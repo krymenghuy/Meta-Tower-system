@@ -1,0 +1,8 @@
+pickup_assigned.#
+available_order.#
+order_canceled.#
+receiver_info_changed.#
+announcement.0
+general.0
+
+

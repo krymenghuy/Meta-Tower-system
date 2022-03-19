@@ -1,0 +1,140 @@
+views
+==========================
+completedpackage.blade.php
+priceSettingComponent.blade.php
+senderListComponent.blade.php
+
+Models
+========================
+CompletedPackage.php
+PickupRequest.php
+Package.php
+Price.php
+Sender.php
+
+Controller
+=======================
+PriceController.php
+
+
+
+public/assets/js
+=======================
+ tracking_map.js (avoid goodle is not defined error)
+public/js
+===========================
+main.js (avoid toaastr is not defined )
+CompletedPackageComponent.js
+PickupRequestComponent.js
+PriceSettingComponent.js
+
+public/asset/js
+===================
+tracking_map.js
+
+public/css
+===================
+app.css
+
+
+App/
+helpers.php
+
+routes
+================
+api.php
+
+
+db script
+=========================
+ALTER TABLE `order` MODIFY COLUMN update_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `order` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `order` MODIFY COLUMN pickup_time TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `order` MODIFY COLUMN request_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `order` MODIFY COLUMN request_pickup_time TIMESTAMP NULL DEFAULT NULL;
+
+ALTER TABLE `sender` MODIFY COLUMN update_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `sender` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+#ALTER TABLE `cash_disbursements` MODIFY COLUMN update_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `cash_disbursements` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `cash_disbursements` MODIFY COLUMN payment_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `cash_receipts` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `cash_receipts` MODIFY COLUMN update_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `cash_receipts` MODIFY COLUMN payment_date TIMESTAMP NULL DEFAULT NULL;
+
+#ALTER TABLE `cash_receipts_attchments` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `delivery` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `delivery` MODIFY COLUMN update_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `delivery` MODIFY COLUMN depart_time TIMESTAMP NULL DEFAULT NULL;
+
+
+ALTER TABLE `package` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `package` MODIFY COLUMN update_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `package` MODIFY COLUMN arrival_time TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `package` MODIFY COLUMN delivery_time TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `package` MODIFY COLUMN pickup_time TIMESTAMP NULL DEFAULT NULL;
+
+
+ALTER TABLE `driver` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+#ALTER TABLE `driver` MODIFY COLUMN update_date TIMESTAMP NULL DEFAULT NULL;
+
+ALTER TABLE `sender` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ 
+ALTER TABLE `driver_warehouses` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+
+ALTER TABLE `exchange_rates` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `expenses` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+
+ALTER TABLE `loc_countries` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `loc_cities` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `loc_districts` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `loc_communes` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `zones` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+
+ALTER TABLE `mobile_brand_images` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `mobile_user_uploads` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `notifications` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `notifications` MODIFY COLUMN expiry_time TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `order_receivers` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+#/ following table not exist in production db /
+##ALTER TABLE `package_attachments` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+##ALTER TABLE `pending_tasks` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+##ALTER TABLE `pending_tasks` MODIFY COLUMN expiry_time TIMESTAMP NULL DEFAULT NULL;
+
+ALTER TABLE `price_list` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `price_list_names` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `product_types` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `promotions` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `promotions` MODIFY COLUMN expiry_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `sales_agents` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `sales_agents` MODIFY COLUMN update_date TIMESTAMP NULL DEFAULT NULL;
+
+ALTER TABLE `sales_agents` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `sender_bank_accounts` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+
+#ALTER TABLE `sender_business_types` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+
+ALTER TABLE `sender_exchange_rates` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+
+ALTER TABLE `um_users` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `um_roles` MODIFY COLUMN create_date TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `um_sessions` MODIFY COLUMN start_time TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `um_sessions` MODIFY COLUMN last_active_time TIMESTAMP NULL DEFAULT NULL;
+
+##==========================
+
+
+alter table package modify column price decimal(10,2) NOT NULL DEFAULT 0;
+alter table package modify column cod TINYINT NOT NULL DEFAULT 0;
+alter table package modify column cod_fee decimal(10,2) NOT NULL DEFAULT 0;
+alter table package modify column driver_total DECIMAL(10,2) NOT NULL DEFAULT 0;
+alter table package modify column sender_total DECIMAL(10,2) NOT NULL DEFAULT 0;
+
+update settings_number set `value` =4100 where id IN (14,15);
+update package set exchange_rate = 4100 where exchange_rate = 41000;
+
+alter table `order` add loc_lat decimal(11,8) NULL DEFAULT NULL;
+alter table `order` add loc_lng decimal(11,8) NULL DEFAULT NULL;
+alter table `order` add expiry_date date NULL DEFAULT NULL;
+
+

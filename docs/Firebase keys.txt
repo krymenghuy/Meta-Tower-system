@@ -1,0 +1,23 @@
+
+FOR MERCHANT APP
+Server key of Firebase
+=====================================
+AAAAF4ix3AE:APA91bEOd79WqGLcGFA9-wlm50KFFFc3GNXMeBzR3o2J_mFY7IoFe5pDMFmJd2U_L_2BTbo2Qe7BnZbs4bx5C4BJ8RBhzysh_pO8CQuKrZDNuCu3h09qvw0BLtTAETn6lqwJTB0lZ9Ib
+
+
+Sender ID for Firebase
+=========================================
+101077605377
+
+
+FOR DRIVER APP
+
+Server key
+===========================
+AAAAF4ix3AE:APA91bEOd79WqGLcGFA9-wlm50KFFFc3GNXMeBzR3o2J_mFY7IoFe5pDMFmJd2U_L_2BTbo2Qe7BnZbs4bx5C4BJ8RBhzysh_pO8CQuKrZDNuCu3h09qvw0BLtTAETn6lqwJTB0lZ9Ib
+
+Sender ID
+=============================
+101077605377
+
+

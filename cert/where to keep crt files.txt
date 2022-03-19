@@ -1,0 +1,6 @@
+Yes but you should place it somewhere like 
+LARAVEL_WEBSOCKETS_SSL_LOCAL_CERT=/etc/ssl/yourdomain.tld.pem 
+where /etc/ssl/yourdomain.tld.pem is the location on the filesystem of the pem encoded certificate. 
+The file only needs to be readable so make sure the permissions are correct, 
+something like 0644 (can be done using chmod 0644 /etc/ssl/yourdomain.tld.pem. 
+The path needs to be a path to the file and cannot be a URL

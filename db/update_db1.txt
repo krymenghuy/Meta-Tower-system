@@ -1,0 +1,1 @@
+Alter table sender ADD FULLTEXT (`name`,email,phone_number,address);

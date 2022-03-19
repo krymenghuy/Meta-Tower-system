@@ -1,0 +1,11 @@
+delete from sender;
+delete from deriver;
+delete from `order`;
+delete from order_receivers;
+delete from package;
+delete from package_attachments;
+delete from cash_disbursements;
+delete from cash_receipts;
+delete from cash_disbursements_attachments;
+delete from cash_receipts_attchments;
+delete from delivery;

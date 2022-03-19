@@ -1,0 +1,30 @@
+
+
+Setup work
+ - Set up Company profile and logo
+ - Set up user logins by Groups
+ - Create Locations & Zones
+ - Create Zone Prices (Price policies)
+ - Create Driver profiles (Many expected)
+ - Create Merchant Profiles (Many Expected)
+ - Create Pickup Request
+ - 
+
+============================
+
+DONE 1. Hide COD Fee column on Pickup Form
+DONE 5. Package trails: Show all outstanding pacakges regardlesss of dates by default. Filter date apply later 
+DONE 6. on Fleet page: Show by default = > only On Delivery trips
+DONE 9. Driver Transactions => use All dates, "Delivered", "Unpaid" by default
+
+2. DFP default Receiver
+3. Use Zone code or search
+7. Display notes/failed notes on Fleet details
+8. Add Exchange rate setting
+7. On Creating Merchant profile => set COD = {Yes, No}, 
+      - Fixed price all zones  below 3kg
+	  - Fixed price all zones above 3 kg	  
+
+  
+
+    

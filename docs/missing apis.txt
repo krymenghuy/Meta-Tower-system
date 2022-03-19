@@ -1,0 +1,14 @@
+
+Driver
+1. transactions and amount due
+2. upload image of payment (at Commission & Settled Packages)
+3. Commssion received, commission receivable
+4. verify_otp
+5. change password
+6. get driver profile (name, photo)
+7. upload profile photo
+
+ 
+
+todo:  Update Models/Pacakge.php for Knomon, Bro Express.
+totdo: check if table "package" has column "completed"

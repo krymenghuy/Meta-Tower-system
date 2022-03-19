@@ -1,0 +1,17 @@
+
+SAMPLE DRIVER LOGIN FOR API TEST
+
+{
+    "login_name":"02356767",
+    "password":"123456",
+    "app_id":"584C7FF2122D11EC89909801A8B0D7XKD"
+}
+
+
+SAMPLE LOGIN MERCHANT
+
+{
+    "login_name":"0967174940",
+    "password":"123456",
+    "app_id":"38DC051E122D11EC89909801A7B0D1FCH"
+}

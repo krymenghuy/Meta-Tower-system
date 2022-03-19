@@ -1,0 +1,53 @@
+
+Routes
+==================
+Web.php
+api.php
+
+
+Config/
+=================
+app.config
+
+securitycom.js ***
+
+FindPersonDialogs.js (DUtil.createGUID() method )
+TripListComponent.js
+DriverPaymentComponent.js
+SenderPaymentComponent.js
+ReceivepackageComponent.js
+PickupListComponent.js
+
+add BDelivery.php
+Package.php
+PickupRequest.php
+Location.php
+DeliveryTrip.php
+
+PickupRequestController
+DeliveryTripController
+LoginController.php
+
+
+TripListComponent.blade.php
+PickupListCompoment.blade.php
+ReceivePackageComponent.blade.php
+DriverPaymentComponent.blade.php
+SenderPaymentComponent.blade.php
+inpuBoxes.blade.php
+
+==================================
+update order_receivers set status_id =1 where status_id IS NULL;
+alter table order_receivers add delivery_notes varchar(100);
+alter table order_receivers add driver_id int;
+
+alter table package drop column sender_trx_id;
+alter table package drop column driver_trx_id;
+alter table package add sender_settlement_id varchar(35);
+alter table package add driver_settlement_id varchar(35);
+ALTER table cash_receipts add settlement_id varchar(35);
+ALTER table cash_disbursements add settlement_id varchar(35);
+
+
+
+

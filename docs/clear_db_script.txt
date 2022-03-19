@@ -1,0 +1,20 @@
+delete from `order`;
+delete from order_receivers;
+delete from `delivery`;
+delete from package;
+delete from sender_cod_charges;
+delete from driver;
+delete from driver_commissions;
+delete from `sender`;
+delete from sender_code_control;
+delete from driver_code_control;
+delete from trip_num_control;
+delete from cash_receipts;
+### the following script clear locations and price list
+delete from loc_countries;
+delete from loc_villages;
+delete from loc_districts;
+delete from loc_cities;
+delete from loc_communes;
+delete from price_list;
+delete from um_users where id <> 1;

@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "101077605377",
+    "project_id": "dolgoal-konmondelivery",
+    "storage_bucket": "dolgoal-konmondelivery.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:101077605377:android:b731459b73e2cae8c63400",
+        "android_client_info": {
+          "package_name": "com.broexpress.merchant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "101077605377-lsa5bjf9v1tpopt01pojmi58dcp2o25c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxHjveJ0jyJIAwbCyzLozqpj3ZFNUhGb0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "101077605377-lsa5bjf9v1tpopt01pojmi58dcp2o25c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:101077605377:android:78e02c22a0a10601c63400",
+        "android_client_info": {
+          "package_name": "dolgoal.delivery.monkon_2021_12_09"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "101077605377-lsa5bjf9v1tpopt01pojmi58dcp2o25c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxHjveJ0jyJIAwbCyzLozqpj3ZFNUhGb0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "101077605377-lsa5bjf9v1tpopt01pojmi58dcp2o25c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

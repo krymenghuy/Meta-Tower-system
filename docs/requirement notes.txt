@@ -1,0 +1,61 @@
+1. create request (sender, product type, qty, vehicle type)
+2.Driver => for each accepted order => enter (receiver info one by one. One receiver_number is one package). This way package is saved into package table (bar_code, receiver_info, package_name, status ='Pending') but "Driver_id" is NULL, meaning that the delviery for this package not yet created
+3.Select picked packages and assign drivers
+
+Delviery list 
+  Date Merchant MerchantType Merchant Phone Package name Product Type, Receiver name, Zone Name, Receiving Address df_payer pricing_rule discount delivery_fee COD Status
+        ----------------------------------------------
+     
+
+===================================
+
+Change Delivery Status = > failed => reason?
+Change Delivery Status => "Delayed" => estiamte date?
+Driver change COD => remarks "ABA to Seller"
+
+Package list for each driver trip (Delivery Assignment)
+ - seller name
+ - seller phone
+ - receiver address (zone name)
+ - receiver phone
+ - total in USD
+ - Total in Riels 
+
+Billing reports
+  - Button to confirm Driver's billing (Clear cash)
+  - On confirming payments with Driver =>user enter dollars amount and Riel amount and store history of cleared transactions Status ={Settled}). (If Settled => Date of Settlement, User who settled, Remarks)
+  - Button to clear Billing payments with Seller
+  -  Seller billing report => colulmns (Delivery Fee, total Prices, COD Fee,taxi_fee, Total, USD,KHR, Status ={Settled}). (If Settled => Date of Settlement, User who settled, Remarks) 
+  
+
+on creating merchant => add bank info, fixed_charge (0,1, between dates), fixed_price_amount, COD(0,1), COD_fee_percent (example 0.05% of package price)  
+Merchant transaction report (On mobile app)
+ List of packages (package's entry date, receiver address,receiver phone,delivery_fee,COD_fee,price, taxi_fee, total (USD))   
+
+On Delivery List => add column "Succeeded Delviery Date" if status is "Delivered"
+
+
+on Create Delivery=> if seller bring goods to Office => create automatic Order ID serving as tracking number as well => useful for Daily seller report
+
+========== (try changing from Failed Delviery List to "Delivered Packages" , and "Outstanding Deliveries"
+Failed or Delayed pacakges disappear from Delivery List
+
+Failed Deliveries => include ()
+
+
+==> Convert to Delivery: remove Barcode, Receiver Address, COD, COD_Fee, Taxi Fee (COD is set with Sender profile)
+--> (Billed_kg * 0.15$) = additional delivery_fee
+
+=========================================================================================
+
+order_id,order_code, barcode, sender_code, sender_phone, 
+
+ Competed Package
+   Booking Date
+   [Product Type]
+   Marchant Name
+   Merchant Phone
+   Receiver Name
+   
+
+   

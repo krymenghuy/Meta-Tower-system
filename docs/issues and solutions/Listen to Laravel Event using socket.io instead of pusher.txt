@@ -1,0 +1,17 @@
+ window.Echo = new Echo({
+                    broadcaster: 'socket.io',
+                    host: socketServerURL, //whatever url you need
+                    auth: {headers: {Authorization: 'Bearer ' + Vue.auth.getToken() }}
+                });
+
+                window.Echo.connector.socket.on('connect', function(){
+                    this.isConnected = true
+                })
+
+                window.Echo.connector.socket.on('disconnect', function(){
+                    this.isConnected = false
+                })
+
+                window.Echo.private('contacts').listen('ContactUpdated', event => {
+                    console.log(event)
+                })

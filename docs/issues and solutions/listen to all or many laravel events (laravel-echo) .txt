@@ -1,0 +1,15 @@
+  
+   const channel = window.Echo.channel('office-dashboard')
+
+    const eventsTolisten = [
+      'CompanyUpdated',
+      'CompanyDeleted',
+    ]
+
+    eventsTolisten.forEach(event => {
+      channel.listen(event, e => {
+        this.handleSocketEvents({
+          name: event,
+          data: e.data
+        })
+      })

@@ -1,0 +1,58 @@
+
+Models
+============================
+DeliveryTrip
+***Package.php
+**Price.php
+***BDelivery.php (updated comments by Vannak)
+***Package.php (updated comments by Vannak)
+*** Location.php
+ 
+
+Controllers
+========================
+**PriceController.php
+**LocationController.php
+
+Routes
+==========================
+**api.php
+
+
+js
+=======================
+PickupListComponent.js
+PackageListComponent.js
+TripListComponent.js
+***DriverPaymentComponent.js (updated comments by Vannak)
+***SenderPaymentComponent.js (updated comments by Vannak)
+ 
+** main.js
+** PriceSettingsComponent.js
+ 
+app
+========================
+** Exceptions/handler.php
+  
+views
+=========================
+ errors/405.blade.php
+ 
+ ** master.blade.php (add @include priceSettingsComponent.blade.php )
+ ** layouts/priceSettingsComponent.blade.php
+ *** driverPaymentComponent.blade.php  (updated comments by Vannak)
+ *** senderPaymentComponent.blade.php  (updated comments by Vannak)
+ *** PriceSettingComponent.blade.php
+
+
+db script
+==============================
+ alter table price_list add price_list_id int;
+ alter table price_list add section varchar(25);
+ alter table sender add price_list_id int;
+ update sender set price_list_id =1;
+
+ Create table price_list_names
+ 
+
+

@@ -1,0 +1,12 @@
+
+1. Fleet Print out for driver
+2. Notification & otp sms
+3. Live Tracking
+4. Correct Merhant Reports
+5. Khmer unicode in PDF
+6. Khmer language support
+7. Upload attachment in driver transaction
+8. Improve ReceivePackage screen
+9. Khmer font Delivery Zones
+
+
