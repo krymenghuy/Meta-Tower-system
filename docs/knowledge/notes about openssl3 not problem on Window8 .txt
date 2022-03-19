@@ -1,4 +1,0 @@
-Openssl version 3.0 => window 8 always wrong password when importing certificate. because AES256 not supported. (window10 is OK)
-so use openssl 1.1.1 on Windows 8
-
- 

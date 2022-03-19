@@ -1,6 +1,0 @@
-Solution:
- 
-1. run composer require guzzlehttp/psr7
-2. in file composer.json, you change version "guzzlehttp/psr7": "^2.0", to "guzzlehttp/psr7": "^1.5",
-3. after that, you run composer update
-4. run composer require beyondcode/laravel-websockets

@@ -1,5 +1,0 @@
-081802428
-
-sudo mv -P SystemSetting.php SystemSttting_del.php
-ls
-sudo 
