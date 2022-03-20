@@ -52,6 +52,10 @@
 
     <!--end:: Global Mandatory Vendors -->
 
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+
+
     <!--begin:: Global Optional Vendors -->
     <link href="{{ asset('assets/vendors/general/tether/dist/css/tether.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/vendors/general/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css') }}" rel="stylesheet" type="text/css" />
@@ -283,15 +287,14 @@
                <!-- if put "layouts.tripListComponent" at bottom  => then there is error in pages -->
                @include('layouts.inputBoxes')
                @include('layouts.dashboardComponent')
-               @include('layouts.newPersonComponent')
-               @include('layouts.companyComponent')
-               @include('layouts.generalSettingsComponent')
-               @include('layouts.um.userManagementComponent')
-               @include('layouts.um.roleManagementComponent')
-               @include('layouts.locationComponent')
-               @include('layouts.mobileBrandImagesComponent')
-               @include('layouts.promotionComponent') 
-               @include('layouts.reportsComponent')
+               @include('layouts.waitinglistComponent')
+               @include('layouts.approveListComponent')
+               @include('layouts.borrowersComponent')
+               @include('layouts.guarantorsComponent')
+               @include('layouts.loanComponent')
+               @include('layouts.repaymentsComponent')
+               @include('layouts.promsoryNotesComponent')
+               @include('layouts.nonPerformingLoansComponent')
             </div><!--end:: div#_app_content-->
         </div>
    </div>

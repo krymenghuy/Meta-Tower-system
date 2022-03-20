@@ -30,6 +30,12 @@ use App\Http\Controllers\Api\ApiController;
 //use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PusherController;
 
+
+
+use App\Http\Controllers\WaitingListController;
+
+
+
 use App\Models\PublicStorage;
 use App\Models\SystemSetting;
  
@@ -385,7 +391,16 @@ Route::post('updateSalesAgentStatus', [SalesAgentController::class, 'updateSales
         //         Route::post('getPickupList', [PickuprequestController::class, 'getPickupList']);
         //     });
         // });
+
+    Route::post('save-applicant', [WaitingListController::class, 'saveApplicant']);
+    Route::post('applicant-list', [WaitingListController::class, 'getApplicantList']);
+
+
     Route::group(['middleware' => 'cors'], function(){
+        //API LMS
+        
+
+
         //##begin:: Merchant app api V1
             Route::prefix('merchant/v1')->group(function(){
               

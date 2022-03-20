@@ -23,6 +23,14 @@
      this.mnuOutstandingPackageList = $('#_main_lnkPackageList');
      this.mnuDeliveryTrips = $('#_main_lnkTrips');
      this.mnuCompletedPackageList = $('#_main_lnkCompletedPackageList');
+     this.mnuWaitingList = $('#_main_lnkLoanApplications');
+     this.mnuApproveList = $('#_main_lnkApproveList');
+     this.mnuBorrowers = $('#_main_lnkBorrowers');
+     this.mnuGuarantors = $('#_main_lnkGuarantors');
+     this.mnuLoans = $('#_main_lnkLoans');
+     this.mnuRepayments = $('#_main_lnkRepayments');
+     this.mnuPromsoryNotes = $('#_main_lnkPrm_Notes');
+     this.mnuNonPerformaingLoan = $('#_main_lnkNon_Performing_Loans');
      //this.mnuBillings = $('#_main_lnkBilling');
      
      this.mnuSenderList = $('#_main_lnkSenderList');
@@ -87,11 +95,65 @@
        DashboardComponent.show(option);
      });
 
-     this.mnuPickupList.on('click',(e)=>{
+     this.mnuWaitingList.on('click',(e)=>{
          e.preventDefault();
-         let option = {'title':'Pickup Center'};
-         PickupListComponent.show(option);
+         let option = {'title':'Applicants List'};
+         WaitingListComponent.show(option);
+         
      });
+
+     this.mnuApproveList.on('click',(e)=>{
+        e.preventDefault();
+        let option = {'title':'Approve List'};
+        ApproveListComponent.show(option);
+        
+    });
+
+    this.mnuBorrowers.on('click',(e)=>{
+        e.preventDefault();
+        let option = {'title':'Borrowers'};
+        BorrowersComponent.show(option);
+        
+    });
+
+    this.mnuGuarantors.on('click',(e)=>{
+        e.preventDefault();
+        let option = {'title':'Guarantors'};
+        GuarantorsComponent.show(option);
+        
+    });
+
+    this.mnuLoans.on('click',(e)=>{
+        e.preventDefault();
+        let option = {'title':'Loans'};
+        LoansComponent.show(option);
+        
+    });
+
+
+    this.mnuRepayments.on('click',(e)=>{
+        e.preventDefault();
+        let option = {'title':'Repayments'};
+        RepaymentsComponent.show(option);
+        
+    });
+
+
+    
+    this.mnuNonPerformaingLoan.on('click',(e)=>{
+        e.preventDefault();
+        let option = {'title':'Non-Performing Loans'};
+        NonPerformingLoansComponent.show(option);
+        
+    });
+
+    
+    this.mnuPromsoryNotes.on('click',(e)=>{
+        e.preventDefault();
+        let option = {'title':'Promsory Notes'};
+        PromsoryNotesComponent.show(option);
+        
+    });
 
      this.mnuCompanyProfile.on('click',function(e){
         e.preventDefault();

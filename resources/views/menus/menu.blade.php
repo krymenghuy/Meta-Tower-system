@@ -54,12 +54,12 @@
                           <span class="kt-menu__link-icon">
                               <i class="fas fa-dolly-flatbed"></i>
                           </span>
-                          <span class="kt-menu__link-text">Waiting list</span>
+                          <span class="kt-menu__link-text">Applicants list</span>
                       </a>
                 </li>
 
                 <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkLoanApplications" class="menu-item kt-menu__link ">
+                      <a href="#" id="_main_lnkApproveList" class="menu-item kt-menu__link ">
                           <span class="kt-menu__link-icon">
                               <i class="fas fa-dolly-flatbed"></i>
                           </span>
@@ -68,81 +68,46 @@
                 </li>
 
                 <li class="kt-menu__section ">
-                  <h4 class="kt-menu__section-text">Loans</h4>
+                  <h4 class="kt-menu__section-text">Student Loans</h4>
                   <i class="kt-menu__section-icon flaticon-more-v2"></i>
                 </li>
 
                 <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkPackageList" class="menu-item kt-menu__link ">
+                      <a href="#" id="_main_lnkBorrowers" class="menu-item kt-menu__link ">
                           <span class="kt-menu__link-icon">
                               <i class="fas fa-cubes"></i>
                           </span>
-                          <span class="kt-menu__link-text">Loan Finder</span>
+                          <span class="kt-menu__link-text">Borrowers</span>
                       </a>
                 </li>
 
                 <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkServiceLoan_studentLoan" class="menu-item kt-menu__link ">
+                      <a href="#" id="_main_lnkGuarantors" class="menu-item kt-menu__link ">
                           <span class="kt-menu__link-icon">
                               <i class="fas fa-cubes"></i>
                           </span>
-                          <span class="kt-menu__link-text">Student Loans</span>
+                          <span class="kt-menu__link-text">Guarantors</span>
                       </a>
                 </li>
 
                 <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkServiceLoan_project" class="menu-item kt-menu__link ">
+                      <a href="#" id="_main_lnkLoans" class="menu-item kt-menu__link ">
                           <span class="kt-menu__link-icon">
                               <i class="fas fa-cubes"></i>
                           </span>
-                          <span class="kt-menu__link-text">Project Loans</span>
+                          <span class="kt-menu__link-text">Loans</span>
                       </a>
                 </li>
 
-                <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkPackageList" class="menu-item kt-menu__link ">
-                          <span class="kt-menu__link-icon">
-                              <i class="fas fa-cubes"></i>
-                          </span>
-                          <span class="kt-menu__link-text">Item Loans</span>
-                      </a>
-                </li>
+                
 
-                <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkPackageList" class="menu-item kt-menu__link ">
-                          <span class="kt-menu__link-icon">
-                              <i class="fas fa-cubes"></i>
-                          </span>
-                          <span class="kt-menu__link-text">Pawn Loans</span>
-                      </a>
-                </li>
+               
 
-                <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkPackageList" class="menu-item kt-menu__link ">
-                          <span class="kt-menu__link-icon">
-                              <i class="fas fa-cubes"></i>
-                          </span>
-                          <span class="kt-menu__link-text">Business Loans</span>
-                      </a>
-                </li>
- 
-                <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkPackageList" class="menu-item kt-menu__link ">
-                          <span class="kt-menu__link-icon">
-                              <i class="fas fa-cubes"></i>
-                          </span>
-                          <span class="kt-menu__link-text">Refinancing Loans</span>
-                      </a>
-                </li>
+               
 
-                <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkPackageList" class="menu-item kt-menu__link ">
-                          <span class="kt-menu__link-icon">
-                              <i class="fas fa-cubes"></i>
-                          </span>
-                          <span class="kt-menu__link-text">Property Loans</span>
-                      </a>
-                </li>
+              
+
+                
  
                 <li class="kt-menu__section ">
                   <h4 class="kt-menu__section-text">Loan Collections</h4>
@@ -150,7 +115,7 @@
                 </li>
 
                 <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkPmt_driver" class="menu-item kt-menu__link ">
+                      <a href="#" id="_main_lnkRepayments" class="menu-item kt-menu__link ">
                           <span class="kt-menu__link-icon">
                               <i class="fa fa-biking"></i>
                           </span>
@@ -159,7 +124,7 @@
                 </li>
  
                 <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkPmt_driver" class="menu-item kt-menu__link ">
+                      <a href="#" id="_main_lnkPrm_Notes" class="menu-item kt-menu__link ">
                           <span class="kt-menu__link-icon">
                               <i class="fa fa-biking"></i>
                           </span>
@@ -167,17 +132,9 @@
                       </a>
                 </li>
 
-                <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkPmt_driver" class="menu-item kt-menu__link ">
-                          <span class="kt-menu__link-icon">
-                              <i class="fa fa-biking"></i>
-                          </span>
-                          <span class="kt-menu__link-text">Payment Schedules</span>
-                      </a>
-                </li>
 
                 <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkPmt_driver" class="menu-item kt-menu__link ">
+                      <a href="#" id="_main_lnkNon_Performing_Loans" class="menu-item kt-menu__link ">
                           <span class="kt-menu__link-icon">
                               <i class="fa fa-biking"></i>
                           </span>
@@ -185,38 +142,7 @@
                       </a>
                 </li>
 
-                 
-                <li class="kt-menu__section ">
-                    <h4 class="kt-menu__section-text">People & Partners</h4>
-                    <i class="kt-menu__section-icon flaticon-more-v2"></i>
-                </li>
                
-                <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkSenderList" class="menu-item kt-menu__link ">
-                          <span class="kt-menu__link-icon">
-                              <i class="fa fa-users"></i>
-                          </span>
-                          <span class="kt-menu__link-text">Borrowers</span>
-                      </a>
-                </li>
- 
-                <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkDriverList" class="menu-item kt-menu__link ">
-                          <span class="kt-menu__link-icon">
-                              <i class="fa fa-biking"></i>
-                          </span>
-                          <span class="kt-menu__link-text">Loan Guarantors</span>
-                      </a>
-                </li>
-
-                <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkDriverList" class="menu-item kt-menu__link ">
-                          <span class="kt-menu__link-icon">
-                              <i class="fa fa-biking"></i>
-                          </span>
-                          <span class="kt-menu__link-text">Employees</span>
-                      </a>
-                </li>
 
                 <li class="kt-menu__section ">
                     <h4 class="kt-menu__section-text">Reports</h4>
@@ -230,14 +156,7 @@
                           <span class="kt-menu__link-text">General Reports</span>
                       </a>
                 </li>
-                <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="javascript:;" id="_mainLnkReports_financials" class="menu-item kt-menu__link ">
-                          <span class="kt-menu__link-icon">
-                              <i class="fa fa-list-alt"></i>
-                          </span>
-                          <span class="kt-menu__link-text">Financials</span>
-                      </a>
-                </li>
+                
 
                 <li class="kt-menu__section ">
                     <h4 class="kt-menu__section-text">Settings</h4>
