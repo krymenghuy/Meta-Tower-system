@@ -1,75 +1,100 @@
-<div id="_main_dashboardComponent" style="display:none;padding:35px">
+<div id="_main_dashboardComponent" style="display:none;padding:35px;">
 
 <section class="content">
       <div class="container-fluid">
         <!-- Small boxes (Stat box) -->
+
+
         <div class="row">
-          <div class="col-lg-3 col-6">
+          <div class="col-lg-12" style="display:flex;padding:0px;">
             <!-- small box -->
-            <div class="small-box">
-              <div class="inner" style="height:90px">
-                <h3 id="spaTotalFee_highlight">$0</h3>
-                <p>Total Fees</p>
+            <div class="small-box1" style="padding:10px;width:100%; margin-right:5px; border:1px solid lightgrey; border-radius:10px; border-bottom: 7px solid #B5C7F7;box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);">
+              <div class="inner2">  
+                <div>
+                  <img src="images/icons/money-bill-solid.svg" alt="" style="height:2.1vw;opacity:30%;">
+                </div>
+                <p style="text-align:center;">Total<br>Borrowers</p>
+                <div>
+                  <h4 id="spaTotalFee_highlight" style="text-align:center;color:#4D5F54;font-size:25px;">$10.00</h4>
+                </div>
               </div>
-              <canvas id="spaTotalFee" style="height:40px"></canvas>
-              <div class="icon">
-              <i class="ion ion-stats-bars"></i>
-              </div>
-              <!-- <a href="#" class="small-box-footer" style="background:#007bff">More info <i class="fas fa-arrow-circle-right"></i></a> -->
             </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="shadow-md small-box">
-              <div class="inner" style="height:90px">
-                <h3 id="spaTotalDoneDeliveries_highlight">53<sup style="font-size: 20px"></sup></h3>
 
-                <p>Total Done Deliveries</p>
+            <div class="small-box1" style="padding:10px;width:100%;margin-left:10px;margin-right:5px;border:1px solid lightgrey; border-radius:10px; border-bottom: 7px solid rgba(255, 0, 0, 0.3);box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);">
+              <div class="inner2">  
+                <div>
+                  <img src="images/icons/filter-circle-dollar-solid.svg" alt="" style="height:2.1vw;opacity:30%;">
+                </div>
+                <p style="text-align:center;">Total<br>Principle Collected</p>
+                <div>
+                  <h4 id="spaTotalFee_highlight" style="text-align:center;color:#4D5F54;font-size:25px;">$10.00</h4>
+                </div>
               </div>
-              <canvas id="spaTotalDoneDeliveries" style="height:40px"></canvas>
-              <div class="icon">
-                <i class="ion ion-android-bicycle"></i>
-              </div>
-              
             </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box">
-              <div class="inner" style="height:90px">
-                <h3 id="spaTotalReturnToMerchants_highlight">44</h3>
 
-                <p>Total Returns to Vendors </p>
-                
+            <div class="small-box1" style="padding:10px;width:100%;margin-left:10px;margin-right:5px;border:1px solid lightgrey; border-radius:10px; border-bottom: 7px solid rgba(20, 255, 0, 0.3);box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);">
+              <div class="inner2">  
+                <div>
+                  <img src="images/icons/comment-dollar-solid.svg" alt="" style="height:2.1vw;opacity:30%;">
+                </div>
+                <p style="text-align:center;">Total<br>Interest Collected</p>
+                <div>
+                <h4 id="spaTotalFee_highlight" style="text-align:center;color:#4D5F54;font-size:25px;">$10.00</h4>
+                </div>
               </div>
-              <canvas id="spaTotalReturnToMerchants" style="height:40px"></canvas>
-              <div class="icon">
-                <i class="ion ion-loop"></i>
-              </div>
-              
             </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box">
-              <div class="inner" style="height:90px">
-                <h3 id="spaTotalContinueToDeliver_highlight">65</h3>
 
-                <p>Total Continue to Deliver </p>
-                
+            <div class="small-box1" style="padding:10px;width:100%;margin-left:10px;margin-right:5px;border:1px solid lightgrey; border-radius:10px; border-bottom: 7px solid rgba(0, 255, 209, 0.3);box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);">
+              <div class="inner2">  
+                <div>
+                  <img src="images/icons/money-bill-trend-up-solid.svg" alt="" style="height:2.1vw;opacity:30%;">
+                </div>
+                <p style="text-align:center;">Average<br>Amount paid by student</p>
+                <div>
+                  <h4 id="spaTotalFee_highlight" style="text-align:center;color:#4D5F54;font-size:25px;">$10.00</h4>
+                </div>
               </div>
-              <canvas id="spaTotalContinueToDeliver" style="height:40px"></canvas>
-              <div class="icon">
-                <i class="ion ion-model-s"></i>
+            </div>
+
+            <div class="small-box1" style="padding:10px;width:100%;margin-left:10px;margin-right:5px;border:1px solid lightgrey; border-radius:10px; border-bottom: 7px solid rgba(255, 245, 0, 0.3);box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);">
+              <div class="inner2">  
+                <div>
+                  <img src="images/icons/money-bill-transfer-solid.svg" alt="" style="height:2.1vw;opacity:30%;">
+                </div>
+                <p style="text-align:center;">Total Late<br>Payment Students</p>
+                <div>
+                  <h4 id="spaTotalFee_highlight" style="text-align:center;color:#4D5F54;font-size:25px;">$10.00</h4>
+                </div>
               </div>
-              
+            </div>
+
+            <div class="small-box1" style="padding:10px;width:100%;margin-left:10px;margin-right:5px;border:1px solid lightgrey; border-radius:10px; border-bottom: 7px solid rgba(88, 105, 95, 0.3);box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);">
+              <div class="inner2">  
+                <div>
+                  <img src="images/icons/piggy-bank-solid.svg" alt="" style="height:2.1vw;opacity:30%;">
+                </div>
+                <p style="text-align:center;">Total finished<br>Loans Students</p>
+                <div>
+                  <h4 id="spaTotalFee_highlight" style="text-align:center;color:#4D5F54;font-size:25px;">$10.00</h4>
+                </div>
+              </div>
+            </div>
+
+            <div class="small-box1" style="padding:10px;width:100%;margin-left:10px;border:1px solid lightgrey; border-radius:10px; border-bottom: 7px solid rgba(193, 97, 43, 0.3);box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);">
+              <div class="inner2">  
+                <div>
+                  <img src="images/icons/graduation-cap-solid.svg" alt="" style="height:2.1vw;opacity:30%;">
+                </div>
+                <p style="text-align:center;">Total Students<br>who never pay</p>
+                <div>
+                  <h4 id="spaTotalFee_highlight" style="text-align:center;color:#4D5F54;font-size:25px;">$10.00</h4>
+                </div>
+              </div>
             </div>
           </div>
-          <!-- ./col -->
-        </div>
+
+
+          </div>
         <!-- /.row -->
         <!-- Main row -->
         <div class="row" style="margin-top:20px;">
@@ -79,7 +104,7 @@
             <div class="card" style="background:none;">
               <div class="card-header border-0" style="border:none;background:none;">
                 <div class="d-flex justify-content-between">
-                  <h3 class="card-title" style="font-size:18px">Revenues VS deliveries</h3>
+                  <h3 class="card-title" style="font-size:18px">Total Prnciple Collected</h3>
                   <a style="display:none" href="javascript:void(0);">View Report</a>
                 </div>
               </div>

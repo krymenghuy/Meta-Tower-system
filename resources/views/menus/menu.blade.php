@@ -75,7 +75,7 @@
                 <li class="kt-menu__item" aria-haspopup="true">
                       <a href="#" id="_main_lnkBorrowers" class="menu-item kt-menu__link ">
                           <span class="kt-menu__link-icon">
-                              <i class="fas fa-cubes"></i>
+                              <i class="fa-solid fas fa-user-graduate"></i>
                           </span>
                           <span class="kt-menu__link-text">Borrowers</span>
                       </a>
@@ -84,7 +84,7 @@
                 <li class="kt-menu__item" aria-haspopup="true">
                       <a href="#" id="_main_lnkGuarantors" class="menu-item kt-menu__link ">
                           <span class="kt-menu__link-icon">
-                              <i class="fas fa-cubes"></i>
+                            <i class="fa-solid fas fa-user-graduate"></i>
                           </span>
                           <span class="kt-menu__link-text">Guarantors</span>
                       </a>
@@ -93,7 +93,7 @@
                 <li class="kt-menu__item" aria-haspopup="true">
                       <a href="#" id="_main_lnkLoans" class="menu-item kt-menu__link ">
                           <span class="kt-menu__link-icon">
-                              <i class="fas fa-cubes"></i>
+                            <i class="fa-solid fas fa-user-graduate"></i>
                           </span>
                           <span class="kt-menu__link-text">Loans</span>
                       </a>
@@ -117,7 +117,7 @@
                 <li class="kt-menu__item" aria-haspopup="true">
                       <a href="#" id="_main_lnkRepayments" class="menu-item kt-menu__link ">
                           <span class="kt-menu__link-icon">
-                              <i class="fa fa-biking"></i>
+                              <i class="fa-solid fas fa-money-bill-wave"></i>
                           </span>
                           <span class="kt-menu__link-text">Repayments</span>
                       </a>
@@ -126,7 +126,7 @@
                 <li class="kt-menu__item" aria-haspopup="true">
                       <a href="#" id="_main_lnkPrm_Notes" class="menu-item kt-menu__link ">
                           <span class="kt-menu__link-icon">
-                              <i class="fa fa-biking"></i>
+                            <i class="fa-solid fas fa-money-bill-wave"></i>
                           </span>
                           <span class="kt-menu__link-text">Promsory Notes</span>
                       </a>
@@ -136,7 +136,7 @@
                 <li class="kt-menu__item" aria-haspopup="true">
                       <a href="#" id="_main_lnkNon_Performing_Loans" class="menu-item kt-menu__link ">
                           <span class="kt-menu__link-icon">
-                              <i class="fa fa-biking"></i>
+                            <i class="fa-solid fas fa-money-bill-wave"></i>
                           </span>
                           <span class="kt-menu__link-text">Non-performing Loans</span>
                       </a>
@@ -151,7 +151,7 @@
                 <li class="kt-menu__item" aria-haspopup="true">
                       <a href="javascript:;" id="_mainLnkReports_general" class="menu-item kt-menu__link ">
                           <span class="kt-menu__link-icon">
-                              <i class="fa fa-list-alt"></i>
+                              <i class="fa-solid fas fa-chart-pie"></i>
                           </span>
                           <span class="kt-menu__link-text">General Reports</span>
                       </a>
