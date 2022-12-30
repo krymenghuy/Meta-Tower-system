@@ -1,0 +1,317 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Session;
+use DB;
+use App\Models\DV;
+use App\Models\Person;
+use App\Models\Lead;
+use App\Models\ServiceQ\QTicket;
+
+class Patient extends Model
+{
+    use HasFactory;
+    protected static $default_official_id_prefix="P";
+    protected static $official_id_length=5;
+
+    protected $table = 'patients';
+    protected $guarded = ['id'];
+    protected $fillable = [];
+      
+    protected $primaryKey = 'id';
+    public $incrementing = true;
+    //protected $keyType = 'string';
+    public $timestamps = true;
+    protected $dateFormat = 'Y-m-d';
+    
+    protected $attributes = [
+        //'inactive' => 0,
+        'code'=>0
+    ];
+
+     /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    // protected $hidden = [
+    //     'password',
+    //     'remember_token',
+    // ];
+ 
+    protected $casts = [
+        'id' => 'integer',
+        'branch_id'=>'integer',
+        'code'=>'string',
+        'patient_type'=>'string', //OPD,IPD
+        'department_id' => 'integer', //ID of servicing department. Example: some client go to Cardio care Center, some patient to Skin Care department
+        'regis' => 'datetime',
+        'consultant_id' => 'integer',
+        'notes' => 'string'
+    ];
+
+    // public function boot()
+    // {
+    //     Model::observe(PatientObserver::class);
+    // }
+
+    static function personId($id){
+      $rows = self::where('id',$id)->selectRaw("person_id")->take(1)->get();
+      foreach($rows as $row) return $row->person_id;
+      return null;
+    }
+
+    static function getDataPropsBy($branch_id,$retrieve_by_fields = [], $select_cols="id",$conj ="AND"){
+       $str_where="";
+       if($conj) $conj=" AND ";
+       foreach($retrieve_by_fields as $field_name=>$value){
+         $str_where .= ($str_where? $conj : "")." $field_name ='$value'";
+       }
+       $rows = DB::table('patients')->whereRaw($str_where)->where('branch_id',$branch_id)->selectRaw($select_cols)->take(1)->get();
+      return isset($rows[0])? $rows[0] : null;
+    }
+
+    // public function saveQuietly(array $options = [])
+    // {
+    //     return static::withoutEvents(function () use ($options) {
+    //         return $this->save($options);
+    //     });
+    // }
+ 
+    protected static function saveVitalSigns($ss,$patient_id,$vitalSigns =[]){
+        $branch_id = $ss->branch_id;
+        //Assume that the Vital sign's Check Time (check_time) is equal to booking time (created_at)
+
+        DB::table('patient_vital_signs')->where('patient_id',$patient_id)->where('branch_id',$branch_id)->delete();
+        foreach($vitalSigns as $item){
+            $create_time = getNowTime();
+
+            //Set default description to display_name of each vital sign
+            $description=$item['display_name'];
+            DB::table('patient_vital_signs')->insert([
+                //"session_id"=>null,
+                "branch_id"=>$branch_id,
+                "patient_id"=>$patient_id,
+                "vital_sign_id"=>$item['id'],
+                "vital_sign_value"=>$item['value'],
+                "description"=>$description,
+                "check_time"=>$create_time,
+                "created_at"=>$create_time,
+                "create_uid"=>$ss->user_id,
+                "create_user"=>$ss->full_name
+            ]);
+        }
+    }
+
+    //@param $mcs is array of medical conditions [{'id','name','value'},...]
+    protected static function saveMedicalConditions($ss,$patient_id,$mcs =[]){
+        $branch_id = $ss->branch_id;
+        //Assume that the Vital sign's Check Time (check_time) is equal to booking time (created_at)
+
+        foreach($mcs as $item){
+            $create_time = getNowTime();
+
+            //Set default description to display_name of each medical condition
+            $description=$item['display_name'];
+            DB::table('patient_medical_conditions')->where('patient_id',$patient_id)->where('branch_id',$branch_id)->delete();
+            DB::table('patient_medical_conditions')->insert([
+                //"session_id"=>null,
+                "branch_id"=>$branch_id,
+                "patient_id"=>$patient_id,
+                "mc_item_id"=>$item['id'],
+                "description"=>$description,
+                "mc_value"=>$item['value'],
+                "status"=>"Active",
+                "observe_date"=>$create_time,
+                "created_at"=>$create_time,
+                "create_uid"=>$ss->user_id,
+                "create_user"=>$ss->full_name
+            ]);
+        }
+    }
+
+    //Create a new patient profile.
+    //@param $mc_items = [{'id':1,'name':'Allergy',value:1},...]
+    //@param vital_signs = [{'id':1,'display_name':'Body temperature',value:37.5},...]
+    //@param $appt_id is Appointment identifier that is available only when user register a patient profile from the Appointment list
+    //@param array $d = ['appt_id'=>0,'person_id'=>0,'name'=>'','first_name','last_name', 'sex','date_of_birth','phone_number','email','address','national_id','has_membership_card'=>'0|1','vital_signs','mc_items'=>[]]
+    static function register($req){
+        $com_branch_id=1;
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $branch_id = $ss->branch_id;
+        
+        $d = $req->all();
+        $addToQueue = isset($d['addToQueue'])?$d['addToQueue']:0;
+        $appt_id = isset($d['appt_id'])?$d['appt_id']:0; //This one is currently not used
+        $lead_id = isset($d['lead_id'])?$d['lead_id']:0; //This is needed to update field "appointments.client_id"
+        $person_id = isset($d['person_id'])?$d['person_id']:null;
+        $national_id = isset($d['national_id'])?$d['national_id']:null;
+        $phone_number = isset($d['phone_number'])?$d['phone_number']:null;
+        //$email = isset($d['email'])?$d['email']:null;
+
+        //begin:: In case of AddingToQueue =1
+            $department_id  =null;
+            $consultant_id = null;
+            if($addToQueue == 1){
+                $department_id = isset($d['department_id'])? $d['department_id']:null;
+                $consultant_id = isset($d['consultant_id'])? $d['consultant_id']:null;
+                if(!$department_id) return DV::error("Servicing department is required for assigning patient to the waiting queue");
+            }
+       //end:: In case of AddingToQueue =1
+
+        //NOTE: $person_id is always Overwritten here because method Person::quickInfo() will always find out person identity using phone number, nationality, or email
+        $person = Person::quickInfo($branch_id,$person_id,['national_id'=>$national_id,'phone_number'=>$phone_number]);
+        if(!$person){
+            $d['date_of_birth'] = convertDate($d['date_of_birth']);
+            $x = Person::forceSave($ss,$d);
+            if($x->status === 'Error') return DV::error($x->error_message);
+            $person_id = $x->person_id;
+        }else $person_id = $person->id;
+         
+        $patient_id = isset($d['id'])?$d['id']:0;
+        if ($patient_id > 0) return DV::error("Patient identity $patient_id should not be given because you are attempting to register new patient profile");
+        //If Person_id is supplied => use @person_id to get patient_id from "patients" table. NOTE. in patients table, there is unique (person_id,patient_id,[patient_code])
+        if($person_id>0) $patient = self::getDataPropsBy($branch_id,['person_id'=>$person_id],"id");
+        if ($patient) $patient_id = $patient->id;
+        //if(self::where("person_id",$person_id)->exists()) return DV::error("The person with phone number ? is already a patient::$phone_number"); 
+        
+        $new_patient_register = false;
+        if (!$patient_id){
+            $patient_id = saveData($ss,'patients',['id'=>0],['person_id'=>$person_id,'patient_type'=>'OPD','com_branch_id'=>$com_branch_id,'code'=>null,'remarks'=>null],[],1);
+            $new_patient_register = true;
+        }
+        
+        if ($patient_id > 0){
+            //Set Patient Code / Official Patient ID
+            $ff = setOfficialCode($branch_id,'patient_code_control','patients',['id'=>$patient_id],self::$default_official_id_prefix,self::$official_id_length);
+
+            //In case user registers Client from Appointment view, there is appointment ID (appt_id) that can be used to update field "appointments.client_id to patient_id and appointments.client_type to 'client' "  
+            if($lead_id > 0){
+                DB::table('appointments')->where('branch_id',$branch_id)->where('lead_id',$lead_id)->update([
+                    'client_id'=>$patient_id,
+                    'client_name'=>$d['name'],
+                    'client_sex'=>$d['sex'],
+                    'client_phone_number'=>$d['phone_number'],
+                    'status_id'=>($addToQueue? 3:2)
+                ]);
+            }
+            //Save vital_sign items
+            $medicalConditions = isset($d['mc_items'])?$d['mc_items']:[];
+            $vital_signs = isset($d['vital_signs'])?$d['vital_signs']:[];
+            self::saveVitalSigns($ss,$patient_id,$vital_signs); 
+            //Save medical conditions such as Alergic, and other condition
+            self::saveMedicalConditions($ss,$patient_id,$medicalConditions);
+
+            $statusInfo = (object)['status'=>'Registered','status_id'=>2];  /** status_id => 0=Canceled, 1= Pending , 2 = Registered, 3=Queued, 4 = Served **/
+            //register patient to Servicing department such as Cardiology, or Dermatology, or Heart Center
+            if ($addToQueue == 1){
+                $qr = QTicket::create($ss,['client_id'=>$patient_id,'department_id'=>$department_id,'consultant_id'=>$consultant_id]);
+                if($qr->status==='Error') return $qr;
+                $statusInfo = (object)['status'=>'Queued','status_id'=>3]; 
+            }
+            
+            return DV::success(['person_id'=>$person_id,'patient_id'=>$patient_id,'patient_code'=>$ff? $ff->code:null,'status_info'=>$statusInfo]);
+        }else return DV::error('Something went wrong during saving patient data');
+
+    }
+
+    static function deletePermanent($req){
+        $com_branch_id=1;
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $branch_id = $ss->branch_id;
+        $id = $req->id;
+        $x = self::where('branch_id',$branch_id)->where('id',$id)->delete(); 
+        if ($x===1) return DV::success(['result'=>$x]);
+        else return DV::error("No matching patient found for deleting!");
+    }
+
+     //set patient code or patient official ID number
+     function setFriendlyId($id,$branch_id=0,$len=5){
+ 
+    }
+
+    static function findSimilar($req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $branch_id = $ss->branch_id;
+        $search_value = escape_like_str($req->search_value);
+
+        $str_search="1=1";
+        if($search_value) $str_search ="(p.phone_number ='$search_value' OR pt.code ='$search_value' OR p.name LIKE '%$search_value%' OR p.national_id ='$search_value')";
+        $cols ="pt.id,pt.code,p.id as person_id,p.name,p.sex, formatDate(pt.created_at) AS created_at,p.phone_number,p.email,p.address,pt.remarks,pt.create_user";
+        $rows = DB::table("patients AS pt")->join('persons as p','p.id','=','pt.person_id')->where('pt.branch_id',$branch_id)->whereRaw($str_search)->selectRaw($cols)->orderByRaw("pt.created_at desc")->get();    
+        return DV::result($rows);
+    }
+   
+    //verify if the one of the given fields (Phone, national_id, email,) is true => then he or she is a client or patient
+    //$retrieveFields is array of fields in table "persons" alias as "p" only
+    static function verifyByFields($branch_id,$retrieveByFields=[]){
+        $more_where =null;
+        foreach($retrieveByFields as $field_name=>$value){
+            if($value){
+                $str = "p.$field_name ='$value'";
+                $more_where .= ($more_where?" OR ":"").$str;
+            }
+        }
+        if($more_where) return null;
+        $more_where =$more_where?$more_where:"1=2";
+
+        $cols ="pt.id";
+        $rows =  DB::table('persons as p')->join('patients as pt','pt.person_id','=','p.id')->where('pt.branch_id',$branch_id)->whereRaw($more_where)->selectRaw($cols)->take(1)->get();
+        return isset($rows[0]);
+    }
+ 
+    static function retrieveBy($branch_id,$retrieveByFields=[],$conj="OR"){
+        $more_where =null;
+        if(!$conj) $conj ="OR";
+        foreach($retrieveByFields as $field_name=>$value){
+            if($value){
+                $str = "p.$field_name ='$value'";
+                $more_where .= ($more_where?" $conj ":"").$str;
+            }
+        }
+        if(!$more_where) return null;
+        $more_where =$more_where?$more_where:"1=2";
+
+        $cols ="pt.id,p.id as person_id,pt.code,p.name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
+        $rows =  DB::table('persons as p')->join('patients as pt','pt.person_id','=','p.id')->where('pt.branch_id',$branch_id)->whereRaw($more_where)->selectRaw($cols)->take(1)->get();
+        return isset($rows[0])?$rows[0]:null;
+    }
+
+    //returns details of one patient (including personal details and medical conditions)
+    static function info($id){
+        $more_where =null;
+        $cols ="p.id,p.name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
+        $rows =  DB::table('persons as p')->join('patients as pt','pt.person_id','=','p.id')->where('pt.id',$id)->selectRaw($cols)->take(1)->get();
+        foreach($rows as $row){
+            $cols1 ="pmc.id,pmc.mc_value,pmc.description";
+            $row->mc_items = DB::table("patient_medical_conditions as pmc")->where('patient_id',$id)->selectRaw($cols1)->take(1)->get();
+            return $row;
+        }
+        return null;
+    }
+
+    //returns details of one patient's personal details. and does not include medical conditions
+    static function quickInfo($id){
+        $more_where =null;
+        $cols ="p.id,p.name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
+        $rows =  DB::table('persons as p')->join('patients as pt','pt.person_id','=','p.id')->where('pt.id',$id)->selectRaw($cols)->take(1)->get();
+        return null;
+    }
+
+    static function list($req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $branch_id = $ss->branch_id;
+        $search_value = $req->search_value;
+        $cols ="pt.id,pt.code,p.id as person_id,p.name,p.sex, formatDate(pt.created_at) AS created_at,p.phone_number,p.email,p.address,pt.remarks,pt.create_user";
+        $rows= DB::table("patients AS pt")->join('persons as p','p.id','=','pt.person_id')->where('pt.branch_id',$branch_id)->selectRaw($cols)->orderByRaw("pt.created_at desc")->get();  
+        return DV::result($rows);
+    }
+
+}

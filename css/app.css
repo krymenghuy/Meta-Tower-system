@@ -1,4 +1,11 @@
 @import url(https://fonts.googleapis.com/css?family=Nunito);
+@import url('https://fonts.googleapis.com/css2?family=Battambang:wght@100;300;400;700;900&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,900&display=swap');
+
+*{
+  font-family: 'Montserrat', sans-serif;
+  /* font-family: 'Battambang', cursive; */
+}
+
 /* @charset "UTF-8"; */
 /*!
  * Bootstrap v4.6.0 (https://getbootstrap.com/)
@@ -6,6 +13,7 @@
  * Copyright 2011-2021 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
+ /* public */
 :root {
   --blue: #3490dc;
   --indigo: #6574cd;
@@ -44,7 +52,8 @@
 }
 
 html {
-  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
+  font-family:'Khmer OS Content','DaunPenh','Francois One','Bayon','Verdana','Arial Black (sans-serif)','Arial (sans-serif)','Tahoma (sans-serif)';
+  /* font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",sans-serif; */
   font-weight: 300;
   font-size: 0.9em;
   line-height: 1.5;
@@ -69,7 +78,8 @@ article, aside, figcaption, figure, footer, header, hgroup, main, nav, section {
 
 body {
   margin: 0;
-  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",sans-serif; 
+  font-family:'Khmer OS Content','DaunPenh','Francois One','Bayon','Verdana','Arial Black (sans-serif)',"Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",'Arial (sans-serif)','Tahoma (sans-serif)';
+  /* font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",sans-serif;  */
   font-size: 0.8em;
   font-weight: 400;
   line-height: 1.6;
@@ -478,7 +488,7 @@ mark,
   color: #6c757d;
 }
 .blockquote-footer::before {
-  content: "— ";
+  content: "ï¿½ï¿½";
 }
 
 .img-fluid {
@@ -10011,37 +10021,7 @@ h3 {
     border-color: #dee2e6;
   }
 }
-
-a.order-status{
-  width:100%;
-  height:100%;
-} 
-a.order-status span{
-  font-weight:bold;
-  font-size:1.2em;
-}
-
-a.order-status .done{
-   background-color:green;
-   color:white;
-} 
-a.order-status .arrived-wh{
-  background-color:green;
-  color:white;
-} 
-a.order-status .penidng{
-  background-color:yellow;
-  color:black;
-}
-a.order-status .picked{
-  color:grey;
-  background-color: orange;
-}
-a.order-status .accepted{
-  color:grey;
-  background-color: orange;
-}
-
+  
 table tr th td{
   font-size:1.8em !important; 
   color:blue;
@@ -10197,8 +10177,17 @@ div.effect-zoomin{
 
   li.kt-menu__section {
     margin-top:-10px !important;
+    background: #fff !important;
   }
+  a.kt-menu__link:hover{
+    border-radius:0px 20px 20px 5px;
+  }
+  a.kt-menu__link > .kt-menu__link--text{
+    background-color: transparent;
+  }
+
   span.simple-label, label.simple-label{
+    font-family:'Khmer OS Content','DaunPenh','Francois One','Bayon','Verdana','Arial Black (sans-serif)','Arial (sans-serif)','Tahoma (sans-serif)';
     margin-top:10px;
     font-size:1.1em;
     padding:3px;
@@ -10456,7 +10445,9 @@ div#kt_aside_menu_wrapper{
 
     /* Works on Chrome, Edge, and Safari */
     *::-webkit-scrollbar {
-      width: 7px;
+      width: 10px;
+      height:10px;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
     }
 
     *::-webkit-scrollbar-track {
@@ -10464,31 +10455,32 @@ div#kt_aside_menu_wrapper{
     }
 
     *::-webkit-scrollbar-thumb {
-      background-color:#CBD6D2;
-      border-radius: 2px;
-      border: 1.2px solid #979A99;
+      background-color:#91D1EE;
+      border-radius: 10px;
+      /* border:  1.2px solid #91D1EE; */
     }
 /**end:: scrollbar style for all **/
 
 /** begin:: scrollbar for aside menu **/
     ul#_dms_aside_menus {
-      scrollbar-width: thin;
+      scrollbar-width: 5px;
       scrollbar-color: #C0C3C2 #696D6B;
     }
 
     /* Works on Chrome, Edge, and Safari */
     ul#_dms_aside_menus::-webkit-scrollbar {
-      width: 9px;
+      width: 5px;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
     }
 
     ul#_dms_aside_menus::-webkit-scrollbar-track {
-      background:#696D6B;
+      background:#EAEDEE;
     }
 
     ul#_dms_aside_menus::-webkit-scrollbar-thumb {
-      background-color:#CBD6D2;
-      border-radius: 2px;
-      border: 1.2px solid #979A99;
+      background-color:#91D1EE;
+      border-radius: 10px;
+      border: 1.2px solid #91D1EE;
     }
 /**end:: scrollbar for aside menu**/
  
@@ -10570,3 +10562,319 @@ a.disabled {
   /* And disable the pointer events */
   pointer-events: none;
 }
+
+.popover {
+  border-color:orange !important;
+  min-width:120px;
+} 
+
+.vs-btn-lg{
+  border-radius:25px;
+  padding:8px;
+  border:none;
+  margin:5px;
+}
+
+.vs-btn-lg:hover{
+ transform:scale(1.2);
+ transition: transform 0.3s ease-in-out;
+ --webkit-transition: transform 0.3s ease-in-out; 
+}
+.vs-btn-primary{
+  background-color:#27BFD8;
+  color:#fff;
+}
+.vs-btn-danger{
+  background-color:red;
+  color:#fff;
+}
+.vs-btn-danger{
+  background-color:#F73004;
+  color:#fff;
+}
+.vs-btn-success{
+  background-color:#149220;
+  color:#fff;
+}
+.vs-btn-default{
+  background-color:#E2DD8D;
+  color:#fff;
+}
+.vs-btn-sm-outline-round{
+  border-radius:15px;
+  display:block;
+  padding:2px;
+  text-align:center;
+  border:1px solid orange;
+}
+.vs-btn-sm-outline-round:hover{
+  background-color:orange;
+}
+
+
+/* Vuth CSS */ 
+.card-totalBorrowers{
+  background: rgb(33,29,102);
+  background: linear-gradient(160deg, rgba(33,29,102,1) 0%, rgba(80,80,231,1) 35%, rgba(0,212,255,1) 100%);
+  border-radius: 50px;
+  height: 50px;
+  margin-bottom: 20px;
+  padding:5px;
+  width: 70%;
+  border-image: 3px solid linear-gradient(90deg, rgba(33,29,102,1) 0%, rgba(80,80,231,1) 35%, rgba(0,212,255,1) 100%);
+}
+.card-totalBorrowers:nth-child(2){
+  width: 70%;
+  margin-left: 10%;
+  background: rgb(37,173,82);
+  background: linear-gradient(90deg, rgba(37,173,82,1) 0%, rgba(110,237,89,1) 43%, rgba(0,255,158,1) 100%);
+}
+.card-totalBorrowers:nth-child(3){
+  width: 70%;
+  margin-left: 20%;
+  background: rgb(212,126,27);
+  background: linear-gradient(40deg, rgba(212,126,27,1) 0%, rgba(209,195,58,1) 45%, rgba(213,104,21,1) 100%);
+}
+.card-totalBorrowers:nth-child(4){
+  width: 75%;
+  margin-left: 25%;
+  background: rgb(176,84,8);
+  background: linear-gradient(40deg, rgba(176,84,8,1) 0%, rgba(207,158,84,1) 43%, rgba(255,141,0,1) 100%);
+}
+.card-totalBorrowers:nth-child(5){
+  width: 70%;
+  margin-left: 20%;
+  background: rgb(131,58,180);
+  background: linear-gradient(50deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%);
+}
+.card-totalBorrowers:nth-child(6){
+  width: 75%;
+  margin-left: 10%;
+  background: rgb(161,176,8);
+  background: linear-gradient(90deg, rgba(161,176,8,1) 0%, rgba(213,237,85,1) 43%, rgba(255,248,0,1) 100%);
+}
+.card-totalBorrowers:nth-child(7){
+  width: 70%;
+  background: rgb(34,193,195);
+  background: linear-gradient(90deg, rgba(34,193,195,1) 0%, rgba(253,187,45,1) 100%);
+}
+
+.card-totalBorrowers .icon{
+  height: 40px;
+  width: 40px;
+  border-radius: 100%;
+  background: white;
+  display: flex;
+}
+.card-totalBorrowers .icon img{
+  width: 25px;
+  height: 25px;
+  margin: auto;
+}
+
+.card-totalBorrowers .title{
+  padding-left: 20px;
+  color: white;
+}
+.card-totalBorrowers .title p{
+  padding-top: 1px;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+.card-totalBorrowers .title h4{
+  font-size: 16px;
+  margin-top: -5px;
+}
+
+.btnTableDashboard{
+  background: rgb(131,58,180);
+  background: linear-gradient(50deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%);
+  border:none;border-radius:5px;color:white;
+}
+.btnTableDashboard-Approved{
+  background: rgb(37,173,82);
+  background: linear-gradient(90deg, rgba(37,173,82,1) 0%, rgba(110,237,89,1) 43%, rgba(0,255,158,1) 100%);
+  border:none;border-radius:5px;color:white;
+}
+
+.img-left-sidebar{
+  background: rgb(33,29,102);
+  background: linear-gradient(160deg, rgba(33,29,102,1) 0%, rgba(80,80,231,1) 35%, rgba(0,212,255,1) 100%);
+  border-radius: 100%;
+  height: 12.5vw;
+  margin-top: 140px;
+  padding: 8%;
+}
+.bg-white{
+  background: lightgrey;
+  border-radius: 100%;
+  height: 10.5vw;
+  display: flex;
+}
+
+.bg-white img{
+  margin: auto;
+  height: 7vw;
+}
+.titleApplicantPrice{
+  font-weight: bold;
+  font-size: 28px;
+}
+.titleApplicantTotalAmount{
+  font-weight: normal;
+  font-size: 22px;
+  color: lightgray;
+}
+.piechartPanel{
+  position: relative;
+}
+.titlePieChart{
+  height: 1px;
+}
+.titlePieChart h1{
+  font-size: 2em;
+  position: absolute;
+    top: 27%;
+    left: 51%;
+    transform: translate(-50%, -50%);
+
+}
+.titlePieChart img{
+  height: 25px;
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.titleTotalCollected {
+  padding-top:20px;
+  font-size: 22px;
+  text-align: center;
+  color: #3490dc;
+}
+.titleLastDay{
+  color: #f6993f;
+}
+.canvasjs-chart-credit{
+  display: none;
+}
+@media (max-width: 576px) {
+  .panelAllReportLeftSideBar{
+    display: none;
+  }
+}
+
+
+
+
+/* ---------------- Vuth Style CSS ------------------*/
+div#kt_aside_brand {
+    background: white;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+div#kt_aside_menu_wrapper{
+  background: white;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+ul#_dms_aside_menus{
+  background:white;
+}
+
+.kt-aside__brand{
+  height: auto;
+  border-bottom: 1px solid lightgrey;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+.kt-aside__brand .kt-aside__brand-tools{
+  margin-top: -45%;
+}
+
+.kt-aside-menu .kt-menu__nav > .kt-menu__item:not(.kt-menu__item--parent):not(.kt-menu__item--open):not(.kt-menu__item--here):not(.kt-menu__item--active):hover > .kt-menu__heading, .kt-aside-menu .kt-menu__nav > .kt-menu__item:not(.kt-menu__item--parent):not(.kt-menu__item--open):not(.kt-menu__item--here):not(.kt-menu__item--active):hover > .kt-menu__link{
+  background-color: #69F2E6;
+}
+#_main_btn_user{
+  border-radius:0;
+}
+
+.kt-grid.kt-grid--hor:not(.kt-grid--desktop):not(.kt-grid--desktop-and-tablet):not(.kt-grid--tablet):not(.kt-grid--tablet-and-mobile):not(.kt-grid--mobile) > .kt-grid__item{
+  background-color: #fff;
+  box-shadow: rgba(0, 0, 0, 0.1) 1px 1px 1px;
+}
+  
+
+/* ---------------- END::Vuth Style CSS ------------------*/
+
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 43px;
+  height: 17px;
+  margin-left: 15%;
+}
+.switch input {
+  display: none;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ccc;
+  border-radius: 34px;
+  transition: .4s;
+}
+.slider:before {
+  content: "";
+  position: absolute;
+  height: 10px;
+  width: 10px;
+  left: 4px;
+  bottom: 4px;
+  background: #fff;
+  border-radius: 50%;
+  transition: .4s;
+}
+input:checked + .slider {
+  background: #b892ff;
+}
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+.dark-mode {
+  background: #0b0a14;
+}
+.dark-mode h1 h2 h3 h4 h5 {
+  color: #f7f0e9;
+}
+.dark-mode p {
+  color: #f7f0e9;
+}
+
+.dark-mode *{
+  background: #0b0a14;
+}
+
+.dark-mode #kt_aside_brand{
+  background: #0b0a14 !important;
+}
+.dark-mode #_dms_aside_menus{
+  background: #0b0a14 !important;
+}
+.dark-mode .kt-menu__section{
+  background: #0b0a14 !important;
+}
+.dark-mode #kt_aside_menu_wrapper{
+  background: #0b0a14 !important;
+}
+
+.dark-mode .loan-step{
+  background: rgb(64, 64, 64) !important;
+}
+
+
+
+ 

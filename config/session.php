@@ -128,7 +128,7 @@ return [
 
     'cookie' => env(
         'SESSION_COOKIE',
-        Str::slug(env('APP_NAME', 'DMS'), '_').'_session'
+        Str::slug(env('APP_NAME', 'mclinic'), '_').'_session'
     ),
 
     /*
@@ -182,7 +182,7 @@ return [
     |
     */
 
-    'http_only' => false, /** The default one is TRUE. We make it FALSE so that cookie can be accessible to JS script **/
+    'http_only' => true, /** The default one is TRUE. We make it FALSE so that cookie can be accessible to JS script **/
 
     /*
     |--------------------------------------------------------------------------

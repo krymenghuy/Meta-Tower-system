@@ -32,8 +32,9 @@ class PusherController extends Controller
         {
             //$request->bearerToken();
             //$user = auth()->user();
-            $um = new UM();
-            $user = $um->getUserByToken($request);
+            //$um = new UM();
+            //todo: check if Decrytpion error "The payload is invalid" causing Websocket to fail. Error 500 on "api/broadcast/auth"
+            $user = UM::getUserInfoByToken($request);
             $socket_id = $request->socket_id;
             $channel_name =$request['channel_name'];
 
@@ -42,9 +43,9 @@ class PusherController extends Controller
             // $secret = env('PUSHER_APP_SECRET');
             // $app_id = env('PUSHER_APP_ID');
 
-            $app_key = '780bc0f81cba4c28118a';
-            $secret = '330244c53d84af48fc46';
-            $app_id = '1312272';
+            $app_key = 'bc77b0c2e26cf2b37d98';
+            $secret = '330245c53d84af48fc46';
+            $app_id = '1311688';
     
             // $pusher = new Pusher($key, $secret, $app_id);
             // $auth = $pusher->socket_Auth($channel_name, $socket_id);

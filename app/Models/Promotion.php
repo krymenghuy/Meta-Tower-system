@@ -18,7 +18,7 @@ class Promotion extends Model
     function savePromotion($d){
         $ss = getSessionInfo($d);
         if(!$ss) return '#350'; //user not authenticated
-        if (!prn_allowed(2)) return '@'; //need permission to do this task
+        if (!prn_allowed(-1)) return '@'; //need permission to do this task
         $branch_id = sanitize($ss->branch_id);
         $user_class = isset($d->user_class)?sanitize($d->user_class):null;
         $id = isset($d->id)?$d->id:null;;
@@ -111,7 +111,7 @@ class Promotion extends Model
     function deletePromotion($d){
         $ss = getSessionInfo($d);
         if(!$ss) return '#350'; //user not authenticated
-        if (!prn_allowed(2)) return '@'; //need permission to do this task
+        if (!prn_allowed(-1)) return '@'; //need permission to do this task
         $branch_id = sanitize($ss->branch_id);
         $user_class = isset($d->user_class)?$d->user_class:null;
         $id = isset($d->id)?sanitize($d->id):null;
@@ -139,7 +139,7 @@ class Promotion extends Model
     function getPromotionInfo($d){
         $ss = getSessionInfo($d);
         if(!$ss) return '#350'; //user not authenticated
-        if (!prn_allowed(2)) return '@'; //need permission to do this task
+        if (!prn_allowed(-1)) return '@'; //need permission to do this task
         $branch_id = sanitize($ss->branch_id);
         $user_class = isset($d->user_class)?$d->user_class:null;
         $id = isset($d->id)?$d->id:null;
@@ -171,7 +171,7 @@ class Promotion extends Model
     function getPromotionList($d){
         $ss = getSessionInfo($d);
         if(!$ss) return '#350'; //user not authenticated
-        if (!prn_allowed(2)) return '@'; //need permission to do this task
+        if (!prn_allowed(-1)) return '@'; //need permission to do this task
         $branch_id = sanitize($ss->branch_id);
 
         //shoudl default @user_class to "merchant"???

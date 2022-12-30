@@ -7,8 +7,7 @@ var ApproveListComponent = new function(){
     this.tblApplicants = $('#_mainApproveListComponent_table');
 
     this.btnAddWaitingList = $('#btnAddWaitingList');
-
-
+ 
     this.init = () => {
         mThis.btnAddWaitingList.on('click', () => {
             let op = {title:'New Approve List'};

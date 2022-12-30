@@ -1,0 +1,111 @@
+
+  .bg-login{
+    height: 100vh;
+    background-image: url("bg-login.png");
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover;
+    
+  }
+
+  .login-panel{
+      position: absolute;
+      left: 13%;
+      top: 20%;
+      background: rgba(0, 0, 0, 0.5);
+      width: 440px;
+      height: 800px;
+      border-radius: 20px;
+  }
+
+
+  .login-logo img{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height: 180px;
+    margin-top: 40px;
+  }
+
+  .titleLogin{
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+      color: lightgrey;
+  }
+
+  .labelText{
+      color: white;
+      margin-bottom: 5px;
+  }
+
+  .forgotPassword a{
+      float: right;
+      color: lightgrey
+  }
+
+  .forgotPassword a:hover{
+    color: rgb(194, 189, 189);
+  }
+
+  .panelRegister{
+    text-align: center;
+  }
+  .panelRegister a{
+      color: lightgrey;
+  }
+  .panelRegister a:hover{
+      color: rgb(194, 189, 189);
+  }
+
+  .btnLogin{
+      width: 100%;
+      margin-top: 40%;
+      border-radius: 25px !important;
+  }
+
+  input[type=text],
+  input[type=email],
+  input[type=password]{
+    background: transparent;
+    border: 1px solid rgb(170, 170, 170);
+    color: lightgrey;
+    border-radius: 25px;
+  }
+
+  input[type=text].form-control:focus,
+  input[type=email].form-control:focus,
+  input[type=password].form-control:focus{
+      background: transparent;
+    border-color:cornflowerblue;
+    color: lightgrey;
+  }
+
+
+  @media (max-width: 767px) {
+    .bg-login{
+        /* background-repeat: no-repeat;
+        background-size:cover; */
+
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: 65% 65%; 
+    }
+    .login-panel{
+        width: 75%;
+        height: auto;
+    }
+    .btnLogin{
+        margin-top: 20%;
+    }
+    .panelRegister{
+        margin-bottom: 50px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .bg-login img{
+        height: 150px;
+    }
+
+  }

@@ -4,24 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
-use App\Notification\OrderCreated;
-
-use App\Events\MerchantCreatedOrder;
-use App\Events\driver_delivered_item;
-use App\Events\PackageStatusChanged;
-use App\Events\driver_accepted_order;
 use App\Events\MessageReceived;
-
-use App\Models\PickupRequest;
-
-use App\Models\User;
+  
 use LaravelFCM\Facades\FCM;
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
 use LaravelFCM\Message\Topics;
- 
+
+use App\Models\UM;
+use App\Models\DV;
 use Session;
 use Carbon\Carbon;
 use DB;
@@ -40,40 +32,40 @@ class Notifier extends Model
 
       try{
           switch($event_name){
-                    case 'merchant_created_order':{
-                      event(new \App\Events\MerchantCreatedOrder($data)); 
-                      break;
-                    }
-                    case 'driver_accepted_order':{
-                      event(new \App\Events\DriverAcceptedOrder($data));    
-                      break;
-                    }
-                    case 'driver_delivered_item':{
-                      event(new \App\Events\DriverDeliveredItem($data));
-                      // must use this => Illuminate\Broadcasting\InteractsWithSockets
-                      //return makeJsonResponse($data)->toOthers();    
-                      break;
-                    } 
+                    // case 'merchant_created_order':{
+                    //   event(new \App\Events\MerchantCreatedOrder($data)); 
+                    //   break;
+                    // }
+                    // case 'driver_accepted_order':{
+                    //   event(new \App\Events\DriverAcceptedOrder($data));    
+                    //   break;
+                    // }
+                    // case 'driver_delivered_item':{
+                    //   event(new \App\Events\DriverDeliveredItem($data));
+                    //   // must use this => Illuminate\Broadcasting\InteractsWithSockets
+                    //   //return makeJsonResponse($data)->toOthers();    
+                    //   break;
+                    // } 
                     case 'message_received':{
                       event(new \App\Events\MessageReceived($data));
                       break;
                     }
-                    case 'package_status_changed':{
-                        $rows = DB::table('package_statuses AS ps')->where('id',$data->status_id)->limit(1)->select('name AS status')->get(); 
-                        $status = null;
-                        foreach($rows as $row) $status = $row->status;
-                        $data->status = $status;
-                        event(new \App\Events\PackageStatusChanged($data));
-                        break;
-                    }
-                    case 'order_status_changed':{
-                      broadcast(new \App\Events\OrderStatusChanged($data))->toOthers();
-                      break;
-                  }
-                    case 'order_status_changed':{
+                  //   case 'package_status_changed':{
+                  //       $rows = DB::table('package_statuses AS ps')->where('id',$data->status_id)->limit(1)->select('name AS status')->get(); 
+                  //       $status = null;
+                  //       foreach($rows as $row) $status = $row->status;
+                  //       $data->status = $status;
+                  //       event(new \App\Events\PackageStatusChanged($data));
+                  //       break;
+                  //   }
+                  //   case 'order_status_changed':{
+                  //     broadcast(new \App\Events\OrderStatusChanged($data))->toOthers();
+                  //     break;
+                  // }
+                  //   case 'order_status_changed':{
 
-                      break;
-                    }default:
+                  //     break;
+                  //   }default:
                     {
                       return "Failed to notify to Web Admin because provided event name is not correct"; 
                       break;
@@ -315,28 +307,23 @@ class Notifier extends Model
  
    //$d= {'branch_id','user_class','user_id'}
    static function getNotificationListByUser($d){
-      $ss = getSessionInfo($d);
-      if(!$ss) return '#350'; //user not authenticated
-      if (!prn_allowed(2)) return '@'; //need permission to do this task
+      $ss = UM::getUserInfoByToken($d,-1);
+      if ($ss->status_code !=200) return DV::emptyResult($ss->status_code,[]);
+      return [];
       $branch_id = $ss->branch_id;
       $user_id = $d->user_id;
       $user_class = $d->user_class;
       
-      //Merchant app_id =  '38DC051E122D11EC89909801A7B0D1FCH';
-      $app_id =null;
-      // driver_app_id = '584C7FF2122D11EC89909801A8B0D7XKD';
-      if($user_class =="driver")  $app_id = getDriverAppId(); 
-      else if ($user_class ==="merchant")  $app_id = getMerchantAppId();
-      else $app_id = getAdminAppId();
+      $app_id = getAdminAppId();
      
       $more_wheres =null;
       if ($user_id > 0)
         $more_wheres .="(n.user_id ='".$user_id."' OR IFNULL(n.user_id,0) =0)";
       else  $more_wheres ="n.user_id = -1";  //return empty rows if there is user_id supplied
-      $rows = DB::table('notifications AS n')->where('branch_id',$branch_id)->where('app_id',$app_id)->whereRaw($more_wheres)->selectRaw("id, CASE IFNULL(user_id,0) WHEN 0 THEN 'all' ELSE 'me' END AS target_user,message,title,is_read,image_url,create_date")->orderByRaw("create_date DESC")->get();
+      $rows = DB::table('notifications AS n')->where('branch_id',$branch_id)->where('app_id',$app_id)->whereRaw($more_wheres)->selectRaw("n.id,is_read(n.id,n.user_id) AS is_read,CASE IFNULL(user_id,0) WHEN 0 THEN 'all' ELSE 'me' END AS target_user,message,title,is_read,image_url,create_date")->orderByRaw("create_date DESC")->get();
       return $rows;
    }
-
+ 
     static function point2point_distance($lat1, $lon1, $lat2, $lon2, $unit='K') 
     { 
         $theta = $lon1 - $lon2; 

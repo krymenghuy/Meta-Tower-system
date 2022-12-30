@@ -2110,7 +2110,7 @@ window._ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
  */
 
 window.axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-var user_token = $('meta[name="csrf-token"]').attr('content');
+let user_token = $('meta[name="csrf-token"]').attr('content');
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 if (user_token) {
@@ -2123,10 +2123,11 @@ if (user_token) {
   //For Mobile api authentication, we use UM->getUserInfoByToken($request). It looks for $request->bearerToken()  
   //***start: read cookie for access token
 
-  var cookie_name = 'da337_acctk_1298XA';
-  var access_token = null;
-  var c_match = document.cookie.match(new RegExp('(^| )' + cookie_name + '=([^;]+)'));
-  if (c_match) access_token = c_match[2]; //*** end:: read cookie for access token 
+  let cookie_name = 'lms5378_3508zd';
+  let access_token = null;
+  let c_match = document.cookie.match(new RegExp('(^| )' + cookie_name + '=([^;]+)'));
+  if (c_match) access_token = c_match[2]; 
+  //*** end:: read cookie for access token 
 
   window.axios.defaults.headers.common['Authorization'] = "Bearer " + access_token;
 } else {
@@ -2180,14 +2181,14 @@ window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/d
 
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
-  key: "780bc0f81cba4c28118a",
+  key: "bc77b0c2e26cf2b37d98",
   cluster: "mt1",
   //disableStats: false,
   //httpHost:window.location.hostname,
   wsHost: window.location.hostname,
-  wsPort: 2088,
+  wsPort: 6001,
   // process.env.WEBSOCKETS_PORT, //process.env.WEBSOCKETS_PORT does not bring in that port number
-  wssPort: 2088,
+  wssPort: 6001,
   // process.env.WEBSOCKETS_PORT,
   forceTLS: false,
   useTLS: true,

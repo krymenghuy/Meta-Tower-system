@@ -30,7 +30,7 @@
                      <div class="col-lg-12">
                        <div class="form-inline" style="margin-bottom:10px">
                            <select id="_mobile_promo_app" class="form-control">
-                               <option value="merchant">Merchant Mobile App</option>
+                               <option value="admin">Student/Customer App</option>
                            </select>
                            &nbsp;
                            <button id="promo_btnNewPromo" type="button" class="btn btn-outline-primary"><i class="fa fa-plus"></i> New Promotion</button>

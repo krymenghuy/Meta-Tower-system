@@ -29,8 +29,8 @@
                      <div class="col-lg-12">
                        <div class="form-inline" style="margin-bottom:10px">
                            <select id="_mobile_brand_app" class="form-control">
-                               <option value="sender">Merchant App</option>
-                               <option value="driver">Driver App</option>
+                               <option value="borrower">Student/Customer App</option>
+                               <option value="admin">Executive App</option>
                            </select>
                            &nbsp;
                            <button id="_mobile_brand_btnAddImage" type="button" class="btn btn-outline-success"><i class="fa fa-plus"></i> Add Image</button>
@@ -46,4 +46,3 @@
         </div>
   </div>
 </div>
-<script async src="{{ asset('js/MobileBrandImagesComponent.js') }}"></script>

@@ -15,17 +15,17 @@ var CompanyComponent = new function(){
 	 this.btnSave.on('click',function(e){
 	   let p = mThis.getData();	 
 	   
-       post_ajax([mThis.base_url,'/api/saveCompanyInfo'].join(''),p,function(err){
-		   if(!err || err ==''){
-             cv_interact.alert('Company information updated!','','info');
-		   }else cv_interact.alert(err,'','error');
+       post_ajax([mThis.base_url,'/api/saveCompanyInfo'].join(''),p,function(result){
+		   if(result.status_code ===200){
+              cv_interact.alert('Company information updated!','','info');
+		   }else cv_interact.alert(result.error_message,'','error');
 	   });
 	 }); 
 
 	 this.displayCompanyInfo = ()=>{
-        post_ajax([mThis.base_url,'/api/getCompanyInfo'].join(''),null,function(d){
-			if(d){
-				d= StringSanitizer.sanitizeObject(d,'email');
+        post_ajax([mThis.base_url,'/api/getCompanyInfo'].join(''),null,function(res){
+			if(res.status_code ===200){
+				let d= StringSanitizer.sanitizeObject(res.data,'email');
 				mThis.setData(d);
 			}
 		});
@@ -57,13 +57,12 @@ var CompanyComponent = new function(){
 
             //upload company's logo
            
-                var p = {};
+                let p = {};
                 p.photoData = base64result; /* NOTE: base64result contains only base64String ready to converted into image. There is no type information in this string */
                 p.fileType = fileType;
 				 
                 post_ajax([mThis.base_url,'/api/saveCompanyLogo'].join(''),p,function(result) {
-					if (typeof result =='string') alert(result); 
-					 if (result.status =='OK')
+					 if (result.status_code ===200)
 					 {
 						 mThis.imgLogo.prop('src',photoData);
 						 cv_interact.alert('Logo uploaded');
@@ -78,8 +77,8 @@ var CompanyComponent = new function(){
 			   cv_interact.confirm('Delete this logo?','Delete Logo',function(e) {
 				    if(e)
 					{
-					      post_ajax([mThis.base_url,'/api/deleteCompanyLogo'].join(''),null,function(err) {				 
-							 if (!err || err =='')
+					      post_ajax([mThis.base_url,'/api/deleteCompanyLogo'].join(''),null,function(res) {				 
+							 if (res.status_code ===200)
 							 {
 								 mThis.imgLogo.prop('src',null);
 								 cv_interact.alert('Logo deleted!');
@@ -102,6 +101,7 @@ var CompanyComponent = new function(){
 				var file = files[0];
 				if (file) {
 					if (file.type.match(/^image\/.*/)) {
+						
 						//if (file.size >2000) {
 						//    alertify.showWarning('The image file is too big');
 						//} else {
@@ -148,11 +148,16 @@ var CompanyComponent = new function(){
 	  
 	  this.displayLogo = function()
 	  {
-		  post_ajax([mThis.base_url,'/api/getCompanyLogo'].join(''),null,function(d) {
-			   //d = StringSanitizer.sanitizeOut(d,'image');
-			   mThis.imgLogo.prop('src',d);
+		  post_ajax([mThis.base_url,'/api/getCompanyLogo'].join(''),null,function(res) {
+			  if(res.status_code===200){
+					//d = StringSanitizer.sanitizeOut(d,'image');
+					let d = res.data;
+					mThis.imgLogo.prop('src',d);
+			  } 
+			  
 		  });
 	  }
+
       this.getData= function() 
 	  {
 		 var i=0, c;

@@ -10,150 +10,365 @@
      font-weight:bold !important;
    }
 
-   div#kt_aside_menu{
-     background:#ECF0F1;
-   }
-   span.kt-menu__link-text{
-     color:#566573 !important;
-   }
-   span.kt-menu__link-text:hover{
+   /* div#kt_aside_menu{
+     background:#ECF0F1 !important;
+   } */
+  .menu-selected{
+     background-color:#0544d1;
+     border-top:1.2px dotted orange;
+     border-radius: 0px 20px 20px 0px;
      color:#fff !important;
-   }
+  }
+
+  .kt-menu__link-icon img{
+    width:22px;
+    height:22px;
+    object-fit:contain;
+    margin-right:5px;
+  }
 </style>
+
 <div class="kt-aside-menu-wrapper kt-grid__item kt-grid__item--fluid" id="kt_aside_menu_wrapper">
      <!--data-ktmenu-scroll="1"-->
-    <div id="kt_aside_menu" class="kt-aside-menu " data-ktmenu-vertical="1" data-ktmenu-scroll="1" data-ktmenu-dropdown-timeout="500">
-      <ul class="kt-menu__nav" id="_dms_aside_menus">
+     <div id="kt_aside_menu" class="kt-aside-menu " data-ktmenu-vertical="1" data-ktmenu-scroll="1" data-ktmenu-dropdown-timeout="500">
+      <ul class="kt-menu__nav" id="_dms_aside_menus" style="display:none">
     
               <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkDashboard" class="menu-item kt-menu__link ">
+                      <a href="javascript:void(0)" id="_main_lnkDashboard" class="menu-item kt-menu__link">
                       <span class="kt-menu__link-icon">    
-                      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon">
-                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-
-                                  <polygon id="Bound" points="0 0 24 0 24 24 0 24" />
-
-                                  <path d="M12.9336061,16.072447 L19.36,10.9564761 L19.5181585,10.8312381 C20.1676248,10.3169571 20.2772143,9.3735535 19.7629333,8.72408713 C19.6917232,8.63415859 19.6104327,8.55269514 19.5206557,8.48129411 L12.9336854,3.24257445 C12.3871201,2.80788259 11.6128799,2.80788259 11.0663146,3.24257445 L4.47482784,8.48488609 C3.82645598,9.00054628 3.71887192,9.94418071 4.23453211,10.5925526 C4.30500305,10.6811601 4.38527899,10.7615046 4.47382636,10.8320511 L4.63,10.9564761 L11.0659024,16.0730648 C11.6126744,16.5077525 12.3871218,16.5074963 12.9336061,16.072447 Z" id="Shape" fill="#000000" fill-rule="nonzero" />
-
-                                  <path d="M11.0563554,18.6706981 L5.33593024,14.122919 C4.94553994,13.8125559 4.37746707,13.8774308 4.06710397,14.2678211 C4.06471678,14.2708238 4.06234874,14.2738418 4.06,14.2768747 L4.06,14.2768747 C3.75257288,14.6738539 3.82516916,15.244888 4.22214834,15.5523151 C4.22358765,15.5534297 4.2250303,15.55454 4.22647627,15.555646 L11.0872776,20.8031356 C11.6250734,21.2144692 12.371757,21.2145375 12.909628,20.8033023 L19.7677785,15.559828 C20.1693192,15.2528257 20.2459576,14.6784381 19.9389553,14.2768974 C19.9376429,14.2751809 19.9363245,14.2734691 19.935,14.2717619 L19.935,14.2717619 C19.6266937,13.8743807 19.0546209,13.8021712 18.6572397,14.1104775 C18.654352,14.112718 18.6514778,14.1149757 18.6486172,14.1172508 L12.9235044,18.6705218 C12.377022,19.1051477 11.6029199,19.1052208 11.0563554,18.6706981 Z" id="Path" fill="#000000" opacity="0.3" />
-
-                                </g>
-                            </svg>
+                        <i><img src="{{asset('assets/images/icons/dashboard.jpg')}}"  style="height:25px;"></i>
                           </span>
-                          <span class="kt-menu__link-text">Dashboard</span>
+                          <span class="kt-menu__link-text trans-text" data-langprop="menus.Dashboard">Dashboard</span>
                       </a>
                 </li>
 
-                <li class="kt-menu__section ">
-                  <h4 class="kt-menu__section-text">Loan Applications</h4>
-                  <i class="kt-menu__section-icon flaticon-more-v2"></i>
-                </li>
-
-                <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkLoanApplications" class="menu-item kt-menu__link ">
-                          <span class="kt-menu__link-icon">
-                              <i class="fas fa-dolly-flatbed"></i>
-                          </span>
-                          <span class="kt-menu__link-text">Applicants list</span>
-                      </a>
-                </li>
-
-                <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkApproveList" class="menu-item kt-menu__link ">
-                          <span class="kt-menu__link-icon">
-                              <i class="fas fa-dolly-flatbed"></i>
-                          </span>
-                          <span class="kt-menu__link-text">Approved List</span>
-                      </a>
-                </li>
-
-                <li class="kt-menu__section ">
+                <!-- <li class="kt-menu__section ">
                   <h4 class="kt-menu__section-text">Student Loans</h4>
                   <i class="kt-menu__section-icon flaticon-more-v2"></i>
+                </li> -->
+
+                <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+                    <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
+                          <span class="kt-menu__link-icon"><i class="fas fa-mobile"></i></span>
+                          <span class="kt-menu__link-text trans-text" data-langprop="menus.Reception">Reception</span>
+                          <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                    </a>
+                    <div class="kt-menu__submenu ">
+                         <span class="kt-menu__arrow"></span>
+                          <ul class="kt-menu__subnav">
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkPatientFinder" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Patient Finder">Patient Finder</span>
+                                    </a>
+                                  </li>
+
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkAppointments" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Appointments">Appointments</span>
+                                    </a>
+                                  </li>
+ 
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkRegistration" class="menu-item kt-menu__link ">
+                                      <i class="kt-menu__link-bullet fas fa-map-marked-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Registration">Regirstation</span>
+                                    </a>
+                                 </li>  
+
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkTickets" class="menu-item kt-menu__link ">
+                                      <i class="kt-menu__link-bullet fas fa-map-marked-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Queues">Queues</span>
+                                    </a>
+                                 </li>
+
+                          </ul>
+                    </div>
+                </li>
+  
+                
+
+              <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+                    <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
+                          <span class="kt-menu__link-icon"><i class="fas fa-mobile"></i></span>
+                          <span class="kt-menu__link-text trans-text" data-langprop="menus.Patients">Patients</span>
+                          <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                    </a>
+                    <div class="kt-menu__submenu ">
+                         <span class="kt-menu__arrow"></span>
+                          <ul class="kt-menu__subnav">
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkPatientDashboard" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Patent Dashboard">Patient Dashboard</span>
+                                    </a>
+                                  </li>
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkOPDList" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.OPD Patients">OPD List</span>
+                                    </a>
+                                </li>
+                                <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkPatientInvoices" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Patent Invoices">Patient Invoices</span>
+                                    </a>
+                                </li>
+                                <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkPatientCreditNotes" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Credit Notes">Credit Notes</span>
+                                    </a>
+                                </li>
+                           </ul>
+                    </div>
+                </li>
+  
+
+                <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+                    <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
+                          <span class="kt-menu__link-icon"><i class="fas fa-mobile"></i></span>
+                          <span class="kt-menu__link-text trans-text" data-langprop="menus.Consultation">Consultation</span>
+                          <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                    </a>
+                    <div class="kt-menu__submenu ">
+                         <span class="kt-menu__arrow"></span>
+                          <ul class="kt-menu__subnav">
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkConsultantDashboard" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Consultant Dashboard">Consultant Dashboard</span>
+                                    </a>
+                                  </li>
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkConsultantQueues" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Queues">Queues</span>
+                                    </a>
+                                </li>
+                           </ul>
+                    </div>
+                </li>
+  
+
+                <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+                    <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
+                          <span class="kt-menu__link-icon"><i class="fas fa-mobile"></i></span>
+                          <span class="kt-menu__link-text trans-text" data-langprop="menus.Services">Services</span>
+                          <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                    </a>
+                    <div class="kt-menu__submenu ">
+                         <span class="kt-menu__arrow"></span>
+                          <ul class="kt-menu__subnav">
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkSurgeryServices" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Surgery Services">Surgery Services</span>
+                                    </a>
+                                  </li>
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkNonsurgeryServices" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Non-surgery Services">Non-surgery Services</span>
+                                    </a>
+                                </li>
+                           </ul>
+                    </div>
                 </li>
 
-                <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkBorrowers" class="menu-item kt-menu__link ">
-                          <span class="kt-menu__link-icon">
-                              <i class="fa-solid fas fa-user-graduate"></i>
-                          </span>
-                          <span class="kt-menu__link-text">Borrowers</span>
-                      </a>
-                </li>
+                <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+                    <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
+                          <span class="kt-menu__link-icon"><i class="fas fa-mobile"></i></span>
+                          <span class="kt-menu__link-text trans-text" data-langprop="menus.Laboratory">Laboratory</span>
+                          <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                    </a>
+                    <div class="kt-menu__submenu ">
+                         <span class="kt-menu__arrow"></span>
+                          <ul class="kt-menu__subnav">
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkLaboDashboard" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Laboratory Dashboard">Laboratory Dashboard</span>
+                                    </a>
+                                  </li>
 
-                <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkGuarantors" class="menu-item kt-menu__link ">
-                          <span class="kt-menu__link-icon">
-                            <i class="fa-solid fas fa-user-graduate"></i>
-                          </span>
-                          <span class="kt-menu__link-text">Guarantors</span>
-                      </a>
-                </li>
-
-                <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkLoans" class="menu-item kt-menu__link ">
-                          <span class="kt-menu__link-icon">
-                            <i class="fa-solid fas fa-user-graduate"></i>
-                          </span>
-                          <span class="kt-menu__link-text">Loans</span>
-                      </a>
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkLaboTests" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Laboratory Tests">Laboratory Tests</span>
+                                    </a>
+                                  </li>
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkLaboPartners" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Laboratory Partners">Laboratory Partners</span>
+                                    </a>
+                                </li>
+                           </ul>
+                    </div>
                 </li>
 
                 
+                <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+                    <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
+                          <span class="kt-menu__link-icon"><i class="fas fa-mobile"></i></span>
+                          <span class="kt-menu__link-text trans-text" data-langprop="menus.Inventory">Inventory</span>
+                          <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                    </a>
+                    <div class="kt-menu__submenu ">
+                         <span class="kt-menu__arrow"></span>
+                          <ul class="kt-menu__subnav">
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkInventoryDashboard" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Inventory Dashboard">Inventory Dashboard</span>
+                                    </a>
+                                  </li>
 
-               
-
-               
-
-              
-
-                
- 
-                <li class="kt-menu__section ">
-                  <h4 class="kt-menu__section-text">Loan Collections</h4>
-                  <i class="kt-menu__section-icon flaticon-more-v2"></i>
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkProductGroups" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Product Groups">Product Groups</span>
+                                    </a>
+                                  </li>
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkProducts" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Products">Products</span>
+                                    </a>
+                                </li>
+                                <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkStockAdjustment" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Stock Adjustments">Stock Adjustments</span>
+                                    </a>
+                                </li>
+                           </ul>
+                    </div>
                 </li>
 
+                <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+                    <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
+                          <span class="kt-menu__link-icon"><i class="fas fa-mobile"></i></span>
+                          <span class="kt-menu__link-text trans-text" data-langprop="menus.Employees">Employees</span>
+                          <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                    </a>
+                    <div class="kt-menu__submenu ">
+                         <span class="kt-menu__arrow"></span>
+                          <ul class="kt-menu__subnav">
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkEmployeeList" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Employee List">Employee List</span>
+                                    </a>
+                                  </li>
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkPositions" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Positions">Positions</span>
+                                    </a>
+                                </li>
+                                <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkDepartments" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Departments">Departments</span>
+                                    </a>
+                                </li>
+                           </ul>
+                    </div>
+                </li>
+
+                <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+                    <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
+                          <span class="kt-menu__link-icon"><i class="fas fa-mobile"></i></span>
+                          <span class="kt-menu__link-text trans-text" data-langprop="menus.Incomes">Incomes</span>
+                          <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                    </a>
+                    <div class="kt-menu__submenu ">
+                         <span class="kt-menu__arrow"></span>
+                          <ul class="kt-menu__subnav">
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkInvoices" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Invoices">Invoices</span>
+                                    </a>
+                                  </li>
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkIncomePayments" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Payments">Payments</span>
+                                    </a>
+                                </li>
+                                <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkOtherRevenues" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Other Revenues">Other Revenues</span>
+                                    </a>
+                                </li>
+
+                                <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkIncomeCategories" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Income Categories">Income categories</span>
+                                    </a>
+                                </li>
+
+                                <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkIncomeBookingTemplates" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Booking Templates">Booking Templates</span>
+                                    </a>
+                                </li>
+
+                           </ul>
+                    </div>
+                </li>
+
+                <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+                    <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
+                          <span class="kt-menu__link-icon"><i class="fas fa-mobile"></i></span>
+                          <span class="kt-menu__link-text trans-text" data-langprop="menus.Expenses">Expenses</span>
+                          <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                    </a>
+                    <div class="kt-menu__submenu ">
+                         <span class="kt-menu__arrow"></span>
+                          <ul class="kt-menu__subnav">
+                                  <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkExpenseBook" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Expense Book">Expense Book</span>
+                                    </a>
+                                  </li>
+
+                                <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkExpenseCategories" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Expense Categories">Expense Categories</span>
+                                    </a>
+                                </li>
+
+                                <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkExpenseBookingTemplates" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Booking Templates">Booking Templates</span>
+                                    </a>
+                                </li>
+
+                           </ul>
+                    </div>
+                </li>
+
+                  
                 <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkRepayments" class="menu-item kt-menu__link ">
+                      <a href="javascript:;" id="_mainLnkReportCenter" class="menu-item kt-menu__link ">
                           <span class="kt-menu__link-icon">
-                              <i class="fa-solid fas fa-money-bill-wave"></i>
+                              <!--<i class="fa-solid fas fa-chart-pie"></i>-->
+                              <i><img src="{{asset('assets/images/icons/General report.png')}}"  style="height:25px;"></i>
                           </span>
-                          <span class="kt-menu__link-text">Repayments</span>
-                      </a>
-                </li>
- 
-                <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkPrm_Notes" class="menu-item kt-menu__link ">
-                          <span class="kt-menu__link-icon">
-                            <i class="fa-solid fas fa-money-bill-wave"></i>
-                          </span>
-                          <span class="kt-menu__link-text">Promsory Notes</span>
-                      </a>
-                </li>
-
-
-                <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="#" id="_main_lnkNon_Performing_Loans" class="menu-item kt-menu__link ">
-                          <span class="kt-menu__link-icon">
-                            <i class="fa-solid fas fa-money-bill-wave"></i>
-                          </span>
-                          <span class="kt-menu__link-text">Non-performing Loans</span>
-                      </a>
-                </li>
-
-               
-
-                <li class="kt-menu__section ">
-                    <h4 class="kt-menu__section-text">Reports</h4>
-                    <i class="kt-menu__section-icon flaticon-more-v2"></i>
-                </li>
-                <li class="kt-menu__item" aria-haspopup="true">
-                      <a href="javascript:;" id="_mainLnkReports_general" class="menu-item kt-menu__link ">
-                          <span class="kt-menu__link-icon">
-                              <i class="fa-solid fas fa-chart-pie"></i>
-                          </span>
-                          <span class="kt-menu__link-text">General Reports</span>
+                          <span class="kt-menu__link-text trans-text" data-langprop="menus.Reports">Report Center</span>
                       </a>
                 </li>
                 
@@ -167,14 +382,14 @@
                           <span class="kt-menu__link-icon">
                               <i class="fa fa-university"></i>
                           </span>
-                          <span class="kt-menu__link-text">Company Profile</span>
+                          <span class="kt-menu__link-text trans-text" data-langprop="menus.Company Profile">Company Profile</span>
                       </a>
                 </li>
 
                 <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                     <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
                           <span class="kt-menu__link-icon"><i class="fas fa-mobile"></i></span>
-                          <span class="kt-menu__link-text">Mobile Settings</span>
+                          <span class="kt-menu__link-text trans-text" data-langprop="menus.Mobile Settings">Mobile Settings</span>
                           <i class="kt-menu__ver-arrow la la-angle-right"></i>
                     </a>
                     <div class="kt-menu__submenu ">
@@ -182,50 +397,83 @@
                           <ul class="kt-menu__subnav">
                                 <li class="kt-menu__item" aria-haspopup="true">
                                     <a href="javascript:void(0)" id="_main_lnkManageBrandImages_mobile" class="menu-item kt-menu__link">
-                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
-                                      <span class="kt-menu__link-text">&nbsp; Brand Images</span>
+                                      <span class="kt-menu__link-icon"><i class="fa fa-map-marker-alt"></i></span>
+                                      <span class="kt-menu__link-text trans-text trans-text" data-langprop="menus.Brand Images">Brand Images</span>
                                     </a>
                                   </li>
  
                                   <li class="kt-menu__item" aria-haspopup="true">
                                     <a href="javascript:void(0)" id="_main_lnkPromotions" class="menu-item kt-menu__link ">
-                                      <i class="kt-menu__link-bullet fas fa-map-marked-alt"><span></span></i>
-                                      <span class="kt-menu__link-text">&nbsp; Promotions</span>
+                                      <span class="kt-menu__link-icon"><i class="fa fa-map-marker-alt"></i></span>
+                                      <span class="kt-menu__link-text trans-text" data-langprop="menus.Promotion">Promotions</span>
                                     </a>
                                 </li>  
                           </ul>
                     </div>
                 </li>
 
-
                 <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                     <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                           <span class="kt-menu__link-icon"><i class="fas fa-globe-asia"></i></span>
-                          <span class="kt-menu__link-text">General Settings</span>
+                          &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Settings">Settings</span>
                           <i class="kt-menu__ver-arrow la la-angle-right"></i>
                     </a>
                     <div class="kt-menu__submenu ">
                          <span class="kt-menu__arrow"></span>
                           <ul class="kt-menu__subnav">
-                                <li class="kt-menu__item" aria-haspopup="true">
-                                    <a href="#" id="_main_lnkManageLocation" class="menu-item kt-menu__link">
-                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
-                                      <span class="kt-menu__link-text">&nbsp Countries and Cities</span>
-                                    </a>
-                                  </li>
-
-                                <li class="kt-menu__item" aria-haspopup="true">
-                                    <a href="#" id="_main_lnkManageDeliveryZones" class="menu-item kt-menu__link ">
-                                      <i class="kt-menu__link-bullet fas fa-map-marked-alt"><span></span></i>
-                                      <span class="kt-menu__link-text">&nbsp; Delivery Zones</span>
+                               <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkChiefCompaints" class="menu-item kt-menu__link ">
+                                      <i class="kt-menu__link-bullet fas fa-list-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Chief Compalaints">Chief Complaints</span>
                                     </a>
                                 </li>
                                 <li class="kt-menu__item" aria-haspopup="true">
-                                    <a href="#" id="_main_lnkManageDeliveryPrices" class="menu-item kt-menu__link ">
-                                      <i class="kt-menu__link-bullet fas fa-map-marked-alt"><span></span></i>
-                                      <span class="kt-menu__link-text">&nbsp; Zone Prices</span>
+                                    <a href="javascript:void(0)" id="_main_lnkDiagnosisAutocomplete" class="menu-item kt-menu__link ">
+                                      <i class="kt-menu__link-bullet fas fa-list-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Diagnosis">Diagnosis Autocomplete</span>
                                     </a>
-                                </li>       
+                                </li>
+                                <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkPEAutocomplete" class="menu-item kt-menu__link ">
+                                      <i class="kt-menu__link-bullet fas fa-list-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Diagnosis">Examination Autocomplete</span>
+                                    </a>
+                                </li>
+                                <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkMedicalHistory" class="menu-item kt-menu__link ">
+                                      <i class="kt-menu__link-bullet fas fa-list-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Medical History">Medical History</span>
+                                    </a>
+                                </li>
+                                <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkServiceDepartments" class="menu-item kt-menu__link ">
+                                      <i class="kt-menu__link-bullet fas fa-list-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Service Departments">Service Departments</span>
+                                    </a>
+                                </li>
+                                <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkManageLocation" class="menu-item kt-menu__link">
+                                      <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                      &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Locations">Locations</span>
+                                    </a>
+                                  </li>
+ 
+                             
+
+                                <!-- <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkSemesterList" class="menu-item kt-menu__link ">
+                                      <i class="kt-menu__link-bullet fas fa-list-alt"><span></span></i>
+                                      <span class="kt-menu__link-text">&nbsp; Semester List</span>
+                                    </a>
+                                </li> -->
+
+                                <!-- <li class="kt-menu__item" aria-haspopup="true">
+                                    <a href="javascript:void(0)" id="_main_lnkLoanPurposes" class="menu-item kt-menu__link ">
+                                      <i class="kt-menu__link-bullet fas fa-list-alt"><span></span></i>
+                                      <span class="kt-menu__link-text">&nbsp; Loan Purposes</span>
+                                    </a>
+                                </li> -->
+
                           </ul>
                     </div>
                 </li>
@@ -233,22 +481,22 @@
                 <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                     <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
                         <span class="kt-menu__link-icon"><i class="fa fa-user-check"></i></span>
-                        <span class="kt-menu__link-text">User Management</span>
+                        <span class="kt-menu__link-text trans-text" data-langprop="menus.User Management">User Management</span>
                         <i class="kt-menu__ver-arrow la la-angle-right"></i>
                     </a>
                       <div class="kt-menu__submenu "><span class="kt-menu__arrow"></span>
                                 <ul class="kt-menu__subnav">
                                     <li class="kt-menu__item" aria-haspopup="true">
-                                        <a href="#" id="_main_lnkManageRoles" class="menu-item kt-menu__link">
-                                          <i class="kt-menu__link-bullet fa fa-user-secret"><span></span></i>
-                                          <span class="kt-menu__link-text">&nbsp; Manage Roles</span>
+                                        <a href="javascript:void(0)" id="_main_lnkManageRoles" class="menu-item kt-menu__link">
+                                           <span class="kt-menu__link-icon"><i class="fa fa-user-secret"></i></span>
+                                          <span class="kt-menu__link-text trans-text" data-langprop="menus.Manage Roles">Manage Roles</span>
                                         </a>
                                     </li>
 
                                       <li class="kt-menu__item" aria-haspopup="true">
-                                          <a href="#" id="_main_lnkManageUsers" class="menu-item kt-menu__link ">
-                                            <i class="kt-menu__link-bullet fa fa-users"><span></span></i>
-                                            <span class="kt-menu__link-text">&nbsp; Manage Users</span>
+                                          <a href="javascript:void(0)" id="_main_lnkManageUsers" class="menu-item kt-menu__link ">
+                                            <span class="kt-menu__link-icon"><i class="fa fa-users"></i></span>
+                                            <span class="kt-menu__link-text trans-text" data-langprop="menus.Manage Users">Manage Users</span>
                                           </a>
                                       </li>      
                                 </ul>
@@ -260,15 +508,34 @@
                         <span class="kt-menu__link-icon">
                         <i class="fas fa-sign-out-alt"></i>
                         </span>
-                        <span class="kt-menu__link-text">Log Out</span> 
+                        <span class="kt-menu__link-text trans-text" data-langprop="menus.Log Out">Log Out</span> 
                     </a>
                 </li>
       </ul><!--end::ul.kt-menu__nav-->
    </div> 
 </div>
-     
+
 <script>
         let __dx = $('#_dms_aside_menus');
-        __dx.css('height',[(window.innerHeight-65),'px'].join(''));
-        __dx.css('overflow-y','auto');
+        //begin:: translate Aside menus. Translating Aside menus into the user's preferred Langauge. This job can also be done from Backend PHP code
+            LocaleManager.translateZone('_dms_aside_menus');
+            //main_view.setLangMenu(LocaleManager.lang); //At this point, object  "main_view" is not Yet defined, so main_view.setLangMenu() is now called in init() of  main_view.js instead
+            __dx.show();
+        //end:: translate Aside menus
+
+       //Begin::Adjust Aside Menu's area for Scrolling behavior 
+          //let __dx = $('#_dms_aside_menus');
+          __dx.css('height',[(window.innerHeight-65),'px'].join(''));
+          __dx.css('overflow-y','auto');
+          let prev_selected_menu = null;
+        //end::Adjust Aside Menu's area for Scrolling behavior
+
+        //begin:: When user clicks on each Sude menu item => Hilight the selected menu item
+          __dx.on('click','.menu-item',function(e){
+              if (prev_selected_menu) prev_selected_menu.removeClass('menu-selected');
+              $(this).toggleClass('menu-selected');
+              prev_selected_menu = $(this);
+          });
+        //end:: When user clicks on each Sude menu item => Hilight the selected menu item
+
 </script>

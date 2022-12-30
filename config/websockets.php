@@ -8,7 +8,7 @@ return [
      * Set a custom dashboard configuration
      */
     'dashboard' => [
-        'port' => env('WEBSOCKETS_PORT', 2087),
+        'port' => env('WEBSOCKETS_PORT', 6001),
     ],
 
     /*
@@ -37,7 +37,7 @@ return [
                 'forceTLS'=>false,
                 'encrypted' => false,
                 'host' => env('WEBSOCKETS_HOST','127.0.0.1'),
-                'port' => env('WEBSOCKETS_PORT', 2087),
+                'port' => env('WEBSOCKETS_PORT', 6001),
                 'scheme' => 'ws',
                 'curl_options' => [
                     CURLOPT_SSL_VERIFYHOST => 0,

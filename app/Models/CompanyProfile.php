@@ -4,17 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\DV;
+use App\Models\UM;
 use Carbon\Carbon;
 use DB;
+use Sanitizer;
 
 class CompanyProfile extends Model
 {
     use HasFactory;
   
-   function saveCompanyInfo($data) {
-    $ss = getSessionInfo($data);
-	if(!$ss) return '#350'; //user not authenticated
-	if (!prn_allowed(2)) return '@'; //need permission to do this task
+  function saveCompanyInfo($data) {
+    $ss = UM::getUserInfoByToken($data,-1);
+	  if ($ss->status_code ===401) return $ss;
+    if (!prn_allowed(0,105)) return DV::error('No access to Company Profile');
+	
      $branch_id = $ss->branch_id;
       
      if(!isset($data->name)) {
@@ -52,21 +56,21 @@ class CompanyProfile extends Model
    }  
 
    function getCompanyInfo($data) {
-        $ss = getSessionInfo($data);
-        if(!$ss) return '#350'; //user not authenticated
-        if (!prn_allowed(2)) return '@'; //need permission to do this task
+       $ss = UM::getUserInfoByToken($data,105);
+	     if ($ss->status_code !=200) return $ss;
+       //if (!prn_allowed(0,105)) return DV::error('No access to Company Profile');
         $branch_id = $ss->branch_id;
         $rows = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw("branch_id,name,name_kh,`address`,address_kh,phone_number,email,first_cp_name,second_cp_name,first_cp_phone,second_cp_phone")->limit(1)->get();
         foreach($rows as $row) return $row;
-        return $row;
+        return DV::success(['data'=>$row]);
    } 
 
   /** Start Save  and retrieve company's logo **/
   function saveCompanyLogo($data)
   {   
-    $ss = getSessionInfo($data);
-    if(!$ss) return '#350'; //user not authenticated
-    if (!prn_allowed(2)) return '@'; //need permission to do this task
+    $ss = UM::getUserInfoByToken($data,105);
+	  if ($ss->status_code ===401) return $ss;
+    //if (!prn_allowed(0,105)) return DV::error('No access to Company Profile');
  
 	  $result = (object)array('error_message'=>null,'status'=>'OK');
 	  $fileTypes = ['jpg','png','jpeg','svg'];
@@ -87,7 +91,7 @@ class CompanyProfile extends Model
     //   }
 
 	  //$dir = getcwd(). '/storage/companies/'.$branch_id.'_data/identity/';
-      $dir = getcwd(). '/uploads/public/'.$branch_id.'_data/general/';
+      $dir = getcwd(). '/uploads/public/'.$branch_id.'_data/general/images/';
 	  //DB::table('um_branches')->where('branch_id',1)->update(array('logo_file_name'=>$dir));   
 	  $fileName =$dir.$branch_id."_logo_".date('Ymd_hms');
 	  
@@ -113,23 +117,23 @@ class CompanyProfile extends Model
   
   function getCompanyLogo($data)
   {
-      $ss = getSessionInfo($data);
-      if(!$ss) return '#350'; //user not authenticated
-      if (!prn_allowed(2)) return '@'; //need permission to do this task
+    $ss = UM::getUserInfoByToken($data,-1);
+	  if ($ss->status_code ===401) return $ss;
+      //if (!prn_allowed(-1)) return DV::error('No access to Company Profile'); //need permission to do this task
         $branch_id = $ss->branch_id;
 
           $rows = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw('logo_file_name,logo_file_type')->limit(1)->get();
         foreach($rows as $row)
         {
             $content = readFileContent($row->logo_file_name);   
-          $p = "data".getEncodedChar(':')."image".getEncodedChar("/").$row->logo_file_type.";"."base64".getEncodedChar(',');
+          $p = "data".Sanitizer::getEncodedChar(':')."image".Sanitizer::getEncodedChar("/").$row->logo_file_type.";"."base64".Sanitizer::getEncodedChar(',');
           //****Return for javascript client
           //return $p.base64_encode($content);
           //**** return direct from server
-          return  "data:image/jpg;base64,".base64_encode($content);
+          return  DV::success(['data'=>"data:image/jpg;base64,".base64_encode($content)]);
           
         }
-        return null;
+        return DV::success();
   }
   
   function getCompanyLogo1($branch_id=0)
@@ -138,15 +142,16 @@ class CompanyProfile extends Model
 	   foreach($rows as $row)
 	   {
 		    $content = readFileContent($row->logo_file_name);   
-			$p = "data".getEncodedChar(':')."image".getEncodedChar("/").$row->logo_file_type.";"."base64".getEncodedChar(',');
+			$p = "data".Sanitizer::getEncodedChar(':')."image".Sanitizer::getEncodedChar("/").$row->logo_file_type.";"."base64".Sanitizer::getEncodedChar(',');
 			//****Return for javascript client
 			//return $p.base64_encode($content);
 			//**** return direct from server
-			return  "data:image/jpg;base64,".base64_encode($content);
+			return DV::success(['data'=> "data:image/jpg;base64,".base64_encode($content)]);
 			
 	   }
-	   return null;
+	   return DV::success();
   }
+  
   //return list of images for mobiles App
   function getBrandImages($d)
   {
@@ -176,9 +181,9 @@ class CompanyProfile extends Model
 
   function saveBrandImage($d)
   {   
-	 $ss = getSessionInfo($d);
-	 if(!$ss) return '#350'; //user not authenticated
-	 if (!prn_allowed(2)) return '@'; //need permission to do this task
+    $ss = UM::getUserInfoByToken($data,-1);
+	  if ($ss->status_code ===401) return $ss;
+	  //if (!prn_allowed(-1)) return '@'; //need permission to do this task
  
 	  $result = (object)array('error_message'=>null,'status'=>'OK');
 	  $fileTypes = ['jpg','png','jpeg','svg'];
@@ -217,31 +222,31 @@ class CompanyProfile extends Model
   
   function deleteBrandImage($d)
   {
-      $ss = getSessionInfo($d);
-      if(!$ss) return '#350'; //user not authenticated
-      if (!prn_allowed(2)) return '@'; //need permission to do this task
-        $branch_id = $ss->branch_id;
-        $app_id = $d->app_id;
-        $file_id = $d->id; 
-        $rows = DB::table('brand_iamges')->where('app_id',$app_id)->where('id',$file_id)->selectRaw('file_name')->limit(1)->get();
-        foreach($rows as $row) {
-          deleteFile($row->file_name);
-        }
-        DB::table('brand_images')->where('app_id',$app_id)->where('id',$file_id)->delete();
-        return null;
+      $ss = UM::getUserInfoByToken($data,-1);
+      if ($ss->status_code ===401) return $ss;
+      //if (!prn_allowed(-1)) return '@'; //need permission to do this task
+          $branch_id = $ss->branch_id;
+          $app_id = $d->app_id;
+          $file_id = $d->id; 
+          $rows = DB::table('brand_iamges')->where('app_id',$app_id)->where('id',$file_id)->selectRaw('file_name')->limit(1)->get();
+          foreach($rows as $row) {
+            deleteFile($row->file_name);
+          }
+          DB::table('brand_images')->where('app_id',$app_id)->where('id',$file_id)->delete();
+          return DV::success();
   }
  
   function deleteCompanyLogo($data)
   {
-      $ss = getSessionInfo($data);
-      if(!$ss) return '#350'; //user not authenticated
-      if (!prn_allowed(2)) return '@'; //need permission to do this task
+     $ss = UM::getUserInfoByToken($data,-1);
+	   if ($ss->status_code ===401) return $ss;
+     //if (!prn_allowed(214)) return '@'; //need permission to do this task
         $branch_id = $ss->branch_id;
           $rows = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw('logo_file_name')->limit(1)->get();
         foreach($rows as $row) {
           deleteFile($row->logo_file_name);
         }
           DB::table('um_branches')->where('branch_id',$branch_id)->update(array('logo_file_type'=>null,'logo_file_name'=>null));
-        return null;
+        return DV::success();
   }
 }

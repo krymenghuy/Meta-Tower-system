@@ -1,0 +1,29 @@
+ //   let vswebsession111 = {
+                //   'value':'$srt->value',
+                //   'iv':'$srt->iv',
+                //   'key':'$srt->key'
+                // }
+
+update app/Security/PHPCrypto (static function decrypt() )
+update scriptProvider, remove crypto-js.js and Encrypter.js as it is included already in vsapi
+update UM => do not decrypt Token
+update UMController => apiLogin() updated
+update loginController => to not use "default_view" route, but to go direct to route "mclinic" and then to main view (so there is need to update route in web.php)
+add javascript file "vsapi.js"
+
+Update Models => DV and JDV => for static function errror() to include additional optional parameter of @error_message
+Master.blade.php add header strcipt
+
+Routes
+===========
+web.php => update main route "mclinic" to use direction function
+
+update database:
+ alter TABLE um_sessions change access_token access_token varchar(800);
+
+
+
+=============================================
+NOTE: Laravel automcatically encrypt every cookie. The excelption by cookie_name in file /app/Http/Middleware/EncryptCookies
+
+ 

@@ -1,32 +1,65 @@
-input._vs-checkbox-lg{
-    display:inline-block;
-    height:20px;
-    width:20px;
-    border:border-box;
-    border:1.2px solid blue;
-    margin:8 8px 0 8px;
- }
- input._vs-checkbox-lg:not(:disabled):hover{
-  border-color:rgba(54, 224, 62, 0.4);
-  box-shadow:solid 1px 1px 0 rgb(240, 241, 243), 0 0 4px rgba(0,0,0,0.2); 
+input._vs-checkbox-lg {
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+  border: border-box;
+  border: 1.2px solid blue;
+  margin: 8 8px 0 8px;
 }
- 
- div._vs_multiple_select_wrapper{
-    height:300px;
-    display:block;
-    border:1px solid #E5E7E9;
-    overflow-y:auto;
-    border-radius:2px;
-    padding:10px;
+
+input._vs-checkbox-lg:not(:disabled):hover {
+  border-color: rgba(54, 224, 62, 0.4);
+  box-shadow: solid 1px 1px 0 rgb(240, 241, 243), 0 0 4px rgba(0, 0, 0, 0.2);
+}
+
+div._vs_multiple_select_wrapper {
+  height: 300px;
+  display: block;
+  border: 1px solid #E5E7E9;
+  overflow-y: auto;
+  border-radius: 2px;
+  padding: 10px;
+}
+
+div._vs_multiple_select_wrapper>ul li {
+  list-style: none;
+  margin-left: -45px;
+}
+
+span._vs-checkbox-text {
+  display: inline-block;
+  color: grey;
+  font-weight: bold;
+  margin-left: 8px;
+}
+
+/** style for default SELECT dropdown **/
+select {
+  margin: 50px;
+  width: 150px;
+  padding: 5px 35px 5px 5px;
+  font-size: 16px;
+  border: 1px solid #CCC;
+  height: 34px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  /* background: url(https://stackoverflow.com/favicon.ico) 96% / 15% no-repeat #EEE; */
+}
+
+
+/* CAUTION: Internet Explorer hackery ahead */
+select::-ms-expand {
+  display: none;
+  /* Remove default arrow in Internet Explorer 10 and 11 */
+}
+
+/* Target Internet Explorer 9 to undo the custom arrow */
+@media screen and (min-width:0\0) {
+  select {
+    background: none\9;
+    padding: 5px\9;
   }
-  div._vs_multiple_select_wrapper>ul li{
-      list-style:none;
-      margin-left:-45px;
-  }
-  span._vs-checkbox-text{
-    display:inline-block;
-    color:grey;
-    font-weight:bold;
-    margin-left:8px;
-  }
-   
+}
+
+/** end of style for default SELECT **/

@@ -9,9 +9,12 @@
     //        });
     //    });
     //};
-    var num_lock_key_values = ['`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
+    let num_lock_key_values = ['`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
     /* jquery function without options as argument*/
     $.fn.dateFormatter = function () {
+        //Turn off browser's password autocomplete that annoy date field
+        $(this).attr('autocomplete',false);
+
         //do not allow space in date field
         $(this).on('keydown', function (event, ui) {
             //var value = $(this).val();
@@ -24,9 +27,9 @@
                 $(this).trigger('blur');
                 return;
             }
-            var key = String.fromCharCode(event.keyCode);
+            let key = String.fromCharCode(event.keyCode);
             if (!(key >= 0 && key <= 9) && num_lock_key_values.indexOf(key) < 0) $(this).val($(this).val().substr(0, $(this).val().length - 1));
-            var value = $(this).val();
+            let value = $(this).val();
             if (value.length == 1 && (event.keyCode == 32 || event.keyCode == 191 || event.keyCode == 220 || event.keyCode == 111)) $(this).val('0' + $(this).val() + '-');
 
             if (value.length == 2) {
@@ -51,11 +54,11 @@
         });
 
         $(this).on('blur', function (event, ui) {
-            var d = $(this).val();
-            var ss = d.split('-');
-            var dd = ss[0];
-            var mm = ss[1]; //NOTE that mm can be either Month Number or Three-character month name such as jan or Feb or Mar
-            var yy = ss[2];
+            let d = $(this).val();
+            let ss = d.split('-');
+            let dd = ss[0];
+            let mm = ss[1]; //NOTE that mm can be either Month Number or Three-character month name such as jan or Feb or Mar
+            let yy = ss[2];
             if (yy == 0) {
                 yy = 2000;
             } else if (yy < 99) {
@@ -98,12 +101,13 @@
 ////    }
 ////});
 
-var _datepicker_inputs = $('.datepicker');
+let _datepicker_inputs = $('.datepicker');
 _datepicker_inputs.dateFormatter();
-_datepicker_inputs.attr('autocomplete','off');
+_datepicker_inputs.attr('autocomplete','chrome-off"');
 
 /*Input.text behavior, Textbox behavior */
 $('input').on('focus', function (event, ui) {
+    _datepicker_inputs.attr('autocomplete','off"');
     $(this)
     .one('mouseup', function () {
         if ($(this).prop('readOnly') ==false) $(this).select();

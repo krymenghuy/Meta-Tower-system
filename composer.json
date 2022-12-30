@@ -8,6 +8,7 @@
         "php": "^7.3|^8.0",
         "apility/laravel-fcm": "^1.4",
         "beyondcode/laravel-websockets": "^1.13",
+        "firebase/php-jwt": "^6.3",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "guzzlehttp/psr7": "^1.5",
@@ -17,6 +18,7 @@
         "laravel/tinker": "^2.5",
         "laravelcollective/html": "^6.2",
         "milon/barcode": "^8.0",
+        "mpdf/mpdf": "^8.0",
         "pusher/pusher-php-server": "^4.0"
     },
     "require-dev": {

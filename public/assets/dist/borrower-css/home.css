@@ -1,0 +1,112 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;1,100;1,200&display=swap');
+
+body{
+    font-family: 'Montserrat';
+}
+
+.top-panel{
+    border-bottom: 1px solid rgb(255, 255, 255);
+    box-shadow: rgba(33, 35, 38, 0.1) 0px 10px 10px -10px;
+    background-image: url("bg-login.png");
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover;
+}
+
+.logo img{
+    height: 15vh;
+}
+
+.school-name-kh{
+   font-weight:bold;
+}
+
+.school-name-en{
+  font-weight:bold;
+  font-size:1.3em;
+}
+
+.tab-buttons{
+   margin-top:10px;
+   
+}
+.component-title{
+  display:block;
+  padding: 3px;
+  font-size:1.5em;
+  font-weight:bold;
+  color:#1D75CF;
+  margin-left:35%
+}
+.rowAddress{
+  display: flex;
+}
+
+/* CSS */
+.vector-btn {
+    /* background-image: linear-gradient(144deg,#AF40FF, #5B42F3 50%,#00DDEB); */
+    border: 0;
+    border-radius: 8px;
+    box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
+    box-sizing: border-box;
+    color: #FFFFFF;
+    font-size: 14px;
+    justify-content: center;
+    line-height: 1em;
+    padding: 10px 5px;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    white-space: nowrap;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+  
+  .vector-btn:active,
+  .vector-btn:hover {
+    outline: 0;
+    opacity: 0.9;
+  }
+   
+  .btn-logout img{
+    height: 16px;
+    margin-right: 5px;
+    filter: brightness(0) invert(0.5);
+    margin-top: 4px;
+    
+  }
+
+  /* #btnLogout a{
+    color: gray;
+    text-decoration: none;
+  } */
+
+
+
+  @media (min-width: 768px) {
+    .vector-btn {
+      font-size: 1rem;
+      padding: 10px 20px 10px 20px;
+    }
+  }
+
+
+  @media (max-width: 767px) {
+    .logo{
+      margin-bottom: 15px;
+    }
+    .vector-btn{
+      padding: 10px 5px;
+    }
+    .rowAddress{
+      display: block;
+    }
+    #btnLogout{
+      padding: 2px 10px 2px 10px;
+      font-size: 14px;
+      height: 30px;
+    }
+  }
+
+

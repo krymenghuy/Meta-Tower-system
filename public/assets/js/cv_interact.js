@@ -1,183 +1,220 @@
-'use strict'
-var __cvi_dialog = {}; //local storage for dialog ist
-
-var _cvi_htm1205 = [
-  '<div class="modal-dialog" role="dialog">',
-    '<div class="modal-content">',
-      '<div class="modal-header">',
-        '<h5 class="modal-title" id="__cvi_alert_title">Message title</h5>',
-        '<button type="button" class="close" data-dismiss="modal" aria-label="Close">',
-        //'<span aria-hidden="true">&times;</span>',
-		'</button>',
-      '</div>',
-      '<div class="modal-body">',
-        //'<p id="__cvi_message">Modal body text goes here.</p>',
-		'<div id="__cvi_message" style="scroll:vertical;"></div>',
-      '</div>',
-      '<div class="modal-footer">',
-	    '<button type="button" class="btn btn-default" id="__cvi_alert_btnCancel"><i class="fa fa-times"></i> Cancel</button>', 
-	    '<button type="button" class="btn btn-primary" id="__cvi_alert_btnOK"><i class="fa fa-check" style="color:#EBEBC2"></i> OK</button>',
-      '</div>',
-    '</div>',
-  '</div>'].join('');
-  
-  
-  var el = document.getElementById('__cvi_alert_dlg');
-	if(!el)
-	{
-		var div = document.createElement('div');
-		div.className = 'modal'; // using "modal fade" => the backdrop remains there and users cannot click on anything after the modal closed
-		div.id ="__cvi_alert_dlg";
-		div.setAttribute('tabindex',-1);
-		div.setAttribute('role','dialog');
-		div.innerHTML = _cvi_htm1205;
-	    document.body.appendChild(div); 
-	}
- 
- //$(document).ready(function() {
-	// Code that uses jQuery's $ can follow here. $.(something) here is recogized as jquery code stuff
-	 //the "cv_interact" class is used for interaction with users in terms of alert(), confirm(), prompt(), log(message)
- var cv_interact = new function()
+ 'use strict';
+ let cv_interact = new function()
  {
-	  var mThis = this;
-	  this.default_alert_title ='DMS';
-	  this.alert_self = $('#__cvi_alert_dlg');
-	  this.alert_title = $('#__cvi_alert_title');
-	  this.alert_message = $('#__cvi_message');
-	  this.confirm_self = null;
-	  this.alert_btnOK = $('#__cvi_alert_btnOK');
-	  this.alert_btnCancel = $('#__cvi_alert_btnCancel');
-	  this.interactType =''; //interactType = {'alert','confirm','prompt','log','scrrollview'}
-	  this.alert_sentiment =''; //sentiment = {'error','warning','info'} //only for alert box
-      this.onResult;
-      
-		this.prepareHTML = function()
-		{
-			//scale-up-center
-			var el = document.getElementById('__cvi_alert_dlg');
-			if(!el)
-			{
-				var div = document.createElement('div');
-				div.className = 'modal fade';
-				div.id ="__cvi_alert_dlg";
-				div.setAttribute('tabindex',-1);
-				div.setAttribute('role','dialog');
-				div.innerHTML = _cvi_htm1205;
-				document.body.appendChild(div);
-				 
-			}
-			
-			 // if (typeof jQuery.ui == 'undefined') 
-			 // {
-				 // alert('cv_interact.alert() failed because there is no jquery-ui.min.js loaded yet');
-			 // } else 
-			 // {
-				 
-			 // }
-			 
-		};	
+	  let mThis = this;
+	  //"message_box_default" is default property in km.json file or en.json file for language lookup translation
+	  this.default_lang_section ='message_box_default';
+	  //default message title, this is usally App name or system name
+	  this.default_alert_title ='LMS';
+  
+	  //@footer = '<a href="">Why do I have this issue?</a>'
+	  this.error = (message,title=null,position='center',onClose=null,footer=null)=>{
+		message = LocaleManager.trans(message,mThis.default_lang_section);
+		title = LocaleManager.trans(title,mThis.default_lang_section);
+		let op = {
+			icon: 'error',
+			title: title,
+			text: message
+		  };
+		  if (position) op.position = position;   
+		  if (footer) op.footer = footer;  
+		Swal.fire(op).then((result)=>{
+		    if(typeof onClose==='function') onClose(result);	
+		});
+	  }
 	  
-         mThis.alert_btnOK.off('click').on('click',function(e) {
-		    mThis.alert_self.modal('hide');
-			   if (mThis.interactType =='confirm')
-			  {
-				  if (typeof mThis.onResult == 'function')
-					  mThis.onResult(true)  
-			  }
-	       });
-	  
-	  	mThis.alert_btnCancel.off('click').on('click',function(e) {
-		    mThis.alert_self.modal('hide');
-			  if (mThis.interactType =='confirm')
-			  {
-				  if (typeof mThis.onResult == 'function')
-					  mThis.onResult(false)  
-			  }				  
-			  
-	     });
-	  
-    //NOTE that alert() and confirm() share the same html and OK button 	  
-	  this.alert = function(message,title, alert_sentiment=null) {
-		    //mThis.prepareHTML();
-             if(!message) return;
-			 // if (typeof jQuery.ui == 'undefined') 
-			 // {
-				 // alert('cv_interact.alert() failed because there is no jquery-ui.min.js loaded yet');
-			 // } 
-			 
-		       if (!title) title = mThis.default_alert_title;
-		       mThis.alert_title.text(title);
-			   mThis.alert_message.html(message);
-			   //mThis.alert_message.text(message);
-			   mThis.alert_btnCancel.hide();
-		       mThis.alert_btnOK.text('OK');
-        		 
-	           mThis.interactType ='alert';
-			  //jQuery.noConflict(); //in case jQuery loaded multiple times => bootstrap .modal does not work	
-               mThis.alert_self.modal(
-               {
-                    backdrop:'static',
-                    keyboard:false, 
-                    //escapeClose:false,
-                    closeExisting:false
-                    //clickClose:false
-               }).on('shown.bs.modal',function(){
-				   mThis.alert_self.addClass('scale-up-center');
-			   });
-			   return false;
-		  
-	  };
-	  
-	  //context = {'delete','continue'}
-	  this.confirm = function(message,title,onResult,ok_title,cancel_title,context)
-	  {     
-   	         //mThis.prepareHTML();
-		      if (!title) title = mThis.default_alert_title; 
-              mThis.alert_title.text(title);
-			   mThis.alert_message.text(message);
-			   if ((ok_title+'').toLowerCase() =='delete' || (ok_title+'').toLowerCase() =='delete now') context =='delete';
-			   else if((ok_title+'').toLowerCase() =='remove') context =='remove';
-			   if(context=='delete')
-			     {
-					mThis.alert_btnOK.removeClass().addClass('btn btn-danger');  
-					mThis.alert_btnOK.html(['<i class="fa fa-trash" style="font-size:0.9em;padding-bottom:5px"></i> Delete'].join(''));
-				 }
-			   else if (context=='remove')
-			     {
-					mThis.alert_btnOK.removeClass().addClass('btn btn-warning');   
-					mThis.alert_btnOK.html(['<i class="fa fa-times"></i> Remove'].join('')); 
-				 }
-			   else 	  	  
-			      {
-					mThis.alert_btnOK.removeClass();
-					mThis.alert_btnOK.addClass('btn btn-primary');
-					if (ok_title) mThis.alert_btnOK.text(ok_title);
-				  }
+	  this.info = (message,title=null,position='center',onClose=null,footer=null)=>{
+		message = LocaleManager.trans(message,mThis.default_lang_section);
+		title = LocaleManager.trans(title,mThis.default_lang_section);
+		let op = {
+			icon: 'info',
+			title: title,
+			text: message
+		  };
+		  if (position) op.position = position;   
+		  if (footer) op.footer = footer;  
+		Swal.fire(op).then((result)=>{
+		    if(typeof onClose==='function') onClose(result);	
+		});
+	  }
 
-			   if (cancel_title) mThis.alert_btnCancel.html(['<i class="fa fa-times"></i> ', cancel_title].join(''));
-			   mThis.alert_btnCancel.show();
-			   mThis.onResult = onResult;
-			   
-			   mThis.interactType ='confirm';
-               //jQuery.noConflict(); //in case jQuery loaded multiple times => bootstrap .modal does not work			   
-               mThis.alert_self.modal(
-               {
-                    backdrop:'static',
-                    keyboard:false, 
-                    //escapeClose:false,
-                    closeExisting:false
-                    //clickClose:false
-               }).on('shown.bs.modal',function(){
-				  mThis.alert_self.add('scale-up-center');
-			   });
-			   return false;
+	  this.success = (message,title=null,position='center',onClose=null,footer=null)=>{
+		message = LocaleManager.trans(message,mThis.default_lang_section);
+		title = LocaleManager.trans(title,mThis.default_lang_section);
+		let op = {
+			icon: 'success',
+			title: title,
+			text: message
+		  };
+		if (position) op.position = position;   
+		if (footer) op.footer = footer;  
+		Swal.fire(op).then((result)=>{
+		    if(typeof onClose==='function') onClose(result);	
+		});
+	  }
+
+	  this.warning = (message,title=null,position='center',onClose=null,footer=null)=>{
+		message = LocaleManager.trans(message,mThis.default_lang_section);
+		title = LocaleManager.trans(title,mThis.default_lang_section);
+		let op = {
+			icon: 'warning',
+			title: title,
+			text: message
+		  };
+		  if (position) op.position = position;   
+		  if (footer) op.footer = footer;   
+		Swal.fire(op).then((result)=>{
+		    if(typeof onClose==='function') onClose(result);	
+		});
+	  }
+
+      //NOTE that alert() and confirm() share the same html and OK button 
+	  // @option = {icon ='success','info','error','warning'} 
+	  this.alert = (message,title=null, icon=null,position='center',lang_option=null) =>{
+             if(!message) return;
+			 //By default, translate to current langauge based on LocaleManager.lang
+			 if(!lang_option) if(LocaleManager) lang_option = LocaleManager.lang; 
+			 if(lang_option){
+				message = LocaleManager.trans(message,mThis.default_lang_section);
+				if(title) title = LocaleManager.trans(title,mThis.default_lang_section);
+			 }
+			 Swal.fire({
+				position: position?position:'top-end',
+				icon: icon, //'success','info','error','warning'
+				title: message,
+				showConfirmButton: false,
+				//reverseButtons: true, /** change Cancel/OK buttons' position **/
+				//timer: 1500
+			  })		  
 	  };
 	  
-	//   this.inputBox = function(message, title,input_num,onClose,ok_title,cancel_title){
-		  
-	//   }
-   
- }; //close cv_interact class
+
+	   //@option = {title,confirmButtonText,cancelButtonText,context=delete|remove|other,translate:true|false,langSection:'message_box_default'}
+	   //langSection:'validation' or langSection:'message_box_default', where "validation" is property in file km.json or en.json that contains list of langauge props to be translated 
+	  /***
+	   cv_interact.confirm('Delete this file?',{'title':"Delete File",'confirmButtonText':'Delete','cancelButtonText':'Close',context:'delete','translate':true,'langSection':'validation'},(yes)=>{
+		  if(yes) {
+			 //do something here
+		  }
+	   });  
+	  ***/ 
+	   this.confirm = (message,option=null,onResult=null)=>{
+		    if(!option) option={};
+			// if (typeof option ==='function'){
+			// 	onResult = option;
+			// 	//***if (typeof onResult==='object') option = onResult;
+			// }
+
+			let title = option.title?option.title:mThis.default_alert_title;
+			let cancel_text = option.cancelButtonText?option.cancelButtonText:'Cancel';
+			let ok_text = option.confirmButtonText?option.confirmButtonText:'OK';
+			let context = option.context;
+			let langSection = option.langSection?option.langSection:mThis.default_lang_section;
+            option.translate =option.translate?option.translate:true;
+
+			//set default OK color. For every confirm. But different types of confirm => delete (red), confirm (resore)(green) etc ... 
+			let ok_button_color = '#079229';
+			let cancel_button_color ='#5B92EC';
+			if(ok_text === 'Remove' || ok_text === 'Delete' || context==='delete' || context==='remove' || context==='cancel')
+			{
+				            ok_button_color ='#ee2a0b';
+							cancel_button_color ='#5B92EC';
+							if(!ok_text) ok_text ='Remove';
+							if(!cancel_text) cancel_text = 'Dont Remove';
+							if (option.translate===true) if(ok_text) ok_text = LocaleManager.trans(ok_text,langSection);  
+							 
+			}else{
+				ok_button_color = '#11A767';
+				cancel_button_color ='#D6DCCC';
+				if(!ok_text) ok_text ='OK';
+				if(!cancel_text) cancel_text='Cancel';
+			}
+
+			if (option.translate===true){
+				message = LocaleManager.trans(message,langSection);
+				if(cancel_text) cancel_text = LocaleManager.trans(cancel_text,langSection);  
+				if(title) title= LocaleManager.trans(title,langSection);
+			}
+			let op = {
+				title: message,
+				//text: message,
+				icon: 'question',
+				showCancelButton: true,
+				confirmButtonColor:ok_button_color,
+				cancelButtonColor: cancel_button_color,
+				confirmButtonText: ok_text,
+				cancelButtonText:cancel_text,
+				reverseButtons:true
+			};  
+			Swal.fire(op).then((result) => {
+					if(typeof onResult==='function') onResult(result.isConfirmed);
+			});
+
+		}
+
+		
+		/**
+		  behavior_option = {
+			translate:true|false
+			maxlength:10, 
+			autocapitalize:'off',
+			autocorrect:'off',
+			'showCancelButton':true,
+			'confirmButtonText':"OK",
+			'cancelButtonText':'Cancel',
+			'placeHolder':'enter your password',
+			inputValidator:(value)=>{
+				if(!value){
+					alert('write something');
+				}
+			}
+		 }
+		 **/
+		 /***
+		  Example:
+		  let pwd = cv_interact.inputBox('Enter your password','Password','password',null,{
+			maxlength:50,
+			inputValidator:(value)=>{
+				if(!value) alert('password cannot be empty!');
+			}
+		  }); 
+
+			if(pwd){
+		        //do someting with the input of password here		
+			}
+		 ***/
+		//input_type = 'password','email','url','text'. for @behavior_option, please read description above
+		this.inputBox = async (message,labelText,input_type ='text',default_value=null,behavior_option={})=>{
+			if(!behavior_option) behavior_option = {};
+			if(!behavior_option.cancelButtonText) behavior_option.cancelButtonText='Cancel';
+			if(!behavior_option.confirmButtonText) behavior_option.confirmButtonText='OK';
+
+			if(behavior_option.translate){
+				message = LocaleManager.trans(message,mThis.default_lang_section);
+				labelText = LocaleManager.trans(labelText,mThis.default_lang_section);
+				if(behavior_option.cancelButtonText) behavior_option.cancelButtonText = LocaleManager.trans(behavior_option.cancelButtonText,mThis.default_lang_section);
+				if(behavior_option.confirmButtonText) behavior_option.confirmButtonText = LocaleManager.trans(behavior_option.confirmButtonText,mThis.default_lang_section);
+			}
+			if (behavior_option.showCancelButton === null || behavior_option.showCancelButton ==undefined) behavior_option.showCancelButton =true;
+			const result = await Swal.fire({
+				title: message,
+				input: input_type,
+				inputLabel: labelText,
+				inputValue:default_value,
+				inputPlaceholder: behavior_option.placeHolder,
+				inputAttributes:behavior_option,
+				cancelButtonText:behavior_option.cancelButtonText,
+				confirmButtonText:behavior_option.confirmButtonText,
+				showCancelButton: behavior_option.showCancelButton,
+				reverseButtons:true, //make OK button to the right
+				'inputValidator': (value) => {
+				  if(typeof behavior_option.inputValidator ==='function') behavior_option.inputValidator(value);
+				}
+			  });
+			  //result = {'value':'some value here'}
+			  return result;
+		}
+ } //close cv_interact class
  
  //});//close $(document).ready(function()) 
  

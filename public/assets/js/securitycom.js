@@ -1,21 +1,21 @@
-'use strict'
-let __access_token_prop = 'acc_tk_dms'; //document.getElementById('__xsp_tkname').value; use json prop "acc_tk_dms" instead of "access_token"
-let __csrfName ='_da129011_csrf_name';
+'use strict';
+//let __access_token_prop = 'acc_tk_dms'; //document.getElementById('__xsp_tkname').value; use json prop "acc_tk_dms" instead of "access_token"
+let __csrfName ='_csrf_115578';
 let  __csrfHash;
 let _back_home_path ='/'; 
 /**NOTE THAT global variable  @__csrfName takes initial value of "_cv_csrf_name" that is the default csrf name in javascript and it must be same as $config['csrf_token_name'] = '_cv_csrf_name' in config.php file of CodeIgniter.
 This default value is IMPORTANT in page load slowly or script load slowly causing the variable @__csrfName become undefined when ajax call is made quickly when page load is not yet complete 
  **/
-var __def_busy_loader = {};
+let __def_busy_loader = {};
 
 $(document).ready(function() {
 	//NOTE that csrf values stored in hidden fields __xsp_name and __xsp_value are important for first load or first request to server only. Because, most calls are done through ajax (that means no page refresh), so that we javascript variables "__csrfName" and "__csrfHash" will be updated everytime when receiving server resonse, regardless of onError() or onSuccess()     
 	__csrfName = document.getElementById('__xsp_name').value;
 	__csrfHash = document.getElementById('__xsp_value').value;
-	__def_busy_loader = $('#cover-spin');
+	__def_busy_loader = $('#vs_loader');
 	//alert('hey name: ' + __csrfName + '   | hash: ' + __csrfHash );
 });
-
+ 
 function _getCookieValue(name) {
   var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
   if (match) return match[2];
@@ -32,30 +32,80 @@ function _getCookieValue(name) {
         // __def_busy_loader.hide();
     // }
 // });
-
-
-
+ 
 //IMPORTANT NOTE: due to asynchronous nature of callback function, CSRF verification error can occur when, for example, multiple calls to method post_ajax() at same time (concurently) causing the server to return new cookie_value of csrfHash while the some ajax calls are already sent to sever but still in process. In this case, there are error 403 (Forbidden) or action not allowed. 
+ 
+//example function using javascript fetch() function
+async function mypost(url = '', data = {}){
+	 
+   //begin:: read cookie value
+	  let cookie_name = 'vsmclinic997891zb';
+	  let access_token = null;
+	  let c_match = document.cookie.match(new RegExp('(^| )' + cookie_name + '=([^;]+)'));
+	  if (c_match) access_token = c_match[2]; 
+   //end:: read cookie for access token
+
+     let csrf_token  = $('meta[name="csrf-token"]').attr('content');
+ 
+	    // Default options are marked with *
+		const myFetch = await fetch(url, {
+					method: 'POST', // *GET, POST, PUT, DELETE, etc.
+					mode: 'cors', // no-cors, *cors, same-origin
+					cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+					credentials: 'same-origin', // include, *same-origin, omit
+					body:data, // body data type must match "Content-Type" header
+					headers: {
+						//'Accept': 'application/json',
+						'Content-Type': 'application/json',
+						'Authorization':['Bearer ',access_token].join(''),
+						//'Authentication':['token ',access_token].join(''),
+						'X-CSRF-TOKEN':csrf_token,
+						//'X-Requested-With':'XMLHttpRequest'
+						//'Content-Type': 'application/x-www-form-urlencoded',
+					},
+					redirect: 'follow', // manual, *follow, error
+					referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+					
+				});
+				
+				let res = await myFetch.json();
+			    //alert(JSON.stringify(res.status_code));
+                if (myFetch.ok){
+					return new Promise((resolve,reject)=>{
+						if (res.status_code ===401){
+							//User authentication failed
+							window.location.href = '/';	 
+						}else if(res.status_code===403){
+							//CSRF is not correct
+							window.location.href = '/';	 
+						}else if (res.status_code===402){
+							//Expired token
+							window.location.href = '/';
+						}else if (res.status_code !=200){
+							window.location.href = '/';
+						}
+						resolve(res);
+					});
+				}else{
+					if(cv_interact) cv_interact.error(res.status); else alert(res.status); 
+					return new Promise((resolve,reject)=>{
+						reject(myFetch);
+					})
+				}
+  
+}
 
 /**Each response data returned by .ajax call has three main properties: 'data', 'csrfName', 'csrfHash'. 'data' is the user data intended to be returned by user, 'csrfHash' and 'csrfName' are security tokens used to protect agains CSRF attack and is used on every request to server for verification **/
- 
-function post_ajax(url, param_data = {}, onSuccess, busy_indicator,onFail=null)
+function post_ajax(url=null, param_data = {}, onSuccess=null, busy_indicator=null,onFail=null)
   {
-	     let cookie_name ='_da129011_csrf_name';
-		 let tk_cookie_name = 'da337_acctk_1298XA';  /** there is this name "_da337_csfz1298" specified in loginController.processLogin()  **/
-		  // In case that post_ajax is called while page or script not yet completely loaded, in such case, the __csrfHash is still undefined and causes the error 403(action not allowed). Therefore, if __csrfHash == undefined => get its value from cookie instead  
-		 //if (!__csrfHash) __csrfHash =_getCookieValue(cookie_name);
-		 let  __access_token = _getCookieValue(tk_cookie_name);
-	     if (!param_data|| param_data ==undefined ) param_data = {};
-         //param_data[__csrfName]  = __csrfHash;
-		 param_data[__access_token_prop]  = __access_token;
-
-		  //alert("BEFORE SEND: cookie value: " + _getCookieValue(cookie_name) + " VS header value: " + __csrfHash + "\n" + url);
-		 //$.cookie(cookie_name,__csrfHash , { expires: 1 }); //set cookie to be expired in 1 day //requires jquery, but error here
-		 //var d = new Date();
-		 // document.cookie = cookie_name + __csrfHash+ ";expires=" + d.toUTCString() + ";";
-		 
-         //alert('securitycom param data: '+ JSON.stringify(param_data) + ' || url: ' + url);
+	     //begin:: read cookie value
+			let cookie_name = 'vsmclinic997891zb';
+			let access_token = null;
+			let c_match = document.cookie.match(new RegExp('(^| )' + cookie_name + '=([^;]+)'));
+			if (c_match) access_token = c_match[2]; 
+		 //end:: read cookie for access token 
+          
+        let csrf_token  = $('meta[name="csrf-token"]').attr('content');
 		$.ajax({
 			url : url,
 			timeout: 0, /*0= never timeout. To minimize chances, if not totally avoid, error of ERR_NETWORK_CHANGED, or ERR_NETWORK_SUSPENDED, etc */
@@ -65,7 +115,8 @@ function post_ajax(url, param_data = {}, onSuccess, busy_indicator,onFail=null)
 			dataType:"json", /** released this line causes weird error that the "error" function is fired when transaction succceed, and "success" callback never fired **/
             //contentType: "application/x-www-form-urlencoded; charset=utf-8", 
             headers: {
-				  //'X-CSRF-TOKEN':__csrfHash,
+				  'Authorization':['Bearer ',access_token].join(''),
+				  'X-CSRF-TOKEN':csrf_token,
 				  'X-Requested-With':'XMLHttpRequest'
 				  // [__csrfName]:__csrfHash
                  ,//'content-type':'application/json' //relase this contentType causes security error 403 (Forbidden)
@@ -84,7 +135,6 @@ function post_ajax(url, param_data = {}, onSuccess, busy_indicator,onFail=null)
 			},				
 			success : function(response, statusText, jqXHR)
 			{   
-			
                 if (response.csrfName && response.csrfHash)
 				{
 					__csrfName = response.csrfName;
@@ -93,50 +143,23 @@ function post_ajax(url, param_data = {}, onSuccess, busy_indicator,onFail=null)
 					//__csrfHash = _getCookieValue(cookie_name); //update global variable __csrfHash via cookie value
 					
 				}					
-				
 				//alert("SUCCESS: cookie value: " + _getCookieValue(cookie_name) + " VS header value: " + __csrfHash + "\n" + url);
-				if (response.status =='OK' || response.status =='ok')
+				if (response.status_code === 401)
 				{
-					
-					//response.data = StringSanitizer.sanitizeObject(response.data);
-					
-					/** This is the handled errors or validation errors caught and sent from server, so we can handle them and display in specific context, NOT general context **/
-                    // var handled_err_status = (response.data)? response.data.status:null;
-					// if (handled_err_status=='Error') 
-						// cv_interact.alert(response.data.error_message);
-                    // else  					
-					    onSuccess(response.data);
-				} else  //if (response.status =='Error')
+                    //Go to login screen;
+					window.location.href = _back_home_path;
+				}else
 				{
-					if (response.status_code ==350) {
-						window.location.href = _back_home_path;
-						return;
-					}else if (response.status_code ==360){
-                        cv_interact.alert(response.error_message,'','warning'); 
-						return;
-					}  
-
-					if ((response.error_message+'').indexOf('Authorization failed') >=0) {
-						window.location.href = _back_home_path;
-					} else 
-					{
-						if (response.error_message=='' || !response.error_message) 
-							response.error_message = 'Please check this method for correctness => ' + url + '\nHint: operation successful but the status is not OK. This usually occurs because the method process_response_json() is not used from server side';
-						cv_interact.alert(response.error_message,null,'Error');
-					
-						if (typeof onFail =='function') onFail(null, 'Error', response.error_message);	
-					}						
-				}
-				 
-				
+					onSuccess(response);	 
+				}	
 			},
 			error:function(jqXHR, statusText, errorThrown)
 			{
 				//alert("ERROR: cookie value: " + _getCookieValue(cookie_name) + " VS header value: " + __csrfHash + "\n" + url);
 				__csrfHash = _getCookieValue(cookie_name);
-				if (jqXHR.status ==200 && jqXHR.statusText =='OK') //sometimes successful, but error callback is fired instead of success callback
+				if (jqXHR.status ===200 && jqXHR.statusText ==='OK') //sometimes successful, but error callback is fired instead of success callback
 				{  
-					var b;
+					let b;
 					if (jqXHR.responseText !='') 
 					{
 						try{
@@ -146,20 +169,11 @@ function post_ajax(url, param_data = {}, onSuccess, busy_indicator,onFail=null)
 						}
 						 
 					}
-					//This usually happens because of invalid JSON format string returned from Server method. Error is  "Unexpected token..."
-					 var err_text = null;
-					// if ((errorThrown+'').indexOf('Unexpected token') > 0) 
-						// err_text ='This is because returned json data is not valid format';
-					 // else if (errorThrown) 
-                        // err_text = errorThrown;
-                     // else 
-                       err_text = jqXHR.responseText;  						 
-					onSuccess('weird: status = OK, but Error callback fired => '+ err_text); 
-					//cv_interact.alert(jqXHR.responseText);
+					 
 				} else //status =500 with statusText
 				{
 					//Wrong CSRF token, so redirect to login page too
-					if (jqXHR.status ==403) {
+					if (jqXHR.status ===403) {
 						window.location.href = _back_home_path;
 						return;
 					}
@@ -167,24 +181,32 @@ function post_ajax(url, param_data = {}, onSuccess, busy_indicator,onFail=null)
 					  //alert the error message, this should be placed in log file later 
 					  if (jqXHR.statusText && jqXHR.status > 0)
 					  {
-						if (jqXHR.status ==429) 
+						let msg =null
+						if (jqXHR.status ===429) 
 						  return; /** encountered error => Too Many Requests attempts **/
 						else  
-					       cv_interact.alert('There was error in ajax response\n Status: ' + jqXHR.status + '\nStatusText: ' + jqXHR.statusText +'\n' + 'ResponseText: ' + JSON.stringify(jqXHR.responseText));
+						   {
+							msg ='There was error in ajax response\n Status: ' + jqXHR.status + '\nStatusText: ' + jqXHR.statusText +'\n' + 'ResponseText: ' + JSON.stringify(jqXHR.responseText);
+						   }
+					       if(msg) if (cv_interact) cv_interact.alert(msg); else alert(msg);
 					  }
 					  //console.log('There was error in ajax response\n Status: ' + jqXHR.status + '\nStatusText: ' + jqXHR.statusText +'\n' + 'ResponseText: ' + JSON.stringify(jqXHR.responseText));
 					  
-					if (typeof onFail =='function') onFail(jqXHR, statusText, errorThrown);	
+					if (typeof onFail ==='function') onFail(jqXHR, statusText, errorThrown);	
 				}
 				
 			},
 			statusCode:{
 				500:function(e) { 
 					//For the time being, display internal error of status 500 
-					if(e.status ==429) 
+					if(e.status ===429) 
 					   return; /** status =429 => Error Too Many Requests attempts**/
 					else 
-					   cv_interact.alert(e.responseText); 
+					{
+						if (cv_interact) 
+						   cv_interact.alert(e.responseText);
+						else alert(e.responseText);
+					}
 				},
 			    403:function(e) {
 					window.location.href = _back_home_path;
@@ -199,112 +221,11 @@ function post_ajax(url, param_data = {}, onSuccess, busy_indicator,onFail=null)
   };
   
   ///////////////////End of post_ajax///////////////////////////////
-
-  
-//####BEGIN::Start of CommonLib common class that contains all commonly used  functions
-var CommonLib = new function()
-{
-	this.addCSRF = (param_data)=>
-	{
-		   var param_data = {};
-		   var cookie_name ='_hk1573_csrfbn25'; 
-		  // In case that post_ajax is called while page or script not yet completely loaded, in such case, the __csrfHash is still undefined and causes the error 403(action not allowed). Therefore, if __csrfHash == undefined => get its value from cookie instead  
-		  if (!__csrfHash) __csrfHash =_getCookieValue(cookie_name);
-		  if (!param_data|| param_data ==undefined ) param_data = {};
-		  param_data[__csrfName]  = __csrfHash;
-		  return param_data;
-	};
-	
-	//get cookie value by name
-	this.getCookieValue =(name)=> {
-		 var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-		 if (match) return match[2];
-	};
-
-	//set cookie value expires in half a way, if not deleted
-	this.setCookieValue =(name,value,days=1)=> {
-			 var expires = "";
-			 if (days) {
-				 var date = new Date();
-				 date.setTime(date.getTime() + (days*24*60*60*1000));
-				 expires = "; expires=" + date.toUTCString();
-			 }
-				 document.cookie = name + "=" + (value || "")  + expires + "; path=/";
-	  }
    
-	  //delete cookie by name
-	 this.deleteCookie = (name)=> {   
-		 document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-	 };
-
-	  this.setComboItems = (cb,items,value_prop='id', text_prop='text', add_empty_item=false,first_option_text=null,default_value)=>
-	 {
-		 if (!cb || cb.length <=0) 
-		 {
-			   
-			 alert('CommonLib.setComboItems() => The Select box object specified is null or invalid');
-			 throw 'Select box is NULL or invalid. FYI: value_prop= ' + value_prop + '  text_prop = ' + text_prop + '   items: ' + JSON.stringify(items);
-			 return false;
-		 }
-		 cb.empty();
-		 if (!first_option_text) first_option_text ='<All>';
-		 if (add_empty_item == true) cb.append($('<option/>').val(0).text(first_option_text));
-		  var i=0, c;
-				  do{
-					  c = items[i];
-					  if(!c) break;
-					  cb.append($('<option/>').val(c[value_prop]).text(c[text_prop]));
-					  i++;
-				  }while(c);
-				  
-				   cb.val(default_value);
-				   if (!cb.val()){
-						cb.append($('<option/>').val(default_value).text(default_value)).val(default_value);
-				   }
-				   
-		  return true;
-	 };
-	 
-	/** find data in the specified dataStore (usually dataSore object is created locally inside a specific class). Find by specified key_name and key_value then returns the found data, otherwise returns NULL **/	
-   this.findData_local = (dataStores, key_value)=>
-   {
-		   if (!dataStores) return null;
-		   var i=0,c ;
-		 do{
-			 c = dataStores[i];
-			 if (!c) break;
-			 if (c.key == key_value) return c.value;
-			 i++;
-		 }while(c);	  
-   };
-   
-   this.setData_local = (dataStores, key_value,data)=>
-   {
-	   if (!dataStores) return false
-		 var x = {};
-		  x.key = key_value;
-		  x.value = data;
-		  dataStores.push(x);
-		  return true;
-   };
-   
-	this.isEqual = (x, y)=> {
-	   const ok = Object.keys, tx = typeof x, ty = typeof y;
-	   return x && y && tx === 'object' && tx === ty ? (
-		 ok(x).length === ok(y).length &&
-		   ok(x).every(key => this.isEqual(x[key], y[key]))
-	   ) : (x === y);
-	 };
-
-	   
-};
-//#### END::END OF CommonLib class
-
-  
   //The following code make sure user can type in only number in the textbox
   $('.integer .decimal').on('keypress keyup blur',function(evt) {
 	  
-	   var charCode = (evt.which) ? evt.which : evt.keyCode
+	   let charCode = (evt.which) ? evt.which : evt.keyCode
         if (evt.which == 46)
             return true;
         else
@@ -332,12 +253,12 @@ var CommonLib = new function()
 
   function get_cookies_array() {
 
-    var cookies = { };
+    let cookies = { };
 
     if (document.cookie && document.cookie != '') {
-        var split = document.cookie.split(';');
-        for (var i = 0; i < split.length; i++) {
-            var name_value = split[i].split("=");
+        let split = document.cookie.split(';');
+        for (let i = 0; i < split.length; i++) {
+            let name_value = split[i].split("=");
             name_value[0] = name_value[0].replace(/^ /, '');
             cookies[decodeURIComponent(name_value[0])] = decodeURIComponent(name_value[1]);
         }

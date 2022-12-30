@@ -35,7 +35,7 @@ class MessageReceived implements ShouldBroadcast
     {
         $branch_id = isset($this->data->branch_id)?$this->data->branch_id:0;
         //$user_id =isset($this->data->user_id)?$this->data->user_id:0;
-        return new PrivateChannel("backend.".$branch_id);
+        return new PrivateChannel(channel_prefix()."backend.".$branch_id);
     }
     public function broadcastAs()
     {

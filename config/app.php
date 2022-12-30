@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'DolgoalApp'),
+    'name' => env('APP_NAME', 'Vectorasoft LMS'),
 
     /*
     |--------------------------------------------------------------------------
@@ -238,6 +238,12 @@ return [
         'DNS1D' => Milon\Barcode\Facades\DNS1DFacade::class,
         'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'Localization'=> App\Locales\LocaleManager::class,
+        'LangContentProvider'=>App\Locales\LangContentProvider::class,
+        'Sanitizer'=>App\Security\Sanitizer::class,
+        'PHPCrypto'=>App\Security\PHPCrypto::class,
+        'SQLDB'=>App\DB\SQLDB::class,
+        'ScriptManager'=>App\ScriptManagement\ScriptManager::class, 
     ],
 
 ];

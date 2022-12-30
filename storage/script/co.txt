@@ -1,0 +1,15 @@
+"componentId":"_coll_mainCOListComponent",
+"saveButtonId":"_coll_btnSave",
+"closeButtonId":"_coll_btnClose",
+"modifyButtonId":"_coll_btnModify",
+"fields":[
+    "id":"",
+	"ffield":"name",
+	"type":"text",
+	"required":"1",
+	"from-group-width":"col-lg-3",
+    "label":"name",	
+]
+
+
+

@@ -1,7 +1,7 @@
 window.addEventListener('load',function(){
            //Set Default Home View => supposed to be dashboard, but now show Pickup List instead
 // <<<<<<< HEAD
-           DashboardComponent.show({'title':'Dashboard'});
+           DashboardComponent.show();
 // =======
 //             PickupListComponent.show({'title':'Pickup Center'});
 // >>>>>>> c1ed4f56b5eb7d45ce133a35e34806d1588e82e4

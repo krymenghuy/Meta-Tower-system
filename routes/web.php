@@ -7,11 +7,16 @@ use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Slide\SlideController;
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LoanAppController;
 use App\Http\Controllers\WebReportController;
 use App\Http\Controllers\Api\PackageController;
 use App\Http\Controllers\Login\LoginController;
 use Illuminate\Http\Request;
+
 use App\Models\Notifier;
+use App\Http\Controllers\MailController;
+use App\Http\Controllers\PdfController;
+use App\Models\PrivateStorage;
 
 //use App\Models\UM;
 /*
@@ -31,6 +36,35 @@ use App\Models\Notifier;
 //     $data = (object ) array('email'=>$email, 'password'=>$password);
 //     return response()->json($data);
 // });
+
+// Route::get('view-pdf', [PdfController::class, 'previewPdf']);
+
+Route::get('view-pdf', function(){
+    $datas = \DB::SELECT('SELECT * FROM package');
+        $fileName = 'UserList.pdf';
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'UTF-8',
+            'format' => 'A4-L',
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
+            'margin-left' => 10,
+            'margin-right' => 10,
+            'margin-top' => 15,
+            'margin-bottom' => 20,
+            'margin_header' => 10,
+            'margin_footer' => 10
+        ]);
+
+        $html = \View::make('preview_pdf')->with('datas', $datas);
+        $html = $html->render();
+
+        $mpdf->SetHeader('Chapter 1 | Package list |ទំព័រទី{PAGENO}');
+        $mpdf->SetFooter('This is footer');
+
+
+        $mpdf->WriteHTML($html);
+        $mpdf->Output($fileName, 'I');
+});
 
 Route::get('/get-enc-data/{q}', function ($q) {
     $encrypter = app(\Illuminate\Contracts\Encryption\Encrypter::class);
@@ -69,6 +103,10 @@ Route::get('tell-merchant/{user_id}',function($user_id){
     return response()->json($res);
 });
 
+Route::get('/student', function () {
+    return view('borrower.login');
+});
+
 Route::get('/', function () {
     return view('login.index');
 });
@@ -76,9 +114,40 @@ Route::get('/', function () {
 Route::get('logout',function(){
     return view('login.index');
 });
-  
+
+Route::get('logout-borrower',function(){
+    return view('borrower.login');
+});
+
+Route::get('private-storage',function(){
+    echo PrivateStorage::path(1,'loan','document');
+});
+
+Route::get('test',function(){
+   $paths = [
+    'public_path'=>public_path(),// Path of public/
+    'base_path'=>base_path(),// Path of application root
+    'storage_path'=>storage_path(),// Path of storage/
+    'app_path'=>app_path(),// Path of app/
+    'cwd'=>getCwd()
+   ];
+   $file_path = base_path().'/storage/locales/en.json';
+   $data = readFileContent($file_path);
+    echo $data;
+//    foreach($paths as $key=>$value){
+//     echo $key.' = '.env('ASSET_URL').' =  |   ';
+//    } 
+
+});
+
 Route::get('package_barcode/{id}', [WebReportController::class, 'package_barcode']);
-Route::get('dms_gen_report/{q}', [WebReportController::class, 'general_report']);
+Route::get('genreport/{q}', [WebReportController::class, 'general_report']);
+Route::get('pawncontract/{q}', [WebReportController::class, 'pawn_contract']);
+Route::get('loancontract/{q}', [WebReportController::class, 'loan_contract']);
+
+// Route::get('view-receipt/{q}',[MailController::class, 'view_receipt']);
+Route::get('receipt/{q}', [WebReportController::class, 'receipt']);
+Route::get('mail-receipt/{q}', [MailController::class, 'receipt']);
 
 // Route::get('clearcache', function () {
 //    $exitCode = Artisan::call('cache:clear');
@@ -89,8 +158,30 @@ Route::get('dms_gen_report/{q}', [WebReportController::class, 'general_report'])
  Route::post('processLogin', [LoginController::class, 'processLogin']); 
 //route 'dms' or Delivery Management System(DMS) routing to default Home View on firt log in
 Route::get('login', [LoginController::class , 'login']);
-Route::get('dms', [LoginController::class , 'default_view']);
- 
+
+Route::get('mclinic',function(){
+    if(!Session::get('login_name')){
+       // return redirect('/')
+       $base_url =url('/');
+       echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
+       return;
+    };
+    return view('master');
+});
+
+Route::get('email/send', [MailController::class, 'html_email']);
+
+Route::get('download-doc/{doc_type}/{loan_app_id}/{file_id}', [LoanAppController::class, 'downloadFile']);
+Route::get('bor',function(Request $request){
+    if(!Session::get('login_name')) return redirect('/student'); // view('login.index');
+    return view('borrower.home');
+});
+
+Route::get('bor',function(Request $request){
+        if(!Session::get('login_name')) return redirect('/student'); // view('login.index');
+        return view('borrower.home');
+});
+
 // Route::post('/pem-login/{q}', function(Request $request, $email, $password){
 //     $email = $request->email;
 //     $password = $request->password;
@@ -103,6 +194,11 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/clear-cache', function() {
     $exitCode = Artisan::call('cache:clear');
     return '<h1>Cache facade value cleared</h1>';
+});
+//Clear Cache facade value:
+Route::get('/config-cache', function() {
+    $exitCode = Artisan::call('cache:config');
+    return '<h1>Cache configed</h1>';
 });
 
 //Reoptimized class loader:

@@ -1,22 +1,48 @@
 ﻿'use strict'
 /*StringSanitizer class */
 /* IMPORTANT When updating the array of whiteList characters ==> please also update the escapeHtml() function defined in Scripts/bootstrap-table.js (for URM project) */
-var StringSanitizer = new function () {
+let StringSanitizer = new function () {
     let mThis = this;
-     
+    this.reverse_char_codes = [
+        {"'&U01;'":'-'},
+        {'&U02;':'$'},
+        {'&U03;':'('},
+        {'&U04;':')'},
+        {'&U05;':'@'},
+        {'&U06;':'/'},
+        {'&U07;':'%'},
+         {'&U08;':'!'},
+         {'&U09;':':'},
+         {'&U10;':'\''},
+         {'&U11;':'#'},
+         {'&U12;':';'},
+         {'&U13;':'\\'},
+         {'&U14;':'='},
+         {'&U16;':'.'},
+         {'&U17;':','},
+         {'&U18;':'?'},
+         {'&U19;':'['},
+         {'&U20;':']'},
+         {'&U21;':'+'},
+         {'&U23;':'&'},
+         {'&U24;':';'}
+     ];
+
     //SanitizeOut() = sanitize output for display. itemName = { 'json???','none','image','nodeTag','sessionType','classTime', 'classTimes','classDays','batchName','schoolSession', 'termName','notes'}
     //when itemName ='none' ==> not allowing any special chars
-    this.sanitizeOut = function (text, itemName, allowedChars) {
+    this.sanitizeOut = (text, itemName, allowedChars) =>{
         //if (typeof text == 'number' || !text) return text; 
         if (!text) return text;
         if ($.isNumeric(text)) return text; //NOTE: $.isNumeric() requires jQuery
+        let num = (text+'').replace(',','');
+        if ($.isNumeric(num)) return num;
 
         text = [text, ''].join(''); //Faster way to turn text to String
         let len = text.length;
         let mayBeDate = false;
         if (len >= 10 && len <= 11) mayBeDate = true; //If len between 10 and 11 chars then check if it is a date
 
-        if (mayBeDate == true) {
+        if (mayBeDate === true) {
             //NOTE: DateHelper.isDate() is defined in Samsethy.js file, which is loaded after this file. The reason that there is no error because, sanitizeOut() is called after Samsethy.js has been loaded
             if (DateHelper.isDate(text)) return text;
         }
@@ -26,47 +52,14 @@ var StringSanitizer = new function () {
         //var allowedChars = ['-', '(', ')', '@', '/', '#',':']; // The char # is used in TreeView node tag
         //var encodes = ['&U01;', '&U03;', '&U04;', '&U05;', '&U06;', '&U11;','&U09;'];
         ////var allowedChars;
-        var encodes = [];
+        let encodes = [];
         if (itemName) {
             allowedChars = []; // convert allowedChars into an array to avoid errors: " Uncaught TypeError: Cannot read property '0' of undefined "
-            if (itemName=='currency')
+            if (itemName ==='currency' || itemName ==='currency_symbol')
 			{
 				return text.slice(0,4);
 			}
-			else if (itemName == 'classTime') {
-                allowedChars = ['-', ':'];
-                encodes = ['&U01;', '&U09;'];
-                ////* Todo: Here is faster way to validate specific data format */
-                //classTime.split('&U01;').join('-').split('&U09;').join(':').split('&U06;').join('/');
-                //if (ValidateClassTime(classTime)) {
-                //    return classTime;
-                //} else
-                //    return 0;
-
-            }
-            else if (itemName == 'batchName') {
-                allowedChars = ['-', '.'];
-                encodes = ['&U01;', '&U16;'];  
-            }
-            else if (itemName == 'days') {
-                allowedChars = ['-', ','];
-                encodes = ['&U01;', '&U17;']; 
-            }
-            else if (itemName == 'academicYear') {
-                allowedChars = ['-'];
-                encodes = ['&U01;']; 
-            }
-            else if (itemName == 'classTimes') {
-
-                allowedChars = ['-', '/', ':', '(', ')'];
-                encodes = ['&U01;', '&U06;', '&U09;', '&U03;', '&U04;'];
-                ////* Todo: Here is faster way to validate specific data format */
-                //classTime.split('&U01;').join('-').split('&U09;').join(':').split('&U06;').join('/');
-                //if (ValidateClassTime(classTime)) {
-                //    return classTime;
-                //} else
-                //    return 0; 
-            } else if (itemName =='email')
+            else if (itemName ==='email')
 			{
 				//allowedChars = ['.', '@'];
                 //encodes = ['&U01;', '&U04;'];
@@ -107,47 +100,45 @@ var StringSanitizer = new function () {
         let badChars = ['?', '[', ']', '+', '.', ',', '-', '(', ')', '@', '/', '#', ':',
                         "~", "^", "&", "&amp;", "!", "$", "*", ";", "%", "=", "\"", "'", "\\", "<", ">", "&quot;", "&lt;", "&gt;", "&#x27;", "&#x2F;", "&#60;", "&#62;", "&#34;", ".fromCharCode", "{", "}", "[", "]", "?"];
 
-
         let st = text.split(''); //Create char array from the input string
-
         i = 0; //reset variable i
-        c = undefined;
+        c = null;
 
         do {
             c = st[i];
             if (!c) break;
 
-            if (c == '|' && itemName == 'nodeTag') //if there is bar | and the text is TreeView item's nodeTag
+            if (c === '|' && itemName === 'nodeTag') //if there is bar | and the text is TreeView item's nodeTag
             {
-                if (st[i + 1] == '|')
+                if (st[i + 1] === '|')
                     i = i + 1;
                 else
                     st[i] = '';
             }
-            else if (c == '|' && itemName != 'nodeTag') {
-                if (itemName == 'answerSet')
+            else if (c === '|' && itemName != 'nodeTag') {
+                if (itemName === 'answerSet')
                     i = i + 1;
                 else
                     st[i] = '';
 
             }
-            else if (c == '#' && itemName == 'nodeTag') //if there is hush sign # and the text is TreeView item's nodeTag
+            else if (c === '#' && itemName === 'nodeTag') //if there is hush sign # and the text is TreeView item's nodeTag
             {
                 if (st[i + 1] == '#')
                     i = i + 1;
                 else
                     st[i] = '';
             }
-            else if (c == '#' && itemName != 'nodeTag') {
+            else if (c === '#' && itemName != 'nodeTag') {
                 i = i + 1; //allow plus sign
             }
-            else if (c == '+' && i > 0 && itemName == 'grade') {
+            else if (c === '+' && i > 0 && itemName === 'grade') {
                 st[i]
             }
 
-            else if (c == '&')   /** Begin checking the encoded chars for example  &U01; is encode for dash - **/ {
+            else if (c === '&')   /** Begin checking the encoded chars for example  &U01; is encode for dash - **/ {
                 //NOTE: valid encode has 5 characters only. For example  &U01; represents - or &U06; represents /
-                if (st[i + 1] == 'U' && st[i + 4] == ';') //It is Capital letter '&U01;'
+                if (st[i + 1] === 'U' && st[i + 4] === ';') //It is Capital letter '&U01;'
                 {
                     //Replace encoded chars with real char. For example, replace &U01; with -
                     let e = [st[i], st[i + 1], st[i + 2], st[i + 3], st[i + 4]].join('');
@@ -173,24 +164,24 @@ var StringSanitizer = new function () {
                 } else st[i] = ''; // if (encodes.indexOf('&') < 0) st[i] = '';
 
             }
-            else if (c == ';') {
+            else if (c === ';') {
                 if (encodes.indexOf(';') < 0) st[i] = '';
                 //if ((typeof st[i - 1] != 'number' || st[i - 4] != '&')) // && st[i-1]%1 != 0 
                 //{
                 //    st[i] = '';
                 //}
             }
-            else if (c == '-') { //part-time full-time
+            else if (c === '-') { //part-time full-time
                 if (st[i - 4]) {
                     let a = String(st[i - 4]).toLowerCase();
                     let b;
-                    if (a == 'p' || a == 'f') //Allow Part-time and Full-time string. Note that 'p' is start of 'Part-time' or 'f' is start of 'Full-time'
+                    if (a === 'p' || a === 'f') //Allow Part-time and Full-time string. Note that 'p' is start of 'Part-time' or 'f' is start of 'Full-time'
                     {
                         a = [st[i - 4], st[i - 3], st[i - 2], st[i - 1]].join(''); //expected to be 'part' or 'full'
                         b = [st[i + 1], st[i + 2], st[i + 3], st[i + 4]].join(''); // expected 'time'
                         if (a && b) {
                             a = a.toLowerCase();
-                            if ((a == 'part' || a == 'full') && b.toLowerCase() == 'time') {
+                            if ((a === 'part' || a === 'full') && b.toLowerCase() === 'time') {
                                 i = i + 4;
                             }
                         }
@@ -254,10 +245,45 @@ var StringSanitizer = new function () {
         }
     };
 
+    //getItemName() checks JSON object's property name and tries to guess some typical property name such as email, currency, start_date, etc and return itemName for method sanitizeOut() to process the string value 
+    this.getItemName = (property)=>{
+        let itemName = null;
+        let prop = (property+'').toLowerCase();
+        switch(prop){
+          case 'email':{
+             itemName ='email';  
+             break;
+          }
+          case 'currency':{
+            itemName ='currency';  //allows '$' sign
+            break;
+          }
+          case 'currency_symbol':{
+            itemName ='currency';  //allows '$' sign
+            break;
+          }
+          case 'notes':{
+            itemName='remarks';
+            break;
+          }
+          case 'remarks':{
+            itemName='remarks';
+            break;
+          }
+          case 'description':{
+            itemName='remarks';
+            break;
+          }
+             default:{
+             break;
+          }
+        } 
+        return itemName;
+    }
+
     //Sanitizes javascript object (or JSON object). NOTE: This method sanitize the first nesting level of object (Not recursively through all nested props), NOT an array of objects
-    this.sanitizeObject = function (obj,allowedChars,except_props=[]) {
-        let itemName =null;
-         
+    //sanitizeArray() recursively
+    this.sanitizeObject = function (obj,allowedChars,except_props=[]) { 
 		if (Array.isArray(obj)) // process Array object = [{pro1,prop2,...}]
 		{
 			let i=0, myObj;
@@ -266,11 +292,15 @@ var StringSanitizer = new function () {
 				myObj = obj[i];
 				if (!myObj) break;
 				for (let property in myObj) {
-				   if (myObj.hasOwnProperty(property)) {
-					    if ((property+'').toLowerCase() =='email') itemName ='email'; 
-                        if (except_props.indexOf(property) ==-1)  myObj[property] = this.sanitizeOut(myObj[property], itemName, allowedChars); //NOTE: this.Sanitize() = Sanitize output for display     
+				   if (myObj.hasOwnProperty(property)) 
+                    //{
+                        if (except_props.indexOf(property) ===-1) {
+                            if (Array.isArray(myObj[property]))  
+                               myObj[property] = this.sanitizeObject(myObj[property]);
+                            else myObj[property] = this.sanitizeOut(myObj[property], this.getItemName(property), allowedChars); //NOTE: this.Sanitize() = Sanitize output for display     
+                        }  
                                                           
-				    }
+				    //}
               } //end::for loop 
 
                i++;				
@@ -279,9 +309,14 @@ var StringSanitizer = new function () {
 		else //process the non-array object object = {'prop1','prop2',...}
 		{
 			for (let property in obj) {
-            if (obj.hasOwnProperty(property)) {      
-                if (except_props.indexOf(property) ==-1) obj[property] = this.sanitizeOut(obj[property], itemName, allowedChars); //NOTE: this.Sanitize() = Sanitize output for display
+              if (obj.hasOwnProperty(property)) 
+              {      
+                if (except_props.indexOf(property) ===-1) {
+                    if (Array.isArray(obj[property])){
+                        obj[property] = this.sanitizeObject(obj[property]);
+                    }else obj[property] = this.sanitizeOut(obj[property], this.getItemName(property), allowedChars); //NOTE: this.Sanitize() = Sanitize output for display
                 }
+              }
             }
 			
 		}
@@ -290,52 +325,53 @@ var StringSanitizer = new function () {
     };
  
     //return decoded character
-    this.getDecodeChar = function (e) {
-        // e is encoded char such as &U01;
-        if (e == '&U01;')
-            return '-';
-        else if (e == '&U02;')
-            return '$';
-        else if (e == '&U03;')
-            return '(';
-        else if (e == '&U04;')
-            return ')';
-        else if (e == '&U05;')
-            return '@';
-        else if (e == '&U06;')
-            return '/';
-        else if (e == '&U07;')
-            return '%';
-        else if (e == '&U08;')
-            return '!';
-        else if (e == '&U09;')
-            return ':';
-        else if (e == '&U10;')
-            return '\'';
-        else if (e == '&U11;')
-            return '#';
-        else if (e == '&U12;')
-            return ';';
-        else if (e == '&U13;')
-            return '\\';
-        else if (e == '&U14;')
-            return '=';
-        else if (e == '&U16;')
-            return '.';
-        else if (e == '&U17;')
-            return ',';
-        else if (e == '&U18;')
-            return '?';
-        else if (e == '&U19;')
-            return '[';
-        else if (e == '&U20;')
-            return ']';
-        else if (e == '&U21;')
-            return '+';
-        else if (e == '&') // encoding &U15;  for &  
-            return '&';
-        else
-            return '';
+    this.getDecodeChar =  (e)=> {
+        // e is encoded char such as &U01;    
+        return mThis.reverse_char_codes[e]?mThis.reverse_char_codes[e]:'';
+        // if (e === '&U01;')
+        //     return '-';
+        // else if (e === '&U02;')
+        //     return '$';
+        // else if (e === '&U03;')
+        //     return '(';
+        // else if (e === '&U04;')
+        //     return ')';
+        // else if (e === '&U05;')
+        //     return '@';
+        // else if (e === '&U06;')
+        //     return '/';
+        // else if (e === '&U07;')
+        //     return '%';
+        // else if (e === '&U08;')
+        //     return '!';
+        // else if (e === '&U09;')
+        //     return ':';
+        // else if (e === '&U10;')
+        //     return '\'';
+        // else if (e === '&U11;')
+        //     return '#';
+        // else if (e === '&U12;')
+        //     return ';';
+        // else if (e === '&U13;')
+        //     return '\\';
+        // else if (e === '&U14;')
+        //     return '=';
+        // else if (e === '&U16;')
+        //     return '.';
+        // else if (e === '&U17;')
+        //     return ',';
+        // else if (e === '&U18;')
+        //     return '?';
+        // else if (e === '&U19;')
+        //     return '[';
+        // else if (e === '&U20;')
+        //     return ']';
+        // else if (e === '&U21;')
+        //     return '+';
+        // else if (e === '&') // encoding &U15;  for &  
+        //     return '&';
+        // else
+        //     return '';
     };
 
     this.getEncodedChar = function (ch) {

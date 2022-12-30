@@ -88,4 +88,3 @@
       </div>
   </div> -->
 </div>
-<script async src="{{ asset('js/LocationComponent.js') }}"></script>

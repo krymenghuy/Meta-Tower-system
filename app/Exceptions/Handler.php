@@ -44,17 +44,15 @@ class Handler extends ExceptionHandler
             if ($exception instanceof CustomException) {
                 return response()->view('errors.custom', [], 500);
             } 
-            // else if ($exception instanceof  \PDOException){
-            //     //405: Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException
-            //     $data['error'] ="Something went wrong with Database Connection!"; 
-            //     return response()->view('errors.error',$data);
-            // } 
+            else if ($exception instanceof  \PDOException){
+                //405: Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException
+                $data['error'] ="Something went wrong with Database Connection!"; 
+                return response()->view('errors.error',$data);
+            }
             else {
                  //other type of exception
                  return parent::render($request, $exception);
-            }
-
-           
+            }  
     }
     // public function render($request, Exception $exception)
     // {

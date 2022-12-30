@@ -15,7 +15,7 @@ use Carbon\Carbon;
 class MobileAppSettings extends Model
 {
     use HasFactory;
-
+ 
     //$d = {'app_id'}
     function getTermsAndConditions($d){
         //$ss = getSessionInfo($d);
@@ -39,10 +39,26 @@ class MobileAppSettings extends Model
         return $text;
     }
 
+    function getContactInfo($d){
+        // $ss = getSessionInfo($d);
+        //if(!$ss) return '#350'; //user not authenticated
+        // if (!prn_allowed(2)) return '@'; //need permission to do this task
+        // $branch_id = $ss->branch_id;
+        $branch_id =1; 
+        if($branch_id ==0 || !$branch_id) return [];
+      
+       $links = DB::table('social_media_links as l')->where('l.branch_id',$branch_id)->selectRaw('l.id,l.name,l.url,l.description, NULL AS image_url')->get();
+       $contacts = DB::table('contacts as c')->where('c.branch_id',$branch_id)->selectRaw("c.id,c.contact_by,c.contact_type")->get();
+       return (object)[
+        'links'=>$links,
+        'contacts'=>$contacts
+      ];
+   } 
+
     function deleteBrandImage($d){
                 $ss = getSessionInfo($d);
                 if(!$ss) return '#350'; //user not authenticated
-                if (!prn_allowed(2)) return '@'; //need permission to do this task
+                if (!prn_allowed(0,106)) return DV::error('Unauthorized access to module Brand Images');
                 $branch_id = $ss->branch_id;
                 $id =isset($d->id)?$d->id:null; //pic_id picture_id
             $user_class = strtolower(isset($d->user_class)?$d->user_class:null);
@@ -73,7 +89,7 @@ class MobileAppSettings extends Model
     {  
         $ss = getSessionInfo($d);
         if(!$ss) return '#350'; //user not authenticated
-        if (!prn_allowed(2)) return '@'; //need permission to do this task
+        if (!UM::allowed(0,106)) return '@'; //need permission to do this task
         $branch_id = $ss->branch_id;
         $photo_data = isset($d->photo_data)?$d->photo_data:null;
         $file_type = isset($d->file_type)?$d->file_type:null;
@@ -122,13 +138,13 @@ class MobileAppSettings extends Model
     }
 
    
-    //getMobileBrandImages() returns array of [{user_class, image_url,title, description, category}]
+    //getBrandImages() | getMobileBrandImages() returns array of [{user_class, image_url,title, description, category}]
     //"user_class" the image is for which user_class so we can derive which mbile app each of these images is for 
     function getMobileBrandImages($d)
     {
         $ss = getSessionInfo($d);
         if(!$ss) return '#350'; //user not authenticated
-        if (!prn_allowed(2)) return '@'; //need permission to do this task
+        if (!prn_allowed(0,106)) return []; // DV::error('No access to module Brand Images');
         $branch_id = sanitize($ss->branch_id);
 
         //user_class =>  tell which mobile app the image is to be displayed in        
@@ -205,17 +221,8 @@ class MobileAppSettings extends Model
         if(!$branch_id) $branch_id = isset($d->branch_id)?$d->branch_id:null;
         if(!$branch_id) $branch_id = 1;
         $app_id = isset($d->app_id)?$d->app_id:null;
-        $user_class = null;
-        if($app_id === getMerchantAppId()) 
-           $user_class ='merchant';
-        else if ($app_id === getDriverAppId()) $user_class ='driver';   
-          
-        if (empty($user_class)){
-            $e = DV::error('User Class is not correct!');
-            $e->imgs = [];
-            return $e;  
-        }
-
+        $user_class = $d->user_class;
+         
         //$subs_id = isset($d->subs_id)?$d->subs_id:null;
         $rows = DB::table('mobile_brand_images AS img')->where('img.branch_id',$branch_id)->where('img.app_id',$app_id)->selectRaw('file_name,file_type')->orderByRaw('img.display_order ASC')->get();
         $i=0;
