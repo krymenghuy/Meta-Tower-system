@@ -5,6 +5,8 @@
 /vendor
 /public/*.zip
 *.zip
+/docs
+/uploads
 .env
 .env.backup
 .phpunit.result.cache
