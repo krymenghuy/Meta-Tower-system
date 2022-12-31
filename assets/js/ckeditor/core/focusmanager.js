@@ -8,7 +8,7 @@
  *		to handle the focus in editor instances.
  */
 
-( function() {
+(function () {
 	/**
 	 * Manages the focus activity in an editor instance. This class is to be
 	 * used mainly by UI element coders when adding interface elements that need
@@ -21,8 +21,8 @@
 	 * @constructor Creates a focusManager class instance.
 	 * @param {CKEDITOR.editor} editor The editor instance.
 	 */
-	CKEDITOR.focusManager = function( editor ) {
-		if ( editor.focusManager )
+	CKEDITOR.focusManager = function (editor) {
+		if (editor.focusManager)
 			return editor.focusManager;
 
 		/**
@@ -90,27 +90,27 @@
 		 * @param {CKEDITOR.dom.element} [currentActive] The new value of the {@link #currentActive} property.
 		 * @member CKEDITOR.focusManager
 		 */
-		focus: function( currentActive ) {
-			if ( this._.timer )
-				clearTimeout( this._.timer );
+		focus: function (currentActive) {
+			if (this._.timer)
+				clearTimeout(this._.timer);
 
-			if ( currentActive )
+			if (currentActive)
 				this.currentActive = currentActive;
 
-			if ( !( this.hasFocus || this._.locked ) ) {
+			if (!(this.hasFocus || this._.locked)) {
 				// If another editor has the current focus, we first "blur" it. In
 				// this way the events happen in a more logical sequence, like:
 				//		"focus 1" > "blur 1" > "focus 2"
 				// ... instead of:
 				//		"focus 1" > "focus 2" > "blur 1"
 				var current = CKEDITOR.currentInstance;
-				current && current.focusManager.blur( 1 );
+				current && current.focusManager.blur(1);
 
 				this.hasFocus = true;
 
 				var ct = this._.editor.container;
-				ct && ct.addClass( 'cke_focus' );
-				this._.editor.fire( 'focus' );
+				ct && ct.addClass('cke_focus');
+				this._.editor.fire('focus');
 			}
 		},
 
@@ -119,7 +119,7 @@
 		 *
 		 * @member CKEDITOR.focusManager
 		 */
-		lock: function() {
+		lock: function () {
 			this._.locked = 1;
 		},
 
@@ -128,7 +128,7 @@
 		 *
 		 * @member CKEDITOR.focusManager
 		 */
-		unlock: function() {
+		unlock: function () {
 			delete this._.locked;
 		},
 
@@ -146,33 +146,33 @@
 		 * @param {Boolean} [noDelay=false] Immediately deactivate the editor instance synchronously.
 		 * @member CKEDITOR.focusManager
 		 */
-		blur: function( noDelay ) {
-			if ( this._.locked ) {
+		blur: function (noDelay) {
+			if (this._.locked) {
 				return;
 			}
 
 			function doBlur() {
-				if ( this.hasFocus ) {
+				if (this.hasFocus) {
 					this.hasFocus = false;
 
 					var ct = this._.editor.container;
-					ct && ct.removeClass( 'cke_focus' );
-					this._.editor.fire( 'blur' );
+					ct && ct.removeClass('cke_focus');
+					this._.editor.fire('blur');
 				}
 			}
 
-			if ( this._.timer ) {
-				clearTimeout( this._.timer );
+			if (this._.timer) {
+				clearTimeout(this._.timer);
 			}
 
 			var delay = CKEDITOR.focusManager._.blurDelay;
-			if ( noDelay || !delay ) {
-				doBlur.call( this );
+			if (noDelay || !delay) {
+				doBlur.call(this);
 			} else {
-				this._.timer = CKEDITOR.tools.setTimeout( function() {
+				this._.timer = CKEDITOR.tools.setTimeout(function () {
 					delete this._.timer;
-					doBlur.call( this );
-				}, delay, this );
+					doBlur.call(this);
+				}, delay, this);
 			}
 		},
 
@@ -185,21 +185,21 @@
 		 * @param {Boolean} isCapture If specified, {@link CKEDITOR.event#useCapture} will be used when listening to the focus event.
 		 * @member CKEDITOR.focusManager
 		 */
-		add: function( element, isCapture ) {
-			var fm = element.getCustomData( SLOT_NAME );
-			if ( !fm || fm != this ) {
+		add: function (element, isCapture) {
+			var fm = element.getCustomData(SLOT_NAME);
+			if (!fm || fm != this) {
 				// If this element is already taken by another instance, dismiss it first.
-				fm && fm.remove( element );
+				fm && fm.remove(element);
 
 				var focusEvent = 'focus',
 					blurEvent = 'blur';
 
 				// Bypass the element's internal DOM focus change.
-				if ( isCapture ) {
+				if (isCapture) {
 
 					// Use "focusin/focusout" events instead of capture phase in IEs,
 					// which fires synchronously.
-					if ( CKEDITOR.env.ie ) {
+					if (CKEDITOR.env.ie) {
 						focusEvent = 'focusin';
 						blurEvent = 'focusout';
 					} else {
@@ -208,23 +208,23 @@
 				}
 
 				var listeners = {
-					blur: function() {
-						if ( element.equals( this.currentActive ) )
+					blur: function () {
+						if (element.equals(this.currentActive))
 							this.blur();
 					},
-					focus: function() {
-						this.focus( element );
+					focus: function () {
+						this.focus(element);
 					}
 				};
 
-				element.on( focusEvent, listeners.focus, this );
-				element.on( blurEvent, listeners.blur, this );
+				element.on(focusEvent, listeners.focus, this);
+				element.on(blurEvent, listeners.blur, this);
 
-				if ( isCapture )
+				if (isCapture)
 					CKEDITOR.event.useCapture = 0;
 
-				element.setCustomData( SLOT_NAME, this );
-				element.setCustomData( SLOT_NAME_LISTENERS, listeners );
+				element.setCustomData(SLOT_NAME, this);
+				element.setCustomData(SLOT_NAME_LISTENERS, listeners);
 			}
 		},
 
@@ -234,16 +234,16 @@
 		 * @param {CKEDITOR.dom.element} element The element to be removed from the focus manager.
 		 * @member CKEDITOR.focusManager
 		 */
-		remove: function( element ) {
-			element.removeCustomData( SLOT_NAME );
-			var listeners = element.removeCustomData( SLOT_NAME_LISTENERS );
-			element.removeListener( 'blur', listeners.blur );
-			element.removeListener( 'focus', listeners.focus );
+		remove: function (element) {
+			element.removeCustomData(SLOT_NAME);
+			var listeners = element.removeCustomData(SLOT_NAME_LISTENERS);
+			element.removeListener('blur', listeners.blur);
+			element.removeListener('focus', listeners.focus);
 		}
 
 	};
 
-} )();
+})();
 
 /**
  * Fired when the editor instance receives the input focus.

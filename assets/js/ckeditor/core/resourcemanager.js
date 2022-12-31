@@ -17,7 +17,7 @@
  * @param {String} basePath The path for the resources folder.
  * @param {String} fileName The name used for resource files.
  */
-CKEDITOR.resourceManager = function( basePath, fileName ) {
+CKEDITOR.resourceManager = function (basePath, fileName) {
 	/**
 	 * The base directory containing all resources.
 	 *
@@ -69,17 +69,17 @@ CKEDITOR.resourceManager.prototype = {
 	 * @param {Object} [definition] The resource definition.
 	 * @see CKEDITOR.pluginDefinition
 	 */
-	add: function( name, definition ) {
-		if ( this.registered[ name ] )
-			throw new Error( '[CKEDITOR.resourceManager.add] The resource name "' + name + '" is already registered.' );
+	add: function (name, definition) {
+		if (this.registered[name])
+			throw new Error('[CKEDITOR.resourceManager.add] The resource name "' + name + '" is already registered.');
 
-		var resource = this.registered[ name ] = definition || {};
+		var resource = this.registered[name] = definition || {};
 		resource.name = name;
-		resource.path = this.getPath( name );
+		resource.path = this.getPath(name);
 
-		CKEDITOR.fire( name + CKEDITOR.tools.capitalize( this.fileName ) + 'Ready', resource );
+		CKEDITOR.fire(name + CKEDITOR.tools.capitalize(this.fileName) + 'Ready', resource);
 
-		return this.get( name );
+		return this.get(name);
 	},
 
 	/**
@@ -90,8 +90,8 @@ CKEDITOR.resourceManager.prototype = {
 	 * @param {String} name The resource name.
 	 * @returns {Object} The registered object.
 	 */
-	get: function( name ) {
-		return this.registered[ name ] || null;
+	get: function (name) {
+		return this.registered[name] || null;
 	},
 
 	/**
@@ -102,9 +102,9 @@ CKEDITOR.resourceManager.prototype = {
 	 * @param {String} name The resource name.
 	 * @returns {String}
 	 */
-	getPath: function( name ) {
-		var external = this.externals[ name ];
-		return CKEDITOR.getUrl( ( external && external.dir ) || this.basePath + name + '/' );
+	getPath: function (name) {
+		var external = this.externals[name];
+		return CKEDITOR.getUrl((external && external.dir) || this.basePath + name + '/');
 	},
 
 	/**
@@ -115,9 +115,9 @@ CKEDITOR.resourceManager.prototype = {
 	 * @param {String} name The resource name.
 	 * @returns {String}
 	 */
-	getFilePath: function( name ) {
-		var external = this.externals[ name ];
-		return CKEDITOR.getUrl( this.getPath( name ) + ( external ? external.file : this.fileName + '.js' ) );
+	getFilePath: function (name) {
+		var external = this.externals[name];
+		return CKEDITOR.getUrl(this.getPath(name) + (external ? external.file : this.fileName + '.js'));
 	},
 
 	/**
@@ -139,26 +139,26 @@ CKEDITOR.resourceManager.prototype = {
 	 * default name is used. If provided with a empty string, will implicitly indicates that `path` argument
 	 * is already the full path.
 	 */
-	addExternal: function( names, path, fileName ) {
-		names = names.split( ',' );
-		for ( var i = 0; i < names.length; i++ ) {
-			var name = names[ i ];
+	addExternal: function (names, path, fileName) {
+		names = names.split(',');
+		for (var i = 0; i < names.length; i++) {
+			var name = names[i];
 
 			// If "fileName" is not provided, we assume that it may be available
 			// in "path". Try to extract it in this case.
-			if ( !fileName ) {
-				path = path.replace( /[^\/]+$/, function( match ) {
+			if (!fileName) {
+				path = path.replace(/[^\/]+$/, function (match) {
 					fileName = match;
 					return '';
-				} );
+				});
 			}
 
-			this.externals[ name ] = {
+			this.externals[name] = {
 				dir: path,
 
 				// Use the default file name if there is no "fileName" and it
 				// was not found in "path".
-				file: fileName || ( this.fileName + '.js' )
+				file: fileName || (this.fileName + '.js')
 			};
 		}
 	},
@@ -176,10 +176,10 @@ CKEDITOR.resourceManager.prototype = {
 	 * are loaded. The callback will receive an array containing all loaded names.
 	 * @param {Object} [scope] The scope object to be used for the callback call.
 	 */
-	load: function( names, callback, scope ) {
+	load: function (names, callback, scope) {
 		// Ensure that we have an array of names.
-		if ( !CKEDITOR.tools.isArray( names ) )
-			names = names ? [ names ] : [];
+		if (!CKEDITOR.tools.isArray(names))
+			names = names ? [names] : [];
 
 		var loaded = this.loaded,
 			registered = this.registered,
@@ -188,41 +188,41 @@ CKEDITOR.resourceManager.prototype = {
 			resources = {};
 
 		// Loop through all names.
-		for ( var i = 0; i < names.length; i++ ) {
-			var name = names[ i ];
+		for (var i = 0; i < names.length; i++) {
+			var name = names[i];
 
-			if ( !name )
+			if (!name)
 				continue;
 
 			// If not available yet.
-			if ( !loaded[ name ] && !registered[ name ] ) {
-				var url = this.getFilePath( name );
-				urls.push( url );
-				if ( !( url in urlsNames ) )
-					urlsNames[ url ] = [];
-				urlsNames[ url ].push( name );
+			if (!loaded[name] && !registered[name]) {
+				var url = this.getFilePath(name);
+				urls.push(url);
+				if (!(url in urlsNames))
+					urlsNames[url] = [];
+				urlsNames[url].push(name);
 			} else {
-				resources[ name ] = this.get( name );
+				resources[name] = this.get(name);
 			}
 		}
 
-		CKEDITOR.scriptLoader.load( urls, function( completed, failed ) {
-			if ( failed.length ) {
-				throw new Error( '[CKEDITOR.resourceManager.load] Resource name "' + urlsNames[ failed[ 0 ] ].join( ',' ) +
-					'" was not found at "' + failed[ 0 ] + '".' );
+		CKEDITOR.scriptLoader.load(urls, function (completed, failed) {
+			if (failed.length) {
+				throw new Error('[CKEDITOR.resourceManager.load] Resource name "' + urlsNames[failed[0]].join(',') +
+					'" was not found at "' + failed[0] + '".');
 			}
 
-			for ( var i = 0; i < completed.length; i++ ) {
-				var nameList = urlsNames[ completed[ i ] ];
-				for ( var j = 0; j < nameList.length; j++ ) {
-					var name = nameList[ j ];
-					resources[ name ] = this.get( name );
+			for (var i = 0; i < completed.length; i++) {
+				var nameList = urlsNames[completed[i]];
+				for (var j = 0; j < nameList.length; j++) {
+					var name = nameList[j];
+					resources[name] = this.get(name);
 
-					loaded[ name ] = 1;
+					loaded[name] = 1;
 				}
 			}
 
-			callback.call( scope, resources );
-		}, this );
+			callback.call(scope, resources);
+		}, this);
 	}
 };

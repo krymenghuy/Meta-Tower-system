@@ -17,7 +17,7 @@
  * Contains the dictionary of language entries.
  * @namespace
  */
-CKEDITOR.lang[ 'hi' ] = {
+CKEDITOR.lang['hi'] = {
 	// ARIA description.
 	editor: 'रिच टेक्स्ट एडिटर',
 	editorPanel: 'Rich Text Editor panel', // MISSING

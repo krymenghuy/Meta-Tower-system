@@ -3,13 +3,13 @@
  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
-( function() {
+(function () {
 	// Basic HTML entities.
 	var htmlbase = 'nbsp,gt,lt,amp';
 
 	var entities =
-	// Latin-1 entities
-	'quot,iexcl,cent,pound,curren,yen,brvbar,sect,uml,copy,ordf,laquo,' +
+		// Latin-1 entities
+		'quot,iexcl,cent,pound,curren,yen,brvbar,sect,uml,copy,ordf,laquo,' +
 		'not,shy,reg,macr,deg,plusmn,sup2,sup3,acute,micro,para,middot,' +
 		'cedil,sup1,ordm,raquo,frac14,frac12,frac34,iquest,times,divide,' +
 
@@ -44,7 +44,7 @@
 
 	// Create a mapping table between one character and its entity form from a list of entity names.
 	// @param reverse {Boolean} Whether to create a reverse map from the entity string form to an actual character.
-	function buildTable( entities, reverse ) {
+	function buildTable(entities, reverse) {
 		var table = {},
 			regex = [];
 
@@ -60,108 +60,108 @@
 			quot: '\u0022' // IE
 		};
 
-		entities = entities.replace( /\b(nbsp|shy|gt|lt|amp|apos|quot)(?:,|$)/g, function( match, entity ) {
-			var org = reverse ? '&' + entity + ';' : specialTable[ entity ],
-				result = reverse ? specialTable[ entity ] : '&' + entity + ';';
+		entities = entities.replace(/\b(nbsp|shy|gt|lt|amp|apos|quot)(?:,|$)/g, function (match, entity) {
+			var org = reverse ? '&' + entity + ';' : specialTable[entity],
+				result = reverse ? specialTable[entity] : '&' + entity + ';';
 
-			table[ org ] = result;
-			regex.push( org );
+			table[org] = result;
+			regex.push(org);
 			return '';
-		} );
+		});
 
 		// Drop trailing comma (#2448).
-		entities = entities.replace( /,$/, '' );
+		entities = entities.replace(/,$/, '');
 
-		if ( !reverse && entities ) {
+		if (!reverse && entities) {
 			// Transforms the entities string into an array.
-			entities = entities.split( ',' );
+			entities = entities.split(',');
 
 			// Put all entities inside a DOM element, transforming them to their
 			// final characters.
-			var div = document.createElement( 'div' ),
+			var div = document.createElement('div'),
 				chars;
-			div.innerHTML = '&' + entities.join( ';&' ) + ';';
+			div.innerHTML = '&' + entities.join(';&') + ';';
 			chars = div.innerHTML;
 			div = null;
 
 			// Add all characters to the table.
-			for ( var i = 0; i < chars.length; i++ ) {
-				var charAt = chars.charAt( i );
-				table[ charAt ] = '&' + entities[ i ] + ';';
-				regex.push( charAt );
+			for (var i = 0; i < chars.length; i++) {
+				var charAt = chars.charAt(i);
+				table[charAt] = '&' + entities[i] + ';';
+				regex.push(charAt);
 			}
 		}
 
-		table.regex = regex.join( reverse ? '|' : '' );
+		table.regex = regex.join(reverse ? '|' : '');
 
 		return table;
 	}
 
-	CKEDITOR.plugins.add( 'entities', {
-		afterInit: function( editor ) {
+	CKEDITOR.plugins.add('entities', {
+		afterInit: function (editor) {
 			var config = editor.config;
 
-			function getChar( character ) {
-				return baseEntitiesTable[ character ];
+			function getChar(character) {
+				return baseEntitiesTable[character];
 			}
 
-			function getEntity( character ) {
-				return config.entities_processNumerical == 'force' || !entitiesTable[ character ] ? '&#' + character.charCodeAt( 0 ) + ';'
-				: entitiesTable[ character ];
+			function getEntity(character) {
+				return config.entities_processNumerical == 'force' || !entitiesTable[character] ? '&#' + character.charCodeAt(0) + ';'
+					: entitiesTable[character];
 			}
 
 			var dataProcessor = editor.dataProcessor,
 				htmlFilter = dataProcessor && dataProcessor.htmlFilter;
 
-			if ( htmlFilter ) {
+			if (htmlFilter) {
 				// Mandatory HTML basic entities.
 				var selectedEntities = [];
 
-				if ( config.basicEntities !== false )
-					selectedEntities.push( htmlbase );
+				if (config.basicEntities !== false)
+					selectedEntities.push(htmlbase);
 
-				if ( config.entities ) {
-					if ( selectedEntities.length )
-						selectedEntities.push( entities );
+				if (config.entities) {
+					if (selectedEntities.length)
+						selectedEntities.push(entities);
 
-					if ( config.entities_latin )
-						selectedEntities.push( latin );
+					if (config.entities_latin)
+						selectedEntities.push(latin);
 
-					if ( config.entities_greek )
-						selectedEntities.push( greek );
+					if (config.entities_greek)
+						selectedEntities.push(greek);
 
-					if ( config.entities_additional )
-						selectedEntities.push( config.entities_additional );
+					if (config.entities_additional)
+						selectedEntities.push(config.entities_additional);
 				}
 
-				var entitiesTable = buildTable( selectedEntities.join( ',' ) );
+				var entitiesTable = buildTable(selectedEntities.join(','));
 
 				// Create the Regex used to find entities in the text, leave it matches nothing if entities are empty.
 				var entitiesRegex = entitiesTable.regex ? '[' + entitiesTable.regex + ']' : 'a^';
 				delete entitiesTable.regex;
 
-				if ( config.entities && config.entities_processNumerical )
+				if (config.entities && config.entities_processNumerical)
 					entitiesRegex = '[^ -~]|' + entitiesRegex;
 
-				entitiesRegex = new RegExp( entitiesRegex, 'g' );
+				entitiesRegex = new RegExp(entitiesRegex, 'g');
 
 				// Decode entities that the browsers has transformed
 				// at first place.
-				var baseEntitiesTable = buildTable( [ htmlbase, 'shy' ].join( ',' ), true ),
-					baseEntitiesRegex = new RegExp( baseEntitiesTable.regex, 'g' );
+				var baseEntitiesTable = buildTable([htmlbase, 'shy'].join(','), true),
+					baseEntitiesRegex = new RegExp(baseEntitiesTable.regex, 'g');
 
-				htmlFilter.addRules( {
-					text: function( text ) {
-						return text.replace( baseEntitiesRegex, getChar ).replace( entitiesRegex, getEntity );
+				htmlFilter.addRules({
+					text: function (text) {
+						return text.replace(baseEntitiesRegex, getChar).replace(entitiesRegex, getEntity);
 					}
 				}, {
 					applyToAll: true,
 					excludeNestedEditable: true
-				} );
+				});
 			}
 		}
-	} );
-} )();
+	});
+})();
 
 /**
  * Whether to escape basic HTML entities in the document, including:

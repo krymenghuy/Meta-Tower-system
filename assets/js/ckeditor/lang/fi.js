@@ -17,7 +17,7 @@
  * Contains the dictionary of language entries.
  * @namespace
  */
-CKEDITOR.lang[ 'fi' ] = {
+CKEDITOR.lang['fi'] = {
 	// ARIA description.
 	editor: 'Rikastekstieditori',
 	editorPanel: 'Rikastekstieditoripaneeli',

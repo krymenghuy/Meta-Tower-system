@@ -8,13 +8,13 @@
  *		utility functions.
  */
 
-( function() {
+(function () {
 	var functions = [],
 		cssVendorPrefix =
 			CKEDITOR.env.gecko ? '-moz-' :
-			CKEDITOR.env.webkit ? '-webkit-' :
-			CKEDITOR.env.ie ? '-ms-' :
-			'',
+				CKEDITOR.env.webkit ? '-webkit-' :
+					CKEDITOR.env.ie ? '-ms-' :
+						'',
 		ampRegex = /&/g,
 		gtRegex = />/g,
 		ltRegex = /</g,
@@ -32,17 +32,17 @@
 			nbsp: '\u00a0',
 			shy: '\u00ad'
 		},
-		allEscDecode = function( match, code ) {
-			if ( code[ 0 ] == '#' ) {
-				return String.fromCharCode( parseInt( code.slice( 1 ), 10 ) );
+		allEscDecode = function (match, code) {
+			if (code[0] == '#') {
+				return String.fromCharCode(parseInt(code.slice(1), 10));
 			} else {
-				return namedEntities[ code ];
+				return namedEntities[code];
 			}
 		};
 
-	CKEDITOR.on( 'reset', function() {
+	CKEDITOR.on('reset', function () {
 		functions = [];
-	} );
+	});
 
 	/**
 	 * Utility functions.
@@ -68,15 +68,15 @@
 		 * @returns {Boolean} `true` if the arrays have the same length and
 		 * their elements match.
 		 */
-		arrayCompare: function( arrayA, arrayB ) {
-			if ( !arrayA && !arrayB )
+		arrayCompare: function (arrayA, arrayB) {
+			if (!arrayA && !arrayB)
 				return true;
 
-			if ( !arrayA || !arrayB || arrayA.length != arrayB.length )
+			if (!arrayA || !arrayB || arrayA.length != arrayB.length)
 				return false;
 
-			for ( var i = 0; i < arrayA.length; i++ ) {
-				if ( arrayA[ i ] != arrayB[ i ] )
+			for (var i = 0; i < arrayA.length; i++) {
+				if (arrayA[i] != arrayB[i])
 					return false;
 			}
 
@@ -95,9 +95,9 @@
 		 * @param {Function} compareFunction Compare function.
 		 * @returns {Number} The index of the first matching element or `-1` if none matches.
 		 */
-		getIndex: function( arr, compareFunction ) {
-			for ( var i = 0; i < arr.length; ++i ) {
-				if ( compareFunction( arr[ i ] ) )
+		getIndex: function (arr, compareFunction) {
+			for (var i = 0; i < arr.length; ++i) {
+				if (compareFunction(arr[i]))
 					return i;
 			}
 			return -1;
@@ -127,33 +127,33 @@
 		 * @param {Object} object The object to be cloned.
 		 * @returns {Object} The object clone.
 		 */
-		clone: function( obj ) {
+		clone: function (obj) {
 			var clone;
 
 			// Array.
-			if ( obj && ( obj instanceof Array ) ) {
+			if (obj && (obj instanceof Array)) {
 				clone = [];
 
-				for ( var i = 0; i < obj.length; i++ )
-					clone[ i ] = CKEDITOR.tools.clone( obj[ i ] );
+				for (var i = 0; i < obj.length; i++)
+					clone[i] = CKEDITOR.tools.clone(obj[i]);
 
 				return clone;
 			}
 
 			// "Static" types.
-			if ( obj === null || ( typeof obj != 'object' ) || ( obj instanceof String ) || ( obj instanceof Number ) || ( obj instanceof Boolean ) || ( obj instanceof Date ) || ( obj instanceof RegExp ) )
+			if (obj === null || (typeof obj != 'object') || (obj instanceof String) || (obj instanceof Number) || (obj instanceof Boolean) || (obj instanceof Date) || (obj instanceof RegExp))
 				return obj;
 
 			// DOM objects and window.
-			if ( obj.nodeType || obj.window === obj )
+			if (obj.nodeType || obj.window === obj)
 				return obj;
 
 			// Objects.
 			clone = new obj.constructor();
 
-			for ( var propertyName in obj ) {
-				var property = obj[ propertyName ];
-				clone[ propertyName ] = CKEDITOR.tools.clone( property );
+			for (var propertyName in obj) {
+				var property = obj[propertyName];
+				clone[propertyName] = CKEDITOR.tools.clone(property);
 			}
 
 			return clone;
@@ -166,8 +166,8 @@
 		 * @param {Boolean} [keepCase] Keep the case of 2nd to last letter.
 		 * @returns {String}
 		 */
-		capitalize: function( str, keepCase ) {
-			return str.charAt( 0 ).toUpperCase() + ( keepCase ? str.slice( 1 ) : str.slice( 1 ).toLowerCase() );
+		capitalize: function (str, keepCase) {
+			return str.charAt(0).toUpperCase() + (keepCase ? str.slice(1) : str.slice(1).toLowerCase());
 		},
 
 		/**
@@ -199,29 +199,29 @@
 		 * list will be received from the source object.
 		 * @returns {Object} The extended object (target).
 		 */
-		extend: function( target ) {
+		extend: function (target) {
 			var argsLength = arguments.length,
 				overwrite, propertiesList;
 
-			if ( typeof ( overwrite = arguments[ argsLength - 1 ] ) == 'boolean' )
+			if (typeof (overwrite = arguments[argsLength - 1]) == 'boolean')
 				argsLength--;
-			else if ( typeof ( overwrite = arguments[ argsLength - 2 ] ) == 'boolean' ) {
-				propertiesList = arguments[ argsLength - 1 ];
+			else if (typeof (overwrite = arguments[argsLength - 2]) == 'boolean') {
+				propertiesList = arguments[argsLength - 1];
 				argsLength -= 2;
 			}
 
-			for ( var i = 1; i < argsLength; i++ ) {
-				var source = arguments[ i ] || {};
+			for (var i = 1; i < argsLength; i++) {
+				var source = arguments[i] || {};
 
-				CKEDITOR.tools.array.forEach( CKEDITOR.tools.object.keys( source ), function( propertyName ) {
+				CKEDITOR.tools.array.forEach(CKEDITOR.tools.object.keys(source), function (propertyName) {
 					// Only copy existed fields if in overwrite mode.
-					if ( overwrite === true || target[ propertyName ] == null ) {
+					if (overwrite === true || target[propertyName] == null) {
 						// Only copy specified fields if list is provided.
-						if ( !propertiesList || ( propertyName in propertiesList ) )
-							target[ propertyName ] = source[ propertyName ];
+						if (!propertiesList || (propertyName in propertiesList))
+							target[propertyName] = source[propertyName];
 					}
 
-				} );
+				});
 			}
 
 			return target;
@@ -237,8 +237,8 @@
 		 * the final object.
 		 * @returns {Object} The resulting copy.
 		 */
-		prototypedCopy: function( source ) {
-			var copy = function() {};
+		prototypedCopy: function (source) {
+			var copy = function () { };
 			copy.prototype = source;
 			return new copy();
 		},
@@ -252,12 +252,12 @@
 		 * @param {Object} source The object to be copied.
 		 * @returns {Object} Copy of `source`.
 		 */
-		copy: function( source ) {
+		copy: function (source) {
 			var obj = {},
 				name;
 
-			for ( name in source )
-				obj[ name ] = source[ name ];
+			for (name in source)
+				obj[name] = source[name];
 
 			return obj;
 		},
@@ -271,8 +271,8 @@
 		 * @param {Object} object The object to be checked.
 		 * @returns {Boolean} `true` if the object is an Array, otherwise `false`.
 		 */
-		isArray: function( object ) {
-			return Object.prototype.toString.call( object ) == '[object Array]';
+		isArray: function (object) {
+			return Object.prototype.toString.call(object) == '[object Array]';
 		},
 
 		/**
@@ -281,9 +281,9 @@
 		 * @param object
 		 * @returns {Boolean}
 		 */
-		isEmpty: function( object ) {
-			for ( var i in object ) {
-				if ( object.hasOwnProperty( i ) )
+		isEmpty: function (object) {
+			for (var i in object) {
+				if (object.hasOwnProperty(i))
 					return false;
 			}
 			return true;
@@ -301,13 +301,13 @@
 		 * @param {Boolean} [asString=false] If `true`, then the returned value will be a CSS string.
 		 * @returns {Object/String} The object containing CSS properties or its stringified version.
 		 */
-		cssVendorPrefix: function( property, value, asString ) {
-			if ( asString )
+		cssVendorPrefix: function (property, value, asString) {
+			if (asString)
 				return cssVendorPrefix + property + ':' + value + ';' + property + ':' + value;
 
 			var ret = {};
-			ret[ property ] = value;
-			ret[ cssVendorPrefix + property ] = value;
+			ret[property] = value;
+			ret[cssVendorPrefix + property] = value;
 
 			return ret;
 		},
@@ -322,21 +322,21 @@
 		 * @param {String} cssName The CSS property name.
 		 * @returns {String} The transformed name.
 		 */
-		cssStyleToDomStyle: ( function() {
-			var test = document.createElement( 'div' ).style;
+		cssStyleToDomStyle: (function () {
+			var test = document.createElement('div').style;
 
-			var cssFloat = ( typeof test.cssFloat != 'undefined' ) ? 'cssFloat' : ( typeof test.styleFloat != 'undefined' ) ? 'styleFloat' : 'float';
+			var cssFloat = (typeof test.cssFloat != 'undefined') ? 'cssFloat' : (typeof test.styleFloat != 'undefined') ? 'styleFloat' : 'float';
 
-			return function( cssName ) {
-				if ( cssName == 'float' )
+			return function (cssName) {
+				if (cssName == 'float')
 					return cssFloat;
 				else {
-					return cssName.replace( /-./g, function( match ) {
-						return match.substr( 1 ).toUpperCase();
-					} );
+					return cssName.replace(/-./g, function (match) {
+						return match.substr(1).toUpperCase();
+					});
 				}
 			};
-		} )(),
+		})(),
 
 		/**
 		 * Builds a HTML snippet from a set of `<style>/<link>`.
@@ -345,20 +345,20 @@
 		 * a trunk of style text.
 		 * @returns {String}
 		 */
-		buildStyleHtml: function( css ) {
-			css = [].concat( css );
+		buildStyleHtml: function (css) {
+			css = [].concat(css);
 			var item,
 				retval = [];
-			for ( var i = 0; i < css.length; i++ ) {
-				if ( ( item = css[ i ] ) ) {
+			for (var i = 0; i < css.length; i++) {
+				if ((item = css[i])) {
 					// Is CSS style text ?
-					if ( /@import|[{}]/.test( item ) )
-						retval.push( '<style>' + item + '</style>' );
+					if (/@import|[{}]/.test(item))
+						retval.push('<style>' + item + '</style>');
 					else
-						retval.push( '<link type="text/css" rel=stylesheet href="' + item + '">' );
+						retval.push('<link type="text/css" rel=stylesheet href="' + item + '">');
 				}
 			}
-			return retval.join( '' );
+			return retval.join('');
 		},
 
 		/**
@@ -370,14 +370,14 @@
 		 * @param {String} text The string to be encoded.
 		 * @returns {String} The encoded string.
 		 */
-		htmlEncode: function( text ) {
+		htmlEncode: function (text) {
 			// Backwards compatibility - accept also non-string values (casting is done below).
 			// Since 4.4.8 we return empty string for null and undefined because these values make no sense.
-			if ( text === undefined || text === null ) {
+			if (text === undefined || text === null) {
 				return '';
 			}
 
-			return String( text ).replace( ampRegex, '&amp;' ).replace( gtRegex, '&gt;' ).replace( ltRegex, '&lt;' );
+			return String(text).replace(ampRegex, '&amp;').replace(gtRegex, '&gt;').replace(ltRegex, '&lt;');
 		},
 
 		/**
@@ -390,13 +390,13 @@
 		 * @param {String} The string to be decoded.
 		 * @returns {String} The decoded string.
 		 */
-		htmlDecode: function( text ) {
+		htmlDecode: function (text) {
 			// See:
 			// * https://dev.ckeditor.com/ticket/13105#comment:8 and comment:9,
 			// * http://jsperf.com/wth-is-going-on-with-jsperf JSPerf has some serious problems, but you can observe
 			// that combined regexp tends to be quicker (except on V8). It will also not be prone to fail on '&amp;lt;'
 			// (see https://dev.ckeditor.com/ticket/13105#DXWTF:CKEDITOR.tools.htmlEnDecodeAttr).
-			return text.replace( allEscRegex, allEscDecode );
+			return text.replace(allEscRegex, allEscDecode);
 		},
 
 		/**
@@ -407,8 +407,8 @@
 		 * @param {String} The attribute value to be encoded.
 		 * @returns {String} The encoded value.
 		 */
-		htmlEncodeAttr: function( text ) {
-			return CKEDITOR.tools.htmlEncode( text ).replace( quoteRegex, '&quot;' );
+		htmlEncodeAttr: function (text) {
+			return CKEDITOR.tools.htmlEncode(text).replace(quoteRegex, '&quot;');
 		},
 
 		/**
@@ -422,8 +422,8 @@
 		 * @param {String} text The text to be decoded.
 		 * @returns {String} The decoded text.
 		 */
-		htmlDecodeAttr: function( text ) {
-			return CKEDITOR.tools.htmlDecode( text );
+		htmlDecodeAttr: function (text) {
+			return CKEDITOR.tools.htmlDecode(text);
 		},
 
 		/**
@@ -434,44 +434,44 @@
 		 * @param {Number} enterMode Editor {@link CKEDITOR.config#enterMode Enter mode}.
 		 * @returns {String} HTML generated from the text.
 		 */
-		transformPlainTextToHtml: function( text, enterMode ) {
+		transformPlainTextToHtml: function (text, enterMode) {
 			var isEnterBrMode = enterMode == CKEDITOR.ENTER_BR,
 				// CRLF -> LF
-				html = this.htmlEncode( text.replace( /\r\n/g, '\n' ) );
+				html = this.htmlEncode(text.replace(/\r\n/g, '\n'));
 
 			// Tab -> &nbsp x 4;
-			html = html.replace( /\t/g, '&nbsp;&nbsp; &nbsp;' );
+			html = html.replace(/\t/g, '&nbsp;&nbsp; &nbsp;');
 
 			var paragraphTag = enterMode == CKEDITOR.ENTER_P ? 'p' : 'div';
 
 			// Two line-breaks create one paragraphing block.
-			if ( !isEnterBrMode ) {
+			if (!isEnterBrMode) {
 				var duoLF = /\n{2}/g;
-				if ( duoLF.test( html ) ) {
+				if (duoLF.test(html)) {
 					var openTag = '<' + paragraphTag + '>', endTag = '</' + paragraphTag + '>';
-					html = openTag + html.replace( duoLF, function() {
+					html = openTag + html.replace(duoLF, function () {
 						return endTag + openTag;
-					} ) + endTag;
+					}) + endTag;
 				}
 			}
 
 			// One <br> per line-break.
-			html = html.replace( /\n/g, '<br>' );
+			html = html.replace(/\n/g, '<br>');
 
 			// Compensate padding <br> at the end of block, avoid loosing them during insertion.
-			if ( !isEnterBrMode ) {
-				html = html.replace( new RegExp( '<br>(?=</' + paragraphTag + '>)' ), function( match ) {
-					return CKEDITOR.tools.repeat( match, 2 );
-				} );
+			if (!isEnterBrMode) {
+				html = html.replace(new RegExp('<br>(?=</' + paragraphTag + '>)'), function (match) {
+					return CKEDITOR.tools.repeat(match, 2);
+				});
 			}
 
 			// Preserve spaces at the ends, so they won't be lost after insertion (merged with adjacent ones).
-			html = html.replace( /^ | $/g, '&nbsp;' );
+			html = html.replace(/^ | $/g, '&nbsp;');
 
 			// Finally, preserve whitespaces that are to be lost.
-			html = html.replace( /(>|\s) /g, function( match, before ) {
+			html = html.replace(/(>|\s) /g, function (match, before) {
 				return before + '&nbsp;';
-			} ).replace( / (?=<)/g, '&nbsp;' );
+			}).replace(/ (?=<)/g, '&nbsp;');
 
 			return html;
 		},
@@ -486,12 +486,12 @@
 		 * @method
 		 * @returns {Number} A unique number.
 		 */
-		getNextNumber: ( function() {
+		getNextNumber: (function () {
 			var last = 0;
-			return function() {
+			return function () {
 				return ++last;
 			};
-		} )(),
+		})(),
 
 		/**
 		 * Gets a unique ID for CKEditor interface elements. It returns a
@@ -502,7 +502,7 @@
 		 *
 		 * @returns {String} A unique ID.
 		 */
-		getNextId: function() {
+		getNextId: function () {
 			return 'cke_' + this.getNextNumber();
 		},
 
@@ -513,10 +513,10 @@
 		 *
 		 * @returns {String} A global unique ID.
 		 */
-		getUniqueId: function() {
+		getUniqueId: function () {
 			var uuid = 'e'; // Make sure that id does not start with number.
-			for ( var i = 0; i < 8; i++ ) {
-				uuid += Math.floor( ( 1 + Math.random() ) * 0x10000 ).toString( 16 ).substring( 1 );
+			for (var i = 0; i < 8; i++) {
+				uuid += Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
 			}
 			return uuid;
 		},
@@ -542,8 +542,8 @@
 		 * function. The original function reference will be passed to this function.
 		 * @returns {Function} The new function.
 		 */
-		override: function( originalFunction, functionBuilder ) {
-			var newFn = functionBuilder( originalFunction );
+		override: function (originalFunction, functionBuilder) {
+			var newFn = functionBuilder(originalFunction);
 			newFn.prototype = originalFunction.prototype;
 			return newFn;
 		},
@@ -566,19 +566,19 @@
 		 * timeout.
 		 * @returns {Object} A value that can be used to cancel the function execution.
 		 */
-		setTimeout: function( func, milliseconds, scope, args, ownerWindow ) {
-			if ( !ownerWindow )
+		setTimeout: function (func, milliseconds, scope, args, ownerWindow) {
+			if (!ownerWindow)
 				ownerWindow = window;
 
-			if ( !scope )
+			if (!scope)
 				scope = ownerWindow;
 
-			return ownerWindow.setTimeout( function() {
-				if ( args )
-					func.apply( scope, [].concat( args ) );
+			return ownerWindow.setTimeout(function () {
+				if (args)
+					func.apply(scope, [].concat(args));
 				else
-					func.apply( scope );
-			}, milliseconds || 0 );
+					func.apply(scope);
+			}, milliseconds || 0);
 		},
 
 		/**
@@ -590,8 +590,8 @@
 		 * @inheritdoc CKEDITOR.tools.buffers.throttle#method-constructor
 		 * @returns {CKEDITOR.tools.buffers.throttle}
 		 */
-		throttle: function( minInterval, output, contextObj ) {
-			return new this.buffers.throttle( minInterval, output, contextObj );
+		throttle: function (minInterval, output, contextObj) {
+			return new this.buffers.throttle(minInterval, output, contextObj);
 		},
 
 		/**
@@ -604,13 +604,13 @@
 		 * @param {String} str The text from which the spaces will be removed.
 		 * @returns {String} The modified string without the boundary spaces.
 		 */
-		trim: ( function() {
+		trim: (function () {
 			// We are not using \s because we don't want "non-breaking spaces" to be caught.
 			var trimRegex = /(?:^[ \t\n\r]+)|(?:[ \t\n\r]+$)/g;
-			return function( str ) {
-				return str.replace( trimRegex, '' );
+			return function (str) {
+				return str.replace(trimRegex, '');
 			};
-		} )(),
+		})(),
 
 		/**
 		 * Removes spaces from the start (left) of a string. The following
@@ -622,13 +622,13 @@
 		 * @param {String} str The text from which the spaces will be removed.
 		 * @returns {String} The modified string excluding the removed spaces.
 		 */
-		ltrim: ( function() {
+		ltrim: (function () {
 			// We are not using \s because we don't want "non-breaking spaces" to be caught.
 			var trimRegex = /^[ \t\n\r]+/g;
-			return function( str ) {
-				return str.replace( trimRegex, '' );
+			return function (str) {
+				return str.replace(trimRegex, '');
 			};
-		} )(),
+		})(),
 
 		/**
 		 * Removes spaces from the end (right) of a string. The following
@@ -640,13 +640,13 @@
 		 * @param {String} str The text from which spaces will be removed.
 		 * @returns {String} The modified string excluding the removed spaces.
 		 */
-		rtrim: ( function() {
+		rtrim: (function () {
 			// We are not using \s because we don't want "non-breaking spaces" to be caught.
 			var trimRegex = /[ \t\n\r]+$/g;
-			return function( str ) {
-				return str.replace( trimRegex, '' );
+			return function (str) {
+				return str.replace(trimRegex, '');
 			};
-		} )(),
+		})(),
 
 		/**
 		 * Returns the index of an element in an array.
@@ -662,17 +662,17 @@
 		 * @returns {Number} The (zero-based) index of the first entry that matches
 		 * the entry, or `-1` if not found.
 		 */
-		indexOf: function( array, value ) {
-			if ( typeof value == 'function' ) {
-				for ( var i = 0, len = array.length; i < len; i++ ) {
-					if ( value( array[ i ] ) )
+		indexOf: function (array, value) {
+			if (typeof value == 'function') {
+				for (var i = 0, len = array.length; i < len; i++) {
+					if (value(array[i]))
 						return i;
 				}
-			} else if ( array.indexOf )
-				return array.indexOf( value );
+			} else if (array.indexOf)
+				return array.indexOf(value);
 			else {
-				for ( i = 0, len = array.length; i < len; i++ ) {
-					if ( array[ i ] === value )
+				for (i = 0, len = array.length; i < len; i++) {
+					if (array[i] === value)
 						return i;
 				}
 			}
@@ -697,9 +697,9 @@
 		 * each entry in the array, returning `true` if the entry matches.
 		 * @returns Object The value that was found in an array.
 		 */
-		search: function( array, value ) {
-			var index = CKEDITOR.tools.indexOf( array, value );
-			return index >= 0 ? array[ index ] : null;
+		search: function (array, value) {
+			var index = CKEDITOR.tools.indexOf(array, value);
+			return index >= 0 ? array[index] : null;
 		},
 
 		/**
@@ -720,9 +720,9 @@
 		 * @returns {Function} The function that can be used to execute the
 		 * `func` function in the context of `obj`.
 		 */
-		bind: function( func, obj ) {
-			return function() {
-				return func.apply( obj, arguments );
+		bind: function (func, obj) {
+			return function () {
+				return func.apply(obj, arguments);
 			};
 		},
 
@@ -738,7 +738,7 @@
 		 * @param {Object} definition The class definition object.
 		 * @returns {Function} A class-like JavaScript function.
 		 */
-		createClass: function( definition ) {
+		createClass: function (definition) {
 			var $ = definition.$,
 				baseClass = definition.base,
 				privates = definition.privates || definition._,
@@ -746,30 +746,30 @@
 				statics = definition.statics;
 
 			// Create the constructor, if not present in the definition.
-			!$ && ( $ = function() {
-				baseClass && this.base.apply( this, arguments );
-			} );
+			!$ && ($ = function () {
+				baseClass && this.base.apply(this, arguments);
+			});
 
-			if ( privates ) {
+			if (privates) {
 				var originalConstructor = $;
-				$ = function() {
+				$ = function () {
 					// Create (and get) the private namespace.
-					var _ = this._ || ( this._ = {} );
+					var _ = this._ || (this._ = {});
 
 					// Make some magic so "this" will refer to the main
 					// instance when coding private functions.
-					for ( var privateName in privates ) {
-						var priv = privates[ privateName ];
+					for (var privateName in privates) {
+						var priv = privates[privateName];
 
-						_[ privateName ] = ( typeof priv == 'function' ) ? CKEDITOR.tools.bind( priv, this ) : priv;
+						_[privateName] = (typeof priv == 'function') ? CKEDITOR.tools.bind(priv, this) : priv;
 					}
 
-					originalConstructor.apply( this, arguments );
+					originalConstructor.apply(this, arguments);
 				};
 			}
 
-			if ( baseClass ) {
-				$.prototype = this.prototypedCopy( baseClass.prototype );
+			if (baseClass) {
+				$.prototype = this.prototypedCopy(baseClass.prototype);
 				$.prototype.constructor = $;
 				// Super references.
 				$.base = baseClass;
@@ -777,16 +777,16 @@
 				// Super constructor.
 				$.prototype.base = function baseClassConstructor() {
 					this.base = baseClass.prototype.base;
-					baseClass.apply( this, arguments );
+					baseClass.apply(this, arguments);
 					this.base = baseClassConstructor;
 				};
 			}
 
-			if ( proto )
-				this.extend( $.prototype, proto, true );
+			if (proto)
+				this.extend($.prototype, proto, true);
 
-			if ( statics )
-				this.extend( $, statics, true );
+			if (statics)
+				this.extend($, statics, true);
 
 			return $;
 		},
@@ -806,10 +806,10 @@
 		 * @returns {Number} A unique reference to be used in conjuction with
 		 * {@link #callFunction}.
 		 */
-		addFunction: function( fn, scope ) {
-			return functions.push( function() {
-				return fn.apply( scope || this, arguments );
-			} ) - 1;
+		addFunction: function (fn, scope) {
+			return functions.push(function () {
+				return fn.apply(scope || this, arguments);
+			}) - 1;
 		},
 
 		/**
@@ -818,8 +818,8 @@
 		 * @param {Number} ref The function reference created with
 		 * {@link #addFunction}.
 		 */
-		removeFunction: function( ref ) {
-			functions[ ref ] = null;
+		removeFunction: function (ref) {
+			functions[ref] = null;
 		},
 
 		/**
@@ -834,9 +834,9 @@
 		 * @param {Mixed} params Any number of parameters to be passed to the executed function.
 		 * @returns {Mixed} The return value of the function.
 		 */
-		callFunction: function( ref ) {
-			var fn = functions[ ref ];
-			return fn && fn.apply( window, Array.prototype.slice.call( arguments, 1 ) );
+		callFunction: function (ref) {
+			var fn = functions[ref];
+			return fn && fn.apply(window, Array.prototype.slice.call(arguments, 1));
 		},
 
 		/**
@@ -854,19 +854,19 @@
 		 * @method
 		 * @param {Number/String/Boolean} length
 		 */
-		cssLength: ( function() {
+		cssLength: (function () {
 			var pixelRegex = /^-?\d+\.?\d*px$/,
 				lengthTrimmed;
 
-			return function( length ) {
-				lengthTrimmed = CKEDITOR.tools.trim( length + '' ) + 'px';
+			return function (length) {
+				lengthTrimmed = CKEDITOR.tools.trim(length + '') + 'px';
 
-				if ( pixelRegex.test( lengthTrimmed ) )
+				if (pixelRegex.test(lengthTrimmed))
 					return lengthTrimmed;
 				else
 					return length || '';
 			};
-		} )(),
+		})(),
 
 		/**
 		 * Converts the specified CSS length value to the calculated pixel length inside this page.
@@ -879,29 +879,29 @@
 		 * @param {String} cssLength CSS length value.
 		 * @returns {Number/String} A number representing the length in pixels or a string with a percentage value.
 		 */
-		convertToPx: ( function() {
+		convertToPx: (function () {
 			var calculator;
 
-			return function( cssLength ) {
-				if ( !calculator ) {
-					calculator = CKEDITOR.dom.element.createFromHtml( '<div style="position:absolute;left:-9999px;' +
+			return function (cssLength) {
+				if (!calculator) {
+					calculator = CKEDITOR.dom.element.createFromHtml('<div style="position:absolute;left:-9999px;' +
 						'top:-9999px;margin:0px;padding:0px;border:0px;"' +
-						'></div>', CKEDITOR.document );
-					CKEDITOR.document.getBody().append( calculator );
+						'></div>', CKEDITOR.document);
+					CKEDITOR.document.getBody().append(calculator);
 				}
 
-				if ( !( /%$/ ).test( cssLength ) ) {
-					var isNegative = parseFloat( cssLength ) < 0,
+				if (!(/%$/).test(cssLength)) {
+					var isNegative = parseFloat(cssLength) < 0,
 						ret;
 
-					if ( isNegative ) {
-						cssLength = cssLength.replace( '-', '' );
+					if (isNegative) {
+						cssLength = cssLength.replace('-', '');
 					}
 
-					calculator.setStyle( 'width', cssLength );
+					calculator.setStyle('width', cssLength);
 					ret = calculator.$.clientWidth;
 
-					if ( isNegative ) {
+					if (isNegative) {
 						return -ret;
 					}
 					return ret;
@@ -909,7 +909,7 @@
 
 				return cssLength;
 			};
-		} )(),
+		})(),
 
 		/**
 		 * String specified by `str` repeats `times` times.
@@ -918,8 +918,8 @@
 		 * @param {Number} times
 		 * @returns {String}
 		 */
-		repeat: function( str, times ) {
-			return new Array( times + 1 ).join( str );
+		repeat: function (str, times) {
+			return new Array(times + 1).join(str);
 		},
 
 		/**
@@ -929,14 +929,14 @@
 		 * @param {Function...} fn
 		 * @returns {Mixed}
 		 */
-		tryThese: function() {
+		tryThese: function () {
 			var returnValue;
-			for ( var i = 0, length = arguments.length; i < length; i++ ) {
-				var lambda = arguments[ i ];
+			for (var i = 0, length = arguments.length; i < length; i++) {
+				var lambda = arguments[i];
 				try {
 					returnValue = lambda();
 					break;
-				} catch ( e ) {}
+				} catch (e) { }
 			}
 			return returnValue;
 		},
@@ -950,8 +950,8 @@
 		 * @param {String} subKey One or more strings used as subkeys.
 		 * @returns {String}
 		 */
-		genKey: function() {
-			return Array.prototype.slice.call( arguments ).join( '-' );
+		genKey: function () {
+			return Array.prototype.slice.call(arguments).join('-');
 		},
 
 		/**
@@ -964,13 +964,13 @@
 		 * @param {Function} fn The callee function.
 		 * @returns {Function} The new deferred function.
 		 */
-		defer: function( fn ) {
-			return function() {
+		defer: function (fn) {
+			return function () {
 				var args = arguments,
 					self = this;
-				window.setTimeout( function() {
-					fn.apply( self, args );
-				}, 0 );
+				window.setTimeout(function () {
+					fn.apply(self, args);
+				}, 0);
 			};
 		},
 
@@ -981,17 +981,17 @@
 		 * @param {Boolean} [nativeNormalize=false] Parse the data using the browser.
 		 * @returns {String} The normalized value.
 		 */
-		normalizeCssText: function( styleText, nativeNormalize ) {
+		normalizeCssText: function (styleText, nativeNormalize) {
 			var props = [],
 				name,
-				parsedProps = CKEDITOR.tools.parseCssText( styleText, true, nativeNormalize );
+				parsedProps = CKEDITOR.tools.parseCssText(styleText, true, nativeNormalize);
 
-			for ( name in parsedProps )
-				props.push( name + ':' + parsedProps[ name ] );
+			for (name in parsedProps)
+				props.push(name + ':' + parsedProps[name]);
 
 			props.sort();
 
-			return props.length ? ( props.join( ';' ) + ';' ) : '';
+			return props.length ? (props.join(';') + ';') : '';
 		},
 
 		/**
@@ -1000,14 +1000,14 @@
 		 * @param {String} styleText The style data (or just a string containing RGB colors) to be converted.
 		 * @returns {String} The style data with RGB colors converted to hexadecimal equivalents.
 		 */
-		convertRgbToHex: function( styleText ) {
-			return styleText.replace( /(?:rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\))/gi, function( match, red, green, blue ) {
-				var color = [ red, green, blue ];
+		convertRgbToHex: function (styleText) {
+			return styleText.replace(/(?:rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\))/gi, function (match, red, green, blue) {
+				var color = [red, green, blue];
 				// Add padding zeros if the hex value is less than 0x10.
-				for ( var i = 0; i < 3; i++ )
-					color[ i ] = ( '0' + parseInt( color[ i ], 10 ).toString( 16 ) ).slice( -2 );
-				return '#' + color.join( '' );
-			} );
+				for (var i = 0; i < 3; i++)
+					color[i] = ('0' + parseInt(color[i], 10).toString(16)).slice(-2);
+				return '#' + color.join('');
+			});
 		},
 
 		/**
@@ -1016,15 +1016,15 @@
 		 * @param {String} styleText The style data (or just a string containing hex colors) to be converted.
 		 * @returns {String} The style data with hex colors normalized.
 		 */
-		normalizeHex: function( styleText ) {
-			return styleText.replace( /#(([0-9a-f]{3}){1,2})($|;|\s+)/gi, function( match, hexColor, hexColorPart, separator ) {
+		normalizeHex: function (styleText) {
+			return styleText.replace(/#(([0-9a-f]{3}){1,2})($|;|\s+)/gi, function (match, hexColor, hexColorPart, separator) {
 				var normalizedHexColor = hexColor.toLowerCase();
-				if ( normalizedHexColor.length == 3 ) {
-					var parts = normalizedHexColor.split( '' );
-					normalizedHexColor = [ parts[ 0 ], parts[ 0 ], parts[ 1 ], parts[ 1 ], parts[ 2 ], parts[ 2 ] ].join( '' );
+				if (normalizedHexColor.length == 3) {
+					var parts = normalizedHexColor.split('');
+					normalizedHexColor = [parts[0], parts[0], parts[1], parts[1], parts[2], parts[2]].join('');
 				}
 				return '#' + normalizedHexColor + separator;
-			} );
+			});
 		},
 
 		/**
@@ -1036,36 +1036,36 @@
 		 * @param {Boolean} [nativeNormalize=false] Parse the data using the browser.
 		 * @returns {Object} The object containing parsed properties.
 		 */
-		parseCssText: function( styleText, normalize, nativeNormalize ) {
+		parseCssText: function (styleText, normalize, nativeNormalize) {
 			var retval = {};
 
-			if ( nativeNormalize ) {
+			if (nativeNormalize) {
 				// Injects the style in a temporary span object, so the browser parses it,
 				// retrieving its final format.
-				var temp = new CKEDITOR.dom.element( 'span' );
-				styleText = temp.setAttribute( 'style', styleText ).getAttribute( 'style' ) || '';
+				var temp = new CKEDITOR.dom.element('span');
+				styleText = temp.setAttribute('style', styleText).getAttribute('style') || '';
 			}
 
 			// Normalize colors.
-			if ( styleText ) {
-				styleText = CKEDITOR.tools.normalizeHex( CKEDITOR.tools.convertRgbToHex( styleText ) );
+			if (styleText) {
+				styleText = CKEDITOR.tools.normalizeHex(CKEDITOR.tools.convertRgbToHex(styleText));
 			}
 
 			// IE will leave a single semicolon when failed to parse the style text. (https://dev.ckeditor.com/ticket/3891)
-			if ( !styleText || styleText == ';' )
+			if (!styleText || styleText == ';')
 				return retval;
 
-			styleText.replace( /&quot;/g, '"' ).replace( /\s*([^:;\s]+)\s*:\s*([^;]+)\s*(?=;|$)/g, function( match, name, value ) {
-				if ( normalize ) {
+			styleText.replace(/&quot;/g, '"').replace(/\s*([^:;\s]+)\s*:\s*([^;]+)\s*(?=;|$)/g, function (match, name, value) {
+				if (normalize) {
 					name = name.toLowerCase();
 					// Drop extra whitespacing from font-family.
-					if ( name == 'font-family' )
-						value = value.replace( /\s*,\s*/g, ',' );
-					value = CKEDITOR.tools.trim( value );
+					if (name == 'font-family')
+						value = value.replace(/\s*,\s*/g, ',');
+					value = CKEDITOR.tools.trim(value);
 				}
 
-				retval[ name ] = value;
-			} );
+				retval[name] = value;
+			});
 			return retval;
 		},
 
@@ -1082,17 +1082,17 @@
 		 * @param {Boolean} [sort] Whether to sort CSS properties.
 		 * @returns {String} The serialized style text.
 		 */
-		writeCssText: function( styles, sort ) {
+		writeCssText: function (styles, sort) {
 			var name,
 				stylesArr = [];
 
-			for ( name in styles )
-				stylesArr.push( name + ':' + styles[ name ] );
+			for (name in styles)
+				stylesArr.push(name + ':' + styles[name]);
 
-			if ( sort )
+			if (sort)
 				stylesArr.sort();
 
-			return stylesArr.join( '; ' );
+			return stylesArr.join('; ');
 		},
 
 		/**
@@ -1106,23 +1106,23 @@
 		 * @param {Boolean} [onlyLeft] Check only the properties that are present in the `left` object.
 		 * @returns {Boolean} Whether objects are identical.
 		 */
-		objectCompare: function( left, right, onlyLeft ) {
+		objectCompare: function (left, right, onlyLeft) {
 			var name;
 
-			if ( !left && !right )
+			if (!left && !right)
 				return true;
-			if ( !left || !right )
+			if (!left || !right)
 				return false;
 
-			for ( name in left ) {
-				if ( left[ name ] != right[ name ] )
+			for (name in left) {
+				if (left[name] != right[name])
 					return false;
 
 			}
 
-			if ( !onlyLeft ) {
-				for ( name in right ) {
-					if ( left[ name ] != right[ name ] )
+			if (!onlyLeft) {
+				for (name in right) {
+					if (left[name] != right[name])
 						return false;
 				}
 			}
@@ -1135,8 +1135,8 @@
 		 * @since 4.1.0
 		 * @deprecated 4.12.0 Use {@link CKEDITOR.tools.object#keys} instead.
 		 */
-		objectKeys: function( obj ) {
-			return CKEDITOR.tools.object.keys( obj );
+		objectKeys: function (obj) {
+			return CKEDITOR.tools.object.keys(obj);
 		},
 
 		/**
@@ -1153,14 +1153,14 @@
 		 * @param {Array} arr The array to be converted to an object.
 		 * @param [fillWith=true] Set each property of an object to `fillWith` value.
 		 */
-		convertArrayToObject: function( arr, fillWith ) {
+		convertArrayToObject: function (arr, fillWith) {
 			var obj = {};
 
-			if ( arguments.length == 1 )
+			if (arguments.length == 1)
 				fillWith = true;
 
-			for ( var i = 0, l = arr.length; i < l; ++i )
-				obj[ arr[ i ] ] = fillWith;
+			for (var i = 0, l = arr.length; i < l; ++i)
+				obj[arr[i]] = fillWith;
 
 			return obj;
 		},
@@ -1174,29 +1174,29 @@
 		 * @returns {Boolean} `true` if the current domain is already good or if
 		 * it has been fixed successfully.
 		 */
-		fixDomain: function() {
+		fixDomain: function () {
 			var domain;
 
-			while ( 1 ) {
+			while (1) {
 				try {
 					// Try to access the parent document. It throws
 					// "access denied" if restricted by the "Same Origin" policy.
 					domain = window.parent.document.domain;
 					break;
-				} catch ( e ) {
+				} catch (e) {
 					// Calculate the value to set to document.domain.
 					domain = domain ?
 
 						// If it is not the first pass, strip one part of the
 						// name. E.g.  "test.example.com"  => "example.com"
-						domain.replace( /.+?(?:\.|$)/, '' ) :
+						domain.replace(/.+?(?:\.|$)/, '') :
 
 						// In the first pass, we'll handle the
 						// "document.domain = document.domain" case.
 						document.domain;
 
 					// Stop here if there is no more domain parts available.
-					if ( !domain )
+					if (!domain)
 						break;
 
 					document.domain = domain;
@@ -1215,8 +1215,8 @@
 		 * @inheritdoc CKEDITOR.tools.buffers.event#method-constructor
 		 * @returns {CKEDITOR.tools.buffers.event}
 		 */
-		eventsBuffer: function( minInterval, output, contextObj ) {
-			return new this.buffers.event( minInterval, output, contextObj );
+		eventsBuffer: function (minInterval, output, contextObj) {
+			return new this.buffers.event(minInterval, output, contextObj);
 		},
 
 		/**
@@ -1230,15 +1230,15 @@
 		 * @param {Object} doc Native `Document` or `DocumentFragment` in which the elements will be enabled.
 		 * @param {Boolean} [withAppend] Whether to append created elements to the `doc`.
 		 */
-		enableHtml5Elements: function( doc, withAppend ) {
-			var els = 'abbr,article,aside,audio,bdi,canvas,data,datalist,details,figcaption,figure,footer,header,hgroup,main,mark,meter,nav,output,progress,section,summary,time,video'.split( ',' ),
+		enableHtml5Elements: function (doc, withAppend) {
+			var els = 'abbr,article,aside,audio,bdi,canvas,data,datalist,details,figcaption,figure,footer,header,hgroup,main,mark,meter,nav,output,progress,section,summary,time,video'.split(','),
 				i = els.length,
 				el;
 
-			while ( i-- ) {
-				el = doc.createElement( els[ i ] );
-				if ( withAppend )
-					doc.appendChild( el );
+			while (i--) {
+				el = doc.createElement(els[i]);
+				if (withAppend)
+					doc.appendChild(el);
 			}
 		},
 
@@ -1250,9 +1250,9 @@
 		 * @returns {Boolean} Returns `true` for the first occurrence of the search pattern.
 		 * @since 4.4.0
 		 */
-		checkIfAnyArrayItemMatches: function( arr, regexp ) {
-			for ( var i = 0, l = arr.length; i < l; ++i ) {
-				if ( arr[ i ].match( regexp ) )
+		checkIfAnyArrayItemMatches: function (arr, regexp) {
+			for (var i = 0, l = arr.length; i < l; ++i) {
+				if (arr[i].match(regexp))
 					return true;
 			}
 			return false;
@@ -1266,9 +1266,9 @@
 		 * @returns {Boolean} Returns `true` for the first occurrence of the search pattern.
 		 * @since 4.4.0
 		 */
-		checkIfAnyObjectPropertyMatches: function( obj, regexp ) {
-			for ( var i in obj ) {
-				if ( i.match( regexp ) )
+		checkIfAnyObjectPropertyMatches: function (obj, regexp) {
+			for (var i in obj) {
+				if (i.match(regexp))
 					return true;
 			}
 			return false;
@@ -1293,11 +1293,11 @@
 		 * @returns {String} return.display
 		 * @returns {String} return.aria
 		 */
-		keystrokeToString: function( lang, keystroke ) {
-			var ret = this.keystrokeToArray( lang, keystroke );
+		keystrokeToString: function (lang, keystroke) {
+			var ret = this.keystrokeToArray(lang, keystroke);
 
-			ret.display = ret.display.join( '+' );
-			ret.aria = ret.aria.join( '+' );
+			ret.display = ret.display.join('+');
+			ret.aria = ret.aria.join('+');
 
 			return ret;
 		},
@@ -1321,7 +1321,7 @@
 		 * @returns {String[]} return.aria An array of strings that should be used for ARIA descriptions.
 		 * It does not use special characters such as `⌥`, `⇧` or `⌘`.
 		 */
-		keystrokeToArray: function( lang, keystroke ) {
+		keystrokeToArray: function (lang, keystroke) {
 			var special = keystroke & 0xFF0000,
 				key = keystroke & 0x00FFFF,
 				isMac = CKEDITOR.env.mac,
@@ -1333,28 +1333,28 @@
 				aria = [];
 
 
-			if ( special & CKEDITOR.CTRL ) {
-				display.push( isMac ? '⌘' : lang[ CTRL ] );
-				aria.push( isMac ? lang[ CMD ] : lang[ CTRL ] );
+			if (special & CKEDITOR.CTRL) {
+				display.push(isMac ? '⌘' : lang[CTRL]);
+				aria.push(isMac ? lang[CMD] : lang[CTRL]);
 			}
 
-			if ( special & CKEDITOR.ALT ) {
-				display.push( isMac ? '⌥' : lang[ ALT ] );
-				aria.push( lang[ ALT ] );
+			if (special & CKEDITOR.ALT) {
+				display.push(isMac ? '⌥' : lang[ALT]);
+				aria.push(lang[ALT]);
 			}
 
-			if ( special & CKEDITOR.SHIFT ) {
-				display.push( isMac ? '⇧' : lang[ SHIFT ] );
-				aria.push( lang[ SHIFT ] );
+			if (special & CKEDITOR.SHIFT) {
+				display.push(isMac ? '⇧' : lang[SHIFT]);
+				aria.push(lang[SHIFT]);
 			}
 
-			if ( key ) {
-				if ( lang[ key ] ) {
-					display.push( lang[ key ] );
-					aria.push( lang[ key ] );
+			if (key) {
+				if (lang[key]) {
+					display.push(lang[key]);
+					aria.push(lang[key]);
 				} else {
-					display.push( String.fromCharCode( key ) );
-					aria.push( String.fromCharCode( key ) );
+					display.push(String.fromCharCode(key));
+					aria.push(String.fromCharCode(key));
 				}
 			}
 
@@ -1380,17 +1380,17 @@
 		 * @param {String} name
 		 * @returns {String}
 		 */
-		getCookie: function( name ) {
+		getCookie: function (name) {
 			name = name.toLowerCase();
-			var parts = document.cookie.split( ';' );
+			var parts = document.cookie.split(';');
 			var pair, key;
 
-			for ( var i = 0; i < parts.length; i++ ) {
-				pair = parts[ i ].split( '=' );
-				key = decodeURIComponent( CKEDITOR.tools.trim( pair[ 0 ] ).toLowerCase() );
+			for (var i = 0; i < parts.length; i++) {
+				pair = parts[i].split('=');
+				key = decodeURIComponent(CKEDITOR.tools.trim(pair[0]).toLowerCase());
 
-				if ( key === name ) {
-					return decodeURIComponent( pair.length > 1 ? pair[ 1 ] : '' );
+				if (key === name) {
+					return decodeURIComponent(pair.length > 1 ? pair[1] : '');
 				}
 			}
 
@@ -1404,8 +1404,8 @@
 		 * @param {String} name
 		 * @param {String} value
 		 */
-		setCookie: function( name, value ) {
-			document.cookie = encodeURIComponent( name ) + '=' + encodeURIComponent( value ) + ';path=/';
+		setCookie: function (name, value) {
+			document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value) + ';path=/';
 		},
 
 		/**
@@ -1416,12 +1416,12 @@
 		 * @since 4.5.6
 		 * @returns {String}
 		 */
-		getCsrfToken: function() {
-			var token = CKEDITOR.tools.getCookie( TOKEN_COOKIE_NAME );
+		getCsrfToken: function () {
+			var token = CKEDITOR.tools.getCookie(TOKEN_COOKIE_NAME);
 
-			if ( !token || token.length != TOKEN_LENGTH ) {
-				token = generateToken( TOKEN_LENGTH );
-				CKEDITOR.tools.setCookie( TOKEN_COOKIE_NAME, token );
+			if (!token || token.length != TOKEN_LENGTH) {
+				token = generateToken(TOKEN_LENGTH);
+				CKEDITOR.tools.setCookie(TOKEN_COOKIE_NAME, token);
 			}
 
 			return token;
@@ -1434,20 +1434,20 @@
 		 * @param {String} selector A CSS selector to escape.
 		 * @returns {String} An escaped selector.
 		 */
-		escapeCss: function( selector ) {
+		escapeCss: function (selector) {
 			// Invalid input.
-			if ( !selector ) {
+			if (!selector) {
 				return '';
 			}
 
 			// CSS.escape() can be used.
-			if ( window.CSS && CSS.escape ) {
-				return CSS.escape( selector );
+			if (window.CSS && CSS.escape) {
+				return CSS.escape(selector);
 			}
 
 			// Simple leading digit escape.
-			if ( !isNaN( parseInt( selector.charAt( 0 ), 10 ) ) ) {
-				return '\\3' + selector.charAt( 0 ) + ' ' + selector.substring( 1, selector.length );
+			if (!isNaN(parseInt(selector.charAt(0), 10))) {
+				return '\\3' + selector.charAt(0) + ' ' + selector.substring(1, selector.length);
 			}
 
 			return selector;
@@ -1461,17 +1461,17 @@
 		 * @returns {Number|Boolean} Returns a number indicating the mouse button or `false`
 		 * if the mouse button cannot be determined.
 		 */
-		getMouseButton: function( evt ) {
+		getMouseButton: function (evt) {
 			var domEvent = evt.data ? evt.data.$ : evt;
 
-			if ( !domEvent ) {
+			if (!domEvent) {
 				return false;
 			}
 
-			if ( CKEDITOR.env.ie && ( CKEDITOR.env.version < 9 || CKEDITOR.env.ie6Compat ) ) {
-				if ( domEvent.button === 4 ) {
+			if (CKEDITOR.env.ie && (CKEDITOR.env.version < 9 || CKEDITOR.env.ie6Compat)) {
+				if (domEvent.button === 4) {
 					return CKEDITOR.MOUSE_BUTTON_MIDDLE;
-				} else if ( domEvent.button === 1 ) {
+				} else if (domEvent.button === 1) {
 					return CKEDITOR.MOUSE_BUTTON_LEFT;
 				} else {
 					return CKEDITOR.MOUSE_BUTTON_RIGHT;
@@ -1488,13 +1488,13 @@
 		 * @param {String} hexString Contains input string which represent bytes, e.g. `"08A11D8ADA2B"`.
 		 * @returns {Number[]} Bytes stored in a form of Integer numbers, e.g. `[ 8, 161, 29, 138, 218, 43 ]`.
 		 */
-		convertHexStringToBytes: function( hexString ) {
+		convertHexStringToBytes: function (hexString) {
 			var bytesArray = [],
 				bytesArrayLength = hexString.length / 2,
 				i;
 
-			for ( i = 0; i < bytesArrayLength; i++ ) {
-				bytesArray.push( parseInt( hexString.substr( i * 2, 2 ), 16 ) );
+			for (i = 0; i < bytesArrayLength; i++) {
+				bytesArray.push(parseInt(hexString.substr(i * 2, 2), 16));
 			}
 			return bytesArray;
 		},
@@ -1506,7 +1506,7 @@
 		 * @param {Number[]} bytesArray An array which stores 1 byte in each cell as an Integer number.
 		 * @returns {String} Base64 string which represents input bytes.
 		 */
-		convertBytesToBase64: function( bytesArray ) {
+		convertBytesToBase64: function (bytesArray) {
 			// Bytes are `8bit` numbers, where base64 use `6bit` to store data. That's why we process 3 Bytes into 4 characters representing base64.
 			//
 			// Algorithm:
@@ -1526,30 +1526,30 @@
 				bytesArrayLength = bytesArray.length,
 				i;
 
-			for ( i = 0; i < bytesArrayLength; i += 3 ) {
-				var array3 = bytesArray.slice( i, i + 3 ),
+			for (i = 0; i < bytesArrayLength; i += 3) {
+				var array3 = bytesArray.slice(i, i + 3),
 					array3length = array3.length,
 					array4 = [],
 					j;
 
-				if ( array3length < 3 ) {
-					for ( j = array3length; j < 3; j++ ) {
-						array3[ j ] = 0;
+				if (array3length < 3) {
+					for (j = array3length; j < 3; j++) {
+						array3[j] = 0;
 					}
 				}
 
 				// 0xFC -> 11111100 || 0x03 -> 00000011 || 0x0F -> 00001111 || 0xC0 -> 11000000 || 0x3F -> 00111111
-				array4[ 0 ] = ( array3[ 0 ] & 0xFC ) >> 2;
-				array4[ 1 ] = ( ( array3[ 0 ] & 0x03 ) << 4 ) | ( array3[ 1 ] >> 4 );
-				array4[ 2 ] = ( ( array3[ 1 ] & 0x0F ) << 2 ) | ( ( array3[ 2 ] & 0xC0 ) >> 6 );
-				array4[ 3 ] = array3[ 2 ] & 0x3F;
+				array4[0] = (array3[0] & 0xFC) >> 2;
+				array4[1] = ((array3[0] & 0x03) << 4) | (array3[1] >> 4);
+				array4[2] = ((array3[1] & 0x0F) << 2) | ((array3[2] & 0xC0) >> 6);
+				array4[3] = array3[2] & 0x3F;
 
-				for ( j = 0; j < 4; j++ ) {
+				for (j = 0; j < 4; j++) {
 					// Example: if array3length == 1, then we need to add 2 equal signs at the end of base64.
 					// array3[ 0 ] is used to calculate array4[ 0 ] and array4[ 1 ], so there will be regular values,
 					// next two ones have to be replaced with `=`, because array3[ 1 ] and array3[ 2 ] wasn't present in the input string.
-					if ( j <= array3length ) {
-						base64string += base64characters.charAt( array4[ j ] );
+					if (j <= array3length) {
+						base64string += base64characters.charAt(array4[j]);
 					} else {
 						base64string += '=';
 					}
@@ -1759,21 +1759,21 @@
 				 * @returns {String} return.unprocessed The remaining part of the `value` that has not been processed.
 				 * @member CKEDITOR.tools.style.parse
 				 */
-				background: function( value ) {
+				background: function (value) {
 					var ret = {},
-						colors = this._findColor( value );
+						colors = this._findColor(value);
 
-					if ( colors.length ) {
-						ret.color = colors[ 0 ];
+					if (colors.length) {
+						ret.color = colors[0];
 
-						CKEDITOR.tools.array.forEach( colors, function( colorToken ) {
-							value = value.replace( colorToken, '' );
-						} );
+						CKEDITOR.tools.array.forEach(colors, function (colorToken) {
+							value = value.replace(colorToken, '');
+						});
 					}
 
-					value = CKEDITOR.tools.trim( value );
+					value = CKEDITOR.tools.trim(value);
 
-					if ( value ) {
+					if (value) {
 						// If anything was left unprocessed include it as unprocessed part.
 						ret.unprocessed = value;
 					}
@@ -1797,10 +1797,10 @@
 				 * @returns {String} return.left Left margin.
 				 * @member CKEDITOR.tools.style.parse
 				 */
-				margin: function( value ) {
-					return CKEDITOR.tools.style.parse.sideShorthand( value, function( width ) {
-						return width.match( /(?:\-?[\.\d]+(?:%|\w*)|auto|inherit|initial|unset|revert)/g ) || [ '0px' ];
-					} );
+				margin: function (value) {
+					return CKEDITOR.tools.style.parse.sideShorthand(value, function (width) {
+						return width.match(/(?:\-?[\.\d]+(?:%|\w*)|auto|inherit|initial|unset|revert)/g) || ['0px'];
+					});
 				},
 
 				/**
@@ -1833,30 +1833,30 @@
 				 * @returns {String} return.left Left value.
 				 * @member CKEDITOR.tools.style.parse
 				 */
-				sideShorthand: function( value, split ) {
+				sideShorthand: function (value, split) {
 					var ret = {},
-						parts = split ? split( value ) : value.split( /\s+/ );
+						parts = split ? split(value) : value.split(/\s+/);
 
-					switch ( parts.length ) {
+					switch (parts.length) {
 						case 1:
-							mapStyles( [ 0, 0, 0, 0 ] );
+							mapStyles([0, 0, 0, 0]);
 							break;
 						case 2:
-							mapStyles( [ 0, 1, 0, 1 ] );
+							mapStyles([0, 1, 0, 1]);
 							break;
 						case 3:
-							mapStyles( [ 0, 1, 2, 1 ] );
+							mapStyles([0, 1, 2, 1]);
 							break;
 						case 4:
-							mapStyles( [ 0, 1, 2, 3 ] );
+							mapStyles([0, 1, 2, 3]);
 							break;
 					}
 
-					function mapStyles( map ) {
-						ret.top = parts[ map[ 0 ] ];
-						ret.right = parts[ map[ 1 ] ];
-						ret.bottom = parts[ map[ 2 ] ];
-						ret.left = parts[ map[ 3 ] ];
+					function mapStyles(map) {
+						ret.top = parts[map[0]];
+						ret.right = parts[map[1]];
+						ret.bottom = parts[map[2]];
+						ret.left = parts[map[3]];
 					}
 
 					return ret;
@@ -1868,8 +1868,8 @@
 				 * @deprecated 4.12.0 Use {@link CKEDITOR.tools.style.border#fromCssRule} instead.
 				 * @member CKEDITOR.tools.style.parse
 				 */
-				border: function( value ) {
-					return CKEDITOR.tools.style.border.fromCssRule( value );
+				border: function (value) {
+					return CKEDITOR.tools.style.border.fromCssRule(value);
 				},
 
 				/**
@@ -1880,26 +1880,26 @@
 				 * @returns {String[]} An array of matched results.
 				 * @member CKEDITOR.tools.style.parse
 				 */
-				_findColor: function( value ) {
+				_findColor: function (value) {
 					var ret = [],
 						arrayTools = CKEDITOR.tools.array;
 
 
 					// Check for rgb(a).
-					ret = ret.concat( value.match( this._rgbaRegExp ) || [] );
+					ret = ret.concat(value.match(this._rgbaRegExp) || []);
 
 					// Check for hsl(a).
-					ret = ret.concat( value.match( this._hslaRegExp ) || [] );
+					ret = ret.concat(value.match(this._hslaRegExp) || []);
 
-					ret = ret.concat( arrayTools.filter( value.split( /\s+/ ), function( colorEntry ) {
+					ret = ret.concat(arrayTools.filter(value.split(/\s+/), function (colorEntry) {
 						// Check for hex format.
-						if ( colorEntry.match( /^\#[a-f0-9]{3}(?:[a-f0-9]{3})?$/gi ) ) {
+						if (colorEntry.match(/^\#[a-f0-9]{3}(?:[a-f0-9]{3})?$/gi)) {
 							return true;
 						}
 
 						// Check for preset names.
 						return colorEntry.toLowerCase() in CKEDITOR.tools.style.parse._colors;
-					} ) );
+					}));
 
 					return ret;
 				}
@@ -1934,14 +1934,14 @@
 			 * @returns {Array} The filtered array.
 			 * @member CKEDITOR.tools.array
 			 */
-			filter: function( array, fn, thisArg ) {
+			filter: function (array, fn, thisArg) {
 				var ret = [];
 
-				this.forEach( array, function( val, i ) {
-					if ( fn.call( thisArg, val, i, array ) ) {
-						ret.push( val );
+				this.forEach(array, function (val, i) {
+					if (fn.call(thisArg, val, i, array)) {
+						ret.push(val);
 					}
-				} );
+				});
 
 				return ret;
 			},
@@ -1967,13 +1967,13 @@
 			 * @member CKEDITOR.tools.array
 			 * @since 4.12.0
 			 */
-			find: function( array, fn, thisArg ) {
+			find: function (array, fn, thisArg) {
 				var length = array.length,
 					i = 0;
 
-				while ( i < length ) {
-					if ( fn.call( thisArg, array[ i ], i, array ) ) {
-						return array[ i ];
+				while (i < length) {
+					if (fn.call(thisArg, array[i], i, array)) {
+						return array[i];
 					}
 					i++;
 				}
@@ -1992,12 +1992,12 @@
 			 * @param {Mixed} [thisArg=undefined] The context object for `fn`.
 			 * @member CKEDITOR.tools.array
 			 */
-			forEach: function( array, fn, thisArg ) {
+			forEach: function (array, fn, thisArg) {
 				var len = array.length,
 					i;
 
-				for ( i = 0; i < len; i++ ) {
-					fn.call( thisArg, array[ i ], i, array );
+				for (i = 0; i < len; i++) {
+					fn.call(thisArg, array[i], i, array);
 				}
 			},
 
@@ -2012,10 +2012,10 @@
 			 * @member CKEDITOR.tools.array
 			 * @since 4.6.2
 			 */
-			map: function( array, fn, thisArg ) {
+			map: function (array, fn, thisArg) {
 				var result = [];
-				for ( var i = 0; i < array.length; i++ ) {
-					result.push( fn.call( thisArg, array[ i ], i, array ) );
+				for (var i = 0; i < array.length; i++) {
+					result.push(fn.call(thisArg, array[i], i, array));
 				}
 				return result;
 			},
@@ -2032,10 +2032,10 @@
 			 * @member CKEDITOR.tools.array
 			 * @since 4.6.2
 			*/
-			reduce: function( array, fn, initial, thisArg ) {
+			reduce: function (array, fn, initial, thisArg) {
 				var acc = initial;
-				for ( var i = 0; i < array.length; i++ ) {
-					acc = fn.call( thisArg, acc, array[ i ], i, array );
+				for (var i = 0; i < array.length; i++) {
+					acc = fn.call(thisArg, acc, array[i], i, array);
 				}
 				return acc;
 			},
@@ -2060,13 +2060,13 @@
 			 * @member CKEDITOR.tools.array
 			 * @since 4.8.0
 			 */
-			every: function( array, fn, thisArg ) {
+			every: function (array, fn, thisArg) {
 				// Empty arrays always return true.
-				if ( !array.length ) {
+				if (!array.length) {
 					return true;
 				}
 
-				var ret = this.filter( array, fn, thisArg );
+				var ret = this.filter(array, fn, thisArg);
 
 				return array.length === ret.length;
 			}
@@ -2113,10 +2113,10 @@
 			 * @param {Object} obj
 			 * @returns {Array} Object's key-value pairs.
 			 */
-			entries: function( obj ) {
-				return CKEDITOR.tools.array.map( CKEDITOR.tools.object.keys( obj ), function( key ) {
-					return [ key, obj[ key ] ];
-				} );
+			entries: function (obj) {
+				return CKEDITOR.tools.array.map(CKEDITOR.tools.object.keys(obj), function (key) {
+					return [key, obj[key]];
+				});
 			},
 
 			/**
@@ -2132,10 +2132,10 @@
 			 * @param {Object} obj
 			 * @returns {Array} Object's values.
 			 */
-			values: function( obj ) {
-				return CKEDITOR.tools.array.map( CKEDITOR.tools.object.keys( obj ), function( key ) {
-					return obj[ key ];
-				} );
+			values: function (obj) {
+				return CKEDITOR.tools.array.map(CKEDITOR.tools.object.keys(obj), function (key) {
+					return obj[key];
+				});
 			},
 
 			/**
@@ -2151,20 +2151,20 @@
 			 * @param {Object} obj
 			 * @returns {Array} Object's keys.
 			 */
-			keys: function( obj ) {
+			keys: function (obj) {
 				var hasOwnProperty = Object.prototype.hasOwnProperty,
 					keys = [],
 					dontEnums = CKEDITOR.tools.object.DONT_ENUMS;
 
-				for ( var prop in obj ) {
-					keys.push( prop );
+				for (var prop in obj) {
+					keys.push(prop);
 				}
 
 				// Fix don't enum bug for IE < 9 browsers (#3120).
-				if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 ) {
-					for ( var i = 0; i < dontEnums.length; i++ ) {
-						if ( hasOwnProperty.call( obj, dontEnums[ i ] ) ) {
-							keys.push( dontEnums[ i ] );
+				if (CKEDITOR.env.ie && CKEDITOR.env.version < 9) {
+					for (var i = 0; i < dontEnums.length; i++) {
+						if (hasOwnProperty.call(obj, dontEnums[i])) {
+							keys.push(dontEnums[i]);
 						}
 					}
 				}
@@ -2181,15 +2181,15 @@
 			 * @member CKEDITOR.tools.object
 			 */
 
-			findKey: function( obj, value ) {
-				if ( typeof obj !== 'object' ) {
+			findKey: function (obj, value) {
+				if (typeof obj !== 'object') {
 					return null;
 				}
 
 				var key;
 
-				for ( key in obj ) {
-					if ( obj[ key ] === value ) {
+				for (key in obj) {
+					if (obj[key] === value) {
 						return key;
 					}
 				}
@@ -2234,18 +2234,18 @@
 			 * @returns {Object} The merged object.
 			 * @member CKEDITOR.tools.object
 			 */
-			merge: function( obj1, obj2 ) {
+			merge: function (obj1, obj2) {
 				var tools = CKEDITOR.tools,
-					copy1 = tools.clone( obj1 ),
-					copy2 = tools.clone( obj2 );
+					copy1 = tools.clone(obj1),
+					copy2 = tools.clone(obj2);
 
-				tools.array.forEach( tools.object.keys( copy2 ), function( key ) {
-					if ( typeof copy2[ key ] === 'object' && typeof copy1[ key ] === 'object' ) {
-						copy1[ key ] = tools.object.merge( copy1[ key ], copy2[ key ] );
+				tools.array.forEach(tools.object.keys(copy2), function (key) {
+					if (typeof copy2[key] === 'object' && typeof copy1[key] === 'object') {
+						copy1[key] = tools.object.merge(copy1[key], copy2[key]);
 					} else {
-						copy1[ key ] = copy2[ key ];
+						copy1[key] = copy2[key];
 					}
-				} );
+				});
 
 				return copy1;
 			}
@@ -2260,9 +2260,9 @@
 		 * @param { CKEDITOR.dom.rect } rect A rectangle with a relative position.
 		 * @returns { CKEDITOR.dom.rect } A rectangle with an absolute position.
 		 */
-		getAbsoluteRectPosition: function( window, rect ) {
-			var newRect = CKEDITOR.tools.copy( rect );
-			appendParentFramePosition( window.getFrame() );
+		getAbsoluteRectPosition: function (window, rect) {
+			var newRect = CKEDITOR.tools.copy(rect);
+			appendParentFramePosition(window.getFrame());
 
 			var winGlobalScroll = CKEDITOR.document.getWindow().getScrollPosition();
 
@@ -2270,7 +2270,7 @@
 			newRect.left += winGlobalScroll.x;
 
 			// If there is no x or y, e.g. Microsoft browsers, don't return them, otherwise we will have rect.x = NaN.
-			if ( ( 'x' in newRect ) && ( 'y' in newRect ) ) {
+			if (('x' in newRect) && ('y' in newRect)) {
 				newRect.y += winGlobalScroll.y;
 				newRect.x += winGlobalScroll.x;
 			}
@@ -2280,8 +2280,8 @@
 
 			return newRect;
 
-			function appendParentFramePosition( frame ) {
-				if ( !frame ) {
+			function appendParentFramePosition(frame) {
+				if (!frame) {
 					return;
 				}
 
@@ -2290,12 +2290,12 @@
 				newRect.top += frameRect.top;
 				newRect.left += frameRect.left;
 
-				if ( ( 'x' in newRect ) && ( 'y' in newRect ) ) {
+				if (('x' in newRect) && ('y' in newRect)) {
 					newRect.x += frameRect.x;
 					newRect.y += frameRect.y;
 				}
 
-				appendParentFramePosition( frame.getWindow().getFrame() );
+				appendParentFramePosition(frame.getWindow().getFrame());
 			}
 		}
 	};
@@ -2305,21 +2305,21 @@
 	// @since 4.5.6
 	// @param {Number} length
 	// @returns {string}
-	function generateToken( length ) {
+	function generateToken(length) {
 		var randValues = [];
 		var result = '';
 
-		if ( window.crypto && window.crypto.getRandomValues ) {
-			randValues = new Uint8Array( length );
-			window.crypto.getRandomValues( randValues );
+		if (window.crypto && window.crypto.getRandomValues) {
+			randValues = new Uint8Array(length);
+			window.crypto.getRandomValues(randValues);
 		} else {
-			for ( var i = 0; i < length; i++ ) {
-				randValues.push( Math.floor( Math.random() * 256 ) );
+			for (var i = 0; i < length; i++) {
+				randValues.push(Math.floor(Math.random() * 256));
 			}
 		}
 
-		for ( var j = 0; j < randValues.length; j++ ) {
-			var character = tokenCharset.charAt( randValues[ j ] % tokenCharset.length );
+		for (var j = 0; j < randValues.length; j++) {
+			var character = tokenCharset.charAt(randValues[j] % tokenCharset.length);
 			result += Math.random() > 0.5 ? character.toUpperCase() : character;
 		}
 
@@ -2337,7 +2337,7 @@
 	 * @param {Function} output The function that will be executed as `output`.
 	 * @param {Object} [contextObj] The object used as context to the listener call (the `this` object).
 	 */
-	function EventsBuffer( minInterval, output, context ) {
+	function EventsBuffer(minInterval, output, context) {
 		/**
 		 * The minimal interval (in milliseconds) between the calls.
 		 *
@@ -2365,7 +2365,7 @@
 
 		this._lastOutput = 0;
 
-		this._output = CKEDITOR.tools.bind( output, context || {} );
+		this._output = CKEDITOR.tools.bind(output, context || {});
 
 		var that = this;
 
@@ -2406,26 +2406,26 @@
 		 * @method
 		 * @param {Mixed[]} [args]
 		 */
-		this.input = function() {
+		this.input = function () {
 			// NOTE: This function needs to be created for each instance,
 			// as there's a common practice to pass `buffer.input`
 			// directly to a listener, and overwrite context object.
-			if ( that._scheduledTimer && that._reschedule() === false ) {
+			if (that._scheduledTimer && that._reschedule() === false) {
 				return;
 			}
 
-			var diff = ( new Date() ).getTime() - that._lastOutput;
+			var diff = (new Date()).getTime() - that._lastOutput;
 
 			// If less than minInterval passed after last check,
 			// schedule next for minInterval after previous one.
-			if ( diff < that._minInterval ) {
-				that._scheduledTimer = setTimeout( triggerOutput, that._minInterval - diff );
+			if (diff < that._minInterval) {
+				that._scheduledTimer = setTimeout(triggerOutput, that._minInterval - diff);
 			} else {
 				triggerOutput();
 			}
 
 			function triggerOutput() {
-				that._lastOutput = ( new Date() ).getTime();
+				that._lastOutput = (new Date()).getTime();
 				that._scheduledTimer = 0;
 
 				that._call();
@@ -2437,7 +2437,7 @@
 		/**
 		 * Resets the buffer state and cancels any pending calls.
 		 */
-		reset: function() {
+		reset: function () {
 			this._lastOutput = 0;
 			this._clearTimer();
 		},
@@ -2447,7 +2447,7 @@
 		 * @private
 		 * @returns {Boolean/undefined} If it returns `false`, the the parent call will be stopped.
 		 */
-		_reschedule: function() {
+		_reschedule: function () {
 			return false;
 		},
 		/**
@@ -2455,7 +2455,7 @@
 		 *
 		 * @private
 		 */
-		_call: function() {
+		_call: function () {
 			this._output();
 		},
 		/**
@@ -2463,9 +2463,9 @@
 		 *
 		 * @private
 		 */
-		_clearTimer: function() {
-			if ( this._scheduledTimer ) {
-				clearTimeout( this._scheduledTimer );
+		_clearTimer: function () {
+			if (this._scheduledTimer) {
+				clearTimeout(this._scheduledTimer);
 			}
 
 			this._scheduledTimer = 0;
@@ -2483,8 +2483,8 @@
 	 * @class CKEDITOR.tools.buffers.throttle
 	 * @extends CKEDITOR.tools.buffers.event
 	 */
-	function ThrottleBuffer( minInterval, output, context ) {
-		EventsBuffer.call( this, minInterval, output, context );
+	function ThrottleBuffer(minInterval, output, context) {
+		EventsBuffer.call(this, minInterval, output, context);
 
 		/**
 		 * Arguments for the last scheduled call.
@@ -2536,25 +2536,25 @@
 		 * @method
 		 * @param {Mixed[]} [args]
 		 */
-		this.input = CKEDITOR.tools.override( this.input, function( originalInput ) {
-			return function() {
-				that._args = Array.prototype.slice.call( arguments );
+		this.input = CKEDITOR.tools.override(this.input, function (originalInput) {
+			return function () {
+				that._args = Array.prototype.slice.call(arguments);
 
-				originalInput.call( this );
+				originalInput.call(this);
 			};
-		} );
+		});
 	}
 
-	ThrottleBuffer.prototype = CKEDITOR.tools.prototypedCopy( EventsBuffer.prototype );
+	ThrottleBuffer.prototype = CKEDITOR.tools.prototypedCopy(EventsBuffer.prototype);
 
-	ThrottleBuffer.prototype._reschedule = function() {
-		if ( this._scheduledTimer ) {
+	ThrottleBuffer.prototype._reschedule = function () {
+		if (this._scheduledTimer) {
 			this._clearTimer();
 		}
 	};
 
-	ThrottleBuffer.prototype._call = function() {
-		this._output.apply( this._context, this._args );
+	ThrottleBuffer.prototype._call = function () {
+		this._output.apply(this._context, this._args);
 	};
 
 	CKEDITOR.tools.buffers = {};
@@ -2567,7 +2567,7 @@
 	 * @since 4.12.0
 	 * @class CKEDITOR.tools.style.border
 	 */
-	CKEDITOR.tools.style.border = CKEDITOR.tools.createClass( {
+	CKEDITOR.tools.style.border = CKEDITOR.tools.createClass({
 
 		/**
 		 * Creates a new instance of the border style.
@@ -2577,7 +2577,7 @@
 		 * @param {String} [props.style] Border style.
 		 * @param {String} [props.width] Border width.
 		 */
-		$: function( props ) {
+		$: function (props) {
 			props = props || {};
 
 			/**
@@ -2607,28 +2607,28 @@
 		_: {
 			normalizeMap: {
 				color: [
-					[ /windowtext/g, 'black' ]
+					[/windowtext/g, 'black']
 				]
 			},
 
-			normalize: function() {
-				for ( var propName in this._.normalizeMap ) {
-					var val = this[ propName ];
+			normalize: function () {
+				for (var propName in this._.normalizeMap) {
+					var val = this[propName];
 
-					if ( val ) {
-						this[propName] = CKEDITOR.tools.array.reduce( this._.normalizeMap[ propName ], function( cur, rule ) {
-							return cur.replace( rule[ 0 ], rule[ 1 ] );
-						}, val );
+					if (val) {
+						this[propName] = CKEDITOR.tools.array.reduce(this._.normalizeMap[propName], function (cur, rule) {
+							return cur.replace(rule[0], rule[1]);
+						}, val);
 					}
 				}
 			}
 		},
 
 		proto: {
-			toString: function() {
-				return CKEDITOR.tools.array.filter( [ this.width, this.style, this.color ], function( item ) {
+			toString: function () {
+				return CKEDITOR.tools.array.filter([this.width, this.style, this.color], function (item) {
 					return !!item;
-				} ).join( ' ' );
+				}).join(' ');
 			}
 		},
 
@@ -2647,33 +2647,33 @@
 			 * @returns {CKEDITOR.tools.style.border} Border style.
 			 * @member CKEDITOR.tools.style.border
 			 */
-			fromCssRule: function( value ) {
+			fromCssRule: function (value) {
 				var props = {},
-					input = value.split( /\s+/g ),
-					parseColor = CKEDITOR.tools.style.parse._findColor( value );
+					input = value.split(/\s+/g),
+					parseColor = CKEDITOR.tools.style.parse._findColor(value);
 
-				if ( parseColor.length ) {
-					props.color = parseColor[ 0 ];
+				if (parseColor.length) {
+					props.color = parseColor[0];
 				}
 
-				CKEDITOR.tools.array.forEach( input, function( val ) {
-					if ( !props.style ) {
-						if ( CKEDITOR.tools.indexOf( CKEDITOR.tools.style.parse._borderStyle, val ) !== -1 ) {
+				CKEDITOR.tools.array.forEach(input, function (val) {
+					if (!props.style) {
+						if (CKEDITOR.tools.indexOf(CKEDITOR.tools.style.parse._borderStyle, val) !== -1) {
 							props.style = val;
 							return;
 						}
 					}
 
-					if ( !props.width ) {
-						if ( CKEDITOR.tools.style.parse._widthRegExp.test( val ) ) {
+					if (!props.width) {
+						if (CKEDITOR.tools.style.parse._widthRegExp.test(val)) {
 							props.width = val;
 							return;
 						}
 					}
 
-				} );
+				});
 
-				return new CKEDITOR.tools.style.border( props );
+				return new CKEDITOR.tools.style.border(props);
 			},
 
 			/**
@@ -2753,41 +2753,41 @@
 			 * @returns {CKEDITOR.tools.style.border} return.border-left Border left style.
 			 * @member CKEDITOR.tools.style.border
 			 */
-			splitCssValues: function( styles, fallback ) {
-				var types = [ 'width', 'style', 'color' ],
-					sides = [ 'top', 'right', 'bottom', 'left' ];
+			splitCssValues: function (styles, fallback) {
+				var types = ['width', 'style', 'color'],
+					sides = ['top', 'right', 'bottom', 'left'];
 
 				fallback = fallback || {};
 
-				var stylesMap = CKEDITOR.tools.array.reduce( types, function( cur, type ) {
-					var style = styles[ 'border-' + type ] || fallback[ type ];
+				var stylesMap = CKEDITOR.tools.array.reduce(types, function (cur, type) {
+					var style = styles['border-' + type] || fallback[type];
 
-					cur[ type ] = style ? CKEDITOR.tools.style.parse.sideShorthand( style ) : null;
+					cur[type] = style ? CKEDITOR.tools.style.parse.sideShorthand(style) : null;
 
 					return cur;
-				}, {} );
+				}, {});
 
-				return CKEDITOR.tools.array.reduce( sides, function( cur, side ) {
+				return CKEDITOR.tools.array.reduce(sides, function (cur, side) {
 					var map = {};
 
-					for ( var style in stylesMap ) {
+					for (var style in stylesMap) {
 						// Prefer property with greater specificity e.g
 						// `border-top-color` over `border-color`.
-						var sideProperty = styles[ 'border-' + side + '-' + style ];
-						if ( sideProperty ) {
-							map[ style ] = sideProperty;
+						var sideProperty = styles['border-' + side + '-' + style];
+						if (sideProperty) {
+							map[style] = sideProperty;
 						} else {
-							map[ style ] = stylesMap[ style ] && stylesMap[ style ][ side ];
+							map[style] = stylesMap[style] && stylesMap[style][side];
 						}
 					}
 
-					cur[ 'border-' + side ] = new CKEDITOR.tools.style.border( map );
+					cur['border-' + side] = new CKEDITOR.tools.style.border(map);
 
 					return cur;
-				}, {} );
+				}, {});
 			}
 		}
-	} );
+	});
 
 	/**
 	 * @member CKEDITOR.tools.array
@@ -2860,6 +2860,6 @@
 	 * @since 4.7.1
 	 * @class CKEDITOR.tools.object
 	 */
-} )();
+})();
 
 // PACKAGER_RENAME( CKEDITOR.tools )

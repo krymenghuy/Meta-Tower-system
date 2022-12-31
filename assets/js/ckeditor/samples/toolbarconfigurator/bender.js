@@ -39,7 +39,7 @@ var config = {
 
 	tests: {
 		'main': {
-			applications: [ 'ckeditor', 'codemirror', 'toolbartool' ],
+			applications: ['ckeditor', 'codemirror', 'toolbartool'],
 			basePath: 'tests/',
 			paths: [
 				'**',

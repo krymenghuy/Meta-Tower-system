@@ -1,7 +1,7 @@
 "use strict";
-var KTDatatablesAdvancedRowGrouping = function() {
+var KTDatatablesAdvancedRowGrouping = function () {
 
-	var initTable1 = function() {
+	var initTable1 = function () {
 		var table = $('#kt_table_1');
 
 		// begin first table
@@ -9,12 +9,12 @@ var KTDatatablesAdvancedRowGrouping = function() {
 			responsive: true,
 			pageLength: 25,
 			order: [[2, 'asc']],
-			drawCallback: function(settings) {
+			drawCallback: function (settings) {
 				var api = this.api();
-				var rows = api.rows({page: 'current'}).nodes();
+				var rows = api.rows({ page: 'current' }).nodes();
 				var last = null;
 
-				api.column(2, {page: 'current'}).data().each(function(group, i) {
+				api.column(2, { page: 'current' }).data().each(function (group, i) {
 					if (last !== group) {
 						$(rows).eq(i).before(
 							'<tr class="group"><td colspan="10">' + group + '</td></tr>',
@@ -33,7 +33,7 @@ var KTDatatablesAdvancedRowGrouping = function() {
 					targets: -1,
 					title: 'Actions',
 					orderable: false,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						return `
                         <span class="dropdown">
                             <a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" data-toggle="dropdown" aria-expanded="true">
@@ -52,15 +52,15 @@ var KTDatatablesAdvancedRowGrouping = function() {
 				},
 				{
 					targets: 8,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						var status = {
-							1: {'title': 'Pending', 'class': 'kt-badge--brand'},
-							2: {'title': 'Delivered', 'class': ' kt-badge--danger'},
-							3: {'title': 'Canceled', 'class': ' kt-badge--primary'},
-							4: {'title': 'Success', 'class': ' kt-badge--success'},
-							5: {'title': 'Info', 'class': ' kt-badge--info'},
-							6: {'title': 'Danger', 'class': ' kt-badge--danger'},
-							7: {'title': 'Warning', 'class': ' kt-badge--warning'},
+							1: { 'title': 'Pending', 'class': 'kt-badge--brand' },
+							2: { 'title': 'Delivered', 'class': ' kt-badge--danger' },
+							3: { 'title': 'Canceled', 'class': ' kt-badge--primary' },
+							4: { 'title': 'Success', 'class': ' kt-badge--success' },
+							5: { 'title': 'Info', 'class': ' kt-badge--info' },
+							6: { 'title': 'Danger', 'class': ' kt-badge--danger' },
+							7: { 'title': 'Warning', 'class': ' kt-badge--warning' },
 						};
 						if (typeof status[data] === 'undefined') {
 							return data;
@@ -70,11 +70,11 @@ var KTDatatablesAdvancedRowGrouping = function() {
 				},
 				{
 					targets: 9,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						var status = {
-							1: {'title': 'Online', 'state': 'danger'},
-							2: {'title': 'Retail', 'state': 'primary'},
-							3: {'title': 'Direct', 'state': 'success'},
+							1: { 'title': 'Online', 'state': 'danger' },
+							2: { 'title': 'Retail', 'state': 'primary' },
+							3: { 'title': 'Direct', 'state': 'success' },
 						};
 						if (typeof status[data] === 'undefined') {
 							return data;
@@ -90,7 +90,7 @@ var KTDatatablesAdvancedRowGrouping = function() {
 	return {
 
 		//main function to initiate the module
-		init: function() {
+		init: function () {
 			initTable1();
 		},
 
@@ -98,6 +98,6 @@ var KTDatatablesAdvancedRowGrouping = function() {
 
 }();
 
-jQuery(document).ready(function() {
+jQuery(document).ready(function () {
 	KTDatatablesAdvancedRowGrouping.init();
 });

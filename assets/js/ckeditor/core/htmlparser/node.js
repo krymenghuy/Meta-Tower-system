@@ -5,7 +5,7 @@
 
 'use strict';
 
-( function() {
+(function () {
 	/**
 	 * A lightweight representation of HTML node.
 	 *
@@ -13,7 +13,7 @@
 	 * @class
 	 * @constructor Creates a node class instance.
 	 */
-	CKEDITOR.htmlParser.node = function() {};
+	CKEDITOR.htmlParser.node = function () { };
 
 	CKEDITOR.htmlParser.node.prototype = {
 		/**
@@ -21,15 +21,15 @@
 		 *
 		 * @since 4.1.0
 		 */
-		remove: function() {
+		remove: function () {
 			var children = this.parent.children,
-				index = CKEDITOR.tools.indexOf( children, this ),
+				index = CKEDITOR.tools.indexOf(children, this),
 				previous = this.previous,
 				next = this.next;
 
-			previous && ( previous.next = next );
-			next && ( next.previous = previous );
-			children.splice( index, 1 );
+			previous && (previous.next = next);
+			next && (next.previous = previous);
+			children.splice(index, 1);
 			this.parent = null;
 		},
 
@@ -39,16 +39,16 @@
 		 * @since 4.1.0
 		 * @param {CKEDITOR.htmlParser.node} node The node that will replace this one.
 		 */
-		replaceWith: function( node ) {
+		replaceWith: function (node) {
 			var children = this.parent.children,
-				index = CKEDITOR.tools.indexOf( children, this ),
+				index = CKEDITOR.tools.indexOf(children, this),
 				previous = node.previous = this.previous,
 				next = node.next = this.next;
 
-			previous && ( previous.next = node );
-			next && ( next.previous = node );
+			previous && (previous.next = node);
+			next && (next.previous = node);
 
-			children[ index ] = node;
+			children[index] = node;
 
 			node.parent = this.parent;
 			this.parent = null;
@@ -60,17 +60,17 @@
 		 * @since 4.1.0
 		 * @param {CKEDITOR.htmlParser.node} node The node that will precede this element.
 		 */
-		insertAfter: function( node ) {
+		insertAfter: function (node) {
 			var children = node.parent.children,
-				index = CKEDITOR.tools.indexOf( children, node ),
+				index = CKEDITOR.tools.indexOf(children, node),
 				next = node.next;
 
-			children.splice( index + 1, 0, this );
+			children.splice(index + 1, 0, this);
 
 			this.next = node.next;
 			this.previous = node;
 			node.next = this;
-			next && ( next.previous = this );
+			next && (next.previous = this);
 
 			this.parent = node.parent;
 		},
@@ -81,15 +81,15 @@
 		 * @since 4.1.0
 		 * @param {CKEDITOR.htmlParser.node} node The node that will follow this element.
 		 */
-		insertBefore: function( node ) {
+		insertBefore: function (node) {
 			var children = node.parent.children,
-				index = CKEDITOR.tools.indexOf( children, node );
+				index = CKEDITOR.tools.indexOf(children, node);
 
-			children.splice( index, 0, this );
+			children.splice(index, 0, this);
 
 			this.next = node;
 			this.previous = node.previous;
-			node.previous && ( node.previous.next = this );
+			node.previous && (node.previous.next = this);
 			node.previous = this;
 
 			this.parent = node.parent;
@@ -102,23 +102,23 @@
 		 * @param {String/Object/Function} condition Name of an ancestor, hash of names or validator function.
 		 * @returns {CKEDITOR.htmlParser.element} The closest ancestor which satisfies given condition or `null`.
 		 */
-		getAscendant: function( condition ) {
+		getAscendant: function (condition) {
 			var checkFn =
 				typeof condition == 'function' ?
 					condition :
-				typeof condition == 'string' ?
-					function( el ) {
-						return el.name == condition;
-					} :
-					function( el ) {
-						return el.name in condition;
-					};
+					typeof condition == 'string' ?
+						function (el) {
+							return el.name == condition;
+						} :
+						function (el) {
+							return el.name in condition;
+						};
 
 			var parent = this.parent;
 
 			// Parent has to be an element - don't check doc fragment.
-			while ( parent && parent.type == CKEDITOR.NODE_ELEMENT ) {
-				if ( checkFn( parent ) )
+			while (parent && parent.type == CKEDITOR.NODE_ELEMENT) {
+				if (checkFn(parent))
 					return parent;
 				parent = parent.parent;
 			}
@@ -133,9 +133,9 @@
 		 * @param {CKEDITOR.htmlParser.element} wrapper The element which will be this element's new parent.
 		 * @returns {CKEDITOR.htmlParser.element} Wrapper.
 		 */
-		wrapWith: function( wrapper ) {
-			this.replaceWith( wrapper );
-			wrapper.add( this );
+		wrapWith: function (wrapper) {
+			this.replaceWith(wrapper);
+			wrapper.add(this);
 			return wrapper;
 		},
 
@@ -145,12 +145,12 @@
 		 * @since 4.3.0
 		 * @returns {Number}
 		 */
-		getIndex: function() {
-			return CKEDITOR.tools.indexOf( this.parent.children, this );
+		getIndex: function () {
+			return CKEDITOR.tools.indexOf(this.parent.children, this);
 		},
 
-		getFilterContext: function( context ) {
+		getFilterContext: function (context) {
 			return context || {};
 		}
 	};
-} )();
+})();

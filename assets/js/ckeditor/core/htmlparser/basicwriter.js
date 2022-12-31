@@ -9,13 +9,13 @@
  * @class
  * @todo
  */
-CKEDITOR.htmlParser.basicWriter = CKEDITOR.tools.createClass( {
+CKEDITOR.htmlParser.basicWriter = CKEDITOR.tools.createClass({
 	/**
 	 * Creates a basicWriter class instance.
 	 *
 	 * @constructor
 	 */
-	$: function() {
+	$: function () {
 		this._ = {
 			output: []
 		};
@@ -32,8 +32,8 @@ CKEDITOR.htmlParser.basicWriter = CKEDITOR.tools.createClass( {
 		 * @param {Object} attributes The attributes defined for this tag. The
 		 * attributes could be used to inspect the tag.
 		 */
-		openTag: function( tagName ) {
-			this._.output.push( '<', tagName );
+		openTag: function (tagName) {
+			this._.output.push('<', tagName);
 		},
 
 		/**
@@ -49,11 +49,11 @@ CKEDITOR.htmlParser.basicWriter = CKEDITOR.tools.createClass( {
 		 * @param {Boolean} isSelfClose Indicates that this is a self-closing tag,
 		 * like `<br>` or `<img>`.
 		 */
-		openTagClose: function( tagName, isSelfClose ) {
-			if ( isSelfClose )
-				this._.output.push( ' />' );
+		openTagClose: function (tagName, isSelfClose) {
+			if (isSelfClose)
+				this._.output.push(' />');
 			else
-				this._.output.push( '>' );
+				this._.output.push('>');
 		},
 
 		/**
@@ -66,12 +66,12 @@ CKEDITOR.htmlParser.basicWriter = CKEDITOR.tools.createClass( {
 		 * @param {String} attName The attribute name.
 		 * @param {String} attValue The attribute value.
 		 */
-		attribute: function( attName, attValue ) {
+		attribute: function (attName, attValue) {
 			// Browsers don't always escape special character in attribute values. (https://dev.ckeditor.com/ticket/4683, https://dev.ckeditor.com/ticket/4719).
-			if ( typeof attValue == 'string' )
-				attValue = CKEDITOR.tools.htmlEncodeAttr( attValue );
+			if (typeof attValue == 'string')
+				attValue = CKEDITOR.tools.htmlEncodeAttr(attValue);
 
-			this._.output.push( ' ', attName, '="', attValue, '"' );
+			this._.output.push(' ', attName, '="', attValue, '"');
 		},
 
 		/**
@@ -82,8 +82,8 @@ CKEDITOR.htmlParser.basicWriter = CKEDITOR.tools.createClass( {
 		 *
 		 * @param {String} tagName The element name for this tag.
 		 */
-		closeTag: function( tagName ) {
-			this._.output.push( '</', tagName, '>' );
+		closeTag: function (tagName) {
+			this._.output.push('</', tagName, '>');
 		},
 
 		/**
@@ -94,8 +94,8 @@ CKEDITOR.htmlParser.basicWriter = CKEDITOR.tools.createClass( {
 		 *
 		 * @param {String} text The text value.
 		 */
-		text: function( text ) {
-			this._.output.push( text );
+		text: function (text) {
+			this._.output.push(text);
 		},
 
 		/**
@@ -106,8 +106,8 @@ CKEDITOR.htmlParser.basicWriter = CKEDITOR.tools.createClass( {
 		 *
 		 * @param {String} comment The comment text.
 		 */
-		comment: function( comment ) {
-			this._.output.push( '<!--', comment, '-->' );
+		comment: function (comment) {
+			this._.output.push('<!--', comment, '-->');
 		},
 
 		/**
@@ -117,8 +117,8 @@ CKEDITOR.htmlParser.basicWriter = CKEDITOR.tools.createClass( {
 		 *
 		 * @param {String} data
 		 */
-		write: function( data ) {
-			this._.output.push( data );
+		write: function (data) {
+			this._.output.push(data);
 		},
 
 		/**
@@ -126,7 +126,7 @@ CKEDITOR.htmlParser.basicWriter = CKEDITOR.tools.createClass( {
 		 *
 		 *		writer.reset();
 		 */
-		reset: function() {
+		reset: function () {
 			this._.output = [];
 			this._.indent = false;
 		},
@@ -140,13 +140,13 @@ CKEDITOR.htmlParser.basicWriter = CKEDITOR.tools.createClass( {
 		 * be automatically called after retrieving the HTML.
 		 * @returns {String} The HTML written to the writer so far.
 		 */
-		getHtml: function( reset ) {
-			var html = this._.output.join( '' );
+		getHtml: function (reset) {
+			var html = this._.output.join('');
 
-			if ( reset )
+			if (reset)
 				this.reset();
 
 			return html;
 		}
 	}
-} );
+});

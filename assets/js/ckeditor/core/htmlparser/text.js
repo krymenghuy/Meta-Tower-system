@@ -5,7 +5,7 @@
 
 'use strict';
 
-( function() {
+(function () {
 	/**
 	 * A lightweight representation of HTML text.
 	 *
@@ -14,7 +14,7 @@
 	 * @constructor Creates a text class instance.
 	 * @param {String} value The text node value.
 	 */
-	CKEDITOR.htmlParser.text = function( value ) {
+	CKEDITOR.htmlParser.text = function (value) {
 		/**
 		 * The text value.
 		 *
@@ -28,7 +28,7 @@
 		};
 	};
 
-	CKEDITOR.htmlParser.text.prototype = CKEDITOR.tools.extend( new CKEDITOR.htmlParser.node(), {
+	CKEDITOR.htmlParser.text.prototype = CKEDITOR.tools.extend(new CKEDITOR.htmlParser.node(), {
 		/**
 		 * The node type. This is a constant value set to {@link CKEDITOR#NODE_TEXT}.
 		 *
@@ -46,8 +46,8 @@
 		 * been removed. This is an information for {@link CKEDITOR.htmlParser.element#filterChildren}
 		 * that it has to repeat filter on current position in parent's children array.
 		 */
-		filter: function( filter, context ) {
-			if ( !( this.value = filter.onText( context, this.value, this ) ) ) {
+		filter: function (filter, context) {
+			if (!(this.value = filter.onText(context, this.value, this))) {
 				this.remove();
 				return false;
 			}
@@ -60,11 +60,11 @@
 		 * @param {CKEDITOR.htmlParser.filter} [filter] The filter to be applied to this node.
 		 * **Note:** it's unsafe to filter offline (not appended) node.
 		 */
-		writeHtml: function( writer, filter ) {
-			if ( filter )
-				this.filter( filter );
+		writeHtml: function (writer, filter) {
+			if (filter)
+				this.filter(filter);
 
-			writer.text( this.value );
+			writer.text(this.value);
 		}
-	} );
-} )();
+	});
+})();

@@ -349,5 +349,3 @@ Route::post('test/test-api',function(){
     // });
 
 //end::API routes for external calls
-
-

@@ -8,18 +8,18 @@
  *		environment and browser information.
  */
 
-if ( !CKEDITOR.env ) {
+if (!CKEDITOR.env) {
 	/**
 	 * Environment and browser information.
 	 *
 	 * @class CKEDITOR.env
 	 * @singleton
 	 */
-	CKEDITOR.env = ( function() {
+	CKEDITOR.env = (function () {
 		var agent = navigator.userAgent.toLowerCase(),
-			edge = agent.match( /edge[ \/](\d+.?\d*)/ ),
-			trident = agent.indexOf( 'trident/' ) > -1,
-			ie = !!( edge || trident );
+			edge = agent.match(/edge[ \/](\d+.?\d*)/),
+			trident = agent.indexOf('trident/') > -1,
+			ie = !!(edge || trident);
 
 		var env = {
 			/**
@@ -57,7 +57,7 @@ if ( !CKEDITOR.env ) {
 			 *
 			 * @property {Boolean}
 			 */
-			webkit: !ie && ( agent.indexOf( ' applewebkit/' ) > -1 ),
+			webkit: !ie && (agent.indexOf(' applewebkit/') > -1),
 
 			/**
 			 * Indicates that CKEditor is running in Adobe AIR.
@@ -67,7 +67,7 @@ if ( !CKEDITOR.env ) {
 			 *
 			 * @property {Boolean}
 			 */
-			air: ( agent.indexOf( ' adobeair/' ) > -1 ),
+			air: (agent.indexOf(' adobeair/') > -1),
 
 			/**
 			 * Indicates that CKEditor is running on Macintosh.
@@ -77,7 +77,7 @@ if ( !CKEDITOR.env ) {
 			 *
 			 * @property {Boolean}
 			 */
-			mac: ( agent.indexOf( 'macintosh' ) > -1 ),
+			mac: (agent.indexOf('macintosh') > -1),
 
 			/**
 			 * Indicates that CKEditor is running in a Quirks Mode environment.
@@ -96,7 +96,7 @@ if ( !CKEDITOR.env ) {
 			 *
 			 * @property {Boolean}
 			 */
-			quirks: ( document.compatMode == 'BackCompat' && ( !document.documentMode || document.documentMode < 10 ) ),
+			quirks: (document.compatMode == 'BackCompat' && (!document.documentMode || document.documentMode < 10)),
 
 			/**
 			 * Indicates that CKEditor is running in a mobile environemnt.
@@ -107,7 +107,7 @@ if ( !CKEDITOR.env ) {
 			 * @deprecated
 			 * @property {Boolean}
 			 */
-			mobile: ( agent.indexOf( 'mobile' ) > -1 ),
+			mobile: (agent.indexOf('mobile') > -1),
 
 			/**
 			 * Indicates that CKEditor is running on Apple iPhone/iPad/iPod devices.
@@ -117,7 +117,7 @@ if ( !CKEDITOR.env ) {
 			 *
 			 * @property {Boolean}
 			 */
-			iOS: /(ipad|iphone|ipod)/.test( agent ),
+			iOS: /(ipad|iphone|ipod)/.test(agent),
 
 			/**
 			 * Indicates that the browser has a custom domain enabled. This has
@@ -129,14 +129,14 @@ if ( !CKEDITOR.env ) {
 			 * @returns {Boolean} `true` if a custom domain is enabled.
 			 * @deprecated
 			 */
-			isCustomDomain: function() {
-				if ( !this.ie )
+			isCustomDomain: function () {
+				if (!this.ie)
 					return false;
 
 				var domain = document.domain,
 					hostname = window.location.hostname;
 
-				return domain != hostname && domain != ( '[' + hostname + ']' ); // IPv6 IP support (https://dev.ckeditor.com/ticket/5434)
+				return domain != hostname && domain != ('[' + hostname + ']'); // IPv6 IP support (https://dev.ckeditor.com/ticket/5434)
 			},
 
 			/**
@@ -159,7 +159,7 @@ if ( !CKEDITOR.env ) {
 		 *
 		 * @property {Boolean}
 		 */
-		env.gecko = ( navigator.product == 'Gecko' && !env.webkit && !env.ie );
+		env.gecko = (navigator.product == 'Gecko' && !env.webkit && !env.ie);
 
 		/**
 		 * Indicates that CKEditor is running in a Blink-based browser like Chrome.
@@ -178,8 +178,8 @@ if ( !CKEDITOR.env ) {
 		 *
 		 * @property {Boolean} safari
 		 */
-		if ( env.webkit ) {
-			if ( agent.indexOf( 'chrome' ) > -1 )
+		if (env.webkit) {
+			if (agent.indexOf('chrome') > -1)
 				env.chrome = true;
 			else
 				env.safari = true;
@@ -188,12 +188,12 @@ if ( !CKEDITOR.env ) {
 		var version = 0;
 
 		// Internet Explorer 6.0+
-		if ( env.ie ) {
+		if (env.ie) {
 			// We use env.version for feature detection, so set it properly.
-			if ( edge ) {
-				version = parseFloat( edge[ 1 ] );
-			} else if ( env.quirks || !document.documentMode ) {
-				version = parseFloat( agent.match( /msie (\d+)/ )[ 1 ] );
+			if (edge) {
+				version = parseFloat(edge[1]);
+			} else if (env.quirks || !document.documentMode) {
+				version = parseFloat(agent.match(/msie (\d+)/)[1]);
 			} else {
 				version = document.documentMode;
 			}
@@ -238,23 +238,23 @@ if ( !CKEDITOR.env ) {
 		}
 
 		// Gecko.
-		if ( env.gecko ) {
-			var geckoRelease = agent.match( /rv:([\d\.]+)/ );
-			if ( geckoRelease ) {
-				geckoRelease = geckoRelease[ 1 ].split( '.' );
-				version = geckoRelease[ 0 ] * 10000 + ( geckoRelease[ 1 ] || 0 ) * 100 + ( geckoRelease[ 2 ] || 0 ) * 1;
+		if (env.gecko) {
+			var geckoRelease = agent.match(/rv:([\d\.]+)/);
+			if (geckoRelease) {
+				geckoRelease = geckoRelease[1].split('.');
+				version = geckoRelease[0] * 10000 + (geckoRelease[1] || 0) * 100 + (geckoRelease[2] || 0) * 1;
 			}
 		}
 
 		// Adobe AIR 1.0+
 		// Checked before Safari because AIR have the WebKit rich text editor
 		// features from Safari 3.0.4, but the version reported is 420.
-		if ( env.air )
-			version = parseFloat( agent.match( / adobeair\/(\d+)/ )[ 1 ] );
+		if (env.air)
+			version = parseFloat(agent.match(/ adobeair\/(\d+)/)[1]);
 
 		// WebKit 522+ (Safari 3+)
-		if ( env.webkit )
-			version = parseFloat( agent.match( / applewebkit\/(\d+)/ )[ 1 ] );
+		if (env.webkit)
+			version = parseFloat(agent.match(/ applewebkit\/(\d+)/)[1]);
 
 		/**
 		 * Contains the browser version.
@@ -293,11 +293,11 @@ if ( !CKEDITOR.env ) {
 		 */
 		env.isCompatible =
 			// IE 7+ (IE 7 is not supported, but IE Compat Mode is and it is recognized as IE7).
-			!( env.ie && version < 7 ) &&
+			!(env.ie && version < 7) &&
 			// Firefox 4.0+.
-			!( env.gecko && version < 40000 ) &&
+			!(env.gecko && version < 40000) &&
 			// Chrome 6+, Safari 5.1+, iOS 5+.
-			!( env.webkit && version < 534 );
+			!(env.webkit && version < 534);
 
 		/**
 		 * Indicates that CKEditor is running in the HiDPI environment.
@@ -316,7 +316,7 @@ if ( !CKEDITOR.env ) {
 		 * @since 4.3.0
 		 * @property {Boolean}
 		 */
-		env.needsBrFiller = env.gecko || env.webkit || ( env.ie && version > 10 );
+		env.needsBrFiller = env.gecko || env.webkit || (env.ie && version > 10);
 
 		/**
 		 * Indicates that CKEditor is running in a browser which needs a
@@ -336,25 +336,25 @@ if ( !CKEDITOR.env ) {
 		 *
 		 * @property {String}
 		 */
-		env.cssClass = 'cke_browser_' + ( env.ie ? 'ie' : env.gecko ? 'gecko' : env.webkit ? 'webkit' : 'unknown' );
+		env.cssClass = 'cke_browser_' + (env.ie ? 'ie' : env.gecko ? 'gecko' : env.webkit ? 'webkit' : 'unknown');
 
-		if ( env.quirks )
+		if (env.quirks)
 			env.cssClass += ' cke_browser_quirks';
 
-		if ( env.ie )
-			env.cssClass += ' cke_browser_ie' + ( env.quirks ? '6 cke_browser_iequirks' : env.version );
+		if (env.ie)
+			env.cssClass += ' cke_browser_ie' + (env.quirks ? '6 cke_browser_iequirks' : env.version);
 
-		if ( env.air )
+		if (env.air)
 			env.cssClass += ' cke_browser_air';
 
-		if ( env.iOS )
+		if (env.iOS)
 			env.cssClass += ' cke_browser_ios';
 
-		if ( env.hidpi )
+		if (env.hidpi)
 			env.cssClass += ' cke_hidpi';
 
 		return env;
-	} )();
+	})();
 }
 
 // PACKAGER_RENAME( CKEDITOR.env )

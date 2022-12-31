@@ -6,24 +6,28 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 ?>
 <html>
+
 <head>
-	<meta charset="utf-8">
-	<title>Sample &mdash; CKEditor</title>
-	<link rel="stylesheet" href="sample.css">
+    <meta charset="utf-8">
+    <title>Sample &mdash; CKEditor</title>
+    <link rel="stylesheet" href="sample.css">
 </head>
+
 <body>
-	<h1 class="samples">
-		CKEditor &mdash; Posted Data
-	</h1>
-	<table border="1" cellspacing="0" id="outputSample">
-		<colgroup><col width="120"></colgroup>
-		<thead>
-			<tr>
-				<th>Field&nbsp;Name</th>
-				<th>Value</th>
-			</tr>
-		</thead>
-<?php
+    <h1 class="samples">
+        CKEditor &mdash; Posted Data
+    </h1>
+    <table border="1" cellspacing="0" id="outputSample">
+        <colgroup>
+            <col width="120">
+        </colgroup>
+        <thead>
+            <tr>
+                <th>Field&nbsp;Name</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <?php
 
 if (!empty($_POST))
 {
@@ -37,23 +41,28 @@ if (!empty($_POST))
 		else
 			$value = htmlspecialchars( (string)$value );
 ?>
-		<tr>
-			<th style="vertical-align: top"><?php echo htmlspecialchars( (string)$key ); ?></th>
-			<td><pre class="samples"><?php echo $value; ?></pre></td>
-		</tr>
-	<?php
+        <tr>
+            <th style="vertical-align: top"><?php echo htmlspecialchars( (string)$key ); ?></th>
+            <td>
+                <pre class="samples"><?php echo $value; ?></pre>
+            </td>
+        </tr>
+        <?php
 	}
 }
 ?>
-	</table>
-	<div id="footer">
-		<hr>
-		<p>
-			CKEditor - The text editor for the Internet - <a class="samples" href="https://ckeditor.com/">https://ckeditor.com</a>
-		</p>
-		<p id="copy">
-			Copyright &copy; 2003-2019, <a class="samples" href="https://cksource.com/">CKSource</a> - Frederico Knabben. All rights reserved.
-		</p>
-	</div>
+    </table>
+    <div id="footer">
+        <hr>
+        <p>
+            CKEditor - The text editor for the Internet - <a class="samples"
+                href="https://ckeditor.com/">https://ckeditor.com</a>
+        </p>
+        <p id="copy">
+            Copyright &copy; 2003-2019, <a class="samples" href="https://cksource.com/">CKSource</a> - Frederico
+            Knabben. All rights reserved.
+        </p>
+    </div>
 </body>
+
 </html>

@@ -15,7 +15,7 @@
  * @constructor Creates an event class instance.
  * @param {Object} domEvent A native DOM event object.
  */
-CKEDITOR.dom.event = function( domEvent ) {
+CKEDITOR.dom.event = function (domEvent) {
 	/**
 	 * The native DOM event object represented by this class instance.
 	 *
@@ -32,7 +32,7 @@ CKEDITOR.dom.event.prototype = {
 	 *
 	 * @returns {Number} The key code.
 	 */
-	getKey: function() {
+	getKey: function () {
 		return this.$.keyCode || this.$.which;
 	},
 
@@ -47,16 +47,16 @@ CKEDITOR.dom.event.prototype = {
 	 *
 	 * @returns {Number} The number representing the keys combination.
 	 */
-	getKeystroke: function() {
+	getKeystroke: function () {
 		var keystroke = this.getKey();
 
-		if ( this.$.ctrlKey || this.$.metaKey )
+		if (this.$.ctrlKey || this.$.metaKey)
 			keystroke += CKEDITOR.CTRL;
 
-		if ( this.$.shiftKey )
+		if (this.$.shiftKey)
 			keystroke += CKEDITOR.SHIFT;
 
-		if ( this.$.altKey )
+		if (this.$.altKey)
 			keystroke += CKEDITOR.ALT;
 
 		return keystroke;
@@ -77,23 +77,23 @@ CKEDITOR.dom.event.prototype = {
 	 * @param {Boolean} [stopPropagation=false] Stop propagating this event in the
 	 * event chain.
 	 */
-	preventDefault: function( stopPropagation ) {
+	preventDefault: function (stopPropagation) {
 		var $ = this.$;
-		if ( $.preventDefault )
+		if ($.preventDefault)
 			$.preventDefault();
 		else
 			$.returnValue = false;
 
-		if ( stopPropagation )
+		if (stopPropagation)
 			this.stopPropagation();
 	},
 
 	/**
 	 * Stops this event propagation in the event chain.
 	 */
-	stopPropagation: function() {
+	stopPropagation: function () {
 		var $ = this.$;
-		if ( $.stopPropagation )
+		if ($.stopPropagation)
 			$.stopPropagation();
 		else
 			$.cancelBubble = true;
@@ -112,9 +112,9 @@ CKEDITOR.dom.event.prototype = {
 	 *
 	 * @returns {CKEDITOR.dom.node} The target DOM node.
 	 */
-	getTarget: function() {
+	getTarget: function () {
 		var rawNode = this.$.target || this.$.srcElement;
-		return rawNode ? new CKEDITOR.dom.node( rawNode ) : null;
+		return rawNode ? new CKEDITOR.dom.node(rawNode) : null;
 	},
 
 	/**
@@ -124,7 +124,7 @@ CKEDITOR.dom.event.prototype = {
 	 * @returns {Number} One of {@link CKEDITOR#EVENT_PHASE_CAPTURING},
 	 * {@link CKEDITOR#EVENT_PHASE_AT_TARGET}, or {@link CKEDITOR#EVENT_PHASE_BUBBLING}.
 	 */
-	getPhase: function() {
+	getPhase: function () {
 		return this.$.eventPhase || 2;
 	},
 
@@ -142,10 +142,10 @@ CKEDITOR.dom.event.prototype = {
 	 * @returns {Number} return.x
 	 * @returns {Number} return.y
 	 */
-	getPageOffset: function() {
+	getPageOffset: function () {
 		var doc = this.getTarget().getDocument().$;
-		var pageX = this.$.pageX || this.$.clientX + ( doc.documentElement.scrollLeft || doc.body.scrollLeft );
-		var pageY = this.$.pageY || this.$.clientY + ( doc.documentElement.scrollTop || doc.body.scrollTop );
+		var pageX = this.$.pageX || this.$.clientX + (doc.documentElement.scrollLeft || doc.body.scrollLeft);
+		var pageY = this.$.pageY || this.$.clientY + (doc.documentElement.scrollTop || doc.body.scrollTop);
 		return { x: pageX, y: pageY };
 	}
 };

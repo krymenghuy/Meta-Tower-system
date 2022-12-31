@@ -13,7 +13,7 @@
  * @constructor Creates a comment class instance.
  * @param {String} value The comment text value.
  */
-CKEDITOR.htmlParser.comment = function( value ) {
+CKEDITOR.htmlParser.comment = function (value) {
 	/**
 	 * The comment text.
 	 *
@@ -27,7 +27,7 @@ CKEDITOR.htmlParser.comment = function( value ) {
 	};
 };
 
-CKEDITOR.htmlParser.comment.prototype = CKEDITOR.tools.extend( new CKEDITOR.htmlParser.node(), {
+CKEDITOR.htmlParser.comment.prototype = CKEDITOR.tools.extend(new CKEDITOR.htmlParser.node(), {
 	/**
 	 * The node type. This is a constant value set to {@link CKEDITOR#NODE_COMMENT}.
 	 *
@@ -46,16 +46,16 @@ CKEDITOR.htmlParser.comment.prototype = CKEDITOR.tools.extend( new CKEDITOR.html
 	 * {@link CKEDITOR.htmlParser.element#filterChildren} that it has
 	 * to repeat filter on current position in parent's children array.
 	 */
-	filter: function( filter, context ) {
+	filter: function (filter, context) {
 		var comment = this.value;
 
-		if ( !( comment = filter.onComment( context, comment, this ) ) ) {
+		if (!(comment = filter.onComment(context, comment, this))) {
 			this.remove();
 			return false;
 		}
 
-		if ( typeof comment != 'string' ) {
-			this.replaceWith( comment );
+		if (typeof comment != 'string') {
+			this.replaceWith(comment);
 			return false;
 		}
 
@@ -71,10 +71,10 @@ CKEDITOR.htmlParser.comment.prototype = CKEDITOR.tools.extend( new CKEDITOR.html
 	 * @param {CKEDITOR.htmlParser.filter} [filter] The filter to be applied to this node.
 	 * **Note:** it's unsafe to filter offline (not appended) node.
 	 */
-	writeHtml: function( writer, filter ) {
-		if ( filter )
-			this.filter( filter );
+	writeHtml: function (writer, filter) {
+		if (filter)
+			this.filter(filter);
 
-		writer.comment( this.value );
+		writer.comment(this.value);
 	}
-} );
+});

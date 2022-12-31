@@ -1,7 +1,7 @@
 "use strict";
-var KTDatatablesExtensionsRowgroup = function() {
+var KTDatatablesExtensionsRowgroup = function () {
 
-	var initTable1 = function() {
+	var initTable1 = function () {
 		var table = $('#kt_table_1');
 
 		// begin first table
@@ -16,7 +16,7 @@ var KTDatatablesExtensionsRowgroup = function() {
 					targets: -1,
 					title: 'Actions',
 					orderable: false,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						return `
                         <span class="dropdown">
                             <a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" data-toggle="dropdown" aria-expanded="true">
@@ -35,15 +35,15 @@ var KTDatatablesExtensionsRowgroup = function() {
 				},
 				{
 					targets: 8,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						var status = {
-							1: {'title': 'Pending', 'class': 'kt-badge--brand'},
-							2: {'title': 'Delivered', 'class': ' kt-badge--danger'},
-							3: {'title': 'Canceled', 'class': ' kt-badge--primary'},
-							4: {'title': 'Success', 'class': ' kt-badge--success'},
-							5: {'title': 'Info', 'class': ' kt-badge--info'},
-							6: {'title': 'Danger', 'class': ' kt-badge--danger'},
-							7: {'title': 'Warning', 'class': ' kt-badge--warning'},
+							1: { 'title': 'Pending', 'class': 'kt-badge--brand' },
+							2: { 'title': 'Delivered', 'class': ' kt-badge--danger' },
+							3: { 'title': 'Canceled', 'class': ' kt-badge--primary' },
+							4: { 'title': 'Success', 'class': ' kt-badge--success' },
+							5: { 'title': 'Info', 'class': ' kt-badge--info' },
+							6: { 'title': 'Danger', 'class': ' kt-badge--danger' },
+							7: { 'title': 'Warning', 'class': ' kt-badge--warning' },
 						};
 						if (typeof status[data] === 'undefined') {
 							return data;
@@ -53,11 +53,11 @@ var KTDatatablesExtensionsRowgroup = function() {
 				},
 				{
 					targets: 9,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						var status = {
-							1: {'title': 'Online', 'state': 'danger'},
-							2: {'title': 'Retail', 'state': 'primary'},
-							3: {'title': 'Direct', 'state': 'success'},
+							1: { 'title': 'Online', 'state': 'danger' },
+							2: { 'title': 'Retail', 'state': 'primary' },
+							3: { 'title': 'Direct', 'state': 'success' },
 						};
 						if (typeof status[data] === 'undefined') {
 							return data;
@@ -74,7 +74,7 @@ var KTDatatablesExtensionsRowgroup = function() {
 	return {
 
 		//main function to initiate the module
-		init: function() {
+		init: function () {
 			initTable1();
 		},
 
@@ -82,6 +82,6 @@ var KTDatatablesExtensionsRowgroup = function() {
 
 }();
 
-jQuery(document).ready(function() {
+jQuery(document).ready(function () {
 	KTDatatablesExtensionsRowgroup.init();
 });

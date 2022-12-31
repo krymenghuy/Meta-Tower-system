@@ -2,9 +2,9 @@
 
 var KTFormControls = function () {
     // Private functions
-    
+
     var demo1 = function () {
-        $( "#kt_form_1" ).validate({
+        $("#kt_form_1").validate({
             // define validation rules
             rules: {
                 name: {
@@ -17,13 +17,13 @@ var KTFormControls = function () {
                     required: true,
                     email: true,
                     unique: true,
-                    minlength:8 
+                    minlength: 8
                 },
                 image: {
                     required: true
                 },
                 password: {
-                    required: function(element) {
+                    required: function (element) {
                         if ($("#edit").val() == 1) {
                             return false;
                         } else {
@@ -34,7 +34,7 @@ var KTFormControls = function () {
                     maxlength: 12
                 },
                 password_confirmation: {
-                    required: function(element) {
+                    required: function (element) {
                         if ($("#edit").val() == 1) {
                             return false;
                         } else {
@@ -43,7 +43,7 @@ var KTFormControls = function () {
                     },
                     minlength: 6,
                     maxlength: 12,
-                    equalTo: "#password" 
+                    equalTo: "#password"
                 },
                 "roles[]": {
                     required: true,
@@ -125,7 +125,7 @@ var KTFormControls = function () {
                 },
             },
             //display error alert on form submit  
-            invalidHandler: function(event, validator) {     
+            invalidHandler: function (event, validator) {
                 var alert = $('#kt_form_1_msg');
                 alert.removeClass('kt--hide').show();
                 KTUtil.scrollTop();
@@ -134,7 +134,7 @@ var KTFormControls = function () {
             // submitHandler: function (form) {
             //     //form[0].submit(); // submit the form
             // }
-        });  
+        });
 
         //if we want to change defualt message, we change do as below
         // $('input[name="name"]').rules('add', {
@@ -145,7 +145,7 @@ var KTFormControls = function () {
     }
 
     var demo2 = function () {
-        $( "#kt_form_2" ).validate({
+        $("#kt_form_2").validate({
             // define validation rules
             rules: {
                 //= Client Information(step 3)
@@ -174,7 +174,7 @@ var KTFormControls = function () {
                     required: true
                 },
                 billing_address_2: {
-                    
+
                 },
                 billing_city: {
                     required: true
@@ -191,15 +191,15 @@ var KTFormControls = function () {
                     required: true
                 }
             },
-            
+
             //display error alert on form submit  
-            invalidHandler: function(event, validator) {
+            invalidHandler: function (event, validator) {
                 swal.fire({
-                    "title": "", 
-                    "text": "There are some errors in your submission. Please correct them.", 
+                    "title": "",
+                    "text": "There are some errors in your submission. Please correct them.",
                     "type": "error",
                     "confirmButtonClass": "btn btn-secondary",
-                    "onClose": function(e) {
+                    "onClose": function (e) {
                         console.log('on close event fired!');
                     }
                 });
@@ -210,26 +210,26 @@ var KTFormControls = function () {
             submitHandler: function (form) {
                 //form[0].submit(); // submit the form
                 swal.fire({
-                    "title": "", 
-                    "text": "Form validation passed. All good!", 
+                    "title": "",
+                    "text": "Form validation passed. All good!",
                     "type": "success",
                     "confirmButtonClass": "btn btn-secondary"
                 });
 
                 return false;
             }
-        });       
+        });
     }
 
     return {
         // public functions
-        init: function() {
-            demo1(); 
+        init: function () {
+            demo1();
             demo2();
         }
     };
 }();
 
-jQuery(document).ready(function() {    
+jQuery(document).ready(function () {
     KTFormControls.init();
 });

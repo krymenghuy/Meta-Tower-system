@@ -17,7 +17,7 @@
  * Contains the dictionary of language entries.
  * @namespace
  */
-CKEDITOR.lang[ 'fa' ] = {
+CKEDITOR.lang['fa'] = {
 	// ARIA description.
 	editor: 'ویرایش‌گر متن غنی',
 	editorPanel: 'پنل ویرایشگر متن غنی',

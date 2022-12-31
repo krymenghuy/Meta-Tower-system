@@ -14,16 +14,16 @@
  * @constructor Creates a document fragment class instance.
  * @param {CKEDITOR.dom.document/DocumentFragment} [nodeOrDoc=CKEDITOR.document]
  */
-CKEDITOR.dom.documentFragment = function( nodeOrDoc ) {
+CKEDITOR.dom.documentFragment = function (nodeOrDoc) {
 	nodeOrDoc = nodeOrDoc || CKEDITOR.document;
 
-	if ( nodeOrDoc.type == CKEDITOR.NODE_DOCUMENT )
+	if (nodeOrDoc.type == CKEDITOR.NODE_DOCUMENT)
 		this.$ = nodeOrDoc.$.createDocumentFragment();
 	else
 		this.$ = nodeOrDoc;
 };
 
-CKEDITOR.tools.extend( CKEDITOR.dom.documentFragment.prototype, CKEDITOR.dom.element.prototype, {
+CKEDITOR.tools.extend(CKEDITOR.dom.documentFragment.prototype, CKEDITOR.dom.element.prototype, {
 	/**
 	 * The node type. This is a constant value set to {@link CKEDITOR#NODE_DOCUMENT_FRAGMENT}.
 	 *
@@ -37,9 +37,9 @@ CKEDITOR.tools.extend( CKEDITOR.dom.documentFragment.prototype, CKEDITOR.dom.ele
 	 *
 	 * @param {CKEDITOR.dom.node} node
 	 */
-	insertAfterNode: function( node ) {
+	insertAfterNode: function (node) {
 		node = node.$;
-		node.parentNode.insertBefore( this.$, node.nextSibling );
+		node.parentNode.insertBefore(this.$, node.nextSibling);
 	},
 
 	/**
@@ -48,22 +48,22 @@ CKEDITOR.tools.extend( CKEDITOR.dom.documentFragment.prototype, CKEDITOR.dom.ele
 	 * @since 4.5.0
 	 * @returns {String} The HTML of this document fragment's children.
 	 */
-	getHtml: function() {
-		var container = new CKEDITOR.dom.element( 'div' );
+	getHtml: function () {
+		var container = new CKEDITOR.dom.element('div');
 
-		this.clone( 1, 1 ).appendTo( container );
+		this.clone(1, 1).appendTo(container);
 
-		return container.getHtml().replace( /\s*data-cke-expando=".*?"/g, '' );
+		return container.getHtml().replace(/\s*data-cke-expando=".*?"/g, '');
 	}
 }, true, {
 	'append': 1, 'appendBogus': 1, 'clone': 1, 'getFirst': 1, 'getHtml': 1, 'getLast': 1, 'getParent': 1, 'getNext': 1, 'getPrevious': 1,
 	'appendTo': 1, 'moveChildren': 1, 'insertBefore': 1, 'insertAfterNode': 1, 'replace': 1, 'trim': 1, 'type': 1,
 	'ltrim': 1, 'rtrim': 1, 'getDocument': 1, 'getChildCount': 1, 'getChild': 1, 'getChildren': 1
-} );
+});
 
-CKEDITOR.tools.extend( CKEDITOR.dom.documentFragment.prototype, CKEDITOR.dom.document.prototype, true, {
+CKEDITOR.tools.extend(CKEDITOR.dom.documentFragment.prototype, CKEDITOR.dom.document.prototype, true, {
 	'find': 1, 'findOne': 1
-} );
+});
 
 /**
  * @member CKEDITOR.dom.documentFragment

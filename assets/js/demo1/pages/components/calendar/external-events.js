@@ -1,9 +1,9 @@
 "use strict";
 
-var KTCalendarExternalEvents = function() {
+var KTCalendarExternalEvents = function () {
 
-    var initExternalEvents = function() {
-        $('#kt_calendar_external_events .fc-draggable-handle').each(function() {
+    var initExternalEvents = function () {
+        $('#kt_calendar_external_events .fc-draggable-handle').each(function () {
             // store data so the calendar knows to render an event upon drop
             $(this).data('event', {
                 title: $.trim($(this).text()), // use the element's text as the event title
@@ -14,7 +14,7 @@ var KTCalendarExternalEvents = function() {
         });
     }
 
-    var initCalendar = function() {
+    var initCalendar = function () {
         var todayDate = moment().startOf('day');
         var YM = todayDate.format('YYYY-MM');
         var YESTERDAY = todayDate.clone().subtract(1, 'day').format('YYYY-MM-DD');
@@ -28,13 +28,13 @@ var KTCalendarExternalEvents = function() {
 
         new Draggable(containerEl, {
             itemSelector: '.fc-draggable-handle',
-            eventData: function(eventEl) {
+            eventData: function (eventEl) {
                 return $(eventEl).data('event');
-            }   
+            }
         });
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
-            plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
+            plugins: ['interaction', 'dayGrid', 'timeGrid', 'list'],
 
             isRTL: KTUtil.isRTL(),
             header: {
@@ -68,7 +68,7 @@ var KTCalendarExternalEvents = function() {
                     title: 'All Day Event',
                     start: YM + '-01',
                     description: 'Toto lorem ipsum dolor sit incid idunt ut',
-                    className: "fc-event-danger fc-event-solid-warning"  
+                    className: "fc-event-danger fc-event-solid-warning"
                 },
                 {
                     title: 'Reporting',
@@ -162,7 +162,7 @@ var KTCalendarExternalEvents = function() {
                 }
             ],
 
-            drop: function(arg) {
+            drop: function (arg) {
                 // is the "remove after drop" checkbox checked?
                 if ($('#kt_calendar_external_events_remove').is(':checked')) {
                     // if so, remove the element from the "Draggable Events" list
@@ -170,7 +170,7 @@ var KTCalendarExternalEvents = function() {
                 }
             },
 
-            eventRender: function(info) {
+            eventRender: function (info) {
                 var element = $(info.el);
 
                 if (info.event.extendedProps && info.event.extendedProps.description) {
@@ -179,26 +179,26 @@ var KTCalendarExternalEvents = function() {
                         element.data('placement', 'top');
                         KTApp.initPopover(element);
                     } else if (element.hasClass('fc-time-grid-event')) {
-                        element.find('.fc-title').append('<div class="fc-description">' + info.event.extendedProps.description + '</div>'); 
+                        element.find('.fc-title').append('<div class="fc-description">' + info.event.extendedProps.description + '</div>');
                     } else if (element.find('.fc-list-item-title').lenght !== 0) {
-                        element.find('.fc-list-item-title').append('<div class="fc-description">' + info.event.extendedProps.description + '</div>'); 
+                        element.find('.fc-list-item-title').append('<div class="fc-description">' + info.event.extendedProps.description + '</div>');
                     }
-                } 
+                }
             }
         });
 
-        calendar.render();        
+        calendar.render();
     }
 
     return {
         //main function to initiate the module
-        init: function() {
+        init: function () {
             initExternalEvents();
-            initCalendar(); 
+            initCalendar();
         }
     };
 }();
 
-jQuery(document).ready(function() {
+jQuery(document).ready(function () {
     KTCalendarExternalEvents.init();
 });

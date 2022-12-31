@@ -19,9 +19,9 @@ window._ = require('lodash');
  */
 
 window.axios = require('axios');
-let user_token = $('meta[name="csrf-token"]').attr('content'); 
+let user_token = $('meta[name="csrf-token"]').attr('content');
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-if (user_token){
+if (user_token) {
     window.axios.defaults.headers.common['X-CSRF-TOKEN'] = user_token;
     //set access token ( token that is received then user sucessfully logged in). This token is stored encrypted in cookie named "da337_acctk_1298XA" 
     //window.axios.defaults.headers.common['acc_tk_dms'] = _getCookieValue('da337_acctk_1298XA');
@@ -32,13 +32,13 @@ if (user_token){
     //For Mobile api authentication, we use UM->getUserInfoByToken($request). It looks for $request->bearerToken()  
 
     //***start: read cookie for access token
-        let cookie_name ='da337_acctk_1298XA';
-        let access_token = null;
-        let c_match = document.cookie.match(new RegExp('(^| )' + cookie_name + '=([^;]+)'));
-        if (c_match) access_token = c_match[2];
+    let cookie_name = 'da337_acctk_1298XA';
+    let access_token = null;
+    let c_match = document.cookie.match(new RegExp('(^| )' + cookie_name + '=([^;]+)'));
+    if (c_match) access_token = c_match[2];
     //*** end:: read cookie for access token 
     window.axios.defaults.headers.common['Authorization'] = "Bearer " + access_token;
-}else{
+} else {
     console.error('CSRF TOKEN not found in Master page!');
 }
 /**
@@ -88,20 +88,20 @@ window.Pusher = require('pusher-js');
 //         },
 //     },
 // });
-  
+
 
 window.Echo = new Echo({
     broadcaster: 'pusher',
     key: process.env.MIX_PUSHER_APP_KEY,
     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
     //disableStats: false,
-    httpHost:window.location.hostname,
-    wsHost:window.location.hostname,
-    wsPort:6001,// process.env.WEBSOCKETS_PORT,
-    wssPort:6001,// process.env.WEBSOCKETS_PORT,
+    httpHost: window.location.hostname,
+    wsHost: window.location.hostname,
+    wsPort: 6001,// process.env.WEBSOCKETS_PORT,
+    wssPort: 6001,// process.env.WEBSOCKETS_PORT,
     //forceTLS:true,
-    useTLS:false,
-    enabledTransports: ['ws','wss'],
+    useTLS: false,
+    enabledTransports: ['ws', 'wss'],
     //encrypted: true,
     authorizer: (channel, options) => {
         return {
@@ -110,91 +110,91 @@ window.Echo = new Echo({
                     socket_id: socketId,
                     channel_name: channel.name
                 })
-                .then(response => {
-                    if(response.status ==403)
-                       console.log( "axios unable to subscribe to channel "+ channel.name +". Response data => "+ JSON.stringify(response.data));
-                    else if(response.status ==200){
-                        if(response.data =="Forbidden") 
-                           console.log( "axios unable to subscribe to channel "+ channel.name +". Response data => "+ JSON.stringify(response));
-                        else   
-                           console.log( "axios successfully subscribed to channel "+ channel.name+" successfully. Response data => "+ JSON.stringify(response.data));   
-                    }
-                    else  console.log( "axios unable to subscribe to channel "+ channel.name +". Response data => "+ JSON.stringify(response.data));     
-                    callback(false, response.data);
-                })
-                .catch(error => {
-                    console.error("axios encountered error in connecting to web socket. Error => " + JSON.stringify(error));
-                    callback(true, error);
-                });
+                    .then(response => {
+                        if (response.status == 403)
+                            console.log("axios unable to subscribe to channel " + channel.name + ". Response data => " + JSON.stringify(response.data));
+                        else if (response.status == 200) {
+                            if (response.data == "Forbidden")
+                                console.log("axios unable to subscribe to channel " + channel.name + ". Response data => " + JSON.stringify(response));
+                            else
+                                console.log("axios successfully subscribed to channel " + channel.name + " successfully. Response data => " + JSON.stringify(response.data));
+                        }
+                        else console.log("axios unable to subscribe to channel " + channel.name + ". Response data => " + JSON.stringify(response.data));
+                        callback(false, response.data);
+                    })
+                    .catch(error => {
+                        console.error("axios encountered error in connecting to web socket. Error => " + JSON.stringify(error));
+                        callback(true, error);
+                    });
             }
         };
-     },
-  });
+    },
+});
 
-        // window.Echo.connector.pusher.connection.bind('connecting', (payload) => {
-        //     /**
-        //      * All dependencies have been loaded and Channels is trying to connect.
-        //      * The connection will also enter this state when it is trying to reconnect after a connection failure.
-        //      */
+// window.Echo.connector.pusher.connection.bind('connecting', (payload) => {
+//     /**
+//      * All dependencies have been loaded and Channels is trying to connect.
+//      * The connection will also enter this state when it is trying to reconnect after a connection failure.
+//      */
 
-        //     let p = payload;
-        //     if (payload != null && typeof payload == 'object') p = JSON.stringify(p);
-        //     console.log('connecting...', p);
+//     let p = payload;
+//     if (payload != null && typeof payload == 'object') p = JSON.stringify(p);
+//     console.log('connecting...', p);
 
-        // });
+// });
 
-        window.Echo.connector.pusher.connection.bind('connected', (payload) => {
-            /**
-             * The connection to Channels is open and authenticated with your app.
-             */
+window.Echo.connector.pusher.connection.bind('connected', (payload) => {
+    /**
+     * The connection to Channels is open and authenticated with your app.
+     */
 
-            let p = payload;
-            if (payload != null && typeof payload == 'object') p = JSON.stringify(p);
-            console.log('connected', p);
-        });
+    let p = payload;
+    if (payload != null && typeof payload == 'object') p = JSON.stringify(p);
+    console.log('connected', p);
+});
 
-        window.Echo.connector.pusher.connection.bind('unavailable', (payload) => {
+window.Echo.connector.pusher.connection.bind('unavailable', (payload) => {
 
-            /**
-             *  The connection is temporarily unavailable. In most cases this means that there is no internet connection.
-             *  It could also mean that Channels is down, or some intermediary is blocking the connection. In this state,
-             *  pusher-js will automatically retry the connection every 15 seconds.
-             */
+    /**
+     *  The connection is temporarily unavailable. In most cases this means that there is no internet connection.
+     *  It could also mean that Channels is down, or some intermediary is blocking the connection. In this state,
+     *  pusher-js will automatically retry the connection every 15 seconds.
+     */
 
-            let p = payload;
-            if (payload != null && typeof payload == 'object') p = JSON.stringify(p);
-            console.log('Websocket unavailable ', p?p:' NULL is returned ');
-        });
+    let p = payload;
+    if (payload != null && typeof payload == 'object') p = JSON.stringify(p);
+    console.log('Websocket unavailable ', p ? p : ' NULL is returned ');
+});
 
-        window.Echo.connector.pusher.connection.bind('failed', (payload) => {
-            /**
-             * Channels is not supported by the browser.
-             * This implies that WebSockets are not natively available and an HTTP-based transport could not be found.
-             */
-            let p = payload;
-            if (payload != null && typeof payload == 'object') p = JSON.stringify(p);
-            console.log('failed', p);
-            
-        });
+window.Echo.connector.pusher.connection.bind('failed', (payload) => {
+    /**
+     * Channels is not supported by the browser.
+     * This implies that WebSockets are not natively available and an HTTP-based transport could not be found.
+     */
+    let p = payload;
+    if (payload != null && typeof payload == 'object') p = JSON.stringify(p);
+    console.log('failed', p);
 
-        window.Echo.connector.pusher.connection.bind('disconnected', (payload) => {
-            /**
-             * The Channels connection was previously connected and has now intentionally been closed
-             */
+});
 
-            let p = payload;
-            if (payload != null && typeof payload == 'object') p = JSON.stringify(p);
-            console.log('disconnected...', p);
+window.Echo.connector.pusher.connection.bind('disconnected', (payload) => {
+    /**
+     * The Channels connection was previously connected and has now intentionally been closed
+     */
 
-        });
+    let p = payload;
+    if (payload != null && typeof payload == 'object') p = JSON.stringify(p);
+    console.log('disconnected...', p);
 
-        window.Echo.connector.pusher.connection.bind('message', (payload) => {
-            /**
-             * Ping received from server
-             */
+});
 
-            let p = payload;
-            if (payload != null && typeof payload == 'object') p = JSON.stringify(p);
-            console.log('message', p);
-        });
- 
+window.Echo.connector.pusher.connection.bind('message', (payload) => {
+    /**
+     * Ping received from server
+     */
+
+    let p = payload;
+    if (payload != null && typeof payload == 'object') p = JSON.stringify(p);
+    console.log('message', p);
+});
+

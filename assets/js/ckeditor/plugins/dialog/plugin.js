@@ -61,21 +61,21 @@ CKEDITOR.DIALOG_STATE_IDLE = 1;
  */
 CKEDITOR.DIALOG_STATE_BUSY = 2;
 
-( function() {
+(function () {
 	var cssLength = CKEDITOR.tools.cssLength;
 
-	function isTabVisible( tabId ) {
-		return !!this._.tabs[ tabId ][ 0 ].$.offsetHeight;
+	function isTabVisible(tabId) {
+		return !!this._.tabs[tabId][0].$.offsetHeight;
 	}
 
 	function getPreviousVisibleTab() {
 		var tabId = this._.currentTabId,
 			length = this._.tabIdList.length,
-			tabIndex = CKEDITOR.tools.indexOf( this._.tabIdList, tabId ) + length;
+			tabIndex = CKEDITOR.tools.indexOf(this._.tabIdList, tabId) + length;
 
-		for ( var i = tabIndex - 1; i > tabIndex - length; i-- ) {
-			if ( isTabVisible.call( this, this._.tabIdList[ i % length ] ) )
-				return this._.tabIdList[ i % length ];
+		for (var i = tabIndex - 1; i > tabIndex - length; i--) {
+			if (isTabVisible.call(this, this._.tabIdList[i % length]))
+				return this._.tabIdList[i % length];
 		}
 
 		return null;
@@ -84,55 +84,55 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 	function getNextVisibleTab() {
 		var tabId = this._.currentTabId,
 			length = this._.tabIdList.length,
-			tabIndex = CKEDITOR.tools.indexOf( this._.tabIdList, tabId );
+			tabIndex = CKEDITOR.tools.indexOf(this._.tabIdList, tabId);
 
-		for ( var i = tabIndex + 1; i < tabIndex + length; i++ ) {
-			if ( isTabVisible.call( this, this._.tabIdList[ i % length ] ) )
-				return this._.tabIdList[ i % length ];
+		for (var i = tabIndex + 1; i < tabIndex + length; i++) {
+			if (isTabVisible.call(this, this._.tabIdList[i % length]))
+				return this._.tabIdList[i % length];
 		}
 
 		return null;
 	}
 
 
-	function clearOrRecoverTextInputValue( container, isRecover ) {
-		var inputs = container.$.getElementsByTagName( 'input' );
-		for ( var i = 0, length = inputs.length; i < length; i++ ) {
-			var item = new CKEDITOR.dom.element( inputs[ i ] );
+	function clearOrRecoverTextInputValue(container, isRecover) {
+		var inputs = container.$.getElementsByTagName('input');
+		for (var i = 0, length = inputs.length; i < length; i++) {
+			var item = new CKEDITOR.dom.element(inputs[i]);
 
-			if ( item.getAttribute( 'type' ).toLowerCase() == 'text' ) {
-				if ( isRecover ) {
-					item.setAttribute( 'value', item.getCustomData( 'fake_value' ) || '' );
-					item.removeCustomData( 'fake_value' );
+			if (item.getAttribute('type').toLowerCase() == 'text') {
+				if (isRecover) {
+					item.setAttribute('value', item.getCustomData('fake_value') || '');
+					item.removeCustomData('fake_value');
 				} else {
-					item.setCustomData( 'fake_value', item.getAttribute( 'value' ) );
-					item.setAttribute( 'value', '' );
+					item.setCustomData('fake_value', item.getAttribute('value'));
+					item.setAttribute('value', '');
 				}
 			}
 		}
 	}
 
 	// Handle dialog element validation state UI changes.
-	function handleFieldValidated( isValid, msg ) {
+	function handleFieldValidated(isValid, msg) {
 		var input = this.getInputElement();
-		if ( input )
-			isValid ? input.removeAttribute( 'aria-invalid' ) : input.setAttribute( 'aria-invalid', true );
+		if (input)
+			isValid ? input.removeAttribute('aria-invalid') : input.setAttribute('aria-invalid', true);
 
-		if ( !isValid ) {
-			if ( this.select )
+		if (!isValid) {
+			if (this.select)
 				this.select();
 			else
 				this.focus();
 		}
 
-		msg && alert( msg ); // jshint ignore:line
+		msg && alert(msg); // jshint ignore:line
 
-		this.fire( 'validated', { valid: isValid, msg: msg } );
+		this.fire('validated', { valid: isValid, msg: msg });
 	}
 
 	function resetField() {
 		var input = this.getInputElement();
-		input && input.removeAttribute( 'aria-invalid' );
+		input && input.removeAttribute('aria-invalid');
 	}
 
 	var templateSource = '<div class="cke_reset_all {editorId} {editorDialogClass} {hidpi}' +
@@ -142,54 +142,54 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		' aria-labelledby="cke_dialog_title_{id}"' +
 		'>' +
 		'<table class="cke_dialog ' + CKEDITOR.env.cssClass + ' cke_{langDir}"' +
-			' style="position:absolute" role="presentation">' +
-			'<tr><td role="presentation">' +
-			'<div class="cke_dialog_body" role="presentation">' +
-				'<div id="cke_dialog_title_{id}" class="cke_dialog_title" role="presentation"></div>' +
-				'<a id="cke_dialog_close_button_{id}" class="cke_dialog_close_button" href="javascript:void(0)" title="{closeTitle}" role="button"><span class="cke_label">X</span></a>' +
-				'<div id="cke_dialog_tabs_{id}" class="cke_dialog_tabs" role="tablist"></div>' +
-				'<table class="cke_dialog_contents" role="presentation">' +
-				'<tr>' +
-					'<td id="cke_dialog_contents_{id}" class="cke_dialog_contents_body" role="presentation"></td>' +
-				'</tr>' +
-				'<tr>' +
-					'<td id="cke_dialog_footer_{id}" class="cke_dialog_footer" role="presentation"></td>' +
-				'</tr>' +
-				'</table>' +
-			'</div>' +
-			'</td></tr>' +
+		' style="position:absolute" role="presentation">' +
+		'<tr><td role="presentation">' +
+		'<div class="cke_dialog_body" role="presentation">' +
+		'<div id="cke_dialog_title_{id}" class="cke_dialog_title" role="presentation"></div>' +
+		'<a id="cke_dialog_close_button_{id}" class="cke_dialog_close_button" href="javascript:void(0)" title="{closeTitle}" role="button"><span class="cke_label">X</span></a>' +
+		'<div id="cke_dialog_tabs_{id}" class="cke_dialog_tabs" role="tablist"></div>' +
+		'<table class="cke_dialog_contents" role="presentation">' +
+		'<tr>' +
+		'<td id="cke_dialog_contents_{id}" class="cke_dialog_contents_body" role="presentation"></td>' +
+		'</tr>' +
+		'<tr>' +
+		'<td id="cke_dialog_footer_{id}" class="cke_dialog_footer" role="presentation"></td>' +
+		'</tr>' +
+		'</table>' +
+		'</div>' +
+		'</td></tr>' +
 		'</table>' +
 		'</div>';
 
-	function buildDialog( editor ) {
-		var element = CKEDITOR.dom.element.createFromHtml( CKEDITOR.addTemplate( 'dialog', templateSource ).output( {
+	function buildDialog(editor) {
+		var element = CKEDITOR.dom.element.createFromHtml(CKEDITOR.addTemplate('dialog', templateSource).output({
 			id: CKEDITOR.tools.getNextNumber(),
 			editorId: editor.id,
 			langDir: editor.lang.dir,
 			langCode: editor.langCode,
-			editorDialogClass: 'cke_editor_' + editor.name.replace( /\./g, '\\.' ) + '_dialog',
+			editorDialogClass: 'cke_editor_' + editor.name.replace(/\./g, '\\.') + '_dialog',
 			closeTitle: editor.lang.common.close,
 			hidpi: CKEDITOR.env.hidpi ? 'cke_hidpi' : ''
-		} ) );
+		}));
 
 		// TODO: Change this to getById(), so it'll support custom templates.
-		var body = element.getChild( [ 0, 0, 0, 0, 0 ] ),
-			title = body.getChild( 0 ),
-			close = body.getChild( 1 );
+		var body = element.getChild([0, 0, 0, 0, 0]),
+			title = body.getChild(0),
+			close = body.getChild(1);
 
 		// Don't allow dragging on dialog (https://dev.ckeditor.com/ticket/13184).
-		editor.plugins.clipboard && CKEDITOR.plugins.clipboard.preventDefaultDropOnElement( body );
+		editor.plugins.clipboard && CKEDITOR.plugins.clipboard.preventDefaultDropOnElement(body);
 
 		// IFrame shim for dialog that masks activeX in IE. (https://dev.ckeditor.com/ticket/7619)
-		if ( CKEDITOR.env.ie && !CKEDITOR.env.quirks && !CKEDITOR.env.edge ) {
-			var src = 'javascript:void(function(){' + encodeURIComponent( 'document.open();(' + CKEDITOR.tools.fixDomain + ')();document.close();' ) + '}())', // jshint ignore:line
-				iframe = CKEDITOR.dom.element.createFromHtml( '<iframe' +
+		if (CKEDITOR.env.ie && !CKEDITOR.env.quirks && !CKEDITOR.env.edge) {
+			var src = 'javascript:void(function(){' + encodeURIComponent('document.open();(' + CKEDITOR.tools.fixDomain + ')();document.close();') + '}())', // jshint ignore:line
+				iframe = CKEDITOR.dom.element.createFromHtml('<iframe' +
 					' frameBorder="0"' +
 					' class="cke_iframe_shim"' +
 					' src="' + src + '"' +
 					' tabIndex="-1"' +
-					'></iframe>' );
-			iframe.appendTo( body.getParent() );
+					'></iframe>');
+			iframe.appendTo(body.getParent());
 		}
 
 		// Make the Title and Close Button unselectable.
@@ -199,12 +199,12 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		return {
 			element: element,
 			parts: {
-				dialog: element.getChild( 0 ),
+				dialog: element.getChild(0),
 				title: title,
 				close: close,
-				tabs: body.getChild( 2 ),
-				contents: body.getChild( [ 3, 0, 0, 0 ] ),
-				footer: body.getChild( [ 3, 0, 1, 0 ] )
+				tabs: body.getChild(2),
+				contents: body.getChild([3, 0, 0, 0]),
+				footer: body.getChild([3, 0, 1, 0])
 			}
 		};
 	}
@@ -220,31 +220,31 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 	 * @param {Object} editor The editor which created the dialog.
 	 * @param {String} dialogName The dialog's registered name.
 	 */
-	CKEDITOR.dialog = function( editor, dialogName ) {
+	CKEDITOR.dialog = function (editor, dialogName) {
 		// Load the dialog definition.
-		var definition = CKEDITOR.dialog._.dialogDefinitions[ dialogName ],
-			defaultDefinition = CKEDITOR.tools.clone( defaultDialogDefinition ),
+		var definition = CKEDITOR.dialog._.dialogDefinitions[dialogName],
+			defaultDefinition = CKEDITOR.tools.clone(defaultDialogDefinition),
 			buttonsOrder = editor.config.dialog_buttonsOrder || 'OS',
 			dir = editor.lang.dir,
 			tabsToRemove = {},
 			i, processed, stopPropagation;
 
-		if ( ( buttonsOrder == 'OS' && CKEDITOR.env.mac ) || // The buttons in MacOS Apps are in reverse order (https://dev.ckeditor.com/ticket/4750)
-		( buttonsOrder == 'rtl' && dir == 'ltr' ) || ( buttonsOrder == 'ltr' && dir == 'rtl' ) )
+		if ((buttonsOrder == 'OS' && CKEDITOR.env.mac) || // The buttons in MacOS Apps are in reverse order (https://dev.ckeditor.com/ticket/4750)
+			(buttonsOrder == 'rtl' && dir == 'ltr') || (buttonsOrder == 'ltr' && dir == 'rtl'))
 			defaultDefinition.buttons.reverse();
 
 
 		// Completes the definition with the default values.
-		definition = CKEDITOR.tools.extend( definition( editor ), defaultDefinition );
+		definition = CKEDITOR.tools.extend(definition(editor), defaultDefinition);
 
 		// Clone a functionally independent copy for this dialog.
-		definition = CKEDITOR.tools.clone( definition );
+		definition = CKEDITOR.tools.clone(definition);
 
 		// Create a complex definition object, extending it with the API
 		// functions.
-		definition = new definitionObject( this, definition );
+		definition = new definitionObject(this, definition);
 
-		var themeBuilt = buildDialog( editor );
+		var themeBuilt = buildDialog(editor);
 
 		// Initialize some basic parameters.
 		this._ = {
@@ -274,9 +274,9 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 
 		this.parts = themeBuilt.parts;
 
-		CKEDITOR.tools.setTimeout( function() {
-			editor.fire( 'ariaWidget', this.parts.contents );
-		}, 0, this );
+		CKEDITOR.tools.setTimeout(function () {
+			editor.fire('ariaWidget', this.parts.contents);
+		}, 0, this);
 
 		// Set the startup styles for the dialog, avoiding it enlarging the
 		// page size on the dialog creation.
@@ -286,153 +286,153 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 			visibility: 'hidden'
 		};
 
-		startStyles[ dir == 'rtl' ? 'right' : 'left' ] = 0;
-		this.parts.dialog.setStyles( startStyles );
+		startStyles[dir == 'rtl' ? 'right' : 'left'] = 0;
+		this.parts.dialog.setStyles(startStyles);
 
 
 		// Call the CKEDITOR.event constructor to initialize this instance.
-		CKEDITOR.event.call( this );
+		CKEDITOR.event.call(this);
 
 		// Fire the "dialogDefinition" event, making it possible to customize
 		// the dialog definition.
-		this.definition = definition = CKEDITOR.fire( 'dialogDefinition', {
+		this.definition = definition = CKEDITOR.fire('dialogDefinition', {
 			name: dialogName,
 			definition: definition
-		}, editor ).definition;
+		}, editor).definition;
 
 		// Cache tabs that should be removed.
-		if ( !( 'removeDialogTabs' in editor._ ) && editor.config.removeDialogTabs ) {
-			var removeContents = editor.config.removeDialogTabs.split( ';' );
+		if (!('removeDialogTabs' in editor._) && editor.config.removeDialogTabs) {
+			var removeContents = editor.config.removeDialogTabs.split(';');
 
-			for ( i = 0; i < removeContents.length; i++ ) {
-				var parts = removeContents[ i ].split( ':' );
-				if ( parts.length == 2 ) {
-					var removeDialogName = parts[ 0 ];
-					if ( !tabsToRemove[ removeDialogName ] )
-						tabsToRemove[ removeDialogName ] = [];
-					tabsToRemove[ removeDialogName ].push( parts[ 1 ] );
+			for (i = 0; i < removeContents.length; i++) {
+				var parts = removeContents[i].split(':');
+				if (parts.length == 2) {
+					var removeDialogName = parts[0];
+					if (!tabsToRemove[removeDialogName])
+						tabsToRemove[removeDialogName] = [];
+					tabsToRemove[removeDialogName].push(parts[1]);
 				}
 			}
 			editor._.removeDialogTabs = tabsToRemove;
 		}
 
 		// Remove tabs of this dialog.
-		if ( editor._.removeDialogTabs && ( tabsToRemove = editor._.removeDialogTabs[ dialogName ] ) ) {
-			for ( i = 0; i < tabsToRemove.length; i++ )
-				definition.removeContents( tabsToRemove[ i ] );
+		if (editor._.removeDialogTabs && (tabsToRemove = editor._.removeDialogTabs[dialogName])) {
+			for (i = 0; i < tabsToRemove.length; i++)
+				definition.removeContents(tabsToRemove[i]);
 		}
 
 		// Initialize load, show, hide, ok and cancel events.
-		if ( definition.onLoad )
-			this.on( 'load', definition.onLoad );
+		if (definition.onLoad)
+			this.on('load', definition.onLoad);
 
-		if ( definition.onShow )
-			this.on( 'show', definition.onShow );
+		if (definition.onShow)
+			this.on('show', definition.onShow);
 
-		if ( definition.onHide )
-			this.on( 'hide', definition.onHide );
+		if (definition.onHide)
+			this.on('hide', definition.onHide);
 
-		if ( definition.onOk ) {
-			this.on( 'ok', function( evt ) {
+		if (definition.onOk) {
+			this.on('ok', function (evt) {
 				// Dialog confirm might probably introduce content changes (https://dev.ckeditor.com/ticket/5415).
-				editor.fire( 'saveSnapshot' );
-				setTimeout( function() {
-					editor.fire( 'saveSnapshot' );
-				}, 0 );
-				if ( definition.onOk.call( this, evt ) === false )
+				editor.fire('saveSnapshot');
+				setTimeout(function () {
+					editor.fire('saveSnapshot');
+				}, 0);
+				if (definition.onOk.call(this, evt) === false)
 					evt.data.hide = false;
-			} );
+			});
 		}
 
 		// Set default dialog state.
 		this.state = CKEDITOR.DIALOG_STATE_IDLE;
 
-		if ( definition.onCancel ) {
-			this.on( 'cancel', function( evt ) {
-				if ( definition.onCancel.call( this, evt ) === false )
+		if (definition.onCancel) {
+			this.on('cancel', function (evt) {
+				if (definition.onCancel.call(this, evt) === false)
 					evt.data.hide = false;
-			} );
+			});
 		}
 
 		var me = this;
 
 		// Iterates over all items inside all content in the dialog, calling a
 		// function for each of them.
-		var iterContents = function( func ) {
-				var contents = me._.contents,
-					stop = false;
+		var iterContents = function (func) {
+			var contents = me._.contents,
+				stop = false;
 
-				for ( var i in contents ) {
-					for ( var j in contents[ i ] ) {
-						stop = func.call( this, contents[ i ][ j ] );
-						if ( stop )
-							return;
-					}
+			for (var i in contents) {
+				for (var j in contents[i]) {
+					stop = func.call(this, contents[i][j]);
+					if (stop)
+						return;
 				}
-			};
+			}
+		};
 
-		this.on( 'ok', function( evt ) {
-			iterContents( function( item ) {
-				if ( item.validate ) {
-					var retval = item.validate( this ),
-						invalid = ( typeof retval == 'string' ) || retval === false;
+		this.on('ok', function (evt) {
+			iterContents(function (item) {
+				if (item.validate) {
+					var retval = item.validate(this),
+						invalid = (typeof retval == 'string') || retval === false;
 
-					if ( invalid ) {
+					if (invalid) {
 						evt.data.hide = false;
 						evt.stop();
 					}
 
-					handleFieldValidated.call( item, !invalid, typeof retval == 'string' ? retval : undefined );
+					handleFieldValidated.call(item, !invalid, typeof retval == 'string' ? retval : undefined);
 					return invalid;
 				}
-			} );
-		}, this, null, 0 );
+			});
+		}, this, null, 0);
 
-		this.on( 'cancel', function( evt ) {
-			iterContents( function( item ) {
-				if ( item.isChanged() ) {
-					if ( !editor.config.dialog_noConfirmCancel && !confirm( editor.lang.common.confirmCancel ) ) // jshint ignore:line
+		this.on('cancel', function (evt) {
+			iterContents(function (item) {
+				if (item.isChanged()) {
+					if (!editor.config.dialog_noConfirmCancel && !confirm(editor.lang.common.confirmCancel)) // jshint ignore:line
 						evt.data.hide = false;
 					return true;
 				}
-			} );
-		}, this, null, 0 );
+			});
+		}, this, null, 0);
 
-		this.parts.close.on( 'click', function( evt ) {
-			if ( this.fire( 'cancel', { hide: true } ).hide !== false )
+		this.parts.close.on('click', function (evt) {
+			if (this.fire('cancel', { hide: true }).hide !== false)
 				this.hide();
 			evt.data.preventDefault();
-		}, this );
+		}, this);
 
 		// Sort focus list according to tab order definitions.
 		function setupFocus() {
 			var focusList = me._.focusList;
-			focusList.sort( function( a, b ) {
+			focusList.sort(function (a, b) {
 				// Mimics browser tab order logics;
-				if ( a.tabIndex != b.tabIndex )
+				if (a.tabIndex != b.tabIndex)
 					return b.tabIndex - a.tabIndex;
 				//  Sort is not stable in some browsers,
 				// fall-back the comparator to 'focusIndex';
 				else
 					return a.focusIndex - b.focusIndex;
-			} );
+			});
 
 			var size = focusList.length;
-			for ( var i = 0; i < size; i++ )
-				focusList[ i ].focusIndex = i;
+			for (var i = 0; i < size; i++)
+				focusList[i].focusIndex = i;
 		}
 
 		// Expects 1 or -1 as an offset, meaning direction of the offset change.
-		function changeFocus( offset ) {
+		function changeFocus(offset) {
 			var focusList = me._.focusList;
 			offset = offset || 0;
 
-			if ( focusList.length < 1 )
+			if (focusList.length < 1)
 				return;
 
 			var startIndex = me._.currentFocusIndex;
 
-			if ( me._.tabBarMode && offset < 0 ) {
+			if (me._.tabBarMode && offset < 0) {
 				// If we are in tab mode, we need to mimic that we started tabbing back from the first
 				// focusList (so it will go to the last one).
 				startIndex = 0;
@@ -441,8 +441,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 			// Trigger the 'blur' event of  any input element before anything,
 			// since certain UI updates may depend on it.
 			try {
-				focusList[ startIndex ].getInputElement().$.blur();
-			} catch ( e ) {}
+				focusList[startIndex].getInputElement().$.blur();
+			} catch (e) { }
 
 			var currentIndex = startIndex,
 				hasTabs = me._.pageCount > 1;
@@ -450,93 +450,93 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 			do {
 				currentIndex = currentIndex + offset;
 
-				if ( hasTabs && !me._.tabBarMode && ( currentIndex == focusList.length || currentIndex == -1 ) ) {
+				if (hasTabs && !me._.tabBarMode && (currentIndex == focusList.length || currentIndex == -1)) {
 					// If the dialog was not in tab mode, then focus the first tab (https://dev.ckeditor.com/ticket/13027).
 					me._.tabBarMode = true;
-					me._.tabs[ me._.currentTabId ][ 0 ].focus();
+					me._.tabs[me._.currentTabId][0].focus();
 					me._.currentFocusIndex = -1;
 
 					// Early return, in order to avoid accessing focusList[ -1 ].
 					return;
 				}
 
-				currentIndex = ( currentIndex + focusList.length ) % focusList.length;
+				currentIndex = (currentIndex + focusList.length) % focusList.length;
 
-				if ( currentIndex == startIndex ) {
+				if (currentIndex == startIndex) {
 					break;
 				}
-			} while ( offset && !focusList[ currentIndex ].isFocusable() );
+			} while (offset && !focusList[currentIndex].isFocusable());
 
-			focusList[ currentIndex ].focus();
+			focusList[currentIndex].focus();
 
 			// Select whole field content.
-			if ( focusList[ currentIndex ].type == 'text' )
-				focusList[ currentIndex ].select();
+			if (focusList[currentIndex].type == 'text')
+				focusList[currentIndex].select();
 		}
 
 		this.changeFocus = changeFocus;
 
 
-		function keydownHandler( evt ) {
+		function keydownHandler(evt) {
 			// If I'm not the top dialog, ignore.
-			if ( me != CKEDITOR.dialog._.currentTop )
+			if (me != CKEDITOR.dialog._.currentTop)
 				return;
 
 			var keystroke = evt.data.getKeystroke(),
 				rtl = editor.lang.dir == 'rtl',
-				arrowKeys = [ 37, 38, 39, 40 ],
+				arrowKeys = [37, 38, 39, 40],
 				button;
 
 			processed = stopPropagation = 0;
 
-			if ( keystroke == 9 || keystroke == CKEDITOR.SHIFT + 9 ) {
-				var shiftPressed = ( keystroke == CKEDITOR.SHIFT + 9 );
-				changeFocus( shiftPressed ? -1 : 1 );
+			if (keystroke == 9 || keystroke == CKEDITOR.SHIFT + 9) {
+				var shiftPressed = (keystroke == CKEDITOR.SHIFT + 9);
+				changeFocus(shiftPressed ? -1 : 1);
 				processed = 1;
-			} else if ( keystroke == CKEDITOR.ALT + 121 && !me._.tabBarMode && me.getPageCount() > 1 ) {
+			} else if (keystroke == CKEDITOR.ALT + 121 && !me._.tabBarMode && me.getPageCount() > 1) {
 				// Alt-F10 puts focus into the current tab item in the tab bar.
 				me._.tabBarMode = true;
-				me._.tabs[ me._.currentTabId ][ 0 ].focus();
+				me._.tabs[me._.currentTabId][0].focus();
 				me._.currentFocusIndex = -1;
 				processed = 1;
-			} else if ( CKEDITOR.tools.indexOf( arrowKeys, keystroke ) != -1 && me._.tabBarMode ) {
+			} else if (CKEDITOR.tools.indexOf(arrowKeys, keystroke) != -1 && me._.tabBarMode) {
 				// Array with key codes that activate previous tab.
 				var prevKeyCodes = [
-						// Depending on the lang dir: right or left key
-						rtl ? 39 : 37,
-						// Top/bot arrow: actually for both cases it's the same.
-						38
-					],
-					nextId = CKEDITOR.tools.indexOf( prevKeyCodes, keystroke ) != -1 ? getPreviousVisibleTab.call( me ) : getNextVisibleTab.call( me );
+					// Depending on the lang dir: right or left key
+					rtl ? 39 : 37,
+					// Top/bot arrow: actually for both cases it's the same.
+					38
+				],
+					nextId = CKEDITOR.tools.indexOf(prevKeyCodes, keystroke) != -1 ? getPreviousVisibleTab.call(me) : getNextVisibleTab.call(me);
 
-				me.selectPage( nextId );
-				me._.tabs[ nextId ][ 0 ].focus();
+				me.selectPage(nextId);
+				me._.tabs[nextId][0].focus();
 				processed = 1;
-			} else if ( ( keystroke == 13 || keystroke == 32 ) && me._.tabBarMode ) {
-				this.selectPage( this._.currentTabId );
+			} else if ((keystroke == 13 || keystroke == 32) && me._.tabBarMode) {
+				this.selectPage(this._.currentTabId);
 				this._.tabBarMode = false;
 				this._.currentFocusIndex = -1;
-				changeFocus( 1 );
+				changeFocus(1);
 				processed = 1;
 			}
 			// If user presses enter key in a text box, it implies clicking OK for the dialog.
-			else if ( keystroke == 13 /*ENTER*/ ) {
+			else if (keystroke == 13 /*ENTER*/) {
 				// Don't do that for a target that handles ENTER.
 				var target = evt.data.getTarget();
-				if ( !target.is( 'a', 'button', 'select', 'textarea' ) && ( !target.is( 'input' ) || target.$.type != 'button' ) ) {
-					button = this.getButton( 'ok' );
-					button && CKEDITOR.tools.setTimeout( button.click, 0, button );
+				if (!target.is('a', 'button', 'select', 'textarea') && (!target.is('input') || target.$.type != 'button')) {
+					button = this.getButton('ok');
+					button && CKEDITOR.tools.setTimeout(button.click, 0, button);
 					processed = 1;
 				}
 				stopPropagation = 1; // Always block the propagation (https://dev.ckeditor.com/ticket/4269)
-			} else if ( keystroke == 27 /*ESC*/ ) {
-				button = this.getButton( 'cancel' );
+			} else if (keystroke == 27 /*ESC*/) {
+				button = this.getButton('cancel');
 
 				// If there's a Cancel button, click it, else just fire the cancel event and hide the dialog.
-				if ( button )
-					CKEDITOR.tools.setTimeout( button.click, 0, button );
+				if (button)
+					CKEDITOR.tools.setTimeout(button.click, 0, button);
 				else {
-					if ( this.fire( 'cancel', { hide: true } ).hide !== false )
+					if (this.fire('cancel', { hide: true }).hide !== false)
 						this.hide();
 				}
 				stopPropagation = 1; // Always block the propagation (https://dev.ckeditor.com/ticket/4269)
@@ -544,126 +544,126 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 				return;
 			}
 
-			keypressHandler( evt );
+			keypressHandler(evt);
 		}
 
-		function keypressHandler( evt ) {
-			if ( processed )
-				evt.data.preventDefault( 1 );
-			else if ( stopPropagation )
+		function keypressHandler(evt) {
+			if (processed)
+				evt.data.preventDefault(1);
+			else if (stopPropagation)
 				evt.data.stopPropagation();
 		}
 
 		var dialogElement = this._.element;
 
-		editor.focusManager.add( dialogElement, 1 );
+		editor.focusManager.add(dialogElement, 1);
 
 		// Add the dialog keyboard handlers.
-		this.on( 'show', function() {
-			dialogElement.on( 'keydown', keydownHandler, this );
+		this.on('show', function () {
+			dialogElement.on('keydown', keydownHandler, this);
 
 			// Some browsers instead, don't cancel key events in the keydown, but in the
 			// keypress. So we must do a longer trip in those cases. (https://dev.ckeditor.com/ticket/4531,https://dev.ckeditor.com/ticket/8985)
-			if ( CKEDITOR.env.gecko )
-				dialogElement.on( 'keypress', keypressHandler, this );
+			if (CKEDITOR.env.gecko)
+				dialogElement.on('keypress', keypressHandler, this);
 
-		} );
-		this.on( 'hide', function() {
-			dialogElement.removeListener( 'keydown', keydownHandler );
-			if ( CKEDITOR.env.gecko )
-				dialogElement.removeListener( 'keypress', keypressHandler );
+		});
+		this.on('hide', function () {
+			dialogElement.removeListener('keydown', keydownHandler);
+			if (CKEDITOR.env.gecko)
+				dialogElement.removeListener('keypress', keypressHandler);
 
 			// Reset fields state when closing dialog.
-			iterContents( function( item ) {
-				resetField.apply( item );
-			} );
-		} );
-		this.on( 'iframeAdded', function( evt ) {
-			var doc = new CKEDITOR.dom.document( evt.data.iframe.$.contentWindow.document );
-			doc.on( 'keydown', keydownHandler, this, null, 0 );
-		} );
+			iterContents(function (item) {
+				resetField.apply(item);
+			});
+		});
+		this.on('iframeAdded', function (evt) {
+			var doc = new CKEDITOR.dom.document(evt.data.iframe.$.contentWindow.document);
+			doc.on('keydown', keydownHandler, this, null, 0);
+		});
 
 		// Auto-focus logic in dialog.
-		this.on( 'show', function() {
+		this.on('show', function () {
 			// Setup tabIndex on showing the dialog instead of on loading
 			// to allow dynamic tab order happen in dialog definition.
 			setupFocus();
 
 			var hasTabs = me._.pageCount > 1;
 
-			if ( editor.config.dialog_startupFocusTab && hasTabs ) {
+			if (editor.config.dialog_startupFocusTab && hasTabs) {
 				me._.tabBarMode = true;
-				me._.tabs[ me._.currentTabId ][ 0 ].focus();
+				me._.tabs[me._.currentTabId][0].focus();
 				me._.currentFocusIndex = -1;
-			} else if ( !this._.hasFocus ) {
+			} else if (!this._.hasFocus) {
 				// https://dev.ckeditor.com/ticket/13114#comment:4.
 				this._.currentFocusIndex = hasTabs ? -1 : this._.focusList.length - 1;
 
 				// Decide where to put the initial focus.
-				if ( definition.onFocus ) {
-					var initialFocus = definition.onFocus.call( this );
+				if (definition.onFocus) {
+					var initialFocus = definition.onFocus.call(this);
 					// Focus the field that the user specified.
 					initialFocus && initialFocus.focus();
 				}
 				// Focus the first field in layout order.
 				else {
-					changeFocus( 1 );
+					changeFocus(1);
 				}
 			}
-		}, this, null, 0xffffffff );
+		}, this, null, 0xffffffff);
 
 		// IE6 BUG: Text fields and text areas are only half-rendered the first time the dialog appears in IE6 (https://dev.ckeditor.com/ticket/2661).
 		// This is still needed after [2708] and [2709] because text fields in hidden TR tags are still broken.
-		if ( CKEDITOR.env.ie6Compat ) {
-			this.on( 'load', function() {
+		if (CKEDITOR.env.ie6Compat) {
+			this.on('load', function () {
 				var outer = this.getElement(),
 					inner = outer.getFirst();
 				inner.remove();
-				inner.appendTo( outer );
-			}, this );
+				inner.appendTo(outer);
+			}, this);
 		}
 
-		initDragAndDrop( this );
-		initResizeHandles( this );
+		initDragAndDrop(this);
+		initResizeHandles(this);
 
 		// Insert the title.
-		( new CKEDITOR.dom.text( definition.title, CKEDITOR.document ) ).appendTo( this.parts.title );
+		(new CKEDITOR.dom.text(definition.title, CKEDITOR.document)).appendTo(this.parts.title);
 
 		// Insert the tabs and contents.
-		for ( i = 0; i < definition.contents.length; i++ ) {
-			var page = definition.contents[ i ];
-			page && this.addPage( page );
+		for (i = 0; i < definition.contents.length; i++) {
+			var page = definition.contents[i];
+			page && this.addPage(page);
 		}
 
-		this.parts.tabs.on( 'click', function( evt ) {
+		this.parts.tabs.on('click', function (evt) {
 			var target = evt.data.getTarget();
 			// If we aren't inside a tab, bail out.
-			if ( target.hasClass( 'cke_dialog_tab' ) ) {
+			if (target.hasClass('cke_dialog_tab')) {
 				// Get the ID of the tab, without the 'cke_' prefix and the unique number suffix.
 				var id = target.$.id;
-				this.selectPage( id.substring( 4, id.lastIndexOf( '_' ) ) );
+				this.selectPage(id.substring(4, id.lastIndexOf('_')));
 
-				if ( this._.tabBarMode ) {
+				if (this._.tabBarMode) {
 					this._.tabBarMode = false;
 					this._.currentFocusIndex = -1;
-					changeFocus( 1 );
+					changeFocus(1);
 				}
 				evt.data.preventDefault();
 			}
-		}, this );
+		}, this);
 
 		// Insert buttons.
 		var buttonsHtml = [],
-			buttons = CKEDITOR.dialog._.uiElementBuilders.hbox.build( this, {
+			buttons = CKEDITOR.dialog._.uiElementBuilders.hbox.build(this, {
 				type: 'hbox',
 				className: 'cke_dialog_footer_buttons',
 				widths: [],
 				children: definition.buttons
-			}, buttonsHtml ).getChild();
-		this.parts.footer.setHtml( buttonsHtml.join( '' ) );
+			}, buttonsHtml).getChild();
+		this.parts.footer.setHtml(buttonsHtml.join(''));
 
-		for ( i = 0; i < buttons.length; i++ )
-			this._.buttons[ buttons[ i ].id ] = buttons[ i ];
+		for (i = 0; i < buttons.length; i++)
+			this._.buttons[buttons[i].id] = buttons[i];
 
 		/**
 		 * Current state of the dialog. Use the {@link #setState} method to update it.
@@ -675,45 +675,45 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 	};
 
 	// Focusable interface. Use it via dialog.addFocusable.
-	function Focusable( dialog, element, index ) {
+	function Focusable(dialog, element, index) {
 		this.element = element;
 		this.focusIndex = index;
 		// TODO: support tabIndex for focusables.
 		this.tabIndex = 0;
-		this.isFocusable = function() {
-			return !element.getAttribute( 'disabled' ) && element.isVisible();
+		this.isFocusable = function () {
+			return !element.getAttribute('disabled') && element.isVisible();
 		};
-		this.focus = function() {
+		this.focus = function () {
 			dialog._.currentFocusIndex = this.focusIndex;
 			this.element.focus();
 		};
 		// Bind events
-		element.on( 'keydown', function( e ) {
-			if ( e.data.getKeystroke() in { 32: 1, 13: 1 } )
-				this.fire( 'click' );
-		} );
-		element.on( 'focus', function() {
-			this.fire( 'mouseover' );
-		} );
-		element.on( 'blur', function() {
-			this.fire( 'mouseout' );
-		} );
+		element.on('keydown', function (e) {
+			if (e.data.getKeystroke() in { 32: 1, 13: 1 })
+				this.fire('click');
+		});
+		element.on('focus', function () {
+			this.fire('mouseover');
+		});
+		element.on('blur', function () {
+			this.fire('mouseout');
+		});
 	}
 
 	// Re-layout the dialog on window resize.
-	function resizeWithWindow( dialog ) {
+	function resizeWithWindow(dialog) {
 		var win = CKEDITOR.document.getWindow();
 		function resizeHandler() {
 			dialog.layout();
 		}
-		win.on( 'resize', resizeHandler );
-		dialog.on( 'hide', function() {
-			win.removeListener( 'resize', resizeHandler );
-		} );
+		win.on('resize', resizeHandler);
+		dialog.on('hide', function () {
+			win.removeListener('resize', resizeHandler);
+		});
 	}
 
 	CKEDITOR.dialog.prototype = {
-		destroy: function() {
+		destroy: function () {
 			this.hide();
 			this._.element.remove();
 		},
@@ -727,35 +727,35 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @param {Number} width The width of the dialog in pixels.
 		 * @param {Number} height The height of the dialog in pixels.
 		 */
-		resize: ( function() {
-			return function( width, height ) {
-				if ( this._.contentSize && this._.contentSize.width == width && this._.contentSize.height == height )
+		resize: (function () {
+			return function (width, height) {
+				if (this._.contentSize && this._.contentSize.width == width && this._.contentSize.height == height)
 					return;
 
-				CKEDITOR.dialog.fire( 'resize', {
+				CKEDITOR.dialog.fire('resize', {
 					dialog: this,
 					width: width,
 					height: height
-				}, this._.editor );
+				}, this._.editor);
 
-				this.fire( 'resize', {
+				this.fire('resize', {
 					width: width,
 					height: height
-				}, this._.editor );
+				}, this._.editor);
 
 				var contents = this.parts.contents;
-				contents.setStyles( {
+				contents.setStyles({
 					width: width + 'px',
 					height: height + 'px'
-				} );
+				});
 
 				// Update dialog position when dimension get changed in RTL.
-				if ( this._.editor.lang.dir == 'rtl' && this._.position )
-					this._.position.x = CKEDITOR.document.getWindow().getViewPaneSize().width - this._.contentSize.width - parseInt( this._.element.getFirst().getStyle( 'right' ), 10 );
+				if (this._.editor.lang.dir == 'rtl' && this._.position)
+					this._.position.x = CKEDITOR.document.getWindow().getViewPaneSize().width - this._.contentSize.width - parseInt(this._.element.getFirst().getStyle('right'), 10);
 
 				this._.contentSize = { width: width, height: height };
 			};
-		} )(),
+		})(),
 
 		/**
 		 * Gets the current size of the dialog in pixels.
@@ -766,7 +766,7 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @returns {Number} return.width
 		 * @returns {Number} return.height
 		 */
-		getSize: function() {
+		getSize: function () {
 			var element = this._.element.getFirst();
 			return { width: element.$.offsetWidth || 0, height: element.$.offsetHeight || 0 };
 		},
@@ -781,12 +781,12 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @param {Number} y The target y-coordinate.
 		 * @param {Boolean} save Flag indicate whether the dialog position should be remembered on next open up.
 		 */
-		move: function( x, y, save ) {
+		move: function (x, y, save) {
 
 			// The dialog may be fixed positioned or absolute positioned. Ask the
 			// browser what is the current situation first.
 			var element = this._.element.getFirst(), rtl = this._.editor.lang.dir == 'rtl';
-			var isFixed = element.getComputedStyle( 'position' ) == 'fixed';
+			var isFixed = element.getComputedStyle('position') == 'fixed';
 
 			// (https://dev.ckeditor.com/ticket/8888) In some cases of a very small viewport, dialog is incorrectly
 			// positioned in IE7. It also happens that it remains sticky and user cannot
@@ -796,34 +796,34 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 			// go back to see that dialog position is automagically fixed. No events,
 			// no style change - pure magic. This is a IE7 rendering issue, which can be
 			// fixed with dummy style redraw on each move.
-			if ( CKEDITOR.env.ie )
-				element.setStyle( 'zoom', '100%' );
+			if (CKEDITOR.env.ie)
+				element.setStyle('zoom', '100%');
 
-			if ( isFixed && this._.position && this._.position.x == x && this._.position.y == y )
+			if (isFixed && this._.position && this._.position.x == x && this._.position.y == y)
 				return;
 
 			// Save the current position.
 			this._.position = { x: x, y: y };
 
 			// If not fixed positioned, add scroll position to the coordinates.
-			if ( !isFixed ) {
+			if (!isFixed) {
 				var scrollPosition = CKEDITOR.document.getWindow().getScrollPosition();
 				x += scrollPosition.x;
 				y += scrollPosition.y;
 			}
 
 			// Translate coordinate for RTL.
-			if ( rtl ) {
+			if (rtl) {
 				var dialogSize = this.getSize(), viewPaneSize = CKEDITOR.document.getWindow().getViewPaneSize();
 				x = viewPaneSize.width - dialogSize.width - x;
 			}
 
-			var styles = { 'top': ( y > 0 ? y : 0 ) + 'px' };
-			styles[ rtl ? 'right' : 'left' ] = ( x > 0 ? x : 0 ) + 'px';
+			var styles = { 'top': (y > 0 ? y : 0) + 'px' };
+			styles[rtl ? 'right' : 'left'] = (x > 0 ? x : 0) + 'px';
 
-			element.setStyles( styles );
+			element.setStyles(styles);
 
-			save && ( this._.moved = 1 );
+			save && (this._.moved = 1);
 		},
 
 		/**
@@ -835,8 +835,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @returns {Number} return.x
 		 * @returns {Number} return.y
 		 */
-		getPosition: function() {
-			return CKEDITOR.tools.extend( {}, this._.position );
+		getPosition: function () {
+			return CKEDITOR.tools.extend({}, this._.position);
 		},
 
 		/**
@@ -844,14 +844,14 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 *		dialogObj.show();
 		 */
-		show: function() {
+		show: function () {
 			// Insert the dialog's element to the root document.
 			var element = this._.element;
 			var definition = this.definition;
-			if ( !( element.getParent() && element.getParent().equals( CKEDITOR.document.getBody() ) ) )
-				element.appendTo( CKEDITOR.document.getBody() );
+			if (!(element.getParent() && element.getParent().equals(CKEDITOR.document.getBody())))
+				element.appendTo(CKEDITOR.document.getBody());
 			else
-				element.setStyle( 'display', 'block' );
+				element.setStyle('display', 'block');
 
 			// First, set the dialog to an appropriate size.
 			this.resize(
@@ -863,53 +863,53 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 			this.reset();
 
 			// Selects the first tab if no tab is already selected.
-			if ( this._.currentTabId === null ) {
-				this.selectPage( this.definition.contents[ 0 ].id );
+			if (this._.currentTabId === null) {
+				this.selectPage(this.definition.contents[0].id);
 			}
 
 			// Set z-index.
-			if ( CKEDITOR.dialog._.currentZIndex === null )
+			if (CKEDITOR.dialog._.currentZIndex === null)
 				CKEDITOR.dialog._.currentZIndex = this._.editor.config.baseFloatZIndex;
-			this._.element.getFirst().setStyle( 'z-index', CKEDITOR.dialog._.currentZIndex += 10 );
+			this._.element.getFirst().setStyle('z-index', CKEDITOR.dialog._.currentZIndex += 10);
 
 			// Maintain the dialog ordering and dialog cover.
-			if ( CKEDITOR.dialog._.currentTop === null ) {
+			if (CKEDITOR.dialog._.currentTop === null) {
 				CKEDITOR.dialog._.currentTop = this;
 				this._.parentDialog = null;
-				showCover( this._.editor );
+				showCover(this._.editor);
 
 			} else {
 				this._.parentDialog = CKEDITOR.dialog._.currentTop;
 				var parentElement = this._.parentDialog.getElement().getFirst();
-				parentElement.$.style.zIndex -= Math.floor( this._.editor.config.baseFloatZIndex / 2 );
+				parentElement.$.style.zIndex -= Math.floor(this._.editor.config.baseFloatZIndex / 2);
 				CKEDITOR.dialog._.currentTop = this;
 			}
 
-			element.on( 'keydown', accessKeyDownHandler );
-			element.on( 'keyup', accessKeyUpHandler );
+			element.on('keydown', accessKeyDownHandler);
+			element.on('keyup', accessKeyUpHandler);
 
 			// Reset the hasFocus state.
 			this._.hasFocus = false;
 
-			for ( var i in definition.contents ) {
-				if ( !definition.contents[ i ] )
+			for (var i in definition.contents) {
+				if (!definition.contents[i])
 					continue;
 
-				var content = definition.contents[ i ],
-					tab = this._.tabs[ content.id ],
+				var content = definition.contents[i],
+					tab = this._.tabs[content.id],
 					requiredContent = content.requiredContent,
 					enableElements = 0;
 
-				if ( !tab )
+				if (!tab)
 					continue;
 
-				for ( var j in this._.contents[ content.id ] ) {
-					var elem = this._.contents[ content.id ][ j ];
+				for (var j in this._.contents[content.id]) {
+					var elem = this._.contents[content.id][j];
 
-					if ( elem.type == 'hbox' || elem.type == 'vbox' || !elem.getInputElement() )
+					if (elem.type == 'hbox' || elem.type == 'vbox' || !elem.getInputElement())
 						continue;
 
-					if ( elem.requiredContent && !this._.editor.activeFilter.check( elem.requiredContent ) )
+					if (elem.requiredContent && !this._.editor.activeFilter.check(elem.requiredContent))
 						elem.disable();
 					else {
 						elem.enable();
@@ -917,34 +917,34 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 					}
 				}
 
-				if ( !enableElements || ( requiredContent && !this._.editor.activeFilter.check( requiredContent ) ) )
-					tab[ 0 ].addClass( 'cke_dialog_tab_disabled' );
+				if (!enableElements || (requiredContent && !this._.editor.activeFilter.check(requiredContent)))
+					tab[0].addClass('cke_dialog_tab_disabled');
 				else
-					tab[ 0 ].removeClass( 'cke_dialog_tab_disabled' );
+					tab[0].removeClass('cke_dialog_tab_disabled');
 			}
 
-			CKEDITOR.tools.setTimeout( function() {
+			CKEDITOR.tools.setTimeout(function () {
 				this.layout();
-				resizeWithWindow( this );
+				resizeWithWindow(this);
 
-				this.parts.dialog.setStyle( 'visibility', '' );
+				this.parts.dialog.setStyle('visibility', '');
 
 				// Execute onLoad for the first show.
-				this.fireOnce( 'load', {} );
-				CKEDITOR.ui.fire( 'ready', this );
+				this.fireOnce('load', {});
+				CKEDITOR.ui.fire('ready', this);
 
-				this.fire( 'show', {} );
-				this._.editor.fire( 'dialogShow', this );
+				this.fire('show', {});
+				this._.editor.fire('dialogShow', this);
 
-				if ( !this._.parentDialog )
+				if (!this._.parentDialog)
 					this._.editor.focusManager.lock();
 
 				// Save the initial values of the dialog.
-				this.foreach( function( contentObj ) {
+				this.foreach(function (contentObj) {
 					contentObj.setInitValue && contentObj.setInitValue();
-				} );
+				});
 
-			}, 100, this );
+			}, 100, this);
 		},
 
 		/**
@@ -952,25 +952,25 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @since 3.5.0
 		 */
-		layout: function() {
+		layout: function () {
 			var el = this.parts.dialog;
 			var dialogSize = this.getSize();
 			var win = CKEDITOR.document.getWindow(),
-					viewSize = win.getViewPaneSize();
+				viewSize = win.getViewPaneSize();
 
-			var posX = ( viewSize.width - dialogSize.width ) / 2,
-				posY = ( viewSize.height - dialogSize.height ) / 2;
+			var posX = (viewSize.width - dialogSize.width) / 2,
+				posY = (viewSize.height - dialogSize.height) / 2;
 
 			// Switch to absolute position when viewport is smaller than dialog size.
-			if ( !CKEDITOR.env.ie6Compat ) {
-				if ( dialogSize.height + ( posY > 0 ? posY : 0 ) > viewSize.height || dialogSize.width + ( posX > 0 ? posX : 0 ) > viewSize.width ) {
-					el.setStyle( 'position', 'absolute' );
+			if (!CKEDITOR.env.ie6Compat) {
+				if (dialogSize.height + (posY > 0 ? posY : 0) > viewSize.height || dialogSize.width + (posX > 0 ? posX : 0) > viewSize.width) {
+					el.setStyle('position', 'absolute');
 				} else {
-					el.setStyle( 'position', 'fixed' );
+					el.setStyle('position', 'fixed');
 				}
 			}
 
-			this.move( this._.moved ? this._.position.x : posX, this._.moved ? this._.position.y : posY );
+			this.move(this._.moved ? this._.position.x : posX, this._.moved ? this._.position.y : posY);
 		},
 
 		/**
@@ -979,10 +979,10 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @param {Function} fn Function to execute for each UI element.
 		 * @returns {CKEDITOR.dialog} The current dialog object.
 		 */
-		foreach: function( fn ) {
-			for ( var i in this._.contents ) {
-				for ( var j in this._.contents[ i ] ) {
-					fn.call( this, this._.contents[i][j] );
+		foreach: function (fn) {
+			for (var i in this._.contents) {
+				for (var j in this._.contents[i]) {
+					fn.call(this, this._.contents[i][j]);
 				}
 			}
 
@@ -997,16 +997,16 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @method
 		 * @chainable
 		 */
-		reset: ( function() {
-			var fn = function( widget ) {
-					if ( widget.reset )
-						widget.reset( 1 );
-				};
-			return function() {
-				this.foreach( fn );
+		reset: (function () {
+			var fn = function (widget) {
+				if (widget.reset)
+					widget.reset(1);
+			};
+			return function () {
+				this.foreach(fn);
 				return this;
 			};
-		} )(),
+		})(),
 
 
 		/**
@@ -1019,12 +1019,12 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *		var timestamp = ( new Date() ).valueOf();
 		 *		dialogObj.setupContent( timestamp );
 		 */
-		setupContent: function() {
+		setupContent: function () {
 			var args = arguments;
-			this.foreach( function( widget ) {
-				if ( widget.setup )
-					widget.setup.apply( widget, args );
-			} );
+			this.foreach(function (widget) {
+				if (widget.setup)
+					widget.setup.apply(widget, args);
+			});
 		},
 
 		/**
@@ -1037,16 +1037,16 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *		var timestamp = ( new Date() ).valueOf();
 		 *		dialogObj.commitContent( timestamp );
 		 */
-		commitContent: function() {
+		commitContent: function () {
 			var args = arguments;
-			this.foreach( function( widget ) {
+			this.foreach(function (widget) {
 				// Make sure IE triggers "change" event on last focused input before closing the dialog. (https://dev.ckeditor.com/ticket/7915)
-				if ( CKEDITOR.env.ie && this._.currentFocusIndex == widget.focusIndex )
+				if (CKEDITOR.env.ie && this._.currentFocusIndex == widget.focusIndex)
 					widget.getInputElement().$.blur();
 
-				if ( widget.commit )
-					widget.commit.apply( widget, args );
-			} );
+				if (widget.commit)
+					widget.commit.apply(widget, args);
+			});
 		},
 
 		/**
@@ -1054,54 +1054,54 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 *		dialogObj.hide();
 		 */
-		hide: function() {
-			if ( !this.parts.dialog.isVisible() )
+		hide: function () {
+			if (!this.parts.dialog.isVisible())
 				return;
 
-			this.fire( 'hide', {} );
-			this._.editor.fire( 'dialogHide', this );
+			this.fire('hide', {});
+			this._.editor.fire('dialogHide', this);
 			// Reset the tab page.
-			this.selectPage( this._.tabIdList[ 0 ] );
+			this.selectPage(this._.tabIdList[0]);
 			var element = this._.element;
-			element.setStyle( 'display', 'none' );
-			this.parts.dialog.setStyle( 'visibility', 'hidden' );
+			element.setStyle('display', 'none');
+			this.parts.dialog.setStyle('visibility', 'hidden');
 			// Unregister all access keys associated with this dialog.
-			unregisterAccessKey( this );
+			unregisterAccessKey(this);
 
 			// Close any child(top) dialogs first.
-			while ( CKEDITOR.dialog._.currentTop != this )
+			while (CKEDITOR.dialog._.currentTop != this)
 				CKEDITOR.dialog._.currentTop.hide();
 
 			// Maintain dialog ordering and remove cover if needed.
-			if ( !this._.parentDialog )
-				hideCover( this._.editor );
+			if (!this._.parentDialog)
+				hideCover(this._.editor);
 			else {
 				var parentElement = this._.parentDialog.getElement().getFirst();
-				parentElement.setStyle( 'z-index', parseInt( parentElement.$.style.zIndex, 10 ) + Math.floor( this._.editor.config.baseFloatZIndex / 2 ) );
+				parentElement.setStyle('z-index', parseInt(parentElement.$.style.zIndex, 10) + Math.floor(this._.editor.config.baseFloatZIndex / 2));
 			}
 			CKEDITOR.dialog._.currentTop = this._.parentDialog;
 
 			// Deduct or clear the z-index.
-			if ( !this._.parentDialog ) {
+			if (!this._.parentDialog) {
 				CKEDITOR.dialog._.currentZIndex = null;
 
 				// Remove access key handlers.
-				element.removeListener( 'keydown', accessKeyDownHandler );
-				element.removeListener( 'keyup', accessKeyUpHandler );
+				element.removeListener('keydown', accessKeyDownHandler);
+				element.removeListener('keyup', accessKeyUpHandler);
 
 				var editor = this._.editor;
 				editor.focus();
 
 				// Give a while before unlock, waiting for focus to return to the editable. (https://dev.ckeditor.com/ticket/172)
-				setTimeout( function() {
+				setTimeout(function () {
 					editor.focusManager.unlock();
 
 					// Fixed iOS focus issue (https://dev.ckeditor.com/ticket/12381).
 					// Keep in mind that editor.focus() does not work in this case.
-					if ( CKEDITOR.env.iOS ) {
+					if (CKEDITOR.env.iOS) {
 						editor.window.focus();
 					}
-				}, 0 );
+				}, 0);
 
 			} else {
 				CKEDITOR.dialog._.currentZIndex -= 10;
@@ -1109,12 +1109,12 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 
 			delete this._.parentDialog;
 			// Reset the initial values of the dialog.
-			this.foreach( function( contentObj ) {
+			this.foreach(function (contentObj) {
 				contentObj.resetInitValue && contentObj.resetInitValue();
-			} );
+			});
 
 			// Reset dialog state back to IDLE, if busy (https://dev.ckeditor.com/ticket/13213).
-			this.setState( CKEDITOR.DIALOG_STATE_IDLE );
+			this.setState(CKEDITOR.DIALOG_STATE_IDLE);
 		},
 
 		/**
@@ -1122,51 +1122,51 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @param {Object} contents Content definition.
 		 */
-		addPage: function( contents ) {
-			if ( contents.requiredContent && !this._.editor.filter.check( contents.requiredContent ) )
+		addPage: function (contents) {
+			if (contents.requiredContent && !this._.editor.filter.check(contents.requiredContent))
 				return;
 
 			var pageHtml = [],
-				titleHtml = contents.label ? ' title="' + CKEDITOR.tools.htmlEncode( contents.label ) + '"' : '',
-				vbox = CKEDITOR.dialog._.uiElementBuilders.vbox.build( this, {
+				titleHtml = contents.label ? ' title="' + CKEDITOR.tools.htmlEncode(contents.label) + '"' : '',
+				vbox = CKEDITOR.dialog._.uiElementBuilders.vbox.build(this, {
 					type: 'vbox',
 					className: 'cke_dialog_page_contents',
 					children: contents.elements,
 					expand: !!contents.expand,
 					padding: contents.padding,
 					style: contents.style || 'width: 100%;'
-				}, pageHtml );
+				}, pageHtml);
 
-			var contentMap = this._.contents[ contents.id ] = {},
+			var contentMap = this._.contents[contents.id] = {},
 				cursor,
 				children = vbox.getChild(),
 				enabledFields = 0;
 
-			while ( ( cursor = children.shift() ) ) {
+			while ((cursor = children.shift())) {
 				// Count all allowed fields.
-				if ( !cursor.notAllowed && cursor.type != 'hbox' && cursor.type != 'vbox' )
+				if (!cursor.notAllowed && cursor.type != 'hbox' && cursor.type != 'vbox')
 					enabledFields++;
 
-				contentMap[ cursor.id ] = cursor;
-				if ( typeof cursor.getChild == 'function' )
-					children.push.apply( children, cursor.getChild() );
+				contentMap[cursor.id] = cursor;
+				if (typeof cursor.getChild == 'function')
+					children.push.apply(children, cursor.getChild());
 			}
 
 			// If all fields are disabled (because they are not allowed) hide this tab.
-			if ( !enabledFields )
+			if (!enabledFields)
 				contents.hidden = true;
 
 			// Create the HTML for the tab and the content block.
-			var page = CKEDITOR.dom.element.createFromHtml( pageHtml.join( '' ) );
-			page.setAttribute( 'role', 'tabpanel' );
+			var page = CKEDITOR.dom.element.createFromHtml(pageHtml.join(''));
+			page.setAttribute('role', 'tabpanel');
 
 			var env = CKEDITOR.env;
 			var tabId = 'cke_' + contents.id + '_' + CKEDITOR.tools.getNextNumber(),
-				tab = CKEDITOR.dom.element.createFromHtml( [
+				tab = CKEDITOR.dom.element.createFromHtml([
 					'<a class="cke_dialog_tab"',
-					( this._.pageCount > 0 ? ' cke_last' : 'cke_first' ),
+					(this._.pageCount > 0 ? ' cke_last' : 'cke_first'),
 					titleHtml,
-					( !!contents.hidden ? ' style="display:none"' : '' ),
+					(!!contents.hidden ? ' style="display:none"' : ''),
 					' id="', tabId, '"',
 					env.gecko && !env.hc ? '' : ' href="javascript:void(0)"',
 					' tabIndex="-1"',
@@ -1174,29 +1174,29 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 					' role="tab">',
 					contents.label,
 					'</a>'
-				].join( '' ) );
+				].join(''));
 
-			page.setAttribute( 'aria-labelledby', tabId );
+			page.setAttribute('aria-labelledby', tabId);
 
 			// Take records for the tabs and elements created.
-			this._.tabs[ contents.id ] = [ tab, page ];
-			this._.tabIdList.push( contents.id );
+			this._.tabs[contents.id] = [tab, page];
+			this._.tabIdList.push(contents.id);
 			!contents.hidden && this._.pageCount++;
 			this._.lastTab = tab;
 			this.updateStyle();
 
 			// Attach the DOM nodes.
 
-			page.setAttribute( 'name', contents.id );
-			page.appendTo( this.parts.contents );
+			page.setAttribute('name', contents.id);
+			page.appendTo(this.parts.contents);
 
 			tab.unselectable();
-			this.parts.tabs.append( tab );
+			this.parts.tabs.append(tab);
 
 			// Add access key handlers if access key is defined.
-			if ( contents.accessKey ) {
-				registerAccessKey( this, this, 'CTRL+' + contents.accessKey, tabAccessKeyDown, tabAccessKeyUp );
-				this._.accessKeyMap[ 'CTRL+' + contents.accessKey ] = contents.id;
+			if (contents.accessKey) {
+				registerAccessKey(this, this, 'CTRL+' + contents.accessKey, tabAccessKeyDown, tabAccessKeyUp);
+				this._.accessKeyMap['CTRL+' + contents.accessKey] = contents.id;
 			}
 		},
 
@@ -1207,54 +1207,54 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @param {String} id The id of the dialog tab to be activated.
 		 */
-		selectPage: function( id ) {
-			if ( this._.currentTabId == id )
+		selectPage: function (id) {
+			if (this._.currentTabId == id)
 				return;
 
-			if ( this._.tabs[ id ][ 0 ].hasClass( 'cke_dialog_tab_disabled' ) )
+			if (this._.tabs[id][0].hasClass('cke_dialog_tab_disabled'))
 				return;
 
 			// If event was canceled - do nothing.
-			if ( this.fire( 'selectPage', { page: id, currentPage: this._.currentTabId } ) === false )
+			if (this.fire('selectPage', { page: id, currentPage: this._.currentTabId }) === false)
 				return;
 
 			// Hide the non-selected tabs and pages.
-			for ( var i in this._.tabs ) {
-				var tab = this._.tabs[ i ][ 0 ],
-					page = this._.tabs[ i ][ 1 ];
-				if ( i != id ) {
-					tab.removeClass( 'cke_dialog_tab_selected' );
+			for (var i in this._.tabs) {
+				var tab = this._.tabs[i][0],
+					page = this._.tabs[i][1];
+				if (i != id) {
+					tab.removeClass('cke_dialog_tab_selected');
 					page.hide();
 				}
-				page.setAttribute( 'aria-hidden', i != id );
+				page.setAttribute('aria-hidden', i != id);
 			}
 
-			var selected = this._.tabs[ id ];
-			selected[ 0 ].addClass( 'cke_dialog_tab_selected' );
+			var selected = this._.tabs[id];
+			selected[0].addClass('cke_dialog_tab_selected');
 
 			// [IE] an invisible input[type='text'] will enlarge it's width
 			// if it's value is long when it shows, so we clear it's value
 			// before it shows and then recover it (https://dev.ckeditor.com/ticket/5649)
-			if ( CKEDITOR.env.ie6Compat || CKEDITOR.env.ie7Compat ) {
-				clearOrRecoverTextInputValue( selected[ 1 ] );
-				selected[ 1 ].show();
-				setTimeout( function() {
-					clearOrRecoverTextInputValue( selected[ 1 ], 1 );
-				}, 0 );
+			if (CKEDITOR.env.ie6Compat || CKEDITOR.env.ie7Compat) {
+				clearOrRecoverTextInputValue(selected[1]);
+				selected[1].show();
+				setTimeout(function () {
+					clearOrRecoverTextInputValue(selected[1], 1);
+				}, 0);
 			} else {
-				selected[ 1 ].show();
+				selected[1].show();
 			}
 
 			this._.currentTabId = id;
-			this._.currentTabIndex = CKEDITOR.tools.indexOf( this._.tabIdList, id );
+			this._.currentTabIndex = CKEDITOR.tools.indexOf(this._.tabIdList, id);
 		},
 
 		/**
 		 * Dialog state-specific style updates.
 		 */
-		updateStyle: function() {
+		updateStyle: function () {
 			// If only a single page shown, a different style is used in the central pane.
-			this.parts.dialog[ ( this._.pageCount === 1 ? 'add' : 'remove' ) + 'Class' ]( 'cke_single_page' );
+			this.parts.dialog[(this._.pageCount === 1 ? 'add' : 'remove') + 'Class']('cke_single_page');
 		},
 
 		/**
@@ -1264,13 +1264,13 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @param {String} id The page's Id.
 		 */
-		hidePage: function( id ) {
-			var tab = this._.tabs[ id ] && this._.tabs[ id ][ 0 ];
-			if ( !tab || this._.pageCount == 1 || !tab.isVisible() )
+		hidePage: function (id) {
+			var tab = this._.tabs[id] && this._.tabs[id][0];
+			if (!tab || this._.pageCount == 1 || !tab.isVisible())
 				return;
 			// Switch to other tab first when we're hiding the active tab.
-			else if ( id == this._.currentTabId )
-				this.selectPage( getPreviousVisibleTab.call( this ) );
+			else if (id == this._.currentTabId)
+				this.selectPage(getPreviousVisibleTab.call(this));
 
 			tab.hide();
 			this._.pageCount--;
@@ -1284,9 +1284,9 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @param {String} id The page's Id.
 		 */
-		showPage: function( id ) {
-			var tab = this._.tabs[ id ] && this._.tabs[ id ][ 0 ];
-			if ( !tab )
+		showPage: function (id) {
+			var tab = this._.tabs[id] && this._.tabs[id][0];
+			if (!tab)
 				return;
 			tab.show();
 			this._.pageCount++;
@@ -1301,7 +1301,7 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @returns {CKEDITOR.dom.element} The `<span>` element containing this dialog.
 		 */
-		getElement: function() {
+		getElement: function () {
 			return this._.element;
 		},
 
@@ -1312,7 +1312,7 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @returns {String} The name of this dialog.
 		 */
-		getName: function() {
+		getName: function () {
 			return this._.name;
 		},
 
@@ -1325,9 +1325,9 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @param {String} elementId id of UI element.
 		 * @returns {CKEDITOR.ui.dialog.uiElement} The dialog UI element.
 		 */
-		getContentElement: function( pageId, elementId ) {
-			var page = this._.contents[ pageId ];
-			return page && page[ elementId ];
+		getContentElement: function (pageId, elementId) {
+			var page = this._.contents[pageId];
+			return page && page[elementId];
 		},
 
 		/**
@@ -1339,8 +1339,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @param {String} elementId id of UI element.
 		 * @returns {Object} The value of the UI element.
 		 */
-		getValueOf: function( pageId, elementId ) {
-			return this.getContentElement( pageId, elementId ).getValue();
+		getValueOf: function (pageId, elementId) {
+			return this.getContentElement(pageId, elementId).getValue();
 		},
 
 		/**
@@ -1352,8 +1352,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @param {String} elementId id of the UI element.
 		 * @param {Object} value The new value of the UI element.
 		 */
-		setValueOf: function( pageId, elementId, value ) {
-			return this.getContentElement( pageId, elementId ).setValue( value );
+		setValueOf: function (pageId, elementId, value) {
+			return this.getContentElement(pageId, elementId).setValue(value);
 		},
 
 		/**
@@ -1363,8 +1363,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @param {String} id The id of the button.
 		 */
-		getButton: function( id ) {
-			return this._.buttons[ id ];
+		getButton: function (id) {
+			return this._.buttons[id];
 		},
 
 		/**
@@ -1374,8 +1374,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @param {String} id The id of the button.
 		 */
-		click: function( id ) {
-			return this._.buttons[ id ].click();
+		click: function (id) {
+			return this._.buttons[id].click();
 		},
 
 		/**
@@ -1383,8 +1383,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @param {String} id The id of the button.
 		 */
-		disableButton: function( id ) {
-			return this._.buttons[ id ].disable();
+		disableButton: function (id) {
+			return this._.buttons[id].disable();
 		},
 
 		/**
@@ -1392,8 +1392,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @param {String} id The id of the button.
 		 */
-		enableButton: function( id ) {
-			return this._.buttons[ id ].enable();
+		enableButton: function (id) {
+			return this._.buttons[id].enable();
 		},
 
 		/**
@@ -1401,7 +1401,7 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @returns {Number} Page count.
 		 */
-		getPageCount: function() {
+		getPageCount: function () {
 			return this._.pageCount;
 		},
 
@@ -1410,7 +1410,7 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @returns {CKEDITOR.editor} Parent editor instances.
 		 */
-		getParentEditor: function() {
+		getParentEditor: function () {
 			return this._.editor;
 		},
 
@@ -1419,7 +1419,7 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @returns {CKEDITOR.dom.element} The element that was selected, or `null`.
 		 */
-		getSelectedElement: function() {
+		getSelectedElement: function () {
 			return this.getParentEditor().getSelection().getSelectedElement();
 		},
 
@@ -1429,14 +1429,14 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @param {CKEDITOR.dom.element} element
 		 * @param {Number} [index]
 		 */
-		addFocusable: function( element, index ) {
-			if ( typeof index == 'undefined' ) {
+		addFocusable: function (element, index) {
+			if (typeof index == 'undefined') {
 				index = this._.focusList.length;
-				this._.focusList.push( new Focusable( this, element, index ) );
+				this._.focusList.push(new Focusable(this, element, index));
 			} else {
-				this._.focusList.splice( index, 0, new Focusable( this, element, index ) );
-				for ( var i = index + 1; i < this._.focusList.length; i++ )
-					this._.focusList[ i ].focusIndex++;
+				this._.focusList.splice(index, 0, new Focusable(this, element, index));
+				for (var i = index + 1; i < this._.focusList.length; i++)
+					this._.focusList[i].focusIndex++;
 			}
 		},
 
@@ -1446,18 +1446,18 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @since 4.5.0
 		 * @param {Number} state Either {@link CKEDITOR#DIALOG_STATE_IDLE} or {@link CKEDITOR#DIALOG_STATE_BUSY}.
 		 */
-		setState: function( state ) {
+		setState: function (state) {
 			var oldState = this.state;
 
-			if ( oldState == state ) {
+			if (oldState == state) {
 				return;
 			}
 
 			this.state = state;
 
-			if ( state == CKEDITOR.DIALOG_STATE_BUSY ) {
+			if (state == CKEDITOR.DIALOG_STATE_BUSY) {
 				// Insert the spinner on demand.
-				if ( !this.parts.spinner ) {
+				if (!this.parts.spinner) {
 					var dir = this.getParentEditor().lang.dir,
 						spinnerDef = {
 							attributes: {
@@ -1468,30 +1468,30 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 							}
 						};
 
-					spinnerDef.styles[ 'margin-' + ( dir == 'rtl' ? 'left' : 'right' ) ] = '8px';
+					spinnerDef.styles['margin-' + (dir == 'rtl' ? 'left' : 'right')] = '8px';
 
-					this.parts.spinner = CKEDITOR.document.createElement( 'div', spinnerDef );
+					this.parts.spinner = CKEDITOR.document.createElement('div', spinnerDef);
 
-					this.parts.spinner.setHtml( '&#8987;' );
-					this.parts.spinner.appendTo( this.parts.title, 1 );
+					this.parts.spinner.setHtml('&#8987;');
+					this.parts.spinner.appendTo(this.parts.title, 1);
 				}
 
 				// Finally, show the spinner.
 				this.parts.spinner.show();
 
-				this.getButton( 'ok' ).disable();
-			} else if ( state == CKEDITOR.DIALOG_STATE_IDLE ) {
+				this.getButton('ok').disable();
+			} else if (state == CKEDITOR.DIALOG_STATE_IDLE) {
 				// Hide the spinner. But don't do anything if there is no spinner yet.
 				this.parts.spinner && this.parts.spinner.hide();
 
-				this.getButton( 'ok' ).enable();
+				this.getButton('ok').enable();
 			}
 
-			this.fire( 'state', state );
+			this.fire('state', state);
 		}
 	};
 
-	CKEDITOR.tools.extend( CKEDITOR.dialog, {
+	CKEDITOR.tools.extend(CKEDITOR.dialog, {
 		/**
 		 * Registers a dialog.
 		 *
@@ -1564,25 +1564,25 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * return an object conforming to {@link CKEDITOR.dialog.definition}.
 		 * @see CKEDITOR.dialog.definition
 		 */
-		add: function( name, dialogDefinition ) {
+		add: function (name, dialogDefinition) {
 			// Avoid path registration from multiple instances override definition.
-			if ( !this._.dialogDefinitions[ name ] || typeof dialogDefinition == 'function' )
-				this._.dialogDefinitions[ name ] = dialogDefinition;
+			if (!this._.dialogDefinitions[name] || typeof dialogDefinition == 'function')
+				this._.dialogDefinitions[name] = dialogDefinition;
 		},
 
 		/**
 		 * @static
 		 * @todo
 		 */
-		exists: function( name ) {
-			return !!this._.dialogDefinitions[ name ];
+		exists: function (name) {
+			return !!this._.dialogDefinitions[name];
 		},
 
 		/**
 		 * @static
 		 * @todo
 		 */
-		getCurrent: function() {
+		getCurrent: function () {
 			return CKEDITOR.dialog._.currentTop;
 		},
 
@@ -1596,10 +1596,10 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @param {String} tabName
 		 * @returns {Boolean}
 		 */
-		isTabEnabled: function( editor, dialogName, tabName ) {
+		isTabEnabled: function (editor, dialogName, tabName) {
 			var cfg = editor.config.removeDialogTabs;
 
-			return !( cfg && cfg.match( new RegExp( '(?:^|;)' + dialogName + ':' + tabName + '(?:$|;)', 'i' ) ) );
+			return !(cfg && cfg.match(new RegExp('(?:^|;)' + dialogName + ':' + tabName + '(?:$|;)', 'i')));
 		},
 
 		/**
@@ -1608,29 +1608,29 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @static
 		 * @method
 		 */
-		okButton: ( function() {
-			var retval = function( editor, override ) {
-					override = override || {};
-					return CKEDITOR.tools.extend( {
-						id: 'ok',
-						type: 'button',
-						label: editor.lang.common.ok,
-						'class': 'cke_dialog_ui_button_ok',
-						onClick: function( evt ) {
-							var dialog = evt.data.dialog;
-							if ( dialog.fire( 'ok', { hide: true } ).hide !== false )
-								dialog.hide();
-						}
-					}, override, true );
-				};
+		okButton: (function () {
+			var retval = function (editor, override) {
+				override = override || {};
+				return CKEDITOR.tools.extend({
+					id: 'ok',
+					type: 'button',
+					label: editor.lang.common.ok,
+					'class': 'cke_dialog_ui_button_ok',
+					onClick: function (evt) {
+						var dialog = evt.data.dialog;
+						if (dialog.fire('ok', { hide: true }).hide !== false)
+							dialog.hide();
+					}
+				}, override, true);
+			};
 			retval.type = 'button';
-			retval.override = function( override ) {
-				return CKEDITOR.tools.extend( function( editor ) {
-					return retval( editor, override );
-				}, { type: 'button' }, true );
+			retval.override = function (override) {
+				return CKEDITOR.tools.extend(function (editor) {
+					return retval(editor, override);
+				}, { type: 'button' }, true);
 			};
 			return retval;
-		} )(),
+		})(),
 
 		/**
 		 * The default cancel button for dialogs. Fires the `cancel` event and
@@ -1639,29 +1639,29 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @static
 		 * @method
 		 */
-		cancelButton: ( function() {
-			var retval = function( editor, override ) {
-					override = override || {};
-					return CKEDITOR.tools.extend( {
-						id: 'cancel',
-						type: 'button',
-						label: editor.lang.common.cancel,
-						'class': 'cke_dialog_ui_button_cancel',
-						onClick: function( evt ) {
-							var dialog = evt.data.dialog;
-							if ( dialog.fire( 'cancel', { hide: true } ).hide !== false )
-								dialog.hide();
-						}
-					}, override, true );
-				};
+		cancelButton: (function () {
+			var retval = function (editor, override) {
+				override = override || {};
+				return CKEDITOR.tools.extend({
+					id: 'cancel',
+					type: 'button',
+					label: editor.lang.common.cancel,
+					'class': 'cke_dialog_ui_button_cancel',
+					onClick: function (evt) {
+						var dialog = evt.data.dialog;
+						if (dialog.fire('cancel', { hide: true }).hide !== false)
+							dialog.hide();
+					}
+				}, override, true);
+			};
 			retval.type = 'button';
-			retval.override = function( override ) {
-				return CKEDITOR.tools.extend( function( editor ) {
-					return retval( editor, override );
-				}, { type: 'button' }, true );
+			retval.override = function (override) {
+				return CKEDITOR.tools.extend(function (editor) {
+					return retval(editor, override);
+				}, { type: 'button' }, true);
 			};
 			return retval;
-		} )(),
+		})(),
 
 		/**
 		 * Registers a dialog UI element.
@@ -1670,10 +1670,10 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @param {String} typeName The name of the UI element.
 		 * @param {Function} builder The function to build the UI element.
 		 */
-		addUIElement: function( typeName, builder ) {
-			this._.uiElementBuilders[ typeName ] = builder;
+		addUIElement: function (typeName, builder) {
+			this._.uiElementBuilders[typeName] = builder;
 		}
-	} );
+	});
 
 	CKEDITOR.dialog._ = {
 		uiElementBuilders: {},
@@ -1686,71 +1686,71 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 	};
 
 	// "Inherit" (copy actually) from CKEDITOR.event.
-	CKEDITOR.event.implementOn( CKEDITOR.dialog );
-	CKEDITOR.event.implementOn( CKEDITOR.dialog.prototype );
+	CKEDITOR.event.implementOn(CKEDITOR.dialog);
+	CKEDITOR.event.implementOn(CKEDITOR.dialog.prototype);
 
 	var defaultDialogDefinition = {
 		resizable: CKEDITOR.DIALOG_RESIZE_BOTH,
 		minWidth: 600,
 		minHeight: 400,
-		buttons: [ CKEDITOR.dialog.okButton, CKEDITOR.dialog.cancelButton ]
+		buttons: [CKEDITOR.dialog.okButton, CKEDITOR.dialog.cancelButton]
 	};
 
 	// Tool function used to return an item from an array based on its id
 	// property.
-	var getById = function( array, id, recurse ) {
-			for ( var i = 0, item;
-			( item = array[ i ] ); i++ ) {
-				if ( item.id == id )
-					return item;
-				if ( recurse && item[ recurse ] ) {
-					var retval = getById( item[ recurse ], id, recurse );
-					if ( retval )
-						return retval;
-				}
+	var getById = function (array, id, recurse) {
+		for (var i = 0, item;
+			(item = array[i]); i++) {
+			if (item.id == id)
+				return item;
+			if (recurse && item[recurse]) {
+				var retval = getById(item[recurse], id, recurse);
+				if (retval)
+					return retval;
 			}
-			return null;
-		};
+		}
+		return null;
+	};
 
 	// Tool function used to add an item into an array.
-	var addById = function( array, newItem, nextSiblingId, recurse, nullIfNotFound ) {
-			if ( nextSiblingId ) {
-				for ( var i = 0, item;
-				( item = array[ i ] ); i++ ) {
-					if ( item.id == nextSiblingId ) {
-						array.splice( i, 0, newItem );
-						return newItem;
-					}
-
-					if ( recurse && item[ recurse ] ) {
-						var retval = addById( item[ recurse ], newItem, nextSiblingId, recurse, true );
-						if ( retval )
-							return retval;
-					}
+	var addById = function (array, newItem, nextSiblingId, recurse, nullIfNotFound) {
+		if (nextSiblingId) {
+			for (var i = 0, item;
+				(item = array[i]); i++) {
+				if (item.id == nextSiblingId) {
+					array.splice(i, 0, newItem);
+					return newItem;
 				}
 
-				if ( nullIfNotFound )
-					return null;
-			}
-
-			array.push( newItem );
-			return newItem;
-		};
-
-	// Tool function used to remove an item from an array based on its id.
-	var removeById = function( array, id, recurse ) {
-			for ( var i = 0, item;
-			( item = array[ i ] ); i++ ) {
-				if ( item.id == id )
-					return array.splice( i, 1 );
-				if ( recurse && item[ recurse ] ) {
-					var retval = removeById( item[ recurse ], id, recurse );
-					if ( retval )
+				if (recurse && item[recurse]) {
+					var retval = addById(item[recurse], newItem, nextSiblingId, recurse, true);
+					if (retval)
 						return retval;
 				}
 			}
-			return null;
-		};
+
+			if (nullIfNotFound)
+				return null;
+		}
+
+		array.push(newItem);
+		return newItem;
+	};
+
+	// Tool function used to remove an item from an array based on its id.
+	var removeById = function (array, id, recurse) {
+		for (var i = 0, item;
+			(item = array[i]); i++) {
+			if (item.id == id)
+				return array.splice(i, 1);
+			if (recurse && item[recurse]) {
+				var retval = removeById(item[recurse], id, recurse);
+				if (retval)
+					return retval;
+			}
+		}
+		return null;
+	};
 
 	/**
 	 * This class is not really part of the API. It is the `definition` property value
@@ -1767,18 +1767,18 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 	 * @extends CKEDITOR.dialog.definition
 	 * @constructor Creates a definitionObject class instance.
 	 */
-	var definitionObject = function( dialog, dialogDefinition ) {
-			// TODO : Check if needed.
-			this.dialog = dialog;
+	var definitionObject = function (dialog, dialogDefinition) {
+		// TODO : Check if needed.
+		this.dialog = dialog;
 
-			// Transform the contents entries in contentObjects.
-			var contents = dialogDefinition.contents;
-			for ( var i = 0, content;
-			( content = contents[ i ] ); i++ )
-				contents[ i ] = content && new contentObject( dialog, content );
+		// Transform the contents entries in contentObjects.
+		var contents = dialogDefinition.contents;
+		for (var i = 0, content;
+			(content = contents[i]); i++)
+			contents[i] = content && new contentObject(dialog, content);
 
-			CKEDITOR.tools.extend( this, dialogDefinition );
-		};
+		CKEDITOR.tools.extend(this, dialogDefinition);
+	};
 
 	definitionObject.prototype = {
 		/**
@@ -1787,8 +1787,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @param {String} id The id of the content definition.
 		 * @returns {CKEDITOR.dialog.definition.content} The content definition matching id.
 		 */
-		getContents: function( id ) {
-			return getById( this.contents, id );
+		getContents: function (id) {
+			return getById(this.contents, id);
 		},
 
 		/**
@@ -1797,8 +1797,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @param {String} id The id of the button definition.
 		 * @returns {CKEDITOR.dialog.definition.button} The button definition matching id.
 		 */
-		getButton: function( id ) {
-			return getById( this.buttons, id );
+		getButton: function (id) {
+			return getById(this.buttons, id);
 		},
 
 		/**
@@ -1812,8 +1812,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * the last item.
 		 * @returns {CKEDITOR.dialog.definition.content} The inserted content definition.
 		 */
-		addContents: function( contentDefinition, nextSiblingId ) {
-			return addById( this.contents, contentDefinition, nextSiblingId );
+		addContents: function (contentDefinition, nextSiblingId) {
+			return addById(this.contents, contentDefinition, nextSiblingId);
 		},
 
 		/**
@@ -1827,8 +1827,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * the last item.
 		 * @returns {CKEDITOR.dialog.definition.button} The inserted button definition.
 		 */
-		addButton: function( buttonDefinition, nextSiblingId ) {
-			return addById( this.buttons, buttonDefinition, nextSiblingId );
+		addButton: function (buttonDefinition, nextSiblingId) {
+			return addById(this.buttons, buttonDefinition, nextSiblingId);
 		},
 
 		/**
@@ -1837,8 +1837,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @param {String} id The id of the content definition to be removed.
 		 * @returns {CKEDITOR.dialog.definition.content} The removed content definition.
 		 */
-		removeContents: function( id ) {
-			removeById( this.contents, id );
+		removeContents: function (id) {
+			removeById(this.contents, id);
 		},
 
 		/**
@@ -1847,8 +1847,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @param {String} id The id of the button definition to be removed.
 		 * @returns {CKEDITOR.dialog.definition.button} The removed button definition.
 		 */
-		removeButton: function( id ) {
-			removeById( this.buttons, id );
+		removeButton: function (id) {
+			removeById(this.buttons, id);
 		}
 	};
 
@@ -1868,12 +1868,12 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 	 * @class CKEDITOR.dialog.definition.contentObject
 	 * @constructor Creates a contentObject class instance.
 	 */
-	function contentObject( dialog, contentDefinition ) {
+	function contentObject(dialog, contentDefinition) {
 		this._ = {
 			dialog: dialog
 		};
 
-		CKEDITOR.tools.extend( this, contentDefinition );
+		CKEDITOR.tools.extend(this, contentDefinition);
 	}
 
 	contentObject.prototype = {
@@ -1883,8 +1883,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @param {String} id The id of the UI element definition.
 		 * @returns {CKEDITOR.dialog.definition.uiElement}
 		 */
-		get: function( id ) {
-			return getById( this.elements, id, 'children' );
+		get: function (id) {
+			return getById(this.elements, id, 'children');
 		},
 
 		/**
@@ -1898,8 +1898,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * the last item.
 		 * @returns {CKEDITOR.dialog.definition.uiElement} The element definition inserted.
 		 */
-		add: function( elementDefinition, nextSiblingId ) {
-			return addById( this.elements, elementDefinition, nextSiblingId, 'children' );
+		add: function (elementDefinition, nextSiblingId) {
+			return addById(this.elements, elementDefinition, nextSiblingId, 'children');
 		},
 
 		/**
@@ -1908,22 +1908,22 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @param {String} id The id of the UI element definition to be removed.
 		 * @returns {CKEDITOR.dialog.definition.uiElement} The element definition removed.
 		 */
-		remove: function( id ) {
-			removeById( this.elements, id, 'children' );
+		remove: function (id) {
+			removeById(this.elements, id, 'children');
 		}
 	};
 
-	function initDragAndDrop( dialog ) {
+	function initDragAndDrop(dialog) {
 		var lastCoords = null,
 			abstractDialogCoords = null,
 			editor = dialog.getParentEditor(),
 			magnetDistance = editor.config.dialog_magnetDistance,
-			margins = CKEDITOR.skin.margins || [ 0, 0, 0, 0 ];
+			margins = CKEDITOR.skin.margins || [0, 0, 0, 0];
 
-		if ( typeof magnetDistance == 'undefined' )
+		if (typeof magnetDistance == 'undefined')
 			magnetDistance = 20;
 
-		function mouseMoveHandler( evt ) {
+		function mouseMoveHandler(evt) {
 			var dialogSize = dialog.getSize(),
 				viewPaneSize = CKEDITOR.document.getWindow().getViewPaneSize(),
 				x = evt.data.$.screenX,
@@ -1936,163 +1936,163 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 			abstractDialogCoords.x += dx;
 			abstractDialogCoords.y += dy;
 
-			if ( abstractDialogCoords.x + margins[ 3 ] < magnetDistance )
-				realX = -margins[ 3 ];
-			else if ( abstractDialogCoords.x - margins[ 1 ] > viewPaneSize.width - dialogSize.width - magnetDistance )
-				realX = viewPaneSize.width - dialogSize.width + ( editor.lang.dir == 'rtl' ? 0 : margins[ 1 ] );
+			if (abstractDialogCoords.x + margins[3] < magnetDistance)
+				realX = -margins[3];
+			else if (abstractDialogCoords.x - margins[1] > viewPaneSize.width - dialogSize.width - magnetDistance)
+				realX = viewPaneSize.width - dialogSize.width + (editor.lang.dir == 'rtl' ? 0 : margins[1]);
 			else
 				realX = abstractDialogCoords.x;
 
-			if ( abstractDialogCoords.y + margins[ 0 ] < magnetDistance )
-				realY = -margins[ 0 ];
-			else if ( abstractDialogCoords.y - margins[ 2 ] > viewPaneSize.height - dialogSize.height - magnetDistance )
-				realY = viewPaneSize.height - dialogSize.height + margins[ 2 ];
+			if (abstractDialogCoords.y + margins[0] < magnetDistance)
+				realY = -margins[0];
+			else if (abstractDialogCoords.y - margins[2] > viewPaneSize.height - dialogSize.height - magnetDistance)
+				realY = viewPaneSize.height - dialogSize.height + margins[2];
 			else
 				realY = abstractDialogCoords.y;
 
-			dialog.move( realX, realY, 1 );
+			dialog.move(realX, realY, 1);
 
 			evt.data.preventDefault();
 		}
 
 		function mouseUpHandler() {
-			CKEDITOR.document.removeListener( 'mousemove', mouseMoveHandler );
-			CKEDITOR.document.removeListener( 'mouseup', mouseUpHandler );
+			CKEDITOR.document.removeListener('mousemove', mouseMoveHandler);
+			CKEDITOR.document.removeListener('mouseup', mouseUpHandler);
 
-			if ( CKEDITOR.env.ie6Compat ) {
-				var coverDoc = currentCover.getChild( 0 ).getFrameDocument();
-				coverDoc.removeListener( 'mousemove', mouseMoveHandler );
-				coverDoc.removeListener( 'mouseup', mouseUpHandler );
+			if (CKEDITOR.env.ie6Compat) {
+				var coverDoc = currentCover.getChild(0).getFrameDocument();
+				coverDoc.removeListener('mousemove', mouseMoveHandler);
+				coverDoc.removeListener('mouseup', mouseUpHandler);
 			}
 		}
 
-		dialog.parts.title.on( 'mousedown', function( evt ) {
+		dialog.parts.title.on('mousedown', function (evt) {
 			lastCoords = { x: evt.data.$.screenX, y: evt.data.$.screenY };
 
-			CKEDITOR.document.on( 'mousemove', mouseMoveHandler );
-			CKEDITOR.document.on( 'mouseup', mouseUpHandler );
+			CKEDITOR.document.on('mousemove', mouseMoveHandler);
+			CKEDITOR.document.on('mouseup', mouseUpHandler);
 			abstractDialogCoords = dialog.getPosition();
 
-			if ( CKEDITOR.env.ie6Compat ) {
-				var coverDoc = currentCover.getChild( 0 ).getFrameDocument();
-				coverDoc.on( 'mousemove', mouseMoveHandler );
-				coverDoc.on( 'mouseup', mouseUpHandler );
+			if (CKEDITOR.env.ie6Compat) {
+				var coverDoc = currentCover.getChild(0).getFrameDocument();
+				coverDoc.on('mousemove', mouseMoveHandler);
+				coverDoc.on('mouseup', mouseUpHandler);
 			}
 
 			evt.data.preventDefault();
-		}, dialog );
+		}, dialog);
 	}
 
-	function initResizeHandles( dialog ) {
+	function initResizeHandles(dialog) {
 		var def = dialog.definition,
 			resizable = def.resizable;
 
-		if ( resizable == CKEDITOR.DIALOG_RESIZE_NONE )
+		if (resizable == CKEDITOR.DIALOG_RESIZE_NONE)
 			return;
 
 		var editor = dialog.getParentEditor();
 		var wrapperWidth, wrapperHeight, viewSize, origin, startSize, dialogCover;
 
-		var mouseDownFn = CKEDITOR.tools.addFunction( function( $event ) {
+		var mouseDownFn = CKEDITOR.tools.addFunction(function ($event) {
 			startSize = dialog.getSize();
 
 			var content = dialog.parts.contents,
-				iframeDialog = content.$.getElementsByTagName( 'iframe' ).length;
+				iframeDialog = content.$.getElementsByTagName('iframe').length;
 
 			// Shim to help capturing "mousemove" over iframe.
-			if ( iframeDialog ) {
-				dialogCover = CKEDITOR.dom.element.createFromHtml( '<div class="cke_dialog_resize_cover" style="height: 100%; position: absolute; width: 100%;"></div>' );
-				content.append( dialogCover );
+			if (iframeDialog) {
+				dialogCover = CKEDITOR.dom.element.createFromHtml('<div class="cke_dialog_resize_cover" style="height: 100%; position: absolute; width: 100%;"></div>');
+				content.append(dialogCover);
 			}
 
 			// Calculate the offset between content and chrome size.
-			wrapperHeight = startSize.height - dialog.parts.contents.getSize( 'height', !( CKEDITOR.env.gecko || CKEDITOR.env.ie && CKEDITOR.env.quirks ) );
-			wrapperWidth = startSize.width - dialog.parts.contents.getSize( 'width', 1 );
+			wrapperHeight = startSize.height - dialog.parts.contents.getSize('height', !(CKEDITOR.env.gecko || CKEDITOR.env.ie && CKEDITOR.env.quirks));
+			wrapperWidth = startSize.width - dialog.parts.contents.getSize('width', 1);
 
 			origin = { x: $event.screenX, y: $event.screenY };
 
 			viewSize = CKEDITOR.document.getWindow().getViewPaneSize();
 
-			CKEDITOR.document.on( 'mousemove', mouseMoveHandler );
-			CKEDITOR.document.on( 'mouseup', mouseUpHandler );
+			CKEDITOR.document.on('mousemove', mouseMoveHandler);
+			CKEDITOR.document.on('mouseup', mouseUpHandler);
 
-			if ( CKEDITOR.env.ie6Compat ) {
-				var coverDoc = currentCover.getChild( 0 ).getFrameDocument();
-				coverDoc.on( 'mousemove', mouseMoveHandler );
-				coverDoc.on( 'mouseup', mouseUpHandler );
+			if (CKEDITOR.env.ie6Compat) {
+				var coverDoc = currentCover.getChild(0).getFrameDocument();
+				coverDoc.on('mousemove', mouseMoveHandler);
+				coverDoc.on('mouseup', mouseUpHandler);
 			}
 
 			$event.preventDefault && $event.preventDefault();
-		} );
+		});
 
 		// Prepend the grip to the dialog.
-		dialog.on( 'load', function() {
+		dialog.on('load', function () {
 			var direction = '';
-			if ( resizable == CKEDITOR.DIALOG_RESIZE_WIDTH )
+			if (resizable == CKEDITOR.DIALOG_RESIZE_WIDTH)
 				direction = ' cke_resizer_horizontal';
-			else if ( resizable == CKEDITOR.DIALOG_RESIZE_HEIGHT )
+			else if (resizable == CKEDITOR.DIALOG_RESIZE_HEIGHT)
 				direction = ' cke_resizer_vertical';
 			var resizer = CKEDITOR.dom.element.createFromHtml(
 				'<div' +
 				' class="cke_resizer' + direction + ' cke_resizer_' + editor.lang.dir + '"' +
-				' title="' + CKEDITOR.tools.htmlEncode( editor.lang.common.resize ) + '"' +
+				' title="' + CKEDITOR.tools.htmlEncode(editor.lang.common.resize) + '"' +
 				' onmousedown="CKEDITOR.tools.callFunction(' + mouseDownFn + ', event )">' +
 				// BLACK LOWER RIGHT TRIANGLE (ltr)
 				// BLACK LOWER LEFT TRIANGLE (rtl)
-				( editor.lang.dir == 'ltr' ? '\u25E2' : '\u25E3' ) +
-				'</div>' );
-			dialog.parts.footer.append( resizer, 1 );
-		} );
-		editor.on( 'destroy', function() {
-			CKEDITOR.tools.removeFunction( mouseDownFn );
-		} );
+				(editor.lang.dir == 'ltr' ? '\u25E2' : '\u25E3') +
+				'</div>');
+			dialog.parts.footer.append(resizer, 1);
+		});
+		editor.on('destroy', function () {
+			CKEDITOR.tools.removeFunction(mouseDownFn);
+		});
 
-		function mouseMoveHandler( evt ) {
+		function mouseMoveHandler(evt) {
 			var rtl = editor.lang.dir == 'rtl',
-				dx = ( evt.data.$.screenX - origin.x ) * ( rtl ? -1 : 1 ),
+				dx = (evt.data.$.screenX - origin.x) * (rtl ? -1 : 1),
 				dy = evt.data.$.screenY - origin.y,
 				width = startSize.width,
 				height = startSize.height,
-				internalWidth = width + dx * ( dialog._.moved ? 1 : 2 ),
-				internalHeight = height + dy * ( dialog._.moved ? 1 : 2 ),
+				internalWidth = width + dx * (dialog._.moved ? 1 : 2),
+				internalHeight = height + dy * (dialog._.moved ? 1 : 2),
 				element = dialog._.element.getFirst(),
-				right = rtl && element.getComputedStyle( 'right' ),
+				right = rtl && element.getComputedStyle('right'),
 				position = dialog.getPosition();
 
-			if ( position.y + internalHeight > viewSize.height )
+			if (position.y + internalHeight > viewSize.height)
 				internalHeight = viewSize.height - position.y;
 
-			if ( ( rtl ? right : position.x ) + internalWidth > viewSize.width )
-				internalWidth = viewSize.width - ( rtl ? right : position.x );
+			if ((rtl ? right : position.x) + internalWidth > viewSize.width)
+				internalWidth = viewSize.width - (rtl ? right : position.x);
 
 			// Make sure the dialog will not be resized to the wrong side when it's in the leftmost position for RTL.
-			if ( ( resizable == CKEDITOR.DIALOG_RESIZE_WIDTH || resizable == CKEDITOR.DIALOG_RESIZE_BOTH ) )
-				width = Math.max( def.minWidth || 0, internalWidth - wrapperWidth );
+			if ((resizable == CKEDITOR.DIALOG_RESIZE_WIDTH || resizable == CKEDITOR.DIALOG_RESIZE_BOTH))
+				width = Math.max(def.minWidth || 0, internalWidth - wrapperWidth);
 
-			if ( resizable == CKEDITOR.DIALOG_RESIZE_HEIGHT || resizable == CKEDITOR.DIALOG_RESIZE_BOTH )
-				height = Math.max( def.minHeight || 0, internalHeight - wrapperHeight );
+			if (resizable == CKEDITOR.DIALOG_RESIZE_HEIGHT || resizable == CKEDITOR.DIALOG_RESIZE_BOTH)
+				height = Math.max(def.minHeight || 0, internalHeight - wrapperHeight);
 
-			dialog.resize( width, height );
+			dialog.resize(width, height);
 
-			if ( !dialog._.moved )
+			if (!dialog._.moved)
 				dialog.layout();
 
 			evt.data.preventDefault();
 		}
 
 		function mouseUpHandler() {
-			CKEDITOR.document.removeListener( 'mouseup', mouseUpHandler );
-			CKEDITOR.document.removeListener( 'mousemove', mouseMoveHandler );
+			CKEDITOR.document.removeListener('mouseup', mouseUpHandler);
+			CKEDITOR.document.removeListener('mousemove', mouseMoveHandler);
 
-			if ( dialogCover ) {
+			if (dialogCover) {
 				dialogCover.remove();
 				dialogCover = null;
 			}
 
-			if ( CKEDITOR.env.ie6Compat ) {
-				var coverDoc = currentCover.getChild( 0 ).getFrameDocument();
-				coverDoc.removeListener( 'mouseup', mouseUpHandler );
-				coverDoc.removeListener( 'mousemove', mouseMoveHandler );
+			if (CKEDITOR.env.ie6Compat) {
+				var coverDoc = currentCover.getChild(0).getFrameDocument();
+				coverDoc.removeListener('mouseup', mouseUpHandler);
+				coverDoc.removeListener('mousemove', mouseMoveHandler);
 			}
 		}
 	}
@@ -2103,216 +2103,216 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 	var covers = {},
 		currentCover;
 
-	function cancelEvent( ev ) {
-		ev.data.preventDefault( 1 );
+	function cancelEvent(ev) {
+		ev.data.preventDefault(1);
 	}
 
-	function showCover( editor ) {
+	function showCover(editor) {
 		var win = CKEDITOR.document.getWindow(),
 			config = editor.config,
-			skinName = ( CKEDITOR.skinName || editor.config.skin ),
-			backgroundColorStyle = config.dialog_backgroundCoverColor || ( skinName == 'moono-lisa' ? 'black' : 'white' ),
+			skinName = (CKEDITOR.skinName || editor.config.skin),
+			backgroundColorStyle = config.dialog_backgroundCoverColor || (skinName == 'moono-lisa' ? 'black' : 'white'),
 			backgroundCoverOpacity = config.dialog_backgroundCoverOpacity,
 			baseFloatZIndex = config.baseFloatZIndex,
-			coverKey = CKEDITOR.tools.genKey( backgroundColorStyle, backgroundCoverOpacity, baseFloatZIndex ),
-			coverElement = covers[ coverKey ];
+			coverKey = CKEDITOR.tools.genKey(backgroundColorStyle, backgroundCoverOpacity, baseFloatZIndex),
+			coverElement = covers[coverKey];
 
-		if ( !coverElement ) {
+		if (!coverElement) {
 			var html = [
-				'<div tabIndex="-1" style="position: ', ( CKEDITOR.env.ie6Compat ? 'absolute' : 'fixed' ),
+				'<div tabIndex="-1" style="position: ', (CKEDITOR.env.ie6Compat ? 'absolute' : 'fixed'),
 				'; z-index: ', baseFloatZIndex,
 				'; top: 0px; left: 0px; ',
-				( !CKEDITOR.env.ie6Compat ? 'background-color: ' + backgroundColorStyle : '' ),
+				(!CKEDITOR.env.ie6Compat ? 'background-color: ' + backgroundColorStyle : ''),
 				'" class="cke_dialog_background_cover">'
 			];
 
-			if ( CKEDITOR.env.ie6Compat ) {
+			if (CKEDITOR.env.ie6Compat) {
 				// Support for custom document.domain in IE.
 				var iframeHtml = '<html><body style=\\\'background-color:' + backgroundColorStyle + ';\\\'></body></html>';
 
-				html.push( '<iframe' +
+				html.push('<iframe' +
 					' hidefocus="true"' +
 					' frameborder="0"' +
 					' id="cke_dialog_background_iframe"' +
-					' src="javascript:' );
+					' src="javascript:');
 
-				html.push( 'void((function(){' + encodeURIComponent(
+				html.push('void((function(){' + encodeURIComponent(
 					'document.open();' +
 					// Support for custom document.domain in IE.
 					'(' + CKEDITOR.tools.fixDomain + ')();' +
 					'document.write( \'' + iframeHtml + '\' );' +
 					'document.close();'
-				) + '})())' );
+				) + '})())');
 
-				html.push( '"' +
+				html.push('"' +
 					' style="' +
-						'position:absolute;' +
-						'left:0;' +
-						'top:0;' +
-						'width:100%;' +
-						'height: 100%;' +
-						'filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0)">' +
-					'</iframe>' );
+					'position:absolute;' +
+					'left:0;' +
+					'top:0;' +
+					'width:100%;' +
+					'height: 100%;' +
+					'filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0)">' +
+					'</iframe>');
 			}
 
-			html.push( '</div>' );
+			html.push('</div>');
 
-			coverElement = CKEDITOR.dom.element.createFromHtml( html.join( '' ) );
-			coverElement.setOpacity( backgroundCoverOpacity !== undefined ? backgroundCoverOpacity : 0.5 );
+			coverElement = CKEDITOR.dom.element.createFromHtml(html.join(''));
+			coverElement.setOpacity(backgroundCoverOpacity !== undefined ? backgroundCoverOpacity : 0.5);
 
-			coverElement.on( 'keydown', cancelEvent );
-			coverElement.on( 'keypress', cancelEvent );
-			coverElement.on( 'keyup', cancelEvent );
+			coverElement.on('keydown', cancelEvent);
+			coverElement.on('keypress', cancelEvent);
+			coverElement.on('keyup', cancelEvent);
 
-			coverElement.appendTo( CKEDITOR.document.getBody() );
-			covers[ coverKey ] = coverElement;
+			coverElement.appendTo(CKEDITOR.document.getBody());
+			covers[coverKey] = coverElement;
 		} else {
 			coverElement.show();
 		}
 
 		// Makes the dialog cover a focus holder as well.
-		editor.focusManager.add( coverElement );
+		editor.focusManager.add(coverElement);
 
 		currentCover = coverElement;
-		var resizeFunc = function() {
-				var size = win.getViewPaneSize();
-				coverElement.setStyles( {
-					width: size.width + 'px',
-					height: size.height + 'px'
-				} );
-			};
+		var resizeFunc = function () {
+			var size = win.getViewPaneSize();
+			coverElement.setStyles({
+				width: size.width + 'px',
+				height: size.height + 'px'
+			});
+		};
 
-		var scrollFunc = function() {
-				var pos = win.getScrollPosition(),
-					cursor = CKEDITOR.dialog._.currentTop;
-				coverElement.setStyles( {
-					left: pos.x + 'px',
-					top: pos.y + 'px'
-				} );
+		var scrollFunc = function () {
+			var pos = win.getScrollPosition(),
+				cursor = CKEDITOR.dialog._.currentTop;
+			coverElement.setStyles({
+				left: pos.x + 'px',
+				top: pos.y + 'px'
+			});
 
-				if ( cursor ) {
-					do {
-						var dialogPos = cursor.getPosition();
-						cursor.move( dialogPos.x, dialogPos.y );
-					} while ( ( cursor = cursor._.parentDialog ) );
-				}
-			};
+			if (cursor) {
+				do {
+					var dialogPos = cursor.getPosition();
+					cursor.move(dialogPos.x, dialogPos.y);
+				} while ((cursor = cursor._.parentDialog));
+			}
+		};
 
 		resizeCover = resizeFunc;
-		win.on( 'resize', resizeFunc );
+		win.on('resize', resizeFunc);
 		resizeFunc();
 		// Using Safari/Mac, focus must be kept where it is (https://dev.ckeditor.com/ticket/7027)
-		if ( !( CKEDITOR.env.mac && CKEDITOR.env.webkit ) )
+		if (!(CKEDITOR.env.mac && CKEDITOR.env.webkit))
 			coverElement.focus();
 
-		if ( CKEDITOR.env.ie6Compat ) {
+		if (CKEDITOR.env.ie6Compat) {
 			// IE BUG: win.$.onscroll assignment doesn't work.. it must be window.onscroll.
 			// So we need to invent a really funny way to make it work.
-			var myScrollHandler = function() {
-					scrollFunc();
-					myScrollHandler.prevScrollHandler.apply( this, arguments );
-				};
-			win.$.setTimeout( function() {
+			var myScrollHandler = function () {
+				scrollFunc();
+				myScrollHandler.prevScrollHandler.apply(this, arguments);
+			};
+			win.$.setTimeout(function () {
 				myScrollHandler.prevScrollHandler = window.onscroll ||
-				function() {};
+					function () { };
 				window.onscroll = myScrollHandler;
-			}, 0 );
+			}, 0);
 			scrollFunc();
 		}
 	}
 
-	function hideCover( editor ) {
-		if ( !currentCover )
+	function hideCover(editor) {
+		if (!currentCover)
 			return;
 
-		editor.focusManager.remove( currentCover );
+		editor.focusManager.remove(currentCover);
 		var win = CKEDITOR.document.getWindow();
 		currentCover.hide();
 
 		// Remove the current cover reference once the cover is removed (#589).
 		currentCover = null;
-		win.removeListener( 'resize', resizeCover );
+		win.removeListener('resize', resizeCover);
 
-		if ( CKEDITOR.env.ie6Compat ) {
-			win.$.setTimeout( function() {
+		if (CKEDITOR.env.ie6Compat) {
+			win.$.setTimeout(function () {
 				var prevScrollHandler = window.onscroll && window.onscroll.prevScrollHandler;
 				window.onscroll = prevScrollHandler || null;
-			}, 0 );
+			}, 0);
 		}
 		resizeCover = null;
 	}
 
 	function removeCovers() {
-		for ( var coverId in covers )
-			covers[ coverId ].remove();
+		for (var coverId in covers)
+			covers[coverId].remove();
 		covers = {};
 	}
 
 	var accessKeyProcessors = {};
 
-	var accessKeyDownHandler = function( evt ) {
-			var ctrl = evt.data.$.ctrlKey || evt.data.$.metaKey,
-				alt = evt.data.$.altKey,
-				shift = evt.data.$.shiftKey,
-				key = String.fromCharCode( evt.data.$.keyCode ),
-				keyProcessor = accessKeyProcessors[ ( ctrl ? 'CTRL+' : '' ) + ( alt ? 'ALT+' : '' ) + ( shift ? 'SHIFT+' : '' ) + key ];
+	var accessKeyDownHandler = function (evt) {
+		var ctrl = evt.data.$.ctrlKey || evt.data.$.metaKey,
+			alt = evt.data.$.altKey,
+			shift = evt.data.$.shiftKey,
+			key = String.fromCharCode(evt.data.$.keyCode),
+			keyProcessor = accessKeyProcessors[(ctrl ? 'CTRL+' : '') + (alt ? 'ALT+' : '') + (shift ? 'SHIFT+' : '') + key];
 
-			if ( !keyProcessor || !keyProcessor.length )
-				return;
+		if (!keyProcessor || !keyProcessor.length)
+			return;
 
-			keyProcessor = keyProcessor[ keyProcessor.length - 1 ];
-			keyProcessor.keydown && keyProcessor.keydown.call( keyProcessor.uiElement, keyProcessor.dialog, keyProcessor.key );
+		keyProcessor = keyProcessor[keyProcessor.length - 1];
+		keyProcessor.keydown && keyProcessor.keydown.call(keyProcessor.uiElement, keyProcessor.dialog, keyProcessor.key);
+		evt.data.preventDefault();
+	};
+
+	var accessKeyUpHandler = function (evt) {
+		var ctrl = evt.data.$.ctrlKey || evt.data.$.metaKey,
+			alt = evt.data.$.altKey,
+			shift = evt.data.$.shiftKey,
+			key = String.fromCharCode(evt.data.$.keyCode),
+			keyProcessor = accessKeyProcessors[(ctrl ? 'CTRL+' : '') + (alt ? 'ALT+' : '') + (shift ? 'SHIFT+' : '') + key];
+
+		if (!keyProcessor || !keyProcessor.length)
+			return;
+
+		keyProcessor = keyProcessor[keyProcessor.length - 1];
+		if (keyProcessor.keyup) {
+			keyProcessor.keyup.call(keyProcessor.uiElement, keyProcessor.dialog, keyProcessor.key);
 			evt.data.preventDefault();
-		};
+		}
+	};
 
-	var accessKeyUpHandler = function( evt ) {
-			var ctrl = evt.data.$.ctrlKey || evt.data.$.metaKey,
-				alt = evt.data.$.altKey,
-				shift = evt.data.$.shiftKey,
-				key = String.fromCharCode( evt.data.$.keyCode ),
-				keyProcessor = accessKeyProcessors[ ( ctrl ? 'CTRL+' : '' ) + ( alt ? 'ALT+' : '' ) + ( shift ? 'SHIFT+' : '' ) + key ];
+	var registerAccessKey = function (uiElement, dialog, key, downFunc, upFunc) {
+		var procList = accessKeyProcessors[key] || (accessKeyProcessors[key] = []);
+		procList.push({
+			uiElement: uiElement,
+			dialog: dialog,
+			key: key,
+			keyup: upFunc || uiElement.accessKeyUp,
+			keydown: downFunc || uiElement.accessKeyDown
+		});
+	};
 
-			if ( !keyProcessor || !keyProcessor.length )
-				return;
-
-			keyProcessor = keyProcessor[ keyProcessor.length - 1 ];
-			if ( keyProcessor.keyup ) {
-				keyProcessor.keyup.call( keyProcessor.uiElement, keyProcessor.dialog, keyProcessor.key );
-				evt.data.preventDefault();
+	var unregisterAccessKey = function (obj) {
+		for (var i in accessKeyProcessors) {
+			var list = accessKeyProcessors[i];
+			for (var j = list.length - 1; j >= 0; j--) {
+				if (list[j].dialog == obj || list[j].uiElement == obj)
+					list.splice(j, 1);
 			}
-		};
+			if (list.length === 0)
+				delete accessKeyProcessors[i];
+		}
+	};
 
-	var registerAccessKey = function( uiElement, dialog, key, downFunc, upFunc ) {
-			var procList = accessKeyProcessors[ key ] || ( accessKeyProcessors[ key ] = [] );
-			procList.push( {
-				uiElement: uiElement,
-				dialog: dialog,
-				key: key,
-				keyup: upFunc || uiElement.accessKeyUp,
-				keydown: downFunc || uiElement.accessKeyDown
-			} );
-		};
+	var tabAccessKeyUp = function (dialog, key) {
+		if (dialog._.accessKeyMap[key])
+			dialog.selectPage(dialog._.accessKeyMap[key]);
+	};
 
-	var unregisterAccessKey = function( obj ) {
-			for ( var i in accessKeyProcessors ) {
-				var list = accessKeyProcessors[ i ];
-				for ( var j = list.length - 1; j >= 0; j-- ) {
-					if ( list[ j ].dialog == obj || list[ j ].uiElement == obj )
-						list.splice( j, 1 );
-				}
-				if ( list.length === 0 )
-					delete accessKeyProcessors[ i ];
-			}
-		};
+	var tabAccessKeyDown = function () { };
 
-	var tabAccessKeyUp = function( dialog, key ) {
-			if ( dialog._.accessKeyMap[ key ] )
-				dialog.selectPage( dialog._.accessKeyMap[ key ] );
-		};
-
-	var tabAccessKeyDown = function() {};
-
-	( function() {
+	(function () {
 		CKEDITOR.ui.dialog = {
 			/**
 			 * The base class of all dialog UI elements.
@@ -2362,19 +2362,19 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 			 * A function returning a string, or a simple string for the HTML code inside
 			 * the root DOM node. Default is empty string.
 			 */
-			uiElement: function( dialog, elementDefinition, htmlList, nodeNameArg, stylesArg, attributesArg, contentsArg ) {
-				if ( arguments.length < 4 )
+			uiElement: function (dialog, elementDefinition, htmlList, nodeNameArg, stylesArg, attributesArg, contentsArg) {
+				if (arguments.length < 4)
 					return;
 
-				var nodeName = ( nodeNameArg.call ? nodeNameArg( elementDefinition ) : nodeNameArg ) || 'div',
-					html = [ '<', nodeName, ' ' ],
-					styles = ( stylesArg && stylesArg.call ? stylesArg( elementDefinition ) : stylesArg ) || {},
-					attributes = ( attributesArg && attributesArg.call ? attributesArg( elementDefinition ) : attributesArg ) || {},
-					innerHTML = ( contentsArg && contentsArg.call ? contentsArg.call( this, dialog, elementDefinition ) : contentsArg ) || '',
+				var nodeName = (nodeNameArg.call ? nodeNameArg(elementDefinition) : nodeNameArg) || 'div',
+					html = ['<', nodeName, ' '],
+					styles = (stylesArg && stylesArg.call ? stylesArg(elementDefinition) : stylesArg) || {},
+					attributes = (attributesArg && attributesArg.call ? attributesArg(elementDefinition) : attributesArg) || {},
+					innerHTML = (contentsArg && contentsArg.call ? contentsArg.call(this, dialog, elementDefinition) : contentsArg) || '',
 					domId = this.domId = attributes.id || CKEDITOR.tools.getNextId() + '_uiElement',
 					i;
 
-				if ( elementDefinition.requiredContent && !dialog.getParentEditor().filter.check( elementDefinition.requiredContent ) ) {
+				if (elementDefinition.requiredContent && !dialog.getParentEditor().filter.check(elementDefinition.requiredContent)) {
 					styles.display = 'none';
 					this.notAllowed = true;
 				}
@@ -2384,124 +2384,124 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 
 				// Set the type and definition CSS class names.
 				var classes = {};
-				if ( elementDefinition.type )
-					classes[ 'cke_dialog_ui_' + elementDefinition.type ] = 1;
-				if ( elementDefinition.className )
-					classes[ elementDefinition.className ] = 1;
-				if ( elementDefinition.disabled )
+				if (elementDefinition.type)
+					classes['cke_dialog_ui_' + elementDefinition.type] = 1;
+				if (elementDefinition.className)
+					classes[elementDefinition.className] = 1;
+				if (elementDefinition.disabled)
 					classes.cke_disabled = 1;
 
-				var attributeClasses = ( attributes[ 'class' ] && attributes[ 'class' ].split ) ? attributes[ 'class' ].split( ' ' ) : [];
-				for ( i = 0; i < attributeClasses.length; i++ ) {
-					if ( attributeClasses[ i ] )
-						classes[ attributeClasses[ i ] ] = 1;
+				var attributeClasses = (attributes['class'] && attributes['class'].split) ? attributes['class'].split(' ') : [];
+				for (i = 0; i < attributeClasses.length; i++) {
+					if (attributeClasses[i])
+						classes[attributeClasses[i]] = 1;
 				}
 				var finalClasses = [];
-				for ( i in classes )
-					finalClasses.push( i );
-				attributes[ 'class' ] = finalClasses.join( ' ' );
+				for (i in classes)
+					finalClasses.push(i);
+				attributes['class'] = finalClasses.join(' ');
 
 				// Set the popup tooltop.
-				if ( elementDefinition.title )
+				if (elementDefinition.title)
 					attributes.title = elementDefinition.title;
 
 				// Write the inline CSS styles.
-				var styleStr = ( elementDefinition.style || '' ).split( ';' );
+				var styleStr = (elementDefinition.style || '').split(';');
 
 				// Element alignment support.
-				if ( elementDefinition.align ) {
+				if (elementDefinition.align) {
 					var align = elementDefinition.align;
-					styles[ 'margin-left' ] = align == 'left' ? 0 : 'auto';
-					styles[ 'margin-right' ] = align == 'right' ? 0 : 'auto';
+					styles['margin-left'] = align == 'left' ? 0 : 'auto';
+					styles['margin-right'] = align == 'right' ? 0 : 'auto';
 				}
 
-				for ( i in styles )
-					styleStr.push( i + ':' + styles[ i ] );
-				if ( elementDefinition.hidden )
-					styleStr.push( 'display:none' );
-				for ( i = styleStr.length - 1; i >= 0; i-- ) {
-					if ( styleStr[ i ] === '' )
-						styleStr.splice( i, 1 );
+				for (i in styles)
+					styleStr.push(i + ':' + styles[i]);
+				if (elementDefinition.hidden)
+					styleStr.push('display:none');
+				for (i = styleStr.length - 1; i >= 0; i--) {
+					if (styleStr[i] === '')
+						styleStr.splice(i, 1);
 				}
-				if ( styleStr.length > 0 )
-					attributes.style = ( attributes.style ? ( attributes.style + '; ' ) : '' ) + styleStr.join( '; ' );
+				if (styleStr.length > 0)
+					attributes.style = (attributes.style ? (attributes.style + '; ') : '') + styleStr.join('; ');
 
 				// Write the attributes.
-				for ( i in attributes )
-					html.push( i + '="' + CKEDITOR.tools.htmlEncode( attributes[ i ] ) + '" ' );
+				for (i in attributes)
+					html.push(i + '="' + CKEDITOR.tools.htmlEncode(attributes[i]) + '" ');
 
 				// Write the content HTML.
-				html.push( '>', innerHTML, '</', nodeName, '>' );
+				html.push('>', innerHTML, '</', nodeName, '>');
 
 				// Add contents to the parent HTML array.
-				htmlList.push( html.join( '' ) );
+				htmlList.push(html.join(''));
 
-				( this._ || ( this._ = {} ) ).dialog = dialog;
+				(this._ || (this._ = {})).dialog = dialog;
 
 				// Override isChanged if it is defined in element definition.
-				if ( typeof elementDefinition.isChanged == 'boolean' )
-					this.isChanged = function() {
+				if (typeof elementDefinition.isChanged == 'boolean')
+					this.isChanged = function () {
 						return elementDefinition.isChanged;
 					};
-				if ( typeof elementDefinition.isChanged == 'function' )
+				if (typeof elementDefinition.isChanged == 'function')
 					this.isChanged = elementDefinition.isChanged;
 
 				// Overload 'get(set)Value' on definition.
-				if ( typeof elementDefinition.setValue == 'function' ) {
-					this.setValue = CKEDITOR.tools.override( this.setValue, function( org ) {
-						return function( val ) {
-							org.call( this, elementDefinition.setValue.call( this, val ) );
+				if (typeof elementDefinition.setValue == 'function') {
+					this.setValue = CKEDITOR.tools.override(this.setValue, function (org) {
+						return function (val) {
+							org.call(this, elementDefinition.setValue.call(this, val));
 						};
-					} );
+					});
 				}
 
-				if ( typeof elementDefinition.getValue == 'function' ) {
-					this.getValue = CKEDITOR.tools.override( this.getValue, function( org ) {
-						return function() {
-							return elementDefinition.getValue.call( this, org.call( this ) );
+				if (typeof elementDefinition.getValue == 'function') {
+					this.getValue = CKEDITOR.tools.override(this.getValue, function (org) {
+						return function () {
+							return elementDefinition.getValue.call(this, org.call(this));
 						};
-					} );
+					});
 				}
 
 				// Add events.
-				CKEDITOR.event.implementOn( this );
+				CKEDITOR.event.implementOn(this);
 
-				this.registerEvents( elementDefinition );
-				if ( this.accessKeyUp && this.accessKeyDown && elementDefinition.accessKey )
-					registerAccessKey( this, dialog, 'CTRL+' + elementDefinition.accessKey );
+				this.registerEvents(elementDefinition);
+				if (this.accessKeyUp && this.accessKeyDown && elementDefinition.accessKey)
+					registerAccessKey(this, dialog, 'CTRL+' + elementDefinition.accessKey);
 
 				var me = this;
-				dialog.on( 'load', function() {
+				dialog.on('load', function () {
 					var input = me.getInputElement();
-					if ( input ) {
+					if (input) {
 						var focusClass = me.type in { 'checkbox': 1, 'ratio': 1 } && CKEDITOR.env.ie && CKEDITOR.env.version < 8 ? 'cke_dialog_ui_focused' : '';
-						input.on( 'focus', function() {
+						input.on('focus', function () {
 							dialog._.tabBarMode = false;
 							dialog._.hasFocus = true;
-							me.fire( 'focus' );
-							focusClass && this.addClass( focusClass );
+							me.fire('focus');
+							focusClass && this.addClass(focusClass);
 
-						} );
+						});
 
-						input.on( 'blur', function() {
-							me.fire( 'blur' );
-							focusClass && this.removeClass( focusClass );
-						} );
+						input.on('blur', function () {
+							me.fire('blur');
+							focusClass && this.removeClass(focusClass);
+						});
 					}
-				} );
+				});
 
 				// Completes this object with everything we have in the
 				// definition.
-				CKEDITOR.tools.extend( this, elementDefinition );
+				CKEDITOR.tools.extend(this, elementDefinition);
 
 				// Register the object as a tab focus if it can be included.
-				if ( this.keyboardFocusable ) {
+				if (this.keyboardFocusable) {
 					this.tabIndex = elementDefinition.tabIndex || 0;
 
-					this.focusIndex = dialog._.focusList.push( this ) - 1;
-					this.on( 'focus', function() {
+					this.focusIndex = dialog._.focusList.push(this) - 1;
+					this.on('focus', function () {
 						dialog._.currentFocusIndex = me.focusIndex;
-					} );
+					});
 				}
 			},
 
@@ -2527,11 +2527,11 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 			 * * `padding` (Optional) The padding width inside child cells.
 			 * * `align` (Optional) The alignment of the whole layout.
 			 */
-			hbox: function( dialog, childObjList, childHtmlList, htmlList, elementDefinition ) {
-				if ( arguments.length < 4 )
+			hbox: function (dialog, childObjList, childHtmlList, htmlList, elementDefinition) {
+				if (arguments.length < 4)
 					return;
 
-				this._ || ( this._ = {} );
+				this._ || (this._ = {});
 
 				var children = this._.children = childObjList,
 					widths = elementDefinition && elementDefinition.widths || null,
@@ -2539,49 +2539,49 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 					styles = {},
 					i;
 				/** @ignore */
-				var innerHTML = function() {
-						var html = [ '<tbody><tr class="cke_dialog_ui_hbox">' ];
-						for ( i = 0; i < childHtmlList.length; i++ ) {
-							var className = 'cke_dialog_ui_hbox_child',
-								styles = [];
-							if ( i === 0 ) {
-								className = 'cke_dialog_ui_hbox_first';
-							}
-							if ( i == childHtmlList.length - 1 ) {
-								className = 'cke_dialog_ui_hbox_last';
-							}
-
-							html.push( '<td class="', className, '" role="presentation" ' );
-							if ( widths ) {
-								if ( widths[ i ] ) {
-									styles.push( 'width:' + cssLength( widths[i] ) );
-								}
-							} else {
-								styles.push( 'width:' + Math.floor( 100 / childHtmlList.length ) + '%' );
-							}
-							if ( height ) {
-								styles.push( 'height:' + cssLength( height ) );
-							}
-							if ( elementDefinition && elementDefinition.padding !== undefined ) {
-								styles.push( 'padding:' + cssLength( elementDefinition.padding ) );
-							}
-							// In IE Quirks alignment has to be done on table cells. (https://dev.ckeditor.com/ticket/7324)
-							if ( CKEDITOR.env.ie && CKEDITOR.env.quirks && children[ i ].align ) {
-								styles.push( 'text-align:' + children[ i ].align );
-							}
-							if ( styles.length > 0 ) {
-								html.push( 'style="' + styles.join( '; ' ) + '" ' );
-							}
-							html.push( '>', childHtmlList[ i ], '</td>' );
+				var innerHTML = function () {
+					var html = ['<tbody><tr class="cke_dialog_ui_hbox">'];
+					for (i = 0; i < childHtmlList.length; i++) {
+						var className = 'cke_dialog_ui_hbox_child',
+							styles = [];
+						if (i === 0) {
+							className = 'cke_dialog_ui_hbox_first';
 						}
-						html.push( '</tr></tbody>' );
-						return html.join( '' );
-					};
+						if (i == childHtmlList.length - 1) {
+							className = 'cke_dialog_ui_hbox_last';
+						}
+
+						html.push('<td class="', className, '" role="presentation" ');
+						if (widths) {
+							if (widths[i]) {
+								styles.push('width:' + cssLength(widths[i]));
+							}
+						} else {
+							styles.push('width:' + Math.floor(100 / childHtmlList.length) + '%');
+						}
+						if (height) {
+							styles.push('height:' + cssLength(height));
+						}
+						if (elementDefinition && elementDefinition.padding !== undefined) {
+							styles.push('padding:' + cssLength(elementDefinition.padding));
+						}
+						// In IE Quirks alignment has to be done on table cells. (https://dev.ckeditor.com/ticket/7324)
+						if (CKEDITOR.env.ie && CKEDITOR.env.quirks && children[i].align) {
+							styles.push('text-align:' + children[i].align);
+						}
+						if (styles.length > 0) {
+							html.push('style="' + styles.join('; ') + '" ');
+						}
+						html.push('>', childHtmlList[i], '</td>');
+					}
+					html.push('</tr></tbody>');
+					return html.join('');
+				};
 
 				var attribs = { role: 'presentation' };
-				elementDefinition && elementDefinition.align && ( attribs.align = elementDefinition.align );
+				elementDefinition && elementDefinition.align && (attribs.align = elementDefinition.align);
 
-				CKEDITOR.ui.dialog.uiElement.call( this, dialog, elementDefinition || { type: 'hbox' }, htmlList, 'table', styles, attribs, innerHTML );
+				CKEDITOR.ui.dialog.uiElement.call(this, dialog, elementDefinition || { type: 'hbox' }, htmlList, 'table', styles, attribs, innerHTML);
 			},
 
 			/**
@@ -2607,57 +2607,57 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 			 * * `expand` (Optional) Whether the layout should expand
 			 *     vertically to fill its container.
 			 */
-			vbox: function( dialog, childObjList, childHtmlList, htmlList, elementDefinition ) {
-				if ( arguments.length < 3 )
+			vbox: function (dialog, childObjList, childHtmlList, htmlList, elementDefinition) {
+				if (arguments.length < 3)
 					return;
 
-				this._ || ( this._ = {} );
+				this._ || (this._ = {});
 
 				var children = this._.children = childObjList,
 					width = elementDefinition && elementDefinition.width || null,
 					heights = elementDefinition && elementDefinition.heights || null;
 				/** @ignore */
-				var innerHTML = function() {
-						var html = [ '<table role="presentation" cellspacing="0" border="0" ' ];
-						html.push( 'style="' );
-						if ( elementDefinition && elementDefinition.expand )
-							html.push( 'height:100%;' );
-						html.push( 'width:' + cssLength( width || '100%' ), ';' );
+				var innerHTML = function () {
+					var html = ['<table role="presentation" cellspacing="0" border="0" '];
+					html.push('style="');
+					if (elementDefinition && elementDefinition.expand)
+						html.push('height:100%;');
+					html.push('width:' + cssLength(width || '100%'), ';');
 
-						// (https://dev.ckeditor.com/ticket/10123) Temp fix for dialog broken layout in latest webkit.
-						if ( CKEDITOR.env.webkit )
-							html.push( 'float:none;' );
+					// (https://dev.ckeditor.com/ticket/10123) Temp fix for dialog broken layout in latest webkit.
+					if (CKEDITOR.env.webkit)
+						html.push('float:none;');
 
-						html.push( '"' );
-						html.push( 'align="', CKEDITOR.tools.htmlEncode(
-						( elementDefinition && elementDefinition.align ) || ( dialog.getParentEditor().lang.dir == 'ltr' ? 'left' : 'right' ) ), '" ' );
+					html.push('"');
+					html.push('align="', CKEDITOR.tools.htmlEncode(
+						(elementDefinition && elementDefinition.align) || (dialog.getParentEditor().lang.dir == 'ltr' ? 'left' : 'right')), '" ');
 
-						html.push( '><tbody>' );
-						for ( var i = 0; i < childHtmlList.length; i++ ) {
-							var styles = [];
-							html.push( '<tr><td role="presentation" ' );
-							if ( width )
-								styles.push( 'width:' + cssLength( width || '100%' ) );
-							if ( heights )
-								styles.push( 'height:' + cssLength( heights[ i ] ) );
-							else if ( elementDefinition && elementDefinition.expand )
-								styles.push( 'height:' + Math.floor( 100 / childHtmlList.length ) + '%' );
-							if ( elementDefinition && elementDefinition.padding !== undefined )
-								styles.push( 'padding:' + cssLength( elementDefinition.padding ) );
-							// In IE Quirks alignment has to be done on table cells. (https://dev.ckeditor.com/ticket/7324)
-							if ( CKEDITOR.env.ie && CKEDITOR.env.quirks && children[ i ].align )
-								styles.push( 'text-align:' + children[ i ].align );
-							if ( styles.length > 0 )
-								html.push( 'style="', styles.join( '; ' ), '" ' );
-							html.push( ' class="cke_dialog_ui_vbox_child">', childHtmlList[ i ], '</td></tr>' );
-						}
-						html.push( '</tbody></table>' );
-						return html.join( '' );
-					};
-				CKEDITOR.ui.dialog.uiElement.call( this, dialog, elementDefinition || { type: 'vbox' }, htmlList, 'div', null, { role: 'presentation' }, innerHTML );
+					html.push('><tbody>');
+					for (var i = 0; i < childHtmlList.length; i++) {
+						var styles = [];
+						html.push('<tr><td role="presentation" ');
+						if (width)
+							styles.push('width:' + cssLength(width || '100%'));
+						if (heights)
+							styles.push('height:' + cssLength(heights[i]));
+						else if (elementDefinition && elementDefinition.expand)
+							styles.push('height:' + Math.floor(100 / childHtmlList.length) + '%');
+						if (elementDefinition && elementDefinition.padding !== undefined)
+							styles.push('padding:' + cssLength(elementDefinition.padding));
+						// In IE Quirks alignment has to be done on table cells. (https://dev.ckeditor.com/ticket/7324)
+						if (CKEDITOR.env.ie && CKEDITOR.env.quirks && children[i].align)
+							styles.push('text-align:' + children[i].align);
+						if (styles.length > 0)
+							html.push('style="', styles.join('; '), '" ');
+						html.push(' class="cke_dialog_ui_vbox_child">', childHtmlList[i], '</td></tr>');
+					}
+					html.push('</tbody></table>');
+					return html.join('');
+				};
+				CKEDITOR.ui.dialog.uiElement.call(this, dialog, elementDefinition || { type: 'vbox' }, htmlList, 'div', null, { role: 'presentation' }, innerHTML);
 			}
 		};
-	} )();
+	})();
 
 	/** @class CKEDITOR.ui.dialog.uiElement */
 	CKEDITOR.ui.dialog.uiElement.prototype = {
@@ -2668,8 +2668,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @returns {CKEDITOR.dom.element} Root DOM element of UI object.
 		 */
-		getElement: function() {
-			return CKEDITOR.document.getById( this.domId );
+		getElement: function () {
+			return CKEDITOR.document.getById(this.domId);
 		},
 
 		/**
@@ -2683,7 +2683,7 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @returns {CKEDITOR.dom.element} The element where the user input values.
 		 */
-		getInputElement: function() {
+		getInputElement: function () {
 			return this.getElement();
 		},
 
@@ -2694,7 +2694,7 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @returns {CKEDITOR.dialog} Parent dialog object.
 		 */
-		getDialog: function() {
+		getDialog: function () {
 			return this._.dialog;
 		},
 
@@ -2707,9 +2707,9 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @param {Object} value The new value.
 		 * @param {Boolean} noChangeEvent Internal commit, to supress `change` event on this element.
 		 */
-		setValue: function( value, noChangeEvent ) {
-			this.getInputElement().setValue( value );
-			!noChangeEvent && this.fire( 'change', { value: value } );
+		setValue: function (value, noChangeEvent) {
+			this.getInputElement().setValue(value);
+			!noChangeEvent && this.fire('change', { value: value });
 			return this;
 		},
 
@@ -2720,7 +2720,7 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @returns {Object} The current value.
 		 */
-		getValue: function() {
+		getValue: function () {
 			return this.getInputElement().getValue();
 		},
 
@@ -2732,7 +2732,7 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @returns {Boolean} `true` if changed, `false` if not changed.
 		 */
-		isChanged: function() {
+		isChanged: function () {
 			// Override in input classes.
 			return false;
 		},
@@ -2747,22 +2747,22 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @chainable
 		 */
-		selectParentTab: function() {
+		selectParentTab: function () {
 			var element = this.getInputElement(),
 				cursor = element,
 				tabId;
-			while ( ( cursor = cursor.getParent() ) && cursor.$.className.search( 'cke_dialog_page_contents' ) == -1 ) {
+			while ((cursor = cursor.getParent()) && cursor.$.className.search('cke_dialog_page_contents') == -1) {
 
 			}
 
 			// Some widgets don't have parent tabs (e.g. OK and Cancel buttons).
-			if ( !cursor )
+			if (!cursor)
 				return this;
 
-			tabId = cursor.getAttribute( 'name' );
+			tabId = cursor.getAttribute('name');
 			// Avoid duplicate select.
-			if ( this._.dialog._.currentTabId != tabId )
-				this._.dialog.selectPage( tabId );
+			if (this._.dialog._.currentTabId != tabId)
+				this._.dialog.selectPage(tabId);
 			return this;
 		},
 
@@ -2773,7 +2773,7 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @chainable
 		 */
-		focus: function() {
+		focus: function () {
 			this.selectParentTab().getInputElement().focus();
 			return this;
 		},
@@ -2798,23 +2798,23 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @param {CKEDITOR.dialog.definition.uiElement} definition The UI element
 		 * definition.
 		 */
-		registerEvents: function( definition ) {
+		registerEvents: function (definition) {
 			var regex = /^on([A-Z]\w+)/,
 				match;
 
-			var registerDomEvent = function( uiElement, dialog, eventName, func ) {
-					dialog.on( 'load', function() {
-						uiElement.getInputElement().on( eventName, func, uiElement );
-					} );
-				};
+			var registerDomEvent = function (uiElement, dialog, eventName, func) {
+				dialog.on('load', function () {
+					uiElement.getInputElement().on(eventName, func, uiElement);
+				});
+			};
 
-			for ( var i in definition ) {
-				if ( !( match = i.match( regex ) ) )
+			for (var i in definition) {
+				if (!(match = i.match(regex)))
 					continue;
-				if ( this.eventProcessors[ i ] )
-					this.eventProcessors[ i ].call( this, this._.dialog, definition[ i ] );
+				if (this.eventProcessors[i])
+					this.eventProcessors[i].call(this, this._.dialog, definition[i]);
 				else
-					registerDomEvent( this, this._.dialog, match[ 1 ].toLowerCase(), definition[ i ] );
+					registerDomEvent(this, this._.dialog, match[1].toLowerCase(), definition[i]);
 			}
 
 			return this;
@@ -2841,16 +2841,16 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @property {Object}
 		 */
 		eventProcessors: {
-			onLoad: function( dialog, func ) {
-				dialog.on( 'load', func, this );
+			onLoad: function (dialog, func) {
+				dialog.on('load', func, this);
 			},
 
-			onShow: function( dialog, func ) {
-				dialog.on( 'show', func, this );
+			onShow: function (dialog, func) {
+				dialog.on('show', func, this);
 			},
 
-			onHide: function( dialog, func ) {
-				dialog.on( 'hide', func, this );
+			onHide: function (dialog, func) {
+				dialog.on('hide', func, this);
 			}
 		},
 
@@ -2865,7 +2865,7 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * are defined to always include the `CTRL` key, its value should always
 		 * include a `'CTRL+'` prefix.
 		 */
-		accessKeyDown: function() {
+		accessKeyDown: function () {
 			this.focus();
 		},
 
@@ -2880,26 +2880,26 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * are defined to always include the `CTRL` key, its value should always
 		 * include a `'CTRL+'` prefix.
 		 */
-		accessKeyUp: function() {},
+		accessKeyUp: function () { },
 
 		/**
 		 * Disables a UI element.
 		 */
-		disable: function() {
+		disable: function () {
 			var element = this.getElement(),
 				input = this.getInputElement();
-			input.setAttribute( 'disabled', 'true' );
-			element.addClass( 'cke_disabled' );
+			input.setAttribute('disabled', 'true');
+			element.addClass('cke_disabled');
 		},
 
 		/**
 		 * Enables a UI element.
 		 */
-		enable: function() {
+		enable: function () {
 			var element = this.getElement(),
 				input = this.getInputElement();
-			input.removeAttribute( 'disabled' );
-			element.removeClass( 'cke_disabled' );
+			input.removeAttribute('disabled');
+			element.removeClass('cke_disabled');
 		},
 
 		/**
@@ -2907,8 +2907,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @returns {Boolean} Whether the UI element is enabled.
 		 */
-		isEnabled: function() {
-			return !this.getElement().hasClass( 'cke_disabled' );
+		isEnabled: function () {
+			return !this.getElement().hasClass('cke_disabled');
 		},
 
 		/**
@@ -2916,7 +2916,7 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @returns {Boolean} Whether the UI element is visible.
 		 */
-		isVisible: function() {
+		isVisible: function () {
 			return this.getInputElement().isVisible();
 		},
 
@@ -2926,15 +2926,15 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 *
 		 * @returns {Boolean} Whether the UI element can be focused.
 		 */
-		isFocusable: function() {
-			if ( !this.isEnabled() || !this.isVisible() )
+		isFocusable: function () {
+			if (!this.isEnabled() || !this.isVisible())
 				return false;
 			return true;
 		}
 	};
 
 	/** @class CKEDITOR.ui.dialog.hbox */
-	CKEDITOR.ui.dialog.hbox.prototype = CKEDITOR.tools.extend( new CKEDITOR.ui.dialog.uiElement(), {
+	CKEDITOR.ui.dialog.hbox.prototype = CKEDITOR.tools.extend(new CKEDITOR.ui.dialog.uiElement(), {
 		/**
 		 * Gets a child UI element inside this container.
 		 *
@@ -2946,45 +2946,45 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * @returns {Array/CKEDITOR.ui.dialog.uiElement} Array of all UI elements in the container
 		 * if no argument given, or the specified UI element if indices is given.
 		 */
-		getChild: function( indices ) {
+		getChild: function (indices) {
 			// If no arguments, return a clone of the children array.
-			if ( arguments.length < 1 )
+			if (arguments.length < 1)
 				return this._.children.concat();
 
 			// If indices isn't array, make it one.
-			if ( !indices.splice )
-				indices = [ indices ];
+			if (!indices.splice)
+				indices = [indices];
 
 			// Retrieve the child element according to tree position.
-			if ( indices.length < 2 )
-				return this._.children[ indices[ 0 ] ];
+			if (indices.length < 2)
+				return this._.children[indices[0]];
 			else
-				return ( this._.children[ indices[ 0 ] ] && this._.children[ indices[ 0 ] ].getChild ) ? this._.children[ indices[ 0 ] ].getChild( indices.slice( 1, indices.length ) ) : null;
+				return (this._.children[indices[0]] && this._.children[indices[0]].getChild) ? this._.children[indices[0]].getChild(indices.slice(1, indices.length)) : null;
 		}
-	}, true );
+	}, true);
 
 	CKEDITOR.ui.dialog.vbox.prototype = new CKEDITOR.ui.dialog.hbox();
 
-	( function() {
+	(function () {
 		var commonBuilder = {
-			build: function( dialog, elementDefinition, output ) {
+			build: function (dialog, elementDefinition, output) {
 				var children = elementDefinition.children,
 					child,
 					childHtmlList = [],
 					childObjList = [];
-				for ( var i = 0;
-				( i < children.length && ( child = children[ i ] ) ); i++ ) {
+				for (var i = 0;
+					(i < children.length && (child = children[i])); i++) {
 					var childHtml = [];
-					childHtmlList.push( childHtml );
-					childObjList.push( CKEDITOR.dialog._.uiElementBuilders[ child.type ].build( dialog, child, childHtml ) );
+					childHtmlList.push(childHtml);
+					childObjList.push(CKEDITOR.dialog._.uiElementBuilders[child.type].build(dialog, child, childHtml));
 				}
-				return new CKEDITOR.ui.dialog[ elementDefinition.type ]( dialog, childObjList, childHtmlList, output, elementDefinition );
+				return new CKEDITOR.ui.dialog[elementDefinition.type](dialog, childObjList, childHtmlList, output, elementDefinition);
 			}
 		};
 
-		CKEDITOR.dialog.addUIElement( 'hbox', commonBuilder );
-		CKEDITOR.dialog.addUIElement( 'vbox', commonBuilder );
-	} )();
+		CKEDITOR.dialog.addUIElement('hbox', commonBuilder);
+		CKEDITOR.dialog.addUIElement('vbox', commonBuilder);
+	})();
 
 	/**
 	 * Generic dialog command. It opens a specific dialog when executed.
@@ -3003,20 +3003,20 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 	 *		// Open the dialog on the 'keystroke' tabId.
 	 *		editor.addCommand( 'keystroke', new CKEDITOR.dialogCommand( 'a11yHelp', { tabId: 'keystroke' } ) );
 	 */
-	CKEDITOR.dialogCommand = function( dialogName, ext ) {
+	CKEDITOR.dialogCommand = function (dialogName, ext) {
 		this.dialogName = dialogName;
-		CKEDITOR.tools.extend( this, ext, true );
+		CKEDITOR.tools.extend(this, ext, true);
 	};
 
 	CKEDITOR.dialogCommand.prototype = {
-		exec: function( editor ) {
+		exec: function (editor) {
 			var tabId = this.tabId;
-			editor.openDialog( this.dialogName, function( dialog ) {
+			editor.openDialog(this.dialogName, function (dialog) {
 				// Select different tab if it's provided (#830).
-				if ( tabId ) {
-					dialog.selectPage( tabId );
+				if (tabId) {
+					dialog.selectPage(tabId);
 				}
-			} );
+			});
 		},
 
 		// Dialog commands just open a dialog ui, thus require no undo logic,
@@ -3026,7 +3026,7 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		editorFocus: 1
 	};
 
-	( function() {
+	(function () {
 		var notEmptyRegex = /^([a]|[^a])+$/,
 			integerRegex = /^\d*$/,
 			numberRegex = /^\d*(?:\.\d+)?$/,
@@ -3079,41 +3079,41 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 			 *
 			 * @returns {Function} Composed validation function.
 			 */
-			functions: function() {
+			functions: function () {
 				var args = arguments;
-				return function() {
+				return function () {
 					// It's important for validate functions to be able to accept the value
 					// as argument in addition to this.getValue(), so that it is possible to
 					// combine validate functions together to make more sophisticated
 					// validators.
-					var value = this && this.getValue ? this.getValue() : args[ 0 ];
+					var value = this && this.getValue ? this.getValue() : args[0];
 
 					var msg,
 						relation = CKEDITOR.VALIDATE_AND,
 						functions = [],
 						i;
 
-					for ( i = 0; i < args.length; i++ ) {
-						if ( typeof args[ i ] == 'function' )
-							functions.push( args[ i ] );
+					for (i = 0; i < args.length; i++) {
+						if (typeof args[i] == 'function')
+							functions.push(args[i]);
 						else
 							break;
 					}
 
-					if ( i < args.length && typeof args[ i ] == 'string' ) {
-						msg = args[ i ];
+					if (i < args.length && typeof args[i] == 'string') {
+						msg = args[i];
 						i++;
 					}
 
-					if ( i < args.length && typeof args[ i ] == 'number' )
-						relation = args[ i ];
+					if (i < args.length && typeof args[i] == 'number')
+						relation = args[i];
 
-					var passed = ( relation == CKEDITOR.VALIDATE_AND ? true : false );
-					for ( i = 0; i < functions.length; i++ ) {
-						if ( relation == CKEDITOR.VALIDATE_AND )
-							passed = passed && functions[ i ]( value );
+					var passed = (relation == CKEDITOR.VALIDATE_AND ? true : false);
+					for (i = 0; i < functions.length; i++) {
+						if (relation == CKEDITOR.VALIDATE_AND)
+							passed = passed && functions[i](value);
 						else
-							passed = passed || functions[ i ]( value );
+							passed = passed || functions[i](value);
 					}
 
 					return !passed ? msg : true;
@@ -3132,14 +3132,14 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 			 * @param {String} msg Validator error message.
 			 * @returns {Function} Validation function.
 			 */
-			regex: function( regex, msg ) {
+			regex: function (regex, msg) {
 				/*
 				 * Can be greatly shortened by deriving from functions validator if code size
 				 * turns out to be more important than performance.
 				 */
-				return function() {
-					var value = this && this.getValue ? this.getValue() : arguments[ 0 ];
-					return !regex.test( value ) ? msg : true;
+				return function () {
+					var value = this && this.getValue ? this.getValue() : arguments[0];
+					return !regex.test(value) ? msg : true;
 				};
 			},
 
@@ -3154,8 +3154,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 			 * @param {String} msg Validator error message.
 			 * @returns {Function} Validation function.
 			 */
-			notEmpty: function( msg ) {
-				return this.regex( notEmptyRegex, msg );
+			notEmpty: function (msg) {
+				return this.regex(notEmptyRegex, msg);
 			},
 
 			/**
@@ -3169,8 +3169,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 			 * @param {String} msg Validator error message.
 			 * @returns {Function} Validation function.
 			 */
-			integer: function( msg ) {
-				return this.regex( integerRegex, msg );
+			integer: function (msg) {
+				return this.regex(integerRegex, msg);
 			},
 
 			/**
@@ -3184,8 +3184,8 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 			 * @param {String} msg Validator error message.
 			 * @returns {Function} Validation function.
 			 */
-			'number': function( msg ) {
-				return this.regex( numberRegex, msg );
+			'number': function (msg) {
+				return this.regex(numberRegex, msg);
 			},
 
 			/**
@@ -3201,10 +3201,10 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 			 * @param {String} msg Validator error message.
 			 * @returns {Function} Validation function.
 			 */
-			'cssLength': function( msg ) {
-				return this.functions( function( val ) {
-					return cssLengthRegex.test( CKEDITOR.tools.trim( val ) );
-				}, msg );
+			'cssLength': function (msg) {
+				return this.functions(function (val) {
+					return cssLengthRegex.test(CKEDITOR.tools.trim(val));
+				}, msg);
 			},
 
 			/**
@@ -3220,10 +3220,10 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 			 * @param {String} msg Validator error message.
 			 * @returns {Function} Validation function.
 			 */
-			'htmlLength': function( msg ) {
-				return this.functions( function( val ) {
-					return htmlLengthRegex.test( CKEDITOR.tools.trim( val ) );
-				}, msg );
+			'htmlLength': function (msg) {
+				return this.functions(function (val) {
+					return htmlLengthRegex.test(CKEDITOR.tools.trim(val));
+				}, msg);
 			},
 
 			/**
@@ -3237,10 +3237,10 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 			 * @param {String} msg Validator error message.
 			 * @returns {Function} Validation function.
 			 */
-			'inlineStyle': function( msg ) {
-				return this.functions( function( val ) {
-					return inlineStyleRegex.test( CKEDITOR.tools.trim( val ) );
-				}, msg );
+			'inlineStyle': function (msg) {
+				return this.functions(function (val) {
+					return inlineStyleRegex.test(CKEDITOR.tools.trim(val));
+				}, msg);
 			},
 
 			/**
@@ -3255,10 +3255,10 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 			 * @param {String} msg Validator error message.
 			 * @returns {Function} Validation function.
 			 */
-			equals: function( value, msg ) {
-				return this.functions( function( val ) {
+			equals: function (value, msg) {
+				return this.functions(function (val) {
 					return val == value;
-				}, msg );
+				}, msg);
 			},
 
 			/**
@@ -3273,32 +3273,32 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 			 * @param {String} msg Validator error message.
 			 * @returns {Function} Validation function.
 			 */
-			notEqual: function( value, msg ) {
-				return this.functions( function( val ) {
+			notEqual: function (value, msg) {
+				return this.functions(function (val) {
 					return val != value;
-				}, msg );
+				}, msg);
 			}
 		};
 
-		CKEDITOR.on( 'instanceDestroyed', function( evt ) {
+		CKEDITOR.on('instanceDestroyed', function (evt) {
 			// Remove dialog cover on last instance destroy.
-			if ( CKEDITOR.tools.isEmpty( CKEDITOR.instances ) ) {
+			if (CKEDITOR.tools.isEmpty(CKEDITOR.instances)) {
 				var currentTopDialog;
-				while ( ( currentTopDialog = CKEDITOR.dialog._.currentTop ) )
+				while ((currentTopDialog = CKEDITOR.dialog._.currentTop))
 					currentTopDialog.hide();
 				removeCovers();
 			}
 
 			var dialogs = evt.editor._.storedDialogs;
-			for ( var name in dialogs )
-				dialogs[ name ].destroy();
+			for (var name in dialogs)
+				dialogs[name].destroy();
 
-		} );
+		});
 
-	} )();
+	})();
 
 	// Extend the CKEDITOR.editor class with dialog specific functions.
-	CKEDITOR.tools.extend( CKEDITOR.editor.prototype, {
+	CKEDITOR.tools.extend(CKEDITOR.editor.prototype, {
 		/**
 		 * Loads and opens a registered dialog.
 		 *
@@ -3311,53 +3311,53 @@ CKEDITOR.DIALOG_STATE_BUSY = 2;
 		 * `null` if the dialog name is not registered.
 		 * @see CKEDITOR.dialog#add
 		 */
-		openDialog: function( dialogName, callback ) {
-			var dialog = null, dialogDefinitions = CKEDITOR.dialog._.dialogDefinitions[ dialogName ];
+		openDialog: function (dialogName, callback) {
+			var dialog = null, dialogDefinitions = CKEDITOR.dialog._.dialogDefinitions[dialogName];
 
-			if ( CKEDITOR.dialog._.currentTop === null )
-				showCover( this );
+			if (CKEDITOR.dialog._.currentTop === null)
+				showCover(this);
 
 			// If the dialogDefinition is already loaded, open it immediately.
-			if ( typeof dialogDefinitions == 'function' ) {
-				var storedDialogs = this._.storedDialogs || ( this._.storedDialogs = {} );
+			if (typeof dialogDefinitions == 'function') {
+				var storedDialogs = this._.storedDialogs || (this._.storedDialogs = {});
 
-				dialog = storedDialogs[ dialogName ] || ( storedDialogs[ dialogName ] = new CKEDITOR.dialog( this, dialogName ) );
+				dialog = storedDialogs[dialogName] || (storedDialogs[dialogName] = new CKEDITOR.dialog(this, dialogName));
 
-				callback && callback.call( dialog, dialog );
+				callback && callback.call(dialog, dialog);
 				dialog.show();
 
-			} else if ( dialogDefinitions == 'failed' ) {
-				hideCover( this );
-				throw new Error( '[CKEDITOR.dialog.openDialog] Dialog "' + dialogName + '" failed when loading definition.' );
-			} else if ( typeof dialogDefinitions == 'string' ) {
+			} else if (dialogDefinitions == 'failed') {
+				hideCover(this);
+				throw new Error('[CKEDITOR.dialog.openDialog] Dialog "' + dialogName + '" failed when loading definition.');
+			} else if (typeof dialogDefinitions == 'string') {
 
-				CKEDITOR.scriptLoader.load( CKEDITOR.getUrl( dialogDefinitions ),
-					function() {
-						var dialogDefinition = CKEDITOR.dialog._.dialogDefinitions[ dialogName ];
+				CKEDITOR.scriptLoader.load(CKEDITOR.getUrl(dialogDefinitions),
+					function () {
+						var dialogDefinition = CKEDITOR.dialog._.dialogDefinitions[dialogName];
 						// In case of plugin error, mark it as loading failed.
-						if ( typeof dialogDefinition != 'function' )
-							CKEDITOR.dialog._.dialogDefinitions[ dialogName ] = 'failed';
+						if (typeof dialogDefinition != 'function')
+							CKEDITOR.dialog._.dialogDefinitions[dialogName] = 'failed';
 
-						this.openDialog( dialogName, callback );
-					}, this, 0, 1 );
+						this.openDialog(dialogName, callback);
+					}, this, 0, 1);
 			}
 
-			CKEDITOR.skin.loadPart( 'dialog' );
+			CKEDITOR.skin.loadPart('dialog');
 
 			return dialog;
 		}
-	} );
-} )();
+	});
+})();
 
-CKEDITOR.plugins.add( 'dialog', {
+CKEDITOR.plugins.add('dialog', {
 	requires: 'dialogui',
-	init: function( editor ) {
-		editor.on( 'doubleclick', function( evt ) {
-			if ( evt.data.dialog )
-				editor.openDialog( evt.data.dialog );
-		}, null, null, 999 );
+	init: function (editor) {
+		editor.on('doubleclick', function (evt) {
+			if (evt.data.dialog)
+				editor.openDialog(evt.data.dialog);
+		}, null, null, 999);
 	}
-} );
+});
 
 // Dialog related configurations.
 

@@ -16,7 +16,7 @@
  * Contains the dictionary of language entries.
  * @namespace
  */
-CKEDITOR.lang[ 'de-ch' ] = {
+CKEDITOR.lang['de-ch'] = {
 	// ARIA description.
 	editor: 'WYSIWYG-Editor',
 	editorPanel: 'WYSIWYG-Editor-Leiste',

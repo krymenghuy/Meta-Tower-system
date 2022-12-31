@@ -3,6 +3,7 @@ unset($_COOKIE['lms5378_3508zd']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,11 +11,13 @@ unset($_COOKIE['lms5378_3508zd']);
     <title>Login</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Koulen&display=swap" rel="stylesheet"> 
-    <link href="{{ asset('assets/borrower-css/login-style.css') }}" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css2?family=Koulen&display=swap" rel="stylesheet">
+    <link href="{{ asset('assets/borrower-css/login-style.css') }}" rel="stylesheet"
+        type="text/css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
+
 <body>
     <div class="container-fluid d-flex bg-login">
         <div class="login-panel">
@@ -23,8 +26,8 @@ unset($_COOKIE['lms5378_3508zd']);
             </div>
 
 
-            <form action="{{url('/processLogin') }}" method="POST">
-                            {{ csrf_field() }}
+            <form action="{{ url('/processLogin') }}" method="POST">
+                {{ csrf_field() }}
                 <div class="px-4 py-4">
                     <h2 class="titleLogin">Login</h2>
                     <label for="" class="labelText">Email</label>
@@ -45,7 +48,7 @@ unset($_COOKIE['lms5378_3508zd']);
                 <div class="panelRegister">
                     <a href="#" class="btnRegister">Don't have account?</a>
                 </div>
-                
+
 
 
 
@@ -55,4 +58,5 @@ unset($_COOKIE['lms5378_3508zd']);
 
     </div>
 </body>
+
 </html>

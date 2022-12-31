@@ -17,7 +17,7 @@
  * Contains the dictionary of language entries.
  * @namespace
  */
-CKEDITOR.lang[ 'cs' ] = {
+CKEDITOR.lang['cs'] = {
 	// ARIA description.
 	editor: 'Textový editor',
 	editorPanel: 'Panel textového editoru',

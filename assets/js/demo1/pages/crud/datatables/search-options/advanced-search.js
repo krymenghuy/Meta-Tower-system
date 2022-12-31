@@ -1,11 +1,11 @@
 "use strict";
-var KTDatatablesSearchOptionsAdvancedSearch = function() {
+var KTDatatablesSearchOptionsAdvancedSearch = function () {
 
-	$.fn.dataTable.Api.register('column().title()', function() {
+	$.fn.dataTable.Api.register('column().title()', function () {
 		return $(this.header()).text().trim();
 	});
 
-	var initTable1 = function() {
+	var initTable1 = function () {
 		// begin first table
 		var table = $('#kt_table_1').DataTable({
 			responsive: true,
@@ -36,50 +36,50 @@ var KTDatatablesSearchOptionsAdvancedSearch = function() {
 				},
 			},
 			columns: [
-				{data: 'RecordID'},
-				{data: 'OrderID'},
-				{data: 'Country'},
-				{data: 'ShipCity'},
-				{data: 'CompanyAgent'},
-				{data: 'ShipDate'},
-				{data: 'Status'},
-				{data: 'Type'},
-				{data: 'Actions', responsivePriority: -1},
+				{ data: 'RecordID' },
+				{ data: 'OrderID' },
+				{ data: 'Country' },
+				{ data: 'ShipCity' },
+				{ data: 'CompanyAgent' },
+				{ data: 'ShipDate' },
+				{ data: 'Status' },
+				{ data: 'Type' },
+				{ data: 'Actions', responsivePriority: -1 },
 			],
 
-			initComplete: function() {
-				this.api().columns().every(function() {
+			initComplete: function () {
+				this.api().columns().every(function () {
 					var column = this;
 
 					switch (column.title()) {
 						case 'Country':
-							column.data().unique().sort().each(function(d, j) {
+							column.data().unique().sort().each(function (d, j) {
 								$('.kt-input[data-col-index="2"]').append('<option value="' + d + '">' + d + '</option>');
 							});
 							break;
 
 						case 'Status':
 							var status = {
-								1: {'title': 'Pending', 'class': 'kt-badge--brand'},
-								2: {'title': 'Delivered', 'class': ' kt-badge--danger'},
-								3: {'title': 'Canceled', 'class': ' kt-badge--primary'},
-								4: {'title': 'Success', 'class': ' kt-badge--success'},
-								5: {'title': 'Info', 'class': ' kt-badge--info'},
-								6: {'title': 'Danger', 'class': ' kt-badge--danger'},
-								7: {'title': 'Warning', 'class': ' kt-badge--warning'},
+								1: { 'title': 'Pending', 'class': 'kt-badge--brand' },
+								2: { 'title': 'Delivered', 'class': ' kt-badge--danger' },
+								3: { 'title': 'Canceled', 'class': ' kt-badge--primary' },
+								4: { 'title': 'Success', 'class': ' kt-badge--success' },
+								5: { 'title': 'Info', 'class': ' kt-badge--info' },
+								6: { 'title': 'Danger', 'class': ' kt-badge--danger' },
+								7: { 'title': 'Warning', 'class': ' kt-badge--warning' },
 							};
-							column.data().unique().sort().each(function(d, j) {
+							column.data().unique().sort().each(function (d, j) {
 								$('.kt-input[data-col-index="6"]').append('<option value="' + d + '">' + status[d].title + '</option>');
 							});
 							break;
 
 						case 'Type':
 							var status = {
-								1: {'title': 'Online', 'state': 'danger'},
-								2: {'title': 'Retail', 'state': 'primary'},
-								3: {'title': 'Direct', 'state': 'success'},
+								1: { 'title': 'Online', 'state': 'danger' },
+								2: { 'title': 'Retail', 'state': 'primary' },
+								3: { 'title': 'Direct', 'state': 'success' },
 							};
-							column.data().unique().sort().each(function(d, j) {
+							column.data().unique().sort().each(function (d, j) {
 								$('.kt-input[data-col-index="7"]').append('<option value="' + d + '">' + status[d].title + '</option>');
 							});
 							break;
@@ -92,7 +92,7 @@ var KTDatatablesSearchOptionsAdvancedSearch = function() {
 					targets: -1,
 					title: 'Actions',
 					orderable: false,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						return `
                         <span class="dropdown">
                             <a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" data-toggle="dropdown" aria-expanded="true">
@@ -111,15 +111,15 @@ var KTDatatablesSearchOptionsAdvancedSearch = function() {
 				},
 				{
 					targets: 6,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						var status = {
-							1: {'title': 'Pending', 'class': 'kt-badge--brand'},
-							2: {'title': 'Delivered', 'class': ' kt-badge--danger'},
-							3: {'title': 'Canceled', 'class': ' kt-badge--primary'},
-							4: {'title': 'Success', 'class': ' kt-badge--success'},
-							5: {'title': 'Info', 'class': ' kt-badge--info'},
-							6: {'title': 'Danger', 'class': ' kt-badge--danger'},
-							7: {'title': 'Warning', 'class': ' kt-badge--warning'},
+							1: { 'title': 'Pending', 'class': 'kt-badge--brand' },
+							2: { 'title': 'Delivered', 'class': ' kt-badge--danger' },
+							3: { 'title': 'Canceled', 'class': ' kt-badge--primary' },
+							4: { 'title': 'Success', 'class': ' kt-badge--success' },
+							5: { 'title': 'Info', 'class': ' kt-badge--info' },
+							6: { 'title': 'Danger', 'class': ' kt-badge--danger' },
+							7: { 'title': 'Warning', 'class': ' kt-badge--warning' },
 						};
 						if (typeof status[data] === 'undefined') {
 							return data;
@@ -129,11 +129,11 @@ var KTDatatablesSearchOptionsAdvancedSearch = function() {
 				},
 				{
 					targets: 7,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						var status = {
-							1: {'title': 'Online', 'state': 'danger'},
-							2: {'title': 'Retail', 'state': 'primary'},
-							3: {'title': 'Direct', 'state': 'success'},
+							1: { 'title': 'Online', 'state': 'danger' },
+							2: { 'title': 'Retail', 'state': 'primary' },
+							3: { 'title': 'Direct', 'state': 'success' },
 						};
 						if (typeof status[data] === 'undefined') {
 							return data;
@@ -145,20 +145,20 @@ var KTDatatablesSearchOptionsAdvancedSearch = function() {
 			],
 		});
 
-		var filter = function() {
+		var filter = function () {
 			var val = $.fn.dataTable.util.escapeRegex($(this).val());
 			table.column($(this).data('col-index')).search(val ? val : '', false, false).draw();
 		};
 
-		var asdasd = function(value, index) {
+		var asdasd = function (value, index) {
 			var val = $.fn.dataTable.util.escapeRegex(value);
 			table.column(index).search(val ? val : '', false, true);
 		};
 
-		$('#kt_search').on('click', function(e) {
+		$('#kt_search').on('click', function (e) {
 			e.preventDefault();
 			var params = {};
-			$('.kt-input').each(function() {
+			$('.kt-input').each(function () {
 				var i = $(this).data('col-index');
 				if (params[i]) {
 					params[i] += '|' + $(this).val();
@@ -167,16 +167,16 @@ var KTDatatablesSearchOptionsAdvancedSearch = function() {
 					params[i] = $(this).val();
 				}
 			});
-			$.each(params, function(i, val) {
+			$.each(params, function (i, val) {
 				// apply search params to datatable
 				table.column(i).search(val ? val : '', false, false);
 			});
 			table.table().draw();
 		});
 
-		$('#kt_reset').on('click', function(e) {
+		$('#kt_reset').on('click', function (e) {
 			e.preventDefault();
-			$('.kt-input').each(function() {
+			$('.kt-input').each(function () {
 				$(this).val('');
 				table.column($(this).data('col-index')).search('', false, false);
 			});
@@ -196,7 +196,7 @@ var KTDatatablesSearchOptionsAdvancedSearch = function() {
 	return {
 
 		//main function to initiate the module
-		init: function() {
+		init: function () {
 			initTable1();
 		},
 
@@ -204,6 +204,6 @@ var KTDatatablesSearchOptionsAdvancedSearch = function() {
 
 }();
 
-jQuery(document).ready(function() {
+jQuery(document).ready(function () {
 	KTDatatablesSearchOptionsAdvancedSearch.init();
 });

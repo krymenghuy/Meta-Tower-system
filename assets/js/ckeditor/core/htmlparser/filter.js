@@ -5,7 +5,7 @@
 
 'use strict';
 
-( function() {
+(function () {
 	/**
 	 * Filter is a configurable tool for transforming and filtering {@link CKEDITOR.htmlParser.node nodes}.
 	 * It is mainly used during data processing phase which is done not on real DOM nodes,
@@ -30,12 +30,12 @@
 	 *
 	 * @class
 	 */
-	CKEDITOR.htmlParser.filter = CKEDITOR.tools.createClass( {
+	CKEDITOR.htmlParser.filter = CKEDITOR.tools.createClass({
 		/**
 		 * @constructor Creates a filter class instance.
 		 * @param {CKEDITOR.htmlParser.filterRulesDefinition} [rules]
 		 */
-		$: function( rules ) {
+		$: function (rules) {
 			/**
 			 * ID of filter instance, which is used to mark elements
 			 * to which this filter has been already applied.
@@ -99,8 +99,8 @@
 			 */
 			this.rootRules = new filterRulesGroup();
 
-			if ( rules )
-				this.addRules( rules, 10 );
+			if (rules)
+				this.addRules(rules, 10);
 		},
 
 		proto: {
@@ -114,49 +114,49 @@
 			 * @param {Boolean} [options.applyToAll=false] Whether to apply rule to non-editable
 			 * elements and their descendants too.
 			 */
-			addRules: function( rules, options ) {
+			addRules: function (rules, options) {
 				var priority;
 
 				// Backward compatibility.
-				if ( typeof options == 'number' )
+				if (typeof options == 'number')
 					priority = options;
 				// New version - try reading from options.
-				else if ( options && ( 'priority' in options ) )
+				else if (options && ('priority' in options))
 					priority = options.priority;
 
 				// Defaults.
-				if ( typeof priority != 'number' )
+				if (typeof priority != 'number')
 					priority = 10;
-				if ( typeof options != 'object' )
+				if (typeof options != 'object')
 					options = {};
 
 				// Add the elementNames.
-				if ( rules.elementNames )
-					this.elementNameRules.addMany( rules.elementNames, priority, options );
+				if (rules.elementNames)
+					this.elementNameRules.addMany(rules.elementNames, priority, options);
 
 				// Add the attributeNames.
-				if ( rules.attributeNames )
-					this.attributeNameRules.addMany( rules.attributeNames, priority, options );
+				if (rules.attributeNames)
+					this.attributeNameRules.addMany(rules.attributeNames, priority, options);
 
 				// Add the elements.
-				if ( rules.elements )
-					addNamedRules( this.elementsRules, rules.elements, priority, options );
+				if (rules.elements)
+					addNamedRules(this.elementsRules, rules.elements, priority, options);
 
 				// Add the attributes.
-				if ( rules.attributes )
-					addNamedRules( this.attributesRules, rules.attributes, priority, options );
+				if (rules.attributes)
+					addNamedRules(this.attributesRules, rules.attributes, priority, options);
 
 				// Add the text.
-				if ( rules.text )
-					this.textRules.add( rules.text, priority, options );
+				if (rules.text)
+					this.textRules.add(rules.text, priority, options);
 
 				// Add the comment.
-				if ( rules.comment )
-					this.commentRules.add( rules.comment, priority, options );
+				if (rules.comment)
+					this.commentRules.add(rules.comment, priority, options);
 
 				// Add root node rules.
-				if ( rules.root )
-					this.rootRules.add( rules.root, priority, options );
+				if (rules.root)
+					this.rootRules.add(rules.root, priority, options);
 			},
 
 			/**
@@ -164,50 +164,50 @@
 			 *
 			 * @param {CKEDITOR.htmlParser.node} node The node to be filtered.
 			 */
-			applyTo: function( node ) {
-				node.filter( this );
+			applyTo: function (node) {
+				node.filter(this);
 			},
 
-			onElementName: function( context, name ) {
-				return this.elementNameRules.execOnName( context, name );
+			onElementName: function (context, name) {
+				return this.elementNameRules.execOnName(context, name);
 			},
 
-			onAttributeName: function( context, name ) {
-				return this.attributeNameRules.execOnName( context, name );
+			onAttributeName: function (context, name) {
+				return this.attributeNameRules.execOnName(context, name);
 			},
 
-			onText: function( context, text, node ) {
-				return this.textRules.exec( context, text, node );
+			onText: function (context, text, node) {
+				return this.textRules.exec(context, text, node);
 			},
 
-			onComment: function( context, commentText, comment ) {
-				return this.commentRules.exec( context, commentText, comment );
+			onComment: function (context, commentText, comment) {
+				return this.commentRules.exec(context, commentText, comment);
 			},
 
-			onRoot: function( context, element ) {
-				return this.rootRules.exec( context, element );
+			onRoot: function (context, element) {
+				return this.rootRules.exec(context, element);
 			},
 
-			onElement: function( context, element ) {
+			onElement: function (context, element) {
 				// We must apply filters set to the specific element name as
 				// well as those set to the generic ^/$ name. So, add both to an
 				// array and process them in a small loop.
-				var rulesGroups = [ this.elementsRules[ '^' ], this.elementsRules[ element.name ], this.elementsRules.$ ],
+				var rulesGroups = [this.elementsRules['^'], this.elementsRules[element.name], this.elementsRules.$],
 					rulesGroup, ret;
 
-				for ( var i = 0; i < 3; i++ ) {
-					rulesGroup = rulesGroups[ i ];
-					if ( rulesGroup ) {
-						ret = rulesGroup.exec( context, element, this );
+				for (var i = 0; i < 3; i++) {
+					rulesGroup = rulesGroups[i];
+					if (rulesGroup) {
+						ret = rulesGroup.exec(context, element, this);
 
-						if ( ret === false )
+						if (ret === false)
 							return null;
 
-						if ( ret && ret != element )
-							return this.onNode( context, ret );
+						if (ret && ret != element)
+							return this.onNode(context, ret);
 
 						// The non-root element has been dismissed by one of the filters.
-						if ( element.parent && !element.name )
+						if (element.parent && !element.name)
 							break;
 					}
 				}
@@ -215,23 +215,23 @@
 				return element;
 			},
 
-			onNode: function( context, node ) {
+			onNode: function (context, node) {
 				var type = node.type;
 
-				return type == CKEDITOR.NODE_ELEMENT ? this.onElement( context, node ) :
-					type == CKEDITOR.NODE_TEXT ? new CKEDITOR.htmlParser.text( this.onText( context, node.value ) ) :
-					type == CKEDITOR.NODE_COMMENT ? new CKEDITOR.htmlParser.comment( this.onComment( context, node.value ) ) : null;
+				return type == CKEDITOR.NODE_ELEMENT ? this.onElement(context, node) :
+					type == CKEDITOR.NODE_TEXT ? new CKEDITOR.htmlParser.text(this.onText(context, node.value)) :
+						type == CKEDITOR.NODE_COMMENT ? new CKEDITOR.htmlParser.comment(this.onComment(context, node.value)) : null;
 			},
 
-			onAttribute: function( context, element, name, value ) {
-				var rulesGroup = this.attributesRules[ name ];
+			onAttribute: function (context, element, name, value) {
+				var rulesGroup = this.attributesRules[name];
 
-				if ( rulesGroup )
-					return rulesGroup.exec( context, value, element, this );
+				if (rulesGroup)
+					return rulesGroup.exec(context, value, element, this);
 				return value;
 			}
 		}
-	} );
+	});
 
 	/**
 	 * Class grouping filter rules for one subject (like element or attribute names).
@@ -259,12 +259,12 @@
 		 * @param {Number} priority
 		 * @param options
 		 */
-		add: function( rule, priority, options ) {
-			this.rules.splice( this.findIndex( priority ), 0, {
+		add: function (rule, priority, options) {
+			this.rules.splice(this.findIndex(priority), 0, {
 				value: rule,
 				priority: priority,
 				options: options
-			} );
+			});
 		},
 
 		/**
@@ -274,18 +274,18 @@
 		 * @param {Number} priority
 		 * @param options
 		 */
-		addMany: function( rules, priority, options ) {
-			var args = [ this.findIndex( priority ), 0 ];
+		addMany: function (rules, priority, options) {
+			var args = [this.findIndex(priority), 0];
 
-			for ( var i = 0, len = rules.length; i < len; i++ ) {
-				args.push( {
-					value: rules[ i ],
+			for (var i = 0, len = rules.length; i < len; i++) {
+				args.push({
+					value: rules[i],
 					priority: priority,
 					options: options
-				} );
+				});
 			}
 
-			this.rules.splice.apply( this.rules, args );
+			this.rules.splice.apply(this.rules, args);
 		},
 
 		/**
@@ -294,14 +294,14 @@
 		 * @param {Number} priority
 		 * @returns {Number} Index.
 		 */
-		findIndex: function( priority ) {
+		findIndex: function (priority) {
 			var rules = this.rules,
 				len = rules.length,
 				i = len - 1;
 
 			// Search from the end, because usually rules will be added with default priority, so
 			// we will be able to stop loop quickly.
-			while ( i >= 0 && priority < rules[ i ].priority )
+			while (i >= 0 && priority < rules[i].priority)
 				i--;
 
 			return i + 1;
@@ -315,37 +315,37 @@
 		 * @param {CKEDITOR.htmlParser.node/CKEDITOR.htmlParser.fragment/String} currentValue The value to be filtered.
 		 * @returns {CKEDITOR.htmlParser.node/CKEDITOR.htmlParser.fragment/String} Filtered value.
 		 */
-		exec: function( context, currentValue ) {
+		exec: function (context, currentValue) {
 			var isNode = currentValue instanceof CKEDITOR.htmlParser.node || currentValue instanceof CKEDITOR.htmlParser.fragment,
 				// Splice '1' to remove context, which we don't want to pass to filter rules.
-				args = Array.prototype.slice.call( arguments, 1 ),
+				args = Array.prototype.slice.call(arguments, 1),
 				rules = this.rules,
 				len = rules.length,
 				orgType, orgName, ret, i, rule;
 
-			for ( i = 0; i < len; i++ ) {
+			for (i = 0; i < len; i++) {
 				// Backup the node info before filtering.
-				if ( isNode ) {
+				if (isNode) {
 					orgType = currentValue.type;
 					orgName = currentValue.name;
 				}
 
-				rule = rules[ i ];
-				if ( isRuleApplicable( context, rule ) ) {
-					ret = rule.value.apply( null, args );
+				rule = rules[i];
+				if (isRuleApplicable(context, rule)) {
+					ret = rule.value.apply(null, args);
 
-					if ( ret === false )
+					if (ret === false)
 						return ret;
 
 					// We're filtering node (element/fragment).
 					// No further filtering if it's not anymore fitable for the subsequent filters.
-					if ( isNode && ret && ( ret.name != orgName || ret.type != orgType ) )
+					if (isNode && ret && (ret.name != orgName || ret.type != orgType))
 						return ret;
 
 					// Update currentValue and corresponding argument in args array.
 					// Updated values will be used in next for-loop step.
-					if ( ret != null )
-						args[ 0 ] = currentValue = ret;
+					if (ret != null)
+						args[0] = currentValue = ret;
 
 					// ret == undefined will continue loop as nothing has happened.
 				}
@@ -360,43 +360,43 @@
 		 * @param {String} currentName The name to be filtered.
 		 * @returns {String} Filtered name.
 		 */
-		execOnName: function( context, currentName ) {
+		execOnName: function (context, currentName) {
 			var i = 0,
 				rules = this.rules,
 				len = rules.length,
 				rule;
 
-			for ( ; currentName && i < len; i++ ) {
-				rule = rules[ i ];
-				if ( isRuleApplicable( context, rule ) )
-					currentName = currentName.replace( rule.value[ 0 ], rule.value[ 1 ] );
+			for (; currentName && i < len; i++) {
+				rule = rules[i];
+				if (isRuleApplicable(context, rule))
+					currentName = currentName.replace(rule.value[0], rule.value[1]);
 			}
 
 			return currentName;
 		}
 	};
 
-	function addNamedRules( rulesGroups, newRules, priority, options ) {
+	function addNamedRules(rulesGroups, newRules, priority, options) {
 		var ruleName, rulesGroup;
 
-		for ( ruleName in newRules ) {
-			rulesGroup = rulesGroups[ ruleName ];
+		for (ruleName in newRules) {
+			rulesGroup = rulesGroups[ruleName];
 
-			if ( !rulesGroup )
-				rulesGroup = rulesGroups[ ruleName ] = new filterRulesGroup();
+			if (!rulesGroup)
+				rulesGroup = rulesGroups[ruleName] = new filterRulesGroup();
 
-			rulesGroup.add( newRules[ ruleName ], priority, options );
+			rulesGroup.add(newRules[ruleName], priority, options);
 		}
 	}
 
-	function isRuleApplicable( context, rule ) {
-		if ( context.nonEditable && !rule.options.applyToAll )
+	function isRuleApplicable(context, rule) {
+		if (context.nonEditable && !rule.options.applyToAll)
 			return false;
 
-		if ( context.nestedEditable && rule.options.excludeNestedEditable )
+		if (context.nestedEditable && rule.options.excludeNestedEditable)
 			return false;
 
 		return true;
 	}
 
-} )();
+})();

@@ -3,15 +3,15 @@
  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
-CKEDITOR.dialog.add( 'about', function( editor ) {
+CKEDITOR.dialog.add('about', function (editor) {
 	var lang = editor.lang.about,
-		imagePath = CKEDITOR.getUrl( CKEDITOR.plugins.get( 'about' ).path + 'dialogs/' + ( CKEDITOR.env.hidpi ? 'hidpi/' : '' ) + 'logo_ckeditor.png' );
+		imagePath = CKEDITOR.getUrl(CKEDITOR.plugins.get('about').path + 'dialogs/' + (CKEDITOR.env.hidpi ? 'hidpi/' : '') + 'logo_ckeditor.png');
 
 	return {
 		title: lang.dlgTitle,
 		minWidth: 390,
 		minHeight: 210,
-		contents: [ {
+		contents: [{
 			id: 'tab1',
 			label: '',
 			title: '',
@@ -23,53 +23,53 @@ CKEDITOR.dialog.add( 'about', function( editor ) {
 					html: '<style type="text/css">' +
 						'.cke_about_container' +
 						'{' +
-							'color:#000 !important;' +
-							'padding:10px 10px 0;' +
-							'margin-top:5px' +
+						'color:#000 !important;' +
+						'padding:10px 10px 0;' +
+						'margin-top:5px' +
 						'}' +
 						'.cke_about_container p' +
 						'{' +
-							'margin: 0 0 10px;' +
+						'margin: 0 0 10px;' +
 						'}' +
 						'.cke_about_container .cke_about_logo' +
 						'{' +
-							'height:81px;' +
-							'background-color:#fff;' +
-							'background-image:url(' + imagePath + ');' +
-							( CKEDITOR.env.hidpi ? 'background-size:194px 58px;' : '' ) +
-							'background-position:center; ' +
-							'background-repeat:no-repeat;' +
-							'margin-bottom:10px;' +
+						'height:81px;' +
+						'background-color:#fff;' +
+						'background-image:url(' + imagePath + ');' +
+						(CKEDITOR.env.hidpi ? 'background-size:194px 58px;' : '') +
+						'background-position:center; ' +
+						'background-repeat:no-repeat;' +
+						'margin-bottom:10px;' +
 						'}' +
 						'.cke_about_container a' +
 						'{' +
-							'cursor:pointer !important;' +
-							'color:#00B2CE !important;' +
-							'text-decoration:underline !important;' +
+						'cursor:pointer !important;' +
+						'color:#00B2CE !important;' +
+						'text-decoration:underline !important;' +
 						'}' +
 						'.cke_about_container > p,' +
 						'.cke_rtl .cke_about_container > p' +
 						'{' +
-							'text-align:center;' +
+						'text-align:center;' +
 						'}' +
 						'</style>' +
 						'<div class="cke_about_container">' +
 						'<div class="cke_about_logo"></div>' +
 						'<p>' +
-							'CKEditor ' + CKEDITOR.version + ' (revision ' + CKEDITOR.revision + ')<br>' +
-							'<a target="_blank" rel="noopener noreferrer" href="https://ckeditor.com/">https://ckeditor.com</a>' +
+						'CKEditor ' + CKEDITOR.version + ' (revision ' + CKEDITOR.revision + ')<br>' +
+						'<a target="_blank" rel="noopener noreferrer" href="https://ckeditor.com/">https://ckeditor.com</a>' +
 						'</p>' +
 						'<p>' +
-							lang.moreInfo + '<br>' +
-							'<a target="_blank" rel="noopener noreferrer" href="https://ckeditor.com/legal/ckeditor-oss-license/">https://ckeditor.com/legal/ckeditor-oss-license/</a>' +
+						lang.moreInfo + '<br>' +
+						'<a target="_blank" rel="noopener noreferrer" href="https://ckeditor.com/legal/ckeditor-oss-license/">https://ckeditor.com/legal/ckeditor-oss-license/</a>' +
 						'</p>' +
 						'<p>' +
-							lang.copy.replace( '$1', '<a target="_blank" rel="noopener noreferrer" href="https://cksource.com/">CKSource</a> - Frederico Knabben' ) +
+						lang.copy.replace('$1', '<a target="_blank" rel="noopener noreferrer" href="https://cksource.com/">CKSource</a> - Frederico Knabben') +
 						'</p>' +
 						'</div>'
 				}
 			]
-		} ],
-		buttons: [ CKEDITOR.dialog.cancelButton ]
+		}],
+		buttons: [CKEDITOR.dialog.cancelButton]
 	};
-} );
+});

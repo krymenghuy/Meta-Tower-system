@@ -17,7 +17,7 @@
  * Contains the dictionary of language entries.
  * @namespace
  */
-CKEDITOR.lang[ 'gl' ] = {
+CKEDITOR.lang['gl'] = {
 	// ARIA description.
 	editor: 'Editor de texto mellorado',
 	editorPanel: 'Panel do editor de texto mellorado',

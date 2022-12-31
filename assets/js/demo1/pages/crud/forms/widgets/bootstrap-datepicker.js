@@ -14,7 +14,7 @@ var KTBootstrapDatepicker = function () {
             rightArrow: '<i class="la la-angle-right"></i>'
         }
     }
-    
+
     // Private functions
     var demos = function () {
         // minimum setup
@@ -103,7 +103,7 @@ var KTBootstrapDatepicker = function () {
             templates: arrows
         });
 
-         // inline picker
+        // inline picker
         $('#kt_datepicker_6').datepicker({
             rtl: KTUtil.isRTL(),
             todayHighlight: true,
@@ -113,12 +113,12 @@ var KTBootstrapDatepicker = function () {
 
     return {
         // public functions
-        init: function() {
-            demos(); 
+        init: function () {
+            demos();
         }
     };
 }();
 
-jQuery(document).ready(function() {    
+jQuery(document).ready(function () {
     KTBootstrapDatepicker.init();
 });

@@ -3,7 +3,7 @@
  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
-CKEDITOR.dialog.add( 'myDialog', function() {
+CKEDITOR.dialog.add('myDialog', function () {
 	return {
 		title: 'My Dialog',
 		minWidth: 400,
@@ -24,8 +24,8 @@ CKEDITOR.dialog.add( 'myDialog', function() {
 						type: 'select',
 						label: 'Select Field',
 						items: [
-							[ 'option1', 'value1' ],
-							[ 'option2', 'value2' ]
+							['option1', 'value1'],
+							['option2', 'value2']
 						]
 					}
 				]
@@ -44,6 +44,6 @@ CKEDITOR.dialog.add( 'myDialog', function() {
 			}
 		]
 	};
-} );
+});
 
 // %LEAVE_UNMINIFIED% %REMOVE_LINE%

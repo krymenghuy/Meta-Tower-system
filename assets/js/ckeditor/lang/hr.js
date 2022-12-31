@@ -17,7 +17,7 @@
  * Contains the dictionary of language entries.
  * @namespace
  */
-CKEDITOR.lang[ 'hr' ] = {
+CKEDITOR.lang['hr'] = {
 	// ARIA description.
 	editor: 'Bogati uređivač teksta, %1',
 	editorPanel: 'Ploča Bogatog Uređivača Teksta',

@@ -1,10 +1,10 @@
 "use strict";
 
-var KTCalendarBasic = function() {
+var KTCalendarBasic = function () {
 
     return {
         //main function to initiate the module
-        init: function() {
+        init: function () {
             var todayDate = moment().startOf('day');
             var YM = todayDate.format('YYYY-MM');
             var YESTERDAY = todayDate.clone().subtract(1, 'day').format('YYYY-MM-DD');
@@ -13,7 +13,7 @@ var KTCalendarBasic = function() {
 
             var calendarEl = document.getElementById('kt_calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
-                plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
+                plugins: ['interaction', 'dayGrid', 'timeGrid', 'list'],
 
                 isRTL: KTUtil.isRTL(),
                 header: {
@@ -46,7 +46,7 @@ var KTCalendarBasic = function() {
                         title: 'All Day Event',
                         start: YM + '-01',
                         description: 'Toto lorem ipsum dolor sit incid idunt ut',
-                        className: "fc-event-danger fc-event-solid-warning"  
+                        className: "fc-event-danger fc-event-solid-warning"
                     },
                     {
                         title: 'Reporting',
@@ -140,7 +140,7 @@ var KTCalendarBasic = function() {
                     }
                 ],
 
-                eventRender: function(info) {
+                eventRender: function (info) {
                     var element = $(info.el);
 
                     if (info.event.extendedProps && info.event.extendedProps.description) {
@@ -149,11 +149,11 @@ var KTCalendarBasic = function() {
                             element.data('placement', 'top');
                             KTApp.initPopover(element);
                         } else if (element.hasClass('fc-time-grid-event')) {
-                            element.find('.fc-title').append('<div class="fc-description">' + info.event.extendedProps.description + '</div>'); 
+                            element.find('.fc-title').append('<div class="fc-description">' + info.event.extendedProps.description + '</div>');
                         } else if (element.find('.fc-list-item-title').lenght !== 0) {
-                            element.find('.fc-list-item-title').append('<div class="fc-description">' + info.event.extendedProps.description + '</div>'); 
+                            element.find('.fc-list-item-title').append('<div class="fc-description">' + info.event.extendedProps.description + '</div>');
                         }
-                    } 
+                    }
                 }
             });
 
@@ -162,6 +162,6 @@ var KTCalendarBasic = function() {
     };
 }();
 
-jQuery(document).ready(function() {
+jQuery(document).ready(function () {
     KTCalendarBasic.init();
 });

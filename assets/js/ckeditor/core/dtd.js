@@ -32,17 +32,17 @@
  * @class CKEDITOR.dtd
  * @singleton
  */
-CKEDITOR.dtd = ( function() {
+CKEDITOR.dtd = (function () {
 	'use strict';
 
 	var X = CKEDITOR.tools.extend,
 		// Subtraction rest of sets, from the first set.
-		Y = function( source, removed ) {
-			var substracted = CKEDITOR.tools.clone( source );
-			for ( var i = 1; i < arguments.length; i++ ) {
-				removed = arguments[ i ];
-				for ( var name in removed )
-					delete substracted[ name ];
+		Y = function (source, removed) {
+			var substracted = CKEDITOR.tools.clone(source);
+			for (var i = 1; i < arguments.length; i++) {
+				removed = arguments[i];
+				for (var name in removed)
+					delete substracted[name];
 			}
 			return substracted;
 		};
@@ -96,18 +96,18 @@ CKEDITOR.dtd = ( function() {
 		DFO = { center: 1, dir: 1, noframes: 1 };
 
 	// Phrasing elements := PF + T + DP
-	X( P, PF, T, DP );
+	X(P, PF, T, DP);
 	// Flow elements := FO + P + DFO
-	X( F, FO, P, DFO );
+	X(F, FO, P, DFO);
 
 	var dtd = {
-		a: Y( P, { a: 1, button: 1 } ), // Treat as normal inline element (not a transparent one).
+		a: Y(P, { a: 1, button: 1 }), // Treat as normal inline element (not a transparent one).
 		abbr: P,
 		address: F,
 		area: E,
 		article: F,
 		aside: F,
-		audio: X( { source: 1, track: 1 }, F ),
+		audio: X({ source: 1, track: 1 }, F),
 		b: P,
 		base: E,
 		bdi: P,
@@ -115,7 +115,7 @@ CKEDITOR.dtd = ( function() {
 		blockquote: F,
 		body: F,
 		br: E,
-		button: Y( P, { a: 1, button: 1 } ),
+		button: Y(P, { a: 1, button: 1 }),
 		canvas: P, // Treat as normal inline element (not a transparent one).
 		caption: F,
 		cite: P,
@@ -123,19 +123,19 @@ CKEDITOR.dtd = ( function() {
 		col: E,
 		colgroup: { col: 1 },
 		command: E,
-		datalist: X( { option: 1 }, P ),
+		datalist: X({ option: 1 }, P),
 		dd: F,
 		del: P, // Treat as normal inline element (not a transparent one).
-		details: X( { summary: 1 }, F ),
+		details: X({ summary: 1 }, F),
 		dfn: P,
 		div: F,
 		dl: { dt: 1, dd: 1 },
 		dt: F,
 		em: P,
 		embed: E,
-		fieldset: X( { legend: 1 }, F ),
+		fieldset: X({ legend: 1 }, F),
 		figcaption: F,
-		figure: X( { figcaption: 1 }, F ),
+		figure: X({ figcaption: 1 }, F),
 		footer: F,
 		form: F,
 		h1: P,
@@ -144,11 +144,11 @@ CKEDITOR.dtd = ( function() {
 		h4: P,
 		h5: P,
 		h6: P,
-		head: X( { title: 1, base: 1 }, M ),
+		head: X({ title: 1, base: 1 }, M),
 		header: F,
 		hgroup: { h1: 1, h2: 1, h3: 1, h4: 1, h5: 1, h6: 1 },
 		hr: E,
-		html: X( { head: 1, body: 1 }, F, M ), // Head and body are optional...
+		html: X({ head: 1, body: 1 }, F, M), // Head and body are optional...
 		i: P,
 		iframe: T,
 		img: E,
@@ -165,12 +165,12 @@ CKEDITOR.dtd = ( function() {
 		main: F,
 		map: F,
 		mark: P, // Treat as normal inline element (not a transparent one).
-		menu: X( { li: 1 }, F ),
+		menu: X({ li: 1 }, F),
 		meta: E,
-		meter: Y( P, { meter: 1 } ),
+		meter: Y(P, { meter: 1 }),
 		nav: F,
-		noscript: X( { link: 1, meta: 1, style: 1 }, P ), // Treat as normal inline element (not a transparent one).
-		object: X( { param: 1 }, P ), // Treat as normal inline element (not a transparent one).
+		noscript: X({ link: 1, meta: 1, style: 1 }, P), // Treat as normal inline element (not a transparent one).
+		object: X({ param: 1 }, P), // Treat as normal inline element (not a transparent one).
 		ol: { li: 1 },
 		optgroup: { option: 1 },
 		option: T,
@@ -178,11 +178,11 @@ CKEDITOR.dtd = ( function() {
 		p: P,
 		param: E,
 		pre: P,
-		progress: Y( P, { progress: 1 } ),
+		progress: Y(P, { progress: 1 }),
 		q: P,
 		rp: P,
 		rt: P,
-		ruby: X( { rp: 1, rt: 1 }, P ),
+		ruby: X({ rp: 1, rt: 1 }, P),
 		s: P,
 		samp: P,
 		script: T,
@@ -194,7 +194,7 @@ CKEDITOR.dtd = ( function() {
 		strong: P,
 		style: T,
 		sub: P,
-		summary: X( { h1: 1, h2: 1, h3: 1, h4: 1, h5: 1, h6: 1 }, P ),
+		summary: X({ h1: 1, h2: 1, h3: 1, h4: 1, h5: 1, h6: 1 }, P),
 		sup: P,
 		table: { caption: 1, colgroup: 1, thead: 1, tfoot: 1, tbody: 1, tr: 1 },
 		tbody: { tr: 1 },
@@ -203,19 +203,19 @@ CKEDITOR.dtd = ( function() {
 		tfoot: { tr: 1 },
 		th: F,
 		thead: { tr: 1 },
-		time: Y( P, { time: 1 } ),
+		time: Y(P, { time: 1 }),
 		title: T,
 		tr: { th: 1, td: 1 },
 		track: E,
 		u: P,
 		ul: { li: 1 },
 		'var': P,
-		video: X( { source: 1, track: 1 }, F ),
+		video: X({ source: 1, track: 1 }, F),
 		wbr: E,
 
 		// Deprecated tags.
 		acronym: P,
-		applet: X( { param: 1 }, F ),
+		applet: X({ param: 1 }, F),
 		basefont: E,
 		big: P,
 		center: F,
@@ -228,11 +228,11 @@ CKEDITOR.dtd = ( function() {
 		tt: P
 	};
 
-	X( dtd, {
+	X(dtd, {
 		/**
 		 * List of block elements, like `<p>` or `<div>`.
 		 */
-		$block: X( { audio: 1, dd: 1, dt: 1, figcaption: 1, li: 1, video: 1 }, FO, DFO ),
+		$block: X({ audio: 1, dd: 1, dt: 1, figcaption: 1, li: 1, video: 1 }, FO, DFO),
 
 		/**
 		 * List of elements that contain other blocks, in which block-level operations should be limited,
@@ -292,7 +292,7 @@ CKEDITOR.dtd = ( function() {
 		/**
 		 * List of elements which may live outside body.
 		 */
-		$nonBodyContent: X( { body: 1, head: 1, html: 1 }, dtd.head ),
+		$nonBodyContent: X({ body: 1, head: 1, html: 1 }, dtd.head),
 
 		/**
 		 * Elements that accept text nodes, but are not possible to edit into the browser.
@@ -341,9 +341,9 @@ CKEDITOR.dtd = ( function() {
 			caption: 1, colgroup: 1, dd: 1, dt: 1, figcaption: 1, legend: 1, li: 1, optgroup: 1,
 			option: 1, rp: 1, rt: 1, summary: 1, tbody: 1, td: 1, tfoot: 1, th: 1, thead: 1, tr: 1
 		}
-	} );
+	});
 
 	return dtd;
-} )();
+})();
 
 // PACKAGER_RENAME( CKEDITOR.dtd )

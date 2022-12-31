@@ -1,7 +1,7 @@
 "use strict";
-var KTDatatablesBasicBasic = function() {
+var KTDatatablesBasicBasic = function () {
 
-	var initTable1 = function() {
+	var initTable1 = function () {
 		var table = $('#kt_table_1');
 
 		// begin first table
@@ -23,7 +23,7 @@ var KTDatatablesBasicBasic = function() {
 			// Order settings
 			order: [[1, 'desc']],
 
-			headerCallback: function(thead, data, start, end, display) {
+			headerCallback: function (thead, data, start, end, display) {
 				thead.getElementsByTagName('th')[0].innerHTML = `
                     <label class="kt-checkbox kt-checkbox--single kt-checkbox--solid">
                         <input type="checkbox" value="" class="m-group-checkable">
@@ -37,7 +37,7 @@ var KTDatatablesBasicBasic = function() {
 					width: '30px',
 					className: 'dt-right',
 					orderable: false,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						return `
                         <label class="kt-checkbox kt-checkbox--single kt-checkbox--solid">
                             <input type="checkbox" value="" class="m-checkable">
@@ -49,7 +49,7 @@ var KTDatatablesBasicBasic = function() {
 					targets: -1,
 					title: 'Actions',
 					orderable: false,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						return `
                         <span class="dropdown">
                             <a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" data-toggle="dropdown" aria-expanded="true">
@@ -68,15 +68,15 @@ var KTDatatablesBasicBasic = function() {
 				},
 				{
 					targets: 8,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						var status = {
-							1: {'title': 'Pending', 'class': 'kt-badge--brand'},
-							2: {'title': 'Delivered', 'class': ' kt-badge--danger'},
-							3: {'title': 'Canceled', 'class': ' kt-badge--primary'},
-							4: {'title': 'Success', 'class': ' kt-badge--success'},
-							5: {'title': 'Info', 'class': ' kt-badge--info'},
-							6: {'title': 'Danger', 'class': ' kt-badge--danger'},
-							7: {'title': 'Warning', 'class': ' kt-badge--warning'},
+							1: { 'title': 'Pending', 'class': 'kt-badge--brand' },
+							2: { 'title': 'Delivered', 'class': ' kt-badge--danger' },
+							3: { 'title': 'Canceled', 'class': ' kt-badge--primary' },
+							4: { 'title': 'Success', 'class': ' kt-badge--success' },
+							5: { 'title': 'Info', 'class': ' kt-badge--info' },
+							6: { 'title': 'Danger', 'class': ' kt-badge--danger' },
+							7: { 'title': 'Warning', 'class': ' kt-badge--warning' },
 						};
 						if (typeof status[data] === 'undefined') {
 							return data;
@@ -86,11 +86,11 @@ var KTDatatablesBasicBasic = function() {
 				},
 				{
 					targets: 9,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						var status = {
-							1: {'title': 'Online', 'state': 'danger'},
-							2: {'title': 'Retail', 'state': 'primary'},
-							3: {'title': 'Direct', 'state': 'success'},
+							1: { 'title': 'Online', 'state': 'danger' },
+							2: { 'title': 'Retail', 'state': 'primary' },
+							3: { 'title': 'Direct', 'state': 'success' },
 						};
 						if (typeof status[data] === 'undefined') {
 							return data;
@@ -102,11 +102,11 @@ var KTDatatablesBasicBasic = function() {
 			],
 		});
 
-		table.on('change', '.kt-group-checkable', function() {
+		table.on('change', '.kt-group-checkable', function () {
 			var set = $(this).closest('table').find('td:first-child .kt-checkable');
 			var checked = $(this).is(':checked');
 
-			$(set).each(function() {
+			$(set).each(function () {
 				if (checked) {
 					$(this).prop('checked', true);
 					$(this).closest('tr').addClass('active');
@@ -118,11 +118,11 @@ var KTDatatablesBasicBasic = function() {
 			});
 		});
 
-		table.on('change', 'tbody tr .kt-checkbox', function() {
+		table.on('change', 'tbody tr .kt-checkbox', function () {
 			$(this).parents('tr').toggleClass('active');
 		});
 	};
-	var initTable2 = function() {
+	var initTable2 = function () {
 		var table = $('#kt_table_2');
 
 		// begin first table
@@ -144,7 +144,7 @@ var KTDatatablesBasicBasic = function() {
 			// Order settings
 			order: [[1, 'desc']],
 
-			headerCallback: function(thead, data, start, end, display) {
+			headerCallback: function (thead, data, start, end, display) {
 				thead.getElementsByTagName('th')[0].innerHTML = `
                     <label class="kt-checkbox kt-checkbox--single kt-checkbox--solid">
                         <input type="checkbox" value="" class="m-group-checkable">
@@ -158,7 +158,7 @@ var KTDatatablesBasicBasic = function() {
 					width: '30px',
 					className: 'dt-right',
 					orderable: false,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						return `
                         <label class="kt-checkbox kt-checkbox--single kt-checkbox--solid">
                             <input type="checkbox" value="" class="m-checkable">
@@ -170,7 +170,7 @@ var KTDatatablesBasicBasic = function() {
 					targets: -1,
 					title: 'Actions',
 					orderable: false,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						return `
                         <span class="dropdown">
                             <a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" data-toggle="dropdown" aria-expanded="true">
@@ -189,15 +189,15 @@ var KTDatatablesBasicBasic = function() {
 				},
 				{
 					targets: 8,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						var status = {
-							1: {'title': 'Pending', 'class': 'kt-badge--brand'},
-							2: {'title': 'Delivered', 'class': ' kt-badge--danger'},
-							3: {'title': 'Canceled', 'class': ' kt-badge--primary'},
-							4: {'title': 'Success', 'class': ' kt-badge--success'},
-							5: {'title': 'Info', 'class': ' kt-badge--info'},
-							6: {'title': 'Danger', 'class': ' kt-badge--danger'},
-							7: {'title': 'Warning', 'class': ' kt-badge--warning'},
+							1: { 'title': 'Pending', 'class': 'kt-badge--brand' },
+							2: { 'title': 'Delivered', 'class': ' kt-badge--danger' },
+							3: { 'title': 'Canceled', 'class': ' kt-badge--primary' },
+							4: { 'title': 'Success', 'class': ' kt-badge--success' },
+							5: { 'title': 'Info', 'class': ' kt-badge--info' },
+							6: { 'title': 'Danger', 'class': ' kt-badge--danger' },
+							7: { 'title': 'Warning', 'class': ' kt-badge--warning' },
 						};
 						if (typeof status[data] === 'undefined') {
 							return data;
@@ -207,11 +207,11 @@ var KTDatatablesBasicBasic = function() {
 				},
 				{
 					targets: 9,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						var status = {
-							1: {'title': 'Online', 'state': 'danger'},
-							2: {'title': 'Retail', 'state': 'primary'},
-							3: {'title': 'Direct', 'state': 'success'},
+							1: { 'title': 'Online', 'state': 'danger' },
+							2: { 'title': 'Retail', 'state': 'primary' },
+							3: { 'title': 'Direct', 'state': 'success' },
 						};
 						if (typeof status[data] === 'undefined') {
 							return data;
@@ -223,11 +223,11 @@ var KTDatatablesBasicBasic = function() {
 			],
 		});
 
-		table.on('change', '.kt-group-checkable', function() {
+		table.on('change', '.kt-group-checkable', function () {
 			var set = $(this).closest('table').find('td:first-child .kt-checkable');
 			var checked = $(this).is(':checked');
 
-			$(set).each(function() {
+			$(set).each(function () {
 				if (checked) {
 					$(this).prop('checked', true);
 					$(this).closest('tr').addClass('active');
@@ -239,7 +239,7 @@ var KTDatatablesBasicBasic = function() {
 			});
 		});
 
-		table.on('change', 'tbody tr .kt-checkbox', function() {
+		table.on('change', 'tbody tr .kt-checkbox', function () {
 			$(this).parents('tr').toggleClass('active');
 		});
 	};
@@ -247,7 +247,7 @@ var KTDatatablesBasicBasic = function() {
 	return {
 
 		//main function to initiate the module
-		init: function() {
+		init: function () {
 			initTable1();
 			initTable2();
 		},
@@ -256,6 +256,6 @@ var KTDatatablesBasicBasic = function() {
 
 }();
 
-jQuery(document).ready(function() {
+jQuery(document).ready(function () {
 	KTDatatablesBasicBasic.init();
 });

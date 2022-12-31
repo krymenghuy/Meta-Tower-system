@@ -8,7 +8,7 @@
  * an UI template for an editor instance.
  */
 
-( function() {
+(function () {
 	var rePlaceholder = /{([^}]+)}/g;
 
 	/**
@@ -30,7 +30,7 @@
 	 * @param {String/Function} source A string with the template source or a callback that will return such string.
 	 * The handling of the `Function` type was added in version 4.12.0 .
 	 */
-	CKEDITOR.template = function( source ) {
+	CKEDITOR.template = function (source) {
 		/**
 		 * The current template source.
 		 *
@@ -40,7 +40,7 @@
 		 * @member CKEDITOR.template
 		 * @property {String/Function} source
 		 */
-		this.source = typeof source === 'function' ? source : String( source );
+		this.source = typeof source === 'function' ? source : String(source);
 	};
 
 	/**
@@ -57,13 +57,13 @@
 	 * @returns {String/Number} If `buffer` has not been provided, the processed
 	 * template output data; otherwise the new length of `buffer`.
 	 */
-	CKEDITOR.template.prototype.output = function( data, buffer ) {
+	CKEDITOR.template.prototype.output = function (data, buffer) {
 
-		var template = typeof this.source === 'function' ? this.source( data ) : this.source,
-			output = template.replace( rePlaceholder, function( fullMatch, dataKey ) {
-				return data[ dataKey ] !== undefined ? data[ dataKey ] : fullMatch;
-			} );
+		var template = typeof this.source === 'function' ? this.source(data) : this.source,
+			output = template.replace(rePlaceholder, function (fullMatch, dataKey) {
+				return data[dataKey] !== undefined ? data[dataKey] : fullMatch;
+			});
 
-		return buffer ? buffer.push( output ) : output;
+		return buffer ? buffer.push(output) : output;
 	};
-} )();
+})();

@@ -10,8 +10,8 @@
  * @constructor Creates a keystrokeHandler class instance.
  * @param {CKEDITOR.editor} editor The editor instance.
  */
-CKEDITOR.keystrokeHandler = function( editor ) {
-	if ( editor.keystrokeHandler )
+CKEDITOR.keystrokeHandler = function (editor) {
+	if (editor.keystrokeHandler)
 		return editor.keystrokeHandler;
 
 	/**
@@ -37,41 +37,41 @@ CKEDITOR.keystrokeHandler = function( editor ) {
 	return this;
 };
 
-( function() {
+(function () {
 	var cancel;
 
-	var onKeyDown = function( event ) {
-			// The DOM event object is passed by the "data" property.
-			event = event.data;
+	var onKeyDown = function (event) {
+		// The DOM event object is passed by the "data" property.
+		event = event.data;
 
-			var keyCombination = event.getKeystroke();
-			var command = this.keystrokes[ keyCombination ];
-			var editor = this._.editor;
+		var keyCombination = event.getKeystroke();
+		var command = this.keystrokes[keyCombination];
+		var editor = this._.editor;
 
-			cancel = ( editor.fire( 'key', { keyCode: keyCombination, domEvent: event } ) === false );
+		cancel = (editor.fire('key', { keyCode: keyCombination, domEvent: event }) === false);
 
-			if ( !cancel ) {
-				if ( command ) {
-					var data = { from: 'keystrokeHandler' };
-					cancel = ( editor.execCommand( command, data ) !== false );
-				}
-
-				if ( !cancel )
-					cancel = !!this.blockedKeystrokes[ keyCombination ];
+		if (!cancel) {
+			if (command) {
+				var data = { from: 'keystrokeHandler' };
+				cancel = (editor.execCommand(command, data) !== false);
 			}
 
-			if ( cancel )
-				event.preventDefault( true );
+			if (!cancel)
+				cancel = !!this.blockedKeystrokes[keyCombination];
+		}
 
-			return !cancel;
-		};
+		if (cancel)
+			event.preventDefault(true);
 
-	var onKeyPress = function( event ) {
-			if ( cancel ) {
-				cancel = false;
-				event.data.preventDefault( true );
-			}
-		};
+		return !cancel;
+	};
+
+	var onKeyPress = function (event) {
+		if (cancel) {
+			cancel = false;
+			event.data.preventDefault(true);
+		}
+	};
 
 	CKEDITOR.keystrokeHandler.prototype = {
 		/**
@@ -80,18 +80,18 @@ CKEDITOR.keystrokeHandler = function( editor ) {
 		 *
 		 * @param {CKEDITOR.dom.domObject} domObject The DOM object to attach to.
 		 */
-		attach: function( domObject ) {
+		attach: function (domObject) {
 			// For most browsers, it is enough to listen to the keydown event
 			// only.
-			domObject.on( 'keydown', onKeyDown, this );
+			domObject.on('keydown', onKeyDown, this);
 
 			// Some browsers instead, don't cancel key events in the keydown, but in the
 			// keypress. So we must do a longer trip in those cases.
-			if ( CKEDITOR.env.gecko && CKEDITOR.env.mac )
-				domObject.on( 'keypress', onKeyPress, this );
+			if (CKEDITOR.env.gecko && CKEDITOR.env.mac)
+				domObject.on('keypress', onKeyPress, this);
 		}
 	};
-} )();
+})();
 
 /**
  * A list associating keystrokes with editor commands. Each element in the list

@@ -1,7 +1,7 @@
 "use strict";
 
 // Class definition
-var KTjQVMapDemo = function() {
+var KTjQVMapDemo = function () {
 
     var sample_data = {
         "af": "16.63",
@@ -191,7 +191,7 @@ var KTjQVMapDemo = function() {
 
     // Private functions
 
-    var setupMap = function(name) {
+    var setupMap = function (name) {
         var data = {
             map: 'world_en',
             backgroundColor: null,
@@ -203,13 +203,13 @@ var KTjQVMapDemo = function() {
             values: sample_data,
             scaleColors: ['#C8EEFF', '#006491'],
             normalizeFunction: 'polynomial',
-            onRegionOver: function(event, code) {
+            onRegionOver: function (event, code) {
                 //sample to interact with map
                 if (code == 'ca') {
                     event.preventDefault();
                 }
             },
-            onRegionClick: function(element, code, region) {
+            onRegionClick: function (element, code, region) {
                 //sample to interact with map
                 var message = 'You clicked "' + region + '" which has the code: ' + code.toUpperCase();
                 alert(message);
@@ -224,7 +224,7 @@ var KTjQVMapDemo = function() {
         map.vectorMap(data);
     }
 
-    var setupMaps = function() {
+    var setupMaps = function () {
         setupMap("world");
         setupMap("usa");
         setupMap("europe");
@@ -234,17 +234,17 @@ var KTjQVMapDemo = function() {
 
     return {
         // public functions
-        init: function() {
+        init: function () {
             // default charts
             setupMaps();
 
-            KTUtil.addResizeHandler(function() {
+            KTUtil.addResizeHandler(function () {
                 setupMaps();
             });
         }
     };
 }();
 
-jQuery(document).ready(function() {
+jQuery(document).ready(function () {
     KTjQVMapDemo.init();
 });

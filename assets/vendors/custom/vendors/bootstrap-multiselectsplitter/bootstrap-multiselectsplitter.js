@@ -32,14 +32,14 @@
             return '<option>' + label + '</option>';
         },
         template: '<div class="row" data-multiselectsplitter-wrapper-selector>' +
-        '<div class="col-xs-6 col-sm-6">' +
-        '<select class="form-control" data-multiselectsplitter-firstselect-selector></select>' +
-        '</div>' +
-        ' <!-- Add the extra clearfix for only the required viewport -->' +
-        '<div class="col-xs-6 col-sm-6">' +
-        '<select class="form-control" data-multiselectsplitter-secondselect-selector></select>' +
-        '</div>' +
-        '</div>'
+            '<div class="col-xs-6 col-sm-6">' +
+            '<select class="form-control" data-multiselectsplitter-firstselect-selector></select>' +
+            '</div>' +
+            ' <!-- Add the extra clearfix for only the required viewport -->' +
+            '<div class="col-xs-6 col-sm-6">' +
+            '<select class="form-control" data-multiselectsplitter-secondselect-selector></select>' +
+            '</div>' +
+            '</div>'
     };
 
     MultiSelectSplitter.prototype.init = function (type, element, options) {
@@ -333,7 +333,7 @@
                 return;
             }
             if (!data) {
-                $this.data('multiselectsplitter', ( data = new MultiSelectSplitter(this, options) ));
+                $this.data('multiselectsplitter', (data = new MultiSelectSplitter(this, options)));
             }
             if (typeof option == 'string') {
                 data[option]();

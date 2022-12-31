@@ -17,7 +17,7 @@
  * Contains the dictionary of language entries.
  * @namespace
  */
-CKEDITOR.lang[ 'cy' ] = {
+CKEDITOR.lang['cy'] = {
 	// ARIA description.
 	editor: 'Golygydd Testun Cyfoethog',
 	editorPanel: 'Panel Golygydd Testun Cyfoethog',

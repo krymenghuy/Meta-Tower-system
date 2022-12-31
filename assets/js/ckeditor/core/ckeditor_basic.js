@@ -9,9 +9,9 @@
  *		the root ckeditor_basic.js file.
  */
 
-if ( CKEDITOR.status == 'unloaded' ) {
-	( function() {
-		CKEDITOR.event.implementOn( CKEDITOR );
+if (CKEDITOR.status == 'unloaded') {
+	(function () {
+		CKEDITOR.event.implementOn(CKEDITOR);
 
 		/**
 		 * Forces the full CKEditor core code, in the case only the basic code has been
@@ -24,9 +24,9 @@ if ( CKEDITOR.status == 'unloaded' ) {
 		 *
 		 * @member CKEDITOR
 		 */
-		CKEDITOR.loadFullCore = function() {
+		CKEDITOR.loadFullCore = function () {
 			// If the basic code is not ready, just mark it to be loaded.
-			if ( CKEDITOR.status != 'basic_ready' ) {
+			if (CKEDITOR.status != 'basic_ready') {
 				CKEDITOR.loadFullCore._load = 1;
 				return;
 			}
@@ -35,12 +35,12 @@ if ( CKEDITOR.status == 'unloaded' ) {
 			delete CKEDITOR.loadFullCore;
 
 			// Append the script to the head.
-			var script = document.createElement( 'script' );
+			var script = document.createElement('script');
 			script.type = 'text/javascript';
 			script.src = CKEDITOR.basePath + 'ckeditor.js';
 			script.src = CKEDITOR.basePath + 'ckeditor_source.js'; // %REMOVE_LINE%
 
-			document.getElementsByTagName( 'head' )[ 0 ].appendChild( script );
+			document.getElementsByTagName('head')[0].appendChild(script);
 		};
 
 		/**
@@ -59,36 +59,36 @@ if ( CKEDITOR.status == 'unloaded' ) {
 		CKEDITOR.loadFullCoreTimeout = 0;
 
 		// Documented at ckeditor.js.
-		CKEDITOR.add = function( editor ) {
+		CKEDITOR.add = function (editor) {
 			// For now, just put the editor in the pending list. It will be
 			// processed as soon as the full code gets loaded.
-			var pending = this._.pending || ( this._.pending = [] );
-			pending.push( editor );
+			var pending = this._.pending || (this._.pending = []);
+			pending.push(editor);
 		};
 
-		( function() {
-			var onload = function() {
-					var loadFullCore = CKEDITOR.loadFullCore,
-						loadFullCoreTimeout = CKEDITOR.loadFullCoreTimeout;
+		(function () {
+			var onload = function () {
+				var loadFullCore = CKEDITOR.loadFullCore,
+					loadFullCoreTimeout = CKEDITOR.loadFullCoreTimeout;
 
-					if ( !loadFullCore )
-						return;
+				if (!loadFullCore)
+					return;
 
-					CKEDITOR.status = 'basic_ready';
+				CKEDITOR.status = 'basic_ready';
 
-					if ( loadFullCore && loadFullCore._load )
-						loadFullCore();
-					else if ( loadFullCoreTimeout ) {
-						setTimeout( function() {
-							if ( CKEDITOR.loadFullCore )
-								CKEDITOR.loadFullCore();
-						}, loadFullCoreTimeout * 1000 );
-					}
-				};
+				if (loadFullCore && loadFullCore._load)
+					loadFullCore();
+				else if (loadFullCoreTimeout) {
+					setTimeout(function () {
+						if (CKEDITOR.loadFullCore)
+							CKEDITOR.loadFullCore();
+					}, loadFullCoreTimeout * 1000);
+				}
+			};
 
-			CKEDITOR.domReady( onload );
-		} )();
+			CKEDITOR.domReady(onload);
+		})();
 
 		CKEDITOR.status = 'basic_loaded';
-	} )();
+	})();
 }

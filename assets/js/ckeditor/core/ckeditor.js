@@ -31,7 +31,7 @@ CKEDITOR.instances = {};
  *
  * @property {CKEDITOR.dom.document}
  */
-CKEDITOR.document = new CKEDITOR.dom.document( document );
+CKEDITOR.document = new CKEDITOR.dom.document(document);
 
 /**
  * Adds an editor instance to the global {@link CKEDITOR} object. This function
@@ -39,27 +39,27 @@ CKEDITOR.document = new CKEDITOR.dom.document( document );
  *
  * @param {CKEDITOR.editor} editor The editor instance to be added.
  */
-CKEDITOR.add = function( editor ) {
-	CKEDITOR.instances[ editor.name ] = editor;
+CKEDITOR.add = function (editor) {
+	CKEDITOR.instances[editor.name] = editor;
 
-	editor.on( 'focus', function() {
-		if ( CKEDITOR.currentInstance != editor ) {
+	editor.on('focus', function () {
+		if (CKEDITOR.currentInstance != editor) {
 			CKEDITOR.currentInstance = editor;
-			CKEDITOR.fire( 'currentInstance' );
+			CKEDITOR.fire('currentInstance');
 		}
-	} );
+	});
 
-	editor.on( 'blur', removeInstance );
+	editor.on('blur', removeInstance);
 
 	// Remove currentInstance if it's destroyed (#589).
-	editor.on( 'destroy', removeInstance );
+	editor.on('destroy', removeInstance);
 
-	CKEDITOR.fire( 'instance', null, editor );
+	CKEDITOR.fire('instance', null, editor);
 
 	function removeInstance() {
-		if ( CKEDITOR.currentInstance == editor ) {
+		if (CKEDITOR.currentInstance == editor) {
 			CKEDITOR.currentInstance = null;
-			CKEDITOR.fire( 'currentInstance' );
+			CKEDITOR.fire('currentInstance');
 		}
 	}
 };
@@ -71,11 +71,11 @@ CKEDITOR.add = function( editor ) {
  * @private
  * @param {CKEDITOR.editor} editor The editor instance to be removed.
  */
-CKEDITOR.remove = function( editor ) {
-	delete CKEDITOR.instances[ editor.name ];
+CKEDITOR.remove = function (editor) {
+	delete CKEDITOR.instances[editor.name];
 };
 
-( function() {
+(function () {
 	var tpls = {};
 
 	/**
@@ -87,16 +87,16 @@ CKEDITOR.remove = function( editor ) {
 	 * @param {String} source The source string for constructing this template.
 	 * @returns {CKEDITOR.template} The created template instance.
 	 */
-	CKEDITOR.addTemplate = function( name, source ) {
-		var tpl = tpls[ name ];
-		if ( tpl )
+	CKEDITOR.addTemplate = function (name, source) {
+		var tpl = tpls[name];
+		if (tpl)
 			return tpl;
 
 		// Make it possible to customize the template through event.
 		var params = { name: name, source: source };
-		CKEDITOR.fire( 'template', params );
+		CKEDITOR.fire('template', params);
 
-		return ( tpls[ name ] = new CKEDITOR.template( params.source ) );
+		return (tpls[name] = new CKEDITOR.template(params.source));
 	};
 
 	/**
@@ -104,12 +104,12 @@ CKEDITOR.remove = function( editor ) {
 	 *
 	 * @param {String} name The template name.
 	 */
-	CKEDITOR.getTemplate = function( name ) {
-		return tpls[ name ];
+	CKEDITOR.getTemplate = function (name) {
+		return tpls[name];
 	};
-} )();
+})();
 
-( function() {
+(function () {
 	var styles = [];
 
 	/**
@@ -126,8 +126,8 @@ CKEDITOR.remove = function( editor ) {
 	 * @param {String} css The style rules to be appended.
 	 * @see CKEDITOR.config#contentsCss
 	 */
-	CKEDITOR.addCss = function( css ) {
-		styles.push( css );
+	CKEDITOR.addCss = function (css) {
+		styles.push(css);
 	};
 
 	/**
@@ -135,20 +135,20 @@ CKEDITOR.remove = function( editor ) {
 	 *
 	 * @returns {String} A string containing CSS rules.
 	 */
-	CKEDITOR.getCss = function() {
-		return styles.join( '\n' );
+	CKEDITOR.getCss = function () {
+		return styles.join('\n');
 	};
-} )();
+})();
 
 // Perform global clean up to free as much memory as possible
 // when there are no instances left
-CKEDITOR.on( 'instanceDestroyed', function() {
-	if ( CKEDITOR.tools.isEmpty( this.instances ) )
-		CKEDITOR.fire( 'reset' );
-} );
+CKEDITOR.on('instanceDestroyed', function () {
+	if (CKEDITOR.tools.isEmpty(this.instances))
+		CKEDITOR.fire('reset');
+});
 
 // Load the bootstrap script.
-CKEDITOR.loader.load( '_bootstrap' ); // %REMOVE_LINE%
+CKEDITOR.loader.load('_bootstrap'); // %REMOVE_LINE%
 
 // Tri-state constants.
 /**

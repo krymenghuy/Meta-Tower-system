@@ -17,7 +17,7 @@
  * Contains the dictionary of language entries.
  * @namespace
  */
-CKEDITOR.lang[ 'km' ] = {
+CKEDITOR.lang['km'] = {
 	// ARIA description.
 	editor: 'ឧបករណ៍​សរសេរ​អត្ថបទ​សម្បូរ​បែប',
 	editorPanel: 'ផ្ទាំង​ឧបករណ៍​សរសេរ​អត្ថបទ​សម្បូរ​បែប',

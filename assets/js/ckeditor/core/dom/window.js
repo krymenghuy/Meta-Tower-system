@@ -18,20 +18,20 @@
  * @constructor Creates a window class instance.
  * @param {Object} domWindow A native DOM window.
  */
-CKEDITOR.dom.window = function( domWindow ) {
-	CKEDITOR.dom.domObject.call( this, domWindow );
+CKEDITOR.dom.window = function (domWindow) {
+	CKEDITOR.dom.domObject.call(this, domWindow);
 };
 
 CKEDITOR.dom.window.prototype = new CKEDITOR.dom.domObject();
 
-CKEDITOR.tools.extend( CKEDITOR.dom.window.prototype, {
+CKEDITOR.tools.extend(CKEDITOR.dom.window.prototype, {
 	/**
 	 * Moves the selection focus to this window.
 	 *
 	 *		var win = new CKEDITOR.dom.window( window );
 	 *		win.focus();
 	 */
-	focus: function() {
+	focus: function () {
 		this.$.focus();
 	},
 
@@ -46,12 +46,12 @@ CKEDITOR.tools.extend( CKEDITOR.dom.window.prototype, {
 	 * @returns {Object} An object with the `width` and `height`
 	 * properties containing the size.
 	 */
-	getViewPaneSize: function() {
+	getViewPaneSize: function () {
 		var doc = this.$.document,
 			stdMode = doc.compatMode == 'CSS1Compat';
 		return {
-			width: ( stdMode ? doc.documentElement.clientWidth : doc.body.clientWidth ) || 0,
-			height: ( stdMode ? doc.documentElement.clientHeight : doc.body.clientHeight ) || 0
+			width: (stdMode ? doc.documentElement.clientWidth : doc.body.clientWidth) || 0,
+			height: (stdMode ? doc.documentElement.clientHeight : doc.body.clientHeight) || 0
 		};
 	},
 
@@ -66,10 +66,10 @@ CKEDITOR.tools.extend( CKEDITOR.dom.window.prototype, {
 	 * @returns {Object} An object with the `x` and `y` properties
 	 * containing the scroll position.
 	 */
-	getScrollPosition: function() {
+	getScrollPosition: function () {
 		var $ = this.$;
 
-		if ( 'pageXOffset' in $ ) {
+		if ('pageXOffset' in $) {
 			return {
 				x: $.pageXOffset || 0,
 				y: $.pageYOffset || 0
@@ -88,8 +88,8 @@ CKEDITOR.tools.extend( CKEDITOR.dom.window.prototype, {
 	 *
 	 * @returns {CKEDITOR.dom.element} The frame element or `null` if not in a frame context.
 	 */
-	getFrame: function() {
+	getFrame: function () {
 		var iframe = this.$.frameElement;
-		return iframe ? new CKEDITOR.dom.element.get( iframe ) : null;
+		return iframe ? new CKEDITOR.dom.element.get(iframe) : null;
 	}
-} );
+});

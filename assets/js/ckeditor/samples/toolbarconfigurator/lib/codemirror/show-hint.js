@@ -1,30 +1,30 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+(function (mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+})(function (CodeMirror) {
   "use strict";
 
-  var HINT_ELEMENT_CLASS        = "CodeMirror-hint";
+  var HINT_ELEMENT_CLASS = "CodeMirror-hint";
   var ACTIVE_HINT_ELEMENT_CLASS = "CodeMirror-hint-active";
 
   // This is the old interface, kept around for now to stay
   // backwards-compatible.
-  CodeMirror.showHint = function(cm, getHints, options) {
+  CodeMirror.showHint = function (cm, getHints, options) {
     if (!getHints) return cm.showHint(options);
     if (options && options.async) getHints.async = true;
-    var newOpts = {hint: getHints};
+    var newOpts = { hint: getHints };
     if (options) for (var prop in options) newOpts[prop] = options[prop];
     return cm.showHint(newOpts);
   };
 
-  CodeMirror.defineExtension("showHint", function(options) {
+  CodeMirror.defineExtension("showHint", function (options) {
     // We want a single cursor position.
     if (this.listSelections().length > 1 || this.somethingSelected()) return;
 
@@ -46,16 +46,16 @@
     this.startLen = this.cm.getLine(this.startPos.line).length;
 
     var self = this;
-    cm.on("cursorActivity", this.activityFunc = function() { self.cursorActivity(); });
+    cm.on("cursorActivity", this.activityFunc = function () { self.cursorActivity(); });
   }
 
-  var requestAnimationFrame = window.requestAnimationFrame || function(fn) {
-    return setTimeout(fn, 1000/60);
+  var requestAnimationFrame = window.requestAnimationFrame || function (fn) {
+    return setTimeout(fn, 1000 / 60);
   };
   var cancelAnimationFrame = window.cancelAnimationFrame || clearTimeout;
 
   Completion.prototype = {
-    close: function() {
+    close: function () {
       if (!this.active()) return;
       this.cm.state.completionActive = null;
       this.tick = null;
@@ -65,20 +65,20 @@
       CodeMirror.signal(this.cm, "endCompletion", this.cm);
     },
 
-    active: function() {
+    active: function () {
       return this.cm.state.completionActive == this;
     },
 
-    pick: function(data, i) {
+    pick: function (data, i) {
       var completion = data.list[i];
       if (completion.hint) completion.hint(this.cm, data, completion);
       else this.cm.replaceRange(getText(completion), completion.from || data.from,
-                                completion.to || data.to, "complete");
+        completion.to || data.to, "complete");
       CodeMirror.signal(data, "pick", completion);
       this.close();
     },
 
-    showHints: function(data) {
+    showHints: function (data) {
       if (!data || !data.list.length || !this.active()) return this.close();
 
       if (this.options.completeSingle && data.list.length == 1)
@@ -87,7 +87,7 @@
         this.showWidget(data);
     },
 
-    cursorActivity: function() {
+    cursorActivity: function () {
       if (this.debounce) {
         cancelAnimationFrame(this.debounce);
         this.debounce = 0;
@@ -95,30 +95,30 @@
 
       var pos = this.cm.getCursor(), line = this.cm.getLine(pos.line);
       if (pos.line != this.startPos.line || line.length - pos.ch != this.startLen - this.startPos.ch ||
-          pos.ch < this.startPos.ch || this.cm.somethingSelected() ||
-          (pos.ch && this.options.closeCharacters.test(line.charAt(pos.ch - 1)))) {
+        pos.ch < this.startPos.ch || this.cm.somethingSelected() ||
+        (pos.ch && this.options.closeCharacters.test(line.charAt(pos.ch - 1)))) {
         this.close();
       } else {
         var self = this;
-        this.debounce = requestAnimationFrame(function() {self.update();});
+        this.debounce = requestAnimationFrame(function () { self.update(); });
         if (this.widget) this.widget.disable();
       }
     },
 
-    update: function() {
+    update: function () {
       if (this.tick == null) return;
       if (this.data) CodeMirror.signal(this.data, "update");
       if (!this.options.hint.async) {
         this.finishUpdate(this.options.hint(this.cm, this.options), myTick);
       } else {
         var myTick = ++this.tick, self = this;
-        this.options.hint(this.cm, function(data) {
+        this.options.hint(this.cm, function (data) {
           if (self.tick == myTick) self.finishUpdate(data);
         }, this.options);
       }
     },
 
-    finishUpdate: function(data) {
+    finishUpdate: function (data) {
       this.data = data;
       var picked = this.widget && this.widget.picked;
       if (this.widget) this.widget.close();
@@ -128,13 +128,13 @@
       }
     },
 
-    showWidget: function(data) {
+    showWidget: function (data) {
       this.data = data;
       this.widget = new Widget(this, data);
       CodeMirror.signal(data, "shown");
     },
 
-    buildOptions: function(options) {
+    buildOptions: function (options) {
       var editor = this.cm.options.hintOptions;
       var out = {};
       for (var prop in defaultOptions) out[prop] = defaultOptions[prop];
@@ -153,12 +153,12 @@
 
   function buildKeyMap(completion, handle) {
     var baseMap = {
-      Up: function() {handle.moveFocus(-1);},
-      Down: function() {handle.moveFocus(1);},
-      PageUp: function() {handle.moveFocus(-handle.menuSize() + 1, true);},
-      PageDown: function() {handle.moveFocus(handle.menuSize() - 1, true);},
-      Home: function() {handle.setFocus(0);},
-      End: function() {handle.setFocus(handle.length - 1);},
+      Up: function () { handle.moveFocus(-1); },
+      Down: function () { handle.moveFocus(1); },
+      PageUp: function () { handle.moveFocus(-handle.menuSize() + 1, true); },
+      PageDown: function () { handle.moveFocus(handle.menuSize() - 1, true); },
+      Home: function () { handle.setFocus(0); },
+      End: function () { handle.setFocus(handle.length - 1); },
       Enter: handle.pick,
       Tab: handle.pick,
       Esc: handle.close
@@ -168,7 +168,7 @@
     function addBinding(key, val) {
       var bound;
       if (typeof val != "string")
-        bound = function(cm) { return val(cm, handle); };
+        bound = function (cm) { return val(cm, handle); };
       // This mechanism is deprecated
       else if (baseMap.hasOwnProperty(val))
         bound = baseMap[val];
@@ -249,23 +249,23 @@
     }
 
     cm.addKeyMap(this.keyMap = buildKeyMap(completion, {
-      moveFocus: function(n, avoidWrap) { widget.changeActive(widget.selectedHint + n, avoidWrap); },
-      setFocus: function(n) { widget.changeActive(n); },
-      menuSize: function() { return widget.screenAmount(); },
+      moveFocus: function (n, avoidWrap) { widget.changeActive(widget.selectedHint + n, avoidWrap); },
+      setFocus: function (n) { widget.changeActive(n); },
+      menuSize: function () { return widget.screenAmount(); },
       length: completions.length,
-      close: function() { completion.close(); },
-      pick: function() { widget.pick(); },
+      close: function () { completion.close(); },
+      pick: function () { widget.pick(); },
       data: data
     }));
 
     if (completion.options.closeOnUnfocus) {
       var closingOnBlur;
-      cm.on("blur", this.onBlur = function() { closingOnBlur = setTimeout(function() { completion.close(); }, 100); });
-      cm.on("focus", this.onFocus = function() { clearTimeout(closingOnBlur); });
+      cm.on("blur", this.onBlur = function () { closingOnBlur = setTimeout(function () { completion.close(); }, 100); });
+      cm.on("focus", this.onFocus = function () { clearTimeout(closingOnBlur); });
     }
 
     var startScroll = cm.getScrollInfo();
-    cm.on("scroll", this.onScroll = function() {
+    cm.on("scroll", this.onScroll = function () {
       var curScroll = cm.getScrollInfo(), editor = cm.getWrapperElement().getBoundingClientRect();
       var newTop = top + startScroll.top - curScroll.top;
       var point = newTop - (window.pageYOffset || (document.documentElement || document.body).scrollTop);
@@ -275,12 +275,12 @@
       hints.style.left = (left + startScroll.left - curScroll.left) + "px";
     });
 
-    CodeMirror.on(hints, "dblclick", function(e) {
+    CodeMirror.on(hints, "dblclick", function (e) {
       var t = getHintElement(hints, e.target || e.srcElement);
-      if (t && t.hintId != null) {widget.changeActive(t.hintId); widget.pick();}
+      if (t && t.hintId != null) { widget.changeActive(t.hintId); widget.pick(); }
     });
 
-    CodeMirror.on(hints, "click", function(e) {
+    CodeMirror.on(hints, "click", function (e) {
       var t = getHintElement(hints, e.target || e.srcElement);
       if (t && t.hintId != null) {
         widget.changeActive(t.hintId);
@@ -288,8 +288,8 @@
       }
     });
 
-    CodeMirror.on(hints, "mousedown", function() {
-      setTimeout(function(){cm.focus();}, 20);
+    CodeMirror.on(hints, "mousedown", function () {
+      setTimeout(function () { cm.focus(); }, 20);
     });
 
     CodeMirror.signal(data, "select", completions[0], hints.firstChild);
@@ -297,7 +297,7 @@
   }
 
   Widget.prototype = {
-    close: function() {
+    close: function () {
       if (this.completion.widget != this) return;
       this.completion.widget = null;
       this.hints.parentNode.removeChild(this.hints);
@@ -311,22 +311,22 @@
       cm.off("scroll", this.onScroll);
     },
 
-    disable: function() {
+    disable: function () {
       this.completion.cm.removeKeyMap(this.keyMap);
       var widget = this;
-      this.keyMap = {Enter: function() { widget.picked = true; }};
+      this.keyMap = { Enter: function () { widget.picked = true; } };
       this.completion.cm.addKeyMap(this.keyMap);
     },
 
-    pick: function() {
+    pick: function () {
       this.completion.pick(this.data, this.selectedHint);
     },
 
-    changeActive: function(i, avoidWrap) {
+    changeActive: function (i, avoidWrap) {
       if (i >= this.data.list.length)
         i = avoidWrap ? this.data.list.length - 1 : 0;
       else if (i < 0)
-        i = avoidWrap ? 0  : this.data.list.length - 1;
+        i = avoidWrap ? 0 : this.data.list.length - 1;
       if (this.selectedHint == i) return;
       var node = this.hints.childNodes[this.selectedHint];
       node.className = node.className.replace(" " + ACTIVE_HINT_ELEMENT_CLASS, "");
@@ -339,12 +339,12 @@
       CodeMirror.signal(this.data, "select", this.data.list[this.selectedHint], node);
     },
 
-    screenAmount: function() {
+    screenAmount: function () {
       return Math.floor(this.hints.clientHeight / this.hints.firstChild.offsetHeight) || 1;
     }
   };
 
-  CodeMirror.registerHelper("hint", "auto", function(cm, options) {
+  CodeMirror.registerHelper("hint", "auto", function (cm, options) {
     var helpers = cm.getHelpers(cm.getCursor(), "hint"), words;
     if (helpers.length) {
       for (var i = 0; i < helpers.length; i++) {
@@ -352,13 +352,13 @@
         if (cur && cur.list.length) return cur;
       }
     } else if (words = cm.getHelper(cm.getCursor(), "hintWords")) {
-      if (words) return CodeMirror.hint.fromList(cm, {words: words});
+      if (words) return CodeMirror.hint.fromList(cm, { words: words });
     } else if (CodeMirror.hint.anyword) {
       return CodeMirror.hint.anyword(cm, options);
     }
   });
 
-  CodeMirror.registerHelper("hint", "fromList", function(cm, options) {
+  CodeMirror.registerHelper("hint", "fromList", function (cm, options) {
     var cur = cm.getCursor(), token = cm.getTokenAt(cur);
     var found = [];
     for (var i = 0; i < options.words.length; i++) {
@@ -370,7 +370,7 @@
     if (found.length) return {
       list: found,
       from: CodeMirror.Pos(cur.line, token.start),
-            to: CodeMirror.Pos(cur.line, token.end)
+      to: CodeMirror.Pos(cur.line, token.end)
     };
   });
 

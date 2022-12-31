@@ -11,8 +11,8 @@
  * @constructor Creates a `ui` class instance.
  * @param {CKEDITOR.editor} editor The editor instance.
  */
-CKEDITOR.ui = function( editor ) {
-	if ( editor.ui )
+CKEDITOR.ui = function (editor) {
+	if (editor.ui)
 		return editor.ui;
 
 	this.items = {};
@@ -49,18 +49,18 @@ CKEDITOR.ui.prototype = {
 	 * @param {Object} definition The item definition. The properties of this
 	 * object depend on the item type.
 	 */
-	add: function( name, type, definition ) {
+	add: function (name, type, definition) {
 		// Compensate the unique name of this ui item to definition.
 		definition.name = name.toLowerCase();
 
-		var item = this.items[ name ] = {
+		var item = this.items[name] = {
 			type: type,
 			// The name of {@link CKEDITOR.command} which associate with this UI.
 			command: definition.command || null,
-			args: Array.prototype.slice.call( arguments, 2 )
+			args: Array.prototype.slice.call(arguments, 2)
 		};
 
-		CKEDITOR.tools.extend( item, definition );
+		CKEDITOR.tools.extend(item, definition);
 	},
 
 	/**
@@ -68,8 +68,8 @@ CKEDITOR.ui.prototype = {
 	 *
 	 * @param {String} name The name of the UI definition.
 	 */
-	get: function( name ) {
-		return this.instances[ name ];
+	get: function (name) {
+		return this.instances[name];
 	},
 
 	/**
@@ -78,20 +78,20 @@ CKEDITOR.ui.prototype = {
 	 * @param {String} name The UI item name.
 	 * @returns {Object} The UI element.
 	 */
-	create: function( name ) {
-		var item = this.items[ name ],
-			handler = item && this._.handlers[ item.type ],
-			command = item && item.command && this.editor.getCommand( item.command );
+	create: function (name) {
+		var item = this.items[name],
+			handler = item && this._.handlers[item.type],
+			command = item && item.command && this.editor.getCommand(item.command);
 
-		var result = handler && handler.create.apply( this, item.args );
+		var result = handler && handler.create.apply(this, item.args);
 
-		this.instances[ name ] = result;
+		this.instances[name] = result;
 
 		// Add reference inside command object.
-		if ( command )
-			command.uiItems.push( result );
+		if (command)
+			command.uiItems.push(result);
 
-		if ( result && !result.type )
+		if (result && !result.type)
 			result.type = item.type;
 
 		return result;
@@ -104,8 +104,8 @@ CKEDITOR.ui.prototype = {
 	 * @param {Object} type The item type.
 	 * @param {Object} handler The handler definition.
 	 */
-	addHandler: function( type, handler ) {
-		this._.handlers[ type ] = handler;
+	addHandler: function (type, handler) {
+		this._.handlers[type] = handler;
 	},
 
 	/**
@@ -120,8 +120,8 @@ CKEDITOR.ui.prototype = {
 	 * @param {String} name The name of the space.
 	 * @returns {CKEDITOR.dom.element} The element that represents the space.
 	 */
-	space: function( name ) {
-		return CKEDITOR.document.getById( this.spaceId( name ) );
+	space: function (name) {
+		return CKEDITOR.document.getById(this.spaceId(name));
 	},
 
 	/**
@@ -130,12 +130,12 @@ CKEDITOR.ui.prototype = {
 	 * @param {String} name The name of the space.
 	 * @returns {String} The ID of an element representing this space in the DOM.
 	 */
-	spaceId: function( name ) {
+	spaceId: function (name) {
 		return this.editor.id + '_' + name;
 	}
 };
 
-CKEDITOR.event.implementOn( CKEDITOR.ui );
+CKEDITOR.event.implementOn(CKEDITOR.ui);
 
 /**
  * Internal event fired when a new UI element is ready.

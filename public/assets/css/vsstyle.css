@@ -7,10 +7,12 @@
   --vs-btn-danger: #ff4036;
   --vs-btn-export: #ffd7a5;
 }
-.btn{
-  padding-top:2px !important;
-  padding-bottom:2px !important;
+
+.btn {
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
 }
+
 .width-search {
   max-width: 300px;
 }
@@ -515,16 +517,19 @@ tr.row-expanded td {
 tr.detail-row td {
   border-top: none !important;
 }
-.combo-box{
-  padding:5px;
-  height:37.05px;
-  border:1px solid grey;
-  border-radius:5px;
-  color:#707275;
+
+.combo-box {
+  padding: 5px;
+  height: 37.05px;
+  border: 1px solid grey;
+  border-radius: 5px;
+  color: #707275;
 }
-.combo-box-strong{
-  background-color:#F5F8FD;
+
+.combo-box-strong {
+  background-color: #F5F8FD;
 }
+
 .kt-menu__link-text {
   font-size: 1em !important;
 }

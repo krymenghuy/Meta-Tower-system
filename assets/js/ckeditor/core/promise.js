@@ -5,23 +5,23 @@
 
 /* global Promise, ES6Promise */
 
-( function() {
+(function () {
 	'use strict';
 
-	if ( window.Promise ) {
+	if (window.Promise) {
 		CKEDITOR.tools.promise = Promise;
 	} else {
-		var polyfillURL = CKEDITOR.getUrl( 'vendor/promise.js' );
+		var polyfillURL = CKEDITOR.getUrl('vendor/promise.js');
 
-		CKEDITOR.scriptLoader.load( polyfillURL, function( success ) {
-			if ( success ) {
+		CKEDITOR.scriptLoader.load(polyfillURL, function (success) {
+			if (success) {
 				CKEDITOR.tools.promise = ES6Promise;
 			} else {
-				CKEDITOR.error( 'no-vendor-lib', {
+				CKEDITOR.error('no-vendor-lib', {
 					path: polyfillURL
-				} );
+				});
 			}
-		} );
+		});
 	}
 
 	/**
@@ -75,4 +75,4 @@
 	 * @constructor
 	 */
 
-} )();
+})();

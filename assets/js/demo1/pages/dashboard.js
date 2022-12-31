@@ -1,10 +1,10 @@
 "use strict";
 
 // Class definition
-var KTDashboard = function() {
+var KTDashboard = function () {
 
     // Sparkline Chart helper function
-    var _initSparklineChart = function(src, data, color, border) {
+    var _initSparklineChart = function (src, data, color, border) {
         if (src.length == 0) {
             return;
         }
@@ -96,7 +96,7 @@ var KTDashboard = function() {
 
     // Daily Sales chart.
     // Based on Chartjs plugin - http://www.chartjs.org/
-    var dailySales = function() {
+    var dailySales = function () {
         var chartContainer = KTUtil.getByID('kt_chart_daily_sales');
 
         if (!chartContainer) {
@@ -166,12 +166,12 @@ var KTDashboard = function() {
 
     // Profit Share Chart.
     // Based on Chartjs plugin - http://www.chartjs.org/
-    var profitShare = function() {        
+    var profitShare = function () {
         if (!KTUtil.getByID('kt_chart_profit_share')) {
             return;
         }
 
-        var randomScalingFactor = function() {
+        var randomScalingFactor = function () {
             return Math.round(Math.random() * 100);
         };
 
@@ -216,11 +216,11 @@ var KTDashboard = function() {
                     mode: 'nearest',
                     bodySpacing: 5,
                     yPadding: 10,
-                    xPadding: 10, 
+                    xPadding: 10,
                     caretPadding: 0,
                     displayColors: false,
                     backgroundColor: KTApp.getStateColor('brand'),
-                    titleFontColor: '#ffffff', 
+                    titleFontColor: '#ffffff',
                     cornerRadius: 4,
                     footerSpacing: 0,
                     titleSpacing: 0
@@ -234,7 +234,7 @@ var KTDashboard = function() {
 
     // Sales Stats.
     // Based on Chartjs plugin - http://www.chartjs.org/
-    var salesStats = function() {
+    var salesStats = function () {
         if (!KTUtil.getByID('kt_chart_sales_stats')) {
             return;
         }
@@ -250,7 +250,7 @@ var KTDashboard = function() {
                     borderColor: KTApp.getStateColor('brand'),
                     borderWidth: 2,
                     //pointBackgroundColor: KTApp.getStateColor('brand'),
-                    backgroundColor: KTApp.getStateColor('brand'),                    
+                    backgroundColor: KTApp.getStateColor('brand'),
                     pointBackgroundColor: Chart.helpers.color('#ffffff').alpha(0).rgbString(),
                     pointBorderColor: Chart.helpers.color('#ffffff').alpha(0).rgbString(),
                     pointHoverBackgroundColor: KTApp.getStateColor('danger'),
@@ -323,7 +323,7 @@ var KTDashboard = function() {
 
     // Sales By KTUtillication Stats.
     // Based on Chartjs plugin - http://www.chartjs.org/
-    var salesByApps = function() {
+    var salesByApps = function () {
         // Init chart instances
         _initSparklineChart($('#kt_chart_sales_by_apps_1_1'), [10, 20, -5, 8, -20, -2, -4, 15, 5, 8], KTApp.getStateColor('success'), 2);
         _initSparklineChart($('#kt_chart_sales_by_apps_1_2'), [2, 16, 0, 12, 22, 5, -10, 5, 15, 2], KTApp.getStateColor('danger'), 2);
@@ -338,7 +338,7 @@ var KTDashboard = function() {
 
     // Latest Updates.
     // Based on Chartjs plugin - http://www.chartjs.org/
-    var latestUpdates = function() {
+    var latestUpdates = function () {
         if ($('#kt_chart_latest_updates').length == 0) {
             return;
         }
@@ -421,7 +421,7 @@ var KTDashboard = function() {
 
     // Trends Stats.
     // Based on Chartjs plugin - http://www.chartjs.org/
-    var trendsStats = function() {
+    var trendsStats = function () {
         if ($('#kt_chart_trends_stats').length == 0) {
             return;
         }
@@ -525,7 +525,7 @@ var KTDashboard = function() {
 
     // Trends Stats 2.
     // Based on Chartjs plugin - http://www.chartjs.org/
-    var trendsStats2 = function() {
+    var trendsStats2 = function () {
         if ($('#kt_chart_trends_stats_2').length == 0) {
             return;
         }
@@ -625,7 +625,7 @@ var KTDashboard = function() {
 
     // Trends Stats.
     // Based on Chartjs plugin - http://www.chartjs.org/
-    var latestTrendsMap = function() {
+    var latestTrendsMap = function () {
         if ($('#kt_chart_latest_trends_map').length == 0) {
             return;
         }
@@ -643,7 +643,7 @@ var KTDashboard = function() {
 
     // Revenue Change.
     // Based on Morris plugin - http://morrisjs.github.io/morris.js/
-    var revenueChange = function() {
+    var revenueChange = function () {
         if ($('#kt_chart_revenue_change').length == 0) {
             return;
         }
@@ -651,17 +651,17 @@ var KTDashboard = function() {
         Morris.Donut({
             element: 'kt_chart_revenue_change',
             data: [{
-                    label: "New York",
-                    value: 10
-                },
-                {
-                    label: "London",
-                    value: 7
-                },
-                {
-                    label: "Paris",
-                    value: 20
-                }
+                label: "New York",
+                value: 10
+            },
+            {
+                label: "London",
+                value: 7
+            },
+            {
+                label: "Paris",
+                value: 20
+            }
             ],
             colors: [
                 KTApp.getStateColor('success'),
@@ -673,7 +673,7 @@ var KTDashboard = function() {
 
     // Support Tickets Chart.
     // Based on Morris plugin - http://morrisjs.github.io/morris.js/
-    var supportCases = function() {
+    var supportCases = function () {
         if ($('#kt_chart_support_tickets').length == 0) {
             return;
         }
@@ -681,17 +681,17 @@ var KTDashboard = function() {
         Morris.Donut({
             element: 'kt_chart_support_tickets',
             data: [{
-                    label: "Margins",
-                    value: 20
-                },
-                {
-                    label: "Profit",
-                    value: 70
-                },
-                {
-                    label: "Lost",
-                    value: 10
-                }
+                label: "Margins",
+                value: 20
+            },
+            {
+                label: "Profit",
+                value: 70
+            },
+            {
+                label: "Lost",
+                value: 10
+            }
             ],
             labelColor: '#a7a7c2',
             colors: [
@@ -705,14 +705,14 @@ var KTDashboard = function() {
 
     // Support Tickets Chart.
     // Based on Chartjs plugin - http://www.chartjs.org/
-    var supportRequests = function() {
+    var supportRequests = function () {
         var container = KTUtil.getByID('kt_chart_support_requests');
 
         if (!container) {
             return;
         }
 
-        var randomScalingFactor = function() {
+        var randomScalingFactor = function () {
             return Math.round(Math.random() * 100);
         };
 
@@ -757,11 +757,11 @@ var KTDashboard = function() {
                     mode: 'nearest',
                     bodySpacing: 5,
                     yPadding: 10,
-                    xPadding: 10, 
+                    xPadding: 10,
                     caretPadding: 0,
                     displayColors: false,
                     backgroundColor: KTApp.getStateColor('brand'),
-                    titleFontColor: '#ffffff', 
+                    titleFontColor: '#ffffff',
                     cornerRadius: 4,
                     footerSpacing: 0,
                     titleSpacing: 0
@@ -775,7 +775,7 @@ var KTDashboard = function() {
 
     // Activities Charts.
     // Based on Chartjs plugin - http://www.chartjs.org/
-    var activitiesChart = function() {
+    var activitiesChart = function () {
         if ($('#kt_chart_activities').length == 0) {
             return;
         }
@@ -869,7 +869,7 @@ var KTDashboard = function() {
 
     // Bandwidth Charts 1.
     // Based on Chartjs plugin - http://www.chartjs.org/
-    var bandwidthChart1 = function() {
+    var bandwidthChart1 = function () {
         if ($('#kt_chart_bandwidth1').length == 0) {
             return;
         }
@@ -963,7 +963,7 @@ var KTDashboard = function() {
 
     // Bandwidth Charts 2.
     // Based on Chartjs plugin - http://www.chartjs.org/
-    var bandwidthChart2 = function() {
+    var bandwidthChart2 = function () {
         if ($('#kt_chart_bandwidth2').length == 0) {
             return;
         }
@@ -1056,7 +1056,7 @@ var KTDashboard = function() {
 
     // Bandwidth Charts 2.
     // Based on Chartjs plugin - http://www.chartjs.org/
-    var adWordsStat = function() {
+    var adWordsStat = function () {
         if ($('#kt_chart_adwords_stats').length == 0) {
             return;
         }
@@ -1162,7 +1162,7 @@ var KTDashboard = function() {
 
     // Bandwidth Charts 2.
     // Based on Chartjs plugin - http://www.chartjs.org/
-    var financeSummary = function() {
+    var financeSummary = function () {
         if ($('#kt_chart_finance_summary').length == 0) {
             return;
         }
@@ -1251,7 +1251,7 @@ var KTDashboard = function() {
 
     // Order Statistics.
     // Based on Chartjs plugin - http://www.chartjs.org/
-    var orderStatistics = function() {
+    var orderStatistics = function () {
         var container = KTUtil.getByID('kt_chart_order_statistics');
 
         if (!container) {
@@ -1263,13 +1263,13 @@ var KTDashboard = function() {
         var color = Chart.helpers.color;
         var barChartData = {
             labels: ['1 Jan', '2 Jan', '3 Jan', '4 Jan', '5 Jan', '6 Jan', '7 Jan'],
-            datasets : [
-				{
+            datasets: [
+                {
                     fill: true,
                     //borderWidth: 0,
                     backgroundColor: color(KTApp.getStateColor('brand')).alpha(0.6).rgbString(),
-                    borderColor : color(KTApp.getStateColor('brand')).alpha(0).rgbString(),
-                    
+                    borderColor: color(KTApp.getStateColor('brand')).alpha(0).rgbString(),
+
                     pointHoverRadius: 4,
                     pointHoverBorderWidth: 12,
                     pointBackgroundColor: Chart.helpers.color('#000000').alpha(0).rgbString(),
@@ -1277,14 +1277,14 @@ var KTDashboard = function() {
                     pointHoverBackgroundColor: KTApp.getStateColor('brand'),
                     pointHoverBorderColor: Chart.helpers.color('#000000').alpha(0.1).rgbString(),
 
-					data: [20, 30, 20, 40, 30, 60, 30]
-				},
-				{
+                    data: [20, 30, 20, 40, 30, 60, 30]
+                },
+                {
                     fill: true,
                     //borderWidth: 0,
-					backgroundColor : color(KTApp.getStateColor('brand')).alpha(0.2).rgbString(),
-                    borderColor : color(KTApp.getStateColor('brand')).alpha(0).rgbString(),
-                    
+                    backgroundColor: color(KTApp.getStateColor('brand')).alpha(0.2).rgbString(),
+                    borderColor: color(KTApp.getStateColor('brand')).alpha(0).rgbString(),
+
                     pointHoverRadius: 4,
                     pointHoverBorderWidth: 12,
                     pointBackgroundColor: Chart.helpers.color('#000000').alpha(0).rgbString(),
@@ -1292,8 +1292,8 @@ var KTDashboard = function() {
                     pointHoverBackgroundColor: KTApp.getStateColor('brand'),
                     pointHoverBorderColor: Chart.helpers.color('#000000').alpha(0.1).rgbString(),
 
-					data: [15, 40, 15, 30, 40, 30, 50]
-				}
+                    data: [15, 40, 15, 30, 40, 30, 50]
+                }
             ]
         };
 
@@ -1342,7 +1342,7 @@ var KTDashboard = function() {
                             zeroLineBorderDash: [3, 4]
                         },
                         ticks: {
-                            max: 70,                            
+                            max: 70,
                             stepSize: 10,
                             display: true,
                             beginAtZero: true,
@@ -1364,11 +1364,11 @@ var KTDashboard = function() {
                     mode: 'nearest',
                     bodySpacing: 5,
                     yPadding: 10,
-                    xPadding: 10, 
+                    xPadding: 10,
                     caretPadding: 0,
                     displayColors: false,
                     backgroundColor: KTApp.getStateColor('brand'),
-                    titleFontColor: '#ffffff', 
+                    titleFontColor: '#ffffff',
                     cornerRadius: 4,
                     footerSpacing: 0,
                     titleSpacing: 0
@@ -1386,7 +1386,7 @@ var KTDashboard = function() {
     }
 
     // Quick Stat Charts
-    var quickStats = function() {
+    var quickStats = function () {
         _initSparklineChart($('#kt_chart_quick_stats_1'), [10, 14, 18, 11, 9, 12, 14, 17, 18, 14], KTApp.getStateColor('brand'), 3);
         _initSparklineChart($('#kt_chart_quick_stats_2'), [11, 12, 18, 13, 11, 12, 15, 13, 19, 15], KTApp.getStateColor('danger'), 3);
         _initSparklineChart($('#kt_chart_quick_stats_3'), [12, 12, 18, 11, 15, 12, 13, 16, 11, 18], KTApp.getStateColor('success'), 3);
@@ -1394,7 +1394,7 @@ var KTDashboard = function() {
     }
 
     // Daterangepicker Init
-    var daterangepickerInit = function() {
+    var daterangepickerInit = function () {
         if ($('#kt_dashboard_daterangepicker').length == 0) {
             return;
         }
@@ -1440,7 +1440,7 @@ var KTDashboard = function() {
     }
 
     // Latest Orders
-    var datatableLatestOrders = function() {
+    var datatableLatestOrders = function () {
         if ($('#kt_datatable_latest_orders').length === 0) {
             return;
         }
@@ -1490,16 +1490,16 @@ var KTDashboard = function() {
                 width: 'auto',
                 autoHide: false,
                 // callback function support for column rendering
-                template: function(data, i) {
-                  var number = i + 1;
-                  while (number > 5) {
-                    number = number - 3;
-                  }
+                template: function (data, i) {
+                    var number = i + 1;
+                    while (number > 5) {
+                        number = number - 3;
+                    }
                     var img = number + '.png';
 
                     var skills = [
                         'Angular, React',
-                        'Vue, Kendo', 
+                        'Vue, Kendo',
                         '.NET, Oracle, MySQL',
                         'Node, SASS, Webpack',
                         'MangoDB, Java',
@@ -1514,7 +1514,7 @@ var KTDashboard = function() {
                             <div class="kt-user-card-v2__details">\
                                 <a href="#" class="kt-user-card-v2__name">' + data.CompanyName + '</a>\
                                 <span class="kt-user-card-v2__email">' +
-                                skills[number - 1] + '</span>\
+                        skills[number - 1] + '</span>\
                             </div>\
                         </div>';
 
@@ -1524,7 +1524,7 @@ var KTDashboard = function() {
                 field: "ShipDate",
                 title: "Date",
                 width: 100,
-                template: function(data) {
+                template: function (data) {
                     return '<span class="kt-font-bold">' + data.ShipDate + '</span>';
                 }
             }, {
@@ -1532,7 +1532,7 @@ var KTDashboard = function() {
                 title: "Status",
                 width: 100,
                 // callback function support for column rendering
-                template: function(row) {
+                template: function (row) {
                     var status = {
                         1: {
                             'title': 'Pending',
@@ -1545,7 +1545,7 @@ var KTDashboard = function() {
                         3: {
                             'title': 'Success',
                             'class': ' btn-label-success'
-                        },                                                
+                        },
                         4: {
                             'title': 'Delivered',
                             'class': ' btn-label-success'
@@ -1570,26 +1570,26 @@ var KTDashboard = function() {
                 title: "Managed By",
                 width: 200,
                 // callback function support for column rendering
-                template: function(data, i) {
+                template: function (data, i) {
                     var number = 4 + i;
                     while (number > 12) {
                         number = number - 3;
                     }
                     var user_img = '100_' + number + '.jpg';
-                    
+
                     var pos = KTUtil.getRandomInt(0, 5);
                     var position = [
                         'Developer',
-                        'Designer', 
+                        'Designer',
                         'CEO',
                         'Manager',
                         'Architect',
                         'Sales'
                     ];
 
-					var output = '';
-					if (number > 5) {
-						output = '<div class="kt-user-card-v2">\
+                    var output = '';
+                    if (number > 5) {
+                        output = '<div class="kt-user-card-v2">\
 							<div class="kt-user-card-v2__pic">\
 								<img src="https://keenthemes.com/metronic/preview/assets/media/users/' + user_img + '" alt="photo">\
 							</div>\
@@ -1598,20 +1598,20 @@ var KTDashboard = function() {
 								<span class="kt-user-card-v2__desc">' + position[pos] + '</span>\
 							</div>\
 						</div>';
-					}
-					else {
-						var stateNo = KTUtil.getRandomInt(0, 6);
-						var states = [
-							'success',
-							'brand',
-							'danger',
-							'success',
-							'warning',
-							'primary',
-							'info'];
-						var state = states[stateNo];
+                    }
+                    else {
+                        var stateNo = KTUtil.getRandomInt(0, 6);
+                        var states = [
+                            'success',
+                            'brand',
+                            'danger',
+                            'success',
+                            'warning',
+                            'primary',
+                            'info'];
+                        var state = states[stateNo];
 
-						output = '<div class="kt-user-card-v2">\
+                        output = '<div class="kt-user-card-v2">\
 							<div class="kt-user-card-v2__pic">\
 								<div class="kt-badge kt-badge--xl kt-badge--' + state + '">' + data.CompanyAgent.substring(0, 1) + '</div>\
 							</div>\
@@ -1620,9 +1620,9 @@ var KTDashboard = function() {
 								<span class="kt-user-card-v2__desc">' + position[pos] + '</span>\
 							</div>\
 						</div>';
-					}
+                    }
 
-					return output;
+                    return output;
                 }
             }, {
                 field: "Actions",
@@ -1631,7 +1631,7 @@ var KTDashboard = function() {
                 sortable: false,
                 autoHide: false,
                 overflow: 'visible',
-                template: function() {
+                template: function () {
                     return '\
                         <div class="dropdown">\
                             <a href="javascript:;" class="btn btn-sm btn-clean btn-icon btn-icon-md" data-toggle="dropdown">\
@@ -1673,11 +1673,11 @@ var KTDashboard = function() {
     }
 
     // Calendar Init
-    var calendarInit = function() {
+    var calendarInit = function () {
         if ($('#kt_calendar').length === 0) {
             return;
         }
-        
+
         var todayDate = moment().startOf('day');
         var YM = todayDate.format('YYYY-MM');
         var YESTERDAY = todayDate.clone().subtract(1, 'day').format('YYYY-MM-DD');
@@ -1703,7 +1703,7 @@ var KTDashboard = function() {
                     className: "fc-event-light fc-event-solid-warning"
                 },
                 {
-                    title: 'Conference',                    
+                    title: 'Conference',
                     description: 'Lorem ipsum dolor incid idunt ut labore',
                     start: moment('2017-08-29T13:30:00'),
                     end: moment('2017-08-29T17:30:00'),
@@ -1722,7 +1722,7 @@ var KTDashboard = function() {
                     className: "fc-event-danger fc-event-solid-focus"
                 },
                 {
-                    title: 'Reporting',                    
+                    title: 'Reporting',
                     description: 'Lorem ipsum dolor incid idunt ut labore',
                     start: moment('2017-09-03T13:30:00'),
                     end: moment('2017-09-04T17:30:00'),
@@ -1816,7 +1816,7 @@ var KTDashboard = function() {
                 }
             ],
 
-            eventRender: function(event, element) {
+            eventRender: function (event, element) {
                 if (element.hasClass('fc-day-grid-event')) {
                     element.data('content', event.description);
                     element.data('placement', 'top');
@@ -1831,12 +1831,12 @@ var KTDashboard = function() {
     }
 
     // Earnings Sliders
-    var earningsSlide = function() {
+    var earningsSlide = function () {
         var carousel1 = $('#kt_earnings_widget .kt-widget30__head .owl-carousel');
         var carousel2 = $('#kt_earnings_widget .kt-widget30__body .owl-carousel');
 
-        carousel1.find('.carousel').each( function( index ) {
-            $(this).attr( 'data-position', index );
+        carousel1.find('.carousel').each(function (index) {
+            $(this).attr('data-position', index);
         });
 
         carousel1.owlCarousel({
@@ -1853,11 +1853,11 @@ var KTDashboard = function() {
             loop: true
         });
 
-        $(document).on('click', '.carousel', function() {
-            var index = $(this).attr( 'data-position' );
+        $(document).on('click', '.carousel', function () {
+            var index = $(this).attr('data-position');
             if (index) {
-                carousel1.trigger('to.owl.carousel', index );
-                carousel2.trigger('to.owl.carousel', index );
+                carousel1.trigger('to.owl.carousel', index);
+                carousel2.trigger('to.owl.carousel', index);
             }
         });
 
@@ -1870,7 +1870,7 @@ var KTDashboard = function() {
 
         carousel2.on('changed.owl.carousel', function () {
             var index = $(this).find('.owl-item.active.center').find('.carousel').attr('data-position');
-            if (index){
+            if (index) {
                 carousel1.trigger('to.owl.carousel', index);
             }
         });
@@ -1878,7 +1878,7 @@ var KTDashboard = function() {
 
     return {
         // Init demos
-        init: function() {
+        init: function () {
             // init charts
             dailySales();
             profitShare();
@@ -1911,12 +1911,12 @@ var KTDashboard = function() {
             // earnings slide
             earningsSlide();
 
-            
+
             // demo loading
-            var loading = new KTDialog({'type': 'loader', 'placement': 'top center', 'message': 'Loading ...'});
+            var loading = new KTDialog({ 'type': 'loader', 'placement': 'top center', 'message': 'Loading ...' });
             loading.show();
 
-            setTimeout(function() {
+            setTimeout(function () {
                 loading.hide();
             }, 3000);
         }
@@ -1924,6 +1924,6 @@ var KTDashboard = function() {
 }();
 
 // Class initialization on page load
-jQuery(document).ready(function() {
+jQuery(document).ready(function () {
     KTDashboard.init();
 });

@@ -6,249 +6,249 @@
 
 'use strict';
 
-var SF = ( function() {
-	var SF = {};
+var SF = (function () {
+    var SF = {};
 
-	SF.attachListener = function( elem, evtName, callback ) {
-		if ( elem.addEventListener ) {
-			elem.addEventListener( evtName, callback, false );
-		} else if ( elem.attachEvent ) {
-			elem.attachEvent( 'on' + evtName , function() {
-				callback.apply( elem, arguments );
-			} );
-		} else {
-			throw new Error( 'Could not attach event.' );
-		}
-	};
+    SF.attachListener = function (elem, evtName, callback) {
+        if (elem.addEventListener) {
+            elem.addEventListener(evtName, callback, false);
+        } else if (elem.attachEvent) {
+            elem.attachEvent('on' + evtName, function () {
+                callback.apply(elem, arguments);
+            });
+        } else {
+            throw new Error('Could not attach event.');
+        }
+    };
 
-	SF.indexOf = ( function() {
-		var indexOf = Array.prototype.indexOf;
+    SF.indexOf = (function () {
+        var indexOf = Array.prototype.indexOf;
 
-		if ( indexOf === 'function' ) {
-			return function( arr, elem ) {
-				return indexOf.call( arr, elem );
-			};
-		} else {
-			return function( arr, elem ) {
-				var max = arr.length;
+        if (indexOf === 'function') {
+            return function (arr, elem) {
+                return indexOf.call(arr, elem);
+            };
+        } else {
+            return function (arr, elem) {
+                var max = arr.length;
 
-				for ( var i = 0; i < max; i++ ) {
-					if ( arr[ i ] === elem ) {
-						return i;
-					}
-				}
+                for (var i = 0; i < max; i++) {
+                    if (arr[i] === elem) {
+                        return i;
+                    }
+                }
 
-				return -1;
-			};
-		}
+                return -1;
+            };
+        }
 
-	}() );
+    }());
 
-	SF.accept = function( node, visitor ) {
-		var children;
+    SF.accept = function (node, visitor) {
+        var children;
 
-		// Handling node as a node and array
-		if ( node.children ) {
-			children = node.children;
+        // Handling node as a node and array
+        if (node.children) {
+            children = node.children;
 
-			visitor( node );
-		} else if ( typeof node.length === 'number' ) {
-			children = node;
-		}
+            visitor(node);
+        } else if (typeof node.length === 'number') {
+            children = node;
+        }
 
-		var i = children ? ( children.length || 0 ) : 0;
-		while ( i-- ) {
-			SF.accept( children[ i ], visitor );
-		}
-	};
+        var i = children ? (children.length || 0) : 0;
+        while (i--) {
+            SF.accept(children[i], visitor);
+        }
+    };
 
-	SF.getByClass = ( function(  ) {
-		var getByClass = document.getElementsByClassName;
-		if ( typeof getByClass === 'function' ) {
-			return function( root, className ) {
-				if ( typeof root === 'string' ) {
-					className = root;
-					root = document;
-				}
+    SF.getByClass = (function () {
+        var getByClass = document.getElementsByClassName;
+        if (typeof getByClass === 'function') {
+            return function (root, className) {
+                if (typeof root === 'string') {
+                    className = root;
+                    root = document;
+                }
 
-				return getByClass.call( root, className );
-			};
-		}
+                return getByClass.call(root, className);
+            };
+        }
 
-		return function( root, className ) {
-			if ( typeof root === 'string' ) {
-				className = root;
-				root = document.getElementsByTagName( 'html' )[ 0 ];
-			}
-			var results = [];
+        return function (root, className) {
+            if (typeof root === 'string') {
+                className = root;
+                root = document.getElementsByTagName('html')[0];
+            }
+            var results = [];
 
-			SF.accept( root, function( elem ) {
-				if ( SF.classList.contains( elem, className ) ) {
-					results.push( elem );
-				}
-			} );
+            SF.accept(root, function (elem) {
+                if (SF.classList.contains(elem, className)) {
+                    results.push(elem);
+                }
+            });
 
-			return results;
-		};
-	}() );
+            return results;
+        };
+    }());
 
-	SF.classList = {};
+    SF.classList = {};
 
-	SF.classList.add = function( elem, className ) {
-		var classes = parseClasses( elem );
-		classes.push( className );
+    SF.classList.add = function (elem, className) {
+        var classes = parseClasses(elem);
+        classes.push(className);
 
-		elem.attributes.setNamedItem( createClassAttr( classes ) );
-	};
+        elem.attributes.setNamedItem(createClassAttr(classes));
+    };
 
-	SF.classList.remove = function( elem, className ) {
-		var classes = parseClasses( elem, className ),
-			foundAt = SF.indexOf( classes, className );
+    SF.classList.remove = function (elem, className) {
+        var classes = parseClasses(elem, className),
+            foundAt = SF.indexOf(classes, className);
 
-		if ( foundAt === -1 ) {
-			return;
-		}
+        if (foundAt === -1) {
+            return;
+        }
 
-		classes.splice( foundAt, 1 );
-		elem.attributes.setNamedItem( createClassAttr( classes ) );
-	};
+        classes.splice(foundAt, 1);
+        elem.attributes.setNamedItem(createClassAttr(classes));
+    };
 
-	SF.classList.contains = function( elem, className ) {
-		return findIndex( elem, className ) !== -1;
-	};
+    SF.classList.contains = function (elem, className) {
+        return findIndex(elem, className) !== -1;
+    };
 
-	SF.classList.toggle = function( elem, className ) {
-		this.contains( elem, className ) ? this.remove( elem, className ) : this.add( elem, className );
-	};
+    SF.classList.toggle = function (elem, className) {
+        this.contains(elem, className) ? this.remove(elem, className) : this.add(elem, className);
+    };
 
-	function findIndex( elem, className ) {
-		return SF.indexOf( parseClasses( elem ), className );
-	}
+    function findIndex(elem, className) {
+        return SF.indexOf(parseClasses(elem), className);
+    }
 
-	function parseClasses( elem ) {
-		var classAttr = elem.attributes ? elem.attributes.getNamedItem( 'class' ) : null;
+    function parseClasses(elem) {
+        var classAttr = elem.attributes ? elem.attributes.getNamedItem('class') : null;
 
-		return classAttr ? classAttr.value.split( ' ' ) : [];
-	}
+        return classAttr ? classAttr.value.split(' ') : [];
+    }
 
-	function createClassAttr( classesArray ) {
-		var attr = document.createAttribute( 'class' );
+    function createClassAttr(classesArray) {
+        var attr = document.createAttribute('class');
 
-		attr.value = classesArray.join( ' ' );
+        attr.value = classesArray.join(' ');
 
-		return attr;
-	}
+        return attr;
+    }
 
-	return SF;
-}() );
+    return SF;
+}());
 
 /* global SF, picoModal */
 
 'use strict';
 
-( function() {
-	// Purges all styles in passed object.
-	function purgeStyles( styles ) {
-		for ( var i in styles ) {
-			delete styles[ i ];
-		}
-	}
+(function () {
+    // Purges all styles in passed object.
+    function purgeStyles(styles) {
+        for (var i in styles) {
+            delete styles[i];
+        }
+    }
 
-	SF.modal = function( config ) {
-		// Modal should use the same style set as the rest of the page (.content component).
-		config.modalClass = 'modal content';
-		config.closeClass = 'modal-close';
+    SF.modal = function (config) {
+        // Modal should use the same style set as the rest of the page (.content component).
+        config.modalClass = 'modal content';
+        config.closeClass = 'modal-close';
 
-		// Purge all pre-defined pico styles. Use the lessfile instead.
-		config.modalStyles = purgeStyles;
+        // Purge all pre-defined pico styles. Use the lessfile instead.
+        config.modalStyles = purgeStyles;
 
-		// Close button styles are customized via lessfile.
-		config.closeStyles = purgeStyles;
+        // Close button styles are customized via lessfile.
+        config.closeStyles = purgeStyles;
 
-		var userDefinedAfterCreate = config.afterCreate,
-			userDefinedAfterClose = config.afterClose;
+        var userDefinedAfterCreate = config.afterCreate,
+            userDefinedAfterClose = config.afterClose;
 
-		// Close modal on ESC key.
-		function onKeyDown( event ) {
-			if ( event.keyCode == 27 ) {
-				modal.close();
-			}
-		}
+        // Close modal on ESC key.
+        function onKeyDown(event) {
+            if (event.keyCode == 27) {
+                modal.close();
+            }
+        }
 
-		// Use afterCreate as a config option rather than function chain.
-		config.afterCreate = function( modal ) {
-			userDefinedAfterCreate && userDefinedAfterCreate( modal );
+        // Use afterCreate as a config option rather than function chain.
+        config.afterCreate = function (modal) {
+            userDefinedAfterCreate && userDefinedAfterCreate(modal);
 
-			window.addEventListener( 'keydown', onKeyDown );
-		};
+            window.addEventListener('keydown', onKeyDown);
+        };
 
-		// Use afterClose as a config option rather than function chain.
-		config.afterClose = function( modal ) {
-			userDefinedAfterClose && userDefinedAfterClose( modal );
+        // Use afterClose as a config option rather than function chain.
+        config.afterClose = function (modal) {
+            userDefinedAfterClose && userDefinedAfterClose(modal);
 
-			window.removeEventListener( 'keydown', onKeyDown );
-		};
+            window.removeEventListener('keydown', onKeyDown);
+        };
 
-		var modal = new picoModal( config )
-			.afterCreate( config.afterCreate )
-			.afterClose( config.afterClose );
+        var modal = new picoModal(config)
+            .afterCreate(config.afterCreate)
+            .afterClose(config.afterClose);
 
-		return modal;
-	};
-} )();
+        return modal;
+    };
+})();
 'use strict';
 
-( function() {
-	// All .tree-a elements in DOM.
-	var expanders = SF.getByClass( 'toggler' );
+(function () {
+    // All .tree-a elements in DOM.
+    var expanders = SF.getByClass('toggler');
 
-	var i = expanders.length;
-	while ( i-- ) {
-		var expander = expanders[ i ];
+    var i = expanders.length;
+    while (i--) {
+        var expander = expanders[i];
 
-		SF.attachListener( expander, 'click', function() {
-			var containsIcon = SF.classList.contains( this, 'icon-toggler-expanded' ) || SF.classList.contains( this, 'icon-toggler-collapsed' ),
-				related = document.getElementById( this.getAttribute( 'data-for' ) );
+        SF.attachListener(expander, 'click', function () {
+            var containsIcon = SF.classList.contains(this, 'icon-toggler-expanded') || SF.classList.contains(this, 'icon-toggler-collapsed'),
+                related = document.getElementById(this.getAttribute('data-for'));
 
-			SF.classList.toggle( this, 'collapsed' );
+            SF.classList.toggle(this, 'collapsed');
 
-			if ( SF.classList.contains( this, 'collapsed' ) ) {
-				SF.classList.add( related, 'collapsed' );
-				if ( containsIcon ) {
-					SF.classList.remove( this, 'icon-toggler-expanded' );
-					SF.classList.add( this, 'icon-toggler-collapsed' );
-				}
-			} else {
-				SF.classList.remove( related, 'collapsed' );
-				if ( containsIcon ) {
-					SF.classList.remove( this, 'icon-toggler-collapsed' );
-					SF.classList.add( this, 'icon-toggler-expanded' );
-				}
-			}
-		} );
-	}
-} )();
+            if (SF.classList.contains(this, 'collapsed')) {
+                SF.classList.add(related, 'collapsed');
+                if (containsIcon) {
+                    SF.classList.remove(this, 'icon-toggler-expanded');
+                    SF.classList.add(this, 'icon-toggler-collapsed');
+                }
+            } else {
+                SF.classList.remove(related, 'collapsed');
+                if (containsIcon) {
+                    SF.classList.remove(this, 'icon-toggler-collapsed');
+                    SF.classList.add(this, 'icon-toggler-expanded');
+                }
+            }
+        });
+    }
+})();
 /* global SF */
 
 'use strict';
 
-( function() {
-	// All .tree-a elements in DOM.
-	var trees = SF.getByClass( 'tree-a' );
+(function () {
+    // All .tree-a elements in DOM.
+    var trees = SF.getByClass('tree-a');
 
-	for ( var i = trees.length; i--; ) {
-		var tree = trees[ i ];
+    for (var i = trees.length; i--;) {
+        var tree = trees[i];
 
-		SF.attachListener( tree, 'click', function( evt ) {
-			var target = evt.target || evt.srcElement;
+        SF.attachListener(tree, 'click', function (evt) {
+            var target = evt.target || evt.srcElement;
 
-			// Collapse or expand item groups.
-			if ( target.nodeName === 'H2' && !SF.classList.contains( target, 'tree-a-no-sub' ) ) {
-				SF.classList.toggle( target, 'tree-a-active' );
-			}
-		} );
-	}
-} )();
+            // Collapse or expand item groups.
+            if (target.nodeName === 'H2' && !SF.classList.contains(target, 'tree-a-no-sub')) {
+                SF.classList.toggle(target, 'tree-a-active');
+            }
+        });
+    }
+})();
 // jshint ignore:start
 // jscs:disable
 /**
@@ -274,12 +274,12 @@ var SF = ( function() {
 /**
  * A self-contained modal library
  */
-(function(window, document) {
+(function (window, document) {
     "use strict";
 
     /** Returns whether a value is a dom node */
     function isNode(value) {
-        if ( typeof Node === "object" ) {
+        if (typeof Node === "object") {
             return value instanceof Node;
         }
         else {
@@ -301,11 +301,11 @@ var SF = ( function() {
         var callbacks = [];
         return {
             watch: callbacks.push.bind(callbacks),
-            trigger: function( modal ) {
+            trigger: function (modal) {
 
                 var unprevented = true;
                 var event = {
-                    preventDefault: function preventDefault () {
+                    preventDefault: function preventDefault() {
                         unprevented = false;
                     }
                 };
@@ -323,14 +323,14 @@ var SF = ( function() {
     /**
      * A small interface for creating and managing a dom element
      */
-    function Elem( elem ) {
+    function Elem(elem) {
         this.elem = elem;
     }
 
     /**
      * Creates a new div
      */
-    Elem.div = function ( parent ) {
+    Elem.div = function (parent) {
         var elem = document.createElement('div');
         (parent || document.body).appendChild(elem);
         return new Elem(elem);
@@ -344,10 +344,10 @@ var SF = ( function() {
         },
 
         /** Applies a set of styles to an element */
-        stylize: function(styles) {
+        stylize: function (styles) {
             styles = styles || {};
 
-            if ( typeof styles.opacity !== "undefined" ) {
+            if (typeof styles.opacity !== "undefined") {
                 styles.filter =
                     "alpha(opacity=" + (styles.opacity * 100) + ")";
             }
@@ -369,8 +369,8 @@ var SF = ( function() {
 
         /** Sets the HTML */
         html: function (content) {
-            if ( isNode(content) ) {
-                this.elem.appendChild( content );
+            if (isNode(content)) {
+                this.elem.appendChild(content);
             }
             else {
                 this.elem.innerHTML = content;
@@ -379,37 +379,37 @@ var SF = ( function() {
         },
 
         /** Adds a click handler to this element */
-        onClick: function(callback) {
+        onClick: function (callback) {
             this.elem.addEventListener('click', callback);
             return this;
         },
 
         /** Removes this element from the DOM */
-        destroy: function() {
+        destroy: function () {
             document.body.removeChild(this.elem);
         },
 
         /** Hides this element */
-        hide: function() {
+        hide: function () {
             this.elem.style.display = "none";
         },
 
         /** Shows this element */
-        show: function() {
+        show: function () {
             this.elem.style.display = "block";
         },
 
         /** Sets an attribute on this element */
-        attr: function ( name, value ) {
+        attr: function (name, value) {
             this.elem.setAttribute(name, value);
             return this;
         },
 
         /** Executes a callback on all the ancestors of an element */
-        anyAncestor: function ( predicate ) {
+        anyAncestor: function (predicate) {
             var elem = this.elem;
-            while ( elem ) {
-                if ( predicate( new Elem(elem) ) ) {
+            while (elem) {
+                if (predicate(new Elem(elem))) {
                     return true;
                 }
                 else {
@@ -422,10 +422,10 @@ var SF = ( function() {
 
 
     /** Generates the grey-out effect */
-    function buildOverlay( getOption, close ) {
+    function buildOverlay(getOption, close) {
         return Elem.div()
             .clazz("pico-overlay")
-            .clazz( getOption("overlayClass", "") )
+            .clazz(getOption("overlayClass", ""))
             .stylize({
                 display: "block",
                 position: "fixed",
@@ -440,22 +440,22 @@ var SF = ( function() {
                 background: "#000"
             }))
             .onClick(function () {
-                if ( getOption('overlayClose', true) ) {
+                if (getOption('overlayClose', true)) {
                     close();
                 }
             });
     }
 
     /** Builds the content of a modal */
-    function buildModal( getOption, close ) {
+    function buildModal(getOption, close) {
         var width = getOption('width', 'auto');
-        if ( typeof width === "number" ) {
+        if (typeof width === "number") {
             width = "" + width + "px";
         }
 
         var elem = Elem.div()
             .clazz("pico-content")
-            .clazz( getOption("modalClass", "") )
+            .clazz(getOption("modalClass", ""))
             .stylize({
                 display: 'block',
                 position: 'fixed',
@@ -474,14 +474,14 @@ var SF = ( function() {
                 padding: "20px",
                 borderRadius: "5px"
             }))
-            .html( getOption('content') )
+            .html(getOption('content'))
             .attr("role", "dialog")
             .onClick(function (event) {
                 var isCloseClick = new Elem(event.target)
                     .anyAncestor(function (elem) {
                         return /\bpico-close\b/.test(elem.elem.className);
                     });
-                if ( isCloseClick ) {
+                if (isCloseClick) {
                     close();
                 }
             });
@@ -490,13 +490,13 @@ var SF = ( function() {
     }
 
     /** Builds the close button */
-    function buildClose ( elem, getOption ) {
-        if ( getOption('closeButton', true) ) {
+    function buildClose(elem, getOption) {
+        if (getOption('closeButton', true)) {
             return elem.child()
-                .html( getOption('closeHtml', "&#xD7;") )
+                .html(getOption('closeHtml', "&#xD7;"))
                 .clazz("pico-close")
-                .clazz( getOption("closeClass") )
-                .stylize( getOption('closeStyles', {
+                .clazz(getOption("closeClass"))
+                .stylize(getOption('closeStyles', {
                     borderRadius: "2px",
                     cursor: "pointer",
                     height: "15px",
@@ -508,12 +508,12 @@ var SF = ( function() {
                     textAlign: "center",
                     lineHeight: "15px",
                     background: "#CCC"
-                }) );
+                }));
         }
     }
 
     /** Builds a method that calls a method and returns an element */
-    function buildElemAccessor( builder ) {
+    function buildElemAccessor(builder) {
         return function () {
             return builder().elem;
         };
@@ -525,7 +525,7 @@ var SF = ( function() {
      */
     function picoModal(options) {
 
-        if ( isString(options) || isNode(options) ) {
+        if (isString(options) || isNode(options)) {
             options = { content: options };
         }
 
@@ -539,30 +539,30 @@ var SF = ( function() {
          * Returns a named option if it has been explicitly defined. Otherwise,
          * it returns the given default value
          */
-        function getOption ( opt, defaultValue ) {
+        function getOption(opt, defaultValue) {
             var value = options[opt];
-            if ( typeof value === "function" ) {
-                value = value( defaultValue );
+            if (typeof value === "function") {
+                value = value(defaultValue);
             }
             return value === undefined ? defaultValue : value;
         }
 
         /** Hides this modal */
-        function forceClose () {
+        function forceClose() {
             shadowElem().hide();
             modalElem().hide();
             afterCloseEvent.trigger(iface);
         }
 
         /** Gracefully hides this modal */
-        function close () {
-            if ( beforeCloseEvent.trigger(iface) ) {
+        function close() {
+            if (beforeCloseEvent.trigger(iface)) {
                 forceClose();
             }
         }
 
         /** Wraps a method so it returns the modal interface */
-        function returnIface ( callback ) {
+        function returnIface(callback) {
             return function () {
                 callback.apply(this, arguments);
                 return iface;
@@ -574,8 +574,8 @@ var SF = ( function() {
         var built;
 
         /** Builds a method that calls a method and returns an element */
-        function build ( name ) {
-            if ( !built ) {
+        function build(name) {
+            if (!built) {
                 var modal = buildModal(getOption, close);
                 built = {
                     modal: modal,
@@ -605,7 +605,7 @@ var SF = ( function() {
 
             /** Shows this modal */
             show: function () {
-                if ( beforeShowEvent.trigger(iface) ) {
+                if (beforeShowEvent.trigger(iface)) {
                     shadowElem().show();
                     closeElem();
                     modalElem().show();
@@ -635,7 +635,7 @@ var SF = ( function() {
              * change options that are re-evaluted regularly, such as
              * `overlayClose`.
              */
-            options: function ( opts ) {
+            options: function (opts) {
                 options = opts;
             },
 
@@ -658,7 +658,7 @@ var SF = ( function() {
         return iface;
     }
 
-    if ( typeof window.define === "function" && window.define.amd ) {
+    if (typeof window.define === "function" && window.define.amd) {
         window.define(function () {
             return picoModal;
         });

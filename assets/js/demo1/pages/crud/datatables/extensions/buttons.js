@@ -1,7 +1,7 @@
 "use strict";
-var KTDatatablesExtensionButtons = function() {
+var KTDatatablesExtensionButtons = function () {
 
-	var initTable1 = function() {
+	var initTable1 = function () {
 
 		// begin first table
 		var table = $('#kt_table_1').DataTable({
@@ -21,15 +21,15 @@ var KTDatatablesExtensionButtons = function() {
 			columnDefs: [
 				{
 					targets: 6,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						var status = {
-							1: {'title': 'Pending', 'class': 'kt-badge--brand'},
-							2: {'title': 'Delivered', 'class': ' kt-badge--danger'},
-							3: {'title': 'Canceled', 'class': ' kt-badge--primary'},
-							4: {'title': 'Success', 'class': ' kt-badge--success'},
-							5: {'title': 'Info', 'class': ' kt-badge--info'},
-							6: {'title': 'Danger', 'class': ' kt-badge--danger'},
-							7: {'title': 'Warning', 'class': ' kt-badge--warning'},
+							1: { 'title': 'Pending', 'class': 'kt-badge--brand' },
+							2: { 'title': 'Delivered', 'class': ' kt-badge--danger' },
+							3: { 'title': 'Canceled', 'class': ' kt-badge--primary' },
+							4: { 'title': 'Success', 'class': ' kt-badge--success' },
+							5: { 'title': 'Info', 'class': ' kt-badge--info' },
+							6: { 'title': 'Danger', 'class': ' kt-badge--danger' },
+							7: { 'title': 'Warning', 'class': ' kt-badge--warning' },
 						};
 						if (typeof status[data] === 'undefined') {
 							return data;
@@ -39,11 +39,11 @@ var KTDatatablesExtensionButtons = function() {
 				},
 				{
 					targets: 7,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						var status = {
-							1: {'title': 'Online', 'state': 'danger'},
-							2: {'title': 'Retail', 'state': 'primary'},
-							3: {'title': 'Direct', 'state': 'success'},
+							1: { 'title': 'Online', 'state': 'danger' },
+							2: { 'title': 'Retail', 'state': 'primary' },
+							3: { 'title': 'Direct', 'state': 'success' },
 						};
 						if (typeof status[data] === 'undefined') {
 							return data;
@@ -57,12 +57,12 @@ var KTDatatablesExtensionButtons = function() {
 
 	};
 
-	var initTable2 = function() {
+	var initTable2 = function () {
 
 		// begin first table
 		var table = $('#kt_table_2').DataTable({
 			responsive: true,
-			
+
 			buttons: [
 				'print',
 				'copyHtml5',
@@ -83,27 +83,27 @@ var KTDatatablesExtensionButtons = function() {
 				},
 			},
 			columns: [
-				{data: 'OrderID'},
-				{data: 'Country'},
-				{data: 'ShipCity'},
-				{data: 'ShipAddress'},
-				{data: 'CompanyAgent'},
-				{data: 'CompanyName'},
-				{data: 'Status'},
-				{data: 'Type'},
+				{ data: 'OrderID' },
+				{ data: 'Country' },
+				{ data: 'ShipCity' },
+				{ data: 'ShipAddress' },
+				{ data: 'CompanyAgent' },
+				{ data: 'CompanyName' },
+				{ data: 'Status' },
+				{ data: 'Type' },
 			],
 			columnDefs: [
 				{
 					targets: 6,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						var status = {
-							1: {'title': 'Pending', 'class': 'kt-badge--brand'},
-							2: {'title': 'Delivered', 'class': ' kt-badge--danger'},
-							3: {'title': 'Canceled', 'class': ' kt-badge--primary'},
-							4: {'title': 'Success', 'class': ' kt-badge--success'},
-							5: {'title': 'Info', 'class': ' kt-badge--info'},
-							6: {'title': 'Danger', 'class': ' kt-badge--danger'},
-							7: {'title': 'Warning', 'class': ' kt-badge--warning'},
+							1: { 'title': 'Pending', 'class': 'kt-badge--brand' },
+							2: { 'title': 'Delivered', 'class': ' kt-badge--danger' },
+							3: { 'title': 'Canceled', 'class': ' kt-badge--primary' },
+							4: { 'title': 'Success', 'class': ' kt-badge--success' },
+							5: { 'title': 'Info', 'class': ' kt-badge--info' },
+							6: { 'title': 'Danger', 'class': ' kt-badge--danger' },
+							7: { 'title': 'Warning', 'class': ' kt-badge--warning' },
 						};
 						if (typeof status[data] === 'undefined') {
 							return data;
@@ -113,11 +113,11 @@ var KTDatatablesExtensionButtons = function() {
 				},
 				{
 					targets: 7,
-					render: function(data, type, full, meta) {
+					render: function (data, type, full, meta) {
 						var status = {
-							1: {'title': 'Online', 'state': 'danger'},
-							2: {'title': 'Retail', 'state': 'primary'},
-							3: {'title': 'Direct', 'state': 'success'},
+							1: { 'title': 'Online', 'state': 'danger' },
+							2: { 'title': 'Retail', 'state': 'primary' },
+							3: { 'title': 'Direct', 'state': 'success' },
 						};
 						if (typeof status[data] === 'undefined') {
 							return data;
@@ -129,27 +129,27 @@ var KTDatatablesExtensionButtons = function() {
 			],
 		});
 
-		$('#export_print').on('click', function(e) {
+		$('#export_print').on('click', function (e) {
 			e.preventDefault();
 			table.button(0).trigger();
 		});
 
-		$('#export_copy').on('click', function(e) {
+		$('#export_copy').on('click', function (e) {
 			e.preventDefault();
 			table.button(1).trigger();
 		});
 
-		$('#export_excel').on('click', function(e) {
+		$('#export_excel').on('click', function (e) {
 			e.preventDefault();
 			table.button(2).trigger();
 		});
 
-		$('#export_csv').on('click', function(e) {
+		$('#export_csv').on('click', function (e) {
 			e.preventDefault();
 			table.button(3).trigger();
 		});
 
-		$('#export_pdf').on('click', function(e) {
+		$('#export_pdf').on('click', function (e) {
 			e.preventDefault();
 			table.button(4).trigger();
 		});
@@ -159,7 +159,7 @@ var KTDatatablesExtensionButtons = function() {
 	return {
 
 		//main function to initiate the module
-		init: function() {
+		init: function () {
 			initTable1();
 			initTable2();
 		},
@@ -168,6 +168,6 @@ var KTDatatablesExtensionButtons = function() {
 
 }();
 
-jQuery(document).ready(function() {
+jQuery(document).ready(function () {
 	KTDatatablesExtensionButtons.init();
 });

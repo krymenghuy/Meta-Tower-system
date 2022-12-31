@@ -17,7 +17,7 @@
  * Contains the dictionary of language entries.
  * @namespace
  */
-CKEDITOR.lang[ 'hu' ] = {
+CKEDITOR.lang['hu'] = {
 	// ARIA description.
 	editor: 'HTML szerkesztő',
 	editorPanel: 'HTML szerkesztő panel',

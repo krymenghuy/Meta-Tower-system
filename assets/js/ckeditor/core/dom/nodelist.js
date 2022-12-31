@@ -14,7 +14,7 @@
  * @constructor Creates a document class instance.
  * @param {Object} nativeList
  */
-CKEDITOR.dom.nodeList = function( nativeList ) {
+CKEDITOR.dom.nodeList = function (nativeList) {
 	this.$ = nativeList;
 };
 
@@ -24,7 +24,7 @@ CKEDITOR.dom.nodeList.prototype = {
 	 *
 	 * @returns {Number}
 	 */
-	count: function() {
+	count: function () {
 		return this.$.length;
 	},
 
@@ -33,12 +33,12 @@ CKEDITOR.dom.nodeList.prototype = {
 	 *
 	 * @returns {CKEDITOR.dom.node}
 	 */
-	getItem: function( index ) {
-		if ( index < 0 || index >= this.$.length )
+	getItem: function (index) {
+		if (index < 0 || index >= this.$.length)
 			return null;
 
-		var $node = this.$[ index ];
-		return $node ? new CKEDITOR.dom.node( $node ) : null;
+		var $node = this.$[index];
+		return $node ? new CKEDITOR.dom.node($node) : null;
 	},
 
 	/**
@@ -46,9 +46,9 @@ CKEDITOR.dom.nodeList.prototype = {
 	 *
 	 * @returns {CKEDITOR.dom.node[]}
 	 */
-	toArray: function() {
-		return CKEDITOR.tools.array.map( this.$, function( nativeEl ) {
-			return new CKEDITOR.dom.node( nativeEl );
-		} );
+	toArray: function () {
+		return CKEDITOR.tools.array.map(this.$, function (nativeEl) {
+			return new CKEDITOR.dom.node(nativeEl);
+		});
 	}
 };

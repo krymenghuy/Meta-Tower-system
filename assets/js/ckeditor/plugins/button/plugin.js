@@ -3,10 +3,10 @@
  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
-( function() {
+(function () {
 	var template = '<a id="{id}"' +
 		' class="cke_button cke_button__{name} cke_button_{state} {cls}"' +
-		( CKEDITOR.env.gecko && !CKEDITOR.env.hc ? '' : ' href="javascript:void(\'{titleJs}\')"' ) +
+		(CKEDITOR.env.gecko && !CKEDITOR.env.hc ? '' : ' href="javascript:void(\'{titleJs}\')"') +
 		' title="{title}"' +
 		' tabindex="-1"' +
 		' hidefocus="true"' +
@@ -19,18 +19,18 @@
 	// Some browsers don't cancel key events in the keydown but in the
 	// keypress.
 	// TODO: Check if really needed.
-	if ( CKEDITOR.env.gecko && CKEDITOR.env.mac )
+	if (CKEDITOR.env.gecko && CKEDITOR.env.mac)
 		template += ' onkeypress="return false;"';
 
 	// With Firefox, we need to force the button to redraw, otherwise it
 	// will remain in the focus state.
-	if ( CKEDITOR.env.gecko )
+	if (CKEDITOR.env.gecko)
 		template += ' onblur="this.style.cssText = this.style.cssText;"';
 
 	// IE and Edge needs special click handler based on mouseup event with additional check
 	// of which mouse button was clicked (https://dev.ckeditor.com/ticket/188, #2565).
 	var specialClickHandler = '';
-	if ( CKEDITOR.env.ie ) {
+	if (CKEDITOR.env.ie) {
 		specialClickHandler = 'return false;" onmouseup="CKEDITOR.tools.getMouseButton(event)==CKEDITOR.MOUSE_BUTTON_LEFT&&';
 	}
 
@@ -48,17 +48,17 @@
 
 	var templateArrow = '<span class="cke_button_arrow">' +
 		// BLACK DOWN-POINTING TRIANGLE
-	( CKEDITOR.env.hc ? '&#9660;' : '' ) +
+		(CKEDITOR.env.hc ? '&#9660;' : '') +
 		'</span>';
 
-	var btnArrowTpl = CKEDITOR.addTemplate( 'buttonArrow', templateArrow ),
-		btnTpl = CKEDITOR.addTemplate( 'button', template );
+	var btnArrowTpl = CKEDITOR.addTemplate('buttonArrow', templateArrow),
+		btnTpl = CKEDITOR.addTemplate('button', template);
 
-	CKEDITOR.plugins.add( 'button', {
-		beforeInit: function( editor ) {
-			editor.ui.addHandler( CKEDITOR.UI_BUTTON, CKEDITOR.ui.button.handler );
+	CKEDITOR.plugins.add('button', {
+		beforeInit: function (editor) {
+			editor.ui.addHandler(CKEDITOR.UI_BUTTON, CKEDITOR.ui.button.handler);
 		}
-	} );
+	});
 
 	/**
 	 * Button UI element.
@@ -77,16 +77,16 @@
 	 * @constructor Creates a button class instance.
 	 * @param {Object} definition The button definition.
 	 */
-	CKEDITOR.ui.button = function( definition ) {
-		CKEDITOR.tools.extend( this, definition,
-		// Set defaults.
-		{
-			title: definition.label,
-			click: definition.click ||
-			function( editor ) {
-				editor.execCommand( definition.command );
-			}
-		} );
+	CKEDITOR.ui.button = function (definition) {
+		CKEDITOR.tools.extend(this, definition,
+			// Set defaults.
+			{
+				title: definition.label,
+				click: definition.click ||
+					function (editor) {
+						editor.execCommand(definition.command);
+					}
+			});
 
 		this._ = {};
 	};
@@ -106,8 +106,8 @@
 		 * @param {Object} definition
 		 * @returns {CKEDITOR.ui.button}
 		 */
-		create: function( definition ) {
-			return new CKEDITOR.ui.button( definition );
+		create: function (definition) {
+			return new CKEDITOR.ui.button(definition);
 		}
 	};
 
@@ -121,23 +121,23 @@
 		 * @param {Array} output The output array to which the HTML code related to
 		 * this button should be appended.
 		 */
-		render: function( editor, output ) {
+		render: function (editor, output) {
 			var modeStates = null;
 
 			function updateState() {
 				// "this" is a CKEDITOR.ui.button instance.
 				var mode = editor.mode;
 
-				if ( mode ) {
+				if (mode) {
 					// Restore saved button state.
-					var state = this.modes[ mode ] ? modeStates[ mode ] !== undefined ? modeStates[ mode ] : CKEDITOR.TRISTATE_OFF : CKEDITOR.TRISTATE_DISABLED;
+					var state = this.modes[mode] ? modeStates[mode] !== undefined ? modeStates[mode] : CKEDITOR.TRISTATE_OFF : CKEDITOR.TRISTATE_DISABLED;
 
 					state = editor.readOnly && !this.readOnly ? CKEDITOR.TRISTATE_DISABLED : state;
 
-					this.setState( state );
+					this.setState(state);
 
 					// Let plugin to disable button.
-					if ( this.refresh )
+					if (this.refresh)
 						this.refresh();
 				}
 			}
@@ -157,108 +157,108 @@
 				id: id,
 				button: this,
 				editor: editor,
-				focus: function() {
-					var element = CKEDITOR.document.getById( id );
+				focus: function () {
+					var element = CKEDITOR.document.getById(id);
 					element.focus();
 				},
-				execute: function() {
-					this.button.click( editor );
+				execute: function () {
+					this.button.click(editor);
 				},
-				attach: function( editor ) {
-					this.button.attach( editor );
+				attach: function (editor) {
+					this.button.attach(editor);
 				}
 			};
 
-			var keydownFn = CKEDITOR.tools.addFunction( function( ev ) {
-				if ( instance.onkey ) {
-					ev = new CKEDITOR.dom.event( ev );
-					return ( instance.onkey( instance, ev.getKeystroke() ) !== false );
+			var keydownFn = CKEDITOR.tools.addFunction(function (ev) {
+				if (instance.onkey) {
+					ev = new CKEDITOR.dom.event(ev);
+					return (instance.onkey(instance, ev.getKeystroke()) !== false);
 				}
-			} );
+			});
 
-			var focusFn = CKEDITOR.tools.addFunction( function( ev ) {
+			var focusFn = CKEDITOR.tools.addFunction(function (ev) {
 				var retVal;
 
-				if ( instance.onfocus )
-					retVal = ( instance.onfocus( instance, new CKEDITOR.dom.event( ev ) ) !== false );
+				if (instance.onfocus)
+					retVal = (instance.onfocus(instance, new CKEDITOR.dom.event(ev)) !== false);
 
 				return retVal;
-			} );
+			});
 
 			var selLocked = 0;
 
-			instance.clickFn = clickFn = CKEDITOR.tools.addFunction( function() {
+			instance.clickFn = clickFn = CKEDITOR.tools.addFunction(function () {
 
 				// Restore locked selection in Opera.
-				if ( selLocked ) {
-					editor.unlockSelection( 1 );
+				if (selLocked) {
+					editor.unlockSelection(1);
 					selLocked = 0;
 				}
 				instance.execute();
 
 				// Fixed iOS focus issue when your press disabled button (https://dev.ckeditor.com/ticket/12381).
-				if ( env.iOS ) {
+				if (env.iOS) {
 					editor.focus();
 				}
-			} );
+			});
 
 
 			// Indicate a mode sensitive button.
-			if ( this.modes ) {
+			if (this.modes) {
 				modeStates = {};
 
-				editor.on( 'beforeModeUnload', function() {
-					if ( editor.mode && this._.state != CKEDITOR.TRISTATE_DISABLED )
-						modeStates[ editor.mode ] = this._.state;
-				}, this );
+				editor.on('beforeModeUnload', function () {
+					if (editor.mode && this._.state != CKEDITOR.TRISTATE_DISABLED)
+						modeStates[editor.mode] = this._.state;
+				}, this);
 
 				// Update status when activeFilter, mode or readOnly changes.
-				editor.on( 'activeFilterChange', updateState, this );
-				editor.on( 'mode', updateState, this );
+				editor.on('activeFilterChange', updateState, this);
+				editor.on('mode', updateState, this);
 				// If this button is sensitive to readOnly state, update it accordingly.
-				!this.readOnly && editor.on( 'readOnly', updateState, this );
+				!this.readOnly && editor.on('readOnly', updateState, this);
 
-			} else if ( command ) {
+			} else if (command) {
 				// Get the command instance.
-				command = editor.getCommand( command );
+				command = editor.getCommand(command);
 
-				if ( command ) {
-					command.on( 'state', function() {
-						this.setState( command.state );
-					}, this );
+				if (command) {
+					command.on('state', function () {
+						this.setState(command.state);
+					}, this);
 
-					stateName += ( command.state == CKEDITOR.TRISTATE_ON ? 'on' : command.state == CKEDITOR.TRISTATE_DISABLED ? 'disabled' : 'off' );
+					stateName += (command.state == CKEDITOR.TRISTATE_ON ? 'on' : command.state == CKEDITOR.TRISTATE_DISABLED ? 'disabled' : 'off');
 				}
 			}
 
 			var iconName;
 
 			// For button that has text-direction awareness on selection path.
-			if ( this.directional ) {
-				editor.on( 'contentDirChanged', function( evt ) {
-					var el = CKEDITOR.document.getById( this._.id ),
+			if (this.directional) {
+				editor.on('contentDirChanged', function (evt) {
+					var el = CKEDITOR.document.getById(this._.id),
 						icon = el.getFirst();
 
 					var pathDir = evt.data;
 
 					// Make a minor direction change to become style-able for the skin icon.
-					if ( pathDir !=  editor.lang.dir )
-						el.addClass( 'cke_' + pathDir );
+					if (pathDir != editor.lang.dir)
+						el.addClass('cke_' + pathDir);
 					else
-						el.removeClass( 'cke_ltr' ).removeClass( 'cke_rtl' );
+						el.removeClass('cke_ltr').removeClass('cke_rtl');
 
 					// Inline style update for the plugin icon.
-					icon.setAttribute( 'style', CKEDITOR.skin.getIconStyle( iconName, pathDir == 'rtl', this.icon, this.iconOffset ) );
-				}, this );
+					icon.setAttribute('style', CKEDITOR.skin.getIconStyle(iconName, pathDir == 'rtl', this.icon, this.iconOffset));
+				}, this);
 			}
 
-			if ( !command ) {
+			if (!command) {
 				stateName += 'off';
 			} else {
-				keystroke = editor.getCommandKeystroke( command );
+				keystroke = editor.getCommandKeystroke(command);
 
-				if ( keystroke ) {
-					shortcut = CKEDITOR.tools.keystrokeToString( editor.lang.common.keyboard, keystroke );
+				if (keystroke) {
+					shortcut = CKEDITOR.tools.keystrokeToString(editor.lang.common.keyboard, keystroke);
 				}
 			}
 
@@ -269,22 +269,22 @@
 			iconName = name;
 
 			// Check if we're pointing to an icon defined by another command. (https://dev.ckeditor.com/ticket/9555)
-			if ( this.icon && !( /\./ ).test( this.icon ) ) {
+			if (this.icon && !(/\./).test(this.icon)) {
 				iconName = this.icon;
 				overridePath = null;
 
 			} else {
 				// Register and use custom icon for button (#1530).
-				if ( this.icon ) {
+				if (this.icon) {
 					iconPath = this.icon;
 				}
-				if ( CKEDITOR.env.hidpi && this.iconHiDpi ) {
+				if (CKEDITOR.env.hidpi && this.iconHiDpi) {
 					iconPath = this.iconHiDpi;
 				}
 			}
 
-			if ( iconPath ) {
-				CKEDITOR.skin.addIcon( iconPath, iconPath );
+			if (iconPath) {
+				CKEDITOR.skin.addIcon(iconPath, iconPath);
 				overridePath = null;
 			} else {
 				iconPath = iconName;
@@ -296,23 +296,23 @@
 				iconName: iconName,
 				label: this.label,
 				// .cke_button_expandable enables additional styling for popup buttons (#2483).
-				cls:  ( this.hasArrow ? 'cke_button_expandable ' : '' ) + ( this.className || '' ),
+				cls: (this.hasArrow ? 'cke_button_expandable ' : '') + (this.className || ''),
 				state: stateName,
 				ariaDisabled: stateName == 'disabled' ? 'true' : 'false',
-				title: this.title + ( shortcut ? ' (' + shortcut.display + ')' : '' ),
+				title: this.title + (shortcut ? ' (' + shortcut.display + ')' : ''),
 				ariaShortcut: shortcut ? editor.lang.common.keyboardShortcut + ' ' + shortcut.aria : '',
-				titleJs: env.gecko && !env.hc ? '' : ( this.title || '' ).replace( "'", '' ),
-				hasArrow: typeof this.hasArrow === 'string' && this.hasArrow || ( this.hasArrow ? 'true' : 'false' ),
+				titleJs: env.gecko && !env.hc ? '' : (this.title || '').replace("'", ''),
+				hasArrow: typeof this.hasArrow === 'string' && this.hasArrow || (this.hasArrow ? 'true' : 'false'),
 				keydownFn: keydownFn,
 				focusFn: focusFn,
 				clickFn: clickFn,
-				style: CKEDITOR.skin.getIconStyle( iconPath, ( editor.lang.dir == 'rtl' ), overridePath, this.iconOffset ),
+				style: CKEDITOR.skin.getIconStyle(iconPath, (editor.lang.dir == 'rtl'), overridePath, this.iconOffset),
 				arrowHtml: this.hasArrow ? btnArrowTpl.output() : ''
 			};
 
-			btnTpl.output( params, output );
+			btnTpl.output(params, output);
 
-			if ( this.onRender )
+			if (this.onRender)
 				this.onRender();
 
 			return instance;
@@ -324,28 +324,28 @@
 		 * @param {Number} state Indicates the button state. One of {@link CKEDITOR#TRISTATE_ON},
 		 * {@link CKEDITOR#TRISTATE_OFF}, or {@link CKEDITOR#TRISTATE_DISABLED}.
 		 */
-		setState: function( state ) {
-			if ( this._.state == state )
+		setState: function (state) {
+			if (this._.state == state)
 				return false;
 
 			this._.state = state;
 
-			var element = CKEDITOR.document.getById( this._.id );
+			var element = CKEDITOR.document.getById(this._.id);
 
-			if ( element ) {
-				element.setState( state, 'cke_button' );
-				element.setAttribute( 'aria-disabled', state == CKEDITOR.TRISTATE_DISABLED );
+			if (element) {
+				element.setState(state, 'cke_button');
+				element.setAttribute('aria-disabled', state == CKEDITOR.TRISTATE_DISABLED);
 
-				if ( !this.hasArrow ) {
+				if (!this.hasArrow) {
 					// Note: aria-pressed attribute should not be added to menuButton instances. (https://dev.ckeditor.com/ticket/11331)
-					if ( state === CKEDITOR.TRISTATE_ON ) {
-						element.setAttribute( 'aria-pressed', true );
+					if (state === CKEDITOR.TRISTATE_ON) {
+						element.setAttribute('aria-pressed', true);
 					} else {
-						element.removeAttribute( 'aria-pressed' );
+						element.removeAttribute('aria-pressed');
 					}
 				} else {
 					// Indicates that menu button is opened (#421).
-					element.setAttribute( 'aria-expanded', state == CKEDITOR.TRISTATE_ON );
+					element.setAttribute('aria-expanded', state == CKEDITOR.TRISTATE_ON);
 				}
 
 				return true;
@@ -360,7 +360,7 @@
 		 * @returns {Number} The button state. One of {@link CKEDITOR#TRISTATE_ON},
 		 * {@link CKEDITOR#TRISTATE_OFF}, or {@link CKEDITOR#TRISTATE_DISABLED}.
 		 */
-		getState: function() {
+		getState: function () {
 			return this._.state;
 		},
 
@@ -378,15 +378,15 @@
 		 * @param {CKEDITOR.editor} Editor instance.
 		 * @returns {CKEDITOR.feature} The feature.
 		 */
-		toFeature: function( editor ) {
-			if ( this._.feature )
+		toFeature: function (editor) {
+			if (this._.feature)
 				return this._.feature;
 
 			var feature = this;
 
 			// If button isn't a feature, return command if is bound.
-			if ( !this.allowedContent && !this.requiredContent && this.command )
-				feature = editor.getCommand( this.command ) || feature;
+			if (!this.allowedContent && !this.requiredContent && this.command)
+				feature = editor.getCommand(this.command) || feature;
 
 			return this._.feature = feature;
 		}
@@ -437,8 +437,8 @@
 	 * @param {String/Boolean} definition.hasArrow If Boolean, it indicates whether the button should have a dropdown. If a string, it acts
 	 * as a value of the button's `aria-haspopup` attribute. Since **4.11.0** it supports the string as a value.
 	 */
-	CKEDITOR.ui.prototype.addButton = function( name, definition ) {
-		this.add( name, CKEDITOR.UI_BUTTON, definition );
+	CKEDITOR.ui.prototype.addButton = function (name, definition) {
+		this.add(name, CKEDITOR.UI_BUTTON, definition);
 	};
 
-} )();
+})();

@@ -16,14 +16,14 @@
 // #### Raw code
 // ATTENTION: read the above "Compressed Code" notes when changing this code.
 
-if ( !window.CKEDITOR ) {
+if (!window.CKEDITOR) {
 	/**
 	 * This is the API entry point. The entire CKEditor code runs under this object.
 	 * @class CKEDITOR
 	 * @mixins CKEDITOR.event
 	 * @singleton
 	 */
-	window.CKEDITOR = ( function() {
+	window.CKEDITOR = (function () {
 		var basePathSrcPattern = /(^|.*[\\\/])ckeditor\.js(?:\?.*|;.*)?$/i;
 
 		var CKEDITOR = {
@@ -71,7 +71,7 @@ if ( !window.CKEDITOR ) {
 			 *
 			 * @property {Number}
 			 */
-			rnd: Math.floor( Math.random() * ( 999 /*Max*/ - 100 /*Min*/ + 1 ) ) + 100 /*Min*/,
+			rnd: Math.floor(Math.random() * (999 /*Max*/ - 100 /*Min*/ + 1)) + 100 /*Min*/,
 
 			/**
 			 * Private object used to hold core stuff. It should not be used outside of
@@ -116,18 +116,18 @@ if ( !window.CKEDITOR ) {
 			 *
 			 * @property {String}
 			 */
-			basePath: ( function() {
+			basePath: (function () {
 				// Find out the editor directory path, based on its <script> tag.
 				var path = window.CKEDITOR_BASEPATH || '';
 
-				if ( !path ) {
-					var scripts = document.getElementsByTagName( 'script' );
+				if (!path) {
+					var scripts = document.getElementsByTagName('script');
 
-					for ( var i = 0; i < scripts.length; i++ ) {
-						var match = scripts[ i ].src.match( basePathSrcPattern );
+					for (var i = 0; i < scripts.length; i++) {
+						var match = scripts[i].src.match(basePathSrcPattern);
 
-						if ( match ) {
-							path = match[ 1 ];
+						if (match) {
+							path = match[1];
 							break;
 						}
 					}
@@ -135,20 +135,20 @@ if ( !window.CKEDITOR ) {
 
 				// In IE (only) the script.src string is the raw value entered in the
 				// HTML source. Other browsers return the full resolved URL instead.
-				if ( path.indexOf( ':/' ) == -1 && path.slice( 0, 2 ) != '//' ) {
+				if (path.indexOf(':/') == -1 && path.slice(0, 2) != '//') {
 					// Absolute path.
-					if ( path.indexOf( '/' ) === 0 )
-						path = location.href.match( /^.*?:\/\/[^\/]*/ )[ 0 ] + path;
+					if (path.indexOf('/') === 0)
+						path = location.href.match(/^.*?:\/\/[^\/]*/)[0] + path;
 					// Relative path.
 					else
-						path = location.href.match( /^[^\?]*\/(?:)/ )[ 0 ] + path;
+						path = location.href.match(/^[^\?]*\/(?:)/)[0] + path;
 				}
 
-				if ( !path )
+				if (!path)
 					throw 'The CKEditor installation path could not be automatically detected. Please set the global variable "CKEDITOR_BASEPATH" before creating editor instances.';
 
 				return path;
-			} )(),
+			})(),
 
 			/**
 			 * Gets the full URL for CKEditor resources. By default, URLs
@@ -174,14 +174,14 @@ if ( !window.CKEDITOR ) {
 			 * It may be a full, absolute, or relative URL.
 			 * @returns {String} The full URL.
 			 */
-			getUrl: function( resource ) {
+			getUrl: function (resource) {
 				// If this is not a full or absolute path.
-				if ( resource.indexOf( ':/' ) == -1 && resource.indexOf( '/' ) !== 0 )
+				if (resource.indexOf(':/') == -1 && resource.indexOf('/') !== 0)
 					resource = this.basePath + resource;
 
 				// Add the timestamp, except for directories.
-				if ( this.timestamp && resource.charAt( resource.length - 1 ) != '/' && !( /[&?]t=/ ).test( resource ) )
-					resource += ( resource.indexOf( '?' ) >= 0 ? '&' : '?' ) + 't=' + this.timestamp;
+				if (this.timestamp && resource.charAt(resource.length - 1) != '/' && !(/[&?]t=/).test(resource))
+					resource += (resource.indexOf('?') >= 0 ? '&' : '?') + 't=' + this.timestamp;
 
 				return resource;
 			},
@@ -195,7 +195,7 @@ if ( !window.CKEDITOR ) {
 			 * @method
 			 * @todo
 			 */
-			domReady: ( function() {
+			domReady: (function () {
 				// Based on the original jQuery code (available under the MIT license, see LICENSE.md).
 
 				var callbacks = [];
@@ -203,54 +203,54 @@ if ( !window.CKEDITOR ) {
 				function onReady() {
 					try {
 						// Cleanup functions for the document ready method
-						if ( document.addEventListener ) {
-							document.removeEventListener( 'DOMContentLoaded', onReady, false );
+						if (document.addEventListener) {
+							document.removeEventListener('DOMContentLoaded', onReady, false);
 							executeCallbacks();
 						}
 						// Make sure body exists, at least, in case IE gets a little overzealous.
-						else if ( document.attachEvent && document.readyState === 'complete' ) {
-							document.detachEvent( 'onreadystatechange', onReady );
+						else if (document.attachEvent && document.readyState === 'complete') {
+							document.detachEvent('onreadystatechange', onReady);
 							executeCallbacks();
 						}
-					} catch ( er ) {}
+					} catch (er) { }
 				}
 
 				function executeCallbacks() {
 					var i;
-					while ( ( i = callbacks.shift() ) )
+					while ((i = callbacks.shift()))
 						i();
 				}
 
-				return function( fn ) {
-					callbacks.push( fn );
+				return function (fn) {
+					callbacks.push(fn);
 
 					// Catch cases where this is called after the
 					// browser event has already occurred.
-					if ( document.readyState === 'complete' )
+					if (document.readyState === 'complete')
 						// Handle it asynchronously to allow scripts the opportunity to delay ready
-						setTimeout( onReady, 1 );
+						setTimeout(onReady, 1);
 
 					// Run below once on demand only.
-					if ( callbacks.length != 1 )
+					if (callbacks.length != 1)
 						return;
 
 					// For IE>8, Firefox, Opera and Webkit.
-					if ( document.addEventListener ) {
+					if (document.addEventListener) {
 						// Use the handy event callback
-						document.addEventListener( 'DOMContentLoaded', onReady, false );
+						document.addEventListener('DOMContentLoaded', onReady, false);
 
 						// A fallback to window.onload, that will always work
-						window.addEventListener( 'load', onReady, false );
+						window.addEventListener('load', onReady, false);
 
 					}
 					// If old IE event model is used
-					else if ( document.attachEvent ) {
+					else if (document.attachEvent) {
 						// ensure firing before onload,
 						// maybe late but safe also for iframes
-						document.attachEvent( 'onreadystatechange', onReady );
+						document.attachEvent('onreadystatechange', onReady);
 
 						// A fallback to window.onload, that will always work
-						window.attachEvent( 'onload', onReady );
+						window.attachEvent('onload', onReady);
 
 						// If IE and not a frame
 						// continually check to see if the document is ready
@@ -260,39 +260,39 @@ if ( !window.CKEDITOR ) {
 
 						try {
 							toplevel = !window.frameElement;
-						} catch ( e ) {}
+						} catch (e) { }
 
-						if ( document.documentElement.doScroll && toplevel ) {
+						if (document.documentElement.doScroll && toplevel) {
 							scrollCheck();
 						}
 					}
 
 					function scrollCheck() {
 						try {
-							document.documentElement.doScroll( 'left' );
-						} catch ( e ) {
-							setTimeout( scrollCheck, 1 );
+							document.documentElement.doScroll('left');
+						} catch (e) {
+							setTimeout(scrollCheck, 1);
 							return;
 						}
 						onReady();
 					}
 				};
 
-			} )()
+			})()
 		};
 
 		// Make it possible to override the "url" function with a custom
 		// implementation pointing to a global named CKEDITOR_GETURL.
 		var newGetUrl = window.CKEDITOR_GETURL;
-		if ( newGetUrl ) {
+		if (newGetUrl) {
 			var originalGetUrl = CKEDITOR.getUrl;
-			CKEDITOR.getUrl = function( resource ) {
-				return newGetUrl.call( CKEDITOR, resource ) || originalGetUrl.call( CKEDITOR, resource );
+			CKEDITOR.getUrl = function (resource) {
+				return newGetUrl.call(CKEDITOR, resource) || originalGetUrl.call(CKEDITOR, resource);
 			};
 		}
 
 		return CKEDITOR;
-	} )();
+	})();
 }
 
 /**

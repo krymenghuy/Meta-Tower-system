@@ -1,10 +1,10 @@
 "use strict";
 
 // Class definition
-var KTamChartsStockChartsDemo = function() {
+var KTamChartsStockChartsDemo = function () {
 
     // Private functions
-    var demo1 = function() {
+    var demo1 = function () {
         var chartData1 = [];
         var chartData2 = [];
         var chartData3 = [];
@@ -179,7 +179,7 @@ var KTamChartsStockChartsDemo = function() {
         });
     }
 
-    var demo2 = function() {
+    var demo2 = function () {
         var chartData = [];
         generateChartData();
 
@@ -351,7 +351,7 @@ var KTamChartsStockChartsDemo = function() {
         });
     }
 
-    var demo3 = function() {
+    var demo3 = function () {
         var chartData = generateChartData();
 
         function generateChartData() {
@@ -445,7 +445,7 @@ var KTamChartsStockChartsDemo = function() {
         });
     }
 
-    var demo4 = function() {
+    var demo4 = function () {
         var chartData = generateChartData();
 
         function generateChartData() {
@@ -573,7 +573,7 @@ var KTamChartsStockChartsDemo = function() {
         });
     }
 
-    var demo5 = function() {
+    var demo5 = function () {
         var chartData = [];
         generateChartData();
 
@@ -661,71 +661,71 @@ var KTamChartsStockChartsDemo = function() {
 
 
             "panels": [{
-                    "title": "Value",
-                    "showCategoryAxis": false,
-                    "percentHeight": 70,
-                    "valueAxes": [{
-                        "id": "v1",
-                        "dashLength": 5
-                    }],
+                "title": "Value",
+                "showCategoryAxis": false,
+                "percentHeight": 70,
+                "valueAxes": [{
+                    "id": "v1",
+                    "dashLength": 5
+                }],
 
-                    "categoryAxis": {
-                        "dashLength": 5
-                    },
-
-                    "stockGraphs": [{
-                        "type": "candlestick",
-                        "id": "g1",
-                        "openField": "open",
-                        "closeField": "close",
-                        "highField": "high",
-                        "lowField": "low",
-                        "valueField": "close",
-                        "lineColor": "#7f8da9",
-                        "fillColors": "#7f8da9",
-                        "negativeLineColor": "#db4c3c",
-                        "negativeFillColors": "#db4c3c",
-                        "fillAlphas": 1,
-                        "useDataSetColors": false,
-                        "comparable": true,
-                        "compareField": "value",
-                        "showBalloon": false,
-                        "proCandlesticks": true
-                    }],
-
-                    "stockLegend": {
-                        "valueTextRegular": undefined,
-                        "periodValueTextComparing": "[[percents.value.close]]%"
-                    }
+                "categoryAxis": {
+                    "dashLength": 5
                 },
 
-                {
-                    "title": "Volume",
-                    "percentHeight": 30,
-                    "marginTop": 1,
-                    "showCategoryAxis": true,
-                    "valueAxes": [{
-                        "dashLength": 5
-                    }],
+                "stockGraphs": [{
+                    "type": "candlestick",
+                    "id": "g1",
+                    "openField": "open",
+                    "closeField": "close",
+                    "highField": "high",
+                    "lowField": "low",
+                    "valueField": "close",
+                    "lineColor": "#7f8da9",
+                    "fillColors": "#7f8da9",
+                    "negativeLineColor": "#db4c3c",
+                    "negativeFillColors": "#db4c3c",
+                    "fillAlphas": 1,
+                    "useDataSetColors": false,
+                    "comparable": true,
+                    "compareField": "value",
+                    "showBalloon": false,
+                    "proCandlesticks": true
+                }],
 
-                    "categoryAxis": {
-                        "dashLength": 5
-                    },
-
-                    "stockGraphs": [{
-                        "valueField": "volume",
-                        "type": "column",
-                        "showBalloon": false,
-                        "fillAlphas": 1
-                    }],
-
-                    "stockLegend": {
-                        "markerType": "none",
-                        "markerSize": 0,
-                        "labelText": "",
-                        "periodValueTextRegular": "[[value.close]]"
-                    }
+                "stockLegend": {
+                    "valueTextRegular": undefined,
+                    "periodValueTextComparing": "[[percents.value.close]]%"
                 }
+            },
+
+            {
+                "title": "Volume",
+                "percentHeight": 30,
+                "marginTop": 1,
+                "showCategoryAxis": true,
+                "valueAxes": [{
+                    "dashLength": 5
+                }],
+
+                "categoryAxis": {
+                    "dashLength": 5
+                },
+
+                "stockGraphs": [{
+                    "valueField": "volume",
+                    "type": "column",
+                    "showBalloon": false,
+                    "fillAlphas": 1
+                }],
+
+                "stockLegend": {
+                    "markerType": "none",
+                    "markerSize": 0,
+                    "labelText": "",
+                    "periodValueTextRegular": "[[value.close]]"
+                }
+            }
             ],
 
             "chartScrollbarSettings": {
@@ -769,7 +769,7 @@ var KTamChartsStockChartsDemo = function() {
     }
     return {
         // public functions
-        init: function() {
+        init: function () {
             demo1();
             demo2();
             demo3();
@@ -779,6 +779,6 @@ var KTamChartsStockChartsDemo = function() {
     };
 }();
 
-jQuery(document).ready(function() {
+jQuery(document).ready(function () {
     KTamChartsStockChartsDemo.init();
 });

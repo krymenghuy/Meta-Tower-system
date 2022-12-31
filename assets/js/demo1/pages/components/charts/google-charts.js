@@ -1,21 +1,21 @@
 "use strict";
 // Class definition
-var KTGoogleChartsDemo = function() {
+var KTGoogleChartsDemo = function () {
 
     // Private functions
 
-    var main = function() {
+    var main = function () {
         // GOOGLE CHARTS INIT
         google.load('visualization', '1', {
             packages: ['corechart', 'bar', 'line']
         });
 
-        google.setOnLoadCallback(function() {
+        google.setOnLoadCallback(function () {
             KTGoogleChartsDemo.runDemos();
         });
     }
 
-    var demoColumnCharts = function() {
+    var demoColumnCharts = function () {
         // COLUMN CHART
         var data = new google.visualization.DataTable();
         data.addColumn('timeofday', 'Time of Day');
@@ -89,7 +89,7 @@ var KTGoogleChartsDemo = function() {
         chart.draw(data, options);
     }
 
-    var demoPieCharts = function() {
+    var demoPieCharts = function () {
         var data = google.visualization.arrayToDataTable([
             ['Task', 'Hours per Day'],
             ['Work', 11],
@@ -114,9 +114,9 @@ var KTGoogleChartsDemo = function() {
 
         var chart = new google.visualization.PieChart(document.getElementById('kt_gchart_4'));
         chart.draw(data, options);
-    }    
+    }
 
-    var demoLineCharts = function() {
+    var demoLineCharts = function () {
         // LINE CHART
         var data = new google.visualization.DataTable();
         data.addColumn('number', 'Day');
@@ -155,11 +155,11 @@ var KTGoogleChartsDemo = function() {
 
     return {
         // public functions
-        init: function() {
+        init: function () {
             main();
         },
 
-        runDemos: function() {
+        runDemos: function () {
             demoColumnCharts();
             demoLineCharts();
             demoPieCharts();
