@@ -11183,11 +11183,11 @@ li.kt-menu__section {
   background: #fff !important;
 }
 
-a.kt-menu__link:hover {
+/* a.kt-menu__link:hover {
   color: #3498DB !important;
-  /* background-color: orange !important;
-    border-radius:0px 20px 20px 5px; */
-}
+  background-color: orange !important;
+    border-radius:0px 20px 20px 5px;
+} */
 
 /** begin:: tab-view classes **/
 div.tab-view {

@@ -147,7 +147,6 @@
         <blade media|%20(min-width%3A%201025px)%20%7B>.kt-header--fixed.kt-subheader--fixed.kt-subheader--enabled .kt-wrapper {
             padding-top: 65px !important;
         }
-        }
 
         .required:after {
             content: '*';

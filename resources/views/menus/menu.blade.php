@@ -11,9 +11,6 @@
         font-weight: bold !important;
     }
 
-    /* div#kt_aside_menu{
-     background:#ECF0F1 !important;
-   } */
     .menu-selected {
         background-color: #0544d1;
         border-top: 1.2px dotted orange;
@@ -585,9 +582,17 @@
     //Begin::Adjust Aside Menu's area for Scrolling behavior 
     //let __dx = $('#_dms_aside_menus');
     __dx.css('height', [(window.innerHeight - 65), 'px'].join(''));
-    __dx.css('overflow-y', 'auto');
+    __dx.css('overflow-y','auto');
     let prev_selected_menu = null;
     //end::Adjust Aside Menu's area for Scrolling behavior
+
+    __dx.on('mouseover', function () {
+        $(this).css('overflow-y', 'auto');
+    });
+
+    __dx.on('mouseout', function() {
+        $(this).css('overflow-y', 'hidden');
+    });
 
     //begin:: When user clicks on each Sude menu item => Hilight the selected menu item
     __dx.on('click', '.menu-item', function (e) {
