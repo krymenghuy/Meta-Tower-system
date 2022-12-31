@@ -107,7 +107,7 @@ _datepicker_inputs.attr('autocomplete','chrome-off"');
 
 /*Input.text behavior, Textbox behavior */
 $('input').on('focus', function (event, ui) {
-    _datepicker_inputs.attr('autocomplete','off"');
+    _datepicker_inputs.attr('autocomplete',false);
     $(this)
     .one('mouseup', function () {
         if ($(this).prop('readOnly') ==false) $(this).select();

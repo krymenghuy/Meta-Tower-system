@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2022-12-01 11:48:26
+Date: 2022-12-31 08:39:44
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -21,7 +21,7 @@ SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `appointments`;
 CREATE TABLE `appointments` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `branch_id` int(11) NOT NULL,
+  `branch_id` int(11) NOT NULL DEFAULT 1,
   `channel_id` int(11) NOT NULL,
   `arrival_date` date NOT NULL,
   `arrival_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
@@ -41,41 +41,118 @@ CREATE TABLE `appointments` (
   `update_uid` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `client_sex` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status_id` tinyint(6) DEFAULT 1 COMMENT '0=Canceled, 1= Pending, 2=Served',
+  `status_id` tinyint(6) DEFAULT 1 COMMENT '0=Canceled, 1= Pending, 2=Registered 3=Queued, 4=Served',
   `client_code` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `schedule_type` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT 'appointment_type = {followup,on demand}',
+  `priority` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'priority ={urgent,normal}',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of appointments
 -- ----------------------------
-INSERT INTO `appointments` VALUES ('48', '1', '2', '2022-12-02', '2022-12-02 10:30:00', null, 'Ms Darany', '012555653', 'daraagmailcom', null, '0', '13', null, '0', 'Samsethy', '1', '2022-12-01 09:17:15.000000', null, null, null, 'F', '1', '');
-INSERT INTO `appointments` VALUES ('49', '1', '2', '2022-12-08', '2022-12-01 10:19:48', null, 'Ms Darany', '012555653', null, null, '0', '13', null, '67', 'Samsethy', '1', '2022-12-01 10:18:10.000000', null, null, null, 'F', '1', '');
+INSERT INTO `appointments` VALUES ('49', '1', '2', '2022-12-08', '2022-12-09 11:06:10', null, 'Ms Darany', '012555653', 'dddyahoocom', null, '0', '13', null, '67', 'Samsethy', '1', '2022-12-01 10:18:10.000000', 'Samsethy', '1', '2022-12-03 17:54:51', 'F', '3', '', 'Followup', 'Normal');
+INSERT INTO `appointments` VALUES ('53', '1', '2', '2022-12-08', '2022-12-10 19:07:26', null, 'KKKKK', '0125656765', 'kk.gg-m@yahoo.com', null, '2', '0', null, '71', 'Samsethy', '1', '2022-12-03 17:38:30.000000', 'Samsethy', '1', '2022-12-07 13:35:48', 'F', '3', 'P100060', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('55', '1', '2', '2022-12-18', '2022-12-09 11:17:03', null, 'new name 111', '012555666', null, null, '0', '15', null, '72', 'Samsethy', '1', '2022-12-04 13:18:46.000000', 'Samsethy', '1', '2022-12-05 18:58:26', 'F', '3', '', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('57', '1', '2', '2023-01-18', '2022-12-29 23:28:18', null, 'DSDF AAA', '0112225653', null, null, '2', '17', null, '74', 'Samsethy', '1', '2022-12-04 13:41:17.000000', 'Samsethy', '1', '2022-12-04 13:48:47', 'F', '3', '', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('58', '1', '2', '2023-01-10', '2022-12-09 11:17:12', null, 'NEW ONE', '012998898', null, null, '2', '18', null, '75', 'Samsethy', '1', '2022-12-04 13:43:17.000000', 'Samsethy', '1', '2022-12-04 14:10:11', 'F', '3', '', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('59', '1', '2', '2022-12-15', '2022-12-09 10:34:47', null, 'Bun Sobana', '0115656565', 'babab@gmail.com', null, '2', '19', null, '76', 'Samsethy', '1', '2022-12-06 11:21:11.000000', null, null, null, 'F', '2', '', 'Followup', 'Urgent');
+INSERT INTO `appointments` VALUES ('64', '1', '2', '2022-12-15', '2022-12-09 11:03:50', null, 'Bun Sobana', '0115656565', null, null, '2', '0', null, '76', 'Samsethy', '1', '2022-12-06 12:46:58.000000', 'Samsethy', '1', '2022-12-07 10:54:17', 'F', '3', 'P100061', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('66', '1', '2', '2022-12-16', '2022-12-09 10:36:03', null, 'Sonary', '0102256765', 'info@vectorasoft.com', null, '2', '22', null, '79', 'Samsethy', '1', '2022-12-08 09:51:36.000000', null, null, null, 'F', '3', '', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('69', '1', '2', '2023-01-27', '2022-12-09 10:34:47', null, 'some one', '012565656', 'info@vectorasoft.com', null, '2', '25', null, '82', 'Samsethy', '1', '2022-12-09 10:03:50.000000', null, null, null, 'F', '2', '', 'Followup', 'Normal');
+INSERT INTO `appointments` VALUES ('71', '1', '2', '2022-12-22', '2022-12-10 19:14:08', null, 'KKK1', '01245656', null, null, '2', '27', null, '84', 'Samsethy', '1', '2022-12-10 19:13:54.000000', null, null, null, 'F', '3', '', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('83', '1', '2', '2022-12-12', '2022-12-11 12:33:06', null, 'sdgdfhfdhgfh', '012456576', null, null, '2', '32', null, '89', 'Samsethy', '1', '2022-12-10 20:38:31.000000', null, null, null, 'F', '3', '', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('87', '1', '2', '2022-12-12', '2022-12-11 12:24:33', null, 'sdgdfhfdhgfh', '012456576', null, null, '2', '32', null, '89', 'Samsethy', '1', '2022-12-10 20:43:54.000000', null, null, null, 'F', '3', '', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('93', '1', '2', '2022-12-15', '2022-12-12 01:44:14', null, 'HJKJKJK', '010566767', null, null, '2', '37', null, '92', 'Samsethy', '1', '2022-12-12 01:43:48.000000', null, null, null, 'F', '3', '', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('94', '1', '2', '2022-12-16', '2022-12-17 09:37:50', null, 'sovanna', '012565656', null, null, '2', '0', null, '82', 'Samsethy', '1', '2022-12-14 12:50:24.000000', 'Samsethy', '1', '2022-12-16 17:46:16', 'F', '3', 'P100067', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('95', '1', '2', '2022-12-17', '2022-12-16 14:10:32', null, 'vikara', '0102343322', null, null, '2', '38', null, '93', 'Samsethy', '1', '2022-12-14 12:51:17.000000', null, null, null, 'M', '3', '', 'On demand', 'Normal');
 
 -- ----------------------------
 -- Table structure for `appt_chief_complaints`
 -- ----------------------------
 DROP TABLE IF EXISTS `appt_chief_complaints`;
 CREATE TABLE `appt_chief_complaints` (
-  `appointment_id` int(10) NOT NULL,
-  `chief_complaint_id` int(10) NOT NULL
+  `appt_id` int(10) DEFAULT NULL,
+  `chief_complaint_id` int(10) NOT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `ticket_id` int(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of appt_chief_complaints
 -- ----------------------------
-INSERT INTO `appt_chief_complaints` VALUES ('35', '3');
-INSERT INTO `appt_chief_complaints` VALUES ('35', '4');
-INSERT INTO `appt_chief_complaints` VALUES ('35', '4');
-INSERT INTO `appt_chief_complaints` VALUES ('26', '5');
-INSERT INTO `appt_chief_complaints` VALUES ('26', '6');
-INSERT INTO `appt_chief_complaints` VALUES ('11', '4');
-INSERT INTO `appt_chief_complaints` VALUES ('26', '3');
-INSERT INTO `appt_chief_complaints` VALUES ('26', '5');
-INSERT INTO `appt_chief_complaints` VALUES ('11', '5');
-INSERT INTO `appt_chief_complaints` VALUES ('11', '11');
-INSERT INTO `appt_chief_complaints` VALUES ('48', '2');
-INSERT INTO `appt_chief_complaints` VALUES ('48', '4');
+INSERT INTO `appt_chief_complaints` VALUES ('35', '3', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('35', '4', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('35', '4', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('26', '5', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('26', '6', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('11', '4', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('26', '3', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('26', '5', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('11', '5', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('11', '11', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('48', '2', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('48', '4', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('52', '2', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('52', '3', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('64', '3', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('64', '6', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('64', '5', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('57', '2', null, null, '2022-12-29 23:28:18.220609', '78');
+INSERT INTO `appt_chief_complaints` VALUES ('57', '5', null, null, '2022-12-29 23:28:18.220609', '78');
+INSERT INTO `appt_chief_complaints` VALUES ('59', '3', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('59', '5', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('53', '5', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('65', '2', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('65', '3', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('67', '3', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('67', '4', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('69', '5', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('55', '3', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('55', '4', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('60', '4', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('74', '3', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('74', '4', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('88', '1', '1', 'Samsethy', '2022-12-10 20:47:04.000000', null);
+INSERT INTO `appt_chief_complaints` VALUES ('88', '4', '1', 'Samsethy', '2022-12-10 20:47:04.000000', null);
+INSERT INTO `appt_chief_complaints` VALUES ('89', '1', '1', 'Samsethy', '2022-12-10 20:47:36.000000', null);
+INSERT INTO `appt_chief_complaints` VALUES ('89', '4', '1', 'Samsethy', '2022-12-10 20:47:36.000000', null);
+INSERT INTO `appt_chief_complaints` VALUES ('90', '2', '1', 'Samsethy', '2022-12-11 11:36:05.000000', null);
+INSERT INTO `appt_chief_complaints` VALUES ('91', '1', '1', 'Samsethy', '2022-12-11 11:45:38.000000', null);
+INSERT INTO `appt_chief_complaints` VALUES ('92', '2', '1', 'Samsethy', '2022-12-11 19:52:33.411700', '74');
+INSERT INTO `appt_chief_complaints` VALUES ('92', '4', '1', 'Samsethy', '2022-12-11 19:52:33.411700', '74');
+INSERT INTO `appt_chief_complaints` VALUES (null, '3', '1', 'Samsethy', '2022-12-11 18:57:25.000000', '51');
+INSERT INTO `appt_chief_complaints` VALUES (null, '5', '1', 'Samsethy', '2022-12-11 18:57:28.000000', '51');
+INSERT INTO `appt_chief_complaints` VALUES (null, '3', '1', 'Samsethy', '2022-12-11 19:52:58.000000', '50');
+INSERT INTO `appt_chief_complaints` VALUES (null, '4', '1', 'Samsethy', '2022-12-11 19:53:03.000000', '50');
+INSERT INTO `appt_chief_complaints` VALUES (null, '6', '1', 'Samsethy', '2022-12-12 19:12:08.000000', '53');
+INSERT INTO `appt_chief_complaints` VALUES ('95', '3', '1', 'Samsethy', '2022-12-16 14:10:32.753681', '76');
+INSERT INTO `appt_chief_complaints` VALUES (null, '4', '1', 'Samsethy', '2022-12-14 17:56:48.000000', '52');
+INSERT INTO `appt_chief_complaints` VALUES ('94', '3', null, null, '2022-12-17 09:37:50.103780', '77');
+INSERT INTO `appt_chief_complaints` VALUES ('94', '4', null, null, '2022-12-17 09:37:50.103780', '77');
+INSERT INTO `appt_chief_complaints` VALUES (null, '5', '1', 'Samsethy', '2022-12-17 09:38:53.000000', '53');
+
+-- ----------------------------
+-- Table structure for `appt_statuses`
+-- ----------------------------
+DROP TABLE IF EXISTS `appt_statuses`;
+CREATE TABLE `appt_statuses` (
+  `id` int(10) NOT NULL,
+  `branch_id` int(10) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of appt_statuses
+-- ----------------------------
+INSERT INTO `appt_statuses` VALUES ('-1', '1', 'Canceled');
+INSERT INTO `appt_statuses` VALUES ('1', '1', 'Pending');
+INSERT INTO `appt_statuses` VALUES ('2', '1', 'Registered');
+INSERT INTO `appt_statuses` VALUES ('3', '1', 'Queued');
+INSERT INTO `appt_statuses` VALUES ('4', '1', 'Served');
 
 -- ----------------------------
 -- Table structure for `chief_complaints`
@@ -94,7 +171,7 @@ CREATE TABLE `chief_complaints` (
   `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   `description` varchar(350) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of chief_complaints
@@ -111,6 +188,8 @@ INSERT INTO `chief_complaints` VALUES ('9', '1', 'lalalala', '9', '2022-11-23 16
 INSERT INTO `chief_complaints` VALUES ('10', '1', 'Facial Acne', '10', '2022-11-24 08:14:09.423172', 'Samsethy', '1', null, null, '2022-11-24 08:14:09.423172', null);
 INSERT INTO `chief_complaints` VALUES ('11', '1', 'Im too beautiful ', '11', '2022-11-24 20:03:50.809045', 'Samsethy', '1', null, null, '2022-11-24 20:03:50.809045', null);
 INSERT INTO `chief_complaints` VALUES ('12', '1', 'sdfsdgfdg', '12', '2022-12-01 10:41:02.999518', 'Samsethy', '1', null, null, '2022-12-01 10:41:02.999518', null);
+INSERT INTO `chief_complaints` VALUES ('13', '1', 'ggghh', '13', '2022-12-08 09:25:57.718674', 'Samsethy', '1', null, null, '2022-12-08 09:25:57.718674', null);
+INSERT INTO `chief_complaints` VALUES ('14', '1', 'dgsdfgdfhf', '14', '2022-12-08 09:36:42.284727', 'Samsethy', '1', null, null, '2022-12-08 09:36:42.284727', null);
 
 -- ----------------------------
 -- Table structure for `com_branches`
@@ -203,8 +282,8 @@ CREATE TABLE `departments` (
 -- Records of departments
 -- ----------------------------
 INSERT INTO `departments` VALUES ('1', '1', '0', 'General', null, 'Admin', '1', null, null, '2022-11-16 12:21:45', null);
-INSERT INTO `departments` VALUES ('2', '1', '0', 'Skin Care', null, 'Admin', '1', null, null, '2022-11-16 12:21:45', null);
-INSERT INTO `departments` VALUES ('3', '1', '0', 'Cosmetic Surgery', null, 'Admin', '1', null, null, '2022-11-16 12:21:45', null);
+INSERT INTO `departments` VALUES ('2', '1', '0', 'Dermatology', null, 'Admin', '1', null, null, '2022-12-03 19:03:52', null);
+INSERT INTO `departments` VALUES ('3', '1', '0', 'Plastic Surgery', null, 'Admin', '1', null, null, '2022-12-03 19:04:03', null);
 
 -- ----------------------------
 -- Table structure for `employees`
@@ -232,8 +311,8 @@ CREATE TABLE `employees` (
 -- ----------------------------
 -- Records of employees
 -- ----------------------------
-INSERT INTO `employees` VALUES ('1', '1', '1', '11111', '1', '1', 'full time', '0.00', 'USD', '1', '0', null, null, '2022-11-18 10:36:12', null);
-INSERT INTO `employees` VALUES ('2', '1', '2', '22222', '1', '1', 'full time', '0.00', 'USD', '1', '0', null, null, '2022-11-18 10:36:09', null);
+INSERT INTO `employees` VALUES ('1', '1', '1', '11111', '2', '1', 'full time', '0.00', 'USD', '1', '0', null, null, '2022-12-03 18:02:35', null);
+INSERT INTO `employees` VALUES ('2', '1', '2', '22222', '3', '1', 'full time', '0.00', 'USD', '1', '0', null, null, '2022-12-03 19:36:33', null);
 
 -- ----------------------------
 -- Table structure for `employee_positions`
@@ -242,6 +321,7 @@ DROP TABLE IF EXISTS `employee_positions`;
 CREATE TABLE `employee_positions` (
   `emp_id` int(10) NOT NULL,
   `position_id` int(10) NOT NULL,
+  `status` varchar(15) NOT NULL DEFAULT 'Active',
   `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   `create_user` varchar(50) DEFAULT NULL,
@@ -253,6 +333,514 @@ CREATE TABLE `employee_positions` (
 -- ----------------------------
 -- Records of employee_positions
 -- ----------------------------
+INSERT INTO `employee_positions` VALUES ('1', '2', 'Active', '2022-12-03 19:37:03.746133', '2022-12-03 19:37:03.746133', null, null, null, null);
+INSERT INTO `employee_positions` VALUES ('2', '3', 'Active', '2022-12-03 19:37:04.306061', '2022-12-03 19:37:04.306061', null, null, null, null);
+
+-- ----------------------------
+-- Table structure for `inv_adjustment_types`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_adjustment_types`;
+CREATE TABLE `inv_adjustment_types` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `description` varchar(250) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `stock_class_id` int(10) DEFAULT NULL,
+  `warehouse_id` int(10) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_adjustment_types
+-- ----------------------------
+INSERT INTO `inv_adjustment_types` VALUES ('1', '1', 'Missing', 'Missing', null, null, '2022-12-02 10:38:09.982458', null, null, '2022-12-02 10:38:09.982458', null, '0');
+INSERT INTO `inv_adjustment_types` VALUES ('2', '1', 'shrinkage', 'shrinkage', null, null, '2022-12-02 10:37:20.193295', null, null, '2022-12-02 10:37:20.193295', null, '0');
+INSERT INTO `inv_adjustment_types` VALUES ('3', '1', 'broken', 'broken', null, null, null, null, null, null, null, '0');
+INSERT INTO `inv_adjustment_types` VALUES ('4', '1', 'Theft', 'Theft', null, null, null, null, null, null, null, '0');
+
+-- ----------------------------
+-- Table structure for `inv_available_stocks`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_available_stocks`;
+CREATE TABLE `inv_available_stocks` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `item_id` int(10) NOT NULL,
+  `variance_id` int(10) NOT NULL,
+  `item_code` varchar(25) NOT NULL,
+  `available_qty` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `sku` int(10) NOT NULL,
+  `last_count_date` date NOT NULL,
+  `stock_class_id` int(10) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_available_stocks
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_brands`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_brands`;
+CREATE TABLE `inv_brands` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) DEFAULT NULL,
+  `branch_id` int(10) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `create_user` varchar(50) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  `name_kh` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=121 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_brands
+-- ----------------------------
+INSERT INTO `inv_brands` VALUES ('107', 'ab', '1', '2022-12-03 12:05:09.000000', 'Samsethy', '1', null, null, null, 'ab');
+INSERT INTO `inv_brands` VALUES ('108', 'dicta', '1', '2022-12-03 12:06:17.000000', 'Samsethy', '1', null, null, null, 'dicta');
+INSERT INTO `inv_brands` VALUES ('109', 'aut', '1', '2022-12-03 12:06:41.000000', 'Samsethy', '1', null, null, null, 'aut');
+INSERT INTO `inv_brands` VALUES ('110', 'rerum', '1', '2022-12-03 12:09:52.000000', 'Samsethy', '1', null, null, null, 'rerum');
+INSERT INTO `inv_brands` VALUES ('111', 'mollitia', '1', '2022-12-03 12:23:28.000000', 'Samsethy', '1', null, null, null, 'mollitia');
+INSERT INTO `inv_brands` VALUES ('112', 'aut', '1', '2022-12-03 12:24:41.000000', 'Samsethy', '1', null, null, null, 'aut');
+INSERT INTO `inv_brands` VALUES ('113', 'laborum', '1', '2022-12-03 12:24:51.000000', 'Samsethy', '1', null, null, null, 'laborum');
+INSERT INTO `inv_brands` VALUES ('114', 'quas', '1', '2022-12-03 12:26:37.000000', 'Samsethy', '1', null, null, null, 'quas');
+INSERT INTO `inv_brands` VALUES ('115', 'omnis', '1', '2022-12-03 12:27:09.000000', 'Samsethy', '1', null, null, null, 'omnis');
+INSERT INTO `inv_brands` VALUES ('116', 'recusandae', '1', '2022-12-03 12:28:47.000000', 'Samsethy', '1', null, null, null, 'recusandae');
+INSERT INTO `inv_brands` VALUES ('117', 'minus', '1', '2022-12-03 12:31:27.000000', 'Samsethy', '1', null, null, null, 'minus');
+INSERT INTO `inv_brands` VALUES ('118', 'ratione', '1', '2022-12-03 12:38:08.000000', 'Samsethy', '1', null, null, null, 'ratione');
+INSERT INTO `inv_brands` VALUES ('119', 'ducimus', '1', '2022-12-03 12:38:43.000000', 'Samsethy', '1', null, null, null, 'ducimus');
+INSERT INTO `inv_brands` VALUES ('120', 'illum', '1', '2022-12-07 09:56:45.000000', 'Samsethy', '1', null, null, null, 'illum');
+
+-- ----------------------------
+-- Table structure for `inv_countries`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_countries`;
+CREATE TABLE `inv_countries` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `country_name` varchar(100) NOT NULL,
+  `country_id` int(10) NOT NULL,
+  `branch_id` int(10) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_countries
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_finished_goods`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_finished_goods`;
+CREATE TABLE `inv_finished_goods` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `category_id` int(10) NOT NULL,
+  `cost` decimal(10,2) NOT NULL,
+  `selling_price` decimal(10,2) NOT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `create_user` varchar(50) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_finished_goods
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_items`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_items`;
+CREATE TABLE `inv_items` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) DEFAULT NULL,
+  `code` varchar(25) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `commercial_name` varchar(50) DEFAULT NULL,
+  `description` varchar(250) DEFAULT NULL,
+  `category_id` int(10) DEFAULT NULL,
+  `group_id` int(10) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `loc_block_code` varchar(25) DEFAULT NULL,
+  `loc_shelf_code` varchar(25) DEFAULT NULL,
+  `warehouse_id` int(10) DEFAULT NULL COMMENT 'optional default warehouse',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_items
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_item_attributes`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_item_attributes`;
+CREATE TABLE `inv_item_attributes` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `item_id` int(10) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `value_type` varchar(25) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_item_attributes
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_item_varriances`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_item_varriances`;
+CREATE TABLE `inv_item_varriances` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `variance_code` varchar(25) DEFAULT NULL,
+  `name` varchar(150) NOT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `create_user` varchar(50) NOT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  `update_user` varchar(50) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_item_varriances
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_manufacturers`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_manufacturers`;
+CREATE TABLE `inv_manufacturers` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `country_id` int(10) DEFAULT NULL,
+  `create_uid` int(10) NOT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) NOT NULL,
+  `update_user` varchar(50) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_manufacturers
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_merchandising_items`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_merchandising_items`;
+CREATE TABLE `inv_merchandising_items` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `item_id` int(10) NOT NULL,
+  `variance_id` int(10) DEFAULT NULL,
+  `price` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `selling_price` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `create_user` varchar(50) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(50) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `sales_tax_rate` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `sales_tax_id` int(10) NOT NULL DEFAULT 0,
+  `purchase_tax_id` int(10) NOT NULL DEFAULT 0,
+  `purchase_tax_rate` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `purchase_sku` int(10) DEFAULT NULL,
+  `sku` int(10) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_merchandising_items
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_physical_counts`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_physical_counts`;
+CREATE TABLE `inv_physical_counts` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `count_date` date NOT NULL,
+  `item_id` int(10) NOT NULL,
+  `variance_id` int(10) NOT NULL,
+  `qty` int(10) NOT NULL,
+  `sku` int(10) NOT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  `stock_class_id` int(10) NOT NULL COMMENT 'stock_class_id, for example, 1 = Selling, 2 = Internal use, etc...',
+  `warehouse_id` int(10) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_physical_counts
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_po_items`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_po_items`;
+CREATE TABLE `inv_po_items` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `po_id` int(10) NOT NULL,
+  `item_id` int(10) NOT NULL,
+  `varriance_id` int(10) NOT NULL,
+  `item_code` varchar(10) NOT NULL,
+  `description` varchar(250) DEFAULT NULL,
+  `qty` decimal(10,2) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `line_total` decimal(10,2) NOT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_po_items
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_purchase_orders`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_purchase_orders`;
+CREATE TABLE `inv_purchase_orders` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `po_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `vendor_id` int(10) NOT NULL,
+  `status` varchar(20) NOT NULL,
+  `description` varchar(250) DEFAULT NULL,
+  `warehouse_id` int(10) NOT NULL,
+  `com_branch_id` int(10) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_purchase_orders
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_raw_materials`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_raw_materials`;
+CREATE TABLE `inv_raw_materials` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `item_id` int(10) NOT NULL,
+  `varriance_id` int(10) DEFAULT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `purchase_sku` int(10) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  `update_user` varchar(50) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `sku` int(10) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_raw_materials
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_stocking_keeping_units`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_stocking_keeping_units`;
+CREATE TABLE `inv_stocking_keeping_units` (
+  `item_id` int(10) NOT NULL,
+  `unit_id` int(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_stocking_keeping_units
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_stock_adjustments`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_stock_adjustments`;
+CREATE TABLE `inv_stock_adjustments` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `item_id` int(10) NOT NULL,
+  `variance_id` int(10) NOT NULL,
+  `adjust_qty` int(10) NOT NULL DEFAULT 0,
+  `adjust_type_id` int(10) NOT NULL,
+  `description` varchar(250) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_stock_adjustments
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_stock_classes`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_stock_classes`;
+CREATE TABLE `inv_stock_classes` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_stock_classes
+-- ----------------------------
+INSERT INTO `inv_stock_classes` VALUES ('1', '1', 'Saleable Stock', null, null, null);
+INSERT INTO `inv_stock_classes` VALUES ('2', '1', 'Internal Usage', null, null, null);
+
+-- ----------------------------
+-- Table structure for `inv_stock_trans`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_stock_trans`;
+CREATE TABLE `inv_stock_trans` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `stock_class_id` int(10) NOT NULL,
+  `item_id` int(10) NOT NULL,
+  `variance_id` int(10) NOT NULL,
+  `qty` int(10) NOT NULL,
+  `trx_type` varchar(35) NOT NULL COMMENT 'trx_type = {selling,purchase, customer return, return to vendor, transfer in, transfer out, adjustment}',
+  `trx_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `adjust_trx_id` int(10) DEFAULT NULL,
+  `po_id` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_stock_trans
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_transfers`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_transfers`;
+CREATE TABLE `inv_transfers` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `trx_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `trx_type` varchar(50) DEFAULT NULL,
+  `description` varchar(250) NOT NULL DEFAULT '0',
+  `qty` decimal(10,2) NOT NULL,
+  `from_warehouse_id` int(10) NOT NULL,
+  `to_warehouse_id` int(10) NOT NULL,
+  `auth_status` varchar(20) NOT NULL,
+  `auth_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `auth_user` varchar(50) DEFAULT NULL,
+  `auth_uid` int(10) DEFAULT NULL,
+  `transit_status` varchar(15) DEFAULT NULL COMMENT 'transit_status ={transporting,received}',
+  `received_by` int(10) DEFAULT NULL,
+  `receipt_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `receipt_notes` varchar(250) DEFAULT NULL,
+  `from_stock_class_id` int(10) DEFAULT NULL,
+  `to_stock_class_id` int(10) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `updated-at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_transfers
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_units`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_units`;
+CREATE TABLE `inv_units` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `description` varchar(100) NOT NULL,
+  `parent_unit_id` int(10) DEFAULT NULL,
+  `item_id` int(10) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_units
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_warehouses`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_warehouses`;
+CREATE TABLE `inv_warehouses` (
+  `id` int(10) NOT NULL,
+  `branch_id` int(10) NOT NULL,
+  `name` varchar(250) NOT NULL,
+  `description` varchar(250) DEFAULT NULL,
+  `lat` decimal(10,0) DEFAULT NULL,
+  `lng` decimal(10,0) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_warehouses
+-- ----------------------------
+INSERT INTO `inv_warehouses` VALUES ('1', '1', 'Defaut Warehosue', 'Default warehouse', '0', '0', null, null, null, null, null, null);
 
 -- ----------------------------
 -- Table structure for `leads`
@@ -273,12 +861,37 @@ CREATE TABLE `leads` (
   `branch_id` int(10) DEFAULT NULL,
   `email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of leads
 -- ----------------------------
 INSERT INTO `leads` VALUES ('13', 'Ms Darany', 'F', '012555653', '2', '1', 'Samsethy', null, null, '2022-12-01 09:17:15', null, '1', null);
+INSERT INTO `leads` VALUES ('14', 'KKKKK', 'F', '0125656765', '2', '1', 'Samsethy', null, null, '2022-12-03 17:37:42', null, '1', null);
+INSERT INTO `leads` VALUES ('15', 'dsfdsgdf', null, '012555666', '2', '1', 'Samsethy', null, null, '2022-12-04 13:18:46', null, '1', null);
+INSERT INTO `leads` VALUES ('16', 'DDDDDD``', 'F', '093488789', '2', '1', 'Samsethy', null, null, '2022-12-04 13:40:07', null, '1', null);
+INSERT INTO `leads` VALUES ('17', 'dsdgds', 'F', '0112225653', '2', '1', 'Samsethy', null, null, '2022-12-04 13:41:17', null, '1', null);
+INSERT INTO `leads` VALUES ('18', 'NEW ONE', 'F', '012998898', '2', '1', 'Samsethy', null, null, '2022-12-04 13:43:17', null, '1', null);
+INSERT INTO `leads` VALUES ('19', 'Bun Sobana', 'F', '0115656565', '2', '1', 'Samsethy', null, null, '2022-12-06 11:21:11', null, '1', null);
+INSERT INTO `leads` VALUES ('20', 'Borya', 'F', '0125689898', '2', '1', 'Samsethy', null, null, '2022-12-06 12:01:56', null, '1', null);
+INSERT INTO `leads` VALUES ('21', 'DDGDGDGD', 'F', '0125686455', '2', '1', 'Samsethy', null, null, '2022-12-07 17:00:49', null, '1', null);
+INSERT INTO `leads` VALUES ('22', 'Sonary', 'F', '0102256765', '2', '1', 'Samsethy', null, null, '2022-12-08 09:51:36', null, '1', null);
+INSERT INTO `leads` VALUES ('23', 'Ginara', 'F', '01023765423', '2', '1', 'Samsethy', null, null, '2022-12-08 10:02:58', null, '1', null);
+INSERT INTO `leads` VALUES ('24', 'Funny name', 'F', '011235768', '2', '1', 'Samsethy', null, null, '2022-12-08 10:04:38', null, '1', null);
+INSERT INTO `leads` VALUES ('25', 'some one', 'F', '012565656', '2', '1', 'Samsethy', null, null, '2022-12-09 10:03:50', null, '1', null);
+INSERT INTO `leads` VALUES ('26', 'KKKKK', 'F', '01025657667', '2', '1', 'Samsethy', null, null, '2022-12-10 19:10:39', null, '1', null);
+INSERT INTO `leads` VALUES ('27', 'KKK1', 'F', '01245656', '2', '1', 'Samsethy', null, null, '2022-12-10 19:13:54', null, '1', null);
+INSERT INTO `leads` VALUES ('28', 'HHH2', 'F', '011023255', '2', '1', 'Samsethy', null, null, '2022-12-10 19:23:07', null, '1', null);
+INSERT INTO `leads` VALUES ('29', 'HKKK', 'F', '01245657', '2', '1', 'Samsethy', null, null, '2022-12-10 19:25:52', null, '1', null);
+INSERT INTO `leads` VALUES ('30', 'GGG1', 'M', '0125765676', '2', '1', 'Samsethy', null, null, '2022-12-10 19:30:17', null, '1', null);
+INSERT INTO `leads` VALUES ('31', 'dfgdfgf', 'F', '01235345435', '2', '1', 'Samsethy', null, null, '2022-12-10 19:33:35', null, '1', null);
+INSERT INTO `leads` VALUES ('32', 'sdgdfhfdhgfh', 'F', '012456576', '2', '1', 'Samsethy', null, null, '2022-12-10 20:25:00', null, '1', null);
+INSERT INTO `leads` VALUES ('33', 'sfddgfdgdfgdfg', 'F', '012234353', '2', '1', 'Samsethy', null, null, '2022-12-10 20:47:36', null, '1', null);
+INSERT INTO `leads` VALUES ('34', '345345%^* BBBB', 'F', '0124565756', '2', '1', 'Samsethy', null, null, '2022-12-11 11:36:05', null, '1', null);
+INSERT INTO `leads` VALUES ('35', 'sdfdggdf', 'F', '012456546', '2', '1', 'Samsethy', null, null, '2022-12-11 11:45:38', null, '1', null);
+INSERT INTO `leads` VALUES ('36', 'sfsdgfdgd', 'F', '012565676', '2', '1', 'Samsethy', null, null, '2022-12-11 12:53:37', null, '1', null);
+INSERT INTO `leads` VALUES ('37', 'HJKJKJK', 'F', '010566767', '2', '1', 'Samsethy', null, null, '2022-12-12 01:43:48', null, '1', null);
+INSERT INTO `leads` VALUES ('38', 'vikara', 'F', '0102343322', '2', '1', 'Samsethy', null, null, '2022-12-14 12:51:17', null, '1', null);
 
 -- ----------------------------
 -- Table structure for `loc_cities`
@@ -516,12 +1129,12 @@ CREATE TABLE `medical_conditions` (
 -- ----------------------------
 -- Records of medical_conditions
 -- ----------------------------
-INSERT INTO `medical_conditions` VALUES ('1', '1', 'Allergies', 'boolean', null, null);
-INSERT INTO `medical_conditions` VALUES ('2', '1', 'Colds and Flu', 'level', '0-10', null);
-INSERT INTO `medical_conditions` VALUES ('3', '1', 'Conjunctivitis ', 'boolean', null, null);
-INSERT INTO `medical_conditions` VALUES ('4', '1', 'Diarrhea', 'level', '0-10', null);
-INSERT INTO `medical_conditions` VALUES ('5', '1', 'Headaches', 'level', '0-10', null);
-INSERT INTO `medical_conditions` VALUES ('6', '1', 'Stomach Aches', 'level', '0-10', null);
+INSERT INTO `medical_conditions` VALUES ('1', '1', 'Allergies', 'boolean', null, '0');
+INSERT INTO `medical_conditions` VALUES ('2', '1', 'Colds and Flu', 'level', '0-10', '0');
+INSERT INTO `medical_conditions` VALUES ('3', '1', 'Conjunctivitis ', 'boolean', null, '0');
+INSERT INTO `medical_conditions` VALUES ('4', '1', 'Diarrhea', 'level', '0-10', '0');
+INSERT INTO `medical_conditions` VALUES ('5', '1', 'Headaches', 'level', '0-10', '0');
+INSERT INTO `medical_conditions` VALUES ('6', '1', 'Stomach Aches', 'level', '0-10', '0');
 
 -- ----------------------------
 -- Table structure for `migrations`
@@ -569,12 +1182,35 @@ CREATE TABLE `patients` (
   `remarks` varchar(350) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `patient_type` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'patient_type = {OPD,IPD}',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=94 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of patients
 -- ----------------------------
-INSERT INTO `patients` VALUES ('67', '1', '1', '50', 'P100001', 'Samsethy', '1', '2022-12-01 10:19:48', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('67', '1', '1', '50', 'P100057', 'Samsethy', '1', '2022-12-01 10:19:48', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('71', '1', '1', '51', 'P100060', 'Samsethy', '1', '2022-12-04 09:56:46', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('72', '1', '1', '52', 'P100056', 'Samsethy', '1', '2022-12-04 13:19:03', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('73', '1', '1', '53', 'P100055', 'Samsethy', '1', '2022-12-04 13:40:21', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('74', '1', '1', '54', 'P100058', 'Samsethy', '1', '2022-12-04 13:41:53', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('75', '1', '1', '55', 'P100059', 'Samsethy', '1', '2022-12-04 14:09:38', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('76', '1', '1', '56', 'P100061', 'Samsethy', '1', '2022-12-06 12:01:00', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('77', '1', '1', '57', 'P100062', 'Samsethy', '1', '2022-12-06 12:02:15', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('78', '1', '1', '58', 'P100063', 'Samsethy', '1', '2022-12-07 17:20:24', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('79', '1', '1', '59', 'P100064', 'Samsethy', '1', '2022-12-08 09:52:09', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('80', '1', '1', '60', 'P100065', 'Samsethy', '1', '2022-12-08 10:03:45', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('81', '1', '1', '61', 'P100066', 'Samsethy', '1', '2022-12-08 11:01:25', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('82', '1', '1', '62', 'P100067', 'Samsethy', '1', '2022-12-09 10:04:17', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('83', '1', '1', '63', 'P100069', 'Samsethy', '1', '2022-12-10 19:10:53', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('84', '1', '1', '64', 'P100070', 'Samsethy', '1', '2022-12-10 19:14:08', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('85', '1', '1', '65', 'P100071', 'Samsethy', '1', '2022-12-10 19:23:16', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('86', '1', '1', '66', 'P100072', 'Samsethy', '1', '2022-12-10 19:25:59', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('87', '1', '1', '67', 'P100073', 'Samsethy', '1', '2022-12-10 19:30:24', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('88', '1', '1', '68', 'P100074', 'Samsethy', '1', '2022-12-10 20:53:28', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('89', '1', '1', '69', 'P100075', 'Samsethy', '1', '2022-12-10 20:55:18', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('90', '1', '1', '70', 'P100076', 'Samsethy', '1', '2022-12-11 11:46:44', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('91', '1', '1', '71', 'P100077', 'Samsethy', '1', '2022-12-11 12:53:57', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('92', '1', '1', '72', 'P100078', 'Samsethy', '1', '2022-12-12 01:44:14', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('93', '1', '1', '73', 'P100079', 'Samsethy', '1', '2022-12-16 14:10:24', null, null, null, null, 'OPD');
 
 -- ----------------------------
 -- Table structure for `patient_code_control`
@@ -590,7 +1226,7 @@ CREATE TABLE `patient_code_control` (
 -- ----------------------------
 -- Records of patient_code_control
 -- ----------------------------
-INSERT INTO `patient_code_control` VALUES ('1', '1', null, 'P');
+INSERT INTO `patient_code_control` VALUES ('1', '79', null, 'P');
 
 -- ----------------------------
 -- Table structure for `patient_medical_conditions`
@@ -611,13 +1247,40 @@ CREATE TABLE `patient_medical_conditions` (
   `update_user` varchar(50) DEFAULT NULL,
   `update_uid` int(10) DEFAULT NULL,
   `description` varchar(150) DEFAULT NULL,
+  `display_order` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=195 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of patient_medical_conditions
 -- ----------------------------
-INSERT INTO `patient_medical_conditions` VALUES ('40', '1', '67', '3', '0', 'Active', '2022-12-01 10:19:48.000000', '1', 'Samsethy', '2022-12-01 10:19:48.000000', null, null, null, 'Conjunctivitis');
+INSERT INTO `patient_medical_conditions` VALUES ('42', '1', '68', '3', '0', 'Active', '2022-12-03 17:39:11.000000', '1', 'Samsethy', '2022-12-03 17:39:11.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('44', '1', '69', '3', '0', 'Active', '2022-12-04 09:33:31.000000', '1', 'Samsethy', '2022-12-04 09:33:31.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('46', '1', '70', '3', '0', 'Active', '2022-12-04 09:33:42.000000', '1', 'Samsethy', '2022-12-04 09:33:42.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('146', '1', '73', '3', '1', 'Active', '2022-12-05 23:39:43.000000', '1', 'Samsethy', '2022-12-05 23:39:43.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('148', '1', '72', '3', '1', 'Active', '2022-12-05 23:42:19.000000', '1', 'Samsethy', '2022-12-05 23:42:19.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('150', '1', '67', '3', '1', 'Active', '2022-12-05 23:45:40.000000', '1', 'Samsethy', '2022-12-05 23:45:40.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('152', '1', '74', '3', '0', 'Active', '2022-12-06 09:31:46.000000', '1', 'Samsethy', '2022-12-06 09:31:46.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('154', '1', '75', '3', '0', 'Active', '2022-12-06 09:32:54.000000', '1', 'Samsethy', '2022-12-06 09:32:54.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('156', '1', '71', '3', '0', 'Active', '2022-12-06 10:20:00.000000', '1', 'Samsethy', '2022-12-06 10:20:00.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('158', '1', '76', '3', '1', 'Active', '2022-12-06 12:01:00.000000', '1', 'Samsethy', '2022-12-06 12:01:00.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('160', '1', '77', '3', '0', 'Active', '2022-12-06 12:02:15.000000', '1', 'Samsethy', '2022-12-06 12:02:15.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('162', '1', '78', '3', '1', 'Active', '2022-12-07 17:20:24.000000', '1', 'Samsethy', '2022-12-07 17:20:24.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('164', '1', '79', '3', '0', 'Active', '2022-12-08 09:52:09.000000', '1', 'Samsethy', '2022-12-08 09:52:09.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('166', '1', '80', '3', '0', 'Active', '2022-12-08 10:03:46.000000', '1', 'Samsethy', '2022-12-08 10:03:46.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('168', '1', '81', '3', '1', 'Active', '2022-12-08 11:01:25.000000', '1', 'Samsethy', '2022-12-08 11:01:25.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('170', '1', '82', '3', '1', 'Active', '2022-12-09 10:04:17.000000', '1', 'Samsethy', '2022-12-09 10:04:17.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('174', '1', '83', '3', '0', 'Active', '2022-12-10 19:12:58.000000', '1', 'Samsethy', '2022-12-10 19:12:58.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('176', '1', '84', '3', '0', 'Active', '2022-12-10 19:14:08.000000', '1', 'Samsethy', '2022-12-10 19:14:08.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('178', '1', '85', '3', '0', 'Active', '2022-12-10 19:23:16.000000', '1', 'Samsethy', '2022-12-10 19:23:16.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('180', '1', '86', '3', '0', 'Active', '2022-12-10 19:25:59.000000', '1', 'Samsethy', '2022-12-10 19:25:59.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('182', '1', '87', '3', '0', 'Active', '2022-12-10 19:30:24.000000', '1', 'Samsethy', '2022-12-10 19:30:24.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('184', '1', '88', '3', '0', 'Active', '2022-12-10 20:53:28.000000', '1', 'Samsethy', '2022-12-10 20:53:28.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('186', '1', '89', '3', '0', 'Active', '2022-12-10 20:55:18.000000', '1', 'Samsethy', '2022-12-10 20:55:18.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('188', '1', '90', '3', '0', 'Active', '2022-12-11 11:46:44.000000', '1', 'Samsethy', '2022-12-11 11:46:44.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('190', '1', '91', '3', '0', 'Active', '2022-12-11 12:53:57.000000', '1', 'Samsethy', '2022-12-11 12:53:57.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('192', '1', '92', '3', '0', 'Active', '2022-12-12 01:44:14.000000', '1', 'Samsethy', '2022-12-12 01:44:14.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('194', '1', '93', '3', '0', 'Active', '2022-12-16 14:10:24.000000', '1', 'Samsethy', '2022-12-16 14:10:24.000000', null, null, null, 'Conjunctivitis', null);
 
 -- ----------------------------
 -- Table structure for `patient_vital_signs`
@@ -638,16 +1301,326 @@ CREATE TABLE `patient_vital_signs` (
   `update_uid` int(10) DEFAULT NULL,
   `update_user` varchar(50) DEFAULT NULL,
   `branch_id` int(10) DEFAULT NULL,
+  `appt_id` int(10) DEFAULT NULL,
+  `ticket_id` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=353 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of patient_vital_signs
 -- ----------------------------
-INSERT INTO `patient_vital_signs` VALUES ('41', null, '67', '1', '35.00', 'Body temperature', '2022-12-01 10:19:48.000000', '2022-12-01 10:19:48.000000', '1', 'Samsethy', null, null, null, '1');
-INSERT INTO `patient_vital_signs` VALUES ('42', null, '67', '2', '67.00', 'Impulse rate', '2022-12-01 10:19:48.000000', '2022-12-01 10:19:48.000000', '1', 'Samsethy', null, null, null, '1');
-INSERT INTO `patient_vital_signs` VALUES ('43', null, '67', '3', '89.00', 'Respiration Rate', '2022-12-01 10:19:48.000000', '2022-12-01 10:19:48.000000', '1', 'Samsethy', null, null, null, '1');
-INSERT INTO `patient_vital_signs` VALUES ('44', null, '67', '4', '120.00', 'Blood pressure', '2022-12-01 10:19:48.000000', '2022-12-01 10:19:48.000000', '1', 'Samsethy', null, null, null, '1');
+INSERT INTO `patient_vital_signs` VALUES ('41', null, '67', '1', '35.00', 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('42', null, '67', '2', '67.00', 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('43', null, '67', '3', '89.00', 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('44', null, '67', '4', '120.00', 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('45', null, '68', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('46', null, '68', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('47', null, '68', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('48', null, '68', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('49', null, '69', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('50', null, '69', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('51', null, '69', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('52', null, '69', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('53', null, '70', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('54', null, '70', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('55', null, '70', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('56', null, '70', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('57', null, '71', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('58', null, '71', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('59', null, '71', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('60', null, '71', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('61', null, '67', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('62', null, '67', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('63', null, '67', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('64', null, '67', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('65', null, '72', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('66', null, '72', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('67', null, '72', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('68', null, '72', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('69', null, '72', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('70', null, '72', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('71', null, '72', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('72', null, '72', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('73', null, '73', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('74', null, '73', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('75', null, '73', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('76', null, '73', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('77', null, '74', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('78', null, '74', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('79', null, '74', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('80', null, '74', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('81', null, '74', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('82', null, '74', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('83', null, '74', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('84', null, '74', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('85', null, '73', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('86', null, '73', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('87', null, '73', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('88', null, '73', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('89', null, '75', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('90', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('91', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('92', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('93', null, '75', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('94', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('95', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('96', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('97', null, '75', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('98', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('99', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('100', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('101', null, '75', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('102', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('103', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('104', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('105', null, '75', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('106', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('107', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('108', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('109', null, '75', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('110', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('111', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('112', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('113', null, '75', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('114', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('115', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('116', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('117', null, '75', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('118', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('119', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('120', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('121', null, '75', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('122', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('123', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('124', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('125', null, '75', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('126', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('127', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('128', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('129', null, '75', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('130', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('131', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('132', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('133', null, '75', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('134', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('135', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('136', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('137', null, '75', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('138', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('139', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('140', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('141', null, '75', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('142', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('143', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('144', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('145', null, '75', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('146', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('147', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('148', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('149', null, '75', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('150', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('151', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('152', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('153', null, '75', '1', '50.00', 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('154', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('155', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('156', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('157', null, '75', '1', '50.00', 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('158', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('159', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('160', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('161', null, '75', '1', '50.00', 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('162', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('163', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('164', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('165', null, '73', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('166', null, '73', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('167', null, '73', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('168', null, '73', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('169', null, '74', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('170', null, '74', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('171', null, '74', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('172', null, '74', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('173', null, '71', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('174', null, '71', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('175', null, '71', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('176', null, '71', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('177', null, '67', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('178', null, '67', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('179', null, '67', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('180', null, '67', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('181', null, '67', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('182', null, '67', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('183', null, '67', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('184', null, '67', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('185', null, '67', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('186', null, '67', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('187', null, '67', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('188', null, '67', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('189', null, '67', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('190', null, '67', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('191', null, '67', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('192', null, '67', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('193', null, '67', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('194', null, '67', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('195', null, '67', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('196', null, '67', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('197', null, '67', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('198', null, '67', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('199', null, '67', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('200', null, '67', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('201', null, '67', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('202', null, '67', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('203', null, '67', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('204', null, '67', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('205', null, '67', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('206', null, '67', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('207', null, '67', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('208', null, '67', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('209', null, '67', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('210', null, '67', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('211', null, '67', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('212', null, '67', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('213', null, '67', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('214', null, '67', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('215', null, '67', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('216', null, '67', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('217', null, '67', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('218', null, '67', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('219', null, '67', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('220', null, '67', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('221', null, '67', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('222', null, '67', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('223', null, '67', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('224', null, '67', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('225', null, '67', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('226', null, '67', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('227', null, '67', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('228', null, '67', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('229', null, '72', '1', '100.00', 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('230', null, '72', '2', '200.00', 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('231', null, '72', '3', '500.00', 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('232', null, '72', '4', '201.00', 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('233', null, '67', '1', '100.00', 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('234', null, '67', '2', '202.00', 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('235', null, '67', '3', '303.00', 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('236', null, '67', '4', '505.00', 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('237', null, '72', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('238', null, '72', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('239', null, '72', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('240', null, '72', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('241', null, '75', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('242', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('243', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('244', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('245', null, '71', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('246', null, '71', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('247', null, '71', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('248', null, '71', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('249', null, '74', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('250', null, '74', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('251', null, '74', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('252', null, '74', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('253', null, '73', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('254', null, '73', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('255', null, '73', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('256', null, '73', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('257', null, '72', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('258', null, '72', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('259', null, '72', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('260', null, '72', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('261', null, '67', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('262', null, '67', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('263', null, '67', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('264', null, '67', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('265', null, '74', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('266', null, '74', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('267', null, '74', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('268', null, '74', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('269', null, '75', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('270', null, '75', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('271', null, '75', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('272', null, '75', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('273', null, '71', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('274', null, '71', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('275', null, '71', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('276', null, '71', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('277', null, '76', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('278', null, '76', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('279', null, '76', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('280', null, '76', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('281', null, '77', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('282', null, '77', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('283', null, '77', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('284', null, '77', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('285', null, '78', '1', '20.00', 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('286', null, '78', '2', '50.00', 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('287', null, '78', '3', '29.00', 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('288', null, '78', '4', '10.00', 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('289', null, '79', '1', '20.00', 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('290', null, '79', '2', '56.00', 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('291', null, '79', '3', '120.00', 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('292', null, '79', '4', '120.00', 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('293', null, '80', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('294', null, '80', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('295', null, '80', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('296', null, '80', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('297', null, '81', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('298', null, '81', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('299', null, '81', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('300', null, '81', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('301', null, '82', '1', '20.00', 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('302', null, '82', '2', '50.00', 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('303', null, '82', '3', '120.00', 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('304', null, '82', '4', '150.00', 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('305', null, '83', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('306', null, '83', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('307', null, '83', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('308', null, '83', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('309', null, '83', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('310', null, '83', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('311', null, '83', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('312', null, '83', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('313', null, '84', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('314', null, '84', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('315', null, '84', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('316', null, '84', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('317', null, '85', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('318', null, '85', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('319', null, '85', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('320', null, '85', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('321', null, '86', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('322', null, '86', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('323', null, '86', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('324', null, '86', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('325', null, '87', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('326', null, '87', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('327', null, '87', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('328', null, '87', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('329', null, '88', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('330', null, '88', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('331', null, '88', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('332', null, '88', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('333', null, '89', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('334', null, '89', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('335', null, '89', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('336', null, '89', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('337', null, '90', '1', '37.00', 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('338', null, '90', '2', '120.00', 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('339', null, '90', '3', '290.00', 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('340', null, '90', '4', '250.00', 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('341', null, '91', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('342', null, '91', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('343', null, '91', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('344', null, '91', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('345', null, '92', '1', null, 'Body temperature', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('346', null, '92', '2', null, 'Impulse rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('347', null, '92', '3', null, 'Respiration Rate', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('348', null, '92', '4', null, 'Blood pressure', '2022-12-12 02:08:42.402850', '2022-12-12 02:08:42.402850', '1', 'Samsethy', '2022-12-12 02:08:42.402850', null, null, '1', null, '53');
+INSERT INTO `patient_vital_signs` VALUES ('349', null, '93', '1', null, 'Body temperature', '2022-12-16 14:10:24.000000', '2022-12-16 14:10:24.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('350', null, '93', '2', null, 'Impulse rate', '2022-12-16 14:10:24.000000', '2022-12-16 14:10:24.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('351', null, '93', '3', null, 'Respiration Rate', '2022-12-16 14:10:24.000000', '2022-12-16 14:10:24.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('352', null, '93', '4', null, 'Blood pressure', '2022-12-16 14:10:24.000000', '2022-12-16 14:10:24.000000', '1', 'Samsethy', null, null, null, '1', null, null);
 
 -- ----------------------------
 -- Table structure for `persons`
@@ -675,13 +1648,39 @@ CREATE TABLE `persons` (
   `update_user` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `update_uid` int(11) DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
+  `cp_email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of persons
 -- ----------------------------
-INSERT INTO `persons` VALUES ('50', '1', 'Ms Darany', 'Darany', 'Ms', 'F', '2022-10-10', '14', '012555653', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-01 10:19:48', null, null, null);
+INSERT INTO `persons` VALUES ('1', '1', 'Dr. Sinora', 'Sinora', 'Sin', 'F', null, null, '012567672', null, null, null, null, null, null, '', '0', null, null, null, null, null);
+INSERT INTO `persons` VALUES ('2', '1', 'Dr. Phina', 'Phina', 'Chea', 'F', null, null, '0112225652', null, null, null, null, null, null, '', '0', null, null, null, null, null);
+INSERT INTO `persons` VALUES ('50', '1', 'Ms Darany', 'Darany', 'Ms', 'F', '2022-10-10', '14', '012555653', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-01 10:19:48', null, null, null, null);
+INSERT INTO `persons` VALUES ('51', '1', 'KKKKK', '', 'KKKKK', 'F', '2022-09-12', '14', '0125656765', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-03 17:39:11', null, null, null, null);
+INSERT INTO `persons` VALUES ('52', '1', 'new name client one', 'name client one', 'new', 'F', null, '14', '012555666', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-04 13:19:03', null, null, null, null);
+INSERT INTO `persons` VALUES ('53', '1', 'DDDDDD``', '', 'DDDDDD``', 'F', null, '14', '093488789', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-04 13:40:21', null, null, null, null);
+INSERT INTO `persons` VALUES ('54', '1', 'DSDF AAA', 'AAA', 'DSDF', 'F', null, '14', '0112225653', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-04 13:41:53', null, null, null, null);
+INSERT INTO `persons` VALUES ('55', '1', 'NEW ONE', 'ONE', 'NEW', 'F', null, '14', '012998898', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-04 14:09:38', null, null, null, null);
+INSERT INTO `persons` VALUES ('56', '1', 'Bun Sobana', 'Sobana', 'Bun', 'F', '2022-10-03', '14', '0115656565', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-06 11:24:58', null, null, null, null);
+INSERT INTO `persons` VALUES ('57', '1', 'Borya', '', 'Borya', 'F', '2022-09-05', '14', '0125689898', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-06 12:02:15', null, null, null, null);
+INSERT INTO `persons` VALUES ('58', '1', 'DDGDGDGD', '', 'DDGDGDGD', 'F', '2022-12-06', '14', '0125686455', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-07 17:20:23', null, null, null, null);
+INSERT INTO `persons` VALUES ('59', '1', 'Sonary', '', 'Sonary', 'F', '2022-08-02', '14', '0102256765', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-08 09:52:09', null, null, null, null);
+INSERT INTO `persons` VALUES ('60', '1', 'Ginara', '', 'Ginara', 'F', '2022-09-05', '14', '01023765423', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-08 10:03:45', null, null, null, null);
+INSERT INTO `persons` VALUES ('61', '1', 'Funny name', 'name', 'Funny', 'F', '2022-10-10', '14', '011235768', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-08 11:01:25', null, null, null, null);
+INSERT INTO `persons` VALUES ('62', '1', 'some one', 'one', 'some', 'F', '2022-06-06', '14', '012565656', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-09 10:04:17', null, null, null, null);
+INSERT INTO `persons` VALUES ('63', '1', 'KKKKK', '', 'KKKKK', 'F', null, '14', '01025657667', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 19:10:53', null, null, null, null);
+INSERT INTO `persons` VALUES ('64', '1', 'KKK1', '', 'KKK1', 'F', null, '14', '01245656', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 19:14:08', null, null, null, null);
+INSERT INTO `persons` VALUES ('65', '1', 'HHH2', '', 'HHH2', 'F', null, '14', '011023255', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 19:23:16', null, null, null, null);
+INSERT INTO `persons` VALUES ('66', '1', 'HKKK', '', 'HKKK', 'F', null, '14', '01245657', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 19:25:59', null, null, null, null);
+INSERT INTO `persons` VALUES ('67', '1', 'GGG1', '', 'GGG1', 'M', null, '14', '0125765676', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 19:30:24', null, null, null, null);
+INSERT INTO `persons` VALUES ('68', '1', 'sfddgfdgdfgdfg', '', 'sfddgfdgdfgdfg', 'F', null, '14', '012234353', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 20:53:28', null, null, null, null);
+INSERT INTO `persons` VALUES ('69', '1', 'sdgdfhfdhgfh', '', 'sdgdfhfdhgfh', 'F', null, '14', '012456576', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 20:55:17', null, null, null, null);
+INSERT INTO `persons` VALUES ('70', '1', 'sdfdggdf', '', 'sdfdggdf', 'F', '2022-08-08', '14', '012456546', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-11 11:46:44', null, null, null, null);
+INSERT INTO `persons` VALUES ('71', '1', 'sfsdgfdgd', '', 'sfsdgfdgd', 'F', null, '14', '012565676', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-11 12:53:57', null, null, null, null);
+INSERT INTO `persons` VALUES ('72', '1', 'HJKJKJK', '', 'HJKJKJK', 'F', null, '14', '010566767', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-12 01:44:14', null, null, null, null);
+INSERT INTO `persons` VALUES ('73', '1', 'vikara', '', 'vikara', 'M', null, '14', '0102343322', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-16 14:10:24', null, null, null, null);
 
 -- ----------------------------
 -- Table structure for `positions`
@@ -734,6 +1733,37 @@ CREATE TABLE `prescriptions` (
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for `queue_ticket_control`
+-- ----------------------------
+DROP TABLE IF EXISTS `queue_ticket_control`;
+CREATE TABLE `queue_ticket_control` (
+  `branch_id` int(10) NOT NULL,
+  `last_id` int(10) NOT NULL,
+  `department_id` int(10) DEFAULT NULL,
+  `prefix` varchar(10) DEFAULT NULL,
+  `q_date` date DEFAULT NULL,
+  `com_branch_id` int(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of queue_ticket_control
+-- ----------------------------
+INSERT INTO `queue_ticket_control` VALUES ('1', '3', '2', 'P', '2022-12-07', '1');
+INSERT INTO `queue_ticket_control` VALUES ('1', '4', '1', 'D', '2022-12-07', '1');
+INSERT INTO `queue_ticket_control` VALUES ('1', '3', '3', 'P', '2022-12-07', '1');
+INSERT INTO `queue_ticket_control` VALUES ('1', '3', '2', 'D', '2022-12-08', '1');
+INSERT INTO `queue_ticket_control` VALUES ('1', '10', '2', 'D', '2022-12-09', '1');
+INSERT INTO `queue_ticket_control` VALUES ('1', '2', '3', 'P', '2022-12-09', '1');
+INSERT INTO `queue_ticket_control` VALUES ('1', '9', '2', 'D', '2022-12-10', '1');
+INSERT INTO `queue_ticket_control` VALUES ('1', '1', '1', 'G', '2022-12-10', '1');
+INSERT INTO `queue_ticket_control` VALUES ('1', '1', '3', 'P', '2022-12-10', '1');
+INSERT INTO `queue_ticket_control` VALUES ('1', '8', '2', 'D', '2022-12-11', '1');
+INSERT INTO `queue_ticket_control` VALUES ('1', '1', '3', 'P', '2022-12-12', '1');
+INSERT INTO `queue_ticket_control` VALUES ('1', '1', '2', 'D', '2022-12-16', '1');
+INSERT INTO `queue_ticket_control` VALUES ('1', '1', '2', 'D', '2022-12-17', '1');
+INSERT INTO `queue_ticket_control` VALUES ('1', '1', '2', 'D', '2022-12-29', '1');
+
+-- ----------------------------
 -- Table structure for `reports`
 -- ----------------------------
 DROP TABLE IF EXISTS `reports`;
@@ -758,6 +1788,82 @@ INSERT INTO `reports` VALUES ('4', '100', 'Loan Collections', 'Loan Collections'
 INSERT INTO `reports` VALUES ('5', '100', 'Interest Earnings', 'Interest Earnings', 'Loan', 'start_date|end_date', '5', '0');
 INSERT INTO `reports` VALUES ('6', '100', 'Overdue report', 'Overdue report', 'Loan', 'loan_type_id', '5', '0');
 INSERT INTO `reports` VALUES ('7', '100', 'Uncollectible Loans', 'Uncollectible Loans', 'Loan', '', '1', '0');
+
+-- ----------------------------
+-- Table structure for `service_queue`
+-- ----------------------------
+DROP TABLE IF EXISTS `service_queue`;
+CREATE TABLE `service_queue` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `ticket_number` varchar(15) NOT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `create_user` varchar(50) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `client_id` int(10) DEFAULT NULL,
+  `department_id` int(11) DEFAULT NULL COMMENT 'section_id is department_id or id of the service server block. For example, banking has Customer Service block, or Tell''s counter block',
+  `client_name` varchar(50) DEFAULT NULL,
+  `q_date` date NOT NULL,
+  `consultant_id` int(10) DEFAULT NULL,
+  `branch_id` int(10) DEFAULT NULL,
+  `appt_id` int(10) DEFAULT NULL,
+  `person_id` int(10) DEFAULT NULL,
+  `status_id` int(10) DEFAULT NULL,
+  `priority` varchar(35) DEFAULT NULL,
+  `schedule_type` varchar(35) DEFAULT NULL,
+  `remarks` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of service_queue
+-- ----------------------------
+INSERT INTO `service_queue` VALUES ('50', 'D100005', '2022-12-09 11:06:10.000000', 'Samsethy', '1', '67', '2', null, '2022-12-09', '2', '1', '49', '50', '1', 'Normal', 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('51', 'D100006', '2022-12-09 11:17:03.000000', 'Samsethy', '1', '72', '2', null, '2022-12-09', null, '1', '55', '52', '1', 'Normal', 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('52', 'P100001', '2022-12-09 11:17:12.000000', 'Samsethy', '1', '75', '3', null, '2022-12-09', null, '1', '58', '55', '1', 'Normal', 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('53', 'D100007', '2022-12-09 12:20:13.000000', 'Samsethy', '1', '80', '2', null, '2022-12-09', null, '1', '67', '60', '1', 'Normal', 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('54', 'P100002', '2022-12-09 14:04:06.000000', 'Samsethy', '1', '81', '3', null, '2022-12-09', '1', '1', '68', '61', null, null, 'On Demand', 'She is beautifucl');
+INSERT INTO `service_queue` VALUES ('55', 'D100010', '2022-12-09 14:08:51.000000', 'Samsethy', '1', '77', '2', null, '2022-12-09', '1', '1', '60', '57', null, null, 'On Demand', 'Notes about the patient');
+INSERT INTO `service_queue` VALUES ('56', 'D100001', '2022-12-10 19:07:26.000000', 'Samsethy', '1', '71', '2', null, '2022-12-10', '1', '1', '53', '51', null, null, 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('57', 'D100002', '2022-12-10 19:07:45.000000', 'Samsethy', '1', '78', '2', null, '2022-12-10', null, '1', '65', '58', null, null, 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('58', 'D100003', '2022-12-10 19:13:09.000000', 'Samsethy', '1', '83', '2', null, '2022-12-10', null, '1', '70', '63', null, null, 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('59', 'D100004', '2022-12-10 19:14:08.000000', 'Samsethy', '1', '84', '2', null, '2022-12-10', '1', '1', null, '64', null, null, 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('60', 'D100005', '2022-12-10 19:23:21.000000', 'Samsethy', '1', '85', '2', null, '2022-12-10', null, '1', '72', '65', null, null, 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('61', 'D100006', '2022-12-10 19:23:29.000000', 'Samsethy', '1', '85', '2', null, '2022-12-10', null, '1', '72', '65', null, null, 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('62', 'G100001', '2022-12-10 19:23:37.000000', 'Samsethy', '1', '85', '1', null, '2022-12-10', null, '1', '72', '65', null, null, 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('63', 'D100007', '2022-12-10 19:23:43.000000', 'Samsethy', '1', '85', '2', null, '2022-12-10', null, '1', '72', '65', null, null, 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('64', 'D100008', '2022-12-10 19:26:04.000000', 'Samsethy', '1', '86', '2', null, '2022-12-10', null, '1', '73', '66', null, null, 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('65', 'P100001', '2022-12-10 19:30:28.000000', 'Samsethy', '1', '87', '3', null, '2022-12-10', null, '1', '74', '67', null, null, 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('66', 'D100009', '2022-12-10 20:55:24.000000', 'Samsethy', '1', '88', '2', null, '2022-12-10', null, null, '89', '68', null, null, 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('67', 'D100001', '2022-12-11 11:47:21.000000', 'Samsethy', '1', '90', '2', null, '2022-12-11', '2', null, '91', '70', null, null, 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('68', 'D100002', '2022-12-11 12:24:33.000000', 'Samsethy', '1', '89', '2', null, '2022-12-11', null, null, '87', '69', null, null, 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('69', 'D100003', '2022-12-11 12:33:06.000000', 'Samsethy', '1', '89', '2', null, '2022-12-11', null, null, '83', '69', null, null, 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('70', 'D100004', '2022-12-11 12:33:33.000000', 'Samsethy', '1', '89', '2', null, '2022-12-11', null, null, '86', '69', null, null, 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('71', 'D100005', '2022-12-11 19:50:45.000000', 'Samsethy', '1', '91', '2', null, '2022-12-11', '1', '1', '92', '71', null, null, 'On Demand', 'asdsfsdgdgdfg');
+INSERT INTO `service_queue` VALUES ('72', 'D100006', '2022-12-11 19:51:49.000000', 'Samsethy', '1', '91', '2', null, '2022-12-11', '2', '1', '92', '71', null, null, 'On Demand', 'asdsfsdgdgdfg');
+INSERT INTO `service_queue` VALUES ('73', 'D100007', '2022-12-11 19:52:01.000000', 'Samsethy', '1', '91', '2', null, '2022-12-11', '2', '1', '92', '71', null, null, 'On Demand', 'asdsfsdgdgdfg');
+INSERT INTO `service_queue` VALUES ('74', 'D100008', '2022-12-11 19:52:33.000000', 'Samsethy', '1', '91', '2', null, '2022-12-11', '2', '1', '92', '71', null, null, 'On Demand', 'asdsfsdgdgdfg');
+INSERT INTO `service_queue` VALUES ('75', 'P100001', '2022-12-12 01:44:14.000000', 'Samsethy', '1', '92', '3', null, '2022-12-12', '1', '1', null, '72', null, null, 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('76', 'D100001', '2022-12-16 14:10:32.000000', 'Samsethy', '1', '93', '2', null, '2022-12-16', null, '1', '95', '73', null, null, 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('77', 'D100001', '2022-12-17 09:37:50.000000', 'Samsethy', '1', '82', '2', null, '2022-12-17', '1', '1', '94', '62', null, null, 'On Demand', 'vdfgdfgdfgfh');
+INSERT INTO `service_queue` VALUES ('78', 'D100001', '2022-12-29 23:28:18.000000', 'Samsethy', '1', '74', '2', null, '2022-12-29', '1', '1', '57', '54', null, null, 'On Demand', null);
+
+-- ----------------------------
+-- Table structure for `ticket_statuses`
+-- ----------------------------
+DROP TABLE IF EXISTS `ticket_statuses`;
+CREATE TABLE `ticket_statuses` (
+  `id` int(10) NOT NULL,
+  `branch_id` int(10) NOT NULL,
+  `name` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of ticket_statuses
+-- ----------------------------
+INSERT INTO `ticket_statuses` VALUES ('-1', '1', 'Canceled');
+INSERT INTO `ticket_statuses` VALUES ('1', '1', 'Waiting');
+INSERT INTO `ticket_statuses` VALUES ('4', '1', 'Serving');
+INSERT INTO `ticket_statuses` VALUES ('5', '1', 'Closed');
 
 -- ----------------------------
 -- Table structure for `um_applications`
@@ -940,12 +2046,12 @@ CREATE TABLE `um_sessions` (
   `status` varchar(10) DEFAULT NULL COMMENT 'status ={online,offline}',
   `lang` varchar(50) DEFAULT 'en',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1488 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1624 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of um_sessions
 -- ----------------------------
-INSERT INTO `um_sessions` VALUES ('1487', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2022-12-01 11:42:45', '2022-12-01 11:42:45', 'ru7yjV67W2D5V1Rs9iN0iyj6rFx8F742Ai6RQd', 'oc95X2AdQerGp4vcSnZSB8jTJR9Vl8BvY1w6fv', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjY5ODY5NzY1LCJuYmYiOjE2Njk4Njk3NjUsImV4cCI6MTY2OTg3MzM2NSwibGFuZyI6ImVuIiwidXNlcl9jbGFzcyI6ImFkbWluIiwib2ZmaWNpYWxfaWQiOm51bGwsImlkIjoxLCJsb2dpbl9uYW1lIjoiYWRtaW5AZ21haWwuY29tIiwiYnJhbmNoX2lkIjoxLCJmdWxsX25hbWUiOiJTYW1zZXRoeSIsInN0YXR1cyI6ImFjdGl2ZSIsImlzX2xvY2tlZCI6MCwiZW1haWwiOm51bGwsInBob25lX251bWJlciI6IjAxMjU3ODkwIiwib3RwX2NvZGUiOm51bGx9.O0B3UyeRmMzc4UPOjhiXKzl9RhHFCpixPtT2A3ptMT0', null, 'en');
+INSERT INTO `um_sessions` VALUES ('1623', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2022-12-30 23:51:20', '2022-12-30 23:51:20', 'UCtz89WIb1h065hTuSmsaQzpNB4QeCBNK9MS2k', 't7gLJRn5xOr7joK42qpg8NigEa14qbJCO4Yzr5', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjcyNDE5MDgwLCJuYmYiOjE2NzI0MTkwODAsImV4cCI6MTY3MjQyMjY4MCwibGFuZyI6ImVuIiwidXNlcl9jbGFzcyI6ImFkbWluIiwib2ZmaWNpYWxfaWQiOm51bGwsImlkIjoxLCJsb2dpbl9uYW1lIjoiYWRtaW5AZ21haWwuY29tIiwiYnJhbmNoX2lkIjoxLCJmdWxsX25hbWUiOiJTYW1zZXRoeSIsInN0YXR1cyI6ImFjdGl2ZSIsImlzX2xvY2tlZCI6MCwiZW1haWwiOm51bGwsInBob25lX251bWJlciI6IjAxMjU3ODkwIiwib3RwX2NvZGUiOm51bGx9.ZT_Ma-esDO3-JkgZwtHsygSEHr_ukSuTs8wJ7c4wP6I', null, 'en');
 
 -- ----------------------------
 -- Table structure for `um_users`
@@ -980,7 +2086,7 @@ CREATE TABLE `um_users` (
 -- ----------------------------
 -- Records of um_users
 -- ----------------------------
-INSERT INTO `um_users` VALUES ('1', 'admin@gmail.com', '01257890', null, '$2y$10$9s0nFmOKK6xEc8c63nT7KeQSGb4UoUio39dTBoQKrArZ3TlRh7LYK', '2022-11-27 13:27:16.483053', 'DXM20FKAEFC711EH2E7C9801A7BZD311', null, '1', 'Admin', '0', 'active', 'Samsethy', null, 'admin', 'admin@gmail.com', '3', '2021-09-13 04:00:26', '0001', null, null, 'en');
+INSERT INTO `um_users` VALUES ('1', 'admin@gmail.com', '01257890', null, '$2y$10$9s0nFmOKK6xEc8c63nT7KeQSGb4UoUio39dTBoQKrArZ3TlRh7LYK', '2022-12-21 07:20:20.123416', 'DXM20FKAEFC711EH2E7C9801A7BZD311', null, '1', 'Admin', '0', 'active', 'Samsethy', null, 'admin', 'admin@gmail.com', '3', '2021-09-13 04:00:26', '0001', null, null, 'en');
 
 -- ----------------------------
 -- Table structure for `um_user_roles`
@@ -1080,97 +2186,118 @@ CREATE TABLE `websockets_statistics_entries` (
 -- ----------------------------
 -- Function structure for `formatDate`
 -- ----------------------------
+
 DROP FUNCTION IF EXISTS `formatDate`;
-DELIMITER ;;
-CREATE   FUNCTION `formatDate`(mDate Date) RETURNS varchar(50) CHARSET utf8
+CREATE  FUNCTION `formatDate`(mDate Date) RETURNS varchar(50) CHARSET utf8
 BEGIN
   return DATE_FORMAT(mDate,'%d %b %Y');
-END
-;;
-DELIMITER ;
-
+END;
+ 
 -- ----------------------------
 -- Function structure for `formatDateTime`
 -- ----------------------------
+
 DROP FUNCTION IF EXISTS `formatDateTime`;
-DELIMITER ;;
-CREATE   FUNCTION `formatDateTime`(mDate Date) RETURNS varchar(50) CHARSET utf8mb4
+CREATE  FUNCTION `formatDateTime`(mDate Date) RETURNS varchar(50) CHARSET utf8mb4
 BEGIN
   return DATE_FORMAT(mDate,'%d %b %Y %r');
-END
-;;
-DELIMITER ;
+END;
+
 
 -- ----------------------------
 -- Function structure for `formatTime`
 -- ----------------------------
+
 DROP FUNCTION IF EXISTS `formatTime`;
-DELIMITER ;;
-CREATE   FUNCTION `formatTime`(mDate Date) RETURNS varchar(30) CHARSET utf8
+CREATE  FUNCTION `formatTime`(mDate Date) RETURNS varchar(30) CHARSET utf8
 BEGIN
   return DATE_FORMAT(mDate,'%r');
-END
-;;
-DELIMITER ;
+END;
+
 
 -- ----------------------------
 -- Function structure for `getApptStatus`
 -- ----------------------------
+
 DROP FUNCTION IF EXISTS `getApptStatus`;
-DELIMITER ;;
-CREATE   FUNCTION `getApptStatus`(status_id INT) RETURNS varchar(20) CHARSET utf8mb4
+CREATE  FUNCTION `getApptStatus`(branchid INT,statusid INT) RETURNS varchar(20) CHARSET utf8mb4
 BEGIN
    declare ss varchar(20); 
-   if(status_id=0) then
-     set ss= 'Canceled';
-   elseif (status_id =1) then
-    set ss = 'Pending';
-   elseif (status_id =2) then
-    set ss='Served';
-   else
-     set ss='Pending';
-   end if;
-  return ss;
-END
-;;
-DELIMITER ;
+   SET ss = (select `name` from appt_statuses where id =statusid AND branch_id =branchid LIMIT 1);  
+   return IFNULL(ss,'Pending');
+END;
+
+
+-- ----------------------------
+-- Function structure for `getConsultanName`
+-- ----------------------------
+
+DROP FUNCTION IF EXISTS `getConsultanName`;
+CREATE  FUNCTION `getConsultanName`(consultantid INT) RETURNS varchar(50) CHARSET utf8mb4
+BEGIN
+ declare cname varchar(50);
+ set cname = (select `name` from persons as p INNER JOIN employees as e ON e.person_id = p.id WHERE p.id = consultantid LIMIT 1);
+ return cname; 
+end;
+
 
 -- ----------------------------
 -- Function structure for `getPatientCode`
 -- ----------------------------
+
 DROP FUNCTION IF EXISTS `getPatientCode`;
-DELIMITER ;;
-CREATE   FUNCTION `getPatientCode`(branchid INT,clientid INT) RETURNS varchar(30) CHARSET utf8mb4
+CREATE  FUNCTION `getPatientCode`(branchid INT,clientid INT) RETURNS varchar(30) CHARSET utf8mb4
 begin
   DECLARE cc varchar(30); 
   set cc = (select `code` from patients as p where p.branch_id =branchid AND p.id =clientid LIMIT 1);
   return cc;
-end
-;;
-DELIMITER ;
+end;
+
+
+-- ----------------------------
+-- Function structure for `getTicketNumber`
+-- ----------------------------
+
+DROP FUNCTION IF EXISTS `getTicketNumber`;
+CREATE  FUNCTION `getTicketNumber`(branchid INT,apptid INT) RETURNS varchar(30) CHARSET utf8mb4
+BEGIN
+ declare ticket varchar(30); 
+ SET ticket = (SELECT ticket_number FROM service_queue where branch_id=branchid and appt_id = apptid LIMIT 1);
+ RETURN ticket; 
+END;
+
+
+-- ----------------------------
+-- Function structure for `getTicketStatus`
+-- ----------------------------
+
+DROP FUNCTION IF EXISTS `getTicketStatus`;
+CREATE  FUNCTION `getTicketStatus`(branchid INT,ticketid INT) RETURNS varchar(30) CHARSET utf8mb4
+BEGIN
+  declare tstatus varchar(30);
+  SET tstatus = (select sts.`name` from ticket_statuses AS sts INNER JOIN service_queue as s ON s.status_id = sts.id where s.id =ticketid LIMIT 1);
+  return tstatus;
+END;
+
 
 -- ----------------------------
 -- Function structure for `hasPosition`
 -- ----------------------------
 DROP FUNCTION IF EXISTS `hasPosition`;
-DELIMITER ;;
-CREATE   FUNCTION `hasPosition`(empid INT,posid INT) RETURNS int(11)
+CREATE  FUNCTION `hasPosition`(empid INT,posid INT) RETURNS int(11)
 BEGIN
   SET @d= (EXISTS(select id from employee_positions as e WHERE e.emp_id = empid AND e.position_id = posid LIMIT 1));
   RETURN @d;
-END
-;;
-DELIMITER ;
+END;
+ 
 
 -- ----------------------------
 -- Function structure for `hasPositions`
 -- ----------------------------
+
 DROP FUNCTION IF EXISTS `hasPositions`;
-DELIMITER ;;
-CREATE   FUNCTION `hasPositions`(empid INT,posid INT) RETURNS int(11)
+CREATE  FUNCTION `hasPositions`(empid INT,posid INT) RETURNS int(11)
 BEGIN
   SET @d= (EXISTS(select id from employee_positions as e WHERE e.emp_id = empid AND e.position_id = posid LIMIT 1));
   RETURN @d;
-END
-;;
-DELIMITER ;
+END;

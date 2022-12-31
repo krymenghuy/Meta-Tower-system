@@ -7,7 +7,10 @@
   --vs-btn-danger: #ff4036;
   --vs-btn-export: #ffd7a5;
 }
-
+.btn{
+  padding-top:2px !important;
+  padding-bottom:2px !important;
+}
 .width-search {
   max-width: 300px;
 }

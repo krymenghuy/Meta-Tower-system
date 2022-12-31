@@ -410,7 +410,7 @@
           <div class="kt-aside__brand kt-grid__item" id="kt_aside_brand">
             <div class="kt-aside__brand-logo">
               <!-- <span id="_dms_brand_label">{{session('login_name')}}</span> -->
-              <img src="{{asset('assets/images/icons/sh-logo.jpg')}}" alt="" class="img-logo"/>
+              <img src="{{asset('assets/images/icons/logo.jpg')}}" alt="" class="img-logo"/>
             </div>
 
             <div class="kt-aside__brand-tools">

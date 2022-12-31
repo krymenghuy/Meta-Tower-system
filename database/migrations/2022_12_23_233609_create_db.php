@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateInitalData extends Migration
+class CreateDb extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,8 @@ class CreateInitalData extends Migration
      */
     public function up()
     {
-        DB::unprepared(file_get_contents(getCWD()."/db/mclinic_init_data.sql"));
+        DB::unprepared(file_get_contents(getCWD()."/db/mclinic_db.sql"));
+        //DB::unprepared(file_get_contents(getCWD()."/db1/accounting_init_data.sql"));
     }
 
     /**
@@ -23,6 +24,7 @@ class CreateInitalData extends Migration
      */
     public function down()
     {
-       return; // Schema::dropIfExists('inital_data');
+        return;
+        //Schema::dropIfExists('db');
     }
 }
