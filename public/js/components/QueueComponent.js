@@ -104,7 +104,10 @@ let TicketDetails = new function () {
         let ticket_id = ul.data('tid');
         let i = 0, html = '';
         (items || []).map((item) => {
-            html = [html, `<li id="${item.id}" data-tid="${ticket_id}"><a href="#" data-apptid="${ticket_id}" data-id="${item.id}" class="appt-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`].join('');
+            html = [html, `<li id="${item.id}" data-tid="${ticket_id}">
+            <a href="#" data-apptid="${ticket_id}" data-id="${item.id}" class="appt-remove-complaint">
+            <i class="fa fa-times" style="color:red"></i>
+            </a>&nbsp;${item.name}</li>`].join('');
             i++;
         });
         if (i === 0) html = `<li data-apptid="0"><span class="text-muted">(No chief complaints)</span></li>`;
@@ -132,56 +135,55 @@ let TicketDetails = new function () {
                         <div class="d-flex flex-column" style="width:100%">
                             <div class="d-flex flex-row">
                                 <div class="d-flex" style="width:100%">`,
-                                    `<div style="width:35%">
-                                        <div class="d-flex flex-row">            
-                                            <div class="thumbnail-wrapper">
+                                    `<div style="width:30%">
+                                        <div class="row gx-1 d-flex flex-row">          
+                                            <div class="col-4 thumbnail-wrapper">
                                                 <img src="${mThis.icon_url()}/client-girl.png" class="profile-thumbnail"/>
                                             </div>
-                                            <div class="client-personal-data">
-                                                <span class="detail-header-text trans-text" data-langprop="patient.Client Information">Client Information</span>
+                                            <div class="col-7 client-personal-data">
+                                                <span class="row detail-header-text trans-text" data-langprop="patient.Client Information">Client Information</span>
                                                 <div class="divider"></div>
-                                                <div class="detail-item">
-                                                    <span class="detail-item-label" >Patient ID</span>
-                                                    <span class="detail-item-value" data-field="patient_code">${d.client_code}</span>
+                                                <div class="row detail-item">
+                                                    <span class="detail-item-label col-6">Patient ID</span>
+                                                    <span class="detail-item-value col-6" data-field="patient_code">${d.client_code}</span>
                                                 </div>
-                                                <div class="detail-item">
-                                                    <span class="detail-item-label">Name</span>
-                                                    <span class="detail-item-value" data-field="name">${d.client_name}</span>
+                                                <div class="row detail-item">
+                                                    <span class="detail-item-label col-6">Name</span>
+                                                    <span class="detail-item-value col-6" data-field="name">${d.client_name}</span>
                                                 </div>
-                                                <div class="detail-item">
-                                                    <span class="detail-item-label">Gender</span>
-                                                    <span class="detail-item-value" data-field="sex">${d.client_sex}</span>
+                                                <div class="row detail-item">
+                                                    <span class="detail-item-label col-6">Gender</span>
+                                                    <span class="detail-item-value col-6" data-field="sex">${d.client_sex}</span>
                                                 </div>
-                                                <div class="detail-item">
-                                                    <span class="detail-item-label">Phone</span>
-                                                    <span class="detail-item-value" data-field="phone_number">${d.client_phone_number}</span>
+                                                <div class="row detail-item">
+                                                    <span class="detail-item-label col-6">Phone</span>
+                                                    <span class="detail-item-value col-6" data-field="phone_number">${d.client_phone_number}</span>
                                                 </div>
-                                                <div class="detail-item">
-                                                    <span class="detail-item-label">Email</span>
-                                                    <span class="detail-item-value" data-field="email">${email}</span>
+                                                <div class="row detail-item">
+                                                    <span class="detail-item-label col-6">Email</span>
+                                                    <span class="detail-item-value col-6" data-field="email">${email}</span>
                                                 </div>    
-                                                <div class="detail-item">
-                                                    <span class="detail-item-label">Membership</span>
-                                                    <span class="detail-item-value" data-field="membership_card">${d.membership_card}</span>
+                                                <div class="row detail-item">
+                                                    <span class="detail-item-label col-6">Membership</span>
+                                                    <span class="detail-item-value col-6" data-field="membership_card">${d.membership_card}</span>
                                                 </div>    
                                             </div> 
                                         </div>                                                      
                                     </div>`,
-                                    `<div class="client-vital-signs" style="width:33%;">
-                                        <span class="detail-header-text">Vital Signs</span>
-                                        <div class="divider"></div>
-                                        <div>${mThis.displayVitalSignItems(d.vital_signs)}</div>
+                                    `<div class="row client-vital-signs" style="width:33%;">
+                                        <span class="col-12 detail-header-text">Vital Signs</span>
+                                        <div class="col-12">${mThis.displayVitalSignItems(d.vital_signs)}</div>
                                     </div>`,
-                                    `<div style="width:33%">
-                                        <span class="detail-header-text">Consultant/Doctor</span>
-                                        <span class="text-normal" style="display:block;margin-left:15px">${d.consultant_name}</span>
-                                        <div class="d-flex flex-row">
+                                    `<div style="row width:33%">
+                                        <span class="col-12 detail-header-text">Consultant/Doctor</span>
+                                        <span class="text-normal col-12" style="display:block;margin-left:15px">${d.consultant_name}</span>
+                                        <div class="col-12 d-flex flex-row">
                                             <span class="detail-header-text trans-text" data-langprop="appointment.Chief Compalaints">Chief Complaints</span>&nbsp;
                                             <a href="#" data-ulid="qul-complaint-list-${ticket_id}" data-tid="${ticket_id}" class="qul-add-complaint" style="margin-top:5px;">
                                                 <i class="fa fa-plus-circle" style="color:#14B1D1;font-size:1.5em"></i>
                                             </a>
                                         </div>
-                                        <div class="apl-cc-wrapper">
+                                        <div class="col-12 apl-cc-wrapper">
                                             <ul id ="qul-complaint-list-${ticket_id}" data-tid="${ticket_id}" class="apl-complaint-list" style="list-style:none">
                                             ${mThis.displayCCList(['qul-complaint-list-', ticket_id].join(''), d.chief_complaints)}  
                                             </ul>
@@ -225,7 +227,11 @@ let TicketDetails = new function () {
     this.displayVitalSignItems = (items = []) => {
         let html = null;
         (items || []).map((v) => {
-            html = [html, `<div class="detail-item"> <span class="detail-item-label" style="width:120px">${v.name}</span> <span class="detail-item-value" data-id="${v.id}" data-field="${v.name}">${v.vital_sign_value}</span></div>`].join('');
+            html = [html,
+                `<div class="row detail-item">
+                    <span class="detail-item-label col-6" style="width:120px">${v.name}</span>
+                    <span class="detail-item-value col-6" data-id="${v.id}" data-field="${v.name}">${v.vital_sign_value}</span>
+                </div>`].join('');
         });
         return html ? html : '<span class="detail-item-empty">No vital signs</span>';
     }
