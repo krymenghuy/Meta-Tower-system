@@ -792,18 +792,24 @@ function readFileContent($fileName=null)
      function getPropValue($prop_name=null,$part3=null,$part4=null){
         //if(!$prop_name) return $part3? $part3: ($part4? $part4:null);
         if (!$prop_name) return null;
+        $prop_found = false;
         if ($part3){
             $sts = explode('=',$part3);
             $varname = trim($sts[0]?$sts[0]:'');
-            if ($varname ===$prop_name) return isset($sts[1])?$sts[1]:null;
+            if ($varname ===$prop_name){
+                $prop_found = true;
+                return isset($sts[1])?$sts[1]:null;
+            }
             //else if ($varname != $prop_name) return $part3;  
         }
-        else if ($part4) {
+
+        if (!$prop_found  && $part4) {
             $sts = explode('=',$part4);
             $varname = trim($sts[0]?$sts[0]:'');
             if ($varname ===$prop_name) return isset($sts[1])?$sts[1]:null;
             //else if ($varname != $prop_name) return $part4;
-        } else return null;
+        } 
+        return null;
         // if ($sts[0]===$prop_name) return isset($sts[1])?$sts[1]:null;
         // $sts = explode('=',$part4);
         // if ($sts[0]===$prop_name) return isset($sts[1])?$sts[1]:null;
@@ -859,6 +865,7 @@ function readFileContent($fileName=null)
     else if ($part1==1 || $part1===true){
 
                 if ($part2 === 'string' || !$part2){
+                    //$my_text_prop = $part4; //here
                     if (!$val) return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name cannot be empty"),'default_value'=>$def_val];  
                     $interval = getInterval($part3);
                     if ($interval->min ===-1 && $interval->max ===-1){

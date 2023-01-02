@@ -293,9 +293,9 @@ Route::post('test/test-api',function(){
     Route::post('pending-requests', [NotificationController::class, 'getPendingRequests']);
     Route::post('notifications', [NotificationController::class, 'getNotificationListByUser']);
     Route::post('person/save', [PersonController::class, 'savePersonInfo']);
-    Route::post('person/find', [PersonController::class, 'findPersons']);
-    Route::post('person/profile', [PersonController::class, 'getPersonProfile']);
-    Route::post('person/info-by-nid', [PersonController::class, 'getPersonInfoByNID']);
+    //Route::post('person/find', [PersonController::class, 'findPersons']);
+    Route::post('person/info', [PersonController::class, 'getPersonInfo']);
+    //Route::post('person/info-by-nid', [PersonController::class, 'getPersonInfoByNID']);
      
 //begin::DashboardController
     Route::post('dashboard/board-data', [DashboardController::class, 'getDashboardData']);

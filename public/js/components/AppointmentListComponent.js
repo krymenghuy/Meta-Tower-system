@@ -84,12 +84,15 @@
             let btn = tr.find('a.btn-appt-status');
             btn.text(d.status);
             btn.data('statusid',d.status_id);
+            tr.data('statusid',d.status_id);
+
             let btnQ = detail_tr.find('.btn-add-queue');
-            let btnEdit = tr.find('a.btn_appt_modify').hide();
+            //let btnEdit = tr.find('a.btn_appt_modify').hide();
             // status_id => -1= canceled , 1 = Pending, 2= Registered, 3 = Queued 4 = Served
-            if (d.status_id >2) 
-               btnEdit.hide();
-            else btnEdit.show();
+
+            // if (d.status_id >2) 
+            //    btnEdit.hide();
+            // else btnEdit.show();
 
             if(d.status_id >=3 ) 
                {
@@ -220,13 +223,16 @@
             mThis.btnNewAppointment.on('click', function (e) {
                 e.preventDefault();
 
-                let op = {'identity_value':0};
-                AppointmentDialog.show(op,(e)=>{
+                let op = {'id':0,
+                 'onClose':(e)=>{
                     if(e){
                         cv_interact.info('New Appointment has been created',null,true);
                         mThis.displayAppointmentList();
-                    }
-                });
+                      }
+                   }
+                };
+
+                AppointmentDialog.show(op);
             });
             
             mThis.tblAppointments.on('click','a.btn_appt_action',function(e){
@@ -290,15 +296,16 @@
                 let appt_id = $(this).data('apptid'); 
                 let op = {
                     "id":0,
-                     "default_data":mThis.getClientInfo(tr)
-                };
-                PatientDialog.show(op,(res)=>{
-                    if(res){
-                        let d = res.status_info;
-                        mThis.setAppointmentStatus(tr, {'status':d.status,'status_id':d.status_id});
-                        mThis.displayAppointmentDetails(tr,appt_id);
+                     "default_data":mThis.getClientInfo(tr),
+                     "onClose":(res)=>{
+                        if(res){
+                            let d = res.status_info;
+                            mThis.setAppointmentStatus(tr, {'status':d.status,'status_id':d.status_id});
+                            mThis.displayAppointmentDetails(tr,appt_id);
+                        }
                     }
-                });
+                };
+                PatientDialog.show(op);
             });
             
             //remove Chief complaint item, on Appoinment list expanaded view
@@ -337,13 +344,31 @@
             mThis.tblAppointments.on('click','a.btn_appt_modify',function(e){
                 e.preventDefault();
                 let lnk = $(this);
-                let op = {'identity_value':lnk.data('id')};
-                AppointmentDialog.show(op,(e)=>{
-                    if(e){
-                        cv_interact.info('Appointment details has been saved',null,true);
-                        mThis.displayAppointmentList();
-                    }
-                });
+                let tr = lnk.closest('tr');
+                let appt_id = tr.data('id');
+                let op = {}; //{'identity_value':appt_id}; //appt_id for editing Appointment
+                op.id = appt_id;
+                op.onClose = (e)=>{
+                   if(e){
+                       mThis.displayAppointmentDetails(tr.next(),appt_id);
+                   }
+                };
+
+                let status_id = tr.data('statusid');
+                
+                //Edit only Personal demogrpahic (name,sex, phone, email) when status_id > 2 (Quued)
+                if(status_id > 2){
+                    //In case of Editing Person Info only => also use @appt_id (instad of "id") to edit person info
+                    /***
+                     @op = {'appt_id':##} => api/person/save() will use appt_id to retrieve @person_id in order to update person profile 
+                    **/ 
+                    op.appt_id = appt_id;
+                    PersonDialog.show(op);
+
+                }else if(status_id<=2){
+                    AppointmentDialog.show(op);
+                } else console.error(`Error: Editing Appointment or personal profile requires status_id to be known exactly`);
+       
             });
 
             this.cfg = new ExpandableRowConfig('_apl_tblAppts',{
@@ -520,7 +545,7 @@
                      {
                         title: mThis.trans_title('Status'),
                         data:(data,a,b)=>{
-                            return [`<a href="#" style="display:block;text-align:center;width:85px;padding:5px;" data-statusid="${data.status_id}" class="btn-appt-status border rounded-pill ${mThis.getApptStatusClass(data.status_id)}">`,data.status,`</a>`].join('');
+                            return [`<a href="#" style="display:block;text-align:center;min-width:75px;padding:5px;" data-statusid="${data.status_id}" class="btn-appt-status border rounded-pill ${mThis.getApptStatusClass(data.status_id)}">`,data.status,`</a>`].join('');
                         }
                     },
                      {
@@ -529,7 +554,7 @@
                             let status_class = null; //mThis.getStatusClass(data.status_id);
                             return [`<div class="form-inline">`,
                             `<a href="javascript:void(0)" class="btn_appt_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
-                            `<a style="display:${data.status_id>2? 'none':'block'}" href="javascript:void(0)" class="btn_appt_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
+                            `<a href="javascript:void(0)" class="btn_appt_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
                             `<a href="javascript:void(0);" data-id="${data.id}" class="btn_appt_delete"><i class="fa fa-trash" style="color:red"></i></a>`,
                             `&nbsp;<a href="#" data-id="${data.id}" class="btn_appt_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
                             `</div>`
@@ -581,10 +606,11 @@
                      ,"createdRow": function(row, data, dataIndex)
                        {
                             let tr = $(row);
-                            tr.data('id',data.id);
+                            tr.data('id',data.id); //appt_id
                             tr.data('statusid',data.status_id);
                             tr.data('leadid',data.lead_id);
-                            tr.data('personid',data.person_id);
+                            tr.data('clientid',data.client_id);
+                            //tr.data('personid',data.person_id);
                        }
  
                     //    ,"cellCreated":function(td,data,colIndex) {
@@ -751,15 +777,16 @@ let AppointmentDialog = new function(){
     this.formUntil = new FormUntil({
         "itemName":"Appointment",
         "formId":'_apl_dlgAppt',
-        "titleId":"_apl_dlgAppt_title",
-        "errorId":"_apl_dlgAppt_error",
-        "saveButtonId":"_apl_dlgAppt_btnSave",
+        //"titleId":"_apl_dlgAppt_title",
+        //"errorId":"_apl_dlgAppt_error",
+        //"saveButtonId":"_apl_dlgAppt_btnSave",
         "instance":this,
         "apiSave":`${main_view.base_url}/api/appointment/save`,
         "apiGet":`${main_view.base_url}/api/appointment/details`,
-        "identityProp":"id",
+        //"identityProp":"id",
         "modifyTitle":"Modify Appointment",
         "createTitle":"New Appointment",
+        "identityProps":['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props":['lead_id','client_id'],
         "sub_prop":"chief_complaint_items",
@@ -1030,10 +1057,10 @@ let AppointmentDialog = new function(){
     }
 
     //option = {id,default_nationality}
-    this.show = (option,onClose=null)=>{
+    this.show = (option)=>{
         option = option?option:{};   
         mThis.option = option;
-        mThis.onClose = onClose;
+        mThis.onClose = option.onClose;
 
         mThis.prepareOptions(()=>{
 
@@ -1157,7 +1184,7 @@ let AppointmentDialog = new function(){
      }
   }
 //end:: ServiceQueueDialog
-
+ 
 $(document).ready(()=>{
     AppointmentListComponent.init();
 });
