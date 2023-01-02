@@ -18,7 +18,9 @@
 }
 
 .modal-fullscreen {
-  min-width: 95vw;
+  min-width: 99vw;
+  padding:5px;
+  margin:0;
 }
 
 .width_at_input_discount {
