@@ -50,7 +50,7 @@ let VSUtil = new function()
 			   if(div) {
 					div.style.display='none';	
 					let span = div.querySelector('.dialog-error-text');
-					span.textContent = null;
+					if(span) span.textContent = null;
 			   }
 		    }
 	  }

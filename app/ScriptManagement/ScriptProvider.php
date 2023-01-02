@@ -95,6 +95,7 @@ namespace App\ScriptManagement;
                     'attr'=>'defer',
                     'output_file'=>'/js/components/output/lms.components.js',
                     'files'=>[
+                        '/js/components/PersonDialog.js',
                         '/js/components/AppointmentListComponent.js',
                         '/js/components/QueueComponent.js',
                         '/js/components/PatientFinderComponent.js',

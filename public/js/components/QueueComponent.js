@@ -48,10 +48,9 @@ let TicketDetails = new function () {
                         <a style="padding:5px" type="button" class="btn-ticket-tab qul-btn-consult trans-text" data-langprop="buttons.Consult Now">Consult Now</a>
                     </div>
                     
-                    <div data-tid="${d.ticket_id}" class="d-flex qul-workspace" style="width:100%;display:block;">
+                    <div data-tid="${d.ticket_id}" class="qul-workspace pt-3" style="width:100%;display:block;">
                         
                     </div>
-
                   </div>`;
 
         div_wrapper.html(html);
@@ -122,6 +121,8 @@ let TicketDetails = new function () {
 
         window.vsapi.call(`${main_view.base_url}/api/ticket/details`, p, 'POST', false).then((res) => {
             let html = null;
+            let ws_id = null;
+
             if (res.status_code === 200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
                 //d.chief_complaints = d.chief_complaints?d.chief_complaints:[];
@@ -129,96 +130,96 @@ let TicketDetails = new function () {
                 d.consultant_name = d.consultant_name ? d.consultant_name : 'N.A.';
                 d.membership_card = d.membership_card ? d.membership_card : 'None';
                 let email = d.email ? d.email : 'N.A.';
-
+                ws_id = ['ticket_',d.id].join('');
+                let ticket_id = d.id;
+                
                 html = [
-                    `<div data-apptid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="ticket-patient-info" style="width:100%;">
-                        <div class="d-flex flex-column" style="width:100%">
-                            <div class="d-flex flex-row">
-                                <div class="d-flex" style="width:100%">`,
-                                    `<div style="width:30%">
-                                        <div class="row gx-1 d-flex flex-row">          
-                                            <div class="col-4 thumbnail-wrapper">
-                                                <img src="${mThis.icon_url()}/client-girl.png" class="profile-thumbnail"/>
-                                            </div>
-                                            <div class="col-7 client-personal-data">
-                                                <span class="row detail-header-text trans-text" data-langprop="patient.Client Information">Client Information</span>
-                                                <div class="divider"></div>
-                                                <div class="row detail-item">
-                                                    <span class="detail-item-label col-6">Patient ID</span>
-                                                    <span class="detail-item-value col-6" data-field="patient_code">${d.client_code}</span>
-                                                </div>
-                                                <div class="row detail-item">
-                                                    <span class="detail-item-label col-6">Name</span>
-                                                    <span class="detail-item-value col-6" data-field="name">${d.client_name}</span>
-                                                </div>
-                                                <div class="row detail-item">
-                                                    <span class="detail-item-label col-6">Gender</span>
-                                                    <span class="detail-item-value col-6" data-field="sex">${d.client_sex}</span>
-                                                </div>
-                                                <div class="row detail-item">
-                                                    <span class="detail-item-label col-6">Phone</span>
-                                                    <span class="detail-item-value col-6" data-field="phone_number">${d.client_phone_number}</span>
-                                                </div>
-                                                <div class="row detail-item">
-                                                    <span class="detail-item-label col-6">Email</span>
-                                                    <span class="detail-item-value col-6" data-field="email">${email}</span>
-                                                </div>    
-                                                <div class="row detail-item">
-                                                    <span class="detail-item-label col-6">Membership</span>
-                                                    <span class="detail-item-value col-6" data-field="membership_card">${d.membership_card}</span>
-                                                </div>    
-                                            </div> 
-                                        </div>                                                      
-                                    </div>`,
-                                    `<div class="row client-vital-signs" style="width:33%;">
-                                        <span class="col-12 detail-header-text">Vital Signs</span>
-                                        <div class="col-12">${mThis.displayVitalSignItems(d.vital_signs)}</div>
-                                    </div>`,
-                                    `<div style="row width:33%">
-                                        <span class="col-12 detail-header-text">Consultant/Doctor</span>
-                                        <span class="text-normal col-12" style="display:block;margin-left:15px">${d.consultant_name}</span>
-                                        <div class="col-12 d-flex flex-row">
-                                            <span class="detail-header-text trans-text" data-langprop="appointment.Chief Compalaints">Chief Complaints</span>&nbsp;
-                                            <a href="#" data-ulid="qul-complaint-list-${ticket_id}" data-tid="${ticket_id}" class="qul-add-complaint" style="margin-top:5px;">
-                                                <i class="fa fa-plus-circle" style="color:#14B1D1;font-size:1.5em"></i>
-                                            </a>
+                    `<div id="${ws_id}" data-ticketid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="row">
+                        <div class="col-lg-4">
+                            <div class="row">
+                                <div class="col-4">
+                                    <img src="${mThis.icon_url()}/client-girl.png" class="profile-thumbnail pe-2"/>
+                                </div>
+                                <div class="col-8">
+                                    <div class="row g-1">
+                                        <p class="trans-text fw-bold fs-5 text-nowrap" data-langprop="patient.Client Information"></p>
+                                    </div>
+                                    <div class="row g-1">
+                                        <div class="detail-item">
+                                            <p class="detail-item-label col-6 py-0 text-nowrap">Patient ID</p>
+                                            <p class="detail-item-value col-6 py-0" data-field="patient_code">${d.client_code}</span>
                                         </div>
-                                        <div class="col-12 apl-cc-wrapper">
-                                            <ul id ="qul-complaint-list-${ticket_id}" data-tid="${ticket_id}" class="apl-complaint-list" style="list-style:none">
-                                            ${mThis.displayCCList(['qul-complaint-list-', ticket_id].join(''), d.chief_complaints)}  
-                                            </ul>
+                                    </div>
+                                    <div class="row g-1">
+                                        <div class="detail-item">
+                                            <p class="detail-item-label col-6 py-0">Name</p>
+                                            <p class="detail-item-value col-6 py-0" data-field="name">${d.client_name}</p>
                                         </div>
-                                    </div>`,
-                                `</div> 
-                            </div>`,
-
-                            `<div style="margin-top:10px;margin-bottom:10px;width:100%;background-color:#ABAEAA;border:1px solid #ABAEAA;"></div> 
-                            <div class="d-flex flex-row">`,
-                                `<div class="client-med-conditions" style="width:33%">
-                                    <span class="detail-header-text">${LocaleManager.trans('Medical Conditions', 'patient')}</span>
-                                    <div class="divider"></div>
-                                    <div>${mThis.displayMedicalConditions(d.mc_items)}</div>
-                                </div>`,
-
-                                `<div style="width:33%" class="">
-                                    <div class="form-inline"><button class="btn btnsm btn-outline-primary qul-btn-prescribe">Prescription</button></div>
-                                </div>`,
-
-                                // `<div style="width:33%" class="client-insurance-info">
-                                //         <span class="detail-header-text">${LocaleManager.trans('Insurance Information','patient')}</span>
-                                //         <div class="divider"></div>
-                                //         <div class="detail-item"> <span class="detail-item-label" style="width:120px">Company name</span> <span class="detail-item-value" data-field="company_name">Forte</span></div>
-                                //         <div class="detail-item"> <span class="detail-item-label" style="width:120px">Policy number</span> <span class="detail-item-value" data-field="policy_number">2233</span></div>
-                                //         <div class="detail-item"> <span class="detail-item-label" style="width:120px">Description</span> <span class="detail-item-value" data-field="description">Nursing & Medication</span></div>
-                                // </div>`,
-                            `</div>
+                                    </div>
+                                    <div class="row g-1">
+                                        <div class="detail-item">
+                                            <p class="detail-item-label col-6 py-0">Gender</p>
+                                            <p class="detail-item-value col-6 py-0" data-field="sex">${d.client_sex}</p>
+                                        </div>
+                                    </div>
+                                    <div class="row g-1">
+                                        <div class="detail-item">
+                                            <p class="detail-item-label col-6 py-0">Phone</p>
+                                            <p class="detail-item-value col-6 py-0" data-field="phone_number">${d.client_phone_number}</p>
+                                        </div>
+                                    </div>
+                                    <div class="row g-1">
+                                        <div class="detail-item">
+                                            <p class="detail-item-label col-6 py-0">Email</p>
+                                            <p class="detail-item-value col-6 py-0" data-field="email">${email}</p>
+                                        </div>
+                                    </div>
+                                    <div class="row g-1">
+                                        <div class="detail-item">
+                                            <p class="detail-item-label col-6 py-0">Membership</p>
+                                            <p class="detail-item-value col-6 py-0" data-field="membership_card">${d.membership_card}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>`].join('');
+                        <div class="col-lg-4">
+                            <div class="row">
+                                <p class="trans-text text-nowrap fw-bold fs-5" data-langprop="patient.Vital Signs"></p>
+                            </div>
+                            <div class="row">${mThis.displayVitalSignItems(d.vital_signs)}</div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="row">
+                                <p class="detail-header-text">Consultant/Doctor</p>
+                            </div>
+                            <div class="row">
+                                <p class="text-normal">${d.consultant_name}</span>
+                            </div>
+                            <div class="row">
+                                <div class="d-flex px-0">
+                                    <p class="detail-header-text trans-text text-nowrap" data-langprop="appointment.Chief Complaints"></p>
+                                    <a href="#" data-ulid="qul-complaint-list-${ticket_id}" data-tid="${ticket_id} class="qul-add-complaint">
+                                        <i class="fa fa-plus-circle mt-1" style="color:#14b1d1; font-size:1.5em"></i>
+                                    </a>
+                                </div>
+                                <div class="apl-cc-wrapper">
+                                    <ul id="qul-complaint-list-${ticket_id}" data-tid="${ticket_id}" class="apl-complaint-list" style="list-style:none">
+                                        ${mThis.displayCCList(['qul-complaint-list-', ticket_id].join(''), d.chief_complaints)}  
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top:10px; margin-bottom:10px; width:100%; background-color:#aeabaa; border:1px solid #abaeaa;"></div>
+                        <div class="row"></div>
+                    </div>`
+                ].join('');
             } else {
                 html = `<div class="expanded-row-error">${error_message}</div>`;
             }
 
             div_workspace.html(html);
+            LocaleManager.translateZone(ws_id);
             //div_wrapper.slideDown(500);
             mThis.current_view_name = 'info';
         });
@@ -228,9 +229,9 @@ let TicketDetails = new function () {
         let html = null;
         (items || []).map((v) => {
             html = [html,
-                `<div class="row detail-item">
-                    <span class="detail-item-label col-6" style="width:120px">${v.name}</span>
-                    <span class="detail-item-value col-6" data-id="${v.id}" data-field="${v.name}">${v.vital_sign_value}</span>
+                `<div class="detail-item">
+                    <p class="detail-item-label col-6 py-0">${v.name}</p>
+                    <p class="detail-item-value col-6 py-0" data-id="${v.id}" data-field="${v.name}">${v.vital_sign_value}</p>
                 </div>`].join('');
         });
         return html ? html : '<span class="detail-item-empty">No vital signs</span>';

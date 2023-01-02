@@ -40,7 +40,7 @@
 
      .detail-header-text {
          display: block;
-         padding: 3px;
+         padding: 3px 10px;
          font-weight: bold;
          font-size: 1.2em;
      }
@@ -549,3 +549,4 @@
      </div>
  </div>
  <!--end::QServiceDialog -->
+ 

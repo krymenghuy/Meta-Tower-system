@@ -58,7 +58,8 @@
 		"Remarks":"Remarks",
 		"Notes":"Notes",
 		"Description":"Description",
-		"Chief Complaints":"Chief Complaints"
+		"Chief Complaints":"Chief Complaints",
+		"Client Information":"Client Information"
 	},
 	"person":{
         "Name":"Name",
