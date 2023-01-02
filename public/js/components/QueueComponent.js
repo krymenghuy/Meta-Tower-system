@@ -94,8 +94,7 @@ let TicketDetails = new function () {
             if (i === 0) html = `<li data-apptid="0"><span class="text-muted">(No chief complaints)</span></li>`;
             return html;
         }
-
-
+ 
   this.getChiefComplaintOptions = (onFinish)=>{
     if(!mThis.form_data) mThis.form_data = {};
     
