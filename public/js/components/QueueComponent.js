@@ -6,12 +6,12 @@ let TicketDetails = new function () {
     //mThis.default_view = 'info';
     mThis.current_view_name = 'info';
     mThis.tblTickets = null;
-
+    
     this.icon_url = () => {
         return `${VSUtil.asset_url()}/images/icons`;
     }
 
-    //initialize TicketDetails. Eventhandler bindlings
+    //begin:: initialize TicketDetails. Eventhandler bindlings
     this.init = (tblTickets_id) => {
         mThis.tblTickets = $(`#${tblTickets_id}`);
 
@@ -25,16 +25,90 @@ let TicketDetails = new function () {
             mThis.showInfo(div_wrapper);
         });
 
-        mThis.tblTickets.on('click', '.qul-btn-history', function (e) {
+        mThis.tblTickets.on('click', 'a.qul-btn-history', function (e) {
             let div_wrapper = $(this).closest('div.ticket-info-wrapper');
             mThis.showHistory(div_wrapper);
         });
 
-        mThis.tblTickets.on('click', '.qul-btn-consult', function (e) {
+        mThis.tblTickets.on('click', 'a.qul-btn-consult', function (e) {
             let div_wrapper = $(this).closest('div.ticket-info-wrapper');
             mThis.startConsult(div_wrapper);
         });
+        
+        //within the TicketDetails class => TicketDetails.tblTickets
+        mThis.tblTickets.on('click','a.qul-add-complaint',function (e) {
+            e.preventDefault();
+            let x = $(this);
+            let ul_id = x.data('ulid');
+            let ul = $(`#${ul_id}`);
+            let ticket_id = x.data('tid');
+
+            mThis.getChiefComplaintOptions((chief_complaints)=>{
+
+                        let option = { 'title': 'Choose Chief Complaint', 'dataLabel': 'Select Chief Complaint', 'valueMember': 'id', 'textMember': 'name', 'data':chief_complaints, 'blankErrorMessage': "Please choose chief complaint" };
+                        InputBox2.show(option, function (d) {
+                            //NOTE: d is object with {value,text}
+                            if (d) {
+                                let p = { "chief_complaint_id": d.value, "name": d.text, 'ticket_id': ticket_id }; /** d.value = chief complaint id **/
+                                window.vsapi.call(`${main_view.base_url}/api/ticket/add-chief-complaint`, p, null, null).then((res) => {
+                                    if (res.status_code === 200) {
+                                        let item = {
+                                            "id": d.value,
+                                            "name": d.text
+                                        }
+                                        ul.data('tid', ticket_id);
+                                        mThis.addCCToList(ul, item);
+                                    } else cv_interact.warning(res.error_message);
+                                });
+                            }
+                        });
+                        
+            });
+
+       
+        });
+
     }
+  //end::TicketDetails.init()
+
+        //AddChiefComplaintToList() on Appointment List' s expanded view
+        this.addCCToList = (ul, item = {}) => {
+            //let ul = $(`complaint_list-${appt_id}`);
+            let appt_id = ul.data('apptid');
+
+            //Remove first default element "(No chief complaint)"
+            ul.find('li[data-apptid="0"]').remove();
+            ul.append(`<li id="${item.id}" data-apptid="${appt_id}"><a href="#" data-apptid="${appt_id}" data-id="${item.id}" class="appt-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`);
+        }
+
+        //return html string for array of <li>
+        this.displayCCList = (list_id, items = []) => {
+            let ul = $(`#${list_id}`);
+            ul.empty();
+            let appt_id = ul.data('apptid');
+            let i = 0, html = '';
+            (items || []).map((item) => {
+                html = [html, `<li id="${item.id}" data-apptid="${appt_id}"><a href="#" data-apptid="${appt_id}" data-id="${item.id}" class="appt-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`].join('');
+                i++;
+            });
+            if (i === 0) html = `<li data-apptid="0"><span class="text-muted">(No chief complaints)</span></li>`;
+            return html;
+        }
+
+
+  this.getChiefComplaintOptions = (onFinish)=>{
+    if(!mThis.form_data) mThis.form_data = {};
+    
+    mThis.form_data.chief_complaints = null;
+
+    if(!mThis.form_data.chief_complaints){
+        vsapi.call(`${main_view.base_url}/api/settings/options-chief-complaint`,null).then((res)=>{
+            if(res.status_code===200)
+               onFinish(StringSanitizer.sanitizeObject(res.data));
+            else cv_interact.error(res.error_message);   
+        });
+    }else onFinish(mThis.form_data.chief_complaints); 
+  }
 
     //Display Ticket Detail panel, by displaying the "Info" tab as default view
     this.show = (detail_tr, d = {}) => {
@@ -199,7 +273,7 @@ let TicketDetails = new function () {
                             <div class="row">
                                 <div class="d-flex px-0">
                                     <p class="detail-header-text trans-text text-nowrap" data-langprop="appointment.Chief Complaints"></p>
-                                    <a href="#" data-ulid="qul-complaint-list-${ticket_id}" data-tid="${ticket_id}" class="qul-add-complaint">
+                                    <a href="#" data-ulid="qul-complaint-list-${ticket_id}" data-tid="${ticket_id} class="qul-add-complaint">
                                         <i class="fa fa-plus-circle mt-1" style="color:#14b1d1; font-size:1.5em"></i>
                                     </a>
                                 </div>
@@ -266,25 +340,18 @@ let TicketDetails = new function () {
 
     this.startConsult = (div_panel, ticket_id = null) => {
         if (!ticket_id) ticket_id = div_panel.data('tid');
-        let op = {
-            onClose:(e)=>{
-                //dosomething
-                alert("welcome");
-            }
-        };
-        ConsultDialog.show(op);
-        // let div_workspace = div_panel.find('div.qul-workspace');
-        // div_workspace.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
-        // div_workspace.html(`<div class="d-flex p-3">
-        // <div style="height:25px"></div>
-        // <ul>
-        //  <li>Chief Complaints</li>
-        //  <li>Physical Examinations</li>
-        //  <li>Laboratory Tests</li>
-        //  <li>Diagnosis</li>
-        //  <li>Recommendations</li>
-        // </ul>
-        // </div>`);
+        let div_workspace = div_panel.find('div.qul-workspace');
+        //div_workspace.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
+        div_workspace.html(`<div class="d-flex p-3">
+        <div style="height:25px"></div>
+        <ul>
+         <li>Chief Complaints</li>
+         <li>Physical Examinations</li>
+         <li>Laboratory Tests</li>
+         <li>Diagnosis</li>
+         <li>Recommendations</li>
+        </ul>
+        </div>`);
         mThis.current_view_name = 'consult';
     };
 
@@ -345,31 +412,7 @@ let QueueComponent = new function () {
     //         mThis.form_data.chief_complaints = StringSanitizer.sanitizeObject(d.data);
     //    });
     // }
-
-    //AddChiefComplaintToList() on Appointment List' s expanded view
-    this.addCCToList = (ul, item = {}) => {
-        //let ul = $(`complaint_list-${appt_id}`);
-        let appt_id = ul.data('apptid');
-
-        //Remove first default element "(No chief complaint)"
-        ul.find('li[data-apptid="0"]').remove();
-        ul.append(`<li id="${item.id}" data-apptid="${appt_id}"><a href="#" data-apptid="${appt_id}" data-id="${item.id}" class="appt-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`);
-    }
-
-    //return html string for array of <li>
-    this.displayCCList = (list_id, items = []) => {
-        let ul = $(`#${list_id}`);
-        ul.empty();
-        let appt_id = ul.data('apptid');
-        let i = 0, html = '';
-        (items || []).map((item) => {
-            html = [html, `<li id="${item.id}" data-apptid="${appt_id}"><a href="#" data-apptid="${appt_id}" data-id="${item.id}" class="appt-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`].join('');
-            i++;
-        });
-        if (i === 0) html = `<li data-apptid="0"><span class="text-muted">(No chief complaints)</span></li>`;
-        return html;
-    }
-
+ 
     //SetQueueStatus()
     this.setTicketStatus = (detail_tr, d = {}) => {
         let tr = detail_tr.prev();
@@ -446,33 +489,7 @@ let QueueComponent = new function () {
         mThis.tblTickets.on('click', 'a.btn_ticket_action', function (e) {
             e.preventDefault();
         });
-
-        mThis.tblTickets.on('click', 'a.qul-add-complaint', function (e) {
-            e.preventDefault();
-            let x = $(this);
-            let ul_id = x.data('ulid');
-            let ul = $(`#${ul_id}`);
-            let ticket_id = x.data('tid');
-
-            let option = { 'title': 'Choose Chief Complaint', 'dataLabel': 'Select Chief Complaint', 'valueMember': 'id', 'textMember': 'name', 'data': mThis.form_data.chief_complaints, 'blankErrorMessage': "Please choose chief complaint" };
-            InputBox2.show(option, function (d) {
-                //NOTE: d is object with {value,text}
-                if (d) {
-                    let p = { "chief_complaint_id": d.value, "name": d.text, 'ticket_id': ticket_id }; /** d.value = chief complaint id **/
-                    window.vsapi.call(`${main_view.base_url}/api/ticket/add-chief-complaint`, p, null, null).then((res) => {
-                        if (res.status_code === 200) {
-                            let item = {
-                                "id": d.value,
-                                "name": d.text
-                            }
-                            ul.data('tid', ticket_id);
-                            mThis.addCCToList(ul, item);
-                        } else cv_interact.warning(res.error_message);
-                    });
-                }
-            });
-        });
-
+ 
         //remove Chief complaint item, on Appoinment list expanaded view
         mThis.tblTickets.on('click', 'a.appt-remove-complaint', function (e) {
             e.preventDefault();
