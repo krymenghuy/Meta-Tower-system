@@ -135,7 +135,7 @@ let TicketDetails = new function () {
                 
                 html = [
                     `<div id="${ws_id}" data-ticketid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="row">
-                        <div class="col-lg-4">
+                        <div class="col-lg-6">
                             <div class="row">
                                 <div class="col-4">
                                     <img src="${mThis.icon_url()}/client-girl.png" class="profile-thumbnail pe-2"/>
@@ -183,13 +183,13 @@ let TicketDetails = new function () {
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                             <div class="row">
                                 <p class="trans-text text-nowrap fw-bold fs-5" data-langprop="patient.Vital Signs"></p>
                             </div>
                             <div class="row">${mThis.displayVitalSignItems(d.vital_signs)}</div>
                         </div>
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                             <div class="row">
                                 <p class="detail-header-text">Consultant/Doctor</p>
                             </div>
