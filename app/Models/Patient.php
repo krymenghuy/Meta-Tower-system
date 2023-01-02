@@ -199,6 +199,14 @@ class Patient extends Model
                     'status_id'=>($addToQueue? 3:2)
                 ]);
             }
+
+            // //Update person's name, phone_number, sex => to avoid difference in Name or phone between Appoinment View and Queued Ticket view
+            // DB::table('persons')->where('branch_id',$branch_id)->where('id',$person_id)->update([
+            //     'name'=>$d['name'],
+            //     'sex'=>$d['sex'],
+            //     'phone_number'=>$d['phone_number']
+            // ]);
+
             //Save vital_sign items
             $medicalConditions = isset($d['mc_items'])?$d['mc_items']:[];
             $vital_signs = isset($d['vital_signs'])?$d['vital_signs']:[];
