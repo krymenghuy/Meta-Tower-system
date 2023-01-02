@@ -15,6 +15,7 @@ let TicketDetails = new function () {
     this.init = (tblTickets_id) => {
         mThis.tblTickets = $(`#${tblTickets_id}`);
 
+        if(mThis.tblTickets.length === 0) console.error(`Error: failed create object element ${tblTickets_id}`); 
         mThis.tblTickets.on('click', '.btn-ticket-tab', function (e) {
             $(this).addClass('btn-ticket-tab--active').siblings().removeClass('btn-ticket-tab--active');
         });
@@ -26,23 +27,61 @@ let TicketDetails = new function () {
         });
 
         mThis.tblTickets.on('click', 'a.qul-btn-history', function (e) {
+            e.preventDefault();
             let div_wrapper = $(this).closest('div.ticket-info-wrapper');
             mThis.showHistory(div_wrapper);
         });
 
-        mThis.tblTickets.on('click', 'a.qul-btn-consult', function (e) {
-            let div_wrapper = $(this).closest('div.ticket-info-wrapper');
-            mThis.startConsult(div_wrapper);
+         mThis.tblTickets.on('click', 'a.qul-btn-consult', function (e) {
+            e.preventDefault();
+            
+            //let div_wrapper = $(this).closest('div.ticket-info-wrapper');
+            //mThis.startConsult(div_wrapper);
+
+            let op = {
+                onClose:(d)=>{
+                  alert('Consult Window is closing');
+                }
+            };
+
+            ConsultDialog.show(op);
+          
         });
         
+         //remove Chief complaint item, on Appoinment list expanaded view
+         mThis.tblTickets.on('click', 'tbody>tr> td a.qul-remove-complaint', function (e) {
+            e.preventDefault();
+            let lnk = $(this);
+            let ul = lnk.closest('ul');
+            let p = {
+                'chief_complaint_id': lnk.data('id'),
+                'ticket_id': ul.data('tid')
+            };
+
+            let li = $(this).closest('li');
+            cv_interact.confirm('Delete this item?', {
+                'confirmButtonText': 'Delete',
+                'cancelButtonText': 'Dont Delete',
+                'context': 'delete'
+            }, (yes) => {
+                if (yes) {
+                    window.vsapi.call(`${main_view.base_url}/api/ticket/remove-chief-complaint`, p, null, null).then((res) => {
+                        if (res.status_code === 200) {
+                            li.remove();
+                        } else cv_interact.warning(res.error_message);
+                    });
+                }
+            });
+        });
+ 
         //within the TicketDetails class => TicketDetails.tblTickets
-        mThis.tblTickets.on('click','a.qul-add-complaint',function (e) {
+        mThis.tblTickets.on('click','tbody>tr>td a.qul-add-complaint',function (e) {
             e.preventDefault();
             let x = $(this);
             let ul_id = x.data('ulid');
             let ul = $(`#${ul_id}`);
             let ticket_id = x.data('tid');
-
+            
             mThis.getChiefComplaintOptions((chief_complaints)=>{
 
                         let option = { 'title': 'Choose Chief Complaint', 'dataLabel': 'Select Chief Complaint', 'valueMember': 'id', 'textMember': 'name', 'data':chief_complaints, 'blankErrorMessage': "Please choose chief complaint" };
@@ -67,7 +106,6 @@ let TicketDetails = new function () {
 
        
         });
-
     }
   //end::TicketDetails.init()
 
@@ -78,7 +116,7 @@ let TicketDetails = new function () {
 
             //Remove first default element "(No chief complaint)"
             ul.find('li[data-apptid="0"]').remove();
-            ul.append(`<li id="${item.id}" data-apptid="${appt_id}"><a href="#" data-apptid="${appt_id}" data-id="${item.id}" class="appt-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`);
+            ul.append(`<li id="${item.id}" data-apptid="${appt_id}"><a href="#" data-apptid="${appt_id}" data-id="${item.id}" class="qul-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`);
         }
 
         //return html string for array of <li>
@@ -88,7 +126,7 @@ let TicketDetails = new function () {
             let appt_id = ul.data('apptid');
             let i = 0, html = '';
             (items || []).map((item) => {
-                html = [html, `<li id="${item.id}" data-apptid="${appt_id}"><a href="#" data-apptid="${appt_id}" data-id="${item.id}" class="appt-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`].join('');
+                html = [html, `<li id="${item.id}" data-apptid="${appt_id}"><a href="#" data-apptid="${appt_id}" data-id="${item.id}" class="qul-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`].join('');
                 i++;
             });
             if (i === 0) html = `<li data-apptid="0"><span class="text-muted">(No chief complaints)</span></li>`;
@@ -177,7 +215,7 @@ let TicketDetails = new function () {
         let i = 0, html = '';
         (items || []).map((item) => {
             html = [html, `<li id="${item.id}" data-tid="${ticket_id}">
-            <a href="#" data-apptid="${ticket_id}" data-id="${item.id}" class="appt-remove-complaint">
+            <a href="#" data-apptid="${ticket_id}" data-id="${item.id}" class="qul-remove-complaint">
             <i class="fa fa-times" style="color:red"></i>
             </a>&nbsp;${item.name}</li>`].join('');
             i++;
@@ -271,8 +309,8 @@ let TicketDetails = new function () {
                             </div>
                             <div class="row">
                                 <div class="d-flex px-0">
-                                    <p class="detail-header-text trans-text text-nowrap" data-langprop="appointment.Chief Complaints"></p>
-                                    <a href="#" data-ulid="qul-complaint-list-${ticket_id}" data-tid="${ticket_id} class="qul-add-complaint">
+                                    <p class="detail-header-text trans-text text-nowrap" data-langprop="patient.Chief Complaints"></p>
+                                    <a href="javascript:void(0)" data-ulid="qul-complaint-list-${ticket_id}" data-tid="${ticket_id}" class="qul-add-complaint">
                                         <i class="fa fa-plus-circle mt-1" style="color:#14b1d1; font-size:1.5em"></i>
                                     </a>
                                 </div>
@@ -286,7 +324,7 @@ let TicketDetails = new function () {
                         <div style="margin-top:10px; margin-bottom:10px; width:100%; background-color:#aeabaa; border:1px solid #abaeaa;"></div>
                         <div class="row">
                             <div class="col-sm-4">
-                                <p class="detail-header-text">${LocaleManager.trans('Medical Conditions', 'patient')}</p>
+                                <p class="detail-header-text trans-text" data-langprop="patient.Medical Conditions"></p>
                                 <div class="divider"></div>
                                 <div>${mThis.displayMedicalConditions(d.mc_items)}</div>
                             </div>
@@ -489,31 +527,31 @@ let QueueComponent = new function () {
             e.preventDefault();
         });
  
-        //remove Chief complaint item, on Appoinment list expanaded view
-        mThis.tblTickets.on('click', 'a.appt-remove-complaint', function (e) {
-            e.preventDefault();
-            let lnk = $(this);
-            let ul = lnk.closest('ul');
-            let p = {
-                'chief_complaint_id': lnk.data('id'),
-                'ticket_id': ul.data('tid')
-            };
+        // //remove Chief complaint item, on Appoinment list expanaded view
+        // mThis.tblTickets.on('click', 'a.qul-remove-complaint', function (e) {
+        //     e.preventDefault();
+        //     let lnk = $(this);
+        //     let ul = lnk.closest('ul');
+        //     let p = {
+        //         'chief_complaint_id': lnk.data('id'),
+        //         'ticket_id': ul.data('tid')
+        //     };
 
-            let li = $(this).closest('li');
-            cv_interact.confirm('Delete this item?', {
-                'confirmButtonText': 'Delete',
-                'cancelButtonText': 'Dont Delete',
-                'context': 'delete'
-            }, (yes) => {
-                if (yes) {
-                    window.vsapi.call(`${main_view.base_url}/api/ticket/remove-chief-complaint`, p, null, null).then((res) => {
-                        if (res.status_code === 200) {
-                            li.remove();
-                        } else cv_interact.warning(res.error_message);
-                    });
-                }
-            });
-        });
+        //     let li = $(this).closest('li');
+        //     cv_interact.confirm('Delete this item?', {
+        //         'confirmButtonText': 'Delete',
+        //         'cancelButtonText': 'Dont Delete',
+        //         'context': 'delete'
+        //     }, (yes) => {
+        //         if (yes) {
+        //             window.vsapi.call(`${main_view.base_url}/api/ticket/remove-chief-complaint`, p, null, null).then((res) => {
+        //                 if (res.status_code === 200) {
+        //                     li.remove();
+        //                 } else cv_interact.warning(res.error_message);
+        //             });
+        //         }
+        //     });
+        // });
 
         mThis.tblTickets.on('click', '.btn_ticket_status', function (e) {
             e.preventDefault();
