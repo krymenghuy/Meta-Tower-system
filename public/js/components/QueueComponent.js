@@ -91,7 +91,7 @@ let TicketDetails = new function () {
         let html = "";
         (items || []).map((i) => {
             let display_value = (i.mc_value == 1) ? 'Yes' : 'No';
-            html = [html, `<div class="detail-item"> <span class="detail-item-label" style="width:150px">${i.description}</span> <span class="detail-item-value" data-field="${i.description}">${display_value}</span></div>`].join('');
+            html = [html, `<div class="detail-item row"> <span class="detail-item-label col-6 ps-4">${i.description}</span> <span class="detail-item-value col-6" data-field="${i.description}">${display_value}</span></div>`].join('');
         });
         return html;
     }
@@ -199,7 +199,7 @@ let TicketDetails = new function () {
                             <div class="row">
                                 <div class="d-flex px-0">
                                     <p class="detail-header-text trans-text text-nowrap" data-langprop="appointment.Chief Complaints"></p>
-                                    <a href="#" data-ulid="qul-complaint-list-${ticket_id}" data-tid="${ticket_id} class="qul-add-complaint">
+                                    <a href="#" data-ulid="qul-complaint-list-${ticket_id}" data-tid="${ticket_id}" class="qul-add-complaint">
                                         <i class="fa fa-plus-circle mt-1" style="color:#14b1d1; font-size:1.5em"></i>
                                     </a>
                                 </div>
@@ -211,7 +211,16 @@ let TicketDetails = new function () {
                             </div>
                         </div>
                         <div style="margin-top:10px; margin-bottom:10px; width:100%; background-color:#aeabaa; border:1px solid #abaeaa;"></div>
-                        <div class="row"></div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <p class="detail-header-text">${LocaleManager.trans('Medical Conditions', 'patient')}</p>
+                                <div class="divider"></div>
+                                <div>${mThis.displayMedicalConditions(d.mc_items)}</div>
+                            </div>
+                            <div class="col-sm-4">
+                                <button class="btn btnsm btn-outline-primary qul-btn-prescribe">Prescription</button>
+                            </div>
+                        </div>
                     </div>`
                 ].join('');
             } else {
@@ -257,18 +266,25 @@ let TicketDetails = new function () {
 
     this.startConsult = (div_panel, ticket_id = null) => {
         if (!ticket_id) ticket_id = div_panel.data('tid');
-        let div_workspace = div_panel.find('div.qul-workspace');
-        //div_workspace.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
-        div_workspace.html(`<div class="d-flex p-3">
-        <div style="height:25px"></div>
-        <ul>
-         <li>Chief Complaints</li>
-         <li>Physical Examinations</li>
-         <li>Laboratory Tests</li>
-         <li>Diagnosis</li>
-         <li>Recommendations</li>
-        </ul>
-        </div>`);
+        let op = {
+            onClose:(e)=>{
+                //dosomething
+                alert("welcome");
+            }
+        };
+        ConsultDialog.show(op);
+        // let div_workspace = div_panel.find('div.qul-workspace');
+        // div_workspace.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
+        // div_workspace.html(`<div class="d-flex p-3">
+        // <div style="height:25px"></div>
+        // <ul>
+        //  <li>Chief Complaints</li>
+        //  <li>Physical Examinations</li>
+        //  <li>Laboratory Tests</li>
+        //  <li>Diagnosis</li>
+        //  <li>Recommendations</li>
+        // </ul>
+        // </div>`);
         mThis.current_view_name = 'consult';
     };
 
@@ -1044,6 +1060,31 @@ let QueueComponent = new function () {
 
 //  }
 // //end::PatientDialog
+
+
+//begin::ConsultDialog
+let ConsultDialog = new function(){
+    let mThis = this;
+    this.self = $('#_qul_dlgConsult');
+    this.btnSave = $('#_qul_dlgConsult_btnSave');
+
+    this.btnSave.on('click',(e)=>{
+      e.preventDefault();
+      //tod; Save consult session info
+
+      mThis.self.modal('hide');
+      mThis.onClose(true);
+    });
+
+    this.show = (option)=>{
+        if(!option) option = {};
+        mThis.onClose = option.onClose;
+        mThis.self.modal({
+            backdrop:'static'
+        });
+    }
+}
+//end::ConsultDialog
 
 $(document).ready(() => {
     TicketDetails.init('_qul_tblTickets');
