@@ -78,6 +78,8 @@ class QTicket extends Model
             }
         }
 
+        //In case of Registering patient and add them to Queque directly
+        $inputs['status_id'] =1;
         $ticket_id = saveData($ss,'service_queue',['id'=>0],$inputs,[],1);
         if($ticket_id >0){
             $status_id_queued =3;

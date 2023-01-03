@@ -103,8 +103,8 @@
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button></button>
-                    <button></button>
+                    <button class="btn btn-outline-success">History</button>
+                    <button class="btn btn-outline-primary">Consultation</button>
                 </div>
                 <div class="modal-body"></div>
                 <div class="modal-footer">
