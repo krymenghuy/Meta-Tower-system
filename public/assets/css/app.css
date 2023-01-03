@@ -11227,6 +11227,7 @@ div.tab-view {
 
 .tab-view>div.tab-body div.tab-panel {
   display: none;
+  padding:30px 20px;
 }
 
 /**end:: tab-view classes**/

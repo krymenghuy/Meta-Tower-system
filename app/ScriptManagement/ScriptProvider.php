@@ -50,6 +50,8 @@ namespace App\ScriptManagement;
                     //'/js/security/Encrypter.js',
                     '/assets/js/vsutil.js',
                     '/assets/js/formUtils.js',
+                    '/assets/js/vsdom.js',
+                    '/assets/js/ItemsView.js',
                     '/assets/js/expandableTableRow.js',
                     '/assets/plugins/chart.js/Chart.js',
                     '/assets/js/Popper.js', //Popper 2.10

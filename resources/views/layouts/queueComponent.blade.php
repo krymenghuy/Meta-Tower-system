@@ -103,10 +103,67 @@
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button class="btn btn-outline-success">History</button>
-                    <button class="btn btn-outline-primary">Consultation</button>
+                     <h4>Consultation Window</h4>
                 </div>
-                <div class="modal-body"></div>
+                <div class="modal-body">
+                    <div class="tab-view" id="_consultTabView">
+                        <div class="tab-header">
+                            <a href="javascript:void(0)" class="tab-button trans-text" data-viewname="history" id=""
+                                data-target="tab_panel_history" data-langprop="patient.HISTORY">History</a>
+                            <a href="javascript:void(0)" class="tab-button trans-text" data-langprop="patient.CONSULTATION" data-viewname="consultation" id=""
+                                data-target="tab_panel_consult">Consultation</a>
+                        </div>
+
+                        <div class="tab-body">
+                            <div class="tab-panel border-3d" data-viewname="history" id="tab_panel_history">
+                                <h3>Show History</h3>
+                            </div>
+
+                            <div class="tab-panel border-3d" data-viewname="consultation" id="tab_panel_consult">
+                                <div class="row">
+                                    <div class="col-xl-3 custom-width">
+                                        <ul id="_consult_menus" class="nav flex-column">
+                                            <li class="nav-item consult-style-custom d-flex align-items-center">
+                                                <span class="consult-icon">
+                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                </span>
+                                                <a href="javascript:void(0)" data-viewname="chief_complaints" class="nav-link trans-text" data-langprop="consult.Chief Complaints"></a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="javascript:void(0)" data-viewname="vital_signs" class="nav-link trans-text" data-langprop="consult.Vital Signs"></a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="javascript:void(0)" data-viewname="visual_signs" class="nav-link trans-text" data-langprop="consult.Visual Signs"></a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="javascript:void(0)" data-viewname="physical_examination" class="nav-link trans-text" data-langprop="consult.Physical Examination"></a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="javascript:void(0)" data-viewname="labo_tests" class="nav-link trans-text" data-langprop="consult.Laboratory Tests"></a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="javascript:void(0)" data-viewname="diagnosis" class="nav-link trans-text" data-langprop="consult.Diagnosis"></a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="javascript:void(0)" data-viewname="prescription" class="nav-link trans-text" data-langprop="consult.Prescription"></a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="javascript:void(0)" data-viewname="recommendations" class="nav-link trans-text" data-langprop="consult.Recommendations"></a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="javascript:void(0)" data-viewname="medical_report" class="nav-link trans-text" data-langprop="consult.Medical Report"></a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-xl-9">
+                                        <div id="_consult_panel" style="width:100%">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="modal-footer">
                     <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">Cancel</button>
                     <button id="_qul_dlgConsult_btnSave" class="vs-btn-custom-primary" type="button">Save</button>

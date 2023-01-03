@@ -39,6 +39,7 @@ let TicketDetails = new function () {
             //mThis.startConsult(div_wrapper);
 
             let op = {
+                patient_id:0,
                 onClose:(d)=>{
                   alert('Consult Window is closing');
                 }
@@ -83,70 +84,68 @@ let TicketDetails = new function () {
             let ticket_id = x.data('tid');
             
             mThis.getChiefComplaintOptions((chief_complaints)=>{
-
-                        let option = { 'title': 'Choose Chief Complaint', 'dataLabel': 'Select Chief Complaint', 'valueMember': 'id', 'textMember': 'name', 'data':chief_complaints, 'blankErrorMessage': "Please choose chief complaint" };
-                        InputBox2.show(option, function (d) {
-                            //NOTE: d is object with {value,text}
-                            if (d) {
-                                let p = { "chief_complaint_id": d.value, "name": d.text, 'ticket_id': ticket_id }; /** d.value = chief complaint id **/
-                                window.vsapi.call(`${main_view.base_url}/api/ticket/add-chief-complaint`, p, null, null).then((res) => {
-                                    if (res.status_code === 200) {
-                                        let item = {
-                                            "id": d.value,
-                                            "name": d.text
-                                        }
-                                        ul.data('tid', ticket_id);
-                                        mThis.addCCToList(ul, item);
-                                    } else cv_interact.warning(res.error_message);
-                                });
-                            }
-                        });     
-            });       
+                let option = { 'title': 'Choose Chief Complaint', 'dataLabel': 'Select Chief Complaint', 'valueMember': 'id', 'textMember': 'name', 'data':chief_complaints, 'blankErrorMessage': "Please choose chief complaint" };
+                InputBox2.show(option, function (d) {
+                    //NOTE: d is object with {value,text}
+                    if (d) {
+                        let p = { "chief_complaint_id": d.value, "name": d.text, 'ticket_id': ticket_id }; /** d.value = chief complaint id **/
+                        window.vsapi.call(`${main_view.base_url}/api/ticket/add-chief-complaint`, p, null, null).then((res) => {
+                            if (res.status_code === 200) {
+                                let item = {
+                                    "id": d.value,
+                                    "name": d.text
+                                }
+                                ul.data('tid', ticket_id);
+                                mThis.addCCToList(ul, item);
+                            } else cv_interact.warning(res.error_message);
+                        });
+                    }
+                });
+            });
         });
     }
   //end::TicketDetails.init()
 
-        //AddChiefComplaintToList() on Appointment List' s expanded view
-        this.addCCToList = (ul, item = {}) => {
-            //let ul = $(`complaint_list-${appt_id}`);
-            let appt_id = ul.data('apptid');
+    //AddChiefComplaintToList() on Appointment List' s expanded view
+    this.addCCToList = (ul, item = {}) => {
+        //let ul = $(`complaint_list-${appt_id}`);
+        let appt_id = ul.data('apptid');
 
-            //Remove first default element "(No chief complaint)"
-            ul.find('li[data-apptid="0"]').remove();
-            ul.append(`<li id="${item.id}" data-apptid="${appt_id}"><a href="#" data-apptid="${appt_id}" data-id="${item.id}" class="qul-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`);
-        }
+        //Remove first default element "(No chief complaint)"
+        ul.find('li[data-apptid="0"]').remove();
+        ul.append(`<li id="${item.id}" data-apptid="${appt_id}"><a href="#" data-apptid="${appt_id}" data-id="${item.id}" class="qul-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`);
+    }
 
-        //return html string for array of <li>
-        this.displayCCList = (list_id, items = []) => {
-            let ul = $(`#${list_id}`);
-            ul.empty();
-            let appt_id = ul.data('apptid');
-            let i = 0, html = '';
-            (items || []).map((item) => {
-                html = [html, `<li id="${item.id}" data-apptid="${appt_id}"><a href="#" data-apptid="${appt_id}" data-id="${item.id}" class="qul-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`].join('');
-                i++;
-            });
-            if (i === 0) html = `<li data-apptid="0"><span class="text-muted">(No chief complaints)</span></li>`;
-            return html;
-        }
- 
-  this.getChiefComplaintOptions = (onFinish)=>{
-    if(!mThis.form_data) mThis.form_data = {};
-    
-    mThis.form_data.chief_complaints = null;
-
-    if(!mThis.form_data.chief_complaints){
-        vsapi.call(`${main_view.base_url}/api/settings/options-chief-complaint`,null).then((res)=>{
-            if(res.status_code===200)
-               onFinish(StringSanitizer.sanitizeObject(res.data));
-            else cv_interact.error(res.error_message);   
+    //return html string for array of <li>
+    this.displayCCList = (list_id, items = []) => {
+        let ul = $(`#${list_id}`);
+        ul.empty();
+        let appt_id = ul.data('apptid');
+        let i = 0, html = '';
+        (items || []).map((item) => {
+            html = [html, `<li id="${item.id}" data-apptid="${appt_id}"><a href="#" data-apptid="${appt_id}" data-id="${item.id}" class="qul-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`].join('');
+            i++;
         });
-    }else onFinish(mThis.form_data.chief_complaints); 
-  }
+        if (i === 0) html = `<li data-apptid="0"><span class="text-muted">(No chief complaints)</span></li>`;
+        return html;
+    }
+ 
+    this.getChiefComplaintOptions = (onFinish)=>{
+        if(!mThis.form_data) mThis.form_data = {};
+        
+        mThis.form_data.chief_complaints = null;
+
+        if(!mThis.form_data.chief_complaints){
+            vsapi.call(`${main_view.base_url}/api/settings/options-chief-complaint`,null).then((res)=>{
+                if(res.status_code===200)
+                onFinish(StringSanitizer.sanitizeObject(res.data));
+                else cv_interact.error(res.error_message);   
+            });
+        }else onFinish(mThis.form_data.chief_complaints); 
+    }
 
     //Display Ticket Detail panel, by displaying the "Info" tab as default view
     this.show = (detail_tr, d = {}) => {
-
         let div_wrapper = detail_tr.find('div.expandable-row-containter');
 
         let html = `<div data-tid="${d.ticket_id}" data-clientid="${d.client_id}" data-personid="${d.person_id}" data-statusid="${d.status_id}" class="ticket-info-wrapper shadow-lg d-flex" style="width:100%;">
@@ -155,15 +154,11 @@ let TicketDetails = new function () {
                         <a style="padding:5px" type="button" class="btn-ticket-tab qul-btn-history trans-text" data-langprop="buttons.History">History</a>
                         <a style="padding:5px" type="button" class="btn-ticket-tab qul-btn-consult trans-text" data-langprop="buttons.Consult Now">Consult Now</a>
                     </div>
-                    
                     <div data-tid="${d.ticket_id}" class="qul-workspace pt-3" style="width:100%;display:block;">
-                        
                     </div>
                   </div>`;
-
         div_wrapper.html(html);
         //div_wrapper.slideDown(500);
-
         let div_panel = div_wrapper.find('div.ticket-info-wrapper');
         switch (mThis.current_view_name) {
             case 'info': {
@@ -188,7 +183,6 @@ let TicketDetails = new function () {
                 break;
             }
         }
-
     }
 
     this.setActiveTabButton = (div_wrapper, btn_class) => {
@@ -621,7 +615,6 @@ let QueueComponent = new function () {
         //     btn.find('i').css('color','#E9E7E7');
 
         // });
-
     }
 
     this.trans_title = (title_prop = 'undefined') => {
@@ -807,7 +800,6 @@ let QueueComponent = new function () {
                         tr.data('clientid', data.client_id);
                         tr.data('personid', data.person_id);
                     }
-
                     //    ,"cellCreated":function(td,data,colIndex) {
                     //        alert('test');
                     //      if(colIndex==9){
@@ -816,13 +808,11 @@ let QueueComponent = new function () {
                     //      }
                     //   }    								
                 });
-
             // let div = $('#_dl_d_filter_panel');  
             // $('#_dl_tblTickets_wrapper>div.dt-buttons').prepend(div);
             if (typeof onFinish === 'function') onFinish();
             //mThis.cfg.open(mThis.tblTickets.find(`tr:last`));                
         });
-
     };
 
     this.loadOptions = (onFinish = null) => {
@@ -837,7 +827,6 @@ let QueueComponent = new function () {
                 if (onFinish) onFinish();
                 mThis.form_data.departments = items;
             }
-
         });
     }
 
@@ -1042,7 +1031,7 @@ let QueueComponent = new function () {
 //        d = d?d:{};
 //        mThis.appt_id = d.appt_id;
 //        mThis.lead_id = d.lead_id;
-//        mThis.elAgeUnit.text(null);
+//        mThis.elAgeUnit.text(null);1153
 //        mThis.elError.val(null);
 
 //        // class "data-input-reg" is for person's data input such as "name, date_of_birth,phone_number,email, ..."
@@ -1113,11 +1102,158 @@ let QueueComponent = new function () {
 // //end::PatientDialog
 
 
+
+//begin::ConsultTabView 
+let ConsultTabView = new function(){
+    let mThis = this;
+    this.self = $('#_consultTabView');
+    this.base_url = main_view.base_url;
+
+    this.cur_view = 'consultation';
+    
+    this.self.on('click','div.tab-header>a.tab-button',function(e){
+        e.preventDefault();
+        //alert($(this).data('target'));
+        $(this).addClass('active').siblings().removeClass('active');
+        let view_name = $(this).data('viewname').toLowerCase();
+        mThis.show(mThis.client_id,view_name,true);
+    }); 
+
+    this.show = function(client_id,view_name,tab_button_clicked = false){
+         mThis.client_id = client_id;
+         if (!view_name) view_name = mThis.cur_view;
+         view_name = (view_name+'').toLowerCase();
+               
+         mThis.self.find('div.tab-body>div.tab-panel').each(function(){
+            let this_view_name =($(this).data('viewname')+'').toLowerCase();
+            let div_tab_panel = $(this);
+        
+            if(view_name === this_view_name) {
+                mThis.cur_view = view_name;
+                $(this).show().siblings().hide();
+                   
+                  //begin:: display content data depending on current view_name. This code block is not part of General Script for TabView
+                       if (view_name ==='history') {
+                           mThis.displayHistory(mThis.client_id,div_tab_panel);
+                       } else if (view_name ==='consultation') {
+                           mThis.displayConsultation(mThis.client_id,div_tab_panel);
+                       }
+                       // else {
+                       //   //do nothing   
+                       // }
+                  //end:: dispay content data
+
+                return;
+             } 
+         }); 
+
+         //If tab is open by calling this.show() and user did not click on Tab button => make corresponding Tab button appear Active
+         if(!tab_button_clicked) {
+           mThis.self.find('div.tab-header>a.tab-button').each(function() {
+             let this_view_name =($(this).data('viewname')+'').toLowerCase();
+             if (view_name === this_view_name){
+                 $(this).addClass('active').siblings().removeClass('active');
+             }
+           });
+        }
+    } 
+
+    //begin:: Event handlers for History Tab  and Consultation tab
+
+    this.displayHistory = (client_id =0, div_tab_panel=null)=>{
+        div_tab_panel.html(`<div> <h3> This is patient history</h3> </div>`);
+    }
+
+    this.displayConsultation = (client_id = 0,div_tab_panel=null)=>{
+        // div_tab_panel.html(`<div> <h3> This is current consult</h3> </div>`);
+    }
+    //end:: Event handlers for History Tab  and Consultation tab
+
+    //begin::init ConsultTabeView (menus item event handlers and so on)
+    this.init = () => {
+        mThis.ul_menus = $('#_consult_menus');
+        //div panel that contains each consultation item's details
+        mThis.consultItemPanel = $('#_consult_panel');
+        mThis.details_routes = mThis.defineDetailRoutes(mThis.consultItemPanel ); 
+
+        mThis.ul_menus.on('click','li',function(e){
+           e.preventDefault();
+           let li = $(this);
+           //let targetElementId = li.find('a').data('target');
+           let view_name =  li.find('a').data('viewname'); 
+           if(mThis.prev_selected_li) mThis.prev_selected_li.removeClass('consult-menu-selected');
+           li.addClass('consult-menu-selected');
+           mThis.prev_selected_li = li;
+
+           mThis.details_routes[view_name]();
+           //mThis.consultItemPanel.html(html);
+        });
+    } 
+    //end::init ConsultTabeView (menus item event handlers and so on)
+
+    this.defineDetailRoutes = (div)=>{
+       return {
+          "chief_complaints":()=>{
+             mThis.showConsultChiefComplaints(div);
+          },
+          "vital_signs":()=>{
+            mThis.showConsultVitalSigns(div);
+          },
+          "visual_signs":()=>{
+            mThis.showConsultVisualSigns(div);
+          },
+          "prescription":()=>{
+            mThis.showConsultPrescription(div);
+          }
+       };
+    }
+
+    this.showConsultChiefComplaints = (div)=>{
+        let html = `<h3> This is Cheief complaints</h3>
+        <div id="cc_list"></div>`;
+        div.html(html);
+        let columns = [
+            {
+                "name":"name",
+                "title":"Chief Complaint",
+                "dataType":"string",
+                "displayType":"select",
+                cssClass:"",
+                "selectItems":[{
+                    "value":"1", "text":"headache"
+                }]
+            }
+        ]
+        let cfg = new ItemsView('cc_list',{
+            columns:columns,
+            tableClass:"cc_list_style"
+        });
+    }
+
+    this.showConsultVitalSigns = (div)=>{
+        let html = `<h3> This is Vital Signs</h3>`;
+        div.html(html);
+    }
+     
+    this.showConsultPrescription = (div)=>{
+        let html = `<h3> This is Prescription </h3>`;
+        div.html(html);
+    }
+
+    this.showConsultVisualSigns = (div)=>{
+        let html = `<h3> This is Visual Signs</h3>`;
+        div.html(html);
+    }
+}
+//end::ConsultTabView
+
+
 //begin::ConsultDialog
 let ConsultDialog = new function(){
     let mThis = this;
     this.self = $('#_qul_dlgConsult');
     this.btnSave = $('#_qul_dlgConsult_btnSave');
+    this.defaultTabView= 'consultation';
 
     this.btnSave.on('click',(e)=>{
       e.preventDefault();
@@ -1126,16 +1262,20 @@ let ConsultDialog = new function(){
       mThis.self.modal('hide');
       mThis.onClose(true);
     });
+    
+    ConsultTabView.init();
 
     this.show = (option)=>{
         if(!option) option = {};
         mThis.onClose = option.onClose;
+        ConsultTabView.show(option.patient_id,this.defaultTabView);
         mThis.self.modal({
             backdrop:'static'
         });
     }
 }
 //end::ConsultDialog
+
 
 $(document).ready(() => {
     TicketDetails.init('_qul_tblTickets');
