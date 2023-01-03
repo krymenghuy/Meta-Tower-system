@@ -1,0 +1,66 @@
+ <div class="tab-view" id="_um_roleTabView">
+                    <div class="tab-header">
+                        <a href="#" class="tab-button" data-viewname="users" id="_um_roletab_button_users"
+                            data-target="tab_panel_users">USERS</a>
+                        <a href="#" class="tab-button" data-viewname="modules" id="_um_roletab_button_modules"
+                            data-target="tab_panel_modules">MODULES</a>
+                        <a href="#" class="tab-button" data-viewname="permissions" id="_um_roletab_button_prns"
+                            data-target="tab_panel_prns">PERMISSIONS</a>
+                    </div>
+                    <div style="height:5px;"></div>
+                    <div class="tab-body">
+                        <div class="tab-panel border-3d" data-viewname="users" id="_um_tab_panel_users"
+                            style="height:40vw;padding:15px;">
+                            <span style="color:grey;font-weight:bold;font-size:12px" id="_um_roletab_users_text">Members
+                                of the selected role</span>
+                            &nbsp;<a href="#" id="_um_lnkAddRemMember">(<i class="fa fa-plus"
+                                    style="color:green"></i>)</a>
+                            <div style="height:10px;border-bottom:1px dotted red"></div>
+                            <table id="_um_tblRoleMembers" class="table fixed-body-table">
+                                <thead>
+                                    <tr>
+                                        <th>Login</th>
+                                        <th>Full Name</th>
+                                        <th>Official ID</th>
+                                        <th>Phone</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="_um_tblRoleMembers_body" style="height:30vw">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-panel border-3d" data-viewname="modules" id="_um_tab_panel_modules"
+                            style="height:40vw;padding:15px;">
+                            <span style="color:grey;font-weight:bold;font-size:12px"
+                                id="_um_roletab_module_text">Accessible modules</span>
+                            &nbsp;<a href="#" id="_um_lnkAddModule">(<i class="fa fa-plus" style="color:green"></i>)</a>
+                            <div style="height:10px;border-bottom:1px dotted orange;margin-bottom:15px"></div>
+                            <table id="_um_tblRoleModules" class="table fixed-body-table no-cell-border">
+                                <tbody id="_um_tblRoleModules_body" style="height:30vw">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-panel border-3d" data-viewname="permissions" id="_um_tab_panel_prns"
+                            style="height:40vw;padding:15px;">
+                            <a href="#" id="_um_roleprn_lnk_add"><i class="fa fa-plus" style="color:green"></i>
+                                Manage</a>
+                            &nbsp;&nbsp;<a href="#" id="_um_roleprn_lnkLargeView"><i class="fa fa-list-alt"
+                                    style="color:orange"></i> Advanced</a>
+                            <div style="height:10px;border-bottom:1px dotted green"></div>
+                            <table id="_um_roleprn_tblPrns" class="table fixed-body-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:25%">Code</th>
+                                        <th style="width:50%">Description</th>
+                                        <!-- <th>Module Name</th>   -->
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="_um_roleprn_tblPrns_body" style="height:25vw;">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!--end:div.tab-body-->
+                </div>

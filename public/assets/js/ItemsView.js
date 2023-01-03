@@ -3,7 +3,8 @@
 /**** Dependencies
    - vsdom.js
    - vsutil.js for VSUtil.setSelect2_value()
-   - string_san.js
+   - string_san.js,
+   - LocaleManager.js for transaction. LocaleManager.trans()
 ****/
 
 class ItemsView{
@@ -27,19 +28,30 @@ class ItemsView{
      constructor(div_id,options=null){
         options=options?options:{};
         options.tableClass = options.tableClass?options.tableClass:'table header-light-blue header-uppercase';
-        if(!options.columns) options.columns = this.getDefaultColumns();
+        //Use dt_columns as default langProp
+        if(!options.langProp) options.langProp ="dt_columns";
+        if(!options.addLineButtonClass) options.addLineButtonClass = 'btn btn-sm btn-primary';
+        if(!options.addLineButtonText) options.addLineButtonText ='Add Line';
 
+        if(options.showAddLineButton =='undefined') options.showAddLineButton = true;  
+        if(options.showColumnHeaders == 'undefined') options.showColumnHeaders = true;
+       
+        if(!options.columns) options.columns = this.getDefaultColumns(); 
         this.options = options;
         this.self = document.querySelector(`#${div_id}`);
  
         this.table_id =`${div_id}_tblItems`;
-  
+        let addLineText = this.options.addLineButtonText;
+        if(LocaleManager) addLineText = LocaleManager.trans(addLineText,this.options.langProp);
+        let addLineButton_html = `<button class="${this.options.addLineButtonClass} btn-item-addline trans-text" type="button" data-langprop="${this.options.langProp}.${this.options.addLineButtonText}">${addLineText}</button>`;
+        if(this.options.showAddLineButton != true) addLineButton_html ='';
+
         this.self.innerHTML =[
             `<div id="${this.table_id}_wrapper"><table id="${this.table_id}" class="${options.tableClass}">`,
                 this.createColumnHeaders_html(options.columns),
                 `<tbody id="${this.table_id}_body"></tbody>`,
             `</table></div>`,
-            `<div id="${this.table_id}_footer" class="form-inline"><button class="btn btn-sm btn-primary trans-text btn-item-addline" type="button" data-langprop="dt_columns.Add Line">Add Line</button></div>`
+            `<div id="${this.table_id}_footer" class="form-inline">${addLineButton_html}</div>`
          ].join('');
         
         //this.self.appendChild(document.createTextNode(html));
@@ -48,24 +60,33 @@ class ItemsView{
         this.table_body = this.table.querySelector(`#${this.table_id}_body`);
         this.div_footer = document.querySelector(`#${this.table_id}_footer`);
  
+        //Add initial empty Row
+        this.addRow(null);
+
         this.table.addEventListener('click',(e)=>{
             let tr = VSDOM.getClosestParentByType(e.target,'TR');
             if(tr){
-                //begin edit row
-                this.changeRowState(tr,'edit');
-
+                
                 //Check if the clicked target was a link (<a href="#">)
                 let el = VSDOM.getClosestParentByClass(e.target,'btn-item-delete');             
                 if (el){
                         let that = this;
-                        cv_interact.confirm("Delete this item?",{title:'Delete Item',OKButtonText:'Delete',context:'delete'},(e)=>{
-                            if(e){
-                              tr.remove();
-                              that.resetNumero();
+                        cv_interact.confirm("Delete this item?",{title:'Delete Item',OKButtonText:'Delete',context:'delete'},
+                            (e)=>{
+                              if(e){
+                                  tr.remove();
+                                  that.resetNumero();
+                                  that.displayEmptyMessage();
+                                }
                             }
-                         });
-                     return;  
-                }  
+                         );
+                     //return;  
+                }else{
+                   
+                   //begin edit row (change Row's state to "Editing mode" only if user Do not click on any link inside tr (row) )
+                   this.changeRowState(tr,'edit');
+                }   
+
             } else {
                //Click outside row (tr)
                if (this.prev_edit_row) this.changeRowState(prev_edit_row,'readonly');
@@ -77,7 +98,7 @@ class ItemsView{
             let el = VSDOM.getClosestParentByClass(e.target,'btn-item-addline');        
             if (el){
                 this.addRow(null);
-                this.resetNumero();
+                //this.resetNumero(); //addRow() will also resetNumero()
             } 
         });
    
@@ -94,13 +115,27 @@ class ItemsView{
 
      }
 
+     displayEmptyMessage(){
+        if (this.options.emptyMessage){
+          let el = this.table_body.firstChild;
+          //if there is no rows remaining => then add empty-row, if the "this.options.emptyMessage" is supplied
+            if(!el) {
+              let empty_row = document.createElement('tr');
+              empty_row.classList.add('empty-row');
+              empty_row.innerHTML = `<td colspan="100%">${this.options.emptyMessage}</td>`;
+              this.table_body.appendChild(empty_row);
+            }
+        }
+     }
+
      resetNumero(){
        let index =0;
+       let that = this;
        this.table_body.querySelectorAll('tr').forEach(tr=>{
              let num = "";
              //tr.dataset.index = index;
-             if (typeof this.options.numeroFormatter ==='function') 
-                num = this.options.numeroFormatter(index+1,null);
+             if (typeof that.options.numeroFormatter ==='function') 
+                num = that.options.numeroFormatter(index+1,null);
              else
                 num = index +1;
 
@@ -142,10 +177,11 @@ class ItemsView{
                 let def_class ='form-control';
                 let select2_cssClass ='modal-select3';
                 if(!col) throw "Error ItemsView.getColumnPropsByName(@colName) failed to find column by name " + col_name;
-                col.cssClass =col.cssClass?col.cssClass:'form-control';
+                col.cssClass =col.cssClass?col.cssClass:'';
                 let html = `<input type="text" class="${def_class} ${col.cssClass} td-input" value="${text}"/>`;
       
                 if (col.displayType =='select'){
+                    if(!col.selectOptions) col.selectOptions = col.selectItems;
                     col.selectOptions = col.selectOptions?col.selectOptions:[];
                     html = [`<select class="${select2_cssClass} td-input" value="${value}">`,
                             this.createSelectOptions(col_name,value),
@@ -264,6 +300,7 @@ class ItemsView{
      }
 
      createColumnHeaders_html(columns =[]){
+        if(!this.options.showColumnHeaders) return '';
         let this_th = '';
         columns.map(col=>{
             this_th = [this_th,`<th class="trans-text" data-langprop="${col.langProp}">`,col.title,`</th>`].join('');
@@ -335,9 +372,15 @@ class ItemsView{
         ];
      }
 
-     addRow(d=null,rowIndex=0){
+     addRow(d=null,rowIndex = 0){
             let html_cols = "";
             d = d?d:{};
+
+            //before adding any new row, Remove empty row, if exists.
+              let empty_row = this.table_body.firstChild;
+              if(empty_row){
+                 if (empty_row.classList.contains('empty-row')) empty_row.remove();
+              }
 
             (this.options.columns || []).map(col=>{
                 let value ='';
@@ -370,8 +413,9 @@ class ItemsView{
                 let action_col =[`<td><div class="form-inline"><a href="javascript:void" class="btn-item-delete"><i class="fa fa-trash" style="color:red"></i></a></div></td>`].join('');
                 tr.innerHTML = [numero_col,html_cols,action_col].join('');
                 this.table_body.appendChild(tr);
-                if (!d.id) this.changeRowState(tr,'edit');
-           
+                if (!d.id) this.changeRowState(tr,'edit'); 
+
+                this.resetNumero();
      }
 
      setData(rows){

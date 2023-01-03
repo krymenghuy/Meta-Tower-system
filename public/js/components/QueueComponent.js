@@ -1176,6 +1176,11 @@ let ConsultTabView = new function(){
         mThis.consultItemPanel = $('#_consult_panel');
         mThis.details_routes = mThis.defineDetailRoutes(mThis.consultItemPanel ); 
 
+        mThis.consultItemPanel.on('click','a.consultview-add-cc',(e)=>{
+            e.preventDefault();
+            mThis.tblChiefComplaints.addRow();
+        });
+
         mThis.ul_menus.on('click','li',function(e){
            e.preventDefault();
            let li = $(this);
@@ -1209,7 +1214,7 @@ let ConsultTabView = new function(){
     }
 
     this.showConsultChiefComplaints = (div)=>{
-        let html = `<h3> This is Cheief complaints</h3>
+        let html = `<h3> This is Chief complaints <a href="#" class="consultview-add-cc"><i class="fa fa-plus-circle"></i></a></h3>
         <div id="cc_list"></div>`;
         div.html(html);
         let columns = [
@@ -1218,16 +1223,28 @@ let ConsultTabView = new function(){
                 "title":"Chief Complaint",
                 "dataType":"string",
                 "displayType":"select",
-                cssClass:"",
-                "selectItems":[{
-                    "value":"1", "text":"headache"
-                }]
+                "selectOptions":[
+                     {"value":"1", "text":"headache"}
+                    ,{"value":"2","text":"high body temperature"}
+                ]
             }
         ]
-        let cfg = new ItemsView('cc_list',{
-            columns:columns,
-            tableClass:"cc_list_style"
+        mThis.tblChiefComplaints = new ItemsView('cc_list',{
+            "columns":columns,
+            "langProp":"consult",
+            "tableClass":"table",
+            "showColumnHeaders":false,
+            "showAddLineButton":false,
+            //"addLineButtonText":"Add CC",
+            //"addLineButtonClass":null,
+            //"cssClass":"td_class",
+            "numeroFormatter":(numero,row)=>{
+                return `<span class="text-secondary fw-bold">${numero}</span>`; 
+            },
+            "emptyMessage":`<span class="text-secondary text-align-center">${LocaleManager.trans('No chief complaints','consult')}</span>`,
+
         });
+        
     }
 
     this.showConsultVitalSigns = (div)=>{
