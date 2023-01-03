@@ -162,6 +162,9 @@
 	"consult":{
 		"Prescription":"Prescription"
 	},
+	"history":{
+
+	},
 	"message_box_default":{
 		 "MClinic":"MClinic",
 		 "Service department is required":"Service department is required",

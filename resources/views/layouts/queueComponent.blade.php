@@ -116,7 +116,52 @@
 
                         <div class="tab-body">
                             <div class="tab-panel border-3d" data-viewname="history" id="tab_panel_history">
-                                <h3>Show History</h3>
+                                <div class="row">
+                                    <div class="col-xl-3">
+                                        <ul id="_history_menus" class="nav flex-column">
+                                            <li class="nav-item history_style_custom d-flex align-items-center">
+                                                <span class="history_icon">
+                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                </span>
+                                                <a href="javascript:void(0)" data-viewname="chief_complaints" class="nav-link trans-text" data-langprop="history.Chief Complaints"></a>
+                                            </li>
+                                            <li class="nav-item history_style_custom d-flex align-items-center">
+                                                <span class="history_icon">
+                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                </span>
+                                                <a href="javascript:void(0)" data-viewname="physical_examinations" class="nav-link trans-text" data-langprop="history.Physical Examinations"></a>
+                                            </li>
+                                            <li class="nav-item history_style_custom d-flex align-items-center">
+                                                <span class="history_icon">
+                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                </span>
+                                                <a href="javascript:void(0)" data-viewname="laboratory_tests" class="nav-link trans-text" data-langprop="history.Laboratory Tests"></a>
+                                            </li>
+                                            <li class="nav-item history_style_custom d-flex align-items-center">
+                                                <span class="history_icon">
+                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                </span>
+                                                <a href="javascript:void(0)" data-viewname="diagnosis" class="nav-link trans-text" data-langprop="history.Diagnosis"></a>
+                                            </li>
+                                            <li class="nav-item history_style_custom d-flex align-items-center">
+                                                <span class="history_icon">
+                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                </span>
+                                                <a href="javascript:void(0)" data-viewname="prescriptions" class="nav-link trans-text" data-langprop="history.Prescriptions"></a>
+                                            </li>
+                                            <li class="nav-item history_style_custom d-flex align-items-center">
+                                                <span class="history_icon">
+                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                </span>
+                                                <a href="javascript:void(0)" data-viewname="recommendations" class="nav-link trans-text" data-langprop="history.Recommendations"></a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-xl-9">
+                                        <div id="_history_panel" style="width:100%">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="tab-panel border-3d" data-viewname="consultation" id="tab_panel_consult">
@@ -129,28 +174,52 @@
                                                 </span>
                                                 <a href="javascript:void(0)" data-viewname="chief_complaints" class="nav-link trans-text" data-langprop="consult.Chief Complaints"></a>
                                             </li>
-                                            <li class="nav-item">
+                                            <li class="nav-item consult-style-custom d-flex align-items-center">
+                                                <span class="consult-icon">
+                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                </span>
                                                 <a href="javascript:void(0)" data-viewname="vital_signs" class="nav-link trans-text" data-langprop="consult.Vital Signs"></a>
                                             </li>
-                                            <li class="nav-item">
+                                            <li class="nav-item consult-style-custom d-flex align-items-center">
+                                                <span class="consult-icon">
+                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                </span>
                                                 <a href="javascript:void(0)" data-viewname="visual_signs" class="nav-link trans-text" data-langprop="consult.Visual Signs"></a>
                                             </li>
-                                            <li class="nav-item">
+                                            <li class="nav-item consult-style-custom d-flex align-items-center">
+                                                <span class="consult-icon">
+                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                </span>
                                                 <a href="javascript:void(0)" data-viewname="physical_examination" class="nav-link trans-text" data-langprop="consult.Physical Examination"></a>
                                             </li>
-                                            <li class="nav-item">
+                                            <li class="nav-item consult-style-custom d-flex align-items-center">
+                                                <span class="consult-icon">
+                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                </span>
                                                 <a href="javascript:void(0)" data-viewname="labo_tests" class="nav-link trans-text" data-langprop="consult.Laboratory Tests"></a>
                                             </li>
-                                            <li class="nav-item">
+                                            <li class="nav-item consult-style-custom d-flex align-items-center">
+                                                <span class="consult-icon">
+                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                </span>
                                                 <a href="javascript:void(0)" data-viewname="diagnosis" class="nav-link trans-text" data-langprop="consult.Diagnosis"></a>
                                             </li>
-                                            <li class="nav-item">
+                                            <li class="nav-item consult-style-custom d-flex align-items-center">
+                                                <span class="consult-icon">
+                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                </span>
                                                 <a href="javascript:void(0)" data-viewname="prescription" class="nav-link trans-text" data-langprop="consult.Prescription"></a>
                                             </li>
-                                            <li class="nav-item">
+                                            <li class="nav-item consult-style-custom d-flex align-items-center">
+                                                <span class="consult-icon">
+                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                </span>
                                                 <a href="javascript:void(0)" data-viewname="recommendations" class="nav-link trans-text" data-langprop="consult.Recommendations"></a>
                                             </li>
-                                            <li class="nav-item">
+                                            <li class="nav-item consult-style-custom d-flex align-items-center">
+                                                <span class="consult-icon">
+                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                </span>
                                                 <a href="javascript:void(0)" data-viewname="medical_report" class="nav-link trans-text" data-langprop="consult.Medical Report"></a>
                                             </li>
                                         </ul>

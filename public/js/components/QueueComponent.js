@@ -1160,23 +1160,24 @@ let ConsultTabView = new function(){
 
     //begin:: Event handlers for History Tab  and Consultation tab
 
-    this.displayHistory = (client_id =0, div_tab_panel=null)=>{
-        div_tab_panel.html(`<div> <h3> This is patient history</h3> </div>`);
-    }
+    this.displayHistory = (client_id =0, div_tab_panel=null)=>{}
 
-    this.displayConsultation = (client_id = 0,div_tab_panel=null)=>{
-        // div_tab_panel.html(`<div> <h3> This is current consult</h3> </div>`);
-    }
+    this.displayConsultation = (client_id = 0,div_tab_panel=null)=>{}
     //end:: Event handlers for History Tab  and Consultation tab
 
     //begin::init ConsultTabeView (menus item event handlers and so on)
     this.init = () => {
-        mThis.ul_menus = $('#_consult_menus');
+        mThis.ul_menus_consult = $('#_consult_menus');
+        mThis.ul_menus_history = $('#_history_menus');
+
         //div panel that contains each consultation item's details
         mThis.consultItemPanel = $('#_consult_panel');
-        mThis.details_routes = mThis.defineDetailRoutes(mThis.consultItemPanel ); 
+        mThis.historyItemPanel = $('#_history_panel');
+        
+        mThis.details_routes_history = mThis.defineDetailRoutesHistory(mThis.historyItemPanel);
+        mThis.details_routes_consult = mThis.defineDetailRoutesConsult(mThis.consultItemPanel);
 
-        mThis.ul_menus.on('click','li',function(e){
+        mThis.ul_menus_consult.on('click','li',function(e){
            e.preventDefault();
            let li = $(this);
            //let targetElementId = li.find('a').data('target');
@@ -1185,29 +1186,80 @@ let ConsultTabView = new function(){
            li.addClass('consult-menu-selected');
            mThis.prev_selected_li = li;
 
-           mThis.details_routes[view_name]();
-           //mThis.consultItemPanel.html(html);
+           mThis.details_routes_consult[view_name]();
         });
-    } 
+
+        mThis.ul_menus_history.on('click','li',function(e){
+            e.preventDefault();
+            let li = $(this);
+            let view_name = li.find('a').data('viewname');
+            if(mThis.prev_selected_li) mThis.prev_selected_li.removeClass('history-menu-selected');
+            li.addClass('history-menu-selected');
+            mThis.prev_selected_li = li;
+
+            mThis.details_routes_history[view_name]();
+        });
+    }
     //end::init ConsultTabeView (menus item event handlers and so on)
 
-    this.defineDetailRoutes = (div)=>{
+    //begin::Detail Routes of Consult
+    this.defineDetailRoutesConsult = (div)=>{
        return {
-          "chief_complaints":()=>{
+          "chief_complaints":() => {
              mThis.showConsultChiefComplaints(div);
           },
-          "vital_signs":()=>{
+          "vital_signs":() => {
             mThis.showConsultVitalSigns(div);
           },
-          "visual_signs":()=>{
+          "visual_signs":() => {
             mThis.showConsultVisualSigns(div);
           },
-          "prescription":()=>{
+          "physical_examination":() => {
+            mThis.showConsultPhysicalExamination(div);
+          },
+          "prescription":() => {
             mThis.showConsultPrescription(div);
-          }
+          },
+          "labo_tests":() => {
+            mThis.showConsultLaboratoryTests(div);
+          },
+          "diagnosis":() => {
+            mThis.showConsultDiagnosis(div);
+          },
+          "recommendations":() => {
+            mThis.showConsultRecommendations(div);
+          },
+          "medical_report":() => {
+            mThis.showConsultMedicalReport(div);
+          },
        };
     }
+    //end::Detail Routes of Consult
 
+    this.defineDetailRoutesHistory = (div) => {
+        return {
+            "chief_complaints":() => {
+                mThis.showHistoryChiefComplaints(div);
+            },
+            "physical_examinations":() => {
+                mThis.showHistoryPhysicalExaminations(div);
+            },
+            "laboratory_tests":() => {
+                mThis.showHistoryLaboratoryTests(div);
+            },
+            "diagnosis":() => {
+                mThis.showHistoryDiagnosis(div);
+            },
+            "prescriptions":() => {
+                mThis.showHistoryPrescription(div);
+            },
+            "recommendations":() => {
+                mThis.showHistoryRecommendations(div);
+            }
+        };
+    };
+
+    //begin::Any options of consult
     this.showConsultChiefComplaints = (div)=>{
         let html = `<h3> This is Cheief complaints</h3>
         <div id="cc_list"></div>`;
@@ -1218,7 +1270,7 @@ let ConsultTabView = new function(){
                 "title":"Chief Complaint",
                 "dataType":"string",
                 "displayType":"select",
-                cssClass:"",
+                "cssClass":"",
                 "selectItems":[{
                     "value":"1", "text":"headache"
                 }]
@@ -1231,22 +1283,79 @@ let ConsultTabView = new function(){
     }
 
     this.showConsultVitalSigns = (div)=>{
-        let html = `<h3> This is Vital Signs</h3>`;
+        let html = `<h3>This is Vital Signs</h3>`;
         div.html(html);
     }
      
     this.showConsultPrescription = (div)=>{
-        let html = `<h3> This is Prescription </h3>`;
+        let html = `<h3>This is Prescription</h3>`;
         div.html(html);
     }
 
     this.showConsultVisualSigns = (div)=>{
-        let html = `<h3> This is Visual Signs</h3>`;
+        let html = `<h3>This is Visual Signs</h3>`;
         div.html(html);
     }
+
+    this.showConsultPhysicalExamination = (div) => {
+        let html = `<h3>This is Physical Examination</h3>`;
+        div.html(html);
+    }
+
+    this.showConsultLaboratoryTests = (div) => {
+        let html = `<h3>This is Laboratory Test</h3>`;
+        div.html(html);
+    }
+
+    this.showConsultDiagnosis = (div) => {
+        let html = `<h3>This is Diagnosis</h3>`;
+        div.html(html);
+    }
+    
+    this.showConsultRecommendations = (div) => {
+        let html = `<h3>This is Recommendations</h3>`;
+        div.html(html);
+    }
+
+    this.showConsultMedicalReport = (div) => {
+        let html = `<h3>This is Medical Report`;
+        div.html(html);
+    }
+    //end::Any options of consult
+
+    //begin::Any options of history
+    this.showHistoryChiefComplaints = (div) => {
+        let html = `<h3>This is Chief Complaint</h3>`;
+        div.html(html);
+    }
+
+    this.showHistoryPhysicalExaminations = (div) => {
+        let html = `<h3>This is Physical Examinations</h3>`;
+        div.html(html);
+    }
+
+    this.showHistoryLaboratoryTests = (div) => {
+        let html = `<h3>This is Laboratory Tests</h3>`;
+        div.html(html);
+    }
+
+    this.showHistoryDiagnosis = (div) => {
+        let html = `<h3>This is Diagnosis</h3>`;
+        div.html(html);
+    }
+
+    this.showHistoryPrescription = (div) => {
+        let html = `<h3>This is Prescription</h3>`;
+        div.html(html);
+    }
+
+    this.showHistoryRecommendations = (div) => {
+        let html = `<h3>This is Recommedations</h3>`;
+        div.html(html);
+    }
+    //end::Any options of history
 }
 //end::ConsultTabView
-
 
 //begin::ConsultDialog
 let ConsultDialog = new function(){
