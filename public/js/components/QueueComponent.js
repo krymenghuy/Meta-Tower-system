@@ -61,11 +61,8 @@ let TicketDetails = new function () {
                                     } else cv_interact.warning(res.error_message);
                                 });
                             }
-                        });
-                        
-            });
-
-       
+                        });     
+            });       
         });
 
     }
