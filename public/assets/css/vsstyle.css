@@ -134,10 +134,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   background-color:#526fff86;
 }
 
-table.cc_list_style td {
-  padding:15px;
-}
-
 .custom-width{
   max-width:255px;
 }

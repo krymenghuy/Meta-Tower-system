@@ -1173,6 +1173,11 @@ let ConsultTabView = new function(){
         //div panel that contains each consultation item's details
         mThis.consultItemPanel = $('#_consult_panel');
         mThis.historyItemPanel = $('#_history_panel');
+
+        mThis.consultItemPanel.on('click','a.consultview-add-cc',(e)=>{
+            e.preventDefault();
+            mThis.tblChiefComplaints.addRow();
+        });
         
         mThis.details_routes_history = mThis.defineDetailRoutesHistory(mThis.historyItemPanel);
         mThis.details_routes_consult = mThis.defineDetailRoutesConsult(mThis.consultItemPanel);
@@ -1261,7 +1266,7 @@ let ConsultTabView = new function(){
 
     //begin::Any options of consult
     this.showConsultChiefComplaints = (div)=>{
-        let html = `<h3> This is Cheief complaints</h3>
+        let html = `<h3> This is Chief complaints <a href="#" class="consultview-add-cc"><i class="fa fa-plus-circle"></i></a></h3>
         <div id="cc_list"></div>`;
         div.html(html);
         let columns = [
@@ -1276,10 +1281,22 @@ let ConsultTabView = new function(){
                 }]
             }
         ]
-        let cfg = new ItemsView('cc_list',{
-            columns:columns,
-            tableClass:"cc_list_style"
+        mThis.tblChiefComplaints = new ItemsView('cc_list',{
+            "columns":columns,
+            "langProp":"consult",
+            "tableClass":"table",
+            "showColumnHeaders":false,
+            "showAddLineButton":false,
+            //"addLineButtonText":"Add CC",
+            //"addLineButtonClass":null,
+            //"cssClass":"td_class",
+            "numeroFormatter":(numero,row)=>{
+                return `<span class="text-secondary fw-bold">${numero}</span>`; 
+            },
+            "emptyMessage":`<span class="text-secondary text-align-center">${LocaleManager.trans('No chief complaints','consult')}</span>`,
+
         });
+        
     }
 
     this.showConsultVitalSigns = (div)=>{
