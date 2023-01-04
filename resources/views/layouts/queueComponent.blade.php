@@ -117,7 +117,7 @@
                         <div class="tab-body">
                             <div class="tab-panel border-3d" data-viewname="history" id="tab_panel_history">
                                 <div class="row">
-                                    <div class="col-xl-3">
+                                    <div class="col-xl-3 custom-width">
                                         <ul id="_history_menus" class="nav flex-column">
                                             <li class="nav-item history_style_custom d-flex align-items-center">
                                                 <span class="history_icon">
@@ -154,6 +154,12 @@
                                                     <i class="fa-solid fa-user ps-2"></i>
                                                 </span>
                                                 <a href="javascript:void(0)" data-viewname="recommendations" class="nav-link trans-text" data-langprop="history.Recommendations"></a>
+                                            </li>
+                                            <li class="nav-item history_style_custom d-flex align-items-center">
+                                                <span class="history_icon">
+                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                </span>
+                                                <a href="javascript:void(0)" data-viewname="medical-reports" class="nav-link trans-text" data-langprop="history.Medical Reports"></a>
                                             </li>
                                         </ul>
                                     </div>

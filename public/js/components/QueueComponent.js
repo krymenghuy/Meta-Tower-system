@@ -1112,6 +1112,9 @@ let ConsultTabView = new function(){
     let mThis = this;
     this.self = $('#_consultTabView');
     this.base_url = main_view.base_url;
+    this.ticket_id = null;
+    this.patient_id =null;
+
     //this.data is used to store form options such as chief_complaints, vital_signs, etc ...
     this.data = {};
 
@@ -1125,6 +1128,7 @@ let ConsultTabView = new function(){
         mThis.show(mThis.client_id,view_name,true);
     }); 
 
+    //options = {patient_id,ticket_id}
     this.show = function(options,view_name,tab_button_clicked = false){
          if(!options) options = {};
          mThis.patient_id = options.patient_id;
@@ -1144,7 +1148,7 @@ let ConsultTabView = new function(){
                    
                   //begin:: display content data depending on current view_name. This code block is not part of General Script for TabView
                        if (view_name ==='history') {
-                           mThis.displayHistory(mThis.ticket_id,div_tab_panel);
+                           mThis.displayHistory(mThis.patient_id,div_tab_panel);
                        } else if (view_name ==='consultation') {
                            mThis.displayConsultation(mThis.ticket_id,div_tab_panel);
                        }
@@ -1170,9 +1174,9 @@ let ConsultTabView = new function(){
 
     //begin:: Event handlers for History Tab  and Consultation tab
 
-    this.displayHistory = (client_id =0, div_tab_panel=null)=>{}
+    ////this.displayHistory = (patient_id =0, div_tab_panel=null)=>{}
 
-    this.displayConsultation = (client_id = 0,div_tab_panel=null)=>{}
+    ////this.displayConsultation = (ticket_id = 0,div_tab_panel=null)=>{}
     //end:: Event handlers for History Tab  and Consultation tab
 
     //begin::init ConsultTabeView (menus item event handlers and so on)
@@ -1271,6 +1275,9 @@ let ConsultTabView = new function(){
             },
             "recommendations":() => {
                 mThis.showHistoryRecommendations(div);
+            },
+            "medical-reports":() => {
+                mThis.showHistoryMedicalReports(div);
             }
         };
     };
@@ -1382,9 +1389,6 @@ let ConsultTabView = new function(){
                 
                 el.show().siblings().hide();
         });
-
-    
-         
     }
     
     this.loadPE_patient = (ticket_id,onFinish)=>{
@@ -1452,7 +1456,6 @@ let ConsultTabView = new function(){
             </div>`;
            
             div.append(html);
-
                 let columns = [
                     {
                         "name":"name",
@@ -1498,7 +1501,6 @@ let ConsultTabView = new function(){
                         "emptyMessage":`<span class="text-secondary text-align-center">${LocaleManager.trans('No item prescribed','consult')}</span>`,
     
                     });
-                    
                     //mThis.tblChiefComplaints.setSelectOptions('name',cc_items);
                     el = div.find(`#${wrapper_id}`);
                 });
@@ -1540,22 +1542,121 @@ let ConsultTabView = new function(){
 
     //begin::Any options of history
     this.showHistoryChiefComplaints = (div) => {
-        let html = `<h3>This is Chief Complaint</h3>`;
+        let html = `<h3>This is Chief Complaint</h3>
+        <div class="d-block">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="fw-bold">Date</th>
+                            <th class="fw-bold">h:m:ss</th>
+                            <th class="fw-bold">Doctor Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <ul>
+                                    <li>ADFA</li>
+                                    <li>ADFA</li>
+                                    <li>ADFA</li>
+                                </ul>
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>`;
         div.html(html);
     }
 
     this.showHistoryPhysicalExaminations = (div) => {
-        let html = `<h3>This is Physical Examinations</h3>`;
+        let html = `<h3>Physical Examination</h3>
+        <div class="d-block">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="fw-bold">27-08-2021</th>
+                            <th class="fw-bold">h:m:ss</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <p>
+                                    During a physical examination, a health care provider studies your body to determine if you do or do not have a physical problem. A physical examination usually includes: Inspection (looking at the body) Palpation (feeling the body with fingers or hands) Auscultation (listening to sounds)
+                                </p>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>`;
         div.html(html);
     }
 
     this.showHistoryLaboratoryTests = (div) => {
-        let html = `<h3>This is Laboratory Tests</h3>`;
+        let html = `<h3>Laboratory Tests</h3>
+        <div class="d-block">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="fw-bold">Test Name</th>
+                            <th class="fw-bold">Laboratory</th>
+                            <th class="fw-bold">Date</th>
+                            <th class="fw-bold">Result</th>
+                            <th class="fw-bold">Docs</th>
+                            <th class="fw-bold">Comment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>`;
         div.html(html);
     }
 
     this.showHistoryDiagnosis = (div) => {
-        let html = `<h3>This is Diagnosis</h3>`;
+        let html = `<h3>This is Diagnosis</h3>
+        <div class="d-block">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="fw-bold">Date</th>
+                            <th class="fw-bold">Description</th>
+                            <th class="fw-bold">Doctor Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td class="vs-contain-custom">
+                                <p>
+                                    A clinic (or outpatient clinic or ambulatory care clinic) is a health facility that is primarily focused on the care of outpatients. Clinics can be privately operated or publicly managed and funded. They typically cover the primary care needs of populations in local communities, in contrast to larger hospitals which offer more specialised treatments and admit inpatients for overnight stays.
+                                <p>
+                                <span id = "diag_${patient_id}" class="diag-detail"></span>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>`;
         div.html(html);
     }
 
@@ -1566,6 +1667,39 @@ let ConsultTabView = new function(){
 
     this.showHistoryRecommendations = (div) => {
         let html = `<h3>This is Recommedations</h3>`;
+        div.html(html);
+    }
+
+    this.showHistoryMedicalReports = (div) => {
+        let html = `<div class="d-block">
+            <div class="d-flex align-items-center justify-content-center">
+                <h3>Medical Reports</h3>
+            </div>
+            <div class="d-block">
+                <div class="d-flex align-items-center">
+                    <div>
+                        <p class="trans-text" data-langprop="patient.Patient ID">Patient ID :</p>
+                    </div>
+                    <div>
+                        <p class="">008</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div>
+                        <p class="trans-text" data-langprop="patient.Patient Name">Patient Name :</p>
+                    </div>
+                    <div>
+                        <p class="">Koko</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div>
+                        <p class="trans-text" data></p>
+                    </div>
+                    <div></div>
+                </div>
+            </div>
+        <div>`;
         div.html(html);
     }
     //end::Any options of history
