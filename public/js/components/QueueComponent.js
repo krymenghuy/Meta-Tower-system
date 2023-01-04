@@ -1,5 +1,4 @@
 "use strict";
-
 //begin::TicketDetails class
 let TicketDetails = new function () {
     let mThis = this;
@@ -40,7 +39,6 @@ let TicketDetails = new function () {
             
             let ticket_id = $(this).data('tid');
             let patient_id = $(this).data('clientid');
-  
             let op = {
                 patient_id: patient_id,
                 ticket_id: ticket_id,
@@ -1112,8 +1110,8 @@ let ConsultTabView = new function(){
     let mThis = this;
     this.self = $('#_consultTabView');
     this.base_url = main_view.base_url;
-    this.ticket_id = null;
-    this.patient_id =null;
+    //this.ticket_id = null;
+    //this.patient_id =null;
 
     //this.data is used to store form options such as chief_complaints, vital_signs, etc ...
     this.data = {};
@@ -1125,15 +1123,24 @@ let ConsultTabView = new function(){
         //alert($(this).data('target'));
         $(this).addClass('active').siblings().removeClass('active');
         let view_name = $(this).data('viewname').toLowerCase();
-        mThis.show(mThis.client_id,view_name,true);
+        mThis.show(mThis.options,view_name,true);
     }); 
 
     //options = {patient_id,ticket_id}
     this.show = function(options,view_name,tab_button_clicked = false){
          if(!options) options = {};
-         mThis.patient_id = options.patient_id;
-         mThis.ticket_id = options.ticket_id;
-        if(!mThis.ticket_id) console.error('ConsultTabView on ConsultDialog does not have valid ticket_id, thus it is not possible to identify patient');
+         //alert(JSON.stringify(options));
+        //  mThis.patient_id = options.patient_id;
+        //  mThis.ticket_id = options.ticket_id;
+         mThis.options = options;
+
+          //Store patient_id and ticket_id as data attributes of each panel container
+        mThis.consultItemPanel.data('tid',mThis.options.ticket_id);
+        mThis.consultItemPanel.data('patientid',mThis.options.patient_id);
+        mThis.historyItemPanel.data('tid',mThis.options.ticket_id);
+        mThis.historyItemPanel.data('patientid',mThis.options.patient_id);
+
+        if(!mThis.options.ticket_id) console.error('ConsultTabView on ConsultDialog does not have valid ticket_id, thus it is not possible to identify patient');
 
          if (!view_name) view_name = mThis.cur_view;
          view_name = (view_name+'').toLowerCase();
@@ -1147,14 +1154,14 @@ let ConsultTabView = new function(){
                 $(this).show().siblings().hide();
                    
                   //begin:: display content data depending on current view_name. This code block is not part of General Script for TabView
-                       if (view_name ==='history') {
-                           mThis.displayHistory(mThis.patient_id,div_tab_panel);
-                       } else if (view_name ==='consultation') {
-                           mThis.displayConsultation(mThis.ticket_id,div_tab_panel);
-                       }
-                       // else {
-                       //   //do nothing   
-                       // }
+                    //    if (view_name ==='history') {
+                    //        mThis.displayHistory(mThis.patient_id,div_tab_panel);
+                    //    } else if (view_name ==='consultation') {
+                    //        mThis.displayConsultation(mThis.ticket_id,div_tab_panel);
+                    //    }
+                    //    // else {
+                    //    //   //do nothing   
+                    //    // }
                   //end:: dispay content data
 
                 return;
@@ -1188,6 +1195,7 @@ let ConsultTabView = new function(){
         mThis.consultItemPanel = $('#_consult_panel');
         mThis.historyItemPanel = $('#_history_panel');
 
+        
         mThis.consultItemPanel.on('click','a.consultview-add-cc',(e)=>{
             e.preventDefault();
             mThis.tblChiefComplaints.addRow();
@@ -1349,7 +1357,7 @@ let ConsultTabView = new function(){
     }
 
     //LoadPatientVitalSigns() | Load vital signs for one patient
-    this.loadVitalSigns_patient = (patient_id=0,onFinish)=>{
+    this.loadVitalSigns_patient = (ticket_id=0,onFinish)=>{
         let items = [
             {'name':'s1','value':'30'},
             {'name':'s2','value':'35'},
@@ -1542,7 +1550,7 @@ let ConsultTabView = new function(){
 
     //begin::Any options of history
     this.showHistoryChiefComplaints = (div) => {
-        let html = `<h3>This is Chief Complaint</h3>
+        let html = `<h3>Chief Complaint</h3>
         <div class="d-block">
             <div class="table-responsive">
                 <table class="table table-bordered">
@@ -1550,7 +1558,28 @@ let ConsultTabView = new function(){
                         <tr>
                             <th class="fw-bold">Date</th>
                             <th class="fw-bold">h:m:ss</th>
-                            <th class="fw-bold">Doctor Name</th>
+                            <th class="fw-bold text-nowrap">Doctor Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <ul>
+                                    <li>ADFA</li>
+                                    <li>ADFA</li>
+                                    <li>ADFA</li>
+                                </ul>
+                            </td>
+                            <td>12-11-2021</td>
+                            <td>Peter</td>
+                        </tr>
+                    </tbody>
+
+                    <thead>
+                        <tr>
+                            <th class="fw-bold">Date</th>
+                            <th class="fw-bold">h:m:ss</th>
+                            <th class="fw-bold text-nowrap">Doctor Name</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1593,6 +1622,23 @@ let ConsultTabView = new function(){
                             <td></td>
                         </tr>
                     </tbody>
+
+                    <thead>
+                        <tr>
+                            <th class="fw-bold">27-08-2021</th>
+                            <th class="fw-bold">h:m:ss</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <p>
+                                    During a physical examination, a health care provider studies your body to determine if you do or do not have a physical problem. A physical examination usually includes: Inspection (looking at the body) Palpation (feeling the body with fingers or hands) Auscultation (listening to sounds)
+                                </p>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>`;
@@ -1606,7 +1652,7 @@ let ConsultTabView = new function(){
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th class="fw-bold">Test Name</th>
+                            <th class="fw-bold text-nowrap">Test Name</th>
                             <th class="fw-bold">Laboratory</th>
                             <th class="fw-bold">Date</th>
                             <th class="fw-bold">Result</th>
@@ -1630,55 +1676,135 @@ let ConsultTabView = new function(){
         div.html(html);
     }
 
+    this.loadHistory_diagnosis = (patient_id,onFinish)=>{
+       let items= [
+         {
+            "ticket_id":1,
+            "date":"12 Dec 2022",
+            "ticket_number":"D0001",
+            "description":"This is diagnosis one",
+         },
+         {
+            "ticket_id":2,
+            "date":"13 Dec 2022",
+            "ticket_number":"D0001",
+            "description":"This is diagnosis two",
+         },
+         {
+            "ticket_id":3,
+            "date":"20 Dec 2022",
+            "ticket_number":"D0001",
+            "description":"This is diagnosis three",
+         }
+       ];
+      onFinish(items);
+    }
+
     this.showHistoryDiagnosis = (div) => {
-        let html = `<h3>This is Diagnosis</h3>
-        <div class="d-block">
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th class="fw-bold">Date</th>
-                            <th class="fw-bold">Description</th>
-                            <th class="fw-bold">Doctor Name</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td></td>
+
+        let ticket_id = div.data('tid');
+        let patient_id = div.data('patientid');
+        let wrapper_id ='_history_hs_wrapper';
+        let el = div.find(`#${wrapper_id}`);
+
+        if (!el || el.length ===0){
+
+            mThis.loadHistory_diagnosis(patient_id,items=>{
+
+            });
+                let body_id = `tblHis_tbody_${patient_id}`;
+
+                let html = `<h3>Diagnosis</h3>
+                <div class="d-block">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="fw-bold">Date</th>
+                                    <th class="fw-bold">Description</th>
+                                    <th class="fw-bold text-nowrap">Doctor Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td class="vs-contain-custom">
+                                        <p>
+                                            A clinic (or outpatient clinic or ambulatory care clinic) is a health facility that is primarily focused on the care of outpatients. Clinics can be privately operated or publicly managed and funded. They typically cover the primary care needs of populations in local communities, in contrast to larger hospitals which offer more specialised treatments and admit inpatients for overnight stays.
+                                        <p>
+                                        <span id="diag_${ticket_id}" class="span"></span>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+
+                            <thead>
+                                <tr>
+                                    <th class="fw-bold">Date</th>
+                                    <th class="fw-bold">Description</th>
+                                    <th class="fw-bold text-nowrap">Doctor Name</th>
+                                </tr>
+                            </thead>
+                            <tbody id ="${body_id}"> 
+                            </tbody>
+                        </table>
+                    </div>
+                </div>`;
+                div.html(html);
+
+                //Insert rows to History table
+                let tbody = document.querySelector(`#${body_id}`);
+                 if(tbody){
+                     let row_html ='';
+                     let i=0;
+                     items.map(item =>{
+                        row_html = [row_html,`<tr>
+                            <td><span style="display:block">${item.date}</span> <span>${item.ticket_number}</span></td>
                             <td class="vs-contain-custom">
                                 <p>
-                                    A clinic (or outpatient clinic or ambulatory care clinic) is a health facility that is primarily focused on the care of outpatients. Clinics can be privately operated or publicly managed and funded. They typically cover the primary care needs of populations in local communities, in contrast to larger hospitals which offer more specialised treatments and admit inpatients for overnight stays.
+                                   ${item.description}
                                 <p>
-                                <span id = "diag_${patient_id}" class="diag-detail"></span>
+                                <span id="diag_${item.ticket_id}" class="span"></span>
                             </td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>`;
-        div.html(html);
+                            <td>${item.consultant_name}</td>
+                        </tr>`].join('');
+                        i++;
+                     }); 
+
+                     tbody.innerHTML = row_html;
+                    tbody.querySelector(`#diag_${item.ticket_id}`).addEventListener('click',(e)=>{
+                        let td = VSDOM.getClosestParentByType(e.target,'TD');
+                        if(td) td.classList.toggle('active');
+                    });
+                 }
+               
+              
+        }else{
+           el.show().siblings().hide();
+        }
+
+      
     }
 
     this.showHistoryPrescription = (div) => {
-        let html = `<h3>This is Prescription</h3>`;
+        let html = `<h3>Prescription</h3>`;
         div.html(html);
     }
 
     this.showHistoryRecommendations = (div) => {
-        let html = `<h3>This is Recommedations</h3>`;
+        let html = `<h3>Recommedations</h3>`;
         div.html(html);
     }
 
     this.showHistoryMedicalReports = (div) => {
         let html = `<div class="d-block">
-            <div class="d-flex align-items-center justify-content-center">
+            <div class="d-flex align-items-center mb-4">
                 <h3>Medical Reports</h3>
             </div>
             <div class="d-block">
                 <div class="d-flex align-items-center">
                     <div>
-                        <p class="trans-text" data-langprop="patient.Patient ID">Patient ID :</p>
+                        <p class="fw-semibold trans-text pe-2" data-langprop="patient.Patient ID">Patient ID:</p>
                     </div>
                     <div>
                         <p class="">008</p>
@@ -1686,7 +1812,7 @@ let ConsultTabView = new function(){
                 </div>
                 <div class="d-flex align-items-center">
                     <div>
-                        <p class="trans-text" data-langprop="patient.Patient Name">Patient Name :</p>
+                        <p class="fw-semibold trans-text pe-2" data-langprop="patient.Patient Name">Patient Name:</p>
                     </div>
                     <div>
                         <p class="">Koko</p>
@@ -1694,10 +1820,30 @@ let ConsultTabView = new function(){
                 </div>
                 <div class="d-flex align-items-center">
                     <div>
-                        <p class="trans-text" data></p>
+                        <p class="fw-semibold trans-text pe-2" data-langprop="patient.Sex">Sex:</p>
                     </div>
-                    <div></div>
+                    <div>
+                        <p class="">Female</p>
+                    </div>
                 </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="fw-bold">No</th>
+                            <th class="fw-bold">Date</th>
+                            <th class="fw-bold">Doctor Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>001</td>
+                            <td>12-11-2021</td>
+                            <td>Peter</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         <div>`;
         div.html(html);
@@ -1726,7 +1872,9 @@ let ConsultDialog = new function(){
     // @option = {patient_id,ticket_id,onClose:()=> { ... }}
     this.show = (option)=>{
         if(!option) option = {};
+        //alert(JSON.stringify(option));
         mThis.onClose = option.onClose;
+    
         ConsultTabView.show({"ticket_id":option.ticket_id,"patient_id":option.patient_id },this.defaultTabView);
         mThis.self.modal({
             backdrop:'static'
