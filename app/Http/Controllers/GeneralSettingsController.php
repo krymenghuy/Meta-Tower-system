@@ -25,11 +25,27 @@ class GeneralSettingsController extends Controller
         $this->settingModel = new GeneralSettings();
     }
   
-    function getComboItems_channel(Request $request){
+    function getComboItems_channel(Request $req){
         $rows = DB::table('contact_channels as cc')->where('cc.branch_id',0)->selectRaw("cc.id,cc.name as channel_name")->get();
         return JDV::result($rows);
     }
   
+    function getProductData(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !=200) return JDV::emptyResult($ss); //user not authenticated
+      $branch_id = $ss->branch_id;
+      $rows = DB::table('inv_items as i')->where('i.branch_id',$branch_id)->selectRaw("i.id as `value`,i.name as `text`")->get();
+      $data = (object)[];
+      $data->products = $rows;
+      $data->usage_options = [
+        ['value'=>"1x2","text"=>"1x2"],
+        ['value'=>"1x3","text"=>"1x3"],
+        ['value'=>"Apply","text"=>"Apply"],
+        ['value'=>"Other instruction","text"=>"Other instruction"]
+      ]; 
+      return JDV::result($data);
+    }
+
     function getComboItems_consultant(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !=200) return JDV::emptyResult($ss); //user not authenticated

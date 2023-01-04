@@ -323,6 +323,8 @@ Route::post('test/test-api',function(){
     Route::post('settings/options-consultant', [GeneralSettingsController::class, 'getComboItems_consultant']);   
     Route::post('settings/options-chief-complaint', [GeneralSettingsController::class, 'getComboItems_chief_complaint']);
     Route::post('settings/save-chief-complaint', [GeneralSettingsController::class, 'saveChiefComplaint']);
+    //getProductData() return object {"products"=> [], "usages"=>[]}
+    Route::post('settings/options-product', [GeneralSettingsController::class, 'getProductData']);
 
     /** return various options regarding Employment data. such as organiations, industries, etc **/
     Route::post('settings/emp-options', [GeneralSettingsController::class, 'getComboItems_emp_options']);
