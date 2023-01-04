@@ -35,7 +35,8 @@ class ItemsView{
 
         if(options.showAddLineButton =='undefined') options.showAddLineButton = true;  
         if(options.showColumnHeaders == 'undefined') options.showColumnHeaders = true;
-       
+        if (options.onItemChange != 'function') options.onItemChange = ()=>{ return;};
+
         if(!options.columns) options.columns = this.getDefaultColumns(); 
         this.options = options;
         this.self = document.querySelector(`#${div_id}`);
@@ -206,7 +207,7 @@ class ItemsView{
                 if (col.displayType =='select'){
                     let cb = td.querySelector('select.td-input');
                     //cb.setAttribute('disabled',false);
-                    this.initSelect2(cb,td);
+                    this.initSelect2(cb,td,value);
                 } //else cb.setAttribute('readOnly',false);
                
             } 
@@ -258,17 +259,24 @@ class ItemsView{
 
      }
 
-     initSelect2(el,td){
+     initSelect2(el,td,value){
         let select2_dropdowns = td.querySelectorAll('span.select2-container');
         select2_dropdowns.forEach(d =>{
                   d.classList.style.display='none';
         }); 
 
           //NOTE: el must be converted to $(el) because .select2() is jquery function
-            $(el).select2({
+            let x = $(el);
+            x.select2({
                 width:'100%'
             });
- 
+
+            // x.on('change',()=>{
+            //   let col_name = td.dataset.name;
+            //   this.options.onItemChange(col_name);
+            // });
+
+            x.val(value).trigger('change');
      }
   
      //@items is array = [{value,text}, {value,text}, ...] 
