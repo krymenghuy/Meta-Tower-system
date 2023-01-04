@@ -1143,14 +1143,14 @@ let ConsultTabView = new function(){
                 $(this).show().siblings().hide();
                    
                   //begin:: display content data depending on current view_name. This code block is not part of General Script for TabView
-                       if (view_name ==='history') {
-                           mThis.displayHistory(mThis.ticket_id,div_tab_panel);
-                       } else if (view_name ==='consultation') {
-                           mThis.displayConsultation(mThis.ticket_id,div_tab_panel);
-                       }
-                       // else {
-                       //   //do nothing   
-                       // }
+                    //    if (view_name ==='history') {
+                    //        //mThis.displayHistory(mThis.patient_id,div_tab_panel);
+                    //    } else if (view_name ==='consultation') {
+                    //        //mThis.displayConsultation(mThis.ticket_id,div_tab_panel);
+                    //    }
+                    //    // else {
+                    //    //   //do nothing   
+                    //    // }
                   //end:: dispay content data
 
                 return;
@@ -1170,9 +1170,9 @@ let ConsultTabView = new function(){
 
     //begin:: Event handlers for History Tab  and Consultation tab
 
-    this.displayHistory = (client_id =0, div_tab_panel=null)=>{}
+    //this.displayHistory = (client_id =0, div_tab_panel=null)=>{}
 
-    this.displayConsultation = (client_id = 0,div_tab_panel=null)=>{}
+    ///this.displayConsultation = (client_id = 0,div_tab_panel=null)=>{}
     //end:: Event handlers for History Tab  and Consultation tab
 
     //begin::init ConsultTabeView (menus item event handlers and so on)
