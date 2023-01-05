@@ -172,6 +172,10 @@ span.span::before{
   cursor:pointer;
 }
 
+.menu-selected .icons{
+  filter: invert(86%) sepia(100%) saturate(0%) hue-rotate(140deg) brightness(103%) contrast(101%);
+}
+
 @media screen and (max-width:820px) {
   .kt-aside__brand {
     display: flex;

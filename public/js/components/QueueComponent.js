@@ -5,7 +5,7 @@ let TicketDetails = new function () {
     //mThis.default_view = 'info';
     mThis.current_view_name = 'info';
     mThis.tblTickets = null;
-    
+
     this.icon_url = () => {
         return `${VSUtil.asset_url()}/images/icons`;
     }
@@ -14,7 +14,7 @@ let TicketDetails = new function () {
     this.init = (tblTickets_id) => {
         mThis.tblTickets = $(`#${tblTickets_id}`);
 
-        if(mThis.tblTickets.length === 0) console.error(`Error: failed create object element ${tblTickets_id}`); 
+        if (mThis.tblTickets.length === 0) console.error(`Error: failed create object element ${tblTickets_id}`);
         mThis.tblTickets.on('click', '.btn-ticket-tab', function (e) {
             $(this).addClass('btn-ticket-tab--active').siblings().removeClass('btn-ticket-tab--active');
         });
@@ -25,34 +25,34 @@ let TicketDetails = new function () {
             mThis.showInfo(div_wrapper);
         });
 
-        mThis.tblTickets.on('click', 'a.qul-btn-history', function (e) {
+        mThis.tblTickets.on('click', 'a.qul-btn-photo', function (e) {
             e.preventDefault();
             let div_wrapper = $(this).closest('div.ticket-info-wrapper');
-            mThis.showHistory(div_wrapper);
+            mThis.showPhoto(div_wrapper);
         });
 
-         mThis.tblTickets.on('click', 'a.qul-btn-consult', function (e) {
+        mThis.tblTickets.on('click', 'a.qul-btn-consult', function (e) {
             e.preventDefault();
-            
+
             //let div_wrapper = $(this).closest('div.ticket-info-wrapper');
             //mThis.startConsult(div_wrapper);
-            
+
             let ticket_id = $(this).data('tid');
             let patient_id = $(this).data('clientid');
             let op = {
                 patient_id: patient_id,
                 ticket_id: ticket_id,
-                onClose:(d)=>{
-                  alert('Consult Window is closing');
+                onClose: (d) => {
+                    alert('Consult Window is closing');
                 }
             };
 
             ConsultDialog.show(op);
-          
+
         });
-        
-         //remove Chief complaint item, on Appoinment list expanaded view
-         mThis.tblTickets.on('click', 'tbody>tr> td a.qul-remove-complaint', function (e) {
+
+        //remove Chief complaint item, on Appoinment list expanaded view
+        mThis.tblTickets.on('click', 'tbody>tr> td a.qul-remove-complaint', function (e) {
             e.preventDefault();
             let lnk = $(this);
             let ul = lnk.closest('ul');
@@ -76,17 +76,17 @@ let TicketDetails = new function () {
                 }
             });
         });
- 
+
         //within the TicketDetails class => TicketDetails.tblTickets
-        mThis.tblTickets.on('click','tbody>tr>td a.qul-add-complaint',function (e) {
+        mThis.tblTickets.on('click', 'tbody>tr>td a.qul-add-complaint', function (e) {
             e.preventDefault();
             let x = $(this);
             let ul_id = x.data('ulid');
             let ul = $(`#${ul_id}`);
             let ticket_id = x.data('tid');
-            
-            mThis.getChiefComplaintOptions((chief_complaints)=>{
-                let option = { 'title': 'Choose Chief Complaint', 'dataLabel': 'Select Chief Complaint', 'valueMember': 'id', 'textMember': 'name', 'data':chief_complaints, 'blankErrorMessage': "Please choose chief complaint" };
+
+            mThis.getChiefComplaintOptions((chief_complaints) => {
+                let option = { 'title': 'Choose Chief Complaint', 'dataLabel': 'Select Chief Complaint', 'valueMember': 'id', 'textMember': 'name', 'data': chief_complaints, 'blankErrorMessage': "Please choose chief complaint" };
                 InputBox2.show(option, function (d) {
                     //NOTE: d is object with {value,text}
                     if (d) {
@@ -106,7 +106,7 @@ let TicketDetails = new function () {
             });
         });
     }
-  //end::TicketDetails.init()
+    //end::TicketDetails.init()
 
     //AddChiefComplaintToList() on Appointment List' s expanded view
     this.addCCToList = (ul, item = {}) => {
@@ -131,19 +131,19 @@ let TicketDetails = new function () {
         if (i === 0) html = `<li data-apptid="0"><span class="text-muted">(No chief complaints)</span></li>`;
         return html;
     }
- 
-    this.getChiefComplaintOptions = (onFinish)=>{
-        if(!mThis.form_data) mThis.form_data = {};
-        
+
+    this.getChiefComplaintOptions = (onFinish) => {
+        if (!mThis.form_data) mThis.form_data = {};
+
         mThis.form_data.chief_complaints = null;
 
-        if(!mThis.form_data.chief_complaints){
-            vsapi.call(`${main_view.base_url}/api/settings/options-chief-complaint`,null).then((res)=>{
-                if(res.status_code===200)
-                onFinish(StringSanitizer.sanitizeObject(res.data));
-                else cv_interact.error(res.error_message);   
+        if (!mThis.form_data.chief_complaints) {
+            vsapi.call(`${main_view.base_url}/api/settings/options-chief-complaint`, null).then((res) => {
+                if (res.status_code === 200)
+                    onFinish(StringSanitizer.sanitizeObject(res.data));
+                else cv_interact.error(res.error_message);
             });
-        }else onFinish(mThis.form_data.chief_complaints); 
+        } else onFinish(mThis.form_data.chief_complaints);
     }
 
     //Display Ticket Detail panel, by displaying the "Info" tab as default view
@@ -153,7 +153,7 @@ let TicketDetails = new function () {
         let html = `<div data-tid="${d.ticket_id}" data-clientid="${d.client_id}" data-personid="${d.person_id}" data-statusid="${d.status_id}" class="ticket-info-wrapper shadow-lg d-flex" style="width:100%;">
                     <div class="form-inline ticket-tab-buttons" role="group" aria-label="ticket tabs" style="display:block">
                         <a style="padding:5px" type="button"  data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-info trans-text" data-langprop="buttons.Info">Info</a>
-                        <a style="padding:5px" type="button"  data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-history trans-text" data-langprop="buttons.History">History</a>
+                        <a style="padding:5px" type="button"  data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-photo trans-text" data-langprop="buttons.Photo">Photo</a>
                         <a style="padding:5px" type="button" data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-consult trans-text" data-langprop="buttons.Consult Now">Consult Now</a>
                     </div>
                     <div data-tid="${d.ticket_id}" class="qul-workspace pt-3" style="width:100%;display:block;">
@@ -169,9 +169,9 @@ let TicketDetails = new function () {
                 mThis.showInfo(div_panel);
                 break;
             }
-            case 'history': {
-                mThis.setActiveTabButton(div_panel, 'qul-btn-history')
-                mThis.showHistory(div_panel);
+            case 'photo': {
+                mThis.setActiveTabButton(div_panel, 'qul-btn-photo')
+                mThis.showPhoto(div_panel);
                 break;
             }
             case 'consult': {
@@ -234,9 +234,9 @@ let TicketDetails = new function () {
                 d.consultant_name = d.consultant_name ? d.consultant_name : 'N.A.';
                 d.membership_card = d.membership_card ? d.membership_card : 'None';
                 let email = d.email ? d.email : 'N.A.';
-                ws_id = ['ticket_',d.id].join('');
+                ws_id = ['ticket_', d.id].join('');
                 let ticket_id = d.id;
-                
+
                 html = [
                     `<div id="${ws_id}" data-ticketid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="row">
                         <div class="col-xl-6 col-lg-8 col-sm-12">
@@ -350,22 +350,24 @@ let TicketDetails = new function () {
         return html ? html : '<span class="detail-item-empty">No vital signs</span>';
     }
 
-    this.showHistory = (div_panel, ticket_id = null) => {
+    this.showPhoto = (div_panel, ticket_id = null) => {
         if (!ticket_id) ticket_id = div_panel.data('tid');
         let div_workspace = div_panel.find('div.qul-workspace');
         //div_workspace.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
-        div_workspace.html(`<div class="d-flex p-3">
-        <div style="height:25px"></div>
-        <ul>
-         <li>Chief Complaints</li>
-         <li>Physical Examinations</li>
-         <li>Laboratory Tests</li>
-         <li>Diagnosis</li>
-         <li>Prescriptions</li>
-         <li>Recommendations</li>
-        </ul>
+        div_workspace.html(`<div class="d-flex align-items-center justify-content-center">
+            <div class="d-flex gx-4">
+                <div class="">
+                    <img class="img-thumbnail rounded" src="${VSUtil.asset_url()}/images/icons/client-girl.png"/>
+                </div>
+                <div class="">
+                    <img class="img-thumbnail rounded" src="${VSUtil.asset_url()}/images/icons/client-girl.png"/>
+                </div>
+                <div class="">
+                    <img class="img-thumbnail rounded" src="${VSUtil.asset_url()}/images/icons/client-girl.png"/>
+                </div>
+            </div>
         </div>`);
-        mThis.current_view_name = 'history';
+        mThis.current_view_name = 'photo';
     };
 
     this.startConsult = (div_panel, ticket_id = null) => {
@@ -384,7 +386,6 @@ let TicketDetails = new function () {
         </div>`);
         mThis.current_view_name = 'consult';
     };
-
 }
 //end::TicketDetails class
 
@@ -442,7 +443,7 @@ let QueueComponent = new function () {
     //         mThis.form_data.chief_complaints = StringSanitizer.sanitizeObject(d.data);
     //    });
     // }
- 
+
     //SetQueueStatus()
     this.setTicketStatus = (detail_tr, d = {}) => {
         let tr = detail_tr.prev();
@@ -460,7 +461,7 @@ let QueueComponent = new function () {
         btnQ.show();
     }
 
-    // //return json object about Appointment's client details (name,sex,phone_number,...) from expandable view
+    //return json object about Appointment's client details (name,sex,phone_number,...) from expandable view
     // this.getClientInfo = (tr)=>{
     //    let div = tr.find('.appt-info-wrapper');
     //    let appt_id = div.data('apptid');
@@ -519,7 +520,7 @@ let QueueComponent = new function () {
         mThis.tblTickets.on('click', 'a.btn_ticket_action', function (e) {
             e.preventDefault();
         });
- 
+
         // //remove Chief complaint item, on Appoinment list expanaded view
         // mThis.tblTickets.on('click', 'a.qul-remove-complaint', function (e) {
         //     e.preventDefault();
@@ -1106,7 +1107,7 @@ let QueueComponent = new function () {
 
 
 //begin::ConsultTabView 
-let ConsultTabView = new function(){
+let ConsultTabView = new function () {
     let mThis = this;
     this.self = $('#_consultTabView');
     this.base_url = main_view.base_url;
@@ -1117,73 +1118,73 @@ let ConsultTabView = new function(){
     this.data = {};
 
     this.cur_view = 'consultation';
-    
-    this.self.on('click','div.tab-header>a.tab-button',function(e){
+
+    this.self.on('click', 'div.tab-header>a.tab-button', function (e) {
         e.preventDefault();
         //alert($(this).data('target'));
         $(this).addClass('active').siblings().removeClass('active');
         let view_name = $(this).data('viewname').toLowerCase();
-        mThis.show(mThis.options,view_name,true);
-    }); 
+        mThis.show(mThis.options, view_name, true);
+    });
 
     //options = {patient_id,ticket_id}
-    this.show = function(options,view_name,tab_button_clicked = false){
-         if(!options) options = {};
-         //alert(JSON.stringify(options));
+    this.show = function (options, view_name, tab_button_clicked = false) {
+        if (!options) options = {};
+        //alert(JSON.stringify(options));
         //  mThis.patient_id = options.patient_id;
         //  mThis.ticket_id = options.ticket_id;
-         mThis.options = options;
+        mThis.options = options;
 
-          //Store patient_id and ticket_id as data attributes of each panel container
-        mThis.consultItemPanel.data('tid',mThis.options.ticket_id);
-        mThis.consultItemPanel.data('patientid',mThis.options.patient_id);
-        mThis.historyItemPanel.data('tid',mThis.options.ticket_id);
-        mThis.historyItemPanel.data('patientid',mThis.options.patient_id);
+        //Store patient_id and ticket_id as data attributes of each panel container
+        mThis.consultItemPanel.data('tid', mThis.options.ticket_id);
+        mThis.consultItemPanel.data('patientid', mThis.options.patient_id);
+        mThis.historyItemPanel.data('tid', mThis.options.ticket_id);
+        mThis.historyItemPanel.data('patientid', mThis.options.patient_id);
 
-        if(!mThis.options.ticket_id) console.error('ConsultTabView on ConsultDialog does not have valid ticket_id, thus it is not possible to identify patient');
+        if (!mThis.options.ticket_id) console.error('ConsultTabView on ConsultDialog does not have valid ticket_id, thus it is not possible to identify patient');
 
-         if (!view_name) view_name = mThis.cur_view;
-         view_name = (view_name+'').toLowerCase();
-               
-         mThis.self.find('div.tab-body>div.tab-panel').each(function(){
-            let this_view_name =($(this).data('viewname')+'').toLowerCase();
+        if (!view_name) view_name = mThis.cur_view;
+        view_name = (view_name + '').toLowerCase();
+
+        mThis.self.find('div.tab-body>div.tab-panel').each(function () {
+            let this_view_name = ($(this).data('viewname') + '').toLowerCase();
             let div_tab_panel = $(this);
-        
-            if(view_name === this_view_name) {
+
+            if (view_name === this_view_name) {
                 mThis.cur_view = view_name;
                 $(this).show().siblings().hide();
-                   
-                  //begin:: display content data depending on current view_name. This code block is not part of General Script for TabView
-                       if (view_name ==='history') {
-                           mThis.displayHistory(mThis.ticket_id,div_tab_panel);
-                       } else if (view_name ==='consultation') {
-                           mThis.displayConsultation(mThis.ticket_id,div_tab_panel);
-                       }
-                       // else {
-                       //   //do nothing   
-                       // }
-                  //end:: dispay content data
+
+                //begin:: display content data depending on current view_name. This code block is not part of General Script for TabView
+                if (view_name === 'history') {
+                    mThis.displayHistory(mThis.ticket_id, div_tab_panel);
+                } else if (view_name === 'consultation') {
+                    mThis.displayConsultation(mThis.ticket_id, div_tab_panel);
+                }
+                // else {
+                //   //do nothing   
+                // }
+                //end:: dispay content data
 
                 return;
-             } 
-         }); 
+            }
+        });
 
-         //If tab is open by calling this.show() and user did not click on Tab button => make corresponding Tab button appear Active
-         if(!tab_button_clicked) {
-           mThis.self.find('div.tab-header>a.tab-button').each(function() {
-             let this_view_name =($(this).data('viewname')+'').toLowerCase();
-             if (view_name === this_view_name){
-                 $(this).addClass('active').siblings().removeClass('active');
-             }
-           });
+        //If tab is open by calling this.show() and user did not click on Tab button => make corresponding Tab button appear Active
+        if (!tab_button_clicked) {
+            mThis.self.find('div.tab-header>a.tab-button').each(function () {
+                let this_view_name = ($(this).data('viewname') + '').toLowerCase();
+                if (view_name === this_view_name) {
+                    $(this).addClass('active').siblings().removeClass('active');
+                }
+            });
         }
-    } 
+    }
 
     //begin:: Event handlers for History Tab  and Consultation tab
 
-    this.displayHistory = (client_id =0, div_tab_panel=null)=>{}
+    this.displayHistory = (client_id = 0, div_tab_panel = null) => { }
 
-    this.displayConsultation = (client_id = 0,div_tab_panel=null)=>{}
+    this.displayConsultation = (client_id = 0, div_tab_panel = null) => { }
     //end:: Event handlers for History Tab  and Consultation tab
 
     //begin::init ConsultTabeView (menus item event handlers and so on)
@@ -1195,32 +1196,32 @@ let ConsultTabView = new function(){
         mThis.consultItemPanel = $('#_consult_panel');
         mThis.historyItemPanel = $('#_history_panel');
 
-        
-        mThis.consultItemPanel.on('click','a.consultview-add-cc',(e)=>{
+
+        mThis.consultItemPanel.on('click', 'a.consultview-add-cc', (e) => {
             e.preventDefault();
             mThis.tblChiefComplaints.addRow();
         });
-        
+
         mThis.details_routes_history = mThis.defineDetailRoutesHistory(mThis.historyItemPanel);
         mThis.details_routes_consult = mThis.defineDetailRoutesConsult(mThis.consultItemPanel);
 
-        mThis.ul_menus_consult.on('click','li',function(e){
-           e.preventDefault();
-           let li = $(this);
-           //let targetElementId = li.find('a').data('target');
-           let view_name =  li.find('a').data('viewname'); 
-           if(mThis.prev_selected_li_consult) mThis.prev_selected_li_consult.removeClass('consult-menu-selected');
-           li.addClass('consult-menu-selected');
-           mThis.prev_selected_li_consult = li;
+        mThis.ul_menus_consult.on('click', 'li', function (e) {
+            e.preventDefault();
+            let li = $(this);
+            //let targetElementId = li.find('a').data('target');
+            let view_name = li.find('a').data('viewname');
+            if (mThis.prev_selected_li_consult) mThis.prev_selected_li_consult.removeClass('consult-menu-selected');
+            li.addClass('consult-menu-selected');
+            mThis.prev_selected_li_consult = li;
 
-           mThis.details_routes_consult[view_name]();
+            mThis.details_routes_consult[view_name]();
         });
 
-        mThis.ul_menus_history.on('click','li',function(e){
+        mThis.ul_menus_history.on('click', 'li', function (e) {
             e.preventDefault();
             let li = $(this);
             let view_name = li.find('a').data('viewname');
-            if(mThis.prev_selected_li_history) mThis.prev_selected_li_history.removeClass('history-menu-selected');
+            if (mThis.prev_selected_li_history) mThis.prev_selected_li_history.removeClass('history-menu-selected');
             li.addClass('history-menu-selected');
             mThis.prev_selected_li_history = li;
 
@@ -1230,126 +1231,126 @@ let ConsultTabView = new function(){
     //end::init ConsultTabeView (menus item event handlers and so on)
 
     //begin:: Define routes to details view of all menu items on the "Consult" tab
-    this.defineDetailRoutesConsult = (div)=>{
-       return {
-          "chief_complaints":() => {
-             mThis.showConsultChiefComplaints(div);
-          },
-          "vital_signs":() => {
-            mThis.showConsultVitalSigns(div);
-          },
-          "visual_signs":() => {
-            mThis.showConsultVisualSigns(div);
-          },
-          "physical_examination":() => {
-            mThis.showConsultPE(div);
-          },
-          "prescription":() => {
-            mThis.showConsultPrescription(div);
-          },
-          "labo_tests":() => {
-            mThis.showConsultLaboratoryTests(div);
-          },
-          "diagnosis":() => {
-            mThis.showConsultDiagnosis(div);
-          },
-          "recommendations":() => {
-            mThis.showConsultRecommendations(div);
-          },
-          "medical-report":() => {
-            mThis.showConsultMedicalReport(div);
-          },
-          "medical-certificate":() => {
-            mThis.showConsultMedicalCertificate(div);
-          },
-       };
+    this.defineDetailRoutesConsult = (div) => {
+        return {
+            "chief_complaints": () => {
+                mThis.showConsultChiefComplaints(div);
+            },
+            "vital_signs": () => {
+                mThis.showConsultVitalSigns(div);
+            },
+            "history": () => {
+                mThis.showConsultHistory(div);
+            },
+            "physical_examination": () => {
+                mThis.showConsultPE(div);
+            },
+            "prescription": () => {
+                mThis.showConsultPrescription(div);
+            },
+            "labo_tests": () => {
+                mThis.showConsultLaboratoryTests(div);
+            },
+            "diagnosis": () => {
+                mThis.showConsultDiagnosis(div);
+            },
+            "recommendations": () => {
+                mThis.showConsultRecommendations(div);
+            },
+            "medical-report": () => {
+                mThis.showConsultMedicalReport(div);
+            },
+            "medical-certificate": () => {
+                mThis.showConsultMedicalCertificate(div);
+            },
+        };
     }
     //end::Detail Routes of Consult
 
     //Define menu routes on History tab
     this.defineDetailRoutesHistory = (div) => {
         return {
-            "chief_complaints":() => {
+            "chief_complaints": () => {
                 mThis.showHistoryChiefComplaints(div);
             },
-            "physical_examinations":() => {
+            "physical_examinations": () => {
                 mThis.showHistoryPhysicalExaminations(div);
             },
-            "laboratory_tests":() => {
+            "laboratory_tests": () => {
                 mThis.showHistoryLaboratoryTests(div);
             },
-            "diagnosis":() => {
+            "diagnosis": () => {
                 mThis.showHistoryDiagnosis(div);
             },
-            "prescriptions":() => {
+            "prescriptions": () => {
                 mThis.showHistoryPrescription(div);
             },
-            "recommendations":() => {
+            "recommendations": () => {
                 mThis.showHistoryRecommendations(div);
             },
-            "medical-reports":() => {
+            "medical-reports": () => {
                 mThis.showHistoryMedicalReports(div);
             }
         };
     };
 
     //begin::Any options of consult
-    this.showConsultChiefComplaints = (div)=>{
-        let wrapper_id ='_consult_cc_warpper';
+    this.showConsultChiefComplaints = (div) => {
+        let wrapper_id = '_consult_cc_warpper';
         let div_id = '_consult_cc_list';
         let el = div.find(`#${wrapper_id}`);
         let ticket_id = div.data('tid');
         //let patient_id = div.data('patientid');
 
-        if (!el || el.length ===0){
-            let title = LocaleManager.trans('This is Chief complaints','consult');
+        if (!el || el.length === 0) {
+            let title = LocaleManager.trans('This is Chief complaints', 'consult');
             let html = `<div id="${wrapper_id}"><h3 class="trans-text" data-langprop="consult.Chief Complaints">${title} &nbsp;<a href="#" class="consultview-add-cc"><i class="fa fa-plus-circle"></i></a></h3>
               <div id="${div_id}"></div>
             </div>`;
-           
+
             div.append(html);
 
-                let columns = [
-                    {
-                        "name":"name",
-                        "title":"Chief Complaint",
-                        "dataType":"string",
-                        "displayType":"select",
-                        "cssClass":"",
-                        //"selectOptions":[] 
-                    }
-                ];
+            let columns = [
+                {
+                    "name": "name",
+                    "title": "Chief Complaint",
+                    "dataType": "string",
+                    "displayType": "select",
+                    "cssClass": "",
+                    //"selectOptions":[] 
+                }
+            ];
 
-                mThis.loadChiefComplaintOptions(ticket_id,cc_items=>{
-                    //After having loaded chief complaint options from server => init cc-table
-                   
-                    columns[0].selectOptions = cc_items;
-                    mThis.tblChiefComplaints = new ItemsView(div_id,{
-                        "columns":columns,
-                        "langProp":"consult",
-                        "tableClass":"table",
-                        "showColumnHeaders":false,
-                        "showAddLineButton":false,
-                        "onItemChange":(col_name)=>{
-                             console.error(col_name + ' has changed');
-                        },
-                        //"addLineButtonText":"Add CC",
-                        //"addLineButtonClass":null,
-                        //"cssClass":"td_class",
-                        "numeroFormatter":(numero,row)=>{
-                            return `<span class="text-secondary fw-bold">${numero}</span>`; 
-                        },
-                        "emptyMessage":`<span class="text-secondary text-align-center">${LocaleManager.trans('No chief complaints','consult')}</span>`,
-    
-                    });
-                    
-                    //mThis.tblChiefComplaints.setSelectOptions('name',cc_items);
-                    el = div.find(`#${wrapper_id}`);
+            mThis.loadChiefComplaintOptions(ticket_id, cc_items => {
+                //After having loaded chief complaint options from server => init cc-table
+
+                columns[0].selectOptions = cc_items;
+                mThis.tblChiefComplaints = new ItemsView(div_id, {
+                    "columns": columns,
+                    "langProp": "consult",
+                    "tableClass": "table",
+                    "showColumnHeaders": false,
+                    "showAddLineButton": false,
+                    "onItemChange": (col_name) => {
+                        console.error(col_name + ' has changed');
+                    },
+                    //"addLineButtonText":"Add CC",
+                    //"addLineButtonClass":null,
+                    //"cssClass":"td_class",
+                    "numeroFormatter": (numero, row) => {
+                        return `<span class="text-secondary fw-bold">${numero}</span>`;
+                    },
+                    "emptyMessage": `<span class="text-secondary text-align-center">${LocaleManager.trans('No chief complaints', 'consult')}</span>`,
+
                 });
+
+                //mThis.tblChiefComplaints.setSelectOptions('name',cc_items);
+                el = div.find(`#${wrapper_id}`);
+            });
         }
 
-        el.show().siblings().hide();   
-       
+        el.show().siblings().hide();
+
     }
 
     this.loadChiefComplaintOptions =(patient_id=0, onFinish=null)=>{
@@ -1385,10 +1386,10 @@ let ConsultTabView = new function(){
         });
         
     }
- 
-    this.showConsultVitalSigns = (div)=>{
+
+    this.showConsultVitalSigns = (div) => {
         let ticket_id = div.data('tid');
-        let wrapper_id ='_consult_vt_wrapper';
+        let wrapper_id = '_consult_vt_wrapper';
         let el = div.find(`#${wrapper_id}`);
 
         mThis.loadVitalSigns_patient(ticket_id, items => {
@@ -1398,9 +1399,9 @@ let ConsultTabView = new function(){
                 html_vs_items = [html_vs_items,`<tr data-id="${t.id}" data-tid="${ticket_id}"><td>`,t.description,`</td><td><input class="form-control w-50" type="text" value ="`,t.vital_sign_value,`"></td></tr>`].join('');
              });
 
-                if(!el || el.length === 0){
-                        let title = LocaleManager.trans('Vital Signs','consult'); 
-                        let html = `
+            if (!el || el.length === 0) {
+                let title = LocaleManager.trans('Vital Signs', 'consult');
+                let html = `
                         <div id="${wrapper_id}" style="display:none">
                         <h3 class="trans-text" data-langprop="consult.Vital Signs">${title}</a></h3>
                         <div class="">
@@ -1412,11 +1413,11 @@ let ConsultTabView = new function(){
                         </div>
                     </div>
                     `;
-                    div.append(html);
-                    el = div.find(`#${wrapper_id}`);
-                }
-                
-                el.show().siblings().hide();
+                div.append(html);
+                el = div.find(`#${wrapper_id}`);
+            }
+
+            el.show().siblings().hide();
         });
     }
    
@@ -1434,7 +1435,7 @@ let ConsultTabView = new function(){
     this.showConsultPE = (div)=>{
         //let patient_id = div.data('patientid');
         let ticket_id = div.data('tid');
-        let wrapper_id ='_consult_pe_wrapper';
+        let wrapper_id = '_consult_pe_wrapper';
         let el = div.find(`#${wrapper_id}`);
 
         //loadPE_patient
@@ -1451,113 +1452,113 @@ let ConsultTabView = new function(){
                         </div>
                     </div>
                     `;
-                    div.append(html);
-                    el = div.find(`#${wrapper_id}`);
-                }
-                
-                el.show().siblings().hide();
+                div.append(html);
+                el = div.find(`#${wrapper_id}`);
+            }
+
+            el.show().siblings().hide();
         });
 
-    
-         
-    }
-    
-    this.loadPrescription = (ticket_id=0,onFinish)=>{
-    //    let d = {};
-    //    d.products = [
-    //      {value:"1","text":"Medicine 1"}
-    //      , {value:"2","text":"Medicine 2"}
-    //      , {value:"4","text":"Medicine 3"}
-    //      , {value:"5","text":"Medicine 4"}
-    //      , {value:"6","text":"Medicine 5"}
-    //    ];
-    //    d.usage_options = [
-    //     {value:"1","text":"1 x 3"}
-    //     , {value:"2","text":"1 x 4"}
-    //     , {value:"4","text":"1 x 5 After Meal"}
-    //    ];
-       
-       vsapi.call(`${main_view.base_url}/api/settings/options-product`,null).then(res=>{
-            if(res.status_code===200){
-                onFinish(res.data);
-            }
-       });
-      
+
+
     }
 
-    this.showConsultPrescription = (div)=>{
-        let wrapper_id ='_consult_pres_warpper';
+    this.loadPrescription = (ticket_id = 0, onFinish) => {
+        //    let d = {};
+        //    d.products = [
+        //      {value:"1","text":"Medicine 1"}
+        //      , {value:"2","text":"Medicine 2"}
+        //      , {value:"4","text":"Medicine 3"}
+        //      , {value:"5","text":"Medicine 4"}
+        //      , {value:"6","text":"Medicine 5"}
+        //    ];
+        //    d.usage_options = [
+        //     {value:"1","text":"1 x 3"}
+        //     , {value:"2","text":"1 x 4"}
+        //     , {value:"4","text":"1 x 5 After Meal"}
+        //    ];
+
+        vsapi.call(`${main_view.base_url}/api/settings/options-product`, null).then(res => {
+            if (res.status_code === 200) {
+                onFinish(res.data);
+            }
+        });
+
+    }
+
+    this.showConsultPrescription = (div) => {
+        let wrapper_id = '_consult_pres_warpper';
         let div_id = '_consult_prescription';
         let el = div.find(`#${wrapper_id}`);
         let ticket_id = div.data('tid');
 
-        if (!el || el.length ===0){
-            let title = LocaleManager.trans('Prescription','consult');
+        if (!el || el.length === 0) {
+            let title = LocaleManager.trans('Prescription', 'consult');
             let html = `<div id="${wrapper_id}"><h3 class="trans-text" data-langprop="consult.Prescription">${title}</h3>
               <div id="${div_id}"></div>
             </div>`;
-           
-            div.append(html);
-                let columns = [
-                    {
-                        "name":"name",
-                        "title":"Medication",
-                        "dataType":"string",
-                        "displayType":"select",
-                        "cssClass":"",
-                        //"selectOptions":[] 
-                    },
-                    {
-                        "name":"qty",
-                        "title":"Quantity",
-                        "dataType":"number",
-                        "displayType":"input"
-                        // ,"data":(value,row)=>{
-                        //     return "";
-                        // }
-                    },
-                    {
-                        "name":"usage",
-                        "title":"Usage",
-                        "dataType":"string",
-                        "displayType":"select"
-                    }
-                ];
 
-                mThis.loadPrescription(ticket_id,d=>{
-                    //After having loaded prescription data from server => init prescription table
-                    columns[0].selectOptions = d.products;
-                    columns[2].selectOptions = d.usage_options;
-                    mThis.tblProducts  = new ItemsView(div_id,{
-                        "columns":columns,
-                        "langProp":"consult",
-                        "tableClass":"table presciption-table",
-                        "showColumnHeaders":true,
-                        "showAddLineButton":true,
-                        "addLineButtonText":"Add Item",
-                        //"addLineButtonClass":null,
-                        //"cssClass":"td_class",
-                        "numeroFormatter":(numero,row)=>{
-                            return `<span class="text-secondary fw-bold">${numero}</span>`; 
-                        },
-                        "emptyMessage":`<span class="text-secondary text-align-center">${LocaleManager.trans('No item prescribed','consult')}</span>`,
-    
-                    });
-                    //mThis.tblChiefComplaints.setSelectOptions('name',cc_items);
-                    el = div.find(`#${wrapper_id}`);
+            div.append(html);
+            let columns = [
+                {
+                    "name": "name",
+                    "title": "Medication",
+                    "dataType": "string",
+                    "displayType": "select",
+                    "cssClass": "",
+                    //"selectOptions":[] 
+                },
+                {
+                    "name": "qty",
+                    "title": "Quantity",
+                    "dataType": "number",
+                    "displayType": "input"
+                    // ,"data":(value,row)=>{
+                    //     return "";
+                    // }
+                },
+                {
+                    "name": "usage",
+                    "title": "Usage",
+                    "dataType": "string",
+                    "displayType": "select"
+                }
+            ];
+
+            mThis.loadPrescription(ticket_id, d => {
+                //After having loaded prescription data from server => init prescription table
+                columns[0].selectOptions = d.products;
+                columns[2].selectOptions = d.usage_options;
+                mThis.tblProducts = new ItemsView(div_id, {
+                    "columns": columns,
+                    "langProp": "consult",
+                    "tableClass": "table presciption-table",
+                    "showColumnHeaders": true,
+                    "showAddLineButton": true,
+                    "addLineButtonText": "Add Item",
+                    //"addLineButtonClass":null,
+                    //"cssClass":"td_class",
+                    "numeroFormatter": (numero, row) => {
+                        return `<span class="text-secondary fw-bold">${numero}</span>`;
+                    },
+                    "emptyMessage": `<span class="text-secondary text-align-center">${LocaleManager.trans('No item prescribed', 'consult')}</span>`,
+
                 });
+                //mThis.tblChiefComplaints.setSelectOptions('name',cc_items);
+                el = div.find(`#${wrapper_id}`);
+            });
         }
 
-        el.show().siblings().hide();   
+        el.show().siblings().hide();
     }
 
-    this.showConsultVisualSigns = (div)=>{
-        let html = `<h3>Visual Signs</h3>`;
+    this.showConsultHistory = (div) => {
+        let html = `<h3>History</h3>`;
         div.html(html);
     }
 
     this.showConsultPhysicalExamination = (div) => {
-        let html = `<h3>This is Physical Examination</h3>`;
+        let html = `<h3>Physical Examination</h3>`;
         div.html(html);
     }
 
@@ -1570,7 +1571,7 @@ let ConsultTabView = new function(){
         let html = `<h3>Diagnosis</h3>`;
         div.html(html);
     }
-    
+
     this.showConsultRecommendations = (div) => {
         let html = `<h3>Recommendations</h3>`;
         div.html(html);
@@ -1712,45 +1713,45 @@ let ConsultTabView = new function(){
         div.html(html);
     }
 
-    this.loadHistory_diagnosis = (patient_id,onFinish)=>{
-       let items= [
-         {
-            "ticket_id":1,
-            "date":"12 Dec 2022",
-            "ticket_number":"D0001",
-            "description":"This is diagnosis one",
-            "consultant_name":"Mr. Doctor A"
-         },
-         {
-            "ticket_id":2,
-            "date":"13 Dec 2022",
-            "ticket_number":"D0001",
-            "description":"An irregular heartbeat is an arrhythmia (also called dysrhythmia). Heart rates can also be irregular. A normal heart rate is 50 to 100 beats per minute. Arrhythmias and abnormal heart rates don’t necessarily occur together. Arrhythmias can occur with a normal heart rate, or with heart rates that are slow (called bradyarrhythmias — less than 50 beats per minute). Arrhythmias can also occur with rapid heart rates (called tachyarrhythmias — faster than 100 beats per minute).",
-            "consultant_name":"Mr. Doctor One"
-         },
-         {
-            "ticket_id":3,
-            "date":"20 Dec 2022",
-            "ticket_number":"D0001",
-            "description":"This is diagnosis three",
-            "consultant_name":"Mr. Doctor BBBB"
-         }
-       ];
-      onFinish(items);
+    this.loadHistory_diagnosis = (patient_id, onFinish) => {
+        let items = [
+            {
+                "ticket_id": 1,
+                "date": "12 Dec 2022",
+                "ticket_number": "D0001",
+                "description": "This is diagnosis one",
+                "consultant_name": "Mr. Doctor A"
+            },
+            {
+                "ticket_id": 2,
+                "date": "13 Dec 2022",
+                "ticket_number": "D0001",
+                "description": "An irregular heartbeat is an arrhythmia (also called dysrhythmia). Heart rates can also be irregular. A normal heart rate is 50 to 100 beats per minute. Arrhythmias and abnormal heart rates don’t necessarily occur together. Arrhythmias can occur with a normal heart rate, or with heart rates that are slow (called bradyarrhythmias — less than 50 beats per minute). Arrhythmias can also occur with rapid heart rates (called tachyarrhythmias — faster than 100 beats per minute).",
+                "consultant_name": "Mr. Doctor One"
+            },
+            {
+                "ticket_id": 3,
+                "date": "20 Dec 2022",
+                "ticket_number": "D0001",
+                "description": "This is diagnosis three",
+                "consultant_name": "Mr. Doctor BBBB"
+            }
+        ];
+        onFinish(items);
     }
 
     this.showHistoryDiagnosis = (div) => {
 
         //let ticket_id = div.data('tid');
         let patient_id = div.data('patientid');
-        let wrapper_id ='_history_hs_wrapper';
+        let wrapper_id = '_history_hs_wrapper';
         let el = div.find(`#${wrapper_id}`);
 
-        if (!el || el.length ===0){
- 
-                let body_id = `tblHis_tbody_${patient_id}`;
+        if (!el || el.length === 0) {
 
-                let html = `<h3>Diagnosis</h3>
+            let body_id = `tblHis_tbody_${patient_id}`;
+
+            let html = `<h3>Diagnosis</h3>
                 <div class="d-block">
                     <div class="table-responsive">
                         <table class="table table-bordered">
@@ -1766,53 +1767,48 @@ let ConsultTabView = new function(){
                         </table>
                     </div>
                 </div>`;
-                div.html(html);
- 
-                //Insert rows to History table
+            div.html(html);
 
-                mThis.loadHistory_diagnosis(patient_id,items=>{
-                    let tbody = document.querySelector(`#${body_id}`);
-                        if(tbody){
-                                let row_html ='';
-                                let i=0;
+            //Insert rows to History table
 
-                                tbody.innerHTML ='';
-                                items.map(item =>{
-                                row_html = [row_html,`<tr>
-                                        <td>
-                                           <span class="d-block p-1" style="min-width:110px">${item.date}</span>
-                                           <span class="d-inline-block text-secondary p-1">${item.ticket_number}</span>
-                                        </td>
-                                        <td class="vs-contain-custom">
-                                            <p>
-                                                ${item.description}
-                                            <p>
-                                            <span data-tid="${item.ticket_id}" class="span lnk-show-more"></span>
-                                        </td>
-                                        <td>${item.consultant_name}</td>
-                                       </tr>`].join('');
+            mThis.loadHistory_diagnosis(patient_id, items => {
+                let tbody = document.querySelector(`#${body_id}`);
+                if (tbody) {
+                    let row_html = '';
+                    let i = 0;
 
-                                    i++;
-                                }); 
-        
-                            tbody.innerHTML = row_html;
+                    tbody.innerHTML = '';
+                    items.map(item => {
+                        row_html = [row_html, `<tr>
+                                    <td>
+                                        <span class="d-block p-1" style="min-width:110px">${item.date}</span>
+                                        <span class="d-inline-block text-secondary p-1">${item.ticket_number}</span>
+                                    </td>
+                                    <td class="vs-contain-custom">
+                                        <p>
+                                            ${item.description}
+                                        <p>
+                                        <span data-tid="${item.ticket_id}" class="span lnk-show-more"></span>
+                                    </td>
+                                    <td>${item.consultant_name}</td>
+                                    </tr>`].join('');
+                        i++;
+                    });
 
-                            (tbody.querySelectorAll('.lnk-show-more') || {}).forEach( d =>{
-                                d.addEventListener('click',e=>{
-                                    let td = VSDOM.getClosestParentByType(e.target,'TD');
-                                    let  ticket_id = e.target.dataset.tid;
-                                    //alert(ticket_id);
-                                    if(td) td.classList.toggle('active');
-                                }); 
-                            });
-                    }
-                });
+                    tbody.innerHTML = row_html;
 
-        }else{
-           el.show().siblings().hide();
+                    (tbody.querySelectorAll('.lnk-show-more') || {}).forEach(d => {
+                        d.addEventListener('click', e => {
+                            let td = VSDOM.getClosestParentByType(e.target, 'TD');
+                            let ticket_id = e.target.dataset.tid;
+                            if (td) td.classList.toggle('active');
+                        });
+                    });
+                }
+            });
+        } else {
+            el.show().siblings().hide();
         }
-
-      
     }
 
     this.showHistoryPrescription = (div) => {
@@ -1825,36 +1821,36 @@ let ConsultTabView = new function(){
         div.html(html);
     }
 
-    this.loadHistory_medical_report =(patient_id=0, onFinish)=>{
-      let d = {};
-      d.patient_id = 101;
-      d.patient_code ='1011';
-      d.patient_name = 'Sovano';
-      d.patient_sex ='M';
+    this.loadHistory_medical_report = (patient_id = 0, onFinish) => {
+        let d = {};
+        d.patient_id = 101;
+        d.patient_code = '1011';
+        d.patient_name = 'Sovano';
+        d.patient_sex = 'M';
 
-      let items = [
-        {"ticket_id":1, "ticket_number":"D0001","date":"11 Dec 2022","consultant_name":"Dr. A"}
-        ,{"ticket_id":2, "ticket_number":"D0003","date":"15 Dec 2022","consultant_name":"Dr. A"}
-        ,{"ticket_id":3, "ticket_number":"D0002","date":"25 Dec 2022","consultant_name":"Dr. B"}
-        ,{"ticket_id":4, "ticket_number":"D0001","date":"31 Dec 2022","consultant_name":"Dr. A"}
-      ];
-      d.items = items;
-      onFinish(d);
+        let items = [
+            { "ticket_id": 1, "ticket_number": "D0001", "date": "11 Dec 2022", "consultant_name": "Dr. A" }
+            , { "ticket_id": 2, "ticket_number": "D0003", "date": "15 Dec 2022", "consultant_name": "Dr. A" }
+            , { "ticket_id": 3, "ticket_number": "D0002", "date": "25 Dec 2022", "consultant_name": "Dr. B" }
+            , { "ticket_id": 4, "ticket_number": "D0001", "date": "31 Dec 2022", "consultant_name": "Dr. A" }
+        ];
+        d.items = items;
+        onFinish(d);
     }
 
     this.showHistoryMedicalReports = (div) => {
         let patient_id = div.data('patientid');
-        let wrapper_id ='_history_medrpt_wrapper';
+        let wrapper_id = '_history_medrpt_wrapper';
         let el = div.find(`#${wrapper_id}`);
         //let table_id = null;
         //let tbody_id = null;
-        if (!el || el.length === 0){
+        if (!el || el.length === 0) {
             //mThis.history_table_id = `${wrapper_id}_tblmritems`;
-            mThis.history_tbody_id =`${wrapper_id}_tblmritems_body`;
+            mThis.history_tbody_id = `${wrapper_id}_tblmritems_body`;
 
             let html = `<div id="${wrapper_id}" style="display:none">
                         <div class="d-flex align-items-center mb-4">
-                            <h3 class="trans-text" data-langprop="history.Medical Reports">${LocaleManager.trans('Medical Reports','history')}</h3>
+                            <h3 class="trans-text" data-langprop="history.Medical Reports">${LocaleManager.trans('Medical Reports', 'history')}</h3>
                         </div>
                         <div class="d-block">
                             <div class="d-flex align-items-center">
@@ -1896,66 +1892,63 @@ let ConsultTabView = new function(){
                             </table>
                         </div>
                     <div>`;
-
-                    div.html(html);                  
+            div.html(html);
         }
 
-        mThis.loadHistory_medical_report(patient_id, d=>{
+        mThis.loadHistory_medical_report(patient_id, d => {
             let items = d.items;
             let el = div.find(`#${wrapper_id}`);
 
-            el.find('.history-mr-header-item').each(function(){
+            el.find('.history-mr-header-item').each(function () {
                 let x = $(this);
-                let f =x.data('field');
+                let f = x.data('field');
                 x.text(d[f]);
             });
 
             let tbody = el.find(`#${mThis.history_tbody_id}`);
             let row_html = '';
-            items.map(item =>{
-               row_html = [row_html,`<tr>
+            items.map(item => {
+                row_html = [row_html, `<tr>
                 <td>${item.ticket_number}</td>
                 <td><a href="javascript:void(0)"><i class="fa fa-print"></i><span class="pl-1">${item.date} medical report</span></a></td>
                 <td>${item.consultant_name}</td>
-               </tr>`].join('');  
+               </tr>`].join('');
             });
-            tbody.html(row_html); 
+            tbody.html(row_html);
             el.show().siblings().hide();
         });
-         
+
     }
     //end::Any options of history
-
-
 }
 //end::ConsultTabView
 
 //begin::ConsultDialog
-let ConsultDialog = new function(){
+let ConsultDialog = new function () {
     let mThis = this;
     this.self = $('#_qul_dlgConsult');
     this.btnSave = $('#_qul_dlgConsult_btnSave');
-    this.defaultTabView= 'consultation';
+    this.defaultTabView = 'consultation';
 
-    this.btnSave.on('click',(e)=>{
-      e.preventDefault();
-      //tod; Save consult session info
+    this.btnSave.on('click', (e) => {
+        e.preventDefault();
+        //tod; Save consult session info
 
-      mThis.self.modal('hide');
-      mThis.onClose(true);
+        mThis.self.modal('hide');
+        mThis.onClose(true);
     });
-    
+
     ConsultTabView.init();
 
     // @option = {patient_id,ticket_id,onClose:()=> { ... }}
-    this.show = (option)=>{
-        if(!option) option = {};
+    this.show = (option) => {
+        if (!option) option = {};
         //alert(JSON.stringify(option));
         mThis.onClose = option.onClose;
-    
-        ConsultTabView.show({"ticket_id":option.ticket_id,"patient_id":option.patient_id },this.defaultTabView);
+
+        ConsultTabView.show({ "ticket_id": option.ticket_id, "patient_id": option.patient_id }, this.defaultTabView);
         mThis.self.modal({
-            backdrop:'static'
+            backdrop: 'static'
         });
     }
 }
