@@ -190,7 +190,7 @@
                                                 <span class="consult-icon">
                                                     <i class="fa-solid fa-user ps-2"></i>
                                                 </span>
-                                                <a href="javascript:void(0)" data-viewname="visual_signs" class="nav-link trans-text" data-langprop="consult.Visual Signs"></a>
+                                                <a href="javascript:void(0)" data-viewname="history" class="nav-link trans-text" data-langprop="consult.History"></a>
                                             </li>
                                             <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
