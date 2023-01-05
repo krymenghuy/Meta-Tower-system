@@ -50,6 +50,66 @@ class QTicketController extends Controller
        return JDV::raw($res);
     }
 
+    function getPatientVitalSigns(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+        $branch_id = $ss->branch_id;
+        $ticket_id = $req->ticket_id;
+
+        $res = QTicket::vitalSigns($branch_id,$ticket_id);
+        return JDV::result($res);
+    }
+
+    function getPatientDescription(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+        $branch_id = $ss->branch_id;
+        $ticket_id = $req->ticket_id;
+
+        $res = QTicket::description($branch_id,$ticket_id);
+        return JDV::result($res);
+    }
+
+    function getDoctorAdvice(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+        $branch_id = $ss->branch_id;
+        $ticket_id = $req->ticket_id;
+
+        $res = QTicket::advice($branch_id,$ticket_id);
+        return JDV::result($res);
+    }
+ 
+    function getPatientPE(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+        $branch_id = $ss->branch_id;
+        $ticket_id = $req->ticket_id;
+
+        $res = QTicket::physicalExamination($branch_id,$ticket_id);
+        return JDV::result($res);
+    }
+
+    function getPatientDiagnosis(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+        $branch_id = $ss->branch_id;
+        $ticket_id = $req->ticket_id;
+
+        $res = QTicket::diagnosis($branch_id,$ticket_id);
+        return JDV::result($res);
+    }
+
+    function getPatientLaboTests(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+        $branch_id = $ss->branch_id;
+        $ticket_id = $req->ticket_id;
+
+        $res = QTicket::laboTests($branch_id,$ticket_id);
+        return JDV::result($res);
+    }
+
     function deleteChiefComplaint(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated

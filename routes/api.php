@@ -69,6 +69,14 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('ticket/details', [QTicketController::class, 'getTicketDetails']);
         Route::post('ticket/add-chief-complaint', [QTicketController::class, 'addChiefComplaint']);
         Route::post('ticket/remove-chief-complaint', [QTicketController::class, 'deleteChiefComplaint']);
+        Route::post('ticket/patient-vital-signs', [QTicketController::class, 'getPatientVitalSigns']);
+        //getPatientPhysicalExamination()
+        Route::post('ticket/patient-pe', [QTicketController::class, 'getPatientPE']);
+        Route::post('ticket/patient-labo-tests', [QTicketController::class, 'getPatientLaboTests']);
+        Route::post('ticket/patient-diagnosis', [QTicketController::class, 'getPatientDiagnosis']);
+        Route::post('ticket/patient-prescription', [QTicketController::class, 'getPatientPrescription']);
+        Route::post('ticket/doctor-advice', [QTicketController::class, 'getDoctorAdvice']);
+        
     //End::QTicketController
     
     //begin::PatientController. Not using Controller

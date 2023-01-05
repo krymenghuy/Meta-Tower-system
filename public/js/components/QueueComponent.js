@@ -1299,6 +1299,7 @@ let ConsultTabView = new function(){
         let div_id = '_consult_cc_list';
         let el = div.find(`#${wrapper_id}`);
         let ticket_id = div.data('tid');
+        //let patient_id = div.data('patientid');
 
         if (!el || el.length ===0){
             let title = LocaleManager.trans('This is Chief complaints','consult');
@@ -1352,21 +1353,37 @@ let ConsultTabView = new function(){
     }
 
     this.loadChiefComplaintOptions =(patient_id=0, onFinish=null)=>{
-       mThis.data.chief_complaint_options = [
-        {"value":"1","text":"Highe temperature"},
-        {"value":"2","text":"Abdominal pain"}
-       ];
-       onFinish(mThis.data.chief_complaint_options);
+        //    mThis.data.chief_complaint_options = [
+        //     {"value":"1","text":"Highe temperature"},
+        //     {"value":"2","text":"Abdominal pain"}
+        //    ];
+       vsapi.call(`${main_view.base_url}/api/settings/options-chief-complaint`,null).then(res=>{
+         if(res.status_code === 200){
+            let items = res.data;
+            (items || []).map(c=>{
+                c.value = c.code;
+                c.text = c.name;
+            });
+            onFinish(items);
+         }else  onFinish([]);
+       });
+       //onFinish(mThis.data.chief_complaint_options);
     }
 
     //LoadPatientVitalSigns() | Load vital signs for one patient
     this.loadVitalSigns_patient = (ticket_id=0,onFinish)=>{
-        let items = [
-            {'name':'s1','value':'30'},
-            {'name':'s2','value':'35'},
-            {'name':'23','value':'51'},
-        ];
-         onFinish(items);
+        // let items = [
+        //     {'name':'s1','value':'30'},
+        //     {'name':'s2','value':'35'},
+        //     {'name':'23','value':'51'},
+        // ];
+        vsapi.call(`${main_view.base_url}/api/ticket/patient-vital-signs`,null).then(res=>{
+            if(res.status_code===200){
+                let items = StringSanitizer.sanitizeObject(res.data);
+                onFinish(items);
+            }else onFinish({'vital_signs':[],'items':[]});
+        });
+        
     }
  
     this.showConsultVitalSigns = (div)=>{
@@ -1377,7 +1394,8 @@ let ConsultTabView = new function(){
         mThis.loadVitalSigns_patient(ticket_id, items => {
              let html_vs_items = "";
              items.map(t =>{
-                html_vs_items = [html_vs_items,`<tr><td>`,t.name,`</td><td><input class="form-control w-50" type="text" value ="`,t.value,`"></td></tr>`].join('');
+                //t.description = t.name or Vital sign name
+                html_vs_items = [html_vs_items,`<tr data-id="${t.id}" data-tid="${ticket_id}"><td>`,t.description,`</td><td><input class="form-control w-50" type="text" value ="`,t.vital_sign_value,`"></td></tr>`].join('');
              });
 
                 if(!el || el.length === 0){
@@ -1401,19 +1419,26 @@ let ConsultTabView = new function(){
                 el.show().siblings().hide();
         });
     }
-    
-    this.loadPE_patient = (ticket_id,onFinish)=>{
-       let d = {};
-       onFinish(d);
+   
+
+    this.loadConsult_PE =(ticket_id,onFinish)=>{
+       vsapi.call(`${main_view.base_url}/api/ticket/patient-pe`,null).then(res=>{
+            if (res.status_code === 200){
+                 let d = StringSanitizer.sanitizeOut(res.data);
+                 onFinish(d);
+            } else onFinish(null);
+       });
     }
 
+    //showConsultPhysicalExamination
     this.showConsultPE = (div)=>{
-        let patient_id = div.data('patientid');
+        //let patient_id = div.data('patientid');
         let ticket_id = div.data('tid');
         let wrapper_id ='_consult_pe_wrapper';
         let el = div.find(`#${wrapper_id}`);
 
-        mThis.loadPE_patient(ticket_id, pe => {
+        //loadPE_patient
+        mThis.loadConsult_PE(ticket_id, pe => {
              let html = "";
             
                 if(!el || el.length === 0){
@@ -1422,7 +1447,7 @@ let ConsultTabView = new function(){
                         <div id="${wrapper_id}" style="display:none">
                         <h3 class="trans-text" data-langprop="consult.Pysical Examination">${title}</a></h3>
                         <div class="">
-                           <textarea class="form-control" cols="10"></textarea>
+                           <textarea class="form-control" cols="10" rows="5">${pe}</textarea>
                         </div>
                     </div>
                     `;

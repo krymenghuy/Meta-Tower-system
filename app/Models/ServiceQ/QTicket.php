@@ -228,4 +228,28 @@ class QTicket extends Model
       $rows = DB::table('service_queue as s')->where('id',$ticket_id)->where('branch_id',$branch_id)->selectRaw('client_id')->take(1)->get();
       return isset($rows[0])? $rows[0]->client_id:null;
     }
+
+    static function vitalSigns($branch_id,$ticket_id=0){
+      return DB::table('patient_vital_signs as pvt')->where('pvt.branch_id',$branch_id)->where('pvt.ticket_id',$ticket_id)->selectRaw("pvt.id,vital_sign_id,vital_sign_value,pvt.description")->take(5)->get();
+    }
+ 
+    static function laboTests($branch_id,$ticket_id=0){
+        return DB::table('patient_labo_tests as l')->join('labo_tests as t','t.id','=','l.test_id')->where('l.branch_id',$branch_id)->where('l.ticket_id',$ticket_id)->selectRaw("l.id,l.test_id,t.name, l.result_description,l.consultant_comment")->take(5)->get();
+    }
+    static function physicalExamination($branch_id,$ticket_id=0){
+        return getDataValue('patient_consult_items',['ticket_id'=>$ticket_id,'branch_id'=>$branch_id,'item_type'=>'pe'],"description");
+         
+    }
+
+    static function diagnosis($branch_id,$ticket_id=0){
+        return getDataValue('patient_consult_items',['ticket_id'=>$ticket_id,'branch_id'=>$branch_id,'item_type'=>'diagnosis'],"description");
+    }
+    
+    //Recommendations
+    static function advice($branch_id,$ticket_id=0){
+        return getDataValue('patient_consult_items',['ticket_id'=>$ticket_id,'branch_id'=>$branch_id,'item_type'=>'advice'],"description");
+    }
+    static function prescription($branch_id,$ticket_id=0){
+        return DB::table('patient_prescribed_items as c')->join('patients as p','p.id','=','c.patient_id')->where('c.branch_id',$branch_id)->where('c.ticket_id',$ticket_id)->selectRaw("c.id,c.description,c.dosage,c.reason")->get();
+    }
 }

@@ -186,12 +186,12 @@
                                                 </span>
                                                 <a href="javascript:void(0)" data-viewname="vital_signs" class="nav-link trans-text" data-langprop="consult.Vital Signs"></a>
                                             </li>
-                                            <li class="nav-item consult-style-custom d-flex align-items-center">
+                                            <!-- <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
                                                     <i class="fa-solid fa-user ps-2"></i>
                                                 </span>
                                                 <a href="javascript:void(0)" data-viewname="visual_signs" class="nav-link trans-text" data-langprop="consult.Visual Signs"></a>
-                                            </li>
+                                            </li> -->
                                             <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
                                                     <i class="fa-solid fa-user ps-2"></i>

@@ -94,7 +94,7 @@ class GeneralSettingsController extends Controller
       $rows = DB::table('loan_purposes as l')->where('branch_id',$branch_id)->selectRaw("id,name as purpose")->get(); 
       return $rows;  
     }
-
+ 
     function occupation_exists($branch_id, $name){
       $rows = DB::table('occupations as c')->where('branch_id',$branch_id)->where('name',$name)->selectRaw("id")->limit(1)->get();
       foreach($rows as $row) return true;
