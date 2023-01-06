@@ -81,17 +81,15 @@
                 let p = {'id':lnk.data('id')};
                 cv_interact.confirm('Remove this patient?',{'confirmButtonText':'Delete','cancelButtonText':'Dont Delete',title:null,'context':'delete'},(e)=>{
                     if(e){
-                            vsapi.call(`${mThis.base_url}/api/patient/delete`,p).then((res)=>{
-                                if(res.status_code === 200){
-                                   mThis.displayPatients();    
-                                }else cv_interact.error(res.error_message);
-                            });
+                        vsapi.call(`${mThis.base_url}/api/patient/delete`,p).then((res)=>{
+                            if(res.status_code === 200){
+                                mThis.displayPatients();    
+                            }else cv_interact.error(res.error_message);
+                        });
                     }
                 });
-
             });
  
-
             // mThis.tblPatients.on('mouseover','tr',function(e){
             //    let btn = $(this).find('a.btn_apt_action');
       

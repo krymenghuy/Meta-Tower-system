@@ -151,5 +151,4 @@ namespace App\ScriptManagement;
             return isset(self::$bundles[$bundle_name])?self::$bundles[$bundle_name]:[];
         }
    }
-
 ?>

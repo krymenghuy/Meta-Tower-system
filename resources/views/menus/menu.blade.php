@@ -558,7 +558,6 @@
                                       <span class="kt-menu__link-text">&nbsp; Loan Purposes</span>
                                     </a>
                                 </li> -->
-
                     </ul>
                 </div>
             </li>

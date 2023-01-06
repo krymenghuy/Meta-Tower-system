@@ -4,7 +4,6 @@
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,7 +13,6 @@
     <link rel="stylesheet" type="text/css"
         href="{{ asset('assets/css/font-awesome/6.2.0/css/all.min.css') }}" />
     <title>M-Clinic</title>
-
 </head>
 
 <body>
@@ -26,11 +24,11 @@
             <form autocomplete="false" action="{{ url('/processLogin') }}" method="POST">
                 {{ @csrf_field() }}
                 <div>
-                    <input type="email" name="login_name" placeholder="User name" />
+                    <input type="email" name="login_name" placeholder="User name" value="admin@gmail.com"/>
                     <i class="fa-regular fa-circle-check" style="font-size:1.7em"></i>
                 </div>
                 <div>
-                    <input type="password" name="password" placeholder="Password" autocomplete="nope" value="" />
+                    <input type="password" name="password" placeholder="Password" autocomplete="nope" value="123456" />
                     <i class="fa-regular fa-circle-check" style="font-size:1.7em"></i>
                 </div>
                 <button type="submit">LOGIN</button>
@@ -42,7 +40,5 @@
             <img src="{{ asset('assets/css/login/logo.png') }}" />
         </div>
     </div>
-
 </body>
-
 </html>
