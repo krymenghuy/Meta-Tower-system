@@ -155,45 +155,45 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
                     return JDV::json($rows);
                 })->middleware('vs-auth');
 
-                Route::post('country/save',function(Request $req){
-                    $res = App\Models\Location\Country::save($req);
-                    return response()->json($res);
-                });
+                // Route::post('country/save',function(Request $req){
+                //     $res = App\Models\Location\Country::save($req);
+                //     return response()->json($res);
+                // });
 
-                Route::post('country/delete',function(Request $req){
-                    $res = App\Models\Location\Country::delete($req);
-                    return response()->json($res);
-                });
+                // Route::post('country/delete',function(Request $req){
+                //     $res = App\Models\Location\Country::delete($req);
+                //     return response()->json($res);
+                // });
 
-                Route::post('city/save',function(Request $req){
-                    $res = App\Models\Location\City::save($req);
-                    return response()->json($res);
-                });
+                // Route::post('city/save',function(Request $req){
+                //     $res = App\Models\Location\City::save($req);
+                //     return response()->json($res);
+                // });
 
-                Route::post('city/delete',function(Request $req){
-                    $res = App\Models\Location\City::delete($req);
-                    return response()->json($res);
-                });
+                // Route::post('city/delete',function(Request $req){
+                //     $res = App\Models\Location\City::delete($req);
+                //     return response()->json($res);
+                // });
 
-                Route::post('district/save',function(Request $req){
-                    $res = App\Models\Location\District::save($req);
-                    return response()->json($res);
-                });
+                // Route::post('district/save',function(Request $req){
+                //     $res = App\Models\Location\District::save($req);
+                //     return response()->json($res);
+                // });
 
-                Route::post('district/delete',function(Request $req){
-                    $res = App\Models\Location\District::delete($req);
-                    return response()->json($res);
-                });
+                // Route::post('district/delete',function(Request $req){
+                //     $res = App\Models\Location\District::delete($req);
+                //     return response()->json($res);
+                // });
 
-                Route::post('commune/save',function(Request $req){
-                    $res = App\Models\Location\Commune::save($req);
-                    return response()->json($res);
-                });
+                // Route::post('commune/save',function(Request $req){
+                //     $res = App\Models\Location\Commune::save($req);
+                //     return response()->json($res);
+                // });
 
-                Route::post('commune/delete',function(Request $req){
-                    $res = App\Models\Location\Commune::delete($req);
-                    return response()->json($res);
-                });         
+                // Route::post('commune/delete',function(Request $req){
+                //     $res = App\Models\Location\Commune::delete($req);
+                //     return response()->json($res);
+                // });         
      //end::LocationController
 
   

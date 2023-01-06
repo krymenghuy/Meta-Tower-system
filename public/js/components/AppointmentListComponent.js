@@ -361,14 +361,13 @@
                     //In case of Editing Person Info only => also use @appt_id (instad of "id") to edit person info
                     /***
                      @op = {'appt_id':##} => api/person/save() will use appt_id to retrieve @person_id in order to update person profile 
-                    **/ 
+                    **/
                     op.appt_id = appt_id;
                     PersonDialog.show(op);
 
                 }else if(status_id<=2){
                     AppointmentDialog.show(op);
                 } else console.error(`Error: Editing Appointment or personal profile requires status_id to be known exactly`);
-       
             });
 
             this.cfg = new ExpandableRowConfig('_apl_tblAppts',{

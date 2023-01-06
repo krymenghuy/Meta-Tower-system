@@ -41,6 +41,12 @@
 			"Status":"Status",
 			"Action":"Action"
 	},
+	"service":{
+		"Numero":"No.",
+        "Name":"Name",
+        "Description":"Description",
+        "Action":"Action"
+	},
 	"patient":{
         "ID":"Patient ID",
 		"Patient ID":"Patient ID",

@@ -565,8 +565,7 @@
             <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon"><i class="fa fa-user-check"></i></span>
-                    <span class="kt-menu__link-text trans-text" data-langprop="menus.User Management">User
-                        Management</span>
+                    <span class="kt-menu__link-text trans-text" data-langprop="menus.User Management">User Management</span>
                     <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
                 <div class="kt-menu__submenu "><span class="kt-menu__arrow"></span>

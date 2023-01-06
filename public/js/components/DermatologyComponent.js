@@ -9,12 +9,36 @@ let DermatologyComponent = new function(){
     this.elSearchItem = $('#_dml_search');
     this.tblItems = $('#_dml_tblItems');
 
+    this.col_titles = {
+        "Numero":"No.",
+        "Name":"Name",
+        "Description":"Description",
+        "Action":"Action"
+    };
+
+    this.trans_title = (title_prop='undefined')=>{
+        return (mThis.col_titles[title_prop] || 'undefined');
+     }
+
+    this.setLanguage = ()=>{
+        //let d = 0;
+        if (LocaleManager.lang !== mThis.lang){
+            for (let prop in mThis.col_titles){
+                //if (mThis.col_titles.hasOwnProperty(prop)) {}
+                 mThis.col_titles[prop] = LocaleManager.trans(prop,'service',LocaleManager.lang);
+            }
+            //d =1;
+            mThis.lang = LocaleManager.lang;
+        }
+        //alert( (d==1?'translate => ':'No need translate=> ') + JSON.stringify(mThis.col_titles)); 
+    }
+
     this.init = () => {
         mThis.tblItems.on('click','.btn_item_modify',function(e){
             let item_id = $(this).data("id");
 
             //todo: delete this item_id
-            
+
         });
     }
 
@@ -23,47 +47,47 @@ let DermatologyComponent = new function(){
          //Initialize language for DataTable columns headers
          //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
          //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
-         //mThis.setLanguage();
+         mThis.setLanguage();
          let p = {'search_value':mThis.elSearchItem.val()};
          window.vsapi.call(`${mThis.base_url}/api/service/items`,p,'POST',null).then((result)=>{
-             let data = [];
-             if(result.status_code ===200) data = result.data;
-             if (mThis.table){
-                     mThis.tblItems.DataTable().clear().destroy();
-                     //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
-                     mThis.tblItems.empty();
-                     //alert('destroyed => '+  mThis.tblItems.html());
-                     mThis.table = null;
-             }
-              data = StringSanitizer.sanitizeObject(data,null,['cur_symbol']);
+            let data = [];
+            if(result.status_code ===200) data = result.data;
+            if (mThis.table){
+                mThis.tblItems.DataTable().clear().destroy();
+                //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
+                mThis.tblItems.empty();
+                //alert('destroyed => '+  mThis.tblItems.html());
+                mThis.table = null;
+            }
+
+            data = StringSanitizer.sanitizeObject(data,null,['cur_symbol']);
              //begin::Set up columns
-                 //let cnt = 1;
-                 //data = [ {name: "sffdf", description:"sddfsf",price:100, cur_symbol:"$"},{}, ... ]
-                 let my_columns = [
-                      
+                //let cnt = 1;
+                //data = [ {name: "sffdf", description:"sddfsf",price:100, cur_symbol:"$"},{}, ... ]
+                let my_columns = [
                     {
                         data:(item,a,b)=>{
                             return 1;
                         },
                         title: mThis.trans_title('Numero')
                     },
-                     {
+                    {
                         data:(item,a,b) =>{
                             return [`<div>${item.name}</div>`].join('');
                         },
                         title: mThis.trans_title('Name')
-                      },
-                     {
+                    },
+                    {
                         title: mThis.trans_title('Description'),
-                         data:"description"
-                     },
-                     {
+                        data:"description"
+                    },
+                    {
                         title: mThis.trans_title('Price'),
                         data:(item,a,b)=>{
-                           return [item.cur_symbol,item.price].join('');
+                            return [item.cur_symbol,item.price].join('');
                         }
-                     },
-                     {
+                    },
+                    {
                         title:mThis.trans_title('Action'),
                         data: function(item,a,b){
                             return [`<div class="form-inline">`,
@@ -73,8 +97,8 @@ let DermatologyComponent = new function(){
                            ].join('');
                         }
                     }
-                 ];
-                 //END Define colum
+                ];
+                //END Define colum
 
              //translate column names
              //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
