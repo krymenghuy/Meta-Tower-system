@@ -26,7 +26,8 @@ use App\Http\Controllers\WebReportController;
 use App\Http\Controllers\PusherController;
  
 use App\Http\Controllers\AppointmentController;
-use App\Http\Controllers\QTicketController;  
+use App\Http\Controllers\QTicketController;
+use App\Http\Controllers\ItemController;    
 use App\Models\PublicStorage;
 use App\Models\SystemSetting;
 use App\Models\Patient;
@@ -79,6 +80,11 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         
     //End::QTicketController
     
+  //begin::ItemController
+     Route::post('service/items', [ItemController::class, 'getItemList']);
+  
+  //End::ItemController
+
     //begin::PatientController. Not using Controller
             Route::post('patient/find',function(Request $req){
                 $res = Patient::findSimilar($req);

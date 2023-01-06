@@ -34,10 +34,10 @@ class ItemController extends Controller
         //$this->item->branch_id = $branch_id;     
         //$this->item->name = 'Some name hhh';
         //$this->item->create_user = $ss->full_name;
-        
-        $r =  $this->item::where('branch_id',$branch_id)->orderBy('name')->get();
+        $rows = DB::table('service_items as i')->where('i.branch_id',$branch_id)->selectRaw("id,name,description,create_user, created_at")->orderBy('name','ASC')->get(); 
+        //$r =  $this->item::selectRaw("name,")->where('branch_id',$branch_id)->orderBy('name')->get();
        
-        return makeJsonResponse($r);
+        return JDV::result($rows);
     }
      
     function deleteItem(Request $request) { 

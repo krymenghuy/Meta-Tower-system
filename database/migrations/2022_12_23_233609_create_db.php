@@ -14,6 +14,7 @@ class CreateDb extends Migration
     public function up()
     {
         DB::unprepared(file_get_contents(getCWD()."/db/mclinic_db.sql"));
+        DB::unprepared(file_get_contents(getCWD()."/db/mclinic_db_functions.sql"));
         //DB::unprepared(file_get_contents(getCWD()."/db1/accounting_init_data.sql"));
     }
 

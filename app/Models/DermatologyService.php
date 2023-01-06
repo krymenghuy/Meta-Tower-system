@@ -4,14 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\UM;
-use DB;
-use Session;
 
-class Item extends Model
+class DermatologyService extends Model
 {
     use HasFactory;
-    protected $table = 'items';
+    protected $table = 'service_items';
     protected $primaryKey = 'id';
     //public $incrementing = true;
     protected $keyType = 'int';
@@ -37,5 +34,5 @@ class Item extends Model
     ];
 
     protected $fillable =["*"];  
- 
+
 }
