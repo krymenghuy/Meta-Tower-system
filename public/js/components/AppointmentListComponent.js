@@ -209,7 +209,7 @@
                 e.preventDefault();
                 //let d = mThis.elSearchAppt.val();
                 //if(!d || d.length >3) 
-               if (e.keyCode ===13) mThis.displayAppointmentList();
+               if (e.keyCode === 13) mThis.displayAppointmentList();
             });
 
             mThis.appt_filter_date.on('change',(e)=>{
@@ -515,14 +515,12 @@
                          data:(data,a,b)=>{
                             return [`<img class="dt-icon" src="${this.icon_url()}/time.png">&nbsp;`,data.arrival_time].join('');
                          },
-                       
                      },
                      {
                         title: mThis.trans_title('Client Name'),
                         data:(data,a,b)=>{
                            return [`<span style="display:block" class="client-name text-bold">`,data.client_name,`</span>`,`<span style="display:block;" class="client-code text-success">`,data.patient_code,`</span>`].join('');
                         }
-                        
                      },
                      {
                          title: mThis.trans_title('Client Phone'),
@@ -573,7 +571,7 @@
                      // }
                  ];
                  //END Define colum
-             
+
              //translate column names
              //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
 
@@ -640,7 +638,7 @@
                 let items = StringSanitizer.sanitizeObject(res.data);
                 VSUtil.setComboItems(mThis.appt_filter_status,items,'id','appt_status',true,'All Statuses',0);
                 if(onFinish) onFinish();
-                mThis.form_data.departments = items;
+                mThis.form_data.statuses = items;
               
             }
            
