@@ -81,7 +81,7 @@ END;
 -- Function structure for `hasPosition`
 -- ----------------------------
 DROP FUNCTION IF EXISTS `hasPosition`;
-CREATE  FUNCTION `hasPosition`(empid INT,posid INT) RETURNS int(11)
+CREATE  FUNCTION `hasPosition`(empid INT,posid INT) RETURNS int(11) DETERMINISTIC
 BEGIN
   SET @d= (EXISTS(select id from employee_positions as e WHERE e.emp_id = empid AND e.position_id = posid LIMIT 1));
   RETURN @d;
@@ -91,7 +91,7 @@ END;
 -- Function structure for `hasPositions`
 -- ----------------------------
 DROP FUNCTION IF EXISTS `hasPositions`;
-CREATE  FUNCTION `hasPositions`(empid INT,posid INT) RETURNS int(11)
+CREATE  FUNCTION `hasPositions`(empid INT,posid INT) RETURNS int(11) DETERMINISTIC
 BEGIN
   SET @d= (EXISTS(select id from employee_positions as e WHERE e.emp_id = empid AND e.position_id = posid LIMIT 1));
   RETURN @d;
