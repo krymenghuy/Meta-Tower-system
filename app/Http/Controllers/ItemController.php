@@ -28,13 +28,13 @@ class ItemController extends Controller
  
     function getItemList(Request $request) { 
         $ss = UM::getUserInfoByToken($request,-1);
-        if($ss->status_code !=200) return DV::emptyResult($ss->status_code,null); //user not authenticated
+        if($ss->status_code !=200) return $ss; //user not authenticated
         $branch_id = $ss->branch_id;
 
         //$this->item->branch_id = $branch_id;     
         //$this->item->name = 'Some name hhh';
         //$this->item->create_user = $ss->full_name;
-        $rows = DB::table('service_items as i')->where('i.branch_id',$branch_id)->selectRaw("id,name,description,create_user, created_at")->orderBy('name','ASC')->get(); 
+        $rows = DB::table('service_items as i')->where('i.branch_id',$branch_id)->selectRaw("id,name,description,price,displayMoney(price,currency_code) as display_price,create_user, created_at")->orderBy('name','ASC')->get(); 
         //$r =  $this->item::selectRaw("name,")->where('branch_id',$branch_id)->orderBy('name')->get();
        
         return JDV::result($rows);

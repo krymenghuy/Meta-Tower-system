@@ -1267,11 +1267,8 @@ function readFileContent($fileName=null)
         if($pk_value > 0) $str_pk = " AND $table.$pk_field_name <> $pk_value";
         else if($pk_value) $str_pk =" AND $table.$pk_field_name <> '$pk_value'";
         $text = getPropValue('text',$parts[3]);
-        if (!$text)  
-        {
-              $text = getPropValue('text',$parts[4]);
-        }
-        
+        if (!$text) $text = getPropValue('text',isset($parts[4])?$parts[4]:'');
+         
         $str_branch = "1=1 ";
         if ($branch_id > 0) $str_branch ="branch_id =$branch_id ";
         $m_where =  $str_branch." AND ".$m_where.$str_pk;

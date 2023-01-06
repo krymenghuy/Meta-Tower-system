@@ -69,45 +69,8 @@ class GeneralSettingsController extends Controller
       else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
       return makeJsonResponse($r);
     }
-    
-    function getPaymentFormOptions(Request $request) {
-      $r = $this->settingModel->getPaymentFormOptions($request); 
-      if($r =='#350') 
-      return makeJsonResponse($r,350); // user not authenticated
-      else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-      return makeJsonResponse($r);
-    }
-    
-    function getOccupations(Request $req) {
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-        $branch_id = $ss->branch_id;
-        //$d = Sanitizer::sanitizeObject($req->all(),[]);
-        $rows = DB::table('occupations as o')->where('branch_id',$branch_id)->selectRaw("id,name as occupation")->get(); 
-        return JDV::result($rows);
-    }
-
-    function getLoanPurposes(Request $req) {
-      $ss = UM::getUserInfoByToken($req,-1);
-      if($ss->status_code !=200) return $ss; //user not authenticated
-      $branch_id = $ss->branch_id;
-      $rows = DB::table('loan_purposes as l')->where('branch_id',$branch_id)->selectRaw("id,name as purpose")->get(); 
-      return $rows;  
-    }
- 
-    function occupation_exists($branch_id, $name){
-      $rows = DB::table('occupations as c')->where('branch_id',$branch_id)->where('name',$name)->selectRaw("id")->limit(1)->get();
-      foreach($rows as $row) return true;
-      return false;
-    }
-
-    function purpose_exists($branch_id, $name){
-        $rows = DB::table('loan_purposes as c')->where('branch_id',$branch_id)->where('name',$name)->selectRaw("id")->limit(1)->get();
-        foreach($rows as $row) return true;
-        return false;
-    }
-
-    function saveChiefComplaint(Request $req){
+     
+     function saveChiefComplaint(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !=200) return $ss; //User not authenticated
       $branch_id = $ss->branch_id;
@@ -130,7 +93,7 @@ class GeneralSettingsController extends Controller
         $this->setChiefCompaintCode($new_id,$code); 
         return JDV::success(['id'=>$new_id]);
       }
-      else return JDV::error("SOmething went wrong when trying to save Chief complaint data");
+      else return JDV::error("Something went wrong when trying to save Chief complaint data");
     }
 
     static function getComboItems_consultant_internal($branch_id,$department_id=0){
@@ -187,104 +150,40 @@ class GeneralSettingsController extends Controller
         if(!$code) $code = $id;
         DB::table('chief_complaints')->where('id',$id)->update(['code'=>$code]);
     }
-
-    function saveOccupation(Request $req) {
-        $ss = UM::getUserInfoByToken($req,207);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-        $branch_id = $ss->branch_id;
-        $d = Sanitizer::sanitizeObject($req->all(),[]);
-        $id = getValue($d,'id');
-        $name = getValue($d,'name');
-
-        if(!$name) return JDV::error('Occupation name cannot be empty');
-        if($this->occupation_exists($branch_id,$name)) return JDV::error("The provided occupation already exists");
-        
-        DB::table('occupations')->insert(array(
-            'name'=>$name,
-            'branch_id'=>$branch_id,
-            'create_user'=>$ss->login_name,
-            'create_date'=>getNowTime()
-        ));
-        $new_id = DB::getPdo()->lastInsertId();
-        return JDV::success(['id'=>$new_id,'occupation'=>$name]); 
-    }
-   
-    function saveLoanPurpose(Request $request){
+ 
+   function getDepartmentList(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
         $branch_id = $ss->branch_id;
-        $d = Sanitizer::sanitizeObject($req->all(),[]);
-        $id = getValue($d,'id');
-        $name = getValue($d,'name');
-    
-        if(!$name) return DV::error('Purpose name cannot be empty');
-        if($this->purpose_exists($branch_id,$name)) return JDV::error("The provided purpose already exists");
-        
-        DB::table('loan_purposes')->insert(array(
-            'name'=>$name,
-            'branch_id'=>$branch_id,
-            'create_user'=>$ss->login_name,
-            'create_date'=>getNowTime()
-        ));
-        $new_id = DB::getPdo()->lastInsertId();
-        return JDV::success();  
-    }
+        $rows = DB::table('departments as d')->where('d.branch_id',$branch_id)->selectRaw("d.id,d.name,d.description,d.create_user, d.created_at")->get();
+        return JDV::result($rows);
+    } 
 
-    function getCollateralTypes(){
-       $rows = DB::table('collateral_types as c')->selectRaw("c.id,c.name,c.category")->get();
-       return JDV::result($rows);
-    }
-
-    function getProgramOptions(Request $request) {
-          $r = $this->settingModel->getProgramOptions($request); 
-          if($r =='#350') 
-          return makeJsonResponse($r,350); // user not authenticated
-          else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-          return makeJsonResponse($r);
-    }
-
-    function saveProgram(Request $request) {
-          $r = $this->settingModel->saveProgram($request); 
-          if($r =='#350') 
-          return makeJsonResponse($r,350); // user not authenticated
-          else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-          return makeJsonResponse($r);
-    }
-
-    function getProductTypes(Request $request) {
-        $r = $this->settingModel->getProductTypes($request); 
-        if($r =='#350') 
-        return makeJsonResponse($r,350); // user not authenticated
-         else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-        return makeJsonResponse($r);
+   function deleteDepartment(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !=200) return $ss; //user not authenticated
+      $branch_id = $ss->branch_id;
+      $id = $req->id;
+      DB::table('departments')->where('branch_id',$branch_id)->where('id',$id)->delete();
+      return JDV::success();   
    }
 
-   
-   //$d = {phone_number,text}
-   function sendMessage(Request $request) {
-          $r = $this->settingModel->sendMessage($request); 
-          if($r =='#350') 
-          return makeJsonResponse($r,350); // user not authenticated
-          else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-          return makeJsonResponse($r);
-   }
+   function saveDepartment(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !=200) return $ss; //user not authenticated
+      $branch_id = $ss->branch_id;
+      $check_unique = ["$branch_id|departments|name|id=id"];
+      $validate_rule = ["id"=>"0|number|identity=1","name"=>"1|string|1-200","description"=>"0|string"];
+      $res = validateReq($req,$validate_rule,true,[],$ss->lang,false,$check_unique);
+      if($res->error) return JDV::error($res->error);
+      $id = $res->id;
+      $inputs = $res->values;
+      if(!isset($inputs['description'])) $inputs['description'] = $inputs['name'];
 
-   function deleteProductType(Request $request) {
-        $r = $this->settingModel->deleteProductType($request); 
-        if($r =='#350') 
-        return makeJsonResponse($r,350); // user not authenticated
-        else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-        return makeJsonResponse($r);
+      $id = saveData($ss,"departments",["id"=>$id],$inputs,[],1);
+      if($id>0) return JDV::success(["id"=>$id]); 
+      return JDV::error("Something wrong in saving department");    
    }
-
-   function saveProductType(Request $request){
-        $r = $this->settingModel->saveProductType($request); 
-        if($r =='#350') 
-        return makeJsonResponse($r,350); // user not authenticated
-        else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-        return makeJsonResponse($r);
-   }
-
 
     //api/settings/test-sql
     function testSQL(Request $req){
