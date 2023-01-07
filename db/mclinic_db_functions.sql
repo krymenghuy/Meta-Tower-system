@@ -96,3 +96,32 @@ BEGIN
   SET @d= (EXISTS(select id from employee_positions as e WHERE e.emp_id = empid AND e.position_id = posid LIMIT 1));
   RETURN @d;
 END;
+
+DROP FUNCTION IF EXISTS `getCurSymbol`;
+CREATE   FUNCTION `getCurSymbol`(ccode varchar(10)) RETURNS varchar(10) DETERMINISTIC
+    DETERMINISTIC
+BEGIN
+  declare ss varchar(10);
+  SET ss = (select `symbol` from currencies as c where c.`code` = ccode limit 1);
+  return ss;
+end;
+
+DROP FUNCTION IF EXISTS `displayMoney`;
+CREATE   FUNCTION `displayMoney`(amt decimal(10,2),ccode varchar(10)) RETURNS varchar(100) DETERMINISTIC
+    DETERMINISTIC
+BEGIN
+  declare sym varchar(15);
+  declare symbol_after int;
+  declare dec_points int;
+  declare val varchar(100);
+  if (amt IS null) then
+    set amt =0;
+  end if;
+ 
+  SELECT  c.symbol, c.symbol_after, c.decimal_points INTO sym, symbol_after,dec_points FROM currencies as c WHERE c.code =ccode limit 1;
+  IF (symbol_after =1) THEN
+    set val = concat(amt,sym);
+  ELSE set val= concat(sym,amt); 
+  END IF;
+  return val; 
+end;
