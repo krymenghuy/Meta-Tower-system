@@ -22,4 +22,16 @@ pipeline {
             }
         }
     }
+    post{
+        success{
+            sh '''
+            sh 1-success-deploy-dev.sh;\
+            '''
+        }
+        failure{
+            sh '''
+            sh 2-fail-deploy-dev.sh;\
+            '''
+        }
+    }
 }
