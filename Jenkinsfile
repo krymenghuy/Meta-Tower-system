@@ -11,7 +11,7 @@ pipeline {
             steps {
                 sh 'ssh -o StrictHostKeyChecking=no root@66.29.152.204 "cd /apps/m-clinic;\
                 git fetch;\
-                git checkout dev;\
+                git checkout main;\
                 git pull;\
                 "'
             }
