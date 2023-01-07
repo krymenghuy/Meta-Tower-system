@@ -184,7 +184,7 @@ class GeneralSettingsController extends Controller
 
       $id = saveData($ss,"departments",["id"=>$id],$inputs,[],1);
       if($id>0) return JDV::success(["id"=>$id]); 
-      return JDV::error("Something wrong in saving department");    
+      return JDV::error("Something wrong in saving department data");    
    }
 
     //api/settings/test-sql
