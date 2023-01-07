@@ -13,6 +13,7 @@ let DermatologyComponent = new function(){
         "Numero":"No.",
         "Name":"Name",
         "Description":"Description",
+        "Price":"Price",
         "Action":"Action"
     };
 
@@ -60,7 +61,7 @@ let DermatologyComponent = new function(){
                 mThis.table = null;
             }
 
-            data = StringSanitizer.sanitizeObject(data,null,['cur_symbol']);
+            data = StringSanitizer.sanitizeObject(data,null,['display_price']);
              //begin::Set up columns
                 //let cnt = 1;
                 //data = [ {name: "sffdf", description:"sddfsf",price:100, cur_symbol:"$"},{}, ... ]
@@ -83,9 +84,10 @@ let DermatologyComponent = new function(){
                     },
                     {
                         title: mThis.trans_title('Price'),
-                        data:(item,a,b)=>{
-                            return [item.cur_symbol,item.price].join('');
-                        }
+                        data:'display_price'
+                        // data:(item,a,b)=>{
+                        //     return [item.cur_symbol,item.price].join('');
+                        // }
                     },
                     {
                         title:mThis.trans_title('Action'),

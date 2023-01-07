@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2023-01-06 16:05:28
+Date: 2023-01-07 10:41:14
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -255,6 +255,32 @@ INSERT INTO `contact_channels` VALUES ('4', '0', 'Telegram', 'Admin', '1', '2022
 INSERT INTO `contact_channels` VALUES ('5', '0', 'Walkin', 'Admin', '1', '2022-11-16 12:21:45', null, null, null);
 
 -- ----------------------------
+-- Table structure for `currencies`
+-- ----------------------------
+DROP TABLE IF EXISTS `currencies`;
+CREATE TABLE `currencies` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `code` varchar(10) NOT NULL,
+  `create_uid` int(10) NOT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  `update_user` varchar(50) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `symbol` varchar(10) DEFAULT NULL,
+  `symbol_after` tinyint(6) DEFAULT NULL,
+  `decimal_points` int(10) DEFAULT 2,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of currencies
+-- ----------------------------
+INSERT INTO `currencies` VALUES ('1', '1', 'American Dollar', 'USD', '1', 'Admin', null, null, '2023-01-06 17:38:12.676399', '$', '0', '2');
+INSERT INTO `currencies` VALUES ('2', '1', 'Riel', 'KHR', '1', 'Admin', null, null, '2023-01-06 17:38:15.991101', 'KHR', '0', '2');
+
+-- ----------------------------
 -- Table structure for `departments`
 -- ----------------------------
 DROP TABLE IF EXISTS `departments`;
@@ -263,6 +289,7 @@ CREATE TABLE `departments` (
   `branch_id` int(11) NOT NULL,
   `com_branch_id` int(11) DEFAULT 0,
   `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `parent_department_id` int(10) DEFAULT NULL,
   `description` varchar(350) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `create_user` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `create_uid` int(11) NOT NULL,
@@ -271,14 +298,13 @@ CREATE TABLE `departments` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of departments
 -- ----------------------------
-INSERT INTO `departments` VALUES ('1', '1', '0', 'General', null, 'Admin', '1', null, null, '2022-11-16 12:21:45', null);
-INSERT INTO `departments` VALUES ('2', '1', '0', 'Dermatology', null, 'Admin', '1', null, null, '2022-12-03 19:03:52', null);
-INSERT INTO `departments` VALUES ('3', '1', '0', 'Plastic Surgery', null, 'Admin', '1', null, null, '2022-12-03 19:04:03', null);
+INSERT INTO `departments` VALUES ('1', '1', '0', 'Dermatology', null, 'Dermatology', 'Samsethy', '1', null, null, '2023-01-06 19:40:15', null);
+INSERT INTO `departments` VALUES ('2', '1', '0', 'Pastic Surgery', null, 'Pastic Surgery', 'Samsethy', '1', null, null, '2023-01-06 19:40:16', null);
 
 -- ----------------------------
 -- Table structure for `employees`
@@ -330,6 +356,30 @@ CREATE TABLE `employee_positions` (
 -- ----------------------------
 INSERT INTO `employee_positions` VALUES ('1', '2', 'Active', '2022-12-03 19:37:03.746133', '2022-12-03 19:37:03.746133', null, null, null, null);
 INSERT INTO `employee_positions` VALUES ('2', '3', 'Active', '2022-12-03 19:37:04.306061', '2022-12-03 19:37:04.306061', null, null, null, null);
+
+-- ----------------------------
+-- Table structure for `exchange_rates`
+-- ----------------------------
+DROP TABLE IF EXISTS `exchange_rates`;
+CREATE TABLE `exchange_rates` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `currency_code` varchar(10) NOT NULL,
+  `base_currency_code` varchar(10) NOT NULL,
+  `buy_rate` decimal(10,4) NOT NULL,
+  `sell_rate` decimal(10,4) DEFAULT NULL,
+  `x_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `x_month` int(11) DEFAULT NULL,
+  `x_year` int(11) DEFAULT NULL,
+  `branch_id` int(10) NOT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of exchange_rates
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for `inv_adjustment_types`
@@ -1148,30 +1198,6 @@ CREATE TABLE `inv_warehouses` (
 INSERT INTO `inv_warehouses` VALUES ('1', '1', 'Defaut Warehosue', 'Default warehouse', '0', '0', null, null, null, null, null, null);
 
 -- ----------------------------
--- Table structure for `labo_tests`
--- ----------------------------
-DROP TABLE IF EXISTS `labo_tests`;
-CREATE TABLE `labo_tests` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `branch_id` int(10) NOT NULL,
-  `name` varchar(250) NOT NULL,
-  `create_uid` int(10) DEFAULT NULL,
-  `create_user` varchar(50) DEFAULT NULL,
-  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `update_uid` int(10) DEFAULT NULL,
-  `update_user` varchar(50) DEFAULT NULL,
-  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
-
--- ----------------------------
--- Records of labo_tests
--- ----------------------------
-INSERT INTO `labo_tests` VALUES ('1', '1', 'Blood Test One', '1', null, null, null, null, null);
-INSERT INTO `labo_tests` VALUES ('2', '1', 'Blood Test 2', '1', null, null, null, null, null);
-INSERT INTO `labo_tests` VALUES ('3', '1', 'Test 3', '1', null, null, null, null, null);
-
--- ----------------------------
 -- Table structure for `leads`
 -- ----------------------------
 DROP TABLE IF EXISTS `leads`;
@@ -1477,6 +1503,51 @@ INSERT INTO `medical_conditions` VALUES ('5', '1', 'Headaches', 'level', '0-10',
 INSERT INTO `medical_conditions` VALUES ('6', '1', 'Stomach Aches', 'level', '0-10', '0');
 
 -- ----------------------------
+-- Table structure for `medical_services`
+-- ----------------------------
+DROP TABLE IF EXISTS `medical_services`;
+CREATE TABLE `medical_services` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `name` varchar(250) NOT NULL,
+  `description` varchar(250) NOT NULL,
+  `create_uid` int(10) NOT NULL,
+  `create_user` varchar(50) NOT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT 0.00,
+  `currency_code` varchar(10) DEFAULT 'USD',
+  `cost` decimal(10,2) DEFAULT 0.00,
+  `department_id` int(10) NOT NULL,
+  `treatment_method` varchar(25) DEFAULT '' COMMENT 'treatment_type ={non-surgery,minor suregery,surgery}',
+  `service_type` varchar(25) DEFAULT 'treatment' COMMENT 'service_type = {treatment, labo,consultation}',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of medical_services
+-- ----------------------------
+INSERT INTO `medical_services` VALUES ('1', '1', 'Skin cleaning', 'Skin cleaning', '1', 'Admin', '2023-01-06 17:22:21.590731', '2023-01-06 17:22:21.590731', null, null, '0.00', 'USD', '0.00', '0', null, 'treatment');
+INSERT INTO `medical_services` VALUES ('2', '1', 'Facial treatment', 'Facial Treatment', '1', 'Admin', '2023-01-06 17:22:26.077659', '2023-01-06 17:22:26.077659', null, null, '0.00', 'USD', '0.00', '0', null, 'treatment');
+INSERT INTO `medical_services` VALUES ('9', '1', 'Facial treatment', 'Facial treatment', '1', 'Samsethy', '2023-01-07 00:10:00.000000', null, null, null, null, 'USD', null, '1', 'nonsurgery', 'treatment');
+INSERT INTO `medical_services` VALUES ('10', '1', 'Facial treatment', 'Facial treatment', '1', 'Samsethy', '2023-01-07 00:10:03.000000', null, null, null, null, 'USD', null, '1', 'nonsurgery', 'treatment');
+INSERT INTO `medical_services` VALUES ('11', '1', 'Facial treatment', 'Facial treatment', '1', 'Samsethy', '2023-01-07 00:13:23.000000', null, null, null, null, 'USD', null, '1', 'nonsurgery', 'treatment');
+INSERT INTO `medical_services` VALUES ('12', '1', 'Facial treatment', 'Facial treatment', '1', 'Samsethy', '2023-01-07 00:13:24.000000', null, null, null, null, 'USD', null, '1', 'nonsurgery', 'treatment');
+INSERT INTO `medical_services` VALUES ('14', '1', 'Facial treatment', 'Facial treatment', '1', 'Samsethy', '2023-01-07 00:15:13.000000', null, null, null, null, 'USD', null, '1', 'nonsurgery', 'treatment');
+INSERT INTO `medical_services` VALUES ('15', '1', 'Facial treatment', 'Facial treatment', '1', 'Samsethy', '2023-01-07 00:15:14.000000', null, null, null, null, 'USD', null, '1', 'nonsurgery', 'treatment');
+INSERT INTO `medical_services` VALUES ('16', '1', 'Facial treatment', 'Facial treatment', '1', 'Samsethy', '2023-01-07 00:15:15.000000', null, null, null, null, 'USD', null, '1', 'nonsurgery', 'treatment');
+INSERT INTO `medical_services` VALUES ('17', '1', 'Facial treatment', 'Facial treatment', '1', 'Samsethy', '2023-01-07 00:16:58.000000', null, null, null, null, 'USD', null, '1', 'nonsurgery', 'treatment');
+INSERT INTO `medical_services` VALUES ('18', '1', 'Facial treatment', 'Facial treatment', '1', 'Samsethy', '2023-01-07 00:16:59.000000', null, null, null, null, 'USD', null, '1', 'nonsurgery', 'treatment');
+INSERT INTO `medical_services` VALUES ('19', '1', 'Facial treatment', 'Facial treatment', '1', 'Samsethy', '2023-01-07 00:17:00.000000', null, null, null, null, 'USD', null, '1', 'nonsurgery', 'treatment');
+INSERT INTO `medical_services` VALUES ('20', '1', 'Facial treatment', 'Facial treatment', '1', 'Samsethy', '2023-01-07 00:17:01.000000', null, null, null, null, 'USD', null, '1', 'nonsurgery', 'treatment');
+INSERT INTO `medical_services` VALUES ('21', '1', 'Facial treatment', 'Facial treatment', '1', 'Samsethy', '2023-01-07 00:17:01.000000', null, null, null, null, 'USD', null, '1', 'nonsurgery', 'treatment');
+INSERT INTO `medical_services` VALUES ('22', '1', 'Facial treatment', 'Facial treatment', '1', 'Samsethy', '2023-01-07 00:17:01.000000', null, null, null, null, 'USD', null, '1', 'nonsurgery', 'treatment');
+INSERT INTO `medical_services` VALUES ('27', '1', 'Blood test', 'Blood test', '1', 'Samsethy', '2023-01-07 00:23:42.000000', null, null, null, null, 'USD', null, '1', 'nonsurgery', 'labo');
+INSERT INTO `medical_services` VALUES ('28', '1', 'Medical Consultation', 'Medical Consultation', '1', 'Samsethy', '2023-01-07 00:24:42.000000', null, null, null, null, 'USD', null, '1', 'none', 'consultation');
+
+-- ----------------------------
 -- Table structure for `migrations`
 -- ----------------------------
 DROP TABLE IF EXISTS `migrations`;
@@ -1485,7 +1556,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of migrations
@@ -1503,6 +1574,39 @@ INSERT INTO `migrations` VALUES ('10', '2022_11_16_113936_create_departments_tab
 INSERT INTO `migrations` VALUES ('11', '2022_11_16_115512_create_positions_table', '1');
 INSERT INTO `migrations` VALUES ('12', '2022_11_16_120819_create_inital_data', '1');
 INSERT INTO `migrations` VALUES ('13', '2022_12_23_233609_create_db', '1');
+INSERT INTO `migrations` VALUES ('14', '2022_12_23_233609_create_db', '1');
+
+-- ----------------------------
+-- Table structure for `partners`
+-- ----------------------------
+DROP TABLE IF EXISTS `partners`;
+CREATE TABLE `partners` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `name` varchar(250) NOT NULL,
+  `address` varchar(350) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `phone_number` varchar(50) DEFAULT NULL,
+  `phone_number1` varchar(50) DEFAULT NULL,
+  `partner_type` varchar(25) DEFAULT 'institution' COMMENT 'partner_type = {person,institution}',
+  `create_user` varchar(50) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_uid` int(6) DEFAULT NULL,
+  `update_user` varchar(50) DEFAULT NULL,
+  `person_id` int(10) DEFAULT NULL,
+  `cp_name` varchar(100) DEFAULT NULL,
+  `cp_phone_number` varchar(100) DEFAULT NULL,
+  `cp_email` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of partners
+-- ----------------------------
+INSERT INTO `partners` VALUES ('1', '1', 'Biomed', null, null, '012345345', null, 'institution', 'Samsethy', '1', '2023-01-07 00:45:32.000000', null, null, null, null, 'some one', '012345345', 'ccgmailcom');
+INSERT INTO `partners` VALUES ('4', '1', 'Super Lab', null, null, '012345345', null, 'institution', 'Samsethy', '1', '2023-01-07 00:48:26.000000', null, null, null, null, 'some one', '012345345', 'ccgmailcom');
 
 -- ----------------------------
 -- Table structure for `patients`
@@ -2292,30 +2396,6 @@ INSERT INTO `reports` VALUES ('6', '100', 'Overdue report', 'Overdue report', 'L
 INSERT INTO `reports` VALUES ('7', '100', 'Uncollectible Loans', 'Uncollectible Loans', 'Loan', '', '1', '0');
 
 -- ----------------------------
--- Table structure for `service_items`
--- ----------------------------
-DROP TABLE IF EXISTS `service_items`;
-CREATE TABLE `service_items` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `branch_id` int(10) NOT NULL,
-  `name` varchar(250) NOT NULL,
-  `description` varchar(250) NOT NULL,
-  `create_uid` int(10) NOT NULL,
-  `create_user` varchar(50) NOT NULL,
-  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `update_user` varchar(50) DEFAULT NULL,
-  `update_uid` int(10) DEFAULT NULL,
-  PRIMARY KEY (`id`,`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
-
--- ----------------------------
--- Records of service_items
--- ----------------------------
-INSERT INTO `service_items` VALUES ('1', '1', 'Skin cleaning', 'Skin cleaning', '1', 'Admin', null, null, null, null);
-INSERT INTO `service_items` VALUES ('2', '1', 'Facial treatment', 'Facial Treatment', '1', 'Admin', null, null, null, null);
-
--- ----------------------------
 -- Table structure for `service_queue`
 -- ----------------------------
 DROP TABLE IF EXISTS `service_queue`;
@@ -2856,12 +2936,12 @@ CREATE TABLE `um_sessions` (
   `status` varchar(10) DEFAULT NULL COMMENT 'status ={online,offline}',
   `lang` varchar(50) DEFAULT 'en',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1684 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1700 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of um_sessions
 -- ----------------------------
-INSERT INTO `um_sessions` VALUES ('1683', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-01-06 15:52:07', '2023-01-06 15:52:07', 'KWn47a774L631O59hciW06Vf17DU5rlfs0oGfA', 'LY8vhU2v1nV4gJ1h93B8nAwhGxEimB6EFIjR5a', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAiLCJhdWQiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAiLCJpYXQiOjE2NzI5OTUxMjcsIm5iZiI6MTY3Mjk5NTEyNywiZXhwIjoxNjcyOTk4NzI3LCJsYW5nIjoiZW4iLCJ1c2VyX2NsYXNzIjoiYWRtaW4iLCJvZmZpY2lhbF9pZCI6bnVsbCwiaWQiOjEsImxvZ2luX25hbWUiOiJhZG1pbkBnbWFpbC5jb20iLCJicmFuY2hfaWQiOjEsImZ1bGxfbmFtZSI6IlNhbXNldGh5Iiwic3RhdHVzIjoiYWN0aXZlIiwiaXNfbG9ja2VkIjowLCJlbWFpbCI6bnVsbCwicGhvbmVfbnVtYmVyIjoiMDEyNTc4OTAiLCJvdHBfY29kZSI6bnVsbH0.8RSv8sSoZl3m9oWIdv4GW4BCUlhpQPPKezT6NKKTS2U', null, 'en');
+INSERT INTO `um_sessions` VALUES ('1699', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-01-07 00:44:44', '2023-01-07 00:44:44', 'TLVDn9uvxz9R3524VXrAySPPWW3CT5xQTCKfBQ', 'n2hE7i4MRw1RNM5M69oi14LrOBD3955V7lj0f1', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAiLCJhdWQiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAiLCJpYXQiOjE2NzMwMjcwODQsIm5iZiI6MTY3MzAyNzA4NCwiZXhwIjoxNjczMDMwNjg0LCJsYW5nIjoiZW4iLCJ1c2VyX2NsYXNzIjoiYWRtaW4iLCJvZmZpY2lhbF9pZCI6bnVsbCwiaWQiOjEsImxvZ2luX25hbWUiOiJhZG1pbkBnbWFpbC5jb20iLCJicmFuY2hfaWQiOjEsImZ1bGxfbmFtZSI6IlNhbXNldGh5Iiwic3RhdHVzIjoiYWN0aXZlIiwiaXNfbG9ja2VkIjowLCJlbWFpbCI6bnVsbCwicGhvbmVfbnVtYmVyIjoiMDEyNTc4OTAiLCJvdHBfY29kZSI6bnVsbH0.AigmBatjFVUqAmWhk-Wj_fGKGGEjBr_GjXEEnCQGiy8', null, 'en');
 
 -- ----------------------------
 -- Table structure for `um_users`
@@ -2973,4 +3053,4 @@ INSERT INTO `vital_signs` VALUES ('1', 'body_temperatur', 'Body temperature', 'n
 INSERT INTO `vital_signs` VALUES ('2', 'impulse_rate', 'Impulse rate', 'number', '1', null, '2022-11-28 18:37:38', '1', '1', '-1');
 INSERT INTO `vital_signs` VALUES ('3', 'respiration_', 'Respiration Rate', 'number', '1', null, '2022-11-28 18:37:57', '1', '1', '-1');
 INSERT INTO `vital_signs` VALUES ('4', 'Blood pressure', 'Blood pressure', 'number', '1', null, '2022-11-28 18:38:00', '1', '1', '-1');
-  
+

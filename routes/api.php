@@ -27,7 +27,8 @@ use App\Http\Controllers\PusherController;
  
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\QTicketController;
-use App\Http\Controllers\ItemController;    
+use App\Http\Controllers\MedicalServiceController;    
+use App\Http\Controllers\PartnerController;
 use App\Models\PublicStorage;
 use App\Models\SystemSetting;
 use App\Models\Patient;
@@ -81,9 +82,16 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //End::QTicketController
     
   //begin::ItemController
-     Route::post('service/items', [ItemController::class, 'getItemList']);
-  
+     Route::post('service/items', [MedicalServiceController::class, 'getMedicalServices']);
+     Route::post('service/delete', [MedicalServiceController::class, 'deleteMedicalService']);
+     Route::post('service/save', [MedicalServiceController::class, 'saveMedicalService']);
   //End::ItemController
+
+   //begin::PartnerController
+     Route::post('partner/list', [PartnerController::class, 'getPartnerList']);
+     Route::post('partner/delete', [PartnerController::class, 'deletePartner']);
+     Route::post('partner/save', [PartnerController::class, 'savePartner']);
+  //End::PartnerController
 
     //begin::PatientController. Not using Controller
             Route::post('patient/find',function(Request $req){
@@ -337,6 +345,9 @@ Route::post('test/test-api',function(){
     Route::post('settings/options-consultant', [GeneralSettingsController::class, 'getComboItems_consultant']);   
     Route::post('settings/options-chief-complaint', [GeneralSettingsController::class, 'getComboItems_chief_complaint']);
     Route::post('settings/save-chief-complaint', [GeneralSettingsController::class, 'saveChiefComplaint']);
+    Route::post('settings/departments', [GeneralSettingsController::class, 'getDepartmentList']);
+    Route::post('settings/save-department', [GeneralSettingsController::class, 'saveDepartment']);
+    Route::post('settings/delete-department', [GeneralSettingsController::class, 'deleteDepartment']);
     //getProductData() return object {"products"=> [], "usages"=>[]}
     Route::post('settings/options-product', [GeneralSettingsController::class, 'getProductData']);
 
