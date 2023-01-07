@@ -166,7 +166,10 @@
          "no data to display":"No data to display"
 	},
 	"consult":{
-		"Prescription":"Prescription"
+		"Prescription":"Prescription",
+		"History":"History",
+		"Recommendations":"Recommendations",
+		"Chief Complaints":"Chief Complaints"
 	},
 	"history":{
 

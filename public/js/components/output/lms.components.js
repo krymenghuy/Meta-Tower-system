@@ -129,13 +129,13 @@ this.displayAppointmentDetails=(detail_tr,appt_id=0)=>{let div_wrapper=detail_tr
 div_wrapper.html(html);});}
 this.getClientInfo=(tr)=>{let div=tr.find('.appt-info-wrapper');let appt_id=div.data('apptid');let lead_id=div.data('leadid');let d={'appt_id':appt_id,"lead_id":lead_id};div.find('.detail-item-value').each(function(){let span=$(this);let f=span.data('field');d[f]=span.text();});return d;}
 this.init=()=>{LocaleManager.setLanguageChangeHandler((lang)=>{mThis.displayAppointmentList();});mThis.loadOptions();mThis.btnSearchAppt.on('click',(e)=>{e.preventDefault();mThis.displayAppointmentList();});mThis.elSearchAppt.on('keyup',(e)=>{e.preventDefault();if(e.keyCode===13)mThis.displayAppointmentList();});mThis.appt_filter_date.on('change',(e)=>{mThis.displayAppointmentList();});mThis.appt_filter_status.on('change',(e)=>{mThis.displayAppointmentList();});mThis.btnNewAppointment.on('click',function(e){e.preventDefault();let op={'id':0,'onClose':(e)=>{if(e){cv_interact.info('New Appointment has been created',null,true);mThis.displayAppointmentList();}}};AppointmentDialog.show(op);});mThis.tblAppointments.on('click','a.btn_appt_action',function(e){e.preventDefault();});mThis.tblAppointments.on('click','a.appt-add-complaint',function(e){e.preventDefault();let x=$(this);let ul_id=x.data('ulid');let ul=$(`#${ul_id}`);let appt_id=x.data('apptid');let option={'title':'Choose Chief Complaint','dataLabel':'Select Chief Complaint','valueMember':'id','textMember':'name','data':mThis.form_data.chief_complaints,'blankErrorMessage':"Please choose chief complaint"};InputBox2.show(option,function(d){if(d){let p={"cc_id":d.value,"name":d.text,'appt_id':appt_id};window.vsapi.call(`${main_view.base_url}/api/appointment/add-chief-complaint`,p,null,null).then((res)=>{if(res.status_code===200){let item={"id":d.value,"name":d.text}
-ul.data('apptid',appt_id);mThis.addCCToList(ul,item);}else cv_interact.warning(res.error_message);});}});});mThis.tblAppointments.on('click','.btn-view-profile',(e)=>{e.preventDefault();});mThis.tblAppointments.on('click','.btn-add-queue',function(e){let x=$(this);let detail_tr=x.closest('tr');let client_id=x.data('patientid');let appt_id=x.data('apptid');let op={'client_id':client_id,'appt_id':appt_id};ServiceQueueDialog.show(op,(p)=>{if(p){window.vsapi.call(`${main_view.base_url}/api/ticket/create`,p).then((res)=>{if(res.status_code===200){let status_info=StringSanitizer.sanitizeObject(res.status_info);cv_interact.info(['Queue Ticket: ',res.ticket_number].join(''));mThis.setAppointmentStatus(detail_tr,status_info);}else cv_interact.warning(res.error_message);});}});});mThis.tblAppointments.on('click','.btn-register',function(e){let tr=$(this).closest('tr');let appt_id=$(this).data('apptid');let op={"id":0,"default_data":mThis.getClientInfo(tr),"onClose":(res)=>{if(res){let d=res.status_info;mThis.setAppointmentStatus(tr,{'status':d.status,'status_id':d.status_id});mThis.displayAppointmentDetails(tr,appt_id);}}};PatientDialog.show(op);});mThis.tblAppointments.on('click','a.appt-remove-complaint',function(e){e.preventDefault();let lnk=$(this);let ul=lnk.closest('ul');let p={'cc_id':lnk.data('id'),'appt_id':ul.data('apptid')};let li=$(this).closest('li');cv_interact.confirm('Delete this item?',{'confirmButtonText':'Delete','cancelButtonText':'Dont Delete','context':'delete'},(yes)=>{if(yes){window.vsapi.call(`${main_view.base_url}/api/appointment/remove-chief-complaint`,p,null,null).then((res)=>{if(res.status_code===200){li.remove();}else cv_interact.warning(res.error_message);});}});});mThis.tblAppointments.on('click','.btn-appt-status',function(e){e.preventDefault();let btn=$(this);let status_id=btn.data('statusid');alert('Change status from '+status_id);});mThis.tblAppointments.on('click','a.btn_appt_modify',function(e){e.preventDefault();let lnk=$(this);let tr=lnk.closest('tr');let appt_id=tr.data('id');let op={};op.id=appt_id;op.onClose=(e)=>{if(e){mThis.displayAppointmentDetails(tr.next(),appt_id);}};let status_id=tr.data('statusid');if(status_id>2){op.appt_id=appt_id;PersonDialog.show(op);}else if(status_id<=2){AppointmentDialog.show(op);}else console.error(`Error: Editing Appointment or personal profile requires status_id to be known exactly`);});this.cfg=new ExpandableRowConfig('_apl_tblAppts',{'dontExpandByClickingOn':['btn_appt_modify','btn_appt_delete','btn_appt_action','btn_appt_print'],'onOpen':(container,detail_tr,parent_tr)=>{let qtr=$(parent_tr);let appt_id=qtr.data('id');mThis.displayAppointmentDetails($(detail_tr),appt_id);}});mThis.tblAppointments.on('click','a.btn_appt_delete',function(e){e.preventDefault();let lnk=$(this);let p={'id':lnk.data('id')};cv_interact.confirm('Remove this appointment?',{'confirmButtonText':'Delete','cancelButtonText':'Dont Delete',title:null,'context':'delete'},(e)=>{if(e){vsapi.call(`${mThis.base_url}/api/appointment/delete`,p).then((res)=>{if(res.status_code===200){mThis.displayAppointmentList();}else cv_interact.error(res.error_message);});}});});}
+ul.data('apptid',appt_id);mThis.addCCToList(ul,item);}else cv_interact.warning(res.error_message);});}});});mThis.tblAppointments.on('click','.btn-view-profile',(e)=>{e.preventDefault();});mThis.tblAppointments.on('click','.btn-add-queue',function(e){let x=$(this);let detail_tr=x.closest('tr');let client_id=x.data('patientid');let appt_id=x.data('apptid');let op={'client_id':client_id,'appt_id':appt_id};ServiceQueueDialog.show(op,(p)=>{if(p){vsapi.call(`${main_view.base_url}/api/ticket/create`,p).then((res)=>{if(res.status_code===200){let status_info=StringSanitizer.sanitizeObject(res.status_info);cv_interact.info(['Queue Ticket: ',res.ticket_number].join(''));mThis.setAppointmentStatus(detail_tr,status_info);}else cv_interact.warning(res.error_message);});}});});mThis.tblAppointments.on('click','.btn-register',function(e){let tr=$(this).closest('tr');let appt_id=$(this).data('apptid');let op={"id":0,"default_data":mThis.getClientInfo(tr),"onClose":(res)=>{if(res){let d=res.status_info;mThis.setAppointmentStatus(tr,{'status':d.status,'status_id':d.status_id});mThis.displayAppointmentDetails(tr,appt_id);}}};PatientDialog.show(op);});mThis.tblAppointments.on('click','a.appt-remove-complaint',function(e){e.preventDefault();let lnk=$(this);let ul=lnk.closest('ul');let p={'cc_id':lnk.data('id'),'appt_id':ul.data('apptid')};let li=$(this).closest('li');cv_interact.confirm('Delete this item?',{'confirmButtonText':'Delete','cancelButtonText':'Dont Delete','context':'delete'},(yes)=>{if(yes){window.vsapi.call(`${main_view.base_url}/api/appointment/remove-chief-complaint`,p,null,null).then((res)=>{if(res.status_code===200){li.remove();}else cv_interact.warning(res.error_message);});}});});mThis.tblAppointments.on('click','.btn-appt-status',function(e){e.preventDefault();let btn=$(this);let status_id=btn.data('statusid');alert('Change status from '+status_id);});mThis.tblAppointments.on('click','a.btn_appt_modify',function(e){e.preventDefault();let lnk=$(this);let tr=lnk.closest('tr');let appt_id=tr.data('id');let op={};op.id=appt_id;op.onClose=(e)=>{if(e){mThis.displayAppointmentDetails(tr.next(),appt_id);}};let status_id=tr.data('statusid');if(status_id>2){op.appt_id=appt_id;PersonDialog.show(op);}else if(status_id<=2){AppointmentDialog.show(op);}else console.error(`Error: Editing Appointment or personal profile requires status_id to be known exactly`);});this.cfg=new ExpandableRowConfig('_apl_tblAppts',{'dontExpandByClickingOn':['btn_appt_modify','btn_appt_delete','btn_appt_action','btn_appt_print'],'onOpen':(container,detail_tr,parent_tr)=>{let qtr=$(parent_tr);let appt_id=qtr.data('id');mThis.displayAppointmentDetails($(detail_tr),appt_id);}});mThis.tblAppointments.on('click','a.btn_appt_delete',function(e){e.preventDefault();let lnk=$(this);let p={'id':lnk.data('id')};cv_interact.confirm('Remove this appointment?',{'confirmButtonText':'Delete','cancelButtonText':'Dont Delete',title:null,'context':'delete'},(e)=>{if(e){vsapi.call(`${mThis.base_url}/api/appointment/delete`,p).then((res)=>{if(res.status_code===200){mThis.displayAppointmentList();}else cv_interact.error(res.error_message);});}});});}
 this.trans_title=(title_prop='undefined')=>{return(mThis.col_titles[title_prop]||'undefined');}
 this.createDropdownMenuHtml_loan=(items=[],data=null,data_props=[])=>{if(!data_props)data_props=[];let str_props="";data_props.map((prop_name)=>{prop_name=(prop_name?prop_name:'').replace(/_/g,'');if(prop_name)str_props=[str_props,str_props?" ":"",prop_name,`="${data[prop_name]}"`].join('');});let html=['<div class="dropdown-menu action-menus">','<a data-id="',loan_app_id,'" data-personid="',person_id,'" class="dropdown-item _apl_loanapp_edit" href="javascript:void(0)"><i class="fa fa-edit" style="color:blue;font-size:1.1em;margin-top:2px;"></i> <span>Review Application</span</a>','<a data-id="',loan_app_id,'" data-personid="',person_id,'" class="dropdown-item _apl_loanapp_disburse" href="#"><i class="fa fa-list-alt" style="color:orange"></i> Disburse Loan</a>','<div class="dropdown-divider"></div>','<a data-id="',loan_app_id,'" data-personid="',person_id,'" class="dropdown-item _apl_loanapp_delete" href="#"><i class="fa fa-times" style="color:red"></i> Delete Loan Application</a>','<a data-id="',loan_app_id,'" data-personid="',person_id,'" class="dropdown-item _apl_loanapp_person_profile" href="#"><i class="fa fa-list" style="color:green"></i> Personal Profile</a>','</div>'].join('');return html;}
 this.getApptStatusClass=(status_id)=>{if(status_id==0)return'border-secondary';else if(status_id==1)return'border-warning';else if(status_id==2)return'border-success';else'btn btn-outline-warning';}
 this.displayAppointmentList=(onFinish=null)=>{mThis.setLanguage();let p={'search_value':mThis.elSearchAppt.val(),'date':mThis.appt_filter_date.val(),'status_id':mThis.appt_filter_status.val()};window.vsapi.call(`${mThis.base_url}/api/appointment/list`,p,'POST',null).then((result)=>{let data=[];if(result.status_code===200)data=result.data;if(mThis.table){mThis.tblAppointments.DataTable().clear().destroy();mThis.tblAppointments.empty();mThis.table=null;}
 data=StringSanitizer.sanitizeObject(data,null,['cur_symbol','arrival_time']);let my_columns=[{data:function(data,a,b){return['<span style="display:block;padding:3px;">',data.arrival_date,'</span>',].join('');},title:mThis.trans_title('Arrival Date')},{title:mThis.trans_title('Arrival Time'),data:(data,a,b)=>{return[`<img class="dt-icon" src="${this.icon_url()}/time.png">&nbsp;`,data.arrival_time].join('');},},{title:mThis.trans_title('Client Name'),data:(data,a,b)=>{return[`<span style="display:block" class="client-name text-bold">`,data.client_name,`</span>`,`<span style="display:block;" class="client-code text-success">`,data.patient_code,`</span>`].join('');}},{title:mThis.trans_title('Client Phone'),data:(data,a,b)=>{return data.client_phone_number;}},{title:mThis.trans_title('Schedule Type'),data:(data,a,b)=>{return data.schedule_type;}},{title:mThis.trans_title('Priority'),data:(data,a,b)=>{return data.priority;}},{title:mThis.trans_title('Status'),data:(data,a,b)=>{return[`<a href="#" style="display:block;text-align:center;min-width:75px;padding:5px;" data-statusid="${data.status_id}" class="btn-appt-status border rounded-pill ${mThis.getApptStatusClass(data.status_id)}">`,data.status,`</a>`].join('');}},{title:mThis.trans_title('Action'),data:function(data,a,b){let status_class=null;return[`<div class="form-inline">`,`<a href="javascript:void(0)" class="btn_appt_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,`<a href="javascript:void(0)" class="btn_appt_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,`<a href="javascript:void(0);" data-id="${data.id}" class="btn_appt_delete"><i class="fa fa-trash" style="color:red"></i></a>`,`&nbsp;<a href="#" data-id="${data.id}" class="btn_appt_action"><i class="fa-solid fa-grip-vertical"></i></a>`,`</div>`].join('');}}];if(!mThis.table)
-mThis.table=mThis.tblAppointments.DataTable({searching:false,destroy:true,paging:true,ordering:false,retrieve:true,info:true,pageLength:10,bLengthChange:false,saveState:true,'processing':true,'language':{'loadingRecords':'&nbsp;','processing':'Loading...',"emptyTable":LocaleManager.trans('No data to display','datatable')},'data':data,'columns':my_columns,"createdRow":function(row,data,dataIndex){let tr=$(row);tr.data('id',data.id);tr.data('statusid',data.status_id);tr.data('leadid',data.lead_id);tr.data('clientid',data.client_id);}});if(typeof onFinish==='function')onFinish();});};this.loadOptions=(onFinish=null)=>{window.vsapi.call(`${main_view.base_url}/api/settings/options-chief-complaint`,null).then((d)=>{mThis.form_data.chief_complaints=StringSanitizer.sanitizeObject(d.data);});window.vsapi.call(`${main_view.base_url}/api/settings/options-appt-status`,null).then((res)=>{if(res.status_code===200){let items=StringSanitizer.sanitizeObject(res.data);VSUtil.setComboItems(mThis.appt_filter_status,items,'id','appt_status',true,'All Statuses',0);if(onFinish)onFinish();mThis.form_data.departments=items;}});}
+mThis.table=mThis.tblAppointments.DataTable({searching:false,destroy:true,paging:true,ordering:false,retrieve:true,info:true,pageLength:10,bLengthChange:false,saveState:true,'processing':true,'language':{'loadingRecords':'&nbsp;','processing':'Loading...',"emptyTable":LocaleManager.trans('No data to display','datatable')},'data':data,'columns':my_columns,"createdRow":function(row,data,dataIndex){let tr=$(row);tr.data('id',data.id);tr.data('statusid',data.status_id);tr.data('leadid',data.lead_id);tr.data('clientid',data.client_id);}});if(typeof onFinish==='function')onFinish();});};this.loadOptions=(onFinish=null)=>{window.vsapi.call(`${main_view.base_url}/api/settings/options-chief-complaint`,null).then((d)=>{mThis.form_data.chief_complaints=StringSanitizer.sanitizeObject(d.data);});window.vsapi.call(`${main_view.base_url}/api/settings/options-appt-status`,null).then((res)=>{if(res.status_code===200){let items=StringSanitizer.sanitizeObject(res.data);VSUtil.setComboItems(mThis.appt_filter_status,items,'id','appt_status',true,'All Statuses',0);if(onFinish)onFinish();mThis.form_data.statuses=items;}});}
 this.show=(option=null)=>{mThis.displayAppointmentList(()=>{mThis.self.show().siblings().hide();main_view.setTitle(mThis.title_prop);});}}
 let AppointmentDialog=new function(){let mThis=this;this.self=$('#_apl_dlgAppt');this.cc_list=$('#_appt_cc_list');this.elChannel=$('#_appt_contact_channel');this.elConsultant=$('#_appt_consultant');this.elChiefComplaint=$('#_appt_chief_complaint');this.elSearch=$('#_appt_search_client');this.btnSearchClient=$('#_appt_btnSearch');this.elPatientCode=$('#_appt_client_code');this.elName=$('#_appt_client_name');this.elPhoneNumber=$('#_appt_client_phone');this.elSex=$('#_appt_client_sex');this.elEmail=$('#_appt_client_email');this.cc_input=$('#appt_cc_input');this.btnFindClient=$('#_appt_btnFindClient');window.vsapi.call(`${main_view.base_url}/api/settings/options-contact-channel`,null).then((d)=>{let items=StringSanitizer.sanitizeObject(d.data);VSUtil.setComboItems(mThis.elChannel,items,'id','channel_name','(Select channel)',null);});window.vsapi.call(`${main_view.base_url}/api/settings/options-consultant`,null).then((d)=>{let items=StringSanitizer.sanitizeObject(d.data);VSUtil.setComboItems(mThis.elConsultant,items,'id','consultant_name','(Select consultant)',null);});this.getChiefComplaints=()=>{let ps=[];mThis.cc_list.find('li').each(function(){let li=$(this);ps.push({'id':li.data('id'),'name':li.text()});});return ps;}
 this.addChiefComplaintToList=(item=null)=>{if(!item){item={"id":mThis.elChiefComplaint.val(),"name":mThis.elChiefComplaint.find('option:selected').text()};}
@@ -173,7 +173,7 @@ this.prepareOptions=(onFinish)=>{window.vsapi.call(`${main_view.base_url}/api/se
 this.displayConsultants=(department_id=0)=>{let p={'department_id':department_id};window.vsapi.call(`${main_view.base_url}/api/settings/options-consultant`,p).then((res)=>{if(res.status_code===200){let items=StringSanitizer.sanitizeObject(res.data);VSUtil.setComboItems(mThis.elConsultant,items,'id','consultant_name',null,null);}});}
 this.show=(option=null,onClose)=>{if(!option)option={};mThis.appt_id=option.appt_id;mThis.client_id=option.client_id;mThis.onClose=onClose;VSUtil.hideDialogError(mThis.dialog_id);mThis.prepareOptions(()=>{mThis.self.modal({backdrop:'static'});mThis.elTitle.text(LocaleManager.trans(mThis.title_prop));});}}
 $(document).ready(()=>{AppointmentListComponent.init();});;"use strict";let TicketDetails=new function(){let mThis=this;mThis.current_view_name='info';mThis.tblTickets=null;this.icon_url=()=>{return`${VSUtil.asset_url()}/images/icons`;}
-this.init=(tblTickets_id)=>{mThis.tblTickets=$(`#${tblTickets_id}`);if(mThis.tblTickets.length===0)console.error(`Error: failed create object element ${tblTickets_id}`);mThis.tblTickets.on('click','.btn-ticket-tab',function(e){$(this).addClass('btn-ticket-tab--active').siblings().removeClass('btn-ticket-tab--active');});mThis.tblTickets.on('click','.qul-btn-info',function(e){e.preventDefault();let div_wrapper=$(this).closest('div.ticket-info-wrapper');mThis.showInfo(div_wrapper);});mThis.tblTickets.on('click','a.qul-btn-history',function(e){e.preventDefault();let div_wrapper=$(this).closest('div.ticket-info-wrapper');mThis.showHistory(div_wrapper);});mThis.tblTickets.on('click','a.qul-btn-consult',function(e){e.preventDefault();let op={patient_id:0,onClose:(d)=>{alert('Consult Window is closing');}};ConsultDialog.show(op);});mThis.tblTickets.on('click','tbody>tr> td a.qul-remove-complaint',function(e){e.preventDefault();let lnk=$(this);let ul=lnk.closest('ul');let p={'chief_complaint_id':lnk.data('id'),'ticket_id':ul.data('tid')};let li=$(this).closest('li');cv_interact.confirm('Delete this item?',{'confirmButtonText':'Delete','cancelButtonText':'Dont Delete','context':'delete'},(yes)=>{if(yes){window.vsapi.call(`${main_view.base_url}/api/ticket/remove-chief-complaint`,p,null,null).then((res)=>{if(res.status_code===200){li.remove();}else cv_interact.warning(res.error_message);});}});});mThis.tblTickets.on('click','tbody>tr>td a.qul-add-complaint',function(e){e.preventDefault();let x=$(this);let ul_id=x.data('ulid');let ul=$(`#${ul_id}`);let ticket_id=x.data('tid');mThis.getChiefComplaintOptions((chief_complaints)=>{let option={'title':'Choose Chief Complaint','dataLabel':'Select Chief Complaint','valueMember':'id','textMember':'name','data':chief_complaints,'blankErrorMessage':"Please choose chief complaint"};InputBox2.show(option,function(d){if(d){let p={"chief_complaint_id":d.value,"name":d.text,'ticket_id':ticket_id};window.vsapi.call(`${main_view.base_url}/api/ticket/add-chief-complaint`,p,null,null).then((res)=>{if(res.status_code===200){let item={"id":d.value,"name":d.text}
+this.init=(tblTickets_id)=>{mThis.tblTickets=$(`#${tblTickets_id}`);if(mThis.tblTickets.length===0)console.error(`Error: failed create object element ${tblTickets_id}`);mThis.tblTickets.on('click','.btn-ticket-tab',function(e){$(this).addClass('btn-ticket-tab--active').siblings().removeClass('btn-ticket-tab--active');});mThis.tblTickets.on('click','.qul-btn-info',function(e){e.preventDefault();let div_wrapper=$(this).closest('div.ticket-info-wrapper');mThis.showInfo(div_wrapper);});mThis.tblTickets.on('click','a.qul-btn-photo',function(e){e.preventDefault();let div_wrapper=$(this).closest('div.ticket-info-wrapper');mThis.showPhoto(div_wrapper);});mThis.tblTickets.on('click','a.qul-btn-consult',function(e){e.preventDefault();let ticket_id=$(this).data('tid');let patient_id=$(this).data('clientid');let op={patient_id:patient_id,ticket_id:ticket_id,onClose:(d)=>{alert('Consult Window is closing');}};ConsultDialog.show(op);});mThis.tblTickets.on('click','tbody>tr> td a.qul-remove-complaint',function(e){e.preventDefault();let lnk=$(this);let ul=lnk.closest('ul');let p={'chief_complaint_id':lnk.data('id'),'ticket_id':ul.data('tid')};let li=$(this).closest('li');cv_interact.confirm('Delete this item?',{'confirmButtonText':'Delete','cancelButtonText':'Dont Delete','context':'delete'},(yes)=>{if(yes){window.vsapi.call(`${main_view.base_url}/api/ticket/remove-chief-complaint`,p,null,null).then((res)=>{if(res.status_code===200){li.remove();}else cv_interact.warning(res.error_message);});}});});mThis.tblTickets.on('click','tbody>tr>td a.qul-add-complaint',function(e){e.preventDefault();let x=$(this);let ul_id=x.data('ulid');let ul=$(`#${ul_id}`);let ticket_id=x.data('tid');mThis.getChiefComplaintOptions((chief_complaints)=>{let option={'title':'Choose Chief Complaint','dataLabel':'Select Chief Complaint','valueMember':'id','textMember':'name','data':chief_complaints,'blankErrorMessage':"Please choose chief complaint"};InputBox2.show(option,function(d){if(d){let p={"chief_complaint_id":d.value,"name":d.text,'ticket_id':ticket_id};window.vsapi.call(`${main_view.base_url}/api/ticket/add-chief-complaint`,p,null,null).then((res)=>{if(res.status_code===200){let item={"id":d.value,"name":d.text}
 ul.data('tid',ticket_id);mThis.addCCToList(ul,item);}else cv_interact.warning(res.error_message);});}});});});}
 this.addCCToList=(ul,item={})=>{let appt_id=ul.data('apptid');ul.find('li[data-apptid="0"]').remove();ul.append(`<li id="${item.id}" data-apptid="${appt_id}"><a href="#" data-apptid="${appt_id}" data-id="${item.id}" class="qul-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`);}
 this.displayCCList=(list_id,items=[])=>{let ul=$(`#${list_id}`);ul.empty();let appt_id=ul.data('apptid');let i=0,html='';(items||[]).map((item)=>{html=[html,`<li id="${item.id}" data-apptid="${appt_id}"><a href="#" data-apptid="${appt_id}" data-id="${item.id}" class="qul-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`].join('');i++;});if(i===0)html=`<li data-apptid="0"><span class="text-muted">(No chief complaints)</span></li>`;return html;}
@@ -181,15 +181,15 @@ this.getChiefComplaintOptions=(onFinish)=>{if(!mThis.form_data)mThis.form_data={
 onFinish(StringSanitizer.sanitizeObject(res.data));else cv_interact.error(res.error_message);});}else onFinish(mThis.form_data.chief_complaints);}
 this.show=(detail_tr,d={})=>{let div_wrapper=detail_tr.find('div.expandable-row-containter');let html=`<div data-tid="${d.ticket_id}" data-clientid="${d.client_id}" data-personid="${d.person_id}" data-statusid="${d.status_id}" class="ticket-info-wrapper shadow-lg d-flex" style="width:100%;">
                     <div class="form-inline ticket-tab-buttons" role="group" aria-label="ticket tabs" style="display:block">
-                        <a style="padding:5px" type="button" class="btn-ticket-tab qul-btn-info trans-text" data-langprop="buttons.Info">Info</a>
-                        <a style="padding:5px" type="button" class="btn-ticket-tab qul-btn-history trans-text" data-langprop="buttons.History">History</a>
-                        <a style="padding:5px" type="button" class="btn-ticket-tab qul-btn-consult trans-text" data-langprop="buttons.Consult Now">Consult Now</a>
+                        <a style="padding:5px" type="button"  data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-info trans-text" data-langprop="buttons.Info">Info</a>
+                        <a style="padding:5px" type="button"  data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-photo trans-text" data-langprop="buttons.Photo">Photo</a>
+                        <a style="padding:5px" type="button" data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-consult trans-text" data-langprop="buttons.Consult Now">Consult Now</a>
                     </div>
                     <div data-tid="${d.ticket_id}" class="qul-workspace pt-3" style="width:100%;display:block;">
                     </div>
                   </div>`;div_wrapper.html(html);let div_panel=div_wrapper.find('div.ticket-info-wrapper');switch(mThis.current_view_name){case'info':{mThis.setActiveTabButton(div_panel,'qul-btn-info');mThis.showInfo(div_panel);break;}
-case'history':{mThis.setActiveTabButton(div_panel,'qul-btn-history')
-mThis.showHistory(div_panel);break;}
+case'photo':{mThis.setActiveTabButton(div_panel,'qul-btn-photo')
+mThis.showPhoto(div_panel);break;}
 case'consult':{mThis.setActiveTabButton(div_panel,'qul-btn-consult')
 mThis.startConsult(div_panel);break;}
 default:{mThis.setActiveTabButton(div_panel,'qul-btn-info');mThis.showHistory(div_panel);break;}}}
@@ -292,17 +292,19 @@ this.displayVitalSignItems=(items=[])=>{let html=null;(items||[]).map((v)=>{html
                     <p class="detail-item-label col-6 py-0">${v.name}</p>
                     <p class="detail-item-value col-6 py-0" data-id="${v.id}" data-field="${v.name}">${v.vital_sign_value}</p>
                 </div>`].join('');});return html?html:'<span class="detail-item-empty">No vital signs</span>';}
-this.showHistory=(div_panel,ticket_id=null)=>{if(!ticket_id)ticket_id=div_panel.data('tid');let div_workspace=div_panel.find('div.qul-workspace');div_workspace.html(`<div class="d-flex p-3">
-        <div style="height:25px"></div>
-        <ul>
-         <li>Chief Complaints</li>
-         <li>Physical Examinations</li>
-         <li>Laboratory Tests</li>
-         <li>Diagnosis</li>
-         <li>Prescriptions</li>
-         <li>Recommendations</li>
-        </ul>
-        </div>`);mThis.current_view_name='history';};this.startConsult=(div_panel,ticket_id=null)=>{if(!ticket_id)ticket_id=div_panel.data('tid');let div_workspace=div_panel.find('div.qul-workspace');div_workspace.html(`<div class="d-flex p-3">
+this.showPhoto=(div_panel,ticket_id=null)=>{if(!ticket_id)ticket_id=div_panel.data('tid');let div_workspace=div_panel.find('div.qul-workspace');div_workspace.html(`<div class="d-flex align-items-center justify-content-center">
+            <div class="d-flex gx-4">
+                <div class="">
+                    <img class="img-thumbnail rounded" src="${VSUtil.asset_url()}/images/icons/client-girl.png"/>
+                </div>
+                <div class="">
+                    <img class="img-thumbnail rounded" src="${VSUtil.asset_url()}/images/icons/client-girl.png"/>
+                </div>
+                <div class="">
+                    <img class="img-thumbnail rounded" src="${VSUtil.asset_url()}/images/icons/client-girl.png"/>
+                </div>
+            </div>
+        </div>`);mThis.current_view_name='photo';};this.startConsult=(div_panel,ticket_id=null)=>{if(!ticket_id)ticket_id=div_panel.data('tid');let div_workspace=div_panel.find('div.qul-workspace');div_workspace.html(`<div class="d-flex p-3">
         <div style="height:25px"></div>
         <ul>
          <li>Chief Complaints</li>
@@ -325,20 +327,260 @@ this.displayTicketList=(onFinish=null)=>{mThis.setLanguage();let p={'search_valu
 let my_columns=[{data:function(data,a,b){return['<span class="qul-ticket-number">',data.ticket_number,'</span>',].join('');},title:mThis.trans_title('Ticket Number')},{title:mThis.trans_title('Client ID'),data:'client_code'},{title:mThis.trans_title('Client Name'),data:'client_name'},{title:mThis.trans_title('Sex'),data:(data,a,b)=>{return data.client_sex;}},{title:mThis.trans_title('Schedule Type'),data:(data,a,b)=>{return data.schedule_type;}},{title:mThis.trans_title('Priority'),data:(data,a,b)=>{return data.priority;}},{title:mThis.trans_title('Status'),data:(data,a,b)=>{return[`<a href="#" style="display:block;text-align:center;width:85px;padding:5px;" data-statusid="${data.status_id}" class="btn_ticket_status border rounded-pill ${mThis.getTicketStatusClass(data.status_id)}">`,data.status,`</a>`].join('');}},{title:mThis.trans_title('Action'),data:function(data,a,b){let status_class=null;return[`<div class="form-inline">`,`<a href="javascript:void(0)" class="btn_co_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,`<a style="display:${data.status_id > 2 ? 'none' : 'block'}" href="javascript:void(0)" class="btn_ticket_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,`<a href="javascript:void(0);" data-id="${data.id}" class="btn_apt_delete"><i class="fa fa-trash" style="color:red"></i></a>`,`&nbsp;<a href="#" data-id="${data.id}" class="btn_apt_action"><i class="fa-solid fa-grip-vertical"></i></a>`,`</div>`].join('');}}];if(!mThis.table)
 mThis.table=mThis.tblTickets.DataTable({searching:false,destroy:true,paging:true,ordering:false,retrieve:true,info:true,pageLength:10,bLengthChange:false,saveState:true,'processing':true,'language':{'loadingRecords':'&nbsp;','processing':'Loading...',"emptyTable":LocaleManager.trans('No data to display','datatable')},'data':data,'columns':my_columns,"createdRow":function(row,data,dataIndex){let tr=$(row);tr.data('id',data.id);tr.data('tid',data.id);tr.data('statusid',data.status_id);tr.data('clientid',data.client_id);tr.data('personid',data.person_id);}});if(typeof onFinish==='function')onFinish();});};this.loadOptions=(onFinish=null)=>{window.vsapi.call(`${main_view.base_url}/api/settings/options-chief-complaint`,null).then((d)=>{mThis.form_data.chief_complaints=StringSanitizer.sanitizeObject(d.data);});window.vsapi.call(`${main_view.base_url}/api/settings/options-ticket-status`,null).then((res)=>{if(res.status_code===200){let items=StringSanitizer.sanitizeObject(res.data);VSUtil.setComboItems(mThis.appt_filter_status,items,'id','ticket_status',true,'All Statuses',0);if(onFinish)onFinish();mThis.form_data.departments=items;}});}
 this.show=(option=null)=>{mThis.displayTicketList(()=>{mThis.self.show().siblings().hide();main_view.setTitle(mThis.title_prop);});}}
-let ConsultTabView=new function(){let mThis=this;this.self=$('#_consultTabView');this.base_url=main_view.base_url;this.cur_view='consultation';this.self.on('click','div.tab-header>a.tab-button',function(e){e.preventDefault();$(this).addClass('active').siblings().removeClass('active');let view_name=$(this).data('viewname').toLowerCase();mThis.show(mThis.client_id,view_name,true);});this.show=function(client_id,view_name,tab_button_clicked=false){mThis.client_id=client_id;if(!view_name)view_name=mThis.cur_view;view_name=(view_name+'').toLowerCase();mThis.self.find('div.tab-body>div.tab-panel').each(function(){let this_view_name=($(this).data('viewname')+'').toLowerCase();let div_tab_panel=$(this);if(view_name===this_view_name){mThis.cur_view=view_name;$(this).show().siblings().hide();if(view_name==='history'){mThis.displayHistory(mThis.client_id,div_tab_panel);}else if(view_name==='consultation'){mThis.displayConsultation(mThis.client_id,div_tab_panel);}
+let ConsultTabView=new function(){let mThis=this;this.self=$('#_consultTabView');this.base_url=main_view.base_url;this.data={};this.cur_view='consultation';this.self.on('click','div.tab-header>a.tab-button',function(e){e.preventDefault();$(this).addClass('active').siblings().removeClass('active');let view_name=$(this).data('viewname').toLowerCase();mThis.show(mThis.options,view_name,true);});this.show=function(options,view_name,tab_button_clicked=false){if(!options)options={};mThis.options=options;mThis.consultItemPanel.data('tid',mThis.options.ticket_id);mThis.consultItemPanel.data('patientid',mThis.options.patient_id);mThis.historyItemPanel.data('tid',mThis.options.ticket_id);mThis.historyItemPanel.data('patientid',mThis.options.patient_id);if(!mThis.options.ticket_id)console.error('ConsultTabView on ConsultDialog does not have valid ticket_id, thus it is not possible to identify patient');if(!view_name)view_name=mThis.cur_view;view_name=(view_name+'').toLowerCase();mThis.self.find('div.tab-body>div.tab-panel').each(function(){let this_view_name=($(this).data('viewname')+'').toLowerCase();let div_tab_panel=$(this);if(view_name===this_view_name){mThis.cur_view=view_name;$(this).show().siblings().hide();if(view_name==='history'){mThis.displayHistory(mThis.ticket_id,div_tab_panel);}else if(view_name==='consultation'){mThis.displayConsultation(mThis.ticket_id,div_tab_panel);}
 return;}});if(!tab_button_clicked){mThis.self.find('div.tab-header>a.tab-button').each(function(){let this_view_name=($(this).data('viewname')+'').toLowerCase();if(view_name===this_view_name){$(this).addClass('active').siblings().removeClass('active');}});}}
-this.displayHistory=(client_id=0,div_tab_panel=null)=>{div_tab_panel.html(`<div> <h3> This is patient history</h3> </div>`);}
+this.displayHistory=(client_id=0,div_tab_panel=null)=>{}
 this.displayConsultation=(client_id=0,div_tab_panel=null)=>{}
-this.init=()=>{mThis.ul_menus=$('#_consult_menus');mThis.consultItemPanel=$('#_consult_panel');mThis.details_routes=mThis.defineDetailRoutes(mThis.consultItemPanel);mThis.consultItemPanel.on('click','a.consultview-add-cc',(e)=>{e.preventDefault();mThis.tblChiefComplaints.addRow();});mThis.ul_menus.on('click','li',function(e){e.preventDefault();let li=$(this);let view_name=li.find('a').data('viewname');if(mThis.prev_selected_li)mThis.prev_selected_li.removeClass('consult-menu-selected');li.addClass('consult-menu-selected');mThis.prev_selected_li=li;mThis.details_routes[view_name]();});}
-this.defineDetailRoutes=(div)=>{return{"chief_complaints":()=>{mThis.showConsultChiefComplaints(div);},"vital_signs":()=>{mThis.showConsultVitalSigns(div);},"visual_signs":()=>{mThis.showConsultVisualSigns(div);},"prescription":()=>{mThis.showConsultPrescription(div);}};}
-this.showConsultChiefComplaints=(div)=>{let html=`<h3> This is Chief complaints <a href="#" class="consultview-add-cc"><i class="fa fa-plus-circle"></i></a></h3>
-        <div id="cc_list"></div>`;div.html(html);let columns=[{"name":"name","title":"Chief Complaint","dataType":"string","displayType":"select","selectOptions":[{"value":"1","text":"headache"},{"value":"2","text":"high body temperature"}]}]
-mThis.tblChiefComplaints=new ItemsView('cc_list',{"columns":columns,"langProp":"consult","tableClass":"table","showColumnHeaders":false,"showAddLineButton":false,"numeroFormatter":(numero,row)=>{return`<span class="text-secondary fw-bold">${numero}</span>`;},"emptyMessage":`<span class="text-secondary text-align-center">${LocaleManager.trans('No chief complaints','consult')}</span>`,});}
-this.showConsultVitalSigns=(div)=>{let html=`<h3> This is Vital Signs</h3>`;div.html(html);}
-this.showConsultPrescription=(div)=>{let html=`<h3> This is Prescription </h3>`;div.html(html);}
-this.showConsultVisualSigns=(div)=>{let html=`<h3> This is Visual Signs</h3>`;div.html(html);}}
-let ConsultDialog=new function(){let mThis=this;this.self=$('#_qul_dlgConsult');this.btnSave=$('#_qul_dlgConsult_btnSave');this.defaultTabView='consultation';this.btnSave.on('click',(e)=>{e.preventDefault();mThis.self.modal('hide');mThis.onClose(true);});ConsultTabView.init();this.show=(option)=>{if(!option)option={};mThis.onClose=option.onClose;ConsultTabView.show(option.patient_id,this.defaultTabView);mThis.self.modal({backdrop:'static'});}}
-$(document).ready(()=>{TicketDetails.init('_qul_tblTickets');QueueComponent.init();});;"use strict";let PatientFinderComponent=new function(){let mThis=this;this.title_prop='Find Patient';this.self=$('#_main_patientFinderComponent');this.base_url=$('#__base_url').val();this.tblPatients=$('#_paf_tblPatients');this.elSearch=$('#_apl_search');this.col_titles={"ID":"ID","Name":"Name","Sex":"Sex","Age":"Age","Phone Number":"Phone Number","Email":"Email","Action":"Action"};this.setLanguage=()=>{if(LocaleManager.lang!==mThis.lang){for(let prop in mThis.col_titles){mThis.col_titles[prop]=LocaleManager.trans(prop,'patient',LocaleManager.lang);}
+this.init=()=>{mThis.ul_menus_consult=$('#_consult_menus');mThis.ul_menus_history=$('#_history_menus');mThis.consultItemPanel=$('#_consult_panel');mThis.historyItemPanel=$('#_history_panel');mThis.consultItemPanel.on('click','a.consultview-add-cc',(e)=>{e.preventDefault();mThis.tblChiefComplaints.addRow();});mThis.details_routes_history=mThis.defineDetailRoutesHistory(mThis.historyItemPanel);mThis.details_routes_consult=mThis.defineDetailRoutesConsult(mThis.consultItemPanel);mThis.ul_menus_consult.on('click','li',function(e){e.preventDefault();let li=$(this);let view_name=li.find('a').data('viewname');if(mThis.prev_selected_li_consult)mThis.prev_selected_li_consult.removeClass('consult-menu-selected');li.addClass('consult-menu-selected');mThis.prev_selected_li_consult=li;mThis.details_routes_consult[view_name]();});mThis.ul_menus_history.on('click','li',function(e){e.preventDefault();let li=$(this);let view_name=li.find('a').data('viewname');if(mThis.prev_selected_li_history)mThis.prev_selected_li_history.removeClass('history-menu-selected');li.addClass('history-menu-selected');mThis.prev_selected_li_history=li;mThis.details_routes_history[view_name]();});}
+this.defineDetailRoutesConsult=(div)=>{return{"chief_complaints":()=>{mThis.showConsultChiefComplaints(div);},"vital_signs":()=>{mThis.showConsultVitalSigns(div);},"history":()=>{mThis.showConsultHistory(div);},"physical_examination":()=>{mThis.showConsultPE(div);},"prescription":()=>{mThis.showConsultPrescription(div);},"labo_tests":()=>{mThis.showConsultLaboratoryTests(div);},"diagnosis":()=>{mThis.showConsultDiagnosis(div);},"recommendations":()=>{mThis.showConsultRecommendations(div);},"medical-report":()=>{mThis.showConsultMedicalReport(div);},"medical-certificate":()=>{mThis.showConsultMedicalCertificate(div);},};}
+this.defineDetailRoutesHistory=(div)=>{return{"chief_complaints":()=>{mThis.showHistoryChiefComplaints(div);},"physical_examinations":()=>{mThis.showHistoryPhysicalExaminations(div);},"laboratory_tests":()=>{mThis.showHistoryLaboratoryTests(div);},"diagnosis":()=>{mThis.showHistoryDiagnosis(div);},"prescriptions":()=>{mThis.showHistoryPrescription(div);},"recommendations":()=>{mThis.showHistoryRecommendations(div);},"medical-reports":()=>{mThis.showHistoryMedicalReports(div);}};};this.showConsultChiefComplaints=(div)=>{let wrapper_id='_consult_cc_warpper';let div_id='_consult_cc_list';let el=div.find(`#${wrapper_id}`);let ticket_id=div.data('tid');if(!el||el.length===0){let title=LocaleManager.trans('This is Chief complaints','consult');let html=`<div id="${wrapper_id}"><h3 class="trans-text" data-langprop="consult.Chief Complaints">${title} &nbsp;<a href="#" class="consultview-add-cc"><i class="fa fa-plus-circle"></i></a></h3>
+              <div id="${div_id}"></div>
+            </div>`;div.append(html);let columns=[{"name":"name","title":"Chief Complaint","dataType":"string","displayType":"select","cssClass":"",}];mThis.loadChiefComplaintOptions(ticket_id,cc_items=>{columns[0].selectOptions=cc_items;mThis.tblChiefComplaints=new ItemsView(div_id,{"columns":columns,"langProp":"consult","tableClass":"table","showColumnHeaders":false,"showAddLineButton":false,"onItemChange":(col_name)=>{console.error(col_name+' has changed');},"numeroFormatter":(numero,row)=>{return`<span class="text-secondary fw-bold">${numero}</span>`;},"emptyMessage":`<span class="text-secondary text-align-center">${LocaleManager.trans('No chief complaints', 'consult')}</span>`,});el=div.find(`#${wrapper_id}`);});}
+el.show().siblings().hide();}
+this.loadChiefComplaintOptions=(patient_id=0,onFinish=null)=>{vsapi.call(`${main_view.base_url}/api/settings/options-chief-complaint`,null).then(res=>{if(res.status_code===200){let items=res.data;(items||[]).map(c=>{c.value=c.code;c.text=c.name;});onFinish(items);}else onFinish([]);});}
+this.loadVitalSigns_patient=(ticket_id=0,onFinish)=>{vsapi.call(`${main_view.base_url}/api/ticket/patient-vital-signs`,null).then(res=>{if(res.status_code===200){let items=StringSanitizer.sanitizeObject(res.data);onFinish(items);}else onFinish({'vital_signs':[],'items':[]});});}
+this.showConsultVitalSigns=(div)=>{let ticket_id=div.data('tid');let wrapper_id='_consult_vt_wrapper';let el=div.find(`#${wrapper_id}`);mThis.loadVitalSigns_patient(ticket_id,items=>{let html_vs_items="";items.map(t=>{html_vs_items=[html_vs_items,`<tr data-id="${t.id}" data-tid="${ticket_id}"><td>`,t.description,`</td><td><input class="form-control w-50" type="text" value ="`,t.vital_sign_value,`"></td></tr>`].join('');});if(!el||el.length===0){let title=LocaleManager.trans('Vital Signs','consult');let html=`
+                        <div id="${wrapper_id}" style="display:none">
+                        <h3 class="trans-text" data-langprop="consult.Vital Signs">${title}</a></h3>
+                        <div class="">
+                            <table class="table">
+                                    <tbody>
+                                        ${html_vs_items}
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    `;div.append(html);el=div.find(`#${wrapper_id}`);}
+el.show().siblings().hide();});}
+this.loadConsult_PE=(ticket_id,onFinish)=>{vsapi.call(`${main_view.base_url}/api/ticket/patient-pe`,null).then(res=>{if(res.status_code===200){let d=StringSanitizer.sanitizeOut(res.data);onFinish(d);}else onFinish(null);});}
+this.showConsultPE=(div)=>{let ticket_id=div.data('tid');let wrapper_id='_consult_pe_wrapper';let el=div.find(`#${wrapper_id}`);mThis.loadConsult_PE(ticket_id,pe=>{let html="";if(!el||el.length===0){let title=LocaleManager.trans('Physical Examination','consult');let html=`
+                        <div id="${wrapper_id}" style="display:none">
+                        <h3 class="trans-text" data-langprop="consult.Pysical Examination">${title}</a></h3>
+                        <div class="">
+                           <textarea class="form-control" cols="10" rows="5">${pe}</textarea>
+                        </div>
+                    </div>
+                    `;div.append(html);el=div.find(`#${wrapper_id}`);}
+el.show().siblings().hide();});}
+this.loadPrescription=(ticket_id=0,onFinish)=>{vsapi.call(`${main_view.base_url}/api/settings/options-product`,null).then(res=>{if(res.status_code===200){onFinish(res.data);}});}
+this.showConsultPrescription=(div)=>{let wrapper_id='_consult_pres_warpper';let div_id='_consult_prescription';let el=div.find(`#${wrapper_id}`);let ticket_id=div.data('tid');if(!el||el.length===0){let title=LocaleManager.trans('Prescription','consult');let html=`<div id="${wrapper_id}"><h3 class="trans-text" data-langprop="consult.Prescription">${title}</h3>
+              <div id="${div_id}"></div>
+            </div>`;div.append(html);let columns=[{"name":"name","title":"Medication","dataType":"string","displayType":"select","cssClass":"",},{"name":"qty","title":"Quantity","dataType":"number","displayType":"input"},{"name":"usage","title":"Usage","dataType":"string","displayType":"select"}];mThis.loadPrescription(ticket_id,d=>{columns[0].selectOptions=d.products;columns[2].selectOptions=d.usage_options;mThis.tblProducts=new ItemsView(div_id,{"columns":columns,"langProp":"consult","tableClass":"table presciption-table","showColumnHeaders":true,"showAddLineButton":true,"addLineButtonText":"Add Item","numeroFormatter":(numero,row)=>{return`<span class="text-secondary fw-bold">${numero}</span>`;},"emptyMessage":`<span class="text-secondary text-align-center">${LocaleManager.trans('No item prescribed', 'consult')}</span>`,});el=div.find(`#${wrapper_id}`);});}
+el.show().siblings().hide();}
+this.showConsultHistory=(div)=>{let html=`<h3>History</h3>`;div.html(html);}
+this.showConsultPhysicalExamination=(div)=>{let html=`<h3>Physical Examination</h3>`;div.html(html);}
+this.showConsultLaboratoryTests=(div)=>{let html=`<h3>Laboratory Test</h3>`;div.html(html);}
+this.showConsultDiagnosis=(div)=>{let html=`<h3>Diagnosis</h3>`;div.html(html);}
+this.showConsultRecommendations=(div)=>{let html=`<h3>Recommendations</h3>`;div.html(html);}
+this.showConsultMedicalReport=(div)=>{alert('Print medical report');}
+this.showConsultMedicalCertificate=(div)=>{alert('Print medical certificate');}
+this.showHistoryChiefComplaints=(div)=>{let html=`<h3>Chief Complaint</h3>
+        <div class="d-block">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="fw-bold">Date</th>
+                            <th class="fw-bold">h:m:ss</th>
+                            <th class="fw-bold text-nowrap">Doctor Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <ul>
+                                    <li>ADFA</li>
+                                    <li>ADFA</li>
+                                    <li>ADFA</li>
+                                </ul>
+                            </td>
+                            <td>12-11-2021</td>
+                            <td>Peter</td>
+                        </tr>
+                    </tbody>
+
+                    <thead>
+                        <tr>
+                            <th class="fw-bold">Date</th>
+                            <th class="fw-bold">h:m:ss</th>
+                            <th class="fw-bold text-nowrap">Doctor Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <ul>
+                                    <li>ADFA</li>
+                                    <li>ADFA</li>
+                                    <li>ADFA</li>
+                                </ul>
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>`;div.html(html);}
+this.showHistoryPhysicalExaminations=(div)=>{let html=`<h3>Physical Examination</h3>
+        <div class="d-block">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="fw-bold">27-08-2021</th>
+                            <th class="fw-bold">h:m:ss</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <p>
+                                    During a physical examination, a health care provider studies your body to determine if you do or do not have a physical problem. A physical examination usually includes: Inspection (looking at the body) Palpation (feeling the body with fingers or hands) Auscultation (listening to sounds)
+                                </p>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+
+                    <thead>
+                        <tr>
+                            <th class="fw-bold">27-08-2021</th>
+                            <th class="fw-bold">h:m:ss</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <p>
+                                    During a physical examination, a health care provider studies your body to determine if you do or do not have a physical problem. A physical examination usually includes: Inspection (looking at the body) Palpation (feeling the body with fingers or hands) Auscultation (listening to sounds)
+                                </p>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>`;div.html(html);}
+this.showHistoryLaboratoryTests=(div)=>{let html=`<h3>Laboratory Tests</h3>
+        <div class="d-block">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="fw-bold text-nowrap">Test Name</th>
+                            <th class="fw-bold">Laboratory</th>
+                            <th class="fw-bold">Date</th>
+                            <th class="fw-bold">Result</th>
+                            <th class="fw-bold">Docs</th>
+                            <th class="fw-bold">Comment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>`;div.html(html);}
+this.loadHistory_diagnosis=(patient_id,onFinish)=>{let items=[{"ticket_id":1,"date":"12 Dec 2022","ticket_number":"D0001","description":"This is diagnosis one","consultant_name":"Mr. Doctor A"},{"ticket_id":2,"date":"13 Dec 2022","ticket_number":"D0001","description":"An irregular heartbeat is an arrhythmia (also called dysrhythmia). Heart rates can also be irregular. A normal heart rate is 50 to 100 beats per minute. Arrhythmias and abnormal heart rates don’t necessarily occur together. Arrhythmias can occur with a normal heart rate, or with heart rates that are slow (called bradyarrhythmias — less than 50 beats per minute). Arrhythmias can also occur with rapid heart rates (called tachyarrhythmias — faster than 100 beats per minute).","consultant_name":"Mr. Doctor One"},{"ticket_id":3,"date":"20 Dec 2022","ticket_number":"D0001","description":"This is diagnosis three","consultant_name":"Mr. Doctor BBBB"}];onFinish(items);}
+this.showHistoryDiagnosis=(div)=>{let patient_id=div.data('patientid');let wrapper_id='_history_hs_wrapper';let el=div.find(`#${wrapper_id}`);if(!el||el.length===0){let body_id=`tblHis_tbody_${patient_id}`;let html=`<h3>Diagnosis</h3>
+                <div class="d-block">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="fw-bold">Date</th>
+                                    <th class="fw-bold">Description</th>
+                                    <th class="fw-bold text-nowrap">Doctor Name</th>
+                                </tr>
+                            </thead>
+                            <tbody id ="${body_id}">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>`;div.html(html);mThis.loadHistory_diagnosis(patient_id,items=>{let tbody=document.querySelector(`#${body_id}`);if(tbody){let row_html='';let i=0;tbody.innerHTML='';items.map(item=>{row_html=[row_html,`<tr>
+                                    <td>
+                                        <span class="d-block p-1" style="min-width:110px">${item.date}</span>
+                                        <span class="d-inline-block text-secondary p-1">${item.ticket_number}</span>
+                                    </td>
+                                    <td class="vs-contain-custom">
+                                        <p>
+                                            ${item.description}
+                                        <p>
+                                        <span data-tid="${item.ticket_id}" class="span lnk-show-more"></span>
+                                    </td>
+                                    <td>${item.consultant_name}</td>
+                                    </tr>`].join('');i++;});tbody.innerHTML=row_html;(tbody.querySelectorAll('.lnk-show-more')||{}).forEach(d=>{d.addEventListener('click',e=>{let td=VSDOM.getClosestParentByType(e.target,'TD');let ticket_id=e.target.dataset.tid;if(td)td.classList.toggle('active');});});}});}else{el.show().siblings().hide();}}
+this.showHistoryPrescription=(div)=>{let html=`<h3>Prescription</h3>`;div.html(html);}
+this.showHistoryRecommendations=(div)=>{let html=`<h3>Recommedations</h3>`;div.html(html);}
+this.loadHistory_medical_report=(patient_id=0,onFinish)=>{let d={};d.patient_id=101;d.patient_code='1011';d.patient_name='Sovano';d.patient_sex='M';let items=[{"ticket_id":1,"ticket_number":"D0001","date":"11 Dec 2022","consultant_name":"Dr. A"},{"ticket_id":2,"ticket_number":"D0003","date":"15 Dec 2022","consultant_name":"Dr. A"},{"ticket_id":3,"ticket_number":"D0002","date":"25 Dec 2022","consultant_name":"Dr. B"},{"ticket_id":4,"ticket_number":"D0001","date":"31 Dec 2022","consultant_name":"Dr. A"}];d.items=items;onFinish(d);}
+this.showHistoryMedicalReports=(div)=>{let patient_id=div.data('patientid');let wrapper_id='_history_medrpt_wrapper';let el=div.find(`#${wrapper_id}`);if(!el||el.length===0){mThis.history_tbody_id=`${wrapper_id}_tblmritems_body`;let html=`<div id="${wrapper_id}" style="display:none">
+                        <div class="d-flex align-items-center mb-4">
+                            <h3 class="trans-text" data-langprop="history.Medical Reports">${LocaleManager.trans('Medical Reports', 'history')}</h3>
+                        </div>
+                        <div class="d-block">
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <p class="fw-semibold trans-text pe-2" data-langprop="patient.Patient ID">Patient ID:</p>
+                                </div>
+                                <div>
+                                    <p class="history-mr-header-item" data-field="patient_code">007</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <p class="fw-semibold trans-text pe-2" data-langprop="patient.Patient Name">Patient Name:</p>
+                                </div>
+                                <div>
+                                    <p class="history-mr-header-item" data-field="patient_name">Koko</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <p class="fw-semibold trans-text pe-2" data-langprop="patient.Sex">Sex:</p>
+                                </div>
+                                <div>
+                                    <p class="history-mr-header-item" data-field="patient_sex">F</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="fw-bold">Ticket No.</th>
+                                        <th class="fw-bold">Date</th>
+                                        <th class="fw-bold">Doctor Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="${mThis.history_tbody_id}">
+                                </tbody>
+                            </table>
+                        </div>
+                    <div>`;div.html(html);}
+mThis.loadHistory_medical_report(patient_id,d=>{let items=d.items;let el=div.find(`#${wrapper_id}`);el.find('.history-mr-header-item').each(function(){let x=$(this);let f=x.data('field');x.text(d[f]);});let tbody=el.find(`#${mThis.history_tbody_id}`);let row_html='';items.map(item=>{row_html=[row_html,`<tr>
+                <td>${item.ticket_number}</td>
+                <td><a href="javascript:void(0)"><i class="fa fa-print"></i><span class="pl-1">${item.date} medical report</span></a></td>
+                <td>${item.consultant_name}</td>
+               </tr>`].join('');});tbody.html(row_html);el.show().siblings().hide();});}}
+let ConsultDialog=new function(){let mThis=this;this.self=$('#_qul_dlgConsult');this.btnSave=$('#_qul_dlgConsult_btnSave');this.defaultTabView='consultation';this.btnSave.on('click',(e)=>{e.preventDefault();mThis.self.modal('hide');mThis.onClose(true);});ConsultTabView.init();this.show=(option)=>{if(!option)option={};mThis.onClose=option.onClose;ConsultTabView.show({"ticket_id":option.ticket_id,"patient_id":option.patient_id},this.defaultTabView);mThis.self.modal({backdrop:'static'});}}
+$(document).ready(()=>{TicketDetails.init('_qul_tblTickets');QueueComponent.init();});;"use strict";let DermatologyComponent=new function(){let mThis=this;this.title_prop='Dermatology';this.base_url=$('#__base_url').val();this.self=$('#_main_dermatologyComponent');this.btnNew=$('#_dml_btnNew');this.elSearchItem=$('#_dml_search');this.tblItems=$('#_dml_tblItems');this.col_titles={"Numero":"No.","Name":"Name","Description":"Description","Price":"Price","Action":"Action"};this.trans_title=(title_prop='undefined')=>{return(mThis.col_titles[title_prop]||'undefined');}
+this.setLanguage=()=>{if(LocaleManager.lang!==mThis.lang){for(let prop in mThis.col_titles){mThis.col_titles[prop]=LocaleManager.trans(prop,'service',LocaleManager.lang);}
+mThis.lang=LocaleManager.lang;}}
+this.init=()=>{mThis.tblItems.on('click','.btn_item_modify',function(e){let item_id=$(this).data("id");});}
+this.dermatologyList=(onFinish=null)=>{mThis.setLanguage();let p={'search_value':mThis.elSearchItem.val()};window.vsapi.call(`${mThis.base_url}/api/service/items`,p,'POST',null).then((result)=>{let data=[];if(result.status_code===200)data=result.data;if(mThis.table){mThis.tblItems.DataTable().clear().destroy();mThis.tblItems.empty();mThis.table=null;}
+data=StringSanitizer.sanitizeObject(data,null,['display_price']);let my_columns=[{data:(item,a,b)=>{return 1;},title:mThis.trans_title('Numero')},{data:(item,a,b)=>{return[`<div>${item.name}</div>`].join('');},title:mThis.trans_title('Name')},{title:mThis.trans_title('Description'),data:"description"},{title:mThis.trans_title('Price'),data:'display_price'},{title:mThis.trans_title('Action'),data:function(item,a,b){return[`<div class="form-inline">`,`<a href="javascript:void(0)" class="btn_item_modify" data-id="${item.id}"><i class="fa fa-edit"></i></a> &nbsp;`,`<a href="javascript:void(0);" data-id="${item.id}" class="btn_item_delete"><i class="fa fa-trash" style="color:red"></i></a>`,`</div>`].join('');}}];if(!mThis.table)
+mThis.table=mThis.tblItems.DataTable({searching:false,destroy:true,paging:true,ordering:false,retrieve:true,info:true,pageLength:10,bLengthChange:false,saveState:true,'processing':true,'language':{'loadingRecords':'&nbsp;','processing':'Loading...',"emptyTable":LocaleManager.trans('No data to display','datatable')},'data':data,'columns':my_columns,"createdRow":function(row,data,dataIndex){let tr=$(row);tr.data('id',data.id);}});if(typeof onFinish==='function')onFinish();});};this.show=(options=null)=>{if(!options)options={};mThis.options=options;mThis.dermatologyList(()=>{main_view.setTitle(mThis.title_prop);mThis.self.show().siblings().hide();});}}
+$(document).ready(function(){DermatologyComponent.init();});;"use strict";let PlasticSurgeryComponent=new function(){let mThis=this;this.title_prop='Plastic Surgery';this.base_url=$('#__base_url').val();this.self=$('#_main_plasticSurgeryComponent');this.btnAdd=$('#_pls_btnNew');this.init=()=>{}
+this.show=(options=null)=>{if(!options)options={};mThis.options=options;main_view.setTitle(mThis.title_prop);mThis.self.show().siblings().hide();}}
+$(document).ready(function(){PlasticSurgeryComponent.init();});;"use strict";let PatientFinderComponent=new function(){let mThis=this;this.title_prop='Find Patient';this.self=$('#_main_patientFinderComponent');this.base_url=$('#__base_url').val();this.tblPatients=$('#_paf_tblPatients');this.elSearch=$('#_apl_search');this.col_titles={"ID":"ID","Name":"Name","Sex":"Sex","Age":"Age","Phone Number":"Phone Number","Email":"Email","Action":"Action"};this.setLanguage=()=>{if(LocaleManager.lang!==mThis.lang){for(let prop in mThis.col_titles){mThis.col_titles[prop]=LocaleManager.trans(prop,'patient',LocaleManager.lang);}
 mThis.lang=LocaleManager.lang;}}
 this.init=()=>{LocaleManager.setLanguageChangeHandler((lang)=>{mThis.displayPatients();});mThis.elSearch.on('keyup',(e)=>{mThis.displayPatients();});this.cfg=new ExpandableRowConfig('_paf_tblPatients',{'wrapperClass':'patient-info-wrapper','html':`<div style="width:100%;padding:10px">The patient details is displayed here</div>`});mThis.tblPatients.on('click','a.btn_patient_delete',function(e){e.preventDefault();let lnk=$(this);let p={'id':lnk.data('id')};cv_interact.confirm('Remove this patient?',{'confirmButtonText':'Delete','cancelButtonText':'Dont Delete',title:null,'context':'delete'},(e)=>{if(e){vsapi.call(`${mThis.base_url}/api/patient/delete`,p).then((res)=>{if(res.status_code===200){mThis.displayPatients();}else cv_interact.error(res.error_message);});}});});}
 this.trans_title=(title_prop='undefined')=>{return(mThis.col_titles[title_prop]||'undefined');}
