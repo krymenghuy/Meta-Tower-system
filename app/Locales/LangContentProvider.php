@@ -21,7 +21,8 @@ class LangContentProvider {
                  'number between'=>'លេខត្រូវនៅចន្លោះពី ? ទៅ ?',
                  'text length must be between'=>'text ត្រូវនៅចន្លោះពី ? ទៅ ?',
                  'Start date should be earlier than first payment date'=>'ថ្ងៃចាប់ផ្តើមគួរតែមុនថ្ងៃបង់ប្រាក់តំបូង',
-                 "Contact channel is not valid"=>"Contact channel is not valid" 
+                 "Contact channel is not valid"=>"Contact channel is not valid",
+                 "Department name is required"=>"Department name is required" 
                  ]
             ];
     }

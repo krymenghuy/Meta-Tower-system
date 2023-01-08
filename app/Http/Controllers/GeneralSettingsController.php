@@ -5,16 +5,18 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\GeneralSettings;
-use App\Models\ContactChannel;
+//use App\Models\ContactChannel;
 use App\Models\JDV;
 use App\Models\UM;
-use Session;
-use Localization;
+//use Session;
+//use App\Locales\LocaleManager;
 
-use DB;
-use SQLDB;
-use Carbon\Carbon;
-use Sanitizer;
+use Illuminate\Support\Facades\DB;
+use App\DB\SQLDB;
+//use DB;
+//use SQLDB;
+//use Carbon\Carbon;
+use App\Security\Sanitizer;
 
 
 class GeneralSettingsController extends Controller
@@ -173,7 +175,7 @@ class GeneralSettingsController extends Controller
       if($ss->status_code !=200) return $ss; //user not authenticated
       $branch_id = $ss->branch_id;
       $check_unique = ["$branch_id|departments|name|id=id"];
-      $validate_rule = ["id"=>"0|number|identity=1","name"=>"1|string|1-200","description"=>"0|string"];
+      $validate_rule = ["id"=>"0|number|identity=1","name"=>"1|string|1-200|text=Department name is required","description"=>"0|string"];
       $res = validateReq($req,$validate_rule,true,[],$ss->lang,false,$check_unique);
       if($res->error) return JDV::error($res->error);
       $id = $res->id;
@@ -182,7 +184,7 @@ class GeneralSettingsController extends Controller
 
       $id = saveData($ss,"departments",["id"=>$id],$inputs,[],1);
       if($id>0) return JDV::success(["id"=>$id]); 
-      return JDV::error("Something wrong in saving department");    
+      return JDV::error("Something wrong in saving department data");    
    }
 
     //api/settings/test-sql

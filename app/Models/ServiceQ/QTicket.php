@@ -57,7 +57,8 @@ class QTicket extends Model
 
         $department_id = $inputs['department_id'];
         $today_date = date('Y-m-d');
-        $ticket_number = self::createTicketNumber($branch_id,self::$com_branch_id,$today_date,$department_id,self::DEFAULT_TICKET_PREFIXES[$department_id],5);
+        $def_ticket_prefix = isset(self::DEFAULT_TICKET_PREFIXES[$department_id])?self::DEFAULT_TICKET_PREFIXES[$department_id]:"P";
+        $ticket_number = self::createTicketNumber($branch_id,self::$com_branch_id,$today_date,$department_id,$def_ticket_prefix,5);
         $inputs['ticket_number'] =$ticket_number; 
         
         if(!isset($inputs['ticket_number'])) return DV::error('Failed to create waiting ticket number');

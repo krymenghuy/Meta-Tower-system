@@ -280,7 +280,7 @@
                 ServiceQueueDialog.show(op,(p)=>{
                     if(p){
                        //let p = {'client_id':d.client_id,'department_id':d.department_id,'consultant_id':d.consultant_id};  
-                       window.vsapi.call(`${main_view.base_url}/api/ticket/create`,p).then((res)=>{ 
+                       vsapi.call(`${main_view.base_url}/api/ticket/create`,p).then((res)=>{ 
                            if(res.status_code === 200){
                                let status_info = StringSanitizer.sanitizeObject(res.status_info); 
                                cv_interact.info(['Queue Ticket: ',res.ticket_number].join(''));
