@@ -123,19 +123,19 @@
                                                 <span class="history_icon">
                                                     <i class="fa-solid fa-user ps-2"></i>
                                                 </span>
-                                                <a href="javascript:void(0)" data-viewname="chief_complaints" class="nav-link trans-text" data-langprop="history.Chief Complaints"></a>
+                                                <a href="javascript:void(0)" data-viewname="chief-complaints" class="nav-link trans-text" data-langprop="history.Chief Complaints"></a>
                                             </li>
                                             <li class="nav-item history_style_custom d-flex align-items-center">
                                                 <span class="history_icon">
                                                     <i class="fa-solid fa-user ps-2"></i>
                                                 </span>
-                                                <a href="javascript:void(0)" data-viewname="physical_examinations" class="nav-link trans-text" data-langprop="history.Physical Examinations"></a>
+                                                <a href="javascript:void(0)" data-viewname="pe" class="nav-link trans-text" data-langprop="history.Physical Examinations"></a>
                                             </li>
                                             <li class="nav-item history_style_custom d-flex align-items-center">
                                                 <span class="history_icon">
                                                     <i class="fa-solid fa-user ps-2"></i>
                                                 </span>
-                                                <a href="javascript:void(0)" data-viewname="laboratory_tests" class="nav-link trans-text" data-langprop="history.Laboratory Tests"></a>
+                                                <a href="javascript:void(0)" data-viewname="labo-tests" class="nav-link trans-text" data-langprop="history.Laboratory Tests"></a>
                                             </li>
                                             <li class="nav-item history_style_custom d-flex align-items-center">
                                                 <span class="history_icon">
@@ -153,7 +153,7 @@
                                                 <span class="history_icon">
                                                     <i class="fa-solid fa-user ps-2"></i>
                                                 </span>
-                                                <a href="javascript:void(0)" data-viewname="recommendations" class="nav-link trans-text" data-langprop="history.Recommendations"></a>
+                                                <a href="javascript:void(0)" data-viewname="advice" class="nav-link trans-text" data-langprop="history.Recommendations"></a>
                                             </li>
                                             <li class="nav-item history_style_custom d-flex align-items-center">
                                                 <span class="history_icon">
@@ -178,31 +178,40 @@
                                                 <span class="consult-icon">
                                                     <i class="fa-solid fa-user ps-2"></i>
                                                 </span>
-                                                <a href="javascript:void(0)" data-viewname="chief_complaints" class="nav-link trans-text" data-langprop="consult.Chief Complaints"></a>
+                                                <a href="javascript:void(0)" data-viewname="chief-complaints" class="nav-link trans-text" data-langprop="consult.Chief Complaints"></a>
                                             </li>
                                             <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
                                                     <i class="fa-solid fa-user ps-2"></i>
                                                 </span>
-                                                <a href="javascript:void(0)" data-viewname="vital_signs" class="nav-link trans-text" data-langprop="consult.Vital Signs"></a>
+                                                <a href="javascript:void(0)" data-viewname="vital-signs" class="nav-link trans-text" data-langprop="consult.Vital Signs"></a>
                                             </li>
+                                            
                                             <!-- <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
                                                     <i class="fa-solid fa-user ps-2"></i>
                                                 </span>
-                                                <a href="javascript:void(0)" data-viewname="visual_signs" class="nav-link trans-text" data-langprop="consult.Visual Signs"></a>
+                                                <a href="javascript:void(0)" data-viewname="visual-signs" class="nav-link trans-text" data-langprop="consult.Visual Signs"></a>
                                             </li> -->
+
                                             <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
                                                     <i class="fa-solid fa-user ps-2"></i>
                                                 </span>
-                                                <a href="javascript:void(0)" data-viewname="physical_examination" class="nav-link trans-text" data-langprop="consult.Physical Examination"></a>
+                                                <a href="javascript:void(0)" data-viewname="medical-history" class="nav-link trans-text" data-langprop="consult.Medical History"></a>
+                                            </li>
+
+                                            <li class="nav-item consult-style-custom d-flex align-items-center">
+                                                <span class="consult-icon">
+                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                </span>
+                                                <a href="javascript:void(0)" data-viewname="physical-examination" class="nav-link trans-text" data-langprop="consult.Physical Examination"></a>
                                             </li>
                                             <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
                                                     <i class="fa-solid fa-user ps-2"></i>
                                                 </span>
-                                                <a href="javascript:void(0)" data-viewname="labo_tests" class="nav-link trans-text" data-langprop="consult.Laboratory Tests"></a>
+                                                <a href="javascript:void(0)" data-viewname="labo-tests" class="nav-link trans-text" data-langprop="consult.Laboratory Tests"></a>
                                             </li>
                                             <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
@@ -220,7 +229,7 @@
                                                 <span class="consult-icon">
                                                     <i class="fa-solid fa-user ps-2"></i>
                                                 </span>
-                                                <a href="javascript:void(0)" data-viewname="recommendations" class="nav-link trans-text" data-langprop="consult.Recommendations"></a>
+                                                <a href="javascript:void(0)" data-viewname="advice" class="nav-link trans-text" data-langprop="consult.Recommendations"></a>
                                             </li>
                                             <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
