@@ -21,6 +21,13 @@
 		"Mobile Settings":"Mobile Settings",
 		"Log Out":"Log Out"
 	},
+	"labotest":{
+		"Test Name":"Test Name",
+		"Description":"Description",
+		"Result":"Result",
+		"Document":"Document",
+		"Labor Name":"labo Name"
+	},
 	"appointment":{
 			"Arrival Date":"Arrival Date",
 			"Arrival Time":"Arrival Time",

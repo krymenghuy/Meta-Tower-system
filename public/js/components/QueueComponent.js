@@ -1503,7 +1503,7 @@ let ConsultTabView = new function () {
             let columns = [
                 {
                     "name": "name",
-                    "title": "Medication",
+                    "title": "Product",
                     "dataType": "string",
                     "displayType": "select",
                     "cssClass": "",
@@ -1520,9 +1520,36 @@ let ConsultTabView = new function () {
                 },
                 {
                     "name": "usage",
-                    "title": "Usage",
+                    "title": "usage",
                     "dataType": "string",
                     "displayType": "select"
+                },
+                {
+                    "name": "duration_days",
+                    "title": "Days",
+                    "dataType": "number",
+                    "displayType": "input"
+                    // ,"data":(value,row)=>{
+                    //     return "";
+                    // }
+                },
+                {
+                    "name": "reason",
+                    "title": "Reasons",
+                    //"dataType": "string",
+                    "displayType": "input"
+                    // ,"data":(value,row)=>{
+                    //     return "";
+                    // }
+                },
+                {
+                    "name": "remarks",
+                    "title": "Remarks",
+                    //"dataType": "string",
+                    "displayType": "input"
+                    // ,"data":(value,row)=>{
+                    //     return "";
+                    // }
                 }
             ];
 
@@ -1632,13 +1659,42 @@ let ConsultTabView = new function () {
            </div>`;
             div.html(html);
            el = $(`#${div_id}`);
+
+           //initialize mThis.tblLaboTests for the first time
+           let cols = [
+            {
+                name:'labo_test_id',
+                title:'Test Name',
+                //display:'select',
+                selectOptions:[
+                    {'value':"Boold test",'text':'Blood Test'},
+                    {'value':"Other Test",'text':'Other Test'},
+                ]
+            },
+            {
+                name:'description',
+                //dataType:'string',
+                title:'Description'
+            },
+            {
+                name:'labo_id',
+                title:'Labo Name',
+                selectOPtions:[] 
+            }
+           ];
+
+           mThis.tblLaboTests = new ItemsView(div_labotest_panel_id,{
+              columns:cols,
+              tableClass:"table",
+              //showColumnHeaders:true,
+              //showAddLineButton:true,
+              addLineButtonText:"Add Labo Test",
+              langProp:'labotest' 
+           });
+
         }
 
         el.show().siblings().hide();
-        mThis.tblLaboTests = new ItemsView(div_labotest_panel_id,{
-
-        });
-
         LocaleManager.translateZone(div_id);
     }
 

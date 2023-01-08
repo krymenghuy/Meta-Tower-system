@@ -33,8 +33,10 @@ class ItemsView{
         if(!options.addLineButtonClass) options.addLineButtonClass = 'btn btn-sm btn-primary';
         if(!options.addLineButtonText) options.addLineButtonText ='Add Line';
 
-        if(options.showAddLineButton =='undefined') options.showAddLineButton = true;  
-        if(options.showColumnHeaders == 'undefined') options.showColumnHeaders = true;
+        if(this.isUndefined(options.showAddLineButton)) options.showAddLineButton = true;  
+        if(this.isUndefined(options.showColumnHeaders)) options.showColumnHeaders = true;
+        //if(this.isUndefined(options.validateBeforeAddNew)) options.validateBeforeAddNew = false;
+
         if (options.onItemChange != 'function') options.onItemChange = ()=>{ return;};
 
         if(!options.columns) options.columns = this.getDefaultColumns(); 
@@ -99,6 +101,7 @@ class ItemsView{
             let el = VSDOM.getClosestParentByClass(e.target,'btn-item-addline');        
             if (el){
                 this.addRow(null);
+                alert(JSON.stringify(this.getItems()));
                 //this.resetNumero(); //addRow() will also resetNumero()
             } 
         });
@@ -114,6 +117,11 @@ class ItemsView{
         //     }
         // });
 
+     }
+
+     isUndefined(d){
+      if (d ==undefined || d ==null || d=='undefined') return true;
+      return false;
      }
 
      displayEmptyMessage(){
@@ -180,7 +188,10 @@ class ItemsView{
                 if(!col) throw "Error ItemsView.getColumnPropsByName(@colName) failed to find column by name " + col_name;
                 col.cssClass =col.cssClass?col.cssClass:'';
                 let html = `<input type="text" class="${def_class} ${col.cssClass} td-input" value="${text}"/>`;
-      
+                
+                //If there is col.selectOptions => then set displayType = 'select'
+                if (col.selectOptions) col.displayType ='select';
+
                 if (col.displayType =='select'){
                     if(!col.selectOptions) col.selectOptions = col.selectItems;
                     col.selectOptions = col.selectOptions?col.selectOptions:[];
@@ -189,6 +200,8 @@ class ItemsView{
                           `</select>`].join('');
                      
                 }else {
+                    //Set detault data type to string
+                    if(!col.dataType) col.dataType ='string';
                     if (col.dataType =='date'){
                        html = `<input class="${def_class} ${col.cssClass} td-input" value="${text}" data-select="datepicker"/>`;
                     }else if (col.dataType =='time'){
@@ -310,7 +323,9 @@ class ItemsView{
      createColumnHeaders_html(columns =[]){
         if(!this.options.showColumnHeaders) return '';
         let this_th = '';
+        let that = this;
         columns.map(col=>{
+            if(!col.langProp) col.langProp = that.options.langProp;
             this_th = [this_th,`<th class="trans-text" data-langprop="${col.langProp}">`,col.title,`</th>`].join('');
         });
 
@@ -402,8 +417,11 @@ class ItemsView{
                 }
                 //In case the column is to display formated or display value or text value (Combo comlumn)   
                 if (!col.displayName) col.displayName = col.name; 
+
+                if(col.selectOptions) col.displayType ='select';
+
                 html_cols = [html_cols,
-                              `<td class="${col.cssClass}" data-name="`,col.name,`" data-text="`,d[col.displayName],`" data-value="`,d[col.name],`">`,value,`</td>`
+                              `<td class="${col.cssClass}" data-name="`,col.name,`" data-editortype="${col.displayType}" data-text="`,d[col.displayName],`" data-value="`,d[col.name],`">`,value,`</td>`
                             ].join('');
               });
 
@@ -421,11 +439,58 @@ class ItemsView{
                 let action_col =[`<td><div class="form-inline"><a href="javascript:void" class="btn-item-delete"><i class="fa fa-trash" style="color:red"></i></a></div></td>`].join('');
                 tr.innerHTML = [numero_col,html_cols,action_col].join('');
                 this.table_body.appendChild(tr);
-                if (!d.id) this.changeRowState(tr,'edit'); 
+                if (!d.id) this.changeRowState(tr,'edit');
 
+                this.setFieldFocus(tr,null); 
                 this.resetNumero();
      }
 
+     setFieldFocus(tr,col_name =null){
+       if(!tr || tr.length ===0) return null;
+       let target_td = null;
+
+       let cells = tr.querySelectorAll('td');
+       let i=0,c;
+       do{
+           c = cells[i];
+           if(!c) break;
+           if(!col_name && i===1){
+             target_td = c;
+             break;
+           }else if (col_name){
+             if(c.dataset.name === col_name){
+               target_td = c;
+               break;
+             }
+           } 
+           i++;
+       }while(c);
+       
+          if(target_td){
+                    
+                  let el = target_td.querySelector('.td-input');  
+                  if(el){
+                    let displayType = target_td.dataset.editortype;
+                    if(displayType ==='select'){
+                      let select2_container = tr.querySelector('.select2-container');
+                      if(select2_container){
+                        select2_container.classList.add('select2-container--focus');
+                        //select2_container.classList.add('select2-container--below');
+                        //select2_container.classList.add('select2-container--open');
+                      }
+
+                    }else{
+                        el.focus();
+                        //el.value ="test";
+                        el.select();
+                    }
+                 }
+           
+         }
+    }
+
+
+     //Set data for display in ItemView
      setData(rows){
        
        let rowIndex= 0;
@@ -436,6 +501,20 @@ class ItemsView{
             rowIndex++;
       });
           
+     }
+
+     getItems(){
+       let trs = this.table_body.querySelectorAll('tr');
+       let ps = [];
+       trs.forEach(tr=>{
+          let item = {};
+          tr.querySelectorAll('td').forEach(td=>{
+              let f = td.dataset.name;
+              if(f) item[f] = td.dataset.value; 
+          });
+          ps.push(item);
+       });
+       return ps;
      }
 
      getTotal(){
