@@ -50,7 +50,7 @@ class ItemController extends Controller
         }
         if ($group_id >0) $str_group ="g.id =$group_id"; 
         //if ($brand_id >0) $str_brand ="g.id =$brand_id";
-        $rows = DB::table('inv_items as i')->join('inv_groups as g','g.id','=','i.group_id')->where('i.branch_id',$branch_id)->whereRaw($str_group)->whereRaw($str_search)->selectRaw("i.id,i.name,i.description,g.name,g.id as group_id,g.description,i.create_user,formatDate(i.created_at) as created_at")->orderByRaw("i.name ASC")->get();
+        $rows = DB::table('inv_items as i')->join('inv_groups as g','g.id','=','i.group_id')->where('i.branch_id',$branch_id)->whereRaw($str_group)->whereRaw($str_search)->selectRaw("i.id,NULL AS item_type,i.name,i.description,g.name,g.id as group_id,g.description,i.create_user,formatDate(i.created_at) as created_at")->orderByRaw("i.name ASC")->get();
         return JDV::result($rows);
     }
      
@@ -64,7 +64,16 @@ class ItemController extends Controller
       return JDV::success();
       //else return JDV::error("Failed to delete inventory item $id");
     }
-      
+     
+    function getItemDetails(Request $req) { 
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !=200) return JDV::emptyResult($ss->status_code,null); //user not authenticated
+      $branch_id = $ss->branch_id;
+      $id = $req->id;     
+      $rows = DB::table("inv_items as i")->where('i.id',$id)->where('i.branch_id',$branch_id)->selectRaw("i.id,i.code,NULL as item_type,i.group_id,i.name,i.description,i.cost,i.created_at, i.create_user")->take(1)->get();
+      return JDV::result(isset($rows[0])?$rows[0]:null);  
+    }
+
     function saveItem(Request $req) { 
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return JDV::emptyResult($ss->status_code,null); //user not authenticated

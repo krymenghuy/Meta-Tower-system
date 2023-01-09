@@ -3106,30 +3106,4 @@ INSERT INTO `vital_signs` VALUES ('1', 'body_temperatur', 'Body temperature', 'n
 INSERT INTO `vital_signs` VALUES ('2', 'impulse_rate', 'Impulse rate', 'number', '1', null, '2022-11-28 18:37:38', '1', '1', '-1');
 INSERT INTO `vital_signs` VALUES ('3', 'respiration_', 'Respiration Rate', 'number', '1', null, '2022-11-28 18:37:57', '1', '1', '-1');
 INSERT INTO `vital_signs` VALUES ('4', 'Blood pressure', 'Blood pressure', 'number', '1', null, '2022-11-28 18:38:00', '1', '1', '-1');
-
--- ----------------------------
--- Function structure for `displayMoney`
--- ----------------------------
-DROP FUNCTION IF EXISTS `displayMoney`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `displayMoney`(amt decimal(10,2),ccode varchar(10)) RETURNS varchar(100) CHARSET utf8mb4
-    DETERMINISTIC
-BEGIN
-  declare sym varchar(15);
-  declare symbol_after int;
-  declare dec_points int;
-  declare val varchar(100);
-  if (amt IS null) then
-    set amt =0;
-  end if;
- 
-  SELECT  c.symbol, c.symbol_after, c.decimal_points INTO sym, symbol_after,dec_points FROM currencies as c WHERE c.code =ccode limit 1;
-  IF (symbol_after =1) THEN
-    set val = concat(amt,sym);
-  ELSE set val= concat(sym,amt); 
-  END IF;
-  return val; 
-end
-;;
-DELIMITER ;
  
