@@ -18,16 +18,7 @@
      this.current_view_name = '';
      
      this.mnuDashboard = $('#_main_lnkDashboard');
-     this.mnuLoanAppList = $('#_main_lnkLoanAppList');
-     this.mnuLoanList = $('#_main_lnkLoanList');
-     this.mnuFinishedLoanList = $('#_main_lnkFinishedLoans');
 
-     this.mnuBorrowers = $('#_main_lnkBorrowers');
-     this.mnuGuarantors = $('#_main_lnkGuarantors');
-     this.mnuLoans = $('#_main_lnkLoans');
-     this.mnuLoanCollection = $('#_main_lnkRepayments');
-     this.mnuPromsoryNotes = $('#_main_lnkPrm_Notes');
-     this.mnuNonPerformaingLoan = $('#_main_lnkNon_Performing_Loans');
      //this.mnuBillings = $('#_main_lnkBilling');
      
      this.mnuSenderList = $('#_main_lnkSenderList');
@@ -52,8 +43,8 @@
      this.mnuLogout = $('#_main_lnkLogout');
 
      //User menus
-         this.lnkAbout = $('#_main_mnu_about');
-         this.lnkLogout = $('#_main_mnu_logout');
+    this.lnkAbout = $('#_main_mnu_about');
+    this.lnkLogout = $('#_main_mnu_logout');
          
      this.mnuManageBrandImages_mobile = $('#_main_lnkManageBrandImages_mobile');
      this.mnuPromotions_mobile = $('#_main_lnkPromotions');

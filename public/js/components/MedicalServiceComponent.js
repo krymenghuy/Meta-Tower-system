@@ -17,6 +17,8 @@ let MedicalServiceComponent = new function(){
         "Description":"Description",
         "Price":"Price",
         "Department":"Department",
+        "Service Type":"Service Type",
+        "Treatment Method":"Treatment Method",
         "Action":"Action"
     };
 
@@ -131,7 +133,8 @@ let MedicalServiceComponent = new function(){
                         data:"service_type"
                     },
                     {
-                        title:mThis.trans_title('')
+                        title:mThis.trans_title('Treatment Method'),
+                        data:"treatment_method"
                     },
                     {
                         title: mThis.trans_title('Description'),
@@ -222,16 +225,16 @@ let MedicalServiceComponent = new function(){
       if (mThis.form_data.departments){
          onFinish(mThis.form_data.departments);
       } else{
-                vsapi.call(`${main_view.base_url}/api/settings/departments`,null).then(res=>{
-                    if(res.status_code === 200) {
-                    let items = StringSanitizer.sanitizeObject(res.data);
-                    // items = [{id, name}]
-                    ////VSUtil.setComboItems(mThis.elFilter_department,items,'id','name',true,'(Select department)',0); 
-                    //if(!mThis.form_data) mThis.form_data = {};
-                    mThis.form_data.departments = items;
-                    onFinish(items);
-                    }
-                });
+            vsapi.call(`${main_view.base_url}/api/settings/departments`,null).then(res=>{
+                if(res.status_code === 200) {
+                let items = StringSanitizer.sanitizeObject(res.data);
+                // items = [{id, name}]
+                ////VSUtil.setComboItems(mThis.elFilter_department,items,'id','name',true,'(Select department)',0); 
+                //if(!mThis.form_data) mThis.form_data = {};
+                mThis.form_data.departments = items;
+                onFinish(items);
+                }
+            });
       } 
     } 
 

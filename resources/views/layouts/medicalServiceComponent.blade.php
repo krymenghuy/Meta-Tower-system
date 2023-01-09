@@ -13,7 +13,7 @@
     </div>
 </div>
 
-<div id="_msl_dlgService" class="modal fade" tabindex="-1" aria-labelledby="_msl_dlgService" aria-hidden="true">
+<div id="_msl_dlgService" class="modal fade" tabindex="-1" aria-labelledby="_msl_dlgService_title" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -60,7 +60,6 @@
                     </div>
                     <div class="col-12">
                        <div class="dialog-error" id="_msl_dlgService_error">
-                        
                        </div>
                     </div>
                 </div>

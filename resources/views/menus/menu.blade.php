@@ -194,7 +194,6 @@
                                 &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Medical Services">Services</span>
                             </a>
                         </li>
-                        
                     </ul>
                 </div>
             </li>
@@ -522,7 +521,7 @@
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkServiceDepartments"
-                                class="menu-item kt-menu__link ">
+                                class="menu-item kt-menu__link">
                                 <i class="kt-menu__link-bullet fas fa-list-alt"><span></span></i>
                                 &nbsp;<span class="kt-menu__link-text trans-text"
                                     data-langprop="menus.Service Departments">Service Departments</span>
@@ -535,8 +534,6 @@
                                     data-langprop="menus.Locations">Locations</span>
                             </a>
                         </li>
-
-
 
                         <!-- <li class="kt-menu__item" aria-haspopup="true">
                                     <a href="javascript:void(0)" id="_main_lnkSemesterList" class="menu-item kt-menu__link ">

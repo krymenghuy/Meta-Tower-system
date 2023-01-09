@@ -33,6 +33,7 @@
      
      this.mnuBorrowerList =$('#_mainLnkBorrowers');
      this.mnuCreditOfficerList = $('#_mainLnkCreditOfficers');
+     this.mnuServiceDepartments = $('#_main_lnkServiceDepartments');
      this.mnuManageUsers = $('#_main_lnkManageUsers');
      this.mnuManageRoles = $('#_main_lnkManageRoles');
         
@@ -170,6 +171,11 @@
                 this.mnuManageRoles.on('click',function(e){
                     e.preventDefault();
                     RoleManagementComponent.show(null);
+                });
+
+                this.mnuServiceDepartments.on('click',function(e){
+                    e.preventDefault();
+                    ServiceDepartmentsComponent.show(null);
                 });
             
                 this.mnuLogout.on('click',(e)=>{

@@ -108,7 +108,8 @@ namespace App\ScriptManagement;
                         '/js/components/FindPersonDialog.js',
                         '/js/components/DashboardComponent.js',
                         '/js/components/CompanyComponent.js', 
-                        '/js/components/LocationComponent.js', 
+                        '/js/components/LocationComponent.js',
+                        '/js/components/ServiceDepartmentsComponent.js',
                         '/js/components/GeneralSettingsComponent.js',
                         '/js/components/RoleManagementComponent.js',
                         '/js/components/UserManagementComponent.js'

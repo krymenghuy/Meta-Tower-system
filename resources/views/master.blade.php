@@ -630,6 +630,7 @@
                             @include('layouts.reportCenterComponent')
                             @include('layouts.companyComponent')
                             @include('layouts.locationComponent')
+                            @include('layouts.serviceDepartmentsComponent')
                             @include('layouts.um.userManagementComponent')
                             @include('layouts.um.roleManagementComponent')
                             @include('layouts.mobileBrandImagesComponent')
