@@ -199,7 +199,7 @@ this.displayCCList=(list_id,items=[])=>{let ul=$(`#${list_id}`);ul.empty();let t
             <a href="#" data-apptid="${ticket_id}" data-id="${item.id}" class="qul-remove-complaint">
             <i class="fa fa-times" style="color:red"></i>
             </a>&nbsp;${item.name}</li>`].join('');i++;});if(i===0)html=`<li data-apptid="0"><span class="text-muted">(No chief complaints)</span></li>`;return html;}
-this.showInfo=(div_panel,ticket_id=null)=>{if(!ticket_id)ticket_id=div_panel.data('tid');let div_workspace=div_panel.find('div.qul-workspace');div_workspace.html('<div class="animation-line" style="height:2px;margin:0;"></div>');let p={'id':ticket_id};window.vsapi.call(`${main_view.base_url}/api/ticket/details`,p,'POST',false).then((res)=>{let html=null;let ws_id=null;if(res.status_code===200){let d=StringSanitizer.sanitizeObject(res.data);d.patient_code=d.patient_code?d.patient_code:'N.A.';d.consultant_name=d.consultant_name?d.consultant_name:'N.A.';d.membership_card=d.membership_card?d.membership_card:'None';let email=d.email?d.email:'N.A.';ws_id=['ticket_',d.id].join('');let ticket_id=d.id;html=[`<div id="${ws_id}" data-ticketid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="row">
+this.showInfo=(div_panel,ticket_id=null)=>{if(!ticket_id)ticket_id=div_panel.data('tid');let div_workspace=div_panel.find('div.qul-workspace');div_workspace.html('<div class="animation-line" style="height:2px;margin:0;"></div>');let p={'id':ticket_id};window.vsapi.call(`${main_view.base_url}/api/ticket/details`,p,'POST',false).then((res)=>{let html=null;let ws_id=null;if(res.status_code===200){let d=StringSanitizer.sanitizeObject(res.data);if(!d)d={};d.patient_code=d.patient_code?d.patient_code:'N.A.';d.consultant_name=d.consultant_name?d.consultant_name:'N.A.';d.membership_card=d.membership_card?d.membership_card:'None';let email=d.email?d.email:'N.A.';ws_id=['ticket_',d.id].join('');let ticket_id=d.id;html=[`<div id="${ws_id}" data-ticketid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="row">
                         <div class="col-xl-6 col-lg-8 col-sm-12">
                             <div class="row">
                                 <div class="col-4">
@@ -332,10 +332,10 @@ return;}});if(!tab_button_clicked){mThis.self.find('div.tab-header>a.tab-button'
 this.displayHistory=(client_id=0,div_tab_panel=null)=>{}
 this.displayConsultation=(client_id=0,div_tab_panel=null)=>{}
 this.init=()=>{mThis.ul_menus_consult=$('#_consult_menus');mThis.ul_menus_history=$('#_history_menus');mThis.consultItemPanel=$('#_consult_panel');mThis.historyItemPanel=$('#_history_panel');mThis.consultItemPanel.on('click','a.consultview-add-cc',(e)=>{e.preventDefault();mThis.tblChiefComplaints.addRow();});mThis.details_routes_history=mThis.defineDetailRoutesHistory(mThis.historyItemPanel);mThis.details_routes_consult=mThis.defineDetailRoutesConsult(mThis.consultItemPanel);mThis.ul_menus_consult.on('click','li',function(e){e.preventDefault();let li=$(this);let view_name=li.find('a').data('viewname');if(mThis.prev_selected_li_consult)mThis.prev_selected_li_consult.removeClass('consult-menu-selected');li.addClass('consult-menu-selected');mThis.prev_selected_li_consult=li;mThis.details_routes_consult[view_name]();});mThis.ul_menus_history.on('click','li',function(e){e.preventDefault();let li=$(this);let view_name=li.find('a').data('viewname');if(mThis.prev_selected_li_history)mThis.prev_selected_li_history.removeClass('history-menu-selected');li.addClass('history-menu-selected');mThis.prev_selected_li_history=li;mThis.details_routes_history[view_name]();});}
-this.defineDetailRoutesConsult=(div)=>{return{"chief_complaints":()=>{mThis.showConsultChiefComplaints(div);},"vital_signs":()=>{mThis.showConsultVitalSigns(div);},"history":()=>{mThis.showConsultHistory(div);},"physical_examination":()=>{mThis.showConsultPE(div);},"prescription":()=>{mThis.showConsultPrescription(div);},"labo_tests":()=>{mThis.showConsultLaboratoryTests(div);},"diagnosis":()=>{mThis.showConsultDiagnosis(div);},"recommendations":()=>{mThis.showConsultRecommendations(div);},"medical-report":()=>{mThis.showConsultMedicalReport(div);},"medical-certificate":()=>{mThis.showConsultMedicalCertificate(div);},};}
-this.defineDetailRoutesHistory=(div)=>{return{"chief_complaints":()=>{mThis.showHistoryChiefComplaints(div);},"physical_examinations":()=>{mThis.showHistoryPhysicalExaminations(div);},"laboratory_tests":()=>{mThis.showHistoryLaboratoryTests(div);},"diagnosis":()=>{mThis.showHistoryDiagnosis(div);},"prescriptions":()=>{mThis.showHistoryPrescription(div);},"recommendations":()=>{mThis.showHistoryRecommendations(div);},"medical-reports":()=>{mThis.showHistoryMedicalReports(div);}};};this.showConsultChiefComplaints=(div)=>{let wrapper_id='_consult_cc_warpper';let div_id='_consult_cc_list';let el=div.find(`#${wrapper_id}`);let ticket_id=div.data('tid');if(!el||el.length===0){let title=LocaleManager.trans('This is Chief complaints','consult');let html=`<div id="${wrapper_id}"><h3 class="trans-text" data-langprop="consult.Chief Complaints">${title} &nbsp;<a href="#" class="consultview-add-cc"><i class="fa fa-plus-circle"></i></a></h3>
+this.defineDetailRoutesConsult=(div)=>{return{"chief-complaints":()=>{mThis.showConsultChiefComplaints(div);},"vital-signs":()=>{mThis.showConsultVitalSigns(div);},"medical-history":()=>{mThis.showConsultMedicalHistory(div);},"physical-examination":()=>{mThis.showConsultPE(div);},"prescription":()=>{mThis.showConsultPrescription(div);},"labo-tests":()=>{mThis.showConsultLaboratoryTests(div);},"diagnosis":()=>{mThis.showConsultDiagnosis(div);},"advice":()=>{mThis.showConsultRecommendations(div);},"medical-report":()=>{mThis.showConsultMedicalReport(div);},"medical-certificate":()=>{mThis.showConsultMedicalCertificate(div);},};}
+this.defineDetailRoutesHistory=(div)=>{return{"chief-complaints":()=>{mThis.showHistoryChiefComplaints(div);},"pe":()=>{mThis.showHistoryPhysicalExamination(div);},"labo-tests":()=>{mThis.showHistoryLaboratoryTests(div);},"diagnosis":()=>{mThis.showHistoryDiagnosis(div);},"prescriptions":()=>{mThis.showHistoryPrescription(div);},"advice":()=>{mThis.showHistoryRecommendations(div);},"medical-reports":()=>{mThis.showHistoryMedicalReports(div);}};};this.showConsultChiefComplaints=(div)=>{let wrapper_id='_consult_cc_warpper';let div_id='_consult_cc_list';let el=div.find(`#${wrapper_id}`);let ticket_id=div.data('tid');if(!el||el.length===0){let title=LocaleManager.trans('This is Chief complaints','consult');let html=`<div id="${wrapper_id}"><h3 class="trans-text" data-langprop="consult.Chief Complaints">${title} &nbsp;<a href="#" class="consultview-add-cc"><i class="fa fa-plus-circle"></i></a></h3>
               <div id="${div_id}"></div>
-            </div>`;div.append(html);let columns=[{"name":"name","title":"Chief Complaint","dataType":"string","displayType":"select","cssClass":"",}];mThis.loadChiefComplaintOptions(ticket_id,cc_items=>{columns[0].selectOptions=cc_items;mThis.tblChiefComplaints=new ItemsView(div_id,{"columns":columns,"langProp":"consult","tableClass":"table","showColumnHeaders":false,"showAddLineButton":false,"onItemChange":(col_name)=>{console.error(col_name+' has changed');},"numeroFormatter":(numero,row)=>{return`<span class="text-secondary fw-bold">${numero}</span>`;},"emptyMessage":`<span class="text-secondary text-align-center">${LocaleManager.trans('No chief complaints', 'consult')}</span>`,});el=div.find(`#${wrapper_id}`);});}
+            </div>`;div.html(html);let columns=[{"name":"name","title":"Chief Complaint","dataType":"string","displayType":"select","cssClass":"",}];mThis.loadChiefComplaintOptions(ticket_id,cc_items=>{columns[0].selectOptions=cc_items;mThis.tblChiefComplaints=new ItemsView(div_id,{"columns":columns,"langProp":"consult","tableClass":"table","showColumnHeaders":false,"showAddLineButton":false,"onItemChange":(col_name)=>{console.error(col_name+' has changed');},"numeroFormatter":(numero,row)=>{return`<span class="text-secondary fw-bold">${numero}</span>`;},"emptyMessage":`<span class="text-secondary text-align-center">${LocaleManager.trans('No chief complaints', 'consult')}</span>`,});el=div.find(`#${wrapper_id}`);});}
 el.show().siblings().hide();}
 this.loadChiefComplaintOptions=(patient_id=0,onFinish=null)=>{vsapi.call(`${main_view.base_url}/api/settings/options-chief-complaint`,null).then(res=>{if(res.status_code===200){let items=res.data;(items||[]).map(c=>{c.value=c.code;c.text=c.name;});onFinish(items);}else onFinish([]);});}
 this.loadVitalSigns_patient=(ticket_id=0,onFinish)=>{vsapi.call(`${main_view.base_url}/api/ticket/patient-vital-signs`,null).then(res=>{if(res.status_code===200){let items=StringSanitizer.sanitizeObject(res.data);onFinish(items);}else onFinish({'vital_signs':[],'items':[]});});}
@@ -353,7 +353,7 @@ this.showConsultVitalSigns=(div)=>{let ticket_id=div.data('tid');let wrapper_id=
                     `;div.append(html);el=div.find(`#${wrapper_id}`);}
 el.show().siblings().hide();});}
 this.loadConsult_PE=(ticket_id,onFinish)=>{vsapi.call(`${main_view.base_url}/api/ticket/patient-pe`,null).then(res=>{if(res.status_code===200){let d=StringSanitizer.sanitizeOut(res.data);onFinish(d);}else onFinish(null);});}
-this.showConsultPE=(div)=>{let ticket_id=div.data('tid');let wrapper_id='_consult_pe_wrapper';let el=div.find(`#${wrapper_id}`);mThis.loadConsult_PE(ticket_id,pe=>{let html="";if(!el||el.length===0){let title=LocaleManager.trans('Physical Examination','consult');let html=`
+this.showConsultPE=(div)=>{let ticket_id=div.data('tid');let wrapper_id='_consult_pe_wrapper';let el=div.find(`#${wrapper_id}`);mThis.loadConsult_PE(ticket_id,pe=>{let html="";if(!pe)pe="";if(!el||el.length===0){let title=LocaleManager.trans('Physical Examination','consult');let html=`
                         <div id="${wrapper_id}" style="display:none">
                         <h3 class="trans-text" data-langprop="consult.Pysical Examination">${title}</a></h3>
                         <div class="">
@@ -365,13 +365,75 @@ el.show().siblings().hide();});}
 this.loadPrescription=(ticket_id=0,onFinish)=>{vsapi.call(`${main_view.base_url}/api/settings/options-product`,null).then(res=>{if(res.status_code===200){onFinish(res.data);}});}
 this.showConsultPrescription=(div)=>{let wrapper_id='_consult_pres_warpper';let div_id='_consult_prescription';let el=div.find(`#${wrapper_id}`);let ticket_id=div.data('tid');if(!el||el.length===0){let title=LocaleManager.trans('Prescription','consult');let html=`<div id="${wrapper_id}"><h3 class="trans-text" data-langprop="consult.Prescription">${title}</h3>
               <div id="${div_id}"></div>
-            </div>`;div.append(html);let columns=[{"name":"name","title":"Medication","dataType":"string","displayType":"select","cssClass":"",},{"name":"qty","title":"Quantity","dataType":"number","displayType":"input"},{"name":"usage","title":"Usage","dataType":"string","displayType":"select"}];mThis.loadPrescription(ticket_id,d=>{columns[0].selectOptions=d.products;columns[2].selectOptions=d.usage_options;mThis.tblProducts=new ItemsView(div_id,{"columns":columns,"langProp":"consult","tableClass":"table presciption-table","showColumnHeaders":true,"showAddLineButton":true,"addLineButtonText":"Add Item","numeroFormatter":(numero,row)=>{return`<span class="text-secondary fw-bold">${numero}</span>`;},"emptyMessage":`<span class="text-secondary text-align-center">${LocaleManager.trans('No item prescribed', 'consult')}</span>`,});el=div.find(`#${wrapper_id}`);});}
+            </div>`;div.html(html);let columns=[{"name":"name","title":"Product","dataType":"string","displayType":"select","cssClass":"",},{"name":"qty","title":"Quantity","dataType":"number","displayType":"input"},{"name":"usage","title":"usage","dataType":"string","displayType":"select"},{"name":"duration_days","title":"Days","dataType":"number","displayType":"input"},{"name":"reason","title":"Reasons","displayType":"input"},{"name":"remarks","title":"Remarks","displayType":"input"}];mThis.loadPrescription(ticket_id,d=>{columns[0].selectOptions=d.products;columns[2].selectOptions=d.usage_options;mThis.tblProducts=new ItemsView(div_id,{"columns":columns,"langProp":"consult","tableClass":"table presciption-table","showColumnHeaders":true,"showAddLineButton":true,"addLineButtonText":"Add Item","numeroFormatter":(numero,row)=>{return`<span class="text-secondary fw-bold">${numero}</span>`;},"emptyMessage":`<span class="text-secondary text-align-center">${LocaleManager.trans('No item prescribed', 'consult')}</span>`,});el=div.find(`#${wrapper_id}`);});}
 el.show().siblings().hide();}
-this.showConsultHistory=(div)=>{let html=`<h3>History</h3>`;div.html(html);}
-this.showConsultPhysicalExamination=(div)=>{let html=`<h3>Physical Examination</h3>`;div.html(html);}
-this.showConsultLaboratoryTests=(div)=>{let html=`<h3>Laboratory Test</h3>`;div.html(html);}
-this.showConsultDiagnosis=(div)=>{let html=`<h3>Diagnosis</h3>`;div.html(html);}
-this.showConsultRecommendations=(div)=>{let html=`<h3>Recommendations</h3>`;div.html(html);}
+this.showConsultMedicalHistory=(div)=>{let wrapper_id='_consult_medical_history_warpper';let ticket_id=div.data('tid');let patient_id=div.data('patientid');let div_id='_consult_history';let el=div.find(`#${wrapper_id}`);if(el){let html=`<div id ="${div_id}" style="display:none">
+              <h3 class="trans-text" data-langprop="consult.Medical History">Medical History</h3>
+              <div class="d-flex flex-column">
+                <div>
+                   <label class="control-label">Personal History</label>
+                   <textarea class="form-control" cols="10" rows="3" id="_consul_history_personal"></textarea>
+                </div>
+
+                <div>
+                  <label class="control-label">Family History</label>
+                  <textarea class="form-control" cols="10" rows="3" id="_consul_history_familiy"></textarea>
+                </div>
+
+                <div>
+                  <label class="control-label">Traveling</label>
+                  <textarea class="form-control" cols="10" rows="3" id="_consul_history_traveling"></textarea>
+                </div>
+                
+                <div>
+                  <label class="control-label">Vacination</label>
+                  <textarea class="form-control" cols="10" rows="3" id="_consul_history_vacination"></textarea>
+                </div>
+
+                <div>
+                  <label class="control-label">Allergy</label>
+                  <textarea class="form-control" cols="10" rows="3" id="_consul_history_allergy"></textarea>
+                </div>
+
+                <div>
+                  <label class="control-label">Surgery</label>
+                  <textarea class="form-control" cols="10" rows="3" id="_consul_history_surgery"></textarea>
+                </div>
+
+                <div>
+                  <label class="control-label">Others</label>
+                  <textarea class="form-control" cols="10" rows="3" id="_consul_history_others"></textarea>
+                </div>
+
+              </div>
+           </div>`;div.html(html);el=$(`#${div_id}`);}
+el.show().siblings().hide();LocaleManager.translateZone(div_id);}
+this.showConsultLaboratoryTests=(div)=>{let wrapper_id='_consult_labo_warpper';let div_labotest_panel_id='_consult_div_labotest_panel';let ticket_id=div.data('tid');let patient_id=div.data('patientid');let div_id='_consult_labo';let el=div.find(`#${wrapper_id}`);if(el){let html=`<div id ="${div_id}" style="display:none">
+                <h3 class="trans-text" data-langprop="consult.Laboratory Tests">Laboratory Tests</h3>
+                <div class="d-flex">
+                    <div id="${div_labotest_panel_id}" class="table-responsive">  
+                    </div>
+                </div>
+           </div>`;div.html(html);el=$(`#${div_id}`);let cols=[{name:'labo_test_id',title:'Test Name',selectOptions:[{'value':"Boold test",'text':'Blood Test'},{'value':"Other Test",'text':'Other Test'},]},{name:'description',title:'Description'},{name:'labo_id',title:'Labo Name',selectOPtions:[]}];mThis.tblLaboTests=new ItemsView(div_labotest_panel_id,{columns:cols,tableClass:"table",addLineButtonText:"Add Labo Test",langProp:'labotest'});}
+el.show().siblings().hide();LocaleManager.translateZone(div_id);}
+this.showConsultDiagnosis=(div)=>{let wrapper_id='_consult_diagnosis_warpper';let ticket_id=div.data('tid');let patient_id=div.data('patientid');let div_id='_consult_diagnosis';let el=div.find(`#${wrapper_id}`);if(el){let html=`<div id ="${wrapper_id}" style="display:none">
+              <h3 class="trans-text" data-langprop="consult.Diagnosis">Diagnosis</h3>
+              <div class="d-flex flex-column">
+                 <label class="control-label">Diagnosis details</label>
+                 <textarea class="form-control" cols="10" rows="3" id="_consul_diagnosis"></textarea>
+              </div>
+           
+            </div>`;div.html(html);el=div.find(`#${wrapper_id}`);}
+el.show().siblings().hide();LocaleManager.translateZone(div_id);}
+this.showConsultRecommendations=(div)=>{let wrapper_id='_consult_advice_warpper';let ticket_id=div.data('tid');let patient_id=div.data('patientid');let div_id='_consult_advice';let el=div.find(`#${wrapper_id}`);if(el){let html=`<div id ="${wrapper_id}" style="display:none">
+              <h3 class="trans-text" data-langprop="consult.Recommendations">Recommendations</h3>
+              <div class="d-flex flex-column">
+                 <label class="control-label">Doctor's recommendation</label>
+                 <textarea class="form-control" cols="10" rows="3" id="_consul_advice"></textarea>
+              </div>
+            </div>  
+           `;div.html(html);el=div.find(`#${wrapper_id}`);}
+el.show().siblings().hide();LocaleManager.translateZone(wrapper_id);}
 this.showConsultMedicalReport=(div)=>{alert('Print medical report');}
 this.showConsultMedicalCertificate=(div)=>{alert('Print medical certificate');}
 this.showHistoryChiefComplaints=(div)=>{let html=`<h3>Chief Complaint</h3>
@@ -422,75 +484,78 @@ this.showHistoryChiefComplaints=(div)=>{let html=`<h3>Chief Complaint</h3>
                 </table>
             </div>
         </div>`;div.html(html);}
-this.showHistoryPhysicalExaminations=(div)=>{let html=`<h3>Physical Examination</h3>
-        <div class="d-block">
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th class="fw-bold">27-08-2021</th>
-                            <th class="fw-bold">h:m:ss</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <p>
-                                    During a physical examination, a health care provider studies your body to determine if you do or do not have a physical problem. A physical examination usually includes: Inspection (looking at the body) Palpation (feeling the body with fingers or hands) Auscultation (listening to sounds)
-                                </p>
-                            </td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-
-                    <thead>
-                        <tr>
-                            <th class="fw-bold">27-08-2021</th>
-                            <th class="fw-bold">h:m:ss</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <p>
-                                    During a physical examination, a health care provider studies your body to determine if you do or do not have a physical problem. A physical examination usually includes: Inspection (looking at the body) Palpation (feeling the body with fingers or hands) Auscultation (listening to sounds)
-                                </p>
-                            </td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>`;div.html(html);}
-this.showHistoryLaboratoryTests=(div)=>{let html=`<h3>Laboratory Tests</h3>
-        <div class="d-block">
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th class="fw-bold text-nowrap">Test Name</th>
-                            <th class="fw-bold">Laboratory</th>
-                            <th class="fw-bold">Date</th>
-                            <th class="fw-bold">Result</th>
-                            <th class="fw-bold">Docs</th>
-                            <th class="fw-bold">Comment</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>`;div.html(html);}
+this.showHistoryPhysicalExamination=(div)=>{let wrapper_id='_history_pe_wapper';let patient_id=div.data('patientid');let ticket_id=div.data('tid');let el=$(`#${wrapper_id}`);if(!el||el.length===0){let html=`<div id="${wrapper_id}">
+            <h3 class="trans-text" data-langprop="consult.Physical Examination">Physical Examination</h3>
+            <div class="d-block">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="fw-bold">27-08-2021</th>
+                                <th class="fw-bold">h:m:ss</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <p>
+                                        During a physical examination, a health care provider studies your body to determine if you do or do not have a physical problem. A physical examination usually includes: Inspection (looking at the body) Palpation (feeling the body with fingers or hands) Auscultation (listening to sounds)
+                                    </p>
+                                </td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+    
+                        <thead>
+                            <tr>
+                                <th class="fw-bold">27-08-2021</th>
+                                <th class="fw-bold">h:m:ss</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <p>
+                                        During a physical examination, a health care provider studies your body to determine if you do or do not have a physical problem. A physical examination usually includes: Inspection (looking at the body) Palpation (feeling the body with fingers or hands) Auscultation (listening to sounds)
+                                    </p>
+                                </td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>`;div.html(html);el=$(`#${wrapper_id}`);}
+el.show().siblings().hide();LocaleManager.translateZone(wrapper_id);}
+this.showHistoryLaboratoryTests=(div)=>{let wrapper_id='_history_labo_wapper';let patient_id=div.data('patientid');let ticket_id=div.data('tid');let el=$(`#${wrapper_id}`);if(!el||el.length===0){let html=`<h3>Laboratory Tests</h3>
+            <div class="d-block">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="fw-bold text-nowrap">Test Name</th>
+                                <th class="fw-bold">Laboratory</th>
+                                <th class="fw-bold">Date</th>
+                                <th class="fw-bold">Result</th>
+                                <th class="fw-bold">Docs</th>
+                                <th class="fw-bold">Comment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>`;div.html(html);el=$(`#${wrapper_id}`);}
+el.show().siblings().hide();LocaleManager.translateZone(wrapper_id);}
 this.loadHistory_diagnosis=(patient_id,onFinish)=>{let items=[{"ticket_id":1,"date":"12 Dec 2022","ticket_number":"D0001","description":"This is diagnosis one","consultant_name":"Mr. Doctor A"},{"ticket_id":2,"date":"13 Dec 2022","ticket_number":"D0001","description":"An irregular heartbeat is an arrhythmia (also called dysrhythmia). Heart rates can also be irregular. A normal heart rate is 50 to 100 beats per minute. Arrhythmias and abnormal heart rates don’t necessarily occur together. Arrhythmias can occur with a normal heart rate, or with heart rates that are slow (called bradyarrhythmias — less than 50 beats per minute). Arrhythmias can also occur with rapid heart rates (called tachyarrhythmias — faster than 100 beats per minute).","consultant_name":"Mr. Doctor One"},{"ticket_id":3,"date":"20 Dec 2022","ticket_number":"D0001","description":"This is diagnosis three","consultant_name":"Mr. Doctor BBBB"}];onFinish(items);}
-this.showHistoryDiagnosis=(div)=>{let patient_id=div.data('patientid');let wrapper_id='_history_hs_wrapper';let el=div.find(`#${wrapper_id}`);if(!el||el.length===0){let body_id=`tblHis_tbody_${patient_id}`;let html=`<h3>Diagnosis</h3>
+this.showHistoryDiagnosis=(div)=>{let patient_id=div.data('patientid');let wrapper_id='_history_hs_wrapper';let el=div.find(`#${wrapper_id}`);if(!el||el.length===0){mThis.tblHistoryDiagnosis_body_id=`tblHis_tbody_${patient_id}`;let html=`<h3>Diagnosis</h3>
                 <div class="d-block">
                     <div class="table-responsive">
                         <table class="table table-bordered">
@@ -501,75 +566,82 @@ this.showHistoryDiagnosis=(div)=>{let patient_id=div.data('patientid');let wrapp
                                     <th class="fw-bold text-nowrap">Doctor Name</th>
                                 </tr>
                             </thead>
-                            <tbody id ="${body_id}">
+                            <tbody id ="${mThis.tblHistoryDiagnosis_body_id}">
                             </tbody>
                         </table>
                     </div>
-                </div>`;div.html(html);mThis.loadHistory_diagnosis(patient_id,items=>{let tbody=document.querySelector(`#${body_id}`);if(tbody){let row_html='';let i=0;tbody.innerHTML='';items.map(item=>{row_html=[row_html,`<tr>
-                                    <td>
-                                        <span class="d-block p-1" style="min-width:110px">${item.date}</span>
-                                        <span class="d-inline-block text-secondary p-1">${item.ticket_number}</span>
-                                    </td>
-                                    <td class="vs-contain-custom">
-                                        <p>
-                                            ${item.description}
-                                        <p>
-                                        <span data-tid="${item.ticket_id}" class="span lnk-show-more"></span>
-                                    </td>
-                                    <td>${item.consultant_name}</td>
-                                    </tr>`].join('');i++;});tbody.innerHTML=row_html;(tbody.querySelectorAll('.lnk-show-more')||{}).forEach(d=>{d.addEventListener('click',e=>{let td=VSDOM.getClosestParentByType(e.target,'TD');let ticket_id=e.target.dataset.tid;if(td)td.classList.toggle('active');});});}});}else{el.show().siblings().hide();}}
-this.showHistoryPrescription=(div)=>{let html=`<h3>Prescription</h3>`;div.html(html);}
-this.showHistoryRecommendations=(div)=>{let html=`<h3>Recommedations</h3>`;div.html(html);}
+                </div>`;div.html(html);el=$(`#${wrapper_id}`);}
+mThis.loadHistory_diagnosis(patient_id,items=>{let tbody=document.querySelector(`#${mThis.tblHistoryDiagnosis_body_id}`);if(tbody){let row_html='';let i=0;tbody.innerHTML='';items.map(item=>{row_html=[row_html,`<tr>
+                                            <td>
+                                                <span class="d-block p-1" style="min-width:110px">${item.date}</span>
+                                                <span class="d-inline-block text-secondary p-1">${item.ticket_number}</span>
+                                            </td>
+                                            <td class="vs-contain-custom">
+                                                <p>
+                                                    ${item.description}
+                                                <p>
+                                                <span data-tid="${item.ticket_id}" class="span lnk-show-more"></span>
+                                            </td>
+                                            <td>${item.consultant_name}</td>
+                                            </tr>`].join('');i++;});tbody.innerHTML=row_html;(tbody.querySelectorAll('.lnk-show-more')||{}).forEach(d=>{d.addEventListener('click',e=>{let td=VSDOM.getClosestParentByType(e.target,'TD');let ticket_id=e.target.dataset.tid;if(td)td.classList.toggle('active');});});}});el.show().siblings().hide();}
+this.showHistoryPrescription=(div)=>{let patient_id=div.data('patientid');let wrapper_id='_history_prescriptions';let el=$(`#${wrapper_id}`);if(!el||el.length===0){let html=`<div class="${wrapper_id}">
+                <h3 class="trans-text" data-langprop="history.Historical Prescriptions">Historical Prescriptions</h3>
+                <div>
+                  Please display a list of prescription by date and doctor's name here!
+                </div>
+             </div>
+            `;div.html(html);el=$(`#${wrapper_id}`);}
+LocaleManager.translateZone(wrapper_id);el.show().siblings().hide();}
+this.showHistoryRecommendations=(div)=>{let patient_id=div.data('patientid');let wrapper_id='_history_advice';let el=$(`#${wrapper_id}`);if(!el||el.length===0){let html=`<div class="${wrapper_id}">
+                <h3 class="trans-text" data-langprop="history.Historical Recommendations">Historical Recommedations</h3>
+                <div>
+                  Doctor advice is to be displayed here!
+                </div>
+             </div>
+            `;div.html(html);el=$(`#${wrapper_id}`);}
+LocaleManager.translateZone(wrapper_id);el.show().siblings().hide();}
 this.loadHistory_medical_report=(patient_id=0,onFinish)=>{let d={};d.patient_id=101;d.patient_code='1011';d.patient_name='Sovano';d.patient_sex='M';let items=[{"ticket_id":1,"ticket_number":"D0001","date":"11 Dec 2022","consultant_name":"Dr. A"},{"ticket_id":2,"ticket_number":"D0003","date":"15 Dec 2022","consultant_name":"Dr. A"},{"ticket_id":3,"ticket_number":"D0002","date":"25 Dec 2022","consultant_name":"Dr. B"},{"ticket_id":4,"ticket_number":"D0001","date":"31 Dec 2022","consultant_name":"Dr. A"}];d.items=items;onFinish(d);}
-this.showHistoryMedicalReports=(div)=>{let patient_id=div.data('patientid');let wrapper_id='_history_medrpt_wrapper';let el=div.find(`#${wrapper_id}`);if(!el||el.length===0){mThis.history_tbody_id=`${wrapper_id}_tblmritems_body`;let html=`<div id="${wrapper_id}" style="display:none">
-                        <div class="d-flex align-items-center mb-4">
-                            <h3 class="trans-text" data-langprop="history.Medical Reports">${LocaleManager.trans('Medical Reports', 'history')}</h3>
-                        </div>
-                        <div class="d-block">
-                            <div class="d-flex align-items-center">
-                                <div>
-                                    <p class="fw-semibold trans-text pe-2" data-langprop="patient.Patient ID">Patient ID:</p>
-                                </div>
-                                <div>
-                                    <p class="history-mr-header-item" data-field="patient_code">007</p>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <div>
-                                    <p class="fw-semibold trans-text pe-2" data-langprop="patient.Patient Name">Patient Name:</p>
-                                </div>
-                                <div>
-                                    <p class="history-mr-header-item" data-field="patient_name">Koko</p>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <div>
-                                    <p class="fw-semibold trans-text pe-2" data-langprop="patient.Sex">Sex:</p>
-                                </div>
-                                <div>
-                                    <p class="history-mr-header-item" data-field="patient_sex">F</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th class="fw-bold">Ticket No.</th>
-                                        <th class="fw-bold">Date</th>
-                                        <th class="fw-bold">Doctor Name</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="${mThis.history_tbody_id}">
-                                </tbody>
-                            </table>
-                        </div>
-                    <div>`;div.html(html);}
-mThis.loadHistory_medical_report(patient_id,d=>{let items=d.items;let el=div.find(`#${wrapper_id}`);el.find('.history-mr-header-item').each(function(){let x=$(this);let f=x.data('field');x.text(d[f]);});let tbody=el.find(`#${mThis.history_tbody_id}`);let row_html='';items.map(item=>{row_html=[row_html,`<tr>
-                <td>${item.ticket_number}</td>
-                <td><a href="javascript:void(0)"><i class="fa fa-print"></i><span class="pl-1">${item.date} medical report</span></a></td>
-                <td>${item.consultant_name}</td>
-               </tr>`].join('');});tbody.html(row_html);el.show().siblings().hide();});}}
+this.showHistoryMedicalReports=(div)=>{let patient_id=div.data('patientid');let wrapper_id='_history_med_report_wrapper';mThis.tblHistoryReports_body_id='_history_tblMedReports_body';this.loadHistory_medical_report(patient_id,d=>{let items=d.items;let el=div.find(`#${wrapper_id}`);if(!el||el.length===0){let html=`<div id="${wrapper_id}">
+                   <div class="d-flex flex-column history-mr-header">
+                       <div class="d-flex flex-row">
+                          <span class="w-30 fw-bold trans-text" data-langprop="patient.Patient ID"></span>
+                          <span class="">${d.patient_code}</span>
+                       </div>
+
+                       <div class="d-flex flex-row">
+                         <span class="w-30 fw-bold trans-text" data-langprop="patient.Patient Name"></span>
+                         <span class="">${d.patient_name}</span>
+                      </div>
+
+                      <div class="d-flex flex-row">
+                        <span class="w-30 fw-bold trans-text" data-langprop="patient.Sex"></span>
+                        <span class="">${d.patient_sex}</span>
+                      </div>
+
+                      <div class="d-flex flex-row">
+                        <span class="w-30 fw-bold trans-text" data-langprop="patient.Phone Number"></span>
+                        <span class="">${d.patient_phone_number}</span>
+                     </div>
+
+                   </div>
+                   
+                   <div class="table-responsive">
+                     <table class="table">
+                      <thead>
+                        <th class="trans-text" data-langprop="history.No"></th>
+                        <th class="trans-text" data-langprop="history.Date"></th>
+                        <th class="trans-text" data-langprop="history.Consultant"></th>
+                      </thead>
+                      <tbody id="${mThis.tblHistoryReports_body_id}"></tbody>
+                     </table>
+                   </div>
+                </div>
+               `;div.html(html);let el=$(`#${wrapper_id}`);}
+LocaleManager.translateZone(wrapper_id);el.find('.history-mr-header').each(function(){let x=$(this);let f=x.data('field');x.text(d[f]);});let tbody=document.querySelector(`#${mThis.tblHistoryReports_body_id}`);let row_html='';items.map(item=>{row_html=[row_html,`<tr>
+                    <td>${item.ticket_number}</td>
+                    <td><a href="javascript:void(0)"><i class="fa fa-print"></i><span class="pl-1">${item.date} medical report</span></a></td>
+                    <td>${item.consultant_name}</td>
+                   </tr>`].join('');});tbody.innerHTML=row_html;el.show().siblings().hide();});}}
 let ConsultDialog=new function(){let mThis=this;this.self=$('#_qul_dlgConsult');this.btnSave=$('#_qul_dlgConsult_btnSave');this.defaultTabView='consultation';this.btnSave.on('click',(e)=>{e.preventDefault();mThis.self.modal('hide');mThis.onClose(true);});ConsultTabView.init();this.show=(option)=>{if(!option)option={};mThis.onClose=option.onClose;ConsultTabView.show({"ticket_id":option.ticket_id,"patient_id":option.patient_id},this.defaultTabView);mThis.self.modal({backdrop:'static'});}}
 $(document).ready(()=>{TicketDetails.init('_qul_tblTickets');QueueComponent.init();});;"use strict";let DermatologyComponent=new function(){let mThis=this;this.title_prop='Dermatology';this.base_url=$('#__base_url').val();this.self=$('#_main_dermatologyComponent');this.btnNew=$('#_dml_btnNew');this.elSearchItem=$('#_dml_search');this.tblItems=$('#_dml_tblItems');this.col_titles={"Numero":"No.","Name":"Name","Description":"Description","Price":"Price","Action":"Action"};this.trans_title=(title_prop='undefined')=>{return(mThis.col_titles[title_prop]||'undefined');}
 this.setLanguage=()=>{if(LocaleManager.lang!==mThis.lang){for(let prop in mThis.col_titles){mThis.col_titles[prop]=LocaleManager.trans(prop,'service',LocaleManager.lang);}

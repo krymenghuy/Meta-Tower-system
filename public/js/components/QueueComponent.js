@@ -1200,7 +1200,7 @@ let ConsultTabView = new function () {
 
         mThis.consultItemPanel.on('click', 'a.consultview-add-cc', (e) => {
             e.preventDefault();
-            mThis.tblChiefComplaints.addRow();
+            (mThis.tblChiefComplaints || {}).addRow();
         });
 
         mThis.details_routes_history = mThis.defineDetailRoutesHistory(mThis.historyItemPanel);

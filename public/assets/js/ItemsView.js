@@ -101,11 +101,16 @@ class ItemsView{
             let el = VSDOM.getClosestParentByClass(e.target,'btn-item-addline');        
             if (el){
                 this.addRow(null);
-                alert(JSON.stringify(this.getItems()));
+                //alert(JSON.stringify(this.getItems()));
                 //this.resetNumero(); //addRow() will also resetNumero()
             } 
         });
    
+        // document.addEventListener('click',(e)=>{
+        //     e.preventDefault();
+        //     alert('click doc');
+        // });
+
         // this.table_body.addEventListener('focus',(e)=>{
         //    e.preventDefault(); 
         //    alert(typeof e.target);
@@ -436,7 +441,7 @@ class ItemsView{
                 tr.dataset.id = item_id;
                 tr.dataset.editing =0;
                 if (this.options.rowClass) tr.classList.add(this.options.rowClass);
-                let action_col =[`<td><div class="form-inline"><a href="javascript:void" class="btn-item-delete"><i class="fa fa-trash" style="color:red"></i></a></div></td>`].join('');
+                let action_col =[`<td><div class="form-inline"><a href="javascript:void(0)" class="btn-item-delete"><i class="fa fa-trash" style="color:red"></i></a></div></td>`].join('');
                 tr.innerHTML = [numero_col,html_cols,action_col].join('');
                 this.table_body.appendChild(tr);
                 if (!d.id) this.changeRowState(tr,'edit');

@@ -5,7 +5,7 @@
 	  //"message_box_default" is default property in km.json file or en.json file for language lookup translation
 	  this.default_lang_section ='message_box_default';
 	  //default message title, this is usally App name or system name
-	  this.default_alert_title ='LMS';
+	  this.default_alert_title ='MClinic';
   
 	  //@footer = '<a href="">Why do I have this issue?</a>'
 	  this.error = (message,title=null,position='center',onClose=null,footer=null)=>{
@@ -19,7 +19,7 @@
 		  if (position) op.position = position;   
 		  if (footer) op.footer = footer;  
 		Swal.fire(op).then((result)=>{
-		    if(typeof onClose==='function') onClose(result);	
+		    if(typeof onClose === 'function') onClose(result);	
 		});
 	  }
 	  
@@ -85,7 +85,7 @@
 				showConfirmButton: false,
 				//reverseButtons: true, /** change Cancel/OK buttons' position **/
 				//timer: 1500
-			  })		  
+			  });		  
 	  };
 	  
 
@@ -121,7 +121,7 @@
 							cancel_button_color ='#5B92EC';
 							if(!ok_text) ok_text ='Remove';
 							if(!cancel_text) cancel_text = 'Dont Remove';
-							if (option.translate===true) if(ok_text) ok_text = LocaleManager.trans(ok_text,langSection);  
+							if (option.translate === true) if(ok_text) ok_text = LocaleManager.trans(ok_text,langSection);  
 							 
 			}else{
 				ok_button_color = '#11A767';
