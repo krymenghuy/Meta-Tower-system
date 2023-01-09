@@ -54,32 +54,34 @@ class ItemController extends Controller
         return JDV::result($rows);
     }
      
-    function deleteItem(Request $request) { 
-      $ss = UM::getUserInfoByToken($request,-1);
+    function deleteItem(Request $req) { 
+      $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !=200) return JDV::emptyResult($ss->status_code,null); //user not authenticated
       $branch_id = $ss->branch_id;
-      $id = $d->id;     
-      $r =  $this->item::where('branch_id',$branch_id)->where('id',$id)->delete();
+      $id = $req->id;     
+      $r =  Item::where('branch_id',$branch_id)->where('id',$id)->delete();
+      //if($r) 
       return JDV::success();
+      //else return JDV::error("Failed to delete inventory item $id");
     }
       
     function saveItem(Request $req) { 
-        $ss = UM::getUserInfoByToken($request,-1);
+        $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return JDV::emptyResult($ss->status_code,null); //user not authenticated
         $branch_id = $ss->branch_id;
       
         $def_prefix =null;
         $def_code_length = 5;
         $validate_rule =[
-          "id"=>"0|number|identity",
+          "id"=>"0|number|identity=1",
           "name"=>"1|string|1-150",
           "description"=>"0|string",
           "group_id"=>"1|positive|exists=inv_groups|id",
           "brand_id"=>"0|number|default=0",
           "manufacturer_id"=>"0|number|default=0",
-          "selling_price"=>"0|number|default=0",
           "cost"=>"0|number|default=0",
-          "made_in_country_id"=>"0|number"
+          "made_in_country_id"=>"0|number",
+          "unit_id"=>"1|number|text=Stock Keeping Unit is required"
         ];
         $check_unique = ["$branch_id|inv_items|name|id=id"];
         $res = validateReq($req,$validate_rule,true,[],$ss->lang,false,$check_unique);
