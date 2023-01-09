@@ -1,0 +1,1 @@
+<div id="_main_productsGroupComponent" style="display:none;padding-top:15px"></div>

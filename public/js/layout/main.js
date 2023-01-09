@@ -22,7 +22,8 @@
      this.mnuPatientFinder = $('#_main_lnkPatientFinder');
      this.mnuTickets = $('#_main_lnkTickets');
      this.mnuMedicalServices = $('#_main_lnkMedicalServices');
-      
+     this.mnuProducts = $('#_main_lnkProducts');
+     this.mnuProductsGroup = $('#_main_lnkProductGroups');
 
      this.mnuPatientDashboard = $('#_main_lnkPatientDashboard');
      this.mnuOPDList = $('#_main_lnkOPDList');
@@ -136,6 +137,16 @@
                  this.mnuMedicalServices.on('click',(e)=>{
                     e.preventDefault();
                     MedicalServiceComponent.show(null);
+                 });
+
+                 this.mnuProducts.on('click',(e)=>{
+                    e.preventDefault();
+                    ProductsComponent.show(null);
+                 });
+
+                 this.mnuProductsGroup.on('click',(e)=>{
+                    e.preventDefault();
+                    ProductsGroupComponent.show(null);
                  });
  
                  this.mnuAppointmentList.on('click',(e)=>{

@@ -101,6 +101,8 @@ namespace App\ScriptManagement;
                         '/js/components/AppointmentListComponent.js',
                         '/js/components/QueueComponent.js',
                         '/js/components/MedicalServiceComponent.js',
+                        '/js/components/ProductsComponent.js',
+                        '/js/components/ProductsGroupComponent.js',
                         '/js/components/PatientFinderComponent.js',
                         '/js/components/PatientListComponent.js',
                         '/js/components/ReportCenterComponent.js',

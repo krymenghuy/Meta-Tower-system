@@ -524,7 +524,7 @@
                                 class="menu-item kt-menu__link">
                                 <i class="kt-menu__link-bullet fas fa-list-alt"><span></span></i>
                                 &nbsp;<span class="kt-menu__link-text trans-text"
-                                    data-langprop="menus.Service Departments">Service Departments</span>
+                                    data-langprop="menus.Departments">Departments</span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">

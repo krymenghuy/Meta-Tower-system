@@ -1,21 +1,21 @@
 "use strict";
-let ServiceDepartmentsComponent = new function(){
+let ProductsComponent = new function(){
     let mThis = this;
-    this.title_prop = 'Service Departments';
+    this.title_prop = 'Products';
     this.base_url = $('#__base_url').val();
-    this.self = $('#_main_serviceDepartmentsComponent');
-    this.btnNew = $('#_svd_btnNew');
+    this.self = $('#_main_productsComponent');
+    this.btnNew = $('#_pdc_btnNew');
     // this.elSearchItem = $('#_msl_search');
     // this.elFilter_department = $('#_msl_filter_service');
-    this.tblItems = $('#_svd_tblItem');
+    this.tblItems = $('#_pdc_tblItem');
     // this.form_data = {};
 
     this.col_titles = {
         "Numero":"No.",
+        "Code":"Code",
         "Name":"Name",
-        "Description":"Description",
-        "Create User":"Create User",
-        "Create At":"Create At",
+        "Group":"Group",
+        "Type":"Type",
         "Action":"Action"
     };
 
@@ -26,7 +26,7 @@ let ServiceDepartmentsComponent = new function(){
     this.setLanguage = ()=>{
         if (LocaleManager.lang !== mThis.lang){
             for (let prop in mThis.col_titles){
-                mThis.col_titles[prop] = LocaleManager.trans(prop,'service',LocaleManager.lang);
+                mThis.col_titles[prop] = LocaleManager.trans(prop,'items',LocaleManager.lang);
             }
             mThis.lang = LocaleManager.lang;
         }
@@ -37,11 +37,11 @@ let ServiceDepartmentsComponent = new function(){
             let op = {
                 onClose:(e)=>{
                      if(e){
-                         mThis.displayServiceDepartments();
+                         mThis.displayProducts();
                      }
                 }
             };
-            ServiceDepartmentsDialog.show(op);
+            ProductsDialog.show(op);
         });
 
         mThis.tblItems.on('click','.btn_item_modify',function(e){
@@ -51,11 +51,11 @@ let ServiceDepartmentsComponent = new function(){
                 onClose:(e)=>{
                      //do something on dialog closed
                      if(e){
-                         mThis.displayServiceDepartments();
+                         mThis.displayProducts();
                      }
                 }
             };
-            ServiceDepartmentsDialog.show(op); 
+            ProductsDialog.show(op);
         });
 
         mThis.tblItems.on('click','.btn_item_delete',function(e){
@@ -63,9 +63,9 @@ let ServiceDepartmentsComponent = new function(){
             cv_interact.confirm(`Delete this department?`,{title:"Delete Department",context:"delete"},(yes)=>{
                 if(yes){
                     let p = {"id":item_id};
-                    vsapi.call(`${main_view.base_url}/api/settings/delete-department`,p).then(res=>{
-                       if(res.status_code===200){
-                          mThis.displayServiceDepartments();
+                    vsapi.call(`${main_view.base_url}/api/inventory/delete-item`,p).then(res=>{
+                       if(res.status_code === 200){
+                          mThis.displayProducts();
                        }else cv_interact.error(res.error_message);
                     });
                 }
@@ -73,14 +73,14 @@ let ServiceDepartmentsComponent = new function(){
         });
     }
 
-    this.displayServiceDepartments =(onFinish=null)=>
+    this.displayProducts =(onFinish=null)=>
     { 
         //Initialize language for DataTable columns headers
         //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
         //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
         let p = {};
-        window.vsapi.call(`${mThis.base_url}/api/settings/departments`,p,'POST',null).then((result)=>{
+        window.vsapi.call(`${mThis.base_url}/api/inventory/items`,p,'POST',null).then((result)=>{
             let data = [];
             if(result.status_code === 200) data = result.data;
             if (mThis.table){
@@ -95,10 +95,14 @@ let ServiceDepartmentsComponent = new function(){
             //begin::Set up columns
             let my_columns = [
                 {
-                    title: mThis.trans_title("Numero"),
+                    title: mThis.trans_title("No."),
                     data: () => {
                         return cnt;
                     }
+                },
+                {
+                    title: mThis.trans_title("Code"),
+                    data: "code"
                 },
                 {
                     data:(item,a,b) =>{
@@ -107,16 +111,12 @@ let ServiceDepartmentsComponent = new function(){
                     title: mThis.trans_title('Name')
                 },
                 {
-                    title: mThis.trans_title('Description'),
-                    data:"description"
+                    title: mThis.trans_title('Group'),
+                    data:"group"
                 },
                 {
-                    title: mThis.trans_title('Create User'),
-                    data: "create_user"
-                },
-                {
-                    title: mThis.trans_title('Create At'),
-                    data: "create_at"
+                    title: mThis.trans_title('Type'),
+                    data: "type"
                 },
                 {
                     title:mThis.trans_title('Action'),
@@ -170,7 +170,7 @@ let ServiceDepartmentsComponent = new function(){
     this.show = (options=null) => {
         if(!options) options={};
         mThis.options = options;
-        mThis.displayServiceDepartments(() => {
+        mThis.displayProducts(() => {
             main_view.setTitle(mThis.title_prop);
             mThis.self.show().siblings().hide();
         });
@@ -178,23 +178,23 @@ let ServiceDepartmentsComponent = new function(){
 }
 
 //begin::MedicalServiceDialog
-let ServiceDepartmentsDialog = new function(){
+let ProductsDialog = new function(){
     let mThis = this;
-    this.self = $(`#_msl_dlgDepartment`);
+    this.self = $(`#_pdc_dlgProducts`);
 
     //AppointmentDialog
     this.formUntil = new FormUntil({
-        "itemName":"Service Departments",
-        "formId":'_svd_dlgDepartment',
+        "itemName":"Products",
+        "formId":'_pdc_dlgProducts',
         //"titleId":"_msl_dlgService_title",
         //"errorId":"_msl_dlgService_error",
         //"saveButtonId":"_msl_dlgService_btnSave",
         "instance":this,
-        "apiSave":`${main_view.base_url}/api/settings/save-department`,
-        "apiGet":`${main_view.base_url}/api/settings/department-info`,
+        "apiSave":`${main_view.base_url}/api/inventory/save-item`,
+        "apiGet":`${main_view.base_url}/api/inventory/details-item`,
         //"identityProp":"id",
-        "modifyTitle":"Modify Department",
-        "createTitle":"New Department",
+        "modifyTitle":"Modify Product",
+        "createTitle":"New Product",
         "identityProps":['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props":['id'],
@@ -215,5 +215,5 @@ let ServiceDepartmentsDialog = new function(){
 //end::MedicalServiceDialog
 
 $(document).ready(function() {
-    ServiceDepartmentsComponent.init();
+    ProductsComponent.init();
 });
