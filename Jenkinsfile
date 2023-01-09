@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        BOT_TOKEN = credentials('Telegram_BotToken')
+        CHAT_ID = credentials('Telegram_ChatID')
+    }
+
     stages {
         stage('Start') {
             steps {

@@ -1,7 +1,7 @@
 #! /bin/bash
 
-CHAT_ID="-1001725503298"
-BOT_TOKEN=5479701203:AAE9-RAdSL8uRjSdlSdMuWtUKHg0aJF3lvU
+CHAT_ID=${CHAT_ID}
+BOT_TOKEN=${BOT_TOKEN}
 
 
 L="------------------------------------------------------"
