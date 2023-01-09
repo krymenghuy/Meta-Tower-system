@@ -358,6 +358,8 @@ Route::post('test/test-api',function(){
     Route::post('settings/departments', [GeneralSettingsController::class, 'getDepartmentList']);
     Route::post('settings/save-department', [GeneralSettingsController::class, 'saveDepartment']);
     Route::post('settings/delete-department', [GeneralSettingsController::class, 'deleteDepartment']);
+    Route::post('settings/department-info', [GeneralSettingsController::class, 'getDepartmentDetails']);
+    
     //getProductData() return object {"products"=> [], "usages"=>[]}
     Route::post('settings/options-product', [GeneralSettingsController::class, 'getProductData']);
 

@@ -161,6 +161,16 @@ class GeneralSettingsController extends Controller
         return JDV::result($rows);
     } 
 
+    function getDepartmentDetails(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !=200) return $ss; //user not authenticated
+      $branch_id = $ss->branch_id;
+      $id = $req->id;
+      $rows = DB::table('departments as d')->where('d.branch_id',$branch_id)->where('d.id',$id)->selectRaw("d.id,d.name,d.description,d.create_user,formatDate(d.created_at) as created_at")->take(1)->get(); 
+      return JDV::result(isset($rows[0])?$rows[0]:null);   
+   }
+
+
    function deleteDepartment(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !=200) return $ss; //user not authenticated
