@@ -27,7 +27,8 @@ use App\Http\Controllers\PusherController;
  
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\QTicketController;
-use App\Http\Controllers\MedicalServiceController;    
+use App\Http\Controllers\MedicalServiceController;
+use App\Http\Controllers\ItemController;    
 use App\Http\Controllers\PartnerController;
 use App\Models\PublicStorage;
 use App\Models\SystemSetting;
@@ -81,14 +82,22 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         
     //End::QTicketController
     
-  //begin::ItemController
+  //begin::MedicalServiceController
     Route::post('service/details', [MedicalServiceController::class, 'getMedicalServiceDetails']);
      Route::post('service/items', [MedicalServiceController::class, 'getMedicalServices']);
      Route::post('service/delete', [MedicalServiceController::class, 'deleteMedicalService']);
      Route::post('service/save', [MedicalServiceController::class, 'saveMedicalService']);
-  //End::ItemController
+  //End::MedicalServiceController
 
-   //begin::PartnerController
+    //begin::ItemController
+        Route::post('inventory/item-details', [ItemController::class, 'getItemDetails']);
+        Route::post('inventory/items', [ItemController::class, 'getItemList']);
+        Route::post('inventory/delete-item', [ItemController::class, 'deleteItem']);
+        Route::post('inventory/save-item', [ItemController::class, 'saveItem']);
+    //End::ItemController
+
+
+  //begin::PartnerController
      Route::post('partner/list', [PartnerController::class, 'getPartnerList']);
      Route::post('partner/delete', [PartnerController::class, 'deletePartner']);
      Route::post('partner/save', [PartnerController::class, 'savePartner']);

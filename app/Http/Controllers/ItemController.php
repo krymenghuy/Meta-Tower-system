@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Item;
+use App\Models\Inventory\Item;
+use App\Models\Inventory\Settings;
 use App\Models\JDV;
 use App\Models\UM;
 use DB;
@@ -11,32 +12,45 @@ use Session;
 
 class ItemController extends Controller
 {
-    protected $item;
-    public function __construct() {
-        $this->item = new Item();
-    }
+    // protected $item;
+    // public function __construct() {
+    //     $this->item = new Item();
+    // }
 
     function uniqid(){
       $branch_id = Session('branch_id',random_int()); 
       return uniqid($branch_id);
     }
 
-    function getForm_options(Request $request) { 
-      $r = $this->item->getForm_options($request);
-      return makeJsonResponse($r);
-    }
- 
-    function getItemList(Request $request) { 
-        $ss = UM::getUserInfoByToken($request,-1);
+    function getForm_options(Request $req) { 
+        $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
         $branch_id = $ss->branch_id;
 
-        //$this->item->branch_id = $branch_id;     
-        //$this->item->name = 'Some name hhh';
-        //$this->item->create_user = $ss->full_name;
-        $rows = DB::table('service_items as i')->where('i.branch_id',$branch_id)->selectRaw("id,name,description,price,displayMoney(price,currency_code) as display_price,create_user, created_at")->orderBy('name','ASC')->get(); 
-        //$r =  $this->item::selectRaw("name,")->where('branch_id',$branch_id)->orderBy('name')->get();
-       
+       $data =[
+        'groups'=>Settings::options_group($ss),
+        'brands'=>Settings::options_brand($ss),
+        'manufacturer'=>Settings::options_manufacturer($ss)
+       ];
+       return JDV::result($data);
+    }
+ 
+    function getItemList(Request $req) { 
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $branch_id = $ss->branch_id;
+        $search_value =$req->search_value;
+        $group_id = $req->group_id;
+        $country_id = $req->country_id;
+
+        $str_search ="1=1";
+        $str_group="1=1";
+        if($search_value){
+          $str_search ="(i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+        }
+        if ($group_id >0) $str_group ="g.id =$group_id"; 
+        //if ($brand_id >0) $str_brand ="g.id =$brand_id";
+        $rows = DB::table('inv_items as i')->join('inv_groups as g','g.id','=','i.group_id')->where('i.branch_id',$branch_id)->whereRaw($str_group)->whereRaw($str_search)->selectRaw("i.id,i.name,i.description,g.name,g.id as group_id,g.description,i.create_user,formatDate(i.created_at) as created_at")->orderByRaw("i.name ASC")->get();
         return JDV::result($rows);
     }
      
@@ -49,15 +63,35 @@ class ItemController extends Controller
       return JDV::success();
     }
       
-    function saveItem(Request $request) { 
+    function saveItem(Request $req) { 
         $ss = UM::getUserInfoByToken($request,-1);
         if($ss->status_code !=200) return JDV::emptyResult($ss->status_code,null); //user not authenticated
         $branch_id = $ss->branch_id;
       
-        $item = new Item(); 
-        extendProps($request->all(),$item);
-        $r =  $item::create();
-        return JDV::success();
+        $def_prefix =null;
+        $def_code_length = 5;
+        $validate_rule =[
+          "id"=>"0|number|identity",
+          "name"=>"1|string|1-150",
+          "description"=>"0|string",
+          "group_id"=>"1|positive|exists=inv_groups|id",
+          "brand_id"=>"0|number|default=0",
+          "manufacturer_id"=>"0|number|default=0",
+          "selling_price"=>"0|number|default=0",
+          "cost"=>"0|number|default=0",
+          "made_in_country_id"=>"0|number"
+        ];
+        $check_unique = ["$branch_id|inv_items|name|id=id"];
+        $res = validateReq($req,$validate_rule,true,[],$ss->lang,false,$check_unique);
+        if($res->error) return JDV::error($res->error);
+        $inputs =$res->values;
+        $id = $res->id;
+        $id = saveData($ss,'inv_items',['id'=>$id],$inputs,[],1);
+        if($id > 0){
+          $new_code = setOfficialCode($branch_id,'inv_item_code_control','inv_items',['id'=>$id],$def_prefix,$def_code_length);  
+          return JDV::success(['id'=>$id]);
+        }
+        else return JDV::error("Something went wrong during saving inventory item");
     }
 
     function setStockIn(Request $req){
@@ -77,7 +111,7 @@ class ItemController extends Controller
           'qty'=>$qty,
           'create_user'=>$ss->full_name,
           'create_uid'=>$ss->user_id,
-          'create_date'=>getNowTime()
+          'created_at'=>getNowTime()
         ]);
 
         return JDV::success();
