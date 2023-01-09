@@ -20,7 +20,15 @@ class MedicalServiceController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
         $branch_id = $ss->branch_id;
-        $rows = DB::table('medical_services as ms')->join('departments as d','d.id','=','ms.department_id')->where('ms.branch_id',$branch_id)->selectRaw("ms.id,ms.name,ms.description,ms.price,displayMoney(price,currency_code) as display_price,ms.cost,displayMoney(cost,currency_code) as display_cost,ms.department_id,d.name as department_name,treatment_method,service_type")->get(); 
+        $search_value = $req->search_value;
+        $department_id = $req->department_id;
+        $str_search = "1=1";
+        if($search_value) {
+            $search_value = escape_like_str($search_value);
+            $str_search = "d.name LIKE '%$search_value%' OR ms.name LIKE '%$search_value%'";
+        }
+      
+        $rows = DB::table('medical_services as ms')->join('departments as d','d.id','=','ms.department_id')->where('d.id',$department_id)->where('ms.branch_id',$branch_id)->whereRaw($str_search)->selectRaw("ms.id,ms.name,ms.description,ms.price,displayMoney(price,currency_code) as display_price,ms.cost,displayMoney(cost,currency_code) as display_cost,ms.department_id,d.name as department_name,treatment_method,service_type")->get(); 
         return JDV::result($rows);
     }
 
@@ -35,7 +43,7 @@ class MedicalServiceController extends Controller
 
         $validate_rule = [
             'id' => '0|number|identity=1',
-            'name'=>'1|string|1-250',
+            'name'=>'1|string|1-100',
             'description'=>'0|string',
             'department_id'=>'1|number',
             'treatment_method'=>'1|choice|none,nonsurgery,minor surgery,surgery',
@@ -65,4 +73,14 @@ class MedicalServiceController extends Controller
         DB::table('medical_services')->where('id',$id)->where('branch_id',$branch_id)->delete();
         return JDV::success();
     }
+
+    function getMedicalServiceDetails(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $branch_id = $ss->branch_id;
+        $id = $req->id;
+        $row = getDataRow('medical_services',['id'=>$id],"id,name,department_id,description,price,service_type,treatment_method,create_user,created_at");
+        return JDV::result($row);
+    }
+
 }

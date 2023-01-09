@@ -21,8 +21,8 @@
      this.mnuAppointmentList = $('#_main_lnkAppointments');
      this.mnuPatientFinder = $('#_main_lnkPatientFinder');
      this.mnuTickets = $('#_main_lnkTickets');
-     this.mnuDermatology = $('#_main_lnkDermatology');
-     this.mnuPlasticSurgery = $('#_main_lnkPlasticSurgery');
+     this.mnuMedicalServices = $('#_main_lnkMedicalServices');
+      
 
      this.mnuPatientDashboard = $('#_main_lnkPatientDashboard');
      this.mnuOPDList = $('#_main_lnkOPDList');
@@ -132,16 +132,11 @@
                     QueueComponent.show(null);
                  });
 
-                 this.mnuDermatology.on('click',(e)=>{
+                 this.mnuMedicalServices.on('click',(e)=>{
                     e.preventDefault();
-                    DermatologyComponent.show(null);
+                    MedicalServiceComponent.show(null);
                  });
-
-                 this.mnuPlasticSurgery.on('click',(e)=>{
-                    e.preventDefault();
-                    PlasticSurgeryComponent.show(null);
-                 });
-
+ 
                  this.mnuAppointmentList.on('click',(e)=>{
                     e.preventDefault();
                     AppointmentListComponent.show(null);

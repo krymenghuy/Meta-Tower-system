@@ -53,7 +53,6 @@ class LangContentProvider {
             'km'=>self::km()
         ];
     }
- 
  }
  //END:: LangContentProvider
 ?>

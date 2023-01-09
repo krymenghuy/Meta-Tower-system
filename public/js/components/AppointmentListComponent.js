@@ -852,7 +852,7 @@ let AppointmentDialog = new function(){
         //,"beforeShow":beforeShow
     });
  
-    this.show = (option=null,onClose=null)=>{
+    this.show = (option=null)=>{
         //let x = document.getElementById('_appt_contact_channel').options;
        
         if (option.identity_value > 0)
@@ -862,7 +862,7 @@ let AppointmentDialog = new function(){
             mThis.self.find('.cc-input').show(); 
         }
 
-        mThis.formUntil.show(option,onClose);
+        mThis.formUntil.show(option);
     }
      
 } 

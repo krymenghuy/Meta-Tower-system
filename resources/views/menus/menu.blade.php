@@ -187,21 +187,14 @@
                     <span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkDermatology" class="menu-item kt-menu__link">
+                            <a href="javascript:void(0)" id="_main_lnkMedicalServices" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/surgery-equipment%201.svg')}}"/>
                                 </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Dermatology">Dermatology</span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Medical Services">Services</span>
                             </a>
                         </li>
-                        <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkPlasticSurgery" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/none-surgery-room%201.svg')}}"/>
-                                </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Plastic Surgery">Plastic Surgery</span>
-                            </a>
-                        </li>
+                        
                     </ul>
                 </div>
             </li>
