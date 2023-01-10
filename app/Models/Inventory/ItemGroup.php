@@ -14,7 +14,7 @@ class ItemGroup extends Model
     static function list($ss,$d){
         $branch_id = $ss->branch_id;
         $str_search ="1=1";
-        $search_value = isset($d['serach_value'])?$d['serach_value']:null;
+        $search_value = isset($d['search_value'])?$d['search_value']:null;
         $search_value = escape_like_str($search_value);
         if($search_value){
             $str_search ="(g.name LIKE '%$search_value%')";

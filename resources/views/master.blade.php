@@ -626,6 +626,7 @@
                             @include('layouts.appointmentListComponent')
                             @include('layouts.queueComponent')
                             @include('layouts.patientInvoicesComponent')
+                            @include('layouts.patientRecieptsComponent')
                             @include('layouts.medicalServiceComponent')
                             @include('layouts.productsComponent')
                             @include('layouts.productsGroupComponent')

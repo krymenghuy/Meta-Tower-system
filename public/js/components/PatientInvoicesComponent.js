@@ -5,7 +5,7 @@ let PatientInvoicesComponent = new function(){
     this.base_url = $('#__base_url').val();
     this.self = $('#_main_patientInvoicesComponent');
     this.btnNew = $('#_pic_btnNew');
-    // this.elSearchItem = $('#_msl_search');
+    this.elSearchItem = $('#_pic_search');
     // this.elFilter_department = $('#_msl_filter_service');
     this.tblItems = $('#_pic_tblInvoice');
     // this.form_data = {};
@@ -45,6 +45,10 @@ let PatientInvoicesComponent = new function(){
             };
             PatientInvoicesDialog.show(op);
         });
+
+        mThis.elSearchItem.on('keyup',(e)=>{
+            if(e.keyCode === 13) mThis.displaypatientInvoices();
+        });
     }
 
     this.displaypatientInvoices =(onFinish=null)=>
@@ -53,7 +57,7 @@ let PatientInvoicesComponent = new function(){
         //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
         //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
-        let p = {};
+        let p = {'search_value':mThis.elSearchItem.val()};
         window.vsapi.call(`${mThis.base_url}/api/inventory/items`,p,'POST',null).then((result)=>{
             let data = [];
             if(result.status_code === 200) data = result.data;

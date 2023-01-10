@@ -5,7 +5,7 @@ let ProductsComponent = new function(){
     this.base_url = $('#__base_url').val();
     this.self = $('#_main_productsComponent');
     this.btnNew = $('#_pdc_btnNew');
-    // this.elSearchItem = $('#_msl_search');
+    this.elSearchItem = $('#_pcd_search');
     // this.elFilter_department = $('#_msl_filter_service');
     this.tblItems = $('#_pdc_tblItem');
     // this.form_data = {};
@@ -103,7 +103,7 @@ let ProductsComponent = new function(){
             let op = {
                 onClose:(e)=>{
                     if(e){
-                    mThis.displayProducts();
+                        mThis.displayProducts();
                     }
                 }
             };
@@ -148,6 +148,10 @@ let ProductsComponent = new function(){
                 mThis.displayProductsDetails($(detail_tr),appt_id);
              }
         });
+
+        mThis.elSearchItem.on('keyup',(e)=>{
+            if(e.keyCode === 13) mThis.displayProducts();
+        });
     }
      
     this.displayProducts =(onFinish=null)=>
@@ -156,7 +160,7 @@ let ProductsComponent = new function(){
         //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
         //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
-        let p = {};
+        let p = {'search_value':mThis.elSearchItem.val()};
         window.vsapi.call(`${mThis.base_url}/api/inventory/items`,p,'POST',null).then((result)=>{
             let data = [];
             if(result.status_code === 200) data = result.data;
@@ -257,13 +261,13 @@ let ProductsComponent = new function(){
 //begin::MedicalServiceDialog
 let ProductsDialog = new function(){
     let mThis = this;
-    this.self = $(`#_pdc_dlgProducts`);
+    this.self = $(`#_pcd_dlgProduct`);
 
     //AppointmentDialog
     this.formUntil = new FormUntil({
         "itemName":"Products",
-        "formId":'_pdc_dlgProducts',
-        //"titleId":"_msl_dlgService_title",
+        "formId":'_pcd_dlgProduct',
+        "titleId":"_pcd_dlgProduct-title",
         //"errorId":"_msl_dlgService_error",
         //"saveButtonId":"_msl_dlgService_btnSave",
         "instance":this,

@@ -23,3 +23,22 @@
         </div>
     </div>
 </div>
+
+<div id="_pcd_dlgProduct" class="modal fade" tabindex="-1" aria-labelledby="_pcd_dlgProduct-title" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="_pcd_dlgProduct-title"></h4>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button class="" type="button" data-dismiss="modal">
+                    <span class="trans-text" data-langprop="buttons.Cancel"></span>
+                </button>
+                <button class="" type="button" id="_pcd_btnSave">
+                    <span class="trans-text" data-langprop="buttons.Save"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

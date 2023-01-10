@@ -5,13 +5,13 @@ let ProductsGroupComponent = new function(){
     this.base_url = $('#__base_url').val();
     this.self = $('#_main_productsGroupComponent');
     this.btnNew = $('#_pdg_btnNew');
-    // this.elSearchItem = $('#_msl_search');
+    this.elSearchItem = $('#_pdg_search');
     // this.elFilter_department = $('#_msl_filter_service');
     this.tblItems = $('#_pdg_tblProductGroup');
     // this.form_data = {};
 
     this.col_titles = {
-        "Numero":"No.",
+        "No.":"No.",
         "Name":"Name",
         "Description":"Description",
         "Create By":"Create By",
@@ -62,13 +62,17 @@ let ProductsGroupComponent = new function(){
             cv_interact.confirm(`Delete this department?`,{title:"Delete Department",context:"delete"},(yes)=>{
                 if(yes){
                     let p = {"id":item_id};
-                    vsapi.call(`${main_view.base_url}/api/inventory/delete-item`,p).then(res=>{
+                    vsapi.call(`${main_view.base_url}/api/inventory/delete-group`,p).then(res=>{
                        if(res.status_code === 200){
                           mThis.displayProductsGroup();
                        }else cv_interact.error(res.error_message);
                     });
                 }
             });
+        });
+
+        mThis.elSearchItem.on('keyup',(e)=>{
+            if(e.keyCode === 13) mThis.displayProductsGroup();
         });
     }
 
@@ -78,8 +82,8 @@ let ProductsGroupComponent = new function(){
         //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
         //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
-        let p = {};
-        window.vsapi.call(`${mThis.base_url}/api/inventory/items`,p,'POST',null).then((result)=>{
+        let p = {'search_value':mThis.elSearchItem.val()};
+        window.vsapi.call(`${mThis.base_url}/api/inventory/groups`,p,'POST',null).then((result)=>{
             let data = [];
             if(result.status_code === 200) data = result.data;
             if (mThis.table){
@@ -175,18 +179,18 @@ let ProductsGroupComponent = new function(){
 //begin::MedicalServiceDialog
 let ProductsGroupDialog = new function(){
     let mThis = this;
-    this.self = $(`#_pdg_dlgProductsGroup`);
+    this.self = $(`#_pdg_dlgProductGroup`);
 
     //AppointmentDialog
     this.formUntil = new FormUntil({
         "itemName":"Products Group",
-        "formId":'_pdg_dlgProductsGroup',
-        //"titleId":"_msl_dlgService_title",
+        "formId":'_pdg_dlgProductGroup',
+        "titleId":"_pdg_dlgProductGroup_title",
         //"errorId":"_msl_dlgService_error",
         //"saveButtonId":"_msl_dlgService_btnSave",
         "instance":this,
-        "apiSave":`${main_view.base_url}/api/inventory/save-item`,
-        "apiGet":`${main_view.base_url}/api/inventory/details-item`,
+        "apiSave":`${main_view.base_url}/api/inventory/save-group`,
+        "apiGet":`${main_view.base_url}/api/inventory/delete-group`,
         //"identityProp":"id",
         "modifyTitle":"Modify Product Group",
         "createTitle":"New Product Group",

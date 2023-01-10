@@ -49,7 +49,7 @@ class ItemGroupController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
         $id = $req->id;
-        $row = ItemGroup::details($id);
+        $row = ItemGroup::details($ss,$id);
         return JDV::result($row);
     }
 
