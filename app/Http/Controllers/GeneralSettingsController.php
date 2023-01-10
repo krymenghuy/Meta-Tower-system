@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\GeneralSettings;
+//use App\Models\GeneralSettings;
 //use App\Models\ContactChannel;
 use App\Models\JDV;
 use App\Models\UM;
@@ -21,11 +21,11 @@ use App\Security\Sanitizer;
 
 class GeneralSettingsController extends Controller
 {
-    protected $settingModel;
-    public function __construct()
-    {
-        $this->settingModel = new GeneralSettings();
-    }
+    // protected $settingModel;
+    // public function __construct()
+    // {
+    //     $this->settingModel = new GeneralSettings();
+    // }
   
     function getComboItems_channel(Request $req){
         $rows = DB::table('contact_channels as cc')->where('cc.branch_id',0)->selectRaw("cc.id,cc.name as channel_name")->get();
