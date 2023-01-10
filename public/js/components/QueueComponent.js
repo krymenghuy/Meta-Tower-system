@@ -1576,7 +1576,6 @@ let ConsultTabView = new function () {
                 el = div.find(`#${wrapper_id}`);
             });
         }
-
         el.show().siblings().hide();
     }
 

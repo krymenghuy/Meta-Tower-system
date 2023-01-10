@@ -10,15 +10,17 @@
         </div>
         <div>
             <div class="d-flex align-items-center gap-2">
-                <div class="input-group flex-nowrap">
-                    <div class="input-group-text">
-                        <span class="trans-text" data-langprop="titles.Search"></span>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="input-group flex-nowrap">
+                        <div class="input-group-text">
+                            <span class="trans-text" data-langprop="titles.Search"></span>
+                        </div>
+                        <input id="_pic_search" type="search" class="form-control custom-width" placeholder="search..."/>
                     </div>
-                    <input id="_pic_search" type="search" class="form-control custom-width" placeholder="search..."/>
+                    <button id="_pic_group_filter" type="button" class="btn btn-outline-primary">
+                        <i class="fa-solid fa-bars-staggered"></i>
+                    </button>
                 </div>
-                <button id="_pic_group_filter" type="button" class="btn btn-outline-primary">
-                    <i class="fa-solid fa-bars-staggered"></i>
-                </button>
             </div>
             <div>
                 <table class="table" id="_pic_tblInvoice"></table>

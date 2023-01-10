@@ -62,11 +62,11 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button class="btn btn-primary" type="button" id="_pcd_btnSave">
-                    <span class="trans-text" id="_pcd_dlgProduct_btnSave" data-langprop="buttons.Save"></span>
+                <button class="vs-btn-custom-primary" type="button" id="_pcd_btnSave">
+                    <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>
         </div>
