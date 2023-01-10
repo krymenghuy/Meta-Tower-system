@@ -25,10 +25,10 @@
             </div>
             <div class="modal-body"></div>
             <div class="modal-footer">
-                <button class="" type="button" data-dismiss="modal">
+                <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button class="" type="button" id="_pdg_btnSave">
+                <button class="vs-btn-custom-primary" type="button" id="_pdg_btnSave">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>
