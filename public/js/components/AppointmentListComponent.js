@@ -170,9 +170,7 @@
 
               div_wrapper.html(html);
               //div_wrapper.slideDown(500);
-
             });
-             
         }
 
         //return json object about Appointment's client details (name,sex,phone_number,...) from expandable view

@@ -129,7 +129,7 @@
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/invoice%201.svg')}}"/>
                                 </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Patent Invoices">Patient Invoices</span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Patient Invoices">Patient Invoices</span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">

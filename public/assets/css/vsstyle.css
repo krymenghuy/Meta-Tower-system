@@ -111,8 +111,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   color: #000;
 }
 
-.consult-style-custom{
-}
+.consult-style-custom{}
 
 .presciption-table > thead th{
    font-weight: bold;

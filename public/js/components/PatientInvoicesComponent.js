@@ -1,21 +1,24 @@
 "use strict";
-let ProductsGroupComponent = new function(){
+let PatientInvoicesComponent = new function(){
     let mThis = this;
-    this.title_prop = 'Products Group';
+    this.title_prop = 'Patient Invoices';
     this.base_url = $('#__base_url').val();
-    this.self = $('#_main_productsGroupComponent');
-    this.btnNew = $('#_pdg_btnNew');
+    this.self = $('#_main_patientInvoicesComponent');
+    this.btnNew = $('#_pic_btnNew');
     // this.elSearchItem = $('#_msl_search');
     // this.elFilter_department = $('#_msl_filter_service');
-    this.tblItems = $('#_pdg_tblProductGroup');
+    this.tblItems = $('#_pic_tblInvoice');
     // this.form_data = {};
 
     this.col_titles = {
-        "Numero":"No.",
-        "Name":"Name",
-        "Description":"Description",
-        "Create By":"Create By",
-        "Action":"Action"
+        "No.":"No.",
+        "Invoice Number":"Invoice Number",
+        "Patient":"Patient",
+        "Invoice Date":"Invoice Date",
+        "Due Date":"Due Date",
+        "Amount":"Amount",
+        "Paid":"Paid",
+        "Status":"Status"
     };
 
     this.trans_title = (title_prop='undefined')=>{
@@ -25,7 +28,7 @@ let ProductsGroupComponent = new function(){
     this.setLanguage = ()=>{
         if (LocaleManager.lang !== mThis.lang){
             for (let prop in mThis.col_titles){
-                mThis.col_titles[prop] = LocaleManager.trans(prop,'items',LocaleManager.lang);
+                mThis.col_titles[prop] = LocaleManager.trans(prop,'patients',LocaleManager.lang);
             }
             mThis.lang = LocaleManager.lang;
         }
@@ -35,44 +38,16 @@ let ProductsGroupComponent = new function(){
         mThis.btnNew.on('click',(e)=>{
             let op = {
                 onClose:(e)=>{
-                     if(e){
-                        mThis.displayProductsGroup();
-                     }
+                    if(e){
+                        mThis.displaypatientInvoices();
+                    }
                 }
             };
-            ProductsGroupDialog.show(op);
-        });
-
-        mThis.tblItems.on('click','.btn_item_modify',function(e){
-            let item_id = $(this).data("id");
-            let op = {
-                id:item_id,
-                onClose:(e)=>{
-                     //do something on dialog closed
-                     if(e){
-                         mThis.displayProductsGroup();
-                     }
-                }
-            };
-            ProductsGroupDialog.show(op);
-        });
-
-        mThis.tblItems.on('click','.btn_item_delete',function(e){
-            let item_id = $(this).data("id");
-            cv_interact.confirm(`Delete this department?`,{title:"Delete Department",context:"delete"},(yes)=>{
-                if(yes){
-                    let p = {"id":item_id};
-                    vsapi.call(`${main_view.base_url}/api/inventory/delete-item`,p).then(res=>{
-                       if(res.status_code === 200){
-                          mThis.displayProductsGroup();
-                       }else cv_interact.error(res.error_message);
-                    });
-                }
-            });
+            PatientInvoicesDialog.show(op);
         });
     }
 
-    this.displayProductsGroup =(onFinish=null)=>
+    this.displaypatientInvoices =(onFinish=null)=>
     { 
         //Initialize language for DataTable columns headers
         //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
@@ -100,29 +75,33 @@ let ProductsGroupComponent = new function(){
                     }
                 },
                 {
-                    data:(item,a,b) =>{
-                        return [`<div>${item.name}</div>`].join('');
-                    },
-                    title: mThis.trans_title('Name')
+                    data:"invoice_number",
+                    title: mThis.trans_title('Invoice Number')
                 },
                 {
-                    title: mThis.trans_title('Description'),
-                    data:"Description"
+                    title: mThis.trans_title('Patient'),
+                    data:"patient"
                 },
                 {
-                    title: mThis.trans_title('Create By'),
-                    data: "create_by"
+                    title: mThis.trans_title('Invoice Date'),
+                    data:"invoice_date"
                 },
                 {
-                    title:mThis.trans_title('Action'),
-                    data: function(item,a,b){
-                        return [`<div class="form-inline">`,
-                        `<a href="javascript:void(0)" class="btn_item_modify" data-id="${item.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
-                        `<a href="javascript:void(0);" data-id="${item.id}" class="btn_item_delete"><i class="fa fa-trash" style="color:red"></i></a>`,
-                        `</div>`
-                        ].join('');
-                    }
-                }
+                    title: mThis.trans_title('Due Date'),
+                    data:"due_date"
+                },
+                {
+                    title: mThis.trans_title('Amount'),
+                    data:"amount"
+                },
+                {
+                    title: mThis.trans_title('Paid'),
+                    data:"paid"
+                },
+                {
+                    title: mThis.trans_title('Status'),
+                    data:"status"
+                },
             ];
             //END Define colum
 
@@ -165,7 +144,7 @@ let ProductsGroupComponent = new function(){
     this.show = (options=null) => {
         if(!options) options={};
         mThis.options = options;
-        mThis.displayProductsGroup(() => {
+        mThis.displaypatientInvoices(() => {
             main_view.setTitle(mThis.title_prop);
             mThis.self.show().siblings().hide();
         });
@@ -173,23 +152,23 @@ let ProductsGroupComponent = new function(){
 }
 
 //begin::MedicalServiceDialog
-let ProductsGroupDialog = new function(){
+let PatientInvoicesDialog = new function(){
     let mThis = this;
-    this.self = $(`#_pdg_dlgProductsGroup`);
+    this.self = $(`#_pic_dlgInvoice`);
 
     //AppointmentDialog
     this.formUntil = new FormUntil({
-        "itemName":"Products Group",
-        "formId":'_pdg_dlgProductsGroup',
-        //"titleId":"_msl_dlgService_title",
+        "itemName":"Patient Invoices",
+        "formId":'_pic_dlgInvoice',
+        "titleId":"_pic_dlgInvoice-title",
         //"errorId":"_msl_dlgService_error",
         //"saveButtonId":"_msl_dlgService_btnSave",
         "instance":this,
         "apiSave":`${main_view.base_url}/api/inventory/save-item`,
-        "apiGet":`${main_view.base_url}/api/inventory/details-item`,
+        //"apiGet":`${main_view.base_url}/api/inventory/details-item`,
         //"identityProp":"id",
-        "modifyTitle":"Modify Product Group",
-        "createTitle":"New Product Group",
+        //"modifyTitle":"Modify Product Group",
+        "createTitle":"New Invoice",
         "identityProps":['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props":['id'],
@@ -210,5 +189,5 @@ let ProductsGroupDialog = new function(){
 //end::MedicalServiceDialog
 
 $(document).ready(function() {
-    ProductsGroupComponent.init();
+    PatientInvoicesComponent.init();
 });

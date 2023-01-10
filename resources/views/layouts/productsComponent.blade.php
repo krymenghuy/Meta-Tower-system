@@ -13,7 +13,7 @@
                 </button>
             </div>
             <div class="container-fluid d-flex align-items-center justify-content-end">
-                <button class="vs-btn-custom-primary" type="button">
+                <button id="_pdc_btnNew"class="vs-btn-custom-primary" type="button">
                     <span class="trans-text" data-langprop="buttons.New Product"></span>
                 </button>
             </div>
