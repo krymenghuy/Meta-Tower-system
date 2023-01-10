@@ -28,7 +28,8 @@ use App\Http\Controllers\PusherController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\QTicketController;
 use App\Http\Controllers\MedicalServiceController;
-use App\Http\Controllers\ItemController;    
+use App\Http\Controllers\ItemController;
+use App\Http\Controllers\ItemGroupController;    
 use App\Http\Controllers\PartnerController;
 use App\Models\PublicStorage;
 use App\Models\SystemSetting;
@@ -96,6 +97,12 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('inventory/save-item', [ItemController::class, 'saveItem']);
     //End::ItemController
 
+    //begin::ItemGroupController
+        Route::post('inventory/group-details', [ItemGroupController::class, 'getItemGroupDetails']);
+        Route::post('inventory/groups', [ItemGroupController::class, 'getItemGroups']);
+        Route::post('inventory/delete-group', [ItemGroupController::class, 'deleteItemGroup']);
+        Route::post('inventory/save-group', [ItemGroupController::class, 'saveItemGroup']);
+    //End::ItemGroupController
 
   //begin::PartnerController
      Route::post('partner/list', [PartnerController::class, 'getPartnerList']);

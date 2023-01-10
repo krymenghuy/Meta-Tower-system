@@ -193,7 +193,7 @@ let ProductsComponent = new function(){
                 },
                 {
                     title: mThis.trans_title('Type'),
-                    data: "type"
+                    data: "item_type"
                 },
                 {
                     title:mThis.trans_title('Action'),
