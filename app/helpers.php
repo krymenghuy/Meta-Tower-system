@@ -227,8 +227,8 @@ function getNameParts($name,$name_orienation=0){
 function makeJsonResponse($data) {
     $status_code = intVal(isset($data->status_code)?$data->status_code:0);
     if ($status_code > 0){
-        if ($status_code ===401 || $status_code ===403 || $status_code ===405 || $status_code ===200) return response()->json($data);
-        else return response()->json((object)['status'=>'Error','status_code'=>null,'error_message'=>'unexpected or invalid result']);
+        if ($status_code ===401 || $status_code===402 || $status_code ===403 || $status_code ===405 || $status_code ===200) return response()->json($data);
+        else return response()->json((object)['status'=>'Error','status_code'=>null,'error_message'=>"unexpected or invalid result. Status code $status_code"]);
     } else return response()->json((object)['status'=>'OK','status_code'=>200,'data'=>$data]);
 }
  

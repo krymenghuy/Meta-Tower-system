@@ -24,10 +24,20 @@ class ItemGroup extends Model
         
     }
 
-   static function deleteFresh($ss,$id){
+   //group_in_use()| groupInUse() 
+   static function inUse($branch_id,$group_id){
+     $rows = DB::table('inv_items as i')->where('i.group_id',$group_id)->selectRaw("i.id")->take(1)->get();
+     foreach($rows as $row) return true;
+     return false; 
+   }
+
+   static function commitDelete($ss,$id){
       $branch_id = $ss->branch_id;
+      if(self::inUse($branch_id,$id)) return DV::error("Cannot delete group that is already in use");
       $x = DB::table('inv_groups')->where('id',$id)->where('branch_id',$branch_id)->delete();
-      return $x;
+      //if ($x) 
+      return DV::success();
+      //else return DV::error("Failed to delete inventory group");
    }
 
    static function details($ss,$id){
@@ -37,7 +47,7 @@ class ItemGroup extends Model
         return isset($rows[0])?$rows[0]:null; 
    }
  
-   static function saveFresh($ss,$d){
+   static function commitSave($ss,$d){
     $branch_id = $ss->branch_id;
     $validate_rule = [
         'id'=>'0|number|identity=1',
