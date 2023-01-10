@@ -25,4 +25,15 @@ class Settings extends Model
         $branch_id = $ss->branch_id;
         return DB::table('inv_manufacturers as m')->where('m.branch_id',$branch_id)->selectRaw("m.id,m.name")->orderByRaw('m.name ASC')->get();
     }
+
+    static function item_form_options($ss){
+        $branch_id = $ss->branch_id;
+        $groups =  DB::table('inv_groups as g')->where('g.branch_id',$branch_id)->selectRaw("g.id,g.name,g.description")->orderByRaw('g.name ASC')->get();
+        $units =  DB::table('inv_units as u')->selectRaw("u.id,u.name,u.description")->orderByRaw('u.name ASC')->get(); 
+        return (object)[
+            'groups'=>$groups,
+            'units'=>$units
+        ];
+    }
+    
 }

@@ -32,7 +32,7 @@ class ItemGroupController extends Controller
         if($ss->status_code !=200) return $ss; //user not authenticated
         $d = $req->all(); 
         $res = ItemGroup::commitSave($ss,$d);
-        if ($res->status_code ===200)
+        if ($res->status_code === 200)
             return JDV::success(['id'=>$res->id]);
         else return JDV::error($res->error_message);
     }

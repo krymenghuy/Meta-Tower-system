@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Inventory\Item;
+use App\Models\Inventory\StockUnit;
 use App\Models\Inventory\Settings;
 use App\Models\JDV;
 use App\Models\UM;
@@ -46,11 +47,11 @@ class ItemController extends Controller
         $str_search ="1=1";
         $str_group="1=1";
         if($search_value){
-          $str_search ="(i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+          $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
         }
         if ($group_id >0) $str_group ="g.id =$group_id"; 
         //if ($brand_id >0) $str_brand ="g.id =$brand_id";
-        $rows = DB::table('inv_items as i')->join('inv_groups as g','g.id','=','i.group_id')->where('i.branch_id',$branch_id)->whereRaw($str_group)->whereRaw($str_search)->selectRaw("i.id,'Product' AS item_type,i.code,i.name,i.description,g.name,g.id as group_id,g.description,i.create_user,formatDate(i.created_at) as created_at")->orderByRaw("i.name ASC")->get();
+        $rows = DB::table('inv_items as i')->join('inv_groups as g','g.id','=','i.group_id')->where('i.branch_id',$branch_id)->whereRaw($str_group)->whereRaw($str_search)->selectRaw("i.id,'Product' AS item_type,i.code,i.name,i.description,g.name as group_name,g.id as group_id,g.description,i.create_user,formatDate(i.created_at) as created_at")->orderByRaw("i.name ASC")->get();
         return JDV::result($rows);
     }
      
@@ -70,7 +71,7 @@ class ItemController extends Controller
       if($ss->status_code !=200) return JDV::emptyResult($ss->status_code,null); //user not authenticated
       $branch_id = $ss->branch_id;
       $id = $req->id;     
-      $rows = DB::table("inv_items as i")->where('i.id',$id)->where('i.branch_id',$branch_id)->selectRaw("i.id,i.code,NULL as item_type,i.group_id,i.name,i.description,i.cost,i.created_at, i.create_user")->take(1)->get();
+      $rows = DB::table("inv_items as i")->where('i.id',$id)->where('i.branch_id',$branch_id)->selectRaw("i.id,i.code,NULL as item_type,i.group_id,i.unit_id,i.name,i.description,i.cost,i.created_at, i.create_user")->take(1)->get();
       return JDV::result(isset($rows[0])?$rows[0]:null);  
     }
 
@@ -85,7 +86,7 @@ class ItemController extends Controller
           "id"=>"0|number|identity=1",
           "name"=>"1|string|1-150",
           "description"=>"0|string",
-          "group_id"=>"1|positive|exists=inv_groups|id",
+          "group_id"=>"1|positive|exists=inv_groups,id",
           "brand_id"=>"0|number|default=0",
           "manufacturer_id"=>"0|number|default=0",
           "cost"=>"0|number|default=0",
@@ -97,6 +98,11 @@ class ItemController extends Controller
         if($res->error) return JDV::error($res->error);
         $inputs =$res->values;
         $id = $res->id;
+        
+        $unit_id = $inputs['unit_id'];
+        $unit = StockUnit::info($unit_id);
+        if (!$unit) return JDV::error("Unit ID id not valid. There is no valid SKU found!");
+        $inputs['sku'] = $unit->name; 
         $id = saveData($ss,'inv_items',['id'=>$id],$inputs,[],1);
         if($id > 0){
           $new_code = setOfficialCode($branch_id,'inv_item_code_control','inv_items',['id'=>$id],$def_prefix,$def_code_length);  
@@ -104,7 +110,7 @@ class ItemController extends Controller
         }
         else return JDV::error("Something went wrong during saving inventory item");
     }
-
+     
     function setStockIn(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return JDV::emptyResult($ss->status_code,null); //user not authenticated

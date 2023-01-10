@@ -63,8 +63,7 @@ class FormUntil{
          e.preventDefault();
          let that = this;
          let d = this.getData();
-         if(d.has_error) return;
-
+         if(d.has_error) return;   
          window.vsapi.call(this.api_save,d.data).then((res)=>{
                if(res.status_code == 200){
                   if(typeof this.option.onClose === 'function') this.option.onClose(res);

@@ -19,24 +19,54 @@
             </div>
         </div>
         <div>
-             <table class="table" id="_pdc_tblItem"></table>
+             <table class="table header-light-blue header-uppercase" id="_pdc_tblItem"></table>
         </div>
     </div>
 </div>
 
-<div id="_pcd_dlgProduct" class="modal fade" tabindex="-1" aria-labelledby="_pcd_dlgProduct-title" aria-hidden="true">
+<div id="_pcd_dlgProduct" class="modal fade" tabindex="-1" aria-labelledby="_pcd_dlgProduct_title" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="_pcd_dlgProduct-title"></h4>
+                <h4 class="modal-title" id="_pcd_dlgProduct_title"></h4>
             </div>
-            <div class="modal-body"></div>
+            <div class="modal-body">
+                <div class="row">
+                      <div class="forn-group col-lg-6">
+                          <span class="simple-label trans-text" id="_pcd_item_code" data-langprop="item.Item Code">Item Code</span>
+                          <input placeholder="Auto" type="text" data-field="code" data-ffield="Item code" class="form-control data-input" readOnly>
+                     </div>
+                     <div class="forn-group col-lg-6">
+                          <span class="simple-label trans-text" data-langprop="item.Item Name">Item Name</span>
+                          <input type="text" data-required="1" data-field="name" data-ffield="Item name" class="form-control data-input">
+                     </div>
+
+                     <div class="forn-group col-lg-6">
+                          <span class="simple-label trans-text" data-langprop="item.Description">Description</span>
+                          <input type="text" data-field="description" data-ffield="Description" class="form-control data-input">
+                     </div>
+
+                     <div class="forn-group col-lg-6">
+                          <span class="simple-label trans-text" data-langprop="item.Group">Item Group</span>
+                           <select id="_pcd_item_group" data-required="1" class="modal-select2 form-select data-input" data-field="group_id" data-ffield="Item group"></select>
+                     </div>
+
+                     <div class="forn-group col-lg-6">
+                          <span class="simple-label trans-text" data-langprop="item.SKU">SKU</span>
+                           <select id="_pcd_item_unit" data-required="1" class="modal-select2 form-select data-input" data-field="unit_id" data-ffield="SKU"></select>
+                     </div>
+                     <div class="forn-group col-lg-12">
+                        <div class="dialog-error" id="_pcd_dlgProduct_error">
+                        </div>
+                     </div>
+                </div>
+            </div>
             <div class="modal-footer">
-                <button class="" type="button" data-dismiss="modal">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button class="" type="button" id="_pcd_btnSave">
-                    <span class="trans-text" data-langprop="buttons.Save"></span>
+                <button class="btn btn-primary" type="button" id="_pcd_btnSave">
+                    <span class="trans-text" id="_pcd_dlgProduct_btnSave" data-langprop="buttons.Save"></span>
                 </button>
             </div>
         </div>

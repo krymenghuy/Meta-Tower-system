@@ -9,6 +9,7 @@ let ProductsComponent = new function(){
     // this.elFilter_department = $('#_msl_filter_service');
     this.tblItems = $('#_pdc_tblItem');
     // this.form_data = {};
+    this.icon_url = [VSUtil.asset_url(),'/images/icons'].join('');
 
     this.col_titles = {
         "No.":"No.",
@@ -23,7 +24,7 @@ let ProductsComponent = new function(){
         let div_wrapper = detail_tr.find('div.expandable-row-containter');
         div_wrapper.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
         let p = {'id':appt_id};
-        window.vsapi.call(`${main_view.base_url}/api/inventory/details-item`,p,'POST',false).then((res) => {
+        window.vsapi.call(`${main_view.base_url}/api/inventory/item-details`,p,'POST',false).then((res) => {
           let html=null;
           if (res.status_code === 200){
              let d = StringSanitizer.sanitizeObject(res.data); 
@@ -39,38 +40,16 @@ let ProductsComponent = new function(){
           
              html = `<div data-apptid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="appt-info-wrapper shadow-lg d-flex" style="width:100%;">
                     <div class="thumbnail-wrapper">
-                    <img src="${mThis.icon_url()}/client-girl.png" class="profile-thumbnail">
+                    <img src="${mThis.icon_url}/client-girl.png" class="profile-thumbnail">
                     </div>
 
                     <div class="d-flex" style="width:100%">
                             <div style="width:50%">
-                                    <span class="detail-header-text">Client Information</span>
-                                    <div class="divider"></div>
-                                    <div class="detail-item"> <span class="detail-item-label">Patient ID</span> <span class="detail-item-value" data-field="patient_code">${d.patient_code}</span></div>
-                                    <div class="detail-item"> <span class="detail-item-label">Name</span> <span class="detail-item-value" data-field="name">${d.client_name}</span></div>
-                                    <div class="detail-item"> <span class="detail-item-label">Gender</span> <span class="detail-item-value" data-field="sex">${d.client_sex}</span></div>
-                                    <div class="detail-item"> <span class="detail-item-label">Phone</span> <span class="detail-item-value" data-field="phone_number">${d.client_phone_number}</span></div>
-                                    <div class="btn-group">
-                                    <button style="display:${d.status_id>2? 'block':'none'}" type="button" data-apptid="${d.id}" data-patientid="${d.client_id}" class="btn btn-sm btn-outline-success btn-view-profile">View Profile</button>&nbsp;
-                                    <button style="display:${d.status_id<2? 'block':'none'}" type="button" data-apptid="${d.id}" data-patientid="${d.client_id}" class="btn btn-sm btn-outline-warning btn-register"><i class="fa fa-list-alt"></i><span class="trans-text" data-langprop="buttons.Register">Register</span></button>
-                                    <button style="display:${d.status_id==2? 'block':'none'}" type="button" data-apptid="${d.id}" data-patientid="${d.client_id}" class="btn btn-sm btn-outline-success btn-add-queue"><i class="fa fa-tasks"></i><span class="trans-text" data-langprop="buttons.Add to Queue">Queue</span></button>
-                                    <button style="display:${d.status_id===3? 'block':'none'}" type="button" data-apptid="${d.id}" data-patientid="${d.client_id}" class="btn btn-sm btn-outline-success btn-start-consult"><i class="fa fa-user-check"></i><span class="trans-text" data-langprop="buttons.Serve">Serve</span></button>
-                                    </div>
+                                    
                             </div>
 
                             <div style="width:50%">
-                                <span class="detail-header-text">Consultant/Doctor</span>
-                                <span class="text-normal" style="display:block;margin-left:15px">${d.consultant_name}</span>
-
-                                <div class="d-flex flex-row">
-                                    <span class="detail-header-text trans-text" data-langprop="appointment.Chief Compalaints">Chief Complaints</span>&nbsp;
-                                    <a href="#" data-ulid="apl-complaint-list-${d.id}" data-apptid="${d.id}" class="appt-add-complaint" style="margin-top:5px;"><i class="fa fa-plus-circle" style="color:#14B1D1;font-size:1.5em"></i></a>
-                                </div>
-                                <div class="apl-cc-wrapper">
-                                    <ul id ="apl-complaint-list-${d.id}" data-apptid="${d.id}" class="apl-complaint-list" style="list-style:none">
-                                     ${mThis.displayCCList(['apl-complaint-list-',d.id].join(''),d.chief_complaints)}  
-                                    </ul>
-                                </div>
+                        
                             </div>
                     </div> 
                 
@@ -110,7 +89,7 @@ let ProductsComponent = new function(){
             ProductsDialog.show(op);
         });
 
-        mThis.tblItems.on('click','.btn_item_modify',function(e){
+        mThis.tblItems.on('click','a.btn-item-modify',function(e){
             let item_id = $(this).data("id");
             let op = {
                 id:item_id,
@@ -124,7 +103,7 @@ let ProductsComponent = new function(){
             ProductsDialog.show(op);
         });
 
-        mThis.tblItems.on('click','.btn-delete-item',function(e){
+        mThis.tblItems.on('click','a.btn-item-delete',function(e){
             let item_id = $(this).data("id");
             cv_interact.confirm(`Delete this product ddd?`,{title:"Delete Product11",context:"delete"},(yes)=>{
                 if(yes){
@@ -139,7 +118,7 @@ let ProductsComponent = new function(){
         });
 
         this.cfg = new ExpandableRowConfig('_pdc_tblItem',{
-            'dontExpandByClickingOn':['btn_appt_modify','btn_appt_delete','btn_appt_action','btn_appt_print'],
+            'dontExpandByClickingOn':['btn-item-modify','btn-item-delete','btn-item-action'],
             //'content':`<div class="alert alert-info">Loading details</div>`,
             'onOpen':(container,detail_tr,parent_tr)=>{
                 //alert(detail_tr.find('ul').html());
@@ -186,14 +165,12 @@ let ProductsComponent = new function(){
                     data: "code"
                 },
                 {
-                    data:(item,a,b) =>{
-                        return [`<div>${item.name}</div>`].join('');
-                    },
+                    data:"name",
                     title: mThis.trans_title('Name')
                 },
                 {
                     title: mThis.trans_title('Group'),
-                    data:"group"
+                    data:"group_name"
                 },
                 {
                     title: mThis.trans_title('Type'),
@@ -203,8 +180,8 @@ let ProductsComponent = new function(){
                     title:mThis.trans_title('Action'),
                     data: function(item,a,b){
                         return [`<div class="form-inline">`,
-                        `<a href="javascript:void(0)" class="btn_item_modify" data-id="${item.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
-                        `<a href="javascript:void(0);" data-id="${item.id}" class="btn-delete-item"><i class="fa fa-trash" style="color:red"></i></a>`,
+                        `<a href="javascript:void(0)" class="btn-item-modify" data-id="${item.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
+                        `<a href="javascript:void(0);" data-id="${item.id}" class="btn-item-delete"><i class="fa fa-trash" style="color:red"></i></a>`,
                         `</div>`
                         ].join('');
                     }
@@ -261,18 +238,41 @@ let ProductsComponent = new function(){
 //begin::MedicalServiceDialog
 let ProductsDialog = new function(){
     let mThis = this;
+    this.form_data = {};
     this.self = $(`#_pcd_dlgProduct`);
+    this.elItemCode = $('#_pcd_item_code');
+    this.elItemGroup = $('#_pcd_item_group');
+    this.elUnit = $('#_pcd_item_unit');
 
-    //AppointmentDialog
+    this.prepareOptions = (def={},onFinish)=>{
+       if(!def) def = {}; 
+       if (mThis.form_data.groups){
+         onFinish(mThis.form_data);
+         return;
+       }
+
+       //api/settings/item-form-options returns all sets of options for productDialog including arrays of "units,item-groups" 
+       vsapi.call(`${main_view.base_url}/api/inventory/settings/item-form-options`,null).then(res=>{
+           if(res.status_code === 200){
+             let d = StringSanitizer.sanitizeObject(res.data);
+             //VSUtil.setComboItems(mThis.elItemGroup,items,'id','name',false,null,def.group_id);
+             mThis.form_data.groups = d.groups;
+             mThis.form_data.units = d.units;
+             onFinish(mThis.form_data);
+           }     
+       });  
+    }
+
+    //ProductDialog using FormUtil as helper
     this.formUntil = new FormUntil({
         "itemName":"Products",
         "formId":'_pcd_dlgProduct',
-        "titleId":"_pcd_dlgProduct-title",
+        //"titleId":"_pcd_dlgProduct_title",
         //"errorId":"_msl_dlgService_error",
         //"saveButtonId":"_msl_dlgService_btnSave",
         "instance":this,
         "apiSave":`${main_view.base_url}/api/inventory/save-item`,
-        "apiGet":`${main_view.base_url}/api/inventory/details-item`,
+        "apiGet":`${main_view.base_url}/api/inventory/item-details`,
         //"identityProp":"id",
         "modifyTitle":"Modify Product",
         "createTitle":"New Product",
@@ -283,13 +283,20 @@ let ProductsDialog = new function(){
         //"sub_prop_function":mThis.getChiefComplaints,
         "sanitize_excepts":[],
         'use_alert_error':true,
-        'beforeShow': () => {}
+        //'beforeShow': () => {}
         // "init": ()=>{  
         //  }
     });
 
     this.show = (options)=>{
-        mThis.formUntil.show(options);
+        //default_input = {group_id, unit_id, etc...}. This is default selections when Dialog is shown for better user experiences
+        if (!options.default_input) options.default_input = {};
+        mThis.prepareOptions(options.default_input,(d)=>{
+            //mThis.elItemCode.prop('readOnly', (options.id > 0));
+            VSUtil.setComboItems(mThis.elItemGroup,d.groups,'id','name',false,null,options.default_input.group_id);
+            VSUtil.setComboItems(mThis.elUnit,d.units,'id','name',false,null,options.default_input.unit_id);
+            mThis.formUntil.show(options);
+        });
     }
 }
 //end::MedicalServiceDialog

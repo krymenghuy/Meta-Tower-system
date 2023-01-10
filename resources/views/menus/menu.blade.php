@@ -124,22 +124,7 @@
                                 &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.OPD Patients">OPD List</span>
                             </a>
                         </li>
-                        <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkPatientInvoices" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/invoice%201.svg')}}"/>
-                                </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Patient Invoices">Patient Invoices</span>
-                            </a>
-                        </li>
-                        <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkPatientReceipts" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/invoice%201.svg')}}"/>
-                                </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Patient Reciepts">Patient Receipts</span>
-                            </a>
-                        </li>
+                      
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkPatientCreditNotes" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
@@ -211,35 +196,18 @@
                     <span class="kt-menu__link-icon">
                         <img class="icons" src="{{asset('assets/images/icons/laboratory%201.svg')}}"/>
                     </span>
-                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Laboratory">Laboratory</span>
+                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Partners">Partners</span>
                     <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
                 <div class="kt-menu__submenu ">
                     <span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkLaboDashboard" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/dashboard.svg')}}"/>
-                                </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Laboratory Dashboard">Laboratory Dashboard</span>
-                            </a>
-                        </li>
-
-                        <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkLaboTests" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/Laboratory%20test.svg')}}"/>
-                                </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Laboratory Tests">Laboratory Tests</span>
-                            </a>
-                        </li>
-                        <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkLaboPartners" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/laboratory%20partner%201.svg')}}"/>
                                 </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Laboratory Partners">Laboratory Partners</span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Labo Partners">Labo Partners</span>
                             </a>
                         </li>
                     </ul>
@@ -257,7 +225,7 @@
                 <div class="kt-menu__submenu ">
                     <span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
-                        <li class="kt-menu__item" aria-haspopup="true">
+                        <li class="kt-menu__item" aria-haspopup="true" style="display:none">
                             <a href="javascript:void(0)" id="_main_lnkInventoryDashboard"
                                 class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
@@ -268,13 +236,14 @@
                         </li>
 
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkProductGroups" class="menu-item kt-menu__link">
+                            <a href="javascript:void(0)" id="_main_lnkStockAdjustment" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/hierarchical-structure%201.svg')}}"/>
+                                    <img class="icons" src="{{asset('assets/images/icons/Stock%20Adjustments.svg')}}"/>
                                 </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Product Groups">Product Groups</span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Stock Adjustments">Stock Adjustments</span>
                             </a>
                         </li>
+
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkProducts" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
@@ -283,12 +252,13 @@
                                 &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Products">Products</span>
                             </a>
                         </li>
+
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkStockAdjustment" class="menu-item kt-menu__link">
+                            <a href="javascript:void(0)" id="_main_lnkProductGroups" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/Stock%20Adjustments.svg')}}"/>
+                                    <img class="icons" src="{{asset('assets/images/icons/hierarchical-structure%201.svg')}}"/>
                                 </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Stock Adjustments">Stock Adjustments</span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Product Groups">Product Groups</span>
                             </a>
                         </li>
                     </ul>
@@ -345,15 +315,25 @@
                 <div class="kt-menu__submenu ">
                     <span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
+                
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkInvoices" class="menu-item kt-menu__link">
+                            <a href="javascript:void(0)" id="_main_lnkPatientInvoices" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/invoice%201.svg')}}"/>
                                 </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text"
-                                    data-langprop="menus.Invoices">Invoices</span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Invoices">Invoices</span>
                             </a>
                         </li>
+
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="javascript:void(0)" id="_main_lnkPatientReceipts" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{asset('assets/images/icons/invoice%201.svg')}}"/>
+                                </span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Reciepts">Receipts</span>
+                            </a>
+                        </li>
+
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkIncomePayments" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">

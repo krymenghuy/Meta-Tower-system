@@ -29,7 +29,9 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\QTicketController;
 use App\Http\Controllers\MedicalServiceController;
 use App\Http\Controllers\ItemController;
-use App\Http\Controllers\ItemGroupController;    
+use App\Http\Controllers\ItemGroupController;  
+use App\Http\Controllers\InventorySettingsController;
+
 use App\Http\Controllers\PartnerController;
 use App\Models\PublicStorage;
 use App\Models\SystemSetting;
@@ -103,6 +105,12 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('inventory/delete-group', [ItemGroupController::class, 'deleteItemGroup']);
         Route::post('inventory/save-group', [ItemGroupController::class, 'saveItemGroup']);
     //End::ItemGroupController
+
+    //begin::InventorySettingsController =>  Inventory Settings.
+    Route::post('inventory/settings/options-group',[InventorySettingsController::class, 'getComboItems_group']);
+    Route::post('inventory/settings/item-form-options',[InventorySettingsController::class, 'getItemFormOptions']);
+    
+   //end::InventorySettingsController =>  Inventory Settings.
 
   //begin::PartnerController
      Route::post('partner/list', [PartnerController::class, 'getPartnerList']);
@@ -367,23 +375,16 @@ Route::post('test/test-api',function(){
     Route::post('settings/delete-department', [GeneralSettingsController::class, 'deleteDepartment']);
     Route::post('settings/department-info', [GeneralSettingsController::class, 'getDepartmentDetails']);
     
-    //getProductData() return object {"products"=> [], "usages"=>[]}
+    //getProductData() return object {"products"=> [], "usages"=>[]} for doctor's editing prescription
     Route::post('settings/options-product', [GeneralSettingsController::class, 'getProductData']);
 
     /** return various options regarding Employment data. such as organiations, industries, etc **/
     Route::post('settings/emp-options', [GeneralSettingsController::class, 'getComboItems_emp_options']);
     Route::post('settings/report-filter-options', [GeneralSettingsController::class, 'getReportFilter_options']);
-    Route::post('settings/program-details', [GeneralSettingsController::class, 'getProgramDetails']);
-    Route::post('settings/program-options', [GeneralSettingsController::class, 'getProgramOptions']);
-    Route::post('settings/payment-form-options', [GeneralSettingsController::class, 'getPaymentFormOptions']);
-    Route::post('settings/save-program', [GeneralSettingsController::class, 'saveProgram']);
-
-    Route::post('settings/save-occupation', [GeneralSettingsController::class, 'saveOccupation']);
-    Route::post('settings/occupations', [GeneralSettingsController::class, 'getOccupations']);
- 
-    Route::post('settings/save-loan-purpose', [GeneralSettingsController::class, 'saveLoanPurpose']);
-    Route::post('settings/loan-purposes', [GeneralSettingsController::class, 'getLoanPurposes']);
- 
+    // Route::post('settings/program-details', [GeneralSettingsController::class, 'getProgramDetails']);
+    // Route::post('settings/program-options', [GeneralSettingsController::class, 'getProgramOptions']);
+    // Route::post('settings/occupations', [GeneralSettingsController::class, 'getOccupations']);
+  
     Route::post('location/cities', [LocationController::class, 'getCityList']);
     Route::post('location/districts', [LocationController::class, 'getDistrictList']);
     Route::post('location/communes', [LocationController::class, 'getCommuneList']);

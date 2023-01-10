@@ -23,7 +23,13 @@
             <div class="modal-header">
                 <h4 class="modal-title" id="_pdg_dlgProductGroup_title"></h4>
             </div>
-            <div class="modal-body"></div>
+            <div class="modal-body">
+
+                
+               <div class="dialog-error" id="_pdg_dlgProductGroup_error">
+
+               </div>
+            </div>
             <div class="modal-footer">
                 <button class="" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>

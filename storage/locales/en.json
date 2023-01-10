@@ -181,8 +181,13 @@
 	"history":{
 
 	},
-	"items":{
-
+	"item":{
+        "Name":"Name",
+		"Description":"Description",
+        "Cost":"Cost",
+		"Selling price":"Selling price",
+		"Group":"Group",
+		"Item Group":"Item Group"
 	},
 	"message_box_default":{
 		 "MClinic":"MClinic",

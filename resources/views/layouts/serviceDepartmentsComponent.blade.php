@@ -27,6 +27,11 @@
                         <label for="description" class="form-label trans-text" data-langprop="Departments.Description"></label>
                         <textarea data-required="1" data-field="description" data-ffield="Description of department" class="form-control data-input" placeholder="Department"></textarea>
                     </div>
+
+                    <div class="col-12">
+                        <div class="dialog-error" id="_svd_dlgDepartment_error">
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
