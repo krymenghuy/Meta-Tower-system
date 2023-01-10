@@ -8,7 +8,7 @@
             </select>
         </div>
         <div>
-            <table class="table" id="_msl_tblItems"></table>
+            <table class="table header-light-blue header-uppercase" id="_msl_tblItems"></table>
         </div>
     </div>
 </div>

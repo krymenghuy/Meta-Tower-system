@@ -65,7 +65,7 @@
                 <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button class="vs-btn-custom-primary" type="button" id="_pcd_btnSave">
+                <button class="vs-btn-custom-primary" type="button" id="_pcd_dlgProduct_btnSave">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>
