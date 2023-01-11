@@ -107,50 +107,47 @@
          border-radius: 5px;
      }
 
-     .medical-condition-panel {
-         border-color: red;
-     }
+    .medical-condition-panel {
+        border-color: red;
+    }
 
-     .vital-signs input {
-         outline: none !important;
-         border: none;
-         border-radius: 0;
-         border-bottom: 1.1px solid grey;
-     }
+    .vital-signs input {
+        outline: none !important;
+        border: none;
+        border-radius: 0;
+        border-bottom: 1.1px solid grey;
+    }
 
-     .vital-signs input:focus {
+    .vital-signs input:focus {
          border-width: 2px;
-     }
+    }
 
-     #_main_appointmentListComponent .btn-outline-success,
-     #_main_appointmentListComponent .btn-outline-primary,
-     #_main_appointmentListComponent .btn-outline-warning {
-         border-radius: 15px;
-     }
+    #_main_appointmentListComponent .btn-outline-success,
+    #_main_appointmentListComponent .btn-outline-primary,
+    #_main_appointmentListComponent .btn-outline-warning {
+        border-radius: 15px;
+    }
 
  </style>
 
  <div id="_main_appointmentListComponent" style="display:none;padding-top:15px">
      <section class="content">
-
          <div class="container-fluid">
-
              <div class="d-flex justify-content-between" style="padding:10px">
                  <div class="d-flex col-md-6">
-                     <button class="btn btn-outline-primary border border-primary rounded-pill"
-                         id="_apl_btnNewAppointment"><i class="fa fa-calendar-check"></i> &nbsp;<span class="trans-text"
-                             data-langprop="buttons.New Appointment">New Appointment</span></button>
-                     <input id="_apl_search_appt" style="width:50%;margin-right:10px;margin-left:10px" type="text"
-                         class="form-control" placeholder="Search appointment">
-                     <a id="_apl_btnFindAppt" class="btn btn-sm border border-rounded" href="javascript:void(0)"><i
-                             class="fas fa-sync-alt"></i></a>
+                    <button class="btn btn-outline-primary border border-primary rounded-pill" id="_apl_btnNewAppointment">
+                        <i class="fa fa-calendar-check"></i>
+                        &nbsp;<span class="trans-text" data-langprop="buttons.New Appointment">New Appointment</span>
+                    </button>
+                    <input id="_apl_search_appt" style="width:50%;margin-right:10px;margin-left:10px" type="text" class="form-control" placeholder="Search appointment">
+                    <a id="_apl_btnFindAppt" class="btn btn-sm border border-rounded" href="javascript:void(0)">
+                        <i class="fas fa-sync-alt mt-2"></i>
+                    </a>
                  </div>
 
                  <div class="d-flex justify-content-end col-md-4">
-                     <input class="input-sm form-control" data-select="datepicker" placeholder="Filter date"
-                         id="_apl_filter_date">&nbsp;
-                     <select class="input-sm combo-box combo-box-strong" placeholder="Status" id="_apl_filter_status">
-                     </select>
+                     <input class="input-sm form-control" data-select="datepicker" placeholder="Filter date" id="_apl_filter_date"/>&nbsp;
+                     <select class="input-sm combo-box combo-box-strong" placeholder="Status" id="_apl_filter_status"></select>
                      <!-- <a id="_apl_btnPrint" href="javascript:void(0)"  class="btn btn-sm btn-primary" style="border-radius:10px;"><i class="fa-solid fas fa-print"></i> Print</a>&nbsp; -->
                      <!-- <a id="_apl_btnPDF" href="javascript:void(0)" class="btn btn-sm btn-success" style="border-radius:10px"><i class="fa-solid fas fa-file-pdf"></i> PDF</a>&nbsp; -->
                      <!-- <a id="_apl_btnExcel" href="javascript:void(0)"  class="btn btn-sm btn-default" style="border-radius:10px"><i class="fa-solid fas fa-file-pdf"></i> Excel</a> -->
@@ -159,12 +156,9 @@
 
              <div class="flat-box"
                  style="margin:17px;padding:15px;overflow:auto;border-color:#A0DFF3;min-height:350px;">
-                 <table class="table header-light-blue header-uppercase" id="_apl_tblAppts"
-                     style="margin-top:-25px !important;"></table>
+                 <table class="table header-light-blue header-uppercase" id="_apl_tblAppts" style="margin-top:-25px !important;"></table>
              </div>
-
          </div>
-
      </section>
  </div>
 

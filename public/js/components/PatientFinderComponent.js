@@ -76,7 +76,16 @@
 
             this.cfg = new ExpandableRowConfig('_paf_tblPatients',{
                 'wrapperClass':'patient-info-wrapper',
-                'html':`<div style="width:100%;padding:10px">The patient details is displayed here</div>`
+                'html':`<div class="shadow-sm bg-info rounded py-3 px-2" style="width:100%">
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="trans-text btn btn-outline-primary" id="_paf_history" data-langprop="patient.History">History</button>
+                        <button class="trans-text btn btn-outline-primary" id="_paf_photo" data-langprop="patient.Photo">Photo</button>
+                        <button class="trans-text btn btn-outline-primary" id="_paf_invoice" data-langprop="patient.Invoice">Invoice</button>
+                    </div>
+                    <div class="mt-3">
+                        <p>Test</p>
+                    </div>
+                </div>`
             });
            
             // mThis.setExpandableRow('_activeloan_tblLoans',function(){
