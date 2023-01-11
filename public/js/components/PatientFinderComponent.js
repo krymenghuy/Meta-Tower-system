@@ -61,17 +61,18 @@
             //     e.preventDefault();
             // });
 
-            // mThis.tblPatients.on('click','a.btn_apt_modify',function(e){
-            //     e.preventDefault();
-            //     let lnk = $(this);
-            //     let op = {'identity_value':lnk.data('id')};
-            //     AppointmentDialog.show(op,(e)=>{
-            //         if(e){
-            //             cv_interact.info('Appointment details has been saved',null,true);
-            //             mThis.displayPatients();
-            //         }
-            //     });
-            // });
+            mThis.tblPatients.on('click','a.btn_patient_modify',function(e){
+                e.preventDefault();
+                let lnk = $(this);
+                let op = {'id':lnk.data('id')};
+                PersonDialog.show(op);
+            });
+
+            mThis.tblPatients.on('click','a.btn_patient_delete',function(e){
+                e.preventDefault();
+                let id = lnk.data('id');
+                alert('todo: delete patient if can');
+            });
 
             this.cfg = new ExpandableRowConfig('_paf_tblPatients',{
                 'wrapperClass':'patient-info-wrapper',

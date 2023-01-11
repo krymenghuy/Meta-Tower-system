@@ -184,7 +184,7 @@
                          <div class="input-group">
                              <input id="_appt_search_client" type="text" class="form-control"
                                  placeholder="Patient ID or phone">
-                             <div class="input-group-append"><a id="_appt_btnSearch" href="javascript:void(0)"
+                             <div class="input-group-append"><a id="_appt_btnFindClient" href="javascript:void(0)"
                                      class="btn btn-sm btn-outline-success"><i class="fa fa-search"></i></a></div>
                          </div>
                      </div>

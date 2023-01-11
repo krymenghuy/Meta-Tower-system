@@ -919,10 +919,10 @@ let AppointmentDialog = new function(){
         let p = mThis.getFormData();
         p.addToQueue = addToQueue;
 
-        if (!p.appt_id){
-          cv_interact.warning('The appointment identifer is unexpectedly missing'); 
-          return;
-        }
+        // if (!p.appt_id){
+        //   cv_interact.warning('The appointment identifer is unexpectedly missing'); 
+        //   return;
+        // }
  
         //alert(JSON.stringify(p));
         window.vsapi.call(`${main_view.base_url}/api/patient/register`,p,null,null).then((res)=>{
