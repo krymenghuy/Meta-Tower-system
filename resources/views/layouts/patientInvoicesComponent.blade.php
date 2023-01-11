@@ -35,7 +35,16 @@
             <div class="modal-header">
                 <h4 id="_pic_dlgInvoice-title"></h4>
             </div>
-            <div class="modal-body"></div>
+            <div class="modal-body">
+                <div class="row gy-2">
+                    <div class="col-lg-3">
+                        <label for="patient" class="form-label trans-text" data-langprop="patient.Patient"></label>
+                        <div class="input-group flex-nowrap">
+                            <div class="input-group-text"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="modal-footer">
                 <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>

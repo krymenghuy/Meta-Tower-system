@@ -194,6 +194,20 @@ span.span::before{
   background-color:transparent;
 }
 
+.invisable-input{
+  border:none;
+  outline:none;
+  background-color:transparent;
+}
+
+.invisable-input:hover{
+  border:1px solid #828282;
+}
+
+.invisable-input:focus{
+  border:1px solid #008000;
+}
+
 @media screen and (max-width:820px) {
   .kt-aside__brand {
     display: flex;

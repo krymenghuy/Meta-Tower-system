@@ -100,6 +100,8 @@ namespace App\ScriptManagement;
                         '/js/components/PersonDialog.js',
                         '/js/components/AppointmentListComponent.js',
                         '/js/components/QueueComponent.js',
+                        '/js/components/EmployeeListComponent.js',
+                        '/js/components/PositionsComponent.js',
                         '/js/components/PatientInvoicesComponent.js',
                         '/js/components/PatientReceiptsComponent.js',
                         '/js/components/MedicalServiceComponent.js',
@@ -126,17 +128,17 @@ namespace App\ScriptManagement;
                         'files'=>[
                             '/js/layout/main.js',
                         ]
-                    ]     
+                    ]
          ];
 
          static function bundle($bundle_name=null){
-             if(!$bundle_name) return [];
+            if(!$bundle_name) return [];
              return isset(self::$bundles[$bundle_name])?self::$bundles[$bundle_name]:[];
          }
 
-         static function getBundles(){
+        static function getBundles(){
             return self::$bundles;
-         }
+        }
     }
 
 

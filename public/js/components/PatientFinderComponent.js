@@ -7,6 +7,7 @@
         this.base_url = $('#__base_url').val();
         this.tblPatients = $('#_paf_tblPatients');
         this.elSearch = $('#_apl_search');
+        this.btnNew = $('#_paf_btnNew');
         //this.btnSave = $('#_loanapp_btnSave');
         //this.btnApprove = $('#_loanapp_btnApprove');
  
@@ -43,6 +44,17 @@
 
             mThis.elSearch.on('keyup',(e)=>{
                 mThis.displayPatients();
+            });
+
+            mThis.btnNew.on('click',e => {
+                let op = {
+                    onClose:(e)=>{
+                       if(e){
+                         mThis.displayPatients();
+                       }
+                    }
+                };
+                PatientDialog.show(op);
             });
       
             // mThis.tblPatients.on('click','a.btn_apt_action',function(e){

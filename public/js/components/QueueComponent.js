@@ -1484,7 +1484,6 @@ let ConsultTabView = new function () {
                 onFinish(res.data);
             }
         });
-
     }
 
     this.showConsultPrescription = (div) => {

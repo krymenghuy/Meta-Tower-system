@@ -77,15 +77,6 @@
                         </li>
 
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkRegistration" class="menu-item kt-menu__link ">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/registration-form%201.svg')}}"/>
-                                </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Registration">Regirstation</span>
-                            </a>
-                        </li>
-
-                        <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkTickets" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/queue%201.svg')}}"/>

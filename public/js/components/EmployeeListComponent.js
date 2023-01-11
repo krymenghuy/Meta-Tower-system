@@ -1,13 +1,13 @@
 "use strict";
-let PatientReceiptsComponent = new function(){
+let EmployeeListComponent = new function(){
     let mThis = this;
-    this.title_prop = 'Patient Reciepts';
+    this.title_prop = 'Employee List';
     this.base_url = $('#__base_url').val();
-    this.self = $('#_main_patientRecieptsComponent');
-    this.btnNew = $('#_prc_btnNew');
-    this.elSearchItem = $('#_prc_search');
+    this.self = $('#_main_employeeListComponent');
+    this.btnNew = $('#_epl_btnNew');
+    this.elSearchItem = $('#_epl_search');
     // this.elFilter_department = $('#_msl_filter_service');
-    this.tblItems = $('#_prc_tblReciept');
+    this.tblItems = $('#_epl_tblEmployee');
     // this.form_data = {};
 
     this.col_titles = {
@@ -37,116 +37,19 @@ let PatientReceiptsComponent = new function(){
             let op = {
                 onClose:(e)=>{
                     if(e){
-                        mThis.displaypatientReceipts();
+                        mThis.displayemployeeList();
                     }
                 }
             };
-            PatientReceiptsDialog.show(op);
+            EmployeeListDialog.show(op);
         });
 
         mThis.elSearchItem.on('keyup',(e)=>{
-            if(e.keyCode === 13) mThis.displaypatientReceipts();
-        });
-
-        let  itemConfig = new ItemsView('_receipt_panel',{
-            "showColumnHeaders":true,
-            "showAddLineButton":true
+            if(e.keyCode === 13) mThis.displayemployeeList();
         });
     }
 
-    this.showReceipts = (div) => {
-        let wrapper_id = '_receipt_warpper';
-        let div_id = '_receipt_panel';
-        let el = div.find(`#${wrapper_id}`);
-        //let ticket_id = div.data('tid');
-
-        if (!el || el.length === 0) {
-            let title = LocaleManager.trans();
-            let html = `<div id="${wrapper_id}"><h3 class="trans-text" data-langprop="consult.Prescription">${title}</h3>
-              <div id="${div_id}"></div>
-            </div>`;
-
-            div.html(html);
-            let columns = [
-                {
-                    "name": "name",
-                    "title": "Product",
-                    "dataType": "string",
-                    "displayType": "select",
-                    "cssClass": "",
-                    //"selectOptions":[] 
-                },
-                {
-                    "name": "qty",
-                    "title": "Quantity",
-                    "dataType": "number",
-                    "displayType": "input"
-                    // ,"data":(value,row)=>{
-                    //     return "";
-                    // }
-                },
-                {
-                    "name": "usage",
-                    "title": "usage",
-                    "dataType": "string",
-                    "displayType": "select"
-                },
-                {
-                    "name": "duration_days",
-                    "title": "Days",
-                    "dataType": "number",
-                    "displayType": "input"
-                    // ,"data":(value,row)=>{
-                    //     return "";
-                    // }
-                },
-                {
-                    "name": "reason",
-                    "title": "Reasons",
-                    //"dataType": "string",
-                    "displayType": "input"
-                    // ,"data":(value,row)=>{
-                    //     return "";
-                    // }
-                },
-                {
-                    "name": "remarks",
-                    "title": "Remarks",
-                    //"dataType": "string",
-                    "displayType": "input"
-                    // ,"data":(value,row)=>{
-                    //     return "";
-                    // }
-                }
-            ];
-
-            mThis.loadReceipt(ticket_id, d => {
-                //After having loaded prescription data from server => init prescription table
-                columns[0].selectOptions = d.products;
-                columns[2].selectOptions = d.usage_options;
-                mThis.tblProducts = new ItemsView(div_id, {
-                    "columns": columns,
-                    "langProp": "consult",
-                    "tableClass": "table receipt-table",
-                    "showColumnHeaders": true,
-                    "showAddLineButton": true,
-                    "addLineButtonText": "Add Item",
-                    //"addLineButtonClass":null,
-                    //"cssClass":"td_class",
-                    "numeroFormatter": (numero, row) => {
-                        return `<span class="text-secondary fw-bold">${numero}</span>`;
-                    },
-                    "emptyMessage": `<span class="text-secondary text-align-center">${LocaleManager.trans('No item prescribed', 'consult')}</span>`,
-
-                });
-                //mThis.tblChiefComplaints.setSelectOptions('name',cc_items);
-                el = div.find(`#${wrapper_id}`);
-            });
-        }
-        el.show().siblings().hide();
-    }
-
-    this.displaypatientReceipts = (onFinish=null)=>
+    this.displayemployeeList = (onFinish=null)=>
     { 
         //Initialize language for DataTable columns headers
         //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
@@ -235,7 +138,7 @@ let PatientReceiptsComponent = new function(){
     this.show = (options=null) => {
         if(!options) options={};
         mThis.options = options;
-        mThis.displaypatientReceipts(() => {
+        mThis.displayemployeeList(() => {
             main_view.setTitle(mThis.title_prop);
             mThis.self.show().siblings().hide();
         });
@@ -243,7 +146,7 @@ let PatientReceiptsComponent = new function(){
 }
 
 //begin::MedicalServiceDialog
-let PatientReceiptsDialog = new function(){
+let EmployeeListDialog = new function(){
     let mThis = this;
     this.self = $(`#_prc_tblReciept`);
 
@@ -280,5 +183,5 @@ let PatientReceiptsDialog = new function(){
 //end::MedicalServiceDialog
 
 $(document).ready(function() {
-    PatientReceiptsComponent.init();
+    EmployeeListComponent.init();
 });

@@ -625,6 +625,8 @@
                             @include('layouts.patientFinderComponent')
                             @include('layouts.appointmentListComponent')
                             @include('layouts.queueComponent')
+                            @include('layouts.employeeListComponent')
+                            @include('layouts.positionsComponent')
                             @include('layouts.patientInvoicesComponent')
                             @include('layouts.patientRecieptsComponent')
                             @include('layouts.medicalServiceComponent')

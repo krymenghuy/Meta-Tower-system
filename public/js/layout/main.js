@@ -21,6 +21,9 @@
      this.mnuAppointmentList = $('#_main_lnkAppointments');
      this.mnuPatientFinder = $('#_main_lnkPatientFinder');
      this.mnuTickets = $('#_main_lnkTickets');
+     this.mnuEmployeeList = $('#_main_lnkEmployeeList');
+     this.mnuPositions = $('#_main_lnkPositions');
+     this.mnuEmployeeDepartment = $('#_main_lnkDepartments');
      this.mnuMedicalServices = $('#_main_lnkMedicalServices');
      this.mnuProducts = $('#_main_lnkProducts');
      this.mnuProductsGroup = $('#_main_lnkProductGroups');
@@ -133,6 +136,21 @@
                  this.mnuTickets.on('click',(e)=>{
                     e.preventDefault();
                     QueueComponent.show(null);
+                 });
+
+                 this.mnuEmployeeList.on('click',(e)=>{
+                    e.preventDefault();
+                    EmployeeListComponent.show(null);
+                 });
+
+                 this.mnuPositions.on('click',(e)=>{
+                    e.preventDefault();
+                    PositionsComponent.show(null);
+                 });
+
+                 this.mnuEmployeeDepartment.on('click',(e)=>{
+                    e.preventDefault();
+                    EmployeeDepartmentComponent.show(null);
                  });
 
                  this.mnuMedicalServices.on('click',(e)=>{
