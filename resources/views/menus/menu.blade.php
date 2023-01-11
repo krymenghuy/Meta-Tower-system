@@ -100,28 +100,11 @@
                     <span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkPatientDashboard" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/dashboard.svg')}}"/>
-                                </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Patient Dashboard">Patient Dashboard</span>
-                            </a>
-                        </li>
-                        <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkOPDList" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/opd%20patient%201.svg')}}"/>
                                 </span>
                                 &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.OPD Patients">OPD List</span>
-                            </a>
-                        </li>
-                      
-                        <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkPatientCreditNotes" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/credit%20note%201.svg')}}"/>
-                                </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Credit Notes">Credit Notes</span>
                             </a>
                         </li>
                     </ul>
@@ -381,6 +364,15 @@
                                     <img class="icons" src="{{asset('assets/images/icons/expense%20book.svg')}}"/>
                                 </span>
                                 &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Expense Book">Expense Book</span>
+                            </a>
+                        </li>
+
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="javascript:void(0)" id="_main_lnkPatientCreditNotes" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{asset('assets/images/icons/credit%20note%201.svg')}}"/>
+                                </span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Credit Notes">Credit Notes</span>
                             </a>
                         </li>
 

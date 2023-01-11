@@ -419,14 +419,12 @@ div.flat-box {
 .vs-btn-round {
   display: block;
   border: 1.1px solid green;
-  font-size: 0.9em;
+  font-size: 19px;
   font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
-  /* border-radius:20px; */
-  border-radius: 45%;
-  /* min-width:35px; */
+  border-radius: 10px;
   width: auto;
   text-align: center;
-  padding: 5px;
+  padding: 3px 20px;
 }
 
 .vs-btn-round-success {

@@ -21,11 +21,11 @@
 
              <div class="d-flex justify-content-between" style="padding:10px">
                  <div class="d-flex col-md-6">
-                    <button class="btn btn-primary" id="_paf_btnNew"></button>
-                     <input id="_apl_search" style="width:50%;margin-right:10px;margin-left:10px" type="text"
-                         class="form-control" placeholder="Search patient">
-                     <a id="_apl_btnSearch" class="vs-btn-round vs-btn-success" href="javascript:void(0)"><i
-                             class="fas fa-sync-alt"></i></a>
+                    <button class="btn btn-primary trans-text" id="_paf_btnNew" data-langprop="buttons.New Patient"></button>
+                    <input id="_apl_search" style="width:50%;margin-right:10px;margin-left:10px" type="text" class="form-control" placeholder="Search patient"/>
+                    <a id="_apl_btnSearch" class="vs-btn-round vs-btn-success" href="javascript:void(0)">
+                        <i class="fas fa-sync-alt"></i>
+                    </a>
                  </div>
 
                  <div class="d-flex justify-content-end col-md-6">
