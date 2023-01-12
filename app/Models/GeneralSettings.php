@@ -10,18 +10,6 @@ use DB;
 class GeneralSettings extends Model
 {
     use HasFactory;
- 
-    function occupation_exists($branch_id, $name){
-       $rows = DB::table('occupations as c')->where('branch_id',$branch_id)->where('name',$name)->selectRaw("id")->limit(1)->get();
-       foreach($rows as $row) return true;
-       return false;
-    }
-
-    function purpose_exists($branch_id, $name){
-        $rows = DB::table('loan_purposes as c')->where('branch_id',$branch_id)->where('name',$name)->selectRaw("id")->limit(1)->get();
-        foreach($rows as $row) return true;
-        return false;
-    }
   
     function getReportFilter_options($d){
         $ss = getSessionInfo($d);
@@ -36,98 +24,12 @@ class GeneralSettings extends Model
 
     }
  
-    function getPaymentFormOptions($d){
-        $ss = getSessionInfo($d);
-        if(!$ss) return '#350'; //user not authenticated
-        if (!prn_allowed(-1)) return '@'; //need permission to do this task
-        $branch_id = sanitize($ss->branch_id);
-        $rows = DB::table('pmt_methods')->where('branch_id',$branch_id)->selectRaw("name as pmt_method,category,id")->get();
-        return (object)[
-          'pmt_methods'=>$rows
-        ];
+    function position_exists($branch_id, $name){
+        $rows = DB::table('positions')->where('branch_id',$branch_id)->where('name',$name)->selectRaw("id")->limit(1)->get();
+        foreach($rows as $row) return true;
+        return false;
     }
-
-    function getProgramOptions($d){
-        $ss = getSessionInfo($d);
-        if(!$ss) return '#350'; //user not authenticated
-        if (!prn_allowed(-1)) return '@'; //need permission to do this task
-        $branch_id = sanitize($ss->branch_id);
-        $id = isset($d->id)?sanitize($d->id):null;
-        $data = (object)['levels'=>[],'degrees'=>[]];
-        $data->levels = DB::table('academic_levels AS l')->selectRaw('id,level_name AS level_name')->orderByRaw('l.id ASC')->get();
-        $data->degrees = DB::table('academic_degrees AS l')->where('branch_id',$branch_id)->selectRaw('name AS degree_name')->orderByRaw('l.name ASC')->get();
-        $data->programs = DB::table('academic_programs AS l')->where('l.branch_id',$branch_id)->selectRaw('l.id,l.name AS program_name')->orderByRaw('l.level_id ASC')->get();
-        return $data;
-    }
-
-    function program_exists($name,$id){
-        $rows = [];
-        if($id>0) 
-         $rows = DB::table('academic_programs as p')->where('name',$name)->whereRaw("p.id <> $id")->select('id')->limit(1)->get();
-        else
-          $rows = DB::table('academic_programs as p')->where('name',$name)->select('id')->limit(1)->get();
-        if(isset($rows[0])) return true;
-        return false; 
-    }
-    function saveProgram($d){
-        $ss = getSessionInfo($d);
-        if(!$ss) return '#350'; //user not authenticated
-        if (!prn_allowed(0,207)) return DV::error('No access to Loan Application');
-        $branch_id = sanitize($ss->branch_id);
-        $id = isset($d->id)?sanitize($d->id):null;
-        $name =isset( $d->name)?sanitize( $d->name):null;
-        $major_name = isset($d->major_name)?sanitize($d->major_name):null;
-        $degree_name = isset($d->degree_name)?sanitize($d->degree_name):null;
-        $level_id = isset($d->level_id)?sanitize($d->level_id):null;
-
-        $err = DV::getErrors($d,['level_id'=>'positive','name'=>'string','major_name','string','degree_name'=>'string'],'academic_program');
-        if($err) return DV::error($err);
-
-        //begin:: validate degree and level
-          $item = null;
-          $rows = DB::table('academic_degrees as d')->where('name',$degree_name)->selectRaw('level_id,name')->limit(1)->get();
-          foreach($rows as $row) $item = $row;
-          if(!$item) return DV::error('Degree name is not valid or does not exist');
-          if($item->level_id != $level_id) return DV::error('The provided Level is not correct for the degree name');
-        //end:: validate degree and level
-
-        if($this->program_exists($name,$id)) return DV::error('Program name already in use');
-
-        if($id>0){
-             DB::table('academic_programs')->where('id',$id)->update([
-                 //'branch_id'=>$branch_id,
-                 'level_id'=>$level_id,
-                 'name'=>$name,
-                 'degree_name'=>$degree_name,
-                 'major_name'=>$major_name,
-                 'create_user'=>$ss->login_name,
-                 'create_date'=>getNowTime()
-             ]);
-        }else{
-          DB::table('academic_programs')->where('id',$id)->insert([
-                 'branch_id'=>$branch_id,
-                 'level_id'=>$level_id,
-                 'name'=>$name,
-                 'degree_name'=>$degree_name,
-                 'major_name'=>$major_name,
-                 'create_user'=>$ss->login_name,
-                 'create_date'=>getNowTime()
-             ]);
-           $id = DB::getPdo()->lastInsertId();
-        }
-        return DV::success(['program_id'=>$id]);
-    }  
-
-    function deleteProductType($d){
-        $ss = getSessionInfo($d);
-        if(!$ss) return '#350'; //user not authenticated
-        if (!prn_allowed(-1)) return '@'; //need permission to do this task
-        $branch_id = sanitize($ss->branch_id);
-        $id = isset($d->id)?sanitize($d->id):null;
-        DB::table('product_types')->where('branch_id',$branch_id)->where('id',$id)->delete();
-        return null;
-    }
-
+ 
     function sendMessage($d){
         $ss = getSessionInfo($d);
         if(!$ss) return '#350'; //user not authenticated
@@ -243,7 +145,7 @@ class GeneralSettings extends Model
         $id =isset($d->id)?sanitize($d->id):0;
         return  DB::table('industries as i')->whereRaw('IFNULL(inactive,0) =0')->selectRaw("i.id,i.name as industry")->get();
     }
-
+    
     function getComboItems_position(){
         //$ss = getSessionInfo($d);
         //if(!$ss) return '#350'; //user not authenticated

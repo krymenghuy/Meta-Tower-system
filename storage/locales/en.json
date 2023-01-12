@@ -182,6 +182,17 @@
 	"history":{
 
 	},
+	"transaction":{
+       "Date":"Date",
+	   "Amount":"Amount",
+	   "Issue Date":"Issue Date",
+	   "Invoice":"Invoice",
+	   "Ref Number":"Ref Number",
+	   "Description":"Description",
+	   "Remarks":"Remarks",
+	   "payer":"Payer",
+	   "Payee":"Payee"
+	},
 	"item":{
         "Name":"Name",
 		"Description":"Description",

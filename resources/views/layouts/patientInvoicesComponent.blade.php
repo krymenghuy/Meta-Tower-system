@@ -44,6 +44,9 @@
                         </div>
                     </div>
                 </div>
+                <div id="_pic_dlgInvoice_error" class="dialog-error">
+
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">

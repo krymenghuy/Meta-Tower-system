@@ -145,6 +145,27 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
                 $res = Patient::deletePermanent($req);
                 return response()->json($res);
             });
+
+            Route::post('patient/history',function(Request $req){
+                $res = Patient::history($req);
+                return response()->json($res);
+            });
+
+            Route::post('patient/photos',function(Request $req){
+                $res = Patient::photos($req);
+                return response()->json($res);
+            });
+
+            Route::post('patient/invoices',function(Request $req){
+                $res = Patient::invoices($req);
+                return response()->json($res);
+            });
+
+            Route::post('patient/transactions',function(Request $req){
+                $res = Patient::transactions($req);
+                return response()->json($res);
+            });
+
     //end::PatientController
 
     //begin::Inventory Module. Not using Controller
@@ -366,11 +387,19 @@ Route::post('test/test-api',function(){
     //return langauge as json object format based on give parameter @lang = {'en','km',...}. It is used to return langauge to client side
     Route::post('settings/lang', [UMController::class, 'getLang']);
     Route::post('settings/save-lang', [UMController::class, 'saveLang']);
+    Route::post('settings/departments', [GeneralSettingsController::class, 'getDepartmentList']);
+    Route::post('settings/save-department', [GeneralSettingsController::class, 'saveDepartment']);
+    Route::post('settings/delete-department', [GeneralSettingsController::class, 'deleteDepartment']);
+    Route::post('settings/department-info', [GeneralSettingsController::class, 'getDepartmentDetails']);
+
+    Route::post('settings/save-position', [GeneralSettingsController::class, 'savePosition']);
+    Route::post('settings/options-position', [GeneralSettingsController::class, 'getComboItems_position']);
     Route::post('settings/create-org', [GeneralSettingsController::class, 'createOrganization']);
     Route::post('settings/delete-org', [GeneralSettingsController::class, 'deleteOrganization']);
     Route::post('settings/create-industry', [GeneralSettingsController::class, 'createIndustry']);
     Route::post('settings/delete-industry', [GeneralSettingsController::class, 'deleteIndustry']);
     Route::post('settings/collateral-types', [GeneralSettingsController::class, 'getCollateralTypes']);
+
     Route::post('settings/options-contact-channel', [GeneralSettingsController::class, 'getComboItems_channel']);
     Route::post('settings/options-appt-status', [GeneralSettingsController::class, 'getComboItems_appt_status']);
     Route::post('settings/options-ticket-status', [GeneralSettingsController::class, 'getComboItems_ticket_status']);
@@ -378,10 +407,7 @@ Route::post('test/test-api',function(){
     Route::post('settings/options-consultant', [GeneralSettingsController::class, 'getComboItems_consultant']);   
     Route::post('settings/options-chief-complaint', [GeneralSettingsController::class, 'getComboItems_chief_complaint']);
     Route::post('settings/save-chief-complaint', [GeneralSettingsController::class, 'saveChiefComplaint']);
-    Route::post('settings/departments', [GeneralSettingsController::class, 'getDepartmentList']);
-    Route::post('settings/save-department', [GeneralSettingsController::class, 'saveDepartment']);
-    Route::post('settings/delete-department', [GeneralSettingsController::class, 'deleteDepartment']);
-    Route::post('settings/department-info', [GeneralSettingsController::class, 'getDepartmentDetails']);
+  
     
     //getProductData() return object {"products"=> [], "usages"=>[]} for doctor's editing prescription
     Route::post('settings/options-product', [GeneralSettingsController::class, 'getProductData']);

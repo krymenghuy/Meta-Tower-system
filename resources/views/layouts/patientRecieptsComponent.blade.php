@@ -140,6 +140,11 @@
                         <textarea class="form-control"></textarea>
                     </div>
                 </div>
+
+                <div id="_prc_dlgReciept_error" class="dialog-error">
+                    
+                </div>
+
             </div>
             <div class="modal-footer">
                 <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">

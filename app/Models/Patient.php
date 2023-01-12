@@ -322,4 +322,43 @@ class Patient extends Model
         return DV::result($rows);
     }
 
+
+     //Before and After photos
+     //::photos() returns array of image_urls (last three photos or photos taken during the last consulting session) 
+     static function photos($req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $branch_id = $ss->branch_id;
+        $patient_id = $req->patient_id;  
+        $cols ="ph.file_name,ph.file_type,ph.create_user,ph.created_at";
+        $rows = DB::table("patient_photos AS ph")->join('patients as pt','ph.patient_id','=','pt.id')->where('ph.patient_id',$patient_id)->where('pt.branch_id',$branch_id)->selectRaw($cols)->orderByRaw("ph.created_at desc")->take(3)->get();    
+        foreach($rows as $row){
+            $row->image_url = "";
+        }
+        return DV::result($rows);
+    }
+ 
+    //::history() returns array of medical reports by date and doctor's name 
+    static function history($req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $branch_id = $ss->branch_id;
+        $search_value = escape_like_str($req->search_value);
+
+       return DV::result([
+        'medical_reports'=>[],
+        'medical_history'=>null
+       ]);
+    }
+
+    //::invoice() returns array of invoice info (number, date,amount)
+    static function invoices($req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $branch_id = $ss->branch_id;
+        $search_value = escape_like_str($req->search_value);
+
+        return DV::result([]);
+    }
+
 }

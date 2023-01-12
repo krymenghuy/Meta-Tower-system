@@ -98,6 +98,33 @@ class GeneralSettingsController extends Controller
       else return JDV::error("Something went wrong when trying to save Chief complaint data");
     }
 
+    function getComboItems_position(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !=200) return JDV::emptyResult($ss->status_code,null); //user not authenticated
+      $branch_id = $ss->branch_id;
+      $id =isset($d->id)?sanitize($d->id):0;
+      $rows = DB::table('positions as l')->whereRaw('IFNULL(l.inactive,0) =0')->where('l.branch_id',$branch_id)->selectRaw("l.id,l.name as position_title")->get();
+      return JDV::result($rows);
+    }
+
+    function department_exists($dep_id){
+      $row = getDataRow('departments',['id'=>$dep_id],"id");
+      return $row?true:false;
+    }
+    function savePosition(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !=200) return JDV::emptyResult($ss->status_code,null); //user not authenticated
+      $branch_id = $ss->branch_id;
+      $name = $req->name;
+      $department_id = $req->department_id;
+      $id = $req->id;
+      if(!isset($name)) return JDV::error("Position name or title cannot be empty");
+      if (!$this->department_exists($department_id)) return JDV::error("Department Id is not valid");
+      $id = saveData($ss,'positions',['id'=>$id],['name'=>$name,'department_id'=>$department_id],null,1);
+      if($id > 0) return JDV::success(['id'=>$id]);
+      return JDV::error("Failed to save position"); 
+    }
+
     static function getComboItems_consultant_internal($branch_id,$department_id=0){
       $str_where ="ep.position_id IN(2,3) and ep.status ='Active'";
       return DB::table("employees as e")->join('persons as p','p.id','=','e.person_id')->join('employee_positions as ep','ep.emp_id','=','e.id')->where('e.branch_id',$branch_id)->whereRaw($str_where)->selectRaw("e.id,p.name as consultant_name,e.code")->get();

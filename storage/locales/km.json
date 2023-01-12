@@ -41,6 +41,17 @@
 		"Status":"ស្ថានភាព",
 		"Action":"សកម្មភាព"
    },
+   "transaction":{
+	"Date":"Date",
+	"Amount":"Amount",
+	"Issue Date":"Issue Date",
+	"Invoice":"Invoice",
+	"Ref Number":"Ref Number",
+	"Description":"Description",
+	"Remarks":"Remarks",
+	"payer":"Payer",
+	"Payee":"Payee"
+ },
    "patient":{
 	"ID":"Patient ID",
 	"Patient ID":"Patient ID",
