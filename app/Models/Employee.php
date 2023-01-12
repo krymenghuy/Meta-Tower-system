@@ -93,6 +93,4 @@ class Employee extends Model
         $rows = DB::table('employees as e')->join('persons as p','p.id','=','e.person_id')->where('e.id',$id)->where('e.branch_id',$branch_id)->selectRaw($cols)->orderByRaw("e.name ASC")->take(1)->get();
         return isset($rows[0])?$rows[0]:null;
     }
-
-    
 }

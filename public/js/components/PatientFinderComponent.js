@@ -56,10 +56,6 @@
                 };
                 PatientDialog.show(op);
             });
-      
-            // mThis.tblPatients.on('click','a.btn_apt_action',function(e){
-            //     e.preventDefault();
-            // });
 
             mThis.tblPatients.on('click','a.btn_patient_modify',function(e){
                 e.preventDefault();
@@ -282,18 +278,17 @@
                   
      };
  
-        this.show = (option=null)=>{
-            //if(!option) option={};
-            mThis.displayPatients(()=>{
-                mThis.self.show().siblings().hide();
-                main_view.setTitle(mThis.title_prop);
-            });
-        }
+    this.show = (option=null)=>{
+        //if(!option) option={};
+        mThis.displayPatients(()=>{
+            mThis.self.show().siblings().hide();
+            main_view.setTitle(mThis.title_prop);
+        });
+    }
 }
 
 let PatientDetails = new function () {
     let mThis = this;
-    //mThis.default_view = 'info';
     mThis.current_view_name = 'history';
     mThis.tblPatients = $('#_paf_tblPatients');
 
@@ -303,83 +298,145 @@ let PatientDetails = new function () {
 
     //begin:: initialize PatientDetails. Eventhandler bindlings
     this.init = () => {
-
-        // if (mThis.tblTickets.length === 0) console.error(`Error: failed create object element ${tblTickets_id}`);
-        // mThis.tblTickets.on('click', '.btn-ticket-tab', function (e) {
-        //     $(this).addClass('btn-ticket-tab--active').siblings().removeClass('btn-ticket-tab--active');
-        // });
-
-        // mThis.tblTickets.on('click', '.btn-patient-history', function (e) {
-        //     e.preventDefault();
-        //     let div_wrapper = $(this).closest('div.ticket-info-wrapper');
-        //     mThis.showHistory(div_wrapper);
-        // });
-            
-        mThis.tblPatients.on('click','a.btn-patient-history',function(e){
+        mThis.tblPatients.on('click','a.btn-ticket-tab',function(e){
             e.preventDefault();
             let ws_id = $(this).data('target');
+            let view_name = $(this).data('viewname');
             let ws = $(`#${ws_id}`);
-            ws.html("This something about history");
+            mThis.displayPatientTab(ws,view_name);
         });
-
-        mThis.tblPatients.on('click','a.qul-btn-photo',function(e){
-            e.preventDefault();
-            let ws_id = $(this).data('target');
-            let ws = $(`#${ws_id}`);
-            ws.html("This something about Photo");
-        });
-
-        mThis.tblPatients.on('click','a.qul-btn-invoice',function(e){
-            e.preventDefault();
-            let ws_id = $(this).data('target');
-            let ws = $(`#${ws_id}`);
-            ws.html("This something about history");
-        });
-
-        // mThis.tblTickets.on('click', 'a.qul-btn-photo', function (e) {
-        //     e.preventDefault();
-        //     let div_wrapper = $(this).closest('div.ticket-info-wrapper');
-        //     mThis.showPhoto(div_wrapper);
-        // });
-
-        // mThis.tblTickets.on('click', 'a.qul-btn-invoice', function (e) {
-        //     e.preventDefault();
-
-        //     //let div_wrapper = $(this).closest('div.ticket-info-wrapper');
-        //     //mThis.startConsult(div_wrapper);
-
-        //     let ticket_id = $(this).data('tid');
-        //     let patient_id = $(this).data('clientid');
-        //     let op = {
-        //         patient_id: patient_id,
-        //         ticket_id: ticket_id,
-        //         onClose: (d) => {
-        //             alert('Consult Window is closing');
-        //         }
-        //     };
-        // });
     }
     //end::TicketDetails.init()
+
+    this.displayPatientTab = (div_workspace,view_name)=>{
+        let renderPatientDetails ={
+            "history":() => {
+                vsapi.call(`${main_view.base_url}/api/patient/history`,null).then(res => {
+                    if(res.stutus_code === 200){
+                        let history_urls = res.data;
+                        let html = `<div class="table-reponsive">
+                        <table class="table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <span class="trans-text" data-langprop="dt_columns.Ticket Number"></span>
+                                </th>
+                                <th>
+                                    <span class="trans-text" data-langprop="dt_columns.Doctor"></span>
+                                </th>
+                                <th>
+                                    <span class="trans-text" data-langprop="dt_columns.Date"></span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                        history_urls.map(url => {
+                            html = [`
+                                    <tr>
+                                        <td>${url.ticket_id}</td>
+                                        <td>${url.doctor}</td>
+                                        <td>${url.date}</td>
+                                    </tr>
+                                `].join('');
+                        });
+                        html = [html,`</tbody></table>
+                        </div>`].join('');
+
+                        div_workspace.html(html);
+                    }
+                });
+            },
+            "photo":() => {
+                vsapi.call(`${main_view.base_url}/api/paitent/photos`,null).then(res=>{
+                    if(res.status_code===200){
+                         let image_urls = res.data;
+                         let html =`<div class="d-flex align-items-center justify-content-center gap-2">`;
+                         image_urls.map(url=>{
+                            html = [html,`<img class="img-thumbnail" src="${url}"/>`].join('');
+                         });
+                         html = [html,`</div>`].join('');
+                        div_workspace.html(html);
+                    }
+                });
+ 
+            },
+
+            "invoices":() => {
+                vsapi.call(`${main_view.base_url}/api/patient/invoice`,null).then(res => {
+                    if(res.status_code === 200){
+                        cnt = 1;
+                        let invoice_urls = res.data;
+                        let html = `<div class="table-responsive">
+                        <talbe class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <span class="trans-text" data-langprop="dt_columns.No"></span>
+                                    </th>
+                                    <th>
+                                        <span class="trans-text" data-langprop="dt_columns.Ticket Number"></span>
+                                    </th>
+                                    <th>
+                                        <span class="trans-text" data-langprop="dt_columns.Patient"></span>
+                                    </th>
+                                    <th>
+                                        <span class="trans-text" data-langprop="dt_columns.Invoice Date"></span>
+                                    </th>
+                                    <th>
+                                        <span class="trans-text" data-langprop="dt_columns.Due Date"></span>
+                                    </th>
+                                    <th>
+                                        <span class="trans-text" data-langprop="dt_columns.Amount"></span>
+                                    </th>
+                                    <th>
+                                        <span class="trans-text" data-langprop="dt_columns.Paid"></span>
+                                    </th>
+                                </tr>
+                            </thead><tbody>`;
+                        invoice_urls.map(ulr => {
+                            html = [`
+                                <tr>
+                                    <td>${cnt++}</td>
+                                    <td>${ulr.ticket_id}</td>
+                                    <td>${ulr.patient}</td>
+                                    <td>${ulr.invoiceDate}</td>
+                                    <td>${ulr.dueDate}</td>
+                                    <td>${ulr.amount}</td>
+                                    <td>${ulr.paid}</td>
+                                </tr>
+                            `].join('');
+                        });
+                        html = [`</tbody></table></div>`].join('');
+                        div_workspace.html(html);
+                    }
+                });
+            }
+        };
+        renderPatientDetails[view_name]() ;
+    }
 
     //Display Patient Details panel, by displaying the "History" tab as default view
     this.show = (detail_tr,options) => {
         let patient_id =options.patient_id;
         let div_wrapper = detail_tr.find('div.expandable-row-containter');
         //patient_id = detail_tr.data('patientid');
- let div_id = `ws_${patient_id}`;
+        let div_id = `ws_${patient_id}`;
 
         let html = `<div class="ticket-info-wrapper shadow-lg d-flex" style="width:100%;">
                     <div class="form-inline ticket-tab-buttons" role="group" aria-label="ticket tabs" style="display:block">
-                        <a style="padding:5px" data-target ="${div_id}" type="button" class="btn-ticket-tab btn-patient-history trans-text" data-langprop="buttons.History">History</a>
-                        <a style="padding:5px" type="button" class="btn-ticket-tab qul-btn-photo trans-text" data-langprop="buttons.Photo">Photo</a>
-                        <a style="padding:5px" type="button" class="btn-ticket-tab qul-btn-invoice trans-text" data-langprop="buttons.Invoice">Invoice</a>
+                        <a style="padding:5px" data-viewname="history" data-target ="${div_id}" type="button" class="btn-ticket-tab btn-patient-history trans-text" data-langprop="buttons.History">History</a>
+                        <a style="padding:5px" data-viewname="photo" data-target ="${div_id}" type="button" class="btn-ticket-tab btn-patient-photo trans-text" data-langprop="buttons.Photo">Photos</a>
+                        <a style="padding:5px" data-viewname="invoices" data-target ="${div_id}" type="button" class="btn-ticket-tab btn-patient-invoices trans-text" data-langprop="buttons.Invoices">Invoices</a>
                     </div>
                     <div id="${div_id}" class="qul-workspace pt-3" style="width:100%;display:block;">
                     </div>
                   </div>`;
         div_wrapper.html(html);
         //div_wrapper.slideDown(500);
-        ///todo: show detaul tab "Histosry"   
+        ///todo: show detaul tab "Histosry"
+
+
+
     }
 
     this.setActiveTabButton = (div_wrapper, btn_class) => {

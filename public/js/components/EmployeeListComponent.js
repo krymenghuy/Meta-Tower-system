@@ -12,11 +12,14 @@ let EmployeeListComponent = new function(){
 
     this.col_titles = {
         "No.":"No.",
-        "Reciept Date":"Reciept Date",
-        "Patient":"Patient",
-        "Reciept Number":"Reciept Number",
-        "Amount":"Amount",
-        "Cash Account":"Cash Account",
+        "Code":"Code",
+        "Name":"Name",
+        "First Name":"First Name",
+        "Last Name":"Last Name",
+        "Sex":"Sex",
+        "Email":"Email",
+        "Phone Number":"Phone Number",
+        "Date Of Birth":"Date Of Birth"
     };
 
     this.trans_title = (title_prop='undefined')=>{
@@ -26,7 +29,7 @@ let EmployeeListComponent = new function(){
     this.setLanguage = ()=>{
         if (LocaleManager.lang !== mThis.lang){
             for (let prop in mThis.col_titles){
-                mThis.col_titles[prop] = LocaleManager.trans(prop,'patients',LocaleManager.lang);
+                mThis.col_titles[prop] = LocaleManager.trans(prop,'employees',LocaleManager.lang);
             }
             mThis.lang = LocaleManager.lang;
         }
@@ -56,7 +59,7 @@ let EmployeeListComponent = new function(){
         //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
         let p = {'search_value':mThis.elSearchItem.val()};
-        window.vsapi.call(`${mThis.base_url}/api/inventory/items`,p,'POST',null).then((result)=>{
+        window.vsapi.call(`${mThis.base_url}/api/employee/list`,p,'POST',null).then((result)=>{
             let data = [];
             if(result.status_code === 200) data = result.data;
             if (mThis.table){
@@ -77,24 +80,36 @@ let EmployeeListComponent = new function(){
                     }
                 },
                 {
-                    data:"reciept_date",
-                    title: mThis.trans_title('Reciept Date')
+                    data:"code",
+                    title: mThis.trans_title('Code')
                 },
                 {
-                    title: mThis.trans_title('Patient'),
-                    data:"patient"
+                    title: mThis.trans_title('Name'),
+                    data:"name"
                 },
                 {
-                    title: mThis.trans_title('Reciept Number'),
-                    data:"reciept_number"
+                    title: mThis.trans_title('First Name'),
+                    data:"first_name"
                 },
                 {
-                    title: mThis.trans_title('Amount'),
-                    data:"amount"
+                    title: mThis.trans_title('Last Name'),
+                    data:"last_name"
                 },
                 {
-                    title: mThis.trans_title('Cash Account'),
-                    data:"cash_account"
+                    title: mThis.trans_title('Sex'),
+                    data:"sex"
+                },
+                {
+                    title: mThis.trans_title('Email'),
+                    data: "email"
+                },
+                {
+                    title: mThis.trans_title('Phone Number'),
+                    data: "phone_number"
+                },
+                {
+                    title: mThis.trans_title('Date Of Birth'),
+                    data: "date_of_birth"
                 }
             ];
             //END Define colum

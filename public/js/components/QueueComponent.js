@@ -958,7 +958,6 @@ let QueueComponent = new function () {
 //         return ps;
 //     }
 
-
 //     this.prepareVitalSignFields =(fields =[])=>{
 //         mThis.divVitalSign.empty();
 
