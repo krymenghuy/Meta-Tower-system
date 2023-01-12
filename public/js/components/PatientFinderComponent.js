@@ -1,4 +1,7 @@
 "use strict";
+
+const { lowerFirst } = require("lodash");
+
 //begin:: PatientFinderComponent
  let PatientFinderComponent = new function(){
         let mThis = this;
@@ -73,18 +76,22 @@
             //     });
             // });
 
-            this.cfg = new ExpandableRowConfig('_paf_tblPatients',{
-                'wrapperClass':'patient-info-wrapper',
-                'html':`<div class="shadow-sm bg-info rounded py-3 px-2" style="width:100%">
-                    <div class="d-flex align-items-center gap-2">
-                        <button class="trans-text btn btn-outline-primary" id="_paf_history" data-langprop="patient.History">History</button>
-                        <button class="trans-text btn btn-outline-primary" id="_paf_photo" data-langprop="patient.Photo">Photo</button>
-                        <button class="trans-text btn btn-outline-primary" id="_paf_invoice" data-langprop="patient.Invoice">Invoice</button>
-                    </div>
-                    <div class="mt-3">
-                        <p>Test</p>
-                    </div>
-                </div>`
+            this.cfg = new ExpandableRowConfig('_paf_tblPatients', {
+                'dontExpandByClickingOn': ['btn_patient_modify', 'btn_patient_delete', 'btn_patient_action'],
+                'tr_dataset':['patient_id'],
+                //'content':`<div class="alert alert-info">Loading details</div>`,
+                'onOpen': (container, detail_tr, parent_tr) => {
+                    //alert(detail_tr.find('ul').html());
+                    //let q_tr = $(parent_tr);
+                    let patient_id = detail_tr.dataset.patientid; // q_tr.data('id');
+                 alert(parent_tr.innerHTML);
+                    //Show Expandable Details of each ticket (QTicket)
+                    PatientDetails.show($(detail_tr), {
+                        'patient_id': patient_id,  
+                        'person_id': parent_tr.dataset.personid,
+                        'status_id': parent_tr.dataset.statusid
+                    });
+                }
             });
            
             // mThis.setExpandableRow('_activeloan_tblLoans',function(){
@@ -110,34 +117,12 @@
                     }
                 });
             });
- 
-            // mThis.tblPatients.on('mouseover','tr',function(e){
-            //    let btn = $(this).find('a.btn_apt_action');
-      
-            //    btn.find('i').css('color','red');
-            // }).on('mouseleave','tr',function(e){
-            //     let btn = $(this).find('a.btn_apt_action');
-            //     btn.find('i').css('color','#E9E7E7');
-
-            // });
-
         }
    
     this.trans_title = (title_prop='undefined')=>{
        return (mThis.col_titles[title_prop] || 'undefined');
     }
 
-    /**
-     items = [
-        {
-            cssClass:"acl_edit",
-            click:function(){
-
-            },
-            
-        }
-     ]  
-      **/
     this.createDropdownMenuHtml_loan =(items=[],data=null, data_props=[])=> {
         if (!data_props) data_props = [];
         let str_props ="";
@@ -247,16 +232,6 @@
                            ].join('');
                         }
                     }
-                     // {
-                     //       className:'name', //css class "total" is used for accessing value and update values of totals in <td>
-                     //       data:function(data,a,b){
-                     //         return ['<div style="display:flex;flex-direction:column">',
-                     //             '<div class="pg-total_driver"><span class="total-label">Driver:</span><span class="total-value driver-total">',data.driver_total,'</span></div>',
-                     //             '<div class="pg-total_sender"><span class="total-label">Sender:</span><span class="total-value sender-total">',data.sender_total,'</span></div>',
-                     //         '</div>'].join(''); 
-                     //     },
-                     //     title:'Totals'
-                     // }
                  ];
                  //END Define colum
              
@@ -293,23 +268,15 @@
                        {
                             let tr = $(row);
                             tr.data('id',data.id);
+                            //tr.data('id',data.patient_id);
                             tr.data('statusid',data.status_id);
                             tr.data('personid',data.person_id);
-                       }
- 
-                    //    ,"cellCreated":function(td,data,colIndex) {
-                    //        alert('test');
-                    //      if(colIndex==9){
-                    //         let html = ['<div><a href="#" data-ceid="',data[0], '" data-studentid ="',data[2],'" data-classid="',data[1],'" class="scl_gl_delete_ceid"><i class="fa fa-trash" style="color:red"></i></a></div>'].join('');
-                    //         $(td).html(html); 
-                    //      }
-                    //   }    								
+                       }   								
              });
              
              // let div = $('#_dl_d_filter_panel');  
              // $('#_dl_tblPatients_wrapper>div.dt-buttons').prepend(div);
-              if(typeof onFinish ==='function') onFinish();      
-              mThis.cfg.open(mThis.tblPatients.find(`tr:first`));                
+              if(typeof onFinish ==='function') onFinish();              
          });
                   
      };
@@ -321,79 +288,166 @@
                 main_view.setTitle(mThis.title_prop);
             });
         }
+}
 
-        // this.setExpandableRow = (table_id,createHTML=null,op={})=>{
-        //    let tbl = $(`#${table_id}`);
-        //    if(!op) op = {};
+let PatientDetails = new function () {
+    let mThis = this;
+    //mThis.default_view = 'info';
+    mThis.current_view_name = 'history';
+    mThis.tblPatients = $('#_paf_tblPatients');
 
-        //    tbl.on('click','tr',function(){
-        //         let tr = $(this);
-        //         if (tr.hasClass('expandable-row')) return;
-        //         let next_tr = tr.next();
-        //         if (next_tr.hasClass('expandable-row')){
-        //             next_tr.show();
-        //             mThis.prev_selected_row =null;
-        //             return;
+    this.icon_url = () => {
+        return `${VSUtil.asset_url()}/images/icons`;
+    }
+
+    //begin:: initialize PatientDetails. Eventhandler bindlings
+    this.init = () => {
+
+        // if (mThis.tblTickets.length === 0) console.error(`Error: failed create object element ${tblTickets_id}`);
+        // mThis.tblTickets.on('click', '.btn-ticket-tab', function (e) {
+        //     $(this).addClass('btn-ticket-tab--active').siblings().removeClass('btn-ticket-tab--active');
+        // });
+
+        // mThis.tblTickets.on('click', '.btn-patient-history', function (e) {
+        //     e.preventDefault();
+        //     let div_wrapper = $(this).closest('div.ticket-info-wrapper');
+        //     mThis.showHistory(div_wrapper);
+        // });
+            
+        mThis.tblPatients.on('click','a.btn-patient-history',function(e){
+            e.preventDefault();
+            let ws_id = $(this).data('target');
+            let ws = $(`#${ws_id}`);
+            ws.html("This something about history");
+        });
+
+        mThis.tblPatients.on('click','a.qul-btn-photo',function(e){
+            e.preventDefault();
+            let ws_id = $(this).data('target');
+            let ws = $(`#${ws_id}`);
+            ws.html("This something about Photo");
+        });
+
+        mThis.tblPatients.on('click','a.qul-btn-invoice',function(e){
+            e.preventDefault();
+            let ws_id = $(this).data('target');
+            let ws = $(`#${ws_id}`);
+            ws.html("This something about history");
+        });
+
+        // mThis.tblTickets.on('click', 'a.qul-btn-photo', function (e) {
+        //     e.preventDefault();
+        //     let div_wrapper = $(this).closest('div.ticket-info-wrapper');
+        //     mThis.showPhoto(div_wrapper);
+        // });
+
+        // mThis.tblTickets.on('click', 'a.qul-btn-invoice', function (e) {
+        //     e.preventDefault();
+
+        //     //let div_wrapper = $(this).closest('div.ticket-info-wrapper');
+        //     //mThis.startConsult(div_wrapper);
+
+        //     let ticket_id = $(this).data('tid');
+        //     let patient_id = $(this).data('clientid');
+        //     let op = {
+        //         patient_id: patient_id,
+        //         ticket_id: ticket_id,
+        //         onClose: (d) => {
+        //             alert('Consult Window is closing');
         //         }
-        //         // `<tr class="expandable-row"><td colspan="10"><div class="${cssClass}"></div><h4>This is a test expanded</h4></td></tr>`;  
-        //         let html = (typeof createHTML==='function')? createHTML():`</div><h4> This is default Panel for Expandable Row </h4></div>`; 
-        //         let row_id = [table_id,'_',op.id].join('');
-        //         tr.after(`<tr id="${row_id}" data-id="${op.id}" class="expandable-row ${op.rowClass}"><td colspan="${op.colspan?op.colspan:'100%'}">${html}</td></tr>`);     
-        //    });
-        // }
- }
- 
+        //     };
+        // });
+    }
+    //end::TicketDetails.init()
 
- 
-// let AppointmentDialog = new function(){
-//     //this.base_url = main_view.base_url;     
-//     let mThis = this;
-//     mThis.elChannel = $('#_appt_contact_channel');
-//     mThis.elConsultant = $('#_appt_consultant');
+    //Display Patient Details panel, by displaying the "History" tab as default view
+    this.show = (detail_tr,options) => {
+        let patient_id =options.patient_id;
+        let div_wrapper = detail_tr.find('div.expandable-row-containter');
+        //patient_id = detail_tr.data('patientid');
+ let div_id = `ws_${patient_id}`;
 
-//     window.vsapi.call(`${main_view.base_url}/api/settings/options-contact-channel`,null).then((d)=>{
-//         let items = StringSanitizer.sanitizeObject(d.data);
-//         VSUtil.setComboItems(mThis.elChannel,items,'id','name','(select channel)',null);
-//     });
+        let html = `<div class="ticket-info-wrapper shadow-lg d-flex" style="width:100%;">
+                    <div class="form-inline ticket-tab-buttons" role="group" aria-label="ticket tabs" style="display:block">
+                        <a style="padding:5px" data-target ="${div_id}" type="button" class="btn-ticket-tab btn-patient-history trans-text" data-langprop="buttons.History">History</a>
+                        <a style="padding:5px" type="button" class="btn-ticket-tab qul-btn-photo trans-text" data-langprop="buttons.Photo">Photo</a>
+                        <a style="padding:5px" type="button" class="btn-ticket-tab qul-btn-invoice trans-text" data-langprop="buttons.Invoice">Invoice</a>
+                    </div>
+                    <div id="${div_id}" class="qul-workspace pt-3" style="width:100%;display:block;">
+                    </div>
+                  </div>`;
+        div_wrapper.html(html);
+        //div_wrapper.slideDown(500);
+        ///todo: show detaul tab "Histosry"   
+    }
 
-//     window.vsapi.call(`${main_view.base_url}/api/settings/options-consultant`,null).then((d)=>{
-//         let items = StringSanitizer.sanitizeObject(d.data);
-//         VSUtil.setComboItems(mThis.elConsultant,items,'id','name','(Select consultant)',null);
-//     });
- 
-//     // let beforeShow =()=>{
-//     //      window.vsapi.call(`${main_view.base_url}/api/settings/options-consultant`,null).then((d)=>{
-//     //         let items = StringSanitizer.sanitizeObject(d.data);
-//     //         VSUtil.setComboItems(mThis.elConsultant,items,'id','name','(Select consultant)',null);
-//     //     });
-//     // }
+    this.setActiveTabButton = (div_wrapper, btn_class) => {
+        div_wrapper.find(`.${btn_class}`).addClass('btn-ticket-tab--active').siblings().removeClass('btn-ticket-tab--active');
+    }
 
+    this.showHistory = (div_panel) => {
+        let div_workspace = div_panel.find('div.qul-workspace');
+        div_workspace.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
 
-//     this.formUntil = new FormUntil({
-//         "itemName":"Appointment",
-//         "formId":'_apl_dlgAppt',
-//         "titleId":"_apl_dlgAppt_title",
-//         "errorId":"_apl_dlgAppt_error",
-//         "saveButtonId":"_apl_dlgAppt_btnSave",
-//         "instance":this,
-//         "apiSave":`${main_view.base_url}/api/appointment/save`,
-//         "apiGet":`${main_view.base_url}/api/appointment/details`,
-//         "identityProp":"id",
-//         "modifyTitle":"Modify Appointment",
-//         "createTitle":"New Appointment",
-//         "sanitize_excepts":['email','client_email','arrival_time'],
-//         'use_alert_error':false
-//         //,"beforeShow":beforeShow
-//     });
- 
-//     this.show = (option=null,onClose=null)=>{
-//         //let x = document.getElementById('_appt_contact_channel').options;
-//         //alert(JSON.stringify(x[3].text));
-//         mThis.formUntil.show(option,onClose);
-//     }
-     
-// } 
+        window.vsapi.call(`${main_view.base_url}/api/ticket/details`, p, 'POST', false).then((res) => {
+            let html = null;
+            let ws_id = null;
+
+            if (res.status_code === 200) {
+                let d = StringSanitizer.sanitizeObject(res.data);
+                if(!d) d = {};
+                //d.chief_complaints = d.chief_complaints?d.chief_complaints:[];
+
+                html = [].join('');
+            } else {
+                html = `<div class="expanded-row-error">${error_message}</div>`;
+            }
+
+            div_workspace.html(html);
+            LocaleManager.translateZone(ws_id);
+            //div_wrapper.slideDown(500);
+            mThis.current_view_name = 'history';
+        });
+    }
+
+    this.showPhoto = (div_panel) => {
+        let div_workspace = div_panel.find('div.qul-workspace');
+        //div_workspace.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
+        div_workspace.html(`<div class="d-flex align-items-center justify-content-center">
+            <div class="d-flex gx-4">
+                <div class="">
+                    <img class="img-thumbnail rounded" src="${VSUtil.asset_url()}/images/icons/client-girl.png"/>
+                </div>
+                <div class="">
+                    <img class="img-thumbnail rounded" src="${VSUtil.asset_url()}/images/icons/client-girl.png"/>
+                </div>
+                <div class="">
+                    <img class="img-thumbnail rounded" src="${VSUtil.asset_url()}/images/icons/client-girl.png"/>
+                </div>
+            </div>
+        </div>`);
+        mThis.current_view_name = 'photo';
+    };
+
+    this.startInvoice = (div_panel, ticket_id = null) => {
+        if (!ticket_id) ticket_id = div_panel.data('tid');
+        let div_workspace = div_panel.find('div.qul-workspace');
+        //div_workspace.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
+        div_workspace.html(`<div class="d-flex p-3">
+        <div style="height:25px"></div>
+        <ul>
+         <li>Chief Complaints</li>
+         <li>Physical Examinations</li>
+         <li>Laboratory Tests</li>
+         <li>Diagnosis</li>
+         <li>Recommendations</li>
+        </ul>
+        </div>`);
+        mThis.current_view_name = 'invoice';
+    };
+}
 
 $(document).ready(()=>{
+    PatientDetails.init();
     PatientFinderComponent.init();
 });
