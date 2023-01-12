@@ -82,6 +82,22 @@ class Person extends Model
         return isset($rows[0])? $rows[0]:null;
     }
 
+    static function commitSave($ss,$d){
+        //$user = (object)Session('user');
+        $sanitize_options = ['email'=>['@'],'address'=>['#','.']];
+        $res = DV::validateProps($d,self::$validate_rule,true,$sanitize_options,false);
+        if($res->error) return DV::error($res->error);
+        $person_id =isset($res->id)? $res->id:0;
+
+        $inputs = $res->inputs;
+        //divide $name into first_name and last_name using function Helper/getNameParts()
+        $o_name = getNameParts($inputs['name']);
+        $inputs['first_name'] = $o_name->first_name;
+        $inputs['last_name'] = $o_name->last_name;
+        $person_id = saveData($ss,'persons',['id'=>$person_id],$inputs,[],1);
+        if($person_id>0) return DV::success(['person_id'=>$person_id]);
+    }
+
     //forceSave() will create a new person profile if the given @person_id is not supplied or zero 
     static function forceSave($ss,$d){
         //$user = (object)Session('user');
@@ -111,4 +127,10 @@ class Person extends Model
         else return DV::error("failed to delete person $id");
     }
  
+    static function commitDelete($id){
+        $x = self::where('id',$id)->delete();
+        if ($x) return DV::success();
+        else return DV::error("failed to delete person $id");
+    }
+
 }

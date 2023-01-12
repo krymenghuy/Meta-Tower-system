@@ -76,7 +76,7 @@
 
             this.cfg = new ExpandableRowConfig('_paf_tblPatients',{
                 'wrapperClass':'patient-info-wrapper',
-                'html':`<div class="shadow-sm bg-info rounded py-3 px-2" style="width:100%">
+                'html':`<div class="shadow-sm bg-info rounded py-3 px-2" style="width:100%;margin-top:-15px">
                     <div class="d-flex align-items-center gap-2">
                         <button class="trans-text btn btn-outline-primary" id="_paf_history" data-langprop="patient.History">History</button>
                         <button class="trans-text btn btn-outline-primary" id="_paf_photo" data-langprop="patient.Photo">Photo</button>
@@ -310,7 +310,7 @@
              // let div = $('#_dl_d_filter_panel');  
              // $('#_dl_tblPatients_wrapper>div.dt-buttons').prepend(div);
               if(typeof onFinish ==='function') onFinish();      
-              mThis.cfg.open(mThis.tblPatients.find(`tr:first`));                
+              //mThis.cfg.open(mThis.tblPatients.find(`tr:first`));                
          });
                   
      };

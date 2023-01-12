@@ -29,7 +29,8 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\QTicketController;
 use App\Http\Controllers\MedicalServiceController;
 use App\Http\Controllers\ItemController;
-use App\Http\Controllers\ItemGroupController;  
+use App\Http\Controllers\ItemGroupController; 
+use App\Http\Controllers\EmployeeController;  
 use App\Http\Controllers\InventorySettingsController;
 
 use App\Http\Controllers\PartnerController;
@@ -105,6 +106,13 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('inventory/delete-group', [ItemGroupController::class, 'deleteItemGroup']);
         Route::post('inventory/save-group', [ItemGroupController::class, 'saveItemGroup']);
     //End::ItemGroupController
+
+    //begin::EmployeeController
+        Route::post('employee/details', [EmployeeController::class, 'getEmployeeDetails']);
+        Route::post('employee/list', [EmployeeController::class, 'getEmployeeList']);
+        Route::post('employee/delete', [EmployeeController::class, 'deleteEmployee']);
+        Route::post('employee/save', [EmployeeController::class, 'saveEmployee']);
+    //End::EmployeeController
 
     //begin::InventorySettingsController =>  Inventory Settings.
     Route::post('inventory/settings/options-group',[InventorySettingsController::class, 'getComboItems_group']);

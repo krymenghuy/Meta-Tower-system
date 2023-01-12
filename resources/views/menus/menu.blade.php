@@ -127,7 +127,7 @@
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/dashboard.svg')}}"/>
                                 </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Consultant Dashboard">Consultant Dashboard</span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Dashboard">Dashboard</span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
