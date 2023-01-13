@@ -321,7 +321,6 @@ let PatientDetails = new function () {
                 return false;
             }
         });
-
        
     }
 
