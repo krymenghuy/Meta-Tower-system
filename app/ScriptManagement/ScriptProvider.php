@@ -102,6 +102,7 @@ namespace App\ScriptManagement;
                         '/js/components/QueueComponent.js',
                         '/js/components/EmployeeListComponent.js',
                         '/js/components/PositionsComponent.js',
+                        '/js/components/LaboPartnersComponent.js',
                         '/js/components/PatientInvoicesComponent.js',
                         '/js/components/PatientReceiptsComponent.js',
                         '/js/components/MedicalServiceComponent.js',
@@ -118,6 +119,7 @@ namespace App\ScriptManagement;
                         '/js/components/ServiceDepartmentsComponent.js',
                         '/js/components/GeneralSettingsComponent.js',
                         '/js/components/RoleManagementComponent.js',
+                        '/js/components/ExchangeRateComponent.js',
                         '/js/components/UserManagementComponent.js'
                     ]
 

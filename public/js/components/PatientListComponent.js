@@ -161,7 +161,7 @@
         '</div>'].join('');
         return html;
     } 
- 
+
     //displayCreditOfficerList()| displayCO|
      this.displayPatients =(onFinish=null)=>
      { 
