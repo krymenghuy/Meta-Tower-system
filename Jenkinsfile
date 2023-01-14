@@ -14,7 +14,7 @@ pipeline {
         }
         stage('Deployment') {
             steps {
-                sh 'ssh -o StrictHostKeyChecking=no vectfrar@192.64.117.185 -p 21098 "cd ~/mclinic.vectorasoft.com;\
+                sh 'ssh -o StrictHostKeyChecking=no vectfrar@192.64.117.185 -p 21098 "cd ~/public_html/mclinic.vectorasoft.com;\
                 git fetch;\
                 git checkout main;\
                 git pull;\
