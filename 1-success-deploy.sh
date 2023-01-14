@@ -6,8 +6,8 @@ BOT_TOKEN=${BOT_TOKEN}
 
 L="------------------------------------------------------"
 Log=$(git log -n 1 --pretty=format:"<b>COMMITER</b>: %cN %n<b>DATE</b>: %ci %n<b>MESSAGE</b>: %s")
-Server="<b>Server</b>: VPS-01"
-MSG="${L}%0A<b>PROJECT</b>: MCLINIC%0A<b>APPLICATION</b>: LARAVEL API%0A<b>STATUS</b>:  Success%0A<b>VERSION</b>: ${BUILD_NUMBER}%0A${L}%0A${Log}%0A${L}%0A${Server}%0A${L}"
+Server="<b>Server</b>: Shared Hosting"
+MSG="${L}%0A<b>PROJECT</b>: MCLINIC%0A<b>APPLICATION</b>: LARAVEL%0A<b>STATUS</b>:  Success%0A<b>VERSION</b>: ${BUILD_NUMBER}%0A${L}%0A${Log}%0A${L}%0A${Server}%0A${L}"
 
 
 
