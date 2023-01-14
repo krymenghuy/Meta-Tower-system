@@ -16,11 +16,20 @@ use Sanitizer;
 class PartnerController extends Controller
 {
    
+    function getPartnerDetails(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $branch_id = $ss->branch_id;
+        $id = $req->id;
+        $rows = DB::table('partners as p')->where('p.id',$id)->where('p.branch_id',$branch_id)->selectRaw("p.id,p.name,email,address,phone_number,phone_number1,partner_type,person_id,cp_name,cp_phone_number,cp_email")->get(); 
+        return JDV::result(isset($rows[0])?$rows[0]:null);
+    }
+ 
     function getPartnerList(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
         $branch_id = $ss->branch_id;
-        $rows = DB::table('partners as p')->where('p.branch_id',$branch_id)->selectRaw("p.id,p.name,email,address,phone_number,phone_number1,partner_type,person_id")->get(); 
+        $rows = DB::table('partners as p')->where('p.branch_id',$branch_id)->selectRaw("p.id,p.name,email,address,phone_number,phone_number1,partner_type,person_id,cp_name,cp_phone_number,cp_email")->get(); 
         return JDV::result($rows);
     }
  

@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Vectorasoft LMS'),
+    'name' => env('APP_NAME', 'Vectorasoft MClinic'),
 
     /*
     |--------------------------------------------------------------------------
@@ -120,9 +120,13 @@ return [
     */
 
     'key' => env('APP_KEY'),
-
     'cipher' => 'AES-256-CBC',
 
+    /* App Id used by Vectorasoft Dev Team */
+    'app_id' => env('APP_ID','DXM20FKAEFC711EH2E7C9801A7BZD311'),
+    'customer_app_id'=> env('CUSTOMER_APP_ID','DXM20FKAEFC711EH2E7C9801A7BZD311'),
+    'pusher_channel_prefix'=>env('PUSHER_CHANNEL_PREFIX','vsmclinic.'),
+    'storage_dir'=>env('STORAGE_DIR','/uploads/companies/'),
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers

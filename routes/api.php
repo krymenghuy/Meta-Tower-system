@@ -34,6 +34,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\InventorySettingsController;
 
 use App\Http\Controllers\PartnerController;
+use App\Http\Controllers\CurrencyController;
 use App\Models\PublicStorage;
 use App\Models\SystemSetting;
 use App\Models\Patient;
@@ -124,7 +125,19 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
      Route::post('partner/list', [PartnerController::class, 'getPartnerList']);
      Route::post('partner/delete', [PartnerController::class, 'deletePartner']);
      Route::post('partner/save', [PartnerController::class, 'savePartner']);
+     Route::post('partner/details', [PartnerController::class, 'getPartnerDetails']);
   //End::PartnerController
+
+   //begin::CurrencyController
+    Route::post('currency/list', [CurrencyController::class, 'getCurrencyList']);
+    Route::post('currency/delete', [CurrencyController::class, 'deleteCurrency']);
+    Route::post('currency/save', [CurrencyController::class, 'saveCurrency']);
+    Route::post('currency/details', [CurrencyController::class, 'getCurrencyDetails']);
+    Route::post('currency/save-rates', [CurrencyController::class, 'saveRates']);
+    Route::post('currency/save-rate', [CurrencyController::class, 'saveBuyRate']);
+    Route::post('currency/save-buy-rate', [CurrencyController::class, 'saveBuyRate']);
+    Route::post('currency/save-sell-rate', [CurrencyController::class, 'saveSellRate']);
+  //End::CurrencyController
 
     //begin::PatientController. Not using Controller
             Route::post('patient/find',function(Request $req){

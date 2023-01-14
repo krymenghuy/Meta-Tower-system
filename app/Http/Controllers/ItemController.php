@@ -86,12 +86,12 @@ class ItemController extends Controller
           "id"=>"0|number|identity=1",
           "name"=>"1|string|1-150",
           "description"=>"0|string",
-          "brand_id"=>"0|number|default=0",
-          "manufacturer_id"=>"0|default=0",
+          "brand_id"=>"0|exists=inv_brands.id",
+          "manufacturer_id"=>"0|exists=inv_manufacturers.id",
           "cost"=>"0|number|default=0",
           "made_in_country_id"=>"0|exists=inv_countries",
           "unit_id"=>"0|exists=inv_units|text=SKU is required",
-          "group_id"=>"0|positive"
+          "group_id"=>"1|positive|exists=inv_groups.id"
         ];
         $check_unique = ["$branch_id|inv_items|name|id=id|text=item name already exists"];
         

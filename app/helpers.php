@@ -4,7 +4,7 @@
  use App\Models\UM;
  use Carbon\Carbon;
  use App\Models\DV;
-
+ 
  //BEGIN:: LocaleManager class
   
  //END:: LocaleManager class
@@ -1157,8 +1157,8 @@ function readFileContent($fileName=null)
                         if (!$pk_input_prop) $pk_input_prop = $identity_field;
                         $pk_value= isset($d[$pk_input_prop])?$d[$pk_input_prop]:null;
                 }
-                //return (object)["error"=>"err: $pk_field_name ".$d['cost'],"default_value"=>""]; 
-                if ($u_spec && $val) $unique_error = checkUnique($d,$pk_field_name,$pk_value,$u_spec,$lang,$langSection);  
+
+                if ($u_spec) $unique_error = checkUnique($d,$pk_field_name,$pk_value,$u_spec,$lang,$langSection);  
                 if ($unique_error){
                    $trans_err = Localization::translate($lang,$unique_error,null,$lang,$langSection,);
                    return (object)['error'=>$trans_err,'values'=>null];
@@ -1212,7 +1212,6 @@ function readFileContent($fileName=null)
         }
 
         if ($include_all_fields)  foreach($d as $col=>$value) if (!isset($outputs[$col])) $outputs[$col] = $value;
-         
         //Check Uniqeness
         $unique_error =null;
         if (is_array($unique_specs)){
@@ -1229,11 +1228,12 @@ function readFileContent($fileName=null)
                         if (!$pk_input_prop) $pk_input_prop = $identity_field;
                         $pk_value= isset($d[$pk_input_prop])?$d[$pk_input_prop]:null;
                 }
+               
                 //NOTE: $pk_field is associateive array. Example: ['person_id'=>101] . This is needed for avoid check duplicate in case of UPDATE exiting item " where person_id <> 101"
-                if ($u_spec && $val) $unique_error = checkUnique($d,$pk_field_name,$pk_value,$u_spec,$lang,$langSection);  
+                if ($u_spec) $unique_error = checkUnique($d,$pk_field_name,$pk_value,$u_spec,$lang,$langSection);  
                 if ($unique_error){
-                $trans_err = Localization::translate($lang,$unique_error,null,$lang,$langSection,);
-                return (object)['error'=>$trans_err,'values'=>null];
+                    $trans_err = Localization::translate($lang,$unique_error,null,$lang,$langSection,);
+                    return (object)['error'=>$trans_err,'values'=>null];
                 } 
             }
              
@@ -1266,7 +1266,6 @@ function readFileContent($fileName=null)
         $branch_id = $parts[0];
         $table = $parts[1];
         $field_list = explode(',',$parts[2]);
-        
         $m_where ="";
         $select_cols =$pk_field_name; //presume a default. That all tables have a "id" column
         //$checking_field_cnt = 0;
@@ -1343,37 +1342,37 @@ function readFileContent($fileName=null)
             $path = Storage::disk('private')->path('');
           }else{
              //$path = Storage::disk('public')->path('');
-             $path = getcwd(). "/uploads/companies/";
+             $path = getcwd().Config::get('app.storage_dir');
           }
         return $path;
     }
 
     //return public url
     function getStorageUrl(){
-      return url('')."/uploads/companies/";
+      return url('').Config::get('app.storage_dir'); //"/uploads/companies/";
     } 
 
     //To upport misspelling version   
     function getAdminAppId(){
-        return "DXM20FKAEFC711EH2E7C9801A7BZD311";
+        return Config::get('app.app_id');
     }
     
     function thisAppId()
     {
-      return 'DXM20FKAEFC711EH2E7C9801A7BZD311'; 
+      return Config::get('app.app_id');
     }
 
     function getAppId(){
-        return "DXM20FKAEFC711EH2E7C9801A7BZD311";
+        return Config::get('app.app_id');
     }
 
     function getAppIdByUserClass(){
         //return Student Mobile App ID by default
-        return "DXM20FKAEFC711EH2E7C9801A7BZD311";
+        return Config::get('app.app_id');
     }
 
     function channel_prefix(){
-        return "vsmclinic.";
+        return Config::get('app.pusher_channel_prefix');
     }
 
     function extendProps($cols=[],$d=null){

@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Login;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\UM;
+use Config;
 use Session;
 use Cookie;
 use Auth;
+
 use App\Security\PHPCrypto;
 
 class LoginController extends Controller
@@ -19,7 +21,7 @@ class LoginController extends Controller
   
     function processLogin(Request $request){
          /** $THIS_APP_ID is used for we login. BUT for Mobile app authentication, must be come app_id and users login_name or access_token **/
-         $THIS_APP_ID = getAdminAppId(); // 'DXM20FKAEFC711EH2E7C9801A7CXD201'; 
+         $THIS_APP_ID = Config::get('app.app_id'); 
         //$user = (object)(["id"=>1,"branch_id"=>1,"full_name"=>null,"login_name"=>$request->login_name]);
         //$this->UMModel->setSessionUser($user);
         //$this->UMModel->createSession($request->login_name);
