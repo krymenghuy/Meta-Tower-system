@@ -172,6 +172,15 @@
 	"datatable":{
          "no data to display":"គ្មានទិន្ននយ័ បង្ហាញ!"
 	},
+	"item_group":{
+		"Code":"Code",
+		"Name":"Name",
+		"Description":"Description",
+		"Unit":"Unit",
+		"SKU":"SKU",
+		"Created By":"Created By",
+		"Booked By":"Booked By"
+	 },
 	"message_box_default":{
 		"MClinic":"MClinic",
         "Service department is required":"Service department is required",

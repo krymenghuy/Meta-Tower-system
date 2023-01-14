@@ -217,7 +217,7 @@ let CategoryDialog = new function(){
         "formId":'_cat_dlgCategory',
         "titleId":"_cat_dlgCategory_title",
         //"errorId":"_cat_dlgCategory_error",
-        "saveButtonId":"_cat_btnSave",
+        //"saveButtonId":"_cat_btnSave",
         "instance":this,
         "apiSave":`${main_view.base_url}/api/category/save`,
         "apiGet":`${main_view.base_url}/api/category/details`,

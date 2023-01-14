@@ -18,7 +18,7 @@
 </div>
 
 <div id="_pdg_dlgProductGroup" class="modal fade" tabindex="-1" aria-labelledby="_pdg_dlgProductGroup_title" aria-hidden="true">
-    <div class="modal-dialog-md">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="_pdg_dlgProductGroup_title"></h4>
@@ -26,12 +26,12 @@
             <div class="modal-body">
                 <div class="row gy-2">
                    <div class="col-6">
-                        <label for="code" class="form-label trans-text" data-langprop="titles.Code"></label>
+                        <label for="code" class="form-label trans-text" data-langprop="item_group.Code"></label>
                         <input type="text" class="form-control data-input" data-field="code" data-required="1" data-ffield="Code" placeholder="Code"/>
                     </div>
 
                     <div class="col-6">
-                        <label for="name" class="form-label trans-text" data-langprop="titles.Name"></label>
+                        <label for="name" class="form-label trans-text" data-langprop="item_group.Name"></label>
                         <input type="text" class="form-control data-input" data-field="name" data-required="1" data-ffield="Name" placeholder="Name"/>
                     </div>
                 </div>
@@ -39,19 +39,19 @@
 
                 <div class="row gy-2">
                    <div class="col-6">
-                        <label for="code" class="form-label trans-text" data-langprop="titles.Category"></label>
+                        <label for="code" class="form-label trans-text" data-langprop="item_group.Category"></label>
                         <select class="modal-select2 form-select data-input" data-field="category_id" data-required="1" data-ffield="Category"></select>
                     </div>
 
                     <div class="col-6">
-                        <label for="code" class="form-label trans-text" data-langprop="titles.SKU"></label>
+                        <label for="code" class="form-label trans-text" data-langprop="item_group.SKU"></label>
                         <select class="modal-select2 form-select data-input" data-field="unit_id" data-required="1" data-ffield="unit_id"></select>
                     </div>
                 </div>
 
                 <div class="row gy-2">
                     <div class="col-12">
-                        <label for="description" class="form-label trans-text" data-langprop="titles.Description"></label>
+                        <label for="description" class="form-label trans-text" data-langprop="item_group.Description"></label>
                         <textarea class="form-control data-input" data-field="description" data-required="0" data-ffield="Description" placeholder="Description"></textarea>
                     </div>
                 </div>

@@ -217,7 +217,7 @@ let ProductsGroupDialog = new function(){
         "formId":'_pdg_dlgProductGroup',
         "titleId":"_pdg_dlgProductGroup_title",
         //"errorId":"_msl_dlgService_error",
-        "saveButtonId":"_pdg_btnSave",
+        //"saveButtonId":"_pdg_dlgProductGroup_btnSave",
         "instance":this,
         "apiSave":`${main_view.base_url}/api/inventory/save-group`,
         "apiGet":`${main_view.base_url}/api/inventory/group-details`,
@@ -231,7 +231,7 @@ let ProductsGroupDialog = new function(){
         //"sub_prop_function":mThis.getChiefComplaints,
         "sanitize_excepts":[],
         'use_alert_error':true,
-        'beforeShow': () => {}
+        //'beforeShow': () => {}
         // "init": ()=>{
         //  }
     });
