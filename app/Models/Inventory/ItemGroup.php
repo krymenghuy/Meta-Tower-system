@@ -20,7 +20,7 @@ class ItemGroup extends Model
             $str_search ="(g.name LIKE '%$search_value%')";
         }
         $cols = "g.id,g.name,g.description,g.create_user,formatDate(g.created_at) as created_at";
-        return DB::table("inv_groups as g")->where('g.branch_id',$branch_id)->whereRaw($str_search)->selectRaw($cols)->orderByRaw("g.name ASC")->get();
+        return DB::table("inv_item_groups as g")->where('g.branch_id',$branch_id)->whereRaw($str_search)->selectRaw($cols)->orderByRaw("g.name ASC")->get();
         
     }
 
@@ -34,7 +34,7 @@ class ItemGroup extends Model
    static function commitDelete($ss,$id){
       $branch_id = $ss->branch_id;
       if(self::inUse($branch_id,$id)) return DV::error("Cannot delete group that is already in use");
-      $x = DB::table('inv_groups')->where('id',$id)->where('branch_id',$branch_id)->delete();
+      $x = DB::table('inv_item_groups')->where('id',$id)->where('branch_id',$branch_id)->delete();
       //if ($x) 
       return DV::success();
       //else return DV::error("Failed to delete inventory group");
@@ -43,7 +43,7 @@ class ItemGroup extends Model
    static function details($ss,$id){
         $branch_id = $ss->branch_id;
         $cols = "g.id,g.name,g.description,g.create_user,formatDate(g.created_at) as created_at";
-        $rows =  DB::table("inv_groups as g")->where('g.id',$id)->where('g.branch_id',$branch_id)->selectRaw($cols)->take(1)->get();
+        $rows =  DB::table("inv_item_groups as g")->where('g.id',$id)->where('g.branch_id',$branch_id)->selectRaw($cols)->take(1)->get();
         return isset($rows[0])?$rows[0]:null; 
    }
  
@@ -55,12 +55,12 @@ class ItemGroup extends Model
         'description'=>'0|string'
     ];
     
-    $check_unique = ["$branch_id|inv_groups|name|id=id|text=Group already exists"];
+    $check_unique = ["$branch_id|inv_item_groups|name|id=id|text=Group already exists"];
     $res = validateObject($d,$validate_rule,true,[],$ss->lang,false,$check_unique);
     if($res->error) return DV::error($res->error);
     $inputs = $res->values;
     $id = $res->id;
-    $id = saveData($ss,'inv_groups',['id'=>$id],$inputs,[],1);
+    $id = saveData($ss,'inv_item_groups',['id'=>$id],$inputs,[],1);
     if($id > 0) return DV::success(['id'=>$id]);
     return DV::error("Something went wrong during saving item group");
   }

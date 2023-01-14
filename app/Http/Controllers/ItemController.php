@@ -51,7 +51,7 @@ class ItemController extends Controller
         }
         if ($group_id >0) $str_group ="g.id =$group_id"; 
         //if ($brand_id >0) $str_brand ="g.id =$brand_id";
-        $rows = DB::table('inv_items as i')->join('inv_groups as g','g.id','=','i.group_id')->where('i.branch_id',$branch_id)->whereRaw($str_group)->whereRaw($str_search)->selectRaw("i.id,'Product' AS item_type,i.code,i.name,i.description,g.name as group_name,g.id as group_id,g.description,i.create_user,formatDate(i.created_at) as created_at")->orderByRaw("i.name ASC")->get();
+        $rows = DB::table('inv_items as i')->join('inv_item_groups as g','g.id','=','i.group_id')->where('i.branch_id',$branch_id)->whereRaw($str_group)->whereRaw($str_search)->selectRaw("i.id,'Product' AS item_type,i.code,i.name,i.description,g.name as group_name,g.id as group_id,g.description,i.create_user,formatDate(i.created_at) as created_at")->orderByRaw("i.name ASC")->get();
         return JDV::result($rows);
     }
      

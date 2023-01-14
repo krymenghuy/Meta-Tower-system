@@ -30,6 +30,7 @@ use App\Http\Controllers\QTicketController;
 use App\Http\Controllers\MedicalServiceController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ItemGroupController; 
+use App\Http\Controllers\CategoryController; 
 use App\Http\Controllers\EmployeeController;  
 use App\Http\Controllers\InventorySettingsController;
 
@@ -107,6 +108,13 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('inventory/delete-group', [ItemGroupController::class, 'deleteItemGroup']);
         Route::post('inventory/save-group', [ItemGroupController::class, 'saveItemGroup']);
     //End::ItemGroupController
+
+    //begin::CategoryController
+        Route::post('category/details', [CategoryController::class, 'getCategoryDetails']);
+        Route::post('category/list', [CategoryController::class, 'getCategories']);
+        Route::post('category/delete', [CategoryController::class, 'deleteCategory']);
+        Route::post('category/save', [CategoryController::class, 'saveCategory']);
+   //End::CategoryController
 
     //begin::EmployeeController
         Route::post('employee/details', [EmployeeController::class, 'getEmployeeDetails']);

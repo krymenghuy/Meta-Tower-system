@@ -1,9 +1,9 @@
 "use strict";
-let ProductsGroupComponent = new function(){
+let ItemGroupsComponent = new function(){
     let mThis = this;
     this.title_prop = 'Products Group';
     this.base_url = $('#__base_url').val();
-    this.self = $('#_main_productsGroupComponent');
+    this.self = $('#_main_itemGroupsComponent');
     this.btnNew = $('#_pdg_btnNew');
     this.elSearchItem = $('#_pdg_search');
     // this.elFilter_department = $('#_msl_filter_service');
@@ -213,7 +213,7 @@ let ProductsGroupDialog = new function(){
 
     //AppointmentDialog
     this.formUntil = new FormUntil({
-        "itemName":"Products Group",
+        "itemName":"Item Group",
         "formId":'_pdg_dlgProductGroup',
         "titleId":"_pdg_dlgProductGroup_title",
         //"errorId":"_msl_dlgService_error",
@@ -243,5 +243,5 @@ let ProductsGroupDialog = new function(){
 //end::MedicalServiceDialog
 
 $(document).ready(function() {
-    ProductsGroupComponent.init();
+    ItemGroupsComponent.init();
 });

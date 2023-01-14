@@ -83,6 +83,7 @@
                         <input type="number" class="form-control input-data" data-field="sell_rate" data_required="1" data-ffield="Sell Rate"/>
                     </div>
                 </div>
+                <div class="dialog-error" id="_ecr_dlgExchangeRate_detail_error"></div>
             </div>
             <div class="modal-footer">
                 <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">
