@@ -40,12 +40,12 @@
                 <div class="row gy-2">
                    <div class="col-6">
                         <label for="code" class="form-label trans-text" data-langprop="item_group.Category"></label>
-                        <select class="modal-select2 form-select data-input" data-field="category_id" data-required="1" data-ffield="Category"></select>
+                        <select id="_pdg_dlgProductGroup_cat" class="modal-select2 form-select data-input" data-field="category_id" data-required="1" data-ffield="Category"></select>
                     </div>
 
                     <div class="col-6">
                         <label for="code" class="form-label trans-text" data-langprop="item_group.SKU"></label>
-                        <select class="modal-select2 form-select data-input" data-field="unit_id" data-required="1" data-ffield="unit_id"></select>
+                        <select id="_pdg_dlgProductGroup_unit" class="modal-select2 form-select data-input" data-field="unit_id" data-required="1" data-ffield="unit_id"></select>
                     </div>
                 </div>
 

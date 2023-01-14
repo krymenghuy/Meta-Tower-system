@@ -210,6 +210,19 @@ let ItemGroupsComponent = new function(){
 let ProductsGroupDialog = new function(){
     let mThis = this;
     this.self = $(`#_pdg_dlgProductGroup`);
+     this.elCat = $(`#_pdg_dlgProductGroup_cat`);
+     //elUnit
+     this.elSKU = $(`#_pdg_dlgProductGroup_unit`);
+
+    this.prepareFormOptions = (onFinish)=>{
+       
+        vsapi.call(`${main_view.base_url}/api/group/form-options`,null).then(res=>{
+            if(res.status_code===200){
+                let d = StringSanitizer.sanitizeObject(res.data);
+                 onFinish(d);
+            }
+        });
+    }
 
     //AppointmentDialog
     this.formUntil = new FormUntil({
@@ -235,9 +248,16 @@ let ProductsGroupDialog = new function(){
         // "init": ()=>{
         //  }
     });
-
+     
     this.show = (options)=>{
-        mThis.formUntil.show(options);
+        mThis.prepareFormOptions(d=>{
+            let cats = d.categories;
+            let units = d.units;
+            VSUtil.setComboItems(mThis.elCat,cats,'id','category',true,'(select category)',null);
+            VSUtil.setComboItems(mThis.elSKU,units,'id','unit_name',true,'(select sku)',null);
+            mThis.formUntil.show(options);
+        });
+        
     }
 }
 //end::MedicalServiceDialog

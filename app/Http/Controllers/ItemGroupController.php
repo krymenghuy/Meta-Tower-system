@@ -52,5 +52,14 @@ class ItemGroupController extends Controller
         $row = ItemGroup::details($ss,$id);
         return JDV::result($row);
     }
+    function getFormOptions(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $branch_id = $ss->branch_id;
+        $data = (object)[];
+        $data->categories = DB::table('inv_categories')->where('branch_id',$branch_id)->selectRaw("id,name")->orderByRaw("name ASC")->get();
+        $data->units = DB::table('inv_units')->where('branch_id',$branch_id)->selectRaw("id,name")->orderByRaw("name ASC")->get();
+        return JDV::result($data);
+    }
 
 }

@@ -107,6 +107,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('inventory/groups', [ItemGroupController::class, 'getItemGroups']);
         Route::post('inventory/delete-group', [ItemGroupController::class, 'deleteItemGroup']);
         Route::post('inventory/save-group', [ItemGroupController::class, 'saveItemGroup']);
+        Route::post('group/form-options', [ItemGroupController::class, 'getFormOptions']);
     //End::ItemGroupController
 
     //begin::CategoryController
