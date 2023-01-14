@@ -321,6 +321,7 @@ let PatientDetails = new function () {
                 return false;
             }
         });
+
        
     }
 
@@ -495,16 +496,12 @@ let PatientDetails = new function () {
                     </div>`;
             div_wrapper.html(html);
             div_tab_pane = detail_tr.find(`div#${div_wrapper_id}`);
-
         } 
         div_tab_pane.show();
         //Display default tab view on Expandable Row. Every time when user (e.g: Receiptionist user) clicks to expand patient's details
         mThis.displayPatientTab(div_wrapper.find(`#${div_id}`),options.default_tab_view);
         //div_wrapper.slideDown(500);
-        ///todo: show detaul tab "Histosry"
-
-
-
+        ///todo: show detaul tab "History"
     }
  
     // this.showHistory = (div_panel) => {

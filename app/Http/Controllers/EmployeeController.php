@@ -42,8 +42,8 @@ class EmployeeController extends Controller
       if($ss->status_code !=200) return JDV::emptyResult($ss->status_code,null); //user not authenticated
       $branch_id = $ss->branch_id;
       $id = $req->id;
-      $rows = DB::table('employees as e')->join('persons as p','p.id','=','e.person_id')->where('e.id',$id)->where('e.branch_id',$branch_id)->selectRaw("e.id,e.code,p.name,p.first_name, p.last_name,p.sex, p.email, p.phone_number,e.create_user,formatDate(p.date_of_birth) as date_of_birth")->take(1)->get();
-      return JDV::result(isset($rows[0])?$rows[0]:null);  
+      $rows = DB::table('employees as e')->join('persons as p','p.id','=','e.person_id')->where('e.id',$id)->where('e.branch_id',$branch_id)->selectRaw("e.id,e.code,p.name,p.first_name, p.last_name,p.sex, p.email, p.phone_number,e.create_user,formatDate(p.date_of_birth) as date_of_birth,e.employment_type")->take(1)->get();
+      return JDV::result(isset($rows[0])?$rows[0]:null);
     }
 
     function getPersonId($emp_id){
@@ -81,6 +81,9 @@ class EmployeeController extends Controller
         $res = validateReq($req,$validate_rule,true,[],$ss->lang,false,$check_unique);
         if($res->error) return JDV::error($res->error);
         $inputs =$res->values;
+        $full_name = getNameParts($inputs['name']);
+        $inputs['first_name'] = $full_name->first_name;
+        $inputs['last_name'] = $full_name->last_name;
         $emp_id = $res->id; //emp_id
         $person_id = $inputs['person_id'];
        

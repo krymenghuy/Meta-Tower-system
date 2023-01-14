@@ -27,6 +27,8 @@
      this.mnuMedicalServices = $('#_main_lnkMedicalServices');
      this.mnuProducts = $('#_main_lnkProducts');
      this.mnuProductsGroup = $('#_main_lnkProductGroups');
+     this.mnuLaboPartners = $('#_main_lnkLaboPartners');
+     this.mnuExchangeRate = $('#_main_lnkExchangeRate');
 
      this.mnuPatientDashboard = $('#_main_lnkPatientDashboard');
      this.mnuOPDList = $('#_main_lnkOPDList');
@@ -166,6 +168,16 @@
                  this.mnuProductsGroup.on('click',(e)=>{
                     e.preventDefault();
                     ProductsGroupComponent.show(null);
+                 });
+
+                 this.mnuLaboPartners.on('click',(e)=>{
+                    e.preventDefault();
+                    LaboPartnersComponent.show(null);
+                 });
+
+                 this.mnuExchangeRate.on('click',(e)=>{
+                    e.preventDefault();
+                    ExchangeRateComponent.show(null);
                  });
 
                  this.mnuPatientInvoices.on('click',(e) => {

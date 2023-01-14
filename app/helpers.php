@@ -827,16 +827,19 @@ function readFileContent($fileName=null)
       
     function processInput($field_name=null,$val=null, $spec='',$lang =null){
         /***
-          1. 0|string|0|default:dsfdgdf
-          2. 1|string|5-25|default:sfdsfdf|first name is required
-          3. 1|string|default:active
-          4. 1|number|0|default:1
-          5. 1|object|default:null
-          6. 1|array|Fast,Normal|exactcase:1
-          7. 1|date|default:today
-          8. 1|timestamp|default:now,
-          9. 1|time|default:now
-         ***/
+          1. "prop_name"=> "0|string|0|default=dsfdgdf"
+          2. "prop_name"=> "1|string|5-25|default=sfdsfdf|first name is required"
+          3. "status"=>"1|string|default=active"
+          4. "age"=>"1|number|0|default=1"
+          5. "items"=>"1|object"
+          6. "type"=>"1|array|Fast,Normal"
+          7. "payment_date" => "1|date|default=@today"
+          8. "appointment_time"=>"1|timestamp|default=@now",
+          9. "other_time"=> "1|time|default=@now"
+          10. "cp_phone"=>"depend=cp_name,cp_email|string"   Means that "cp_phone" is required only when user inputs cp_name and cp_email
+          11. Example  "brand_id"=>"1|exists=inv_brands.id" or "group_id"=> "0|exists=inv_groups"  that means to check to ensure that the given @brancd_id exists in table "inv_brands" by primary field "id"
+ 
+          ***/
     
     $lang = Session('lang','en'); //default langauge to English
     $field_name = $field_name?str_replace('_',' ',$field_name):'Some field name'; //$field_name is used to show which technical field_name has validation error      
@@ -858,6 +861,16 @@ function readFileContent($fileName=null)
     $is_identity = getPropValue('identity',$part3,$part2); // example:  "id"=>"0|identity=1"
     $is_identity = $is_identity?(int)$is_identity:0;
 
+    //if the value is supplied, then check if there is exist_checking requred for one-to-one or one-to-many relationships.
+    //**** EXAMPLE  "brand_id"=>"1|exists=inv_brands.id" => check to ensure that the given @brancd_id exists in table "inv_brands" by primary field "id"
+    if ($val){
+        //if () return (object)['error'=>$val,'default_value'=>'ddd'];
+        $check_exists_rule = getPropValue('exists',$part2,$part3);
+        if($check_exists_rule){
+            if (!checkExists($check_exists_rule,$val))  return (object)['error'=>Localization::translate($lang,"$field_name ID is not valid or does not exist"),'default_value'=>null];  
+        }
+    }
+    
     if ($is_identity === 1)
         return (object)['error'=>null,'is_identity'=>1,'default_value'=>$val];
     else if ($part1==0 || $part1===false) 
@@ -986,21 +999,20 @@ function readFileContent($fileName=null)
                                 if ($b) return (object)['error'=>null,'default_value'=>$b];
                             }
                         }
-                        
-
                 }
                 else {
                     //This case can happen when $spec ="1|" or "1|default=1" where data_type is not specified as "string or as number?"
                     //This case can happen when $spec ="1|text=fdgfdgf:ddfgf1" where data_type is not specified as "string or as number?"
                     $def_val = getPropValue('default',$part2,null);
-
+                     
                     //NOTE thtat $def_val==0 => ($def_val) = false
                     if ($def_val || $def_val==0){
                         //return whatever value because data_type is not specified for validation
                         return (object)['error'=>null,'default_value'=>$def_val]; 
                     }else {
-                       if($part1===1) 
-                          return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name cannot be empty"),'default_value'=>null];
+                      
+                       if($part1===1)
+                            return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name cannot be empty"),'default_value'=>null];
                        else 
                           return (object)['error'=>null,'default_value'=>null]; /** NULL value is OK and no error **/
                     }
@@ -1018,7 +1030,7 @@ function readFileContent($fileName=null)
                 }else {
                     //In this case : "address"=>"depend=name,email!phone_number|string"  
                             $dep_fields = explode(',',$ff?$ff:'');
-                            $all_exps = true;  //All dependecy fields have values
+                            $all_exps = true;  //All dependency fields have values
                             foreach($dep_fields as $dField){
                                 $or_exp=false;//one of the dependency field has value ( false = not have value)
                                 $or_fields = explode('!',$dField);
@@ -1072,6 +1084,19 @@ function readFileContent($fileName=null)
         return $sanitize? Sanitizer::sanitize($val,$sanitize_options,$allow_raw):$val;
      }
 
+     //returns true if exists. If @check_exists_rule or @val is not supplied = > it returns TRUE
+     function checkExists($check_exists_rule="",$val=null){
+        if(!$val || !$check_exists_rule) return true;
+        $exists_rule_parts = explode(".",$check_exists_rule);
+        $table_name = $exists_rule_parts[0];
+        if($table_name){
+            $exist_col = isset($exists_rule_parts[1])?$exists_rule_parts[1]:'id';
+            $row = getDataRow($table_name,[$exist_col=>$val],$exist_col);
+            return $row?true:false;          
+        }
+        return true;
+     }
+
      //NOTE: 
      /*** validateReq() | getValues() ***/
      /***
@@ -1087,6 +1112,7 @@ function readFileContent($fileName=null)
 
         $d = $req->all();
         $outputs = [];
+        //$to_check_unique = isset($unique_specs);
         foreach($fields as $field=>$spec){
               $val = null;
               $op = null;
@@ -1124,12 +1150,14 @@ function readFileContent($fileName=null)
                 $part4= $parts[3]; //example  "id=person_id" where "id" is the table PK field name and "person_id" is the data's prop that contains id value
                 $parts1 = explode('=',$part4); //"id=person_id"
                 $pk_field_name = isset($parts1[0])?$parts1[0]:null;
-                $pk_value =null; 
+                $pk_value =null;
+
                 if($pk_field_name){
                         $pk_input_prop = isset($parts1[1])?$parts1[1]:null;
                         if (!$pk_input_prop) $pk_input_prop = $identity_field;
                         $pk_value= isset($d[$pk_input_prop])?$d[$pk_input_prop]:null;
                 }
+                //return (object)["error"=>"err: $pk_field_name ".$d['cost'],"default_value"=>""]; 
                 if ($u_spec && $val) $unique_error = checkUnique($d,$pk_field_name,$pk_value,$u_spec,$lang,$langSection);  
                 if ($unique_error){
                    $trans_err = Localization::translate($lang,$unique_error,null,$lang,$langSection,);
@@ -1238,7 +1266,7 @@ function readFileContent($fileName=null)
         $branch_id = $parts[0];
         $table = $parts[1];
         $field_list = explode(',',$parts[2]);
-       
+        
         $m_where ="";
         $select_cols =$pk_field_name; //presume a default. That all tables have a "id" column
         //$checking_field_cnt = 0;
@@ -1258,8 +1286,9 @@ function readFileContent($fileName=null)
                 }
              }
              if ($has_or) $where_con = "($where_con)";
-             $m_where .= ($m_where? ' AND ':'').$where_con; 
+             $m_where .= ($m_where? ' AND ':'').$where_con;
         }
+
         //Following line => do not check duplicate for NULL value or Zero value for the target field
         if ($i===0) return null;  
         $str_pk = "";

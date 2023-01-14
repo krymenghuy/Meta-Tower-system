@@ -86,23 +86,24 @@ class ItemController extends Controller
           "id"=>"0|number|identity=1",
           "name"=>"1|string|1-150",
           "description"=>"0|string",
-          "group_id"=>"1|positive|exists=inv_groups,id",
           "brand_id"=>"0|number|default=0",
-          "manufacturer_id"=>"0|number|default=0",
+          "manufacturer_id"=>"0|default=0",
           "cost"=>"0|number|default=0",
-          "made_in_country_id"=>"0|number",
-          "unit_id"=>"1|number|text=Stock Keeping Unit is required"
+          "made_in_country_id"=>"0|exists=inv_countries",
+          "unit_id"=>"0|exists=inv_units|text=SKU is required",
+          "group_id"=>"0|positive"
         ];
-        $check_unique = ["$branch_id|inv_items|name|id=id"];
+        $check_unique = ["$branch_id|inv_items|name|id=id|text=item name already exists"];
+        
         $res = validateReq($req,$validate_rule,true,[],$ss->lang,false,$check_unique);
         if($res->error) return JDV::error($res->error);
         $inputs =$res->values;
         $id = $res->id;
         
-        $unit_id = $inputs['unit_id'];
-        $unit = StockUnit::info($unit_id);
-        if (!$unit) return JDV::error("Unit ID id not valid. There is no valid SKU found!");
-        $inputs['sku'] = $unit->name; 
+        //$unit_id = $inputs['unit_id'];
+        //$unit = StockUnit::info($unit_id);
+        //if (!$unit) return JDV::error("Unit ID id not valid. There is no valid SKU found!");
+        //$inputs['sku'] = $unit->name; 
         $id = saveData($ss,'inv_items',['id'=>$id],$inputs,[],1);
         if($id > 0){
           $new_code = setOfficialCode($branch_id,'inv_item_code_control','inv_items',['id'=>$id],$def_prefix,$def_code_length);  

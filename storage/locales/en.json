@@ -84,6 +84,8 @@
 		"Email":"Email"
 	},
 	"employees":{},
+	"partners":{},
+	"currencies":{},
 	"buttons":{
         "Cancel":"Cancel",
 		"Add":"Add",

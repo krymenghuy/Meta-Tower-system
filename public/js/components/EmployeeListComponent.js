@@ -12,14 +12,16 @@ let EmployeeListComponent = new function(){
 
     this.col_titles = {
         "No.":"No.",
-        "Code":"Code",
+        "ID":"ID",
         "Name":"Name",
         "First Name":"First Name",
         "Last Name":"Last Name",
         "Sex":"Sex",
         "Email":"Email",
         "Phone Number":"Phone Number",
-        "Date Of Birth":"Date Of Birth"
+        "Date Of Birth":"Date Of Birth",
+        "Employee Type":"Employee Type",
+        "Action":"Action"
     };
 
     this.trans_title = (title_prop='undefined')=>{
@@ -49,6 +51,34 @@ let EmployeeListComponent = new function(){
 
         mThis.elSearchItem.on('keyup',(e)=>{
             if(e.keyCode === 13) mThis.displayemployeeList();
+        });
+
+        mThis.tblItems.on('click','.btn_epl_modify',function(e){
+            let item_id = $(this).data("id");
+            let op = {
+                id:item_id,
+                onClose:(e)=>{
+                     //do something on dialog closed
+                     if(e){
+                         mThis.displayemployeeList();
+                     }
+                }
+            };
+            EmployeeListDialog.show(op); 
+        });
+
+        mThis.tblItems.on('click','.btn_epl_delete',function(e){
+            let item_id = $(this).data("id");
+            cv_interact.confirm(`Delete this employee?`,{title:"Delete Employee",context:"delete"},(yes)=>{
+                if(yes){
+                    let p = {"id":item_id};
+                    vsapi.call(`${main_view.base_url}/api/employee/delete`,p).then(res=>{
+                       if(res.status_code===200){
+                          mThis.displayemployeeList();
+                       }else cv_interact.error(res.error_message);
+                    });
+                }
+            });
         });
     }
 
@@ -81,19 +111,11 @@ let EmployeeListComponent = new function(){
                 },
                 {
                     data:"code",
-                    title: mThis.trans_title('Code')
+                    title: mThis.trans_title('ID')
                 },
                 {
                     title: mThis.trans_title('Name'),
                     data:"name"
-                },
-                {
-                    title: mThis.trans_title('First Name'),
-                    data:"first_name"
-                },
-                {
-                    title: mThis.trans_title('Last Name'),
-                    data:"last_name"
                 },
                 {
                     title: mThis.trans_title('Sex'),
@@ -110,6 +132,23 @@ let EmployeeListComponent = new function(){
                 {
                     title: mThis.trans_title('Date Of Birth'),
                     data: "date_of_birth"
+                },
+                {
+                    title: mThis.trans_title('Employee Type'),
+                    data: "employment_type"
+                },
+                {
+                    title:mThis.trans_title('Action'),
+                    data: function(data,a,b){
+                        let status_class = null; //mThis.getStatusClass(data.status_id);
+                        return [`<div class="form-inline">`,
+                        `<a href="javascript:void(0)" class="btn_co_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
+                        `<a href="javascript:void(0)" class="btn_epl_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
+                        `<a href="javascript:void(0);" data-id="${data.id}" class="btn_epl_delete"><i class="fa fa-trash" style="color:red"></i></a>`,
+                        `&nbsp;<a href="#" data-id="${data.id}" class="btn_pat_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
+                        `</div>`
+                       ].join('');
+                    }
                 }
             ];
             //END Define colum
@@ -163,21 +202,21 @@ let EmployeeListComponent = new function(){
 //begin::MedicalServiceDialog
 let EmployeeListDialog = new function(){
     let mThis = this;
-    this.self = $(`#_prc_tblReciept`);
+    this.self = $(`#_epl_dlgEmployee`);
 
     //AppointmentDialog
     this.formUntil = new FormUntil({
-        "itemName":"Patient Reciepts",
-        "formId":'_prc_dlgReciept',
-        "titleId":"_prc_dlgReciept_title",
+        "itemName":"Employee List",
+        "formId":'_epl_dlgEmployee',
+        "titleId":"_epl_dlgEmployee_title",
         //"errorId":"_msl_dlgService_error",
-        //"saveButtonId":"_msl_dlgService_btnSave",
+        "saveButtonId":"_epl_btnSave",
         "instance":this,
-        "apiSave":`${main_view.base_url}/api/inventory/save-item`,
-        //"apiGet":`${main_view.base_url}/api/inventory/details-item`,
+        "apiSave":`${main_view.base_url}/api/employee/save`,
+        "apiGet":`${main_view.base_url}/api/employee/details`,
         //"identityProp":"id",
         //"modifyTitle":"Modify Product Group",
-        "createTitle":"New Reciept",
+        "createTitle":"New Employee",
         "identityProps":['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props":['id'],

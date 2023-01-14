@@ -266,14 +266,6 @@
                                 &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Positions">Positions</span>
                             </a>
                         </li>
-                        <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkDepartments" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/department.svg')}}"/>
-                                </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Departments">Departments</span>
-                            </a>
-                        </li>
                     </ul>
                 </div>
             </li>
@@ -503,6 +495,13 @@
                                 <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
                                 &nbsp;<span class="kt-menu__link-text trans-text"
                                     data-langprop="menus.Locations">Locations</span>
+                            </a>
+                        </li>
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="javascript:void(0)" id="_main_lnkExchangeRate" class="menu-item kt-menu__link">
+                                <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
+                                &nbsp;<span class="kt-menu__link-text trans-text"
+                                    data-langprop="menus.Exchange Rate">Exchange Rate</span>
                             </a>
                         </li>
 
