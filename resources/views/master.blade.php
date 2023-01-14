@@ -634,6 +634,7 @@
                             @include('layouts.productsComponent')
                             @include('layouts.productsGroupComponent')
                             @include('layouts.patientListComponent')
+                            @include('layouts.expenseBookComponent')
                             @include('layouts.reportCenterComponent')
                             @include('layouts.companyComponent')
                             @include('layouts.locationComponent')

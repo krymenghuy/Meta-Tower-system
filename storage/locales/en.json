@@ -86,6 +86,7 @@
 	"employees":{},
 	"partners":{},
 	"currencies":{},
+	"expenses":{},
 	"buttons":{
         "Cancel":"Cancel",
 		"Add":"Add",

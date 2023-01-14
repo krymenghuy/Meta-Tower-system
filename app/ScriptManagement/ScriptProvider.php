@@ -110,6 +110,7 @@ namespace App\ScriptManagement;
                         '/js/components/ProductsGroupComponent.js',
                         '/js/components/PatientFinderComponent.js',
                         '/js/components/PatientListComponent.js',
+                        '/js/components/ExpenseBookComponent.js',
                         '/js/components/ReportCenterComponent.js',
                         '/js/components/InputBoxes.js',
                         '/js/components/FindPersonDialog.js',
