@@ -1,13 +1,13 @@
 #! /bin/bash
 
-CHAT_ID="-1001725503298"
-BOT_TOKEN=5479701203:AAE9-RAdSL8uRjSdlSdMuWtUKHg0aJF3lvU
+CHAT_ID=${CHAT_ID}
+BOT_TOKEN=${BOT_TOKEN}
 
 
 L="------------------------------------------------------"
 Log=$(git log -n 1 --pretty=format:"<b>COMMITER</b>: %cN %n<b>DATE</b>: %ci %n<b>MESSAGE</b>: %s")
-Server="<b>Server</b>: VPS-01"
-MSG="${L}%0A<b>PROJECT</b>: MCLINIC%0A<b>APPLICATION</b>: LARAVEL API%0A<b>STATUS</b>:  Failed%0A<b>VERSION</b>: ${BUILD_NUMBER}%0A${L}%0A${Log}%0A${L}%0A${Server}%0A${L}"
+Server="<b>Server</b>: Shared Hosting"
+MSG="${L}%0A<b>PROJECT</b>: MCLINIC%0A<b>APPLICATION</b>: LARAVEL%0A<b>STATUS</b>:  Failed%0A<b>VERSION</b>: ${BUILD_NUMBER}%0A${L}%0A${Log}%0A${L}%0A${Server}%0A${L}"
 
 
 
