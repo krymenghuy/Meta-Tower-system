@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2023-01-14 13:20:58
+Date: 2023-01-14 18:06:39
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -553,6 +553,61 @@ INSERT INTO `inv_brands` VALUES ('121', 'Vectorasoft', null, '2023-01-06 15:53:3
 INSERT INTO `inv_brands` VALUES ('122', 'Vectorasoft', null, '2023-01-06 15:56:58.000000', 'Samsethy', '1', null, null, null, 'Vectorasoft');
 
 -- ----------------------------
+-- Table structure for `inv_categories`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_categories`;
+CREATE TABLE `inv_categories` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `description` varchar(250) DEFAULT NULL,
+  `parent_group_id` int(10) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  `item_class` varchar(50) DEFAULT NULL COMMENT 'item_class ={RM,FG,MI}. RM = Raw Materials, FG = Finsihed Goods, MI = Merchandising Items',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_categories
+-- ----------------------------
+INSERT INTO `inv_categories` VALUES ('1', '1', 'Topical Product', 'Admin', '1', '2023-01-14 16:33:59.575929', 'Topical Product', null, '2023-01-14 16:33:59.575929', null, null, 'MI');
+INSERT INTO `inv_categories` VALUES ('2', '1', 'Oral Medicine', 'Admin', '1', '2023-01-14 16:34:01.112554', 'Oral Medicine', null, '2023-01-14 16:34:01.112554', null, null, 'MI');
+INSERT INTO `inv_categories` VALUES ('3', '1', 'Equipment', 'Admin', '1', '2023-01-14 16:34:02.352747', 'Equipment', null, '2023-01-14 16:34:02.352747', 'Samsethy', '1', 'MI');
+INSERT INTO `inv_categories` VALUES ('4', '1', 'Injection', 'Admin', '1', '2023-01-14 16:34:03.661090', 'Injection', null, '2023-01-14 16:34:03.661090', null, null, 'MI');
+INSERT INTO `inv_categories` VALUES ('5', '1', 'Sale product', 'Admin', '1', '2023-01-14 16:34:04.815243', 'Sale product', null, '2023-01-14 16:34:04.815243', null, null, 'MI');
+INSERT INTO `inv_categories` VALUES ('8', '1', 'test gtoup', 'Samsethy', '1', '2023-01-14 16:34:09.549279', 'New group', null, '2023-01-14 16:34:09.549279', null, null, 'MI');
+
+-- ----------------------------
+-- Table structure for `inv_classes`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_classes`;
+CREATE TABLE `inv_classes` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `code` varchar(5) NOT NULL COMMENT 'code ={A,B,C, etc...}',
+  `name` varchar(50) NOT NULL COMMENT 'name ={"For Sales","Internal Usage"}',
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `create_user` varchar(50) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_classes
+-- ----------------------------
+INSERT INTO `inv_classes` VALUES ('1', '1', 'A', 'For Sales', '2023-01-14 15:21:34.162570', 'Admin', '1', '2023-01-14 15:21:34.162570', null, null);
+INSERT INTO `inv_classes` VALUES ('2', '1', 'B', 'Internal Usage', '2023-01-14 15:21:34.574335', 'Admin', '1', '2023-01-14 15:21:34.574335', null, null);
+INSERT INTO `inv_classes` VALUES ('3', '1', 'C', 'Charitty', null, 'Admin', '1', null, null, null);
+
+-- ----------------------------
 -- Table structure for `inv_countries`
 -- ----------------------------
 DROP TABLE IF EXISTS `inv_countries`;
@@ -590,48 +645,6 @@ CREATE TABLE `inv_finished_goods` (
 -- ----------------------------
 -- Records of inv_finished_goods
 -- ----------------------------
-
--- ----------------------------
--- Table structure for `inv_groups`
--- ----------------------------
-DROP TABLE IF EXISTS `inv_groups`;
-CREATE TABLE `inv_groups` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `branch_id` int(10) NOT NULL,
-  `name` varchar(150) NOT NULL,
-  `create_user` varchar(50) DEFAULT NULL,
-  `create_uid` int(10) DEFAULT NULL,
-  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `description` varchar(250) DEFAULT NULL,
-  `parent_group_id` int(10) DEFAULT NULL,
-  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `update_user` varchar(50) DEFAULT NULL,
-  `update_uid` int(10) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
-
--- ----------------------------
--- Records of inv_groups
--- ----------------------------
-INSERT INTO `inv_groups` VALUES ('1', '1', 'Topical Product', 'Admin', '1', '2023-01-09 15:19:39.772108', 'Topical Product', null, null, null, null);
-INSERT INTO `inv_groups` VALUES ('2', '1', 'Oral Medicine', 'Admin', '1', '2023-01-09 15:19:39.772108', 'Oral Medicine', null, null, null, null);
-INSERT INTO `inv_groups` VALUES ('3', '1', 'Equipment', 'Admin', '1', '2023-01-09 15:19:39.772108', 'Equipment', null, null, null, null);
-INSERT INTO `inv_groups` VALUES ('4', '1', 'Injection', 'Admin', '1', '2023-01-09 15:19:39.772108', 'Injection', null, null, null, null);
-INSERT INTO `inv_groups` VALUES ('5', '1', 'Sale product', 'Admin', '1', '2023-01-09 15:19:39.772108', 'Sale product', null, null, null, null);
-INSERT INTO `inv_groups` VALUES ('7', '1', 'New groupsfsdfsd', 'Samsethy', '1', '2023-01-10 00:07:58.000000', 'New group', null, null, null, null);
-INSERT INTO `inv_groups` VALUES ('8', '1', 'test gtoup', 'Samsethy', '1', '2023-01-10 00:09:53.000000', 'New group', null, null, null, null);
-INSERT INTO `inv_groups` VALUES ('9', '1', 'test gtoup sdfdgfd', 'Samsethy', '1', '2023-01-10 00:12:11.000000', 'New group', null, null, null, null);
-INSERT INTO `inv_groups` VALUES ('10', '1', 'test gtoup sdfdfggfd', 'Samsethy', '1', '2023-01-10 12:28:33.000000', 'New group', null, null, null, null);
-INSERT INTO `inv_groups` VALUES ('11', '1', 'test gtoup fggfd', 'Samsethy', '1', '2023-01-10 13:17:09.000000', 'New group', null, null, null, null);
-INSERT INTO `inv_groups` VALUES ('12', '1', 'test gtop fggfd', 'Samsethy', '1', '2023-01-10 13:17:36.000000', 'New group', null, null, null, null);
-INSERT INTO `inv_groups` VALUES ('13', '1', 'test sdsd', 'Samsethy', '1', '2023-01-10 13:21:03.000000', 'New group', null, null, null, null);
-INSERT INTO `inv_groups` VALUES ('14', '1', 'test sdd', 'Samsethy', '1', '2023-01-10 13:21:08.000000', 'New group', null, null, null, null);
-INSERT INTO `inv_groups` VALUES ('15', '1', 'test d sdd', 'Samsethy', '1', '2023-01-10 13:34:28.000000', 'New group', null, null, null, null);
-INSERT INTO `inv_groups` VALUES ('16', '1', 'test d sdfd', 'Samsethy', '1', '2023-01-10 13:36:02.000000', 'New group', null, null, null, null);
-INSERT INTO `inv_groups` VALUES ('17', '1', 'test d sddfd', 'Samsethy', '1', '2023-01-10 13:36:57.000000', 'New group', null, null, null, null);
-INSERT INTO `inv_groups` VALUES ('18', '1', 'test d sdsdfdfd', 'Samsethy', '1', '2023-01-10 14:19:49.000000', 'New group', null, null, null, null);
-INSERT INTO `inv_groups` VALUES ('19', '1', 'test d sdsdsdfdfd', 'Samsethy', '1', '2023-01-10 14:31:13.000000', 'New group', null, null, null, null);
-INSERT INTO `inv_groups` VALUES ('20', '1', 'tesdfdfd', 'Samsethy', '1', '2023-01-10 14:44:02.000000', 'New group', null, null, null, null);
 
 -- ----------------------------
 -- Table structure for `inv_items`
@@ -1052,10 +1065,57 @@ CREATE TABLE `inv_item_code_control` (
 INSERT INTO `inv_item_code_control` VALUES ('1', '125', null, null);
 
 -- ----------------------------
--- Table structure for `inv_item_varriances`
+-- Table structure for `inv_item_groups`
 -- ----------------------------
-DROP TABLE IF EXISTS `inv_item_varriances`;
-CREATE TABLE `inv_item_varriances` (
+DROP TABLE IF EXISTS `inv_item_groups`;
+CREATE TABLE `inv_item_groups` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `description` varchar(250) DEFAULT NULL,
+  `parent_group_id` int(10) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  `category_id` int(10) DEFAULT NULL,
+  `code` varchar(20) NOT NULL,
+  `brand_name` varchar(100) DEFAULT NULL,
+  `manufacturer_id` int(10) DEFAULT NULL,
+  `upc` varchar(10) DEFAULT NULL,
+  `sku` varchar(20) DEFAULT NULL,
+  `unit_id` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_item_groups
+-- ----------------------------
+INSERT INTO `inv_item_groups` VALUES ('1', '1', 'Topical Product', 'Admin', '1', '2023-01-09 15:19:39.772108', 'Topical Product', null, null, null, null, null, '', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('2', '1', 'Oral Medicine', 'Admin', '1', '2023-01-09 15:19:39.772108', 'Oral Medicine', null, null, null, null, null, '', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('3', '1', 'Equipment', 'Admin', '1', '2023-01-09 15:19:39.772108', 'Equipment', null, null, null, null, null, '', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('4', '1', 'Injection', 'Admin', '1', '2023-01-09 15:19:39.772108', 'Injection', null, null, null, null, null, '', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('5', '1', 'Sale product', 'Admin', '1', '2023-01-09 15:19:39.772108', 'Sale product', null, null, null, null, null, '', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('8', '1', 'test gtoup', 'Samsethy', '1', '2023-01-10 00:09:53.000000', 'New group', null, null, null, null, null, '', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('9', '1', 'test gtoup sdfdgfd', 'Samsethy', '1', '2023-01-10 00:12:11.000000', 'New group', null, null, null, null, null, '', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('10', '1', 'test gtoup sdfdfggfd', 'Samsethy', '1', '2023-01-10 12:28:33.000000', 'New group', null, null, null, null, null, '', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('11', '1', 'test gtoup fggfd', 'Samsethy', '1', '2023-01-10 13:17:09.000000', 'New group', null, null, null, null, null, '', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('12', '1', 'test gtop fggfd', 'Samsethy', '1', '2023-01-10 13:17:36.000000', 'New group', null, null, null, null, null, '', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('13', '1', 'test sdsd', 'Samsethy', '1', '2023-01-10 13:21:03.000000', 'New group', null, null, null, null, null, '', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('14', '1', 'test sdd', 'Samsethy', '1', '2023-01-10 13:21:08.000000', 'New group', null, null, null, null, null, '', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('15', '1', 'test d sdd', 'Samsethy', '1', '2023-01-10 13:34:28.000000', 'New group', null, null, null, null, null, '', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('16', '1', 'test d sdfd', 'Samsethy', '1', '2023-01-10 13:36:02.000000', 'New group', null, null, null, null, null, '', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('17', '1', 'test d sddfd', 'Samsethy', '1', '2023-01-10 13:36:57.000000', 'New group', null, null, null, null, null, '', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('18', '1', 'test d sdsdfdfd', 'Samsethy', '1', '2023-01-10 14:19:49.000000', 'New group', null, null, null, null, null, '', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('19', '1', 'test d sdsdsdfdfd', 'Samsethy', '1', '2023-01-10 14:31:13.000000', 'New group', null, null, null, null, null, '', null, null, null, null, null);
+
+-- ----------------------------
+-- Table structure for `inv_item_varriances_del`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_item_varriances_del`;
+CREATE TABLE `inv_item_varriances_del` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `variance_code` varchar(25) DEFAULT NULL,
   `name` varchar(150) NOT NULL,
@@ -1068,7 +1128,7 @@ CREATE TABLE `inv_item_varriances` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Records of inv_item_varriances
+-- Records of inv_item_varriances_del
 -- ----------------------------
 
 -- ----------------------------
@@ -1374,25 +1434,26 @@ INSERT INTO `inv_units` VALUES ('11', 'pcs', 'pcs', null, '0', '0');
 -- ----------------------------
 DROP TABLE IF EXISTS `inv_warehouses`;
 CREATE TABLE `inv_warehouses` (
-  `id` int(10) NOT NULL,
+  `id` int(10) NOT NULL AUTO_INCREMENT,
   `branch_id` int(10) NOT NULL,
   `name` varchar(250) NOT NULL,
-  `description` varchar(250) DEFAULT NULL,
-  `lat` decimal(10,0) DEFAULT NULL,
-  `lng` decimal(10,0) DEFAULT NULL,
   `create_uid` int(10) DEFAULT NULL,
   `create_user` varchar(50) DEFAULT NULL,
   `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   `update_user` varchar(50) DEFAULT NULL,
   `update_uid` int(10) DEFAULT NULL,
+  `address` varchar(250) DEFAULT NULL,
+  `loc_lng` decimal(10,0) DEFAULT NULL,
+  `loc_lat` decimal(10,0) DEFAULT NULL,
+  `decription` varchar(250) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_warehouses
 -- ----------------------------
-INSERT INTO `inv_warehouses` VALUES ('1', '1', 'Defaut Warehosue', 'Default warehouse', '0', '0', null, null, null, null, null, null);
+INSERT INTO `inv_warehouses` VALUES ('1', '1', 'Default warehouse', '1', 'Admin', null, null, null, null, null, null, null, 'Default warehouse');
 
 -- ----------------------------
 -- Table structure for `leads`
@@ -3209,12 +3270,12 @@ CREATE TABLE `um_sessions` (
   `status` varchar(10) DEFAULT NULL COMMENT 'status ={online,offline}',
   `lang` varchar(50) DEFAULT 'en',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1764 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1768 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of um_sessions
 -- ----------------------------
-INSERT INTO `um_sessions` VALUES ('1763', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-01-14 11:48:57', '2023-01-14 11:48:57', 'fc31T5LQ4yybjRKmuo5jMrQjub1jZ82yA7EnES', 'nKaC3a4oFNsryfp8q0L6J8kru9C6CKuzpfWwQb', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjczNjcxNzM3LCJuYmYiOjE2NzM2NzE3MzcsImV4cCI6MTY3MzY3NTMzNywibGFuZyI6ImVuIiwidXNlcl9jbGFzcyI6ImFkbWluIiwib2ZmaWNpYWxfaWQiOm51bGwsImlkIjoxLCJsb2dpbl9uYW1lIjoiYWRtaW5AZ21haWwuY29tIiwiYnJhbmNoX2lkIjoxLCJmdWxsX25hbWUiOiJTYW1zZXRoeSIsInN0YXR1cyI6ImFjdGl2ZSIsImlzX2xvY2tlZCI6MCwiZW1haWwiOm51bGwsInBob25lX251bWJlciI6IjAxMjU3ODkwIiwib3RwX2NvZGUiOm51bGx9.OgU0T1uoYnD39zz2gyRgIFB_jzvRwPpjERNaHW8w_hc', null, 'en');
+INSERT INTO `um_sessions` VALUES ('1767', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-01-14 17:36:39', '2023-01-14 17:36:39', 'ni00U5qFRr4oruF8OZ5vln8kTmVXO4M6Jv7LTy', 'Z26gL4Pn5V4UMSOvjHRzaH0XJNTPwVDJ4ZrmB9', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjczNjkyNTk5LCJuYmYiOjE2NzM2OTI1OTksImV4cCI6MTY3MzY5NjE5OSwibGFuZyI6ImVuIiwidXNlcl9jbGFzcyI6ImFkbWluIiwib2ZmaWNpYWxfaWQiOm51bGwsImlkIjoxLCJsb2dpbl9uYW1lIjoiYWRtaW5AZ21haWwuY29tIiwiYnJhbmNoX2lkIjoxLCJmdWxsX25hbWUiOiJTYW1zZXRoeSIsInN0YXR1cyI6ImFjdGl2ZSIsImlzX2xvY2tlZCI6MCwiZW1haWwiOm51bGwsInBob25lX251bWJlciI6IjAxMjU3ODkwIiwib3RwX2NvZGUiOm51bGx9.S03YHqS-CeV6ioVEcLziTwS00Wq55DzLNNM8HAMnPaw', null, 'en');
 
 -- ----------------------------
 -- Table structure for `um_users`
@@ -3326,5 +3387,4 @@ INSERT INTO `vital_signs` VALUES ('1', 'body_temperatur', 'Body temperature', 'n
 INSERT INTO `vital_signs` VALUES ('2', 'impulse_rate', 'Impulse rate', 'number', '1', null, '2022-11-28 18:37:38', '1', '1', '-1');
 INSERT INTO `vital_signs` VALUES ('3', 'respiration_', 'Respiration Rate', 'number', '1', null, '2022-11-28 18:37:57', '1', '1', '-1');
 INSERT INTO `vital_signs` VALUES ('4', 'Blood pressure', 'Blood pressure', 'number', '1', null, '2022-11-28 18:38:00', '1', '1', '-1');
-
  
