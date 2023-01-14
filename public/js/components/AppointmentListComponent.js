@@ -470,7 +470,7 @@
          let p = {'search_value':mThis.elSearchAppt.val(),'date':mThis.appt_filter_date.val(),'status_id':mThis.appt_filter_status.val()};
          window.vsapi.call(`${mThis.base_url}/api/appointment/list`,p,'POST',null).then((result)=>{
              let data = [];
-             if(result.status_code ===200) data = result.data;
+             if(result.status_code === 200) data = result.data;
              if (mThis.table){
                      mThis.tblAppointments.DataTable().clear().destroy();
                      //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"

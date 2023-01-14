@@ -29,7 +29,15 @@ class PartnerController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
         $branch_id = $ss->branch_id;
-        $rows = DB::table('partners as p')->where('p.branch_id',$branch_id)->selectRaw("p.id,p.name,email,address,phone_number,phone_number1,partner_type,person_id,cp_name,cp_phone_number,cp_email")->get(); 
+        $search_value = $req->search_value;
+        $str_search ="1=1";
+        if($search_value){
+            $search_value = escape_like_str($search_value);
+            $str_search ="(p.phone_number ='$search_value' OR p.cp_phone_number ='$search_value' OR  p.name LIKE '%$search_value%')";
+        }
+        
+
+        $rows = DB::table('partners as p')->where('p.branch_id',$branch_id)->whereRaw($str_search)->selectRaw("p.id,p.name,email,address,phone_number,phone_number1,partner_type,person_id,cp_name,cp_phone_number,cp_email")->get(); 
         return JDV::result($rows);
     }
  
@@ -43,15 +51,15 @@ class PartnerController extends Controller
             'name'=>'1|string|1-250',
             'address'=>'0|string',
             'email'=>'0|email',
-            'phone_number'=>'0|phone',
+            'phone_number'=>'1|phone|1-20',
             'phone_number1'=>'0|phone',
-            'partner_type'=>'0|choice|person,institution',
+            'partner_type'=>'1|choice|person,institution',
             'cp_name'=>'0|string',
-            'cp_phone_number'=>'0|phone',
+            'cp_phone_number'=>'1|phone|1-20',
             'cp_email'=>'0|email'
         ];
         $check_unique = ["$branch_id|partners|name|id=id"];
-        $res = validateReq($req,$validate_rule,true,[],$ss->lang,false,$check_unique);
+        $res = validateReq($req,$validate_rule,true,["cp_email"=>['@','-','.'],"email"=>['@','-','.']],$ss->lang,false,$check_unique);
         if($res->error) return JDV::error($res->error);
         $inputs = $res->values;
       

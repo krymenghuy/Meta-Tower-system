@@ -5,9 +5,9 @@ let LaboPartnersComponent = new function(){
     this.base_url = $('#__base_url').val();
     this.self = $('#_main_laboPartnersComponent');
     this.btnNew = $('#_lbp_btnNew');
-    this.elSearchItem = $('#_lbp_input_search');
+    this.elSearchPartner = $('#_lbp_input_search');
     // this.elFilter_department = $('#_msl_filter_service');
-    this.tblItems = $('#_lbp_tblLaboPartners');
+    this.tblPartners = $('#_lbp_tblLaboPartners');
     // this.form_data = {};
 
     this.col_titles = {
@@ -16,8 +16,9 @@ let LaboPartnersComponent = new function(){
         "Name":"Name",
         "Email":"Email",
         "Phone":"Phone",
-        "Partner Name":"Partner Name",
-        "Partner Phone":"Partner Phone",
+        "CP Name":"CP Name",
+        "CP Phone":"CP Phone",
+        "Partner Type":"Partner Type",
         "Address":"Address",
         "Action":"Action"
     };
@@ -47,8 +48,37 @@ let LaboPartnersComponent = new function(){
             LaboPartnersDialog.show(op);
         });
 
-        mThis.elSearchItem.on('keyup',(e)=>{
-            if(e.keyCode === 13) mThis.displaylaboPartners();
+        mThis.elSearchPartner.on('keyup',(e)=>{
+            e.preventDefault();
+            if(e.keyCode === 13) {mThis.displaylaboPartners();}
+        });
+
+        mThis.tblPartners.on('click','.btn_lbp_modify',function(e){
+            e.preventDefault();
+            let item_id = $(this).data('id');
+            let op = {
+                id: item_id,
+                onClose:(e)=>{
+                    if(e)
+                        mThis.displaylaboPartners();
+                }
+            };
+            LaboPartnersDialog.show(op);
+        });
+
+        mThis.tblPartners.on('click','.btn_lbp_delete',function(e){
+            e.preventDefault();
+            let partner_id = $(this).data("id");
+            cv_interact.confirm(`Delete this partner?`,{title:"Delete Partner",context:"delete"},(yes)=>{
+                if(yes){
+                    let p = {"id":partner_id};
+                    vsapi.call(`${main_view.base_url}/api/partner/delete`,p).then(res=>{
+                       if(res.status_code === 200){
+                          mThis.displaylaboPartners();
+                       }else cv_interact.error(res.error_message);
+                    });
+                }
+            });
         });
     }
 
@@ -58,18 +88,20 @@ let LaboPartnersComponent = new function(){
         //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
         //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
-        let p = {'search_value':mThis.elSearchItem.val()};
+        let p = {'search_value':mThis.elSearchPartner.val()};
+        console.log(p);
         window.vsapi.call(`${mThis.base_url}/api/partner/list`,p,'POST',null).then((result)=>{
             let data = [];
             if(result.status_code === 200) data = result.data;
+            //console.log(JSON.stringify(data));
             if (mThis.table){
-                mThis.tblItems.DataTable().clear().destroy();
+                mThis.tblPartners.DataTable().clear().destroy();
                 //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
-                mThis.tblItems.empty();
+                mThis.tblPartners.empty();
                 mThis.table = null;
             }
 
-            data = StringSanitizer.sanitizeObject(data,null);
+            data = StringSanitizer.sanitizeObject(data,null,["cp_email","email"]);
             let cnt = 1;
             //begin::Set up columns
             let my_columns = [
@@ -89,15 +121,19 @@ let LaboPartnersComponent = new function(){
                 },
                 {
                     title: mThis.trans_title('Phone'),
-                    data:"phone"
+                    data: "phone_number"
                 },
                 {
-                    title: mThis.trans_title('Partner Name'),
-                    data: "partner_name"
+                    title: mThis.trans_title('CP Name'),
+                    data: "cp_name"
                 },
                 {
-                    title: mThis.trans_title('Partner Phone'),
-                    data: "partner_phone"
+                    title: mThis.trans_title('CP Phone'),
+                    data: "cp_phone_number"
+                },
+                {
+                    title: mThis.trans_title('Partner Type'),
+                    data: "partner_type"
                 },
                 {
                     title: mThis.trans_title('Address'),
@@ -108,10 +144,10 @@ let LaboPartnersComponent = new function(){
                     data: function(data,a,b){
                         let status_class = null; //mThis.getStatusClass(data.status_id);
                         return [`<div class="form-inline">`,
-                        `<a href="javascript:void(0)" class="btn_co_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
-                        `<a href="javascript:void(0)" class="btn_pat_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
-                        `<a href="javascript:void(0);" data-id="${data.id}" class="btn_pat_delete"><i class="fa fa-trash" style="color:red"></i></a>`,
-                        `&nbsp;<a href="#" data-id="${data.id}" class="btn_pat_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
+                        `<a href="javascript:void(0)" class="btn_lbp_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
+                        `<a href="javascript:void(0)" class="btn_lbp_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
+                        `<a href="javascript:void(0);" data-id="${data.id}" class="btn_lbp_delete"><i class="fa fa-trash" style="color:red"></i></a>`,
+                        `&nbsp;<a href="#" data-id="${data.id}" class="btn_lbp_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
                         `</div>`
                        ].join('');
                     }
@@ -123,7 +159,7 @@ let LaboPartnersComponent = new function(){
             //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
             
             if (!mThis.table)
-            mThis.table = mThis.tblItems.DataTable({
+            mThis.table = mThis.tblPartners.DataTable({
                 searching:false,
                 destroy:true,
                 paging:true,
@@ -151,7 +187,7 @@ let LaboPartnersComponent = new function(){
                     tr.data('id',data.id);
                 }						
             });
-            if(typeof onFinish ==='function') onFinish();                
+            if(typeof onFinish === 'function') onFinish();                
         });     
     };
 
@@ -165,7 +201,7 @@ let LaboPartnersComponent = new function(){
     }
 }
 
-//begin::MedicalServiceDialog
+//begin::LaboPartnersDialog
 let LaboPartnersDialog = new function(){
     let mThis = this;
     this.self = $(`#_lbp_dlgPartners`);
@@ -176,23 +212,22 @@ let LaboPartnersDialog = new function(){
         "formId":'_lbp_dlgPartners',
         "titleId":"_lbp_dlgPartners_title",
         //"errorId":"_msl_dlgService_error",
-        //"saveButtonId":"_msl_dlgService_btnSave",
+        "saveButtonId":"_lbp_btnSave",
         "instance":this,
         "apiSave":`${main_view.base_url}/api/partner/save`,
         "apiGet":`${main_view.base_url}/api/partner/details`,
         //"identityProp":"id",
-        //"modifyTitle":"Modify Product Group",
+        "modifyTitle":"Modify Product Group",
         "createTitle":"New Partner",
         "identityProps":['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props":['id'],
         //"sub_prop":"chief_complaint_items",
         //"sub_prop_function":mThis.getChiefComplaints,
-        "sanitize_excepts":[],
+        "sanitize_excepts":["cp_email","email"],
         'use_alert_error':true,
         'beforeShow': () => {}
         // "init": ()=>{
-            
         //  }
     });
 
@@ -200,7 +235,7 @@ let LaboPartnersDialog = new function(){
         mThis.formUntil.show(options);
     }
 }
-//end::MedicalServiceDialog
+//end::LaboPartnersDialog
 
 $(document).ready(function() {
     LaboPartnersComponent.init();

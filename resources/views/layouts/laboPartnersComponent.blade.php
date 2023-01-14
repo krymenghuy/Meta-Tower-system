@@ -27,31 +27,40 @@
                 <div class="row gy-2">
                     <div class="col-lg-6">
                         <label for="name" class="form-label trans-text" data-langprop="partners.Name"></label>
-                        <input type="text" class="form-control" placeholder="name"/>
+                        <input type="text" class="form-control data-input" data-field="name" data-required="1" data-ffield="Name" placeholder="name"/>
                     </div>
                     <div class="col-lg-6">
                         <label for="email" class="form-label trans-text" data-langprop="partners.Email"></label>
-                        <input type="text" class="form-control" placeholder="email"/>
+                        <input type="text" class="form-control data-input" data-field="email" data-required="1" data-ffield="Email" placeholder="email"/>
                     </div>
                 </div>
                 <div class="row gy-2">
                     <div class="col-lg-6">
                         <label for="phone" class="form-label trans-text" data-langprop="partners.Phone"></label>
-                        <input type="text" class="form-control" placeholder="phone number"/>
+                        <input type="text" class="form-control data-input" data-field="phone_number" data-required="1" data-ffield="Phone" placeholder="phone number"/>
                     </div>
                     <div class="col-lg-6">
                         <label for="cp_name" class="form-label trans-text" data-langprop="partners.CP Name"></label>
-                        <input type="text" class="form-control" placeholder="Contact Person Name"/>
+                        <input type="text" class="form-control data-input" data-field="cp_name" data-required="1" data-ffield="Contact Person Name" placeholder="Contact Person Name"/>
                     </div>
                 </div>
                 <div class="row gy-2">
                     <div class="col-lg-6">
-                        <label for="cp_phone" class="form-label trans-text" data-langprop="partners.CP Phone"></label>
-                        <input type="text" class="form-control" placeholder="Contact Person Phone"/>
+                        <label for="cp_phone_number" class="form-label trans-text" data-langprop="partners.CP Phone"></label>
+                        <input type="text" class="form-control data-input" data-field="cp_phone_number" data-required="1" data-ffield="Contact Person Phone" placeholder="Contact Person Phone"/>
                     </div>
                     <div class="col-lg-6">
                         <label for="address" class="form-label trans-text" data-langprop="partners.Address"></label>
-                        <input type="text" class="form-control" placehoder="Address"/>
+                        <input type="text" class="form-control data-input" data-field="address" data-required="1" data-ffield="Address" placehoder="Address"/>
+                    </div>
+                </div>
+                <div class="row gy-2">
+                    <div class="col-lg-6">
+                        <label for="partner_type" class="form-label trans-text" data-langprop="partners.Partner Type"></label>
+                        <select class="form-select data-input" data-field="partner_type" data-required="1" data-ffield="Partner Type">
+                            <option value="person">Person</option>
+                            <option value="institution">Institution</value>
+                        </select>
                     </div>
                 </div>
             </div>

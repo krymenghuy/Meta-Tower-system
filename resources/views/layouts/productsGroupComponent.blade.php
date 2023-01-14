@@ -24,10 +24,19 @@
                 <h4 class="modal-title" id="_pdg_dlgProductGroup_title"></h4>
             </div>
             <div class="modal-body">
-
-                
+                <div class="row gy-2">
+                    <div class="col-12">
+                        <label for="name" class="form-label trans-text" data-langprop="titles.Name"></label>
+                        <input type="text" class="form-control data-input" data-field="name" data-required="1" data-ffield="Name" placeholder="Name"/>
+                    </div>
+                </div>
+                <div class="row gy-2">
+                    <div class="col-12">
+                        <label for="description" class="form-label trans-text" data-langprop="titles.Description"></label>
+                        <textarea class="form-control data-input" data-field="description" data-required="0" data-ffield="Description" placeholder="Description"></textarea>
+                    </div>
+                </div>
                <div class="dialog-error" id="_pdg_dlgProductGroup_error">
-
                </div>
             </div>
             <div class="modal-footer">
