@@ -228,13 +228,23 @@
                         </li>
 
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkProductGroups" class="menu-item kt-menu__link">
+                            <a href="javascript:void(0)" id="_main_lnkItemGroups" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/hierarchical-structure%201.svg')}}"/>
                                 </span>
                                 &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Product Groups">Product Groups</span>
                             </a>
                         </li>
+
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="javascript:void(0)" id="_main_lnkCategories" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{asset('assets/images/icons/hierarchical-structure%201.svg')}}"/>
+                                </span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Product Categories">Categories</span>
+                            </a>
+                        </li>
+
                     </ul>
                 </div>
             </li>

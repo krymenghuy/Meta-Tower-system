@@ -134,10 +134,10 @@ let ExchangeRateComponent = new function(){
         });
     }
 
-    this.displayExchangeRateDetails = (detail_tr, appt_id=0)=>{
+    this.displayExchangeRateDetails = (detail_tr, rate_id=0)=>{
         let div_wrapper = detail_tr.find('div.expandable-row-containter');
         div_wrapper.html('<div class="animation-line" style="height:2px;margin:0"></div>');
-        let p = {'id':cur_id,'search_value':mThis.elSearchDate.val()};
+        let p = {'id':rate_id,'search_value':mThis.elSearchDate.val()};
         window.vsapi.call(`${main_view.base_url}/api/currency/details`,p,'POST',false).then((res)=>{ 
           let html=null;
           if (res.status_code === 200){
@@ -160,7 +160,7 @@ let ExchangeRateComponent = new function(){
                 </tr>
             </thead>
             <tbody>`;
-            d.map(currency => {
+            (d||{}).map(currency => {
                 html = [html,`<tr>
                     <td>${currency.date}</td>
                     <td>${currency.buy_rate}</td>

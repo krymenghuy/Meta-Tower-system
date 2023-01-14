@@ -185,6 +185,15 @@
 	"history":{
 
 	},
+	"item_group":{
+       "Code":"Code",
+	   "Name":"Name",
+	   "Description":"Description",
+	   "Unit":"Unit",
+	   "SKU":"SKU",
+	   "Created By":"Created By",
+	   "Booked By":"Booked By"
+	},
 	"transaction":{
        "Date":"Date",
 	   "Amount":"Amount",

@@ -41,7 +41,6 @@ class UM extends Model
         ];
        
     //### The vaiables above for JWT merchanism
-
     public function __construct(array $attributes = [])
     {
         self::$app_id = getAdminAppId();
@@ -183,7 +182,7 @@ class UM extends Model
     }
 
     function getModuleList($user_id =0){
-        $rows = DB::table('um_app_modules AS m')->selectRaw("m.module_name, m.module_name_native, m.icon_image, m.target_url")->orderBy('display_order ASC')->get();
+        $rows = DB::table('um_app_modules AS m')->selectRaw("m.module_name, m.module_name_native, m.icon_image, m.target_url,m.display_order,m.disabled")->orderBy('display_order ASC')->get();
         return $rows;
     }
       

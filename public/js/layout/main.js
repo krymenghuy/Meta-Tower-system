@@ -26,7 +26,8 @@
      this.mnuEmployeeDepartment = $('#_main_lnkDepartments');
      this.mnuMedicalServices = $('#_main_lnkMedicalServices');
      this.mnuProducts = $('#_main_lnkProducts');
-     this.mnuProductsGroup = $('#_main_lnkProductGroups');
+     this.mnuItemGroups = $('#_main_lnkItemGroups');
+     this.mnuCategories = $('#_main_lnkCategories');
      this.mnuLaboPartners = $('#_main_lnkLaboPartners');
      this.mnuExchangeRate = $('#_main_lnkExchangeRate');
      this.mnuExpenseBook = $('#_main_lnkExpenseBook');
@@ -166,11 +167,17 @@
                     ProductsComponent.show(null);
                  });
 
-                 this.mnuProductsGroup.on('click',(e)=>{
+                 this.mnuItemGroups.on('click',(e)=>{
                     e.preventDefault();
-                    ProductsGroupComponent.show(null);
+                    ItemGroupsComponent.show(null);
                  });
 
+                 this.mnuCategories.on('click',(e)=>{
+                    e.preventDefault();
+                    CategoriesComponent.show(null);
+                 });
+
+                 
                  this.mnuLaboPartners.on('click',(e)=>{
                     e.preventDefault();
                     LaboPartnersComponent.show(null);

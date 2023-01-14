@@ -72,6 +72,7 @@
                         <input type="text" class="form-control" placeholder="Reference Number"/>
                     </div>
                 </div>
+                <div class="dialog-error" id="_epb_dlgExpenseBook_error"></div>
             </div>
             <div class="modal-footer">
                 <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">
