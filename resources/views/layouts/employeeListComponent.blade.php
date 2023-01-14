@@ -65,6 +65,7 @@
                         </select>
                     </div>
                 </div>
+                <div class="dialog-error" id="_epl_dlgEmployee_error"></div>
             </div>
             <div class="modal-footer">
                 <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">

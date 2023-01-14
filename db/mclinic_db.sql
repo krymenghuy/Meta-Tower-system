@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2023-01-12 17:07:32
+Date: 2023-01-14 13:20:58
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -325,14 +325,17 @@ CREATE TABLE `currencies` (
   `symbol` varchar(10) DEFAULT NULL,
   `symbol_after` tinyint(6) DEFAULT NULL,
   `decimal_points` int(10) DEFAULT 2,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of currencies
 -- ----------------------------
-INSERT INTO `currencies` VALUES ('1', '1', 'American Dollar', 'USD', '1', 'Admin', null, null, '2023-01-06 17:38:12.676399', '$', '0', '2');
-INSERT INTO `currencies` VALUES ('2', '1', 'Riel', 'KHR', '1', 'Admin', null, null, '2023-01-06 17:38:15.991101', 'KHR', '0', '2');
+INSERT INTO `currencies` VALUES ('1', '1', 'American Dollar', 'USD', '1', 'Admin', null, null, '2023-01-06 17:38:12.676399', '$', '0', '2', null);
+INSERT INTO `currencies` VALUES ('2', '1', 'Riel', 'KHR', '1', 'Admin', null, null, '2023-01-06 17:38:15.991101', 'KHR', '0', '2', null);
+INSERT INTO `currencies` VALUES ('3', '1', 'asdasd', 'USD1', '1', 'Samsethy', null, null, null, '$', '0', '2', '2023-01-14 12:04:54.000000');
+INSERT INTO `currencies` VALUES ('6', '1', 'asdagsd', 'USD3', '1', 'Samsethy', null, null, null, '$', '0', '2', '2023-01-14 12:11:03.000000');
 
 -- ----------------------------
 -- Table structure for `departments`
@@ -659,7 +662,7 @@ CREATE TABLE `inv_items` (
   `sku` varchar(20) DEFAULT NULL,
   `update_uid` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=520 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=611 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_items
@@ -939,9 +942,82 @@ INSERT INTO `inv_items` VALUES ('273', '1', 'IN0050', 'F-MELACLEAR', 'F-MELACLEA
 INSERT INTO `inv_items` VALUES ('274', '1', 'TP0085', 'Vitara TXPPE', 'Vitara TXPPE', 'Vitara TXPPE', null, '1', null, null, '2023-01-05 01:10:26.120732', '2023-01-05 01:10:26.120732', null, null, null, null, '3', null, null, null, '0.00', null, null);
 INSERT INTO `inv_items` VALUES ('512', '1', '100001', 'test item', null, 'test item', null, '1', '1', 'Samsethy', '2023-01-09 16:22:34.262759', '2023-01-09 16:22:34.262759', null, null, null, null, '1', '0', '0', null, '0.00', null, null);
 INSERT INTO `inv_items` VALUES ('514', '1', '100003', 'test item 3', null, 'test item', null, '1', '1', 'Samsethy', '2023-01-09 16:23:09.045949', '2023-01-09 16:23:09.045949', null, null, null, null, '1', '0', '0', null, '0.00', null, null);
-INSERT INTO `inv_items` VALUES ('517', '1', '100015', 'abc', null, 'vcghh', null, '5', '1', 'Samsethy', '2023-01-10 18:33:40.919497', '2023-01-10 18:33:40.919497', 'Samsethy', null, null, null, '7', '0', '0', null, '0.00', 'Box', '1');
 INSERT INTO `inv_items` VALUES ('518', '1', '100014', 'super pills', null, 'dhkhgkhlkh', null, '2', '1', 'Samsethy', '2023-01-10 18:27:49.928085', '2023-01-10 18:27:49.928085', 'Samsethy', null, null, null, '2', '0', '0', null, '0.00', 'Bottle', '1');
 INSERT INTO `inv_items` VALUES ('519', '1', '100017', 'gggg', null, 'admingmailcom', null, '4', '1', 'Samsethy', '2023-01-10 18:55:26.703857', '2023-01-10 18:55:26.703857', null, null, null, null, '2', '0', '0', null, '0.00', 'Bottle', null);
+INSERT INTO `inv_items` VALUES ('520', '1', '100018', 'new item', null, 'sdfdgfdgfg', null, '2', '1', 'Samsethy', '2023-01-13 22:25:17.336540', '2023-01-13 22:25:17.336540', null, null, null, null, '2', '0', '0', null, '0.00', 'Bottle', null);
+INSERT INTO `inv_items` VALUES ('521', '1', '100019', 'new item1', null, 'sdfdgfdgfg', null, '2', '1', 'Samsethy', '2023-01-13 23:43:53.123067', '2023-01-13 23:43:53.123067', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('522', '1', '100020', 'new item2', null, 'sdfdgfdgfg', null, '2', '1', 'Samsethy', '2023-01-13 23:44:30.131729', '2023-01-13 23:44:30.131729', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('523', '1', '100021', 'new item3', null, 'sdfdgfdgfg', null, '2', '1', 'Samsethy', '2023-01-13 23:44:40.625565', '2023-01-13 23:44:40.625565', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('524', '1', '100022', 'new item5', null, 'sdfdgfdgfg', null, '2', '1', 'Samsethy', '2023-01-13 23:45:25.242737', '2023-01-13 23:45:25.242737', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('525', '1', '100023', 'new item6', null, 'sdfdgfdgfg', null, '2', '1', 'Samsethy', '2023-01-14 00:07:59.309499', '2023-01-14 00:07:59.309499', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('526', '1', '100024', 'new item7', null, 'sdfdgfdgfg', null, '2', '1', 'Samsethy', '2023-01-14 00:08:28.666277', '2023-01-14 00:08:28.666277', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('527', '1', '100025', 'new item71', null, 'sdfdgfdgfg', null, '2', '1', 'Samsethy', '2023-01-14 00:10:48.958633', '2023-01-14 00:10:48.958633', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('528', '1', '100026', 'new item72', null, 'sdfdgfdgfg', null, '2', '1', 'Samsethy', '2023-01-14 00:12:39.882259', '2023-01-14 00:12:39.882259', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('529', '1', '100027', 'new item711', null, 'sdfdgfdgfg', null, '2', '1', 'Samsethy', '2023-01-14 00:13:55.106322', '2023-01-14 00:13:55.106322', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('547', '1', '100045', 'new item711', null, 'sdfdgfdgfg', null, '1', '1', 'Samsethy', '2023-01-14 00:46:22.422156', '2023-01-14 00:46:22.422156', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('548', '1', '100046', 'new item711', null, 'sdfdgfdgfg', null, '1', '1', 'Samsethy', '2023-01-14 00:46:23.532116', '2023-01-14 00:46:23.532116', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('549', '1', '100047', 'new item711', null, 'sdfdgfdgfg', null, '1', '1', 'Samsethy', '2023-01-14 00:46:24.362897', '2023-01-14 00:46:24.362897', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('550', '1', '100066', 'new item711', null, null, null, '2', '1', 'Samsethy', '2023-01-14 00:49:53.152797', '2023-01-14 00:49:53.152797', 'Samsethy', null, null, null, null, '0', '0', null, '0.00', null, '1');
+INSERT INTO `inv_items` VALUES ('551', '1', '100049', 'new item711', null, null, null, '1', '1', 'Samsethy', '2023-01-14 00:46:34.780545', '2023-01-14 00:46:34.780545', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('552', '1', '100067', 'new item711', null, null, null, '2', '1', 'Samsethy', '2023-01-14 00:49:59.599993', '2023-01-14 00:49:59.599993', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('553', '1', '100068', 'new item711', null, null, null, '2', '1', 'Samsethy', '2023-01-14 00:50:00.713627', '2023-01-14 00:50:00.713627', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('554', '1', '100069', 'new item711', null, null, null, '2', '1', 'Samsethy', '2023-01-14 00:50:02.798900', '2023-01-14 00:50:02.798900', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('555', '1', '100070', 'new item711', null, null, null, '2', '1', 'Samsethy', '2023-01-14 00:51:25.222727', '2023-01-14 00:51:25.222727', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('556', '1', '100071', 'new item711', null, null, null, '2', '1', 'Samsethy', '2023-01-14 00:51:26.527387', '2023-01-14 00:51:26.527387', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('557', '1', '100072', 'new item711', null, null, null, '2', '1', 'Samsethy', '2023-01-14 00:51:27.507093', '2023-01-14 00:51:27.507093', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('558', '1', '100073', 'new item711', null, null, null, '2', '1', 'Samsethy', '2023-01-14 00:51:47.792368', '2023-01-14 00:51:47.792368', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('559', '1', '100074', 'new item711', null, null, null, '2', '1', 'Samsethy', '2023-01-14 00:51:48.605918', '2023-01-14 00:51:48.605918', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('560', '1', '100075', 'new item711', null, null, null, '2', '1', 'Samsethy', '2023-01-14 00:51:49.695585', '2023-01-14 00:51:49.695585', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('561', '1', '100076', 'new item711', null, null, null, '2', '1', 'Samsethy', '2023-01-14 00:52:02.255211', '2023-01-14 00:52:02.255211', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('562', '1', '100077', 'new item711', null, null, null, '2', '1', 'Samsethy', '2023-01-14 00:52:04.113810', '2023-01-14 00:52:04.113810', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('563', '1', '100078', 'new item711', null, null, null, '2', '1', 'Samsethy', '2023-01-14 00:52:05.593916', '2023-01-14 00:52:05.593916', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('564', '1', '100079', 'new item711', null, null, null, '2', '1', 'Samsethy', '2023-01-14 00:52:28.749847', '2023-01-14 00:52:28.749847', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('565', '1', '100080', 'new item711', null, null, null, '2', '1', 'Samsethy', '2023-01-14 00:52:29.646957', '2023-01-14 00:52:29.646957', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('566', '1', '100081', 'new item7131', null, null, null, '2', '1', 'Samsethy', '2023-01-14 00:55:01.723669', '2023-01-14 00:55:01.723669', null, null, null, null, '2', '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('567', '1', '100082', 'new item7131', null, null, null, '2', '1', 'Samsethy', '2023-01-14 01:03:57.632092', '2023-01-14 01:03:57.632092', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('568', '1', '100083', 'new item7131', null, null, null, '2', '1', 'Samsethy', '2023-01-14 01:03:58.621794', '2023-01-14 01:03:58.621794', null, null, null, null, null, '0', '0', null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('569', '1', '100084', 'new item7131', null, null, null, '2', '1', 'Samsethy', '2023-01-14 01:05:10.306699', '2023-01-14 01:05:10.306699', null, null, null, null, null, '0', null, null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('570', '1', '100085', 'new item7131', null, null, null, '2', '1', 'Samsethy', '2023-01-14 01:05:11.180017', '2023-01-14 01:05:11.180017', null, null, null, null, null, '0', null, null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('571', '1', '100086', 'new item7131', null, null, null, '2', '1', 'Samsethy', '2023-01-14 01:05:13.159444', '2023-01-14 01:05:13.159444', null, null, null, null, null, '0', null, null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('572', '1', '100087', 'new item7131', null, null, null, null, '1', 'Samsethy', '2023-01-14 01:06:25.775043', '2023-01-14 01:06:25.775043', null, null, null, null, null, '0', null, null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('573', '1', '100088', 'new item7131', null, null, null, null, '1', 'Samsethy', '2023-01-14 01:06:28.722279', '2023-01-14 01:06:28.722279', null, null, null, null, null, '0', null, null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('574', '1', '100089', 'new item7131', null, null, null, null, '1', 'Samsethy', '2023-01-14 01:06:29.651742', '2023-01-14 01:06:29.651742', null, null, null, null, null, '0', null, null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('575', '1', '100090', 'new item7131', null, null, null, null, '1', 'Samsethy', '2023-01-14 07:46:50.560626', '2023-01-14 07:46:50.560626', null, null, null, null, null, '0', null, null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('576', '1', '100091', 'new item7131', null, null, null, null, '1', 'Samsethy', '2023-01-14 07:46:52.066681', '2023-01-14 07:46:52.066681', null, null, null, null, null, '0', null, null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('577', '1', '100092', 'new item7131', null, null, null, null, '1', 'Samsethy', '2023-01-14 07:46:53.470710', '2023-01-14 07:46:53.470710', null, null, null, null, null, '0', null, null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('578', '1', '100093', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 08:01:32.581205', '2023-01-14 08:01:32.581205', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('579', '1', '100094', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 08:01:34.451569', '2023-01-14 08:01:34.451569', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('580', '1', '100095', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 08:01:36.335080', '2023-01-14 08:01:36.335080', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('581', '1', '100096', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 08:07:03.405672', '2023-01-14 08:07:03.405672', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('582', '1', '100097', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 08:08:23.534143', '2023-01-14 08:08:23.534143', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('583', '1', '100098', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 08:08:35.372424', '2023-01-14 08:08:35.372424', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('584', '1', '100099', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 08:08:38.084042', '2023-01-14 08:08:38.084042', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('585', '1', '100100', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 08:09:29.470456', '2023-01-14 08:09:29.470456', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('586', '1', '100101', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 08:09:30.914404', '2023-01-14 08:09:30.914404', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('587', '1', '100102', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 08:10:26.657988', '2023-01-14 08:10:26.657988', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('588', '1', '100103', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 08:10:48.352979', '2023-01-14 08:10:48.352979', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('589', '1', '100104', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 08:11:29.697870', '2023-01-14 08:11:29.697870', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('590', '1', '100105', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 08:11:43.551437', '2023-01-14 08:11:43.551437', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('591', '1', '100106', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 08:11:56.453256', '2023-01-14 08:11:56.453256', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('592', '1', '100107', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 09:17:52.199135', '2023-01-14 09:17:52.199135', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('593', '1', '100108', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 09:17:53.733490', '2023-01-14 09:17:53.733490', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('594', '1', '100109', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 09:18:29.539712', '2023-01-14 09:18:29.539712', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('595', '1', '100110', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 09:18:31.743666', '2023-01-14 09:18:31.743666', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('596', '1', '100111', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 09:20:20.663942', '2023-01-14 09:20:20.663942', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('597', '1', '100112', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 09:20:22.381309', '2023-01-14 09:20:22.381309', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('598', '1', '100113', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 09:21:50.749881', '2023-01-14 09:21:50.749881', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('599', '1', '100114', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 09:21:51.888148', '2023-01-14 09:21:51.888148', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('600', '1', '100115', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 09:22:04.611337', '2023-01-14 09:22:04.611337', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('601', '1', '100116', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 09:22:51.628400', '2023-01-14 09:22:51.628400', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('602', '1', '100117', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 09:22:52.693582', '2023-01-14 09:22:52.693582', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('603', '1', '100118', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 09:22:53.387684', '2023-01-14 09:22:53.387684', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('604', '1', '100119', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 09:27:17.786491', '2023-01-14 09:27:17.786491', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('605', '1', '100120', 'new item111333', null, null, null, null, '1', 'Samsethy', '2023-01-14 09:27:19.159502', '2023-01-14 09:27:19.159502', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('606', '1', '100121', 'new item1113332', null, null, null, '2', '1', 'Samsethy', '2023-01-14 09:30:51.211999', '2023-01-14 09:30:51.211999', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('607', '1', '100122', 'new itesfgd', null, null, null, null, '1', 'Samsethy', '2023-01-14 10:19:27.202157', '2023-01-14 10:19:27.202157', null, null, null, null, null, '0', null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('608', '1', '100123', 'new itesfgsdfdd', null, null, null, '1', '1', 'Samsethy', '2023-01-14 10:22:20.964661', '2023-01-14 10:22:20.964661', null, null, null, null, '2', null, null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('609', '1', '100124', 'new itesfgssfsdfdfdd', null, null, null, '1', '1', 'Samsethy', '2023-01-14 10:45:15.225621', '2023-01-14 10:45:15.225621', null, null, null, null, '2', null, null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('610', '1', '100125', 'new itesfgssfsdfdd', null, null, null, '1', '1', 'Samsethy', '2023-01-14 10:45:30.787724', '2023-01-14 10:45:30.787724', null, null, null, null, '2', null, null, null, '150.00', null, null);
 
 -- ----------------------------
 -- Table structure for `inv_item_attributes`
@@ -973,7 +1049,7 @@ CREATE TABLE `inv_item_code_control` (
 -- ----------------------------
 -- Records of inv_item_code_control
 -- ----------------------------
-INSERT INTO `inv_item_code_control` VALUES ('1', '17', null, null);
+INSERT INTO `inv_item_code_control` VALUES ('1', '125', null, null);
 
 -- ----------------------------
 -- Table structure for `inv_item_varriances`
@@ -1713,7 +1789,7 @@ CREATE TABLE `partners` (
   `cp_phone_number` varchar(100) DEFAULT NULL,
   `cp_email` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of partners
@@ -3133,12 +3209,12 @@ CREATE TABLE `um_sessions` (
   `status` varchar(10) DEFAULT NULL COMMENT 'status ={online,offline}',
   `lang` varchar(50) DEFAULT 'en',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1742 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1764 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of um_sessions
 -- ----------------------------
-INSERT INTO `um_sessions` VALUES ('1741', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-01-12 16:58:34', '2023-01-12 16:58:34', 'bmZ7fpgrBz87vUposPwjBFA4P4Afe2C2pGmoJ7', '6vTA7zAk8FvOUQn1Y92S5Lx75fUYxx7Qq35NL4', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjczNTE3NTE0LCJuYmYiOjE2NzM1MTc1MTQsImV4cCI6MTY3MzUyMTExNCwibGFuZyI6ImVuIiwidXNlcl9jbGFzcyI6ImFkbWluIiwib2ZmaWNpYWxfaWQiOm51bGwsImlkIjoxLCJsb2dpbl9uYW1lIjoiYWRtaW5AZ21haWwuY29tIiwiYnJhbmNoX2lkIjoxLCJmdWxsX25hbWUiOiJTYW1zZXRoeSIsInN0YXR1cyI6ImFjdGl2ZSIsImlzX2xvY2tlZCI6MCwiZW1haWwiOm51bGwsInBob25lX251bWJlciI6IjAxMjU3ODkwIiwib3RwX2NvZGUiOm51bGx9.FHaT8EOeNWdB1nl8Grm_VVgGThLesAxVd0qQbT7UIbQ', null, 'en');
+INSERT INTO `um_sessions` VALUES ('1763', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-01-14 11:48:57', '2023-01-14 11:48:57', 'fc31T5LQ4yybjRKmuo5jMrQjub1jZ82yA7EnES', 'nKaC3a4oFNsryfp8q0L6J8kru9C6CKuzpfWwQb', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjczNjcxNzM3LCJuYmYiOjE2NzM2NzE3MzcsImV4cCI6MTY3MzY3NTMzNywibGFuZyI6ImVuIiwidXNlcl9jbGFzcyI6ImFkbWluIiwib2ZmaWNpYWxfaWQiOm51bGwsImlkIjoxLCJsb2dpbl9uYW1lIjoiYWRtaW5AZ21haWwuY29tIiwiYnJhbmNoX2lkIjoxLCJmdWxsX25hbWUiOiJTYW1zZXRoeSIsInN0YXR1cyI6ImFjdGl2ZSIsImlzX2xvY2tlZCI6MCwiZW1haWwiOm51bGwsInBob25lX251bWJlciI6IjAxMjU3ODkwIiwib3RwX2NvZGUiOm51bGx9.OgU0T1uoYnD39zz2gyRgIFB_jzvRwPpjERNaHW8w_hc', null, 'en');
 
 -- ----------------------------
 -- Table structure for `um_users`
