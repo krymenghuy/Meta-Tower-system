@@ -74,6 +74,36 @@ let ProductsGroupComponent = new function(){
         mThis.elSearchItem.on('keyup',(e)=>{
             if(e.keyCode === 13) mThis.displayProductsGroup();
         });
+
+        this.cfg = new ExpandableRowConfig('_pdg_tblProductGroup', {
+            'dontExpandByClickingOn': ['btn_item_modify', 'btn_item_delete', 'btn_item_action'],
+            //'content':`<div class="alert alert-info">Loading details</div>`,
+            'onOpen': (container, detail_tr, parent_tr) => {
+                //alert(detail_tr.find('ul').html());
+                let q_tr = $(parent_tr);
+                //It is IMPORTANT to access patient_id using jquery object here because the "createdRow" event passes data-id atttribue using jquery method
+                let group_id = q_tr.data('id');  
+                //Show Expandable Details of each rate
+                mThis.displayProductsGroupDetails($(detail_tr),group_id);
+            }
+        });
+    }
+
+    this.displayProductsGroupDetails = (detail_tr, group_id=0)=>{
+        let div_wrapper = detail_tr.find('div.expandable-row-containter');
+        div_wrapper.html('<div class="animation-line" style="height:2px;margin:0"></div>');
+        let p = {'id':group_id};
+        window.vsapi.call(`${main_view.base_url}/api/inventory/group-details`,p,'POST',false).then((res)=>{ 
+          let html=null;
+          if (res.status_code === 200){
+            let d = StringSanitizer.sanitizeObject(res.data);
+            html = [``].join('');
+          }
+          else{
+            html =`<div class="expanded-row-error">${error_message}</div>`;
+          }
+          div_wrapper.html(html);
+        });
     }
 
     this.displayProductsGroup =(onFinish=null)=>
@@ -111,7 +141,7 @@ let ProductsGroupComponent = new function(){
                 },
                 {
                     title: mThis.trans_title('Description'),
-                    data:"Description"
+                    data:"description"
                 },
                 {
                     title: mThis.trans_title('Create By'),
@@ -187,10 +217,10 @@ let ProductsGroupDialog = new function(){
         "formId":'_pdg_dlgProductGroup',
         "titleId":"_pdg_dlgProductGroup_title",
         //"errorId":"_msl_dlgService_error",
-        //"saveButtonId":"_msl_dlgService_btnSave",
+        "saveButtonId":"_pdg_btnSave",
         "instance":this,
         "apiSave":`${main_view.base_url}/api/inventory/save-group`,
-        "apiGet":`${main_view.base_url}/api/inventory/delete-group`,
+        "apiGet":`${main_view.base_url}/api/inventory/group-details`,
         //"identityProp":"id",
         "modifyTitle":"Modify Product Group",
         "createTitle":"New Product Group",
@@ -203,7 +233,6 @@ let ProductsGroupDialog = new function(){
         'use_alert_error':true,
         'beforeShow': () => {}
         // "init": ()=>{
-            
         //  }
     });
 

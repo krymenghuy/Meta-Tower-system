@@ -11,6 +11,7 @@
     </div>
 </div>
 
+<!--Begin::ExchangRateDialog-->
 <div id="_ecr_dlgexchangeRate" class="modal fade" tabindex="-1" aria-labelledby="_ecr_dlgexchangeRate_title" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -54,3 +55,44 @@
         </div>
     </div>
 </div>
+<!--End::ExchangeRateDialog-->
+
+<!--Begin::ExchangeRateDetailsDialog-->
+<div id="_ecr_dlgExchangeRate_detail" class="modal fade" tabindex="-1" aria-labelledby="_ecr_dlgExchangeRate_detail_title" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="_ecr_dlgExchangeRate_detail_title"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row gy-2">
+                    <div class="col-12">
+                        <label for="date" class="form-label trans-text" data-langprop="currencies.Date"></label>
+                        <input data-select="datepicker" class="form-control input-data" data-field="date" data-required="1" data-ffield="Date"/>
+                    </div>
+                </div>
+                <div class="row gy-2">
+                    <div class="co-12">
+                        <label for="buy_rate" class="form-label trans-text" data-langprop="currencies.Buy Rate"></label>
+                        <input type="number" class="form-control input-data" data-field="buy_rate" data-required="1" data-ffield="Buy Rate"/>
+                    </div>
+                </div>
+                <div class="row gy-2">
+                    <div class="col-12">
+                        <label for="sell_rate" class="form-label trans-text" data-langprop="currencies.Sell Rate"></label>
+                        <input type="number" class="form-control input-data" data-field="sell_rate" data_required="1" data-ffield="Sell Rate"/>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">
+                    <span class="trans-text" data-langprop="buttons.Cancel"></span>
+                </button>
+                <button class="vs-btn-custom-primary" type="button" id="_ecr_detail_btnSave">
+                    <span class="trans-text" data-langprop="buttons.Save"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--End::ExchangeRateDetailsDialog-->

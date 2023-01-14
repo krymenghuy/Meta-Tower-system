@@ -54,7 +54,7 @@ class ItemGroup extends Model
         'name'=>'1|string|1-150',
         'description'=>'0|string'
     ];
-
+    
     $check_unique = ["$branch_id|inv_groups|name|id=id|text=Group already exists"];
     $res = validateObject($d,$validate_rule,true,[],$ss->lang,false,$check_unique);
     if($res->error) return DV::error($res->error);

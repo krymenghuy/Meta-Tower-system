@@ -5,9 +5,11 @@ let ExchangeRateComponent = new function(){
     this.base_url = $('#__base_url').val();
     this.self = $('#_main_exchangeRateComponent');
     this.btnNew = $('#_ecr_btnNew');
-    //this.elSearchItem = $('#_ecr_search');
+    this.btnNew_details = $('#_ecr_btnNew_title');
+    this.elSearchDate = $('#_ecr_search');
     // this.elFilter_department = $('#_msl_filter_service');
     this.tblItems = $('#_ecr_tblexchangeRate');
+    this.tblexchangeRate_detail = $('#_ecr_exchangeRate_details');
     // this.form_data = {};
 
     this.col_titles = {
@@ -40,7 +42,24 @@ let ExchangeRateComponent = new function(){
                     }
                 }
             };
-            exchangeRateDialog.show(op);
+            ExchangeRateDialog.show(op);
+        });
+
+        mThis.btnNew_details.on('click',(e)=>{
+            e.preventDefault();
+            let op = {
+                onClose: (e)=>{
+                    if(e){
+                        mThis.displayexchangeRate();
+                    }
+                }
+            };
+            ExchangeRateDetailsDialog.show(op);
+        });
+
+        mThis.elSearchDate.on('change',(e)=>{
+            e.preventDefault();
+            mThis.displayexchangeRate();
         });
 
         mThis.tblItems.on('click','.btn_ecr_modify',function(e){
@@ -71,6 +90,35 @@ let ExchangeRateComponent = new function(){
             });
         });
 
+        mThis.tblexchangeRate_detail.on('click','.btn_ecr_modify_details',(e)=>{
+            let rate_id = $(this).data("id");
+            let op = {
+                id: rate_id,
+                onClose:(e)=>{
+                    if(e){
+                        mThis.displayexchangeRate();
+                    }
+                }
+            };
+        });
+
+        mThis.tblexchangeRate_detail.on('click','.btn_ecr_delete_details',(e)=>{
+            let rate_id = $(this).data('id');
+            cv_interact.confirm(`Delete this rate?`,{title:"Delete Rate",context:"delete"},(yes)=>{
+                if(yes){
+                    let p = {"id":rate_id};
+                    vsapi.call(`${main_view.base_url}/api/exchange-rate/delete`,p).then(res => {
+                        if(res.status_code === 200){
+                            mThis.displayexchangeRate();
+                        }
+                        else{
+                            cv_interact.error(res.error_message);
+                        }
+                    });
+                }
+            });
+        });
+
         this.cfg = new ExpandableRowConfig('_ecr_tblexchangeRate', {
             'dontExpandByClickingOn': ['btn_patient_modify', 'btn_patient_delete', 'btn_patient_action'],
             'tr_dataset':['patient_id'],
@@ -88,14 +136,46 @@ let ExchangeRateComponent = new function(){
 
     this.displayExchangeRateDetails = (detail_tr, appt_id=0)=>{
         let div_wrapper = detail_tr.find('div.expandable-row-containter');
-        div_wrapper.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
-        let p = {'id':appt_id};
+        div_wrapper.html('<div class="animation-line" style="height:2px;margin:0"></div>');
+        let p = {'id':cur_id,'search_value':mThis.elSearchDate.val()};
         window.vsapi.call(`${main_view.base_url}/api/currency/details`,p,'POST',false).then((res)=>{ 
-          let html=null; 
+          let html=null;
           if (res.status_code === 200){
-             let d = StringSanitizer.sanitizeObject(res.data); 
-          
-             html = [`<div>Test</div>`].join('');
+            let d = StringSanitizer.sanitizeObject(res.data);
+            html = `<div class="d-flex align-items-center">
+                <div class="input-group flex-nowrap">
+                    <div class="input-group-text">
+                        <span class="trans-text" data-langprop="currencies.Search"></span>
+                    </div>
+                    <input data-select="datepicker" class="form-control" id="_ecr_search"/>
+                </div>
+            </div>
+            <div class="table-responsive">
+            <table class="table" id="_ecr_exchangeRate_details">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Buy Rate</th>
+                    <th>Sell Rate</th>
+                </tr>
+            </thead>
+            <tbody>`;
+            d.map(currency => {
+                html = [html,`<tr>
+                    <td>${currency.date}</td>
+                    <td>${currency.buy_rate}</td>
+                    <td>${currency.sell_rate}</td>
+                    <td>
+                        <a href="javascript:void(0)" class="btn-cur-modify-details" data-id="${d.id}">
+                            <i class="fa fa-edit"></i>
+                        </a>
+                        <a href="javascript:void(0)" class="btn-cur-delete-details" data-id="${d.id}">
+                            <i class="fa fa-trash" style="color:red"></i>
+                        </a>
+                    </td>
+                </tr>`].join('');
+            });
+            html = [html,`</tbody></table></div>`].join('');
           }
           else{
             html =`<div class="expanded-row-error">${error_message}</div>`;
@@ -210,8 +290,8 @@ let ExchangeRateComponent = new function(){
     }
 }
 
-//begin::MedicalServiceDialog
-let Dialog = new function(){
+//begin::ExchangeRateDialog
+let ExchangeRateDialog = new function(){
     let mThis = this;
     this.self = $(`#_ecr_dlgexchangeRate`);
 
@@ -245,7 +325,44 @@ let Dialog = new function(){
         mThis.formUntil.show(options);
     }
 }
-//end::MedicalServiceDialog
+//end::ExchangeRateDialog
+
+//begin::ExchangeRateDialogDetails
+let ExchangeRateDetailsDialog = new function(){
+    let mThis = this;
+    this.self = $(`#_ecr_dlgExchangeRate_detail`);
+
+    //AppointmentDialog
+    this.formUntil = new FormUntil({
+        "itemName":"Currency Rate",
+        "formId":'_ecr_dlgExchangeRate_detail',
+        "titleId":"_ecr_dlgExchangeRate_detail_title",
+        //"errorId":"_msl_dlgService_error",
+        "saveButtonId":"_ecr_detail_btnSave",
+        "instance":this,
+        "apiSave":`${main_view.base_url}/api/exchange-rate/save`,
+        "apiGet":`${main_view.base_url}/api/exchange-rate/details`,
+        //"identityProp":"id",
+        "modifyTitle":"Modify Currency Rate",
+        "createTitle":"New Currency Rate",
+        "identityProps":['id'],
+        //Set additional data props for getFormData() to collect on gathering data inputs from this form,
+        "form_data_props":['id'],
+        //"sub_prop":"chief_complaint_items",
+        //"sub_prop_function":mThis.getChiefComplaints,
+        "sanitize_excepts":[],
+        'use_alert_error':true,
+        'beforeShow': () => {}
+        // "init": ()=>{
+            
+        //  }
+    });
+
+    this.show = (options)=>{
+        mThis.formUntil.show(options);
+    }
+}
+//end::ExchangeRateDetailsDialog
 
 $(document).ready(function() {
     ExchangeRateComponent.init();
