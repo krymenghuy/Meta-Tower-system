@@ -1,13 +1,13 @@
 "use strict";
-let ProductsComponent = new function(){
+let StockTrackingComponent = new function(){
     let mThis = this;
-    this.title_prop = 'Products';
+    this.title_prop = 'Stock Tracking';
     this.base_url = $('#__base_url').val();
-    this.self = $('#_main_productsComponent');
-    this.btnNew = $('#_pdc_btnNew');
-    this.elSearchItem = $('#_pcd_search');
+    this.self = $('#_main_stockTrackingComponent');
+    this.btnNew = $('#_stk_btnExport');
+    this.elSearchItem = $('#_stk_search');
     // this.elFilter_department = $('#_msl_filter_service');
-    this.tblItems = $('#_pdc_tblItem');
+    this.tblItems = $('#_stk_tblItems');
     // this.form_data = {};
     this.icon_url = [VSUtil.asset_url(),'/images/icons'].join('');
 
@@ -16,11 +16,14 @@ let ProductsComponent = new function(){
         "Code":"Code",
         "Name":"Name",
         "Group":"Group",
-        "Type":"Type",
+        "Category":"Category",
+        "SKU":"SKU",
+        "Qty":"Quantity",
+        "Quantity":"Quantity",
         "Action":"Action"
     };
 
-    this.displayProductsDetails = (detail_tr, appt_id=0)=>{
+    this.displayVariances = (detail_tr, appt_id=0)=>{
         let div_wrapper = detail_tr.find('div.expandable-row-containter');
         div_wrapper.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
         let p = {'id':appt_id};
@@ -86,7 +89,7 @@ let ProductsComponent = new function(){
                     }
                 }
             };
-            ProductsDialog.show(op);
+            ItemDialog.show(op);
         });
 
         mThis.tblItems.on('click','a.btn-item-modify',function(e){
@@ -100,12 +103,12 @@ let ProductsComponent = new function(){
                     }
                 }
             };
-            ProductsDialog.show(op);
+            ItemDialog.show(op);
         });
 
         mThis.tblItems.on('click','a.btn-item-delete',function(e){
             let item_id = $(this).data("id");
-            cv_interact.confirm(`Delete this product ddd?`,{title:"Delete Product11",context:"delete"},(yes)=>{
+            cv_interact.confirm(`Delete this product?`,{title:"Delete Product",context:"delete"},(yes)=>{
                 if(yes){
                     let p = {"id":item_id};
                     vsapi.call(`${main_view.base_url}/api/inventory/delete-item`,p).then(res=>{
@@ -117,14 +120,14 @@ let ProductsComponent = new function(){
             });
         });
 
-        this.cfg = new ExpandableRowConfig('_pdc_tblItem',{
+        this.cfg = new ExpandableRowConfig('_itm_tblItem',{
             'dontExpandByClickingOn':['btn-item-modify','btn-item-delete','btn-item-action'],
             //'content':`<div class="alert alert-info">Loading details</div>`,
             'onOpen':(container,detail_tr,parent_tr)=>{
                 //alert(detail_tr.find('ul').html());
                 let qtr = $(parent_tr);
                 let appt_id = qtr.data('id');
-                mThis.displayProductsDetails($(detail_tr),appt_id);
+                mThis.displayVariances($(detail_tr),appt_id);
              }
         });
 
@@ -169,12 +172,12 @@ let ProductsComponent = new function(){
                     title: mThis.trans_title('Name')
                 },
                 {
-                    title: mThis.trans_title('Group'),
-                    data:"group_name"
+                    title: mThis.trans_title('Category'),
+                    data:"category"
                 },
                 {
-                    title: mThis.trans_title('Type'),
-                    data: "item_type"
+                    title: mThis.trans_title('Quantity'),
+                    data: "qty"
                 },
                 {
                     title:mThis.trans_title('Action'),
@@ -235,72 +238,72 @@ let ProductsComponent = new function(){
     }
 }
 
-//begin::MedicalServiceDialog
-let ProductsDialog = new function(){
-    let mThis = this;
-    this.form_data = {};
-    this.self = $(`#_pcd_dlgProduct`);
-    this.elItemCode = $('#_pcd_item_code');
-    this.elItemGroup = $('#_pcd_item_group');
-    this.elUnit = $('#_pcd_item_unit');
+// //begin::ItemDialog
+// let ItemDialog = new function(){
+//     let mThis = this;
+//     this.form_data = {};
+//     this.self = $(`#_itm_dlgProduct`);
+//     this.elItemCode = $('#_itm_item_code');
+//     this.elItemGroup = $('#_itm_item_group');
+//     this.elUnit = $('#_itm_item_unit');
 
-    this.prepareOptions = (def={},onFinish)=>{
-       if(!def) def = {}; 
-       if (mThis.form_data.groups){
-         onFinish(mThis.form_data);
-         return;
-       }
+//     this.prepareOptions = (def={},onFinish)=>{
+//        if(!def) def = {}; 
+//        if (mThis.form_data.groups){
+//          onFinish(mThis.form_data);
+//          return;
+//        }
 
-       //api/settings/item-form-options returns all sets of options for productDialog including arrays of "units,item-groups" 
-       vsapi.call(`${main_view.base_url}/api/inventory/settings/item-form-options`,null).then(res=>{
-           if(res.status_code === 200){
-             let d = StringSanitizer.sanitizeObject(res.data);
-             //VSUtil.setComboItems(mThis.elItemGroup,items,'id','name',false,null,def.group_id);
-             mThis.form_data.groups = d.groups;
-             mThis.form_data.units = d.units;
-             onFinish(mThis.form_data);
-           }     
-       });  
-    }
+//        //api/settings/item-form-options returns all sets of options for productDialog including arrays of "units,item-groups" 
+//        vsapi.call(`${main_view.base_url}/api/inventory/settings/item-form-options`,null).then(res=>{
+//            if(res.status_code === 200){
+//              let d = StringSanitizer.sanitizeObject(res.data);
+//              //VSUtil.setComboItems(mThis.elItemGroup,items,'id','name',false,null,def.group_id);
+//              mThis.form_data.groups = d.groups;
+//              mThis.form_data.units = d.units;
+//              onFinish(mThis.form_data);
+//            }     
+//        });  
+//     }
 
-    //ProductDialog using FormUtil as helper
-    this.formUntil = new FormUntil({
-        "itemName":"Products",
-        "formId":'_pcd_dlgProduct',
-        //"titleId":"_pcd_dlgProduct_title",
-        //"errorId":"_msl_dlgService_error",
-        //"saveButtonId":"_msl_dlgService_btnSave",
-        "instance":this,
-        "apiSave":`${main_view.base_url}/api/inventory/save-item`,
-        "apiGet":`${main_view.base_url}/api/inventory/item-details`,
-        //"identityProp":"id",
-        "modifyTitle":"Modify Product",
-        "createTitle":"New Product",
-        "identityProps":['id'],
-        //Set additional data props for getFormData() to collect on gathering data inputs from this form,
-        "form_data_props":['id'],
-        //"sub_prop":"chief_complaint_items",
-        //"sub_prop_function":mThis.getChiefComplaints,
-        "sanitize_excepts":[],
-        'use_alert_error':true,
-        //'beforeShow': () => {}
-        // "init": ()=>{  
-        //  }
-    });
+//     //ProductDialog using FormUtil as helper
+//     this.formUntil = new FormUntil({
+//         "itemName":"Products",
+//         "formId":'_itm_dlgProduct',
+//         //"titleId":"_itm_dlgProduct_title",
+//         //"errorId":"_itm_dlgProduct_error",
+//         //"saveButtonId":"_itm_dlgProduct_btnSave",
+//         "instance":this,
+//         "apiSave":`${main_view.base_url}/api/inventory/save-item`,
+//         "apiGet":`${main_view.base_url}/api/inventory/item-details`,
+//         //"identityProp":"id",
+//         "modifyTitle":"Modify Product",
+//         "createTitle":"New Product",
+//         "identityProps":['id'],
+//         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
+//         "form_data_props":['id'],
+//         //"sub_prop":"chief_complaint_items",
+//         //"sub_prop_function":mThis.getChiefComplaints,
+//         "sanitize_excepts":[],
+//         'use_alert_error':true,
+//         //'beforeShow': () => {}
+//         // "init": ()=>{  
+//         //  }
+//     });
 
-    this.show = (options)=>{
-        //default_input = {group_id, unit_id, etc...}. This is default selections when Dialog is shown for better user experiences
-        if (!options.default_input) options.default_input = {};
-        mThis.prepareOptions(options.default_input,(d)=>{
-            //mThis.elItemCode.prop('readOnly', (options.id > 0));
-            VSUtil.setComboItems(mThis.elItemGroup,d.groups,'id','name',false,null,options.default_input.group_id);
-            VSUtil.setComboItems(mThis.elUnit,d.units,'id','name',false,null,options.default_input.unit_id);
-            mThis.formUntil.show(options);
-        });
-    }
-}
-//end::MedicalServiceDialog
+//     this.show = (options)=>{
+//         //default_input = {group_id, unit_id, etc...}. This is default selections when Dialog is shown for better user experiences
+//         if (!options.default_input) options.default_input = {};
+//         mThis.prepareOptions(options.default_input,(d)=>{
+//             //mThis.elItemCode.prop('readOnly', (options.id > 0));
+//             VSUtil.setComboItems(mThis.elItemGroup,d.groups,'id','name',false,null,options.default_input.group_id);
+//             VSUtil.setComboItems(mThis.elUnit,d.units,'id','name',false,null,options.default_input.unit_id);
+//             mThis.formUntil.show(options);
+//         });
+//     }
+// }
+// //end::ItemDialog
 
 $(document).ready(function() {
-    ProductsComponent.init();
+    StockTrackingComponent.init();
 });

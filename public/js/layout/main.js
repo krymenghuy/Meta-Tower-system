@@ -25,7 +25,9 @@
      this.mnuPositions = $('#_main_lnkPositions');
      this.mnuEmployeeDepartment = $('#_main_lnkDepartments');
      this.mnuMedicalServices = $('#_main_lnkMedicalServices');
-     this.mnuProducts = $('#_main_lnkProducts');
+
+     this.mnuStockTracking = $('#_main_lnkStockTracking');
+     this.mnuItems = $('#_main_lnkItems');
      this.mnuItemGroups = $('#_main_lnkItemGroups');
      this.mnuCategories = $('#_main_lnkCategories');
      this.mnuLaboPartners = $('#_main_lnkLaboPartners');
@@ -162,9 +164,9 @@
                     MedicalServiceComponent.show(null);
                  });
 
-                 this.mnuProducts.on('click',(e)=>{
+                 this.mnuItems.on('click',(e)=>{
                     e.preventDefault();
-                    ProductsComponent.show(null);
+                    ItemsComponent.show(null);
                  });
 
                  this.mnuItemGroups.on('click',(e)=>{
@@ -172,6 +174,12 @@
                     ItemGroupsComponent.show(null);
                  });
 
+                 this.mnuStockTracking.on('click',(e)=>{
+                    e.preventDefault();
+                    StockTrackingComponent.show(null);
+                 });
+
+                 
                  this.mnuCategories.on('click',(e)=>{
                     e.preventDefault();
                     CategoriesComponent.show(null);

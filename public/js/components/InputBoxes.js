@@ -2,10 +2,9 @@
     - This file required html codes as bootstrap dialogs for inputBox1, InputBox2
     - This script files must run after the html codes or its corresponding DOM objects have been rendered by browser  
 **/
-'use strict'
-
+'use strict';
 //begin::InputBox1 (User type in one value)
-var InputBox1 = new function(){
+let InputBox1 = new function(){
   let mThis = this;
   this.self = $('#_dlgInputBox1');
   this.elData = $('#_inputbox1_input');
@@ -14,6 +13,7 @@ var InputBox1 = new function(){
   this.lblLabel = $('#_inputbox1_label');
   this.label = "Enter value";
   this.allowBlankValue = false;
+  this.manualClosing = false;
   
   this.elError = $('#_inputbox1_error');
 
@@ -27,15 +27,22 @@ var InputBox1 = new function(){
           }
       }
      if (typeof mThis.onClose =='function') mThis.onClose(d);
-     mThis.self.modal('hide');
+     if (!mThis.manualClosing) mThis.self.modal('hide');
   });
 
-  //option = {title,def_value,dataLabel,btnOKText,btnCancelText,allowBlankValue =false,blankErrorMessage,'previousDialog'}
+  this.close = ()=>{
+     mThis.self.modal('hide'); 
+  }
+
+  //option = {title,def_value,dataLabel,btnOKText,btnCancelText,allowBlankValue =false,blankErrorMessage,'previousDialog','manualClosing':false}
   this.show = function(option,onClose){
       //mThis.option = option;
+      //option.manualClosing = false (by default) 
       mThis.elError.html(null);
       if(option){
           mThis.title = option.title;
+          mThis.manualClosing = (option.manualClosing?option.manualClosing:false);
+
           if(option.defaultValue) 
             mThis.def_value = option.defaultValue;
           else 
@@ -47,11 +54,11 @@ var InputBox1 = new function(){
            mThis.label = option.dataLabel;
          
            mThis.previousDialog = option.previousDialog;
-           if(option.allowBlankValue)
+           if(option.allowBlankValue ===undefined) option.allowBlankValue =false;
            mThis.allowBlankValue = option.allowBlankValue;
            if(option.valueMember) mThis.valueMember = option.valueMember;
            if(option.textMember) mThis.textMember = option.textMember;
-           if(option.blankErrorMessage) mThis.blankErrorMessage = option.blankErrorMessage;
+           mThis.blankErrorMessage = option.blankErrorMessage? option.blankErrorMessage: option.errorMessage;
            mThis.data = option.data;
            
            if (option.btnOKText) mThis.btnOK.text(option.btnOKText);
@@ -81,7 +88,7 @@ var InputBox1 = new function(){
 //end::InputBox1(User type in one value)
 
 //begin::InputBox2 (Select one value)
-var InputBox2 = new function(){
+let InputBox2 = new function(){
   let mThis = this;
   this.self = $('#_dlgInputBox2');
   this.elData = $('#_inputbox2_select');

@@ -31,11 +31,63 @@ class ItemController extends Controller
        $data =[
         'groups'=>Settings::options_group($ss),
         'brands'=>Settings::options_brand($ss),
+        'units'=>Settings::options_unit($ss),
+        'categories'=>Settings::options_category($ss),
         'manufacturer'=>Settings::options_manufacturer($ss)
        ];
        return JDV::result($data);
     }
  
+    function saveManufacturer(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $branch_id = $ss->branch_id;
+
+        $validate_rule = [
+          'id'=>'0|identity=1',
+          'name'=>'1|string|1-100'
+        ];
+        
+        $check_unique = ["$branch_id|inv_manufacturers|id=id|text =manufacturer name already exists"];
+        $res = validateReq($req,$validate_rule,true,[],$ss->lang,false,$check_unique);
+        if($res->error) return JDV::error($res->error);
+        $id = $res->id;
+        $inputs = $res->values;
+        $id = saveData($ss,'inv_manufacturers',['id'=>$id],$inputs,[],1);
+        if($id >0 ) return JDV::success(['id'=>$id]);
+        else return JDV::error("Failed to save manufacturer"); 
+    }
+
+    function saveUnit(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $branch_id = $ss->branch_id;
+
+        $validate_rule = [
+          'id'=>'0|identity=1',
+          'name'=>'1|string|1-25',
+          'sub_unit_name'=>'0|string|1-25',
+          'sub_unit_qty'=>'0|number|default=1'
+        ];
+        
+        $check_unique = ["$branch_id|inv_units|id=id|text=unit name already exists"];
+        $res = validateReq($req,$validate_rule,true,[],$ss->lang,false,$check_unique);
+        if($res->error) return JDV::error($res->error);
+        $id = $res->id;
+        $inputs = $res->values;
+        $id = saveData($ss,'inv_units',['id'=>$id],['name'=>$inputs['name'], 'parent_unit_id'=>null,'qty'=>1],[],1);
+        if($id >0){
+              $sub_unit_name = $inputs['sub_unit_name'];
+              if($sub_unit_name){
+                $row = getDataRow('inv_units',['branch_id'=>$branch_id,'name'=>$sub_unit_name],'id');
+                $id1 = isset($row)?$row->id:0;
+                $id1 = saveData($ss,'inv_units',['id'=>$id1],['name'=>$sub_unit_name, 'parent_unit_id'=>$id,'qty'=>$inputs['sub_unit_qty']],[],1);
+              } 
+              
+        }
+        return JDV::success(['id'=>$id]);
+    }
+
     function getItemList(Request $req) { 
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
@@ -51,7 +103,7 @@ class ItemController extends Controller
         }
         if ($group_id >0) $str_group ="g.id =$group_id"; 
         //if ($brand_id >0) $str_brand ="g.id =$brand_id";
-        $rows = DB::table('inv_items as i')->join('inv_item_groups as g','g.id','=','i.group_id')->where('i.branch_id',$branch_id)->whereRaw($str_group)->whereRaw($str_search)->selectRaw("i.id,'Product' AS item_type,i.code,i.name,i.description,g.name as group_name,g.id as group_id,g.description,i.create_user,formatDate(i.created_at) as created_at")->orderByRaw("i.name ASC")->get();
+        $rows = DB::table('inv_items as i')->join('inv_item_groups as g','g.id','=','i.group_id')->where('i.branch_id',$branch_id)->whereRaw($str_group)->whereRaw($str_search)->selectRaw("i.id,'Product' AS item_type,i.code,i.name,i.description,g.name as group_name,g.id as group_id,g.description, 0 AS category_id,'' AS category,i.create_user,formatDate(i.created_at) as created_at")->orderByRaw("g.name ASC,i.code ASC")->get();
         return JDV::result($rows);
     }
      
@@ -91,7 +143,7 @@ class ItemController extends Controller
           "cost"=>"0|number|default=0",
           "made_in_country_id"=>"0|exists=inv_countries",
           "unit_id"=>"0|exists=inv_units|text=SKU is required",
-          "group_id"=>"1|positive|exists=inv_groups.id"
+          "group_id"=>"1|positive|exists=inv_item_groups.id"
         ];
         $check_unique = ["$branch_id|inv_items|name|id=id|text=item name already exists"];
         

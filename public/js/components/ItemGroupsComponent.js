@@ -40,7 +40,7 @@ let ItemGroupsComponent = new function(){
                      }
                 }
             };
-            ProductsGroupDialog.show(op);
+            ItemGroupDialog.show(op);
         });
 
         mThis.tblItems.on('click','.btn_item_modify',function(e){
@@ -54,7 +54,7 @@ let ItemGroupsComponent = new function(){
                      }
                 }
             };
-            ProductsGroupDialog.show(op);
+            ItemGroupDialog.show(op);
         });
 
         mThis.tblItems.on('click','.btn_item_delete',function(e){
@@ -207,7 +207,7 @@ let ItemGroupsComponent = new function(){
 }
 
 //begin::MedicalServiceDialog
-let ProductsGroupDialog = new function(){
+let ItemGroupDialog = new function(){
     let mThis = this;
     this.self = $(`#_pdg_dlgProductGroup`);
      this.elCat = $(`#_pdg_dlgProductGroup_cat`);

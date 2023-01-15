@@ -100,6 +100,9 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('inventory/items', [ItemController::class, 'getItemList']);
         Route::post('inventory/delete-item', [ItemController::class, 'deleteItem']);
         Route::post('inventory/save-item', [ItemController::class, 'saveItem']);
+        Route::post('inventory/save-unit', [ItemController::class, 'saveUnit']);
+        Route::post('inventory/save-sku', [ItemController::class, 'saveUnit']);
+        Route::post('inventory/save-manufacturer', [ItemController::class, 'saveManufacturer']);
     //End::ItemController
 
     //begin::ItemGroupController
@@ -127,7 +130,11 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //begin::InventorySettingsController =>  Inventory Settings.
     Route::post('inventory/settings/options-group',[InventorySettingsController::class, 'getComboItems_group']);
     Route::post('inventory/settings/item-form-options',[InventorySettingsController::class, 'getItemFormOptions']);
-    
+    Route::post('inventory/settings/options-detail-type',[InventorySettingsController::class, 'getComboItems_detailtype']);
+    Route::post('inventory/settings/options-category',[InventorySettingsController::class, 'getComboItems_category']);
+    Route::post('inventory/settings/options-unit',[InventorySettingsController::class, 'getComboItems_unit']);
+    Route::post('inventory/settings/options-sku',[InventorySettingsController::class, 'getComboItems_unit']);
+    Route::post('inventory/settings/options-manufacturer',[InventorySettingsController::class, 'getComboItems_manufacturer']);
    //end::InventorySettingsController =>  Inventory Settings.
 
   //begin::PartnerController

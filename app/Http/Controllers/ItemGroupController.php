@@ -11,7 +11,7 @@ use App\Models\Inventory\ItemGroup;
 
 //use Illuminate\Support\Facades\DB;
 //use App\DB\SQLDB;
-//use DB;
+use DB;
 //use SQLDB;
 //use Carbon\Carbon;
 use Sanitizer;
@@ -57,8 +57,8 @@ class ItemGroupController extends Controller
         if($ss->status_code !=200) return $ss; //user not authenticated
         $branch_id = $ss->branch_id;
         $data = (object)[];
-        $data->categories = DB::table('inv_categories')->where('branch_id',$branch_id)->selectRaw("id,name")->orderByRaw("name ASC")->get();
-        $data->units = DB::table('inv_units')->where('branch_id',$branch_id)->selectRaw("id,name")->orderByRaw("name ASC")->get();
+        $data->categories = DB::table('inv_categories')->where('branch_id',$branch_id)->selectRaw("id,name as category")->orderByRaw("name ASC")->get();
+        $data->units = DB::table('inv_units')->where('branch_id',$branch_id)->selectRaw("id,name as unit_name")->orderByRaw("name ASC")->get();
         return JDV::result($data);
     }
 

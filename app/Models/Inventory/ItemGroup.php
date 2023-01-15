@@ -51,6 +51,7 @@ class ItemGroup extends Model
     $branch_id = $ss->branch_id;
     $validate_rule = [
         'id'=>'0|number|identity=1',
+        'code'=>'0|string|1-20|',
         'name'=>'1|string|1-150',
         'description'=>'0|string'
     ];
