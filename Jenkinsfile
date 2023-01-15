@@ -21,13 +21,13 @@ pipeline {
                 "'
             }
         }
-        stage('Database Migration') {
-            steps {
-                sh 'ssh -o StrictHostKeyChecking=no vectfrar@192.64.117.185 -p 21098 "cd ~/public_html/mclinic.vectorasoft.com;\
-                php artisan migrate:fresh --seed;\
-                "'
-            }
-        }
+        // stage('Database Migration') {
+        //     steps {
+        //         sh 'ssh -o StrictHostKeyChecking=no vectfrar@192.64.117.185 -p 21098 "cd ~/public_html/mclinic.vectorasoft.com;\
+        //         php artisan migrate:fresh --seed;\
+        //         "'
+        //     }
+        // }
         stage('Ending') {
             steps {
                 echo "Thank you!"
