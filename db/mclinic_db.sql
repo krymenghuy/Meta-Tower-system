@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2023-01-14 18:06:39
+Date: 2023-01-16 10:38:44
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -570,17 +570,21 @@ CREATE TABLE `inv_categories` (
   `update_uid` int(10) DEFAULT NULL,
   `item_class` varchar(50) DEFAULT NULL COMMENT 'item_class ={RM,FG,MI}. RM = Raw Materials, FG = Finsihed Goods, MI = Merchandising Items',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_categories
 -- ----------------------------
 INSERT INTO `inv_categories` VALUES ('1', '1', 'Topical Product', 'Admin', '1', '2023-01-14 16:33:59.575929', 'Topical Product', null, '2023-01-14 16:33:59.575929', null, null, 'MI');
-INSERT INTO `inv_categories` VALUES ('2', '1', 'Oral Medicine', 'Admin', '1', '2023-01-14 16:34:01.112554', 'Oral Medicine', null, '2023-01-14 16:34:01.112554', null, null, 'MI');
+INSERT INTO `inv_categories` VALUES ('2', '1', 'Oral Medicine', 'Admin', '1', '2023-01-14 23:08:21.635936', 'Oral Medicine', null, '2023-01-14 23:08:21.000000', 'Samsethy', '1', 'MI');
 INSERT INTO `inv_categories` VALUES ('3', '1', 'Equipment', 'Admin', '1', '2023-01-14 16:34:02.352747', 'Equipment', null, '2023-01-14 16:34:02.352747', 'Samsethy', '1', 'MI');
 INSERT INTO `inv_categories` VALUES ('4', '1', 'Injection', 'Admin', '1', '2023-01-14 16:34:03.661090', 'Injection', null, '2023-01-14 16:34:03.661090', null, null, 'MI');
 INSERT INTO `inv_categories` VALUES ('5', '1', 'Sale product', 'Admin', '1', '2023-01-14 16:34:04.815243', 'Sale product', null, '2023-01-14 16:34:04.815243', null, null, 'MI');
 INSERT INTO `inv_categories` VALUES ('8', '1', 'test gtoup', 'Samsethy', '1', '2023-01-14 16:34:09.549279', 'New group', null, '2023-01-14 16:34:09.549279', null, null, 'MI');
+INSERT INTO `inv_categories` VALUES ('22', '1', 'DDDD', 'Samsethy', '1', '2023-01-16 00:34:53.000000', null, null, null, null, null, 'MI');
+INSERT INTO `inv_categories` VALUES ('23', '1', 'ADAAAA', 'Samsethy', '1', '2023-01-16 00:39:40.000000', null, null, null, null, null, 'MI');
+INSERT INTO `inv_categories` VALUES ('24', '1', 'Sam Category', 'Samsethy', '1', '2023-01-16 01:18:08.000000', null, null, null, null, null, 'MI');
+INSERT INTO `inv_categories` VALUES ('25', '1', 'KKK', 'Samsethy', '1', '2023-01-16 01:35:15.000000', null, null, null, null, null, 'MI');
 
 -- ----------------------------
 -- Table structure for `inv_classes`
@@ -621,6 +625,25 @@ CREATE TABLE `inv_countries` (
 
 -- ----------------------------
 -- Records of inv_countries
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_detailed_types`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_detailed_types`;
+CREATE TABLE `inv_detailed_types` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `category_id` int(10) NOT NULL,
+  `create_uid` int(10) NOT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_detailed_types
 -- ----------------------------
 
 -- ----------------------------
@@ -675,7 +698,7 @@ CREATE TABLE `inv_items` (
   `sku` varchar(20) DEFAULT NULL,
   `update_uid` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=611 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=612 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_items
@@ -706,7 +729,7 @@ INSERT INTO `inv_items` VALUES ('23', '1', 'TP0022', 'Dermavive Nappy Rash Cream
 INSERT INTO `inv_items` VALUES ('24', '1', 'TP0023', 'Fixderma Moisturizing Lotion', 'Fixderma Moisturizing Lotion', 'Fixderma Moisturizing Lotion', null, '1', null, null, '2023-01-05 01:10:26.120732', '2023-01-05 01:10:26.120732', null, null, null, null, '2', null, null, null, '0.00', null, null);
 INSERT INTO `inv_items` VALUES ('25', '1', 'EP0001', 'Serum physiodose 5ml', 'Serum physiodose 5ml', 'Serum physiodose 5ml', null, '3', null, null, '2023-01-05 01:10:26.120732', '2023-01-05 01:10:26.120732', null, null, null, null, '3', null, null, null, '0.00', null, null);
 INSERT INTO `inv_items` VALUES ('26', '1', 'OM0001', 'Prednisolone', 'Prednisolone', 'Prednisolone', null, '2', null, null, '2023-01-05 01:10:26.120732', '2023-01-05 01:10:26.120732', null, null, null, null, '4', null, null, null, '0.00', null, null);
-INSERT INTO `inv_items` VALUES ('27', '1', '100007', 'Acnotin', 'Acnotin', 'Acnotin', null, '2', null, null, '2023-01-10 18:07:50.768014', '2023-01-10 18:07:50.768014', 'Samsethy', null, null, null, '2', '0', '0', null, '0.00', 'Bottle', '1');
+INSERT INTO `inv_items` VALUES ('27', '1', '100128', 'Acnotin', 'Acnotin', 'Acnotin', null, '2', null, null, '2023-01-14 22:56:07.446084', '2023-01-14 22:56:07.446084', 'Samsethy', null, null, null, '2', null, null, null, '0.00', 'Bottle', '1');
 INSERT INTO `inv_items` VALUES ('28', '1', 'OM0003', 'Doxycycline cap 100mg', 'Doxycycline cap 100mg', 'Doxycycline cap 100mg', null, '2', null, null, '2023-01-05 01:10:26.120732', '2023-01-05 01:10:26.120732', null, null, null, null, '4', null, null, null, '0.00', null, null);
 INSERT INTO `inv_items` VALUES ('29', '1', 'OM0004', 'Promethazine 25mg', 'Promethazine 25mg', 'Promethazine 25mg', null, '2', null, null, '2023-01-05 01:10:26.120732', '2023-01-05 01:10:26.120732', null, null, null, null, '4', null, null, null, '0.00', null, null);
 INSERT INTO `inv_items` VALUES ('30', '1', 'EP0002', 'Syringe 3ml Vinahankook B/100P', 'Syringe 3ml Vinahankook B/100P', 'Syringe 3ml Vinahankook B/100P', null, '3', null, null, '2023-01-05 01:10:26.120732', '2023-01-05 01:10:26.120732', null, null, null, null, '3', null, null, null, '0.00', null, null);
@@ -805,7 +828,7 @@ INSERT INTO `inv_items` VALUES ('123', '1', 'EP0031', 'Skin marker', 'Skin marke
 INSERT INTO `inv_items` VALUES ('124', '1', 'EP0032', 'Cotton Facial pad', 'Cotton Facial pad', 'Cotton Facial pad', null, '3', null, null, '2023-01-05 01:10:26.120732', '2023-01-05 01:10:26.120732', null, null, null, null, '6', null, null, null, '0.00', null, null);
 INSERT INTO `inv_items` VALUES ('125', '1', '100016', 'Acne extraction', 'Acne extraction', 'Acne extraction', null, '3', null, null, '2023-01-10 18:55:09.673741', '2023-01-10 18:55:09.673741', 'Samsethy', null, null, null, '2', '0', '0', null, '0.00', 'Bottle', '1');
 INSERT INTO `inv_items` VALUES ('126', '1', 'EP0034', 'Cautery ', 'Cautery ', 'Cautery ', null, '3', null, null, '2023-01-05 01:10:26.120732', '2023-01-05 01:10:26.120732', null, null, null, null, '6', null, null, null, '0.00', null, null);
-INSERT INTO `inv_items` VALUES ('127', '1', '100008', 'Peel', '???? Peel', 'Peel', null, '3', null, null, '2023-01-10 18:16:13.110517', '2023-01-10 18:16:13.110517', 'Samsethy', null, null, null, '6', '0', '0', null, '0.00', 'Pack', '1');
+INSERT INTO `inv_items` VALUES ('127', '1', '100129', 'Peel', '???? Peel', 'Peel', null, '3', null, null, '2023-01-15 09:38:41.632190', '2023-01-15 09:38:41.632190', 'Samsethy', null, null, null, '6', null, null, null, '0.00', 'Pack', '1');
 INSERT INTO `inv_items` VALUES ('128', '1', 'IN0018', 'Meso GTM Gold cell PDRN8% (Box/10 3,3ml)', 'Meso GTM Gold cell PDRN8% (Box/10 3,3ml)', 'Meso GTM Gold cell PDRN8% (Box/10 3,3ml)', null, '4', null, null, '2023-01-05 01:10:26.120732', '2023-01-05 01:10:26.120732', null, null, null, null, '2', null, null, null, '0.00', null, null);
 INSERT INTO `inv_items` VALUES ('129', '1', 'IN0019', 'Meso Restructurer Innoaesthetic (B/4 5ml)', 'Meso Restructurer Innoaesthetic (B/4 5ml)', 'Meso Restructurer Innoaesthetic (B/4 5ml)', null, '4', null, null, '2023-01-05 01:10:26.120732', '2023-01-05 01:10:26.120732', null, null, null, null, '2', null, null, null, '0.00', null, null);
 INSERT INTO `inv_items` VALUES ('130', '1', 'IN0020', 'Meso Redness ID innoaethetic (B/4 2.5ml)', 'Meso Redness ID innoaethetic (B/4 2.5ml)', 'Meso Redness ID innoaethetic (B/4 2.5ml)', null, '4', null, null, '2023-01-05 01:10:26.120732', '2023-01-05 01:10:26.120732', null, null, null, null, '2', null, null, null, '0.00', null, null);
@@ -913,7 +936,7 @@ INSERT INTO `inv_items` VALUES ('231', '1', 'IN0039', 'Botox USA', 'Botox USA', 
 INSERT INTO `inv_items` VALUES ('232', '1', 'TP0069', 'Whiteness lightening serum', 'Whiteness lightening serum', 'Whiteness lightening serum', null, '1', null, null, '2023-01-05 01:10:26.120732', '2023-01-05 01:10:26.120732', null, null, null, null, '3', null, null, null, '0.00', null, null);
 INSERT INTO `inv_items` VALUES ('233', '1', 'OM0017', 'Firide 1mg', 'Firide 1mg', 'Firide 1mg', null, '2', null, null, '2023-01-05 01:10:26.120732', '2023-01-05 01:10:26.120732', null, null, null, null, '4', null, null, null, '0.00', null, null);
 INSERT INTO `inv_items` VALUES ('234', '1', 'TP0070', 'Minoxin 5%', 'Minoxin 5%', 'Minoxin 5%', null, '1', null, null, '2023-01-05 01:10:26.120732', '2023-01-05 01:10:26.120732', null, null, null, null, '2', null, null, null, '0.00', null, null);
-INSERT INTO `inv_items` VALUES ('235', '1', 'TP0071', 'Acnetin 0.05', 'Acnetin 0.05', 'Acnetin 0.05', null, '1', null, null, '2023-01-05 01:10:26.120732', '2023-01-05 01:10:26.120732', null, null, null, null, '3', null, null, null, '0.00', null, null);
+INSERT INTO `inv_items` VALUES ('235', '1', '100127', 'Acnetin 005', 'Acnetin 0.05', 'Acnetin 005', null, '1', null, null, '2023-01-14 22:55:54.007350', '2023-01-14 22:55:54.007350', 'Samsethy', null, null, null, '3', null, null, null, '0.00', null, '1');
 INSERT INTO `inv_items` VALUES ('236', '1', 'IN0040', 'F-ACN (FUSION)', 'F-ACN (FUSION)', 'F-ACN (FUSION)', null, '4', null, null, '2023-01-05 01:10:26.120732', '2023-01-05 01:10:26.120732', null, null, null, null, '2', null, null, null, '0.00', null, null);
 INSERT INTO `inv_items` VALUES ('237', '1', 'IN0041', 'F-RADIAN (FUSION)', 'F-RADIAN (FUSION)', 'F-RADIAN (FUSION)', null, '4', null, null, '2023-01-05 01:10:26.120732', '2023-01-05 01:10:26.120732', null, null, null, null, '2', null, null, null, '0.00', null, null);
 INSERT INTO `inv_items` VALUES ('238', '1', '42', 'F-EYECONTOUR (FUSION)', 'F-EYECONTOUR (FUSION)', 'F-EYECONTOUR (FUSION)', null, '4', null, null, '2023-01-05 01:10:26.120732', '2023-01-05 01:10:26.120732', null, null, null, null, '2', null, null, null, '0.00', null, null);
@@ -1031,6 +1054,7 @@ INSERT INTO `inv_items` VALUES ('607', '1', '100122', 'new itesfgd', null, null,
 INSERT INTO `inv_items` VALUES ('608', '1', '100123', 'new itesfgsdfdd', null, null, null, '1', '1', 'Samsethy', '2023-01-14 10:22:20.964661', '2023-01-14 10:22:20.964661', null, null, null, null, '2', null, null, null, '150.00', null, null);
 INSERT INTO `inv_items` VALUES ('609', '1', '100124', 'new itesfgssfsdfdfdd', null, null, null, '1', '1', 'Samsethy', '2023-01-14 10:45:15.225621', '2023-01-14 10:45:15.225621', null, null, null, null, '2', null, null, null, '150.00', null, null);
 INSERT INTO `inv_items` VALUES ('610', '1', '100125', 'new itesfgssfsdfdd', null, null, null, '1', '1', 'Samsethy', '2023-01-14 10:45:30.787724', '2023-01-14 10:45:30.787724', null, null, null, null, '2', null, null, null, '150.00', null, null);
+INSERT INTO `inv_items` VALUES ('611', '1', '100126', 'DDDDD', null, 'sfdsgdf', null, '4', '1', 'Samsethy', '2023-01-14 22:55:50.540836', '2023-01-14 22:55:50.540836', null, null, null, null, '2', null, null, null, '0.00', null, null);
 
 -- ----------------------------
 -- Table structure for `inv_item_attributes`
@@ -1062,7 +1086,7 @@ CREATE TABLE `inv_item_code_control` (
 -- ----------------------------
 -- Records of inv_item_code_control
 -- ----------------------------
-INSERT INTO `inv_item_code_control` VALUES ('1', '125', null, null);
+INSERT INTO `inv_item_code_control` VALUES ('1', '129', null, null);
 
 -- ----------------------------
 -- Table structure for `inv_item_groups`
@@ -1081,21 +1105,21 @@ CREATE TABLE `inv_item_groups` (
   `update_user` varchar(50) DEFAULT NULL,
   `update_uid` int(10) DEFAULT NULL,
   `category_id` int(10) DEFAULT NULL,
-  `code` varchar(20) NOT NULL,
+  `code` varchar(20) DEFAULT NULL,
   `brand_name` varchar(100) DEFAULT NULL,
   `manufacturer_id` int(10) DEFAULT NULL,
   `upc` varchar(10) DEFAULT NULL,
   `sku` varchar(20) DEFAULT NULL,
   `unit_id` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_item_groups
 -- ----------------------------
 INSERT INTO `inv_item_groups` VALUES ('1', '1', 'Topical Product', 'Admin', '1', '2023-01-09 15:19:39.772108', 'Topical Product', null, null, null, null, null, '', null, null, null, null, null);
-INSERT INTO `inv_item_groups` VALUES ('2', '1', 'Oral Medicine', 'Admin', '1', '2023-01-09 15:19:39.772108', 'Oral Medicine', null, null, null, null, null, '', null, null, null, null, null);
-INSERT INTO `inv_item_groups` VALUES ('3', '1', 'Equipment', 'Admin', '1', '2023-01-09 15:19:39.772108', 'Equipment', null, null, null, null, null, '', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('2', '1', 'Oral Medicine', 'Admin', '1', '2023-01-14 23:08:13.834688', 'Oral Medicine', null, '2023-01-14 23:08:13.000000', 'Samsethy', '1', null, '', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('3', '1', 'Equipment', 'Admin', '1', '2023-01-14 23:20:44.005872', 'Equipment', null, '2023-01-14 23:20:44.000000', 'Samsethy', '1', null, null, null, null, null, null, null);
 INSERT INTO `inv_item_groups` VALUES ('4', '1', 'Injection', 'Admin', '1', '2023-01-09 15:19:39.772108', 'Injection', null, null, null, null, null, '', null, null, null, null, null);
 INSERT INTO `inv_item_groups` VALUES ('5', '1', 'Sale product', 'Admin', '1', '2023-01-09 15:19:39.772108', 'Sale product', null, null, null, null, null, '', null, null, null, null, null);
 INSERT INTO `inv_item_groups` VALUES ('8', '1', 'test gtoup', 'Samsethy', '1', '2023-01-10 00:09:53.000000', 'New group', null, null, null, null, null, '', null, null, null, null, null);
@@ -1110,6 +1134,11 @@ INSERT INTO `inv_item_groups` VALUES ('16', '1', 'test d sdfd', 'Samsethy', '1',
 INSERT INTO `inv_item_groups` VALUES ('17', '1', 'test d sddfd', 'Samsethy', '1', '2023-01-10 13:36:57.000000', 'New group', null, null, null, null, null, '', null, null, null, null, null);
 INSERT INTO `inv_item_groups` VALUES ('18', '1', 'test d sdsdfdfd', 'Samsethy', '1', '2023-01-10 14:19:49.000000', 'New group', null, null, null, null, null, '', null, null, null, null, null);
 INSERT INTO `inv_item_groups` VALUES ('19', '1', 'test d sdsdsdfdfd', 'Samsethy', '1', '2023-01-10 14:31:13.000000', 'New group', null, null, null, null, null, '', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('22', '1', 'admingmailcom', 'Samsethy', '1', '2023-01-14 23:20:50.000000', null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('23', '1', 'ABDSDSD', 'Samsethy', '1', '2023-01-15 14:47:06.000000', null, null, null, null, null, null, '101', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('24', '1', 'DBDDBSS DADA', 'Samsethy', '1', '2023-01-15 14:48:41.000000', null, null, null, null, null, null, '102', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('25', '1', 'Dolprane', 'Samsethy', '1', '2023-01-15 14:49:35.000000', null, null, null, null, null, null, '103', null, null, null, null, null);
+INSERT INTO `inv_item_groups` VALUES ('26', '1', 'DDDAAAA', 'Samsethy', '1', '2023-01-15 15:47:53.000000', null, null, null, null, null, null, 'C10001', null, null, null, null, null);
 
 -- ----------------------------
 -- Table structure for `inv_item_varriances_del`
@@ -1141,17 +1170,19 @@ CREATE TABLE `inv_manufacturers` (
   `name` varchar(150) NOT NULL,
   `country_id` int(10) DEFAULT NULL,
   `create_uid` int(10) NOT NULL,
-  `create_user` varchar(50) DEFAULT NULL,
-  `update_uid` int(10) NOT NULL,
+  `create_user` varchar(50) NOT NULL DEFAULT '',
+  `update_uid` int(10) DEFAULT NULL,
   `update_user` varchar(50) DEFAULT NULL,
   `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_manufacturers
 -- ----------------------------
+INSERT INTO `inv_manufacturers` VALUES ('1', '1', 'fdfgdfgfd', null, '1', 'Samsethy', null, null, null, '2023-01-16 01:54:36.000000');
+INSERT INTO `inv_manufacturers` VALUES ('2', '1', 'Apple', null, '1', 'Samsethy', null, null, null, '2023-01-16 01:57:47.000000');
 
 -- ----------------------------
 -- Table structure for `inv_merchandising_items`
@@ -1408,26 +1439,34 @@ DROP TABLE IF EXISTS `inv_units`;
 CREATE TABLE `inv_units` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
-  `description` varchar(100) NOT NULL,
+  `description` varchar(100) DEFAULT NULL,
   `parent_unit_id` int(10) DEFAULT NULL,
-  `item_id` int(10) NOT NULL,
   `branch_id` int(10) DEFAULT 0,
+  `qty` decimal(10,2) DEFAULT 1.00,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_units
 -- ----------------------------
-INSERT INTO `inv_units` VALUES ('2', 'Bottle', 'Bottle', null, '0', '0');
-INSERT INTO `inv_units` VALUES ('3', 'Tube', 'Tube', null, '0', '0');
-INSERT INTO `inv_units` VALUES ('4', 'Tablet', 'Tablet', null, '0', '0');
-INSERT INTO `inv_units` VALUES ('5', 'Set', 'Set', null, '0', '0');
-INSERT INTO `inv_units` VALUES ('6', 'Pack', 'Pack', null, '0', '0');
-INSERT INTO `inv_units` VALUES ('7', 'Box', 'Box', null, '0', '0');
-INSERT INTO `inv_units` VALUES ('8', 'Vial', 'Vial', null, '0', '0');
-INSERT INTO `inv_units` VALUES ('9', 'FL', 'FL', null, '0', '0');
-INSERT INTO `inv_units` VALUES ('10', 'Amp', 'Amp', null, '0', '0');
-INSERT INTO `inv_units` VALUES ('11', 'pcs', 'pcs', null, '0', '0');
+INSERT INTO `inv_units` VALUES ('2', 'Bottle', 'Bottle', null, '1', '1.00', null, null, null, null, null, null);
+INSERT INTO `inv_units` VALUES ('3', 'Tube', 'Tube', null, '1', '1.00', null, null, null, null, null, null);
+INSERT INTO `inv_units` VALUES ('4', 'Tablet', 'Tablet', null, '1', '1.00', null, null, null, null, null, null);
+INSERT INTO `inv_units` VALUES ('5', 'Set', 'Set', null, '1', '1.00', null, null, null, null, null, null);
+INSERT INTO `inv_units` VALUES ('6', 'Pack', 'Pack', null, '1', '1.00', null, null, null, null, null, null);
+INSERT INTO `inv_units` VALUES ('7', 'Box', 'Box', null, '1', '1.00', null, null, null, null, null, null);
+INSERT INTO `inv_units` VALUES ('8', 'Vial', 'Vial', null, '1', '1.00', null, null, null, null, null, null);
+INSERT INTO `inv_units` VALUES ('9', 'FL', 'FL', null, '1', '1.00', null, null, null, null, null, null);
+INSERT INTO `inv_units` VALUES ('10', 'Amp', 'Amp', null, '1', '1.00', null, null, null, null, null, null);
+INSERT INTO `inv_units` VALUES ('11', 'pcs', 'pcs', null, '1', '1.00', null, null, null, null, null, null);
+INSERT INTO `inv_units` VALUES ('16', 'bottles', null, '17', '1', '20.00', '1', 'Samsethy', '2023-01-16 01:47:37.237984', '2023-01-16 01:47:37.000000', 'Samsethy', '1');
+INSERT INTO `inv_units` VALUES ('17', 'dd', null, null, '1', '1.00', '1', 'Samsethy', '2023-01-16 01:47:37.000000', null, null, null);
 
 -- ----------------------------
 -- Table structure for `inv_warehouses`
@@ -2574,8 +2613,8 @@ INSERT INTO `persons` VALUES ('98', '1', 'Samsethy THOUN', null, null, 'M', '200
 INSERT INTO `persons` VALUES ('99', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:28', null, null, null, null);
 INSERT INTO `persons` VALUES ('100', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:28', null, null, null, null);
 INSERT INTO `persons` VALUES ('101', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:29', null, null, null, null);
-INSERT INTO `persons` VALUES ('102', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:29', null, null, null, null);
-INSERT INTO `persons` VALUES ('103', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:41', null, null, null, null);
+INSERT INTO `persons` VALUES ('102', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:29', 'Samsethy', '1', '2023-01-14 22:29:48', null);
+INSERT INTO `persons` VALUES ('103', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:41', 'Samsethy', '1', '2023-01-14 22:29:45', null);
 INSERT INTO `persons` VALUES ('104', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 13:48:25', null, null, null, null);
 
 -- ----------------------------
@@ -3270,12 +3309,12 @@ CREATE TABLE `um_sessions` (
   `status` varchar(10) DEFAULT NULL COMMENT 'status ={online,offline}',
   `lang` varchar(50) DEFAULT 'en',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1768 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1784 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of um_sessions
 -- ----------------------------
-INSERT INTO `um_sessions` VALUES ('1767', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-01-14 17:36:39', '2023-01-14 17:36:39', 'ni00U5qFRr4oruF8OZ5vln8kTmVXO4M6Jv7LTy', 'Z26gL4Pn5V4UMSOvjHRzaH0XJNTPwVDJ4ZrmB9', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjczNjkyNTk5LCJuYmYiOjE2NzM2OTI1OTksImV4cCI6MTY3MzY5NjE5OSwibGFuZyI6ImVuIiwidXNlcl9jbGFzcyI6ImFkbWluIiwib2ZmaWNpYWxfaWQiOm51bGwsImlkIjoxLCJsb2dpbl9uYW1lIjoiYWRtaW5AZ21haWwuY29tIiwiYnJhbmNoX2lkIjoxLCJmdWxsX25hbWUiOiJTYW1zZXRoeSIsInN0YXR1cyI6ImFjdGl2ZSIsImlzX2xvY2tlZCI6MCwiZW1haWwiOm51bGwsInBob25lX251bWJlciI6IjAxMjU3ODkwIiwib3RwX2NvZGUiOm51bGx9.S03YHqS-CeV6ioVEcLziTwS00Wq55DzLNNM8HAMnPaw', null, 'en');
+INSERT INTO `um_sessions` VALUES ('1783', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-01-16 02:01:05', '2023-01-16 02:01:05', 'yX27RwTF14jJy0D6Voey5ht83uXCvhqW15G40j', 'Y6qtgSRk6yj0H9RvmnxUhN2cDZwqZ0lngH7m9I', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjczODA5MjY1LCJuYmYiOjE2NzM4MDkyNjUsImV4cCI6MTY3MzgxMjg2NSwibGFuZyI6ImVuIiwidXNlcl9jbGFzcyI6ImFkbWluIiwib2ZmaWNpYWxfaWQiOm51bGwsImlkIjoxLCJsb2dpbl9uYW1lIjoiYWRtaW5AZ21haWwuY29tIiwiYnJhbmNoX2lkIjoxLCJmdWxsX25hbWUiOiJTYW1zZXRoeSIsInN0YXR1cyI6ImFjdGl2ZSIsImlzX2xvY2tlZCI6MCwiZW1haWwiOm51bGwsInBob25lX251bWJlciI6IjAxMjU3ODkwIiwib3RwX2NvZGUiOm51bGx9.ze4EvbTmEaPVCFobIdMZkWeKujzIkNcs0TVtFjpc2rI', null, 'en');
 
 -- ----------------------------
 -- Table structure for `um_users`
