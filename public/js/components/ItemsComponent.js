@@ -6,8 +6,10 @@ let ItemsComponent = new function(){
     this.self = $('#_main_itemsComponent');
     this.btnNew = $('#_itm_btnNew');
     this.elSearchItem = $('#_itm_search');
+    this.elFilter_category = $('#_itm_filter_category');
+
     // this.elFilter_department = $('#_msl_filter_service');
-    this.tblItems = $('#_itm_tblItem');
+    this.tblItems = $('#_itm_tblItems');
     // this.form_data = {};
     this.icon_url = [VSUtil.asset_url(),'/images/icons'].join('');
 
@@ -82,7 +84,7 @@ let ItemsComponent = new function(){
             let op = {
                 onClose:(e)=>{
                     if(e){
-                        mThis.displayProducts();
+                        mThis.displayItems();
                     }
                 }
             };
@@ -96,7 +98,7 @@ let ItemsComponent = new function(){
                 onClose:(e)=>{
                     //do something on dialog closed
                     if(e){
-                        mThis.displayProducts();
+                        mThis.displayItems();
                     }
                 }
             };
@@ -110,14 +112,14 @@ let ItemsComponent = new function(){
                     let p = {"id":item_id};
                     vsapi.call(`${main_view.base_url}/api/inventory/delete-item`,p).then(res=>{
                        if(res.status_code === 200){
-                          mThis.displayProducts();
+                          mThis.displayItems();
                        }else cv_interact.error(res.error_message);
                     });
                 }
             });
         });
 
-        this.cfg = new ExpandableRowConfig('_itm_tblItem',{
+        this.cfg = new ExpandableRowConfig('_itm_tblItems',{
             'dontExpandByClickingOn':['btn-item-modify','btn-item-delete','btn-item-action'],
             //'content':`<div class="alert alert-info">Loading details</div>`,
             'onOpen':(container,detail_tr,parent_tr)=>{
@@ -129,17 +131,23 @@ let ItemsComponent = new function(){
         });
 
         mThis.elSearchItem.on('keyup',(e)=>{
-            if(e.keyCode === 13) mThis.displayProducts();
+            if(e.keyCode === 13) mThis.displayItems();
+        });
+
+        mThis.elFilter_category.on('change',(e)=>{
+            e.preventDefault();
+            //let cat_id = mThis.elFilter_category.val();
+            mThis.displayItems();
         });
     }
      
-    this.displayProducts =(onFinish=null)=>
+    this.displayItems =(onFinish=null)=>
     { 
         //Initialize language for DataTable columns headers
         //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
         //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
-        let p = {'search_value':mThis.elSearchItem.val()};
+        let p = {'search_value':mThis.elSearchItem.val(),'category_id':mThis.elFilter_category.val()};
         window.vsapi.call(`${mThis.base_url}/api/inventory/items`,p,'POST',null).then((result)=>{
             let data = [];
             if(result.status_code === 200) data = result.data;
@@ -162,7 +170,12 @@ let ItemsComponent = new function(){
                 },
                 {
                     title: mThis.trans_title("Code"),
-                    data: "code"
+                    data:(data,a,b)=>{
+                        return [
+                            `<span class="fw-bold d-block">`,data.code,`</span>`,
+                            `<span class="text-secondary">group: `,data.group_code,`</span>`
+                        ].join('');
+                    }
                 },
                 {
                     title: mThis.trans_title('Name'),
@@ -230,12 +243,31 @@ let ItemsComponent = new function(){
         });     
     };
 
+     //prepareOptions()| prepareFormOptions() for StockTrackingComponent.show()
+     this.prepareOptions = (onFinish)=>{
+        vsapi.call(`${main_view.base_url}/api/inventory/settings/options-category`,null).then(res=>{
+           if(res.status_code === 200){
+             let cats = StringSanitizer.sanitizeObject(res.data);
+             let d = {
+                "categories":cats
+               };  
+             onFinish(d);  
+           } 
+          
+        });
+    }
+ 
     this.show = (options=null) => {
         if(!options) options={};
         mThis.options = options;
-        mThis.displayProducts(() => {
-            main_view.setTitle(mThis.title_prop);
-            mThis.self.show().siblings().hide();
+        mThis.prepareOptions(d=>{
+            let cats = d.categories;
+            VSUtil.setComboItems(mThis.elFilter_category,cats,'id','category',true,'(All categories)',0);
+            //VSUtil.setComboItems(mThis.elFilter_category,d.stock_classes,'id','stock_class',true,'(All Classes)',0);
+            mThis.displayItems(() => {
+                main_view.setTitle(mThis.title_prop);
+                mThis.self.show().siblings().hide();
+            });
         });
     }
 }

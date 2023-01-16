@@ -29,6 +29,8 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\QTicketController;
 use App\Http\Controllers\MedicalServiceController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\FGItemController;
+
 use App\Http\Controllers\ItemGroupController; 
 use App\Http\Controllers\CategoryController; 
 use App\Http\Controllers\EmployeeController;  
@@ -102,6 +104,14 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('inventory/save-item', [ItemController::class, 'saveItem']);
     //End::ItemController
 
+     //begin::FGItemController
+        //stock/groups  
+        Route::post('inventory/stock/group-list', [FGItemController::class, 'getGroupList']);
+        Route::post('inventory/stock/group-items', [FGItemController::class, 'getItemsByGroup']);
+        Route::post('inventory/stock/classes', [FGItemController::class, 'getStockClasses']); 
+    //End::FGItemController
+
+
     //begin::ItemGroupController
         Route::post('inventory/group-details', [ItemGroupController::class, 'getItemGroupDetails']);
         Route::post('inventory/groups', [ItemGroupController::class, 'getItemGroups']);
@@ -127,6 +137,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //begin::InventorySettingsController =>  Inventory Settings.
         Route::post('inventory/settings/options-group',[InventorySettingsController::class, 'getComboItems_group']);
         Route::post('inventory/settings/item-form-options',[InventorySettingsController::class, 'getItemFormOptions']);
+        Route::post('inventory/settings/stock-tracking-options', [InventorySettingsController::class, 'getStockTrackingFormOptions']);
         Route::post('inventory/settings/options-detail-type',[InventorySettingsController::class, 'getComboItems_detailtype']);
         Route::post('inventory/settings/options-category',[InventorySettingsController::class, 'getComboItems_category']);
         Route::post('inventory/settings/options-unit',[InventorySettingsController::class, 'getComboItems_unit']);
@@ -136,6 +147,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('inventory/settings/save-sku', [InventorySettingsController::class, 'saveUnit']);
         Route::post('inventory/settings/save-manufacturer', [InventorySettingsController::class, 'saveManufacturer']);
         Route::post('inventory/settings/save-brand', [InventorySettingsController::class, 'saveBrand']);
+        Route::post('inventory/settings/options-stock-class', [InventorySettingsController::class, 'getComboItems_stockclass']);
 
         Route::post('inventory/settings/unit/delete', [InventorySettingsController::class, 'deleteUnit']);
         Route::post('inventory/settings/unit/list', [InventorySettingsController::class, 'getUnitList']);

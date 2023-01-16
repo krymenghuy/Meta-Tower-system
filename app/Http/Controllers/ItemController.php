@@ -45,17 +45,20 @@ class ItemController extends Controller
         $search_value =$req->search_value;
         $group_id = $req->group_id;
         $country_id = $req->country_id;
+        $category_id = $req->category_id;
 
         $str_search ="1=1";
-        $str_group="1=1";
+        $str_moreWhere="1=1";
         if($search_value){
           $search_value = escape_like_str($search_value);
           $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
         }
-        if ($group_id >0) $str_group ="g.id =$group_id"; 
+        if ($group_id > 0) $str_moreWhere .=" AND g.id =$group_id";
+        if($category_id > 0) $str_moreWhere .=" AND g.category_id =$category_id";
+        if($country_id > 0)  $str_moreWhere .= " AND i.made_in_country_id =$country_id";
         //if ($brand_id >0) $str_brand ="g.id =$brand_id";
         //order by group_name or group_code
-        $rows = DB::table('inv_items as i')->join('inv_item_groups as g','g.id','=','i.group_id')->join('inv_categories as c','c.id','=','g.category_id')->where('i.branch_id',$branch_id)->whereRaw($str_group)->whereRaw($str_search)->selectRaw("i.id,'Product' AS item_type,i.code,g.code as group_code,i.name,i.description,i.unit_id, i.sku,g.unit_id AS group_unit_id,g.sku AS group_sku,g.name as group_name,g.id as group_id,g.description as group_description, g.category_id, i.manufacturer_id, c.name AS category,g.detail_type_id,getItemDetailType(g.detail_type_id) as detail_type,i.create_user,formatDate(i.created_at) as created_at")->orderByRaw("g.name ASC,i.code ASC")->get();
+        $rows = DB::table('inv_items as i')->join('inv_item_groups as g','g.id','=','i.group_id')->join('inv_categories as c','c.id','=','g.category_id')->where('i.branch_id',$branch_id)->whereRaw($str_moreWhere)->whereRaw($str_search)->selectRaw("i.id,'Product' AS item_type,i.code,g.code as group_code,i.name,i.description,i.unit_id, i.sku,g.unit_id AS group_unit_id,g.sku AS group_sku,g.name as group_name,g.id as group_id,g.description as group_description, g.category_id, i.manufacturer_id, c.name AS category,g.detail_type_id,getItemDetailType(g.detail_type_id) as detail_type,i.create_user,formatDate(i.created_at) as created_at")->orderByRaw("g.name ASC,i.code ASC")->get();
         return JDV::result($rows);
     }
      

@@ -165,7 +165,7 @@
                     </div>`;
               
               }else{
-                html =`<div class="expanded-row-error">${error_message}</div>`;
+                html =`<div class="expanded-row-error">${res.error_message}</div>`;
               }
 
               div_wrapper.html(html);

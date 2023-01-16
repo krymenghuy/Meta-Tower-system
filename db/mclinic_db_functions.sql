@@ -124,9 +124,8 @@ BEGIN
   return val; 
 end;
 
-drop function if exists 'getItemDetailType';
-create function getItemDetailType(detailtypeid INT)
-returns varchar(150) DETERMINISTIC
+DROP FUNCTION IF EXISTS `getItemDetailType`;
+create function getItemDetailType(detailtypeid INT) returns varchar(150) DETERMINISTIC
 BEGIN
   declare detailtype varchar(150);
   SET detailtype = (select d.`name` from inv_detailed_types as d where d.id =detailtypeid LIMIT 1);

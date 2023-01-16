@@ -6,7 +6,12 @@ let StockTrackingComponent = new function(){
     this.self = $('#_main_stockTrackingComponent');
     this.btnNew = $('#_stk_btnExport');
     this.elSearchItem = $('#_stk_search');
-    // this.elFilter_department = $('#_msl_filter_service');
+    this.elFilter_category = $('#_stk_filter_category');
+    this.elFilter_stock_class = $('#_stk_filter_class');
+
+    this.elFilter_loc_warehouse = $('#_stk_filter_warehouse');
+    this.elFilter_loc_block = $('#_stk_filter_block');
+
     this.tblItems = $('#_stk_tblItems');
     // this.form_data = {};
     this.icon_url = [VSUtil.asset_url(),'/images/icons'].join('');
@@ -22,6 +27,18 @@ let StockTrackingComponent = new function(){
         "Quantity":"Quantity",
         "Action":"Action"
     };
+
+     //prepareOptions()| prepareFormOptions() for ItemsComponent.show()
+     this.prepareOptions = (onFinish)=>{
+        //load all data options for Stock Tracking Form
+        vsapi.call(`${main_view.base_url}/api/inventory/settings/stock-tracking-options`,null).then(res=>{
+           if(res.status_code === 200){
+             let d = StringSanitizer.sanitizeObject(res.data);
+             onFinish(d);  
+           } 
+          
+        });
+    }
 
     this.displayVariances = (detail_tr, appt_id=0)=>{
         let div_wrapper = detail_tr.find('div.expandable-row-containter');
@@ -81,69 +98,124 @@ let StockTrackingComponent = new function(){
     }
 
     this.init = () => {
+
+        this.expandableConfig = new ExpandableRowConfig('_stk_tblItems',{
+            'dontExpandByClickingOn':['btn-group-action','btn-group-modify','btn-group-delete','btn-group-print'],
+            //'content':`<div class="alert alert-info">Loading details</div>`,
+            'onOpen':(container,detail_tr,parent_tr)=>{
+                let qtr = $(parent_tr);
+                let group_id = qtr.data('id');
+                mThis.createExpandedPanelContent($(detail_tr),{'group_id':group_id});
+             }
+        });
+ 
         mThis.btnNew.on('click',(e)=>{
             let op = {
                 onClose:(e)=>{
                     if(e){
-                        mThis.displayProducts();
+                        mThis.displayItemGroups();
                     }
                 }
             };
             ItemDialog.show(op);
         });
 
-        mThis.tblItems.on('click','a.btn-item-modify',function(e){
+        mThis.elFilter_category.on('change',(e)=>{
+            e.preventDefault();
+            mThis.displayItemGroups();
+        });
+
+        mThis.tblItems.on('click','a.btn-group-modify',function(e){
             let item_id = $(this).data("id");
             let op = {
                 id:item_id,
                 onClose:(e)=>{
                     //do something on dialog closed
                     if(e){
-                        mThis.displayProducts();
+                        mThis.displayItemGroups();
                     }
                 }
             };
             ItemDialog.show(op);
         });
 
-        mThis.tblItems.on('click','a.btn-item-delete',function(e){
+        mThis.tblItems.on('click','a.btn-group-delete',function(e){
             let item_id = $(this).data("id");
             cv_interact.confirm(`Delete this product?`,{title:"Delete Product",context:"delete"},(yes)=>{
                 if(yes){
                     let p = {"id":item_id};
                     vsapi.call(`${main_view.base_url}/api/inventory/delete-item`,p).then(res=>{
                        if(res.status_code === 200){
-                          mThis.displayProducts();
+                          mThis.displayItemGroups();
                        }else cv_interact.error(res.error_message);
                     });
                 }
             });
         });
-
-        this.cfg = new ExpandableRowConfig('_itm_tblItem',{
-            'dontExpandByClickingOn':['btn-item-modify','btn-item-delete','btn-item-action'],
-            //'content':`<div class="alert alert-info">Loading details</div>`,
-            'onOpen':(container,detail_tr,parent_tr)=>{
-                //alert(detail_tr.find('ul').html());
-                let qtr = $(parent_tr);
-                let appt_id = qtr.data('id');
-                mThis.displayVariances($(detail_tr),appt_id);
-             }
-        });
+ 
 
         mThis.elSearchItem.on('keyup',(e)=>{
-            if(e.keyCode === 13) mThis.displayProducts();
+            let d = mThis.elSearchItem.val();
+            if(!d || d.length >2 || e.keyCode ===13) mThis.displayItemGroups();
         });
     }
-     
-    this.displayProducts =(onFinish=null)=>
+  
+     this.createExpandedPanelContent = (detail_tr,options)=>{
+        let group_id = options.group_id;
+        let div_wrapper = detail_tr.find('div.expandable-row-containter');
+        div_wrapper.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
+        let p = {'group_id':group_id};
+        window.vsapi.call(`${main_view.base_url}/api/inventory/stock/group-items`,p,'POST',false).then((res)=>{ 
+          let html=null;
+          if (res.status_code === 200){
+             
+             let items = StringSanitizer.sanitizeObject(res.data); 
+              
+             html = [
+                `<div class="stock-items-panel">`,
+                        `<table class="w-100 inner-item-table header-uppercase">`,
+                            `<thead><tr>`,
+                            `<th>Item Code</th>`,
+                            `<th>Name</th>`,
+                            `<th>Desciption</th>`,
+                            `<th>Qty</th>`,
+                            `<th>Last Updated</th>`,
+                            `</tr></thead>`,
+                            `<tbody>`,
+                                mThis.createRowItems(items)
+                            ,`</tbody>
+                        </table>`,
+                 `</div>`].join('');
+          
+          }else{
+            html =`<div class="expanded-row-error">${res.error_message}</div>`;
+          }
+
+          div_wrapper.html(html);
+          //div_wrapper.slideDown(500);
+        });
+    }
+ 
+    this.createRowItems = (items)=>{
+        let html = "";
+       (items || []).map(t=>{
+          let sku = t.sku;
+          if(t.qty>1 && sku) sku =[sku,'s'].join('');
+          let qty = [t.qty?t.qty:0,` `,sku].join('');
+          let inner_html =`<td>${t.code}</td><td>${t.name}</td> <td>${t.description?t.description:""}</td> <td>${qty}</td><td>${t.last_updated?t.last_updated:"NA"}</td>`;
+          html = [html,`<tr data-itemid="`,t.id,`">`,inner_html,`</tr>`].join('');
+       });
+       return html;
+    }
+
+    this.displayItemGroups =(onFinish=null)=>
     { 
         //Initialize language for DataTable columns headers
         //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
         //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
-        let p = {'search_value':mThis.elSearchItem.val()};
-        window.vsapi.call(`${mThis.base_url}/api/inventory/items`,p,'POST',null).then((result)=>{
+        let p = {'search_value':mThis.elSearchItem.val(),'category_id':mThis.elFilter_category.val()};
+        window.vsapi.call(`${mThis.base_url}/api/inventory/stock/group-list`,p,'POST',null).then((result)=>{
             let data = [];
             if(result.status_code === 200) data = result.data;
             if (mThis.table){
@@ -173,18 +245,27 @@ let StockTrackingComponent = new function(){
                 },
                 {
                     title: mThis.trans_title('Category'),
-                    data:"category"
+                    data:(data,a,b)=>{
+                        return [
+                            `<span class="fw-normal d-block"><a data-gid="${data.id}" data-catid="${data.category_id}" href="javasvript:void(0)">`,data.category,`</a></span>`,
+                            `<span class="text-secondary">`,data.detail_type,`</span>`
+                        ].join('');
+                    }
                 },
                 {
                     title: mThis.trans_title('Quantity'),
-                    data: "qty"
+                    data: (data,a,b)=>{
+                        let sku = data.sku;
+                        if(data.qty>1 && sku) sku = [sku,'s'].join('');
+                        return [data.qty?data.qty:0,' ',sku].join('');
+                    }
                 },
                 {
                     title:mThis.trans_title('Action'),
                     data: function(item,a,b){
                         return [`<div class="form-inline">`,
-                        `<a href="javascript:void(0)" class="btn-item-modify" data-id="${item.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
-                        `<a href="javascript:void(0);" data-id="${item.id}" class="btn-item-delete"><i class="fa fa-trash" style="color:red"></i></a>`,
+                        `<a href="javascript:void(0)" class="btn-group-modify" data-id="${item.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
+                        `<a href="javascript:void(0);" data-id="${item.id}" class="btn-group-delete"><i class="fa fa-trash" style="color:red"></i></a>`,
                         `</div>`
                         ].join('');
                     }
@@ -231,10 +312,16 @@ let StockTrackingComponent = new function(){
     this.show = (options=null) => {
         if(!options) options={};
         mThis.options = options;
-        mThis.displayProducts(() => {
-            main_view.setTitle(mThis.title_prop);
-            mThis.self.show().siblings().hide();
+        mThis.prepareOptions(d=>{
+            VSUtil.setComboItems(mThis.elFilter_category,d.categories,'id','category',true,'(All Categories)',0);
+            VSUtil.setComboItems(mThis.elFilter_stock_class,d.stockclasses,'code','stock_class',true,'(All Classes)',0);
+            mThis.displayItemGroups(() => {
+                main_view.setTitle(mThis.title_prop);
+                mThis.self.show().siblings().hide();
+            });
         });
+
+       
     }
 }
 

@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2023-01-16 16:18:15
+Date: 2023-01-17 01:31:04
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -149,6 +149,63 @@ INSERT INTO `appt_statuses` VALUES ('1', '1', 'Pending');
 INSERT INTO `appt_statuses` VALUES ('2', '1', 'Registered');
 INSERT INTO `appt_statuses` VALUES ('3', '1', 'Queued');
 INSERT INTO `appt_statuses` VALUES ('4', '1', 'Served');
+
+-- ----------------------------
+-- Table structure for `bills`
+-- ----------------------------
+DROP TABLE IF EXISTS `bills`;
+CREATE TABLE `bills` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `issue_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `vendor_id` int(10) NOT NULL,
+  `vendor_address` varchar(250) DEFAULT NULL,
+  `vendor_email` varchar(100) DEFAULT NULL,
+  `vendor_phone` varchar(50) DEFAULT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `discount` decimal(10,2) NOT NULL,
+  `discount_type` varchar(10) NOT NULL,
+  `net_amount` decimal(10,2) NOT NULL,
+  `status` varchar(15) NOT NULL,
+  `recurring` tinyint(6) NOT NULL,
+  `create_uid` int(10) NOT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_uid` int(10) DEFAULT NULL,
+  `update_user` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of bills
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `bill_items`
+-- ----------------------------
+DROP TABLE IF EXISTS `bill_items`;
+CREATE TABLE `bill_items` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `bill_id` int(10) NOT NULL,
+  `item_id` int(10) NOT NULL,
+  `description` varchar(200) NOT NULL,
+  `qty` decimal(10,2) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `discount` decimal(10,2) NOT NULL,
+  `discount_type` varchar(10) NOT NULL COMMENT 'discount_type ={percent,amount}',
+  `currency_code` varchar(10) NOT NULL,
+  `line_total` decimal(10,2) NOT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of bill_items
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for `chief_complaints`
@@ -460,6 +517,36 @@ CREATE TABLE `exchange_rates` (
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for `invoices`
+-- ----------------------------
+DROP TABLE IF EXISTS `invoices`;
+CREATE TABLE `invoices` (
+  `id` int(10) NOT NULL DEFAULT 0,
+  `branch_id` int(10) NOT NULL,
+  `issue_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `customer_id` int(10) NOT NULL,
+  `customer_address` varchar(250) DEFAULT '',
+  `customer_email` varchar(100) DEFAULT '',
+  `customer_phone` varchar(50) DEFAULT '',
+  `amount` decimal(10,2) NOT NULL,
+  `discount` decimal(10,2) NOT NULL,
+  `discount_type` varchar(10) NOT NULL,
+  `net_amount` decimal(10,2) NOT NULL,
+  `status` varchar(15) NOT NULL,
+  `recurring` tinyint(6) NOT NULL,
+  `create_uid` int(10) NOT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_uid` int(10) DEFAULT NULL,
+  `update_user` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of invoices
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for `inv_adjustment_types`
 -- ----------------------------
 DROP TABLE IF EXISTS `inv_adjustment_types`;
@@ -513,6 +600,29 @@ CREATE TABLE `inv_available_stocks` (
 -- ----------------------------
 -- Records of inv_available_stocks
 -- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_blocks`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_blocks`;
+CREATE TABLE `inv_blocks` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `code` varchar(10) NOT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_uid` int(10) DEFAULT NULL,
+  `update_user` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_blocks
+-- ----------------------------
+INSERT INTO `inv_blocks` VALUES ('1', '1', 'Block A', 'A', '1', 'Admin', null, null, null, null);
 
 -- ----------------------------
 -- Table structure for `inv_brands`
@@ -581,31 +691,6 @@ INSERT INTO `inv_categories` VALUES ('4', '1', 'Injection', 'Admin', '1', '2023-
 INSERT INTO `inv_categories` VALUES ('5', '1', 'Sale product', 'Admin', '1', '2023-01-14 16:34:04.815243', 'Sale product', '2023-01-14 16:34:04.815243', null, null, 'MI');
 
 -- ----------------------------
--- Table structure for `inv_classes`
--- ----------------------------
-DROP TABLE IF EXISTS `inv_classes`;
-CREATE TABLE `inv_classes` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `branch_id` int(10) NOT NULL,
-  `code` varchar(5) NOT NULL COMMENT 'code ={A,B,C, etc...}',
-  `name` varchar(50) NOT NULL COMMENT 'name ={"For Sales","Internal Usage"}',
-  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `create_user` varchar(50) DEFAULT NULL,
-  `create_uid` int(10) DEFAULT NULL,
-  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `update_user` varchar(50) DEFAULT NULL,
-  `update_uid` int(10) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
-
--- ----------------------------
--- Records of inv_classes
--- ----------------------------
-INSERT INTO `inv_classes` VALUES ('1', '1', 'A', 'For Sales', '2023-01-14 15:21:34.162570', 'Admin', '1', '2023-01-14 15:21:34.162570', null, null);
-INSERT INTO `inv_classes` VALUES ('2', '1', 'B', 'Internal Usage', '2023-01-14 15:21:34.574335', 'Admin', '1', '2023-01-14 15:21:34.574335', null, null);
-INSERT INTO `inv_classes` VALUES ('3', '1', 'C', 'Charitty', null, 'Admin', '1', null, null, null);
-
--- ----------------------------
 -- Table structure for `inv_countries`
 -- ----------------------------
 DROP TABLE IF EXISTS `inv_countries`;
@@ -619,6 +704,37 @@ CREATE TABLE `inv_countries` (
 
 -- ----------------------------
 -- Records of inv_countries
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_daily_stocks`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_daily_stocks`;
+CREATE TABLE `inv_daily_stocks` (
+  `id` int(10) NOT NULL DEFAULT 0,
+  `branch_id` int(10) NOT NULL,
+  `stockclass_code` varchar(15) NOT NULL,
+  `warehouse_id` int(10) NOT NULL,
+  `block_code` varchar(15) DEFAULT NULL,
+  `item_id` int(10) NOT NULL,
+  `item_code` varchar(25) NOT NULL,
+  `qty` decimal(10,2) NOT NULL,
+  `unit_id` int(10) NOT NULL,
+  `sku` varchar(15) NOT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) NOT NULL,
+  `update_uid` int(10) NOT NULL,
+  `remarks` varchar(200) DEFAULT NULL,
+  `begining_qty` decimal(10,2) NOT NULL,
+  `purhase_qty` decimal(10,2) NOT NULL,
+  `sold_qty` decimal(10,2) NOT NULL,
+  `customer_return_qty` decimal(10,2) NOT NULL,
+  `vendor_return_qty` decimal(10,2) NOT NULL,
+  `adjust_qty` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_daily_stocks
 -- ----------------------------
 
 -- ----------------------------
@@ -680,6 +796,8 @@ CREATE TABLE `inv_group_code_control` (
 -- ----------------------------
 INSERT INTO `inv_group_code_control` VALUES ('1', '1', null, 'DOL');
 INSERT INTO `inv_group_code_control` VALUES ('1', '1', null, 'PAR');
+INSERT INTO `inv_group_code_control` VALUES ('1', '1', null, 'SDG');
+INSERT INTO `inv_group_code_control` VALUES ('1', '1', null, 'DDG');
 
 -- ----------------------------
 -- Table structure for `inv_items`
@@ -1047,7 +1165,7 @@ CREATE TABLE `inv_item_groups` (
   `detail_type_id` int(10) NOT NULL DEFAULT 0,
   `brand_id` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=514 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=516 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_item_groups
@@ -1327,6 +1445,8 @@ INSERT INTO `inv_item_groups` VALUES ('272', '1', 'F-MELACLEAR', 'Admin', '1', '
 INSERT INTO `inv_item_groups` VALUES ('273', '1', 'Vitara TXPPE', 'Admin', '1', '2023-01-16 15:14:41.791054', null, '2023-01-16 15:14:41.791054', null, null, '2', 'GTP0085', null, null, null, null, null, '0', null);
 INSERT INTO `inv_item_groups` VALUES ('512', '1', 'Doliprane', 'Samsethy', '1', '2023-01-16 16:10:11.586906', null, '2023-01-16 16:10:11.586906', null, null, '2', 'DOL100001', null, null, null, null, null, '0', null);
 INSERT INTO `inv_item_groups` VALUES ('513', '1', 'Paracetamol', 'Samsethy', '1', '2023-01-16 16:15:36.759593', null, '2023-01-16 16:15:36.000000', 'Samsethy', '1', '2', 'PAR100001', null, null, null, null, null, '0', null);
+INSERT INTO `inv_item_groups` VALUES ('514', '1', 'sdgdfgfdh', 'Samsethy', '1', '2023-01-16 17:25:41.112911', null, '2023-01-16 17:25:41.112911', null, null, '1', 'SDG100001', null, null, null, null, null, '0', null);
+INSERT INTO `inv_item_groups` VALUES ('515', '1', 'ddggdfhfghf', 'Samsethy', '1', '2023-01-16 17:25:49.191979', null, '2023-01-16 17:25:49.191979', null, null, '1', 'DDG100001', null, null, null, null, null, '0', null);
 
 -- ----------------------------
 -- Table structure for `inv_item_varriances_del`
@@ -1346,6 +1466,38 @@ CREATE TABLE `inv_item_varriances_del` (
 
 -- ----------------------------
 -- Records of inv_item_varriances_del
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `inv_last_stocks`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_last_stocks`;
+CREATE TABLE `inv_last_stocks` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `stockclass_code` varchar(15) NOT NULL,
+  `warehouse_id` int(10) NOT NULL,
+  `block_code` varchar(15) DEFAULT NULL,
+  `item_id` int(10) NOT NULL,
+  `item_code` varchar(25) NOT NULL,
+  `qty` decimal(10,2) NOT NULL,
+  `unit_id` int(10) NOT NULL,
+  `sku` varchar(15) NOT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) NOT NULL,
+  `update_uid` int(10) NOT NULL,
+  `remarks` varchar(200) DEFAULT NULL,
+  `begining_qty` decimal(10,2) NOT NULL,
+  `purhase_qty` decimal(10,2) NOT NULL,
+  `sold_qty` decimal(10,2) NOT NULL,
+  `customer_return_qty` decimal(10,2) NOT NULL,
+  `vendor_return_qty` decimal(10,2) NOT NULL,
+  `adjust_qty` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_last_stocks
 -- ----------------------------
 
 -- ----------------------------
@@ -1503,6 +1655,43 @@ CREATE TABLE `inv_raw_materials` (
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for `inv_sold_items`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_sold_items`;
+CREATE TABLE `inv_sold_items` (
+  `id` int(10) NOT NULL,
+  `branch_id` int(10) NOT NULL,
+  `stockclass_code` varchar(10) NOT NULL,
+  `warehouse_id` int(10) NOT NULL,
+  `com_branch_id` int(10) DEFAULT NULL,
+  `item_id` int(10) NOT NULL,
+  `item_code` varchar(20) NOT NULL,
+  `description` varchar(200) DEFAULT NULL,
+  `selling_price` decimal(10,2) NOT NULL,
+  `discount` decimal(10,2) NOT NULL,
+  `discount_type` varchar(10) NOT NULL,
+  `line_total` decimal(10,2) NOT NULL,
+  `qty` decimal(10,2) NOT NULL,
+  `cost` decimal(10,2) NOT NULL,
+  `create_uid` int(10) NOT NULL,
+  `create_user` varchar(50) NOT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_uid` int(10) DEFAULT NULL,
+  `update_user` varchar(50) DEFAULT NULL,
+  `ref_type` varchar(15) NOT NULL COMMENT 'ref_type = {invoice,sale-receipt}',
+  `ref_id` int(10) NOT NULL,
+  `trx_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `customer_id` int(10) DEFAULT NULL,
+  `ref_number` varchar(25) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_sold_items
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for `inv_stocking_keeping_units`
 -- ----------------------------
 DROP TABLE IF EXISTS `inv_stocking_keeping_units`;
@@ -1547,18 +1736,23 @@ DROP TABLE IF EXISTS `inv_stock_classes`;
 CREATE TABLE `inv_stock_classes` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `branch_id` int(10) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `create_uid` int(10) DEFAULT NULL,
-  `create_user` varchar(50) DEFAULT NULL,
+  `code` varchar(5) NOT NULL COMMENT 'code ={A,B,C, etc...}',
+  `name` varchar(50) NOT NULL COMMENT 'name ={"For Sales","Internal Usage"}',
   `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `create_user` varchar(50) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_stock_classes
 -- ----------------------------
-INSERT INTO `inv_stock_classes` VALUES ('1', '1', 'Saleable Stock', null, null, null);
-INSERT INTO `inv_stock_classes` VALUES ('2', '1', 'Internal Usage', null, null, null);
+INSERT INTO `inv_stock_classes` VALUES ('1', '1', 'A', 'For Sales', '2023-01-14 15:21:34.162570', 'Admin', '1', '2023-01-14 15:21:34.162570', null, null);
+INSERT INTO `inv_stock_classes` VALUES ('2', '1', 'B', 'Internal Usage', '2023-01-14 15:21:34.574335', 'Admin', '1', '2023-01-14 15:21:34.574335', null, null);
+INSERT INTO `inv_stock_classes` VALUES ('3', '1', 'C', 'Charitty', null, 'Admin', '1', null, null, null);
 
 -- ----------------------------
 -- Table structure for `inv_stock_trans`
@@ -3500,12 +3694,12 @@ CREATE TABLE `um_sessions` (
   `status` varchar(10) DEFAULT NULL COMMENT 'status ={online,offline}',
   `lang` varchar(50) DEFAULT 'en',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1789 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1794 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of um_sessions
 -- ----------------------------
-INSERT INTO `um_sessions` VALUES ('1788', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-01-16 16:02:10', '2023-01-16 16:02:10', 'dZYVS8kcwcqvP30TkhbHUqmYFJ74fLnGSa1UlS', 'wGwbQcTXBOZfz2dfVrqMuj8alIZfMdV63MDCcU', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjczODU5NzMwLCJuYmYiOjE2NzM4NTk3MzAsImV4cCI6MTY3Mzg2MzMzMCwibGFuZyI6ImVuIiwidXNlcl9jbGFzcyI6ImFkbWluIiwib2ZmaWNpYWxfaWQiOm51bGwsImlkIjoxLCJsb2dpbl9uYW1lIjoiYWRtaW5AZ21haWwuY29tIiwiYnJhbmNoX2lkIjoxLCJmdWxsX25hbWUiOiJTYW1zZXRoeSIsInN0YXR1cyI6ImFjdGl2ZSIsImlzX2xvY2tlZCI6MCwiZW1haWwiOm51bGwsInBob25lX251bWJlciI6IjAxMjU3ODkwIiwib3RwX2NvZGUiOm51bGx9.6-tdqREGtQh0YMvRcwYHw1aZo23tuwcPTkvOORvNIy0', null, 'en');
+INSERT INTO `um_sessions` VALUES ('1793', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-01-17 00:32:32', '2023-01-17 00:32:32', '4V4oV75BU4mCA4ctZwksUXJ7AiW2JsHcGuBx4k', 'siaks1Z8A8rWYz1dr6TpcR67NXW86cWKu78IjI', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjczODkwMzUyLCJuYmYiOjE2NzM4OTAzNTIsImV4cCI6MTY3Mzg5Mzk1MiwibGFuZyI6ImVuIiwidXNlcl9jbGFzcyI6ImFkbWluIiwib2ZmaWNpYWxfaWQiOm51bGwsImlkIjoxLCJsb2dpbl9uYW1lIjoiYWRtaW5AZ21haWwuY29tIiwiYnJhbmNoX2lkIjoxLCJmdWxsX25hbWUiOiJTYW1zZXRoeSIsInN0YXR1cyI6ImFjdGl2ZSIsImlzX2xvY2tlZCI6MCwiZW1haWwiOm51bGwsInBob25lX251bWJlciI6IjAxMjU3ODkwIiwib3RwX2NvZGUiOm51bGx9.F7sRWN3P0ndN9pR3NuMWsHzVFBrily4e3XPsImgYgKI', null, 'en');
 
 -- ----------------------------
 -- Table structure for `um_users`
@@ -3618,4 +3812,32 @@ INSERT INTO `vital_signs` VALUES ('2', 'impulse_rate', 'Impulse rate', 'number',
 INSERT INTO `vital_signs` VALUES ('3', 'respiration_', 'Respiration Rate', 'number', '1', null, '2022-11-28 18:37:57', '1', '1', '-1');
 INSERT INTO `vital_signs` VALUES ('4', 'Blood pressure', 'Blood pressure', 'number', '1', null, '2022-11-28 18:38:00', '1', '1', '-1');
 
+-- ----------------------------
+-- Table structure for `warehouses`
+-- ----------------------------
+DROP TABLE IF EXISTS `warehouses`;
+CREATE TABLE `warehouses` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `loc_lng` decimal(10,0) DEFAULT NULL,
+  `loc_lat` decimal(10,0) DEFAULT NULL,
+  `address` varchar(250) DEFAULT NULL,
+  `loc_city_id` int(10) DEFAULT NULL,
+  `loc_country_id` int(10) DEFAULT NULL,
+  `loc_district_id` int(10) DEFAULT NULL,
+  `loc_commune_id` int(10) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_uid` int(10) DEFAULT NULL,
+  `update_user` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of warehouses
+-- ----------------------------
+INSERT INTO `warehouses` VALUES ('1', '1', 'Main warehouse', '0', '0', null, null, null, null, null, null, null, null, null, null, null);
  

@@ -3,9 +3,13 @@
         <div class="d-flex align-items-center">
             <div class="d-flex align-items-center gap-2">
                 <div class="input-group flex-nowrap">
-                    <input type="search" class="form-control" id="_itm_search"/>
+                    <input type="search" class="form-control" id="_itm_search" style="min-width:250px"/>
                     <div class="input-group-text">
                         <span class="trans-text" data-langprop="titles.Search"></span>
+                    </div>
+                    &nbsp;
+                    <div>
+                        <select class="modal-select2 form-select" id="_itm_filter_category" style="min-width:250px"></select>
                     </div>
                 </div>
                 <button class="btn btn-outline-primary py-1 px-2" type="button">
@@ -19,7 +23,7 @@
             </div>
         </div>
         <div>
-             <table class="table header-light-blue header-uppercase" id="_itm_tblItem"></table>
+             <table class="table header-light-blue header-uppercase" id="_itm_tblItems"></table>
         </div>
     </div>
 </div>

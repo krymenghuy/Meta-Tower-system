@@ -26,6 +26,11 @@ class Settings extends Model
         return DB::table('inv_categories')->where('branch_id',$branch_id)->selectRaw("id,name as category")->orderByRaw('name ASC')->get();
     }
     
+    static function options_stockclass($ss){
+        $branch_id = $ss->branch_id;
+        return DB::table('inv_stock_classes as c')->where('c.branch_id',$branch_id)->selectRaw("c.id,c.code,c.name as stock_class")->orderByRaw('c.name ASC')->get();
+    }
+
     static function options_unit($ss){
         $branch_id = $ss->branch_id;
         return DB::table('inv_units')->where('branch_id',$branch_id)->selectRaw("id,name as unit_name")->orderByRaw('name ASC')->get();
@@ -53,6 +58,13 @@ class Settings extends Model
             'categories'=>$categories,
             'manufacturers'=>$manufacturers
         ];
+    }
+
+    static function stock_tracking_options($ss){
+       return (object)[
+         "categories"=>self::options_category($ss),
+         "stockclasses"=>self::options_stockclass($ss)
+       ];
     }
 
     //saveSKU()| CreateUnit()

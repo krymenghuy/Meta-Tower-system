@@ -1,11 +1,39 @@
+<style>
+    .inner-item-table th{
+       font-size:0.9em;
+       font-weight:bold;
+       border-bottom:1.2px dashed #C7CD39 !important;
+       color:#409CBF !important;
+       padding:10px !important;
+    }
+    .inner-item-table>tbody td{
+       padding:10px;
+    }
+    .stock-items-panel{
+        border:1.1px solid #4797C2;
+        border-radius:5px;
+        padding:10px !important;
+    }
+    #_stk_tblItems>tr.row-expanded td{
+        font-weight:bold;
+    }
+</style>
 <div id="_main_stockTrackingComponent" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
         <div class="d-flex align-items-center">
             <div class="d-flex align-items-center gap-2">
                 <div class="input-group flex-nowrap">
-                    <input type="search" class="form-control" id="_pcd_search"/>
+                    <input type="search" class="form-control" id="_stk_search" placeholder="Search item" style="min-width:250px"/>
                     <div class="input-group-text">
                         <span class="trans-text" data-langprop="titles.Search"></span>
+                    </div>
+                    &nbsp;
+                    <div>
+                        <select class="modal-select2 form-select" id="_stk_filter_category"></select>
+                    </div>
+                    &nbsp;
+                    <div>
+                       <select class="modal-select2 form-select" id="_stk_filter_class"></select>
                     </div>
                 </div>
                 <button class="btn btn-outline-primary py-1 px-2" type="button">
