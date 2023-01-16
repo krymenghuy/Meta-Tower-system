@@ -6,7 +6,6 @@ let ExpenseBookComponent = new function(){
     this.self = $('#_main_expenseBookComponent');
     this.btnNew = $('#_epb_btnNew');
     this.elSearchPartner = $('#_epb_input_search');
-    // this.elFilter_department = $('#_msl_filter_service');
     this.tblPartners = $('#_epb_tblExpenseBook');
     // this.form_data = {};
 
@@ -29,7 +28,7 @@ let ExpenseBookComponent = new function(){
     this.setLanguage = ()=>{
         if (LocaleManager.lang !== mThis.lang){
             for (let prop in mThis.col_titles){
-                mThis.col_titles[prop] = LocaleManager.trans(prop,'partners',LocaleManager.lang);
+                mThis.col_titles[prop] = LocaleManager.trans(prop,'expenses',LocaleManager.lang);
             }
             mThis.lang = LocaleManager.lang;
         }
@@ -40,7 +39,7 @@ let ExpenseBookComponent = new function(){
             let op = {
                 onClose:(e)=>{
                     if(e){
-                        mThis.displayexpenseBook();
+                        mThis.displayExpenses();
                     }
                 }
             };
@@ -49,7 +48,7 @@ let ExpenseBookComponent = new function(){
 
         mThis.elSearchPartner.on('keyup',(e)=>{
             e.preventDefault();
-            if(e.keyCode === 13) {mThis.displayexpenseBook();}
+            if(e.keyCode === 13) mThis.displayExpenses();
         });
 
         mThis.tblPartners.on('click','.btn_epb_modify',function(e){
@@ -59,7 +58,7 @@ let ExpenseBookComponent = new function(){
                 id: expense_id,
                 onClose:(e)=>{
                     if(e)
-                        mThis.displayexpenseBook();
+                        mThis.displayExpenses();
                 }
             };
             ExpenseBookDialog.show(op);
@@ -73,7 +72,7 @@ let ExpenseBookComponent = new function(){
                     let p = {"id":expense_id};
                     vsapi.call(`${main_view.base_url}/api/partner/delete`,p).then(res=>{
                        if(res.status_code === 200){
-                          mThis.displayexpenseBook();
+                          mThis.displayExpenses();
                        }else cv_interact.error(res.error_message);
                     });
                 }
@@ -81,7 +80,7 @@ let ExpenseBookComponent = new function(){
         });
     }
 
-    this.displayexpenseBook = (onFinish=null)=>
+    this.displayExpenses = (onFinish=null)=>
     { 
         //Initialize language for DataTable columns headers
         //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
@@ -188,25 +187,51 @@ let ExpenseBookComponent = new function(){
     this.show = (options=null) => {
         if(!options) options={};
         mThis.options = options;
-        mThis.displayexpenseBook(() => {
+        mThis.displayExpenses(() => {
             main_view.setTitle(mThis.title_prop);
             mThis.self.show().siblings().hide();
         });
     }
 }
 
-//begin::LaboPartnersDialog
+//begin::ExpenseBookDialog
 let ExpenseBookDialog = new function(){
     let mThis = this;
     this.self = $(`#_epb_dlgExpenseBook`);
 
-    //AppointmentDialog
+    mThis.columns = [
+        {
+            "name": "name",
+            "title": "Category",
+            "dataType": "string",
+            "displayType": "select",
+            "cssClass": "",
+            //"selectOptions":[] 
+        },
+        {
+            "name": "description",
+            "title": "Description",
+            "dataType": "string",
+            "displayType": "input",
+            // "data":(value,row)=>{
+            //     return "";
+            // }
+        },
+        {
+            "name": "amount",
+            "title": "Amount",
+            "dataType": "number",
+            "displayType": "input"
+        }
+    ];
+
+    //ExpenseBookDialog
     this.formUntil = new FormUntil({
         "itemName":"Expense Book",
         "formId":'_epb_dlgExpenseBook',
         "titleId":"_epb_dlgExpenseBook_title",
         //"errorId":"_msl_dlgService_error",
-        "saveButtonId":"_epb_btnSave",
+        //"saveButtonId":"_epb_btnSave",
         "instance":this,
         "apiSave":`${main_view.base_url}/api/partner/save`,
         "apiGet":`${main_view.base_url}/api/partner/details`,
@@ -220,16 +245,21 @@ let ExpenseBookDialog = new function(){
         //"sub_prop_function":mThis.getChiefComplaints,
         "sanitize_excepts":["cp_email","email"],
         'use_alert_error':true,
-        'beforeShow': () => {}
-        // "init": ()=>{
-        //  }
+        // 'beforeShow': () => {}
+        "init": ()=>{
+            let  itemConfig = new ItemsView('_epb_panel',{
+                columns: mThis.columns,
+                "showColumnHeaders":true,
+                "showAddLineButton":true
+            });
+         }
     });
 
     this.show = (options)=>{
         mThis.formUntil.show(options);
     }
 }
-//end::LaboPartnersDialog
+//end::ExpenseBookDialog
 
 $(document).ready(function() {
     ExpenseBookComponent.init();

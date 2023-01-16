@@ -7,16 +7,14 @@ let PositionsComponent = new function(){
     this.btnNew = $('#_pos_btnNew');
     this.elSearchItem = $('#_pos_search');
     // this.elFilter_department = $('#_msl_filter_service');
-    this.tblItems = $('#_pos_tblPosition');
+    this.tblPosition = $('#_pos_tblPosition');
     // this.form_data = {};
 
     this.col_titles = {
-        "No.":"No.",
-        "Reciept Date":"Reciept Date",
-        "Patient":"Patient",
-        "Reciept Number":"Reciept Number",
-        "Amount":"Amount",
-        "Cash Account":"Cash Account",
+        "No":"No",
+        "Position":"Position",
+        "Department":"Department",
+        "Action":"Action"
     };
 
     this.trans_title = (title_prop='undefined')=>{
@@ -26,7 +24,7 @@ let PositionsComponent = new function(){
     this.setLanguage = ()=>{
         if (LocaleManager.lang !== mThis.lang){
             for (let prop in mThis.col_titles){
-                mThis.col_titles[prop] = LocaleManager.trans(prop,'patients',LocaleManager.lang);
+                mThis.col_titles[prop] = LocaleManager.trans(prop,'employees',LocaleManager.lang);
             }
             mThis.lang = LocaleManager.lang;
         }
@@ -47,6 +45,34 @@ let PositionsComponent = new function(){
         mThis.elSearchItem.on('keyup',(e)=>{
             if(e.keyCode === 13) mThis.displaypositions();
         });
+
+        mThis.tblPosition.on('click','.btn-pos-modify',(e)=>{
+            e.preventDefault();
+            let position_id = $(this).data('id');
+            let op = {
+                id: position_id,
+                onClose:(e)=>{
+                    if(e)
+                        mThis.displaypositions();
+                }
+            };
+            PositionsDialog.show(op);
+        });
+
+        mThis.tblPosition.on('click','.btn-pos-delete',(e)=>{
+            e.preventDefault();
+            let position_id = $(this).data("id");
+            cv_interact.confirm(`Delete this Position?`,{title:"Delete Position",context:"delete"},(yes)=>{
+                if(yes){
+                    let p = {"id":position_id};
+                    vsapi.call(`${main_view.base_url}/api/position/delete`,p).then(res=>{
+                       if(res.status_code === 200){
+                          mThis.displaypositions();
+                       }else cv_interact.error(res.error_message);
+                    });
+                }
+            });
+        });
     }
 
     this.displaypositions = (onFinish=null)=>
@@ -56,13 +82,13 @@ let PositionsComponent = new function(){
         //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
         let p = {'search_value':mThis.elSearchItem.val()};
-        window.vsapi.call(`${mThis.base_url}/api/inventory/items`,p,'POST',null).then((result)=>{
+        window.vsapi.call(`${mThis.base_url}/api/position/list`,p,'POST',null).then((result)=>{
             let data = [];
             if(result.status_code === 200) data = result.data;
             if (mThis.table){
-                mThis.tblItems.DataTable().clear().destroy();
+                mThis.tblPosition.DataTable().clear().destroy();
                 //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
-                mThis.tblItems.empty();
+                mThis.tblPosition.empty();
                 mThis.table = null;
             }
 
@@ -71,30 +97,31 @@ let PositionsComponent = new function(){
             //begin::Set up columns
             let my_columns = [
                 {
-                    title: mThis.trans_title("No."),
+                    title: mThis.trans_title("No"),
                     data: () => {
                         return cnt;
                     }
                 },
                 {
-                    data:"reciept_date",
-                    title: mThis.trans_title('Reciept Date')
+                    data:"position",
+                    title: mThis.trans_title('Position')
                 },
                 {
-                    title: mThis.trans_title('Patient'),
-                    data:"patient"
+                    title: mThis.trans_title('Department'),
+                    data:"department"
                 },
                 {
-                    title: mThis.trans_title('Reciept Number'),
-                    data:"reciept_number"
-                },
-                {
-                    title: mThis.trans_title('Amount'),
-                    data:"amount"
-                },
-                {
-                    title: mThis.trans_title('Cash Account'),
-                    data:"cash_account"
+                    title:mThis.trans_title('Action'),
+                    data: function(data,a,b){
+                        let status_class = null; //mThis.getStatusClass(data.status_id);
+                        return [`<div class="form-inline">`,
+                        `<a href="javascript:void(0)" class="btn_pos_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
+                        `<a href="javascript:void(0)" class="btn_pos_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
+                        `<a href="javascript:void(0);" data-id="${data.id}" class="btn_pos_delete"><i class="fa fa-trash" style="color:red"></i></a>`,
+                        `&nbsp;<a href="#" data-id="${data.id}" class="btn_pos_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
+                        `</div>`
+                       ].join('');
+                    }
                 }
             ];
             //END Define colum
@@ -103,7 +130,7 @@ let PositionsComponent = new function(){
             //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
             
             if (!mThis.table)
-            mThis.table = mThis.tblItems.DataTable({
+            mThis.table = mThis.tblPosition.DataTable({
                 searching:false,
                 destroy:true,
                 paging:true,
@@ -148,21 +175,21 @@ let PositionsComponent = new function(){
 //begin::MedicalServiceDialog
 let PositionsDialog = new function(){
     let mThis = this;
-    this.self = $(`#_prc_tblReciept`);
+    this.self = $(`#_pos_dlgPosition`);
 
     //AppointmentDialog
     this.formUntil = new FormUntil({
-        "itemName":"Patient Reciepts",
-        "formId":'_prc_dlgReciept',
-        "titleId":"_prc_dlgReciept_title",
+        "itemName":"Position",
+        "formId":'_pos_dlgPosition',
+        "titleId":"_pos_dlgPosition_title",
         //"errorId":"_msl_dlgService_error",
         //"saveButtonId":"_msl_dlgService_btnSave",
         "instance":this,
-        "apiSave":`${main_view.base_url}/api/inventory/save-item`,
-        //"apiGet":`${main_view.base_url}/api/inventory/details-item`,
+        "apiSave":`${main_view.base_url}/api/position/save`,
+        "apiGet":`${main_view.base_url}/api/position/list`,
         //"identityProp":"id",
-        //"modifyTitle":"Modify Product Group",
-        "createTitle":"New Reciept",
+        "modifyTitle":"Modify Position",
+        "createTitle":"New Position",
         "identityProps":['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props":['id'],

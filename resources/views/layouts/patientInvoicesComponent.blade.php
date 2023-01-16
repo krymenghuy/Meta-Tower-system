@@ -30,7 +30,7 @@
 </div>
 
 <div id="_pic_dlgInvoice" class="modal fade" tabindex="-1" aria-labelledby="_pic_dlgInvoice-title" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 id="_pic_dlgInvoice-title"></h4>
@@ -40,13 +40,106 @@
                     <div class="col-lg-3">
                         <label for="patient" class="form-label trans-text" data-langprop="patient.Patient"></label>
                         <div class="input-group flex-nowrap">
-                            <div class="input-group-text"></div>
+                            <div class="input-group-text">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+                            <select class="modal-select2 data-input" data-field="patient" data-required="1" data-ffield="Patient"></select>
+                            <div class="input-group-text">
+                                <i class="fa-solid fa-plus"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="email_address" class="form-label trans-text" data-langprop="patient.Email Address"></label>
+                        <input type="email" class="form-control data-input" data-field="email_address" data-required="1" data-ffield="Email Address" placeholder="Email Address"/>
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="billing_address" class="form-label trans-text" data-langprop="patient.Billing Address"></label>
+                        <textarea class="form-control data-input" data-field="billing_address" data-required="1" data-ffield="Billing Address" placeholder="Billing Address"></textarea>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="d-block">
+                            <label for="balance_due" class="form-label pe-4 border-2 border-bottom border-success trans-text" data-langprop="patient.Amount Due"></label>
+                            <p class="fw-bold">$ 0.00</p>
                         </div>
                     </div>
                 </div>
-                <div id="_pic_dlgInvoice_error" class="dialog-error">
-
+                <div class="row gy-2">
+                    <div class="col-lg-3">
+                        <label for="invoice_date" class="form-label trans-text" data-langprop="patient.Invoice Date"></label>
+                        <div class="input-group flex-nowrap">
+                            <div class="input-group-text">
+                                <i class="fa-regular fa-calendar-days"></i>
+                            </div>
+                            <input data-select="datepicker" class="form-control data-input" data-field="invoice_date" data-required="1" data-ffield="Invoice Date"/>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="terms" class="form-label trans-text" data-langprop="patient.Terms"></label>
+                        <input type="text" class="form-control data-input" data-field="terms" data-required="1" data-ffield="Terms"/>
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="due_date" class="form-label trans-text" data-langprop="patient.Due Date"></label>
+                        <div class="input-group flex-nowrap">
+                            <div class="input-group-text">
+                                <i class="fa-regular fa-calendar-days"></i>
+                            </div>
+                            <input data-select="datepicker" class="form-control data-input" data-field="due_date" data-required="1" data-ffield="Due Date"/>
+                        </div>
+                    </div>
                 </div>
+                <div class="py-3" id="_pic_panel"></div>
+                <div class="row gy-2">
+                    <div class="col-lg-6">
+                        <label for="description" class="form-label trans-text" data-langprop="patient.Description"></label>
+                        <textarea class="form-control data-input" data-field="description" data-required="1" data-ffield="Description" placeholder="Description"></textarea>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="d-flex justify-content-center">
+                            <div class="d-block">
+                                <div class="row gy-2">
+                                    <div class="col-6 d-flex justify-content-end">
+                                        <p class="text-nowrap">Sub Total</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-nowrap">$ 0.00</div>
+                                    </div>
+                                </div>
+                                <div class="row gy-2">
+                                    <div class="col-6 d-flex justify-content-end">
+                                        <p class="text-nowrap">Discount(%)</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="number" class="form-control-sm data-input invisable-input" data-field="discount" data-required="0" data-ffield="Discount"/>
+                                    </div>
+                                </div>
+                                <div class="row gy-2">
+                                    <div class="col-6 d-flex justify-content-end">
+                                        <p class="text-nowrap">Tax</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="text-nowrap">$ 0.00</p>
+                                    </div>
+                                </div>
+                                <div class="row gy-2">
+                                    <div class="col-6 d-flex justify-content-end">
+                                        <p class="text-nowrap">Grand Total</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="text-nowrap">$ 0.00</p>
+                                    </div>
+                                </div>
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+                <div class="row gy-2">
+                    <div class="col-lg-6">
+                        <label for="message_displayed_on_invoice" class="form-label trans-text" data-langprop="patient.Message Displayed On Invoice"></label>
+                        <textarea class="form-control data-input" data-field="message_displayed_on_invoice" data-required="1" data-ffield="Message Displayed On Invoice" placeholder="Message Displayed On Invoice"></textarea>
+                    </div>
+                </div>
+                <div id="_pic_dlgInvoice_error" class="dialog-error"></div>
             </div>
             <div class="modal-footer">
                 <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">

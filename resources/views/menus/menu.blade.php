@@ -473,10 +473,9 @@
                     <span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkChiefCompaints" class="menu-item kt-menu__link ">
+                            <a href="javascript:void(0)" id="_main_lnkChiefCompaints" class="menu-item kt-menu__link">
                                 <i class="kt-menu__link-bullet fas fa-list-alt"><span></span></i>
-                                &nbsp;<span class="kt-menu__link-text trans-text"
-                                    data-langprop="menus.Chief Compalaints">Chief Complaints</span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Chief Complaints">Chief Complaints</span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
@@ -484,14 +483,14 @@
                                 class="menu-item kt-menu__link ">
                                 <i class="kt-menu__link-bullet fas fa-list-alt"><span></span></i>
                                 &nbsp;<span class="kt-menu__link-text trans-text"
-                                    data-langprop="menus.Diagnosis">Diagnosis Autocomplete</span>
+                                    data-langprop="menus.Diagnosis Autocomplete">Diagnosis Autocomplete</span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkPEAutocomplete" class="menu-item kt-menu__link ">
                                 <i class="kt-menu__link-bullet fas fa-list-alt"><span></span></i>
                                 &nbsp;<span class="kt-menu__link-text trans-text"
-                                    data-langprop="menus.Diagnosis">Examination Autocomplete</span>
+                                    data-langprop="menus.Examination Autocomplete">Examination Autocomplete</span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">

@@ -160,6 +160,44 @@ let PatientInvoicesDialog = new function(){
     let mThis = this;
     this.self = $(`#_pic_dlgInvoice`);
 
+    mThis.columns = [
+        {
+            "name": "name",
+            "title": "Item Name",
+            "dataType": "string",
+            "displayType": "select",
+            "cssClass": "",
+            //"selectOptions":[] 
+        },
+        {
+            "name": "description",
+            "title": "Description",
+            "dataType": "string",
+            "displayType": "input",
+            // "data":(value,row)=>{
+            //     return "";
+            // }
+        },
+        {
+            "name": "qty",
+            "title": "Qty",
+            "dataType": "number",
+            "displayType": "input"
+        },
+        {
+            "name":"price",
+            "title":"Price",
+            "dataType":"number",
+            "displayType":"input"
+        },
+        {
+            "name":"discount",
+            "title":"Discount(%)",
+            "dataType":"number",
+            "displayType":"input"
+        }
+    ];
+
     //AppointmentDialog
     this.formUntil = new FormUntil({
         "itemName":"Patient Invoices",
@@ -180,10 +218,14 @@ let PatientInvoicesDialog = new function(){
         //"sub_prop_function":mThis.getChiefComplaints,
         "sanitize_excepts":[],
         'use_alert_error':true,
-        'beforeShow': () => {}
-        // "init": ()=>{
-            
-        //  }
+        // 'beforeShow': () => {}
+        "init": ()=>{
+            let  itemConfig = new ItemsView('_pic_panel',{
+                columns: mThis.columns,
+                "showColumnHeaders":true,
+                "showAddLineButton":true
+            });
+        }
     });
 
     this.show = (options)=>{

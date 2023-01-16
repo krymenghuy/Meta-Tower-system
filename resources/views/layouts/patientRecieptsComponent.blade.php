@@ -89,7 +89,7 @@
                         <select class="modal-select2"></select>
                     </div>
                 </div>
-                <div class="container" id="_receipt_panel"></div>
+                <div class="py-3" id="_receipt_panel"></div>
                 <div class="row gy-2">
                     <div class="col-lg-6">
                         <label for="description" class="form-label trans-text" data-langprop="patient.Description"></label>
@@ -140,11 +140,7 @@
                         <textarea class="form-control"></textarea>
                     </div>
                 </div>
-
-                <div id="_prc_dlgReciept_error" class="dialog-error">
-                    
-                </div>
-
+                <div id="_prc_dlgReciept_error" class="dialog-error"></div>
             </div>
             <div class="modal-footer">
                 <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">
