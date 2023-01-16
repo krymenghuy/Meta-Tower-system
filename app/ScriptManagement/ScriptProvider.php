@@ -120,6 +120,7 @@ namespace App\ScriptManagement;
                         '/js/components/CompanyComponent.js', 
                         '/js/components/LocationComponent.js',
                         '/js/components/ServiceDepartmentsComponent.js',
+                        '/js/components/ChiefComplaintsComponent.js',
                         '/js/components/GeneralSettingsComponent.js',
                         '/js/components/RoleManagementComponent.js',
                         '/js/components/ExchangeRateComponent.js',

@@ -87,6 +87,7 @@
 	"partners":{},
 	"currencies":{},
 	"expenses":{},
+	"settings":{},
 	"buttons":{
         "Cancel":"Cancel",
 		"Add":"Add",

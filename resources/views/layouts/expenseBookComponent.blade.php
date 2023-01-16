@@ -32,7 +32,7 @@
                             <div class="input-group-text">
                                 <i class="fa-solid fa-user"></i>
                             </div>
-                            <select class="modal-select2"></select>
+                            <select class="modal-select2 data-input" data-field="payee" data-required="1" data-ffield="Payee"></select>
                             <div class="input-group-text">
                                 <i class="fa-solid fa-plus"></i>
                             </div>
@@ -40,7 +40,7 @@
                     </div>
                     <div class="col-lg-3">
                         <label for="paymentAccount" class="form-label trans-text" data-langprop="expenses.Payment Account"></label>
-                        <select class="modal-select2"></select>
+                        <select class="modal-select2 data-input" data-field="payment_account" data-required="1" data-ffield="Payment Account"></select>
                     </div>
                     <div class="col-lg-3 d-flex align-items-end">
                         <label for="balance" class="form-label trans-text" data-langprop="expenses.Balance"></label>
@@ -60,16 +60,23 @@
                             <div class="input-group-text">
                                 <i class="fa-regular fa-calendar-days"></i>
                             </div>
-                            <input data-select="datepicker" class="form-control"/>
+                            <input data-select="datepicker" class="form-control data-input" data-field="payment_date" data-required="1" data-ffield="Payment Date"/>
                         </div>
                     </div>
                     <div class="col-lg-3">
                         <label for="paymentMethod" class="form-label trans-text" data-langprop="expenses.Payment Method"></label>
-                        <select class="modal-select2"></select>
+                        <select class="modal-select2 data-input" data-field="payment_method" data-required="1" data-ffield="Payment Method"></select>
                     </div>
                     <div class="col-lg-3">
                         <label for="referenceNumber" class="form-label trans-text" data-langprop="expenses.Reference Number"></label>
-                        <input type="text" class="form-control" placeholder="Reference Number"/>
+                        <input type="text" class="form-control data-input" data-field="reference_number" data-required="1" data-ffield="Reference Number" placeholder="Reference Number"/>
+                    </div>
+                </div>
+                <div class="py-3" id="_epb_panel"></div>
+                <div class="row gy-2">
+                    <div class="col-lg-6">
+                        <label for="description" class="form-label trans-text" data-langprop="expenses.Description"></label>
+                        <textarea class="form-control data-input" data-field="description" data-required="1" data-ffield="Description" placeholder="Description"></textarea>
                     </div>
                 </div>
                 <div class="dialog-error" id="_epb_dlgExpenseBook_error"></div>
@@ -78,7 +85,7 @@
                 <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button class="vs-btn-custom-primary" type="button" id="_epb_btnSave">
+                <button class="vs-btn-custom-primary" type="button" id="_epb_dlgExpenseBook_btnSave">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>

@@ -36,7 +36,6 @@
                     </div>
                 </div>
  
-
                 <div class="row gy-2">
                    <div class="col-6">
                         <label for="code" class="form-label trans-text" data-langprop="item_group.Category"></label>

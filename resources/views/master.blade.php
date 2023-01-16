@@ -641,6 +641,7 @@
                             @include('layouts.companyComponent')
                             @include('layouts.locationComponent')
                             @include('layouts.serviceDepartmentsComponent')
+                            @include('layouts.chiefComplaintsComponent')
                             @include('layouts.exchangeRateComponent')
                             @include('layouts.um.userManagementComponent')
                             @include('layouts.um.roleManagementComponent')
