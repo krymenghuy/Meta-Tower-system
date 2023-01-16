@@ -165,6 +165,7 @@ function setOfficialCode($branch_id,$code_control_table,$target_table,$key_field
     if($branch_id>0){
         $where_branch = "branch_id =$branch_id";
     }
+    if ($def_prefix) $where_branch .=" AND prefix ='$def_prefix'";
     
     $str_where=null;
     foreach($key_field as $pk_field=>$pk_value) $str_where ="$pk_field='$pk_value'";

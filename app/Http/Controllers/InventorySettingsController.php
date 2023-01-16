@@ -47,4 +47,53 @@ class InventorySettingsController extends Controller
         return JDV::result(Settings::options_unit($ss)); 
     }
 
+    //saveSKU()|CreateUnit()
+    function saveUnit(request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $res = Settings::saveUnit($ss,$req->all());
+        if($res->status ==='OK') return JDV::success(['id'=>$res->id]);
+        else return JDV::error($res->error_message); 
+    }
+
+    function saveManufacturer(request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $res = Settings::saveManufacturer($ss,$req->all());
+        if($res->status ==='OK') return JDV::success(['id'=>$res->id]);
+        else return JDV::error($res->error_message); 
+    }
+
+    function deleteUnit(request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $res = Settings::deleteUnit($ss,$req->id);
+        if($res->status ==='OK') return JDV::success();
+        else return JDV::error($res->error_message); 
+    }
+     
+    function deleteManufacturer(request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $res = Settings::deleteManufacturer($ss,$req->id);
+        if($res->status ==='OK') return JDV::success();
+        else return JDV::error($res->error_message); 
+    }
+
+     //saveBrandName() |createBrandName()
+    function saveBrand(request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $res = Settings::saveBrand($ss,$req->all());
+        if($res->status ==='OK') return JDV::success();
+        else return JDV::error($res->error_message); 
+    }
+     
+    function deleteBrand(request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $res = Settings::deleteBrand($ss,$req->id);
+        if($res->status ==='OK') return JDV::success();
+        else return JDV::error($res->error_message); 
+    }
 }

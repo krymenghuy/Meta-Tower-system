@@ -3,7 +3,7 @@
         <div class="d-flex align-items-center">
             <div class="d-flex align-items-center gap-2">
                 <div class="input-group flex-nowrap">
-                    <input type="search" class="form-control" id="_pcd_search"/>
+                    <input type="search" class="form-control" id="_itm_search"/>
                     <div class="input-group-text">
                         <span class="trans-text" data-langprop="titles.Search"></span>
                     </div>
@@ -53,12 +53,12 @@
 
                      <div class="forn-group col-lg-12">
                           <span class="simple-label"><span class="trans-text" data-langprop="item.Category"></span>&nbsp; <a href="javascript:void(0)" id="_itm_lnkAddCategory"><i class="fa fa-plus-circle" style="color:green"></i></a></span>
-                           <select id="_itm_item_category" data-required="1" class="modal-select2 form-select data-input" data-field="group_id" data-ffield="Item group"></select>
+                           <select id="_itm_item_category" data-required="1" class="modal-select2 form-select data-input" data-field="category_id" data-ffield="Category"></select>
                      </div>
                       
                      <div class="forn-group col-lg-12" id="_itm_detail_type_panel" style="display:none">
                            <span class="simple-label"><span class="trans-text" data-langprop="item.Detail Type"></span>&nbsp; <a href="javascript:void(0)" id="_itm_lnkAddDetailType"><i class="fa fa-plus-circle" style="color:green"></i></a></span>
-                           <select id="_itm_item_detail_type" data-required="1" class="modal-select2 form-select data-input" data-field="group_id" data-ffield="Item group"></select>
+                           <select id="_itm_item_detail_type" data-required="1" class="modal-select2 form-select data-input" data-field="detail_type_id" data-ffield="Detail type"></select>
                      </div>
 
                      <div class="forn-group col-lg-6">

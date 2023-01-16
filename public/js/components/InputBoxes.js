@@ -17,6 +17,10 @@ let InputBox1 = new function(){
   
   this.elError = $('#_inputbox1_error');
 
+  this.elData.on('keyup',(e)=>{
+    if(e.keyCode ===13) mThis.btnOK.trigger('click'); 
+  });
+
   this.btnOK.on('click',function(e){
       e.preventDefault();
       let d = mThis.elData.val();
@@ -99,6 +103,10 @@ let InputBox2 = new function(){
   this.allowBlankValue = false;
   
   this.elError = $('#_inputbox2_error');
+  
+  this.elData.on('keyup',(e)=>{
+    if(e.keyCode ===13) mThis.btnOK.trigger('click'); 
+  });
 
   this.btnOK.on('click',function(e){
       e.preventDefault();

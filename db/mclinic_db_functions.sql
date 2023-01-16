@@ -98,8 +98,7 @@ BEGIN
 END;
 
 DROP FUNCTION IF EXISTS `getCurSymbol`;
-CREATE   FUNCTION `getCurSymbol`(ccode varchar(10)) RETURNS varchar(10) DETERMINISTIC
-    DETERMINISTIC
+CREATE  FUNCTION `getCurSymbol`(ccode varchar(10)) RETURNS varchar(10) DETERMINISTIC
 BEGIN
   declare ss varchar(10);
   SET ss = (select `symbol` from currencies as c where c.`code` = ccode limit 1);
@@ -108,7 +107,6 @@ end;
 
 DROP FUNCTION IF EXISTS `displayMoney`;
 CREATE   FUNCTION `displayMoney`(amt decimal(10,2),ccode varchar(10)) RETURNS varchar(100) DETERMINISTIC
-    DETERMINISTIC
 BEGIN
   declare sym varchar(15);
   declare symbol_after int;
@@ -125,3 +123,14 @@ BEGIN
   END IF;
   return val; 
 end;
+
+drop function if exists 'getItemDetailType';
+create function getItemDetailType(detailtypeid INT)
+returns varchar(150) DETERMINISTIC
+BEGIN
+  declare detailtype varchar(150);
+  SET detailtype = (select d.`name` from inv_detailed_types as d where d.id =detailtypeid LIMIT 1);
+  RETURN detailtype;   
+END;
+
+

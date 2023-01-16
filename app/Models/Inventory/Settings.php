@@ -54,5 +54,90 @@ class Settings extends Model
             'manufacturers'=>$manufacturers
         ];
     }
-    
+
+    //saveSKU()| CreateUnit()
+    static function saveUnit($ss,$d){
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $branch_id = $ss->branch_id;
+        $validate_rule = [
+          'id'=>'0|identity=1',
+          'name'=>'1|string|1-25',
+          'sub_unit_name'=>'0|string|1-25',
+          'sub_unit_qty'=>'0|number|default=1'
+        ];
+        
+        $check_unique = ["$branch_id|inv_units|name|id=id|text=unit name already exists"];
+        $res = validateObject($d,$validate_rule,true,[],$ss->lang,false,$check_unique);
+        if($res->error) return DV::error($res->error);
+        $id = $res->id;
+        $inputs = $res->values;
+        $id = saveData($ss,'inv_units',['id'=>$id],['name'=>$inputs['name'], 'parent_unit_id'=>null,'qty'=>1],[],1);
+        if($id >0){
+              $sub_unit_name = $inputs['sub_unit_name'];
+              if($sub_unit_name){
+                $row = getDataRow('inv_units',['branch_id'=>$branch_id,'name'=>$sub_unit_name],'id');
+                $id1 = isset($row)?$row->id:0;
+                $id1 = saveData($ss,'inv_units',['id'=>$id1],['name'=>$sub_unit_name, 'parent_unit_id'=>$id,'qty'=>$inputs['sub_unit_qty']],[],1);
+              } 
+              
+        }
+        return DV::success(['id'=>$id]);
+    }
+
+    static function saveManufacturer($ss,$d){
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $branch_id = $ss->branch_id;
+
+        $validate_rule = [
+          'id'=>'0|number|identity=1',
+          'name'=>'1|string|1-100'
+        ];
+        $check_unique = ["$branch_id|inv_manufacturers|name|id=id|text =manufacturer ? already exists::@name"];
+        $res = validateObject($d,$validate_rule,true,[],$ss->lang,false,$check_unique);
+        if($res->error) return DV::error($res->error);
+        $id = $res->id;
+        $inputs = $res->values;
+        $id = saveData($ss,'inv_manufacturers',['id'=>$id],$inputs,[],1);
+        if($id >0 ) return DV::success(['id'=>$id]);
+        else return DV::error("Failed to save manufacturer"); 
+    }
+
+    static function saveBrand($ss,$d){
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $branch_id = $ss->branch_id;
+
+        $validate_rule = [
+          'id'=>'0|identity=1',
+          'name'=>'1|string|1-150'
+        ];
+        
+        $check_unique = ["$branch_id|inv_brands|name|id=id|text =Brand name already exists"];
+        $res = validateObject($d,$validate_rule,true,[],$ss->lang,false,$check_unique);
+        if($res->error) return DV::error($res->error);
+        $id = $res->id;
+        $inputs = $res->values;
+        $id = saveData($ss,'inv_brands',['id'=>$id],$inputs,[],1);
+        if($id >0 ) return DV::success(['id'=>$id]);
+        else return DV::error("Failed to save brand name"); 
+    }
+
+    static function unitInUse($id){
+      return DB::table('inv_items')->where('unit_id',$id)->select("id")->take(1)->exists();
+    }
+
+    static function manufacturerInUse($id){
+        return DB::table('inv_items')->where('manufacturer_id',$id)->select("id")->take(1)->exists();
+    }
+
+    static function deleteUnit($ss,$id){
+      if(self::unitInUse($id)) return DV::error("Cannot delete brand that is already in use");  
+      $x = DB::table('inv_units')->where('id',$id)->where('branch_id',$branch_id)->delete();
+      return DV::success();  
+    }
+  
+    static function deleteManufacturer($ss,$id){
+        if(self::manufacturerInUse($id)) return DV::error("Cannot delete manufacturer that is already in use");  
+        $x = DB::table('inv_manufacturers')->where('id',$id)->where('branch_id',$branch_id)->delete();
+        return DV::success();  
+    }
 }

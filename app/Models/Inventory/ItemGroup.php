@@ -11,6 +11,8 @@ class ItemGroup extends Model
 {
     use HasFactory;
 
+    //Lengnth of the item_group code or Item Code Number
+    static protected $official_code_length =5;
     static function list($ss,$d){
         $branch_id = $ss->branch_id;
         $str_search ="1=1";
@@ -47,22 +49,44 @@ class ItemGroup extends Model
         return isset($rows[0])?$rows[0]:null; 
    }
  
+   static function codeInUse($branch_id,$code,$id=0){
+     if(!$code) return false;
+     $str_where ="code ='$code'";
+     if($id>0) $str_where .=" AND id <> $id";
+     $rows = DB::table('inv_item_groups')->where('branch_id',$branch_id)->whereRaw($str_where)->select('id')->take(1)->get();
+     return isset($rows[0])?true:false;
+   }
+
    static function commitSave($ss,$d){
     $branch_id = $ss->branch_id;
     $validate_rule = [
         'id'=>'0|number|identity=1',
-        'code'=>'0|string|1-20|',
-        'name'=>'1|string|1-150',
-        'description'=>'0|string'
+        'code'=>'0|string|3-20|',
+        'name'=>'1|string|1-150|text=Group name cannot be empty',
+        'description'=>'0|string',
+        'category_id'=>'1|positive|exists=inv_categories.id|default=1',
+        'unit_id'=>'0|number|exists=inv_units.id'
     ];
-    
-    $check_unique = ["$branch_id|inv_item_groups|name|id=id|text=Group already exists"];
+    $check_unique = ["$branch_id|inv_item_groups|name|id=id|text=Group ? already exists::@name"];
     $res = validateObject($d,$validate_rule,true,[],$ss->lang,false,$check_unique);
     if($res->error) return DV::error($res->error);
     $inputs = $res->values;
     $id = $res->id;
+
+    $code = $inputs['code'];
+    if($code){
+       if(self::codeInUse($branch_id,$code,$id)) return DV::error("Item code $code is already in use");
+    }
+   
+    $group_prefix = strtoupper(substr($inputs['name'],0,3));
+
     $id = saveData($ss,'inv_item_groups',['id'=>$id],$inputs,[],1);
-    if($id > 0) return DV::success(['id'=>$id]);
+    if($id > 0){
+      
+        setOfficialCode($branch_id,'inv_group_code_control','inv_item_groups',['id'=>$id],$group_prefix,self::$official_code_length,null); 
+        return DV::success(['id'=>$id]);
+    }
+
     return DV::error("Something went wrong during saving item group");
   }
 
