@@ -188,6 +188,17 @@
                 </div>
             </li>
 
+            <li class="kt-menu__item" aria-haspopup="true">
+                <a href="javascript:void(0)" id="_main_lnkVendors" class="menu-item kt-menu__link">
+                    <span class="kt-menu__link-icon">
+                        <i>
+                            <img class="icons" src="{{ asset('assets/images/icons/dashboard.svg') }}" style="height:25px;">
+                        </i>
+                    </span>
+                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Vendors"></span>
+                </a>
+            </li>
+
             <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">

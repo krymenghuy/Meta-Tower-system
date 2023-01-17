@@ -372,7 +372,7 @@ let ReceiveStokeDialog = new function(){
             }
         });
     }
-    
+
     mThis.columns = [
         {
             "name": "name",
@@ -426,13 +426,12 @@ let ReceiveStokeDialog = new function(){
     this.cfg.getItems();
     // this.cfg.setData(items);
 
-     
     this.show = (option) => {
         if(!option) option = {};
         mThis.onClose = option.onClose;
         mThis.loadItems((d)=>{
             ///items [ {text,value}, {text,value}]
-            mThis.cfg.setColumnSelectOptions("name",d.items);
+            mThis.cfg.setSelectOptions("name",d.items);
             VSUtil.setComboItems(mThis.elVendor,d.vendors,'id','vendor_name',true,'(select vendor)',null);
             mThis.self.modal({
                 backdrop:'static',

@@ -89,6 +89,7 @@
 	"expenses":{},
 	"settings":{},
 	"inventory":{},
+	"vendors":{},
 	"buttons":{
         "Cancel":"Cancel",
 		"Add":"Add",
