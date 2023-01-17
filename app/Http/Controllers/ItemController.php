@@ -129,27 +129,27 @@ class ItemController extends Controller
         else return JDV::error("Something went wrong during saving inventory item");
     }
      
-    function setStockIn(Request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return JDV::emptyResult($ss->status_code,null); //user not authenticated
-        $branch_id = $ss->branch_id;
-        $d = $req->all();
+    // function setStockIn(Request $req){
+    //     $ss = UM::getUserInfoByToken($req,-1);
+    //     if($ss->status_code !=200) return JDV::emptyResult($ss->status_code,null); //user not authenticated
+    //     $branch_id = $ss->branch_id;
+    //     $d = $req->all();
         
-        $id = $d->item_id;
-        $stockin_date = isset($d->stockin_date)?$d->stockin_date:null;
-        $qty = $d->qty;
+    //     $id = $d->item_id;
+    //     $stockin_date = isset($d->stockin_date)?$d->stockin_date:null;
+    //     $qty = $d->qty;
 
-        DB::table('stockins')->insert([
-          'branch_id'=>$branch_id,
-          'stockin_date'=>$stockin_date,
-          'item_id'=>$id,
-          'qty'=>$qty,
-          'create_user'=>$ss->full_name,
-          'create_uid'=>$ss->user_id,
-          'created_at'=>getNowTime()
-        ]);
+    //     DB::table('stockins')->insert([
+    //       'branch_id'=>$branch_id,
+    //       'stockin_date'=>$stockin_date,
+    //       'item_id'=>$id,
+    //       'qty'=>$qty,
+    //       'create_user'=>$ss->full_name,
+    //       'create_uid'=>$ss->user_id,
+    //       'created_at'=>getNowTime()
+    //     ]);
 
-        return JDV::success();
-    }
+    //     return JDV::success();
+    // }
  
 }

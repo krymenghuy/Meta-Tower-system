@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2023-01-17 01:31:04
+Date: 2023-01-17 15:20:46
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -179,32 +179,6 @@ CREATE TABLE `bills` (
 
 -- ----------------------------
 -- Records of bills
--- ----------------------------
-
--- ----------------------------
--- Table structure for `bill_items`
--- ----------------------------
-DROP TABLE IF EXISTS `bill_items`;
-CREATE TABLE `bill_items` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `branch_id` int(10) NOT NULL,
-  `bill_id` int(10) NOT NULL,
-  `item_id` int(10) NOT NULL,
-  `description` varchar(200) NOT NULL,
-  `qty` decimal(10,2) NOT NULL,
-  `price` decimal(10,2) NOT NULL,
-  `discount` decimal(10,2) NOT NULL,
-  `discount_type` varchar(10) NOT NULL COMMENT 'discount_type ={percent,amount}',
-  `currency_code` varchar(10) NOT NULL,
-  `line_total` decimal(10,2) NOT NULL,
-  `create_uid` int(10) DEFAULT NULL,
-  `create_user` varchar(50) DEFAULT NULL,
-  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- ----------------------------
--- Records of bill_items
 -- ----------------------------
 
 -- ----------------------------
@@ -718,7 +692,6 @@ CREATE TABLE `inv_daily_stocks` (
   `block_code` varchar(15) DEFAULT NULL,
   `item_id` int(10) NOT NULL,
   `item_code` varchar(25) NOT NULL,
-  `qty` decimal(10,2) NOT NULL,
   `unit_id` int(10) NOT NULL,
   `sku` varchar(15) NOT NULL,
   `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
@@ -730,7 +703,9 @@ CREATE TABLE `inv_daily_stocks` (
   `sold_qty` decimal(10,2) NOT NULL,
   `customer_return_qty` decimal(10,2) NOT NULL,
   `vendor_return_qty` decimal(10,2) NOT NULL,
-  `adjust_qty` decimal(10,2) NOT NULL
+  `adjust_qty` decimal(10,2) NOT NULL,
+  `qty` decimal(10,2) NOT NULL DEFAULT 0.00,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -1605,6 +1580,32 @@ CREATE TABLE `inv_po_items` (
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for `inv_purchased_items`
+-- ----------------------------
+DROP TABLE IF EXISTS `inv_purchased_items`;
+CREATE TABLE `inv_purchased_items` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `bill_id` int(10) NOT NULL,
+  `item_id` int(10) NOT NULL,
+  `description` varchar(200) NOT NULL,
+  `qty` decimal(10,2) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `discount` decimal(10,2) NOT NULL,
+  `discount_type` varchar(10) NOT NULL COMMENT 'discount_type ={percent,amount}',
+  `currency_code` varchar(10) NOT NULL,
+  `line_total` decimal(10,2) NOT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of inv_purchased_items
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for `inv_purchase_orders`
 -- ----------------------------
 DROP TABLE IF EXISTS `inv_purchase_orders`;
@@ -2229,7 +2230,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of migrations
@@ -2249,6 +2250,7 @@ INSERT INTO `migrations` VALUES ('12', '2022_11_16_120819_create_inital_data', '
 INSERT INTO `migrations` VALUES ('13', '2022_12_23_233609_create_db', '1');
 INSERT INTO `migrations` VALUES ('14', '2022_12_23_233609_create_db', '1');
 INSERT INTO `migrations` VALUES ('15', '2022_12_23_233609_create_db', '1');
+INSERT INTO `migrations` VALUES ('16', '2022_12_23_233609_create_db', '1');
 
 -- ----------------------------
 -- Table structure for `partners`
@@ -3694,12 +3696,12 @@ CREATE TABLE `um_sessions` (
   `status` varchar(10) DEFAULT NULL COMMENT 'status ={online,offline}',
   `lang` varchar(50) DEFAULT 'en',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1794 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1799 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of um_sessions
 -- ----------------------------
-INSERT INTO `um_sessions` VALUES ('1793', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-01-17 00:32:32', '2023-01-17 00:32:32', '4V4oV75BU4mCA4ctZwksUXJ7AiW2JsHcGuBx4k', 'siaks1Z8A8rWYz1dr6TpcR67NXW86cWKu78IjI', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjczODkwMzUyLCJuYmYiOjE2NzM4OTAzNTIsImV4cCI6MTY3Mzg5Mzk1MiwibGFuZyI6ImVuIiwidXNlcl9jbGFzcyI6ImFkbWluIiwib2ZmaWNpYWxfaWQiOm51bGwsImlkIjoxLCJsb2dpbl9uYW1lIjoiYWRtaW5AZ21haWwuY29tIiwiYnJhbmNoX2lkIjoxLCJmdWxsX25hbWUiOiJTYW1zZXRoeSIsInN0YXR1cyI6ImFjdGl2ZSIsImlzX2xvY2tlZCI6MCwiZW1haWwiOm51bGwsInBob25lX251bWJlciI6IjAxMjU3ODkwIiwib3RwX2NvZGUiOm51bGx9.F7sRWN3P0ndN9pR3NuMWsHzVFBrily4e3XPsImgYgKI', null, 'en');
+INSERT INTO `um_sessions` VALUES ('1798', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-01-17 13:44:39', '2023-01-17 13:44:39', 'ldnBi0iXB6jXQ95a7B8I2HoMLGCw48JavDBugc', 'V1fE12BN837QRh7OeFsnxg59Oqp8P7f18EJV8h', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjczOTM3ODc5LCJuYmYiOjE2NzM5Mzc4NzksImV4cCI6MTY3Mzk0MTQ3OSwibGFuZyI6ImVuIiwidXNlcl9jbGFzcyI6ImFkbWluIiwib2ZmaWNpYWxfaWQiOm51bGwsImlkIjoxLCJsb2dpbl9uYW1lIjoiYWRtaW5AZ21haWwuY29tIiwiYnJhbmNoX2lkIjoxLCJmdWxsX25hbWUiOiJTYW1zZXRoeSIsInN0YXR1cyI6ImFjdGl2ZSIsImlzX2xvY2tlZCI6MCwiZW1haWwiOm51bGwsInBob25lX251bWJlciI6IjAxMjU3ODkwIiwib3RwX2NvZGUiOm51bGx9.CI4t2n2ey3zFk9x0lWImu7b7OA3ZJPY3UsVPCug9594', null, 'en');
 
 -- ----------------------------
 -- Table structure for `um_users`
@@ -3785,6 +3787,30 @@ CREATE TABLE `user_branches` (
 -- ----------------------------
 -- Records of user_branches
 -- ----------------------------
+
+-- ----------------------------
+-- Table structure for `vendors`
+-- ----------------------------
+DROP TABLE IF EXISTS `vendors`;
+CREATE TABLE `vendors` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `phone_number` varchar(100) NOT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `address` varchar(200) DEFAULT NULL,
+  `city_id` int(10) DEFAULT NULL,
+  `country_id` int(10) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of vendors
+-- ----------------------------
+INSERT INTO `vendors` VALUES ('1', '1', 'General Vendor', '023767676', null, null, null, null, null, null, null);
 
 -- ----------------------------
 -- Table structure for `vital_signs`

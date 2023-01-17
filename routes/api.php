@@ -29,7 +29,8 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\QTicketController;
 use App\Http\Controllers\MedicalServiceController;
 use App\Http\Controllers\ItemController;
-use App\Http\Controllers\FGItemController;
+use App\Http\Controllers\FGStockController;
+use App\Http\Controllers\StockController;
 
 use App\Http\Controllers\ItemGroupController; 
 use App\Http\Controllers\CategoryController; 
@@ -104,14 +105,23 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('inventory/save-item', [ItemController::class, 'saveItem']);
     //End::ItemController
 
-     //begin::FGItemController
+     //begin::FGStockController
         //stock/groups  
-        Route::post('inventory/stock/group-list', [FGItemController::class, 'getGroupList']);
-        Route::post('inventory/stock/group-items', [FGItemController::class, 'getItemsByGroup']);
-        Route::post('inventory/stock/classes', [FGItemController::class, 'getStockClasses']); 
-    //End::FGItemController
+        Route::post('inventory/stock/group-list', [FGStockController::class, 'getGroupList']);
+        Route::post('inventory/stock/group-items', [FGStockController::class, 'getItemsByGroup']);
+        Route::post('inventory/stock/classes', [FGStockController::class, 'getStockClasses']); 
 
+        Route::post('inventory/stock/receive-items', [FGStockController::class, 'receiveItems']);
+        Route::post('inventory/stock/adjust', [FGStockController::class, 'getStockClasses']);
+        Route::post('inventory/stock/receive-returns', [FGStockController::class, 'receiveReturns']); 
+        Route::post('inventory/stock/return-to-vendor', [FGStockController::class, 'returnToVendor']);
+    
+        Route::post('inventory/stock/transfer', [FGStockController::class, 'transfer']);
+        //Transfer stock items Qty from one class to another class
+        Route::post('inventory/stock/transfer-class', [FGStockController::class, 'transferClass']);  
 
+    //End::FGStockController
+ 
     //begin::ItemGroupController
         Route::post('inventory/group-details', [ItemGroupController::class, 'getItemGroupDetails']);
         Route::post('inventory/groups', [ItemGroupController::class, 'getItemGroups']);
