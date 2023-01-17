@@ -379,6 +379,7 @@ let ReceiveStokeDialog = new function(){
             "title": "Name",
             "dataType": "string",
             "displayType": "select",
+            "width":"250px",
             "cssClass": "",
             //"selectOptions":[] 
         },
@@ -420,10 +421,19 @@ let ReceiveStokeDialog = new function(){
     
     this.cfg = new ItemsView('_stk_div_items_panel',{
         columns: mThis.columns,
+        "validateColumns":['name','qty','price'],
         "showColumnHeaders":true,
-        "showAddLineButton":true
+        "showAddLineButton":true,
+        "onItemChange":(td,col_name,selOp)=>{
+           mThis.setTotal(td,1500);
+        }
     });
-    this.cfg.getItems();
+
+    this.setTotal =(td,value)=>{
+        mThis.cfg.setCellValue(td.parentNode,'qty',value);
+    }
+
+    //this.cfg.getItems();
     // this.cfg.setData(items);
 
      
@@ -432,7 +442,7 @@ let ReceiveStokeDialog = new function(){
         mThis.onClose = option.onClose;
         mThis.loadItems((d)=>{
             ///items [ {text,value}, {text,value}]
-            mThis.cfg.setColumnSelectOptions("name",d.items);
+            mThis.cfg.setSelectOptions("name",d.items);
             VSUtil.setComboItems(mThis.elVendor,d.vendors,'id','vendor_name',true,'(select vendor)',null);
             mThis.self.modal({
                 backdrop:'static',

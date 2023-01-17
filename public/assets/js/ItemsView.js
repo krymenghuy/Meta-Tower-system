@@ -2,7 +2,7 @@
 
 /**** Dependencies
    - vsdom.js
-   - vsutil.js for VSUtil.setSelect2_value()
+   - vsutil.js for VSUtil.setSelect2_value(), setComboItems()
    - string_san.js,
    - LocaleManager.js for transaction. LocaleManager.trans()
 ****/
@@ -14,7 +14,8 @@ class ItemsView{
         tableClass:'table',
         'numeroFormatter':function(numero,data) => { ... },
         'numeroHeaderText':"Numero",
-        "rowClass" is the default row tr's class
+        "rowClass" is the default row tr's class,
+        "validateColumns":['name','qty','price'] This is to validate columns "name","qty","price" before allowing user to add new row
         columns:[
             {
                 field:'name',
@@ -36,11 +37,10 @@ class ItemsView{
         if(this.isUndefined(options.showAddLineButton)) options.showAddLineButton = true;  
         if(this.isUndefined(options.showColumnHeaders)) options.showColumnHeaders = true;
         //if(this.isUndefined(options.validateBeforeAddNew)) options.validateBeforeAddNew = false;
-
-        if (options.onItemChange != 'function') options.onItemChange = ()=>{ return;};
-
+ 
         if(!options.columns) options.columns = this.getDefaultColumns(); 
         this.options = options;
+        if (typeof(this.options.onItemChange) != 'function') this.options.onItemChange = (e)=>{ return;};
         this.self = document.querySelector(`#${div_id}`);
  
         this.table_id =`${div_id}_tblItems`;
@@ -65,6 +65,12 @@ class ItemsView{
  
         //Add initial empty Row
         this.addRow(null);
+        
+        this.table.addEventListener('change',(e)=>{
+          if(e.target.classList.contains('td-input')){
+             console.error(e.target.dataset.name);
+          }
+        });
 
         this.table.addEventListener('click',(e)=>{
             let tr = VSDOM.getClosestParentByType(e.target,'TR');
@@ -85,9 +91,15 @@ class ItemsView{
                          );
                      //return;  
                 }else{
-                   
-                   //begin edit row (change Row's state to "Editing mode" only if user Do not click on any link inside tr (row) )
-                   this.changeRowState(tr,'edit');
+                   //If user click within INPUT (input.td-input or SELECT boxes)
+                   if (e.target.classList.contains('td-input')){
+                      e.target.select();
+                      e.target.focus();
+                   }else{
+                       //begin edit row (change Row's state to "Editing mode" only if user Do not click on any link inside tr (row) )
+                       this.changeRowState(tr,'edit');
+                   }
+                      
                 }   
 
             } else {
@@ -177,11 +189,11 @@ class ItemsView{
             this.changeRowState(this.prev_edit_row,'readonly');
         }
         if(tr.dataset.editing==1) return;
-
+         
         tr.querySelectorAll('td').forEach(td => {
             let col_name = td.dataset.name;
             let text = td.dataset.text;
-          let value = td.dataset.value;
+            let value = td.dataset.value;
           //   let data_type = td.dataset.datatype;
          
           
@@ -190,14 +202,14 @@ class ItemsView{
             if(col && !col.readOnly){
                 let def_class ='form-control';
                 let select2_cssClass ='modal-select3';
-                if(!col) throw "Error ItemsView.getColumnPropsByName(@colName) failed to find column by name " + col_name;
+                if(!col) throw `Error ItemsView.getColumnPropsByName(@colName) failed to find column by name ${col_name}`;
                 col.cssClass =col.cssClass?col.cssClass:'';
                 let html = `<input type="text" class="${def_class} ${col.cssClass} td-input" value="${text}"/>`;
                 
                 //If there is col.selectOptions => then set displayType = 'select'
                 if (col.selectOptions) col.displayType ='select';
 
-                if (col.displayType =='select'){
+                if (col.displayType ==='select'){
                     if(!col.selectOptions) col.selectOptions = col.selectItems;
                     col.selectOptions = col.selectOptions?col.selectOptions:[];
                     html = [`<select class="${select2_cssClass} td-input" value="${value}">`,
@@ -207,12 +219,15 @@ class ItemsView{
                 }else {
                     //Set detault data type to string
                     if(!col.dataType) col.dataType ='string';
-                    if (col.dataType =='date'){
+                    if (col.dataType ==='date'){
                        html = `<input class="${def_class} ${col.cssClass} td-input" value="${text}" data-select="datepicker"/>`;
-                    }else if (col.dataType =='time'){
+                    }else if (col.dataType ==='time'){
                       html = `<input class="${def_class} ${col.cssClass} td-input" value="${text}" data-select="datepicker"/>`;
                     }else{
-                      let dType = (col.dataType =='string')? 'text':'number'; 
+                      let dType = (col.dataType ==='string')? 'text':'number';
+
+                      //Set detault editor value to zero for Number field 
+                      if(dType==='number' && !text) text="0"; 
                       html = `<input type="${dType}" class="${def_class} ${col.cssClass} td-input" value="${text}"/>`;
                     }
                     
@@ -220,12 +235,13 @@ class ItemsView{
 
                 td.innerHTML= html;
                 //If the displayType is SELECT,and we use select2 with "modal-select2" class => so we need to init select2 script to transform standard SELECT to SELECT2
-               
-
-                if (col.displayType =='select'){
+                
+                if (col.displayType ==='select'){
                     let cb = td.querySelector('select.td-input');
-                    //cb.setAttribute('disabled',false);
-                    this.initSelect2(cb,td,value);
+                    // cb.addEventListener('change',(e)=>{
+                    //   that.options.onItemChange(col.name);
+                    // });
+                    this.initSelect2(cb,td,{"value":value,"width":col.width});
                 } //else cb.setAttribute('readOnly',false);
                
             } 
@@ -255,7 +271,9 @@ class ItemsView{
                 //     d.classList.add('hidden');
                 //   }); 
               }
-              
+
+              //set default numeric value to zero | default value
+              if(col.dataType==='number' && !value) value =0; 
               if (col.isPercentage || col.displayAsPercentage) 
                 html = [value,'%'].join('');
               else{
@@ -277,24 +295,49 @@ class ItemsView{
 
      }
 
-     initSelect2(el,td,value){
+     initSelect2(el,td,op={}){
+        if(!el) return;
+        //op.value=null,op.items =null
         let select2_dropdowns = td.querySelectorAll('span.select2-container');
         select2_dropdowns.forEach(d =>{
-                  d.classList.style.display='none';
-        }); 
-
+                  if(d){
+                    if(d.classList.style) d.classList.style.display='none';
+                  }
+        });
+ 
+        // let opt_html ="";
+        // //unknown error if the items is not type of array
+        // if(items){
+        //   items.map(item=>{
+        //     opt_html = [opt_html,`<option value="${item.value}">${item.text}</option>`].join(''); 
+        //   });
+        //   el.innerHTML = opt_html; 
+        // }
+            
           //NOTE: el must be converted to $(el) because .select2() is jquery function
             let x = $(el);
-            x.select2({
-                width:'100%'
+            if(op.items) VSUtil.setComboItems(x,op.items,'value','text',null,null,null);
+
+            let init_op ={width:'100%'};
+            if(op.width) init_op.width =op.width; 
+            x.select2(init_op);
+
+            if(op.value !== undefined){
+              el.value = op.value;
+              td.dataset.value =op.value;
+            }
+            //x.val(op.value);
+
+            let that = this;
+            x.on('change',(e)=>{
+              e.preventDefault();
+              that.options.onItemChange(td,td.dataset.name,{
+                "value":x.val(),
+                "text":x.find('option:selected').text()
+              }); 
             });
-
-            // x.on('change',()=>{
-            //   let col_name = td.dataset.name;
-            //   this.options.onItemChange(col_name);
-            // });
-
-            x.val(value).trigger('change');
+ 
+            //if(value !== undefined) VSUtil.setSelect2_value(el,value);
      }
   
      //@items is array = [{value,text}, {value,text}, ...] 
@@ -304,9 +347,76 @@ class ItemsView{
          col.displayType = 'select';
          col.selectOptions = items;
          col.selectedValue = selectedValue;
+
+         if (this.prev_edit_row){
+            //ivc stands for "Item View Column"
+            let td = this.prev_edit_row.querySelector(`td.ivc-${col_name}`);
+            if(td){
+              let cb = td.querySelector(`select.td-input`);
+              if(cb) this.initSelect2(cb,td,{value:selectedValue,items:col.selectOptions,width:col.width});
+              //cb.setAttribute('disabled',false);
+            }
+           
+         }
+         
          return true; 
        }
+       //console.error(`Eror: at ItemViews =>setSelectOptions failed to find column named ${col_name} for setting select options`);
        return false;
+     }
+     
+     getCurrentRow(){
+        return this.prev_edit_row;
+     }
+
+     //setColumnValue() | setValue()
+     setCellValue(tr,col_name=null,value=null){
+       if(!col_name) return null;
+       let td = tr.querySelector(`td.ivc-${col_name}`);
+       if(td){
+         let input = td.querySelector('.td-input');
+         if(input){
+            if(td.dataset.editortype==='select'){
+                $(input).val(value).trigger('change');
+            }else{
+                input.value = value;
+            } 
+         }else {
+           //In case of Non-Editing Mode (View only)
+           td.innerHTML = value;
+         }
+        
+       }
+
+     }
+
+     //check_cols = ['name','price','qty'];
+     //validateCols()
+     validateRow(tr=null,check_cols=[],silent_mode=false){
+        if(!tr) tr=this.prev_edit_row;
+        if(!tr) return true;
+        if (!check_cols[0]) return true;
+
+        let validate_succeed =true;
+        tr.querySelectorAll(`td`).forEach(td=>{
+           if (check_cols.indexOf(td.dataset.name)>=0){
+            //  if( !td.dataset.value || (td.dataset.value+'') ===''){
+            //       validate_succeed= false;
+            //       return false;
+            //  }
+             let input = td.querySelector('.td-input');
+             if(input){
+                 let data = input.value;
+                 if(!data || (data+'') ==''){
+                      validate_succeed= false;
+                      return false;
+                 }
+             }
+
+           } 
+        });
+        if(!silent_mode && !validate_succeed) cv_interact.warning(`Please enter required information for the item`);
+        return validate_succeed;
      }
 
      //option = {value,text}
@@ -404,12 +514,15 @@ class ItemsView{
             let html_cols = "";
             d = d?d:{};
 
+             //Validate currently editing row based on the provided "this.options.validateColumns" , if validation is successful then can add new row
+             if (!this.validateRow(null,this.options.validateColumns)) return;
+
             //before adding any new row, Remove empty row, if exists.
               let empty_row = this.table_body.firstChild;
               if(empty_row){
                  if (empty_row.classList.contains('empty-row')) empty_row.remove();
               }
-
+             
             (this.options.columns || []).map(col=>{
                 let value ='';
                 if (typeof col.data ==='function') value = col.data(d[col.name],d); 
@@ -424,9 +537,12 @@ class ItemsView{
                 if (!col.displayName) col.displayName = col.name; 
 
                 if(col.selectOptions) col.displayType ='select';
-
+                
+                let style_width="";
+                if(col.width) style_width =['style="width:',col.width,'"'].join('');
+                if(!value) if(col.dataType==='number') value ="0";  
                 html_cols = [html_cols,
-                              `<td class="${col.cssClass}" data-name="`,col.name,`" data-editortype="${col.displayType}" data-text="`,d[col.displayName],`" data-value="`,d[col.name],`">`,value,`</td>`
+                              `<td ${style_width} class="ivc-`,col.name,' ',col.cssClass,`" data-name="`,col.name,`" data-editortype="${col.displayType?col.displayType:""}" data-text="`,d[col.displayName],`" data-value="`,d[col.name],`">`,value,`</td>`
                             ].join('');
               });
 
