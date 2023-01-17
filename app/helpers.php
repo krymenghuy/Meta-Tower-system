@@ -975,8 +975,10 @@ function readFileContent($fileName=null)
                         
                         //if $val is empty or NULL then do not treat it as validation error for JSON object or JSON array
                         if (!$val) return (object)['error'=>null,'default_value'=>null];
-
-                          $obj = json_decode($val);
+                          if(is_string($val)) 
+                             $obj = json_decode($val);
+                          else 
+                             $obj = json_decode(json_encode($val)); 
                         if ($obj)
                            return (object)['error'=>null,'default_value'=>$obj];
                         else 

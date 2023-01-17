@@ -97,7 +97,7 @@ let StockTrackingComponent = new function(){
 
     this.init = () => {
         this.expandableConfig = new ExpandableRowConfig('_stk_tblItems',{
-            'dontExpandByClickingOn':['btn-group-action','btn-group-modify','btn-group-delete','btn-group-print'],
+            'dontExpandByClickingOn':['tbody-stock-items','lnk-item-category','btn-group-action','btn-group-modify','btn-group-delete','btn-group-print'],
             //'content':`<div class="alert alert-info">Loading details</div>`,
             'onOpen':(container,detail_tr,parent_tr)=>{
                 let qtr = $(parent_tr);
@@ -195,13 +195,13 @@ let StockTrackingComponent = new function(){
                 `<div class="stock-items-panel">`,
                         `<table class="w-100 inner-item-table header-uppercase">`,
                             `<thead><tr>`,
-                            `<th>Item Code</th>`,
-                            `<th>Name</th>`,
-                            `<th>Desciption</th>`,
-                            `<th>Qty</th>`,
-                            `<th>Last Updated</th>`,
-                            `</tr></thead>`,
-                            `<tbody>`,
+                                `<th>Item Code</th>`,
+                                `<th>Name</th>`,
+                                `<th>Desciption</th>`,
+                                `<th>Qty</th>`,
+                                `<th>Last Updated</th>`,
+                                `</tr></thead>`,
+                            `<tbody class="tbody-stock-items">`,
                                 mThis.createRowItems(items)
                             ,`</tbody>
                         </table>`,
@@ -221,7 +221,7 @@ let StockTrackingComponent = new function(){
           let sku = t.sku;
           if(t.qty>1 && sku) sku =[sku,'s'].join('');
           let qty = [t.qty?t.qty:0,` `,sku].join('');
-          let inner_html =`<td>${t.code}</td><td>${t.name}</td> <td>${t.description?t.description:""}</td> <td>${qty}</td><td>${t.last_updated?t.last_updated:"NA"}</td>`;
+          let inner_html =`<td>${t.code}</td><td>${t.name}</td> <td>${t.description?t.description:"NA"}</td> <td>${qty}</td><td>${t.last_updated?t.last_updated:"NA"}</td>`;
           html = [html,`<tr data-itemid="`,t.id,`">`,inner_html,`</tr>`].join('');
        });
        return html;
@@ -266,7 +266,7 @@ let StockTrackingComponent = new function(){
                     title: mThis.trans_title('Category'),
                     data:(data,a,b)=>{
                         return [
-                            `<span class="fw-normal d-block"><a data-gid="${data.id}" data-catid="${data.category_id}" href="javasvript:void(0)">`,data.category,`</a></span>`,
+                            `<span class="fw-normal d-block lnk-item-category"><a data-gid="${data.id}" data-catid="${data.category_id}" href="javasvript:void(0)">`,data.category,`</a></span>`,
                             `<span class="text-secondary">`,data.detail_type,`</span>`
                         ].join('');
                     }
