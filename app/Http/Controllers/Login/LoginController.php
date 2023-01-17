@@ -25,7 +25,6 @@ class LoginController extends Controller
         //$user = (object)(["id"=>1,"branch_id"=>1,"full_name"=>null,"login_name"=>$request->login_name]);
         //$this->UMModel->setSessionUser($user);
         //$this->UMModel->createSession($request->login_name);
-         
         //$request->access_token is used to check if the existing session is valid then just use existing session for this given access_token
         $result = $this->UMModel->verifyUser($THIS_APP_ID,$request->login_name,$request->password,"en");
         if ($result->status_code ===200) {
@@ -53,7 +52,6 @@ class LoginController extends Controller
              $cookie_name ="vsmclinic997891zb";
              //$cookie = Cookie::queue($cookie_name, $user->access_token, 60);
              //$first_role = UM::getFirstRole($user->id);
-              
              $encrypted_token ="";
              ////Encrypt access token ans store in cookie 
              //$res = (object)['value'=>'','key'=>'','iv'=>''];

@@ -59,7 +59,21 @@ class Settings extends Model
             'manufacturers'=>$manufacturers
         ];
     }
+    static function options_vendor($ss){
+        $branch_id = $ss->branch_id;
+        return DB::table('vendors AS d')->where('d.branch_id',$branch_id)->selectRaw("d.id,d.name as vendor_name")->orderByRaw('d.name ASC')->get();
+    }
+    static function options_item($ss){
+        $branch_id = $ss->branch_id;
+        return DB::table('inv_items AS i')->where('i.branch_id',$branch_id)->selectRaw("i.id as `value`,i.name as text")->orderByRaw('i.name ASC')->get();
+    }
 
+    static function receive_stock_form_options($ss){
+        return (object)[
+            "vendors"=>self::options_vendor($ss),
+            "items"=>self::options_item($ss)
+        ];
+    }
     static function stock_tracking_options($ss){
        return (object)[
          "categories"=>self::options_category($ss),

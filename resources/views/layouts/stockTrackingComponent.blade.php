@@ -18,6 +18,7 @@
         font-weight:bold;
     }
 </style>
+
 <div id="_main_stockTrackingComponent" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
         <div class="d-flex align-items-center">
@@ -36,88 +37,128 @@
                        <select class="modal-select2 form-select" id="_stk_filter_class"></select>
                     </div>
                 </div>
-                <button class="btn btn-outline-primary py-1 px-2" type="button">
+                <button class="btn btn-outline-primary py-1 px-2" type="button" id="_stk_dlg_filter">
                     <i class="fa-solid fa-bars-staggered"></i>
                 </button>
             </div>
-            <div class="container-fluid d-flex align-items-center justify-content-end">
-                <button id="_stk_btnExport" class="vs-btn-custom-primary" type="button">
-                    <span class="trans-text" data-langprop="buttons.Export"></span>
+            <div class="container-fluid d-flex align-items-center justify-content-end gap-2">
+                <button class="vs-btn-custom-primary" type="button" id="_stk_btnNew_ReceiveStock">
+                    <span class="trans-text" data-langprop="buttons.Receive Stock"></span>
+                </button>
+                <button id="_stk_btnNew" class="vs-btn-custom-primary" type="button">
+                    <span class="trans-text" data-langprop="buttons.New"></span>
                 </button>
             </div>
         </div>
         <div>
-             <table class="table header-light-blue header-uppercase" id="_stk_tblItems"></table>
+            <table class="table header-light-blue header-uppercase" id="_stk_tblItems"></table>
         </div>
     </div>
 </div>
 
-<!-- <div id="_stk_dlgProduct" class="modal fade" tabindex="-1" aria-labelledby="_stk_dlgProduct_title" aria-hidden="true">
+<!--Begin::FilterDialog-->
+<div id="_stk_dlgFilterStockTracking" class="modal fade" tabindex="-1" aria-labelledby="_stk_dlgFilterStockTracking_title" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="_stk_dlgProduct_title"></h4>
+                <h4 class="modal-title trans-text" data-langprop="inventory.Filter Stock"></h4>
             </div>
             <div class="modal-body">
-                <div class="row">
-                      <div class="forn-group col-lg-6">
-                          <span class="simple-label trans-text" id="_stk_item_code" data-langprop="item.Item Code">Item Code</span>
-                          <input placeholder="Auto" type="text" data-field="code" data-ffield="Item code" class="form-control data-input" readOnly>
-                     </div>
-                     <div class="forn-group col-lg-6">
-                          <span class="simple-label trans-text" data-langprop="item.Item Name">Item Name</span>
-                          <input type="text" data-required="1" data-field="name" data-ffield="Item name" class="form-control data-input">
-                     </div>
-
-                     <div class="forn-group col-lg-6">
-                          <span class="simple-label trans-text" data-langprop="item.Item Group">Item Group</span>
-                           <select id="_stk_item_group" data-required="1" class="modal-select2 form-select data-input" data-field="group_id" data-ffield="Item group"></select>
-                     </div>
-
-                     <div class="forn-group col-lg-6">
-                          <span class="simple-label trans-text" data-langprop="item.Description">Description</span>
-                          <input type="text" data-field="description" data-ffield="Description" class="form-control data-input">
-                     </div>
- 
-                     <div class="forn-group col-lg-6">
-                          <span class="simple-label trans-text" data-langprop="item.SKU">SKU</span>
-                           <select id="_stk_item_unit" data-required="1" class="modal-select2 form-select data-input" data-field="unit_id" data-ffield="SKU"></select>
-                     </div>
-
-                     <div class="forn-group col-lg-6">
-                           <span class="simple-label trans-text" data-langprop="item.Brand Name">Brand Name</span>
-                           <input type="text" id="_stk_brand_name" class="form-control data-input" data-field="brand_name" data-ffield="Brand name"/>
-                     </div>
-
-                     <div class="forn-group col-lg-6">
-                           <span class="simple-label trans-text" data-langprop="item.Manufacturer"></span>
-                           <select id="_stk_manufacturer" data-required="1" class="modal-select2 form-select data-input" data-field="manufacturer_id" data-ffield="Manufacturer"></select>
-                     </div>
-
-                     <div class="forn-group col-lg-6">
-                           <span class="simple-label trans-text" data-langprop="item.Category"></span>
-                           <select id="_stk_category" data-required="1" class="modal-select2 form-select data-input" data-field="category_id" data-ffield="Category"></select>
-                     </div>
-
-                     <div class="forn-group col-lg-6">
-                           <span class="simple-label trans-text" data-langprop="item.Detail Type"></span>
-                           <select id="_stk_detail_type" data-required="1" class="modal-select2 form-select data-input" data-field="detail_type_id" data-ffield="detail type"></select>
-                     </div>
-
-                     <div class="forn-group col-lg-12">
-                        <div class="dialog-error" id="_stk_dlgProduct_error">
-                        </div>
-                     </div>
+                <div class="row gy-2">
+                    <div class="col-lg-3 d-flex justify-content-end">
+                        <p class="text-nowrap trans-text" data-langprop="inventory.Warehouse"></p>
+                    </div>
+                    <div class="col-lg-9">
+                        <select class="modal-select2"></select>
+                    </div>
                 </div>
+                <div class="row gy-2">
+                    <div class="col-lg-3">
+                        <p class="trans-text text-nowrap" data-langprop="inventory.Block"></p>
+                    </div>
+                    <div class="col-lg-9">
+                        <select class="modal-select2"></select>
+                    </div>
+                </div>
+                <div class="row gy-2">
+                    <div class="col-lg-3">
+                        <p class="trans-text text-nowrap" data-langprop="inventory.Class"></p>
+                    </div>
+                    <div class="col-lg-9">
+                        <select class="modal-select2"></select>
+                    </div>
+                </div>
+                <div class="row gy-2">
+                    <div class="col-lg-3">
+                        <p class="trans-text text-nowrap" data-langprop="inventory.Category"></p>
+                    </div>
+                    <div class="col-lg-9">
+                        <select class="modal-select2"></select>
+                    </div>
+                </div>
+                <div class="row gy-2">
+                    <div class="col-lg-3">
+                        <p class="trans-text text-nowrap" data-langprop="inventory.Group"></p>
+                    </div>
+                    <div class="col-lg-9">
+                        <select class="modal-select2"></select>
+                    </div>
+                </div>
+                <div class="_stk_dlgFilterStockTracking-error" id="_stk_dlgFilterStockTracking_error"></div>
             </div>
             <div class="modal-footer">
                 <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button class="vs-btn-custom-primary" type="button" id="_stk_dlgProduct_btnSave">
+                <button class="vs-btn-custom-primary" type="button" id="_stk_dlgFilterStockTracking_btnOK">
+                    <span class="trans-text" data-langprop="buttons.OK"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--End::FilterDialog-->
+
+<!--Begin::ReceiveStock-->
+<div id="_stk_dlgReceiveStock" class="modal fade" tabindex="-1" aria-labelledby="_stk_dlgReceiveStock_title" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title trans-text" data-langprop="inventory.Receive Stock"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row gy-2">
+                    <div class="col-lg-6">
+                        <label for="po" class="form-label trans-text" data-langprop="inventory.PO"></label>
+                        <input type="text" class="form-control data-input" data-field="po" data-required="1" data-ffield="PO" placeholder="PO"/>
+                    </div>
+                    <div class="col-lg-6">
+                        <label for="vendor" class="form-label trans-text" data-langprop="inventory.Vendor"></label>
+                        <select class="modal-select2 data-input" data-field="vendor" data-required="1" data-ffield="Vendor" id="_stk_select_vendors" placeholder="vendor"></select>
+                    </div>
+                </div>
+                <div class="row gy-2">
+                    <div class="col-lg-6">
+                        <label for="date" class="form-label trans-text" data-langprop="inventory.Date"></label>
+                        <input data-select="datepicker" class="form-control data-input" data-field="date" data-required="1" data-ffield="Date"/>
+                    </div>
+                    <div class="col-lg-6">
+                        <label for="description" class="form-label trans-text" data-langprop="inventory.Description"></label>
+                        <textarea class="form-control data-input" data-field="description" data-required="1" data-ffield="Description"></textarea>
+                    </div>
+                </div>
+                <div class="" id="_stk_div_items_panel"></div>
+                <div class="_stk_dlgReceiveStock-error" id="_stk_dlgReceiveStock_error"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">
+                    <span class="trans-text" data-langprop="buttons.Cancel"></span>
+                </button>
+                <button class="vs-btn-custom-primary" type="button" id="_stk_dlgReceiveStock_btnSave">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>
         </div>
     </div>
-</div> -->
+</div>
+<!--End::ReceiveStock-->

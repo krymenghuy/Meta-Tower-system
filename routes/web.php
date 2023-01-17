@@ -1,15 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\Branch\BranchController;
-use App\Http\Controllers\Category\CategoryController;
-use App\Http\Controllers\Slide\SlideController;
-
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\LoanAppController;
 use App\Http\Controllers\WebReportController;
-use App\Http\Controllers\Api\PackageController;
 use App\Http\Controllers\Login\LoginController;
 use Illuminate\Http\Request;
 
@@ -17,6 +9,7 @@ use App\Models\Notifier;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\PdfController;
 use App\Models\PrivateStorage;
+use Illuminate\Contracts\Session\Session;
 
 //use App\Models\UM;
 /*
@@ -136,8 +129,7 @@ Route::get('test',function(){
     echo $data;
 //    foreach($paths as $key=>$value){
 //     echo $key.' = '.env('ASSET_URL').' =  |   ';
-//    } 
-
+//    }
 });
 
 Route::get('package_barcode/{id}', [WebReportController::class, 'package_barcode']);
@@ -154,13 +146,13 @@ Route::get('mail-receipt/{q}', [MailController::class, 'receipt']);
 //    $exitCode = Artisan::call('config:cache');
 //    return null;
 // });
- 
- Route::post('processLogin', [LoginController::class, 'processLogin']); 
+
+Route::post('processLogin', [LoginController::class, 'processLogin']); 
 //route 'dms' or Delivery Management System(DMS) routing to default Home View on firt log in
 Route::get('login', [LoginController::class , 'login']);
 
 Route::get('mclinic',function(){
-    if(!Session::get('login_name')){
+    if(!Session('login_name')){
        // return redirect('/')
        $base_url =url('/');
        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
@@ -172,22 +164,13 @@ Route::get('mclinic',function(){
 Route::get('email/send', [MailController::class, 'html_email']);
 
 Route::get('download-doc/{doc_type}/{loan_app_id}/{file_id}', [LoanAppController::class, 'downloadFile']);
-Route::get('bor',function(Request $request){
-    if(!Session::get('login_name')) return redirect('/student'); // view('login.index');
-    return view('borrower.home');
-});
-
-Route::get('bor',function(Request $request){
-        if(!Session::get('login_name')) return redirect('/student'); // view('login.index');
-        return view('borrower.home');
-});
-
+  
 // Route::post('/pem-login/{q}', function(Request $request, $email, $password){
 //     $email = $request->email;
 //     $password = $request->password;
 //     return redirect('http://127.0.0.1:8000/pem/pem-login'.$email.'/'.$password);
 // });
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+//Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
  
 
 //Clear Cache facade value:

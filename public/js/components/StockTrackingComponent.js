@@ -4,13 +4,15 @@ let StockTrackingComponent = new function(){
     this.title_prop = 'Stock Tracking';
     this.base_url = $('#__base_url').val();
     this.self = $('#_main_stockTrackingComponent');
-    this.btnNew = $('#_stk_btnExport');
+    this.btnNew = $('#_stk_btnNew');
     this.elSearchItem = $('#_stk_search');
     this.elFilter_category = $('#_stk_filter_category');
     this.elFilter_stock_class = $('#_stk_filter_class');
 
     this.elFilter_loc_warehouse = $('#_stk_filter_warehouse');
     this.elFilter_loc_block = $('#_stk_filter_block');
+    this.dlgFilter = $('#_stk_dlg_filter');
+    this.btnReceiveStock = $('#_stk_btnNew_ReceiveStock');
 
     this.tblItems = $('#_stk_tblItems');
     // this.form_data = {};
@@ -36,7 +38,6 @@ let StockTrackingComponent = new function(){
              let d = StringSanitizer.sanitizeObject(res.data);
              onFinish(d);  
            } 
-          
         });
     }
 
@@ -64,12 +65,9 @@ let StockTrackingComponent = new function(){
                     </div>
 
                     <div class="d-flex" style="width:100%">
-                            <div style="width:50%">
-                                    
+                            <div style="width:50%"> 
                             </div>
-
                             <div style="width:50%">
-                        
                             </div>
                     </div> 
                 
@@ -98,7 +96,6 @@ let StockTrackingComponent = new function(){
     }
 
     this.init = () => {
-
         this.expandableConfig = new ExpandableRowConfig('_stk_tblItems',{
             'dontExpandByClickingOn':['btn-group-action','btn-group-modify','btn-group-delete','btn-group-print'],
             //'content':`<div class="alert alert-info">Loading details</div>`,
@@ -107,6 +104,30 @@ let StockTrackingComponent = new function(){
                 let group_id = qtr.data('id');
                 mThis.createExpandedPanelContent($(detail_tr),{'group_id':group_id});
              }
+        });
+
+        mThis.dlgFilter.on('click',(e)=>{
+            e.preventDefault();
+            let op = {
+                onClose: (e) => {
+                    if(e){
+                        //do something
+                    }
+                }
+            };
+            FilterDialog.show(op);
+        });
+
+        mThis.btnReceiveStock.on('click',(e)=>{
+            e.preventDefault();
+            let op = {
+                onClose: (e) => {
+                    if(e){
+                        //do something
+                    }
+                }
+            };
+            ReceiveStokeDialog.show(op);
         });
  
         mThis.btnNew.on('click',(e)=>{
@@ -153,13 +174,12 @@ let StockTrackingComponent = new function(){
             });
         });
  
-
         mThis.elSearchItem.on('keyup',(e)=>{
             let d = mThis.elSearchItem.val();
             if(!d || d.length >2 || e.keyCode ===13) mThis.displayItemGroups();
         });
     }
-  
+
      this.createExpandedPanelContent = (detail_tr,options)=>{
         let group_id = options.group_id;
         let div_wrapper = detail_tr.find('div.expandable-row-containter');
@@ -186,7 +206,6 @@ let StockTrackingComponent = new function(){
                             ,`</tbody>
                         </table>`,
                  `</div>`].join('');
-          
           }else{
             html =`<div class="expanded-row-error">${res.error_message}</div>`;
           }
@@ -195,7 +214,7 @@ let StockTrackingComponent = new function(){
           //div_wrapper.slideDown(500);
         });
     }
- 
+
     this.createRowItems = (items)=>{
         let html = "";
        (items || []).map(t=>{
@@ -320,76 +339,108 @@ let StockTrackingComponent = new function(){
                 mThis.self.show().siblings().hide();
             });
         });
-
-       
     }
 }
 
-// //begin::ItemDialog
-// let ItemDialog = new function(){
-//     let mThis = this;
-//     this.form_data = {};
-//     this.self = $(`#_itm_dlgProduct`);
-//     this.elItemCode = $('#_itm_item_code');
-//     this.elItemGroup = $('#_itm_item_group');
-//     this.elUnit = $('#_itm_item_unit');
+//Begin::FilterDialog
+let FilterDialog = new function(){
+    let mThis = this;
+    this.self = $('#_stk_dlgFilterStockTracking');
 
-//     this.prepareOptions = (def={},onFinish)=>{
-//        if(!def) def = {}; 
-//        if (mThis.form_data.groups){
-//          onFinish(mThis.form_data);
-//          return;
-//        }
+    this.show = (option) => {
+        if (!option) option = {};
+        mThis.onClose = option.onClose;
+        mThis.self.modal({
+            backdrop: 'static'
+        });
+    }
+}
+//End::FilterDialog
 
-//        //api/settings/item-form-options returns all sets of options for productDialog including arrays of "units,item-groups" 
-//        vsapi.call(`${main_view.base_url}/api/inventory/settings/item-form-options`,null).then(res=>{
-//            if(res.status_code === 200){
-//              let d = StringSanitizer.sanitizeObject(res.data);
-//              //VSUtil.setComboItems(mThis.elItemGroup,items,'id','name',false,null,def.group_id);
-//              mThis.form_data.groups = d.groups;
-//              mThis.form_data.units = d.units;
-//              onFinish(mThis.form_data);
-//            }     
-//        });  
-//     }
+//Begin::ReceiveStokeDialog
+let ReceiveStokeDialog = new function(){
+    let mThis = this;
+    this.self = $('#_stk_dlgReceiveStock');
+    this.elVendor = $('#_stk_select_vendors');
 
-//     //ProductDialog using FormUtil as helper
-//     this.formUntil = new FormUntil({
-//         "itemName":"Products",
-//         "formId":'_itm_dlgProduct',
-//         //"titleId":"_itm_dlgProduct_title",
-//         //"errorId":"_itm_dlgProduct_error",
-//         //"saveButtonId":"_itm_dlgProduct_btnSave",
-//         "instance":this,
-//         "apiSave":`${main_view.base_url}/api/inventory/save-item`,
-//         "apiGet":`${main_view.base_url}/api/inventory/item-details`,
-//         //"identityProp":"id",
-//         "modifyTitle":"Modify Product",
-//         "createTitle":"New Product",
-//         "identityProps":['id'],
-//         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
-//         "form_data_props":['id'],
-//         //"sub_prop":"chief_complaint_items",
-//         //"sub_prop_function":mThis.getChiefComplaints,
-//         "sanitize_excepts":[],
-//         'use_alert_error':true,
-//         //'beforeShow': () => {}
-//         // "init": ()=>{  
-//         //  }
-//     });
+    this.loadItems = (onFinish)=>{
+        vsapi.call(`${main_view.base_url}/api/inventory/settings/receive-stock-options`,null).then((res)=>{
+            if(res.status_code === 200){
+                let d = StringSanitizer.sanitizeObject(res.data);
+                /*** d.vendors , d.items */
+                onFinish(d);
+            }
+        });
+    }
+    
+    mThis.columns = [
+        {
+            "name": "name",
+            "title": "Name",
+            "dataType": "string",
+            "displayType": "select",
+            "cssClass": "",
+            //"selectOptions":[] 
+        },
+        {
+            "name":"description",
+            "title":"Description",
+            "dataType":"string",
+            "dispalyType":"input",
+            "cssClass":""
+        },
+        {
+            "name":"qty",
+            "title":"Qty",
+            "dataType":"number",
+            "displayType":"input",
+            "cssClass":""
+        },
+        {
+            "name":"price",
+            "title":"Price",
+            "dataType":"number",
+            "displayType":"input",
+            "cssClass":""
+        },
+        {
+            "name":"discount",
+            "title":"Discount(%)",
+            "dataType":"number",
+            "displayType":"input",
+            "cssClass":""
+        },
+        {
+            "name":"line_total",
+            "title":"Total",
+            "dataType":"number",
+            "readOnly":true
+        }
+    ];
+    
+    this.cfg = new ItemsView('_stk_div_items_panel',{
+        columns: mThis.columns,
+        "showColumnHeaders":true,
+        "showAddLineButton":true
+    });
+    this.cfg.getItems();
+    // this.cfg.setData(items);
 
-//     this.show = (options)=>{
-//         //default_input = {group_id, unit_id, etc...}. This is default selections when Dialog is shown for better user experiences
-//         if (!options.default_input) options.default_input = {};
-//         mThis.prepareOptions(options.default_input,(d)=>{
-//             //mThis.elItemCode.prop('readOnly', (options.id > 0));
-//             VSUtil.setComboItems(mThis.elItemGroup,d.groups,'id','name',false,null,options.default_input.group_id);
-//             VSUtil.setComboItems(mThis.elUnit,d.units,'id','name',false,null,options.default_input.unit_id);
-//             mThis.formUntil.show(options);
-//         });
-//     }
-// }
-// //end::ItemDialog
+     
+    this.show = (option) => {
+        if(!option) option = {};
+        mThis.onClose = option.onClose;
+        mThis.loadItems((d)=>{
+            ///items [ {text,value}, {text,value}]
+            mThis.cfg.setColumnSelectOptions("name",d.items);
+            VSUtil.setComboItems(mThis.elVendor,d.vendors,'id','vendor_name',true,'(select vendor)',null);
+            mThis.self.modal({
+                backdrop:'static',
+            });
+        });
+    }
+}
+//End::ReceiveStokeDialog
 
 $(document).ready(function() {
     StockTrackingComponent.init();

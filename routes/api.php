@@ -148,6 +148,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('inventory/settings/save-manufacturer', [InventorySettingsController::class, 'saveManufacturer']);
         Route::post('inventory/settings/save-brand', [InventorySettingsController::class, 'saveBrand']);
         Route::post('inventory/settings/options-stock-class', [InventorySettingsController::class, 'getComboItems_stockclass']);
+        Route::post('inventory/settings/receive-stock-options', [InventorySettingsController::class, 'getReceiveStockFormOptions']);
 
         Route::post('inventory/settings/unit/delete', [InventorySettingsController::class, 'deleteUnit']);
         Route::post('inventory/settings/unit/list', [InventorySettingsController::class, 'getUnitList']);

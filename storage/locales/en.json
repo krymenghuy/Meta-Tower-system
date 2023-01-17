@@ -88,6 +88,7 @@
 	"currencies":{},
 	"expenses":{},
 	"settings":{},
+	"inventory":{},
 	"buttons":{
         "Cancel":"Cancel",
 		"Add":"Add",

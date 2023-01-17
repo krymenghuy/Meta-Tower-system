@@ -22,6 +22,12 @@ class InventorySettingsController extends Controller
         return JDV::result(Settings::item_form_options($ss)); 
     }
 
+    function getReceiveStockFormOptions(request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        return JDV::result(Settings::receive_stock_form_options($ss)); 
+    }
+    
     function getComboItems_detailtype(request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated

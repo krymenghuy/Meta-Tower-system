@@ -14,7 +14,7 @@ let ChiefComplaintsComponent = new function(){
                 "dataType": "string",
                 "displayType": "select",
                 "cssClass": "",
-                //"selectOptions":[] 
+                //"selectOptions":[]
             },
         ];
 
