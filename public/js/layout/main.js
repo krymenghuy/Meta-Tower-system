@@ -31,6 +31,7 @@
      this.mnuItemGroups = $('#_main_lnkItemGroups');
      this.mnuCategories = $('#_main_lnkCategories');
      this.mnuLaboPartners = $('#_main_lnkLaboPartners');
+     this.mnuVendors = $('#_main_lnkVendors');
      this.mnuExchangeRate = $('#_main_lnkExchangeRate');
      this.mnuExpenseBook = $('#_main_lnkExpenseBook');
      this.mnuChiefComplaints = $('#_main_lnkChiefCompaints');
@@ -186,10 +187,14 @@
                     CategoriesComponent.show(null);
                  });
 
-                 
                  this.mnuLaboPartners.on('click',(e)=>{
                     e.preventDefault();
                     LaboPartnersComponent.show(null);
+                 });
+
+                 this.mnuVendors.on('click',(e)=>{
+                    e.preventDefault();
+                    VendorsComponent.show(null);
                  });
 
                  this.mnuExchangeRate.on('click',(e)=>{

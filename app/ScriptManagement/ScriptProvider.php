@@ -103,6 +103,7 @@ namespace App\ScriptManagement;
                         '/js/components/EmployeeListComponent.js',
                         '/js/components/PositionsComponent.js',
                         '/js/components/LaboPartnersComponent.js',
+                        '/js/components/VendorsComponent.js',
                         '/js/components/PatientInvoicesComponent.js',
                         '/js/components/PatientReceiptsComponent.js',
                         '/js/components/MedicalServiceComponent.js',

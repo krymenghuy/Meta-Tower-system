@@ -372,7 +372,7 @@ let ReceiveStokeDialog = new function(){
             }
         });
     }
-    
+
     mThis.columns = [
         {
             "name": "name",
@@ -436,7 +436,6 @@ let ReceiveStokeDialog = new function(){
     //this.cfg.getItems();
     // this.cfg.setData(items);
 
-     
     this.show = (option) => {
         if(!option) option = {};
         mThis.onClose = option.onClose;

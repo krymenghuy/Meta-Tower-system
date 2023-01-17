@@ -628,6 +628,7 @@
                             @include('layouts.employeeListComponent')
                             @include('layouts.positionsComponent')
                             @include('layouts.laboPartnersComponent')
+                            @include('layouts.vendorsComponent')
                             @include('layouts.patientInvoicesComponent')
                             @include('layouts.patientRecieptsComponent')
                             @include('layouts.medicalServiceComponent')
