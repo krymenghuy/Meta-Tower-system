@@ -223,7 +223,7 @@
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkStockTracking" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/Stock%20Adjustments.svg')}}"/>
+                                    <img class="icons" src="{{asset('assets/images/icons/stock%20tracking.svg')}}"/>
                                 </span>
                                 &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Stock Tracking">Stock Tracking</span>
                             </a>
@@ -232,7 +232,7 @@
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkStockAdjustment" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/Stock%20Adjustments.svg')}}"/>
+                                    <img class="icons" src="{{asset('assets/images/icons/Stock%20adjustment.svg')}}"/>
                                 </span>
                                 &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Stock Adjustments">Stock Adjustments</span>
                             </a>
@@ -446,28 +446,30 @@
 
             <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
-                    <span class="kt-menu__link-icon"><i class="fas fa-mobile"></i></span>
-                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Mobile Settings">Mobile
-                        Settings</span>
+                    <span class="kt-menu__link-icon">
+                        <img class="icons" src="{{asset('assets/images/icons/mobile_setting.svg')}}"/>
+                    </span>
+                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Mobile Settings">Mobile Settings</span>
                     <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
                 <div class="kt-menu__submenu ">
                     <span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkManageBrandImages_mobile"
-                                class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon"><i class="fa fa-map-marker-alt"></i></span>
-                                <span class="kt-menu__link-text trans-text trans-text"
-                                    data-langprop="menus.Brand Images">Brand Images</span>
+                            <a href="javascript:void(0)" id="_main_lnkManageBrandImages_mobile" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{asset('assets/images/icons/brand_image.svg')}}"/>
+                                </span>
+                                <span class="kt-menu__link-text trans-text trans-text" data-langprop="menus.Brand Images">Brand Images</span>
                             </a>
                         </li>
 
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkPromotions" class="menu-item kt-menu__link ">
-                                <span class="kt-menu__link-icon"><i class="fa fa-map-marker-alt"></i></span>
-                                <span class="kt-menu__link-text trans-text"
-                                    data-langprop="menus.Promotion">Promotions</span>
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{asset('assets/images/icons/promotion.svg')}}"/>
+                                </span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Promotion">Promotions</span>
                             </a>
                         </li>
                     </ul>
@@ -476,7 +478,9 @@
 
             <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
-                    <span class="kt-menu__link-icon"><i class="fas fa-globe-asia"></i></span>
+                    <span class="kt-menu__link-icon">
+                        <img class="icons" src="{{asset('assets/images/icons/settings.svg')}}"/>
+                    </span>
                     &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Settings">Settings</span>
                     <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
@@ -485,52 +489,58 @@
                     <ul class="kt-menu__subnav">
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkChiefCompaints" class="menu-item kt-menu__link">
-                                <i class="kt-menu__link-bullet fas fa-list-alt"><span></span></i>
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{asset('assets/images/icons/chief_complaints_diagnosis.svg')}}"/>
+                                </span>
                                 &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Chief Complaints">Chief Complaints</span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkDiagnosisAutocomplete"
-                                class="menu-item kt-menu__link ">
-                                <i class="kt-menu__link-bullet fas fa-list-alt"><span></span></i>
-                                &nbsp;<span class="kt-menu__link-text trans-text"
-                                    data-langprop="menus.Diagnosis Autocomplete">Diagnosis Autocomplete</span>
+                            <a href="javascript:void(0)" id="_main_lnkDiagnosisAutocomplete" class="menu-item kt-menu__link ">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{asset('assets/images/icons/autocomplete.svg')}}"/>
+                                </span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Diagnosis Autocomplete">Diagnosis Autocomplete</span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkPEAutocomplete" class="menu-item kt-menu__link ">
-                                <i class="kt-menu__link-bullet fas fa-list-alt"><span></span></i>
-                                &nbsp;<span class="kt-menu__link-text trans-text"
-                                    data-langprop="menus.Examination Autocomplete">Examination Autocomplete</span>
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{asset('assets/images/icons/autocomplete_examination.svg')}}"/>
+                                </span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Examination Autocomplete">Examination Autocomplete</span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkMedicalHistory" class="menu-item kt-menu__link ">
-                                <i class="kt-menu__link-bullet fas fa-list-alt"><span></span></i>
-                                &nbsp;<span class="kt-menu__link-text trans-text"
-                                    data-langprop="menus.Medical History">Medical History</span>
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{asset('assets/images/icons/medical_history.svg')}}"/>
+                                </span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Medical History">Medical History</span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkServiceDepartments"
-                                class="menu-item kt-menu__link">
-                                <i class="kt-menu__link-bullet fas fa-list-alt"><span></span></i>
-                                &nbsp;<span class="kt-menu__link-text trans-text"
-                                    data-langprop="menus.Departments">Departments</span>
+                            <a href="javascript:void(0)" id="_main_lnkServiceDepartments" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{asset('assets/images/icons/Departments.svg')}}"/>
+                                </span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Departments">Departments</span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkManageLocation" class="menu-item kt-menu__link">
-                                <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
-                                &nbsp;<span class="kt-menu__link-text trans-text"
-                                    data-langprop="menus.Locations">Locations</span>
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{asset('assets/images/icons/Location.svg')}}"/>
+                                </span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Locations">Locations</span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkExchangeRate" class="menu-item kt-menu__link">
-                                <i class="kt-menu__link-bullet fas fa-map-marker-alt"><span></span></i>
-                                &nbsp;<span class="kt-menu__link-text trans-text"
-                                    data-langprop="menus.Exchange Rate">Exchange Rate</span>
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{asset('assets/images/icons/exchange%20rate.svg')}}"/>
+                                </span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Exchange Rate">Exchange Rate</span>
                             </a>
                         </li>
 
@@ -553,7 +563,9 @@
 
             <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
-                    <span class="kt-menu__link-icon"><i class="fa fa-user-check"></i></span>
+                    <span class="kt-menu__link-icon">
+                        <img class="icons" src="{{asset('assets/images/icons/user_management.svg')}}"/>
+                    </span>
                     <span class="kt-menu__link-text trans-text" data-langprop="menus.User Management">User Management</span>
                     <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
@@ -561,17 +573,19 @@
                     <ul class="kt-menu__subnav">
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkManageRoles" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon"><i class="fa fa-user-secret"></i></span>
-                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Manage Roles">Manage
-                                    Roles</span>
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{asset('assets/images/icons/manage%20role.svg')}}"/>
+                                </span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Manage Roles">Manage Roles</span>
                             </a>
                         </li>
 
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkManageUsers" class="menu-item kt-menu__link ">
-                                <span class="kt-menu__link-icon"><i class="fa fa-users"></i></span>
-                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Manage Users">Manage
-                                    Users</span>
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{asset('assets/images/icons/manage%20users.svg')}}"/>
+                                </span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Manage Users">Manage Users</span>
                             </a>
                         </li>
                     </ul>
@@ -579,9 +593,9 @@
             </li>
 
             <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
-                <a id="_main_lnkLogout" href="javascript:;" class="kt-menu__link kt-menu__toggle">
+                <a id="_main_lnkLogout" href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
-                        <i class="fas fa-sign-out-alt"></i>
+                        <img class="icons" src="{{asset('assets/images/icons/log_out.svg')}}"/>
                     </span>
                     <span class="kt-menu__link-text trans-text" data-langprop="menus.Log Out">Log Out</span>
                 </a>

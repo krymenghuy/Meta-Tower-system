@@ -436,6 +436,10 @@ let ReceiveStokeDialog = new function(){
         "keyup":(e,col_name,td)=>{
               let tr = td.parentNode; 
               mThis.setTotal(col_name,tr);
+        },
+        "onInputChange":(e,col_name,td)=>{
+            let tr = td.parentNode; 
+            mThis.setTotal(col_name,tr);
         }
     });
 

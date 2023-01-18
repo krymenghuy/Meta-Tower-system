@@ -22,7 +22,7 @@
                     </button>
                 </div>
             </div>
-            <div>
+            <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;border-color:#EEEA8D;min-height:350px;">
                 <table class="table" id="_prc_tblReciept"></table>
             </div>
         </div>

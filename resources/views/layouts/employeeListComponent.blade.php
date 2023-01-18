@@ -8,7 +8,7 @@
                 <span class="trans-text" data-langprop="buttons.Export"></span>
             </button>
         </div>
-        <div>
+        <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;border-color:#EEEA8D;min-height:350px;">
             <table class="table" id="_epl_tblEmployee"></table>
         </div>
     </div>

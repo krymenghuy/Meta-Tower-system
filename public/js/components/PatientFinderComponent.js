@@ -187,7 +187,7 @@
                             //'<a class="btn btn-sm btn-outline-primary loanapp-btn-action">Approve</a>'
                             ].join('');
                         },
-                        title: mThis.trans_title('ID')
+                        title: mThis.trans_title('ID'),
                       },
                      {
                         title: mThis.trans_title('Name'),

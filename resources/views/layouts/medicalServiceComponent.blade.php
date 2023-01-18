@@ -7,7 +7,7 @@
                 <option value="1">Test</option>
             </select>
         </div>
-        <div>
+        <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;border-color:#EEEA8D;min-height:350px;">
             <table class="table header-light-blue header-uppercase" id="_msl_tblItems"></table>
         </div>
     </div>

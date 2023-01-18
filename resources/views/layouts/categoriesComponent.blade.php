@@ -11,7 +11,7 @@
                 <span class="trans-text" data-langprop="buttons.New Category"></span>
             </button>
         </div>
-        <div>
+        <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;border-color:#EEEA8D;min-height:350px;">
             <table class="table" id="_cat_tblCategories"></table>
         </div>
     </div>

@@ -5,7 +5,7 @@
                 <span class="trans-text" data-langprop="buttons.New Vendor"></span>
             </button>
         </div>
-        <div>
+        <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;border-color:#EEEA8D;min-height:350px">
             <table class="table" id="_vdr_tblVendors"></table>
         </div>
     </div>
@@ -19,8 +19,34 @@
             </div>
             <div class="modal-body">
                 <div class="row gy-2">
-                    <div class="col-lg-6"></div>
-                    <div class="col-lg-6"></div>
+                    <div class="col-lg-6">
+                        <label for="vendor" class="form-label trans-text" data-langprop="vendors.Vendor"></label>
+                        <input type="text" class="form-control data-input" data-field="vendor" data-required="1" data-ffield="Vendor" placeholder="Vendor"/>
+                    </div>
+                    <div class="col-lg-6">
+                        <label for="vendor_type" class="form-label trans-text" data-langprop="vendors.Vendor Type"></label>
+                        <select class="modal-select2 data-input" data-field="vendor_type" data-required="1" data-ffield="Vendor Type"></select>
+                    </div>
+                </div>
+                <div class="row gy-2">
+                    <div class="col-lg-6">
+                        <label for="balance" class="form-label trans-text" data-langprop="vendors.Balance"></label>
+                        <input type="number" class="form-control data-input" data-field="balance" data-required="1" data-ffield="Balance" placeholder="Balance"/>
+                    </div>
+                    <div class="col-lg-6">
+                        <label for="tax_number" class="form-label trans-text" data-langprop="vendors.Tax Number"></label>
+                        <input type="text" class="form-control data-input" data-field="tax_number" data-required="1" data-ffield="Tax Number" placeholder="Tax Number"/>
+                    </div>
+                </div>
+                <div class="row gy-2">
+                    <div class="col-lg-6">
+                        <label for="email" class="form-label trans-text" data-langprop="vendors.Email"></label>
+                        <input type="email" class="form-control data-input" data-field="email" data-required="1" data-ffield="Email" placeholder="Email"/>
+                    </div>
+                    <div class="col-lg-6">
+                        <label for="phone" class="form-label trans-text" data-langprop="vendors.Phone"></label>
+                        <input type="text" class="form-control data-input" data-field="phone" data-required="1" data-ffield="Phone" placeholder="Phone"/>
+                    </div>
                 </div>
                 <div class="_vdr_dlgVendors-error" id="_vdr_dlgVendors_error"></div>
             </div>
