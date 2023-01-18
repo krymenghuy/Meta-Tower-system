@@ -41,6 +41,12 @@ class ItemsView{
         if(!options.columns) options.columns = this.getDefaultColumns(); 
         this.options = options;
         if (typeof(this.options.onItemChange) != 'function') this.options.onItemChange = (e)=>{ return;};
+
+        if(!this.options.onKeyUp) this.options.onKeyUp = this.options.keyup;
+        if (typeof(this.options.onKeyUp) != 'function') this.options.onKeyUp = (e)=>{ return;};
+        if (typeof(this.options.onInputChange) != 'function') this.options.onInputChange = (e)=>{ return;};
+        if (typeof(this.options.totalChange) != 'function') this.options.totalChange = (e)=>{ return;};
+
         this.self = document.querySelector(`#${div_id}`);
  
         this.table_id =`${div_id}_tblItems`;
@@ -66,9 +72,11 @@ class ItemsView{
         //Add initial empty Row
         this.addRow(null);
         
+        let that = this;
         this.table.addEventListener('change',(e)=>{
           if(e.target.classList.contains('td-input')){
-             console.error(e.target.dataset.name);
+             let td = VSDOM.getClosestParentByType('TD');
+             that.options.onInputChange(e.target,td.dataset.name,td); 
           }
         });
 
@@ -199,12 +207,17 @@ class ItemsView{
           
           // let display_type = td.dataset.displaytype;
             let col = this.getColumnPropsByName(col_name);
-            if(col && !col.readOnly){
+            if(col){
                 let def_class ='form-control';
                 let select2_cssClass ='modal-select3';
+                let is_read_only= "";
+                if (col.readOnly){
+                   if(col.displayType==='select') is_read_only="disabled";
+                   else is_read_only="readonly";
+                }
                 if(!col) throw `Error ItemsView.getColumnPropsByName(@colName) failed to find column by name ${col_name}`;
                 col.cssClass =col.cssClass?col.cssClass:'';
-                let html = `<input type="text" class="${def_class} ${col.cssClass} td-input" value="${text}"/>`;
+                let html = `<input type="text" class="${def_class} ${col.cssClass} td-input" value="${text}" ${is_read_only}/>`;
                 
                 //If there is col.selectOptions => then set displayType = 'select'
                 if (col.selectOptions) col.displayType ='select';
@@ -212,7 +225,7 @@ class ItemsView{
                 if (col.displayType ==='select'){
                     if(!col.selectOptions) col.selectOptions = col.selectItems;
                     col.selectOptions = col.selectOptions?col.selectOptions:[];
-                    html = [`<select class="${select2_cssClass} td-input" value="${value}">`,
+                    html = [`<select class="${select2_cssClass} td-input" value="${value}" ${is_read_only}>`,
                             this.createSelectOptions(col_name,value),
                           `</select>`].join('');
                      
@@ -220,15 +233,15 @@ class ItemsView{
                     //Set detault data type to string
                     if(!col.dataType) col.dataType ='string';
                     if (col.dataType ==='date'){
-                       html = `<input class="${def_class} ${col.cssClass} td-input" value="${text}" data-select="datepicker"/>`;
+                       html = `<input class="${def_class} ${col.cssClass} td-input" value="${text}" data-select="datepicker" ${is_read_only}/>`;
                     }else if (col.dataType ==='time'){
-                      html = `<input class="${def_class} ${col.cssClass} td-input" value="${text}" data-select="datepicker"/>`;
+                      html = `<input class="${def_class} ${col.cssClass} td-input" value="${text}" data-select="datepicker" ${is_read_only}/>`;
                     }else{
                       let dType = (col.dataType ==='string')? 'text':'number';
 
                       //Set detault editor value to zero for Number field 
                       if(dType==='number' && !text) text="0"; 
-                      html = `<input type="${dType}" class="${def_class} ${col.cssClass} td-input" value="${text}"/>`;
+                      html = `<input type="${dType}" class="${def_class} ${col.cssClass} td-input" value="${text}" ${is_read_only}/>`;
                     }
                     
                 }
@@ -242,10 +255,23 @@ class ItemsView{
                     //   that.options.onItemChange(col.name);
                     // });
                     this.initSelect2(cb,td,{"value":value,"width":col.width});
-                } //else cb.setAttribute('readOnly',false);
-               
+                }
+                // else{
+                //    //cb.setAttribute('readOnly',false);
+                    
+                // }  
             } 
             
+         });
+         
+         let that = this;
+         tr.querySelectorAll('td>input.td-input').forEach(el=>{
+            if(el.nodeName ==='INPUT'){
+                el.addEventListener('keyup',e=>{
+                  let td = VSDOM.getClosestParentByType(e.target,'TD');
+                  that.options.onKeyUp(e,td.dataset.name,td);
+                });
+            }
          });
 
          tr.dataset.editing =1;
@@ -331,10 +357,10 @@ class ItemsView{
             let that = this;
             x.on('change',(e)=>{
               e.preventDefault();
-              that.options.onItemChange(td,td.dataset.name,{
+              that.options.onItemChange({
                 "value":x.val(),
                 "text":x.find('option:selected').text()
-              }); 
+              },td.dataset.name,td); 
             });
  
             //if(value !== undefined) VSUtil.setSelect2_value(el,value);
@@ -390,31 +416,81 @@ class ItemsView{
 
      }
 
-     //check_cols = ['name','price','qty'];
+     /** 
+          @check_cols = ['name','price','qty'];
+       or @check_cols = ['name|string','price|number','qty|positive'];
+      *  **/
      //validateCols()
-     validateRow(tr=null,check_cols=[],silent_mode=false){
+     validateRow(tr=null,valiateColumns=null,silent_mode=false){
         if(!tr) tr=this.prev_edit_row;
         if(!tr) return true;
-        if (!check_cols[0]) return true;
+        if (!valiateColumns) return true;
+
+        //  let check_cols1 = [];
+        //  (check_cols || []).map(rule=>{
+        //     let parts = (rule+'').split('|');
+        //     let f_name = parts[0];
+        //     let v_item = {"col_name":f_name,};
+        //     if(f_name) check_cols1.push({f_name}); 
+        //  });
 
         let validate_succeed =true;
         tr.querySelectorAll(`td`).forEach(td=>{
-           if (check_cols.indexOf(td.dataset.name)>=0){
-            //  if( !td.dataset.value || (td.dataset.value+'') ===''){
-            //       validate_succeed= false;
-            //       return false;
-            //  }
-             let input = td.querySelector('.td-input');
-             if(input){
-                 let data = input.value;
-                 if(!data || (data+'') ==''){
-                      validate_succeed= false;
-                      return false;
-                 }
-             }
-
-           } 
+           let v_rule = valiateColumns[td.dataset.name];
+           if(v_rule){
+            if(typeof(v_rule)==='function')
+            {
+              let input = td.querySelector('.td-input');
+              return ff(input?input.value:"",td,tr);
+            }
+            else{
+              //***if v_rule is not a function
+                let input = td.querySelector('.td-input');
+                let data = input?input.value:null;
+                 
+                        switch(v_rule){
+                        case 'positive':{
+                          if(!(data>0)){
+                                validate_succeed= false;
+                                //exit forEach (td)
+                                return false;
+                          }
+                          break;
+                        }
+                        case 'number':{
+        
+                          if(!$.isNumeric(data)){
+                            validate_succeed= false;
+                            //exit forEach (td)
+                            return false;
+                          }
+                          break;
+                        }
+                        case 'string':{
+        
+                          if(!data || (data+'') ===''){
+                            validate_succeed= false;
+                            //exit forEach (td)
+                            return false;
+                          }
+                          break;
+                        }
+                        default:{
+                          if(!data || (data+'') ===''){
+                            validate_succeed= false;
+                            //exit forEach (td)
+                            return false;
+                          }
+                          break;
+                        }
+                      } 
+                  } 
+           }
+           //end:: If (v_rule or validate_rule is supplied)
+          
         });
+        //end::forEach loop through (td in tr)
+
         if(!silent_mode && !validate_succeed) cv_interact.warning(`Please enter required information for the item`);
         return validate_succeed;
      }
@@ -424,7 +500,7 @@ class ItemsView{
         let col = this.getColumnPropsByName(col_name);
         if(col){
            let ops = col.selectOptions?col.selectOptions:[];
-           let html = '';
+           let html = [`<option value="">`,LocaleManager.trans('Choose item',this.options.langProp),`</option>`].join('');
            ops.map(item =>{
               let justSelect ="";
               if(col.selectedValue == item.value) justSelect ="selected";
@@ -624,14 +700,28 @@ class ItemsView{
           
      }
 
-     getItems(){
-       let trs = this.table_body.querySelectorAll('tr');
+     getDataRow(tr){
+       let items = this.getItems(tr);
+       return items[0];
+     }
+
+     getItems(tr=null){
+       let trs =null;
+       if(tr){
+         trs = [tr];
+       }else trs = this.table_body.querySelectorAll('tr');
+
        let ps = [];
        trs.forEach(tr=>{
           let item = {};
           tr.querySelectorAll('td').forEach(td=>{
               let f = td.dataset.name;
-              if(f) item[f] = td.dataset.value; 
+              let input =td.querySelector('.td-input');
+              let value =null;
+              if(input)
+                value = input.value;
+              else value = td.dataset.value;
+              if(f) item[f] = value; 
           });
           ps.push(item);
        });
@@ -639,15 +729,15 @@ class ItemsView{
      }
 
      getTotal(){
-        return 10;
+        return 111;
      }
 
      getGrandTotal(){
-        return 11;
+        return 111;
      }
 
      getTotalTax(){
-        return 0;
+        return 111;
      }
 
      getTotalCost(){

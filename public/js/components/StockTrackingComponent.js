@@ -380,29 +380,32 @@ let ReceiveStokeDialog = new function(){
             "dataType": "string",
             "displayType": "select",
             "width":"250px",
-            "cssClass": "",
+            //"cssClass": "",
             //"selectOptions":[] 
-        },
-        {
-            "name":"description",
-            "title":"Description",
-            "dataType":"string",
-            "dispalyType":"input",
-            "cssClass":""
         },
         {
             "name":"qty",
             "title":"Qty",
+            "width":"100px",
             "dataType":"number",
             "displayType":"input",
-            "cssClass":""
+            //"cssClass":""
+        },
+        {
+            "name":"sku",
+            "title":"SKU",
+            "dataType":"string",
+            "displayType":"input",
+            "readOnly":true,
+            //"cssClass":""
         },
         {
             "name":"price",
             "title":"Price",
             "dataType":"number",
             "displayType":"input",
-            "cssClass":""
+            "currencySymbol":"$"
+            //"cssClass":""
         },
         {
             "name":"discount",
@@ -415,22 +418,40 @@ let ReceiveStokeDialog = new function(){
             "name":"line_total",
             "title":"Total",
             "dataType":"number",
+            //todo: later get currency symbol from api
+            "currencySymbol":"$",
             "readOnly":true
         }
     ];
     
     this.cfg = new ItemsView('_stk_div_items_panel',{
         columns: mThis.columns,
-        "validateColumns":['name','qty','price'],
+        "validateColumns":{"name":"positive","qty":"positive","price":"positive"},
         "showColumnHeaders":true,
         "showAddLineButton":true,
-        "onItemChange":(td,col_name,selOp)=>{
-           mThis.setTotal(td,1500);
+        "onItemChange":(selOp,col_name,td)=>{
+            let tr = td.parentNode; 
+            mThis.setTotal(col_name,tr);
+        },
+        "keyup":(e,col_name,td)=>{
+              let tr = td.parentNode; 
+              mThis.setTotal(col_name,tr);
         }
     });
 
-    this.setTotal =(td,value)=>{
-        mThis.cfg.setCellValue(td.parentNode,'qty',value);
+    this.setTotal =(col_name,tr)=>{
+        let d = mThis.cfg.getDataRow(tr);
+        //cause_cols contains list of columns whose value changes will cause the Line Total change 
+        let cause_cols = {'name':1,'qty':1,'price':1,'discount':1,'sku':1};
+        if(cause_cols[col_name]){
+           
+            let total = (d.qty * parseFloat(d.price));
+            d.discount = parseFloat(d.discount);
+            let discount_amt = total * d.discount/100;
+            let net_total = total - discount_amt; 
+            mThis.cfg.setCellValue(tr,'line_total',net_total);
+        }
+       
     }
 
     //this.cfg.getItems();
