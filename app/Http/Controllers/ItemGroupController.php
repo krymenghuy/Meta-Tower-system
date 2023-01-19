@@ -62,4 +62,12 @@ class ItemGroupController extends Controller
         return JDV::result($data);
     }
 
+    //getItemGroupInfo()
+    function getGroupInfo(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $id = $req->id;
+        return JDV::result(ItemGroup::info($ss,$id));
+    }
+
 }

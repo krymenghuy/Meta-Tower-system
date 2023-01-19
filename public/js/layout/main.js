@@ -68,7 +68,7 @@
      if (!this.branch_id || !this.user_id){
         console.error('branch_id (company_id) and user_id are not found! => so Notifications will not work!');
      }
-     this.backend_channel_name = ['vsmclinic.backend.',this.branch_id].join('');
+     this.backend_channel_name = ['vsmclinic.backend.',this.branch_id].join(''); /** process.env.PUSHER_CHANNEL_NAME **/
   
      this.getEncryptData = (qstring,onFinish)=>{
         let p = {'data':qstring};
@@ -590,10 +590,88 @@
               //main_view.setLangMenu(langContent.code);
         // });
 
-         //start: listen to "MessageReceived" event
-           window.Echo.private(main_view.backend_channel_name).listen('.message_received',(data)=>{
-            alert(JSON.stringify(data));
-           });
-        //end: listen to "MessageReceived" event
+        // //begin: listen to "MessageReceived" event (In case of using LARAVEL WEBSOCKET)
+        //    window.Echo.private(main_view.backend_channel_name).listen('.message_received',(data)=>{
+        //     alert(JSON.stringify(data));
+        //    });
+        // //end: listen to "MessageReceived" event
+
+        //begin::connect and then subscript to backend channel (Using internet-based Pusher service)
+           let csrf_token = $('meta[name="csrf-token"]').attr('content');
+           //begin::get access token from cookie
+                    let cookie_name = 'vsmclinic997891zb';
+                    let access_token = null;
+                    let c_match = document.cookie.match(new RegExp('(^| )' + cookie_name + '=([^;]+)'));
+                    if (c_match) access_token = c_match[2]; 
+            //end::get access token from cookie
+
+            //pusher_app_key are in .env file, and in main.js
+            //cookie_name are set in main.js, app.js, vsapi.js, loginController.php, Master.blade.php, "login/index.blade.php" 
+            let pusher_app_key = 'b7351506ee87f3eec932'; //process.env.PUSHER_APP_KEY
+            let pusher = new Pusher(pusher_app_key,{
+                cluster: 'mt1',
+                useTLS:true,
+               // authEndpoint:"/api/broadcast/auth",
+                //authTransport:'ajax', //two options = {'ajax','jsonp'}. The default is "ajax"
+                authorizer: function authorizer(channel, options){
+                    return {
+                            authorize: function authorize(socketId, callback) {
+                                let p = {"socket_id":socketId,"channel_name":channel.name};
+                                vsapi.call(`${main_view.base_url}/api/broadcast/auth`,p).then(auth_data=>{
+                                    console.log('Pusher authorization succeeded!');
+                                    //NOTE: @auth_data ={"auth":"app_key:sig"} . For example,  @auth_data = {"auth":"b7351506ee87f3eec932:3c27d88c6944726d39052efd50770468b23b0e9987e981acbc5ed58ba4bb1d51"}
+                                    callback(null, auth_data);
+                                    // if(res.status_code===200){
+                                    //     //console.error(JSON.stringify(res.data));
+                                    //     callback(null, res.data);
+                                    // }else {
+                                    //     console.error(res.error_message); 
+                                    // }
+                                });
+
+                            }
+
+                    };
+                }
+
+            });
+ 
+
+        pusher.connection.bind('connected',(payload)=>{
+           //console.info('Connected to web socket with payload ' + JSON.stringify(payload));
+           console.info('Web socket connection successful :)');
+        });
+ 
+            //begin::Channel subscription
+                   this.pusher_channel = pusher.subscribe(`private-${main_view.backend_channel_name}`);
+
+                    this.pusher_channel.bind('pusher:subscription_succeeded',(d)=>{
+                        console.info("Channel subscription succeeded");
+                    });
+
+                    this.pusher_channel.bind('pusher:subscription_error',(d)=>{
+                        console.error("Channel subscription error: "+d);
+                    });
+
+                    this.pusher_channel.bind('message_received', function(data) {
+                         alert(JSON.stringify(data));
+                    });
+
+            //subscript to Pusher event
+            this.pusher_channel.bind('AppointmentAdded',(d)=>{
+                console.info(JSON.stringify(d));
+                 let nofif = {"title":"New Appointment","message":"New Appointment Added!"};
+                 main_view.addNotificationItem(nofif,true);
+            });
+
+            this.pusher_channel.bind('TicketAdded',(d)=>{
+                console.info(JSON.stringify(d));
+                 let nofif = {"title":"New Ticket","message":`New Ticket Added! ${d.ticket_number}`};
+                 main_view.addNotificationItem(nofif,true);
+            });
+
+            //end::Channel subscription
+
+        //end::connect and then subecribe to backend channel
 
     });

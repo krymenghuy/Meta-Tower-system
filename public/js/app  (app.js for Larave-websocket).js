@@ -2123,7 +2123,7 @@ if (user_token) {
   //For Mobile api authentication, we use UM->getUserInfoByToken($request). It looks for $request->bearerToken()  
   //***start: read cookie for access token
 
-  let cookie_name = 'vsmclinic997891zb';
+  let cookie_name = 'lms5378_3508zd';
   let access_token = null;
   let c_match = document.cookie.match(new RegExp('(^| )' + cookie_name + '=([^;]+)'));
   if (c_match) access_token = c_match[2]; 
@@ -2179,47 +2179,44 @@ window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/d
 //     },
 // });
 
-// window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
-//   broadcaster: 'pusher',
-//   key:  "b7351506ee87f3eec932", /** process.env.PUSHER_APP_KEY **/
-//   cluster: "mt1",
-//   //disableStats: false,
-//   //httpHost:window.location.hostname,
-//   //wsHost: window.location.hostname,
-//   //wsPort: 6001,
-//   // process.env.WEBSOCKETS_PORT, //process.env.WEBSOCKETS_PORT does not bring in that port number
-//   //wssPort: 6001,
-//   // process.env.WEBSOCKETS_PORT,
-//   forceTLS: false,
-//   useTLS: true,
-//   encrypted: false,
-//   //enabledTransports: ['ws', 'wss'],
-//   //transports: ['websocket'],
-//   //authEndpoint:'/api/broadcast/auth',
-//   //authTransport:'ajax', //two options = {'ajax','jsonp'}. The default is "ajax"
-
-//   // authorizer: function authorizer(channel, options) {
-//   //   return {
-//   //     authorize: function authorize(socketId, callback) {
-//   //       axios.post('/api/broadcast/auth', {
-//   //         crossDomain: true,
-//   //         socket_id: socketId,
-//   //         channel_name: channel.name
-//   //       }).then(function (response) {
-//   //         if (response.status == 403) console.log("axios unable to subscribe to channel " + channel.name + ". Response data => " + JSON.stringify(response.data));else if (response.status == 200) {
-//   //           if (response.data == "Forbidden") console.log("axios unable to subscribe to channel " + channel.name + ". Response data => " + JSON.stringify(response));else console.log("axios successfully subscribed to channel " + channel.name + " successfully. Response data => " + JSON.stringify(response.data));
-//   //         } else console.log("axios unable to subscribe to channel " + channel.name + ". Response data => " + JSON.stringify(response.data));
-//   //         callback(false, response.data);
-//   //       })["catch"](function (error) {
-//   //         console.error("axios encountered error in connecting to web socket. Error => " + JSON.stringify(error));
-//   //         callback(true, error);
-//   //       });
-//   //     }
-//   //   };
-//   // }
-
-// }); // window.Echo.connector.pusher.connection.bind('connecting', (payload) => {
-
+window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
+  broadcaster: 'pusher',
+  key: "bc77b0c2e26cf2b37d98",
+  cluster: "mt1",
+  //disableStats: false,
+  //httpHost:window.location.hostname,
+  wsHost: window.location.hostname,
+  wsPort: 6001,
+  // process.env.WEBSOCKETS_PORT, //process.env.WEBSOCKETS_PORT does not bring in that port number
+  wssPort: 6001,
+  // process.env.WEBSOCKETS_PORT,
+  forceTLS: false,
+  useTLS: true,
+  encrypted: false,
+  enabledTransports: ['ws', 'wss'],
+  //transports: ['websocket'],
+  //authEndpoint:'/api/broadcast/auth',
+  //authTransport:'ajax', //two options = {'ajax','jsonp'}. The default is "ajax"
+  authorizer: function authorizer(channel, options) {
+    return {
+      authorize: function authorize(socketId, callback) {
+        axios.post('/api/broadcast/auth', {
+          crossDomain: true,
+          socket_id: socketId,
+          channel_name: channel.name
+        }).then(function (response) {
+          if (response.status == 403) console.log("axios unable to subscribe to channel " + channel.name + ". Response data => " + JSON.stringify(response.data));else if (response.status == 200) {
+            if (response.data == "Forbidden") console.log("axios unable to subscribe to channel " + channel.name + ". Response data => " + JSON.stringify(response));else console.log("axios successfully subscribed to channel " + channel.name + " successfully. Response data => " + JSON.stringify(response.data));
+          } else console.log("axios unable to subscribe to channel " + channel.name + ". Response data => " + JSON.stringify(response.data));
+          callback(false, response.data);
+        })["catch"](function (error) {
+          console.error("axios encountered error in connecting to web socket. Error => " + JSON.stringify(error));
+          callback(true, error);
+        });
+      }
+    };
+  }
+}); // window.Echo.connector.pusher.connection.bind('connecting', (payload) => {
 //     /**
 //      * All dependencies have been loaded and Channels is trying to connect.
 //      * The connection will also enter this state when it is trying to reconnect after a connection failure.
@@ -2229,49 +2226,49 @@ window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/d
 //     console.log('connecting...', p);
 // });
 
-// window.Echo.connector.pusher.connection.bind('connected', function (payload) {
-//   /**
-//    * The connection to Channels is open and authenticated with your app.
-//    */
-//   let p = payload;
-//   if (payload != null && _typeof(payload) === 'object') p = JSON.stringify(p);
-//   console.log('connected', p);
-// });
-// window.Echo.connector.pusher.connection.bind('unavailable', function (payload) {
-//   /**
-//    *  The connection is temporarily unavailable. In most cases this means that there is no internet connection.
-//    *  It could also mean that Channels is down, or some intermediary is blocking the connection. In this state,
-//    *  pusher-js will automatically retry the connection every 15 seconds.
-//    */
-//   let p = payload;
-//   if (payload != null && _typeof(payload) === 'object') p = JSON.stringify(p);
-//   console.log('Websocket unavailable ', p ? p : ' NULL is returned ');
-// });
-// window.Echo.connector.pusher.connection.bind('failed', function (payload) {
-//   /**
-//    * Channels is not supported by the browser.
-//    * This implies that WebSockets are not natively available and an HTTP-based transport could not be found.
-//    */
-//   let p = payload;
-//   if (payload != null && _typeof(payload) == 'object') p = JSON.stringify(p);
-//   console.log('failed', p);
-// });
-// window.Echo.connector.pusher.connection.bind('disconnected', function (payload) {
-//   /**
-//    * The Channels connection was previously connected and has now intentionally been closed
-//    */
-//   var p = payload;
-//   if (payload != null && _typeof(payload) === 'object') p = JSON.stringify(p);
-//   console.log('disconnected...', p);
-// });
-// window.Echo.connector.pusher.connection.bind('message', function (payload) {
-//   /**
-//    * Ping received from server
-//    */
-//   var p = payload;
-//   if (payload != null && _typeof(payload) == 'object') p = JSON.stringify(p);
-//   console.log('message', p);
-// });
+window.Echo.connector.pusher.connection.bind('connected', function (payload) {
+  /**
+   * The connection to Channels is open and authenticated with your app.
+   */
+  var p = payload;
+  if (payload != null && _typeof(payload) == 'object') p = JSON.stringify(p);
+  console.log('connected', p);
+});
+window.Echo.connector.pusher.connection.bind('unavailable', function (payload) {
+  /**
+   *  The connection is temporarily unavailable. In most cases this means that there is no internet connection.
+   *  It could also mean that Channels is down, or some intermediary is blocking the connection. In this state,
+   *  pusher-js will automatically retry the connection every 15 seconds.
+   */
+  var p = payload;
+  if (payload != null && _typeof(payload) == 'object') p = JSON.stringify(p);
+  console.log('Websocket unavailable ', p ? p : ' NULL is returned ');
+});
+window.Echo.connector.pusher.connection.bind('failed', function (payload) {
+  /**
+   * Channels is not supported by the browser.
+   * This implies that WebSockets are not natively available and an HTTP-based transport could not be found.
+   */
+  var p = payload;
+  if (payload != null && _typeof(payload) == 'object') p = JSON.stringify(p);
+  console.log('failed', p);
+});
+window.Echo.connector.pusher.connection.bind('disconnected', function (payload) {
+  /**
+   * The Channels connection was previously connected and has now intentionally been closed
+   */
+  var p = payload;
+  if (payload != null && _typeof(payload) == 'object') p = JSON.stringify(p);
+  console.log('disconnected...', p);
+});
+window.Echo.connector.pusher.connection.bind('message', function (payload) {
+  /**
+   * Ping received from server
+   */
+  var p = payload;
+  if (payload != null && _typeof(payload) == 'object') p = JSON.stringify(p);
+  console.log('message', p);
+});
 
 /***/ }),
 

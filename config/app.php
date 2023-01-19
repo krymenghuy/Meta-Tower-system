@@ -127,6 +127,13 @@ return [
     'customer_app_id'=> env('CUSTOMER_APP_ID','DXM20FKAEFC711EH2E7C9801A7BZD311'),
     'pusher_channel_prefix'=>env('PUSHER_CHANNEL_PREFIX','vsmclinic.'),
     'storage_dir'=>env('STORAGE_DIR','/uploads/companies/'),
+
+    /* FOR PUSHER USER AUTHENTICATION => Private Channel */
+    'pusher_app_key'=>env('PUSHER_APP_KEY',null),
+    'pusher_app_secret'=>env('PUSHER_APP_SECRET',null),
+    'pusher_app_id'=>env('PUSHER_APP_ID',null),
+    'pusher_app_cluster'=>env('PUSHER_APP_CLUSTER',null),
+    
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers
@@ -196,7 +203,6 @@ return [
     */
 
     'aliases' => [
-
         'App' => Illuminate\Support\Facades\App::class,
         'Arr' => Illuminate\Support\Arr::class,
         'Artisan' => Illuminate\Support\Facades\Artisan::class,

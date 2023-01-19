@@ -375,7 +375,7 @@ let ReceiveStokeDialog = new function(){
 
     mThis.columns = [
         {
-            "name": "name",
+            "name": "item_id",
             "title": "Name",
             "dataType": "string",
             "displayType": "select",
@@ -436,22 +436,41 @@ let ReceiveStokeDialog = new function(){
         "keyup":(e,col_name,td)=>{
               let tr = td.parentNode; 
               mThis.setTotal(col_name,tr);
+        },
+        "onInputChange":(e,col_name,td)=>{
+            let tr = td.parentNode; 
+            mThis.setTotal(col_name,tr);
         }
     });
 
     this.setTotal =(col_name,tr)=>{
         let d = mThis.cfg.getDataRow(tr);
-        //cause_cols contains list of columns whose value changes will cause the Line Total change 
-        let cause_cols = {'name':1,'qty':1,'price':1,'discount':1,'sku':1};
-        if(cause_cols[col_name]){
+        //cause_cols contains list of columns, when values of these columns change => it will cause the Line Total to change as (line_total = price * qty - discount) 
+        let cause_cols = {'name':1,'qty':1,'price':1,'discount':1};
+        //let cause_cols = {'name':1,'qty':1,'price':1,'discount':1,'sku':1}; //In case: we allow user to change SKU per item, when they receive stock
+        let p = {"id":d.item_id};
+
+        vsapi.call(`${main_view.base_url}/api/inventory/item-info`,p).then(res=>{
+            if(res.status_code===200){
+                mThis.cfg.setCellValue(tr,'sku',item.sku);
+                mThis.cfg.setCellValue(tr,'price',item.cost);
+
+                //update to override "price" directly from API
+                d.price = parseFloat(item.cost);
+
+                //NOTE: instead of using If, we use array $cause_cols. NOTE that "price" here is the cost per unit SKU
+                if(cause_cols[col_name]){
+                    d.qty = parseFloat(d.qty);
+                    //d.price = parseFloat(d.price);
+                    let total = (d.qty * d.price);
+                    d.discount = parseFloat(d.discount);
+                    let discount_amt = total * d.discount/100;
+                    let net_total = total - discount_amt; 
+                    mThis.cfg.setCellValue(tr,'line_total',net_total);
+                }
+            }
            
-            let total = (d.qty * parseFloat(d.price));
-            d.discount = parseFloat(d.discount);
-            let discount_amt = total * d.discount/100;
-            let net_total = total - discount_amt; 
-            mThis.cfg.setCellValue(tr,'line_total',net_total);
-        }
-       
+        }); 
     }
 
     //this.cfg.getItems();
@@ -462,7 +481,7 @@ let ReceiveStokeDialog = new function(){
         mThis.onClose = option.onClose;
         mThis.loadItems((d)=>{
             ///items [ {text,value}, {text,value}]
-            mThis.cfg.setSelectOptions("name",d.items);
+            mThis.cfg.setSelectOptions("item_id",d.items);
             VSUtil.setComboItems(mThis.elVendor,d.vendors,'id','vendor_name',true,'(select vendor)',null);
             mThis.self.modal({
                 backdrop:'static',

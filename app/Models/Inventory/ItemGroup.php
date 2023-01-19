@@ -86,9 +86,23 @@ class ItemGroup extends Model
         setOfficialCode($branch_id,'inv_group_code_control','inv_item_groups',['id'=>$id],$group_prefix,self::$official_code_length,null); 
         return DV::success(['id'=>$id]);
     }
-
     return DV::error("Something went wrong during saving item group");
   }
 
+  static function skuInfo($ss=null,$group_id=0){
+      $branch_id = isset($ss)? $ss->branch_id:null;
+      $str_branch = "1=1";
+      if($branch_id>0) $str_branch ="branch_id =$branch_id";
+      $rows = DB::table("inv_item_groups")->where('id',$group_id)->whereRaw($str_branch)->select("unit_id","sku","cost")->take(1)->get();
+      return isset($rows[0])?$rows[0]:null;
+  }
+
+  static function info($ss=null,$group_id=0){
+      $branch_id = isset($ss)? $ss->branch_id:null;
+      $str_branch = "1=1";
+      if($branch_id>0) $str_branch ="branch_id =$branch_id";
+      $rows = DB::table("inv_item_groups")->where('id',$group_id)->whereRaw($str_branch)->select("unit_id","sku","cost","selling_price","ws_selling_price")->take(1)->get();
+      return isset($rows[0])?$rows[0]:null;
+  }
 
 }

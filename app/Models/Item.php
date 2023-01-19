@@ -36,6 +36,14 @@ class Item extends Model
         'status'=>'normal' /** status ={normal, obsolete}**/
     ];
 
-    protected $fillable =["*"];  
+    protected $fillable =["*"];
+    
+    static function info($ss=null,$item=0){
+        $branch_id = isset($ss)? $ss->branch_id:null;
+        $str_branch = "1=1";
+        if($branch_id>0) $str_branch ="branch_id =$branch_id";
+        $rows = DB::table("inv_item_groups as g")->join('inv_items as i','i.group_id','=','g.id')->where('i.id',$item_id)->whereRaw($str_branch)->select("unit_id,sku,cost,selling_price,ws_selling_price")->take(1)->get();
+    
+    }
  
 }

@@ -10,7 +10,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class MessageReceived implements ShouldBroadcast
+class TicketDeleted implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -44,6 +44,6 @@ class MessageReceived implements ShouldBroadcast
     }
     public function broadcastAs()
     {
-        return 'message_received';
+        return 'TicketDeleted';
     }
 }

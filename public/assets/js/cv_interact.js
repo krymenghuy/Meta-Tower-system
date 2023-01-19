@@ -14,7 +14,8 @@
 		let op = {
 			icon: 'error',
 			title: title,
-			text: message
+			text: message,
+			position:"center"
 		  };
 		  if (position) op.position = position;   
 		  if (footer) op.footer = footer;  
@@ -29,9 +30,11 @@
 		let op = {
 			icon: 'info',
 			title: title,
-			text: message
-		  };
-		  if (position) op.position = position;   
+			text: message,
+			position:"center"
+	   	   };
+
+		  if (position) op.position = position;
 		  if (footer) op.footer = footer;  
 		Swal.fire(op).then((result)=>{
 		    if(typeof onClose==='function') onClose(result);	
@@ -46,6 +49,7 @@
 			title: title,
 			text: message
 		  };
+		  op.position ='center';  
 		if (position) op.position = position;   
 		if (footer) op.footer = footer;  
 		Swal.fire(op).then((result)=>{
@@ -61,6 +65,7 @@
 			title: title,
 			text: message
 		  };
+		  op.position ='center';
 		  if (position) op.position = position;   
 		  if (footer) op.footer = footer;   
 		Swal.fire(op).then((result)=>{

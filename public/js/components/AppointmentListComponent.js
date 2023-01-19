@@ -188,6 +188,7 @@
         }
 
         this.init = ()=>{
+
             //This is to refresh Datatable's header texts when language changes
             LocaleManager.setLanguageChangeHandler((lang)=>{
                 mThis.displayAppointmentList();

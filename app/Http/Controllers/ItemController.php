@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Inventory\Item;
+use App\Models\Inventory\ItemGroup;
 use App\Models\Inventory\StockUnit;
 use App\Models\Inventory\Settings;
 use App\Models\JDV;
@@ -73,6 +74,23 @@ class ItemController extends Controller
       //else return JDV::error("Failed to delete inventory item $id");
     }
      
+    //return quick info of an item for itemsView on receipt/invoice/Receive Stock Form 
+    function getItemInfo(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !=200) return JDV::emptyResult($ss->status_code,null); //user not authenticated
+      $branch_id = $ss->branch_id;
+      $id = $req->id;     
+      return JDV::result(Item::info($ss,$id));
+    }
+
+    function getItemGroupInfo(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !=200) return JDV::emptyResult($ss->status_code,null); //user not authenticated
+      $branch_id = $ss->branch_id;
+      $group_id = $req->group_id;     
+      return JDV::result(ItemGroup::info($ss,$group_id));
+    }
+
     function getItemDetails(Request $req) { 
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !=200) return JDV::emptyResult($ss->status_code,null); //user not authenticated

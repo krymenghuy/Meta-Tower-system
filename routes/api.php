@@ -99,6 +99,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
   //End::MedicalServiceController
 
     //begin::ItemController
+        Route::post('inventory/item-info', [ItemController::class, 'getItemInfo']);
+        Route::post('inventory/item/info', [ItemController::class, 'getItemInfo']);
         Route::post('inventory/item-details', [ItemController::class, 'getItemDetails']);
         Route::post('inventory/items', [ItemController::class, 'getItemList']);
         Route::post('inventory/delete-item', [ItemController::class, 'deleteItem']);
@@ -124,7 +126,10 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
  
     //begin::ItemGroupController
         Route::post('inventory/group-details', [ItemGroupController::class, 'getItemGroupDetails']);
+        Route::post('inventory/group-info', [ItemGroupController::class, 'getGroupInfo']);
+        Route::post('inventory/group/info', [ItemGroupController::class, 'getGroupInfo']);
         Route::post('inventory/groups', [ItemGroupController::class, 'getItemGroups']);
+        Route::post('inventory/group-list', [ItemGroupController::class, 'getItemGroups']);
         Route::post('inventory/delete-group', [ItemGroupController::class, 'deleteItemGroup']);
         Route::post('inventory/save-group', [ItemGroupController::class, 'saveItemGroup']);
         Route::post('group/form-options', [ItemGroupController::class, 'getFormOptions']);

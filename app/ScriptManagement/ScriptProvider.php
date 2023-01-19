@@ -80,6 +80,7 @@ namespace App\ScriptManagement;
                     '/assets/js/demo1/scripts.bundle.js',
                     '/assets/vendors/custom/datatables/datatables.bundle.js',
                     'https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js',
+                    'https://js.pusher.com/7.2/pusher.min.js', 
                     '/js/app.js',
                     '/assets/js/browsercontrol.js',
                 ]

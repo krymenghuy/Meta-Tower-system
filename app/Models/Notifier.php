@@ -22,8 +22,9 @@ class Notifier extends Model
 {
     use HasFactory;
 
-    static function notify_admin($event_name, $data){
-      if (!$data) $data = (object)[];
+    static function notify_admin($event_name, $d){
+      if (!$d) $data = (object)[];
+      $data = (object)$d;
       if (!isset($data->sender_id)) $data->sender_id = isset($data->user_id)?$data->user_id:null;
       if(!isset($data->branch_id) || $data->branch_id <=0 || !isset($data->sender_id) || $data->sender_id <=0){
         //log::error('$branch_id is NULL, so cannot fire event "MessageReceived" ' );
@@ -32,14 +33,14 @@ class Notifier extends Model
 
       try{
           switch($event_name){
-                    // case 'merchant_created_order':{
-                    //   event(new \App\Events\MerchantCreatedOrder($data)); 
-                    //   break;
-                    // }
-                    // case 'driver_accepted_order':{
-                    //   event(new \App\Events\DriverAcceptedOrder($data));    
-                    //   break;
-                    // }
+                    case 'AppointmentAdded':{
+                      event(new \App\Events\AppointmentAdded($data)); 
+                      break;
+                    }
+                    case 'TicketAdded':{
+                      event(new \App\Events\TicketAdded($data)); 
+                      break;
+                    }
                     // case 'driver_delivered_item':{
                     //   event(new \App\Events\DriverDeliveredItem($data));
                     //   // must use this => Illuminate\Broadcasting\InteractsWithSockets

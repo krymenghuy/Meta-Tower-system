@@ -9,6 +9,7 @@ use App\Models\ServiceQ\QTicket;
 //use App\Models\Lead;
 use App\Models\JDV;
 use App\Models\UM;
+use App\Models\Notifier;
 use Session;
 use DB;
 
@@ -232,12 +233,16 @@ class AppointmentController extends Controller
        $inputs['client_id'] = $client_id;
        $inputs['lead_id'] = $lead_id;
        $inputs['client_code'] = $patient_code;
-        
+
+       //$create_case = 1; means creating new appointment, Not updating existing appointment
+       $create_case = 0; 
        $appt_id = isset($res->id)?$res->id:0;
+       if(!$appt_id) $create_case = 1;
        $appt_id = saveData($ss,'appointments',['id'=>$appt_id],$inputs,1); 
        if($appt_id > 0)
         {
             $this->saveChiefComplaints($ss,$appt_id,$chief_complaint_items);
+            if($create_case ===1)  Notifier::notify_admin('AppointmentAdded',["user_id"=>$ss->user_id,"login_name"=>$ss->login_name,"appt_id"=>$appt_id,"client_name"=>$inputs['client_name'],"client_phone_number"=>$inputs['client_phone_number']]);
             return JDV::success(['id'=>$appt_id]);
         }
        else return JDV::error("Something went wrong in saving appointment!");

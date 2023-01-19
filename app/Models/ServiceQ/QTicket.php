@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\UM;
 use DB;
 use App\Models\DV;
+use App\Models\Notifier;
 
 class QTicket extends Model
 {
@@ -92,6 +93,7 @@ class QTicket extends Model
             }
 
             $statusInfo = (object)['status_id'=>$status_id_queued,'status'=>'Queued'];
+            Notifier::notify_admin('TicketAdded',["user_id"=>$ss->user_id,"login_name"=>$ss->login_name,"ticket_id"=>$ticket_id,"ticket_number"=>$ticket_number]);
             return DV::success(['id'=>$ticket_id,'ticket_number'=>$ticket_number,'status_info'=>$statusInfo]);
         }
         else return DV::error('Something went wrong during saving queue');

@@ -36,12 +36,12 @@ return [
             'secret' =>env('PUSHER_APP_SECRET'),
             'app_id' =>env('PUSHER_APP_ID'),
             'options' => [
-			   'cluster' =>env('PUSHER_APP_CLUSTER'),
+			   'cluster' =>env('PUSHER_APP_CLUSTER','mt1'),
                //'useTLS' => true,
-               'encrypted'=>false,
-               'host'=>env('WEBSOCKETS_HOST'),
-               'port'=>env('WEBSOCKETS_PORT',2087),
-               'scheme'=>'http'
+               //'encrypted'=>false,
+               //'host'=>env('WEBSOCKETS_HOST'),
+               //'port'=>env('WEBSOCKETS_PORT',2087),
+               //'scheme'=>'http'
             ],
         ],
 

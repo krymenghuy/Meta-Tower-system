@@ -75,7 +75,7 @@ class ItemsView{
         let that = this;
         this.table.addEventListener('change',(e)=>{
           if(e.target.classList.contains('td-input')){
-             let td = VSDOM.getClosestParentByType('TD');
+             let td = VSDOM.getClosestParentByType(e.target,'TD');
              that.options.onInputChange(e.target,td.dataset.name,td); 
           }
         });
@@ -435,9 +435,13 @@ class ItemsView{
         //  });
 
         let validate_succeed =true;
+        let cols =[];
         tr.querySelectorAll(`td`).forEach(td=>{
-           let v_rule = valiateColumns[td.dataset.name];
+          let col_name =td.dataset.name;
+           let v_rule = valiateColumns[col_name];
+            
            if(v_rule){
+            cols.push(col_name.replace('_',' '));
             if(typeof(v_rule)==='function')
             {
               let input = td.querySelector('.td-input');
@@ -491,7 +495,7 @@ class ItemsView{
         });
         //end::forEach loop through (td in tr)
 
-        if(!silent_mode && !validate_succeed) cv_interact.warning(`Please enter required information for the item`);
+        if(!silent_mode && !validate_succeed) cv_interact.warning(['Please fill in required fields ',cols.join(', ')].join(''));
         return validate_succeed;
      }
 
