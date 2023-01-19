@@ -187,7 +187,7 @@
                             //'<a class="btn btn-sm btn-outline-primary loanapp-btn-action">Approve</a>'
                             ].join('');
                         },
-                        title: mThis.trans_title('ID')
+                        title: mThis.trans_title('ID'),
                       },
                      {
                         title: mThis.trans_title('Name'),
@@ -224,7 +224,7 @@
                             return [`<div class="form-inline">`,
                             `<a href="javascript:void(0)" class="btn_co_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" class="btn_patient_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
-                            `<a href="javascript:void(0);" data-id="${data.id}" class="btn_patient_delete"><i class="fa fa-trash" style="color:red"></i></a>`,
+                            `<a href="javascript:void(0);" data-id="${data.id}" class="btn_patient_delete"><i class="fa-regular fa-trash-can" style="color:#de0000"></i></a>`,
                             `&nbsp;<a href="#" data-id="${data.id}" class="btn_apt_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
                             `</div>`
                            ].join('');

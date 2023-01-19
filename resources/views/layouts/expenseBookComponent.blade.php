@@ -1,6 +1,6 @@
 <div id="_main_expenseBookComponent" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2 ms-3">
             <button class="vs-btn-custom-primary" type="button" id="_epb_btnNew">
                 <span class="trans-text text-nowrap" data-langprop="buttons.New Expense"></span>
             </button>
@@ -11,7 +11,7 @@
                 </div>
             </div>
         </div>
-        <div>
+        <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;border-color:#EEEA8D;min-height:350px;">
             <table class="table" id="_epb_tblExpenseBook"></table>
         </div>
     </div>

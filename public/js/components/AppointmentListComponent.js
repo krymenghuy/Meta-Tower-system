@@ -510,9 +510,10 @@
                       },
                      {
                         title: mThis.trans_title('Arrival Time'),
-                         data:(data,a,b)=>{
-                            return [`<img class="dt-icon" src="${this.icon_url()}/time.png">&nbsp;`,data.arrival_time].join('');
-                         },
+                        //  data:(data,a,b)=>{
+                        //     return [`<img class="dt-icon" src="${this.icon_url()}/time.png">&nbsp;`,data.arrival_time].join('');
+                        //  },
+                        data: "arrival_date"
                      },
                      {
                         title: mThis.trans_title('Client Name'),

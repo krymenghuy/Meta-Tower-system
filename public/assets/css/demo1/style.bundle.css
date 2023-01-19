@@ -45898,7 +45898,7 @@ body {
   }
 
   .kt-header--fixed.kt-subheader--fixed.kt-subheader--enabled .kt-wrapper {
-    padding-top: 119px;
+    padding-top: 96px;
   }
 
   .kt-aside--fixed .kt-wrapper {
@@ -45987,7 +45987,7 @@ body {
   .kt-header {
     display: flex;
     justify-content: space-between;
-    height: 65px;
+    height: 46px;
     transition: all 0.3s ease;
     position: relative;
     z-index: 2;

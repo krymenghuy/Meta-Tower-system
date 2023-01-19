@@ -1,7 +1,7 @@
 <div id="_main_itemsComponent" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
         <div class="d-flex align-items-center">
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2 ms-3">
                 <div class="input-group flex-nowrap">
                     <input type="search" class="form-control" id="_itm_search" style="min-width:250px"/>
                     <div class="input-group-text">
@@ -22,7 +22,7 @@
                 </button>
             </div>
         </div>
-        <div>
+        <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;border-color:#EEEA8D;min-height:350px;">
              <table class="table header-light-blue header-uppercase" id="_itm_tblItems"></table>
         </div>
     </div>

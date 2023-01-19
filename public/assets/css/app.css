@@ -11316,7 +11316,7 @@ span.screen-title {
 
 .kt-header {
   background-color: #FAFAFA;
-  height: 45px;
+  padding:0 20px;
 
   display: block;
   border-bottom: 1.5px solid #F1F0EC;

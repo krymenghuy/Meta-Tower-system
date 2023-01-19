@@ -1,13 +1,13 @@
 <div id="_main_medicalServiceComponent" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2 ms-3">
             <button class="vs-btn-custom-primary" id="_msl_btnNew">New</button>
             <input type="search" class="search-box" id="_msl_search" placeholder="Search"/>
             <select id="_msl_filter_service" class="form-select custom-width">
                 <option value="1">Test</option>
             </select>
         </div>
-        <div>
+        <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;border-color:#EEEA8D;min-height:350px;">
             <table class="table header-light-blue header-uppercase" id="_msl_tblItems"></table>
         </div>
     </div>

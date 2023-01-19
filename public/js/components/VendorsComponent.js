@@ -10,21 +10,20 @@ let VendorsComponent = new function(){
     this.tblVendors = $('#_vdr_tblVendors');
 
     this.col_titles = {
-        "No.":"No.",
-        "Code":"Code",
+        "No":"No",
         "Name":"Name",
-        "Group":"Group",
-        "Category":"Category",
-        "SKU":"SKU",
-        "Qty":"Quantity",
-        "Quantity":"Quantity",
+        "Vendor Type":"Vendor Type",
+        "Balance":"Balance",
+        "Tax Number":"Tax Number",
+        "Email":"Email",
+        "Phone":"Phone",
         "Action":"Action"
     };
 
-    this.trans_title = (title_prop='undefined')=>{
+    this.trans_title = (title_prop = 'undefined') => {
         return (mThis.col_titles[title_prop] || 'undefined');
     }
-    
+
     this.setLanguage = ()=>{
         if (LocaleManager.lang !== mThis.lang){
             for (let prop in mThis.col_titles){
@@ -36,7 +35,7 @@ let VendorsComponent = new function(){
 
     this.init = () => {
         this.expandableConfig = new ExpandableRowConfig('_vdr_tblVendors',{
-            'dontExpandByClickingOn':['tbody-stock-items','lnk-item-category','btn-group-action','btn-group-modify','btn-group-delete','btn-group-print'],
+            'dontExpandByClickingOn':['btn-vdr-modify','btn-vdr-delete'],
             //'content':`<div class="alert alert-info">Loading details</div>`,
             'onOpen':(container,detail_tr,parent_tr)=>{
                 let qtr = $(parent_tr);
@@ -53,10 +52,10 @@ let VendorsComponent = new function(){
                     }
                 }
             };
-            //ItemDialog.show(op);
+            VendorsDialog.show(op);
         });
 
-        mThis.tblVendors.on('click','a.btn-group-modify',function(e){
+        mThis.tblVendors.on('click','a.btn-vdr-modify',function(e){
             let item_id = $(this).data("id");
             let op = {
                 id:item_id,
@@ -67,12 +66,12 @@ let VendorsComponent = new function(){
                     }
                 }
             };
-            //ItemDialog.show(op);
+            VendorsDialog.show(op);
         });
 
-        mThis.tblVendors.on('click','a.btn-group-delete',function(e){
+        mThis.tblVendors.on('click','a.btn-vdr-delete',function(e){
             let item_id = $(this).data("id");
-            cv_interact.confirm(`Delete this product?`,{title:"Delete Product",context:"delete"},(yes)=>{
+            cv_interact.confirm(`Delete this vendor?`,{title:"Delete Vendor",context:"delete"},(yes)=>{
                 if(yes){
                     let p = {"id":item_id};
                     vsapi.call(`${main_view.base_url}/api/inventory/delete-item`,p).then(res=>{
@@ -98,9 +97,9 @@ let VendorsComponent = new function(){
         window.vsapi.call(`${main_view.base_url}/api/inventory/stock/group-items`,p,'POST',false).then((res)=>{ 
           let html=null;
           if (res.status_code === 200){
-             
-             let items = StringSanitizer.sanitizeObject(res.data); 
-              
+
+            let items = StringSanitizer.sanitizeObject(res.data); 
+
              html = [
                 `<div class="stock-items-panel">`,
                         `<table class="w-100 inner-item-table header-uppercase">`,
@@ -132,7 +131,7 @@ let VendorsComponent = new function(){
         //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
         let p = {'search_value':mThis.elSearchItem.val()};
-        window.vsapi.call(`${mThis.base_url}/api/inventory/stock/group-list`,p,'POST',null).then((result)=>{
+        window.vsapi.call(`${mThis.base_url}/api/inventory/stock/group-list`,p,'POST',null).then((result) => {
             let data = [];
             if(result.status_code === 200) data = result.data;
             if (mThis.table){
@@ -147,34 +146,41 @@ let VendorsComponent = new function(){
             //begin::Set up columns
             let my_columns = [
                 {
-                    title: mThis.trans_title("No."),
+                    title: mThis.trans_title("No"),
                     data: () => {
                         return cnt;
                     }
                 },
                 {
-                    title: mThis.trans_title("Code"),
-                    data: "code"
+                    title: mThis.trans_title("Name"),
+                    data: "name"
                 },
                 {
-                    data:"name",
-                    title: mThis.trans_title('Name')
+                    data:"vendor_type",
+                    title: mThis.trans_title('Vendor Type')
                 },
                 {
-                    title: mThis.trans_title('Category'),
-                    data:(data,a,b)=>{
-                        return [
-                            `<span class="fw-normal d-block lnk-item-category"><a data-gid="${data.id}" data-catid="${data.category_id}" href="javasvript:void(0)">`,data.category,`</a></span>`,
-                            `<span class="text-secondary">`,data.detail_type,`</span>`
-                        ].join('');
-                    }
+                    title: mThis.trans_title('Balance'),
+                    data: "balance"
+                },
+                {
+                    title: mThis.trans_title('Tax Number'),
+                    data: "tax_number"
+                },
+                {
+                    title: mThis.trans_title('Email'),
+                    data: "email"
+                },
+                {
+                    title: mThis.trans_title('Phone'),
+                    data: "phone"
                 },
                 {
                     title:mThis.trans_title('Action'),
                     data: function(item,a,b){
                         return [`<div class="form-inline">`,
-                        `<a href="javascript:void(0)" class="btn-group-modify" data-id="${item.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
-                        `<a href="javascript:void(0);" data-id="${item.id}" class="btn-group-delete"><i class="fa fa-trash" style="color:red"></i></a>`,
+                        `<a href="javascript:void(0)" class="btn-vdr-modify" data-id="${item.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
+                        `<a href="javascript:void(0);" data-id="${item.id}" class="btn-vdr-delete"><i class="fa fa-trash" style="color:red"></i></a>`,
                         `</div>`
                         ].join('');
                     }
@@ -184,7 +190,7 @@ let VendorsComponent = new function(){
 
             //translate column names
             //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
-            
+
             if (!mThis.table)
             mThis.table = mThis.tblVendors.DataTable({
                 searching:false,
@@ -231,19 +237,18 @@ let VendorsComponent = new function(){
 let VendorsDialog = new function(){
     let mThis = this;
     this.self = $('#_vdr_dlgVendors');
-    
     this.formUntil = new FormUntil({
-        "itemName":"Patient Reciepts",
-        "formId":'_prc_dlgReciept',
-        "titleId":"_prc_dlgReciept_title",
+        "itemName":"Vendor",
+        "formId":'_vdr_dlgVendors',
+        "titleId":"_vdr_dlgVendors_title",
         //"errorId":"_msl_dlgService_error",
         //"saveButtonId":"_msl_dlgService_btnSave",
         "instance":this,
         "apiSave":`${main_view.base_url}/api/inventory/save-item`,
-        //"apiGet":`${main_view.base_url}/api/inventory/details-item`,
+        "apiGet":`${main_view.base_url}/api/inventory/details-item`,
         //"identityProp":"id",
-        //"modifyTitle":"Modify Product Group",
-        "createTitle":"New Reciept",
+        "modifyTitle":"Modify Vendor",
+        "createTitle":"New Vendor",
         "identityProps":['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props":['id'],
@@ -253,7 +258,6 @@ let VendorsDialog = new function(){
         'use_alert_error':true,
         'beforeShow': () => {}
         // "init": ()=>{
-            
         //  }
     });
 

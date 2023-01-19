@@ -504,10 +504,10 @@
                         <div style="width:100%;">
                             <div class="form-inline" style="float:left">
                                 <div class="screen-info">
-                                    <div>
+                                    <!-- <div>
                                         <h5 class="screen-title trans-text" data-langprop="titles.dashboard"
                                             style="text-transform:uppercase" id="screen_title"></h5>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
 
@@ -617,7 +617,8 @@
                 <!-- Begin::Container -->
                 <div id="_p2" class="kt-content kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" id="kt_content"
                     style="margin-top:-50px;">
-                    <div id="_p1" class="row" style="background:red;">
+                    <div id="_p1" class="row">
+                        <h5 class="screen-title trans-text ms-5 py-2" data-langprop="titles.dashboard" style="text-transform:uppercase" id="screen_title"></h5>
                         <div class="col-lg-12 shadow-box" id="_app_content" style="background-color:#fff;">
                             <!-- if put "layouts.tripListComponent" at bottom  => then there is error in pages -->
                             @include('layouts.inputBoxes')

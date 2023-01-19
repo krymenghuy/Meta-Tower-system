@@ -1,6 +1,6 @@
 <div id="_main_categoriesComponent" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2 ms-3">
             <div class="input-group flex-nowrap">
                 <div class="input-group-text">
                     <span class="trans-text" data-langprop="titles.Search"></span>
@@ -11,7 +11,7 @@
                 <span class="trans-text" data-langprop="buttons.New Category"></span>
             </button>
         </div>
-        <div>
+        <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;border-color:#EEEA8D;min-height:350px;">
             <table class="table" id="_cat_tblCategories"></table>
         </div>
     </div>

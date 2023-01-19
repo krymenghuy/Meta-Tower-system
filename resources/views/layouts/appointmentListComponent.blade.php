@@ -316,21 +316,18 @@
  <!--end::AppointmentDialog -->
 
  <!--begin::PatientDialog -->
- <div class="modal fade" id="_apl_dlgPatient" tabindex="-1" role="dialog" aria-labelledby="_apl_dlgPatient"
-     aria-hidden="true">
-     <div class="modal-dialog modal-lg" role="dialog">
+ <div class="modal fade" id="_apl_dlgPatient" tabindex="-1" role="dialog" aria-labelledby="_apl_dlgPatient" aria-hidden="true">
+     <div class="modal-dialog modal-lg vs-modal-dialog" role="dialog">
          <div class="modal-content">
              <div class="modal-header">
-                 <h5 class="modal-title trans-text" data-langprop="titles.Register Patient" id="_apl_dlgAppt_title">
-                     Register Patient</h5>
+                 <h5 class="modal-title trans-text " data-langprop="titles.Register Patient" id="_apl_dlgAppt_title">Register Patient</h5>
                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
              </div>
              <div class="modal-body">
                  <div class="row" id="_apl_dlgPatient_body">
                      <div class="form-group col-lg-6">
                          <span class="simple-label trans-text" data-langprop="patient.Name">Name</span>
-                         <div><input type="text" data-required="1" data-field="name" data-ffield="Patient Name"
-                                 class="form-control data-input-reg"></div>
+                         <div><input type="text" data-required="1" data-field="name" data-ffield="Patient Name" class="form-control data-input-reg"></div>
                      </div>
 
                      <div class="form-group col-lg-6">
@@ -346,8 +343,7 @@
 
                      <div class="form-group col-lg-6">
                          <span class="simple-label trans-text" data-langprop="patient.Nationality">Nationality</span>
-                         <div><select data-required="1" data-field="nationality_id" data-ffield="Nationality"
-                                 class="modal-select2 data-input-reg" id="_pat_nationality"></select></div>
+                         <div><select data-required="1" data-field="nationality_id" data-ffield="Nationality" class="modal-select2 data-input-reg" id="_pat_nationality"></select></div>
                      </div>
 
                      <div class="form-group col-lg-3">

@@ -30,8 +30,8 @@ let StockTrackingComponent = new function(){
         "Action":"Action"
     };
 
-     //prepareOptions()| prepareFormOptions() for ItemsComponent.show()
-     this.prepareOptions = (onFinish)=>{
+    //prepareOptions()| prepareFormOptions() for ItemsComponent.show()
+    this.prepareOptions = (onFinish)=>{
         //load all data options for Stock Tracking Form
         vsapi.call(`${main_view.base_url}/api/inventory/settings/stock-tracking-options`,null).then(res=>{
            if(res.status_code === 200){
@@ -69,10 +69,8 @@ let StockTrackingComponent = new function(){
                             </div>
                             <div style="width:50%">
                             </div>
-                    </div> 
-                
+                    </div>
                 </div>`;
-          
           }else{
             html =`<div class="expanded-row-error">${error_message}</div>`;
           }
@@ -423,7 +421,7 @@ let ReceiveStokeDialog = new function(){
             "readOnly":true
         }
     ];
-    
+
     this.cfg = new ItemsView('_stk_div_items_panel',{
         columns: mThis.columns,
         "validateColumns":{"name":"positive","qty":"positive","price":"positive"},
