@@ -13,6 +13,7 @@ let ExchangeRateComponent = new function(){
     // this.form_data = {};
 
     this.col_titles = {
+        "No":"No",
         "Code":"Code",
         "Name":"Name",
         "Symbol":"Symbol",

@@ -1,6 +1,6 @@
 <div id="_main_itemGroupsComponent" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2 ms-3">
             <div class="input-group flex-nowrap">
                 <div class="input-group-text">
                     <span class="trans-text" data-langprop="titles.Search"></span>

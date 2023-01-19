@@ -24,12 +24,11 @@
         object-fit: contain;
         margin-right: 5px;
     }
-
 </style>
 
 <div class="kt-aside-menu-wrapper kt-grid__item kt-grid__item--fluid" id="kt_aside_menu_wrapper">
     <!--data-ktmenu-scroll="1"-->
-    <div id="kt_aside_menu" class="kt-aside-menu " data-ktmenu-vertical="1" data-ktmenu-scroll="1" data-ktmenu-dropdown-timeout="500">
+    <div id="kt_aside_menu" class="kt-aside-menu" data-ktmenu-vertical="1" data-ktmenu-scroll="1" data-ktmenu-dropdown-timeout="500">
         <ul class="kt-menu__nav" id="_dms_aside_menus" style="display:none">
             <li class="kt-menu__item" aria-haspopup="true">
                 <a href="javascript:void(0)" id="_main_lnkDashboard" class="menu-item kt-menu__link">

@@ -1,9 +1,15 @@
 <div id="_main_employeeListComponent" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2 ms-3">
             <button class="vs-btn-custom-primary" type="button" id="_epl_btnNew">
-                <span class="trans-text" data-langprop="buttons.New Employee"></span>
+                <span class="trans-text text-nowrap" data-langprop="buttons.New Employee"></span>
             </button>
+            <div class="input-group flex-nowrap">
+                <input type="search" class="form-control custom-width" placeholder="search" id="_epl_search"/>
+                <div class="input-group-text">
+                    <span class="trans-text" data-langprop="employees.Search"></span>
+                </div>
+            </div>
             <button class="vs-btn-custom-export" type="button" id="_epl_btnExport">
                 <span class="trans-text" data-langprop="buttons.Export"></span>
             </button>

@@ -1,6 +1,6 @@
 <div id="_main_exchangeRateComponent" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2 ms-3">
             <button class="vs-btn-custom-primary" type="button" id="_ecr_btnNew">
                 <span class="trans-text" data-langprop="buttons.New Currencies"></span>
             </button>

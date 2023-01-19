@@ -1,6 +1,6 @@
 <div id="_main_patientInvoicesComponent" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
-        <div class="d-flex align-items-center gap-2 py-2">
+        <div class="d-flex align-items-center gap-2 py-2 ms-3">
             <button class="vs-btn-custom-primary" type="button" id="_pic_btnNew">
                 <span class="trans-text" data-langprop="patient.New Invoice"></span>
             </button>
@@ -8,23 +8,21 @@
                 <span class="trans-text" data-langprop="patient.Export"></span>
             </button>
         </div>
-        <div>
+        <div class="d-flex align-items-center gap-2 ms-3">
             <div class="d-flex align-items-center gap-2">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="input-group flex-nowrap">
-                        <div class="input-group-text">
-                            <span class="trans-text" data-langprop="titles.Search"></span>
-                        </div>
-                        <input id="_pic_search" type="search" class="form-control custom-width" placeholder="search..."/>
+                <div class="input-group flex-nowrap">
+                    <div class="input-group-text">
+                        <span class="trans-text" data-langprop="titles.Search"></span>
                     </div>
-                    <button id="_pic_group_filter" type="button" class="btn btn-outline-primary">
-                        <i class="fa-solid fa-bars-staggered"></i>
-                    </button>
+                    <input id="_pic_search" type="search" class="form-control custom-width" placeholder="search..."/>
                 </div>
+                <button id="_pic_group_filter" type="button" class="btn btn-outline-primary">
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </button>
             </div>
-            <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;border-color:#EEEA8D;min-height:350px;">
-                <table class="table" id="_pic_tblInvoice"></table>
-            </div>
+        </div>
+        <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;border-color:#EEEA8D;min-height:350px;">
+            <table class="table" id="_pic_tblInvoice"></table>
         </div>
     </div>
 </div>

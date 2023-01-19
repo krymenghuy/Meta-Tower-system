@@ -22,7 +22,7 @@
 <div id="_main_stockTrackingComponent" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
         <div class="d-flex align-items-center">
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2 ms-3">
                 <div class="input-group flex-nowrap">
                     <input type="search" class="form-control" id="_stk_search" placeholder="Search item" style="min-width:250px"/>
                     <div class="input-group-text">

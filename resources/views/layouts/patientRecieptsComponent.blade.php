@@ -1,6 +1,6 @@
 <div id="_main_patientRecieptsComponent" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
-        <div class="d-flex align-items-center gap-2 py-2">
+        <div class="d-flex align-items-center gap-2 py-2 ms-3">
             <button class="vs-btn-custom-primary" type="button" id="_prc_btnNew">
                 <span class="trans-text" data-langprop="buttons.New Reciept"></span>
             </button>
@@ -8,23 +8,21 @@
                 <span class="trans-text" data-langprop="buttons.Export"></span>
             </button>
         </div>
-        <div class="d-block">
+        <div class="d-flex align-items-center gap-2 ms-3">
             <div class="d-flex align-items-center gap-2">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="input-group flex-nowrap">
-                        <div class="input-group-text">
-                            <span class="trans-text" data-langprop="titles.Search"></span>
-                        </div>
-                        <input id="_prc_search" type="search" class="form-control custom-width" placeholder="Search..."/>
+                <div class="input-group flex-nowrap">
+                    <div class="input-group-text">
+                        <span class="trans-text" data-langprop="titles.Search"></span>
                     </div>
-                    <button id="_prc_filtergroup" class="btn btn-outline-primary" type="button">
-                        <i class="fa-solid fa-bars-staggered"></i>
-                    </button>
+                    <input id="_prc_search" type="search" class="form-control custom-width" placeholder="Search..."/>
                 </div>
+                <button id="_prc_filtergroup" class="btn btn-outline-primary" type="button">
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </button>
             </div>
-            <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;border-color:#EEEA8D;min-height:350px;">
-                <table class="table" id="_prc_tblReciept"></table>
-            </div>
+        </div>
+        <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;border-color:#EEEA8D;min-height:350px;">
+            <table class="table" id="_prc_tblReciept"></table>
         </div>
     </div>
 </div>

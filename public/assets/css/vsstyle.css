@@ -418,10 +418,9 @@ div.flat-box {
 
 .vs-btn-round {
   display: block;
-  border: 1.1px solid green;
   font-size: 19px;
   font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
-  border-radius: 10px;
+  border-radius: 6px;
   width: auto;
   text-align: center;
   padding: 3px 20px;
@@ -431,6 +430,11 @@ div.flat-box {
   background-color: #149220;
   font-size: 0.8em !important;
   color: #fff;
+}
+
+.vs-btn-success:hover{
+  background-color:#0eb70e;
+  color:#fff;
 }
 
 .vs-btn-lg {
@@ -692,9 +696,69 @@ table.table>thead th {
   border-bottom: none !important;
 }
 
-/* table.table>tbody td{
- font-size: 1em;
-} */
+tbody, td, tfoot, th, thead, tr{
+  border-style:none;
+}
+
+.vs-modal-body-input{}
+
+.btn-default i,
+.btn-primary i{
+  display:none;
+}
+
+.btn-default:hover{
+  background-color:#eb0000;
+  color:#ffffff;
+}
+
+
+/*Begin style of modal dialog*/
+.vs-modal-dialog .form-control,
+.vs-modal-dialog .form-select{
+  border:1px solid #ced4da80;
+}
+
+.vs-modal-dialog .vital-signs input{
+  border-bottom:1px solid #ced4da80 !important;
+}
+
+.vs-modal-dialog .vital-signs,
+.vs-modal-dialog .medical-condition-panel,
+.vs-modal-dialog .service-reg-panel{
+  border:none !important;
+}
+
+.vs-modal-dialog .modal-header{
+  border-bottom:none;
+}
+
+.vs-modal-dialog .modal-footer{
+  border-top:none;
+}
+
+.vs-modal-dialog .modal-content{
+  border-radius:19px;
+}
+
+.vs-modal-dialog .vs-btn-color-save{
+  background-color:#2673FD;
+}
+
+.vs-modal-dialog .btn-primary,
+.vs-modal-dialog .btn-primary:hover{
+  background-color:#2673fd;
+  color:#fff;
+}
+
+.vs-modal-dialog .btn-default,
+.vs-modal-dialog .btn-secondary:hover,
+.vs-modal-dialog .btn-default:hover{
+  background-color:#EB0000 !important;
+  color:#ffffff !important;
+  font-weight:normal;
+}
+/*End style of modal dialog*/
 
 .border-moving {
   --border-size: 2px;

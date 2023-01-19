@@ -1,6 +1,6 @@
 <div id="_main_medicalServiceComponent" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2 ms-3">
             <button class="vs-btn-custom-primary" id="_msl_btnNew">New</button>
             <input type="search" class="search-box" id="_msl_search" placeholder="Search"/>
             <select id="_msl_filter_service" class="form-select custom-width">
