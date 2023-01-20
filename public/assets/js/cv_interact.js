@@ -56,7 +56,7 @@
 		    if(typeof onClose==='function') onClose(result);	
 		});
 	  }
-
+ 
 	  this.warning = (message,title=null,position='center',onClose=null,footer=null)=>{
 		message = LocaleManager.trans(message,mThis.default_lang_section);
 		title = LocaleManager.trans(title,mThis.default_lang_section);

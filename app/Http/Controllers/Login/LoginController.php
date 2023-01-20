@@ -48,8 +48,8 @@ class LoginController extends Controller
                     "user"=>["branch_id"=>$user->branch_id,"full_name"=>$user->full_name,"login_name"=>$user->login_name,"user_id"=>$user->id]
                 ]);
 
-             //vslms997891zb
-             $cookie_name ="vsmclinic997891zb";
+             //*** NOTE: app/http/middleware/EncryptCookies.php (for exception of encryption)
+             $cookie_name =Config::get('app.cookie_name'); //vsmclinic997891zb
              //$cookie = Cookie::queue($cookie_name, $user->access_token, 60);
              //$first_role = UM::getFirstRole($user->id);
              $encrypted_token ="";

@@ -225,7 +225,7 @@
                 let op = {'id':0,
                  'onClose':(e)=>{
                     if(e){
-                        cv_interact.info('New Appointment has been created',null,true);
+                        cv_interact.info('New Appointment has been created',null,null,true);
                         mThis.displayAppointmentList();
                       }
                    }

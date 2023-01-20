@@ -38,7 +38,7 @@ class ItemController extends Controller
        ];
        return JDV::result($data);
     }
-  
+
     function getItemList(Request $req) { 
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
