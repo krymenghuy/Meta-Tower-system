@@ -37,7 +37,7 @@ class UMController extends Controller
 
       function createPermission(Request $request){ 
             $r = $this->UMModel->createPermission($request);
-            return makeJsonResponse($r); 
+            return JDV::result($r); 
         }
 
 /*#End::adhoc methods (Adhoc static functions are used only in Development time) */
@@ -54,7 +54,7 @@ function encryptData(Request $request){
 
 function getModuleList($user_id =0){
     $r = $this->UMModel->getModuleList($request);
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
 }
   
 function saveRole(Request $request){
@@ -63,116 +63,116 @@ function saveRole(Request $request){
 
  function role_exists(Request $request){
     $r = $this->UMModel->role_exists($request);
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
   } 
 
   function deleteRole(Request $request) {
     $r = $this->UMModel->deleteRole($request); 
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
   }
 
   function addRoleMember(request $request){
     $r = $this->UMModel->addRoleMember($request); 
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
   }
 
   function removeRoleMember(Request $request){
     $r = $this->UMModel->removeRoleMember($request);
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
   }
   function getUserRoles(Request $request){
     $r = $this->UMModel->getUserRoles($request);
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
   }
 
   function getRoleList(Request $request){
     $r = $this->UMModel->getRoleList($request);
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
   }
 
   function getRoleMembers(Request $request){
     $r = $this->UMModel->getRoleMembers($request);
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
   }
 
   function getRoleById(Request $request) {
     $r = $this->UMModel->getRoleById($request);
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
   }
 
   function getUserList(Request $request){
     $r = $this->UMModel->getUserList($request);
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
   }
 
   //returns extended details about a user given by user's class, and user's official_code. A user can be Staff, Student, Teacher, parent, or Guest etc  
   function getUserExtendedDetails(Request $request){
     $r = $this->UMModel->getUserExtendedDetails($request);
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
   } 
 
   function saveUser(Request $request){
     $r = $this->UMModel->saveUser($request);
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
   } 
 
   //getUserInfo() returns "id, previlege_type, user_class,is_locked,status"
   function getUserInfo(Request $request){
       $r = $this->UMModel->getUserInfo($request);
-      return makeJsonResponse($r); 
+      return JDV::result($r); 
   }
 
   function deleteUser(Request $request){
     $r = $this->UMModel->deleteUser($request);
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
   }
 
   function setUserStatus(Request $request){
     $r = $this->UMModel->setUserStatus($request);
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
   } 
   
   function unlockUser(Request $request){
     $r = $this->UMModel->unlockUser($request->user_id);
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
   }
 
   function setLockStatus(Request $request){
        $r = $this->UMModel->setLockStatus($request);
-       return makeJsonResponse($r); 
+       return JDV::result($r); 
   }
   
   function user_exists(Request $request){
       $r = $this->UMModel->user_exists($request->name,$request->user_id); 
-     return makeJsonResponse($r); 
+     return JDV::result($r); 
   }
  
   //checkUser , validateUser, checkPassword, login, Signin
   /** verifyUser() check user login and pwd and then returns object $result = {status, error_message, user} **/
  function verifyUser(Request $request){
   $r = $this->UMModel->verifyUser($request);
-  return makeJsonResponse($r); 
+  return JDV::result($r); 
  }
 
    //In case: user changes their own password
   function changePassword(Request $request){
      $r = $this->UMModel->changePassword($request);
-     return makeJsonResponse($r); 
+     return JDV::result($r); 
   }
 
 function setPassword(Request $request){
    $r = $this->UMModel->setPassword($request);
-   return makeJsonResponse($r); 
+   return JDV::result($r); 
 }
 
 function changeLoginName(Request $request){
   $r = $this->UMModel->changeLoginName($request);
-  return makeJsonResponse($r); 
+  return JDV::result($r); 
 }
 
 function createLoginSession(Request $request){
     $r = $this->UMModel->createLoginSession($request);
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
 }
 
 function getComboItems_user(Request $request){
@@ -209,58 +209,59 @@ function addAccessibleModule(Request $request){
     if($r =='#350') 
     return makeJsonResponse($r,350); // user not authenticated
     else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-    return makeJsonResponse($r);
+    return JDV::result($r);
 }
 
 function getPermissionsByRole(Request $request) {
     $r = $this->UMModel->getPermissionsByRole($request);
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
 }
 
 function findPermissions(Request $request){
     $r = $this->UMModel->findPermissions($request);
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
 }
 
 function addPermissionToRole(Request $request) {
     $r = $this->UMModel->addPermissionToRole($request);
-    return makeJsonResponse($r);    
+    if($r->status_code==='OK') return JDV::success(["id"=>$r->id]);  
+    else return JDV::error($r->error_message);  
 }
 
 function removePermissionFromRole(Request $request){
-    $r = $this->UMModel->removePermissionFromRole($request);
-    return makeJsonResponse($r);  
+    $this->UMModel->removePermissionFromRole($request);
+    return JDV::success();  
 }
  
 function getPersonDetails(Request $request){
   $r = $this->UMModel->getPersonDetails($request->search_value);
-  return makeJsonResponse($r);  
+  return JDV::result($r);  
 }
 
 function getPermissions_cu(Request $request){
     $r = $this->UMModel->getPermissions_cu($request);
-    return makeJsonResponse($r);   
+    return JDV::result($r);   
 }
 
 function getPermissionsByUserId(Request $request){
     $r = $this->UMModel->getPermissionsByUserId($request); 
-    return makeJsonResponse($r);  
+    return JDV::result($r);  
 }
 
 function getPermissionsByRoleId(Request $request){
     $r = $this->UMModel->getPermissionsByRoleId($request);
-    return makeJsonResponse($r);   
+    return JDV::result($r);   
 }
 
 //returns auth data for AuthManager.js. returns object {prns=[], modules=[]}
 function getAuthData(Request $request){
   $r = $this->UMModel->getAuthData($request);
-  return makeJsonResponse($r);  
+  return JDV::result($r);  
 }
 
  function localizePermissions(Request $request){
     $r = $this->UMModel->localizePermissions($request);
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
 }
 
 function apiLogin(Request $request){
@@ -281,22 +282,22 @@ function apiLogin(Request $request){
  
 function allowed(Request $request){
     $r = $this->UMModel->allowed($request);
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
 }
 
 function removeAccessibleModule(Request $request) {
   $r = $this->UMModel->removeAccessibleModule($request);
-  return makeJsonResponse($r); 
+  return JDV::result($r); 
 } 
 //Check if current user has access to a MODULE refered by module_code or ref_code
 function accessibleModule(Request $request) {
     $r = $this->UMModel->accessibleModule($request);
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
 } 
 
   function getComboItems_userclass(Request $request){
     $r = $this->UMModel->getComboItems_userclass($request);
-    return makeJsonResponse($r); 
+    return JDV::result($r); 
   }
 
   // function reloadCurrentLang(Request $req){

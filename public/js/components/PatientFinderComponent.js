@@ -66,6 +66,7 @@
 
             mThis.tblPatients.on('click','a.btn_patient_delete',function(e){
                 e.preventDefault();
+                let lnk = $(this);
                 let id = lnk.data('id');
                 alert('todo: delete patient if can');
             });

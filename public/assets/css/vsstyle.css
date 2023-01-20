@@ -729,7 +729,7 @@ tbody, td, tfoot, th, thead, tr{
 }
 
 .vs-modal-dialog .modal-content{
-  border-radius:19px;
+  border-radius:10px;
   padding: 10px 12px;
 }
 
