@@ -352,6 +352,8 @@
             color: #000 !important;
             font-size: 1.2em;
             font-weight: bold;
+            font-family:Montserrat;
+            opacity:0.7;
         }
 
         /* #kt_header{
@@ -626,6 +628,7 @@
                             @include('layouts.patientFinderComponent')
                             @include('layouts.appointmentListComponent')
                             @include('layouts.queueComponent')
+                            @include('layouts.consultationQueueComponent')
                             @include('layouts.employeeListComponent')
                             @include('layouts.positionsComponent')
                             @include('layouts.laboPartnersComponent')

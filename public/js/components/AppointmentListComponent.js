@@ -969,7 +969,7 @@ let AppointmentDialog = new function(){
             let field_name = (f.display_name+'').replace(' ','').toLowerCase();
             mThis.divVitalSign.append(`
              <div data-id="vital_sign_${f.id}" class="form-group col-lg-3">
-                <span class="simple-label trans-text vital-sign-label" data-langprop="patient.${f.display_name}">${f.display_name}</span> 
+                <span class="simple-label trans-text vital-sign-label text-nowrap" data-langprop="patient.${f.display_name}">${f.display_name}</span> 
                 <div><input data-vitalsignid="${f.id}" type="${f.value_type}" data-field="${field_name}" data-ffield="${f.display_name}" class="form-control data-input"></div> 
               </div>
            `);

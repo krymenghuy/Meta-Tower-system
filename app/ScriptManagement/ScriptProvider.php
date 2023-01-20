@@ -101,6 +101,7 @@ namespace App\ScriptManagement;
                         '/js/components/PersonDialog.js',
                         '/js/components/AppointmentListComponent.js',
                         '/js/components/QueueComponent.js',
+                        '/js/components/ConsultationQueueComponent.js',
                         '/js/components/EmployeeListComponent.js',
                         '/js/components/PositionsComponent.js',
                         '/js/components/LaboPartnersComponent.js',

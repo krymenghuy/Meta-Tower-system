@@ -27,7 +27,7 @@
                 <h4 class="modal-title" id="_lbp_dlgPartners_title"></h4>
             </div>
             <div class="modal-body">
-                <div class="row gy-2">
+                <div class="row gy-2 py-2">
                     <div class="col-lg-6">
                         <label for="name" class="form-label trans-text" data-langprop="partners.Name"></label>
                         <input type="text" class="form-control data-input" data-field="name" data-required="1" data-ffield="Name" placeholder="name"/>
@@ -37,7 +37,7 @@
                         <input type="text" class="form-control data-input" data-field="email" data-required="1" data-ffield="Email" placeholder="email"/>
                     </div>
                 </div>
-                <div class="row gy-2">
+                <div class="row gy-2 py-2">
                     <div class="col-lg-6">
                         <label for="phone" class="form-label trans-text" data-langprop="partners.Phone"></label>
                         <input type="text" class="form-control data-input" data-field="phone_number" data-required="1" data-ffield="Phone" placeholder="phone number"/>
@@ -47,7 +47,7 @@
                         <input type="text" class="form-control data-input" data-field="cp_name" data-required="1" data-ffield="Contact Person Name" placeholder="Contact Person Name"/>
                     </div>
                 </div>
-                <div class="row gy-2">
+                <div class="row gy-2 py-2">
                     <div class="col-lg-6">
                         <label for="cp_phone_number" class="form-label trans-text" data-langprop="partners.CP Phone"></label>
                         <input type="text" class="form-control data-input" data-field="cp_phone_number" data-required="1" data-ffield="Contact Person Phone" placeholder="Contact Person Phone"/>
@@ -57,7 +57,7 @@
                         <input type="text" class="form-control data-input" data-field="address" data-required="1" data-ffield="Address" placehoder="Address"/>
                     </div>
                 </div>
-                <div class="row gy-2">
+                <div class="row gy-2 py-2">
                     <div class="col-lg-6">
                         <label for="partner_type" class="form-label trans-text" data-langprop="partners.Partner Type"></label>
                         <select class="form-select data-input" data-field="partner_type" data-required="1" data-ffield="Partner Type">
@@ -69,10 +69,10 @@
                 <div class="dialog-error" id="_lbp_dlgPartners_error"></div>
             </div>
             <div class="modal-footer">
-                <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">
+                <button class="btn btn-secondary btn-default" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button class="vs-btn-custom-primary" type="button" id="_lbp_btnSave">
+                <button class="btn btn-primary" type="button" id="_lbp_btnSave">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>
