@@ -1,7 +1,10 @@
 <div id="_main_medicalServiceComponent" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
         <div class="d-flex align-items-center gap-2 ms-3">
-            <button class="vs-btn-custom-primary" id="_msl_btnNew">New</button>
+            <button class="vs-btn-custom-primary" id="_msl_btnNew">
+                <i class="fa-solid fa-plus"></i>
+                <span class="trans-text" data-langprop="buttons.Add New"></span>
+            </button>
             <input type="search" class="search-box" id="_msl_search" placeholder="Search"/>
             <select id="_msl_filter_service" class="form-select custom-width">
                 <option value="1">Test</option>
@@ -14,7 +17,7 @@
 </div>
 
 <div id="_msl_dlgService" class="modal fade" tabindex="-1" aria-labelledby="_msl_dlgService_title" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog vs-modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 id="_msl_dlgService_title"></h4>
@@ -65,11 +68,11 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="vs-btn-custom-primary" type="button" data-dismiss="modal">
+                <button class="btn btn-secondary btn-default" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
 
-                <button id="_msl_dlgService_btnSave" class="vs-btn-custom-primary" type="button">
+                <button id="_msl_dlgService_btnSave" class="btn btn-primary" type="button">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>

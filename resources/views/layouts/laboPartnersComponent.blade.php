@@ -2,7 +2,10 @@
     <div class="vs-contianer-custom">
         <div class="d-flex align-items-center gap-2 ms-3">
             <button class="vs-btn-custom-primary" type="button" id="_lbp_btnNew">
-                <span class="trans-text text-nowrap" data-langprop="buttons.New Partner"></span>
+                <div class="d-flex align-items-center">
+                    <i class="fa-solid fa-plus me-1"></i>
+                    <span class="trans-text text-nowrap" data-langprop="buttons.Add New"></span>
+                </div>
             </button>
             <div class="input-group flex-nowrap">
                 <input type="search" id="_lbp_input_search" class="form-control custom-width" placeholder="search..."/>
@@ -18,7 +21,7 @@
 </div>
 
 <div id="_lbp_dlgPartners" class="modal fade" tabindex="-1" aria-labelledby="_lbp_dlgPartners_title" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-xl vs-modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="_lbp_dlgPartners_title"></h4>
@@ -63,9 +66,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="dialog-error" id="_lbp_dlgPartners_error">
-                    
-                </div>
+                <div class="dialog-error" id="_lbp_dlgPartners_error"></div>
             </div>
             <div class="modal-footer">
                 <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">

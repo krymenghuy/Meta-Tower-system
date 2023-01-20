@@ -702,17 +702,6 @@ tbody, td, tfoot, th, thead, tr{
 
 .vs-modal-body-input{}
 
-.btn-default i,
-.btn-primary i{
-  display:none;
-}
-
-.btn-default:hover{
-  background-color:#eb0000;
-  color:#ffffff;
-}
-
-
 /*Begin style of modal dialog*/
 .vs-modal-dialog .form-control,
 .vs-modal-dialog .form-select{
@@ -757,6 +746,16 @@ tbody, td, tfoot, th, thead, tr{
   background-color:#EB0000 !important;
   color:#ffffff !important;
   font-weight:normal;
+}
+
+.vs-modal-dialog .btn-default i,
+.vs-modal-dialog .btn-primary i{
+  display:none;
+}
+
+.vs-modal-dialog .btn-default:hover{
+  background-color:#eb0000;
+  color:#ffffff;
 }
 /*End style of modal dialog*/
 

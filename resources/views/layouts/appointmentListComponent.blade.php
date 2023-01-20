@@ -163,23 +163,22 @@
  </div>
 
  <!--begin::AppointmentDialog -->
- <div class="modal fade" id="_apl_dlgAppt" tabindex="-1" role="dialog" aria-labelledby="_apl_dlgAppt"
-     aria-hidden="true">
-     <div class="modal-dialog modal-lg" role="dialog">
+ <div class="modal fade" id="_apl_dlgAppt" tabindex="-1" role="dialog" aria-labelledby="_apl_dlgAppt" aria-hidden="true">
+     <div class="modal-dialog vs-modal-dialog modal-lg" role="dialog">
          <div class="modal-content">
              <div class="modal-header">
-                 <h5 class="modal-title​ trans-text" data-langprop="titles.New Appointment" id="_apl_dlgAppt_title">New
-                     Appointment</h5>
-                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                 <h5 class="modal-title​ trans-text" data-langprop="titles.New Appointment" id="_apl_dlgAppt_title">New Appointment</h5>
              </div>
              <div class="modal-body">
                  <div class="row" id="_apl_dlgAppt_body">
                      <div class="form-group col-lg-6">
                          <div class="input-group">
-                             <input id="_appt_search_client" type="text" class="form-control"
-                                 placeholder="Patient ID or phone">
-                             <div class="input-group-append"><a id="_appt_btnFindClient" href="javascript:void(0)"
-                                     class="btn btn-sm btn-outline-success"><i class="fa fa-search"></i></a></div>
+                             <input id="_appt_search_client" type="text" class="form-control" placeholder="Patient ID or phone"/>
+                             <div class="input-group-append">
+                                <a id="_appt_btnFindClient" href="javascript:void(0)" class="btn btn-sm btn-outline-success">
+                                    <i class="fa fa-search"></i>
+                                </a>
+                            </div>
                          </div>
                      </div>
                      <div class="form-group col-lg-6">
@@ -321,7 +320,6 @@
          <div class="modal-content">
              <div class="modal-header">
                  <h5 class="modal-title trans-text " data-langprop="titles.Register Patient" id="_apl_dlgAppt_title">Register Patient</h5>
-                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
              </div>
              <div class="modal-body">
                  <div class="row" id="_apl_dlgPatient_body">
@@ -349,8 +347,7 @@
                      <div class="form-group col-lg-3">
                          <span class="simple-label trans-text" data-langprop="patient.Date of birth">Date of
                              birth</span>
-                         <div><input data-required="1" data-field="date_of_birth" data-ffield="Date of birth"
-                                 class="form-control data-input-reg" data-select="datepicker" id="_pat_dob"></div>
+                         <div><input data-required="1" data-field="date_of_birth" data-ffield="Date of birth" class="form-control data-input-reg" data-select="datepicker" id="_pat_dob"></div>
                      </div>
 
                      <div class="form-group col-lg-3">
