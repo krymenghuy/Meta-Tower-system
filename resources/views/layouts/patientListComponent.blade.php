@@ -78,7 +78,7 @@
                      <div class="form-group col-lg-6">
                         <span class="simple-label trans-text" data-langprop="patient.Date of Birth">Date of Birth</span>
                         <div>
-                            <input data-required="1" data-field="date_of_birth" data-ffield="Date of Birth" class="form-control data-input" id="_pat_dob" data-select="datepicker">
+                            <input data-required="1" data-field="date_of_birth" data-ffield="Date of Birth" class="form-control data-input" id="_pat_date_of_birth" data-select="datepicker">
                         </div>
                      </div>
 
@@ -96,7 +96,7 @@
                      <div class="form-group col-lg-6">
                          <span class="simple-label trans-text" data-langprop="patient.Email">Email</span>
                          <div>
-                            <input type="text" data-type="email" data-ffield="Email" data-field="client_email" class="form-control data-input" id="_appt_client_email"/>
+                            <input type="text" data-type="email" data-ffield="Email" data-field="client_email" class="form-control data-input" id="_pat_client_email"/>
                         </div>
                      </div>
 

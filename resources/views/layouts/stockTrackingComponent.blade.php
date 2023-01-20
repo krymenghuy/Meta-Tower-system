@@ -45,9 +45,12 @@
                 <button class="vs-btn-custom-primary" type="button" id="_stk_btnNew_ReceiveStock">
                     <span class="trans-text" data-langprop="buttons.Receive Stock"></span>
                 </button>
-                <button id="_stk_btnNew" class="vs-btn-custom-primary" type="button">
-                    <span class="trans-text" data-langprop="buttons.New"></span>
-                </button>
+                <!-- <button id="_stk_btnNew" class="vs-btn-custom-primary" type="button">
+                    <div class="d-flex align-items-center">
+                        <i class="fa-solid fa-plus me-1"></i>
+                        <span class="trans-text text-nowrap" data-langprop="buttons.Add New"></span>
+                    </div>
+                </button> -->
             </div>
         </div>
         <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;border-color:#EEEA8D;min-height:350px;">
@@ -59,12 +62,12 @@
 <!--Begin::FilterDialog-->
 <div id="_stk_dlgFilterStockTracking" class="modal fade" tabindex="-1" aria-labelledby="_stk_dlgFilterStockTracking_title" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content vs-modal-dialog">
             <div class="modal-header">
                 <h4 class="modal-title trans-text" data-langprop="inventory.Filter Stock"></h4>
             </div>
             <div class="modal-body">
-                <div class="row gy-2">
+                <div class="row gy-2 py-2">
                     <div class="col-lg-3 d-flex justify-content-end">
                         <p class="text-nowrap trans-text" data-langprop="inventory.Warehouse"></p>
                     </div>
@@ -72,7 +75,7 @@
                         <select class="modal-select2"></select>
                     </div>
                 </div>
-                <div class="row gy-2">
+                <div class="row gy-2 py-2">
                     <div class="col-lg-3">
                         <p class="trans-text text-nowrap" data-langprop="inventory.Block"></p>
                     </div>
@@ -80,7 +83,7 @@
                         <select class="modal-select2"></select>
                     </div>
                 </div>
-                <div class="row gy-2">
+                <div class="row gy-2 py-2">
                     <div class="col-lg-3">
                         <p class="trans-text text-nowrap" data-langprop="inventory.Class"></p>
                     </div>
@@ -88,7 +91,7 @@
                         <select class="modal-select2"></select>
                     </div>
                 </div>
-                <div class="row gy-2">
+                <div class="row gy-2 py-2">
                     <div class="col-lg-3">
                         <p class="trans-text text-nowrap" data-langprop="inventory.Category"></p>
                     </div>
@@ -96,7 +99,7 @@
                         <select class="modal-select2"></select>
                     </div>
                 </div>
-                <div class="row gy-2">
+                <div class="row gy-2 py-2">
                     <div class="col-lg-3">
                         <p class="trans-text text-nowrap" data-langprop="inventory.Group"></p>
                     </div>
@@ -107,10 +110,10 @@
                 <div class="_stk_dlgFilterStockTracking-error" id="_stk_dlgFilterStockTracking_error"></div>
             </div>
             <div class="modal-footer">
-                <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">
+                <button class="btn btn-secondary btn-default" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button class="vs-btn-custom-primary" type="button" id="_stk_dlgFilterStockTracking_btnOK">
+                <button class="btn btn-primary" type="button" id="_stk_dlgFilterStockTracking_btnOK">
                     <span class="trans-text" data-langprop="buttons.OK"></span>
                 </button>
             </div>
@@ -121,13 +124,13 @@
 
 <!--Begin::ReceiveStock-->
 <div id="_stk_dlgReceiveStock" class="modal fade" tabindex="-1" aria-labelledby="_stk_dlgReceiveStock_title" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-xl vs-modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title trans-text" data-langprop="inventory.Receive Stock"></h4>
             </div>
             <div class="modal-body">
-                <div class="row gy-2">
+                <div class="row gy-2 py-2">
                     <div class="col-lg-6">
                         <label for="po" class="form-label trans-text" data-langprop="inventory.PO"></label>
                         <input type="text" class="form-control data-input" data-field="po" data-required="1" data-ffield="PO" placeholder="PO"/>
@@ -137,7 +140,7 @@
                         <select class="modal-select2 data-input" data-field="vendor" data-required="1" data-ffield="Vendor" id="_stk_select_vendors" placeholder="vendor"></select>
                     </div>
                 </div>
-                <div class="row gy-2">
+                <div class="row gy-2 py-2">
                     <div class="col-lg-6">
                         <label for="date" class="form-label trans-text" data-langprop="inventory.Date"></label>
                         <input data-select="datepicker" class="form-control data-input" data-field="date" data-required="1" data-ffield="Date"/>
@@ -147,14 +150,14 @@
                         <textarea class="form-control data-input" data-field="description" data-required="1" data-ffield="Description"></textarea>
                     </div>
                 </div>
-                <div class="" id="_stk_div_items_panel"></div>
+                <div class="py-2" id="_stk_div_items_panel"></div>
                 <div class="_stk_dlgReceiveStock-error" id="_stk_dlgReceiveStock_error"></div>
             </div>
             <div class="modal-footer">
-                <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">
+                <button class="btn btn-secondary btn-default" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button class="vs-btn-custom-primary" type="button" id="_stk_dlgReceiveStock_btnSave">
+                <button class="btn btn-primary" type="button" id="_stk_dlgReceiveStock_btnSave">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>

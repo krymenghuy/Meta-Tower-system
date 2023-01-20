@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@600&display=swap');
+
 /*Started customize at 22/12/2022*/
 :root {
   --menu-bg-color: #e1eaee;
@@ -299,8 +302,6 @@ ul#_dms_aside_menus::-webkit-scrollbar-thumb {
 }
 
 /**end:: scrollbar for aside menu**/
-
-
 .has-error {
   border-radius: 3px;
 }
@@ -702,17 +703,6 @@ tbody, td, tfoot, th, thead, tr{
 
 .vs-modal-body-input{}
 
-.btn-default i,
-.btn-primary i{
-  display:none;
-}
-
-.btn-default:hover{
-  background-color:#eb0000;
-  color:#ffffff;
-}
-
-
 /*Begin style of modal dialog*/
 .vs-modal-dialog .form-control,
 .vs-modal-dialog .form-select{
@@ -731,6 +721,7 @@ tbody, td, tfoot, th, thead, tr{
 
 .vs-modal-dialog .modal-header{
   border-bottom:none;
+  font-family:Montserrat;
 }
 
 .vs-modal-dialog .modal-footer{
@@ -738,7 +729,14 @@ tbody, td, tfoot, th, thead, tr{
 }
 
 .vs-modal-dialog .modal-content{
-  border-radius:19px;
+  border-radius:10px;
+  padding: 10px 12px;
+}
+
+.vs-modal-dialog .modal-body .form-label,
+.vs-modal-dialog .modal-body .simple-label,
+.vs-modal-dialog .modal-body .header-text{
+  font-family:Poppins;
 }
 
 .vs-modal-dialog .vs-btn-color-save{
@@ -757,6 +755,20 @@ tbody, td, tfoot, th, thead, tr{
   background-color:#EB0000 !important;
   color:#ffffff !important;
   font-weight:normal;
+}
+
+.vs-modal-dialog .btn-default i,
+.vs-modal-dialog .btn-primary i{
+  display:none;
+}
+
+.vs-modal-dialog .btn-default:hover{
+  background-color:#eb0000;
+  color:#ffffff;
+}
+
+.vs-modal-dialog .modal-title{
+  font-weight: 550 !important;
 }
 /*End style of modal dialog*/
 

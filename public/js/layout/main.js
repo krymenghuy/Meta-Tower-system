@@ -35,6 +35,7 @@
      this.mnuExchangeRate = $('#_main_lnkExchangeRate');
      this.mnuExpenseBook = $('#_main_lnkExpenseBook');
      this.mnuChiefComplaints = $('#_main_lnkChiefCompaints');
+     this.mnuConsultationQueue = $('#_main_lnkConsultantQueues');
 
      this.mnuPatientDashboard = $('#_main_lnkPatientDashboard');
      this.mnuOPDList = $('#_main_lnkOPDList');
@@ -210,6 +211,11 @@
                  this.mnuChiefComplaints.on('click',(e)=>{
                     e.preventDefault();
                     ChiefComplaintsComponent.show(null);
+                 });
+
+                 this.mnuConsultationQueue.on('click',(e)=>{
+                    e.preventDefault();
+                    ConsultationQueueComponent.show(null);
                  });
 
                  this.mnuPatientInvoices.on('click',(e) => {
@@ -611,6 +617,7 @@
             let pusher = new Pusher(pusher_app_key,{
                 cluster: 'mt1',
                 useTLS:true,
+                disableStats:true,
                // authEndpoint:"/api/broadcast/auth",
                 //authTransport:'ajax', //two options = {'ajax','jsonp'}. The default is "ajax"
                 authorizer: function authorizer(channel, options){

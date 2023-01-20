@@ -18,7 +18,10 @@
             </div>
             <div class="container-fluid d-flex align-items-center justify-content-end">
                 <button id="_itm_btnNew" class="vs-btn-custom-primary" type="button">
-                    <span class="trans-text" data-langprop="buttons.New Product"></span>
+                    <div class="d-flex align-items-center">
+                        <i class="fa-solid fa-plus me-1"></i>
+                        <span class="trans-text" data-langprop="buttons.Add New"></span>
+                    </div>
                 </button>
             </div>
         </div>
@@ -29,13 +32,13 @@
 </div>
 
 <div id="_itm_dlgProduct" class="modal fade" tabindex="-1" aria-labelledby="_itm_dlgProduct_title" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog vs-modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="_itm_dlgProduct_title"></h4>
             </div>
             <div class="modal-body">
-                <div class="row">
+                <div class="row gy-2 py-2">
                      <div class="forn-group col-lg-12">
                            <span class="simple-label"><span class="trans-text" data-langprop="item.General Name"></span>&nbsp; <a href="javascript:void(0)" id="_itm_lnkAddGroup"><i class="fa fa-plus-circle" style="color:green"></i></a></span>
                            <select id="_itm_item_group" data-required="1" class="modal-select2 form-select data-input" data-field="group_id" data-ffield="Item group"></select>
@@ -87,10 +90,10 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">
+                <button class="btn btn-secondary btn-default" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button class="vs-btn-custom-primary" type="button" id="_itm_dlgProduct_btnSave">
+                <button class="btn btn-primary" type="button" id="_itm_dlgProduct_btnSave">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>

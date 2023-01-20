@@ -1,14 +1,12 @@
 <div id="_main_patientRecieptsComponent" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
-        <div class="d-flex align-items-center gap-2 py-2 ms-3">
-            <button class="vs-btn-custom-primary" type="button" id="_prc_btnNew">
-                <span class="trans-text" data-langprop="buttons.New Reciept"></span>
-            </button>
-            <button class="vs-btn-custom-secondary" type="button" id="_prc_btnExport">
-                <span class="trans-text" data-langprop="buttons.Export"></span>
-            </button>
-        </div>
         <div class="d-flex align-items-center gap-2 ms-3">
+            <button class="vs-btn-custom-primary" type="button" id="_prc_btnNew">
+                <div class="d-flex align-items-center">
+                    <i class="fa-solid fa-plus me-1"></i>
+                    <span class="trans-text" data-langprop="buttons.Add New"></span>
+                </div>
+            </button>
             <div class="d-flex align-items-center gap-2">
                 <div class="input-group flex-nowrap">
                     <div class="input-group-text">
@@ -20,6 +18,9 @@
                     <i class="fa-solid fa-bars-staggered"></i>
                 </button>
             </div>
+            <button class="vs-btn-custom-secondary" type="button" id="_prc_btnExport">
+                <span class="trans-text" data-langprop="buttons.Export"></span>
+            </button>
         </div>
         <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;border-color:#EEEA8D;min-height:350px;">
             <table class="table" id="_prc_tblReciept"></table>
@@ -28,13 +29,13 @@
 </div>
 
 <div id="_prc_dlgReciept" class="modal fade" tabindex="-1" aria-labelledby="_prc_dlgReciept_title" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-xl vs-modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="moda-title" id="_prc_dlgReciept_title"></h4>
             </div>
             <div class="modal-body">
-                <div class="row gy-2">
+                <div class="row gy-2 py-2">
                     <div class="col-lg-3">
                         <label for="patient" class="form-label trans-text" data-langprop="patient.Patient"></label>
                         <div class="input-group flex-nowrap">
@@ -64,7 +65,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row gy-2">
+                <div class="row gy-2 py-2">
                     <div class="col-lg-3">
                         <label for="receiptDate" class="form-label trans-text" data-langprop="patient.Receipt Date"></label>
                         <input data-select="datepicker" class="input-sm form-control" placeholder="Filter Date"/>
@@ -81,14 +82,14 @@
                         <input type="text" class="form-control" placeholder="reference number"/>
                     </div>
                 </div>
-                <div class="row gy-2">
+                <div class="row gy-2 py-2">
                     <div class="col-lg-3">
                         <label for="depositeTo" class="form-label trans-text" data-langprop="patient.Deposite To"></label>
                         <select class="modal-select2"></select>
                     </div>
                 </div>
                 <div class="py-3" id="_receipt_panel"></div>
-                <div class="row gy-2">
+                <div class="row gy-2 py-2">
                     <div class="col-lg-6">
                         <label for="description" class="form-label trans-text" data-langprop="patient.Description"></label>
                         <textarea class="form-control"></textarea>
@@ -132,7 +133,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row gy-2">
+                <div class="row gy-2 py-2">
                     <div class="col-lg-6">
                         <label for="messageOfReceipt" class="form-label trans-text" data-langprop="patient.Message Desplayed On Reciept"></label>
                         <textarea class="form-control"></textarea>
@@ -141,10 +142,10 @@
                 <div id="_prc_dlgReciept_error" class="dialog-error"></div>
             </div>
             <div class="modal-footer">
-                <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">
+                <button class="btn btn-secondary btn-default" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button class="vs-btn-custom-primary" type="button" id="_prc_btnSave">
+                <button class="btn btn-primary" type="button" id="_prc_btnSave">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>

@@ -1406,7 +1406,7 @@ class UM extends Model
         //foreach($q as $row) $user_id = $row->id; 
         $prns = DB::select(DB::raw("SELECT DISTINCT rp.permission_id FROM um_user_roles AS ur INNER JOIN um_role_permissions AS rp ON ur.role_id = rp.role_id WHERE ur.user_id ='$user_id' AND ur.app_id ='".self::$app_id."' ORDER BY rp.permission_id ASC"));
          
-        $mods = DB::select(DB::raw("SELECT DISTINCT m.id,m.disabled, m.module_name AS `name`, m.module_name_native AS name_native, m.icon_image, m.target_url 
+        $mods = DB::select(DB::raw("SELECT DISTINCT m.id,m.disabled, m.module_name AS `name`, m.module_name_native AS name_native, m.icon_image, m.target_url,m.display_order 
         FROM um_app_modules AS m INNER JOIN um_role_modules AS rm ON m.id = rm.module_id 
         INNER JOIN um_user_roles AS ur ON ur.role_id = rm.role_id 
         WHERE IFNULL(m.hidden,0) =0 AND ur.user_id ='$user_id' ORDER BY m.disabled ASC, m.display_order ASC"));
