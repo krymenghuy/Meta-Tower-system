@@ -22,8 +22,8 @@
                 <span class="trans-text" data-langprop="patient.Export"></span>
             </button>
         </div>
-        <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;border-color:#EEEA8D;min-height:350px;">
-            <table class="table" id="_pic_tblInvoice"></table>
+        <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;min-height:350px;">
+            <table class="table header-light-blue header-uppercase" id="_pic_tblInvoice"></table>
         </div>
     </div>
 </div>

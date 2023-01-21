@@ -773,6 +773,14 @@ tbody, td, tfoot, th, thead, tr{
 }
 /*End style of modal dialog*/
 
+.frame-photo{
+  width:210px;
+  height:211px;
+  margin-bottom:10px;
+  border:1px solid #9b9b9b9a;
+  border-radius:10px;
+}
+
 .border-moving {
   --border-size: 2px;
   --border-angle: 0turn;

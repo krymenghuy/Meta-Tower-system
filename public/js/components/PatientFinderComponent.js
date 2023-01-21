@@ -163,29 +163,10 @@
              }
               data = StringSanitizer.sanitizeObject(data,null,['cur_symbol']);
              //begin::Set up columns
-                 //let cnt = 1;
                  let my_columns = [
-                    //  {
-                    //      // data:function(data,type,meta) {
-                    //      //     return cnt++;
-                    //      // },
-                    //      // title:'NO.'
-                    //      className:'col_action',
-                    //      data:function(data,row,display) {
-                    //       let html =['<div class="action-menus dropdown" style="margin-top:-10px">',
-                    //           '<a href="javascript:void(0)" data-id="',data.id,'" data-personid="',data.person_id,'" data-statusid="',data.status_id,'" class="btn_apt_action">',
-                    //           '<i class="fa fa-tasks" style="color:#E9E7E7;font-size:1.1em"></i>',
-                    //           //' Action',
-                    //           '</a>',
-                    //          '</div>'].join('');
-                    //          return html;
-                        
-                    //      } 
-                    //  },
                      {
                         data:function(data,a,b){
                             return ['<span style="display:block;padding:3px;">',data.code,'</span>',
-                            //'<a class="btn btn-sm btn-outline-primary loanapp-btn-action">Approve</a>'
                             ].join('');
                         },
                         title: mThis.trans_title('ID'),
@@ -334,7 +315,7 @@ let PatientDetails = new function () {
         
         let renderPatientDetails ={
             "history":() => {
-                mThis.div_tab_history_id = [`patient_details_history_`,patient_id].join('');   
+                mThis.div_tab_history_id = [`patient_details_history_`,patient_id].join('');
                 vsapi.call(`${main_view.base_url}/api/patient/history`,null).then(res => {
 
                     if(res.status_code === 200){
@@ -383,14 +364,13 @@ let PatientDetails = new function () {
                         }else{
                             div_workspace.html(html);
                             LocaleManager.translateZone(div_workspace.attr('id'));
-                        } 
-                        
+                        }
                     }
                 });
             },
 
             "photos":() => {
-                mThis.div_tab_invoices_id = [`patient_details_photos_`,patient_id].join('');   
+                mThis.div_tab_invoices_id = [`patient_details_photos_`,patient_id].join('');
                 vsapi.call(`${main_view.base_url}/api/patient/photos`,null).then(res=>{
                     if(res.status_code===200){
                          let image_urls = res.data;
@@ -403,7 +383,6 @@ let PatientDetails = new function () {
                         div_workspace.html(html);
                     }
                 });
- 
             },
 
             "invoices":() => {
@@ -425,8 +404,7 @@ let PatientDetails = new function () {
                                             <td>${c.status}</td>
                                         </tr>
                                     `].join('');
-
-                                 cnt++;
+                                cnt++;
                           });
                        
                         let html = [ `<div id="${mThis.div_tab_invoices_id}" class="table-responsive">
@@ -470,9 +448,8 @@ let PatientDetails = new function () {
         mThis.setActiveTabButton(div_main_wrapper,view_name);
         //Render patient's details by section or view_name
         renderPatientDetails[view_name]() ;
-       
     }
- 
+
     //Display Patient Details panel, by displaying the "History" tab as default view
     this.show = (detail_tr,options) => {
         let patient_id =options.patient_id;
