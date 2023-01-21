@@ -88,7 +88,7 @@
 
              <div class="flat-box"
                  style="margin:17px;padding:15px;overflow:auto;border-color:#A0DFF3;min-height:350px;">
-                 <table class="table" id="_qul_tblTickets" style="margin-top:-25px !important;"></table>
+                 <table class="table header-light-blue header-uppercase" id="_qul_tblTickets" style="margin-top:-25px !important;"></table>
              </div>
          </div>
      </section>

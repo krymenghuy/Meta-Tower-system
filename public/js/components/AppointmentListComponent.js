@@ -289,10 +289,10 @@
                     }
                 });
             });
-             
+
             mThis.tblAppointments.on('click','.btn-register',function(e){
                 let tr = $(this).closest('tr');
-                let appt_id = $(this).data('apptid'); 
+                let appt_id = $(this).data('apptid');
                 let op = {
                     "id":0,
                      "default_data":mThis.getClientInfo(tr),
@@ -395,11 +395,11 @@
                 let p = {'id':lnk.data('id')};
                 cv_interact.confirm('Remove this appointment?',{'confirmButtonText':'Delete','cancelButtonText':'Dont Delete',title:null,'context':'delete'},(e)=>{
                     if(e){
-                            vsapi.call(`${mThis.base_url}/api/appointment/delete`,p).then((res)=>{
-                                if(res.status_code === 200){
-                                   mThis.displayAppointmentList();    
-                                }else cv_interact.error(res.error_message);
-                            });
+                        vsapi.call(`${mThis.base_url}/api/appointment/delete`,p).then((res)=>{
+                            if(res.status_code === 200){
+                                mThis.displayAppointmentList();    
+                            }else cv_interact.error(res.error_message);
+                        });
                     }
                 });
 
@@ -418,7 +418,7 @@
 
         }
    
-    this.trans_title = (title_prop='undefined')=>{
+    this.trans_title = (title_prop = 'undefined')=>{
        return (mThis.col_titles[title_prop] || 'undefined');
     }
 
@@ -458,7 +458,7 @@
       if(status_id==0) return 'border-secondary';
       else if(status_id==1) return 'border-warning';
       else if (status_id==2) return 'border-success';
-      else 'btn btn-outline-warning'; 
+      else 'btn btn-outline-warning';
     }
 
     //displayCreditOfficerList()| displayCO|
@@ -517,15 +517,15 @@
                      },
                      {
                         title: mThis.trans_title('Client Name'),
-                        data:(data,a,b)=>{
+                        data:(data, a, b)=>{
                            return [`<span style="display:block" class="client-name text-bold">`,data.client_name,`</span>`,`<span style="display:block;" class="client-code text-success">`,data.patient_code,`</span>`].join('');
                         }
                      },
                      {
-                         title: mThis.trans_title('Client Phone'),
-                         data:(data,a,b)=>{
-                           return data.client_phone_number;
-                         }
+                        title: mThis.trans_title('Client Phone'),
+                        data:(data,a,b)=>{
+                            return data.client_phone_number;
+                        }
                      },
                      {
                         title: mThis.trans_title('Schedule Type'),
@@ -638,9 +638,7 @@
                 VSUtil.setComboItems(mThis.appt_filter_status,items,'id','appt_status',true,'All Statuses',0);
                 if(onFinish) onFinish();
                 mThis.form_data.statuses = items;
-              
             }
-           
         });
      }
 
@@ -960,7 +958,6 @@ let AppointmentDialog = new function(){
         });
         return ps;
     }
-
 
     this.prepareVitalSignFields =(fields =[])=>{
         mThis.divVitalSign.empty();

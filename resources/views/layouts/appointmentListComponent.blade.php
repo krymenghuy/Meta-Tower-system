@@ -127,7 +127,6 @@
     #_main_appointmentListComponent .btn-outline-warning {
         border-radius: 15px;
     }
-
  </style>
 
  <div id="_main_appointmentListComponent" style="display:none;padding-top:15px">

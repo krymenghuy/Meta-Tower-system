@@ -687,6 +687,7 @@ span.v-label-focus {
 table.header-light-blue>thead th {
   font-weight: bold !important;
   color: #185c81 !important;
+  font-family:Poppins;
 }
 
 table.header-uppercase>thead th {

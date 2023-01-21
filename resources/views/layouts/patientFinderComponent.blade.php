@@ -1,4 +1,4 @@
- <style>
+<style>
      table#_paf_tblPatients>thead th {
          font-weight: normal;
          text-transform: uppercase;
@@ -11,7 +11,7 @@
          border-left: 1.5px dotted red;
          border-right: 1.5px dotted red;
      }
- </style>
+</style>
 
 <div id="_main_patientFinderComponent" style="display:none;">
     <div class="container-fluid">
@@ -35,7 +35,7 @@
         </div>
 
         <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;border-color:#EEEA8D;min-height:350px;">
-            <table class="table" id="_paf_tblPatients" style="margin-top:-25px !important;"></table>
+            <table class="table header-light-blue header-uppercase" id="_paf_tblPatients" style="margin-top:-25px !important;"></table>
         </div>
     </div>
 </div>

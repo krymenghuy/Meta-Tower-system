@@ -11,7 +11,6 @@
          border-left: 1.5px dotted red;
          border-right: 1.5px dotted red;
      }
-
  </style>
 
  <div id="_main_patientListComponent" style="display:none;">
@@ -29,7 +28,7 @@
                     </a>
                 </div>
 
-                 <div class="d-flex justify-content-end col-md-6">
+                <div class="d-flex justify-content-end col-md-6">
                      <!-- <a id="_pal_btnPrint" href="javascript:void(0)"  class="btn btn-sm btn-primary" style="border-radius:10px;"><i class="fa-solid fas fa-print"></i> Print</a>&nbsp; -->
                      <!-- <a id="_pal_btnPDF" href="javascript:void(0)" class="btn btn-sm btn-success" style="border-radius:10px"><i class="fa-solid fas fa-file-pdf"></i> PDF</a>&nbsp; -->
                      <!-- <a id="_pal_btnExcel" href="javascript:void(0)"  class="btn btn-sm btn-default" style="border-radius:10px"><i class="fa-solid fas fa-file-pdf"></i> Excel</a> -->
@@ -37,15 +36,14 @@
              </div>
 
              <div class="flat-box" style="margin:17px; padding:15px; overflow:auto; border-color:#EEEA8D; min-height:350px;">
-                 <table class="table" id="_pal_tblPatients" style="margin-top:-25px !important;"></table>
+                 <table class="table header-light-blue header-uppercase" id="_pal_tblPatients" style="margin-top:-25px !important;"></table>
              </div>
          </div>
      </section>
- </div>
+</div>
 
  <!--begin::CODialog -->
- <div class="modal fade" id="_pal_dlPatient" tabindex="-1" role="dialog" aria-labelledby="_pal_dlPatient"
-     aria-hidden="true">
+ <div class="modal fade" id="_pal_dlPatient" tabindex="-1" role="dialog" aria-labelledby="_pal_dlPatient" aria-hidden="true">
      <div class="modal-dialog" role="dialog">
          <div class="modal-content">
              <div class="modal-header">

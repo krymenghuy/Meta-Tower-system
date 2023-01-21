@@ -15,7 +15,7 @@
             </button>
         </div>
         <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;border-color:#EEEA8D;min-height:350px;">
-            <table class="table" id="_pdg_tblProductGroup"></table>
+            <table class="table header-light-blue header-uppercase" id="_pdg_tblProductGroup"></table>
         </div>
     </div>
 </div>
