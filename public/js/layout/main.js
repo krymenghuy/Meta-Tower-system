@@ -552,28 +552,28 @@
            }        
      //end:: init dropdown menus on Top-right screen
   
-          try{
-            toastr.options = {
-                "closeButton": true,
-                "debug": false,
-                "newestOnTop": false,
-                "progressBar": true,
-                "positionClass": "toast-top-right",
-                "preventDuplicates": false,
-                "onclick": null,
-                "showDuration": "300",
-                "hideDuration": "1000",
-                "timeOut": "5000",
-                "extendedTimeOut": "1000",
-                "showEasing": "swing",
-                "hideEasing": "linear",
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-              };
+        //   try{
+        //     toastr.options = {
+        //         "closeButton": true,
+        //         "debug": false,
+        //         "newestOnTop": false,
+        //         "progressBar": true,
+        //         "positionClass": "toast-top-right",
+        //         "preventDuplicates": false,
+        //         "onclick": null,
+        //         "showDuration": "300",
+        //         "hideDuration": "1000",
+        //         "timeOut": "5000",
+        //         "extendedTimeOut": "1000",
+        //         "showEasing": "swing",
+        //         "hideEasing": "linear",
+        //         "showMethod": "fadeIn",
+        //         "hideMethod": "fadeOut"
+        //       };
 
-          } catch (e) {return; };
+        //   } catch (e) {return; };
           
-        //toastr.info("New event here!");
+        //toastr.success("New event here!");
        
    };
 
@@ -603,12 +603,12 @@
         // //end: listen to "MessageReceived" event
 
         //begin::connect and then subscript to backend channel (Using internet-based Pusher service)
-           let csrf_token = $('meta[name="csrf-token"]').attr('content');
+           //let csrf_token = $('meta[name="csrf-token"]').attr('content'); //not yet used
            //begin::get access token from cookie
-                    let cookie_name = 'vsmclinic997891zb';
-                    let access_token = null;
-                    let c_match = document.cookie.match(new RegExp('(^| )' + cookie_name + '=([^;]+)'));
-                    if (c_match) access_token = c_match[2]; 
+                    // let cookie_name = 'vsmclinic997891zb';
+                    // let access_token = null;
+                    // let c_match = document.cookie.match(new RegExp('(^| )' + cookie_name + '=([^;]+)'));
+                    // if (c_match) access_token = c_match[2]; 
             //end::get access token from cookie
 
             //pusher_app_key are in .env file, and in main.js
@@ -659,14 +659,35 @@
                     this.pusher_channel.bind('pusher:subscription_error',(d)=>{
                         console.error("Channel subscription error: "+d);
                     });
-
-                    this.pusher_channel.bind('message_received', function(data) {
-                         alert(JSON.stringify(data));
-                    });
-
+ 
             //subscript to Pusher event
+            this.pusher_channel.bind('message_received', function(data) {
+                //alert(JSON.stringify(data));
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: JSON.stringify(data),
+                    toast:true,
+                    showConfirmButton: false,
+                    timer:2000,
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                });
+
+            });
+
             this.pusher_channel.bind('AppointmentAdded',(d)=>{
-                console.info(JSON.stringify(d));
+                //console.info(JSON.stringify(d));
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Appointment created',
+                    toast:true,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
                  let nofif = {"title":"New Appointment","message":"New Appointment Added!"};
                  main_view.addNotificationItem(nofif,true);
             });

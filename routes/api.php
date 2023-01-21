@@ -61,7 +61,15 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('broadcast/auth', [PusherController::class, 'pusherAuth']); //->middleware('auth');
-   
+
+// Route::get('env/20230120AZ99/vars',function(){
+//     $vars =[
+//        "pusher_app_key"=>Illuminate\Support\Facades\Config::get('app.pusher_app_key'),
+//        "cookie_name"=>Illuminate\Support\Facades\Config::get('app.cookie_name'),
+//     ];
+//     return response()->json($vars);   
+// }); //->middleware('auth');
+
 // Rate Limiting for a whole group of routes= > allow 200 requests per 1 minute
 Route::group(['middleware' => 'throttle:200,1'], function () {
     //begin:: AppointmentController 

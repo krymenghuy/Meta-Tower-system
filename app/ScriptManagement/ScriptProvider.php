@@ -79,7 +79,7 @@ namespace App\ScriptManagement;
                     '/assets/js/initializeSelect2.js',
                     '/assets/js/demo1/scripts.bundle.js',
                     '/assets/vendors/custom/datatables/datatables.bundle.js',
-                    'https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js',
+                    //'https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js', //This script for toastr (event toasts)
                     'https://js.pusher.com/7.2/pusher.min.js', 
                     '/js/app.js',
                     '/assets/js/browsercontrol.js',
