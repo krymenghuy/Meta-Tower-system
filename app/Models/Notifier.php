@@ -15,6 +15,7 @@ use LaravelFCM\Message\Topics;
 use App\Models\UM;
 use App\Models\DV;
 use Session;
+use Config;
 use Carbon\Carbon;
 use DB;
 
@@ -363,8 +364,10 @@ class Notifier extends Model
           'data' => array('message' => $msg)
            );
   
+      $fcm_server_key = Config::get('app.fcm_server_key');     
       $headers = array(
-          'Authorization:key=AAAABQs1Uak:APA91bFZldm-qTVqgZCnABLSz3Jn-QgTBjgYSP9_2FH5jY5LJtfMdQ0V-pK7O1-E2lpfHx2GaIj0PtsrsDWxVzo1ZOKh2lVghS6TnJVBxbVpM-V3kriXRIVbOC_ESTaxDH4buakWPaKR',
+        "Authorization:key=$fcm_server_key",
+          //"Authorization:key=AAAABQs1Uak:APA91bFZldm-qTVqgZCnABLSz3Jn-QgTBjgYSP9_2FH5jY5LJtfMdQ0V-pK7O1-E2lpfHx2GaIj0PtsrsDWxVzo1ZOKh2lVghS6TnJVBxbVpM-V3kriXRIVbOC_ESTaxDH4buakWPaKR",
           'Content-Type:application/json'
       );
   
