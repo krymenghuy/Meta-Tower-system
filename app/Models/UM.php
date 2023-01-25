@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Exception;
 use Localization;
 use Sanitizer;
+use Config;
 
 class UM extends Model
 {
@@ -41,10 +42,18 @@ class UM extends Model
         ];
        
     //### The vaiables above for JWT merchanism
+ 
+    protected $use_phone_number_login = [
+      'driver'=>1,
+      'merchant'=>1,
+      'admin_support'=>0 /* Backend user's login can be email, phone, or any name */
+    ];
+
     public function __construct(array $attributes = [])
     {
-        self::$app_id = getAdminAppId();
 
+       //NOTE: Config::get('app.app_id') returns Backend system's app_id stored as APP_ID in env file
+        self::$app_id = Config::get('app.app_id');
         $app_url = ENV('APP_URL');
         self::$jwt_payload=[
           "iis"=> $app_url,
@@ -388,13 +397,15 @@ class UM extends Model
         }
 
         function getRoleMembers($d){
-          $ss = self::getUserInfoByToken($d,-1);
-          if($ss->status_code !=200) return $ss; //user not authenticated
+          $ss = getSessionInfo($d);
+          if(!$ss) return '#350'; //user not authenticated
+          if (!self::allowed(-1)) return '@'; //need permission to do this task
           $branch_id = $ss->branch_id; 
           $role_id = $d->role_id;
-          $rows = DB::table('um_user_roles AS ur')->join('um_users AS u','u.id','=','ur.user_id')->selectRaw("u.id,u.login_name,u.full_name,u.official_code,u.phone_number, u.email")->where('u.branch_id',$branch_id)->where('ur.role_id',$role_id)->get();
+          $role_name = $this->getRoleName($role_id);
+          $rows = DB::table('um_user_roles AS ur')->join('um_users AS u','u.id','=','ur.user_id')->selectRaw("'$role_name' as role_name,u.id,u.login_name,u.full_name,u.official_code,u.phone_number, u.email,u.otp_code,u.user_class")->where('u.branch_id',$branch_id)->where('ur.role_id',$role_id)->get();
           return $rows; 
-      }
+       }
 
         function getRoleById($d) {
           $ss = self::getUserInfoByToken($d,-1);

@@ -10,7 +10,7 @@ namespace App\ScriptManagement;
          protected static $bundles = [
             'priority-one'=>[
                 'attr'=>'async',
-                'output_file'=>'/assets/js/priority-one.min.js',
+                'output_file'=>'/js/dist/priority-one.min.js',
                 'files'=>[
                     '/assets/js/vsapi.js',
                     '/assets/js/LocaleManager.js',
@@ -19,7 +19,7 @@ namespace App\ScriptManagement;
             ],
             'primary'=>[
                 'attr'=>null,
-                'output_file'=>'/js/lms.primary.js',
+                'output_file'=>'/js/dist/lms.primary.js',
                 'files'=>[
                     '/assets/material-js/jquery.min.js',
                     '/assets/plugins/chart.js/Chart.js',
@@ -29,7 +29,7 @@ namespace App\ScriptManagement;
             ],
            'primary-async'=>[
                 'attr'=>'async',
-                'output_file'=>'/js/lms.primary-async.js',
+                'output_file'=>'/js/dist/lms.primary-async.js',
                 'files'=>[
                     '/js/AuthManager.js'
                 ]
@@ -44,7 +44,7 @@ namespace App\ScriptManagement;
            ],
            'primary-defer'=>[
                 'attr'=>'defer',
-                'output_file'=>'/js/lms.primary-defer.js',
+                'output_file'=>'/js/dist/lms.primary-defer.js',
                 'files'=>[
                     //'/assets/js/crypto-js.js',
                     //'/js/security/Encrypter.js',
@@ -96,7 +96,7 @@ namespace App\ScriptManagement;
                 ],
                'components'=>[
                     'attr'=>'defer',
-                    'output_file'=>'/js/components/output/lms.components.js',
+                    'output_file'=>'/js/dist/lms.components.js',
                     'files'=>[
                         '/js/components/PersonDialog.js',
                         '/js/components/AppointmentListComponent.js',
@@ -133,7 +133,7 @@ namespace App\ScriptManagement;
                     ],
                     'mainjs'=>[
                         'attr'=>'defer',
-                        'output_file'=>'/js/layout/output/lms.main.js',
+                        'output_file'=>'/js/dist/lms.main.js',
                         'files'=>[
                             '/js/layout/main.js',
                         ]

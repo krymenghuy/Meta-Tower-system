@@ -70,7 +70,7 @@ let StringSanitizer = new function () {
         {
             //check if allowedChars is an array
             // encodes = [];
-            if ($.isArray(allowedChars)) {
+            if (Array.isArray(allowedChars)) {
                 i = 0; //reset variable i
                 do {
                     c = allowedChars[i];
@@ -245,40 +245,24 @@ let StringSanitizer = new function () {
         }
     };
 
+    this.item_names ={
+       "email":"email",
+       "currency":"currency",
+       "currency_symbol":"currency",
+       "cur_symbol":"currency",
+       "usd":"currency",
+       "rield":"currency",
+       "KHR":"currency",
+       "khr":"currency",
+       "notes":"remarks",
+       "description":"remarks"
+    }
+
     //getItemName() checks JSON object's property name and tries to guess some typical property name such as email, currency, start_date, etc and return itemName for method sanitizeOut() to process the string value 
     this.getItemName = (property)=>{
-        let itemName = null;
         let prop = (property+'').toLowerCase();
-        switch(prop){
-          case 'email':{
-             itemName ='email';  
-             break;
-          }
-          case 'currency':{
-            itemName ='currency';  //allows '$' sign
-            break;
-          }
-          case 'currency_symbol':{
-            itemName ='currency';  //allows '$' sign
-            break;
-          }
-          case 'notes':{
-            itemName='remarks';
-            break;
-          }
-          case 'remarks':{
-            itemName='remarks';
-            break;
-          }
-          case 'description':{
-            itemName='remarks';
-            break;
-          }
-             default:{
-             break;
-          }
-        } 
-        return itemName;
+        let val = mThis.item_names[prop];
+        return val?val:null;  
     }
 
     //Sanitizes javascript object (or JSON object). NOTE: This method sanitize the first nesting level of object (Not recursively through all nested props), NOT an array of objects

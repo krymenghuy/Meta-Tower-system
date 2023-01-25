@@ -602,7 +602,7 @@
         //    });
         // //end: listen to "MessageReceived" event
 
-        //begin::connect and then subscript to backend channel (Using internet-based Pusher service)
+     //###begin::connect and then subscript to backend channel (Using internet-based Pusher service)
            //let csrf_token = $('meta[name="csrf-token"]').attr('content'); //not yet used
            //begin::get access token from cookie
                     // let cookie_name = 'vsmclinic997891zb';
@@ -700,6 +700,6 @@
 
             //end::Channel subscription
 
-        //end::connect and then subecribe to backend channel
+        //###end::connect and then subecribe to backend channel
 
     });
