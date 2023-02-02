@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Exception;
 use Localization;
 use Sanitizer;
+use Config;
 
 class UM extends Model
 {
@@ -27,11 +28,38 @@ class UM extends Model
     protected $login_name = null;
     protected $full_name = null;
     protected $user_id = null;
-    protected static $jwt_key ="This is JWT key";
+   
+    //### The variables below for JWT merchanism
+        protected static $use_jwt = 1; //Tell UM class to use JWT mechanism to verify user'stoken
+        protected static $jwt_encode ='HS256';
+        protected static $jwt_lifespan =60*60; //default lifespan of JWT token (Time to expire)
+        protected static $jwt_key ="This is JWT key";
+        protected static $jwt_payload = [
+          "iis"=>"",
+          "aud"=>""
+          //"iat"=>time(),
+          //"nbf"=>time()+60*60
+        ];
+       
+    //### The vaiables above for JWT merchanism
+ 
+    protected $use_phone_number_login = [
+      'driver'=>1,
+      'merchant'=>1,
+      'admin_support'=>0 /* Backend user's login can be email, phone, or any name */
+    ];
 
     public function __construct(array $attributes = [])
     {
-        self::$app_id = getAdminAppId();
+
+       //NOTE: Config::get('app.app_id') returns Backend system's app_id stored as APP_ID in env file
+        self::$app_id = Config::get('app.app_id');
+        $app_url = ENV('APP_URL');
+        self::$jwt_payload=[
+          "iis"=> $app_url,
+          "aud"=> $app_url
+        ];
+
         self::$user_classes = [
           (object)['user_class'=>'super admin','user_class_name'=>'Super Admin'],
           (object)['user_class'=>'admin','user_class_name'=>'Admin'],
@@ -55,29 +83,35 @@ class UM extends Model
     }
 
      //UM::setUserSession() is a static function and is the same as UM->createSession() 
-     function createSession($app_id,$login_name,$user_id,$branch_id=0,$lang='en'){
-       return self::setUserSession($app_id,$login_name,$user_id,$branch_id,$lang);
+     function createSession($app_id,$user){
+       return self::setUserSession($app_id,$user);
      } 
 
      //UM::setUserSession() is a static function and is the same as UM->createSession() 
     //create session can be => (1) create in database table um_sessions, (2) create session as file, which can be faster but cannot be queried
-    static function setUserSession($app_id,$login_name,$user_id,$branch_id=0,$lang='en'){
+    //NOTE: parameter @user is object with minimum fields such as {'branch_id','id','lang','login_name'}
+    static function setUserSession($app_id,$user){
        //TODO: Do not allow creating session if user is not logged in 
       //if (strtolower($login_name) != strtolower($this->login_name)) return;
-      $access_token = getUniqueString(38);
+      $access_token = "";
+      if (self::$use_jwt===1)  $access_token  = self::createJWT($user);
+      else $access_token = self::createUserToken();
+
       $csrf_code = getUniqueString(38);
       $session_id = getUniqueString(38);
-      if(empty($login_name)) return DV::error('Failed to create session info',401);
-       DB::table('um_sessions')->where('login_name',$login_name)->where('app_id',$app_id)->delete();
+
+      $lang = isset($user->lang)?$user->lang:'en';
+      if(empty($user->login_name)) return DV::error('Failed to create session info',$lang,401);
+       DB::table('um_sessions')->where('login_name',$user->login_name)->where('app_id',$app_id)->delete();
        DB::table('um_sessions')->insert(array(
-         'branch_id'=>$branch_id,
+         'branch_id'=>$user->branch_id,
          'app_id'=>$app_id,
-         'user_id'=>$user_id, //ineteger user_id
-         'login_name'=>$login_name,
+         'user_id'=>$user->id, //ineteger user_id
+         'login_name'=>$user->login_name,
          'start_time'=>getNowTime(),
          'last_active_time'=>getNowTime(),
          'csrf_code'=>$csrf_code,
-         'lang'=>$lang,
+         'lang'=>$user->lang,
          'session_id'=>$session_id,
          'access_token'=>$access_token
        ));
@@ -152,14 +186,14 @@ class UM extends Model
 /*##### begin::InApp UserModel ##### */
     
     function getAppIdByUserClass($user_class){
-        if($user_class =='staff') return "DXM20FKAEFC711EH2E7C9801A7CXD190";
-        else if ($user_class =='admin') return 'DXM20FKAEFC711EH2E7C9801A7CXD190';
-        else if ($user_class =='borrower' ) return "DXM20FKAEFC711EH2E7C9801A7CXD190";
-        else return "DXM20FKAEFC711EH2E7C9801A7CXD190";
+        if($user_class =='staff') return "DXM20FMNEFC721EH2E9M980178GBM899";
+        else if ($user_class =='admin') return 'DXM20FMNEFC721EH2E9M980178GBM899';
+        else if ($user_class =='borrower' ) return "DXM20FMNEFC721EH2E9M980178GBM899";
+        else return "DXM20FMNEFC721EH2E9M980178GBM899";
     }
 
     function getModuleList($user_id =0){
-        $rows = DB::table('um_app_modules AS m')->selectRaw("m.module_name, m.module_name_native, m.icon_image, m.target_url")->orderBy('display_order ASC')->get();
+        $rows = DB::table('um_app_modules AS m')->selectRaw("m.module_name, m.module_name_native, m.icon_image, m.target_url,m.display_order,m.disabled")->orderBy('display_order ASC')->get();
         return $rows;
     }
       
@@ -365,13 +399,15 @@ class UM extends Model
         }
 
         function getRoleMembers($d){
-          $ss = self::getUserInfoByToken($d,-1);
-          if($ss->status_code !=200) return $ss; //user not authenticated
+          $ss = getSessionInfo($d);
+          if(!$ss) return '#350'; //user not authenticated
+          if (!self::allowed(-1)) return '@'; //need permission to do this task
           $branch_id = $ss->branch_id; 
           $role_id = $d->role_id;
-          $rows = DB::table('um_user_roles AS ur')->join('um_users AS u','u.id','=','ur.user_id')->selectRaw("u.id,u.login_name,u.full_name,u.official_code,u.phone_number, u.email")->where('u.branch_id',$branch_id)->where('ur.role_id',$role_id)->get();
+          $role_name = $this->getRoleName($role_id);
+          $rows = DB::table('um_user_roles AS ur')->join('um_users AS u','u.id','=','ur.user_id')->selectRaw("'$role_name' as role_name,u.id,u.login_name,u.full_name,u.official_code,u.phone_number, u.email,u.otp_code,u.user_class")->where('u.branch_id',$branch_id)->where('ur.role_id',$role_id)->get();
           return $rows; 
-      }
+       }
 
         function getRoleById($d) {
           $ss = self::getUserInfoByToken($d,-1);
@@ -419,11 +455,11 @@ class UM extends Model
         return null;
       }
 
-      static function getUserProps($user_id,$props){
-          $cols = $props;
-          if(is_array($props)){
-            $cols = implode(',',$props);
-          }
+      static function getUserProps($user_id,$cols){
+          // $cols = $props;
+          // if(is_array($props)){
+          //   $cols = implode(',',$props);
+          // }
          $rows = DB::table('um_users AS u')->where('id',$user_id)->selectRaw($cols)->limit(1)->get(); 
         
         foreach($rows as $row) return $row;
@@ -743,37 +779,78 @@ class UM extends Model
     //2. based on given @user_class = {driver, or merchant or (admin or NULL) }
     //This method is used in mobile app's api authentication, which does not depends on web session
     static function getUserInfoByToken($request, $prn_code=-1,$prn_error_message=null){
+        $def_lang ="en";
         //$access_token = self::decryptToken($request);
         $access_token = $request->bearerToken();
-        if(!$access_token) return DV::error('User authentication failed',401); 
+        if(!$access_token) return DV::error('User authentication failed',$def_lang,401);
+
         if (!self::allowed($prn_code)){
           if (!$prn_error_message) $prn_error_message = "Permission $prn_code is required!";
           return DV::error($prn_error_message,403); //authorization failed or No Permission
         }
+        
+        if (self::$use_jwt===1){
+            /*
+                NOTE: This will now be an object instead of an associative array. To get
+                an associative array, you will need to cast it as such:
+            */
+           JWT::$leeway = 60; // $leeway in seconds
+           try{
+              $decoded = JWT::decode($access_token, new Key(self::$jwt_key, self::$jwt_encode));
+              if(!isset($decoded->user_id)) $decoded->user_id = $decoded->id;
 
-         $user_id = null;
-         $branch_id =null;
-         $official_id = null;
-         $login_name = null;
-         //Obtain $user_id, $official_id from table "um_users"
-         $rows = DB::table('um_sessions AS ss')->join('um_users as u','u.id','=','ss.user_id')->where('ss.access_token',$access_token)->selectRaw("ss.lang,ss.user_id,u.full_name,u.user_class,u.login_name,ss.branch_id, u.official_id")->limit(1)->get();
-         foreach($rows as $row) {
-           return DV::success([
-            'user_id'=>$row->user_id,
-            'lang'=>$row->lang,
-            'branch_id'=>$row->branch_id,
-            'official_id' =>$row->official_id,
-            'user_class'=>$row->user_class,
-            'login_name'=>$row->login_name
-            ,'full_name'=>$row->full_name,
-           ],200);
+              //#begin:: Get special active fields "is_locked,status,lang". These fields need to be updated in the decoded JWT token on every api call
+                  $decoded->status="active";
+                  $row = self::getUserProps($decoded->user_id,"is_locked,status,lang");
+                  if (!$row)
+                  $decoded->lang = $row->lang;
+                  $decoded->is_locked = $row->is_locked;
+                  $decoded->status = $row->status;
 
-         }
-         return DV::error('User authentication failed',401); 
-         ////return "#user_id = ".$user_id." Official_id = ".$official_id;
-         //return self::getUserExtendedInfo($user_class,$official_id); 
-     
-         //return "#350"; /** instead of returning NULL, do return "#350" User authentication failed **/ 
+                  if (strtolower($decoded->status)==='disabled' || $decoded->is_locked === 1) return DV::error('User status is disabled or locked out',$def_lang,400);
+              //#end::Get special active fields "is_locked,status,lang". These fields need to be updated in the decoded JWT token on every api call
+              $ret =(object)['status_code'=>200,'status'=>'OK'];
+              foreach((array)$decoded as $prop=>$value) $ret->{$prop} = $value;
+              return $ret;
+           }catch(\Exception $e){
+                $err = $e->getMessage(); 
+                if($err==="Expired token")  return DV::error($err,$def_lang,402); 
+                 
+                  \Log::error($err, [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                    ]);
+                
+                   return DV::error($err,$def_lang,500); //Invalid token => user unauthenticated
+           }
+          
+        }else{
+          //NOTE: verifyUserToken() will check if the given token is Not yet expired, and is valid, then return the valid token
+           $res = self::verifyUserToken($access_token);
+           if ($res->status==='Error') return DV::error($res->error_message,$def_lang,$res->error_code); 
+           
+            $access_token = $res->access_token; 
+            $user_id = null;
+            $branch_id =null;
+            $official_id = null;
+            $login_name = null;
+
+            //Obtain $user_id, $official_id from table "um_users"
+            $rows = DB::table('um_sessions AS ss')->join('um_users as u','u.id','=','ss.user_id')->where('ss.access_token',$access_token)->selectRaw("ss.lang,ss.user_id,u.full_name,u.user_class,u.login_name,ss.branch_id, u.official_id")->limit(1)->get();
+            foreach($rows as $row){
+                  return (object)['status_code'=>200,'status'=>'OK',
+                  'user_id'=>$row->user_id,
+                  'lang'=>$row->lang,
+                  'branch_id'=>$row->branch_id,
+                  'official_id' =>$row->official_id,
+                  'user_class'=>$row->user_class,
+                  'login_name'=>$row->login_name
+                  ,'full_name'=>$row->full_name
+               ];
+            }
+            
+            return DV::error('User authentication failed',null,401);
+        }
      }
       
      
@@ -867,6 +944,18 @@ class UM extends Model
           else return false;     
       }
 
+      static function verifyUserToken($token=null){
+        return (object)['access_token'=>$token,'status'=>'OK','error_message'=>null,'status_code'=>200];
+        //in case of error:
+            //"User unthenticated"  =>  return (object)['status'=>'Error','access_token'=>$token,'error_message'=>"User authentication failed",'status_code'=>401];
+        //In case of Token Expired => also use error 401 (User authentication failed)
+     }
+
+      //create user token in case that the JWT is not used
+      static function createUserToken(){
+        return  getUniqueString(38);
+      }
+
       function createRandomNumber($length=6)
       {
           return join('', array_map(function($value) { return $value == 1 ? mt_rand(1, 9) : mt_rand(0, 9); }, range(1, $length)));
@@ -886,13 +975,26 @@ class UM extends Model
         return DB::table("um_users")->whereRaw($where_sql)->limit(1)->exists();
       }
 
+   //Create token|createToken()| createJWT() 
+   //NOTE: $userInfo is array ['branch_id','official_id','user_class','full_name',...]  
+   static function createJWT($userInfo=[], $lifespan=0){
+     $nowTime = time();
+     self::$jwt_payload['iat'] = $nowTime; //Issue At
+     self::$jwt_payload['nbf'] = $nowTime; //nbf = Not Before
+     if (!$lifespan) $lifespan = self::$jwt_lifespan;
+     self::$jwt_payload['exp'] =$nowTime + $lifespan; //Expire At
+       
+     $arr  = (array)$userInfo; 
+     foreach($arr as $p=>$value) self::$jwt_payload[$p]=$value;
+     return JWT::encode(self::$jwt_payload, self::$jwt_key, self::$jwt_encode);
+   }
+
    //checkUser , validateUser, checkPassword, login, Signin
-   /** verifyUser() check user login and pwd and then returns object $result = {status, error_message, user} **/
+   /** login() | verifyUser() check user login and pwd and then returns object $result = {status, error_message, user} **/
    function verifyUser($app_id,$login_name,$password,$lang='en'){
          $user_id = null;
          //NOTE: $login_name = {loginName, PhoneNumber,email} 
-        if(empty($login_name)) return DV::error("User name is not valid",$lang,400);  
-
+        if(empty($login_name)) return DV::error("User name is not valid",$lang,400);
         $rows = DB::table('um_users AS u')->selectRaw('u.lang,u.user_class,u.official_id,u.hpwd, u.id,u.login_name, u.branch_id, u.full_name, u.status, u.is_locked,u.email,u.phone_number,u.otp_code')->where('u.login_name',$login_name)->where('u.app_id',$app_id)->limit(1)->get();
  
         if(count($rows) <= 0) return DV::error("User name is not correct or does not have access to this application",$lang,400); 
@@ -909,7 +1011,7 @@ class UM extends Model
         
             if(password_verify($password,$hpwd)){
                   //Login succeeded => create user session either in file or database table
-                  $sess = $this->createSession($app_id,$login_name,$user_id,$row->branch_id,$row->lang);
+                  $sess = self::setUserSession($app_id,$row);
                   if($sess->status ==='OK')
                      {
                         //return object {access_token,user}
@@ -917,7 +1019,13 @@ class UM extends Model
                         $row->mods = $this->getAccessibleModulesByUserId_internal($row->user_id);
                         $row->prns = $this->getPermissionsByUserId_internal($row->user_id);
                         $row->access_token = $sess->access_token;
-                        return DV::success(['user'=>$row],200);
+                        $refresh_token =self::createJWT(['login_name'=>$row->login_name,'user_class'=>$row->user_class],60*60);
+                        // if(self::$use_jwt===1) 
+                        //   $row->access_token = self::createJWT($row,60);
+                        // else 
+                        //    $row->access_token = $sess->access_token;
+                        return (object)['status'=>'OK','status_code'=>200,'user'=>$row,'refresh_token'=>$refresh_token];
+                        //return DV::success(['user'=>$row,'refresh_token'=>$refresh_token],200);
                      }
                   else return DV::error($sess->error_message,$lang,400);
             } else return DV::error('Password is not correct!',$lang,401);
@@ -1089,7 +1197,7 @@ class UM extends Model
 
          $branch_id = Sanitizer::sanitize($ss->branch_id);
          $user_id = Sanitizer::sanitize($ss->user_id);
-         $rows = DB::select(DB::raw("SELECT DISTINCT m.id,m.disabled,m.hidden, m.module_name AS `name` 
+         $rows = DB::select(DB::raw("SELECT DISTINCT m.display_order, m.id,m.disabled,m.hidden, m.module_name AS `name` 
          FROM um_app_modules AS m INNER JOIN um_role_modules AS rm ON m.id = rm.module_id 
          INNER JOIN um_user_roles AS ur ON ur.role_id = rm.role_id 
          WHERE IFNULL(m.hidden,0) =0 AND ur.user_id ='$user_id' ORDER BY m.disabled ASC, m.display_order ASC"));
@@ -1258,7 +1366,7 @@ class UM extends Model
 
      function getAccessibleModulesByUserId_internal($user_id){
         if(!($user_id>0)) $user_id = Sanitizer::sanitize($user_id);
-        $mods = DB::select(DB::raw("SELECT DISTINCT m.id,m.disabled,m.hidden,m.module_name AS `name` 
+        $mods = DB::select(DB::raw("SELECT DISTINCT m.id,m.display_order,m.disabled,m.hidden,m.module_name AS `name` 
         FROM um_app_modules AS m INNER JOIN um_role_modules AS rm ON m.id = rm.module_id 
         INNER JOIN um_user_roles AS ur ON ur.role_id = rm.role_id 
         WHERE IFNULL(m.hidden,0) =0 AND ur.user_id ='".$user_id."' ORDER BY m.disabled ASC, m.display_order ASC"));
@@ -1300,7 +1408,7 @@ class UM extends Model
         //foreach($q as $row) $user_id = $row->id; 
         $prns = DB::select(DB::raw("SELECT DISTINCT rp.permission_id FROM um_user_roles AS ur INNER JOIN um_role_permissions AS rp ON ur.role_id = rp.role_id WHERE ur.user_id ='$user_id' AND ur.app_id ='".self::$app_id."' ORDER BY rp.permission_id ASC"));
          
-        $mods = DB::select(DB::raw("SELECT DISTINCT m.id,m.disabled, m.module_name AS `name`, m.module_name_native AS name_native, m.icon_image, m.target_url 
+        $mods = DB::select(DB::raw("SELECT DISTINCT m.id,m.disabled, m.module_name AS `name`, m.module_name_native AS name_native, m.icon_image, m.target_url,m.display_order 
         FROM um_app_modules AS m INNER JOIN um_role_modules AS rm ON m.id = rm.module_id 
         INNER JOIN um_user_roles AS ur ON ur.role_id = rm.role_id 
         WHERE IFNULL(m.hidden,0) =0 AND ur.user_id ='$user_id' ORDER BY m.disabled ASC, m.display_order ASC"));
@@ -1439,7 +1547,7 @@ class UM extends Model
       $i =0;$c = null;
       do{
         if (isset(self::$user_classes[$i])) $c = self::$user_classes[$i]; else break;
-        if ($c->user_class === $user_class) return true;  
+        if ($c->user_class === strtolower($user_class)) return true;  
         $i++;
       }while($c);
 

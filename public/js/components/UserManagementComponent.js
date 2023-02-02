@@ -1,11 +1,9 @@
-'use strict' 
+'use strict'; 
 //begin::UserManagementComponent
 let UserManagementComponent = new function(){
     let mThis = this;
-    //this.elScreenTitle = $('#screen_title');
-    mThis.base_url = main_view.base_url; // $('#__base_url').val();
-    this.title_prop ='manage users';
-
+    this.title_prop = "User Management"; 
+    mThis.base_url = $('#__base_url').val();
     mThis.initialized = false;
    
     this.init = function() {
@@ -18,10 +16,14 @@ let UserManagementComponent = new function(){
     this.show = function(options) {
       if (!mThis.initialized) alert('UserManagementComponent.init() is not called for inialization');
 
-        if(options)  mThis.onClose = options.onClose; 
+        if(options){
+            if (options.title) mThis.title = options.title; 
+            mThis.onClose = options.onClose;
+        }
         main_view.setTitle(mThis.title_prop);
-        UserListPanel.show();
-        mThis.self.show().siblings().hide(); 
+
+        mThis.self.show().siblings().hide();
+        UserListPanel.show(); 
     };
     
     this.hide = function() {
@@ -31,24 +33,36 @@ let UserManagementComponent = new function(){
 //end::UserManagementCompment
 
 //begin::UserListPanel
-var UserListPanel = new function() {
+let UserListPanel = new function() {
     let mThis = this;
     this.self = $('#_um_userListPanel');
     mThis.base_url = $('#__base_url').val();
     this.lnkNewUser = $('#_um_lnkNewUser');
     
+    this.elFilter_userclass = $('#_um_filter_user_class');
     this.elSearch = $('#_um_userlist_search');
-
-    this.tblUsers = $('#_um_tblusers');
-    this.tblUsers_body = $('#_um_tblUsers_body');
+    
+    this.tblUsers = $('#_um_tblUsers');
+    //this.tblUsers_body = $('#_um_tblUsers_body');
     this.div_extended_detail = $('#_um_extended_details_panel');
 
+
+    //Load user classes from server
+    vsapi.call(`${this.base_url}/api/getComboItems_userclass`,null).then(res=>{
+        if(res.status_code===200){
+           let items = StringSanitizer.sanitizeObject(res.data);
+           items.unshift({'user_class':null,'user_class_name':'(All Classes)'});
+           VSUtil.setComboItems(mThis.elFilter_userclass,items,'user_class','user_class_name',null,null,null);
+        } 
+   });
+     
     this.lnkNewUser.on('click',function(e){
         e.preventDefault();
-          AddUserPanel.show(null);
+          let op = {user_class:mThis.elFilter_userclass.val()};
+          AddUserPanel.show(op);
     });
     
-    mThis.tblUsers_body.on('mouseover','tr',function(e){
+   mThis.tblUsers.on('mouseover','tr',function(e){
         let el = $(this).find('._um_item_action_button');
         el.show();
     }).on('mouseleave','tr',function(e){
@@ -56,39 +70,69 @@ var UserListPanel = new function() {
        el.hide();
     }); 
   
+    this.elFilter_userclass.on('change',(e)=>{
+       mThis.displayUserList();
+    });
+
     this.elSearch.on('keyup',function(e){
         e.preventDefault();
         let d = $(this).val();
         mThis.displayUserList(d); 
     });
 
-    mThis.tblUsers_body.on('click','a._um_delete_user',function(e){
+    mThis.tblUsers.on('click','a.btn-user-setpwd',(e)=>{
         e.preventDefault();
-        let id = $(this).data('userid');
-        cv_interact.confirm('Delete this user?','Delete User',function(e){
+        let tr = $(e.target).closest('tr');
+        let id =tr.data('id');
+        let login_name =tr.data('loginname');
+        if (!login_name || login_name==''){
+            cv_interact.error("Login name is empty or invalid");
+            return;
+        }
+
+        let op = {"login_name":login_name, "user_id":id};
+        SetPasswordDialog.show(op);   
+
+        // cv_interact.confirm('Delete this user?',{title:'Delete user',context:'delete'},e=>{
+        //     if(e){
+        //         mThis.deleteUser(id);
+        //     }
+        // });   
+    });
+
+    mThis.tblUsers.on('click','a.btn-user-delete',(e)=>{
+        e.preventDefault();
+        let tr = $(e.target).closest('tr');
+        let id =tr.data('id');
+        cv_interact.confirm('Delete this user?',{title:'Delete user',context:'delete'},e=>{
             if(e){
                 mThis.deleteUser(id);
             }
-        })   
+        });   
     });
 
-    mThis.tblUsers_body.on('click','a._um_edit_user',function(e){
+   mThis.tblUsers.on('click','a.btn-user-modify',(e)=>{
       e.preventDefault();
-      let user_id = $(this).data('userid');
-      AddUserPanel.show(user_id); 
+
+       let tr = $(e.target).closest('tr');
+       let login_name = tr.find('.login_name-text').text();
+       mThis.changeLoginName(login_name,tr);
+    //   let user_id =tr.data('id');
+    //   let op = {'user_id':user_id};
+    //   AddUserPanel.show(op); 
    });
 
    /** begin::tblUsers's action dropdown menu **/
       
       /** When user clicks outside Groups table's dropdown menus, then hide the dropdown menus **/
          $(document).on('click',function(e) 
-         {  
-             let container = mThis.tblUsers_body.find('.dropdown'); 
+         {   
+             let container = mThis.tblUsers.find('.dropdown'); 
              if (container) {
                  // if the target of the click isn't the container nor a descendant of the container
                  if (!container.is(e.target) && container.has(e.target).length === 0) 
                  {
-                     mThis.tblUsers_body.find('.dropdown-menu').each(function(){
+                    mThis.tblUsers.find('.dropdown-menu').each(function(){
                          $(this).removeClass('show');
                      }); 
                      
@@ -96,10 +140,10 @@ var UserListPanel = new function() {
                  } //else alert("Clicked inside the DIV.dropdown");    
              }  
                  
-             e.stopImmediatePropagation();
+             e.stopPropagation();
          }); 
-  
-   mThis.tblUsers_body.on('click','.btn_user_action',function(e) {
+
+  mThis.tblUsers.on('click','.btn-user-action',function(e) {
         e.preventDefault();
         let p = $(this).parent();
         let user_id = $(this).data('userid');  /** <div class="dropdown-menu" data-userid="##"> its parent is <div class="dropdown" ... its parent is <td ... **/
@@ -125,24 +169,22 @@ var UserListPanel = new function() {
 
     });
 
-    mThis.tblUsers_body.on('mouseover','tr',function(e){
-        let td_action = $(this).find('td.col_action');
-        let btn_class_action = td_action.find('i.user_icon');
-        btn_class_action.addClass('action-icon-active');
-   }).on('mouseleave','tr',function(e) {
-      let td_action = $(this).find('td.col_action');
-      let btn_class_action = td_action.find('i.user_icon');
-
-      td_action.find('a.btn_user_action i').removeClass('action-icon-active');
-      btn_class_action.closest('.dropdown-menu').removeClass('show');
+//    mThis.tblUsers.on('mouseover','tr',function(e){
+//         let td_action = $(this).find('td.col_action');
+//         td_action.find('a').addClass();
+//    }).on('mouseleave','tr',function(e) {
+//       let td_action = $(this).find('td.col_action');
+//       let btn_class_action = td_action.find('a');
+//       btn_class_action.css('display','none');
+//       btn_class_action.closest('.dropdown-menu').removeClass('show');
        
-   }) ;
+//    }) ;
    
     //Create dropdown menus html for table tblUsers> row  
     this.createDropdownMenuHtml_user = function(user_id, loginname) {
         //ga = 'groups_action' = > ga_delete, ga_modify
         let html = ['<div class="dropdown-menu" data-userid="',user_id,'" data-loginname="',loginname,'">',
-            '<a class="dropdown-item _um_ua_delete" href="#"><i class="fa fa-trash" style="color:red"></i> Delete User</a>',
+            '<a class="dropdown-item _um_ua_delete" href="#"><i class="fa fa-times" style="color:red"></i> Delete User</a>',
             //'<a class="dropdown-item _um_ua_modify" href="#"><i class="fa fa-edit" style="color:grey"></i>  Modify User</a>',
             '<a class="dropdown-item _um_ua_change_name" href="#"><i class="fa fa-user" style="color:grey"></i> Change Login Name</a>',
             '<a class="dropdown-item _um_ua_lock" href="#"><i class="fa fa-lock" style="color:red"></i> <span class="menu-text">Lock User</span></a>',
@@ -156,7 +198,7 @@ var UserListPanel = new function() {
    //end::tblUsers' action dropdown menu
 
    /*## begin::event handler for each user action menu ##*/
-   mThis.tblUsers_body.on('click','tr>td.col_action a._um_ua_delete',function(e) {
+  mThis.tblUsers.on('click','tr>td.col_action a._um_ua_delete',function(e) {
        e.preventDefault();
       let user_id = $(this).parent().data('userid');
       if(!user_id) user_id =0;
@@ -168,42 +210,20 @@ var UserListPanel = new function() {
    });
 
       //menu clicked to Change Login name
-      mThis.tblUsers_body.on('click','tr>td.col_action a._um_ua_change_name',function(e) {
-        e.preventDefault();   
-        let login_name = $(this).parent().data('loginname');  
-        let option = {
-            'blankErrorMessage':'Login name cannot be blank',
-            'btnOKText':'Commit Change',
-            'defaultValue':login_name,
-            'title':'Change Login Name',
-            'dataLabel':'New login name'
-        }; 
-        InputBox1.show(option,function(d){
-           if(d){
-               if(d !== login_name) {
-                    let p = {};
-                    //p.user_id = $(this).parent().data('userid');
-                    p.login_name = login_name;
-                    p.new_login_name = d;
-                    //if(!p.user_id) p.user_id =0;
-                    vsapi.call([mThis.base_url,'/api/changeLoginName'].join(''),p).then((result)=>{  
-                        if(result.status_code ===200) {
-                          mThis.displayUserList();
-                        } else cv_interact.alert(result.error_message,'','error');
-                    });
-               }
-           }
-        });
-
+     mThis.tblUsers.on('click','tr>td.col_action a._um_ua_change_name',function(e) {
+        e.preventDefault();
+        let login_name = $(this).parent().data('loginname');
+        let tr = $(this).closest('tr');     
+        mThis.changeLoginName(login_name,tr);
      });
-
-   mThis.tblUsers_body.on('click','tr>td.col_action a._um_ua_setpwd',function(e) {
+ 
+  mThis.tblUsers.on('click','tr>td.col_action a._um_ua_setpwd',function(e) {
     e.preventDefault();  
         let login_name = $(this).parent().data('loginname');
         SetPasswordDialog.show(login_name);   
     });
 
-   mThis.tblUsers_body.on('click','tr>td.col_action a._um_ua_lock',function(e) {
+  mThis.tblUsers.on('click','tr>td.col_action a._um_ua_lock',function(e) {
     e.preventDefault();  
     let is_locked = $(this).closest('tr').data('islocked');
     let action ='lock';
@@ -227,11 +247,11 @@ var UserListPanel = new function() {
        }
         cv_interact.confirm(msg,'User Lockout',function(e){
             if(e){
-                vsapi.call([mThis.base_url,'/api/setLockStatus'].join(''),p).then((res)=>{
+               vsapi.call([mThis.base_url,'/api/setLockStatus'].join(''),p).then(res=>{
                     if(res.status_code ===200){
                         mThis.displayUserList(mThis.elSearch.val());
-                    } else cv_interact.alert(res.error_message,'','error');
-                    });
+                    } else cv_interact.alert(re.error_message);
+               });
             }
         }); 
     });
@@ -245,65 +265,221 @@ var UserListPanel = new function() {
         mThis.self.show().siblings().hide();
     }
  
-    this.displayUserList = function(search_value){
-        //let div = $('#_um_tblUsers_wrapper'); // mThis.tblUsers.parent(); //div.table_wrapper
-        //div.removeClass('animate-slide-right');
-        let p = {};
-        p.search_value = search_value;
-        vsapi.call([mThis.base_url,'/api/getUserList'].join(''),p).then((res)=>{
-            //rows = StringSanitizer.sanitizeObject(rows);
-            let rows = [];
-            if (res.status_code ===200) rows = res.data;
-            mThis.tblUsers_body.empty();
-            let i =0, c;
-            do{
-               c = rows[i];
-               if(!c) break;
-               c.login_name = StringSanitizer.sanitizeOut(c.login_name,'email');
-               c.email =StringSanitizer.sanitizeOut(c.email,'email');
-               c.id =StringSanitizer.sanitizeOut(c.id);
-               c.is_locked =StringSanitizer.sanitizeOut(c.is_locked);
-               c.user_class =StringSanitizer.sanitizeOut(c.user_class);
-               c.full_name =StringSanitizer.sanitizeOut(c.full_name);
-               c.official_code =StringSanitizer.sanitizeOut(c.official_code);
-               c.phone_number =StringSanitizer.sanitizeOut(c.phone_number);
-               c.status =StringSanitizer.sanitizeOut(c.status);
-
-               let dropdown_container_html =['<div class="dropdown">',
-               '<a href="#" data-userid="',c.id,'" data-loginname="',c.login_name,'" class="btn_user_action" aria-haspopup="true" aria-expanded="false">',
-               '<i class="user_icon fa fa-user" style="color:#DBDFDF;"></i>',
-               //' Action',
-               '</a>',
-              '</div>'].join('');
-
-                 let lock_icon ="";
-                 if(c.is_locked==1 ||c.is_locked==true) lock_icon ='<div style="float:right"><span class="fa fa-lock" style="color:red"></span></div>';
-      
-                 let html = ['<tr data-islocked="',c.is_locked,'">',
-                  '<td class="col_action">',dropdown_container_html,'</td>',
-                  '<td><span>',c.login_name,'</span>',lock_icon,'</td>',
-                  '<td>',c.user_class,'</td>',
-                  '<td>',c.full_name,'</td>',
-                  '<td>',c.official_code,'</td>',
-                  //'<td>',c.phone_number,'</td>',
-                  //'<td>',c.email,'</td>',
-                  '<td>',c.status,'</td>',
-                  '</tr>'].join('');
-                 mThis.tblUsers_body.append(html);
-                 i++;
-            }while(c);
-             //Hide action menus, wait until user move mouse over table row (tr)
-             //mThis.tblUsers_body.find('._um_item_action_button').css('display','none');
-             //div.addClass('animate-slide-right');
+    this.changeLoginName = (login_name,tr)=>{
+        // if (!login_name || login_name==''){
+        //     cv_interact.error("Login name is empty or invalid");
+        //     return;
+        // }
+        let option = {
+            'blankErrorMessage':'Login name cannot be blank',
+            'btnOKText':'Commit Change',
+            'defaultValue':login_name,
+            'title':'Change Login Name',
+            'dataLabel':'New login name'
+        };
+        InputBox1.show(option,function(d){
+           if(d){
+               if(d !== login_name) {
+                    let p = {};
+                    //p.user_id = $(this).parent().data('userid');
+                    p.login_name = login_name;
+                    p.new_login_name = d;
+                    //if(!p.user_id) p.user_id =0;
+                    vsapi.call([mThis.base_url,'/api/changeLoginName'].join(''),p).then(res=>{  
+                        if(res.status_code===200) {
+                          mThis.displayUserList();
+                          if(tr) tr.data('loginname',login_name);
+                        } else cv_interact.error(res.error_message);
+                    });
+               }
+           }
         });
-    };
+
+     }
+
+    this.displayUserList = function(search_value=null) {
+        //let div = mThis.tblUsers.parent();
+        //div.removeClass('effect-zoomin');
+        let p = {};
+        p.search_value = search_value? search_value: mThis.elSearch.val();
+        p.user_class = mThis.elFilter_userclass.val();
+        vsapi.call([mThis.base_url,'/api/getUserList'].join(''),p).then(res=>{
+
+          if(res.status_code===200){
+                
+                    if (mThis.table){
+                        mThis.tblUsers.DataTable().clear().destroy();
+                        //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
+                        mThis.tblUsers.empty();
+                        mThis.table = null;
+                    }
+
+                    let data = [];
+                    if(res.status_code===200) data = StringSanitizer.sanitizeObject(res.data,null,['login_name','email']);
+                    let cnt = 1;
+                    //begin::Set up columns
+                    let my_columns = [
+                        {
+                            title: "No",
+                            data: () => {
+                                return cnt;
+                            }
+                        },
+                        {
+                            className:"login_name login_name-text",
+                            data:(user,a,b) =>{
+                                return user.login_name;
+                            },
+                            title: 'Login Name'
+                        },
+                        {
+                            title:'User Class',
+                            data:(user,a,b)=>{
+                                return ['<span style="fw-bold text-secondary">',user.user_class,`</span>`].join('');
+                            }
+                        },
+                        {
+                            title:'Full Name',
+                            data:(user,a,b)=>{
+                                return user.full_name?user.full_name:'Unspecified';
+                            }
+                        },
+                        {
+                            title: "Official ID",
+                            data: (user,a,b)=>{
+                                return user.official_code?user.official_code:'None';
+                            }
+                        },
+                        {
+                            title:"Phone Number",
+                            data:(user,a,b)=>{
+                                return user.phone_number?user.phone_number:"Unavailable";
+                            }
+                        },
+                        {
+                            title:"Email",
+                            data:(user,a,b)=>{
+                                return user.email?user.email:"Unavailable";
+                            }
+                        },
+                        {
+                            className:"status",
+                            title:"Status",
+                            data:(user,a,b)=>{
+                                return user.status;
+                            }
+                        },
+                        {
+                            title:"Action",
+                            className:"col_action",
+                            data: function(user,a,b){
+                                return [`<div class="form-inline">`,
+                                `<a href="javascript:void(0)" class="btn-user-modify" data-id="${user.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
+                                `<a href="javascript:void(0);" data-id="${user.id}" class="btn-user-setpwd"><i class="fa fa-user-lock" style="color:orange"></i></a> &nbsp;`,
+                                `<a href="javascript:void(0);" data-id="${user.id}" class="btn-user-delete"><i class="fa fa-trash" style="color:red"></i></a> &nbsp;`,
+                                `<a style="display:none" href="javascript:void(0);" data-id="${user.id}" class="btn-user-action"><i class="fa fa-list-alt"></i></a>`,
+                                `</div>`
+                                ].join('');
+                            }
+                        }
+                    ];
+                    //END Define colum
+        
+                    //translate column names
+                    //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
+                    if (!mThis.table)
+                    mThis.table = mThis.tblUsers.DataTable({
+                        searching:false,
+                        destroy:true,
+                        paging:true,
+                        ordering:false,
+                        //dom: 'Bfrtip',
+                        retrieve: true,
+                        //scrollY:390,
+                        //scrollX:500,
+                        //pagingType:'numbers',
+                        info:true,
+                        pageLength: 10,
+                        bLengthChange:false,
+                        saveState:true,
+                        'processing': true,
+                        'language': {
+                            'loadingRecords': '&nbsp;',
+                            'processing': 'Loading...',
+                            "emptyTable": 'No data to display'
+                            },
+                        'data':data,
+                        'columns':my_columns,
+                        "createdRow": function(row, data, dataIndex){
+                            cnt++;
+                            let tr = $(row);
+                            tr.data('id',data.id);
+                            tr.data('loginname',data.login_name);
+                        }						
+                    });
+
+            }
+         
+        } );
+     }
+
+    // this.displayUserList1 = function(search_value){
+    //     //let div = $('#_um_tblUsers_wrapper'); // mThis.tblUsers.parent(); //div.table_wrapper
+    //     //div.removeClass('animate-slide-right');
+    //     let p = {};
+    //     p.search_value = search_value;
+    //     post_ajax([mThis.base_url,'/api/getUserList'].join(''),p,function(rows){
+    //         //rows = StringSanitizer.sanitizeObject(rows);
+    //        mThis.tblUsers.empty();
+    //         let i =0, c;
+    //         do{
+    //            c = rows[i];
+    //            if(!c) break;
+    //            c.login_name = StringSanitizer.sanitizeOut(c.login_name,'email');
+    //            c.email =StringSanitizer.sanitizeOut(c.email,'email');
+    //            c.id =StringSanitizer.sanitizeOut(c.id);
+    //            c.is_locked =StringSanitizer.sanitizeOut(c.is_locked);
+    //            c.user_class =StringSanitizer.sanitizeOut(c.user_class);
+    //            c.full_name =StringSanitizer.sanitizeOut(c.full_name);
+    //            c.official_code =StringSanitizer.sanitizeOut(c.official_code);
+    //            c.phone_number =StringSanitizer.sanitizeOut(c.phone_number);
+    //            c.status =StringSanitizer.sanitizeOut(c.status);
+
+    //            let dropdown_container_html =['<div class="dropdown">',
+    //            '<a href="#" data-userid="',c.id,'" data-loginname="',c.login_name,'" class="btn_user_action" aria-haspopup="true" aria-expanded="false" style="display:none">',
+    //            '<i class="fa fa-chevron-down" style="color:red"></i>',
+    //            //' Action',
+    //            '</a>',
+    //           '</div>'].join('');
+
+    //              let lock_icon ="";
+    //              if(c.is_locked==1 ||c.is_locked==true) lock_icon ='<div style="float:right"><span class="fa fa-lock" style="color:red"></span></div>';
+      
+    //              let html = ['<tr data-islocked="',c.is_locked,'">',
+    //               '<td><span>',c.login_name,'</span>',lock_icon,'</td>',
+    //               '<td class="col_action">',dropdown_container_html,'</td>',
+    //               '<td>',c.user_class,'</td>',
+    //               '<td>',c.full_name,'</td>',
+    //               '<td>',c.official_code,'</td>',
+    //               '<td>',c.phone_number,'</td>',
+    //               '<td>',c.email,'</td>',
+    //               '<td>',c.status,'</td>',
+    //               '</tr>'].join('');
+    //             mThis.tblUsers.append(html);
+    //              i++;
+    //         }while(c);
+    //          //Hide action menus, wait until user move mouse over table row (tr)
+    //          //mThis.tblUsers_body.find('._um_item_action_button').css('display','none');
+    //          //div.addClass('animate-slide-right');
+    //     });
+    // };
 
    this.deleteUser = function(user_id =0) {
        let p = {'user_id':user_id};
-        vsapi.call([mThis.base_url,'/api/deleteUser'].join(''),p).then((res)=>{
-            if(res.status_code ===200){
-                mThis.displayUserList(mThis.elSearch.val());
-            } else cv_interact.alert(res.error_message,'','error');
+        vsapi.call([mThis.base_url,'/api/deleteUser'].join(''),p).then(res=>{
+            if(res.status_code===200){
+                mThis.displayUserList();
+            } else cv_interact.error(res.error_message);
         });
         
     }  
@@ -317,7 +493,7 @@ let AddUserPanel = new function() {
     this.self = $('#_um_addUserPanel');
     this.base_url = $('#__base_url').val();
     this.lnkBackToUserList = $('#_um_lnkbackToUserList');
-    mThis.goBackFunction=null;
+    this.goBackFunction=null;
     this.lnkFindPerson = $('#_um_adduser_linkFindPerson');
 
     this.btnBack = $('#_um_btnBackToUserList');
@@ -328,7 +504,7 @@ let AddUserPanel = new function() {
     this.elRole = $('#_um_adduser_role');
     this.elUserClass = $('#_um_adduser_userclass');
     this.elLoginName = $('#_um_adduser_loginname');
-    //this.elOfficialCode = $('#_um_adduser_officialcode');
+    this.elOfficialCode = $('#_um_adduser_officialcode');
     this.elFullName = $('#_um_adduser_fullname');
     //this.elPrevilegeType = $('#_um_adduser_previlege');
 
@@ -342,6 +518,14 @@ let AddUserPanel = new function() {
     this.elWorkLoc_map = $('#_um_adduser_workloc_map'); /*Not yet define in HTML element */
     
     this.div_extended_detail = $('#_um_extended_details_panel');
+    
+    vsapi.call(`${this.base_url}/api/getComboItems_userclass`,null).then(res=>{
+         if(res.status_code===200){
+            let items = StringSanitizer.sanitizeObject(res.data);
+            items.unshift({'user_class':null,'user_class_name':'(Choose user class)'});
+            VSUtil.setComboItems(mThis.elUserClass,items,'user_class','user_class_name',null,null,null);
+         } 
+    });
 
     this.lnkBackToUserList.on('click',function(e){
         e.preventDefault();
@@ -354,23 +538,38 @@ let AddUserPanel = new function() {
         }
     });
 
-    // mThis.lnkFindPerson.on('click',(e)=>{
-    //    e.preventDefault();
-    //    let user_class = mThis.elUserClass.val().toLowerCase();
-    //    let title =null;
-    //    if(user_class ==='staff' || user_class ==='borrower') title ='Find People'
-    //    else {
-    //      cv_interact.alert('Admin staff does not have extended details or profile'); 
-    //      return;
-    //    }
-    //    let option = {'title':title,'role':user_class,'singleSelect':true,'previousDialog':null};
-    //    FindPersonDialog.show(option,(ps)=>{
-    //        if(ps[0]){
-    //            let p = ps[0];
-    //            mThis.elOfficialCode.val(p.code).trigger('blur');
-    //        }
-    //    }); 
-    // });
+    mThis.lnkFindPerson.on('click',(e)=>{
+       e.preventDefault();
+       //Allow user to find Person only when creating merchant or driver only. todo: later, we can have employee profile for staff
+       let allowed_find_userclasses = ['driver','merchant','sender'];
+
+       let user_class = mThis.elUserClass.val();
+       if(!user_class)
+       {
+            cv_interact.alert("Please select one user class");
+            return;
+       }
+       user_class =(user_class +'').toLowerCase();
+       let title =null;
+       if(allowed_find_userclasses.indexOf(user_class) >=0) 
+         title =`Find ${user_class}`;
+       else{
+        cv_interact.alert('Admin Support users do not need to have profile details');
+        return;
+       }
+
+       if(user_class==='merchant') user_class ='sender';
+       let option = {'title':title,'role':user_class,'singleSelect':true,'previousDialog':null};
+       FindPersonDialog.show(option,(ps)=>{
+           if(ps[0]){
+               let p = ps[0];
+               mThis.elOfficialCode.val(p.code).trigger('blur');
+               mThis.elFullName.val(p.name);
+               mThis.elLoginName.val(p.phone_number);
+               mThis.elPhoneNumber.val(p.phone_number);  
+           }
+       }); 
+    });
 
     mThis.btnBack.on('click',function(e) {
         mThis.lnkBackToUserList.trigger('click');
@@ -396,13 +595,10 @@ let AddUserPanel = new function() {
 
     mThis.elUserClass.on('change',()=>{
       let p = {"user_class":mThis.elUserClass.val()}; 
-      vsapi.call([mThis.base_url,'/api/getComboItems_role'].join(''),p).then((res)=>{
-         if (res.status_code===200){
-            let rows = StringSanitizer.sanitizeObject(res.data); 
-            CommonLib.setComboItems(mThis.elRole,rows,'id','name',true,'(Select role)',0);
-            if (rows[0] && !rows[1]) mThis.elRole.val(rows[0].id);
-         } 
-
+      vsapi.call([mThis.base_url,'/api/getComboItems_role'].join(''),p).then(res=>{
+          let rows = StringSanitizer.sanitizeObject(res.data); 
+          VSUtil.setComboItems(mThis.elRole,rows,'id','name',true,'(Select Role)',0);
+          if (rows[0] && !rows[1]) mThis.elRole.val(rows[0].id);
       });
     });
 
@@ -414,7 +610,7 @@ let AddUserPanel = new function() {
         p.login_name = mThis.elLoginName.val();
         p.user_class = mThis.elUserClass.val();
         //use login name as Official code. because login name is email or phone number
-        p.official_code = p.login_name;
+        p.official_code = mThis.elOfficialCode.val();
         p.full_name = mThis.elFullName.val();
 
         //Password and confirm Password are required for New User only
@@ -434,23 +630,22 @@ let AddUserPanel = new function() {
         // }
 
         if (!p.login_name) {
-            mThis.elError.html(LocaleManager.trans('User name cannot be empty','um-validation'));
+            cv_interact.error('User Name cannot be empty');
             return;
         }
      
-        if(p.user_class !='admin'){
-            if(!p.official_code || p.official_code ==='')
-            {
-                mThis.elError.html(LocaleManager.trans('User other than Admin, must have a valid Official ID','um-validation'));
-                return;
-            }
-        }
+        // if(p.user_class !='admin'){
+        //     if(!p.official_code || p.official_code =='')
+        //     {
+        //         mThis.elError.html('User other than Admin, must have a valid Official ID');
+        //         return;
+        //     }
+        // }
  
-        vsapi.call([mThis.base_url,'/api/saveUser'].join(''),p).then((result)=>{ 
-          
-            if (result.status_code ===200){
+        vsapi.call([mThis.base_url,'/api/saveUser'].join(''),p).then(res=> {
+            if (res.status_code === 200){
                 mThis.lnkBackToUserList.trigger('click');
-            } else mThis.elError.text(result.error_message);
+            } else cv_interact.error(res.error_message); //mThis.elError.text(res.error_message);
         }); 
     });
 
@@ -473,36 +668,53 @@ let AddUserPanel = new function() {
 
         if (mThis.user_id > 0){
             //UserManagement.title.html("Modify User Information");
-            mThis.displayUserDetail(user_id);
+            mThis.displayUserDetail(mThis.user_id);
         }else {
-            mThis.clearForm();
+            mThis.clearForm(null);
         }
+        
         //Note that worklocation is applicable only for internal users such as Staff, but for public users , there is no worklocation attribute
-        mThis.loadWorkLocationList(null,()=>{
+        //mThis.loadWorkLocationList(null,()=>{
+            if(option.official_code){
+                mThis.elOfficialCode.val(option.official_code).prop('readOnly',true);
+                mThis.elLoginName.val(option.phone_number);
+                mThis.elFullName.val(option.full_name);
+                mThis.elUserClass.val(option.user_class).trigger('change');
+            } 
+            else{
+                mThis.elOfficialCode.val(null).prop('readOnly',false);
+                mThis.elLoginName.val(null);
+                mThis.elFullName.val(null);
+                mThis.elUserClass.val(option.user_class).trigger('change');
+            }
+
+            mThis.self.parent().show().siblings().hide();
             mThis.self.show().siblings().hide();
-            mThis.elUserClass.trigger('change');
-        });
+        //});
     }
     
     this.loadRoleList = function(role_id,onFinish){
-        vsapi.call([mThis.base_url,'/api/getComboItems_role'].join(''),null).then((res)=>{
-            if (res.status_code===200){
+        vsapi.call([mThis.base_url,'/api/getComboItems_role'].join(''),null).then(res=>{
+            if(res.status_code===200){
                 let rows = StringSanitizer.sanitizeObject(res.data);
-                CommonLib.setComboItems(mThis.elRole,rows,'id','name',true,`(${LocaleManager.trans('Select role','combo-items')})`, role_id);
-                if(typeof onFinish =='function') onFinish();
+                VSUtil.setComboItems(mThis.elRole,rows,'id','name',true,'(Select User Role)', role_id);
+                if(typeof onFinish ==='function') onFinish();
             }
-
+           
         });
     }
    
     this.loadWorkLocationList = function(loc_id,onFinish){
-        vsapi.call([mThis.base_url,'/api/getComboItems_workloc'].join(''),null).then((rows)=>{
-            CommonLib.setComboItems(mThis.elWorkLoc,rows,'id','name',true,`(${LocaleManager.trans('Select work location','combo-items')})`, loc_id);
-            if(typeof onFinish =='function') onFinish();
+        vsapi.call([mThis.base_url,'/api/getComboItems_workloc'].join(''),null).then(res=>{
+           if(res.status_code===200){
+                let rows = res.data;
+                VSUtil.setComboItems(mThis.elWorkLoc,rows,'id','name',true,'(Select Work Location)', loc_id);
+                if(typeof onFinish ==='function') onFinish();
+           }
         });
     }
     
-    this.clearForm = ()=>{
+    this.clearForm = (option)=>{
        mThis.elLoginName.val(null);
        mThis.elFullName.val(null);
     }
@@ -541,25 +753,29 @@ let AddUserPanel = new function() {
     this.displayUserDetail = function() {
         let p = {};
         p.user_id = mThis.user_id;
-        vsapi.call([mThis.base_url,'/api/getUserById'].join(''),p).then((d)=>{
-            d = StringSanitizer.sanitizeObject(d);
+        p.id = mThis.user_id;
+        vsapi.call([mThis.base_url,'/api/getUserDetails'].join(''),p).then(res=>{
+            if(res.status_code===200){
+                let d = StringSanitizer.sanitizeObject(res.data);
             
-            mThis.div_extended_detail.show();
-
-            mThis.elUserClass.val(StringSanitizer.sanitizeOut(d.user_class));
-            mThis.elLoginName.val(StringSanitizer.sanitizeOut(d.login_name));
-            //mThis.elOfficialCode.val(StringSanitizer.sanitizeOut(d.official_code));
-            mThis.elFullName.val(StringSanitizer.sanitizeOut(d.full_name));
-            mThis.elRole.val(StringSanitizer.sanitizeOut(d.role_id));
-            //mThis.elEmail.val(StringSanitizer.sanitizeOut(d.email,'email'));
-            //mThis.elPhoneNumber.val(StringSanitizer.sanitizeOut(d.phone_number));
-            //mThis.elAddress.val(StringSanitizer.sanitizeOut(d.address));
-            //mThis.elWorkLocation.val(StringSanitizer.sanitizeOut(d.work_location)); // work_location ='Branch 271'
-            //mThis.elWorkLocation_type.val(StringSanitizer.sanitizeOut(d.work_location_type)); //work_location_type = 'Branch'
-            //mThis.elWorkLocation_map.val(StringSanitizer.sanitizeOut(d.work_location_map)); //work_location_map = 'Google map x,y'
-            //mThis.elPrevilegeType.val(d.previlege_type); 
+                mThis.div_extended_detail.show();
+    
+                mThis.elUserClass.val(StringSanitizer.sanitizeOut(d.user_class));
+                mThis.elLoginName.val(StringSanitizer.sanitizeOut(d.login_name));
+                //mThis.elOfficialCode.val(StringSanitizer.sanitizeOut(d.official_code));
+                mThis.elFullName.val(StringSanitizer.sanitizeOut(d.full_name));
+                mThis.elRole.val(StringSanitizer.sanitizeOut(d.role_id));
+                //mThis.elEmail.val(StringSanitizer.sanitizeOut(d.email,'email'));
+                //mThis.elPhoneNumber.val(StringSanitizer.sanitizeOut(d.phone_number));
+                //mThis.elAddress.val(StringSanitizer.sanitizeOut(d.address));
+                //mThis.elWorkLocation.val(StringSanitizer.sanitizeOut(d.work_location)); // work_location ='Branch 271'
+                //mThis.elWorkLocation_type.val(StringSanitizer.sanitizeOut(d.work_location_type)); //work_location_type = 'Branch'
+                //mThis.elWorkLocation_map.val(StringSanitizer.sanitizeOut(d.work_location_map)); //work_location_map = 'Google map x,y'
+                //mThis.elPrevilegeType.val(d.previlege_type); 
+            }
         });
     }
+ 
  }; 
 //end::AddUserPanel
 
@@ -567,37 +783,43 @@ let AddUserPanel = new function() {
  let SetPasswordDialog = new function(){
      let mThis = this;
      this.self = $('#_um_dlgSetPwd');
+     this.elTitle = $('#_um_dlgSetPwd_title');
      this.elPwd = $('#_um_setpwd_newpwd');
      this.elConfirmPwd = $('#_um_setpwd_confirmpwd');
+     
      this.btnSave = $('#_um_setpwd_btnSave');
      mThis.elError = $('#_um_setpwd_error');
-     
      mThis.base_url = $('#__base_url').val();
 
      this.btnSave.on('click',function(e){
         mThis.elError.html(null);
          let p = {};
          p.login_name = mThis.login_name;
+         //p.user_id = mThis.user_id;
          p.newPwd = mThis.elPwd.val();
          if(p.newPwd != mThis.elConfirmPwd.val()) {
-             mThis.elError.text(LocaleManager.trans('New password and confirm password do not match','um-validation'));
+            cv_interact.error('New password and Confirm password do not match');
              return;
          }
-         vsapi.call([mThis.base_url,'/api/setPassword'].join(''),p).then((result)=>{
-             if(result.status_code ===200) 
+         
+         vsapi.call([mThis.base_url,'/api/setPassword'].join(''),p).then(res=>{
+             
+             if(res.status_code===200) 
                 mThis.self.modal('hide');
              else {
-                 mThis.elError.text(result.error_message);
+                cv_interact.error(res.error_message);
              }
          });
      });
 
-     this.show = function(login_name) {
-          mThis.login_name = login_name;
+     this.show = function(option = null) {
+          if(!option) option = {};
+          mThis.login_name =option.login_name;
+          mThis.user_id = option.user_id;//not used so far
           mThis.elError.html(null);
           mThis.elPwd.val(null);
           mThis.elConfirmPwd.val(null);
-
+          mThis.elTitle.html(`Set Password for ${mThis.login_name}`); 
           mThis.self.modal({
               backdrop:'static'
           });

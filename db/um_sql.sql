@@ -206,3 +206,8 @@ CREATE TABLE `um_sessions` (
   `lang` varchar(50) DEFAULT 'en'
 ) ENGINE=InnoDB AUTO_INCREMENT=1342 DEFAULT CHARSET=utf8;
 
+alter table um_branches add created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+alter table um_users add created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+alter table um_sessions add created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+alter table um_roles add created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+alter table um_user_roles add created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;

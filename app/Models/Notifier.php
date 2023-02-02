@@ -244,6 +244,90 @@ class Notifier extends Model
      return $status;
 }
 
+/*** 
+ notify_mobile() takes @data as param:
+ $data =[
+    ['user_class','target_user_id','title','message','data','persist'],
+    ['user_class','target_user_id','title','message','data','persist']
+  ] 
+
+  notify_mobile() is to send notifications to one or more apps based on the given param @data = array()
+***/
+static function notify_mobile($branch_id,$data=[]){
+  $i=0;
+  $c = null;
+  do{
+      if(!isset($data[$i])) break;
+      $c = (object)$data[$i];
+      $str_topic = null;
+     
+      $target_user_id = isset($c->target_user_id)?$c->target_user_id:null;
+      $user_class = isset($c->user_class)?$c->user_class:null;
+      $app_id = getAppIdByUserClass($user_class);
+      $persist = isset($c->persist)?$c->persist:null;
+      $image_url = isset($c->image_url)?$c->image_url:null;
+      $custom_data = isset($c->data)?$c->data:null;
+      if($target_user_id>0)
+        $str_topic = $branch_id.topic_prefix($user_class)."private".$target_user_id;
+      else 
+         $str_topic = $branch_id.topic_prefix($user_class)."general";
+
+      // $payload_data = null;
+      // if($custom_data) {
+      //       $dataBuilder = new PayloadDataBuilder();
+      //       //NOTE $data is an associative array
+      //       if(!is_array($custom_data)) $custom_data =(array)$custom_data;
+      //       $dataBuilder->addData($custom_data);
+      //       //build custom data as JSON array that is required by fcm_send()
+      //       $payload_data = $dataBuilder->build();
+      // } 
+
+                  
+          $notification = [
+              //"condition"=>" 'private' in topics", 
+              'topic'=>$str_topic,
+              'title' => isset($c->title)?$c->title:'DMS Notification',
+              //'body' =>$c->message."($str_topic)", //message body
+              'body' =>$c->message,
+              //'android_channel_id' => isset($d->channelId)?$d->channelId:null,
+              'icon' => isset($c->image_url)?$c->image_url:null,
+              'sound' =>isset($c->sound)?$c->sound:'default'
+              //'click_action'=>"url to do something",
+              //'badge' => $c->badge,
+              //'tag' => $c->tag,
+              //'color' => $c->color,
+              //'click_action' => $c->clickAction,
+              //'body_loc_key' => $c->bodyLocationKey,
+              //'body_loc_args' => $c->bodyLocationArgs,
+              //'title_loc_key' => $c->titleLocationKey,
+              //'title_loc_args' => $c->titleLocationArgs,
+          ];
+          $succeeded = 0;
+          $res = self::fcm_send($str_topic,$notification,$custom_data);
+          //if(isset($res->message_id) && $res->message_id) $succeeded =1;
+
+          //if($persist ==1 || $persist==true){
+              $expiry_time = Carbon::now()->addDay(2);
+              //Save notification in db table
+              DB::table('notifications')->insert(array(
+                'app_id'=>$app_id,
+                //"event_name"=>$event_name,
+                "user_class"=>$user_class,
+                'user_id'=>$target_user_id,
+                'branch_id'=>$branch_id,
+                'title'=>isset($c->title)?$c->title:'DMS',
+                'message'=>isset($c->message)?$c->message:'',
+                'image_url'=>$image_url,
+                'expiry_time'=>$expiry_time,
+                'create_date'=>getNowTime()
+              ));
+          //} 
+      $i++;
+  }while($c);
+
+  return null; 
+}
+ 
    //Admin or (Web) to Merchant or Driver (Mobile apps) (target_user_id ="*" => target all user of the @user_class) 
    //@event = {'name','title','message',image_url}
    //@payload is optional param that stores data holding extra information
@@ -307,6 +391,13 @@ class Notifier extends Model
          return DV::success(["notification_status"=>$status]);
    }
  
+   static function getUnreadCount_admin($d=null){
+       return 0;
+   }
+   static function markReadAll_admin($d =null){
+      return null;
+   }
+
    //$d= {'branch_id','user_class','user_id'}
    static function getNotificationListByUser($d){
       $ss = UM::getUserInfoByToken($d,-1);
@@ -349,47 +440,33 @@ class Notifier extends Model
       }
     } 
 
-    function send_fcm($token,$title,$message,$sub_title) {
-      $url = "https://fcm.googleapis.com/fcm/send";
-      $msg = array('message' => $message,
-          'title' => $title,
-          'subtitle' => $sub_title,
-          'tickerText' => '...', //ticker text
-          'vibrate' => 1,
-          'sound' => 1
-      );
+    //$notification = ['title','body','icon'=>null,'sound'=>'default']
+  static function fcm_send($topic_name,$notification=[],$custom_data=array()) {
+    //$apiKey = 'AIzaSyD5hjn0SeDJTHasyISJhnXIRVrj-0ZUdRU';
+    //get server_key for broexpress system. defined in Helpers.php
+    $apiKey =getServerKey(); 
+    //if(!is_array($custom_data)) $custom_data = (array)$custom_data;
+    $fields = array('to' => '/topics/'.$topic_name, 'notification' => $notification, 'data'=>$custom_data);
+    $headers = array('Authorization: key='.$apiKey, 'Content-Type: application/json', 'priority' => 10);
   
-      $fields = array('to' => $token,
-          'priority' => 'high',
-          'data' => array('message' => $msg)
-           );
+    $url = 'https://fcm.googleapis.com/fcm/send';
   
-      $fcm_server_key = Config::get('app.fcm_server_key');     
-      $headers = array(
-        "Authorization:key=$fcm_server_key",
-          //"Authorization:key=AAAABQs1Uak:APA91bFZldm-qTVqgZCnABLSz3Jn-QgTBjgYSP9_2FH5jY5LJtfMdQ0V-pK7O1-E2lpfHx2GaIj0PtsrsDWxVzo1ZOKh2lVghS6TnJVBxbVpM-V3kriXRIVbOC_ESTaxDH4buakWPaKR",
-          'Content-Type:application/json'
-      );
+    // var_dump($fields);
   
-      $ch = curl_init();
-      curl_setopt($ch, CURLOPT_URL, $url);
-      curl_setopt($ch, CURLOPT_POST, true);
-      curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-      curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
-      curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-      curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-      $result = curl_exec($ch);
-      if ($result === FALSE) {
-          die('CURL FAILED ' . curl_error($ch));
-      }
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
   
-      $info = curl_getinfo($ch);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+    $result = curl_exec($ch);
+    curl_close($ch);
   
-      curl_close($ch);
-      return array('result' => $result, 'status' => $info['http_code']);
+    return $result;
   }
+  
+    
     
 }

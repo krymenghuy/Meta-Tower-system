@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Localization;
+use Session;
 
 //JDV is the Data Valiator class
 class JDV extends Model

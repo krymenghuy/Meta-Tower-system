@@ -24,7 +24,7 @@
             <form autocomplete="false" action="{{ url('/processLogin') }}" method="POST">
                 {{ @csrf_field() }}
                 <div>
-                    <input type="email" name="login_name" placeholder="User name" value="admin@gmail.com"/>
+                    <input type="text" name="login_name" placeholder="User name" value="admin@gmail.com"/>
                     <i class="fa-regular fa-circle-check" style="font-size:1.7em"></i>
                 </div>
                 <div>

@@ -61,6 +61,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('broadcast/auth', [PusherController::class, 'pusherAuth']); //->middleware('auth');
+Route::post('auth/auth-data', [UMController::class, 'getAuthData']);
+Route::post('auth/login', [ApiController::class, 'externalLogin']);
 
 // Route::get('env/20230120AZ99/vars',function(){
 //     $vars =[
@@ -357,12 +359,7 @@ Route::post('test/test-api',function(){
     return response()->json($data);
 });
 
-//um::controller
-    Route::post('auth/login', [UMController::class, 'apiLogin']);
-    Route::post('user/change-pwd', [UMController::class, 'changePassword']);
-    Route::post('auth/prns', [UMController::class, 'getPermissions_cu']);
-    Route::post('auth/auth-data', [UMController::class, 'getAuthData']);
-    //Route::post('auth/prns', [UMController::class, 'getPermissionsByUserId']);
+//##um::controller
     Route::post('createApplication', [UMController::class, 'createApplication']);
     Route::post('encryptData', [UMController::class, 'encryptData']);
     Route::post('createPermission', [UMController::class, 'createPermission']);
@@ -376,11 +373,12 @@ Route::post('test/test-api',function(){
     Route::post('getRoleList', [UMController::class, 'getRoleList']);
     Route::post('getRoleMembers', [UMController::class, 'getRoleMembers']);
     Route::post('getRoleById', [UMController::class, 'getRoleById']);
+    Route::post('user/deactivate-me', [UMController::class, 'deactivateMySelf']);
     Route::post('getUserList', [UMController::class, 'getUserList']);
     Route::post('getUserExtendedDetails', [UMController::class, 'getUserExtendedDetails']);
     Route::post('saveUser', [UMController::class, 'saveUser']);
-    Route::post('users/create-logins', [LoanController::class, 'temp_create_logins']);
     Route::post('getUserInfo', [UMController::class, 'getUserInfo']);
+    Route::post('getUserDetails', [UMController::class, 'getUserDetails']);
     Route::post('deleteUser', [UMController::class, 'deleteUser']);
     Route::post('setUserStatus', [UMController::class, 'setUserStatus']);
     Route::post('unlockUser', [UMController::class, 'unlockUser']);
@@ -411,7 +409,7 @@ Route::post('test/test-api',function(){
     Route::post('removeAccessibleModule', [UMController::class, 'removeAccessibleModule']);
     Route::post('getComboItems_userclass', [UMController::class, 'getComboItems_userclass']);
     Route::post('logout', [UMController::class, 'logout']);
-//end::controller
+//##end::controller
  
 //begin::SystemSettingController
     Route::post('getComboItems_price_list',[SystemSettingController::class,'getComboItems_price_list']);

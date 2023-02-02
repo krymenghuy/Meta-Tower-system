@@ -16,6 +16,7 @@
      this.user_id = $('meta[name="sess_user_id"]').attr('content'); 
     
      this.current_view_name = '';
+     this.pusher_channel = {};
      
      this.mnuDashboard = $('#_main_lnkDashboard');
      this.mnuAppointmentList = $('#_main_lnkAppointments');
