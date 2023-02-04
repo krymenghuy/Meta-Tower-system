@@ -305,13 +305,11 @@
             
                     this.mnuManageBrandImages_mobile.on('click',(e)=>{
                         e.preventDefault();
-                        let op = {'title':'Mobile Brand Images'};
-                        MobileBrandImagesComponent.show(op);
+                        MobileBrandImagesComponent.show();
                     });
                     this.mnuPromotions_mobile.on('click',(e)=>{
                         e.preventDefault();
-                        let op = {'title':'Promotions'};
-                        PromotionComponent.show(op);
+                        PromotionComponent.show();
                     });
      
                  
