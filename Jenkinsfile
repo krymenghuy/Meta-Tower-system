@@ -12,7 +12,7 @@ pipeline {
                 echo "Hello Jenkins!"
             }
         }
-        stage('Deployment') {
+        stage('Deploy') {
             steps {
                 sh 'ssh -o StrictHostKeyChecking=no vectfrar@192.64.117.185 -p 21098 "cd ~/public_html/mclinic.vectorasoft.com;\
                 git fetch;\
