@@ -19,6 +19,18 @@ class LoginController extends Controller
         $this->UMModel = new UM();
     }
   
+    function apiLogin(Request $request){
+        $app_id = Config::get('app.app_id');
+        $login_name = $request->login_name;
+        $pwd = $request->password;
+
+        $result = $this->UMModel->verifyUser($app_id,$login_name,$pwd);
+        if($result->status ==='OK'){
+            $result->user->image_url = \App\Models\PublicStorage::getProfilePhoto_url($result->user->branch_id, $result->user->user_class, $result->user->official_id); 
+         }
+        return $result;
+    }
+
     function processLogin(Request $request){
          /** $THIS_APP_ID is used for we login. BUT for Mobile app authentication, must be come app_id and users login_name or access_token **/
          $THIS_APP_ID = Config::get('app.app_id'); 

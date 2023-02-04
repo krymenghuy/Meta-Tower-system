@@ -397,6 +397,26 @@ class PublicStorage extends Model
  
    }
 
+    static function getProfilePhoto_url($branch_id,$user_class,$official_id){
+            if($user_class =='staff' || $user_class =='employee') 
+             {
+                return null;
+                // $rows = DB::table('sender AS d')->where('d.branch_id',$branch_id)->where('d.id',$sender_id)->selectRaw('photo_file_name,photo_file_type')->limit(1)->get();
+                // foreach($rows as $row) {
+                //     if (empty($row->photo_file_name)) 
+                //     return null;
+                //     else
+                //     return self::getUrl($branch_id,'merchant','image').$row->photo_file_name; 
+                // } 
+                // return $sender_id;
+             }
+            else if ($user_class ==='staff') 
+            {
+                return null;
+            }
+            return null;
+    }
+
    //return base64 content of image
     static function getProfilePhoto($branch_id,$person_id){
         //$ss = getSessionInfo($d);

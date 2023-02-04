@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Inventory\Settings;
 use App\Models\JDV;
 use App\Models\UM;
+use App\Models\Inventory\StockUnit;
+use App\Models\Inventory\Item;
+use App\Models\Inventory\StockLog;
 use DB;
 use Session;
 
@@ -54,6 +57,21 @@ class FGStockController extends Controller
         return JDV::result($rows);
     }
 
+    //given an item_id,trx_date, it returns object recpresneting the stock info for the item
+    function getStockRecord($branch_id,$item_id,$trx_date =null){
+         $date = date('Y-m-d');
+         if((bool)strtotime($trx_date)) $date = convertDate($trx_date);
+         $str_date = "DATE(trx_date) ='$date'";
+         //NOTE: important field "si.id" is the stock ID used to update stock trx record
+         $cols = "si.id,si.item_id,si.item_code,si.trx_date,si.warehouse_id,si.stockclass_code,si.begin_qty,si.purchase_qty,si.sold_qty,customer_return_qty,vendor_return_qty,adjust_qty,sku,unit_id";
+         $rows = DB::table('inv_daily_stocks as si')->where('si.item_id',$item_id)->whereRaw($str_date)->where('si.branch_id',$branch_id)->selectRaw($cols)->take(1)->get();
+         return isset($rows[0])? $rows[0]: null;                        
+    }
+
+    function getBeginQty($item_id){
+       return 0;
+    }
+
     //Receive PO items and increase Inventory items  
     function receiveItems(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
@@ -62,9 +80,9 @@ class FGStockController extends Controller
 
         $validate_rule = [
             "type"=>"1|choice|RM,FG",
-            "warehouse_id"=>"1|exists=warehouses.id|default=1",
-            "block"=>"1|exists=inv_blocks.code|default=A",
-            "class"=>"1|exists=inv_stock_classes.code|default=A",
+            "warehouse_id"=>"1|exists=warehouses.id|default=1|text=Warehouse identity does not exist",
+            //"block"=>"1|exists=inv_blocks.code|default=A",
+            "stockclass_code"=>"1|string|exists=inv_stock_classes.code|default=A",
             "po_number"=>"0|string|0-25",
             "trx_date"=>"0|timestamp",
             "vendor_id"=>"0|number|exists=vendors.id",
@@ -78,7 +96,12 @@ class FGStockController extends Controller
         $inputs = $res->values;
         $items = $inputs['items'];
 
-        $trx_date = $inputs['trx_date'];
+        $trx_date = convertDate($inputs['trx_date']);
+        if(!(bool)strtotime($trx_date)) $trx_date = getNowTime();
+
+        $stockclass_code = $inputs['stockclass_code'];
+        $warehouse_id = 1; //$inputs["warehouse_id"];
+
         if(!(bool)strtotime($trx_date)) $trx_date = $inputs['trx_date'];
 
         //return JDV::result($items); 
@@ -86,23 +109,61 @@ class FGStockController extends Controller
         $i =0;
         do{
             if(!isset($items[$i])) break;
-             $item = $items[$i];
+                $item = $items[$i];
                 //begin:: task to process each $item in $items array
-                  $unitInfo = StockUnit::info($item->unit_id);
-                  //$item_code = Item:::info($item->id);
+                  $unitInfo = StockUnit::info($item->sku);
+                
+                  $item_id = isset($item->id)?$item->id:null;
+                  $begin_qty = $this->getBeginQty($item_id);
+                  $sold_qty =0;
+                  $customer_return_qty =0;
+                  $vendor_return_qty = 0;
+                  $adjust_qty = 0;
+                  if(!$item_id) $item_id = isset($item->item_id)?$item->item_id:0;
+                      $itemInfo = Item::info($item_id);
+                      if($itemInfo){
+                            $stock_item = $this->getStockRecord($branch_id,$item_id,$trx_date);
+                            if($stock_item){
+                               $update_qty = $stock_item->purchase_qty + $item->qty; 
+                               DB::table('inv_daily_stocks')->where('id',$stock_item->id)->where('branch_id',$branch_id)->update([
+                                  'purchase_qty'=>$update_qty,
+                                  'update_uid'=>$ss->user_id,
+                                  'updated_at'=>getNowTime(),
+                                  'update_user'=>$ss->login_name
+                               ]);
 
-                  DB::table('inv_daily_stocks')->insert([
-                    "trx_date"=>$trx_date,
-                    "item_id"=>$item->id,
-                    "item_code"=>$item_code,
-                    "purchase_qty"=>$item->qty,
-                    "sol"
-                  ]);
+                            }else{
+                                DB::table('inv_daily_stocks')->insert([
+                                    "branch_id"=>$branch_id,
+                                    "warehouse_id"=>$warehouse_id,
+                                    "stockclass_code"=>$stockclass_code,
+                                    "trx_date"=>$trx_date,
+                                    "item_id"=>$item_id,
+                                    "item_code"=>$itemInfo->code,
+                                    "begin_qty"=>$begin_qty,
+                                    "purchase_qty"=>$item->qty,
+                                    "sold_qty"=>$sold_qty,
+                                    "customer_return_qty"=>$customer_return_qty,
+                                    "vendor_return_qty"=>$vendor_return_qty,
+                                    "adjust_qty"=>$adjust_qty,
+                                    "sku"=>$item->sku,
+                                    "unit_id"=>$unitInfo->id,
+                                    "created_at"=>getNowTime(),
+                                    "create_user"=>$ss->login_name,
+                                    "create_uid"=>$ss->user_id,
+                                    "updated_at"=>getNowTime(),
+                                    "update_user"=>$ss->login_name,
+                                    "update_uid"=>$ss->user_id
+                                ]);
+                            }
+                            $trx_id = DB::getPdo()->lastInsertId();
+                            StockLog::log($ss,['action'=>'receive','qty'=>$item->qty,'sku'=>$item->sku,'trx_id'=>$trx_id]);
+                      } //end:: if item exists in table "inv_items" 
+               
                 //end:: task to process each $item in $items array
             $i++;
-        }while($item);        
-        DB::table("inv_daily_stock")->insert($input_items);
-    
+        }while($item);
+
         return JDV::success($items);
     }
 
