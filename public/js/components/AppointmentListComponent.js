@@ -862,7 +862,6 @@ let AppointmentDialog = new function(){
 
         mThis.formUntil.show(option);
     }
-     
 } 
 
 //begin::PatientDialog => register Patient

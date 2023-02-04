@@ -12,7 +12,7 @@
     }
 
     .menu-selected {
-        background-color: #0544d1;
+        background-color: #ff7b03;
         border-top: 1.2px dotted orange;
         border-radius: 0px 20px 20px 0px;
         color: #fff !important;

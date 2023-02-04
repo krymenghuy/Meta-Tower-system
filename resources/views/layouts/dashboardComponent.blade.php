@@ -377,7 +377,6 @@
                 </div>
                 <!--end::first column-->
 
-
                 <!--begin::second column or second table-->
                 <div class="col-md-12">
                     <div class="card">
@@ -407,5 +406,4 @@
         </div>
         <!--container-fluid-->
     </section>
-
 </div>
