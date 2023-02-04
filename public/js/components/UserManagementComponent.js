@@ -202,7 +202,7 @@ let UserListPanel = new function() {
        e.preventDefault();
       let user_id = $(this).parent().data('userid');
       if(!user_id) user_id =0;
-      cv_interact.confirm('Delete this user?','Delete User',function(e){
+      cv_interact.confirm('Delete this user?',{title:'Delete User',context:'delete'},function(e){
         if(e){
            mThis.deleteUser(user_id);
         }

@@ -517,14 +517,14 @@
                                 <div class="form-inline">
                                     <div class="dropdown">
                                         <button id="_main_btn_lang" class="btn-dropdown" data-menu="lang"
-                                            style="margin-right:10px;padding:0px;border:none;background:none;">
+                                            style="display:none;margin-right:10px;padding:0px;border:none;background:none;">
                                             <img class="mr-1"
                                                 src="{{ asset('assets/images/icons/khmer.png') }}"
                                                 style="height:25px;" />
                                             <span id="_main_lang_name">
                                                 <?php
-                              echo Session::get('lang_name','Khmer');
-                            ?>
+                                                echo Session::get('lang_name','Khmer');
+                                                ?>
                                             </span>
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right">

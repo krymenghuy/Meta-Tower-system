@@ -98,7 +98,7 @@ var RoleListPanel = new function() {
             e.preventDefault();
             
             let role_id = $(this).parent().data('roleid');
-            cv_interact.confirm('Delete this role?','Delete Role',function(e){
+            cv_interact.confirm('Delete this role?',{title:'Delete Role',context:'context'},function(e){
                 if(e){
                     mThis.deleteRole(role_id);
                 }
@@ -633,7 +633,7 @@ var RoleListPanel = new function() {
                     let p = {};
                     p.module_id = $(this).data('moduleid');
                     p.role_id = mThis.role_id;
-                    cv_interact.confirm('Remove this Accessible Module','Remove Access Module',function(e){
+                    cv_interact.confirm('Remove this Accessible Module',{title:'Remove Access Module',context:'delete'},function(e){
                        if(e){
                             vsapi.call([mThis.base_url,'/api/removeAccessibleModule'].join(''),p).then(res=>{
                                 if(res.status_code===200) {
@@ -655,7 +655,7 @@ var RoleListPanel = new function() {
                 mThis.tblPerns1_body.on('click','a._um_roleprn_delete',function(e){
                     e.preventDefault();
                     let ids = $(this).data('prnid');
-                    cv_interact.confirm('Remove this permission?','Remove Permission',function(e){
+                    cv_interact.confirm('Remove this permission?',{title:'Remove Permission',context:'delete'},function(e){
                         if(e){
                             let p = {'role_id':mThis.role_id,'ids':ids};    
                              vsapi.call([mThis.base_url,'/api/removePermissionFromRole'].join(''),p).then(res=>{
@@ -673,7 +673,7 @@ var RoleListPanel = new function() {
                     let p = {};
                     p.user_id = $(this).data('userid');
                     p.role_id = mThis.role_id;
-                    cv_interact.confirm('Remove this user from the selected role?','Remove User',function(e){
+                    cv_interact.confirm('Remove this user from the selected role?',{title:'Unenroll User',context:'update'},function(e){
                        if(e){
                             vsapi.call([mThis.base_url,'/api/removeRoleMember'].join(''),p).then(res=>{
                                 if(res.status_code ===200) {
@@ -753,7 +753,7 @@ var RoleListPanel = new function() {
                     let role_name = e.currentTarget.dataset.rolename;
                     let role_id = RoleListPanel.selected_role_id;
                     
-                    cv_interact.confirm('Delete this user permanently?','Delete User',function(e){
+                    cv_interact.confirm('Delete this user permanently?',{title:'Delete User',context:'delete'},function(e){
                         if(e) {
                             let p = {"user_id":id};
                             vsapi.call([mThis.base_url,'/api/deleteUser'].join(''),p).then(res=>{

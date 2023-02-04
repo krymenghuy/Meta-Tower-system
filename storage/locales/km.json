@@ -203,5 +203,13 @@
 		"Create":"បង្កើត",
 		"Yes":"បាទ",
 		"No":"ទេ"
+   },
+   "service":{
+	"Department":"Department",
+	"Name":"Name",
+	"Service Type":"Service Type",
+	"Service type":"Service Type",
+	"Description":"Description",
+    "Price":"Price"
    }
 }
