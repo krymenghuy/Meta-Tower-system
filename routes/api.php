@@ -11,6 +11,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\UMController;
+use App\Http\Controllers\Login\LoginController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\CompanyProfileController;
   
@@ -39,7 +40,7 @@ use App\Http\Controllers\InventorySettingsController;
 
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\CurrencyController;
-use App\Models\PublicStorage;
+//use App\Models\PublicStorage;
 use App\Models\SystemSetting;
 use App\Models\Patient;
 use App\Models\Inventory\Brand;
@@ -62,7 +63,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('broadcast/auth', [PusherController::class, 'pusherAuth']); //->middleware('auth');
 Route::post('auth/auth-data', [UMController::class, 'getAuthData']);
-Route::post('auth/login', [ApiController::class, 'externalLogin']);
+Route::post('auth/login', [LoginController::class, 'apiLogin']);
 
 // Route::get('env/20230120AZ99/vars',function(){
 //     $vars =[
