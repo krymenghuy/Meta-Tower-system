@@ -1,7 +1,7 @@
 'use strict'
 var CompanyComponent = new function(){
     let mThis = this;
-	this.elScreenTitle = $('#screen_title');
+	this.title_prop = "Company Profile";
     this.base_url = $('#__base_url').val();
     this.self = $('#_main_companyComponent');
     this.btnSave = $('#_main_comp_btnSaveProfile');
@@ -15,17 +15,17 @@ var CompanyComponent = new function(){
 	 this.btnSave.on('click',function(e){
 	   let p = mThis.getData();	 
 	   
-       post_ajax([mThis.base_url,'/api/saveCompanyInfo'].join(''),p,function(err){
-		   if(!err || err ==''){
-             cv_interact.alert('Company information updated!','','info');
-		   }else cv_interact.alert(err,'','error');
+       vsapi.call([mThis.base_url,'/api/saveCompanyInfo'].join(''),p).then(res => {
+		   if(res.status_code === 200){
+             cv_interact.info('Company information updated!');
+		   }else cv_interact.error(res.error_message);
 	   });
 	 }); 
 
 	 this.displayCompanyInfo = ()=>{
-        post_ajax([mThis.base_url,'/api/getCompanyInfo'].join(''),null,function(d){
-			if(d){
-				d= StringSanitizer.sanitizeObject(d,'email');
+        vsapi.call([mThis.base_url,'/api/getCompanyInfo'].join(''),null).then(res => {
+			if(res.status_code === 200){
+				let d= StringSanitizer.sanitizeObject(res.data,['email']);
 				mThis.setData(d);
 			}
 		});
@@ -61,30 +61,29 @@ var CompanyComponent = new function(){
                 p.photoData = base64result; /* NOTE: base64result contains only base64String ready to converted into image. There is no type information in this string */
                 p.fileType = fileType;
 				 
-                post_ajax([mThis.base_url,'/api/saveCompanyLogo'].join(''),p,function(result) {
-					if (typeof result =='string') alert(result); 
-					 if (result.status =='OK')
+                vsapi.call([mThis.base_url,'/api/saveCompanyLogo'].join(''),p).then(res => {
+					 if (res.status_code === 200)
 					 {
 						 mThis.imgLogo.prop('src',photoData);
-						 cv_interact.alert('Logo uploaded');
+						 cv_interact.info('Logo uploaded');
 					 }
-					 else cv_interact.alert(result.error_message,'','error');
+					 else cv_interact.error(res.error_message);
 					 mThis.logoFileChooser.val(null);//clear to ensure second time it works for same file chosen
 				});
         };
 		
 		   this.btnDeleteLogo.off('click').on('click',function(e) {
 			   e.preventDefault();
-			   cv_interact.confirm('Delete this logo?','Delete Logo',function(e) {
+			   cv_interact.confirm('Delete this logo?',{title: 'Delete Logo',context: 'delete'},function(e) {
 				    if(e)
 					{
-					      post_ajax([mThis.base_url,'/api/deleteCompanyLogo'].join(''),null,function(err) {				 
-							 if (!err || err =='')
+					      vsapi.call([mThis.base_url,'/api/deleteCompanyLogo'].join(''),null).then(res => {				 
+							 if (res.status_code === 200)
 							 {
 								 mThis.imgLogo.prop('src',null);
 								 cv_interact.alert('Logo deleted!');
 							 }
-							 else cv_interact.alert(err,'','error');
+							 else cv_interact.error(res.error_message);
 						}); 
 					}
 			   });
@@ -112,7 +111,7 @@ var CompanyComponent = new function(){
 
 
 					} else {
-						cv_interact.alert('The chosen image file is invalid!','','error');
+						cv_interact.error('The chosen image file is invalid!');
 					}
 
 				}
@@ -126,7 +125,7 @@ var CompanyComponent = new function(){
     //end::init()
 
     this.show = (option)=>{
-	  mThis.elScreenTitle.html(option.title);	
+	  main_view.setTitle(mThis.title_prop);
 	  mThis.displayCompanyInfo();	
       mThis.self.show().siblings().hide();
     }
@@ -149,8 +148,8 @@ var CompanyComponent = new function(){
 	  
 	  this.displayLogo = function()
 	  {
-		  post_ajax([mThis.base_url,'/api/getCompanyLogo'].join(''),null,function(d) {
-			   //d = StringSanitizer.sanitizeOut(d,'image');
+		  vsapi.call([mThis.base_url,'/api/getCompanyLogo'].join(''),null).then(res => {
+			   let d = res.data;
 			   mThis.imgLogo.prop('src',d);
 		  });
 	  }

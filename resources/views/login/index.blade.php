@@ -96,12 +96,6 @@
             width:100%;
         }
 
-        .form-inside p{
-            font-size:30px;
-            color:#fff;
-            font-size: 3em;
-        }
-
         .vs-form-group .vs-form-label{
             padding:20px 0;
             color:#fff;
@@ -118,7 +112,7 @@
         }
 
         ::placeholder{
-            padding:0 20px;
+            padding:0 0.1vw;
         }
 
         .vs-form-control{
@@ -208,7 +202,7 @@
                         </div>
                     </div>
                     <div class="img-size">
-                        <img class="img-front" src="{{ asset('assets/images/front-image.webp') }}"/>
+                        <img class="img-front" src="{{ asset('assets/images/front-image.jpg') }}"/>
                     </div>
                 </div>
             </div>

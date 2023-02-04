@@ -2,7 +2,7 @@
 //begin:: PatientFinderComponent
  let PatientFinderComponent = new function(){
         let mThis = this;
-        this.title_prop ='Find Patient';
+        this.title_prop = 'Find Patient';
         this.self = $('#_main_patientFinderComponent');
         this.base_url = $('#__base_url').val();
         this.tblPatients = $('#_paf_tblPatients');
@@ -10,7 +10,7 @@
         this.btnNew = $('#_paf_btnNew');
         //this.btnSave = $('#_loanapp_btnSave');
         //this.btnApprove = $('#_loanapp_btnApprove');
- 
+
         this.col_titles = {
               "ID":"ID",
               "Name":"Name",
