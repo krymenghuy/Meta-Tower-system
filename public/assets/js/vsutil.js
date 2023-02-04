@@ -16,6 +16,36 @@ let VSUtil = new function()
 		//return el? el.content:'';
 	  }
 
+	   //does the same job as htmlspecialchars() PHP
+		this.escapeHtml =(str="")=>
+		{
+			if(!str) str="";
+			let map =
+			{
+				'&': '&amp;',
+				'<': '&lt;',
+				'>': '&gt;',
+				'"': '&quot;',
+				"'": '&#039;'
+			};
+			return str.replace(/[&<>"']/g, function(m) {return map[m];});
+		}
+
+		//decode string that is encoded by htmlspecialchars() in php
+		this.decodeHtml = (str)=>
+		{
+			if(!str) str="";
+			let map =
+			{
+				'&amp;': '&',
+				'&lt;': '<',
+				'&gt;': '>',
+				'&quot;': '"',
+				'&#039;': "'"
+			};
+			return (str+'').replace(/&amp;|&lt;|&gt;|&quot;|&#039;/g, function(m) {return map[m];});
+		}
+
 	  //IMPORTANT NOTE: there must be the following html block on target bootstrap dialog form:
 	  /***
 	    <div class="dialog-error">
@@ -34,12 +64,13 @@ let VSUtil = new function()
 				    div.classList.add('dialog-error-animation');  
 					let span = div.querySelector('.dialog-error-text');
 					span.textContent = error_message;
+					if(!span) alert(error_message);
 					setTimeout(() => {
 						div.classList.remove('dialog-error-animation');
 						div.style.display='none';
 					}, timeout);
-			}
-		}
+			}else alert(error_message);
+		}else return false;
 	  }
 
 	  this.hideDialogError =(dialog_id=null)=>{

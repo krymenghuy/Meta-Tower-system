@@ -89,7 +89,6 @@ let LaboPartnersComponent = new function(){
         //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
         let p = {'search_value':mThis.elSearchPartner.val()};
-        console.log(p);
         window.vsapi.call(`${mThis.base_url}/api/partner/list`,p,'POST',null).then((result)=>{
             let data = [];
             if(result.status_code === 200) data = result.data;

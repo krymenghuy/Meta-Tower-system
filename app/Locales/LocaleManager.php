@@ -26,6 +26,15 @@ class LocaleManager{
            return;
         } 
 
+        static function getLangList(){
+            $base_path = base_path(); 
+              return [
+                  'en'=>"$base_path/storage/locales/en.json",
+                  'km'=>"$base_path/storage/locales/km.json",
+                  'kh'=>"$base_path/storage/locales/km.json"
+                ];
+        }
+
         static function getLangContents(){
             return LangContentProvider::langContents();
             //return self::$langContents;

@@ -8,7 +8,6 @@ use App\Models\UM;
 use App\Models\JDV;
 use Session;
 use Sanitizer;
-use Localization;
 use DB;
 
 class UMController extends Controller
@@ -46,11 +45,11 @@ class UMController extends Controller
 /*##### begin::InApp UserModel ##### */
 /** send encrypted data (usually query_string data) to browser for putting in url (for normal Web report parameters) **/
 function encryptData(Request $request){
-  if(!$request->data || !Session::has('login_name') || !Session::get('login_name',null)) return response()->json(null);
+  if(!Session::has('login_name') || !Session::get('login_name',null)) return makeJsonResponse(null);
   $m_str = $request->data;
   $encrypter = app(\Illuminate\Contracts\Encryption\Encrypter::class);
   $m_str = $encrypter->encrypt($m_str,false); //FALSE => to avoid serialization issue in decryption
-  return response()->json($m_str);
+  return makeJsonResponse($m_str);
 }
 
 function getModuleList($user_id =0){
@@ -114,10 +113,7 @@ function saveRole(Request $request){
 
   function saveUser(Request $request){
     $r = $this->UMModel->saveUser($request);
-    if($r->status_code ===200){
-       return JDV::success(['id'=>$r->id]); 
-    }
-    return JDV::raw($r); 
+    return JDV::result($r); 
   } 
 
   //getUserInfo() returns "id, previlege_type, user_class,is_locked,status"
@@ -128,22 +124,22 @@ function saveRole(Request $request){
 
   function deleteUser(Request $request){
     $r = $this->UMModel->deleteUser($request);
-    return JDV::raw($r); 
+    return JDV::result($r); 
   }
 
   function setUserStatus(Request $request){
     $r = $this->UMModel->setUserStatus($request);
-    return JDV::raw($r); 
+    return JDV::result($r); 
   } 
   
   function unlockUser(Request $request){
     $r = $this->UMModel->unlockUser($request->user_id);
-    return JDV::raw($r);
+    return JDV::result($r); 
   }
 
   function setLockStatus(Request $request){
        $r = $this->UMModel->setLockStatus($request);
-       return JDV::raw($r);
+       return JDV::result($r); 
   }
   
   function user_exists(Request $request){
@@ -161,22 +157,22 @@ function saveRole(Request $request){
    //In case: user changes their own password
   function changePassword(Request $request){
      $r = $this->UMModel->changePassword($request);
-     return JDV::raw($r); 
+     return JDV::result($r); 
   }
 
 function setPassword(Request $request){
    $r = $this->UMModel->setPassword($request);
-   return JDV::raw($r);
+   return JDV::result($r); 
 }
 
 function changeLoginName(Request $request){
   $r = $this->UMModel->changeLoginName($request);
-  return JDV::raw($r); 
+  return JDV::result($r); 
 }
 
 function createLoginSession(Request $request){
     $r = $this->UMModel->createLoginSession($request);
-    return JDV::raw($r); 
+    return JDV::result($r); 
 }
 
 function getComboItems_user(Request $request){
@@ -317,18 +313,17 @@ function accessibleModule(Request $request) {
         //if parameter @lang is NULL then use "lang" set in um_session table based on (app_id,user_id) if the user already logged in
         //if (empty($lang)) $lang = $ss->lang;
         if (!$lang) $lang = "km"; //if there is no preset lanague for the user then use "khmer" default lang
-        $langRoutes = Localization::getLangList();
         $base_path = base_path();
-        // [
-        //   'en'=> $base_path."/storage/locales/en.json",
-        //   'km'=> $base_path."/storage/locales/km.json",
-        //   'kh'=> $base_path."/storage/locales/km.json"
-        // ];
+        $langRoutes =[
+          'en'=> $base_path."/storage/locales/en.json",
+          'km'=> $base_path."/storage/locales/km.json",
+          'kh'=> $base_path."/storage/locales/km.json"
+        ];
 
       //if no valid file_path => use km language  
       $file_path = isset($langRoutes[$lang])? $langRoutes[$lang]:$base_path."/storage/locales/km.json";
       $data = readFileContent($file_path);
-      return JDV::result($data);
+      return JDV::json($data);
   }
 
     function saveLang(Request $req){

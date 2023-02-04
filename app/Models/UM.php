@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Exception;
 use Localization;
 use Sanitizer;
+use Config;
 
 class UM extends Model
 {
@@ -41,33 +42,64 @@ class UM extends Model
         ];
        
     //### The vaiables above for JWT merchanism
+ 
+    protected static $use_phone_number_login = [
+      'consultant'=>0,
+      'doctor'=>0,
+      'admin'=>0,
+      'super_admin'=>0,  
+      'admin_support'=>0 /* Backend user's login can be email, phone, or any name */
+    ];
+
+    protected static $required_official_profile = [
+      'consultant'=>1,
+      'doctor'=>1,
+      'admin'=>0,
+      'super_admin'=>0,  
+      'admin_support'=>0
+    ];
+
+    protected static $new_user_required_password = [
+      'consultant'=>1,
+      'doctor'=>1,
+      'admin'=>1,
+      'super_admin'=>1,  
+      'admin_support'=>1 /* Backend user's login can be email, phone, or any name */
+    ];
+
     public function __construct(array $attributes = [])
     {
-        self::$app_id = getAdminAppId();
-
-        $app_url = ENV('APP_URL');
+       //NOTE: Config::get('app.app_id') returns Backend system's app_id stored as APP_ID in env file
+        self::$app_id = Config::get('app.app_id');
+        $app_url = ENV('APP_URL'); // Config::get('app.app_url'); //todo: /config/app.php
         self::$jwt_payload=[
           "iis"=> $app_url,
           "aud"=> $app_url
         ];
-
+ 
         self::$user_classes = [
-          (object)['user_class'=>'super admin','user_class_name'=>'Super Admin'],
-          (object)['user_class'=>'admin','user_class_name'=>'Admin'],
-          (object)['user_class'=>'provider','user_class_name'=>'Provider'],
-          (object)['user_class'=>'student','user_class_name'=>'Student'],
+          'admin'=>['used'=>1,'name'=>'Admin','app_id'=>getAdminAppId()],
+          'staff'=>['used'=>1,'name'=>'Staff','app_id'=>getAdminAppId()],
+          //'client'=>['used'=>1,'name'=>'Client','app_id'=>getClientAppId()],
+          'superadmin'=>['used'=>1,'name'=>'Super Admin','app_id'=>getAdminAppId()],
+          'admin_support'=>['used'=>0,'name'=>'Admin Support','app_id'=>getAdminAppId()],
+          'super_admin'=>['used'=>0,'name'=>'Super Admin','app_id'=>getAdminAppId()]
         ];
-
         //parent::__construct($attributes);
-        // $this->company_id = session('branch_id');
-        // $this->branch_id = $this->company_id;
-        // $this->login_name = session('login_name');
-        // $this->full_name = session('full_name');
-        // $this->user_id = session('user_id'); 
-        //self::$app_id = 'DFB15FKAEEC611EG2E7C9801A7CXD1HK';
-        //$this->user_classes = ['admin_support','driver','merchant'];
        
     }
+
+    // //Temporary function, getting auth code
+    // function getUserInfoByToken1($req,$user_class=null){
+    //    $ss = self::getUserInfoByToken($req,-1);
+    //    if($ss->status_code !=200)
+    //       return '#350';
+    //    else{
+    //       $ss->id = $ss->official_id;
+    //       $ss->code = $ss->official_code;
+    //       return $ss;
+    //    } 
+    // }
 
     static function getUserClasses(){
       return self::$user_classes;
@@ -75,14 +107,17 @@ class UM extends Model
 
      //UM::setUserSession() is a static function and is the same as UM->createSession() 
      function createSession($app_id,$user){
-       return self::setUserSession($app_id,$user);
+         return self::setUserSession($app_id,$user);
      } 
 
      //UM::setUserSession() is a static function and is the same as UM->createSession() 
     //create session can be => (1) create in database table um_sessions, (2) create session as file, which can be faster but cannot be queried
     //NOTE: parameter @user is object with minimum fields such as {'branch_id','id','lang','login_name'}
+    //UM::setUserSession() is a static function and is the same as UM->createSession() 
+    //create session can be => (1) create in database table um_sessions, (2) create session as file, which can be faster but cannot be queried
+    //NOTE: parameter @user is object with minimum fields such as {'branch_id','id','lang','login_name'}
     static function setUserSession($app_id,$user){
-       //TODO: Do not allow creating session if user is not logged in 
+        //TODO: Do not allow creating session if user is not logged in 
       //if (strtolower($login_name) != strtolower($this->login_name)) return;
       $access_token = "";
       if (self::$use_jwt===1)  $access_token  = self::createJWT($user);
@@ -90,23 +125,25 @@ class UM extends Model
 
       $csrf_code = getUniqueString(38);
       $session_id = getUniqueString(38);
-      if(empty($user->login_name)) return DV::error('Failed to create session info',401);
-       DB::table('um_sessions')->where('login_name',$user->login_name)->where('app_id',$app_id)->delete();
-       DB::table('um_sessions')->insert(array(
-         'branch_id'=>$user->branch_id,
-         'app_id'=>$app_id,
-         'user_id'=>$user->id, //ineteger user_id
-         'login_name'=>$user->login_name,
-         'start_time'=>getNowTime(),
-         'last_active_time'=>getNowTime(),
-         'csrf_code'=>$csrf_code,
-         'lang'=>$user->lang,
-         'session_id'=>$session_id,
-         'access_token'=>$access_token
-       ));
-       return (object)['status'=>'OK','access_token'=>$access_token];
-    }
-    
+
+      $lang = isset($user->lang)?$user->lang:'en';
+      if(empty($user->login_name)) return DV::error('Failed to create session info',$lang,401);
+        DB::table('um_sessions')->where('login_name',$user->login_name)->where('app_id',$app_id)->delete();
+        DB::table('um_sessions')->insert(array(
+          'branch_id'=>$user->branch_id,
+          'app_id'=>$app_id,
+          'user_id'=>$user->id, //ineteger user_id
+          'login_name'=>$user->login_name,
+          'start_time'=>getNowTime(),
+          'last_active_time'=>getNowTime(),
+          'csrf_code'=>$csrf_code,
+          'lang'=>$user->lang,
+          'session_id'=>$session_id,
+          'access_token'=>$access_token
+        ));
+        return (object)['status'=>'OK','access_token'=>$access_token];
+   }
+
     function getGUID()
     {
         $bytes = random_bytes(20);
@@ -173,12 +210,9 @@ class UM extends Model
     /*End::adhoc methods (Adhoc   functions are used only in Development time) */
      
 /*##### begin::InApp UserModel ##### */
-    
+
     function getAppIdByUserClass($user_class){
-        if($user_class =='staff') return "DXM20FMNEFC721EH2E9M980178GBM899";
-        else if ($user_class =='admin') return 'DXM20FMNEFC721EH2E9M980178GBM899';
-        else if ($user_class =='borrower' ) return "DXM20FMNEFC721EH2E9M980178GBM899";
-        else return "DXM20FMNEFC721EH2E9M980178GBM899";
+       return self::$user_classes[$user_class]['app_id'];
     }
 
     function getModuleList($user_id =0){
@@ -392,9 +426,10 @@ class UM extends Model
           if($ss->status_code !=200) return $ss; //user not authenticated
           $branch_id = $ss->branch_id; 
           $role_id = $d->role_id;
-          $rows = DB::table('um_user_roles AS ur')->join('um_users AS u','u.id','=','ur.user_id')->selectRaw("u.id,u.login_name,u.full_name,u.official_code,u.phone_number, u.email")->where('u.branch_id',$branch_id)->where('ur.role_id',$role_id)->get();
+          $role_name = self::getRoleName($role_id);
+          $rows = DB::table('um_user_roles AS ur')->join('um_users AS u','u.id','=','ur.user_id')->selectRaw("'$role_name' as role_name,u.id,u.login_name,u.full_name,u.official_code,u.phone_number, u.email,u.otp_code,u.user_class")->where('u.branch_id',$branch_id)->where('ur.role_id',$role_id)->get();
           return $rows; 
-      }
+       }
 
         function getRoleById($d) {
           $ss = self::getUserInfoByToken($d,-1);
@@ -410,6 +445,9 @@ class UM extends Model
           $ss = self::getUserInfoByToken($d,-1);
           if($ss->status_code !=200) return $ss; //user not authenticated
           $branch_id = $ss->branch_id;
+          $str_user_class ="1=1";
+          $user_class = isset($d->user_class)?$d->user_class:null;
+          if($user_class) $str_user_class="u.user_class ='$user_class'";
 
           $str_search ='';
           if(isset($d->search_value)) {
@@ -418,21 +456,10 @@ class UM extends Model
               }
           }
           $more_where = "1=1".$str_search;
-          $rows = DB::table('um_users as u')->selectRaw("u.id,u.official_id,u.official_code, u.full_name, u.login_name, u.user_class, u.previlege_type, u.last_login_date, is_locked, `status`")->where('branch_id',$branch_id)->whereRaw($more_where)->get(); 
+          $rows = DB::table('um_users as u')->whereRaw($str_user_class)->whereRaw($more_where)->selectRaw("u.id,u.official_id,u.official_code, u.full_name, u.login_name, u.user_class, u.previlege_type, u.last_login_date, is_locked, `status`")->where('branch_id',$branch_id)->get(); 
           return $rows;
         }
-
-      //returns extended details about a user given by user's class, and user's official_code. A user can be Staff, Student, Teacher, parent, or Guest etc  
-        function getUserExtendedDetails($d){
-          $ss = self::getUserInfoByToken($d,-1);
-          if($ss->status_code !=200) return $ss; //user not authenticated
-          //$branch_id = $ss->branch_id;
-          $phone_number = isset($d->phone_number)?$d->phone_number:null;
-          //official_code is usually NID
-          $official_code = isset($d->official_code)?$d->official_code:null;
-          return $this->getUserExtendedDetails1($ss,$phone_number, $d->user_class);
-       } 
-
+ 
       static function getUserProp($user_id,$prop){
         $rows = DB::table('um_users AS u')->where('id',$user_id)->selectRaw($prop)->limit(1)->get();
         if(!isset($rows[0])){
@@ -441,235 +468,148 @@ class UM extends Model
         foreach($rows as $row) return $row->{$prop};
         return null;
       }
-
+ 
+      //$cols = "id,full_name"
       static function getUserProps($user_id,$cols){
-          // $cols = $props;
-          // if(is_array($props)){
-          //   $cols = implode(',',$props);
-          // }
          $rows = DB::table('um_users AS u')->where('id',$user_id)->selectRaw($cols)->limit(1)->get(); 
         
         foreach($rows as $row) return $row;
         return null;
       }
-           
-      //$search_value is phone number or email or n_id
-      //Official_code in this context is same as NID
-      function getPersonDetails($search_value){
-        // $branch_id = null;
-        // if(is_numeric($uss)) $branch_id = $uss;
-        // else
-        //   $branch_id = Sanitizer::sanitize($uss->branch_id);
+      
+      /** getProfileInfo()| getUserProfile()| getOfficialProfile() **/
+      //return official profile information of a user including "official_id, official_code, name, sex, phone_number,email, address" 
+      static function officialProfileInfo($branch_id,$official_code,$user_class,$cols=null){
+         $profile_classes = ['staff','consultant','doctor'];
+         $tables = [
+            "staff"=>"employees",
+            "consultant"=>"employees",
+            "doctor"=>"employees"
+         ];
 
-           $more_where ="(p.phone_number ='$search_value' OR p.email ='$search_value')";
-           $rows = DB::table('persons AS p')->whereRaw($more_where)->selectRaw("p.n_id,CONCAT(p.last_name,' ',p.first_name) AS name, p.phone_number, p.email")->limit(1)->get();
-          //  if(!isset($rows[0]))
-          //  $rows = DB::table('persons AS p')->where('p.n_id',$search_value)->selectRaw("p.n_id,CONCAT(p.last_name,' ',p.first_name) AS name, p.phone_number, p.email")->limit(1)->get();
-        
-          
-        foreach($rows as $row) return $row; 
-        return null;
-    } 
- 
-      //$official_code is National ID
-      function getUserExtendedDetails1($uss,$email_or_phone, $user_class){
-        $branch_id = Sanitizer::sanitize($uss->branch_id);
-    
-        $user_class = Sanitizer::sanitize(strtolower($user_class));
-        
-        if ($user_class == 'admin') return null;
-
-        $more_where ="p.phone_number ='$email_or_phone' OR p.email ='$email_or_phone'";
-        $rows =[];
-        if ($user_class =='admin') return (object)[];
-        else if($user_class =='staff' || $user_class =='borrower'){
-           $rows = DB::table('persons AS p')->where('p.branch_id',$branch_id)->whereRaw($more_where)->selectRaw("p.id,'$user_class' AS user_class, CONCAT(p.last_name,' ',p.first_name) AS name, p.phone_number, p.email")->limit(1)->get();
-        } 
-        foreach($rows as $row) return $row; 
-        return null;
-    } 
-
+         $rows = [];
+         //NOTE: column_name can be also prefixed with alias "s."
+         if(!$cols) $cols = "p.id as person_id,t.id as official_id, t.code as official_code,p.name,p.email,p.phone_number";
+         if(in_array($user_class,$profile_classes)){
+            $tblname = $tables[$user_class];
+            if($tblname) $rows = DB::table("persons as p")->join("$tblname as t",'t.person_id','=','p.id')->where('t.code',$official_code)->where('t.branch_id',$branch_id)->selectRaw($cols)->get();
+            return isset($rows[0])?$rows[0]:null;
+         }else if ($user_class ==='superadmin' || $user_class ==='super_admin'){
+           //todo: Later, we can return admin profile as a person info such as full_name, NID, phone, email, address
+           return null;
+         }else{
+            //todo: Later, we can return admin profile as a person info such as full_name, NID, phone, email, address
+            return null; 
+         }
+      }
+  
     //Check if current user is super admin (with user_id =1)
     static function isSuperAdmin_cu(){
-      return (Session::get('user_id') ==1);
+       return true; //(Session::get('user_id') === 1);
     }
 
+    //getUserListByRole()| getUsersByRole()| getUsersByRoleId()
     static function user_list_by_roles($branch_id,$role_ids){
          $str_roles = 'ur.role_id IN ('.implode(',',$role_ids).')';
          $rows = DB::table('um_users as u')->join('um_user_roles as ur','ur.user_id','=','u.id')->where('u.branch_id',$branch_id)->whereRaw($str_roles)->selectRaw("u.id,u.login_name as staff_name,u.full_name")->get();
          return $rows; 
     }
-     function person_exists($id){
-       $rows = DB::table('persons as p')->where('id',$id)->selectRaw('id')->limit(1)->get();
-       foreach($rows as $row) return true;
-       return false;
-     }
-        //Create or UpdateUser() depending on $d->user_id;
-        //$d = {login_name,password,email,phone_number,user_class,}
-        function saveUser($d){
+
+    // function person_exists($id){
+    //    $rows = DB::table('persons as p')->where('id',$id)->selectRaw('id')->limit(1)->get();
+    //    foreach($rows as $row) return true;
+    //    return false;
+    // }
+       
+     //Create or UpdateUser() depending on $d->user_id;
+     //@params $d = {login_name,password,email,full_name,phone_number,user_class,role_id,official_id}
+     function saveUser($d){
           $ss = self::getUserInfoByToken($d,100);
           if($ss->status_code !=200) return $ss; //user not authenticated
-          $branch_id = Sanitizer::sanitize($ss->branch_id);
-          
-          if(!isset($d->user_id)) $d->user_id = 0;
-          $d->user_id = Sanitizer::sanitize($d->user_id);
+          $branch_id = $ss->branch_id;
 
-          // $single_role_name = isset($d->single_role_name)?$d->$d->single_role_name:null;
-          // if(!$single_role_name) $single_role_name = isset($d->role_name)?$d->role_name:null;
+          $validate_rule =[
+             'user_id'=>"0|identity=1",
+             "login_name"=>"1|string|1-35|text=The login name is too long. Max 35 characters",
+             "password"=>"0|string|0-100",
+             "email"=>"0|email",
+             "user_class"=>"1|choice|admin,driver,merchant,sender",
+             "subs_id"=>"0|string",
+             "role_id"=>"1|number|exists=um_roles.id|text=User role is missing",
+             "official_code"=>"0|string|1-25",
+             //"official_id"=>"0|number",
+             "full_name"=>"0|string",
+             "previlege_type"=>"0|choice|standard|default=standard",
+             "work_location_id"=>"0|string",
+             "lang"=>"0|choice|en,km|default=en", 
+             "status"=>"0|string|default=active"
+          ];
 
-          if(!isset($d->subs_id)) $d->subs_id = null;
-          //$result = (object)array('status'=>'Error','error_message'=>null,'user_id'=>null); 
-          if(!isset($d->login_name) || !$d->login_name) return DV::error("Login name cannot be blank",$ss->lang); 
-          if(strlen($d->login_name)>35) return DV::error('The login name is too long. Max 35 characters',$ss->lang);
-          $user_class = isset($d->user_class)?$d->user_class:''; 
-            
-          if (!self::correctUserClass($user_class) ) return DV::error("User Type or User Class is not correct",$ss->lang);
+          $check_unique = ["$branch_id|um_users|login_name|id|text=login name is already in use"]; 
+          $res = validateObject($d,$validate_rule,true,['email'=>['.','@','-']],$ss->lang,false,$check_unique);
+          if($res->error) return DV::error($res->error);
+          $inputs = $res->values; 
+          $user_id = $res->user_id;
+          $user_class = $inputs['user_class'];
 
+          if (!self::correctUserClass($user_class)) return DV::error("User Type or User Class is not correct",$ss->lang);
           //Get app_id based on a given @user_class;
-          //$app_id = $this->getAppIdByUserClass($user_class);
-          $app_id = self::$app_id;
- 
-          if ($this->user_exists($d->login_name,$d->user_id)) return DV::error("The provided login name is already in use",$ss->lang);  
-          if (!isset($d->password) || empty($d->password)) return DV::error("Password cannot be empty",$ss->lang);  
-
-          if(!isset($d->role_id) || empty($d->role_id)) return DV::error("User must have at least one role",$ss->lang);
-          
-          if( strlen($d->official_code) >50 ) return DV::error("Official code is too long. Max 50 character",$ss->lang);
-
-          // //if role =3 (Borrower) then check for official_id and make sure it is valid person_id
-          // if($d->role_id ==3) {
-          //     if(!$this->person_exists($d->official_id)) return DV::error('Official ID or Person ID is not valid');
-          // }
-
-          $full_name =isset($d->full_name)?$d->full_name:null;
-          //$first_role =self::firstRole($d->role_id);
-
-          if (!$d->role_id) return DV::error('First role ID is not valid',$ss->lang);
-          $single_role_name =null;// $first_role->name;
-       
-          if(!isset($d->phone_number) || empty($d->phone_number)) {
-            $d->phone_number = null;
-            // $result->error_message ="Phone Number cannot be blank";
-            // $result->status ="Error"; 
-            // return $result;
+          $app_id = $this->getAppIdByUserClass($user_class);
+          ////$app_id = self::$app_id;
+           
+          //if official profile info is required
+          $official_code = $inputs['official_code'];
+          if (self::$required_official_profile[$user_class] === 1){
+              if(!$official_code) return DV::error("Official ID is missing");
+              $profile = self::officialProfileInfo($branch_id,$official_code,$user_class,null);
+              if(!$profile) return DV::error("Official profile is not found for $user_class user with id $official_code");  
+              //if full_name is not supplied or param $d['full_name'] is empty, then use $profile->name as user's full name
+              if(!empty($inputs['full_name'])) $inputs['full_name']= $profile->name;
+              if(!empty($inputs['phone_number'])) $inputs['phone_number']= $profile->phone_number;
+              if(!empty($inputs['email'])) $inputs['email']= $profile->email;
+              //use $profile->id or profile->official_id as official_id
+              if(!isset($inputs['official_id'])) $inputs['official_id']= isset($profile->id)?$profile->id:$profile->official_id;
           }
 
+          //$inputs['full_name'] = empty($inputs['full_name'])? $inputs['login_name']:null;
+          if(empty($inputs['full_name'])) return DV::error("Full name is required");
+
+          //$single_role_name =null;// $first_role->name;
+          //$first_role =self::firstRole($d->role_id);
+          if (self::$use_phone_number_login[$user_class]==1){
+              if(!isset($inputs['phone_number'])) $inputs['phone_number'] = $inputs['login_name']; 
+          }
+           
          /*NOTE that depending on Application Context, the  @user_class can be whatever meaningful classifications such as:
-           For Hospital @user_class ={user,doctor,patient, etc } 
+           For Hospital @user_class ={doctor,patient,general people etc } 
            For School @user_class = {Staff, Student,parent} 
            For Corporate @user_class = {customer,individual customer, corporate customer, Staff}
          */
-         if(!isset($d->previlege_type)) $d->previlege_type ='Standard'; // previlege_type = {Standard,Admin}
-         //if(!isset($d->user_class) ||  empty($d->user_class)) $d->user_class = "staff"; /** default user_class = 'Staff'**/
-         if(!isset($d->official_id) ||  $d->official_id <=0) $d->official_id = null;
-        
-         if(!isset($d->email) || !$d->email) $d->email = $d->login_name;
-         if(!isset($d->phone_number) || !$d->phone_number) $d->phone_number = $d->login_name;
-
-         //Official_code is national ID
-         
-         $email_or_phone = $d->login_name;
-         $user_details = $this->getUserExtendedDetails1($ss,$email_or_phone,$d->user_class);
-        
-         if(!isset($d->hr_id)) $d->hr_id =null;
-         if(!isset($d->work_location_id)) $d->work_location_id = null;
  
-         $hpwd = PASSWORD_HASH($d->password,PASSWORD_DEFAULT);
+         $role_id = $inputs['role_id'];
+         unset($inputs['role_id']);
+         $password = $inputs['password'];
+         unset($inputs['password']);
+         $hpwd = PASSWORD_HASH($password,PASSWORD_DEFAULT);
+  
+         $inputs['app_id']=$app_id;
+         if(!$user_id || $user_id ==0) {
+           //todo: Check password strenth rule here
+           if (!$password && self::$new_user_required_password[$user_class]===1) return DV::error("Password is required");
+           $inputs['hpwd'] = $hpwd;
+         }
 
-         $official_id = null;
-         $official_code =null;
-       
-         if (strtolower($user_class) =='staff'){
-            if (!$full_name || empty($full_name)) return DV::error('Full name cannot be empty',$ss->lang);
-            //if(!isset($d->email)) return DV::error('Email is required for staff and student'); 
-         } 
-         else if (strtolower($user_class) == 'borrower'){
-
-            //In case of Borrower account => if no person's detail is found => try again using phone_number; 
-            //This is because Student's login is created using student code as login name
-            if(!$user_details){
-               $user_details = $this->getUserExtendedDetails1($ss,$d->phone_number,$d->user_class);
-            }
-
-              if (!$user_details) 
-                  return DV::error('Cannot find personal profile for this email or phone number');
-              else {
-                $official_id = $user_details->id; //This one is person_id (that is VERY IMPORTANT)
-                //This means getUserExtendedDetails1() returns empty or invalid person_id for the given @email or phone_number
-                if(!($official_id >0)) return DV::error('Failed to identify personal profile id of this borrower!');
-                $official_code = $user_details->email; //OR   $official_code = $user_details->phone_number;
-                $full_name = $user_details->name;
-                $email = $user_details->email;
-              }     
-         
-        } else {
-          if (!$user_details){
-              // $official_id for staff can be used when there is Staff Profile.
-              $official_id = null;
-              $official_code = $d->login_name;
-              //In case that user_class = Admin/ support=> if full_name is not given then user login_name as full_name
-              if(!$full_name) $full_name = $d->login_name;
-              $email = $d->email;
-          }
-        }
- 
-        if ($d->user_id > 0) {
-              DB::table('um_users')->where('id',$d->user_id)->update([
-                'app_id'=>$app_id, /** if @user_class changes => this app_id is changed too **/
-                //'branch_id'=>$branch_id,
-                'login_name'=>$d->login_name,
-                'full_name'=>$full_name,
-                //'official_id'=>$official_id,
-                //'official_code'=>$official_code,
-                //'hpwd'=>$hpwd,
-                'previlege_type'=>$d->previlege_type, //{'standard','admin'}
-                'user_class'=>$user_class, /* user_class = {student,parent,customer,viewer,patient,user}. It is whatever classification meaningful in specific Application Context. It provides directive to use "official_id" to link to meaning table such as Students or Employees or Customers or Parents etc...*/
-                'phone_number'=>$d->phone_number,
-                'email'=>$email,
-                //'subs_id'=>$d->subs_id,
-                //'status'=>'active',
-                //'is_locked'=>0,
-                'work_location_id'=>$d->work_location_id,
-                'single_role_name'=>$single_role_name
-                //,'create_user'=>$ss->login_name,
-                //'create_date'=>getNowTime(),
-                //'create_uid'=>$ss->user_id
-            ]);
-            //Renew user's role by deleteing and inserting it again
-            DB::table('um_user_roles')->where('user_id',$d->user_id)->where('role_id',$d->role_id)->delete();
-            $this->addRoleMember_internal($ss,$d->role_id,$d->user_id);
-
-        } else {
-            DB::table('um_users')->insert([
-              'app_id'=>$app_id, /** NOTE that app_id usually depends on @user_class (method $this->getAppIdByUserClass() will returns same app_id for every "user_class" if all user_classes are allowed to log in to the same app) **/
-              'branch_id'=>$branch_id,
-              'login_name'=>$d->login_name,
-              'full_name'=>$full_name,
-              'official_id'=>$official_id,
-              'official_code'=>$official_code,
-              'hpwd'=>$hpwd,
-              'previlege_type'=>$d->previlege_type, //{'standard','admin'}
-              'user_class'=>$user_class, /* user_class = {student,parent,customer,viewer,patient,user}. It is whatever classification meaningful in specific Application Context. It provides directive to use "official_id" to link to meaning table such as Students or Employees or Customers or Parents etc...*/
-              'phone_number'=>$d->phone_number,
-              'email'=>isset($d->email)?$d->email:null,
-              'subs_id'=>$d->subs_id,
-              'status'=>'active',
-              'single_role_name'=>$single_role_name,
-              'is_locked'=>0,
-              'work_location_id'=>$d->work_location_id,
-              'create_user'=>$ss->login_name,
-              'create_date'=>getNowTime(),
-              'create_uid'=>$ss->user_id
-            ]);
-            $d->user_id  = DB::getPdo()->lastInsertId();
-            $this->addRoleMember_internal($ss,$d->role_id,$d->user_id);
-        }
-        
-          // $data = $d; /** this is because object $d contain $role_id and $access_token value for addRolemember() method to verify session info **/
-          // //$data->role_id =$d->role_id; //already there
-          // $data->user_id = $new_user_id; 
-          return DV::success(['user_id'=>$d->user_id]);
-
+         $inputs['branch_id']=$branch_id;  
+         $user_id = saveData($ss,"um_users",["id"=>$user_id],$inputs,[],0);
+         if($user_id >0){
+              //Renew user's role by deleteing and inserting it again
+              DB::table('um_user_roles')->where('user_id',$d->user_id)->where('role_id',$role_id)->delete();
+              $this->addRoleMember_internal($ss,$role_id,$user_id);
+              return DV::success(['id'=>$user_id]);
+         }else{
+             return DV::error("Something went wrong in saving user data");
+         }
+            
       }
 
       //param => $request->breaerToken()
@@ -766,92 +706,88 @@ class UM extends Model
     //2. based on given @user_class = {driver, or merchant or (admin or NULL) }
     //This method is used in mobile app's api authentication, which does not depends on web session
     static function getUserInfoByToken($request, $prn_code=-1,$prn_error_message=null){
-        $def_lang ="en";
-        //$access_token = self::decryptToken($request);
-        $access_token = $request->bearerToken();
-        if(!$access_token) return DV::error('User authentication failed',$def_lang,401);
+      $def_lang ="en";
+      //$access_token = self::decryptToken($request);
+      $access_token = $request->bearerToken();
+      if(!$access_token) return DV::error('User authentication failed',$def_lang,401);
 
-        if (!self::allowed($prn_code)){
-          if (!$prn_error_message) $prn_error_message = "Permission $prn_code is required!";
-          return DV::error($prn_error_message,403); //authorization failed or No Permission
-        }
-        
-        if (self::$use_jwt===1){
-            /*
-                NOTE: This will now be an object instead of an associative array. To get
-                an associative array, you will need to cast it as such:
-            */
-           JWT::$leeway = 60; // $leeway in seconds
-           try{
-              $decoded = JWT::decode($access_token, new Key(self::$jwt_key, self::$jwt_encode));
-              if(!isset($decoded->user_id)) $decoded->user_id = $decoded->id;
-
-              //#begin:: Get special active fields "is_locked,status,lang". These fields need to be updated in the decoded JWT token on every api call
-                  $decoded->status="active";
-                  $row = self::getUserProps($decoded->user_id,"is_locked,status,lang");
-                  if (!$row)
-                  $decoded->lang = $row->lang;
-                  $decoded->is_locked = $row->is_locked;
-                  $decoded->status = $row->status;
-
-                  if (strtolower($decoded->status)==='disabled' || $decoded->is_locked === 1) return DV::error('User status is disabled or locked out',$def_lang,400);
-              //#end::Get special active fields "is_locked,status,lang". These fields need to be updated in the decoded JWT token on every api call
-              $ret =(object)['status_code'=>200,'status'=>'OK'];
-              foreach((array)$decoded as $prop=>$value) $ret->{$prop} = $value;
-              return $ret;
-           }catch(\Exception $e){
-                $err = $e->getMessage(); 
-                if($err==="Expired token")  return DV::error($err,$def_lang,402); 
-                 
-                  \Log::error($err, [
-                    'file' => $e->getFile(),
-                    'line' => $e->getLine()
-                    ]);
-                
-                   return DV::error($err,$def_lang,500); //Invalid token => user unauthenticated
-           }
-          
-        }else{
-          //NOTE: verifyUserToken() will check if the given token is Not yet expired, and is valid, then return the valid token
-           $res = self::verifyUserToken($access_token);
-           if ($res->status==='Error') return DV::error($res->error_message,$def_lang,$res->error_code); 
-           
-            $access_token = $res->access_token; 
-            $user_id = null;
-            $branch_id =null;
-            $official_id = null;
-            $login_name = null;
-
-            //Obtain $user_id, $official_id from table "um_users"
-            $rows = DB::table('um_sessions AS ss')->join('um_users as u','u.id','=','ss.user_id')->where('ss.access_token',$access_token)->selectRaw("ss.lang,ss.user_id,u.full_name,u.user_class,u.login_name,ss.branch_id, u.official_id")->limit(1)->get();
-            foreach($rows as $row){
-                  return (object)['status_code'=>200,'status'=>'OK',
-                  'user_id'=>$row->user_id,
-                  'lang'=>$row->lang,
-                  'branch_id'=>$row->branch_id,
-                  'official_id' =>$row->official_id,
-                  'user_class'=>$row->user_class,
-                  'login_name'=>$row->login_name
-                  ,'full_name'=>$row->full_name
-               ];
-            }
-            
-            // foreach($rows as $row) {
-            //   return DV::success([
-            //   'user_id'=>$row->user_id,
-            //   'lang'=>$row->lang,
-            //   'branch_id'=>$row->branch_id,
-            //   'official_id' =>$row->official_id,
-            //   'user_class'=>$row->user_class,
-            //   'login_name'=>$row->login_name
-            //   ,'full_name'=>$row->full_name,
-            //   ],200);
-            // }
-            return DV::error('User authentication failed',401);
-        }
-     }
+      if (!self::allowed($prn_code)){
+        if (!$prn_error_message) $prn_error_message = "Permission $prn_code is required!";
+        return DV::error($prn_error_message,403); //authorization failed or No Permission
+      }
       
-     
+      if (self::$use_jwt===1){
+          /*
+              NOTE: This will now be an object instead of an associative array. To get
+              an associative array, you will need to cast it as such:
+          */
+
+          try{
+              //   $encrypter = app(\Illuminate\Contracts\Encryption\Encrypter::class);
+              //   //$access_token= null;
+              //   try{
+              //     $access_token = $encrypter->decrypt($access_token,false);
+              //   }catch(Exception $e){
+              //       return null; 
+              //   } 
+            JWT::$leeway = 60; // $leeway in seconds
+            $decoded = JWT::decode($access_token, new Key(self::$jwt_key, self::$jwt_encode));
+            if(!isset($decoded->user_id)) $decoded->user_id = $decoded->id;
+
+            //#begin:: Get special active fields "is_locked,status,lang". These fields need to be updated in the decoded JWT token on every api call
+                $decoded->status="active";
+                $row = self::getUserProps($decoded->user_id,"is_locked,status,lang");
+                if (!$row)
+                $decoded->lang = $row->lang;
+                $decoded->is_locked = $row->is_locked;
+                $decoded->status = $row->status;
+
+                if (strtolower($decoded->status)==='disabled' || $decoded->is_locked === 1) return DV::error('User status is disabled or locked out',$def_lang,400);
+            //#end::Get special active fields "is_locked,status,lang". These fields need to be updated in the decoded JWT token on every api call
+            $ret =(object)['status_code'=>200,'status'=>'OK'];
+            foreach((array)$decoded as $prop=>$value) $ret->{$prop} = $value;
+            return $ret;
+         }catch(\Exception $e){
+              $err = $e->getMessage(); 
+              if($err==="Expired token")  return DV::error($err,$def_lang,402); 
+               
+                \Log::error($err, [
+                  'file' => $e->getFile(),
+                  'line' => $e->getLine()
+                  ]);
+              
+                 return DV::error($err,$def_lang,500); //Invalid token => user unauthenticated
+         }
+        
+      }else{
+        //NOTE: verifyUserToken() will check if the given token is Not yet expired, and is valid, then return the valid token
+         $res = self::verifyUserToken($access_token);
+         if ($res->status==='Error') return DV::error($res->error_message,$def_lang,$res->error_code); 
+         
+          $access_token = $res->access_token; 
+          $user_id = null;
+          $branch_id =null;
+          $official_id = null;
+          $login_name = null;
+
+          //Obtain $user_id, $official_id from table "um_users"
+          $rows = DB::table('um_sessions AS ss')->join('um_users as u','u.id','=','ss.user_id')->where('ss.access_token',$access_token)->selectRaw("ss.lang,ss.user_id,u.full_name,u.user_class,u.login_name,ss.branch_id, u.official_id,u.official_code")->limit(1)->get();
+          foreach($rows as $row){
+                return (object)['status_code'=>200,'status'=>'OK',
+                'user_id'=>$row->user_id,
+                'lang'=>$row->lang,
+                'branch_id'=>$row->branch_id,
+                'official_id' =>$row->official_id,
+                'user_class'=>$row->user_class,
+                'login_name'=>$row->login_name
+                ,'full_name'=>$row->full_name
+             ];
+          }
+          
+          return DV::error('User authentication failed',null,401);
+      }
+   }
+
       //getUserInfo() returns "id, previlege_type, user_class,is_locked,status"
         function getUserInfo($d){
           $ss = self::getUserInfoByToken($d,-1);
@@ -882,10 +818,10 @@ class UM extends Model
           //For one Application or one system, => There is one in-app Admin user denoted by his "previlege_type =Admin "
           //This Admin user cannot be delete, and he can create other in-app users if needed (Depending on permissions as well)
           if(strToLower($user->previlege_type) ==='admin') {
-              return "Cannot delete Admin user";
-          } 
+              return DV::error("Cannot delete Admin user");
+          }
           DB::table('um_users')->where('branch_id',$branch_id)->where('id',$user_id)->delete();  
-          return null;
+          return DV::success();
       }
 
         function setUserStatus($d){
@@ -931,7 +867,7 @@ class UM extends Model
         function user_exists($name,$user_id){
           //$branch_id = $uss->branch_id;
           $q ;
-          $name = Sanitizer::sanitize($name);
+          $name =$name;
           $user_id = Sanitizer::sanitize($user_id);
           if($user_id > 0) //in case of UPDATE
           {
@@ -986,14 +922,14 @@ class UM extends Model
      foreach($arr as $p=>$value) self::$jwt_payload[$p]=$value;
      return JWT::encode(self::$jwt_payload, self::$jwt_key, self::$jwt_encode);
    }
-
+ 
    //checkUser , validateUser, checkPassword, login, Signin
    /** login() | verifyUser() check user login and pwd and then returns object $result = {status, error_message, user} **/
    function verifyUser($app_id,$login_name,$password,$lang='en'){
          $user_id = null;
          //NOTE: $login_name = {loginName, PhoneNumber,email} 
         if(empty($login_name)) return DV::error("User name is not valid",$lang,400);
-        $rows = DB::table('um_users AS u')->selectRaw('u.lang,u.user_class,u.official_id,u.hpwd, u.id,u.login_name, u.branch_id, u.full_name, u.status, u.is_locked,u.email,u.phone_number,u.otp_code')->where('u.login_name',$login_name)->where('u.app_id',$app_id)->limit(1)->get();
+        $rows = DB::table('um_users AS u')->selectRaw('u.lang,u.id,u.user_class,u.official_id,u.official_code,u.hpwd,u.login_name, u.branch_id, u.full_name, u.status, u.is_locked,u.email,u.phone_number,u.otp_code')->where('u.login_name',$login_name)->where('u.app_id',$app_id)->take(1)->get();
  
         if(count($rows) <= 0) return DV::error("User name is not correct or does not have access to this application",$lang,400); 
 
@@ -1009,7 +945,7 @@ class UM extends Model
         
             if(password_verify($password,$hpwd)){
                   //Login succeeded => create user session either in file or database table
-                  $sess = $this->createSession($app_id,$row);
+                  $sess = self::setUserSession($app_id,$row);
                   if($sess->status ==='OK')
                      {
                         //return object {access_token,user}
@@ -1049,7 +985,7 @@ class UM extends Model
             if (password_verify($oldPwd,$hpwd)){ 
               DB::table('um_users')->where('id',$user_id)->update(array('hpwd'=>$new_password_hash));
               return DV::success();
-            } else return DV::error($lang,"Old password is not correct!");
+            } else return DV::error("Old password is not correct!",$lang,null);
       }
 
 
@@ -1100,13 +1036,14 @@ class UM extends Model
         if($ss->status_code !=200) return $ss; //user not authenticated
           $lang = $ss->lang;
           $branch_id = Sanitizer::sanitize($ss->branch_id);
-          $login_name = Sanitizer::sanitize($d->login_name);
+          //$login_name = $d->login_name;
+          //todo: later sanitize login_name first
+          $login_name = $d->login_name; //Sanitizer::sanitize($d->login_name,'email');
           $newPwd = isset($d->newPwd)?$d->newPwd:null;
           if(empty($newPwd)) $newPwd = isset($d->password)?$d->password:null;
-
         //TODO:Check if the current user has right to set other users' password or not
         //if(empty($login_name)) return "Login name is unexpectedly empty!";
-        if(!$this->user_exists($login_name,null)) return DV::error("Login name does not exist",$lang);
+        if(!$this->user_exists($login_name,null)) return DV::error($login_name? "Login name $login_name does not exist":"Login name is unexpectedly missing or empty",$lang);
         if(empty($newPwd)) return DV::error("password cannot be empty",$lang);
 
         $hpwd = PASSWORD_HASH($newPwd,PASSWORD_DEFAULT);
@@ -1477,7 +1414,11 @@ class UM extends Model
     }
 
     function getComboItems_userclass($d=null){
-      return self::$user_classes;   
+      $items = [];
+      foreach(self::$user_classes as $key=>$item){
+        if ($item['used'] ===1) $items[] = (object)['user_class'=>$key,'user_class_name'=>$item['name']]; 
+      }
+      return $items;   
     }
 
     static function logout_mobile($user_id,$app_id){
@@ -1536,19 +1477,15 @@ class UM extends Model
       return null;
    } 
 
-    // function getRoleName($id){
-    //   $rows = DB::table('um_roles as r')->where('r.id',$id)->selectRaw("r.name")->limit(1)->get();
-    //   foreach($rows as $row) return $row->name;
-    // }
+    static function getRoleName($id){
+      $rows = DB::table('um_roles as r')->where('r.id',$id)->selectRaw("r.name")->limit(1)->get();
+      return isset($row->name)?$row->name:null;
+    }
 
     static function correctUserClass($user_class){
-      $i =0;$c = null;
-      do{
-        if (isset(self::$user_classes[$i])) $c = self::$user_classes[$i]; else break;
-        if ($c->user_class === $user_class) return true;  
-        $i++;
-      }while($c);
-
+      foreach(self::$user_classes as $key=>$c){
+           if($key === $user_class) return true;
+      }
       return false;
     }
 

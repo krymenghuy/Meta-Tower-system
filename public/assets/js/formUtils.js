@@ -64,14 +64,18 @@ class FormUntil{
          let that = this;
          let d = this.getData();
          if(d.has_error) return;   
-         window.vsapi.call(this.api_save,d.data).then((res)=>{
-               if(res.status_code == 200){
+         window.vsapi.call(this.api_save,d.data).then(res=>{
+               alert(JSON.stringify(res));
+               if(res.status_code === 200){
                   if(typeof this.option.onClose === 'function') this.option.onClose(res);
                   this.self.modal('hide');
                   //if (this.option.previousComponent) this.option.previousComponent.show(this.option.previousComponentOptions);
                }else{
                   if (!that.use_alert_error || !cv_interact) 
-                     VSUtil.showDialogError(this.form_id, res.error_message);
+                  {
+                     let x = VSUtil.showDialogError(this.form_id, res.error_message);
+                     if(!x) alert(res.error_message);
+                  }
                   else cv_interact.error(res.error_message);
                }
          }).catch((e)=>{

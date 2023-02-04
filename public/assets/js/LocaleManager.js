@@ -29,26 +29,28 @@
                 }
             } 
 
-            this.translateZone = (div_id = null,lang=null)=>{
+            this.translateZone = (div_id = null,lang=null,onFinish = null)=>{
                 if (!lang) lang = mThis.lang;
-
+                mThis.langContents[lang] = null;       
                     if(!mThis.langContents[lang]) {
-                            mThis.loadLang(lang,(content)=>{
-                                //mThis.langContent = content;
-                                mThis.langContents[lang] = content;
-
+                            //alert('content needs loading');
+                            mThis.loadLang(lang, content=>{
+                                mThis.langContent = content;
                                 ($(`#${div_id}`).find('.trans-text') || []).each(function(){
                                     let el = $(this);
                                     let f = el.data('langprop');
+                                  
                                     let parts = (f+'').split('.');
                                     let section = parts[0];
                                     let field = parts[1];
                                     let sectionContent = content[section];
+                                    //console.error('LOADED ' + JSON.stringify(sectionContent));
                                     if (field === '{text}') field = (el.text() || 'undefined').toLowerCase(); // or .val()???
-                                    let text = sectionContent?sectionContent[field]:`${section} undefined`;
+                                    let text = sectionContent?sectionContent[field]:`${section} unknown text`;
+                                    //console.error(`${section}.${field} | ${text}`);
                                     el.text(text?text:field);
                                 });
- 
+                                  if(typeof onFinish==='function') onFinish();
                                 //  //Call to callbacks's handlers() for langaugeChange events to refresh other dynamic element's lang such as dataTable language
                                 //  mThis.languageChangeHandlers.map((f)=>{
                                 //      f(lang);
@@ -67,10 +69,10 @@
                                
                                 let sectionContent = b?b[section]:null;
                                 if (field === '{text}') field = (el.text() || 'undefined').toLowerCase(); // or .val()???
-                                let text = sectionContent?sectionContent[field]:`${section} undefined`; 
+                                let text = sectionContent?sectionContent[field]:`${section} unknown text`; 
                                 el.text(text?text:field);
                             });
-
+                            if(typeof onFinish==='function') onFinish(); 
                                 // //Call to callbacks's handlers() for langaugeChange events to refresh other dynamic element's lang such as dataTable language
                                 // mThis.languageChangeHandlers.map((f)=>{
                                 //     f(lang);
@@ -154,8 +156,9 @@
             }
             
             //this.translate(). by default section ="js", which means that trans() will ONLY looks for "langprop" under the parent property "js" in locale file such as en.json
-            this.trans = (prop,section= null,lang=null)=>{
-                if(!section) section ='js';
+            
+            this.trans = (prop,section= 'general',lang=null)=>{
+                if(!section) section ='general';
                 //let parts = (prop+'').split('.');
                 //let section = parts[0];
                 //let field = parts[1];
@@ -215,17 +218,20 @@
                     //lang =lang?lang:mThis.lang; 
                     let p = {'lang':lang};
 
-                    if (mThis.lang_data_last_loading_time) {
-                            let time_diff_ms = (new Date()) - mThis.lang_data_last_loading_time;
-                            if (time_diff_ms <3000 && mThis.lang === lang){
-                                //This function can be called again within 3 seconds
-                                return null; 
-                            }
-                    }
-                    mThis.lang_data_last_loading_time = new Date();
+                    // if (mThis.lang_data_last_loading_time) {
+                    //         let time_diff_ms = (new Date()) - mThis.lang_data_last_loading_time;
+                    //         if (time_diff_ms <3000 && mThis.lang === lang){
+                    //             //This function can be called again within 3 seconds
+                    //             return null; 
+                    //         }
+                    // }
+                    //mThis.lang_data_last_loading_time = new Date();
+
                     if (!mThis.base_url) mThis.base_url = $('meta[name="base_url"]').attr('content');              
                     window.vsapi.call(`${mThis.base_url}/api/settings/lang`,p,'POST').then((res)=>{
+                         
                             if (res.status_code === 200){
+                                    if(!res.data) alert('Language data not found! This is usually caused by missing Locales language files');
                                     let b = {};
                                     try{
                                       b = JSON.parse(res.data);

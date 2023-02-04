@@ -304,7 +304,7 @@ function createFile($file_type,$fileName, $fileContent){
           //return $result;
       }
     //$file_type ='x-msdownload' //Executable file .exe
-     $img_types = ['jpg','png','jpeg','svg','pdf'];       
+     $img_types = ['jpg','png','jpeg','svg','pdf','heif'];       
     // $parts = explode('/', $dir);
      // $file = array_pop($parts);
      // $dir = '';

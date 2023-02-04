@@ -86,7 +86,8 @@
 			 Swal.fire({
 				position: position?position:'top-end',
 				icon: icon, //'success','info','error','warning'
-				title: message,
+				title:title,
+				text: message,
 				showConfirmButton: false,
 				//reverseButtons: true, /** change Cancel/OK buttons' position **/
 				//timer: 1500

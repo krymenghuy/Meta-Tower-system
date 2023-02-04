@@ -73,6 +73,10 @@ window.vsapi = new function(){
 								//Data Input Validation failed
 								break;
 							}
+							case 500:{
+								//Data Input Validation failed
+								break;
+							}
 							default:{
 								break;
 							}
