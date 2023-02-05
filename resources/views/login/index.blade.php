@@ -44,7 +44,7 @@
         }
 
         .sub-vs-contain-imgFront-form{
-            width:80vw;
+            width:70vw;
             height:80vh;
             border-radius:5vh;
             background-color:red;
@@ -97,7 +97,7 @@
         }
 
         .vs-form-group .vs-form-label{
-            padding:20px 0;
+            padding:1vh 0;
             color:#fff;
             font-size:2vh;
         }
@@ -106,7 +106,7 @@
             padding:1.5vh 1.5vw;
             border:none;
             outline:none;
-            border-radius:10px;
+            border-radius:1vh;
             margin:2vh 0;
             font-size:1.5vh;
         }
@@ -122,10 +122,10 @@
         .vs-btn-group .vs-btn{
             width:95%;
             padding:0.5vh 0;
-            border-radius:10px;
+            border-radius:3vh;
             outline:none;
             background-color:transparent;
-            border:3px solid #fff;
+            border:0.3vh solid #fff;
             font-size:2.3vh;
             color:#fff;
             cursor:pointer;

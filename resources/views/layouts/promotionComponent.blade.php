@@ -25,7 +25,6 @@
     .promo-des-text {
         font-size: 0.9em;
     }
-
 </style>
 <div id="_main_promotionComponent" style="display:none;margin:auto;width:90%;background:#fff;">
     <div style="margin:auto;width:100%">
