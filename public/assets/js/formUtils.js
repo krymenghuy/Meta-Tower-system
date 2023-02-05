@@ -65,7 +65,6 @@ class FormUntil{
          let d = this.getData();
          if(d.has_error) return;   
          window.vsapi.call(this.api_save,d.data).then(res=>{
-               alert(JSON.stringify(res));
                if(res.status_code === 200){
                   if(typeof this.option.onClose === 'function') this.option.onClose(res);
                   this.self.modal('hide');

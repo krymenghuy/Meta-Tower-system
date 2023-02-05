@@ -32,7 +32,7 @@ class UM extends Model
     //### The variables below for JWT merchanism
         protected static $use_jwt = 1; //Tell UM class to use JWT mechanism to verify user'stoken
         protected static $jwt_encode ='HS256';
-        protected static $jwt_lifespan =60*60; //default lifespan of JWT token (Time to expire)
+        protected static $jwt_lifespan =180*60; //default lifespan of JWT token (Time to expire)
         protected static $jwt_key ="This is JWT key";
         protected static $jwt_payload = [
           "iis"=>"",

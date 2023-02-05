@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Inventory\Settings;
+use App\Events\QTYChanged;
 use App\Models\JDV;
 use App\Models\UM;
 use App\Models\Inventory\StockUnit;
@@ -30,13 +31,13 @@ class FGStockController extends Controller
         $str_moreWhere="1=1";
         if($search_value){
           $search_value = escape_like_str($search_value);
-          $str_search ="(g.code ='$search_value' OR g.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+          $str_search ="(g.code ='$search_value' OR g.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%' OR g.id IN (SELECT group_id FROM inv_items WHERE code ='$search_value'))";
         }
         if ($group_id > 0) $str_moreWhere .=" AND g.id =$group_id";
         if($category_id > 0) $str_moreWhere .=" AND g.category_id =$category_id";
         if($country_id > 0)  $str_moreWhere .= " AND i.made_in_country_id =$country_id";
         //order by group_name
-        $rows = DB::table('inv_item_groups as g')->join('inv_categories as c','c.id','=','g.category_id')->where('g.branch_id',$branch_id)->where("c.item_class",self::$item_class)->whereRaw($str_moreWhere)->whereRaw($str_search)->selectRaw("g.id,'Product' AS item_type,g.code,g.name,g.description,g.unit_id, g.sku,g.category_id, c.name AS category,g.detail_type_id,getItemDetailType(g.detail_type_id) as detail_type,g.create_user,0 AS qty,formatDate(g.created_at) as created_at")->orderByRaw("g.name ASC")->get();
+        $rows = DB::table('inv_item_groups as g')->join('inv_categories as c','c.id','=','g.category_id')->where('g.branch_id',$branch_id)->where("c.item_class",self::$item_class)->whereRaw($str_moreWhere)->whereRaw($str_search)->selectRaw("g.id,'Product' AS item_type,g.code,g.name,g.description,g.unit_id,g.sku,g.category_id, c.name AS category,g.detail_type_id,getItemDetailType(g.detail_type_id) as detail_type,g.create_user,getGroupQty(g.id) AS qty,formatDate(g.created_at) as created_at")->orderByRaw("g.name ASC")->get();
         return JDV::result($rows);
     }
 
@@ -53,25 +54,21 @@ class FGStockController extends Controller
         $branch_id = $ss->branch_id;
         $group_id = $req->group_id;
 
-        $rows = DB::table('inv_items as i')->join('inv_item_groups as g','g.id','=','i.group_id')->join('inv_categories as c','c.id','=','g.category_id')->where('g.id',$group_id)->where('c.item_class',self::$item_class)->where('i.branch_id',$branch_id)->selectRaw("i.id,'Product' AS item_type,i.code,g.code as group_code,i.name,i.description,i.unit_id, i.sku,g.unit_id AS group_unit_id,g.sku AS group_sku,g.name as group_name,g.id as group_id,g.description as group_description, g.category_id, i.manufacturer_id, c.name AS category,g.detail_type_id,getItemDetailType(g.detail_type_id) as detail_type,i.create_user,formatDate(i.created_at) as created_at, 0 AS qty")->orderByRaw("i.name ASC")->get();
+        $rows = DB::table('inv_items as i')->join('inv_item_groups as g','g.id','=','i.group_id')->join('inv_categories as c','c.id','=','g.category_id')->where('g.id',$group_id)->where('c.item_class',self::$item_class)->where('i.branch_id',$branch_id)->selectRaw("i.id,'Product' AS item_type,i.code,g.code as group_code,i.name,i.description,i.unit_id, i.sku,g.unit_id AS group_unit_id,g.sku AS group_sku,g.name as group_name,g.id as group_id,g.description as group_description, g.category_id, i.manufacturer_id, c.name AS category,g.detail_type_id,getItemDetailType(g.detail_type_id) as detail_type,i.create_user,formatDate(i.created_at) as created_at, getItemQty(i.id) AS qty")->orderByRaw("i.name ASC")->get();
         return JDV::result($rows);
     }
 
     //given an item_id,trx_date, it returns object recpresneting the stock info for the item
-    function getStockRecord($branch_id,$item_id,$trx_date =null){
+    function getStockRecord($branch_id,$warehouse_id,$stockclass_code,$item_id,$trx_date =null){
          $date = date('Y-m-d');
          if((bool)strtotime($trx_date)) $date = convertDate($trx_date);
          $str_date = "DATE(trx_date) ='$date'";
          //NOTE: important field "si.id" is the stock ID used to update stock trx record
          $cols = "si.id,si.item_id,si.item_code,si.trx_date,si.warehouse_id,si.stockclass_code,si.begin_qty,si.purchase_qty,si.sold_qty,customer_return_qty,vendor_return_qty,adjust_qty,sku,unit_id";
-         $rows = DB::table('inv_daily_stocks as si')->where('si.item_id',$item_id)->whereRaw($str_date)->where('si.branch_id',$branch_id)->selectRaw($cols)->take(1)->get();
+         $rows = DB::table('inv_daily_stocks as si')->where('si.item_id',$item_id)->whereRaw($str_date)->where('warehouse_id',$warehouse_id)->where('stockclass_code',$stockclass_code)->where('si.branch_id',$branch_id)->selectRaw($cols)->take(1)->get();
          return isset($rows[0])? $rows[0]: null;                        
     }
-
-    function getBeginQty($item_id){
-       return 0;
-    }
-
+ 
     //Receive PO items and increase Inventory items  
     function receiveItems(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
@@ -97,6 +94,7 @@ class FGStockController extends Controller
         $items = $inputs['items'];
 
         $trx_date = convertDate($inputs['trx_date']);
+        if($trx_date > date('Y-m-d')) return JDV::error('Transaction date cannot be later than today');
         if(!(bool)strtotime($trx_date)) $trx_date = getNowTime();
 
         $stockclass_code = $inputs['stockclass_code'];
@@ -107,6 +105,7 @@ class FGStockController extends Controller
         //return JDV::result($items); 
         $item= null;
         $i =0;
+        $success_items = [];
         do{
             if(!isset($items[$i])) break;
                 $item = $items[$i];
@@ -114,49 +113,32 @@ class FGStockController extends Controller
                   $unitInfo = StockUnit::info($item->sku);
                 
                   $item_id = isset($item->id)?$item->id:null;
-                  $begin_qty = $this->getBeginQty($item_id);
+                  //$begin_qty = Item::beginQty($warehouse_id,$stockclass_code,$item_id,false,null);
                   $sold_qty =0;
                   $customer_return_qty =0;
                   $vendor_return_qty = 0;
                   $adjust_qty = 0;
+                  $trx_id =0;
                   if(!$item_id) $item_id = isset($item->item_id)?$item->item_id:0;
                       $itemInfo = Item::info($item_id);
-                      if($itemInfo){
-                            $stock_item = $this->getStockRecord($branch_id,$item_id,$trx_date);
+                      if($itemInfo){  
+                            //$stock_item = $this->getStockRecord($branch_id,$warehouse_id,$stockclass_code,$item_id,$trx_date);
+                            $input_item = ['id'=>$itemInfo->id,'code'=>$itemInfo->code,'sku'=>$item->sku,'unit_id'=>$unitInfo->id];
+                            $stock_item = Item::prepareDailyStockRecord($ss,$warehouse_id,$stockclass_code,$input_item,$trx_date);
+                            $update_qty =0;
                             if($stock_item){
+                               $trx_id = $stock_item->trx_id;  
                                $update_qty = $stock_item->purchase_qty + $item->qty; 
-                               DB::table('inv_daily_stocks')->where('id',$stock_item->id)->where('branch_id',$branch_id)->update([
+                               DB::table('inv_daily_stocks')->where('id',$stock_item->trx_id)->where('branch_id',$branch_id)->where('warehouse_id',$warehouse_id)->where('stockclass_code',$stockclass_code)->update([
                                   'purchase_qty'=>$update_qty,
                                   'update_uid'=>$ss->user_id,
                                   'updated_at'=>getNowTime(),
                                   'update_user'=>$ss->login_name
                                ]);
-
-                            }else{
-                                DB::table('inv_daily_stocks')->insert([
-                                    "branch_id"=>$branch_id,
-                                    "warehouse_id"=>$warehouse_id,
-                                    "stockclass_code"=>$stockclass_code,
-                                    "trx_date"=>$trx_date,
-                                    "item_id"=>$item_id,
-                                    "item_code"=>$itemInfo->code,
-                                    "begin_qty"=>$begin_qty,
-                                    "purchase_qty"=>$item->qty,
-                                    "sold_qty"=>$sold_qty,
-                                    "customer_return_qty"=>$customer_return_qty,
-                                    "vendor_return_qty"=>$vendor_return_qty,
-                                    "adjust_qty"=>$adjust_qty,
-                                    "sku"=>$item->sku,
-                                    "unit_id"=>$unitInfo->id,
-                                    "created_at"=>getNowTime(),
-                                    "create_user"=>$ss->login_name,
-                                    "create_uid"=>$ss->user_id,
-                                    "updated_at"=>getNowTime(),
-                                    "update_user"=>$ss->login_name,
-                                    "update_uid"=>$ss->user_id
-                                ]);
+                              $trx_id = $stock_item->trx_id;   
                             }
-                            $trx_id = DB::getPdo()->lastInsertId();
+                            $item_stockclass = isset($item->stockclass_code)?$item->stockclass_code:$stockclass_code;  
+                            $success_items[] = (object)['id'=>$item_id,'code'=>$itemInfo->code,'qty'=>$item->qty,'sku'=>$item->sku,'stockclass_code'=>$item_stockclass,'target_qty'=>'purchase_qty'];
                             StockLog::log($ss,['action'=>'receive','qty'=>$item->qty,'sku'=>$item->sku,'trx_id'=>$trx_id]);
                       } //end:: if item exists in table "inv_items" 
                
@@ -164,6 +146,7 @@ class FGStockController extends Controller
             $i++;
         }while($item);
 
+        QTYChanged::dispatch(['user'=>$ss,'target_qty'=>'purchase_qty','warehouse_id'=>$warehouse_id,'stockclass_code'=>$stockclass_code,'items'=>$success_items]);
         return JDV::success($items);
     }
 

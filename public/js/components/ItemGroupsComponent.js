@@ -12,9 +12,10 @@ let ItemGroupsComponent = new function(){
 
     this.col_titles = {
         "No.":"No.",
+        "Code":"Code",
         "Name":"Name",
         "Description":"Description",
-        "Create By":"Create By",
+        "Created By":"Created By",
         "Action":"Action"
     };
 
@@ -129,8 +130,14 @@ let ItemGroupsComponent = new function(){
             let my_columns = [
                 {
                     title: mThis.trans_title("No."),
-                    data: () => {
+                    data: (data,a,b) => {
                         return cnt;
+                    }
+                },
+                {
+                    title: mThis.trans_title("Code"),
+                    data: (data,a,b) => {
+                        return data.code?data.code:"N.A.";
                     }
                 },
                 {
@@ -141,11 +148,13 @@ let ItemGroupsComponent = new function(){
                 },
                 {
                     title: mThis.trans_title('Description'),
-                    data:"description"
+                    data:(data,a,b)=>{
+                        return data.description?data.description:"(No Description)";
+                    }
                 },
                 {
-                    title: mThis.trans_title('Create By'),
-                    data: "create_by"
+                    title: mThis.trans_title('Created By'),
+                    data: "create_user"
                 },
                 {
                     title:mThis.trans_title('Action'),
