@@ -8,6 +8,11 @@ let DashboardComponent = new function(){
   this.barCharts = $('#_dash_barChart');
   this.pieCharts = $('#_dash_pieChart');
 
+  this.SmlineChart = $('#_dash_sm_lineChart');
+  this.SmbarChart = $('#_dash_sm_barChart');
+  this.SmdoughnutChart = $('#_dash_sm_doughnutChart');
+  this.SmpolyAreaChart = $('#_dash_sm_polyAreaChart');
+
   this.init = () => {}
 
   this.displayDashboardTable = () => {
@@ -64,17 +69,23 @@ let DashboardComponent = new function(){
     new Chart(mThis.barCharts,{
       type: 'bar',
       data:  {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: ['January', 'February', 'March', 'April', 'May', 'June','July','August','Setember','Octorboer','November','December'],
         datasets: [{
-            label: 'Votes',
-            data: [12, 19, 3, 5, 2, 3],
+            label: 'Revenuse',
+            data: [12, 19, 3, 5, 2, 3, 10, 11, 12, 13, 14, 15],
             backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
+                'rgba(255, 99, 132, 0.6)',
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(255, 206, 86, 0.6)',
+                'rgba(75, 192, 192, 0.6)',
+                'rgba(153, 102, 255, 0.6)',
+                'rgba(255, 159, 64, 0.6)',
+                'rgba(173, 0, 0, 0.6)',
+                'rgba(255, 255, 0, 0.6)',
+                'rgba(0, 255, 255, 0.6)',
+                'rgba(255, 0, 255, 0.6)',
+                'rgba(0, 191, 255, 0.6)',
+                'rgba(0, 255, 0, 0.6)'
             ],
             borderColor: [
                 'rgba(255, 99, 132, 1)',
@@ -82,7 +93,13 @@ let DashboardComponent = new function(){
                 'rgba(255, 206, 86, 1)',
                 'rgba(75, 192, 192, 1)',
                 'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
+                'rgba(255, 159, 64, 1)',
+                'rgba(173, 0, 0, 1)',
+                'rgba(255, 255, 0, 1)',
+                'rgba(0, 255, 255, 1)',
+                'rgba(255, 0, 255, 1)',
+                'rgba(0, 191, 255, 1)',
+                'rgba(0, 255, 0, 1)'
             ],
             borderWidth: 1
         }]
@@ -102,27 +119,172 @@ let DashboardComponent = new function(){
       type: 'pie',
       data: {
         datasets: [{
-          data: [10, 20, 30, 40, 50, 60],
+          data: [10, 20, 30, 40],
           backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(153, 102, 255, 0.2)',
-            'rgba(255, 159, 64, 0.2)'
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
           ],
           borderColor: [
             'rgba(255, 99, 132, 1)',
             'rgba(54, 162, 235, 1)',
             'rgba(255, 206, 86, 1)',
             'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 159, 64, 1)'
           ],
           borderWidth: 1
         }],
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange']
+        labels: ['Labotory', 'Skin Car', 'Surchery', 'Selling Products']
       },
+    });
+
+    new Chart(mThis.SmlineChart,{
+      type: 'line',
+      data: {
+        datasets: [{
+          data: [12, 19, 75, 45, 97, 83, 73, 53, 63, 63, 72, 43],
+          backgroundColor:[
+            'rgba(0, 250, 250, 0.6)'
+          ],
+        }],
+        labels: ['January','February','March', 'April', 'May', 'June','July','August','Setember','Octorboer','November','December']
+      },
+      options: {
+        scales: {
+          yAxes: [{
+            display: false
+            
+          }],
+          xAxes: [{
+            display: false
+          }],
+        },
+        legend: {
+          display: false
+        }
+      }
+    });
+
+    new Chart(mThis.SmbarChart,{
+      type: 'bar',
+      data: {
+        labels: ['January','February','March', 'April', 'May', 'June','July','August','Setember','Octorboer','November','December'],
+        datasets: [{
+          data: [12, 19, 75, 45, 97, 83, 73, 53, 63, 63, 72, 43],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(153, 102, 255, 0.6)',
+            'rgba(255, 159, 64, 0.6)',
+            'rgba(173, 0, 0, 0.6)',
+            'rgba(255, 255, 0, 0.6)',
+            'rgba(0, 255, 255, 0.6)',
+            'rgba(255, 0, 255, 0.6)',
+            'rgba(0, 191, 255, 0.6)',
+            'rgba(0, 255, 0, 0.6)'
+          ],
+          borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)',
+              'rgba(173, 0, 0, 1)',
+              'rgba(255, 255, 0, 1)',
+              'rgba(0, 255, 255, 1)',
+              'rgba(255, 0, 255, 1)',
+              'rgba(0, 191, 255, 1)',
+              'rgba(0, 255, 0, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          yAxes: [{
+            display: false,
+            ticks: {
+              beginAtZero: true
+            }
+          }],
+          xAxes: [{
+            display: false
+          }],
+        },
+        legend: {
+          display: false
+        }
+      }
+    });
+
+    new Chart(mThis.SmdoughnutChart,{
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [10, 20, 30, 40],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+          ],
+          borderWidth: 1
+        }],
+        labels: ['Labotory', 'Skin Car', 'Surchery', 'Selling Products']
+      },
+      options: {
+        legend: {
+          display: false
+        }
+      }
+    });
+
+    new Chart(mThis.SmpolyAreaChart,{
+      type: 'polarArea',
+      data: {
+        datasets: [{
+          data: [10, 20, 30, 40],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+          ],
+          borderWidth: 1
+        }],
+        labels: ['Labotory', 'Skin Car', 'Surchery', 'Selling Products']
+      },
+      options: {
+        scales: {
+          yAxes: [{
+            display: false,
+            ticks: {
+              beginAtZero: true
+            }
+          }],
+          xAxes: [{
+            display: false
+          }],
+        },
+        legend: {
+          display: false
+        }
+      }
     });
   }
 

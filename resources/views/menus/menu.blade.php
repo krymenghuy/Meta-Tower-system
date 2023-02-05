@@ -41,6 +41,17 @@
                 </a>
             </li>
 
+            <li class="kt-menu__item" aria-haspopup="true">
+                <a href="javascript:void(0)" id="_main_lnkDashboard2" class="menu-item kt-menu__link">
+                    <span class="kt-menu__link-icon">
+                        <i>
+                            <img class="icons" src="{{ asset('assets/images/icons/dashboard.svg') }}" style="height:25px;">
+                        </i>
+                    </span>
+                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Dashboard">Dashboard2</span>
+                </a>
+            </li>
+
             <!-- <li class="kt-menu__section ">
                   <h4 class="kt-menu__section-text">Student Loans</h4>
                   <i class="kt-menu__section-icon flaticon-more-v2"></i>
