@@ -628,6 +628,7 @@
                             <!-- if put "layouts.tripListComponent" at bottom  => then there is error in pages -->
                             @include('layouts.inputBoxes')
                             @include('layouts.dashboardComponent')
+                            @include('layouts.dashboard2Component')
                             @include('layouts.patientFinderComponent')
                             @include('layouts.appointmentListComponent')
                             @include('layouts.queueComponent')

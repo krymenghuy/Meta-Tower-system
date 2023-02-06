@@ -25,9 +25,8 @@
     .promo-des-text {
         font-size: 0.9em;
     }
-
 </style>
-<div id="_main_promotionComponent" style="display:none;margin:auto;width;90%;background:#fff;">
+<div id="_main_promotionComponent" style="display:none;margin:auto;width:90%;background:#fff;">
     <div style="margin:auto;width:100%">
         <div style="border:1.2px solid #C9D3D6;padding:10px;border-radius:3px;margin:5px 10px 10px 10px">
             <div class="row">
@@ -44,13 +43,11 @@
                         </div>
                     </div>
                     <div id="promo_img_container" class="img-container">
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 
 <!--begin::PromoDialog-->

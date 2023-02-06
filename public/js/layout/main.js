@@ -19,6 +19,7 @@
      this.pusher_channel = {};
      
      this.mnuDashboard = $('#_main_lnkDashboard');
+     this.mnuDashboard2 = $('#_main_lnkDashboard2');
      this.mnuAppointmentList = $('#_main_lnkAppointments');
      this.mnuPatientFinder = $('#_main_lnkPatientFinder');
      this.mnuTickets = $('#_main_lnkTickets');
@@ -127,9 +128,15 @@
 
                 this.mnuDashboard.on('click',function(e){
                     e.preventDefault();
-                    let option = {'title':'Dashboard','refresh_data':true};
+                    let option = {'refresh_data':true};
                     DashboardComponent.show(option);
                  });
+
+                this.mnuDashboard2.on('click',function(e){
+                    e.preventDefault();
+                    let option = {'refresh_data':true};
+                    Dashboard2Component.show(option);
+                });
             
                  this.mnuLoanAppList.on('click',(e)=>{
                      e.preventDefault();
@@ -306,13 +313,11 @@
             
                     this.mnuManageBrandImages_mobile.on('click',(e)=>{
                         e.preventDefault();
-                        let op = {'title':'Mobile Brand Images'};
-                        MobileBrandImagesComponent.show(op);
+                        MobileBrandImagesComponent.show();
                     });
                     this.mnuPromotions_mobile.on('click',(e)=>{
                         e.preventDefault();
-                        let op = {'title':'Promotions'};
-                        PromotionComponent.show(op);
+                        PromotionComponent.show();
                     });
      
                  

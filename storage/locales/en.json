@@ -90,6 +90,7 @@
 	"settings":{},
 	"inventory":{},
 	"vendors":{},
+	"dashboard":{},
 	"buttons":{
         "Cancel":"Cancel",
 		"Add":"Add",

@@ -94,7 +94,7 @@ let VendorsComponent = new function(){
         let div_wrapper = detail_tr.find('div.expandable-row-containter');
         div_wrapper.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
         let p = {'group_id':group_id};
-        window.vsapi.call(`${main_view.base_url}/api/inventory/stock/group-items`,p,'POST',false).then((res)=>{ 
+        window.vsapi.call(`${main_view.base_url}/api/inventory/stock/group-items`,p,'GET',false).then((res)=>{ 
           let html=null;
           if (res.status_code === 200){
 
@@ -111,7 +111,7 @@ let VendorsComponent = new function(){
                                 `<th>Last Updated</th>`,
                                 `</tr></thead>`,
                             `<tbody class="tbody-stock-items">`,
-                                //mThis.createRowItems(items)
+                                mThis.createRowItems(items)
                             ,`</tbody>
                         </table>`,
                  `</div>`].join('');
@@ -133,7 +133,7 @@ let VendorsComponent = new function(){
         let p = {'search_value':mThis.elSearchItem.val()};
         window.vsapi.call(`${mThis.base_url}/api/inventory/stock/group-list`,p,'POST',null).then((result) => {
             let data = [];
-            if(result.status_code === 200) data = result.data;
+            if(result.status_code === 200) {console.log(result); data = result.data;}
             if (mThis.table){
                 mThis.tblVendors.DataTable().clear().destroy();
                 //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"

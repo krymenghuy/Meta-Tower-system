@@ -20,6 +20,10 @@
   max-width: 300px;
 }
 
+.width-icons-custom{
+  width:7vw;
+}
+
 .modal-fullscreen {
   min-width: 99vw;
   padding:5px;

@@ -1,6 +1,5 @@
 <?php
 namespace App\ScriptManagement;
-
     class ScriptProvider{
          //base in base_path()/public directory
          /***
@@ -98,6 +97,7 @@ namespace App\ScriptManagement;
                     'attr'=>'defer',
                     'output_file'=>'/js/dist/lms.components.js',
                     'files'=>[
+                        '/js/components/Dashboard2Component.js',
                         '/js/components/PersonDialog.js',
                         '/js/components/AppointmentListComponent.js',
                         '/js/components/QueueComponent.js',
@@ -120,7 +120,9 @@ namespace App\ScriptManagement;
                         '/js/components/InputBoxes.js',
                         '/js/components/FindPersonDialog.js',
                         '/js/components/DashboardComponent.js',
-                        '/js/components/CompanyComponent.js', 
+                        '/js/components/CompanyComponent.js',
+                        '/js/components/MobileBrandImagesComponent.js',
+                        '/js/components/PromotionComponent.js',
                         '/js/components/LocationComponent.js',
                         '/js/components/ServiceDepartmentsComponent.js',
                         '/js/components/ChiefComplaintsComponent.js',
