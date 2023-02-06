@@ -1,8 +1,11 @@
 <?php 
-   if(!Session::get('login_name')) return response()->view('/'); 
+   if(!Session::get('login_name')) return view('login.index'); 
    $role= \App\Models\UM::firstRole(Session::get('user_id'));
    $role_id = $role?$role->id:null;
-   if ($role_id != 1 && $role_id != 2) return response()->view('/'); 
+   if ($role_id != 1 && $role_id != 2){
+     echo "It seems you do not have correct role in this system. Contact administrator to resolve this issue";
+     return;
+   }
 ?>
 
 <!DOCTYPE html>
