@@ -274,7 +274,7 @@ let StockTrackingComponent = new function(){
                     data: (data,a,b)=>{
                         let sku = data.sku;
                         if(data.qty>1 && sku) sku = [sku,'s'].join('');
-                        return [data.qty?data.qty:0,' ',sku].join('');
+                        return [data.qty?Number(data.qty):0,' ',sku].join('');
                     }
                 },
                 {

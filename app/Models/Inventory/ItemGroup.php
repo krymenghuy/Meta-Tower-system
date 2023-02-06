@@ -17,11 +17,11 @@ class ItemGroup extends Model
         $branch_id = $ss->branch_id;
         $str_search ="1=1";
         $search_value = isset($d['search_value'])?$d['search_value']:null;
-        $search_value = escape_like_str($search_value);
-        if($search_value){
-            $str_search ="(g.name LIKE '%$search_value%')";
+        $search_value1 = escape_like_str($search_value);
+        if($search_value1){
+            $str_search ="(g.code ='$search_value1' OR g.name 1LIKE '%$search_value1%')";
         }
-        $cols = "g.id,g.name,g.description,g.create_user,formatDate(g.created_at) as created_at";
+        $cols = "g.id,g.code,g.name,g.description,g.create_user,g.sku,g.unit_id, g.brand_name,g.manufacturer_id,formatDate(g.created_at) as created_at";
         return DB::table("inv_item_groups as g")->where('g.branch_id',$branch_id)->whereRaw($str_search)->selectRaw($cols)->orderByRaw("g.name ASC")->get();
         
     }
@@ -44,7 +44,7 @@ class ItemGroup extends Model
 
    static function details($ss,$id){
         $branch_id = $ss->branch_id;
-        $cols = "g.id,g.name,g.description,g.create_user,formatDate(g.created_at) as created_at";
+        $cols = "g.id,g.code,g.unit_id,g.sku,g.category_id,g.name,g.description, g.brand_name,g.manufacturer_id, g.create_user,formatDate(g.created_at) as created_at";
         $rows =  DB::table("inv_item_groups as g")->where('g.id',$id)->where('g.branch_id',$branch_id)->selectRaw($cols)->take(1)->get();
         return isset($rows[0])?$rows[0]:null; 
    }
@@ -71,6 +71,7 @@ class ItemGroup extends Model
     $res = validateObject($d,$validate_rule,true,[],$ss->lang,false,$check_unique);
     if($res->error) return DV::error($res->error);
     $inputs = $res->values;
+    $is_create_case = 0;
     $id = $res->id;
 
     $code = $inputs['code'];
@@ -79,13 +80,13 @@ class ItemGroup extends Model
     }
    
     $group_prefix = strtoupper(substr($inputs['name'],0,3));
-
+    if (!$id) $is_create_case = 1;
     $id = saveData($ss,'inv_item_groups',['id'=>$id],$inputs,[],1);
-    if($id > 0){
-      
+    if($id > 0 && $is_create_case===1){
         setOfficialCode($branch_id,'inv_group_code_control','inv_item_groups',['id'=>$id],$group_prefix,self::$official_code_length,null); 
-        return DV::success(['id'=>$id]);
     }
+    return DV::success(['id'=>$id]);
+
     return DV::error("Something went wrong during saving item group");
   }
 
