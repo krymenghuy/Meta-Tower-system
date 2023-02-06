@@ -7,7 +7,7 @@
                         <p class="fs-5 fw-bold text-muted trans-text" data-langprop="dashboard.Total Revenues"></p>
                     </div>
                     <div class="d-flex align-items-center justify-content-end w-100">
-                        <img class="img-thumbnail width-icons-custom" src="{{ asset('assets/images/icons/average.png') }}"/>
+                        <canvas id="_dash2_SmbarChart"></canvas>
                     </div>
                 </div>
                 <div class="d-flex w-100">
@@ -25,7 +25,7 @@
                         <p class="fs-5 fw-bold text-muted trans-text" data-langprop="dashboard.Avarage Production"></p>
                     </div>
                     <div class="d-flex align-items-center justify-content-end w-100">
-                        <img class="img-thumbnail width-icons-custom" src="{{ asset('assets/images/icons/average.png') }}"/>
+                        <canvas id="_dash2_SmlineChart"></canvas>
                     </div>
                 </div>
                 <div class="d-flex w-100">
@@ -43,7 +43,7 @@
                         <p class="fs-5 fw-bold text-muted trans-text" data-langprop="dashboard.Total Cash"></p>
                     </div>
                     <div class="d-flex align-items-center justify-content-end w-100">
-                        <img class="img-thumbnail width-icons-custom" src="{{ asset('assets/images/icons/average.png') }}"/>
+                        <canvas id="_dash2_SmdoughnutChart"></canvas>
                     </div>
                 </div>
                 <div class="d-flex w-100">

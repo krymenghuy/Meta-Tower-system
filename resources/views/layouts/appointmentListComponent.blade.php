@@ -52,7 +52,7 @@
      }
 
      .detail-item .detail-item-label {
-         width: 80px;
+         max-width: 132px;
          font-weight: bold;
          font-size: 1em;
          padding: 3px;

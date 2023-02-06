@@ -1,6 +1,5 @@
 <?php
 namespace App\ScriptManagement;
-
     class ScriptProvider{
          //base in base_path()/public directory
          /***

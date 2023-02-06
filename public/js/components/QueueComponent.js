@@ -160,7 +160,6 @@ let TicketDetails = new function () {
                     </div>
                   </div>`;
         div_wrapper.html(html);
-        //div_wrapper.slideDown(500);
         let div_panel = div_wrapper.find('div.ticket-info-wrapper');
         switch (mThis.current_view_name) {
             case 'info': {
@@ -181,7 +180,7 @@ let TicketDetails = new function () {
             }
             default: {
                 mThis.setActiveTabButton(div_panel, 'qul-btn-info');
-                mThis.showHistory(div_panel);
+                mThis.showInfo(div_panel);
                 break;
             }
         }
@@ -229,7 +228,7 @@ let TicketDetails = new function () {
 
             if (res.status_code === 200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
-                if(!d) d = {};
+                if (!d) d = {};
                 //d.chief_complaints = d.chief_complaints?d.chief_complaints:[];
                 d.patient_code = d.patient_code ? d.patient_code : 'N.A.';
                 d.consultant_name = d.consultant_name ? d.consultant_name : 'N.A.';
@@ -240,78 +239,80 @@ let TicketDetails = new function () {
 
                 html = [
                     `<div id="${ws_id}" data-ticketid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="row">
-                        <div class="col-xl-6 col-lg-8 col-sm-12">
-                            <div class="row">
-                                <div class="col-4">
-                                    <img src="${mThis.icon_url()}/client-girl.png" class="profile-thumbnail pe-2"/>
+                        <div class="d-flex" style="max-width: 1200px; width:100%">
+                            <div class="col-xl-6 col-lg-8 col-sm-12">
+                                <div class="row">
+                                    <div style="width:163px; max-width: 165px;">
+                                        <img src="${mThis.icon_url()}/client-girl.png" class="profile-thumbnail pe-2"/>
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="row g-1">
+                                            <p class="trans-text fw-bold fs-5 text-nowrap" data-langprop="patient.Client Information"></p>
+                                        </div>
+                                        <div class="row g-1">
+                                            <div class="detail-item">
+                                                <p class="detail-item-label col-6 py-0 text-nowrap">Patient ID</p>
+                                                <p class="detail-item-value col-6 py-0" data-field="patient_code">${d.client_code}</span>
+                                            </div>
+                                        </div>
+                                        <div class="row g-1">
+                                            <div class="detail-item">
+                                                <p class="detail-item-label col-6 py-0">Name</p>
+                                                <p class="detail-item-value col-6 py-0" data-field="name">${d.client_name}</p>
+                                            </div>
+                                        </div>
+                                        <div class="row g-1">
+                                            <div class="detail-item">
+                                                <p class="detail-item-label col-6 py-0">Gender</p>
+                                                <p class="detail-item-value col-6 py-0" data-field="sex">${d.client_sex}</p>
+                                            </div>
+                                        </div>
+                                        <div class="row g-1">
+                                            <div class="detail-item">
+                                                <p class="detail-item-label col-6 py-0">Phone</p>
+                                                <p class="detail-item-value col-6 py-0" data-field="phone_number">${d.client_phone_number}</p>
+                                            </div>
+                                        </div>
+                                        <div class="row g-1">
+                                            <div class="detail-item">
+                                                <p class="detail-item-label col-6 py-0">Email</p>
+                                                <p class="detail-item-value col-6 py-0" data-field="email">${email}</p>
+                                            </div>
+                                        </div>
+                                        <div class="row g-1">
+                                            <div class="detail-item">
+                                                <p class="detail-item-label col-6 py-0">Membership</p>
+                                                <p class="detail-item-value col-6 py-0" data-field="membership_card">${d.membership_card}</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-8">
-                                    <div class="row g-1">
-                                        <p class="trans-text fw-bold fs-5 text-nowrap" data-langprop="patient.Client Information"></p>
-                                    </div>
-                                    <div class="row g-1">
-                                        <div class="detail-item">
-                                            <p class="detail-item-label col-6 py-0 text-nowrap">Patient ID</p>
-                                            <p class="detail-item-value col-6 py-0" data-field="patient_code">${d.client_code}</span>
-                                        </div>
-                                    </div>
-                                    <div class="row g-1">
-                                        <div class="detail-item">
-                                            <p class="detail-item-label col-6 py-0">Name</p>
-                                            <p class="detail-item-value col-6 py-0" data-field="name">${d.client_name}</p>
-                                        </div>
-                                    </div>
-                                    <div class="row g-1">
-                                        <div class="detail-item">
-                                            <p class="detail-item-label col-6 py-0">Gender</p>
-                                            <p class="detail-item-value col-6 py-0" data-field="sex">${d.client_sex}</p>
-                                        </div>
-                                    </div>
-                                    <div class="row g-1">
-                                        <div class="detail-item">
-                                            <p class="detail-item-label col-6 py-0">Phone</p>
-                                            <p class="detail-item-value col-6 py-0" data-field="phone_number">${d.client_phone_number}</p>
-                                        </div>
-                                    </div>
-                                    <div class="row g-1">
-                                        <div class="detail-item">
-                                            <p class="detail-item-label col-6 py-0">Email</p>
-                                            <p class="detail-item-value col-6 py-0" data-field="email">${email}</p>
-                                        </div>
-                                    </div>
-                                    <div class="row g-1">
-                                        <div class="detail-item">
-                                            <p class="detail-item-label col-6 py-0">Membership</p>
-                                            <p class="detail-item-value col-6 py-0" data-field="membership_card">${d.membership_card}</p>
-                                        </div>
-                                    </div>
+                            </div>
+                            <div class="col-xl-3 col-lg-4 col-sm-6">
+                                <div class="row">
+                                    <p class="trans-text text-nowrap fw-bold fs-5" data-langprop="patient.Vital Signs"></p>
                                 </div>
+                                <div class="row">${mThis.displayVitalSignItems(d.vital_signs)}</div>
                             </div>
-                        </div>
-                        <div class="col-xl-3 col-lg-4 col-sm-6">
-                            <div class="row">
-                                <p class="trans-text text-nowrap fw-bold fs-5" data-langprop="patient.Vital Signs"></p>
-                            </div>
-                            <div class="row">${mThis.displayVitalSignItems(d.vital_signs)}</div>
-                        </div>
-                        <div class="col-xl-3 col-lg-4 col-sm-6">
-                            <div class="row">
-                                <p class="detail-header-text">Consultant/Doctor</p>
-                            </div>
-                            <div class="row">
-                                <p class="text-normal">${d.consultant_name}</span>
-                            </div>
-                            <div class="row">
-                                <div class="d-flex px-0">
-                                    <p class="detail-header-text trans-text text-nowrap" data-langprop="patient.Chief Complaints"></p>
-                                    <a href="javascript:void(0)" data-ulid="qul-complaint-list-${ticket_id}" data-tid="${ticket_id}" class="qul-add-complaint">
-                                        <i class="fa fa-plus-circle mt-1" style="color:#14b1d1; font-size:1.5em"></i>
-                                    </a>
+                            <div class="col-xl-3 col-lg-4 col-sm-6">
+                                <div class="row">
+                                    <p class="detail-header-text">Consultant/Doctor</p>
                                 </div>
-                                <div class="apl-cc-wrapper">
-                                    <ul id="qul-complaint-list-${ticket_id}" data-tid="${ticket_id}" class="apl-complaint-list" style="list-style:none">
-                                        ${mThis.displayCCList(['qul-complaint-list-', ticket_id].join(''), d.chief_complaints)}  
-                                    </ul>
+                                <div class="row">
+                                    <p class="text-normal">${d.consultant_name}</span>
+                                </div>
+                                <div class="row">
+                                    <div class="d-flex px-0">
+                                        <p class="detail-header-text trans-text text-nowrap" data-langprop="patient.Chief Complaints"></p>
+                                        <a href="javascript:void(0)" data-ulid="qul-complaint-list-${ticket_id}" data-tid="${ticket_id}" class="qul-add-complaint">
+                                            <i class="fa fa-plus-circle mt-1" style="color:#14b1d1; font-size:1.5em"></i>
+                                        </a>
+                                    </div>
+                                    <div class="apl-cc-wrapper">
+                                        <ul id="qul-complaint-list-${ticket_id}" data-tid="${ticket_id}" class="apl-complaint-list" style="list-style:none">
+                                            ${mThis.displayCCList(['qul-complaint-list-', ticket_id].join(''), d.chief_complaints)}  
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -334,7 +335,6 @@ let TicketDetails = new function () {
 
             div_workspace.html(html);
             LocaleManager.translateZone(ws_id);
-            //div_wrapper.slideDown(500);
             mThis.current_view_name = 'info';
         });
     }
@@ -1127,6 +1127,68 @@ let ConsultTabView = new function () {
         mThis.show(mThis.options, view_name, true);
     });
 
+    this.getInput_chiefcomplaints = (div=null)=>{
+        if (mThis.tblChiefComplaints){
+            return mThis.tblChiefComplaints.getItems();
+        }
+        return [];
+    }
+
+    this.getInput_vitalsigns = (dv=null)=>{
+        let ps = [];
+       div.find('.data-input').each(function(){
+            let el = $(this);
+            let vital_sign_id = el.data('id');
+            ps.push({"id":vital_sign_id,"value":el.val()}); 
+       });
+       return ps;
+    }
+
+    //returns doctor's consultation data including Chielf cpmpaint, Medical history, PE, labor test, prescription, Diagnosis
+    this.getConsultData = ()=>{
+       let consult_panel = mThis.self.find('._consult_panel');
+       consult_panel.find('.consult-content-panel').each(function(){
+         let div = $(this); 
+         let view_name = div.attr('viewname');
+          let p = {};
+         switch(view_name){
+            case 'chief-complaints':{
+               p.chief_compaints = mThis.getInput_chiefcomplaints(div);
+               break;
+            }
+            case 'vital-signs':{
+              p.vital_signs = mThis.getInput_vitalsigns(div);
+              break;
+            } 
+            case 'medical-history':{
+                p.mecial_history = mThis.getInput_medical_history(div);
+                break;
+            }
+            case 'physical-examiniation':{
+                p.physical_examination = mThis.getInput_pe(div);
+                break;
+            }
+            case 'labo-tests':{
+                p.labo_tests = mThis.getInput_labotests(div);
+                break;
+            }
+            case 'diagnosis':{
+               p.diagnosis = p.getInput_diagnosis(div);
+               break;
+            }
+            case 'prescription':{
+                p.prescription = p.getInput_prescription(div);
+                break;
+            }
+            case 'advice':{
+                p.advice = p.getInput_advice(div);
+                break;
+            } 
+         } 
+       });
+
+    }
+
     //options = {patient_id,ticket_id}
     this.show = function (options, view_name, tab_button_clicked = false) {
         if (!options) options = {};
@@ -1205,16 +1267,20 @@ let ConsultTabView = new function () {
         mThis.details_routes_history = mThis.defineDetailRoutesHistory(mThis.historyItemPanel);
         mThis.details_routes_consult = mThis.defineDetailRoutesConsult(mThis.consultItemPanel);
 
+        let consult_view_name = 'medical-history';
+        mThis.details_routes_consult[consult_view_name]();
+
+        let history_view_name = 'medical-reports';
+        mThis.details_routes_history[history_view_name]();
+        
         mThis.ul_menus_consult.on('click', 'li', function (e) {
             e.preventDefault();
             let li = $(this);
-            //let targetElementId = li.find('a').data('target');
             let view_name = li.find('a').data('viewname');
             if (mThis.prev_selected_li_consult) mThis.prev_selected_li_consult.removeClass('consult-menu-selected');
             li.addClass('consult-menu-selected');
             mThis.prev_selected_li_consult = li;
 
-            //if(typeof mThis.details_routes_consult[view_name]==='function')
             mThis.details_routes_consult[view_name]();
         });
 
@@ -1235,30 +1301,31 @@ let ConsultTabView = new function () {
     this.defineDetailRoutesConsult = (div) => {
         return {
             "chief-complaints": () => {
-                mThis.showConsultChiefComplaints(div);
+                mThis.showConsultChiefComplaints(div,"chief-complaints");
             },
             "vital-signs": () => {
-                mThis.showConsultVitalSigns(div);
+                mThis.showConsultVitalSigns(div,"vital-signs");
             },
             "medical-history": () => {
-                mThis.showConsultMedicalHistory(div);
+                mThis.showConsultMedicalHistory(div,"medical-history");
             },
             "physical-examination": () => {
-                mThis.showConsultPE(div);
+                mThis.showConsultPE(div,"physical-examination");
             },
             "prescription": () => {
-                mThis.showConsultPrescription(div);
+                mThis.showConsultPrescription(div),"prescription";
             },
             "labo-tests": () => {
-                mThis.showConsultLaboratoryTests(div);
+                mThis.showConsultLaboratoryTests(div,"labo-tests");
             },
             "diagnosis": () => {
-                mThis.showConsultDiagnosis(div);
+                mThis.showConsultDiagnosis(div,"diagnosis");
             },
             "advice": () => {
-                mThis.showConsultRecommendations(div);
+                mThis.showConsultRecommendations(div,"advice");
             },
             "medical-report": () => {
+                //Show report printing
                 mThis.showConsultMedicalReport(div);
             },
             "medical-certificate": () => {
@@ -1296,7 +1363,7 @@ let ConsultTabView = new function () {
     };
 
     //begin::Any options of consult
-    this.showConsultChiefComplaints = (div) => {
+    this.showConsultChiefComplaints = (div,view_name) => {
         let wrapper_id = '_consult_cc_warpper';
         let div_id = '_consult_cc_list';
         let el = div.find(`#${wrapper_id}`);
@@ -1304,12 +1371,12 @@ let ConsultTabView = new function () {
         //let patient_id = div.data('patientid');
 
         if (!el || el.length === 0) {
-            let title = LocaleManager.trans('This is Chief complaints', 'consult');
-            let html = `<div id="${wrapper_id}"><h3 class="trans-text" data-langprop="consult.Chief Complaints">${title} &nbsp;<a href="#" class="consultview-add-cc"><i class="fa fa-plus-circle"></i></a></h3>
+            let title = LocaleManager.trans('Chief Complaints', 'consult');
+            let html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none"><h3 class="trans-text" data-langprop="consult.Chief Complaints">${title} &nbsp;<a href="#" class="consultview-add-cc"><i class="fa fa-plus-circle"></i></a></h3>
               <div id="${div_id}"></div>
             </div>`;
 
-            div.html(html);
+            div.append(html);
 
             let columns = [
                 {
@@ -1354,56 +1421,56 @@ let ConsultTabView = new function () {
 
     }
 
-    this.loadChiefComplaintOptions =(patient_id=0, onFinish=null)=>{
+    this.loadChiefComplaintOptions = (patient_id = 0, onFinish = null) => {
         //    mThis.data.chief_complaint_options = [
         //     {"value":"1","text":"Highe temperature"},
         //     {"value":"2","text":"Abdominal pain"}
         //    ];
-       vsapi.call(`${main_view.base_url}/api/settings/options-chief-complaint`,null).then(res=>{
-         if(res.status_code === 200){
-            let items = res.data;
-            (items || []).map(c=>{
-                c.value = c.code;
-                c.text = c.name;
-            });
-            onFinish(items);
-         }else  onFinish([]);
-       });
-       //onFinish(mThis.data.chief_complaint_options);
+        vsapi.call(`${main_view.base_url}/api/settings/options-chief-complaint`, null).then(res => {
+            if (res.status_code === 200) {
+                let items = res.data;
+                (items || []).map(c => {
+                    c.value = c.code;
+                    c.text = c.name;
+                });
+                onFinish(items);
+            } else onFinish([]);
+        });
+        //onFinish(mThis.data.chief_complaint_options);
     }
 
     //LoadPatientVitalSigns() | Load vital signs for one patient
-    this.loadVitalSigns_patient = (ticket_id=0,onFinish)=>{
+    this.loadVitalSigns_patient = (ticket_id = 0, onFinish) => {
         // let items = [
         //     {'name':'s1','value':'30'},
         //     {'name':'s2','value':'35'},
         //     {'name':'23','value':'51'},
         // ];
-        vsapi.call(`${main_view.base_url}/api/ticket/patient-vital-signs`,null).then(res=>{
-            if(res.status_code===200){
+        vsapi.call(`${main_view.base_url}/api/ticket/patient-vital-signs`, null).then(res => {
+            if (res.status_code === 200) {
                 let items = StringSanitizer.sanitizeObject(res.data);
                 onFinish(items);
-            }else onFinish({'vital_signs':[],'items':[]});
+            } else onFinish({ 'vital_signs': [], 'items': [] });
         });
-        
+
     }
 
-    this.showConsultVitalSigns = (div) => {
+    this.showConsultVitalSigns = (div,view_name) => {
         let ticket_id = div.data('tid');
         let wrapper_id = '_consult_vt_wrapper';
         let el = div.find(`#${wrapper_id}`);
 
         mThis.loadVitalSigns_patient(ticket_id, items => {
-             let html_vs_items = "";
-             items.map(t =>{
+            let html_vs_items = "";
+            items.map(t => {
                 //t.description = t.name or Vital sign name
-                html_vs_items = [html_vs_items,`<tr data-id="${t.id}" data-tid="${ticket_id}"><td>`,t.description,`</td><td><input class="form-control w-50" type="text" value ="`,t.vital_sign_value,`"></td></tr>`].join('');
-             });
+                html_vs_items = [html_vs_items, `<tr data-id="${t.id}" data-tid="${ticket_id}"><td>`, t.description, `</td><td><input data-id="${t.id}" class="data-input form-control w-50" type="text" value ="`, t.vital_sign_value, `"></td></tr>`].join('');
+            });
 
             if (!el || el.length === 0) {
                 let title = LocaleManager.trans('Vital Signs', 'consult');
                 let html = `
-                        <div id="${wrapper_id}" style="display:none">
+                        <div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                         <h3 class="trans-text" data-langprop="consult.Vital Signs">${title}</a></h3>
                         <div class="">
                             <table class="table">
@@ -1421,33 +1488,32 @@ let ConsultTabView = new function () {
             el.show().siblings().hide();
         });
     }
-   
 
-    this.loadConsult_PE =(ticket_id,onFinish)=>{
-       vsapi.call(`${main_view.base_url}/api/ticket/patient-pe`,null).then(res=>{
-            if (res.status_code === 200){
-                 let d = StringSanitizer.sanitizeOut(res.data);
-                 onFinish(d);
+
+    this.loadConsult_PE = (ticket_id, onFinish) => {
+        vsapi.call(`${main_view.base_url}/api/ticket/patient-pe`, null).then(res => {
+            if (res.status_code === 200) {
+                let d = StringSanitizer.sanitizeOut(res.data);
+                onFinish(d);
             } else onFinish(null);
-       });
+        });
     }
 
     //showConsultPhysicalExamination
-    this.showConsultPE = (div)=>{
+    this.showConsultPE = (div,view_name) => {
         //let patient_id = div.data('patientid');
         let ticket_id = div.data('tid');
         let wrapper_id = '_consult_pe_wrapper';
-        let el = div.find(`#${wrapper_id}`);
-
+        let el = div.find(`#${wrapper_id}`); 
         //loadPE_patient
         mThis.loadConsult_PE(ticket_id, pe => {
-             let html = "";
-                if(!pe) pe ="";
+            let html = "";
+            if (!pe) pe = "";
 
-                if(!el || el.length === 0){
-                        let title = LocaleManager.trans('Physical Examination','consult'); 
-                        let html = `
-                        <div id="${wrapper_id}" style="display:none">
+            if (!el || el.length === 0) {
+                let title = LocaleManager.trans('Physical Examination', 'consult');
+                html = `
+                        <div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                         <h3 class="trans-text" data-langprop="consult.Pysical Examination">${title}</a></h3>
                         <div class="">
                            <textarea class="form-control" cols="10" rows="5">${pe}</textarea>
@@ -1457,27 +1523,11 @@ let ConsultTabView = new function () {
                 div.append(html);
                 el = div.find(`#${wrapper_id}`);
             }
-
             el.show().siblings().hide();
         });
     }
 
-
     this.loadPrescription = (ticket_id = 0, onFinish) => {
-        //    let d = {};
-        //    d.products = [
-        //      {value:"1","text":"Medicine 1"}
-        //      , {value:"2","text":"Medicine 2"}
-        //      , {value:"4","text":"Medicine 3"}
-        //      , {value:"5","text":"Medicine 4"}
-        //      , {value:"6","text":"Medicine 5"}
-        //    ];
-        //    d.usage_options = [
-        //     {value:"1","text":"1 x 3"}
-        //     , {value:"2","text":"1 x 4"}
-        //     , {value:"4","text":"1 x 5 After Meal"}
-        //    ];
-
         vsapi.call(`${main_view.base_url}/api/settings/options-product`, null).then(res => {
             if (res.status_code === 200) {
                 onFinish(res.data);
@@ -1485,7 +1535,7 @@ let ConsultTabView = new function () {
         });
     }
 
-    this.showConsultPrescription = (div) => {
+    this.showConsultPrescription = (div,view_name) => {
         let wrapper_id = '_consult_pres_warpper';
         let div_id = '_consult_prescription';
         let el = div.find(`#${wrapper_id}`);
@@ -1493,7 +1543,7 @@ let ConsultTabView = new function () {
 
         if (!el || el.length === 0) {
             let title = LocaleManager.trans('Prescription', 'consult');
-            let html = `<div id="${wrapper_id}"><h3 class="trans-text" data-langprop="consult.Prescription">${title}</h3>
+            let html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}"><h3 class="trans-text" data-langprop="consult.Prescription">${title}</h3>
               <div id="${div_id}"></div>
             </div>`;
 
@@ -1578,133 +1628,134 @@ let ConsultTabView = new function () {
     }
 
     //showConsultMedicalHistory()
-    this.showConsultMedicalHistory = (div) => {
+    this.showConsultMedicalHistory = (div,view_name) => {
         let wrapper_id = '_consult_medical_history_warpper';
         let ticket_id = div.data('tid');
         let patient_id = div.data('patientid');
-        let div_id = '_consult_history';
+        //let div_id = '_consult_history';
         let el = div.find(`#${wrapper_id}`);
-        
-        if(el){
-           let html = 
-              `<div id ="${div_id}" style="display:none">
+
+        if (el.length ===0 || !el) {
+            let html =
+                `<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
               <h3 class="trans-text" data-langprop="consult.Medical History">Medical History</h3>
               <div class="d-flex flex-column">
                 <div>
                    <label class="control-label">Personal History</label>
-                   <textarea class="form-control" cols="10" rows="3" id="_consul_history_personal"></textarea>
+                   <textarea data-category="Personal History" class="data-input form-control" cols="10" rows="3" id="_consul_history_personal"></textarea>
                 </div>
 
                 <div>
                   <label class="control-label">Family History</label>
-                  <textarea class="form-control" cols="10" rows="3" id="_consul_history_familiy"></textarea>
+                  <textarea data-category="Family History" class="data-input form-control" cols="10" rows="3" id="_consul_history_familiy"></textarea>
                 </div>
 
                 <div>
                   <label class="control-label">Traveling</label>
-                  <textarea class="form-control" cols="10" rows="3" id="_consul_history_traveling"></textarea>
+                  <textarea data-category ="Traveling" class="data-input form-control" cols="10" rows="3" id="_consul_history_traveling"></textarea>
                 </div>
                 
                 <div>
                   <label class="control-label">Vacination</label>
-                  <textarea class="form-control" cols="10" rows="3" id="_consul_history_vacination"></textarea>
+                  <textarea data-category ="Vacination" class="data-input form-control" cols="10" rows="3" id="_consul_history_vacination"></textarea>
                 </div>
 
                 <div>
                   <label class="control-label">Allergy</label>
-                  <textarea class="form-control" cols="10" rows="3" id="_consul_history_allergy"></textarea>
+                  <textarea data-category="Allergy" class="data-input orm-control" cols="10" rows="3" id="_consul_history_allergy"></textarea>
                 </div>
 
                 <div>
                   <label class="control-label">Surgery</label>
-                  <textarea class="form-control" cols="10" rows="3" id="_consul_history_surgery"></textarea>
+                  <textarea data-category="Surgery" class="data-input form-control" cols="10" rows="3" id="_consul_history_surgery"></textarea>
                 </div>
 
                 <div>
                   <label class="control-label">Others</label>
-                  <textarea class="form-control" cols="10" rows="3" id="_consul_history_others"></textarea>
+                  <textarea data-category="Others" class="data-input form-control" cols="10" rows="3" id="_consul_history_others"></textarea>
                 </div>
 
               </div>
            </div>`;
-            div.html(html);
-            el = $(`#${div_id}`);
+            div.append(html);
+            el = $(`#${wrapper_id}`);
         }
 
         el.show().siblings().hide();
-        LocaleManager.translateZone(div_id);
+        LocaleManager.translateZone(wrapper_id);
     }
- 
-     
-    this.showConsultLaboratoryTests = (div) => {
+
+
+    this.showConsultLaboratoryTests = (div,view_name) => {
         let wrapper_id = '_consult_labo_warpper';
         let div_labotest_panel_id = '_consult_div_labotest_panel';
 
         let ticket_id = div.data('tid');
         let patient_id = div.data('patientid');
-        let div_id = '_consult_labo';
+        //let div_id = '_consult_labo';
         let el = div.find(`#${wrapper_id}`);
-        
-        if(el){
-           let html = 
-           `<div id ="${div_id}" style="display:none">
+
+        if (el.length ===0 || !el) {
+            let html =
+                `<div id ="${wrapper_id}" class="consult-content-panel" view-name="${view_name}" style="display:none">
                 <h3 class="trans-text" data-langprop="consult.Laboratory Tests">Laboratory Tests</h3>
                 <div class="d-flex">
                     <div id="${div_labotest_panel_id}" class="table-responsive">  
                     </div>
                 </div>
            </div>`;
-            div.html(html);
-           el = $(`#${div_id}`);
+            div.append(html);
+            el = $(`#${wrapper_id}`);
 
-           //initialize mThis.tblLaboTests for the first time
-           let cols = [
-            {
-                name:'labo_test_id',
-                title:'Test Name',
-                //display:'select',
-                selectOptions:[
-                    {'value':"Boold test",'text':'Blood Test'},
-                    {'value':"Other Test",'text':'Other Test'},
-                ]
-            },
-            {
-                name:'description',
-                //dataType:'string',
-                title:'Description'
-            },
-            {
-                name:'labo_id',
-                title:'Labo Name',
-                selectOPtions:[] 
-            }
-           ];
+            //initialize mThis.tblLaboTests for the first time
+            let cols = [
+                {
+                    name: 'labo_test_id',
+                    title: 'Test Name',
+                    //display:'select',
+                    selectOptions: [
+                        { 'value': "Boold test", 'text': 'Blood Test' },
+                        { 'value': "Other Test", 'text': 'Other Test' },
+                    ]
+                },
+                {
+                    name: 'description',
+                    //dataType:'string',
+                    title: 'Description'
+                },
+                {
+                    name: 'labo_id',
+                    title: 'Labo Name',
+                    selectOPtions: []
+                }
+            ];
 
-           mThis.tblLaboTests = new ItemsView(div_labotest_panel_id,{
-              columns:cols,
-              tableClass:"table",
-              //showColumnHeaders:true,
-              //showAddLineButton:true,
-              addLineButtonText:"Add Labo Test",
-              langProp:'labotest' 
-           });
+            mThis.tblLaboTests = new ItemsView(div_labotest_panel_id, {
+                columns: cols,
+                tableClass: "table",
+                //showColumnHeaders:true,
+                //showAddLineButton:true,
+                addLineButtonText: "Add Labo Test",
+                langProp: 'labotest'
+            });
 
+              
         }
 
         el.show().siblings().hide();
-        LocaleManager.translateZone(div_id);
+        LocaleManager.translateZone(wrapper_id);
     }
 
-    this.showConsultDiagnosis = (div) => {
+    this.showConsultDiagnosis = (div,view_name) => {
         let wrapper_id = '_consult_diagnosis_warpper';
         let ticket_id = div.data('tid');
         let patient_id = div.data('patientid');
-        let div_id = '_consult_diagnosis';
+        //let div_id = '_consult_diagnosis';
         let el = div.find(`#${wrapper_id}`);
-        
-        if(el){
-           let html = 
-             `<div id ="${wrapper_id}" style="display:none">
+
+        if (el.length===0 || !el) {
+            let html =
+                `<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
               <h3 class="trans-text" data-langprop="consult.Diagnosis">Diagnosis</h3>
               <div class="d-flex flex-column">
                  <label class="control-label">Diagnosis details</label>
@@ -1712,24 +1763,24 @@ let ConsultTabView = new function () {
               </div>
            
             </div>`;
-            div.html(html);
+            div.append(html);
             el = div.find(`#${wrapper_id}`);
         }
 
         el.show().siblings().hide();
-        LocaleManager.translateZone(div_id);
+        LocaleManager.translateZone(wrapper_id);
     }
 
-    this.showConsultRecommendations = (div) => {
+    this.showConsultRecommendations = (div,view_name) => {
         let wrapper_id = '_consult_advice_warpper';
         let ticket_id = div.data('tid');
         let patient_id = div.data('patientid');
         let div_id = '_consult_advice';
         let el = div.find(`#${wrapper_id}`);
-        
-        if(el){
-           let html = 
-             `<div id ="${wrapper_id}" style="display:none">
+
+        if (el.length===0 || !el) {
+            let html =
+                `<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
               <h3 class="trans-text" data-langprop="consult.Recommendations">Recommendations</h3>
               <div class="d-flex flex-column">
                  <label class="control-label">Doctor's recommendation</label>
@@ -1737,7 +1788,7 @@ let ConsultTabView = new function () {
               </div>
             </div>  
            `;
-            div.html(html);
+            div.append(html);
             el = div.find(`#${wrapper_id}`);
         }
 
@@ -1812,10 +1863,10 @@ let ConsultTabView = new function () {
         let patient_id = div.data('patientid');
         let ticket_id = div.data('tid');
         let el = $(`#${wrapper_id}`);
-        
-        if(!el || el.length ===0){
-            let html = 
-            `<div id="${wrapper_id}">
+
+        if (!el || el.length === 0) {
+            let html =
+                `<div id="${wrapper_id}">
             <h3 class="trans-text" data-langprop="consult.Physical Examination">Physical Examination</h3>
             <div class="d-block">
                 <div class="table-responsive">
@@ -1859,7 +1910,7 @@ let ConsultTabView = new function () {
             div.html(html);
             el = $(`#${wrapper_id}`);
         }
-        
+
         el.show().siblings().hide();
         LocaleManager.translateZone(wrapper_id);
     }
@@ -1870,8 +1921,8 @@ let ConsultTabView = new function () {
         let patient_id = div.data('patientid');
         let ticket_id = div.data('tid');
         let el = $(`#${wrapper_id}`);
-        
-        if(!el || el.length===0){
+
+        if (!el || el.length === 0) {
             let html = `<h3>Laboratory Tests</h3>
             <div class="d-block">
                 <div class="table-responsive">
@@ -1905,7 +1956,7 @@ let ConsultTabView = new function () {
 
         el.show().siblings().hide();
         LocaleManager.translateZone(wrapper_id);
-       
+
     }
 
     this.loadHistory_diagnosis = (patient_id, onFinish) => {
@@ -1964,18 +2015,18 @@ let ConsultTabView = new function () {
                 </div>`;
             div.html(html);
             el = $(`#${wrapper_id}`);
-         }
+        }
 
-                     //Insert rows to History table
-                     mThis.loadHistory_diagnosis(patient_id, items => {
-                        let tbody = document.querySelector(`#${mThis.tblHistoryDiagnosis_body_id}`);
-                        if (tbody) {
-                            let row_html = '';
-                            let i = 0;
-        
-                            tbody.innerHTML = '';
-                            items.map(item => {
-                                row_html = [row_html, `<tr>
+        //Insert rows to History table
+        mThis.loadHistory_diagnosis(patient_id, items => {
+            let tbody = document.querySelector(`#${mThis.tblHistoryDiagnosis_body_id}`);
+            if (tbody) {
+                let row_html = '';
+                let i = 0;
+
+                tbody.innerHTML = '';
+                items.map(item => {
+                    row_html = [row_html, `<tr>
                                             <td>
                                                 <span class="d-block p-1" style="min-width:110px">${item.date}</span>
                                                 <span class="d-inline-block text-secondary p-1">${item.ticket_number}</span>
@@ -1988,24 +2039,24 @@ let ConsultTabView = new function () {
                                             </td>
                                             <td>${item.consultant_name}</td>
                                             </tr>`].join('');
-                                i++;
-                            });
-        
-                            tbody.innerHTML = row_html;
-        
-                            (tbody.querySelectorAll('.lnk-show-more') || {}).forEach(d => {
-                                d.addEventListener('click', e => {
-                                    let td = VSDOM.getClosestParentByType(e.target, 'TD');
-                                    let ticket_id = e.target.dataset.tid;
-                                    if (td) td.classList.toggle('active');
-                                });
-                            });
-                        }
-                    });
+                    i++;
+                });
 
-             
-            el.show().siblings().hide();
-        
+                tbody.innerHTML = row_html;
+
+                (tbody.querySelectorAll('.lnk-show-more') || {}).forEach(d => {
+                    d.addEventListener('click', e => {
+                        let td = VSDOM.getClosestParentByType(e.target, 'TD');
+                        let ticket_id = e.target.dataset.tid;
+                        if (td) td.classList.toggle('active');
+                    });
+                });
+            }
+        });
+
+
+        el.show().siblings().hide();
+
     }
 
     this.showHistoryPrescription = (div) => {
@@ -2014,10 +2065,10 @@ let ConsultTabView = new function () {
 
         let wrapper_id = '_history_prescriptions';
         let el = $(`#${wrapper_id}`);
-        
-        if(!el || el.length ===0){
-            let html = 
-            `<div class="${wrapper_id}">
+
+        if (!el || el.length === 0) {
+            let html =
+                `<div id="${wrapper_id}">
                 <h3 class="trans-text" data-langprop="history.Historical Prescriptions">Historical Prescriptions</h3>
                 <div>
                   Please display a list of prescription by date and doctor's name here!
@@ -2029,7 +2080,7 @@ let ConsultTabView = new function () {
         }
 
         LocaleManager.translateZone(wrapper_id);
-        el.show().siblings().hide(); 
+        el.show().siblings().hide();
     }
 
     this.showHistoryRecommendations = (div) => {
@@ -2037,9 +2088,9 @@ let ConsultTabView = new function () {
         let wrapper_id = '_history_advice';
         let el = $(`#${wrapper_id}`);
 
-        if(!el || el.length ===0){
-            let html = 
-            `<div class="${wrapper_id}">
+        if (!el || el.length === 0) {
+            let html =
+                `<div id="${wrapper_id}">
                 <h3 class="trans-text" data-langprop="history.Historical Recommendations">Historical Recommedations</h3>
                 <div>
                   Doctor advice is to be displayed here!
@@ -2071,21 +2122,21 @@ let ConsultTabView = new function () {
         d.items = items;
         onFinish(d);
     }
-  
-    this.showHistoryMedicalReports = (div)=>{
+
+    this.showHistoryMedicalReports = (div) => {
         let patient_id = div.data('patientid');
         //let ticket_id = div.data('tid');
-        let wrapper_id ='_history_med_report_wrapper';
-        mThis.tblHistoryReports_body_id ='_history_tblMedReports_body';
+        let wrapper_id = '_history_med_report_wrapper';
+        mThis.tblHistoryReports_body_id = '_history_tblMedReports_body';
 
         this.loadHistory_medical_report(patient_id, d => {
             let items = d.items;
-          
-            let el = div.find(`#${wrapper_id}`);  
-            if (!el || el.length===0){
-              
-               let html = 
-               `<div id="${wrapper_id}">
+
+            let el = div.find(`#${wrapper_id}`);
+            if (!el || el.length === 0) {
+
+                let html =
+                    `<div id="${wrapper_id}">
                    <div class="d-flex flex-column history-mr-header">
                        <div class="d-flex flex-row">
                           <span class="w-30 fw-bold trans-text" data-langprop="patient.Patient ID"></span>
@@ -2122,9 +2173,9 @@ let ConsultTabView = new function () {
                 </div>
                `;
 
-               div.html(html);
-               let el = $(`#${wrapper_id}`);
-            } 
+                div.html(html);
+                let el = $(`#${wrapper_id}`);
+            }
 
             LocaleManager.translateZone(wrapper_id);
 
@@ -2133,28 +2184,25 @@ let ConsultTabView = new function () {
                 let f = x.data('field');
                 x.text(d[f]);
             });
-       
+
             let tbody = document.querySelector(`#${mThis.tblHistoryReports_body_id}`);
             //if (tbody){
-                let row_html = '';
-                items.map(item => {
-                    row_html = [row_html,`<tr>
+            let row_html = '';
+            items.map(item => {
+                row_html = [row_html, `<tr>
                     <td>${item.ticket_number}</td>
                     <td><a href="javascript:void(0)"><i class="fa fa-print"></i><span class="pl-1">${item.date} medical report</span></a></td>
                     <td>${item.consultant_name}</td>
                    </tr>`].join('');
-                  
-                });
-                //alert(tbody.attr('id'));
-                tbody.innerHTML = row_html;
+
+            });
+            //alert(tbody.attr('id'));
+            tbody.innerHTML = row_html;
             //}
-           
+
             el.show().siblings().hide();
-            
         });
     }
-    
-
     //end::Any options of history
 }
 //end::ConsultTabView
