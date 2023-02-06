@@ -132,4 +132,21 @@ BEGIN
   RETURN detailtype;   
 END;
 
-
+DROP FUNCTION IF EXISTS `getGroupQty`;
+CREATE FUNCTION `getGroupQty`(groupid INT) RETURNS decimal(10,2) DETERMINISTIC
+BEGIN
+  declare qty decimal(10,2);
+  SET qty = (SELECT SUM(IFNULL(c.qty,0)) AS qty FROM inv_item_groups AS g INNER JOIN inv_items AS i ON i.group_id = g.id INNER JOIN inv_current_stocks AS c ON i.id = c.item_id WHERE g.id =groupid LIMIT 1);
+  return qty;      
+END;
+ 
+-- ----------------------------
+-- Function structure for `getItemQty`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getItemQty`;
+CREATE FUNCTION `getItemQty`(itemid INT) RETURNS decimal(10,2) DETERMINISTIC
+BEGIN
+  declare qty decimal(10,2);
+  SET qty = (SELECT IFNULL(c.qty,0) AS qty FROM inv_current_stocks AS c INNER JOIN inv_items AS i ON i.id = c.item_id WHERE i.id =itemid LIMIT 1);
+  return qty;      
+END;
