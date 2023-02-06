@@ -112,7 +112,7 @@
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkOPDList" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/opd%20patient%201.svg')}}"/>
+                                    <img class="icons" src="{{asset('assets/images/icons/opd_patient.svg')}}"/>
                                 </span>
                                 &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.OPD Patients">OPD List</span>
                             </a>
