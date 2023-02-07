@@ -108,7 +108,7 @@ let DashboardComponent = new function(){
         scales: {
           yAxes: [{
               ticks: {
-                  beginAtZero: true
+                beginAtZero: true
               }
           }]
         }
@@ -150,6 +150,7 @@ let DashboardComponent = new function(){
         labels: ['January','February','March', 'April', 'May', 'June','July','August','Setember','Octorboer','November','December']
       },
       options: {
+        maintainAspectRatio: false,
         scales: {
           yAxes: [{
             display: false

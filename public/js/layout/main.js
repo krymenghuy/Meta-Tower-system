@@ -76,7 +76,7 @@
      this.getEncryptData = (qstring,onFinish)=>{
         let p = {'data':qstring};
         vsapi.call([mThis.base_url,'/api/encryptData'].join(''),p).then((res)=>{
-            onFinish(res.data?res.data:'');
+            onFinish(res.data?res.data:res);
         }); 
     }
 
