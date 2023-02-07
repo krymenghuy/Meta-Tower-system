@@ -2,7 +2,6 @@
 //begin::TicketDetails class
 let TicketDetails = new function () {
     let mThis = this;
-    //mThis.default_view = 'info';
     mThis.current_view_name = 'info';
     mThis.tblTickets = null;
 
@@ -46,9 +45,7 @@ let TicketDetails = new function () {
                     alert('Consult Window is closing');
                 }
             };
-
             ConsultDialog.show(op);
-
         });
 
         //remove Chief complaint item, on Appoinment list expanaded view
@@ -110,7 +107,6 @@ let TicketDetails = new function () {
 
     //AddChiefComplaintToList() on Appointment List' s expanded view
     this.addCCToList = (ul, item = {}) => {
-        //let ul = $(`complaint_list-${appt_id}`);
         let appt_id = ul.data('apptid');
 
         //Remove first default element "(No chief complaint)"
@@ -375,16 +371,7 @@ let TicketDetails = new function () {
         if (!ticket_id) ticket_id = div_panel.data('tid');
         let div_workspace = div_panel.find('div.qul-workspace');
         //div_workspace.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
-        div_workspace.html(`<div class="d-flex p-3">
-        <div style="height:25px"></div>
-        <ul>
-         <li>Chief Complaints</li>
-         <li>Physical Examinations</li>
-         <li>Laboratory Tests</li>
-         <li>Diagnosis</li>
-         <li>Recommendations</li>
-        </ul>
-        </div>`);
+        div_workspace.html();
         mThis.current_view_name = 'consult';
     };
 }
@@ -433,17 +420,9 @@ let QueueComponent = new function () {
                 //if (mThis.col_titles.hasOwnProperty(prop)) {}
                 mThis.col_titles[prop] = LocaleManager.trans(prop, 'ticket', LocaleManager.lang);
             }
-            //d =1;
             mThis.lang = LocaleManager.lang;
         }
-        //alert( (d==1?'translate => ':'No need translate=> ') + JSON.stringify(mThis.col_titles)); 
     }
-
-    // this.loadChiefComplaints = ()=>{
-    //     window.vsapi.call(`${main_view.base_url}/api/settings/options-chief-complaint`,null).then((d)=>{
-    //         mThis.form_data.chief_complaints = StringSanitizer.sanitizeObject(d.data);
-    //    });
-    // }
 
     //SetQueueStatus()
     this.setTicketStatus = (detail_tr, d = {}) => {
@@ -461,20 +440,6 @@ let QueueComponent = new function () {
         }
         btnQ.show();
     }
-
-    //return json object about Appointment's client details (name,sex,phone_number,...) from expandable view
-    // this.getClientInfo = (tr)=>{
-    //    let div = tr.find('.appt-info-wrapper');
-    //    let appt_id = div.data('apptid');
-    //    let lead_id = div.data('leadid');
-    //    let d = {'appt_id':appt_id,"lead_id":lead_id};
-    //    div.find('.detail-item-value').each(function(){
-    //       let span = $(this);
-    //       let f = span.data('field');
-    //       d[f] = span.text();
-    //    });
-    //    return d;
-    // }
 
     this.init = () => {
         //This is to refresh Datatable's header texts when language changes
@@ -522,32 +487,6 @@ let QueueComponent = new function () {
             e.preventDefault();
         });
 
-        // //remove Chief complaint item, on Appoinment list expanaded view
-        // mThis.tblTickets.on('click', 'a.qul-remove-complaint', function (e) {
-        //     e.preventDefault();
-        //     let lnk = $(this);
-        //     let ul = lnk.closest('ul');
-        //     let p = {
-        //         'chief_complaint_id': lnk.data('id'),
-        //         'ticket_id': ul.data('tid')
-        //     };
-
-        //     let li = $(this).closest('li');
-        //     cv_interact.confirm('Delete this item?', {
-        //         'confirmButtonText': 'Delete',
-        //         'cancelButtonText': 'Dont Delete',
-        //         'context': 'delete'
-        //     }, (yes) => {
-        //         if (yes) {
-        //             window.vsapi.call(`${main_view.base_url}/api/ticket/remove-chief-complaint`, p, null, null).then((res) => {
-        //                 if (res.status_code === 200) {
-        //                     li.remove();
-        //                 } else cv_interact.warning(res.error_message);
-        //             });
-        //         }
-        //     });
-        // });
-
         mThis.tblTickets.on('click', '.btn_ticket_status', function (e) {
             e.preventDefault();
             let btn = $(this);
@@ -558,13 +497,6 @@ let QueueComponent = new function () {
         mThis.tblTickets.on('click', 'a.btn_ticket_modify', function (e) {
             e.preventDefault();
             let lnk = $(this);
-            //let op = {'identity_value':lnk.data('id')};
-            // AppointmentDialog.show(op,(e)=>{
-            //     if(e){
-            //         cv_interact.info('Appointment details has been saved',null,true);
-            //         mThis.displayTicketList();
-            //     }
-            // });
         });
 
         this.cfg = new ExpandableRowConfig('_qul_tblTickets', {
@@ -584,15 +516,6 @@ let QueueComponent = new function () {
             }
         });
 
-        // mThis.setExpandableRow('_activeloan_tblLoans',function(){
-        //    return `<div style="width:100%;padding:10px"> This is new expandable</div>`;   
-        // });
-
-        // this.tblTickets.on('click','tr',function(e){
-        //     let tr = $(this);
-        //     mThis.expandableRow(tr,'expandable-wrapper'); 
-        // });
-
         mThis.tblTickets.on('click', 'a.btn_apt_delete', function (e) {
             e.preventDefault();
             let lnk = $(this);
@@ -606,36 +529,13 @@ let QueueComponent = new function () {
                     });
                 }
             });
-
         });
-
-
-        // mThis.tblTickets.on('mouseover','tr',function(e){
-        //    let btn = $(this).find('a.btn_apt_action');
-
-        //    btn.find('i').css('color','red');
-        // }).on('mouseleave','tr',function(e){
-        //     let btn = $(this).find('a.btn_apt_action');
-        //     btn.find('i').css('color','#E9E7E7');
-
-        // });
     }
 
     this.trans_title = (title_prop = 'undefined') => {
         return (mThis.col_titles[title_prop] || 'undefined');
     }
 
-    /**
-     items = [
-        {
-            cssClass:"acl_edit",
-            click:function(){
-
-            },
-            
-        }
-     ]  
-      **/
     this.createDropdownMenuHtml_loan = (items = [], data = null, data_props = []) => {
         if (!data_props) data_props = [];
         let str_props = "";
@@ -647,12 +547,10 @@ let QueueComponent = new function () {
         //cla = 'class_list_action' = > cla_delete, cla_modify,...
         let html = ['<div class="dropdown-menu action-menus">',
             '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_edit" href="javascript:void(0)"><i class="fa fa-edit" style="color:blue;font-size:1.1em;margin-top:2px;"></i> <span>Review Application</span</a>',
-            //'<a data-id="',loan_app_id,'" data-personid="',person_id,'" class="dropdown-item _apl_loanapp_approve" href="#"><i class="fa fa-check" style="color:green"></i> Approve Loan</a>',
             '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_disburse" href="#"><i class="fa fa-list-alt" style="color:orange"></i> Disburse Loan</a>',
             '<div class="dropdown-divider"></div>',
             '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_delete" href="#"><i class="fa fa-times" style="color:red"></i> Delete Loan Application</a>',
             '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_person_profile" href="#"><i class="fa fa-list" style="color:green"></i> Personal Profile</a>',
-            //'<a data-id="',loan_app_id,'" data-personid="',person_id,'" class="dropdown-item _apl_loanapp_change_status" href="#"><i class="fa fa-tasks" style="color:grey;margin-top:3px;font-size:1.1em"></i> <span>Change Status</span</a>',
             '</div>'].join('');
         return html;
     }
@@ -683,29 +581,10 @@ let QueueComponent = new function () {
                 mThis.table = null;
             }
             //begin::Set up columns
-            //let cnt = 1;
             let my_columns = [
-                //  {
-                //      // data:function(data,type,meta) {
-                //      //     return cnt++;
-                //      // },
-                //      // title:'NO.'
-                //      className:'col_action',
-                //      data:function(data,row,display) {
-                //       let html =['<div class="action-menus dropdown" style="margin-top:-10px">',
-                //           '<a href="javascript:void(0)" data-id="',data.id,'" data-personid="',data.person_id,'" data-statusid="',data.status_id,'" class="btn_apt_action">',
-                //           '<i class="fa fa-tasks" style="color:#E9E7E7;font-size:1.1em"></i>',
-                //           //' Action',
-                //           '</a>',
-                //          '</div>'].join('');
-                //          return html;
-
-                //      } 
-                //  },
                 {
                     data: function (data, a, b) {
                         return ['<span class="qul-ticket-number">', data.ticket_number, '</span>',
-                            //'<a class="btn btn-sm btn-outline-success btn-consult"><i class="fa fa-user-check"></i>&nbsp;<span class="trans-text" data-langprop="buttons.Serve">Serve</span></a>'
                         ].join('');
                     },
                     title: mThis.trans_title('Ticket Number')
@@ -726,12 +605,6 @@ let QueueComponent = new function () {
                         return data.client_sex;
                     }
                 },
-                //  {
-                //     title: mThis.trans_title('Client Phone'),
-                //     data:(data,a,b)=>{
-                //       return data.client_phone_number;
-                //     }
-                // },
                 {
                     title: mThis.trans_title('Schedule Type'),
                     data: (data, a, b) => {
@@ -803,19 +676,9 @@ let QueueComponent = new function () {
                         tr.data('statusid', data.status_id);
                         tr.data('clientid', data.client_id);
                         tr.data('personid', data.person_id);
-                    }
-                    //    ,"cellCreated":function(td,data,colIndex) {
-                    //        alert('test');
-                    //      if(colIndex==9){
-                    //         let html = ['<div><a href="#" data-ceid="',data[0], '" data-studentid ="',data[2],'" data-classid="',data[1],'" class="scl_gl_delete_ceid"><i class="fa fa-trash" style="color:red"></i></a></div>'].join('');
-                    //         $(td).html(html); 
-                    //      }
-                    //   }    								
+                    }   								
                 });
-            // let div = $('#_dl_d_filter_panel');  
-            // $('#_dl_tblTickets_wrapper>div.dt-buttons').prepend(div);
-            if (typeof onFinish === 'function') onFinish();
-            //mThis.cfg.open(mThis.tblTickets.find(`tr:last`));                
+            if (typeof onFinish === 'function') onFinish();             
         });
     };
 
@@ -835,32 +698,11 @@ let QueueComponent = new function () {
     }
 
     this.show = (option = null) => {
-        //if(!option) option={};
         mThis.displayTicketList(() => {
             mThis.self.show().siblings().hide();
             main_view.setTitle(mThis.title_prop);
         });
     }
-
-    // this.setExpandableRow = (table_id,createHTML=null,op={})=>{
-    //    let tbl = $(`#${table_id}`);
-    //    if(!op) op = {};
-
-    //    tbl.on('click','tr',function(){
-    //         let tr = $(this);
-    //         if (tr.hasClass('expandable-row')) return;
-    //         let next_tr = tr.next();
-    //         if (next_tr.hasClass('expandable-row')){
-    //             next_tr.show();
-    //             mThis.prev_selected_row =null;
-    //             return;
-    //         }
-    //         // `<tr class="expandable-row"><td colspan="10"><div class="${cssClass}"></div><h4>This is a test expanded</h4></td></tr>`;  
-    //         let html = (typeof createHTML==='function')? createHTML():`</div><h4> This is default Panel for Expandable Row </h4></div>`; 
-    //         let row_id = [table_id,'_',op.id].join('');
-    //         tr.after(`<tr id="${row_id}" data-id="${op.id}" class="expandable-row ${op.rowClass}"><td colspan="${op.colspan?op.colspan:'100%'}">${html}</td></tr>`);     
-    //    });
-    // }
 }
 
 
@@ -1111,8 +953,6 @@ let ConsultTabView = new function () {
     let mThis = this;
     this.self = $('#_consultTabView');
     this.base_url = main_view.base_url;
-    //this.ticket_id = null;
-    //this.patient_id =null;
 
     //this.data is used to store form options such as chief_complaints, vital_signs, etc ...
     this.data = {};
@@ -1186,15 +1026,11 @@ let ConsultTabView = new function () {
             } 
          } 
        });
-
     }
 
     //options = {patient_id,ticket_id}
     this.show = function (options, view_name, tab_button_clicked = false) {
         if (!options) options = {};
-        //alert(JSON.stringify(options));
-        //  mThis.patient_id = options.patient_id;
-        //  mThis.ticket_id = options.ticket_id;
         mThis.options = options;
 
         //Store patient_id and ticket_id as data attributes of each panel container
@@ -1222,11 +1058,6 @@ let ConsultTabView = new function () {
                 } else if (view_name === 'consultation') {
                     mThis.displayConsultation(mThis.ticket_id, div_tab_panel);
                 }
-                // else {
-                //   //do nothing   
-                // }
-                //end:: dispay content data
-
                 return;
             }
         });
@@ -1402,9 +1233,6 @@ let ConsultTabView = new function () {
                     "onItemChange": (col_name) => {
                         console.error(col_name + ' has changed');
                     },
-                    //"addLineButtonText":"Add CC",
-                    //"addLineButtonClass":null,
-                    //"cssClass":"td_class",
                     "numeroFormatter": (numero, row) => {
                         return `<span class="text-secondary fw-bold">${numero}</span>`;
                     },
@@ -1422,10 +1250,6 @@ let ConsultTabView = new function () {
     }
 
     this.loadChiefComplaintOptions = (patient_id = 0, onFinish = null) => {
-        //    mThis.data.chief_complaint_options = [
-        //     {"value":"1","text":"Highe temperature"},
-        //     {"value":"2","text":"Abdominal pain"}
-        //    ];
         vsapi.call(`${main_view.base_url}/api/settings/options-chief-complaint`, null).then(res => {
             if (res.status_code === 200) {
                 let items = res.data;
@@ -1441,11 +1265,6 @@ let ConsultTabView = new function () {
 
     //LoadPatientVitalSigns() | Load vital signs for one patient
     this.loadVitalSigns_patient = (ticket_id = 0, onFinish) => {
-        // let items = [
-        //     {'name':'s1','value':'30'},
-        //     {'name':'s2','value':'35'},
-        //     {'name':'23','value':'51'},
-        // ];
         vsapi.call(`${main_view.base_url}/api/ticket/patient-vital-signs`, null).then(res => {
             if (res.status_code === 200) {
                 let items = StringSanitizer.sanitizeObject(res.data);
@@ -1488,7 +1307,6 @@ let ConsultTabView = new function () {
             el.show().siblings().hide();
         });
     }
-
 
     this.loadConsult_PE = (ticket_id, onFinish) => {
         vsapi.call(`${main_view.base_url}/api/ticket/patient-pe`, null).then(res => {
@@ -1612,13 +1430,10 @@ let ConsultTabView = new function () {
                     "showColumnHeaders": true,
                     "showAddLineButton": true,
                     "addLineButtonText": "Add Item",
-                    //"addLineButtonClass":null,
-                    //"cssClass":"td_class",
                     "numeroFormatter": (numero, row) => {
                         return `<span class="text-secondary fw-bold">${numero}</span>`;
                     },
                     "emptyMessage": `<span class="text-secondary text-align-center">${LocaleManager.trans('No item prescribed', 'consult')}</span>`,
-
                 });
                 //mThis.tblChiefComplaints.setSelectOptions('name',cc_items);
                 el = div.find(`#${wrapper_id}`);
