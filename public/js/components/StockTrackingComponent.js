@@ -447,9 +447,11 @@ let ReceiveStokeDialog = new function(){
         let cause_cols = {'name':1,'qty':1,'price':1,'discount':1};
         //let cause_cols = {'name':1,'qty':1,'price':1,'discount':1,'sku':1}; //In case: we allow user to change SKU per item, when they receive stock
         let p = {"id":d.item_id};
-
+ 
         vsapi.call(`${main_view.base_url}/api/inventory/item-info`,p).then(res=>{
             if(res.status_code===200){
+                let item = StringSanitizer.sanitizeObject(res.data);
+                
                 mThis.cfg.setCellValue(tr,'sku',item.sku);
                 mThis.cfg.setCellValue(tr,'price',item.cost);
 

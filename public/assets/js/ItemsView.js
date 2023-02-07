@@ -351,6 +351,7 @@ class ItemsView{
             if(op.value !== undefined){
               el.value = op.value;
               td.dataset.value =op.value;
+              x.val(op.value).trigger('change');
             }
             //x.val(op.value);
 
@@ -504,7 +505,7 @@ class ItemsView{
         let col = this.getColumnPropsByName(col_name);
         if(col){
            let ops = col.selectOptions?col.selectOptions:[];
-           let html = [`<option value="">`,LocaleManager.trans('Choose item',this.options.langProp),`</option>`].join('');
+           let html = [`<option value="">`,LocaleManager.trans('None',this.options.langProp),`</option>`].join('');
            ops.map(item =>{
               let justSelect ="";
               if(col.selectedValue == item.value) justSelect ="selected";

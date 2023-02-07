@@ -46,7 +46,7 @@ class UMController extends Controller
 /*##### begin::InApp UserModel ##### */
 /** send encrypted data (usually query_string data) to browser for putting in url (for normal Web report parameters) **/
 function encryptData(Request $request){
-  if(!$request->data || !Session::has('login_name') || !Session::get('login_name',null)) return response()->json(null);
+  //if(!$request->data || !Session::has('login_name') || !Session::get('login_name',null)) return response()->json(null);
   $m_str = $request->data;
   $encrypter = app(\Illuminate\Contracts\Encryption\Encrypter::class);
   $m_str = $encrypter->encrypt($m_str,false); //FALSE => to avoid serialization issue in decryption
