@@ -1181,7 +1181,15 @@ let ConsultTabView = new function () {
     }
 
     this.getInput_prescription = (div=null)=>{
-          return mThis.tblPrescribedItems? mThis.tblPrescribedItems.getItems() : [];
+          let d = {
+            'issue_date':"",
+            'consultant_id':"",
+            'description':"",
+            'items': mThis.tblPrescribedItems? mThis.tblPrescribedItems.getItems() : []
+          };
+          //if there are no items in presecription, then return NULL
+          if(!d.items[0]) return null;
+          return d;
     }
 
     this.getInput_advice = (div)=>{
@@ -1600,7 +1608,7 @@ let ConsultTabView = new function () {
             div.html(html);
             let columns = [
                 {
-                    "name": "name",
+                    "name": "item_id",
                     "title": "Product",
                     "dataType": "string",
                     "displayType": "select",
@@ -1612,6 +1620,16 @@ let ConsultTabView = new function () {
                     "title": "Quantity",
                     "dataType": "number",
                     "displayType": "input"
+                    // ,"data":(value,row)=>{
+                    //     return "";
+                    // }
+                },
+                {
+                    "name": "sku",
+                    "title": "UOM",
+                    "dataType": "string",
+                    "displayType": "input",
+                    "readOnly":true
                     // ,"data":(value,row)=>{
                     //     return "";
                     // }
@@ -1639,22 +1657,22 @@ let ConsultTabView = new function () {
                     // ,"data":(value,row)=>{
                     //     return "";
                     // }
-                },
-                {
-                    "name": "remarks",
-                    "title": "Remarks",
-                    //"dataType": "string",
-                    "displayType": "input"
-                    // ,"data":(value,row)=>{
-                    //     return "";
-                    // }
                 }
+                //,{
+                //     "name": "remarks",
+                //     "title": "Remarks",
+                //     //"dataType": "string",
+                //     "displayType": "input"
+                //     // ,"data":(value,row)=>{
+                //     //     return "";
+                //     // }
+                // }
             ];
 
             mThis.loadPrescription(ticket_id, d => {
                 //After having loaded prescription data from server => init prescription table
                 columns[0].selectOptions = d.products;
-                columns[2].selectOptions = d.usage_options;
+                columns[3].selectOptions = d.usage_options;
                 //tblPrescribedItems
                 mThis.tblPrescribedItems = new ItemsView(div_id, {
                     "columns": columns,
@@ -1665,6 +1683,11 @@ let ConsultTabView = new function () {
                     "addLineButtonText": "Add Item",
                     //"addLineButtonClass":null,
                     //"cssClass":"td_class",
+                    "onItemChange":(selOp,col_name,td)=>{
+                        let tr = td.parentNode; 
+                        //st item sku
+                        mThis.setItemInfo(col_name,tr);
+                    },
                     "numeroFormatter": (numero, row) => {
                         return `<span class="text-secondary fw-bold">${numero}</span>`;
                     },
@@ -1676,6 +1699,22 @@ let ConsultTabView = new function () {
             });
         }
         el.show().siblings().hide();
+    }
+ 
+    this.setItemInfo = (col_name,tr)=>{
+        if(col_name==='item_id'){
+            let d = mThis.tblPrescribedItems.getDataRow(tr);
+            let p = {'item_id':d.item_id};
+            vsapi.call(`${main_view.base_url}/api/inventory/item-info`,p).then(res=>{
+                if(res.status_code===200){
+                    let item = res.data;
+                    mThis.tblPrescribedItems.setCellValue(tr,'sku',StringSanitizer.sanitizeOut(item.sku));
+                    //mThis.cfg.setCellValue(tr,'price',item.cost);
+                }
+            }); 
+
+        }
+        
     }
 
     //showConsultMedicalHistory()

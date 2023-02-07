@@ -25,7 +25,8 @@ use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\WebReportController; 
 //use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PusherController;
- 
+
+use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\QTicketController;
 use App\Http\Controllers\MedicalServiceController;
@@ -85,6 +86,12 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('appointment/find-client', [AppointmentController::class, 'findClient']);
     //end::AppointmentController
         
+    //begin::ConsultationController 
+        Route::post('consultation/save', [ConsultationController::class, 'saveConsultationData']);
+        Route::post('consultation/delete', [ConsultationController::class, 'deleteConsultationData']);
+        Route::post('consultation/details', [ConsultationController::class, 'getConsultationData']);
+    //end::ConsultationController
+
     //begin::QTicketController
         Route::post('ticket/create', [QTicketController::class, 'createTicket']);
         Route::post('ticket/list', [QTicketController::class, 'getTicketList']);
