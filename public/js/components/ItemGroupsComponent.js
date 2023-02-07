@@ -8,7 +8,7 @@ let ItemGroupsComponent = new function(){
     this.elSearchItem = $('#_pdg_search');
     // this.elFilter_department = $('#_msl_filter_service');
     this.tblItems = $('#_pdg_tblProductGroup');
-    // this.form_data = {};
+    this.form_data = {};
 
     this.col_titles = {
         "No.":"No.",
@@ -49,7 +49,6 @@ let ItemGroupsComponent = new function(){
             let op = {
                 id:item_id,
                 onClose:(e)=>{
-                     //do something on dialog closed
                      if(e){
                          mThis.displayProductsGroup();
                      }
@@ -96,14 +95,134 @@ let ItemGroupsComponent = new function(){
         let p = {'id':group_id};
         window.vsapi.call(`${main_view.base_url}/api/inventory/group-details`,p,'POST',false).then((res)=>{ 
           let html=null;
+          let canvas_Barid = null, canvas_Pieid = null, canvas_Doughnutid = null;
           if (res.status_code === 200){
             let d = StringSanitizer.sanitizeObject(res.data);
-            html = [``].join('');
+            canvas_Barid = `_pdg_SmbarChart_${group_id}`;
+            canvas_Pieid = `_pdg_SmpieChart_${group_id}`;
+            canvas_Doughnutid = `_pdg_SmdoughnutChart_${group_id}`;
+
+            html = [`<div class="row py-2 w-100 gy-2">
+                <div class="col-xl-4">
+                    <div class="shadow-sm rounded w-100 py-2">
+                        <canvas id="${canvas_Barid}"></canvas>
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="shadow-sm rounded w-100 py-2">
+                        <canvas id="${canvas_Pieid}"></canvas>
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="shadow-sm rounded w-100 py-2">
+                        <canvas id="${canvas_Doughnutid}"></canvas>
+                    </div>
+                </div>
+            </div>`].join('');
           }
           else{
             html =`<div class="expanded-row-error">${error_message}</div>`;
           }
           div_wrapper.html(html);
+          let bardata = [12, 74, 63], piedata = [10, 20, 30, 74, 45, 93], doughnutdata = [10, 47, 63, 65, 43, 48];
+          if(canvas_Barid) this.initBarChart(canvas_Barid,bardata);
+          if(canvas_Pieid) this.initPieChart(canvas_Pieid,piedata);
+          if(canvas_Doughnutid) this.initDoughnutChart(canvas_Doughnutid,doughnutdata);
+        });
+    }
+
+    this.initBarChart = (canvas_id,data) => {
+        new Chart(canvas_id,{
+            type: 'bar',
+            data: {
+                labels: ['January','February','March'],
+                datasets: [{
+                    data: data,
+                    backgroundColor: [
+                      'rgba(255, 99, 132, 0.6)',
+                      'rgba(54, 162, 235, 0.6)',
+                      'rgba(255, 206, 86, 0.6)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales:{
+                    yAxes: [{
+                        ticks: {
+                          beginAtZero: true
+                        }
+                    }],
+                },
+                legend: {
+                    display: false
+                }
+            }
+        });
+    }
+
+    this.initPieChart = (canvas_id,data) => {
+        new Chart(canvas_id,{
+            type: 'pie',
+            data: {
+                datasets: [{
+                    data: data,
+                    backgroundColor: [
+                      'rgba(255, 99, 132, 0.6)',
+                      'rgba(54, 162, 235, 0.6)',
+                      'rgba(255, 206, 86, 0.6)',
+                      'rgba(0, 255, 255, 0.6)',
+                      'rgba(255, 0, 255, 0.6)',
+                      'rgba(0, 191, 255, 0.6)'
+                    ],
+                    borderColor: [
+                      'rgba(255, 99, 132, 1)',
+                      'rgba(54, 162, 235, 1)',
+                      'rgba(255, 206, 86, 1)',
+                      'rgba(0, 255, 255, 1)',
+                      'rgba(255, 0, 255, 1)',
+                      'rgba(0, 191, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }],
+                labels: ['Labotory', 'Skin Car', 'Surchery']
+            },
+            options: {}
+        });
+    };
+
+    this.initDoughnutChart = (canvas_id,data) => {
+        new Chart(canvas_id,{
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: data,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(255, 0, 255, 0.6)',
+                        'rgba(0, 191, 255, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 0, 255, 0.6)',
+                        'rgba(0, 191, 255, 0.6)'
+                    ],
+                    borderWidth: 1
+                }],
+                labels: ['Labotory', 'Skin Car', 'Surchery', 'Selling Products']
+            },
+            options: {}
         });
     }
 
@@ -233,7 +352,6 @@ let ItemGroupDialog = new function(){
         });
     }
 
-    //AppointmentDialog
     this.formUntil = new FormUntil({
         "itemName":"Item Group",
         "formId":'_pdg_dlgProductGroup',
@@ -269,7 +387,6 @@ let ItemGroupDialog = new function(){
         
     }
 }
-//end::MedicalServiceDialog
 
 $(document).ready(function() {
     ItemGroupsComponent.init();

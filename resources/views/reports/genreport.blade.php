@@ -104,7 +104,10 @@
                                 @break
                             @case('product_list')
                                 @include('reports.product_list')
-                                @break                   
+                                @break
+                            @case('medical_report')
+                                @include('reports.medical_report')
+                                @break                  
                             @default
                                @break
                            @endswitch

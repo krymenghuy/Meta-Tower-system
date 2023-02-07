@@ -233,11 +233,10 @@ let TicketDetails = new function () {
                 ws_id = ['ticket_', d.id].join('');
                 let ticket_id = d.id;
 
-                html = [
-                    `<div id="${ws_id}" data-ticketid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="row">
+                html = [`<div id="${ws_id}" data-ticketid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="row">
                         <div class="d-flex" style="max-width: 1200px; width:100%">
                             <div class="col-xl-6 col-lg-8 col-sm-12">
-                                <div class="row">
+                                <div class="row d-flex flex-nowrap">
                                     <div style="width:163px; max-width: 165px;">
                                         <img src="${mThis.icon_url()}/client-girl.png" class="profile-thumbnail pe-2"/>
                                     </div>
@@ -248,7 +247,7 @@ let TicketDetails = new function () {
                                         <div class="row g-1">
                                             <div class="detail-item">
                                                 <p class="detail-item-label col-6 py-0 text-nowrap">Patient ID</p>
-                                                <p class="detail-item-value col-6 py-0" data-field="patient_code">${d.client_code}</span>
+                                                <p class="detail-item-value col-6 py-0" data-field="patient_code">${d.client_code}</p>
                                             </div>
                                         </div>
                                         <div class="row g-1">
@@ -566,7 +565,7 @@ let QueueComponent = new function () {
     this.displayTicketList = (onFinish = null) => {
         //Initialize language for DataTable columns headers
         //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-        //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
+        //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again
         mThis.setLanguage();
         let p = { 'search_value': mThis.elSearchAppt.val(), 'date': mThis.appt_filter_date.val(), 'status_id': mThis.appt_filter_status.val() };
         window.vsapi.call(`${mThis.base_url}/api/ticket/list`, p).then((result) => {
@@ -667,8 +666,8 @@ let QueueComponent = new function () {
                         "emptyTable": LocaleManager.trans('No data to display', 'datatable')
                     },
                     'data': data,
-                    'columns': my_columns
-                    , "createdRow": function (row, data, dataIndex) {
+                    'columns': my_columns,
+                    "createdRow": function (row, data, dataIndex) {
                         let tr = $(row);
                         tr.data('id', data.id);
                         tr.data('tid', data.id);
@@ -977,7 +976,7 @@ let ConsultTabView = new function () {
     this.btnSaveConsult.on('click',(e)=>{
       e.preventDefault();
       let p = mThis.getConsultData();
-      console.error(JSON.stringify(p));
+      console.log(JSON.stringify(p));
     });
 
     this.getInput_chiefcomplaints = (div=null)=>{
@@ -1033,13 +1032,13 @@ let ConsultTabView = new function () {
 
     //returns doctor's consultation data including Chielf cpmpaint, Medical history, PE, labor test, prescription, Diagnosis
     //getData()|getInputData()
-    this.getConsultData = ()=>{
+    this.getConsultData = () => {
        let consult_panel = mThis.self.find('div#_consult_panel');
        let p = {};
        consult_panel.find('.consult-content-panel').each(function(){
-         let div = $(this); 
+         let div = $(this);
          let view_name = div.attr('viewname');
-         console.log(view_name);
+
          switch(view_name){
             case 'chief-complaints':{
                p.chief_compaints = mThis.getInput_chiefcomplaints(div);
@@ -1073,11 +1072,10 @@ let ConsultTabView = new function () {
                 p.advice = mThis.getInput_advice(div);
                 break;
             } 
-         } 
+         }
        });
 
        return p;
-
     }
 
     //options = {patient_id,ticket_id}
@@ -1096,7 +1094,7 @@ let ConsultTabView = new function () {
         if (!view_name) view_name = mThis.cur_view;
         view_name = (view_name + '').toLowerCase();
 
-        mThis.self.find('div.tab-body>div.tab-panel').each(function () {
+        mThis.self.find('div.tab-body > div.tab-panel').each(function () {
             let this_view_name = ($(this).data('viewname') + '').toLowerCase();
             let div_tab_panel = $(this);
 
@@ -1210,6 +1208,7 @@ let ConsultTabView = new function () {
             "medical-report": () => {
                 //Show report printing
                 mThis.showConsultMedicalReport(div);
+               
             },
             "medical-certificate": () => {
                 mThis.showConsultMedicalCertificate(div);
@@ -1296,9 +1295,7 @@ let ConsultTabView = new function () {
                 el = div.find(`#${wrapper_id}`);
             });
         }
-
         el.show().siblings().hide();
-
     }
 
     this.loadChiefComplaintOptions = (patient_id = 0, onFinish = null) => {
@@ -1323,7 +1320,6 @@ let ConsultTabView = new function () {
                 onFinish(items);
             } else onFinish({ 'vital_signs': [], 'items': [] });
         });
-
     }
 
     this.showConsultVitalSigns = (div,view_name) => {
@@ -1382,14 +1378,12 @@ let ConsultTabView = new function () {
 
             if (!el || el.length === 0) {
                 let title = LocaleManager.trans('Physical Examination', 'consult');
-                html = `
-                        <div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
+                html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                         <h3 class="trans-text" data-langprop="consult.Pysical Examination">${title}</a></h3>
                         <div class="">
                            <textarea class="form-control data-input" cols="10" rows="5">${pe}</textarea>
                         </div>
-                    </div>
-                    `;
+                    </div>`;
                 div.append(html);
                 el = div.find(`#${wrapper_id}`);
             }
@@ -1542,7 +1536,6 @@ let ConsultTabView = new function () {
                   <label class="control-label">Others</label>
                   <textarea data-category="Others" class="data-input form-control" cols="10" rows="3" id="_consul_history_others"></textarea>
                 </div>
-
               </div>
            </div>`;
             div.append(html);
@@ -1663,8 +1656,11 @@ let ConsultTabView = new function () {
         LocaleManager.translateZone(wrapper_id);
     }
 
-    this.showConsultMedicalReport = (div) => {
-        alert('Print medical report');
+    this.showConsultMedicalReport = (div=null, ticket_id=0) => {
+        let qString =['rtype=medical_report&ticketid=',ticket_id].join(''); 
+        main_view.getEncryptData(qString, (d) => {
+            window.open([main_view.base_url,'/genreport?',d].join(''),'_blank');
+        });
     }
 
     this.showConsultMedicalCertificate = (div) => {

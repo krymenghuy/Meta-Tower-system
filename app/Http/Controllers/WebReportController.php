@@ -100,6 +100,8 @@ class WebReportController extends Controller
         //$p = null;
         //try{
           $p = processQueryString($query_string);
+          echo $p->rtype;
+          return;
         //}catch(\Exception $e){
           //return response()->view('errors.500');
         //}finally {
