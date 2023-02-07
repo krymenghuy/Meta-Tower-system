@@ -1111,6 +1111,13 @@ let ConsultTabView = new function () {
     let mThis = this;
     this.self = $('#_consultTabView');
     this.base_url = main_view.base_url;
+    //save all consult data
+    this.btnSaveConsult = $('#_qul_dlgConsult_btnSave');
+    
+    this.tblChiefComplaints =null;
+    this.tblPrescribedItems = null;
+    this.tblLaboTests = null;
+
     //this.ticket_id = null;
     //this.patient_id =null;
 
@@ -1127,14 +1134,17 @@ let ConsultTabView = new function () {
         mThis.show(mThis.options, view_name, true);
     });
 
+    this.btnSaveConsult.on('click',(e)=>{
+      e.preventDefault();
+      let p = mThis.getConsultData();
+      console.error(JSON.stringify(p));
+    });
+
     this.getInput_chiefcomplaints = (div=null)=>{
-        if (mThis.tblChiefComplaints){
-            return mThis.tblChiefComplaints.getItems();
-        }
-        return [];
+        return  mThis.tblChiefComplaints? mThis.tblChiefComplaints.getItems() : [];
     }
 
-    this.getInput_vitalsigns = (dv=null)=>{
+    this.getInput_vitalsigns = (div=null)=>{
         let ps = [];
        div.find('.data-input').each(function(){
             let el = $(this);
@@ -1143,14 +1153,53 @@ let ConsultTabView = new function () {
        });
        return ps;
     }
+ 
+    this.getInput_medical_history = (div=null)=>{
+        let ps = [];
+        div.find('.data-input').each(function(){
+            let el = $(this);
+            let category = el.data('category');
+            ps.push({'category':category,'value':el.val()});
+        });
+        return ps;
+    }
+
+    this.getInput_pe = (div)=>{
+        //Physical examination is one textarea
+        let el = div.find('.data-input');
+        return el.val(); 
+    }
+    
+    this.getInput_labotests = (div =null)=>{
+            return mThis.tblLaboTests?mThis.tblLaboTests.getItems() : [];
+    }
+
+    this.getInput_diagnosis = (div =null)=>{
+        //Dianosis is one textarea
+        let el = div.find('.data-input');
+        return el.val(); 
+    }
+
+    this.getInput_prescription = (div=null)=>{
+          return mThis.tblPrescribedItems? mThis.tblPrescribedItems.getItems() : [];
+    }
+
+    this.getInput_advice = (div)=>{
+        //Medical advice or recommendation is one textarea
+        let el = div.find('.data-input');
+        return el.val(); 
+    }
+
 
     //returns doctor's consultation data including Chielf cpmpaint, Medical history, PE, labor test, prescription, Diagnosis
+    //getData()|getInputData()
     this.getConsultData = ()=>{
-       let consult_panel = mThis.self.find('._consult_panel');
+       let consult_panel = mThis.self.find('div#_consult_panel');
+       let p = {};
        consult_panel.find('.consult-content-panel').each(function(){
          let div = $(this); 
          let view_name = div.attr('viewname');
-          let p = {};
+         console.log(view_name);
          switch(view_name){
             case 'chief-complaints':{
                p.chief_compaints = mThis.getInput_chiefcomplaints(div);
@@ -1161,10 +1210,10 @@ let ConsultTabView = new function () {
               break;
             } 
             case 'medical-history':{
-                p.mecial_history = mThis.getInput_medical_history(div);
+                p.medical_history = mThis.getInput_medical_history(div);
                 break;
             }
-            case 'physical-examiniation':{
+            case 'physical-examination':{
                 p.physical_examination = mThis.getInput_pe(div);
                 break;
             }
@@ -1173,20 +1222,21 @@ let ConsultTabView = new function () {
                 break;
             }
             case 'diagnosis':{
-               p.diagnosis = p.getInput_diagnosis(div);
+               p.diagnosis = mThis.getInput_diagnosis(div);
                break;
             }
             case 'prescription':{
-                p.prescription = p.getInput_prescription(div);
+                p.prescription = mThis.getInput_prescription(div);
                 break;
             }
             case 'advice':{
-                p.advice = p.getInput_advice(div);
+                p.advice = mThis.getInput_advice(div);
                 break;
             } 
          } 
        });
 
+       return p;
     }
 
     //options = {patient_id,ticket_id}
@@ -1313,7 +1363,7 @@ let ConsultTabView = new function () {
                 mThis.showConsultPE(div,"physical-examination");
             },
             "prescription": () => {
-                mThis.showConsultPrescription(div),"prescription";
+                mThis.showConsultPrescription(div,"prescription");
             },
             "labo-tests": () => {
                 mThis.showConsultLaboratoryTests(div,"labo-tests");
@@ -1400,7 +1450,7 @@ let ConsultTabView = new function () {
                     "showColumnHeaders": false,
                     "showAddLineButton": false,
                     "onItemChange": (col_name) => {
-                        console.error(col_name + ' has changed');
+                        console.error(JSON.stringify(col_name) + ' has changed');
                     },
                     //"addLineButtonText":"Add CC",
                     //"addLineButtonClass":null,
@@ -1516,7 +1566,7 @@ let ConsultTabView = new function () {
                         <div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                         <h3 class="trans-text" data-langprop="consult.Pysical Examination">${title}</a></h3>
                         <div class="">
-                           <textarea class="form-control" cols="10" rows="5">${pe}</textarea>
+                           <textarea class="form-control data-input" cols="10" rows="5">${pe}</textarea>
                         </div>
                     </div>
                     `;
@@ -1605,7 +1655,8 @@ let ConsultTabView = new function () {
                 //After having loaded prescription data from server => init prescription table
                 columns[0].selectOptions = d.products;
                 columns[2].selectOptions = d.usage_options;
-                mThis.tblProducts = new ItemsView(div_id, {
+                //tblPrescribedItems
+                mThis.tblPrescribedItems = new ItemsView(div_id, {
                     "columns": columns,
                     "langProp": "consult",
                     "tableClass": "table presciption-table",
@@ -1662,7 +1713,7 @@ let ConsultTabView = new function () {
 
                 <div>
                   <label class="control-label">Allergy</label>
-                  <textarea data-category="Allergy" class="data-input orm-control" cols="10" rows="3" id="_consul_history_allergy"></textarea>
+                  <textarea data-category="Allergy" class="data-input form-control" cols="10" rows="3" id="_consul_history_allergy"></textarea>
                 </div>
 
                 <div>
@@ -1697,7 +1748,7 @@ let ConsultTabView = new function () {
 
         if (el.length ===0 || !el) {
             let html =
-                `<div id ="${wrapper_id}" class="consult-content-panel" view-name="${view_name}" style="display:none">
+                `<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                 <h3 class="trans-text" data-langprop="consult.Laboratory Tests">Laboratory Tests</h3>
                 <div class="d-flex">
                     <div id="${div_labotest_panel_id}" class="table-responsive">  
@@ -1738,7 +1789,6 @@ let ConsultTabView = new function () {
                 addLineButtonText: "Add Labo Test",
                 langProp: 'labotest'
             });
-
               
         }
 
@@ -1759,7 +1809,7 @@ let ConsultTabView = new function () {
               <h3 class="trans-text" data-langprop="consult.Diagnosis">Diagnosis</h3>
               <div class="d-flex flex-column">
                  <label class="control-label">Diagnosis details</label>
-                 <textarea class="form-control" cols="10" rows="3" id="_consul_diagnosis"></textarea>
+                 <textarea class="form-control data-input" cols="10" rows="3" id="_consul_diagnosis"></textarea>
               </div>
            
             </div>`;
@@ -1773,9 +1823,9 @@ let ConsultTabView = new function () {
 
     this.showConsultRecommendations = (div,view_name) => {
         let wrapper_id = '_consult_advice_warpper';
-        let ticket_id = div.data('tid');
-        let patient_id = div.data('patientid');
-        let div_id = '_consult_advice';
+        //let ticket_id = div.data('tid');
+        //let patient_id = div.data('patientid');
+        ////let div_id = '_consult_advice';
         let el = div.find(`#${wrapper_id}`);
 
         if (el.length===0 || !el) {
@@ -1784,7 +1834,7 @@ let ConsultTabView = new function () {
               <h3 class="trans-text" data-langprop="consult.Recommendations">Recommendations</h3>
               <div class="d-flex flex-column">
                  <label class="control-label">Doctor's recommendation</label>
-                 <textarea class="form-control" cols="10" rows="3" id="_consul_advice"></textarea>
+                 <textarea class="form-control data-input" cols="10" rows="3" id="_consul_advice"></textarea>
               </div>
             </div>  
            `;
