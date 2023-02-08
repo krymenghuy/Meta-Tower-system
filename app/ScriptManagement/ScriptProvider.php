@@ -21,9 +21,7 @@ namespace App\ScriptManagement;
                 'output_file'=>'/js/dist/lms.primary.js',
                 'files'=>[
                     '/assets/material-js/jquery.min.js',
-                    '/assets/plugins/chart.js/Chart.js',
-                    //'/assets/js/securitycom.js',
-                    //'/js/LocaleManager.js',
+                    '/assets/plugins/chart.js/Chart.js'
                 ]
             ],
            'primary-async'=>[
@@ -45,8 +43,6 @@ namespace App\ScriptManagement;
                 'attr'=>'defer',
                 'output_file'=>'/js/dist/lms.primary-defer.js',
                 'files'=>[
-                    //'/assets/js/crypto-js.js',
-                    //'/js/security/Encrypter.js',
                     '/assets/js/vsutil.js',
                     '/assets/js/formUtils.js',
                     '/assets/js/vsdom.js',
@@ -54,9 +50,7 @@ namespace App\ScriptManagement;
                     '/assets/js/expandableTableRow.js',
                     '/assets/plugins/chart.js/Chart.js',
                     '/assets/js/Popper.js', //Popper 2.10
-                    //'https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js', 2.9
                     '/assets/material-js/bootstrap.min.js', //bootstrap 5.0.2
-                    //'https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js',//bootstrap 5.0.2
                     '/assets/js/string_san.js',
                     '/assets/js/sweetalert2.all.min.js',
                      //Initialize Toast style and options
@@ -78,7 +72,6 @@ namespace App\ScriptManagement;
                     '/assets/js/initializeSelect2.js',
                     '/assets/js/demo1/scripts.bundle.js',
                     '/assets/vendors/custom/datatables/datatables.bundle.js',
-                    //'https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js', //This script for toastr (event toasts)
                     'https://js.pusher.com/7.2/pusher.min.js', 
                     '/js/app.js',
                     '/assets/js/browsercontrol.js',
@@ -89,8 +82,6 @@ namespace App\ScriptManagement;
                     '/assets/js/demo1/scripts.bundle.js',
                     'https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js',
                     'http://127.0.0.1:8000/assets/vendors/custom/datatables/datatables.bundle.js',
-                    //'/assets/vendors/general/perfect-scrollbar/dist/perfect-scrollbar.js'
-
                 ]
                 ],
                'components'=>[
