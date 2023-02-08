@@ -80,9 +80,6 @@
                  <div class="d-flex justify-content-end col-md-4">
                      <input data-select="datepicker" class="input-sm form-control" placeholder="Filter date" id="_qul_filter_date" autocomplete="off"/>&nbsp;
                      <select class="input-sm" placeholder="Status" id="_qul_filter_status"></select>
-                     <!-- <a id="_qul_btnPrint" href="javascript:void(0)"  class="btn btn-sm btn-primary" style="border-radius:10px;"><i class="fa-solid fas fa-print"></i> Print</a>&nbsp; -->
-                     <!-- <a id="_qul_btnPDF" href="javascript:void(0)" class="btn btn-sm btn-success" style="border-radius:10px"><i class="fa-solid fas fa-file-pdf"></i> PDF</a>&nbsp; -->
-                     <!-- <a id="_qul_btnExcel" href="javascript:void(0)"  class="btn btn-sm btn-default" style="border-radius:10px"><i class="fa-solid fas fa-file-pdf"></i> Excel</a> -->
                  </div>
              </div>
 
@@ -182,13 +179,6 @@
                                                 </span>
                                                 <a href="javascript:void(0)" data-viewname="vital-signs" class="nav-link trans-text" data-langprop="consult.Vital Signs"></a>
                                             </li>
-                                            
-                                            <!-- <li class="nav-item consult-style-custom d-flex align-items-center">
-                                                <span class="consult-icon">
-                                                    <i class="fa-solid fa-user ps-2"></i>
-                                                </span>
-                                                <a href="javascript:void(0)" data-viewname="visual-signs" class="nav-link trans-text" data-langprop="consult.Visual Signs"></a>
-                                            </li> -->
 
                                             <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
