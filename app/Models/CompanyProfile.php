@@ -54,13 +54,28 @@ class CompanyProfile extends Model
      }
      return null;
    }  
+   
 
+   static function details($branch_id=0) {
+    //$ss = UM::getUserInfoByToken($data,105);
+    //if ($ss->status_code !=200) return $ss;
+    //if (!prn_allowed(0,105)) return DV::error('No access to Company Profile');
+     $rows = DB::table('um_branches')->where('branch_id',$branch_id)->select("branch_id","logo_file_name","name","name_kh","address","address_kh","phone_number","email","first_cp_name","second_cp_name","first_cp_phone","second_cp_phone")->take(1)->get();
+      foreach($rows as $row){
+         $file_name = basename($row->logo_file_name);
+         $url =PublicStorage::getUrl($branch_id,'general','image');
+         $logofile = $url.$file_name;
+         $row->logo_url = $logofile;  
+         return $row;
+      }
+      return null;
+  } 
    function getCompanyInfo($data) {
        $ss = UM::getUserInfoByToken($data,105);
 	     if ($ss->status_code !=200) return $ss;
        //if (!prn_allowed(0,105)) return DV::error('No access to Company Profile');
         $branch_id = $ss->branch_id;
-        $rows = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw("branch_id,name,name_kh,`address`,address_kh,phone_number,email,first_cp_name,second_cp_name,first_cp_phone,second_cp_phone")->limit(1)->get();
+        $rows = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw("branch_id,name,name_kh,`address`,address_kh,phone_number,email,first_cp_name,second_cp_name,first_cp_phone,second_cp_phone")->take(1)->get();
         foreach($rows as $row) return $row;
         return DV::success(['data'=>$row]);
    } 
@@ -99,7 +114,7 @@ class CompanyProfile extends Model
 	  ////DB::table('um_branches')->where('branch_id',$branch_id)->update(array('logo_file_name'=>$mResult->error)); 
 	  if (!$mResult->error)
 	  {	
-        $rows = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw('logo_file_name')->limit(1)->get();  
+        $rows = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw('logo_file_name')->take(1)->get();  
 		//todo: detect for error when two users try to delete this file at same time
 		foreach($rows as $row) deleteFile($row->logo_file_name); 
         DB::table('um_branches')->where('branch_id',$branch_id)->update(array('logo_file_type'=>$file_type,'logo_file_name'=>$mResult->filename));
@@ -122,7 +137,7 @@ class CompanyProfile extends Model
       //if (!prn_allowed(-1)) return DV::error('No access to Company Profile'); //need permission to do this task
         $branch_id = $ss->branch_id;
 
-          $rows = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw('logo_file_name,logo_file_type')->limit(1)->get();
+          $rows = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw('logo_file_name,logo_file_type')->take(1)->get();
         foreach($rows as $row)
         {
             $content = readFileContent($row->logo_file_name);   
@@ -138,7 +153,7 @@ class CompanyProfile extends Model
   
   function getCompanyLogo1($branch_id=0)
   {    
-    $rows = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw('logo_file_name,logo_file_type')->limit(1)->get();
+    $rows = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw('logo_file_name,logo_file_type')->take(1)->get();
 	   foreach($rows as $row)
 	   {
 		    $content = readFileContent($row->logo_file_name);   
@@ -204,7 +219,7 @@ class CompanyProfile extends Model
 	  ////DB::table('um_branches')->where('branch_id',$branch_id)->update(array('logo_file_name'=>$mResult->error)); 
 	  if (!$mResult->error)
 	  {	
-        $rows = DB::table('brand_images')->where('app_id',$app_id)->selectRaw('file_name')->limit(1)->get();  
+        $rows = DB::table('brand_images')->where('app_id',$app_id)->selectRaw('file_name')->take(1)->get();  
 		//todo: detect for error when two users try to delete this file at same time
 		foreach($rows as $row) deleteFile($row->file_name); 
         DB::table('brand_images')->where('app_id',$app_id)->update(array('file_type'=>$file_type,'file_name'=>$mResult->filename));
@@ -228,7 +243,7 @@ class CompanyProfile extends Model
           $branch_id = $ss->branch_id;
           $app_id = $d->app_id;
           $file_id = $d->id; 
-          $rows = DB::table('brand_iamges')->where('app_id',$app_id)->where('id',$file_id)->selectRaw('file_name')->limit(1)->get();
+          $rows = DB::table('brand_iamges')->where('app_id',$app_id)->where('id',$file_id)->selectRaw('file_name')->take(1)->get();
           foreach($rows as $row) {
             deleteFile($row->file_name);
           }
@@ -242,7 +257,7 @@ class CompanyProfile extends Model
 	   if ($ss->status_code ===401) return $ss;
      //if (!prn_allowed(214)) return '@'; //need permission to do this task
         $branch_id = $ss->branch_id;
-          $rows = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw('logo_file_name')->limit(1)->get();
+          $rows = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw('logo_file_name')->take(1)->get();
         foreach($rows as $row) {
           deleteFile($row->logo_file_name);
         }

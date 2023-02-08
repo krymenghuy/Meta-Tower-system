@@ -1,11 +1,11 @@
 <style>
-    #_main_companyComponent>.data-input {
+    #_main_companyComponent > .data-input {
         font-size: 0.8em !important;
         color: red;
         font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
     }
-
 </style>
+
 <div id="_main_companyComponent" style="display:none;padding:35px">
     <div class="flat-box" style="padding:20px;">
         <div class="row">
@@ -46,20 +46,17 @@
                 <input type="text" class="form-control data-input" data-field="first_cp_phone">
             </div>
         </div>
-
     </div>
-
 
     <div style="height:25px"></div>
     <div class="row">
         <div class="col-lg-6">
-            <img src="<?php if(isset($logodata)) echo $logodata; ?>" id="com_imgLogo" class="img-thumbnail" alt=""
-                style="margin:-10px;height:235px;" />
-            <input id="com_logoFileChooser" type="file" accept="image/*" style="display:none" />
+            <img src="<?php if(isset($logodata)) echo $logodata; ?>" id="com_imgLogo" class="img-thumbnail" alt="" style="margin:-10px;height:235px;"/>
+            <input id="com_logoFileChooser" type="file" accept="image/*" style="display:none"/>
 
-            <div style="margin-top:30px">
-                <a href="#" id="com_btnChooseLogo" class="btn btn-primary">Choose Logo</a>
-                <a href="#" id="com_btnDeleteLogo" class="btn btn-default">Delete Logo</a>
+            <div class="py-2" style="margin-top:30px">
+                <button id="com_btnChooseLogo" class="btn btn-primary">Choose Logo</button>
+                <button id="com_btnDeleteLogo" class="btn btn-default">Delete Logo</button>
             </div>
         </div>
 
@@ -69,9 +66,7 @@
                     <i class="la la-save"></i>
                     <span class="kt-hidden-mobile">Save Changes</span>
                 </button>
-
             </div>
         </div>
     </div>
-
 </div>
