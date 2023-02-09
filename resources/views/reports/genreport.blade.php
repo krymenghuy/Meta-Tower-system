@@ -86,6 +86,9 @@
                 @case('medical_certificate')
                     @include('reports.medical_certificate')
                     @break;
+                @case('invoice_report')
+                    @include('reports.invoice_report')
+                    @break;
                 @default
                     @break
             @endswitch
