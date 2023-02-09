@@ -93,4 +93,40 @@ class WebReportController extends Controller
         }
         return view('reports.genreport',$data);
     }
+
+    public function general_invoice($query_string = null){
+      if (!Session::get('login_name',null)) return redirect('/');
+        $branch_id =Session::get('branch_id',0);
+        if (!$branch_id) return redirect('/');
+        $data['branch'] = $this->reportModel->getBranchInfo($branch_id);
+        $p = processQueryString($query_string);
+      
+        if(!$p) {
+            //error invalid parameters provided
+            return view('errors.500');
+        }
+
+        // //if(!isset($p->startdate) || !isset($p->enddate)) $p->usealldates =1;
+        $rtype = strtolower(isset($p->rtype) ? $p->rtype:null);
+        $data['rtype']= $rtype;
+        if(!$rtype){
+          //error invalid report type
+          return view('errors.500');
+        }
+
+        $branch = CompanyProfile::details($branch_id);
+
+        switch($rtype){
+          case 'invoice_report':{
+            $data['branch'] = $branch;
+            $data['title'] = "INVOICE";
+            break;
+          }
+          default:{
+              $data['title'] = "IT SEEMS NO MATCHING REPORT NAME :)";
+              break;
+          }
+        }
+        return view('reports.geninvoice',$data);
+    }
 }

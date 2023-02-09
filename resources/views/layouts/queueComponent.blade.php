@@ -9,7 +9,7 @@
          font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
      }
 
-     .ticket-info-wrapper {
+    .ticket-info-wrapper {
          margin-top: -15px;
          padding: 15px;
          border-radius: 5px;
@@ -52,17 +52,12 @@
          transform: scale(0.9);
      }
 
-     /* .btn-ticket-tab:hover{
-     transition-property:border-width;
-     transform:scale(1.2);
-  } */
      .btn-ticket-tab--active {
          border: 1.8px solid #5AC612;
          color: #4CB506 !important;
          font-weight: bold;
          transform: scale(1);
      }
-
  </style>
 
  <div id="_main_queueComponent" style="display:none;padding-top:15px">
@@ -101,7 +96,7 @@
                 <div class="modal-body">
                     <div class="tab-view" id="_consultTabView">
                         <div class="tab-header">
-                            <a href="javascript:void(0)" class="tab-button trans-text" data-viewname="history" id=""
+                            <a href="javascript:void(0)" class="tab-button trans-text" data-viewname="history"
                                 data-target="tab_panel_history" data-langprop="patient.HISTORY">History</a>
                             <a href="javascript:void(0)" class="tab-button trans-text" data-langprop="patient.CONSULTATION" data-viewname="consultation" id=""
                                 data-target="tab_panel_consult">Consultation</a>

@@ -18,10 +18,11 @@ let PatientInvoicesComponent = new function(){
         "Due Date":"Due Date",
         "Amount":"Amount",
         "Paid":"Paid",
-        "Status":"Status"
+        "Status":"Status",
+        "Action":"Action"
     };
 
-    this.trans_title = (title_prop='undefined')=>{
+    this.trans_title = (title_prop = 'undefined')=>{
         return (mThis.col_titles[title_prop] || 'undefined');
     }
     
@@ -48,6 +49,16 @@ let PatientInvoicesComponent = new function(){
 
         mThis.elSearchItem.on('keyup',(e)=>{
             if(e.keyCode === 13) mThis.displaypatientInvoices();
+        });
+
+        mThis.tblItems.on('click','.btn-pic-print',function(e){
+            e.preventDefault();
+            let patient_id = $(this).data('id');
+            let qString =['rtype=invoice_report&patient_id=',patient_id].join('');
+
+            main_view.getEncryptData(qString, (d) => {
+                window.open([main_view.base_url,'/geninvoice/',d].join(''),'_blank');
+            });
         });
     }
 
@@ -106,6 +117,23 @@ let PatientInvoicesComponent = new function(){
                     title: mThis.trans_title('Status'),
                     data:"status"
                 },
+                {
+                    title: mThis.trans_title('Action'),
+                    data: (data,a,b) => {
+                        let html = [`<div class="d-flex align-items-center gap-2">
+                            <a href="javascript:void(0)" class="btn-pic-modify" data-id="${data.id}">
+                                <i class="fa-regular fa-pen-to-square text-warning"></i>
+                            </a>
+                            <a href="javascript:void(0)" class="btn-pic-delete" data-id="${data.id}">
+                                <i class="fa-solid fa-trash-can text-danger"></i>
+                            </a>
+                            <a href="javascript:void(0)" class="btn-pic-print" data-id="${data.id}">
+                                <i class="fa-solid fa-print text-info"></i>
+                            </a>
+                        </div>`].join('');
+                        return html;
+                    }
+                }
             ];
             //END Define colum
 
