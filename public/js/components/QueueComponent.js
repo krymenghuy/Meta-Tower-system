@@ -906,14 +906,14 @@ let ConsultTabView = new function () {
             //Initialize activ menu on Consultation tab
             let def_consult_view = 'medical-history';
             mThis.details_routes_consult[def_consult_view]();
-            let li = mThis.ul_menus_consult.find(`[data-viewname="${def_consult_view}"]`);
+            let li = mThis.ul_menus_consult.find(`[data-viewname="${def_consult_view}"]`).closest('li');
             li.addClass('consult-menu-selected');
             mThis.prev_selected_li_consult = li;
          }else{
             //Initialize active menu on History tab
             let def_history_view = 'medical-reports';
             mThis.details_routes_history[def_history_view]();
-            let li = mThis.ul_menus_history.find(`[data-viewname="${def_history_view}"]`);
+            let li = mThis.ul_menus_history.find(`[data-viewname="${def_history_view}"]`).closest('li');
             li.addClass('history-menu-selected');
             mThis.prev_selected_li_consult = li;
          } 
@@ -950,7 +950,7 @@ let ConsultTabView = new function () {
          
         mThis.ul_menus_consult.on('click', 'li', (e)=>{
             e.preventDefault();
-            let li = $(e.target); //OR $(e.currentTarget)
+            let li = $(e.currentTarget)
             let view_name = li.find('a').data('viewname');
             if (mThis.prev_selected_li_consult) mThis.prev_selected_li_consult.removeClass('consult-menu-selected');
             li.addClass('consult-menu-selected');
@@ -961,8 +961,9 @@ let ConsultTabView = new function () {
 
         mThis.ul_menus_history.on('click', 'li', (e)=>{
             e.preventDefault();
-            let li = $(e.target);
+            let li = $(e.currentTarget);
             let view_name = li.find('a').data('viewname');
+
             mThis.details_routes_history[view_name]();
 
             if (mThis.prev_selected_li_history) mThis.prev_selected_li_history.removeClass('history-menu-selected');
