@@ -4,6 +4,7 @@ namespace App\Models\ServiceQ;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Consultation;
 use App\Models\UM;
 use DB;
 use App\Models\DV;
@@ -197,8 +198,8 @@ class QTicket extends Model
         $cols ="s.branch_id,s.id,s.appt_id,s.person_id,getPatientCode(s.branch_id,s.client_id) as client_code,s.client_id,p.name as client_name,p.sex as client_sex,p.phone_number as client_phone_number,p.email as client_email,s.ticket_number,s.status_id, getConsultanName(s.consultant_id) as consultant_name,'None' AS membership_card";
         $rows = DB::table('service_queue as s')->join('ticket_statuses as sts','sts.id','=','s.status_id')->join('persons as p','p.id','=','s.person_id')->where('s.id',$ticket_id)->where('s.branch_id',$branch_id)->selectRaw($cols)->take(1)->get();
         foreach($rows as $row){
-            $row->vital_signs = self::getVitalSigns($row->branch_id,$row->id);
             $row->chief_complaints = self::getChiefComplaints($row->branch_id,$row->id);
+            $row->vital_signs = self::getVitalSigns($row->branch_id,$row->id);
             $row->mc_items = self::getMedicalConditions($row->branch_id,$row->id);
             return $row;
         }
@@ -206,7 +207,7 @@ class QTicket extends Model
     }
 
     static function getVitalSigns($branch_id,$ticket_id=0){
-        return DB::table('patient_vital_signs as ps')->join('vital_signs as vs','vs.id','=','ps.vital_sign_id')->where('ps.ticket_id',$ticket_id)->where('ps.branch_id',$branch_id)->selectRaw("vs.id,vs.display_name as name,ps.vital_sign_value, ps.description")->take(4)->get();
+        return DB::table('consult_vital_signs as tvs')->join('vital_signs as vs','vs.id','=','tvs.vs_id')->where('tvs.ticket_id',$ticket_id)->where('tvs.branch_id',$branch_id)->select("vs.id","tvs.description","tvs.observed_value")->take(4)->get();
     }
 
     static function getChiefComplaints($branch_id,$ticket_id=0){

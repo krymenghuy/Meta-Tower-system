@@ -749,7 +749,7 @@ let ConsultTabView = new function () {
        div.find('.data-input').each(function(){
             let el = $(this);
             let vital_sign_id = el.data('id');
-            ps.push({"id":vital_sign_id,"value":el.val()}); 
+            ps.push({"id":vital_sign_id,"observed_value":el.val()}); 
        });
        return ps;
     }
@@ -877,6 +877,7 @@ let ConsultTabView = new function () {
                 } else if (view_name === 'consultation') {
                     mThis.displayConsultation(mThis.ticket_id, div_tab_panel);
                 }
+                mThis.setFirstActiveMenu(view_name);
                 return;
             }
         });
@@ -892,12 +893,32 @@ let ConsultTabView = new function () {
         }
     }
 
-    //begin:: Event handlers for History Tab  and Consultation tab
-
-    this.displayHistory = (client_id = 0, div_tab_panel = null) => { }
-
-    this.displayConsultation = (client_id = 0, div_tab_panel = null) => { }
+    //begin:: Event handlers for History Tab  and Consultation tab    
+      this.displayHistory = (client_id = 0, div_tab_panel = null) => { }
+      this.displayConsultation = (client_id = 0, div_tab_panel = null) => { }
     //end:: Event handlers for History Tab  and Consultation tab
+
+    //NOTE: tabeViewName = {'history','consultation'}
+    this.setFirstActiveMenu = (tabViewName=null)=>{
+        //alert(tabViewName +' =>' + mThis.has_already_init[tabViewName]);
+         if(mThis.has_already_init[tabViewName]) return;
+         if (tabViewName === 'consultation'){
+            //Initialize activ menu on Consultation tab
+            let def_consult_view = 'medical-history';
+            mThis.details_routes_consult[def_consult_view]();
+            let li = mThis.ul_menus_consult.find(`[data-viewname="${def_consult_view}"]`);
+            li.addClass('consult-menu-selected');
+            mThis.prev_selected_li_consult = li;
+         }else{
+            //Initialize active menu on History tab
+            let def_history_view = 'medical-reports';
+            mThis.details_routes_history[def_history_view]();
+            let li = mThis.ul_menus_history.find(`[data-viewname="${def_history_view}"]`);
+            li.addClass('history-menu-selected');
+            mThis.prev_selected_li_consult = li;
+         } 
+         mThis.has_already_init[tabViewName] = true;      
+    }
 
     //begin::init ConsultTabeView (menus item event handlers and so on)
     this.init = () => {
@@ -907,7 +928,9 @@ let ConsultTabView = new function () {
         //div panel that contains each consultation item's details
         mThis.consultItemPanel = $('#_consult_panel');
         mThis.historyItemPanel = $('#_history_panel');
-
+        
+        //Object variable to store bool whetther the first active menu on each tab has been set or not on first show of each TabView {'Consultation','History'}
+        mThis.has_already_init = {};
 
         mThis.consultItemPanel.on('click', 'a.consultview-add-cc', (e) => {
             e.preventDefault();
@@ -917,15 +940,17 @@ let ConsultTabView = new function () {
         mThis.details_routes_history = mThis.defineDetailRoutesHistory(mThis.historyItemPanel);
         mThis.details_routes_consult = mThis.defineDetailRoutesConsult(mThis.consultItemPanel);
 
-        let consult_view_name = 'medical-history';
-        mThis.details_routes_consult[consult_view_name]();
-
-        let history_view_name = 'medical-reports';
-        mThis.details_routes_history[history_view_name]();
-        
-        mThis.ul_menus_consult.on('click', 'li', function (e) {
+        // //Initialize View on Consult tab
+        // let consult_view_name = 'medical-history';
+        // mThis.details_routes_consult[consult_view_name]();
+         
+        // //Initialize View on History tab
+        // let history_view_name = 'medical-reports';
+        // mThis.details_routes_history[history_view_name]();
+         
+        mThis.ul_menus_consult.on('click', 'li', (e)=>{
             e.preventDefault();
-            let li = $(this);
+            let li = $(e.target); //OR $(e.currentTarget)
             let view_name = li.find('a').data('viewname');
             if (mThis.prev_selected_li_consult) mThis.prev_selected_li_consult.removeClass('consult-menu-selected');
             li.addClass('consult-menu-selected');
@@ -934,15 +959,15 @@ let ConsultTabView = new function () {
             mThis.details_routes_consult[view_name]();
         });
 
-        mThis.ul_menus_history.on('click', 'li', function (e) {
+        mThis.ul_menus_history.on('click', 'li', (e)=>{
             e.preventDefault();
-            let li = $(this);
+            let li = $(e.target);
             let view_name = li.find('a').data('viewname');
+            mThis.details_routes_history[view_name]();
+
             if (mThis.prev_selected_li_history) mThis.prev_selected_li_history.removeClass('history-menu-selected');
             li.addClass('history-menu-selected');
             mThis.prev_selected_li_history = li;
-
-            mThis.details_routes_history[view_name]();
         });
     }
     //end::init ConsultTabeView (menus item event handlers and so on)
@@ -1031,7 +1056,7 @@ let ConsultTabView = new function () {
 
             let columns = [
                 {
-                    "name": "name",
+                    "name": "id",
                     "title": "Chief Complaint",
                     "dataType": "string",
                     "displayType": "select",
@@ -1862,12 +1887,18 @@ let ConsultTabView = new function () {
 let ConsultDialog = new function () {
     let mThis = this;
     this.self = $('#_qul_dlgConsult');
-    this.btnSave = $('#_qul_dlgConsult_btnSave');
+    this.btnSaveConult = $('#_qul_dlgConsult_btnSave');
     this.defaultTabView = 'consultation';
 
-    this.btnSave.on('click', (e) => {
+    this.btnSaveConult.on('click', (e) => {
         e.preventDefault();
-        //tod; Save consult session info
+        let p = ConsultTabView.getConsultData();
+         console.error(JSON.stringify(p)); 
+        vsapi.call(`${main_view.base_url}/api/consultation/save`,p).then(res=>{
+           if(res.status_code ===200){
+
+           }
+        });
 
         mThis.self.modal('hide');
         mThis.onClose(true);
