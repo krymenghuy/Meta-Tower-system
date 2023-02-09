@@ -1709,18 +1709,18 @@ let ConsultTabView = new function () {
                 tbody.innerHTML = '';
                 items.map(item => {
                     row_html = [row_html, `<tr>
-                                            <td>
-                                                <span class="d-block p-1" style="min-width:110px">${item.date}</span>
-                                                <span class="d-inline-block text-secondary p-1">${item.ticket_number}</span>
-                                            </td>
-                                            <td class="vs-contain-custom">
-                                                <p>
-                                                    ${item.description}
-                                                <p>
-                                                <span data-tid="${item.ticket_id}" class="span lnk-show-more"></span>
-                                            </td>
-                                            <td>${item.consultant_name}</td>
-                                            </tr>`].join('');
+                            <td>
+                                <span class="d-block p-1" style="min-width:110px">${item.date}</span>
+                                <span class="d-inline-block text-secondary p-1">${item.ticket_number}</span>
+                                </td>
+                                <td class="vs-contain-custom">
+                                    <p>
+                                        ${item.description}
+                                    <p>
+                                    <span data-tid="${item.ticket_id}" class="span lnk-show-more"></span>
+                                </td>
+                            <td>${item.consultant_name}</td>
+                        </tr>`].join('');
                     i++;
                 });
 
@@ -1817,30 +1817,29 @@ let ConsultTabView = new function () {
 
                 let html =
                     `<div id="${wrapper_id}">
-                   <div class="d-flex flex-column history-mr-header">
+                   <div class="d-flex flex-column history-mr-header border border-success rounded p-2 my-3">
                        <div class="d-flex flex-row">
-                          <span class="w-30 fw-bold trans-text" data-langprop="patient.Patient ID"></span>
+                          <span class="w-25 lh-lg fw-bold trans-text" data-langprop="patient.Patient ID"></span>
                           <span class="">${d.patient_code}</span>
                        </div>
 
                        <div class="d-flex flex-row">
-                         <span class="w-30 fw-bold trans-text" data-langprop="patient.Patient Name"></span>
+                         <span class="w-25 lh-lg fw-bold trans-text" data-langprop="patient.Patient Name"></span>
                          <span class="">${d.patient_name}</span>
                       </div>
 
                       <div class="d-flex flex-row">
-                        <span class="w-30 fw-bold trans-text" data-langprop="patient.Sex"></span>
+                        <span class="w-25 lh-lg fw-bold trans-text" data-langprop="patient.Sex"></span>
                         <span class="">${d.patient_sex}</span>
                       </div>
 
                       <div class="d-flex flex-row">
-                        <span class="w-30 fw-bold trans-text" data-langprop="patient.Phone Number"></span>
+                        <span class="w-25 lh-lg fw-bold trans-text" data-langprop="patient.Phone Number"></span>
                         <span class="">${d.patient_phone_number}</span>
                      </div>
-
                    </div>
                    
-                   <div class="table-responsive">
+                   <div class="table-responsive border border-success rounded-3 shadow-sm">
                      <table class="table">
                       <thead>
                         <th class="trans-text" data-langprop="history.No"></th>
@@ -1873,7 +1872,6 @@ let ConsultTabView = new function () {
                     <td><a href="javascript:void(0)"><i class="fa fa-print"></i><span class="pl-1">${item.date} medical report</span></a></td>
                     <td>${item.consultant_name}</td>
                    </tr>`].join('');
-
             });
             tbody.innerHTML = row_html;
 
