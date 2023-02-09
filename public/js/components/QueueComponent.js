@@ -211,7 +211,7 @@ let TicketDetails = new function () {
         if (i === 0) html = `<li data-apptid="0"><span class="text-muted">(No chief complaints)</span></li>`;
         return html;
     }
-
+    
     this.showInfo = (div_panel, ticket_id = null) => {
         if (!ticket_id) ticket_id = div_panel.data('tid');
         let div_workspace = div_panel.find('div.qul-workspace');
@@ -915,7 +915,7 @@ let ConsultTabView = new function () {
             mThis.details_routes_history[def_history_view]();
             let li = mThis.ul_menus_history.find(`[data-viewname="${def_history_view}"]`).closest('li');
             li.addClass('history-menu-selected');
-            mThis.prev_selected_li_consult = li;
+            mThis.prev_selected_li_history = li;
          } 
          mThis.has_already_init[tabViewName] = true;      
     }
