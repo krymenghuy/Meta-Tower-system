@@ -16,7 +16,7 @@
             </div>
         </div>
     </div>
-    <div class="d-flex align-items-center w-100">
+    <div class="d-flex align-items-center w-100 mt-5">
         <div class="d-block w-100 px-2">
             <p class="fw-bold fs-5">King Koko</p>
             <p>

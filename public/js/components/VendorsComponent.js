@@ -133,7 +133,7 @@ let VendorsComponent = new function(){
         let p = {'search_value':mThis.elSearchItem.val()};
         window.vsapi.call(`${mThis.base_url}/api/inventory/stock/group-list`,p,'POST',null).then((result) => {
             let data = [];
-            if(result.status_code === 200) {console.log(result); data = result.data;}
+            if(result.status_code === 200) data = result.data;
             if (mThis.table){
                 mThis.tblVendors.DataTable().clear().destroy();
                 //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"

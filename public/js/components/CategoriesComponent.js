@@ -206,7 +206,6 @@ let CategoriesComponent = new function(){
     }
 }
 
-//begin::MedicalServiceDialog
 let CategoryDialog = new function(){
     let mThis = this;
     this.self = $(`#_pdg_dlgProductGroup`);
@@ -240,7 +239,6 @@ let CategoryDialog = new function(){
         mThis.formUntil.show(options);
     }
 }
-//end::MedicalServiceDialog
 
 $(document).ready(function() {
     CategoriesComponent.init();
