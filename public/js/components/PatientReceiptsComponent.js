@@ -58,7 +58,6 @@ let PatientReceiptsComponent = new function(){
         let wrapper_id = '_receipt_warpper';
         let div_id = '_receipt_panel';
         let el = div.find(`#${wrapper_id}`);
-        //let ticket_id = div.data('tid');
 
         if (!el || el.length === 0) {
             let title = LocaleManager.trans();
@@ -73,17 +72,13 @@ let PatientReceiptsComponent = new function(){
                     "title": "Product",
                     "dataType": "string",
                     "displayType": "select",
-                    "cssClass": "",
-                    //"selectOptions":[] 
+                    "cssClass": ""
                 },
                 {
                     "name": "qty",
                     "title": "Quantity",
                     "dataType": "number",
                     "displayType": "input"
-                    // ,"data":(value,row)=>{
-                    //     return "";
-                    // }
                 },
                 {
                     "name": "usage",
@@ -96,27 +91,16 @@ let PatientReceiptsComponent = new function(){
                     "title": "Days",
                     "dataType": "number",
                     "displayType": "input"
-                    // ,"data":(value,row)=>{
-                    //     return "";
-                    // }
                 },
                 {
                     "name": "reason",
                     "title": "Reasons",
-                    //"dataType": "string",
                     "displayType": "input"
-                    // ,"data":(value,row)=>{
-                    //     return "";
-                    // }
                 },
                 {
                     "name": "remarks",
                     "title": "Remarks",
-                    //"dataType": "string",
                     "displayType": "input"
-                    // ,"data":(value,row)=>{
-                    //     return "";
-                    // }
                 }
             ];
 
@@ -131,8 +115,6 @@ let PatientReceiptsComponent = new function(){
                     "showColumnHeaders": true,
                     "showAddLineButton": true,
                     "addLineButtonText": "Add Item",
-                    //"addLineButtonClass":null,
-                    //"cssClass":"td_class",
                     "numeroFormatter": (numero, row) => {
                         return `<span class="text-secondary fw-bold">${numero}</span>`;
                     },
@@ -263,14 +245,9 @@ let PatientReceiptsDialog = new function(){
         "identityProps":['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props":['id'],
-        //"sub_prop":"chief_complaint_items",
-        //"sub_prop_function":mThis.getChiefComplaints,
         "sanitize_excepts":[],
         'use_alert_error':true,
         'beforeShow': () => {}
-        // "init": ()=>{
-            
-        //  }
     });
 
     this.show = (options)=>{

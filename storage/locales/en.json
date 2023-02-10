@@ -91,6 +91,7 @@
 	"inventory":{},
 	"vendors":{},
 	"dashboard":{},
+	"invoice":{},
 	"buttons":{
         "Cancel":"Cancel",
 		"Add":"Add",

@@ -1314,7 +1314,6 @@ let ConsultTabView = new function () {
             }); 
 
         }
-        
     }
 
     //showConsultMedicalHistory()
