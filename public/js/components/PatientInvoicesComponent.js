@@ -6,9 +6,9 @@ let PatientInvoicesComponent = new function(){
     this.self = $('#_main_patientInvoicesComponent');
     this.btnNew = $('#_pic_btnNew');
     this.elSearchItem = $('#_pic_search');
-    // this.elFilter_department = $('#_msl_filter_service');
+    this.elFilter_Invoice = $('#_pic_group_filter');
     this.tblItems = $('#_pic_tblInvoice');
-    // this.form_data = {};
+    this.form_data = {};
 
     this.col_titles = {
         "No.":"No.",
@@ -41,6 +41,7 @@ let PatientInvoicesComponent = new function(){
                 onClose:(e)=>{
                     if(e){
                         mThis.displaypatientInvoices();
+                        console.log(mThis.itemConfig.getItems());
                     }
                 }
             };
@@ -60,15 +61,56 @@ let PatientInvoicesComponent = new function(){
                 window.open([main_view.base_url,'/geninvoice/',d].join(''),'_blank');
             });
         });
+
+        mThis.tblItems.on('click','.btn-pic-modify',function(e){
+            e.preventDefault();
+            let patient_id = $(this).data('id');
+            let op = {
+                id: patient_id,
+                onClose: (e) => {
+                    if(e){
+                        mThis.displaypatientInvoices();
+                    }
+                }
+            };
+            PatientInvoicesDialog.show(op);
+        });
+
+        mThis.tblItems.on('click','.btn-pic-delete',function(e){
+            e.preventDefault();
+            let patient_id = $(this).data('id');
+            let op = {'id': patient_id};
+            cv_interact.confirm('Delete this invoice?',{title: 'Delete Invoice',context: 'delete'},(e) => {
+                if(e){
+                    vsapi.call(`${mThis.base_url}/api/inventory/delete-item`,op).then(res => {
+                        if(res.status_code === 200){
+                            mThis.displaypatientInvoices();
+                        }else cv_interact.error(res.error_message);
+                    });
+                }
+            });
+        });
+
+        mThis.elFilter_Invoice.on('click',(e) => {
+            let op = {
+                onClose: (e) => {
+                    if(e){
+                        mThis.displaypatientInvoices(e);
+                    }
+                }
+            };
+
+            FilterInvoiceDialog.show(op);
+        });
     }
 
-    this.displaypatientInvoices =(onFinish=null)=>
+    this.displaypatientInvoices = (options,onFinish=null)=>
     { 
         //Initialize language for DataTable columns headers
         //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
         //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
-        let p = {'search_value':mThis.elSearchItem.val()};
+        let p = {'search_value': mThis.elSearchItem.val(),'start_date': options.start_date,'end_date': options.end_date, 'patient': options.patient, 'status': options.status};
         window.vsapi.call(`${mThis.base_url}/api/inventory/items`,p,'POST',null).then((result)=>{
             let data = [];
             if(result.status_code === 200) data = result.data;
@@ -176,41 +218,43 @@ let PatientInvoicesComponent = new function(){
     this.show = (options=null) => {
         if(!options) options={};
         mThis.options = options;
-        mThis.displaypatientInvoices(() => {
+        mThis.displaypatientInvoices(options,() => {
             main_view.setTitle(mThis.title_prop);
             mThis.self.show().siblings().hide();
         });
     }
 }
 
-//begin::MedicalServiceDialog
 let PatientInvoicesDialog = new function(){
     let mThis = this;
     this.self = $(`#_pic_dlgInvoice`);
+    this.btnOK = $('#_pic_dlgInvoice_btnSave');
 
-    mThis.columns = [
+    this.columns = [
         {
-            "name": "name",
+            "name": "item_id",
             "title": "Item Name",
             "dataType": "string",
             "displayType": "select",
             "cssClass": "",
-            //"selectOptions":[] 
+            "width":"250"
         },
         {
             "name": "description",
             "title": "Description",
             "dataType": "string",
             "displayType": "input",
-            // "data":(value,row)=>{
-            //     return "";
-            // }
         },
         {
             "name": "qty",
             "title": "Qty",
             "dataType": "number",
             "displayType": "input"
+        }, {
+            "name": "sku",
+            "title": "SKU",
+            "dataType": "string",
+            "readOnly":true
         },
         {
             "name":"price",
@@ -226,18 +270,17 @@ let PatientInvoicesDialog = new function(){
         }
     ];
 
-    //AppointmentDialog
     this.formUntil = new FormUntil({
         "itemName":"Patient Invoices",
         "formId":'_pic_dlgInvoice',
-        "titleId":"_pic_dlgInvoice-title",
+        //"titleId":"_pic_dlgInvoice-title",
         //"errorId":"_msl_dlgService_error",
         //"saveButtonId":"_msl_dlgService_btnSave",
         "instance":this,
         "apiSave":`${main_view.base_url}/api/inventory/save-item`,
-        //"apiGet":`${main_view.base_url}/api/inventory/details-item`,
+        "apiGet":`${main_view.base_url}/api/inventory/item-details`,
         //"identityProp":"id",
-        //"modifyTitle":"Modify Product Group",
+        "modifyTitle":"Modify Invoice",
         "createTitle":"New Invoice",
         "identityProps":['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
@@ -248,19 +291,83 @@ let PatientInvoicesDialog = new function(){
         'use_alert_error':true,
         // 'beforeShow': () => {}
         "init": ()=>{
-            let  itemConfig = new ItemsView('_pic_panel',{
-                columns: mThis.columns,
-                "showColumnHeaders":true,
-                "showAddLineButton":true
-            });
+            vsapi.call(`${main_view.base_url}/api/settings/options-product`,null,null,false).then(res=>{
+                if(res.status_code===200){
+                    let options_items = res.data;
+                    mThis.columns[0].selectOptions = options_items.products;
+                    mThis.itemConfig = new ItemsView('_pic_panel',{
+                        columns: mThis.columns,
+                        "langProp": "invoice",
+                        "showColumnHeaders":true,
+                        "showAddLineButton":true,
+                        "onItemChange":(selOp,col_name,td)=>{
+                            let tr = td.parentNode;
+                            mThis.setItemInfo(col_name,tr);
+                        },
+                        "validateColumns":{'item_id':'number','qty':'number','price':'number'},
+                    });
+                }
+            })
+           mThis.btnOK.on('click',function(e){
+                e.preventDefault();
+                console.log(mThis.itemConfig.getItems());
+           });
         }
     });
+
+    this.setItemInfo = (col_name,tr)=>{
+        if(col_name === 'item_id'){
+            let d = mThis.itemConfig.getDataRow(tr);
+            let p = {'item_id': d.item_id};
+            vsapi.call(`${main_view.base_url}/api/inventory/item-info`,p).then(res => {
+                if(res.status_code === 200){
+                    let item = res.data;
+                    mThis.itemConfig.setCellValue(tr,'sku',StringSanitizer.sanitizeOut(item.sku));
+                }
+            }); 
+        }
+    }
 
     this.show = (options)=>{
         mThis.formUntil.show(options);
     }
 }
-//end::MedicalServiceDialog
+
+let FilterInvoiceDialog = new function(){
+    let mThis = this;
+    this.self = $('#_pic_dlgFilterInvoice');
+    this.modal_title = $('#_pic_dlgFilterInvoice_title');
+    this.btnSave = $('#_pic_dlgFilterInvoice_btnSave');
+
+    this.startDate = $('#_pic_dlgFilterInvoice_StartDate');
+    this.endDate = $('#_pic_dlgFilterInvoice_EndDate');
+    this.patient = $('#_pic_dlgFilterInvoice_Patient');
+    this.status = $('#_pic_dlgFilterInvoice_Status');
+    this.onClose=null;
+
+    this.btnSave.on('click',(e) => {
+        e.preventDefault();
+        let op = {
+            'start_date':mThis.startDate.val(),
+            'end_date': mThis.endDate.val(),
+            'patient': mThis.patient.val(),
+            'status': mThis.status.val()
+        }
+        //todo: if invlid filter, don hide
+        if (typeof mThis.onClose === 'function') mThis.onClose(op);
+        mThis.self.modal('hide'); 
+    });
+
+    this.show = (options) => {
+        if(!options) options = {};
+        mThis.modal_title.text("Filter Invoice");
+        mThis.onClose = options.onClose;
+         
+        mThis.self.modal({
+            backdrop: 'static'
+        });
+    }
+}
 
 $(document).ready(function() {
     PatientInvoicesComponent.init();

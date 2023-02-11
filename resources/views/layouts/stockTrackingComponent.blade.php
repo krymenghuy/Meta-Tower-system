@@ -72,7 +72,7 @@
                         <p class="text-nowrap trans-text" data-langprop="inventory.Warehouse"></p>
                     </div>
                     <div class="col-lg-9">
-                        <select class="modal-select2"></select>
+                        <select class="modal-select2" id="_stk_dlgFilterStockTracking_select_warehouse"></select>
                     </div>
                 </div>
                 <div class="row gy-2 py-2">
@@ -80,23 +80,23 @@
                         <p class="trans-text text-nowrap" data-langprop="inventory.Block"></p>
                     </div>
                     <div class="col-lg-9">
-                        <select class="modal-select2"></select>
+                        <select class="modal-select2" id="_stk_dlgFilterStockTracking_select_block"></select>
                     </div>
                 </div>
-                <div class="row gy-2 py-2">
+                <div class="row gy-2 py-2 d-none">
                     <div class="col-lg-3">
                         <p class="trans-text text-nowrap" data-langprop="inventory.Class"></p>
                     </div>
                     <div class="col-lg-9">
-                        <select class="modal-select2"></select>
+                        <select class="modal-select2" id="_stk_dlgFilterStockTracking_select_class"></select>
                     </div>
                 </div>
-                <div class="row gy-2 py-2">
+                <div class="row gy-2 py-2 d-none">
                     <div class="col-lg-3">
                         <p class="trans-text text-nowrap" data-langprop="inventory.Category"></p>
                     </div>
                     <div class="col-lg-9">
-                        <select class="modal-select2"></select>
+                        <select class="modal-select2" id="_stk_dlgFilterStockTracking_select_category"></select>
                     </div>
                 </div>
                 <div class="row gy-2 py-2">
@@ -104,7 +104,7 @@
                         <p class="trans-text text-nowrap" data-langprop="inventory.Group"></p>
                     </div>
                     <div class="col-lg-9">
-                        <select class="modal-select2"></select>
+                        <select class="modal-select2" id="_stk_dlgFilterStockTracking_select_group"></select>
                     </div>
                 </div>
                 <div class="_stk_dlgFilterStockTracking-error" id="_stk_dlgFilterStockTracking_error"></div>

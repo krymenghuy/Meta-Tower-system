@@ -354,7 +354,6 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
             Route::post('getPromotionInfo', [PromotionController::class, 'getPromotionInfo']);
             Route::post('deletePromotion', [PromotionController::class, 'deletePromotion']);
     //end::PromotionController
-     
 });
  
 //begin::ReportController/WebReportController

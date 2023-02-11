@@ -1309,12 +1309,10 @@ let ConsultTabView = new function () {
                 if(res.status_code===200){
                     let item = res.data;
                     mThis.tblPrescribedItems.setCellValue(tr,'sku',StringSanitizer.sanitizeOut(item.sku));
-                    //mThis.cfg.setCellValue(tr,'price',item.cost);
                 }
             }); 
 
         }
-        
     }
 
     //showConsultMedicalHistory()
@@ -1322,7 +1320,6 @@ let ConsultTabView = new function () {
         let wrapper_id = '_consult_medical_history_warpper';
         let ticket_id = div.data('tid');
         let patient_id = div.data('patientid');
-        //let div_id = '_consult_history';
         let el = div.find(`#${wrapper_id}`);
 
         if (el.length ===0 || !el) {

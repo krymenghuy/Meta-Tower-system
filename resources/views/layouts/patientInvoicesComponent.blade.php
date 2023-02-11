@@ -28,11 +28,11 @@
     </div>
 </div>
 
-<div id="_pic_dlgInvoice" class="modal fade" tabindex="-1" aria-labelledby="_pic_dlgInvoice-title" aria-hidden="true">
+<div id="_pic_dlgInvoice" class="modal fade" tabindex="-1" aria-labelledby="_pic_dlgInvoice_title" aria-hidden="true">
     <div class="modal-dialog modal-xl vs-modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 id="_pic_dlgInvoice-title"></h4>
+                <h4 id="_pic_dlgInvoice_title"></h4>
             </div>
             <div class="modal-body">
                 <div class="row gy-2 py-2">
@@ -42,7 +42,9 @@
                             <div class="input-group-text">
                                 <i class="fa-solid fa-user"></i>
                             </div>
-                            <select class="modal-select2 data-input" data-field="patient" data-required="1" data-ffield="Patient"></select>
+                            <select class="modal-select2 data-input" data-field="patient" data-required="1" data-ffield="Patient">
+                                <option value="1">Test</option>
+                            </select>
                             <div class="input-group-text">
                                 <i class="fa-solid fa-plus"></i>
                             </div>
@@ -144,7 +146,61 @@
                 <button class="btn btn-secondary btn-default" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button class="btn btn-primary" type="button" id="_pic_btnSave">
+                <button class="btn btn-primary" type="button" id="_pic_dlgInvoice_btnSave">
+                    <span class="trans-text" data-langprop="buttons.Save"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="_pic_dlgFilterInvoice" class="modal fade" tabindex="-1" aria-labelledby="_pic_dlgFilterInvoice_title" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="_pic_dlgFilterInvoice_title" class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row gy-2 py-2">
+                    <div class="col-3">
+                        <p class="trans-text" data-langprop="invoice.Start Date"></p>
+                    </div>
+                    <div class="col-9">
+                        <input data-select="datepicker" id="_pic_dlgFilterInvoice_StartDate" class="form-control" placeholder="Start Date"/>
+                    </div>
+                </div>
+                <div class="row gy-2 py-2">
+                    <div class="col-3">
+                        <p class="trans-text" data-langprop="invoice.End Date"></p>
+                    </div>
+                    <div class="col-9">
+                        <input data-select="datepicker" id="_pic_dlgFilterInvoice_EndDate" class="form-control" placeholder="End Date"/>
+                    </div>
+                </div>
+                <div class="row gy-2 py-2">
+                    <div class="col-3">
+                        <p class="trans-text" data-langprop="invoice.Patient"></p>
+                    </div>
+                    <div class="col-9">
+                        <input type="text" id="_pic_dlgFilterInvoice_Patient" class="form-control" placeholder="Patient"/>
+                    </div>
+                </div>
+                <div class="row gy-2 py-2">
+                    <div class="col-3">
+                        <p class="trans-text" data-langprop="invoice.Status"></p>
+                    </div>
+                    <div class="col-9">
+                        <select class="modal-select2" id="_pic_dlgFilterInvoice_Status">
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-default" type="button" data-dismiss="modal">
+                    <span class="trans-text" data-langprop="buttons.Cancel"></span>
+                </button>
+                <button class="btn btn-primary" type="button" id="_pic_dlgFilterInvoice_btnSave">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>

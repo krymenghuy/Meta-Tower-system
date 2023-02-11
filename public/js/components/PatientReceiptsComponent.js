@@ -7,8 +7,47 @@ let PatientReceiptsComponent = new function(){
     this.btnNew = $('#_prc_btnNew');
     this.elSearchItem = $('#_prc_search');
     // this.elFilter_department = $('#_msl_filter_service');
-    this.tblItems = $('#_prc_tblReciept');
+    this.tblReciept = $('#_prc_tblReciept');
     // this.form_data = {};
+    this.itemViewColumns = [
+        {
+            "name": "item_id",
+            "title": "Item Name",
+            "dataType": "string",
+            "displayType": "select",
+            "cssClass": "",
+            "width":"250"
+        },
+        {
+            "name": "description",
+            "title": "Description",
+            "dataType": "string",
+            "displayType": "input",
+        },
+        {
+            "name": "qty",
+            "title": "Qty",
+            "dataType": "number",
+            "displayType": "input"
+        }, {
+            "name": "sku",
+            "title": "SKU",
+            "dataType": "string",
+            "readOnly":true
+        },
+        {
+            "name":"price",
+            "title":"Price",
+            "dataType":"number",
+            "displayType":"input"
+        },
+        {
+            "name":"discount",
+            "title":"Discount(%)",
+            "dataType":"number",
+            "displayType":"input"
+        }
+    ];
 
     this.col_titles = {
         "No.":"No.",
@@ -48,103 +87,23 @@ let PatientReceiptsComponent = new function(){
             if(e.keyCode === 13) mThis.displaypatientReceipts();
         });
 
-        let  itemConfig = new ItemsView('_receipt_panel',{
-            "showColumnHeaders":true,
-            "showAddLineButton":true
+       //begin: Initialize receipt item view
+        mThis.tblItems = new ItemsView('_receipt_panel',{
+            "columns": this.itemViewColumns,
+            "langProp": "consult",
+            "showColumnHeaders": true,
+            "showAddLineButton": true,
+            "addLineButtonText": "Add Item",
+            "numeroFormatter": (numero, row) => {
+                return `<span class="text-secondary fw-bold">${numero}</span>`;
+            },
+            "emptyMessage": `<span class="text-secondary text-align-center">${LocaleManager.trans('No items to dispaly', 'receipt')}</span>`,
+            "validateColumns":{'item_id':'number','qty':'number','price':'number'}
         });
+       //end:: initialize Receipt item view
     }
 
-    this.showReceipts = (div) => {
-        let wrapper_id = '_receipt_warpper';
-        let div_id = '_receipt_panel';
-        let el = div.find(`#${wrapper_id}`);
-        //let ticket_id = div.data('tid');
-
-        if (!el || el.length === 0) {
-            let title = LocaleManager.trans();
-            let html = `<div id="${wrapper_id}"><h3 class="trans-text" data-langprop="consult.Prescription">${title}</h3>
-              <div id="${div_id}"></div>
-            </div>`;
-
-            div.html(html);
-            let columns = [
-                {
-                    "name": "name",
-                    "title": "Product",
-                    "dataType": "string",
-                    "displayType": "select",
-                    "cssClass": "",
-                    //"selectOptions":[] 
-                },
-                {
-                    "name": "qty",
-                    "title": "Quantity",
-                    "dataType": "number",
-                    "displayType": "input"
-                    // ,"data":(value,row)=>{
-                    //     return "";
-                    // }
-                },
-                {
-                    "name": "usage",
-                    "title": "usage",
-                    "dataType": "string",
-                    "displayType": "select"
-                },
-                {
-                    "name": "duration_days",
-                    "title": "Days",
-                    "dataType": "number",
-                    "displayType": "input"
-                    // ,"data":(value,row)=>{
-                    //     return "";
-                    // }
-                },
-                {
-                    "name": "reason",
-                    "title": "Reasons",
-                    //"dataType": "string",
-                    "displayType": "input"
-                    // ,"data":(value,row)=>{
-                    //     return "";
-                    // }
-                },
-                {
-                    "name": "remarks",
-                    "title": "Remarks",
-                    //"dataType": "string",
-                    "displayType": "input"
-                    // ,"data":(value,row)=>{
-                    //     return "";
-                    // }
-                }
-            ];
-
-            mThis.loadReceipt(ticket_id, d => {
-                //After having loaded prescription data from server => init prescription table
-                columns[0].selectOptions = d.products;
-                columns[2].selectOptions = d.usage_options;
-                mThis.tblProducts = new ItemsView(div_id, {
-                    "columns": columns,
-                    "langProp": "consult",
-                    "tableClass": "table receipt-table",
-                    "showColumnHeaders": true,
-                    "showAddLineButton": true,
-                    "addLineButtonText": "Add Item",
-                    //"addLineButtonClass":null,
-                    //"cssClass":"td_class",
-                    "numeroFormatter": (numero, row) => {
-                        return `<span class="text-secondary fw-bold">${numero}</span>`;
-                    },
-                    "emptyMessage": `<span class="text-secondary text-align-center">${LocaleManager.trans('No item prescribed', 'consult')}</span>`,
-
-                });
-                //mThis.tblChiefComplaints.setSelectOptions('name',cc_items);
-                el = div.find(`#${wrapper_id}`);
-            });
-        }
-        el.show().siblings().hide();
-    }
+     
 
     this.displaypatientReceipts = (onFinish=null)=>
     { 
@@ -157,9 +116,9 @@ let PatientReceiptsComponent = new function(){
             let data = [];
             if(result.status_code === 200) data = result.data;
             if (mThis.table){
-                mThis.tblItems.DataTable().clear().destroy();
+                mThis.tblReciept.DataTable().clear().destroy();
                 //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
-                mThis.tblItems.empty();
+                mThis.tblReciept.empty();
                 mThis.table = null;
             }
 
@@ -200,7 +159,7 @@ let PatientReceiptsComponent = new function(){
             //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
             
             if (!mThis.table)
-            mThis.table = mThis.tblItems.DataTable({
+            mThis.table = mThis.tblReciept.DataTable({
                 searching:false,
                 destroy:true,
                 paging:true,
@@ -263,17 +222,19 @@ let PatientReceiptsDialog = new function(){
         "identityProps":['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props":['id'],
-        //"sub_prop":"chief_complaint_items",
-        //"sub_prop_function":mThis.getChiefComplaints,
         "sanitize_excepts":[],
         'use_alert_error':true,
-        'beforeShow': () => {}
-        // "init": ()=>{
-            
-        //  }
+        'beforeShow': () => {},
+        'init': () => {}
     });
 
     this.show = (options)=>{
+        vsapi.call(`${main_view.base_url}/api/settings/options-product`, null).then(res => {
+            if (res.status_code === 200) {
+                let d = res.data;
+                PatientReceiptsComponent.tblItems.setSelectOptions('item_id',d.products);
+            }
+        });
         mThis.formUntil.show(options);
     }
 }
