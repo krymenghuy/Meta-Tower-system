@@ -76,7 +76,6 @@ let StockTrackingComponent = new function(){
           }
 
           div_wrapper.html(html);
-          //div_wrapper.slideDown(500);
         });
     }
 
@@ -109,7 +108,7 @@ let StockTrackingComponent = new function(){
             let op = {
                 onClose: (e) => {
                     if(e){
-                        //do something
+                        mThis.displayItemGroups(e);
                     }
                 }
             };
@@ -140,6 +139,11 @@ let StockTrackingComponent = new function(){
         });
 
         mThis.elFilter_category.on('change',(e)=>{
+            e.preventDefault();
+            mThis.displayItemGroups();
+        });
+
+        mThis.elFilter_stock_class.on('change',(e)=>{
             e.preventDefault();
             mThis.displayItemGroups();
         });
@@ -209,7 +213,6 @@ let StockTrackingComponent = new function(){
           }
 
           div_wrapper.html(html);
-          //div_wrapper.slideDown(500);
         });
     }
 
@@ -225,13 +228,15 @@ let StockTrackingComponent = new function(){
        return html;
     }
 
-    this.displayItemGroups =(onFinish=null)=>
+    this.displayItemGroups =(options,onFinish=null)=>
     { 
+        if (!options) options =  {}; 
         //Initialize language for DataTable columns headers
         //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-        //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
+        //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again
+          
         mThis.setLanguage();
-        let p = {'search_value':mThis.elSearchItem.val(),'category_id':mThis.elFilter_category.val()};
+        let p = {'search_value':mThis.elSearchItem.val(),'category_id':mThis.elFilter_category.val(),'stock_class_code':mThis.elFilter_stock_class.val(),'warehouse_id':options.warehouse_id,'block_id':options.block,'group_id':options.group_id};
         window.vsapi.call(`${mThis.base_url}/api/inventory/stock/group-list`,p,'POST',null).then((result)=>{
             let data = [];
             if(result.status_code === 200) data = result.data;
@@ -332,7 +337,7 @@ let StockTrackingComponent = new function(){
         mThis.prepareOptions(d=>{
             VSUtil.setComboItems(mThis.elFilter_category,d.categories,'id','category',true,'(All Categories)',0);
             VSUtil.setComboItems(mThis.elFilter_stock_class,d.stockclasses,'code','stock_class',true,'(All Classes)',0);
-            mThis.displayItemGroups(() => {
+            mThis.displayItemGroups(options,() => {
                 main_view.setTitle(mThis.title_prop);
                 mThis.self.show().siblings().hide();
             });
@@ -344,6 +349,26 @@ let StockTrackingComponent = new function(){
 let FilterDialog = new function(){
     let mThis = this;
     this.self = $('#_stk_dlgFilterStockTracking');
+    this.btnSave = $('#_stk_dlgFilterStockTracking_btnOK');
+
+    this.FilterWarehouse = $('#_stk_dlgFilterStockTracking_select_warehouse');
+    this.FilterBlock = $('#_stk_dlgFilterStockTracking_select_block');
+    this.FilterClass = $('#_stk_dlgFilterStockTracking_select_class');
+    this.FilterCategory = $('#_stk_dlgFilterStockTracking_select_category');
+    this.FilterGroup = $('#_stk_dlgFilterStockTracking_select_group');
+
+    this.btnSave.on('click',function(e){
+        e.preventDefault();
+        let op = {
+            'warehouse': mThis.FilterWarehouse.val(),
+            'block': mThis.FilterBlock.val(),
+            'stock_class_id': mThis.FilterClass.val(),
+            'category_id': mThis.FilterCategory.val(),
+            'group_id': mThis.FilterGroup.val()
+        };
+        if(typeof mThis.onClose === 'function') mThis.onClose(op);
+        mThis.self.modal('hide');
+    });
 
     this.show = (option) => {
         if (!option) option = {};
