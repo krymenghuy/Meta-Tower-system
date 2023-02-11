@@ -230,7 +230,7 @@ let PatientInvoicesDialog = new function(){
     this.self = $(`#_pic_dlgInvoice`);
     this.btnOK = $('#_pic_dlgInvoice_btnSave');
 
-    mThis.columns = [
+    this.columns = [
         {
             "name": "item_id",
             "title": "Item Name",
@@ -244,9 +244,6 @@ let PatientInvoicesDialog = new function(){
             "title": "Description",
             "dataType": "string",
             "displayType": "input",
-            // "data":(value,row)=>{
-            //     return "";
-            // }
         },
         {
             "name": "qty",
@@ -319,7 +316,7 @@ let PatientInvoicesDialog = new function(){
     });
 
     this.setItemInfo = (col_name,tr)=>{
-        if(col_name==='item_id'){
+        if(col_name === 'item_id'){
             let d = mThis.itemConfig.getDataRow(tr);
             let p = {'item_id': d.item_id};
             vsapi.call(`${main_view.base_url}/api/inventory/item-info`,p).then(res => {
