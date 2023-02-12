@@ -101,9 +101,7 @@
                             CommonLib.setComboItems(mThis.elProgram,d.programs,'id','name',def.program_id);   
                             CommonLib.setComboItems(mThis.elOccupation,d.occupations,'id','occupation',def.occupation_id);
   
-                             //CommonLib.setComboItems(mThis.elIndustry,d.industries,'id','industry',def.industry_id);
                              CommonLib.setComboItems(mThis.elOrg,d.organizations,'id','org_name',def.organization_id);
-                             //CommonLib.setComboItems(mThis.elPosition,d.positions,'id','position',def.position_id);
 
                             if(def.program_id>0) mThis.elProgram.trigger('change');
                             if(def.occupation_id>0) mThis.elOccupation.trigger('change');

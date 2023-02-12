@@ -105,13 +105,10 @@ let PersonDialog = new function(){
         "sanitize_excepts":['email'],
         'use_alert_error':true,
         "init": ()=>{
-               //init code here
                return;
         }
-        //,"beforeShow":beforeShow
     });
  
-    //options = {id,appt_id}
     this.show = (options=null)=>{
         options = options?options:{};
         mThis.options =  options;
