@@ -1,5 +1,5 @@
 "use strict";
-let DashboardComponent = new function(){
+let DashboardComponent = new function () {
   let mThis = this;
   this.title_prop = "Dashboard";
   this.base_url = $('#__base_url').val();
@@ -13,13 +13,13 @@ let DashboardComponent = new function(){
   this.SmdoughnutChart = $('#_dash_sm_doughnutChart');
   this.SmpolyAreaChart = $('#_dash_sm_polyAreaChart');
 
-  this.init = () => {}
+  this.init = () => { }
 
   this.displayDashboardTable = () => {
-    vsapi.call(`${mThis.base_url}/api/dashboard`,null).then(res => {
+    vsapi.call(`${mThis.base_url}/api/dashboard`, null).then(res => {
       let data = StringSanitizer.sanitizeObject(res.data);
 
-      if(mThis.table){
+      if (mThis.table) {
         mThis.tblDashboard.DataTable().clear().destroy();
         mThis.tblDashboard.empty();
         mThis.table = null;
@@ -28,37 +28,37 @@ let DashboardComponent = new function(){
       let cols = [{
         title: "No",
         data: "id"
-      },{
+      }, {
         title: "Code",
         data: "code_id"
       }];
 
-      if(!mThis.table){
+      if (!mThis.table) {
         mThis.table = mThis.tblDashboard.DataTable({
-          searching:false,
-          destroy:true,
-          paging:true,
-          ordering:false,
+          searching: false,
+          destroy: true,
+          paging: true,
+          ordering: false,
           //dom: 'Bfrtip',
           retrieve: true,
           //scrollY:390,
           //scrollX:500,
           //pagingType:'numbers',
-          info:true,
+          info: true,
           pageLength: 10,
-          bLengthChange:false,
-          saveState:true,
+          bLengthChange: false,
+          saveState: true,
           'processing': true,
           'language': {
-              'loadingRecords': '&nbsp;',
-              'processing': 'Loading...',
-              "emptyTable": LocaleManager.trans('No data to display','datatable')
+            'loadingRecords': '&nbsp;',
+            'processing': 'Loading...',
+            "emptyTable": LocaleManager.trans('No data to display', 'datatable')
           },
           'data': data,
           'columns': cols
-          ,"createdRow": function(row, data, dataIndex){
+          , "createdRow": function (row, data, dataIndex) {
             let tr = $(row);
-            tr.data('id',data.id);
+            tr.data('id', data.id);
           }
         });
       }
@@ -66,50 +66,50 @@ let DashboardComponent = new function(){
   }
 
   this.displayBarChart = () => {
-    new Chart(mThis.barCharts,{
+    new Chart(mThis.barCharts, {
       type: 'bar',
-      data:  {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June','July','August','Setember','Octorboer','November','December'],
+      data: {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'Setember', 'Octorboer', 'November', 'December'],
         datasets: [{
-            label: 'Revenuse',
-            data: [12, 19, 3, 5, 2, 3, 10, 11, 12, 13, 14, 15],
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.6)',
-                'rgba(54, 162, 235, 0.6)',
-                'rgba(255, 206, 86, 0.6)',
-                'rgba(75, 192, 192, 0.6)',
-                'rgba(153, 102, 255, 0.6)',
-                'rgba(255, 159, 64, 0.6)',
-                'rgba(173, 0, 0, 0.6)',
-                'rgba(255, 255, 0, 0.6)',
-                'rgba(0, 255, 255, 0.6)',
-                'rgba(255, 0, 255, 0.6)',
-                'rgba(0, 191, 255, 0.6)',
-                'rgba(0, 255, 0, 0.6)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)',
-                'rgba(173, 0, 0, 1)',
-                'rgba(255, 255, 0, 1)',
-                'rgba(0, 255, 255, 1)',
-                'rgba(255, 0, 255, 1)',
-                'rgba(0, 191, 255, 1)',
-                'rgba(0, 255, 0, 1)'
-            ],
-            borderWidth: 1
+          label: 'Revenuse',
+          data: [12, 19, 3, 5, 2, 3, 10, 11, 12, 13, 14, 15],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(153, 102, 255, 0.6)',
+            'rgba(255, 159, 64, 0.6)',
+            'rgba(173, 0, 0, 0.6)',
+            'rgba(255, 255, 0, 0.6)',
+            'rgba(0, 255, 255, 0.6)',
+            'rgba(255, 0, 255, 0.6)',
+            'rgba(0, 191, 255, 0.6)',
+            'rgba(0, 255, 0, 0.6)'
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)',
+            'rgba(173, 0, 0, 1)',
+            'rgba(255, 255, 0, 1)',
+            'rgba(0, 255, 255, 1)',
+            'rgba(255, 0, 255, 1)',
+            'rgba(0, 191, 255, 1)',
+            'rgba(0, 255, 0, 1)'
+          ],
+          borderWidth: 1
         }]
       },
       options: {
         scales: {
           yAxes: [{
-              ticks: {
-                beginAtZero: true
-              }
+            ticks: {
+              beginAtZero: true
+            }
           }]
         }
       }
@@ -138,16 +138,16 @@ let DashboardComponent = new function(){
       },
     });
 
-    new Chart(mThis.SmlineChart,{
+    new Chart(mThis.SmlineChart, {
       type: 'line',
       data: {
         datasets: [{
           data: [12, 19, 75, 45, 97, 83, 73, 53, 63, 63, 72, 43],
-          backgroundColor:[
+          backgroundColor: [
             'rgba(0, 250, 250, 0.6)'
           ],
         }],
-        labels: ['January','February','March', 'April', 'May', 'June','July','August','Setember','Octorboer','November','December']
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'Setember', 'Octorboer', 'November', 'December']
       },
       options: {
         maintainAspectRatio: false,
@@ -165,10 +165,10 @@ let DashboardComponent = new function(){
       }
     });
 
-    new Chart(mThis.SmbarChart,{
+    new Chart(mThis.SmbarChart, {
       type: 'bar',
       data: {
-        labels: ['January','February','March', 'April', 'May', 'June','July','August','Setember','Octorboer','November','December'],
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'Setember', 'Octorboer', 'November', 'December'],
         datasets: [{
           data: [12, 19, 75, 45, 97, 83, 73, 53, 63, 63, 72, 43],
           backgroundColor: [
@@ -186,18 +186,18 @@ let DashboardComponent = new function(){
             'rgba(0, 255, 0, 0.6)'
           ],
           borderColor: [
-              'rgba(255, 99, 132, 1)',
-              'rgba(54, 162, 235, 1)',
-              'rgba(255, 206, 86, 1)',
-              'rgba(75, 192, 192, 1)',
-              'rgba(153, 102, 255, 1)',
-              'rgba(255, 159, 64, 1)',
-              'rgba(173, 0, 0, 1)',
-              'rgba(255, 255, 0, 1)',
-              'rgba(0, 255, 255, 1)',
-              'rgba(255, 0, 255, 1)',
-              'rgba(0, 191, 255, 1)',
-              'rgba(0, 255, 0, 1)'
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)',
+            'rgba(173, 0, 0, 1)',
+            'rgba(255, 255, 0, 1)',
+            'rgba(0, 255, 255, 1)',
+            'rgba(255, 0, 255, 1)',
+            'rgba(0, 191, 255, 1)',
+            'rgba(0, 255, 0, 1)'
           ],
           borderWidth: 1
         }]
@@ -220,7 +220,7 @@ let DashboardComponent = new function(){
       }
     });
 
-    new Chart(mThis.SmdoughnutChart,{
+    new Chart(mThis.SmdoughnutChart, {
       type: 'doughnut',
       data: {
         datasets: [{
@@ -248,7 +248,7 @@ let DashboardComponent = new function(){
       }
     });
 
-    new Chart(mThis.SmpolyAreaChart,{
+    new Chart(mThis.SmpolyAreaChart, {
       type: 'polarArea',
       data: {
         datasets: [{

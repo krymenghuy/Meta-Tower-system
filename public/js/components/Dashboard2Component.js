@@ -1,291 +1,291 @@
 "use strict";
-let Dashboard2Component = new function(){
-    let mThis = this;
-    this.title_prop = "Dashboard";
-    this.base_url = $('#__base_url').val();
-    this.self = $('#_main_dashboard2Component');
-    this.tblDashboard2 = $('#_dash2_tblDashboard2');
-    this.barChart = $('#_dash2_barChart');
-    this.pieChart = $('#_dash2_pieChart');
+let Dashboard2Component = new function () {
+  let mThis = this;
+  this.title_prop = "Dashboard";
+  this.base_url = $('#__base_url').val();
+  this.self = $('#_main_dashboard2Component');
+  this.tblDashboard2 = $('#_dash2_tblDashboard2');
+  this.barChart = $('#_dash2_barChart');
+  this.pieChart = $('#_dash2_pieChart');
 
-    this.SmbarChart = $('#_dash2_SmbarChart');
-    this.SmlineChart = $('#_dash2_SmlineChart');
-    this.SmdoughnutChart = $('#_dash2_SmdoughnutChart');
+  this.SmbarChart = $('#_dash2_SmbarChart');
+  this.SmlineChart = $('#_dash2_SmlineChart');
+  this.SmdoughnutChart = $('#_dash2_SmdoughnutChart');
 
-    this.init = () => {}
+  this.init = () => { }
 
-    this.displayDashboardTable = () => {
-        vsapi.call(`${mThis.base_url}/api/dashboard2`,null).then(res => {
-          let data = StringSanitizer.sanitizeObject(res.data);
-    
-          if(mThis.table){
-            mThis.tblDashboard2.DataTable().clear().destroy();
-            mThis.tblDashboard2.empty();
-            mThis.table = null;
-          }
-    
-          let cols = [{
-            title: "No",
-            data: "id"
-          },{
-            title: "Code",
-            data: "code_id"
-          }];
-    
-          if(!mThis.table){
-            mThis.table = mThis.tblDashboard2.DataTable({
-              searching:false,
-              destroy:true,
-              paging:true,
-              ordering:false,
-              //dom: 'Bfrtip',
-              retrieve: true,
-              //scrollY:390,
-              //scrollX:500,
-              //pagingType:'numbers',
-              info:true,
-              pageLength: 10,
-              bLengthChange:false,
-              saveState:true,
-              'processing': true,
-              'language': {
-                  'loadingRecords': '&nbsp;',
-                  'processing': 'Loading...',
-                  "emptyTable": LocaleManager.trans('No data to display','datatable')
-              },
-              'data': data,
-              'columns': cols
-              ,"createdRow": function(row, data, dataIndex){
-                let tr = $(row);
-                tr.data('id',data.id);
-              }
-            });
-          }
-        });
-    }
+  this.displayDashboardTable = () => {
+    vsapi.call(`${mThis.base_url}/api/dashboard2`, null).then(res => {
+      let data = StringSanitizer.sanitizeObject(res.data);
 
-    this.displayBarChart = () => {
-        new Chart(mThis.barChart,{
-            type: 'bar',
-            data: {
-                labels: ['January','February', 'March', 'April','May', 'June','July','August','Setember','Octorboer','November','December'],
-                datasets:[{
-                    label: 'Bar Dataset',
-                    data: [10, 7, 30, 40, 89, 75, 19, 84, 84, 74, 45, 73],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.6)',
-                        'rgba(54, 162, 235, 0.6)',
-                        'rgba(255, 206, 86, 0.6)',
-                        'rgba(75, 192, 192, 0.6)',
-                        'rgba(153, 102, 255, 0.6)',
-                        'rgba(255, 159, 64, 0.6)',
-                        'rgba(173, 0, 0, 0.6)',
-                        'rgba(255, 255, 0, 0.6)',
-                        'rgba(0, 255, 255, 0.6)',
-                        'rgba(255, 0, 255, 0.6)',
-                        'rgba(0, 191, 255, 0.6)',
-                        'rgba(0, 255, 0, 0.6)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)',
-                        'rgba(173, 0, 0, 1)',
-                        'rgba(255, 255, 0, 1)',
-                        'rgba(0, 255, 255, 1)',
-                        'rgba(255, 0, 255, 1)',
-                        'rgba(0, 191, 255, 1)',
-                        'rgba(0, 255, 0, 1)'
-                    ],
-                    borderWidth: 1,
-                    order: 1
-                },{
-                    label: 'Bar Dataset',
-                    data: [12, 25, 37, 49, 75, 53, 65, 43, 85, 73, 54, 12],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.6)',
-                        'rgba(54, 162, 235, 0.6)',
-                        'rgba(255, 206, 86, 0.6)',
-                        'rgba(75, 192, 192, 0.6)',
-                        'rgba(153, 102, 255, 0.6)',
-                        'rgba(255, 159, 64, 0.6)',
-                        'rgba(173, 0, 0, 0.6)',
-                        'rgba(255, 255, 0, 0.6)',
-                        'rgba(0, 255, 255, 0.6)',
-                        'rgba(255, 0, 255, 0.6)',
-                        'rgba(0, 191, 255, 0.6)',
-                        'rgba(0, 255, 0, 0.6)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)',
-                        'rgba(173, 0, 0, 1)',
-                        'rgba(255, 255, 0, 1)',
-                        'rgba(0, 255, 255, 1)',
-                        'rgba(255, 0, 255, 1)',
-                        'rgba(0, 191, 255, 1)',
-                        'rgba(0, 255, 0, 1)'
-                    ],
-                    borderWidth: 1,
-                    order: 2
-                }]
-            },
-            options:{
-                scales: {
-                    yAxes: [{
-                        display: false
-                    }]
-                }
-            }
-        });
+      if (mThis.table) {
+        mThis.tblDashboard2.DataTable().clear().destroy();
+        mThis.tblDashboard2.empty();
+        mThis.table = null;
+      }
 
-        new Chart(mThis.pieChart, {
-            type: 'pie',
-            data: {
-              datasets: [{
-                data: [300, 200, 100, 500],
-                backgroundColor: [
-                  'rgba(255, 99, 132, 0.6)',
-                  'rgba(54, 162, 235, 0.6)',
-                  'rgba(255, 206, 86, 0.6)',
-                  'rgba(75, 192, 192, 0.6)',
-                ],
-                borderColor: [
-                  'rgba(255, 99, 132, 1)',
-                  'rgba(54, 162, 235, 1)',
-                  'rgba(255, 206, 86, 1)',
-                  'rgba(75, 192, 192, 1)',
-                ],
-                borderWidth: 1
-              }],
-              labels: ['Class A', 'Class B', 'Class C', 'Class D']
-            },
-        });
+      let cols = [{
+        title: "No",
+        data: "id"
+      }, {
+        title: "Code",
+        data: "code_id"
+      }];
 
-        new Chart(mThis.SmbarChart,{
-          type: 'bar',
-          data: {
-            labels: ['January','February', 'March', 'April','May', 'June','July','August','Setember','Octorboer','November','December'],
-            datasets: [{
-              data: [10, 7, 30, 40, 89, 75, 19, 84, 84, 74, 45, 73],
-              backgroundColor: [
-                'rgba(255, 99, 132, 0.6)',
-                'rgba(54, 162, 235, 0.6)',
-                'rgba(255, 206, 86, 0.6)',
-                'rgba(75, 192, 192, 0.6)',
-                'rgba(153, 102, 255, 0.6)',
-                'rgba(255, 159, 64, 0.6)',
-                'rgba(173, 0, 0, 0.6)',
-                'rgba(255, 255, 0, 0.6)',
-                'rgba(0, 255, 255, 0.6)',
-                'rgba(255, 0, 255, 0.6)',
-                'rgba(0, 191, 255, 0.6)',
-                'rgba(0, 255, 0, 0.6)'
-              ],
-              borderColor: [
-                  'rgba(255, 99, 132, 1)',
-                  'rgba(54, 162, 235, 1)',
-                  'rgba(255, 206, 86, 1)',
-                  'rgba(75, 192, 192, 1)',
-                  'rgba(153, 102, 255, 1)',
-                  'rgba(255, 159, 64, 1)',
-                  'rgba(173, 0, 0, 1)',
-                  'rgba(255, 255, 0, 1)',
-                  'rgba(0, 255, 255, 1)',
-                  'rgba(255, 0, 255, 1)',
-                  'rgba(0, 191, 255, 1)',
-                  'rgba(0, 255, 0, 1)'
-              ],
-              borderWidth: 1
-            }]
+      if (!mThis.table) {
+        mThis.table = mThis.tblDashboard2.DataTable({
+          searching: false,
+          destroy: true,
+          paging: true,
+          ordering: false,
+          //dom: 'Bfrtip',
+          retrieve: true,
+          //scrollY:390,
+          //scrollX:500,
+          //pagingType:'numbers',
+          info: true,
+          pageLength: 10,
+          bLengthChange: false,
+          saveState: true,
+          'processing': true,
+          'language': {
+            'loadingRecords': '&nbsp;',
+            'processing': 'Loading...',
+            "emptyTable": LocaleManager.trans('No data to display', 'datatable')
           },
-          options: {
-            scales: {
-              yAxes: [{
-                  ticks: {
-                      beginAtZero: true
-                  },
-                  display: false
-              }],
-              xAxes: [{
-                display: false
-              }],
+          'data': data,
+          'columns': cols
+          , "createdRow": function (row, data, dataIndex) {
+            let tr = $(row);
+            tr.data('id', data.id);
+          }
+        });
+      }
+    });
+  }
+
+  this.displayBarChart = () => {
+    new Chart(mThis.barChart, {
+      type: 'bar',
+      data: {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'Setember', 'Octorboer', 'November', 'December'],
+        datasets: [{
+          label: 'Bar Dataset',
+          data: [10, 7, 30, 40, 89, 75, 19, 84, 84, 74, 45, 73],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(153, 102, 255, 0.6)',
+            'rgba(255, 159, 64, 0.6)',
+            'rgba(173, 0, 0, 0.6)',
+            'rgba(255, 255, 0, 0.6)',
+            'rgba(0, 255, 255, 0.6)',
+            'rgba(255, 0, 255, 0.6)',
+            'rgba(0, 191, 255, 0.6)',
+            'rgba(0, 255, 0, 0.6)'
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)',
+            'rgba(173, 0, 0, 1)',
+            'rgba(255, 255, 0, 1)',
+            'rgba(0, 255, 255, 1)',
+            'rgba(255, 0, 255, 1)',
+            'rgba(0, 191, 255, 1)',
+            'rgba(0, 255, 0, 1)'
+          ],
+          borderWidth: 1,
+          order: 1
+        }, {
+          label: 'Bar Dataset',
+          data: [12, 25, 37, 49, 75, 53, 65, 43, 85, 73, 54, 12],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(153, 102, 255, 0.6)',
+            'rgba(255, 159, 64, 0.6)',
+            'rgba(173, 0, 0, 0.6)',
+            'rgba(255, 255, 0, 0.6)',
+            'rgba(0, 255, 255, 0.6)',
+            'rgba(255, 0, 255, 0.6)',
+            'rgba(0, 191, 255, 0.6)',
+            'rgba(0, 255, 0, 0.6)'
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)',
+            'rgba(173, 0, 0, 1)',
+            'rgba(255, 255, 0, 1)',
+            'rgba(0, 255, 255, 1)',
+            'rgba(255, 0, 255, 1)',
+            'rgba(0, 191, 255, 1)',
+            'rgba(0, 255, 0, 1)'
+          ],
+          borderWidth: 1,
+          order: 2
+        }]
+      },
+      options: {
+        scales: {
+          yAxes: [{
+            display: false
+          }]
+        }
+      }
+    });
+
+    new Chart(mThis.pieChart, {
+      type: 'pie',
+      data: {
+        datasets: [{
+          data: [300, 200, 100, 500],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+          ],
+          borderWidth: 1
+        }],
+        labels: ['Class A', 'Class B', 'Class C', 'Class D']
+      },
+    });
+
+    new Chart(mThis.SmbarChart, {
+      type: 'bar',
+      data: {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'Setember', 'Octorboer', 'November', 'December'],
+        datasets: [{
+          data: [10, 7, 30, 40, 89, 75, 19, 84, 84, 74, 45, 73],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(153, 102, 255, 0.6)',
+            'rgba(255, 159, 64, 0.6)',
+            'rgba(173, 0, 0, 0.6)',
+            'rgba(255, 255, 0, 0.6)',
+            'rgba(0, 255, 255, 0.6)',
+            'rgba(255, 0, 255, 0.6)',
+            'rgba(0, 191, 255, 0.6)',
+            'rgba(0, 255, 0, 0.6)'
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)',
+            'rgba(173, 0, 0, 1)',
+            'rgba(255, 255, 0, 1)',
+            'rgba(0, 255, 255, 1)',
+            'rgba(255, 0, 255, 1)',
+            'rgba(0, 191, 255, 1)',
+            'rgba(0, 255, 0, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
             },
-            legend: {
-              display: false
-            }
-          }
-        });
+            display: false
+          }],
+          xAxes: [{
+            display: false
+          }],
+        },
+        legend: {
+          display: false
+        }
+      }
+    });
 
-        new Chart(mThis.SmlineChart,{
-          type: 'line',
-          data: {
-            datasets:[{
-              data: [12, 19, 75, 45, 97, 83, 73, 53, 63, 63, 72, 43],
-              backgroundColor:[
-                'rgba(0, 250, 250, 0.6)'
-              ],
-            }],
-            labels: ['January','February','March', 'April', 'May', 'June','July','August','Setember','Octorboer','November','December']
-          },
-          options: {
-            scales:{
-              yAxes:[{
-                display: false
-              }],
-              xAxes:[{
-                display: false
-              }]
-            },
-            legend:{
-              display: false
-            }
-          }
-        });
+    new Chart(mThis.SmlineChart, {
+      type: 'line',
+      data: {
+        datasets: [{
+          data: [12, 19, 75, 45, 97, 83, 73, 53, 63, 63, 72, 43],
+          backgroundColor: [
+            'rgba(0, 250, 250, 0.6)'
+          ],
+        }],
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'Setember', 'Octorboer', 'November', 'December']
+      },
+      options: {
+        scales: {
+          yAxes: [{
+            display: false
+          }],
+          xAxes: [{
+            display: false
+          }]
+        },
+        legend: {
+          display: false
+        }
+      }
+    });
 
-        new Chart(mThis.SmdoughnutChart,{
-          type: 'doughnut',
-          data: {
-            datasets: [{
-              data: [10, 20, 30, 40],
-              backgroundColor: [
-                'rgba(255, 99, 132, 0.6)',
-                'rgba(54, 162, 235, 0.6)',
-                'rgba(255, 206, 86, 0.6)',
-                'rgba(75, 192, 192, 0.6)',
-              ],
-              borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-              ],
-              borderWidth: 1
-            }],
-            labels: ['Labotory', 'Skin Car', 'Surchery', 'Selling Products']
-          },
-          options: {
-            legend:{
-              display: false
-            }
-          }
-        });
-    }
+    new Chart(mThis.SmdoughnutChart, {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [10, 20, 30, 40],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+          ],
+          borderWidth: 1
+        }],
+        labels: ['Labotory', 'Skin Car', 'Surchery', 'Selling Products']
+      },
+      options: {
+        legend: {
+          display: false
+        }
+      }
+    });
+  }
 
-    this.show = (option) => {
-        mThis.displayBarChart();
-        main_view.setTitle(mThis.title_prop);
-        mThis.self.show().siblings().hide();
-    }
+  this.show = (option) => {
+    mThis.displayBarChart();
+    main_view.setTitle(mThis.title_prop);
+    mThis.self.show().siblings().hide();
+  }
 }
 
 $(document).ready(() => {
-    Dashboard2Component.init();
+  Dashboard2Component.init();
 });
