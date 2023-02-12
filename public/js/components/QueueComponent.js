@@ -33,9 +33,6 @@ let TicketDetails = new function () {
         mThis.tblTickets.on('click', 'a.qul-btn-consult', function (e) {
             e.preventDefault();
 
-            //let div_wrapper = $(this).closest('div.ticket-info-wrapper');
-            //mThis.startConsult(div_wrapper);
-
             let ticket_id = $(this).data('tid');
             let patient_id = $(this).data('clientid');
             let op = {
@@ -159,7 +156,6 @@ let TicketDetails = new function () {
         let div_panel = div_wrapper.find('div.ticket-info-wrapper');
         switch (mThis.current_view_name) {
             case 'info': {
-                //div_wrapper.find('a.qul-btn-info').addClass('btn-ticket-tab--active');
                 mThis.setActiveTabButton(div_panel, 'qul-btn-info');
                 mThis.showInfo(div_panel);
                 break;
@@ -211,7 +207,7 @@ let TicketDetails = new function () {
         if (i === 0) html = `<li data-apptid="0"><span class="text-muted">(No chief complaints)</span></li>`;
         return html;
     }
-    
+
     this.showInfo = (div_panel, ticket_id = null) => {
         if (!ticket_id) ticket_id = div_panel.data('tid');
         let div_workspace = div_panel.find('div.qul-workspace');
@@ -225,7 +221,6 @@ let TicketDetails = new function () {
             if (res.status_code === 200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
                 if (!d) d = {};
-                //d.chief_complaints = d.chief_complaints?d.chief_complaints:[];
                 d.patient_code = d.patient_code ? d.patient_code : 'N.A.';
                 d.consultant_name = d.consultant_name ? d.consultant_name : 'N.A.';
                 d.membership_card = d.membership_card ? d.membership_card : 'None';
@@ -355,7 +350,6 @@ let TicketDetails = new function () {
     this.showPhoto = (div_panel, ticket_id = null) => {
         if (!ticket_id) ticket_id = div_panel.data('tid');
         let div_workspace = div_panel.find('div.qul-workspace');
-        //div_workspace.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
         div_workspace.html(`<div class="d-flex align-items-center justify-content-center">
             <div class="d-flex gx-4">
                 <div class="">
@@ -375,7 +369,6 @@ let TicketDetails = new function () {
     this.startConsult = (div_panel, ticket_id = null) => {
         if (!ticket_id) ticket_id = div_panel.data('tid');
         let div_workspace = div_panel.find('div.qul-workspace');
-        //div_workspace.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
         div_workspace.html();
         mThis.current_view_name = 'consult';
     };
@@ -419,10 +412,8 @@ let QueueComponent = new function () {
     //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
     //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
     this.setLanguage = () => {
-        //let d = 0;
         if (LocaleManager.lang !== mThis.lang) {
             for (let prop in mThis.col_titles) {
-                //if (mThis.col_titles.hasOwnProperty(prop)) {}
                 mThis.col_titles[prop] = LocaleManager.trans(prop, 'ticket', LocaleManager.lang);
             }
             mThis.lang = LocaleManager.lang;
@@ -506,9 +497,7 @@ let QueueComponent = new function () {
 
         this.cfg = new ExpandableRowConfig('_qul_tblTickets', {
             'dontExpandByClickingOn': ['btn_ticket_modify', 'btn_apt_delete', 'btn_ticket_action'],
-            //'content':`<div class="alert alert-info">Loading details</div>`,
             'onOpen': (container, detail_tr, parent_tr) => {
-                //alert(detail_tr.find('ul').html());
                 let q_tr = $(parent_tr);
                 let ticket_id = q_tr.data('id');
                 //Show Expandable Details of each ticket (QTicket)
@@ -634,7 +623,7 @@ let QueueComponent = new function () {
                         return [`<div class="form-inline">`,
                             `<a href="javascript:void(0)" class="btn_co_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a style="display:${data.status_id > 2 ? 'none' : 'block'}" href="javascript:void(0)" class="btn_ticket_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
-                            `<a href="javascript:void(0);" data-id="${data.id}" class="btn_apt_delete"><i class="fa fa-trash" style="color:red"></i></a>`,
+                            `<a href="javascript:void(0);" data-id="${data.id}" class="btn_apt_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
                             `&nbsp;<a href="#" data-id="${data.id}" class="btn_apt_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
                             `</div>`
                         ].join('');
@@ -680,9 +669,9 @@ let QueueComponent = new function () {
                         tr.data('statusid', data.status_id);
                         tr.data('clientid', data.client_id);
                         tr.data('personid', data.person_id);
-                    }   								
+                    }
                 });
-            if (typeof onFinish === 'function') onFinish();             
+            if (typeof onFinish === 'function') onFinish();
         });
     };
 
@@ -717,8 +706,8 @@ let ConsultTabView = new function () {
 
     //save all consult data
     this.btnSaveConsult = $('#_qul_dlgConsult_btnSave');
-    
-    this.tblChiefComplaints =null;
+
+    this.tblChiefComplaints = null;
     this.tblPrescribedItems = null;
     this.tblLaboTests = null;
 
@@ -729,122 +718,121 @@ let ConsultTabView = new function () {
 
     this.self.on('click', 'div.tab-header>a.tab-button', function (e) {
         e.preventDefault();
-        //alert($(this).data('target'));
         $(this).addClass('active').siblings().removeClass('active');
         let view_name = $(this).data('viewname').toLowerCase();
         mThis.show(mThis.options, view_name, true);
     });
 
-    this.btnSaveConsult.on('click',(e)=>{
-      e.preventDefault();
-      let p = mThis.getConsultData();
+    this.btnSaveConsult.on('click', (e) => {
+        e.preventDefault();
+        let p = mThis.getConsultData();
     });
 
-    this.getInput_chiefcomplaints = (div=null)=>{
-        return  mThis.tblChiefComplaints? mThis.tblChiefComplaints.getItems() : [];
+    this.getInput_chiefcomplaints = (div = null) => {
+        return mThis.tblChiefComplaints ? mThis.tblChiefComplaints.getItems() : [];
     }
 
-    this.getInput_vitalsigns = (div=null)=>{
+    this.getInput_vitalsigns = (div = null) => {
         let ps = [];
-       div.find('.data-input').each(function(){
+        div.find('.data-input').each(function () {
             let el = $(this);
             let vital_sign_id = el.data('id');
-            ps.push({"id":vital_sign_id,"observed_value":el.val()}); 
-       });
-       return ps;
-    }
- 
-    this.getInput_medical_history = (div=null)=>{
-        let ps = [];
-        div.find('.data-input').each(function(){
-            let el = $(this);
-            let category = el.data('category');
-            ps.push({'category':category,'value':el.val()});
+            ps.push({ "id": vital_sign_id, "observed_value": el.val() });
         });
         return ps;
     }
 
-    this.getInput_pe = (div)=>{
+    this.getInput_medical_history = (div = null) => {
+        let ps = [];
+        div.find('.data-input').each(function () {
+            let el = $(this);
+            let category = el.data('category');
+            ps.push({ 'category': category, 'value': el.val() });
+        });
+        return ps;
+    }
+
+    this.getInput_pe = (div) => {
         //Physical examination is one textarea
         let el = div.find('.data-input');
-        return el.val(); 
-    }
-    
-    this.getInput_labotests = (div =null)=>{
-            return mThis.tblLaboTests?mThis.tblLaboTests.getItems() : [];
+        return el.val();
     }
 
-    this.getInput_diagnosis = (div =null)=>{
+    this.getInput_labotests = (div = null) => {
+        return mThis.tblLaboTests ? mThis.tblLaboTests.getItems() : [];
+    }
+
+    this.getInput_diagnosis = (div = null) => {
         //Dianosis is one textarea
         let el = div.find('.data-input');
-        return el.val(); 
+        return el.val();
     }
 
-    this.getInput_prescription = (div=null)=>{
-          let d = {
-            'issue_date':"",
-            'consultant_id':"",
-            'description':"",
-            'items': mThis.tblPrescribedItems? mThis.tblPrescribedItems.getItems() : []
-          };
-          //if there are no items in presecription, then return NULL
-          if(!d.items[0]) return null;
-          return d;
+    this.getInput_prescription = (div = null) => {
+        let d = {
+            'issue_date': "",
+            'consultant_id': "",
+            'description': "",
+            'items': mThis.tblPrescribedItems ? mThis.tblPrescribedItems.getItems() : []
+        };
+        //if there are no items in presecription, then return NULL
+        if (!d.items[0]) return null;
+        return d;
     }
 
-    this.getInput_advice = (div)=>{
+    this.getInput_advice = (div) => {
         //Medical advice or recommendation is one textarea
         let el = div.find('.data-input');
-        return el.val(); 
+        return el.val();
     }
 
 
     //returns doctor's consultation data including Chielf cpmpaint, Medical history, PE, labor test, prescription, Diagnosis
     //getData()|getInputData()
     this.getConsultData = () => {
-       let consult_panel = mThis.self.find('div#_consult_panel');
-       let p = {};
-       consult_panel.find('.consult-content-panel').each(function(){
-         let div = $(this);
-         let view_name = div.attr('viewname');
+        let consult_panel = mThis.self.find('div#_consult_panel');
+        let p = {};
+        consult_panel.find('.consult-content-panel').each(function () {
+            let div = $(this);
+            let view_name = div.attr('viewname');
 
-         switch(view_name){
-            case 'chief-complaints':{
-               p.chief_compaints = mThis.getInput_chiefcomplaints(div);
-               break;
+            switch (view_name) {
+                case 'chief-complaints': {
+                    p.chief_compaints = mThis.getInput_chiefcomplaints(div);
+                    break;
+                }
+                case 'vital-signs': {
+                    p.vital_signs = mThis.getInput_vitalsigns(div);
+                    break;
+                }
+                case 'medical-history': {
+                    p.medical_history = mThis.getInput_medical_history(div);
+                    break;
+                }
+                case 'physical-examination': {
+                    p.physical_examination = mThis.getInput_pe(div);
+                    break;
+                }
+                case 'labo-tests': {
+                    p.labo_tests = mThis.getInput_labotests(div);
+                    break;
+                }
+                case 'diagnosis': {
+                    p.diagnosis = mThis.getInput_diagnosis(div);
+                    break;
+                }
+                case 'prescription': {
+                    p.prescription = mThis.getInput_prescription(div);
+                    break;
+                }
+                case 'advice': {
+                    p.advice = mThis.getInput_advice(div);
+                    break;
+                }
             }
-            case 'vital-signs':{
-              p.vital_signs = mThis.getInput_vitalsigns(div);
-              break;
-            } 
-            case 'medical-history':{
-                p.medical_history = mThis.getInput_medical_history(div);
-                break;
-            }
-            case 'physical-examination':{
-                p.physical_examination = mThis.getInput_pe(div);
-                break;
-            }
-            case 'labo-tests':{
-                p.labo_tests = mThis.getInput_labotests(div);
-                break;
-            }
-            case 'diagnosis':{
-               p.diagnosis = mThis.getInput_diagnosis(div);
-               break;
-            }
-            case 'prescription':{
-                p.prescription = mThis.getInput_prescription(div);
-                break;
-            }
-            case 'advice':{
-                p.advice = mThis.getInput_advice(div);
-                break;
-            } 
-         }
-       });
+        });
 
-       return p;
+        return p;
     }
 
     //options = {patient_id,ticket_id}
@@ -894,30 +882,29 @@ let ConsultTabView = new function () {
     }
 
     //begin:: Event handlers for History Tab  and Consultation tab    
-      this.displayHistory = (client_id = 0, div_tab_panel = null) => { }
-      this.displayConsultation = (client_id = 0, div_tab_panel = null) => { }
+    this.displayHistory = (client_id = 0, div_tab_panel = null) => { }
+    this.displayConsultation = (client_id = 0, div_tab_panel = null) => { }
     //end:: Event handlers for History Tab  and Consultation tab
 
     //NOTE: tabeViewName = {'history','consultation'}
-    this.setFirstActiveMenu = (tabViewName=null)=>{
-        //alert(tabViewName +' =>' + mThis.has_already_init[tabViewName]);
-         if(mThis.has_already_init[tabViewName]) return;
-         if (tabViewName === 'consultation'){
+    this.setFirstActiveMenu = (tabViewName = null) => {
+        if (mThis.has_already_init[tabViewName]) return;
+        if (tabViewName === 'consultation') {
             //Initialize activ menu on Consultation tab
             let def_consult_view = 'medical-history';
             mThis.details_routes_consult[def_consult_view]();
             let li = mThis.ul_menus_consult.find(`[data-viewname="${def_consult_view}"]`).closest('li');
             li.addClass('consult-menu-selected');
             mThis.prev_selected_li_consult = li;
-         }else{
+        } else {
             //Initialize active menu on History tab
             let def_history_view = 'medical-reports';
             mThis.details_routes_history[def_history_view]();
             let li = mThis.ul_menus_history.find(`[data-viewname="${def_history_view}"]`).closest('li');
             li.addClass('history-menu-selected');
             mThis.prev_selected_li_history = li;
-         } 
-         mThis.has_already_init[tabViewName] = true;      
+        }
+        mThis.has_already_init[tabViewName] = true;
     }
 
     //begin::init ConsultTabeView (menus item event handlers and so on)
@@ -928,7 +915,7 @@ let ConsultTabView = new function () {
         //div panel that contains each consultation item's details
         mThis.consultItemPanel = $('#_consult_panel');
         mThis.historyItemPanel = $('#_history_panel');
-        
+
         //Object variable to store bool whetther the first active menu on each tab has been set or not on first show of each TabView {'Consultation','History'}
         mThis.has_already_init = {};
 
@@ -940,15 +927,7 @@ let ConsultTabView = new function () {
         mThis.details_routes_history = mThis.defineDetailRoutesHistory(mThis.historyItemPanel);
         mThis.details_routes_consult = mThis.defineDetailRoutesConsult(mThis.consultItemPanel);
 
-        // //Initialize View on Consult tab
-        // let consult_view_name = 'medical-history';
-        // mThis.details_routes_consult[consult_view_name]();
-         
-        // //Initialize View on History tab
-        // let history_view_name = 'medical-reports';
-        // mThis.details_routes_history[history_view_name]();
-         
-        mThis.ul_menus_consult.on('click', 'li', (e)=>{
+        mThis.ul_menus_consult.on('click', 'li', (e) => {
             e.preventDefault();
             let li = $(e.currentTarget)
             let view_name = li.find('a').data('viewname');
@@ -959,7 +938,7 @@ let ConsultTabView = new function () {
             mThis.details_routes_consult[view_name]();
         });
 
-        mThis.ul_menus_history.on('click', 'li', (e)=>{
+        mThis.ul_menus_history.on('click', 'li', (e) => {
             e.preventDefault();
             let li = $(e.currentTarget);
             let view_name = li.find('a').data('viewname');
@@ -977,33 +956,33 @@ let ConsultTabView = new function () {
     this.defineDetailRoutesConsult = (div) => {
         return {
             "chief-complaints": () => {
-                mThis.showConsultChiefComplaints(div,"chief-complaints");
+                mThis.showConsultChiefComplaints(div, "chief-complaints");
             },
             "vital-signs": () => {
-                mThis.showConsultVitalSigns(div,"vital-signs");
+                mThis.showConsultVitalSigns(div, "vital-signs");
             },
             "medical-history": () => {
-                mThis.showConsultMedicalHistory(div,"medical-history");
+                mThis.showConsultMedicalHistory(div, "medical-history");
             },
             "physical-examination": () => {
-                mThis.showConsultPE(div,"physical-examination");
+                mThis.showConsultPE(div, "physical-examination");
             },
             "prescription": () => {
-                mThis.showConsultPrescription(div,"prescription");
+                mThis.showConsultPrescription(div, "prescription");
             },
             "labo-tests": () => {
-                mThis.showConsultLaboratoryTests(div,"labo-tests");
+                mThis.showConsultLaboratoryTests(div, "labo-tests");
             },
             "diagnosis": () => {
-                mThis.showConsultDiagnosis(div,"diagnosis");
+                mThis.showConsultDiagnosis(div, "diagnosis");
             },
             "advice": () => {
-                mThis.showConsultRecommendations(div,"advice");
+                mThis.showConsultRecommendations(div, "advice");
             },
             "medical-report": () => {
                 //Show report printing
                 mThis.showConsultMedicalReport(div);
-               
+
             },
             "medical-certificate": () => {
                 mThis.showConsultMedicalCertificate(div);
@@ -1040,7 +1019,7 @@ let ConsultTabView = new function () {
     };
 
     //begin::Any options of consult
-    this.showConsultChiefComplaints = (div,view_name) => {
+    this.showConsultChiefComplaints = (div, view_name) => {
         let wrapper_id = '_consult_cc_warpper';
         let div_id = '_consult_cc_list';
         let el = div.find(`#${wrapper_id}`);
@@ -1062,7 +1041,6 @@ let ConsultTabView = new function () {
                     "dataType": "string",
                     "displayType": "select",
                     "cssClass": "",
-                    //"selectOptions":[] 
                 }
             ];
 
@@ -1117,7 +1095,7 @@ let ConsultTabView = new function () {
         });
     }
 
-    this.showConsultVitalSigns = (div,view_name) => {
+    this.showConsultVitalSigns = (div, view_name) => {
         let ticket_id = div.data('tid');
         let wrapper_id = '_consult_vt_wrapper';
         let el = div.find(`#${wrapper_id}`);
@@ -1125,7 +1103,6 @@ let ConsultTabView = new function () {
         mThis.loadVitalSigns_patient(ticket_id, items => {
             let html_vs_items = "";
             items.map(t => {
-                //t.description = t.name or Vital sign name
                 html_vs_items = [html_vs_items, `<tr data-id="${t.id}" data-tid="${ticket_id}"><td>`, t.description, `</td><td><input data-id="${t.id}" class="data-input form-control w-50" type="text" value ="`, t.vital_sign_value, `"></td></tr>`].join('');
             });
 
@@ -1161,12 +1138,10 @@ let ConsultTabView = new function () {
     }
 
     //showConsultPhysicalExamination
-    this.showConsultPE = (div,view_name) => {
-        //let patient_id = div.data('patientid');
+    this.showConsultPE = (div, view_name) => {
         let ticket_id = div.data('tid');
         let wrapper_id = '_consult_pe_wrapper';
-        let el = div.find(`#${wrapper_id}`); 
-        //loadPE_patient
+        let el = div.find(`#${wrapper_id}`);
         mThis.loadConsult_PE(ticket_id, pe => {
             let html = "";
             if (!pe) pe = "";
@@ -1194,7 +1169,7 @@ let ConsultTabView = new function () {
         });
     }
 
-    this.showConsultPrescription = (div,view_name) => {
+    this.showConsultPrescription = (div, view_name) => {
         let wrapper_id = '_consult_pres_warpper';
         let div_id = '_consult_prescription';
         let el = div.find(`#${wrapper_id}`);
@@ -1214,26 +1189,19 @@ let ConsultTabView = new function () {
                     "dataType": "string",
                     "displayType": "select",
                     "cssClass": "",
-                    //"selectOptions":[] 
                 },
                 {
                     "name": "qty",
                     "title": "Quantity",
                     "dataType": "number",
                     "displayType": "input"
-                    // ,"data":(value,row)=>{
-                    //     return "";
-                    // }
                 },
                 {
                     "name": "sku",
                     "title": "UOM",
                     "dataType": "string",
                     "displayType": "input",
-                    "readOnly":true
-                    // ,"data":(value,row)=>{
-                    //     return "";
-                    // }
+                    "readOnly": true
                 },
                 {
                     "name": "usage",
@@ -1246,28 +1214,13 @@ let ConsultTabView = new function () {
                     "title": "Days",
                     "dataType": "number",
                     "displayType": "input"
-                    // ,"data":(value,row)=>{
-                    //     return "";
-                    // }
                 },
                 {
                     "name": "reason",
                     "title": "Reasons",
-                    //"dataType": "string",
+                    "dataType": "string",
                     "displayType": "input"
-                    // ,"data":(value,row)=>{
-                    //     return "";
-                    // }
                 }
-                //,{
-                //     "name": "remarks",
-                //     "title": "Remarks",
-                //     //"dataType": "string",
-                //     "displayType": "input"
-                //     // ,"data":(value,row)=>{
-                //     //     return "";
-                //     // }
-                // }
             ];
 
             mThis.loadPrescription(ticket_id, d => {
@@ -1282,47 +1235,43 @@ let ConsultTabView = new function () {
                     "showColumnHeaders": true,
                     "showAddLineButton": true,
                     "addLineButtonText": "Add Item",
-                    //"addLineButtonClass":null,
-                    //"cssClass":"td_class",
-                    "onItemChange":(selOp,col_name,td)=>{
-                        let tr = td.parentNode; 
+                    "onItemChange": (selOp, col_name, td) => {
+                        let tr = td.parentNode;
                         //st item sku
-                        mThis.setItemInfo(col_name,tr);
+                        mThis.setItemInfo(col_name, tr);
                     },
                     "numeroFormatter": (numero, row) => {
                         return `<span class="text-secondary fw-bold">${numero}</span>`;
                     },
                     "emptyMessage": `<span class="text-secondary text-align-center">${LocaleManager.trans('No item prescribed', 'consult')}</span>`,
                 });
-                //mThis.tblChiefComplaints.setSelectOptions('name',cc_items);
                 el = div.find(`#${wrapper_id}`);
             });
         }
         el.show().siblings().hide();
     }
- 
-    this.setItemInfo = (col_name,tr)=>{
-        if(col_name==='item_id'){
-            let d = mThis.tblPrescribedItems.getDataRow(tr);
-            let p = {'item_id':d.item_id};
-            vsapi.call(`${main_view.base_url}/api/inventory/item-info`,p).then(res=>{
-                if(res.status_code===200){
-                    let item = res.data;
-                    mThis.tblPrescribedItems.setCellValue(tr,'sku',StringSanitizer.sanitizeOut(item.sku));
-                }
-            }); 
 
+    this.setItemInfo = (col_name, tr) => {
+        if (col_name === 'item_id') {
+            let d = mThis.tblPrescribedItems.getDataRow(tr);
+            let p = { 'item_id': d.item_id };
+            vsapi.call(`${main_view.base_url}/api/inventory/item-info`, p).then(res => {
+                if (res.status_code === 200) {
+                    let item = res.data;
+                    mThis.tblPrescribedItems.setCellValue(tr, 'sku', StringSanitizer.sanitizeOut(item.sku));
+                }
+            });
         }
     }
 
     //showConsultMedicalHistory()
-    this.showConsultMedicalHistory = (div,view_name) => {
+    this.showConsultMedicalHistory = (div, view_name) => {
         let wrapper_id = '_consult_medical_history_warpper';
         let ticket_id = div.data('tid');
         let patient_id = div.data('patientid');
         let el = div.find(`#${wrapper_id}`);
 
-        if (el.length ===0 || !el) {
+        if (el.length === 0 || !el) {
             let html =
                 `<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
               <h3 class="trans-text" data-langprop="consult.Medical History">Medical History</h3>
@@ -1372,7 +1321,7 @@ let ConsultTabView = new function () {
     }
 
 
-    this.showConsultLaboratoryTests = (div,view_name) => {
+    this.showConsultLaboratoryTests = (div, view_name) => {
         let wrapper_id = '_consult_labo_warpper';
         let div_labotest_panel_id = '_consult_div_labotest_panel';
 
@@ -1380,7 +1329,7 @@ let ConsultTabView = new function () {
         let patient_id = div.data('patientid');
         let el = div.find(`#${wrapper_id}`);
 
-        if (el.length ===0 || !el) {
+        if (el.length === 0 || !el) {
             let html =
                 `<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                 <h3 class="trans-text" data-langprop="consult.Laboratory Tests">Laboratory Tests</h3>
@@ -1419,20 +1368,20 @@ let ConsultTabView = new function () {
                 addLineButtonText: "Add Labo Test",
                 langProp: 'labotest'
             });
-              
+
         }
 
         el.show().siblings().hide();
         LocaleManager.translateZone(wrapper_id);
     }
 
-    this.showConsultDiagnosis = (div,view_name) => {
+    this.showConsultDiagnosis = (div, view_name) => {
         let wrapper_id = '_consult_diagnosis_warpper';
         let ticket_id = div.data('tid');
         let patient_id = div.data('patientid');
         let el = div.find(`#${wrapper_id}`);
 
-        if (el.length===0 || !el) {
+        if (el.length === 0 || !el) {
             let html =
                 `<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
               <h3 class="trans-text" data-langprop="consult.Diagnosis">Diagnosis</h3>
@@ -1450,11 +1399,11 @@ let ConsultTabView = new function () {
         LocaleManager.translateZone(wrapper_id);
     }
 
-    this.showConsultRecommendations = (div,view_name) => {
+    this.showConsultRecommendations = (div, view_name) => {
         let wrapper_id = '_consult_advice_warpper';
         let el = div.find(`#${wrapper_id}`);
 
-        if (el.length===0 || !el) {
+        if (el.length === 0 || !el) {
             let html =
                 `<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
               <h3 class="trans-text" data-langprop="consult.Recommendations">Recommendations</h3>
@@ -1472,17 +1421,17 @@ let ConsultTabView = new function () {
         LocaleManager.translateZone(wrapper_id);
     }
 
-    this.showConsultMedicalReport = (div=null, ticket_id = 0) => {
-        let qString =['rtype=medical_report&ticketid=',ticket_id].join(''); 
+    this.showConsultMedicalReport = (div = null, ticket_id = 0) => {
+        let qString = ['rtype=medical_report&ticketid=', ticket_id].join('');
         main_view.getEncryptData(qString, (d) => {
-            window.open([main_view.base_url,'/genreport/',d].join(''),'_blank');
+            window.open([main_view.base_url, '/genreport/', d].join(''), '_blank');
         });
     }
 
     this.showConsultMedicalCertificate = (div = null, ticket_id = 0) => {
-        let qString = [`rtype=medical_certificate&ticketid=`,ticket_id].join('');
-        main_view.getEncryptData(qString,(d) => {
-            window.open([main_view.base_url,'/genreport/',d].join(''),'_blank');
+        let qString = [`rtype=medical_certificate&ticketid=`, ticket_id].join('');
+        main_view.getEncryptData(qString, (d) => {
+            window.open([main_view.base_url, '/genreport/', d].join(''), '_blank');
         });
     }
     //end::Any options of consult
@@ -1889,11 +1838,11 @@ let ConsultDialog = new function () {
     this.btnSaveConult.on('click', (e) => {
         e.preventDefault();
         let p = ConsultTabView.getConsultData();
-         console.error(JSON.stringify(p)); 
-        vsapi.call(`${main_view.base_url}/api/consultation/save`,p).then(res=>{
-           if(res.status_code ===200){
+        console.error(JSON.stringify(p));
+        vsapi.call(`${main_view.base_url}/api/consultation/save`, p).then(res => {
+            if (res.status_code === 200) {
 
-           }
+            }
         });
 
         mThis.self.modal('hide');
