@@ -78,7 +78,7 @@
            let that = this;
            //NOTE: this.dontExpandByClickingOn is array of css selector or classes such as ['btn_apt_edit','btn_apt_delete','btn_apt_print']. When user clicks one of these elements, there is no Expanding behavior (No toggleOpen() )
            (this.dontExpandByClickingOn || []).map((c)=>{
-                if (that.getClosestParentByClass(target,c,5)){
+                if (that.getClosestParentByClass(target,c,7)){
                     //click inside the target element
                     to_expand = false;
                     return false;
@@ -118,7 +118,7 @@
  
         //For NextJS project, we use State Management instead of addEventListener('click')
         handleExpansionState(tr,event){
-            if (this.shouldExpand(tr,event.target)) this.toggleOpen(tr);
+            if (this.shouldExpand(tr,event.currentTarget)) this.toggleOpen(tr);
         }
 
         toggleOpen(tr){

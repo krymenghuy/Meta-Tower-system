@@ -422,10 +422,10 @@ class ItemsView{
        or @check_cols = ['name|string','price|number','qty|positive'];
       *  **/
      //validateCols()
-     validateRow(tr=null,valiateColumns=null,silent_mode=false){
+     validateRow(tr=null,validateColumns=null,silent_mode=false){
         if(!tr) tr=this.prev_edit_row;
         if(!tr) return true;
-        if (!valiateColumns) return true;
+        if (!validateColumns) return true;
 
         //  let check_cols1 = [];
         //  (check_cols || []).map(rule=>{
@@ -439,7 +439,7 @@ class ItemsView{
         let cols =[];
         tr.querySelectorAll(`td`).forEach(td=>{
           let col_name =td.dataset.name;
-           let v_rule = valiateColumns[col_name];
+           let v_rule = validateColumns[col_name];
             
            if(v_rule){
             cols.push(col_name.replace('_',' '));
