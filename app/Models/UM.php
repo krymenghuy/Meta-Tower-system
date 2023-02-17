@@ -2,12 +2,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use App\Models;
+//use Illuminate\Database\Eloquent\Model;
+//use App\Models;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-use App\Models\SMS;
+use App\Communication\SMS;
 use Session;
 use DB;
 use Carbon\Carbon;
@@ -16,7 +16,7 @@ use Localization;
 use Sanitizer;
 use Config;
 
-class UM extends Model
+class UM
 {
     use HasFactory;
     
@@ -44,24 +44,21 @@ class UM extends Model
     //### The vaiables above for JWT merchanism
  
     protected static $use_phone_number_login = [
-      'consultant'=>0,
-      'doctor'=>0,
       'admin'=>0,
-      'super_admin'=>0,  
+      'super_admin'=>0,
+      'staff'=>0,   
       'admin_support'=>0 /* Backend user's login can be email, phone, or any name */
     ];
 
     protected static $required_official_profile = [
-      'consultant'=>1,
-      'doctor'=>1,
       'admin'=>0,
+      'staff'=>1,
       'super_admin'=>0,  
       'admin_support'=>0
     ];
 
     protected static $new_user_required_password = [
-      'consultant'=>1,
-      'doctor'=>1,
+      'staff'=>1,
       'admin'=>1,
       'super_admin'=>1,  
       'admin_support'=>1 /* Backend user's login can be email, phone, or any name */
@@ -737,11 +734,11 @@ class UM extends Model
             //#begin:: Get special active fields "is_locked,status,lang". These fields need to be updated in the decoded JWT token on every api call
                 $decoded->status="active";
                 $row = self::getUserProps($decoded->user_id,"is_locked,status,lang");
-                if (!$row)
-                $decoded->lang = $row->lang;
-                $decoded->is_locked = $row->is_locked;
-                $decoded->status = $row->status;
-
+                if ($row){
+                  $decoded->lang = $row->lang;
+                  $decoded->is_locked = $row->is_locked;
+                  $decoded->status = $row->status;
+                }
                 if (strtolower($decoded->status)==='disabled' || $decoded->is_locked === 1) return DV::error('User status is disabled or locked out',$def_lang,400);
             //#end::Get special active fields "is_locked,status,lang". These fields need to be updated in the decoded JWT token on every api call
             $ret =(object)['status_code'=>200,'status'=>'OK'];
@@ -783,7 +780,6 @@ class UM extends Model
                 ,'full_name'=>$row->full_name
              ];
           }
-          
           return DV::error('User authentication failed',null,401);
       }
    }
