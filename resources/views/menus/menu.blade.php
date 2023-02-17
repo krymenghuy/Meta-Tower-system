@@ -505,7 +505,7 @@
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/autocomplete.svg')}}"/>
                                 </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Diagnosis Autocomplete">Diagnosis Autocomplete</span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Diagnosis Options">Diagnosis</span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
@@ -513,7 +513,7 @@
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/autocomplete_examination.svg')}}"/>
                                 </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Examination Autocomplete">Examination Autocomplete</span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.PE Options">PE Options</span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
