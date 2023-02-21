@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 var CompanyComponent = new function () {
 	let mThis = this;
 	this.title_prop = "Company Profile";
@@ -76,7 +76,7 @@ var CompanyComponent = new function () {
 					vsapi.call([mThis.base_url, '/api/deleteCompanyLogo'].join(''), null).then(res => {
 						if (res.status_code === 200) {
 							mThis.imgLogo.prop('src', null);
-							cv_interact.alert('Logo deleted!');
+							cv_interact.info('Logo deleted!');
 						}
 						else cv_interact.error(res.error_message);
 					});

@@ -52,6 +52,9 @@
 	"payer":"Payer",
 	"Payee":"Payee"
  },
+ "customer":{
+		
+ },
    "patient":{
 	"ID":"Patient ID",
 	"Patient ID":"Patient ID",

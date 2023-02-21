@@ -519,7 +519,7 @@
                             <div id="_main_top_right_menus" class="mainview-top-right" style="float:right">
                                 <div class="form-inline">
                                     <div class="dropdown">
-                                        <button id="_main_btn_lang" class="btn-dropdown" data-menu="lang"
+                                        <button style="display:none" id="_main_btn_lang" class="btn-dropdown" data-menu="lang"
                                             style="margin-right:10px;padding:0px;border:none;background:none;">
                                             <img class="mr-1"
                                                 src="{{ asset('assets/images/icons/khmer.png') }}"
@@ -637,7 +637,7 @@
                             @include('layouts.positionsComponent')
                             @include('layouts.laboPartnersComponent')
                             @include('layouts.vendorsComponent')
-                            @include('layouts.patientInvoicesComponent')
+                            @include('layouts.invoicesComponent')
                             @include('layouts.patientRecieptsComponent')
                             @include('layouts.medicalServiceComponent')
                             @include('layouts.itemsComponent')
