@@ -119,7 +119,7 @@ let ExchangeRateComponent = new function () {
         });
 
         this.cfg = new ExpandableRowConfig('_ecr_tblexchangeRate', {
-            'dontExpandByClickingOn': ['btn_patient_modify', 'btn_patient_delete', 'btn_patient_action'],
+            'dontExpandByClickingOn': ['btn_ecr_print', 'btn_ecr_modify', 'btn_ecr_delete', 'btn_ecr_action'],
             'tr_dataset': ['patient_id'],
             'onOpen': (container, detail_tr, parent_tr) => {
                 let q_tr = $(parent_tr);
@@ -205,7 +205,7 @@ let ExchangeRateComponent = new function () {
                 {
                     title: mThis.trans_title("No"),
                     data: () => {
-                        return cnt;
+                        return cnt++;
                     }
                 },
                 {
@@ -229,7 +229,7 @@ let ExchangeRateComponent = new function () {
                     data: function (data, a, b) {
                         let status_class = null; //mThis.getStatusClass(data.status_id);
                         return [`<div class="form-inline">`,
-                            `<a href="javascript:void(0)" class="btn_co_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
+                            `<a href="javascript:void(0)" class="btn_ecr_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" class="btn_ecr_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" data-id="${data.id}" class="btn_ecr_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
                             `&nbsp;<a href="javascript:void(0)" data-id="${data.id}" class="btn_ecr_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
@@ -288,19 +288,19 @@ let ExchangeRateComponent = new function () {
 
 let ExchangeRateDialog = new function () {
     let mThis = this;
-    this.self = $(`#_ecr_dlgexchangeRate`);
+    this.self = $('#_ecr_dlgexchangeRate');
 
     this.formUntil = new FormUntil({
         "itemName": "Currency",
         "formId": '_ecr_dlgexchangeRate',
-        "titleId": "_ecr_dlgexchangeRate_title",
+        //"titleId": "_ecr_dlgexchangeRate_title",
         //"errorId":"_msl_dlgService_error",
-        "saveButtonId": "_ecr_btnSave",
+        //"saveButtonId": "_ecr_btnSave",
         "instance": this,
         "apiSave": `${main_view.base_url}/api/currency/save`,
         "apiGet": `${main_view.base_url}/api/currency/details`,
         //"identityProp":"id",
-        //"modifyTitle":"Modify Product Group",
+        "modifyTitle":"Modify Currency",
         "createTitle": "New Currency",
         "identityProps": ['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
@@ -309,7 +309,7 @@ let ExchangeRateDialog = new function () {
         //"sub_prop_function":mThis.getChiefComplaints,
         "sanitize_excepts": [],
         'use_alert_error': true,
-        'beforeShow': () => { }
+        'beforeShow': () => {}
     });
 
     this.show = (options) => {
