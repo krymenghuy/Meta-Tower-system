@@ -35,7 +35,7 @@
                 <div class="row gy-2 py-2">
                     <div class="col-lg-6">
                         <label for="cur_symbol" class="form-label trans-text" data-langprop="currencies.Symbol"></label>
-                        <input type="text" class="form-control data-input" data-field="cur_symbol" data-required="1" data-ffield="Symbol" placeholder="symbol"/>
+                        <input type="text" class="form-control data-input" data-field="symbol" data-required="1" data-ffield="Symbol" placeholder="symbol"/>
                     </div>
                     <div class="col-lg-6">
                         <label for="symbol_after" class="form-label trans-text" data-langprop="currencies.Symbol After"></label>
@@ -51,7 +51,7 @@
                 <button class="btn btn-secondary btn-default" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button class="btn btn-primary" type="button" id="_ecr_btnSave">
+                <button class="btn btn-primary" type="button" id="_ecr_dlgexchangeRate_btnSave">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>

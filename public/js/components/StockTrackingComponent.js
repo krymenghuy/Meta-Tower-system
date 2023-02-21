@@ -403,8 +403,6 @@ let ReceiveStokeDialog = new function () {
             "dataType": "string",
             "displayType": "select",
             "width": "250px",
-            //"cssClass": "",
-            //"selectOptions":[] 
         },
         {
             "name": "qty",
@@ -412,7 +410,6 @@ let ReceiveStokeDialog = new function () {
             "width": "100px",
             "dataType": "number",
             "displayType": "input",
-            //"cssClass":""
         },
         {
             "name": "sku",
@@ -420,7 +417,6 @@ let ReceiveStokeDialog = new function () {
             "dataType": "string",
             "displayType": "input",
             "readOnly": true,
-            //"cssClass":""
         },
         {
             "name":"stock_class",
@@ -434,7 +430,6 @@ let ReceiveStokeDialog = new function () {
             "dataType": "number",
             "displayType": "input",
             "currencySymbol": "$"
-            //"cssClass":""
         },
         {
             "name": "discount",
@@ -447,7 +442,6 @@ let ReceiveStokeDialog = new function () {
             "name": "line_total",
             "title": "Total",
             "dataType": "number",
-            //todo: later get currency symbol from api
             "currencySymbol": "$",
             "readOnly": true
         }
@@ -506,8 +500,7 @@ let ReceiveStokeDialog = new function () {
     this.btnSave.on('click',function(e){
         e.preventDefault();
         let p = mThis.getFormData();
-        console.log(p);
-        // mThis.self.modal('hide');
+        mThis.self.modal('hide');
     });
 
     this.show = (option) => {
