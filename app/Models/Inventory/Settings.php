@@ -31,9 +31,27 @@ class Settings extends Model
         return DB::table('inv_stock_classes as c')->where('c.branch_id',$branch_id)->selectRaw("c.id,c.code,c.name as stock_class")->orderByRaw('c.name ASC')->get();
     }
 
+    static function options_warehouse($ss){
+        $branch_id = $ss->branch_id;
+        return DB::table('warehouses as c')->where('c.branch_id',$branch_id)->select("c.id","c.name as warehouse_name")->orderByRaw('c.name ASC')->get();
+    }
+
     static function options_unit($ss){
         $branch_id = $ss->branch_id;
         return DB::table('inv_units')->where('branch_id',$branch_id)->selectRaw("id,name as unit_name")->orderByRaw('name ASC')->get();
+    }
+
+    static function options_customer($ss){
+        $branch_id = $ss->branch_id;
+        return DB::table('customers as c')->where('c.branch_id',$branch_id)->select("c.id","c.name as customer_name")->orderBy('c.name','ASC')->get();
+    }
+
+    static function options_pmt_terms($ss){
+        //$branch_id = $ss->branch_id;
+        return [
+            (object)['code'=>' net 30','description'=>'net 30'],
+            (object)['code'=>' net 60','description'=>'net 60']
+        ];
     }
 
     static function options_manufacturer($ss){
@@ -77,9 +95,27 @@ class Settings extends Model
     static function stock_tracking_options($ss){
        return (object)[
          "categories"=>self::options_category($ss),
-         "stockclasses"=>self::options_stockclass($ss)
+         "stockclasses"=>self::options_stockclass($ss),
+         "warehouses"=>self::options_warehouse($ss)
        ];
     }
+
+    static function receive_vpo_options($ss){
+        return (object)[
+          "vendors"=>self::options_vendor($ss),
+          "stockclasses"=>self::options_stockclass($ss),
+          "warehouses"=>self::options_warehouse($ss),
+          "items"=>self::options_item($ss)
+        ];
+     }
+
+     static function invoice_form_options($ss){
+        return (object)[
+          "customers"=>self::options_customer($ss),
+          "pmt_terms"=>self::options_pmt_terms($ss),
+          "items"=>self::options_item($ss)
+        ];
+     }
 
     //saveSKU()| CreateUnit()
     static function saveUnit($ss,$d){

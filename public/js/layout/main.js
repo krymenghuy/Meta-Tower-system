@@ -228,7 +228,7 @@
 
                  this.mnuPatientInvoices.on('click',(e) => {
                     e.preventDefault();
-                    PatientInvoicesComponent.show(null);
+                    InvoicesComponent.show(null);
                  });
 
                  this.mnuPatientReciepts.on('click',(e)=>{

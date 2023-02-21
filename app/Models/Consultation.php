@@ -113,7 +113,6 @@ class Consultation extends Model
 
     static function saveVitalSigns($ss,$items,$ticket_id){
         $patient_id = self::getPatientId($ss->branch_id,$ticket_id);
-      
         $cnt =0;
         $patient_id = self::getPatientId($ss->branch_id,$ticket_id);
         foreach($items as $x){

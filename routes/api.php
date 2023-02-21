@@ -30,16 +30,22 @@ use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\QTicketController;
 use App\Http\Controllers\MedicalServiceController;
-use App\Http\Controllers\ItemController;
-use App\Http\Controllers\FGStockController;
-use App\Http\Controllers\StockController;
 
-use App\Http\Controllers\ItemGroupController; 
-use App\Http\Controllers\CategoryController; 
-use App\Http\Controllers\EmployeeController;  
-use App\Http\Controllers\InventorySettingsController;
+use App\Http\Controllers\Inventory\CategoryController; 
+use App\Http\Controllers\Inventory\MIStockController; 
+use App\Http\Controllers\Inventory\ItemGroupController; 
+use App\Http\Controllers\Inventory\ItemController; 
+use App\Http\Controllers\Inventory\FGStockController; 
+use App\Http\Controllers\Inventory\RMStockController;  
+use App\Http\Controllers\Inventory\InventorySettingsController;
+
+use App\Http\Controllers\Invoice\InvoiceController;
+use App\Http\Controllers\Invoice\CustomerController;
+
 use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\ExchangeRateController;
 
+use App\Http\Controllers\EmployeeController;  
 use App\Http\Controllers\PartnerController;
 //use App\Models\PublicStorage;
 use App\Models\SystemSetting;
@@ -115,104 +121,149 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
      Route::post('service/delete', [MedicalServiceController::class, 'deleteMedicalService']);
      Route::post('service/save', [MedicalServiceController::class, 'saveMedicalService']);
   //End::MedicalServiceController
-
-    //begin::ItemController
-        Route::post('inventory/item-info', [ItemController::class, 'getItemInfo']);
-        Route::post('inventory/item/info', [ItemController::class, 'getItemInfo']);
-        Route::post('inventory/item-details', [ItemController::class, 'getItemDetails']);
-        Route::post('inventory/items', [ItemController::class, 'getItemList']);
-        Route::post('inventory/delete-item', [ItemController::class, 'deleteItem']);
-        Route::post('inventory/save-item', [ItemController::class, 'saveItem']);
-    //End::ItemController
-
-     //begin::FGStockController
-        //stock/groups  
-        Route::post('inventory/stock/group-list', [FGStockController::class, 'getGroupList']);
-        Route::post('inventory/stock/group-items', [FGStockController::class, 'getItemsByGroup']);
-        Route::post('inventory/stock/classes', [FGStockController::class, 'getStockClasses']); 
-
-        Route::post('inventory/stock/receive-items', [FGStockController::class, 'receiveItems']);
-        Route::post('inventory/stock/adjust', [FGStockController::class, 'getStockClasses']);
-        Route::post('inventory/stock/receive-returns', [FGStockController::class, 'receiveReturns']); 
-        Route::post('inventory/stock/return-to-vendor', [FGStockController::class, 'returnToVendor']);
-    
-        Route::post('inventory/stock/transfer', [FGStockController::class, 'transfer']);
-        //Transfer stock items Qty from one class to another class
-        Route::post('inventory/stock/transfer-class', [FGStockController::class, 'transferClass']);  
-
-    //End::FGStockController
  
-    //begin::ItemGroupController
-        Route::post('inventory/group-details', [ItemGroupController::class, 'getItemGroupDetails']);
-        Route::post('inventory/group-info', [ItemGroupController::class, 'getGroupInfo']);
-        Route::post('inventory/group/info', [ItemGroupController::class, 'getGroupInfo']);
-        Route::post('inventory/groups', [ItemGroupController::class, 'getItemGroups']);
-        Route::post('inventory/group-list', [ItemGroupController::class, 'getItemGroups']);
-        Route::post('inventory/delete-group', [ItemGroupController::class, 'deleteItemGroup']);
-        Route::post('inventory/save-group', [ItemGroupController::class, 'saveItemGroup']);
-        Route::post('group/form-options', [ItemGroupController::class, 'getFormOptions']);
-    //End::ItemGroupController
+   //begin::ItemController
+   Route::post('inventory/item-info', [ItemController::class, 'getItemInfo']);
+   Route::post('inventory/item/info', [ItemController::class, 'getItemInfo']);
+   Route::post('inventory/item-details', [ItemController::class, 'getItemDetails']);
+   Route::post('inventory/items', [ItemController::class, 'getItemList']);
+   Route::post('inventory/delete-item', [ItemController::class, 'deleteItem']);
+   Route::post('inventory/save-item', [ItemController::class, 'saveItem']);
+//End::ItemController
 
-    //begin::CategoryController
-        Route::post('category/details', [CategoryController::class, 'getCategoryDetails']);
-        Route::post('category/list', [CategoryController::class, 'getCategories']);
-        Route::post('category/delete', [CategoryController::class, 'deleteCategory']);
-        Route::post('category/save', [CategoryController::class, 'saveCategory']);
-   //End::CategoryController
+//begin::MIStockController
+   //stock/groups  
+   Route::post('inventory/stock/group-list', [MIStockController::class, 'getGroupList']);
+   Route::post('inventory/stock/group-items', [MIStockController::class, 'getItemsByGroup']);
+   Route::post('inventory/stock/classes', [MIStockController::class, 'getStockClasses']); 
+   Route::post('inventory/stock/receive-items', [MIStockController::class, 'receiveVPO']);
+   Route::post('inventory/stock/receive-vpo', [MIStockController::class, 'receiveVPO']);
+   Route::post('inventory/stock/adjust', [MIStockController::class, 'adjustGroupQty']);
+   Route::post('inventory/stock/receive-returns', [MIStockController::class, 'receiveReturns']); 
+   Route::post('inventory/stock/return-to-vendor', [MIStockController::class, 'returnToVendor']);
 
-    //begin::EmployeeController
-        Route::post('employee/details', [EmployeeController::class, 'getEmployeeDetails']);
-        Route::post('employee/list', [EmployeeController::class, 'getEmployeeList']);
-        Route::post('employee/delete', [EmployeeController::class, 'deleteEmployee']);
-        Route::post('employee/save', [EmployeeController::class, 'saveEmployee']);
-    //End::EmployeeController
+   Route::post('inventory/stock/transfer', [MIStockController::class, 'transfer']);
+   //Transfer stock items Qty from one class to another class
+   Route::post('inventory/stock/transfer-class', [MIStockController::class, 'transferClass']); 
+   
+     //update selling prices, and cost
+     Route::post('inventory/item/update-prices', [MIStockController::class, 'updateItemPrices']);
+     //update item's sku and do the sku conversion for item avaliable in stock
+     Route::post('inventory/item/change-sku', [MIStockController::class, 'updateItemSKU']);
+     //Update item's name, code, category
+     Route::post('inventory/item/update-info', [MIStockController::class, 'updateItemInfo']);
+//End::MIStockController
 
-    //begin::InventorySettingsController =>  Inventory Settings.
-        Route::post('inventory/settings/options-group',[InventorySettingsController::class, 'getComboItems_group']);
-        Route::post('inventory/settings/item-form-options',[InventorySettingsController::class, 'getItemFormOptions']);
-        Route::post('inventory/settings/stock-tracking-options', [InventorySettingsController::class, 'getStockTrackingFormOptions']);
-        Route::post('inventory/settings/options-detail-type',[InventorySettingsController::class, 'getComboItems_detailtype']);
-        Route::post('inventory/settings/options-category',[InventorySettingsController::class, 'getComboItems_category']);
-        Route::post('inventory/settings/options-unit',[InventorySettingsController::class, 'getComboItems_unit']);
-        Route::post('inventory/settings/options-sku',[InventorySettingsController::class, 'getComboItems_unit']);
-        Route::post('inventory/settings/options-manufacturer',[InventorySettingsController::class, 'getComboItems_manufacturer']);
-        Route::post('inventory/settings/save-unit', [InventorySettingsController::class, 'saveUnit']);
-        Route::post('inventory/settings/save-sku', [InventorySettingsController::class, 'saveUnit']);
-        Route::post('inventory/settings/save-manufacturer', [InventorySettingsController::class, 'saveManufacturer']);
-        Route::post('inventory/settings/save-brand', [InventorySettingsController::class, 'saveBrand']);
-        Route::post('inventory/settings/options-stock-class', [InventorySettingsController::class, 'getComboItems_stockclass']);
-        Route::post('inventory/settings/receive-stock-options', [InventorySettingsController::class, 'getReceiveStockFormOptions']);
+//  //begin::FGStockController
+//     //stock/groups  
+//     Route::post('inventory/stock/group-list', [FGStockController::class, 'getGroupList']);
+//     Route::post('inventory/stock/group-items', [FGStockController::class, 'getItemsByGroup']);
+//     Route::post('inventory/stock/classes', [FGStockController::class, 'getStockClasses']); 
 
-        Route::post('inventory/settings/unit/delete', [InventorySettingsController::class, 'deleteUnit']);
-        Route::post('inventory/settings/unit/list', [InventorySettingsController::class, 'getUnitList']);
-        Route::post('inventory/settings/unit/save', [InventorySettingsController::class, 'saveUnit']);
-        //Route::post('inventory/settings/delete-sku', [InventorySettingsController::class, 'deleteUnit']);
+//     Route::post('inventory/stock/receive-items', [FGStockController::class, 'receiveItems']);
+//     Route::post('inventory/stock/adjust', [FGStockController::class, 'getStockClasses']);
+//     Route::post('inventory/stock/receive-returns', [FGStockController::class, 'receiveReturns']); 
+//     Route::post('inventory/stock/return-to-vendor', [FGStockController::class, 'returnToVendor']);
 
-        Route::post('inventory/settings/manufacturer/delete', [InventorySettingsController::class, 'deleteManufacturer']);
-        Route::post('inventory/settings/manufacturer/list', [InventorySettingsController::class, 'getManufacturerList']);
-        Route::post('inventory/settings/manufacturer/save', [InventorySettingsController::class, 'saveManufacturer']);
+//     Route::post('inventory/stock/transfer', [FGStockController::class, 'transfer']);
+//     //Transfer stock items Qty from one class to another class
+//     Route::post('inventory/stock/transfer-class', [FGStockController::class, 'transferClass']);  
 
-        // Route::post('inventory/settings/brand/delete', [InventorySettingsController::class, 'deleteBrand']);
-        // Route::post('inventory/settings/brand/list', [InventorySettingsController::class, 'getBrandList']);
-        // Route::post('inventory/settings/brand/save', [InventorySettingsController::class, 'saveBrand']);
+// //End::FGStockController
 
-         // *** inventory/group/save 
-        Route::post('inventory/settings/brand/save',function(Request $req){
-            $res = Brand::createOrUpdate($req);
-            return response()->json($res);
-        });
+//begin::ItemGroupController
+   Route::post('inventory/group-details', [ItemGroupController::class, 'getItemGroupDetails']);
+   Route::post('inventory/group-info', [ItemGroupController::class, 'getGroupInfo']);
+   Route::post('inventory/group/info', [ItemGroupController::class, 'getGroupInfo']);
+   Route::post('inventory/groups', [ItemGroupController::class, 'getItemGroups']);
+   Route::post('inventory/group-list', [ItemGroupController::class, 'getItemGroups']);
+   Route::post('inventory/delete-group', [ItemGroupController::class, 'deleteItemGroup']);
+   Route::post('inventory/save-group', [ItemGroupController::class, 'saveItemGroup']);
+   Route::post('group/form-options', [ItemGroupController::class, 'getFormOptions']);
+//End::ItemGroupController
 
-        Route::post('inventory/settings/brand/delete',function(Request $req){
-            $res = Brand::deletePermanently($req);
-            return response()->json($res);
-        });
-        Route::post('inventory/settings/brand/list',function(Request $req){
-            $res = Brand::list($req);
-            return response()->json($res);
-        });
+//begin::InvoiceController
+  Route::post('invoice/create', [InvoiceController::class, 'createInvoice']);
+  Route::post('invoice/update', [InvoiceController::class, 'updateInvoice']);
+  Route::post('invoice/delete', [InvoiceController::class, 'deleteInvoice']);
+  Route::post('invoice/details', [InvoiceController::class, 'getInvoiceDetails']);
+  Route::post('invoice/basic-info', [InvoiceController::class, 'getBasicInfo']);
+  Route::post('invoice/list', [InvoiceController::class, 'getInvoiceList']);
+  Route::post('invoice-payment/receive', [InvoiceController::class, 'receivePayment']);
+  Route::post('invoice/receive-payment', [InvoiceController::class, 'receivePayment']);
+  Route::post('invoice/receive-payments', [InvoiceController::class, 'receivePayments']);
+  Route::post('invoice/payments', [InvoiceController::class, 'getInvoicePayments']);
+  Route::post('invoice/payments-with-summary', [InvoiceController::class, 'getInvoicePayments_with_summary']); 
+  Route::post('invoice-payment/details', [InvoiceController::class, 'getInvoicePaymentDetails']);
+  //getPaymentDetailsWithSummary() => payment details + invoice info
+  Route::post('invoice-payment/details-with-summary', [InvoiceController::class, 'getInvoicePaymentWithSummary']);
+  
+  Route::post('invoice-payment/update', [InvoiceController::class, 'updatePayment']);
+  Route::post('invoice-payment/delete', [InvoiceController::class, 'deletePayment']);
+  
+//end::InvoiceController
 
+//begin::CategoryController
+   Route::post('category/details', [CategoryController::class, 'getCategoryDetails']);
+   Route::post('category/list', [CategoryController::class, 'getCategories']);
+   Route::post('category/delete', [CategoryController::class, 'deleteCategory']);
+   Route::post('category/save', [CategoryController::class, 'saveCategory']);
+//End::CategoryController
 
-   //end::InventorySettingsController =>  Inventory Settings.
+//begin::EmployeeController
+   Route::post('employee/details', [EmployeeController::class, 'getEmployeeDetails']);
+   Route::post('employee/list', [EmployeeController::class, 'getEmployeeList']);
+   Route::post('employee/delete', [EmployeeController::class, 'deleteEmployee']);
+   Route::post('employee/save', [EmployeeController::class, 'saveEmployee']);
+//End::EmployeeController
+
+//begin::InventorySettingsController =>  Inventory Settings.
+   Route::post('inventory/settings/invoice-form-options',[InventorySettingsController::class, 'invoice_form_options']);
+   Route::post('inventory/settings/options-group',[InventorySettingsController::class, 'getComboItems_group']);
+   Route::post('inventory/settings/item-form-options',[InventorySettingsController::class, 'getItemFormOptions']);
+   Route::post('inventory/settings/stock-tracking-options', [InventorySettingsController::class, 'getStockTrackingFormOptions']);
+   Route::post('inventory/settings/vpo-form-options',[InventorySettingsController::class, 'getReceiveVPOOptions']);
+   Route::post('inventory/settings/options-detail-type',[InventorySettingsController::class, 'getComboItems_detailtype']);
+   Route::post('inventory/settings/options-category',[InventorySettingsController::class, 'getComboItems_category']);
+   Route::post('inventory/settings/options-unit',[InventorySettingsController::class, 'getComboItems_unit']);
+   Route::post('inventory/settings/options-sku',[InventorySettingsController::class, 'getComboItems_unit']);
+   Route::post('inventory/settings/options-manufacturer',[InventorySettingsController::class, 'getComboItems_manufacturer']);
+   Route::post('inventory/settings/save-unit', [InventorySettingsController::class, 'saveUnit']);
+   Route::post('inventory/settings/save-sku', [InventorySettingsController::class, 'saveUnit']);
+   Route::post('inventory/settings/save-manufacturer', [InventorySettingsController::class, 'saveManufacturer']);
+   Route::post('inventory/settings/save-brand', [InventorySettingsController::class, 'saveBrand']);
+   Route::post('inventory/settings/options-stock-class', [InventorySettingsController::class, 'getComboItems_stockclass']);
+   Route::post('inventory/settings/receive-stock-options', [InventorySettingsController::class, 'getReceiveStockFormOptions']);
+   Route::post('inventory/settings/options-warehouse', [InventorySettingsController::class, 'getComboItems_warehouse']);
+
+   Route::post('inventory/settings/unit/delete', [InventorySettingsController::class, 'deleteUnit']);
+   Route::post('inventory/settings/unit/list', [InventorySettingsController::class, 'getUnitList']);
+   Route::post('inventory/settings/unit/save', [InventorySettingsController::class, 'saveUnit']);
+   //Route::post('inventory/settings/delete-sku', [InventorySettingsController::class, 'deleteUnit']);
+
+   Route::post('inventory/settings/manufacturer/delete', [InventorySettingsController::class, 'deleteManufacturer']);
+   Route::post('inventory/settings/manufacturer/list', [InventorySettingsController::class, 'getManufacturerList']);
+   Route::post('inventory/settings/manufacturer/save', [InventorySettingsController::class, 'saveManufacturer']);
+
+   // Route::post('inventory/settings/brand/delete', [InventorySettingsController::class, 'deleteBrand']);
+   // Route::post('inventory/settings/brand/list', [InventorySettingsController::class, 'getBrandList']);
+   // Route::post('inventory/settings/brand/save', [InventorySettingsController::class, 'saveBrand']);
+
+    // *** inventory/group/save 
+   Route::post('inventory/settings/brand/save',function(Request $req){
+       $res = Brand::createOrUpdate($req);
+       return response()->json($res);
+   });
+
+   Route::post('inventory/settings/brand/delete',function(Request $req){
+       $res = Brand::deletePermanently($req);
+       return response()->json($res);
+   });
+   Route::post('inventory/settings/brand/list',function(Request $req){
+       $res = Brand::list($req);
+       return response()->json($res);
+   });
+//end::InventorySettingsController =>  Inventory Settings.
 
   //begin::PartnerController
      Route::post('partner/list', [PartnerController::class, 'getPartnerList']);
@@ -220,18 +271,32 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
      Route::post('partner/save', [PartnerController::class, 'savePartner']);
      Route::post('partner/details', [PartnerController::class, 'getPartnerDetails']);
   //End::PartnerController
+ 
+    //begin::Currency APIs
+        Route::prefix('currency')->group(function(){
+            Route::post('details', [CurrencyController::class,'getCurrencyDetails']);          
+            Route::post('save', [CurrencyController::class,'saveCurrency']); 
+            Route::post('delete', [CurrencyController::class,'deleteCurrency']);   
+            Route::post('list', [CurrencyController::class,'getCurrencies']);
+        });
+    //end::Currency APIs
 
-   //begin::CurrencyController
-    Route::post('currency/list', [CurrencyController::class, 'getCurrencyList']);
-    Route::post('currency/delete', [CurrencyController::class, 'deleteCurrency']);
-    Route::post('currency/save', [CurrencyController::class, 'saveCurrency']);
-    Route::post('currency/details', [CurrencyController::class, 'getCurrencyDetails']);
-    Route::post('currency/save-rates', [CurrencyController::class, 'saveRates']);
-    Route::post('currency/save-rate', [CurrencyController::class, 'saveBuyRate']);
-    Route::post('currency/save-buy-rate', [CurrencyController::class, 'saveBuyRate']);
-    Route::post('currency/save-sell-rate', [CurrencyController::class, 'saveSellRate']);
-  //End::CurrencyController
-
+    //begin::Exchange Rate APIs
+        Route::prefix('x-rate')->group(function(){   
+            Route::post('options-month', [ExchangeRateController::class,'getComboItems_x_month']);
+            Route::post('create-currency-pair', [ExchangeRateController::class,'createCurrencyPair']); 
+            Route::post('delete-currency-pair', [ExchangeRateController::class,'deleteCurrencyPair']);
+            Route::post('currency-pair-list', [ExchangeRateController::class,'getCurrencyPairs']);
+            Route::post('currency-pairs', [ExchangeRateController::class,'getCurrencyPairs']);
+            Route::post('info', [ExchangeRateController::class,'getExchangeRateInfo']);
+            Route::post('delete', [ExchangeRateController::class,'deleteExchangeRate']);
+            Route::post('list', [ExchangeRateController::class,'getExchangeRates']);
+            Route::post('save', [ExchangeRateController::class,'saveExchangeRate']);
+            Route::post('apply', [ExchangeRateController::class,'applyExchangeRate']);
+            Route::post('apply-rate', [ExchangeRateController::class,'applyExchangeRate']);  
+        });
+    //begin::Exchange Rate APIs
+ 
     //begin::PatientController. Not using Controller
             Route::post('patient/find',function(Request $req){
                 $res = Patient::findSimilar($req);

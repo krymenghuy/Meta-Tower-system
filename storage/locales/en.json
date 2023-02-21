@@ -54,6 +54,9 @@
         "Description":"Description",
         "Action":"Action"
 	},
+	"customer":{
+		
+	},
 	"patient":{
         "ID":"Patient ID",
 		"Patient ID":"Patient ID",

@@ -54,6 +54,7 @@
 
             this.table.addEventListener('click',(e)=>{
                 e.preventDefault();
+                //IMPORTANT NOTE: tr in sub table (i.e: tr belonging to table inside Expandable row, makes confusion in the Expanding behavior) => so we detects if the "tr" is inside expandable row or not?
                 let tr = that.getClosestParentByType(e.target,'TR'); //e.target.clostest('TR');// .parentNode;
                 if (!tr) return; 
                 if(tr.parentNode.nodeName ==='TBODY'){
@@ -64,7 +65,9 @@
                     //    alert('click inside my_target_element');
                     // }
 
-                    if (that.shouldExpand(tr,e.target)) that.toggleOpen(tr);
+                    /** Check if the "tr" belongs to sub table or table inside main table that may cause confusion in expanding behavior **/
+                    let div = that.getClosestParentByClass(e.target,'expandable-row-containter');
+                    if(!div) if (that.shouldExpand(tr,e.target)) that.toggleOpen(tr);
                 }
               
             });
@@ -78,7 +81,7 @@
            let that = this;
            //NOTE: this.dontExpandByClickingOn is array of css selector or classes such as ['btn_apt_edit','btn_apt_delete','btn_apt_print']. When user clicks one of these elements, there is no Expanding behavior (No toggleOpen() )
            (this.dontExpandByClickingOn || []).map((c)=>{
-                if (that.getClosestParentByClass(target,c,7)){
+                if (that.getClosestParentByClass(target,c,5)){
                     //click inside the target element
                     to_expand = false;
                     return false;
@@ -118,7 +121,7 @@
  
         //For NextJS project, we use State Management instead of addEventListener('click')
         handleExpansionState(tr,event){
-            if (this.shouldExpand(tr,event.currentTarget)) this.toggleOpen(tr);
+            if (this.shouldExpand(tr,event.target)) this.toggleOpen(tr);
         }
 
         toggleOpen(tr){
