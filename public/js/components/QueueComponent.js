@@ -723,11 +723,11 @@ let ConsultTabView = new function () {
         mThis.show(mThis.options, view_name, true);
     });
 
-    // this.btnSaveConsult.on('click', (e) => {
-    //     e.preventDefault();
-    //     let p = mThis.getConsultData();
-    //     console.error(JSON.stringify(p));
-    // });
+    this.btnSaveConsult.on('click', (e) => {
+        e.preventDefault();
+        let p = mThis.getConsultData();
+        console.log(p);
+    });
 
     this.getInput_chiefcomplaints = (div = null) => {
         return mThis.tblChiefComplaints ? mThis.tblChiefComplaints.getItems() : [];
@@ -786,7 +786,6 @@ let ConsultTabView = new function () {
         let el = div.find('.data-input');
         return el.val();
     }
-
 
     //returns doctor's consultation data including Chielf cpmpaint, Medical history, PE, labor test, prescription, Diagnosis
     //getData()|getInputData()
@@ -918,7 +917,6 @@ let ConsultTabView = new function () {
         mThis.historyItemPanel = $('#_history_panel');
 
         //Object variable to store bool whetther the first active menu on each tab has been set or not on first show of each TabView {'Consultation','History'}
-        mThis.has_already_init = {};
 
         mThis.consultItemPanel.on('click', 'a.consultview-add-cc', (e) => {
             e.preventDefault();
@@ -930,7 +928,7 @@ let ConsultTabView = new function () {
 
         mThis.ul_menus_consult.on('click', 'li', (e) => {
             e.preventDefault();
-            let li = $(e.currentTarget)
+            let li = $(e.currentTarget);
             let view_name = li.find('a').data('viewname');
             if (mThis.prev_selected_li_consult) mThis.prev_selected_li_consult.removeClass('consult-menu-selected');
             li.addClass('consult-menu-selected');
@@ -950,6 +948,8 @@ let ConsultTabView = new function () {
             li.addClass('history-menu-selected');
             mThis.prev_selected_li_history = li;
         });
+
+        mThis.has_already_init = {};
     }
     //end::init ConsultTabeView (menus item event handlers and so on)
 
@@ -1845,7 +1845,7 @@ let ConsultDialog = new function () {
         console.error(JSON.stringify(p));
         vsapi.call(`${main_view.base_url}/api/consultation/save`, p).then(res => {
             if (res.status_code === 200) {
-
+                //do something from consult dialog
             }
         });
 
