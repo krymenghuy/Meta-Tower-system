@@ -24,6 +24,8 @@ class QTicket extends Model
     protected $dateFormat = 'Y-m-d';
     
     protected static $validation_rule = [
+        "id"=>"0|number|identity=1",
+        "com_branch_id"=>"0|number",
         "client_id"=>"1|number",
         "department_id"=>"0|number|default=0",
         "consultant_id"=>"0|number",
@@ -43,16 +45,31 @@ class QTicket extends Model
     ];
 
     //Branch of the subscriber (company)
-    protected static $com_branch_id =1;  
+    protected  $com_branch_id =1;  
     protected static $sanitize_rule = ['ticket_number'=>['-']];
     protected static  $checkUnique = [];
+    
+    protected $id = null;
+    protected $userInfo = null;
+    function __construct($id=null,$userInfo){
+        $this->id = $id;
+        $this->userInfo = $userInfo;
+    }
+
+    function getUserInfo(){
+        return $this->userInfo;
+    }
+    function getId(){
+        return $this->id;
+    }
 
     //@param $d =['client_id','department_id','consultant_id','priority','schedule_type','remarks']
-    static function create($ss,$d){
-        //if(!$ss) $ss = UM::getUserInfoByToken($req,-1);
-        //if($ss->status_code !=200) return $ss; //user not authenticated
+    function create($d=[],$ss=null){
+        if (!$ss) $ss = $this->getUserInfo(); 
         if(!$ss) return DV::error('Authentication information is missing!'); 
         $branch_id = $ss->branch_id;
+        if (!isset($d['id'])) $d['id'] = $this->getId();
+
         $res = validateObject($d,self::$validation_rule,true,self::$sanitize_rule,false,$ss->lang,self::$checkUnique);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
@@ -60,7 +77,7 @@ class QTicket extends Model
         $department_id = $inputs['department_id'];
         $today_date = date('Y-m-d');
         $def_ticket_prefix = isset(self::DEFAULT_TICKET_PREFIXES[$department_id])?self::DEFAULT_TICKET_PREFIXES[$department_id]:"P";
-        $ticket_number = self::createTicketNumber($branch_id,self::$com_branch_id,$today_date,$department_id,$def_ticket_prefix,5);
+        $ticket_number = self::createTicketNumber($branch_id,$inputs['com_branch_id'],$today_date,$department_id,$def_ticket_prefix,5);
         $inputs['ticket_number'] =$ticket_number; 
         
         if(!isset($inputs['ticket_number'])) return DV::error('Failed to create waiting ticket number');

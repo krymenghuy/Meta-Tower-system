@@ -134,7 +134,9 @@ class QTicketController extends Controller
             'schedule_type'=>$req->schedule_type,
             'remarks'=>$req->remarks
         ];
-        $res = QTicket::create($ss,$inputs);
+        $ticket = new QTicket(null,$ss);
+        $res = $ticket->create($inputs);
+        if ($res->status_code ===200) return JDV::success(['id'=>$res->id,'ticket_number'=>$res->ticket_number,'status_info'=>$res->status_info]);
         return JDV::raw($res);
     }
 }

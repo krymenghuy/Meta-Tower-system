@@ -2461,6 +2461,7 @@ DROP TABLE IF EXISTS `medical_services`;
 CREATE TABLE `medical_services` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `branch_id` int(10) NOT NULL,
+  `com_branch_id` int(10) NULL DEFAULT NULL,
   `name` varchar(250) NOT NULL,
   `description` varchar(250) NOT NULL,
   `create_uid` int(10) NOT NULL,
