@@ -1054,9 +1054,12 @@ let ConsultTabView = new function () {
                     "tableClass": "table",
                     "showColumnHeaders": false,
                     "showAddLineButton": false,
-                    "onItemChange": (col_name) => {
-                        console.error(JSON.stringify(col_name) + ' has changed');
+                    "onItemChange": (item,col_name,td) => {
+                        //console.error(JSON.stringify(col_name) + ' has changed');
                     },
+                    // "onItemDeleted": (tr) => {
+                    //     //console.error(JSON.stringify(col_name) + ' has changed');
+                    // },
                     "numeroFormatter": (numero, row) => {
                         return `<span class="text-secondary fw-bold">${numero}</span>`;
                     },

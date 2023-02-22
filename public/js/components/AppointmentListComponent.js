@@ -175,7 +175,7 @@ let AppointmentListComponent = new function () {
 
         //This is to refresh Datatable's header texts when language changes
         LocaleManager.setLanguageChangeHandler((lang) => {
-            mThis.displayAppointmentList();
+            mThis.displayAppointmentList(false);
         });
 
         //loadChiefComplaints() will retrieve list of chief complaints and stores them in "mThis.chief_complaints"
@@ -183,21 +183,21 @@ let AppointmentListComponent = new function () {
 
         mThis.btnSearchAppt.on('click', (e) => {
             e.preventDefault();
-            mThis.displayAppointmentList();
+            mThis.displayAppointmentList(false);
         });
 
         //Search Appointment on Appointment List view
         mThis.elSearchAppt.on('keyup', (e) => {
             e.preventDefault();
-            if (e.keyCode === 13) mThis.displayAppointmentList();
+            if (e.key === "Enter") mThis.displayAppointmentList(false);
         });
 
         mThis.appt_filter_date.on('change', (e) => {
-            mThis.displayAppointmentList();
+            mThis.displayAppointmentList(false);
         });
 
         mThis.appt_filter_status.on('change', (e) => {
-            mThis.displayAppointmentList();
+            mThis.displayAppointmentList(false);
         });
 
         mThis.btnNewAppointment.on('click', function (e) {
@@ -208,7 +208,7 @@ let AppointmentListComponent = new function () {
                 'onClose': (e) => {
                     if (e) {
                         cv_interact.info('New Appointment has been created', null, null, true);
-                        mThis.displayAppointmentList();
+                        mThis.displayAppointmentList(true);
                     }
                 }
             };
@@ -262,8 +262,9 @@ let AppointmentListComponent = new function () {
                 if (p) {
                     vsapi.call(`${main_view.base_url}/api/ticket/create`, p).then((res) => {
                         if (res.status_code === 200) {
-                            let status_info = StringSanitizer.sanitizeObject(res.status_info);
-                            cv_interact.info(['Queue Ticket: ', res.ticket_number].join(''));
+                            let d = (res.data || {});
+                            let status_info = StringSanitizer.sanitizeObject(d.status_info);
+                            cv_interact.info(['Queue Ticket: ', d.ticket_number].join(''));
                             mThis.setAppointmentStatus(detail_tr, status_info);
                         } else cv_interact.warning(res.error_message);
                     });
@@ -406,12 +407,12 @@ let AppointmentListComponent = new function () {
     }
 
     //displayCreditOfficerList()| displayCO|
-    this.displayAppointmentList = (onFinish = null) => {
+    this.displayAppointmentList = (order_by_id=false,onFinish = null) => {
         //Initialize language for DataTable columns headers
         //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
         //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
-        let p = { 'search_value': mThis.elSearchAppt.val(), 'date': mThis.appt_filter_date.val(), 'status_id': mThis.appt_filter_status.val() };
+        let p = {'order_by_id':order_by_id?1:0, 'search_value': mThis.elSearchAppt.val(), 'date': mThis.appt_filter_date.val(), 'status_id': mThis.appt_filter_status.val() };
         window.vsapi.call(`${mThis.base_url}/api/appointment/list`, p, 'POST', null).then((result) => {
             let data = [];
             if (result.status_code === 200) data = result.data;
@@ -536,7 +537,7 @@ let AppointmentListComponent = new function () {
     }
 
     this.show = (option = null) => {
-        mThis.displayAppointmentList(() => {
+        mThis.displayAppointmentList(false,() => {
             mThis.self.show().siblings().hide();
             main_view.setTitle(mThis.title_prop);
         });
@@ -642,7 +643,7 @@ let AppointmentDialog = new function () {
         "sub_prop": "chief_complaint_items",
         "sub_prop_function": mThis.getChiefComplaints,
         "sanitize_excepts": ['email', 'client_email', 'arrival_time'],
-        'use_alert_error': false,
+        'use_alert_error': true,
         "init": () => {
 
             mThis.displayComboItems_cc();
@@ -669,9 +670,9 @@ let AppointmentDialog = new function () {
                         let c = StringSanitizer.sanitizeObject(res.data);
                         if (!c) c = {};
                         mThis.elPatientCode.val(c.patient_code);
-                        mThis.elName.val(c.name);
+                        mThis.elName.val(c.name).trigger('change');
                         mThis.elEmail.val(c.email);
-                        mThis.elPhoneNumber.val(c.phone_number);
+                        mThis.elPhoneNumber.val(c.phone_number).trigger('change');
                         mThis.elSex.val(c.sex).trigger('change');
                         mThis.lead_id = c.lead_id;
                         mThis.client_id = c.client_id;
@@ -773,7 +774,8 @@ let PatientDialog = new function () {
                 if (typeof mThis.onClose === 'function') mThis.onClose(res);
                 mThis.self.modal('hide');
             } else {
-                VSUtil.showDialogError('_apl_dlgPatient', res.error_message, 5000);
+                cv_interact.error(res.error_message);
+                //VSUtil.showDialogError('_apl_dlgPatient', res.error_message, 5000);
             }
         });
     }

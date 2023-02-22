@@ -217,9 +217,8 @@ class Patient extends Model
             $statusInfo = (object)['status'=>'Registered','status_id'=>2];  /** status_id => 0=Canceled, 1= Pending , 2 = Registered, 3=Queued, 4 = Served **/
             //register patient to Servicing department such as Cardiology, or Dermatology, or Heart Center
             if ($addToQueue == 1){
-                $qr = QTicket::create($ss,['client_id'=>$patient_id,'department_id'=>$department_id,'consultant_id'=>$consultant_id]);
-                if($qr->status==='Error') return $qr;
-                $statusInfo = (object)['status'=>'Queued','status_id'=>3]; 
+                $ticket = new QTicket(null,$ss);
+                return $ticket->create(['client_id'=>$patient_id,'department_id'=>$department_id,'consultant_id'=>$consultant_id]); 
             }
             
             return DV::success(['person_id'=>$person_id,'patient_id'=>$patient_id,'patient_code'=>$ff? $ff->code:null,'status_info'=>$statusInfo]);
