@@ -128,14 +128,6 @@
                     <span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkConsultantDashboard" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/dashboard.svg')}}"/>
-                                </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Dashboard">Dashboard</span>
-                            </a>
-                        </li>
-                        <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkConsultantQueues" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/queue.svg')}}"/>
@@ -326,7 +318,7 @@
                             </a>
                         </li>
 
-                        <li class="kt-menu__item" aria-haspopup="true">
+                        <li style="display:none" class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkPatientReceipts" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/invoice.svg')}}"/>
