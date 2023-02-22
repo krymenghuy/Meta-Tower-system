@@ -63,34 +63,11 @@ class WebReportController extends Controller
             return view('errors.500');
         }
 
-        // //if(!isset($p->startdate) || !isset($p->enddate)) $p->usealldates =1;
-        $rtype = strtolower(isset($p->rtype) ? $p->rtype:null);
-        $data['rtype']= $rtype;
-        if(!$rtype){
-          //error invalid report type
-          return view('errors.500');
-        }
-
-        $branch = CompanyProfile::details($branch_id);
-
-        switch($rtype){
-          case 'medical_report':{
-            $data['branch']= $branch;
-            $data['title'] = "Medical Report";
-            $data['company_name'] = "Clinic";
-            break;
-          }
-          case 'medical_certificate':{
-            $data['branch']= $branch;
-            $data['title'] = "Medical Certificate";
-            $data['company_name'] = "Clinic";
-            break;
-          }
-          default:{
-              $data['title'] = "IT SEEMS NO MATCHING REPORT NAME :)"; 
-              break;
-          }
-        }
+        $payment_id = isset($p->id)?$p->id:0;
+        $ss = (object)['branch_id'=>$branch_id];
+        $payment = new \App\Models\Invoice\Invoice($payment_id,$ss);
+        $data['payment'] = $payment->getDetails();
+        $data['title'] = "PAYMENT VUNCHER";
         return view('reports.genreport',$data);
     }
 
@@ -111,8 +88,6 @@ class WebReportController extends Controller
         $invoice = new \App\Models\Invoice\Invoice($invoice_id,$ss);
         $data['invoice'] = $invoice->getDetails();
         $data['title'] = "SALES INVOICE";
-        // echo dd($data);
-        // return;
         return view('reports.invoice', $data);
     }
   

@@ -177,11 +177,10 @@ let InvoicesComponent = new function () {
 
                 mThis.tblInvoice.on('click','.ivc-pmt-print',function(e){
                     let pmt_id = $(this).data('id');
-                    alert('print receipt ' + pmt_id);
-                    //   vsapi.call(`${main_view.base_url}/api/invoice-payment/delete`,p).then(res=>{
-                    //         if(res.status_code===200){           
-                    //         }
-                    //   }); 
+                    let qString = ['id=', pmt_id].join('');
+                    main_view.getEncryptData(qString, (d) => {
+                        window.open([main_view.base_url, '/genreceipt/', d].join(''), '_blank');
+                    });
                 }); 
         //end:: init events in Expandable Row View
     };
@@ -434,12 +433,6 @@ let InvoiceDialog = new function () {
             "displayType":"select",
             "width":"250px"
         },
-        // {
-        //     "name":"description",
-        //     "title":"Description",
-        //     "dataType":"string",
-        //     "displayType":"input"
-        // },
         {
             "name":"qty",
             "title":"Quantity",
@@ -855,14 +848,9 @@ let PaymentDialog = new function (){
                     });
                     mThis.elTitle.html(LocaleManager.trans(title,'titles'));
                 }else cv_interact.error(res.error_message);
-              
             }); 
-
-           
        });
-
     }
-
 }
 //end::PaymentDialog
 
