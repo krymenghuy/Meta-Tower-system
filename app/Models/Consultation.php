@@ -23,56 +23,60 @@ class Consultation extends Model
      *   $arr = ['chief_complaints'=>[],'vital_signs'=>[], 'medical_history'=>[], 'pe'=>string, labo_tests=>[], diagnosis => string, prescription=>[], advice=>string ] 
      *   chief_complaints = [{}]
      ***/
-    
-    static function commitSave($ss,$arr){
-       $d = (object)$arr;
-       $ticket_id = $d->ticket_id;
-       //$patient_id = $d->patient_id;
-       $chief_complaints = $d->chief_complaints;
-       $vital_signs = $d->vital_signs;
-    //    $medical_history = $d->medical_history;
-    //    $pe = $d->physical_examination;
-    //    $labo_tests = $d->labo_tests;
-    //    $diagnosis = $d->diagnosis;
-    //    $prescription = $d->prescription;
-    //    $advice = $d->advice;
-       
-       $res =null;
-       $item_errors =[];
-       $res = self::saveChiefComplaints($ss,$chief_complaints,$ticket_id);
-       if($res->status ==='Error') $item_errors[] = $res->error_message;
+    protected $id = null;
+    protected $userInfo = null;
 
-       $res = self::saveVitalSigns($ss,$vital_signs,$ticket_id);
-       if($res->status ==='Error') $item_errors[] = $res->error_message;
+   function __construct($id=null, $userInfo = null){
+        $this->id = $id;
+        $this->userInfo = $userInfo;
+   }
 
-    //    $res = self::saveMedicalHistory($ss,$medical_history,$ticket_id);
-    //    if($res->status ==='Error') $item_errors[] = $res->error_message;
+   function getUserInfo(){
+    return $this->userInfo;
+   }
+   function getId(){
+    return $this->id;
+   }
 
-    //    $res = self::savePE($ss,$pe,$ticket_id);
-    //    if($res->status ==='Error') $item_errors[] = $res->error_message;
+   function getTicketId($id){
+     $rows = DB::table('consultations AS c')->where('id',$id)->select('ticket_id')->take(1)->get();
+     return isset($rows[0])? $rows[0]->ticket_id: null; 
+   }
+   
+   static function ticketInfo($consult_id =0){
+     $rows = DB::table('consultations AS c')->join('service_queue as q','q.id','=','c.ticket_id')->where('c.id',$id)->select('c.id AS consult_id, q.ticket_number, q.department_id,q.q_date, q.consultant_id, q.appt_id, q.person_id, q.status_id, q.client_id, q.priority')->take(1)->get();
+   }
 
-    //    $res = self::saveLaboTests($ss,$labo_tests,$ticket_id);
-    //    if($res->status ==='Error') $item_errors[] = $res->error_message;
+   function save($d = [], $ss = null){
+       $ss = $ss? $ss: $this->getUserInfo();
+       $res = validateObject($d,[
+        'ticket_id'=>'1|positive',
+        'chief_complaints'=>'0|array',
+        'vital_signs'=>'0|array',
+         'medical_history'=>'0|array',
+        'prescription'=>'1|string|0-500',
+        'labo_tests'=>'0|array',
+        'diagnosis'=>'0|string',
+        'physical_examination'=>'0|string|0-500',
+        'advice'=>'0|string|0-500'
+       ]);
 
-    //    $res = self::saveDiagnosis($ss,$diagnosis,$ticket_id);
-    //    if($res->status ==='Error') $item_errors[] = $res->error_message;
+       if ($res->error) return DV::error($res->error);
+       $ticket_id = isset($inputs['ticket_id'])?$inputs['ticket_id']:null;
+       if(!$ticket_id) return DV::error("Ticket ID is not valid");
 
-    //    $res = self::savePrescription($ss,$prescription,$ticket_id);
-    //    if($res->status ==='Error') $item_errors[] = $res->error_message;
-
-    //    $res = self::saveAdvice($ss,$advice,$ticket_id);
-    //    if($res->status ==='Error') $item_errors[] = $res->error_message;
-       
-       $consultation_id =null;
-       return (object)[
-         'status'=>'OK',
-         'status_code'=>200,
-         'data'=>[
-                'item_errors'=>$item_errors,
-                'ticket_id'=>$ticket_id,
-                'consultation_id'=>$consultation_id
-             ]
-         ];
+       $consult_id = saveData($ss,'consultations',['id'=>$consult_id],[],1);
+       if ($consult_id >0){
+            $this->saveChiefComplaints($ticket_id,$inputs['chief_complaints']);
+            $this->saveVitalSigns($ticket_id,$inputs['vital_signs']);
+            $this->saveMedicalHistory($ticket_id,$inputs['medical_history']);
+            $this->savePrescription($ticket_id,$inputs['prescription']);
+            $this->saveLaboTests($ticket_id,$inputs['labo_tests']);
+            $this->savePE($ticket_id,$inputs['physical_examination']);
+            $this->saveAdvice($ticket_id,$inputs['advice']);
+            return DV::success(['id'=>$consult_id]);
+       }
+       return DV::error('Failed to save consultation data');
     }
 
     static function getPatientId($branch_id, $ticket_id){

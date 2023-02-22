@@ -705,7 +705,7 @@ let ConsultTabView = new function () {
     this.base_url = main_view.base_url;
 
     //save all consult data
-    this.btnSaveConsult = $('#_qul_dlgConsult_btnSave');
+    //this.btnSaveConsult = $('#_qul_dlgConsult_btnSave');
 
     this.tblChiefComplaints = null;
     this.tblPrescribedItems = null;
@@ -798,7 +798,7 @@ let ConsultTabView = new function () {
 
             switch (view_name) {
                 case 'chief-complaints': {
-                    p.chief_compaints = mThis.getInput_chiefcomplaints(div);
+                    p.chief_complaints = mThis.getInput_chiefcomplaints(div);
                     break;
                 }
                 case 'vital-signs': {
@@ -1836,10 +1836,10 @@ let ConsultTabView = new function () {
 let ConsultDialog = new function () {
     let mThis = this;
     this.self = $('#_qul_dlgConsult');
-    this.btnSaveConult = $('#_qul_dlgConsult_btnSave');
+    this.btnSaveConsult = $('#_qul_dlgConsult_btnSave');
     this.defaultTabView = 'consultation';
 
-    this.btnSaveConult.on('click', (e) => {
+    this.btnSaveConsult.on('click', (e) => {
         e.preventDefault();
         let p = ConsultTabView.getConsultData();
         console.error(JSON.stringify(p));
