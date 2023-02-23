@@ -107,7 +107,7 @@
                                 <div class="row">
                                     <div class="col-xl-3 custom-width">
                                         <ul id="_history_menus" class="nav flex-column">
-                                            <li class="nav-item history_style_custom d-flex align-items-center">
+                                            <!-- <li class="nav-item history_style_custom d-flex align-items-center">
                                                 <span class="history_icon">
                                                     <i class="fa-solid fa-user ps-2"></i>
                                                 </span>
@@ -142,7 +142,7 @@
                                                     <i class="fa-solid fa-user ps-2"></i>
                                                 </span>
                                                 <a href="javascript:void(0)" data-viewname="advice" class="nav-link trans-text" data-langprop="history.Recommendations"></a>
-                                            </li>
+                                            </li> -->
                                             <li class="nav-item history_style_custom d-flex align-items-center">
                                                 <span class="history_icon">
                                                     <i class="fa-solid fa-user ps-2"></i>
@@ -205,6 +205,12 @@
                                                     <i class="fa-solid fa-user ps-2"></i>
                                                 </span>
                                                 <a href="javascript:void(0)" data-viewname="prescription" class="nav-link trans-text" data-langprop="consult.Prescription"></a>
+                                            </li>
+                                            <li class="nav-item consult-style-custom d-flex align-items-center">
+                                                <span class="consult-icon">
+                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                </span>
+                                                <a href="javascript:void(0)" data-viewname="service" class="nav-link trans-text" data-langprop="consult.Service"></a>
                                             </li>
                                             <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">

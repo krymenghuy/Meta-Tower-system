@@ -121,6 +121,8 @@ namespace App\ScriptManagement;
                         '/js/components/GeneralSettingsComponent.js',
                         '/js/components/RoleManagementComponent.js',
                         '/js/components/ExchangeRateComponent.js',
+                        '/js/components/R_QueueComponent.js',
+                        '/js/components/StockTransferComponent.js',
                         '/js/components/UserManagementComponent.js',
                         '/js/components/pusher_connect.js'
                     ]

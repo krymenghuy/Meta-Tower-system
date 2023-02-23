@@ -62,12 +62,21 @@ class WebReportController extends Controller
             //error invalid parameters provided
             return view('errors.500');
         }
-
-        $payment_id = isset($p->id)?$p->id:0;
+        
+        $rtype = isset($p->rtype) ? $p->rtype : null;
+        $payment_id = isset($p->id) ? $p->id : 0;
         $ss = (object)['branch_id'=>$branch_id];
         $payment = new \App\Models\Invoice\Invoice($payment_id,$ss);
-        $data['payment'] = $payment->getDetails();
-        $data['title'] = "PAYMENT VUNCHER";
+        switch($rtype){
+          case 'medical_report':{
+            $data['payment'] = $payment->getDetails();
+            $data['rtype'] = "medical_report";
+            break;
+          }
+          default:{
+            $data['title'] = "PAYMENT VUNCHER";
+          }
+        }
         return view('reports.genreport',$data);
     }
 
@@ -87,8 +96,7 @@ class WebReportController extends Controller
         $ss = (object)['branch_id'=>$branch_id];
         $invoice = new \App\Models\Invoice\Invoice($invoice_id,$ss);
         $data['invoice'] = $invoice->getDetails();
-        $data['title'] = "SALES INVOICE";
+        $data['title'] = "ESTHEDERM Aesthetic & Dermatology";
         return view('reports.invoice', $data);
     }
-  
 }
