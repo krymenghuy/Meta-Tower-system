@@ -51,17 +51,13 @@
     <div style="height:25px"></div>
     <div class="row">
         <div class="col-lg-6">
-            <img src="<?php if(isset($logodata)) echo $logodata; ?>" id="com_imgLogo" class="img-thumbnail" alt="" style="margin:-10px;height:235px;"/>
+            <img src="<?php if(isset($logodata)) echo $logodata; ?>" id="com_imgLogo" class="img-thumbnail" alt="" style="width: 300px; height: 300px"/>
             <input id="com_logoFileChooser" type="file" accept="image/*" style="display:none"/>
-
-            <div class="py-2" style="margin-top:30px">
-                <button id="com_btnChooseLogo" class="btn btn-primary">Choose Logo</button>
-                <button id="com_btnDeleteLogo" class="btn btn-default">Delete Logo</button>
-            </div>
         </div>
-
-        <div class="row">
-            <div class="form-inline">
+        <div class="col-lg-6">
+            <div class="d-flex align-items-center h-100 gap-2 justify-content-end">
+                <button id="com_btnChooseLogo" type="button" class="btn btn-primary">Choose Logo</button>
+                <button id="com_btnDeleteLogo" type="button" class="btn btn-default btn-secondary">Delete Logo</button>
                 <button id="_main_comp_btnSaveProfile" type="button" class="btn btn-success">
                     <i class="la la-save"></i>
                     <span class="kt-hidden-mobile">Save Changes</span>
