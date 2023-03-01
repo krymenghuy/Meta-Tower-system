@@ -31,112 +31,135 @@
     <?php 
       if ($invoice->currency_code === 'USD') $cur_symbol ='$';
       else if ($invoice->currency_code == 'KHR') $cur_symbol ='រ';
-     ?>
+    ?>
+
     <div class="border border-1 border-success rounded m-2">
         <div class="rpt-body">
             <div class="d-block px-3">
-                <div class="d-flex align-items-center w-100 py-2">
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <img style="width: 120px" class="img-thumbnail" src="<?php echo isset($branch->logo_url) ? $branch->logo_url : null ?>"/>
+                <div class="d-block w-100">
+                    <div class="d-flex align-items-center w-100 py-2">
+                        <div class="d-flex align-items-center">
+                            <div>
+                                <img style="width: 120px" class="img-thumbnail" src="<?php echo isset($branch->logo_url) ? $branch->logo_url : null ?>"/>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-center w-100">
+                            <div class="px-2">
+                                <h4 class="fw-bold fs-2">
+                                    <?php echo isset($title) ? $title:null; ?>
+                                </h4>
+                            </div>
                         </div>
                     </div>
-                    <div class="d-flex align-items-center justify-content-end w-100">
-                        <div class="px-2">
-                            <h4 class="fw-bold fs-2 pr-2">
-                                <?php echo isset($title) ? $title:null; ?>
-                            </h4>
+                    <div class="d-flex align-items-center justify-content-center flex-column w-100">
+                        <div class="d-flex align-items-center">
+                            <p><?php echo "The Premier Land Sensok, SteetA, House N #74, 78, Vilage Bayab"?></p>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <p><?php echo "Commune, Sangkat Phnom Pehn Thmey, Khan Sensok, Phnom Penh"?></p>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <p class="pe-2">Tel</p>
+                            <p>
+                                <span><?php echo "Cellcard 077 220 089"?></span>
+                                <span><?php echo "Smart 098 422 000"?></span>
+                            </p>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <p class="pe-2">Email:</p>
+                            <p><?php echo "Esthemdermsurgeryclinic@gmail.com"?></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center w-100 flex-column">
+                    <div class="d-flex align-items-center w-100">
+                        <div class="d-flex align-items-center w-50">
+                            <div style="width: 200px">
+                                <p>Patient ID:</p>
+                            </div>
+                            <p><?php echo "P000408-2-010183"?></p>
+                        </div>
+                        <div class="d-flex align-items-center w-50">
+                            <div style="width: 200px">
+                                <p>Invoice No:</p>
+                            </div>
+                            <p><?php echo "2310000282"?></p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center w-100">
+                        <div class="d-flex align-items-center w-50">
+                            <div style="width: 200px">
+                                <p>Patient's Name:</p>
+                            </div>
+                            <p><?php echo "Oeung Houng"?></p>
+                        </div>
+                        <div class="d-flex align-items-center w-50">
+                            <div style="width: 200px">
+                                <p>Invoice Date:</p>
+                            </div>
+                            <p><?php echo "21/02/2023"?></p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center w-100">
+                        <div class="d-flex align-items-center w-50">
+                            <div style="width: 200px">
+                                <p>Age:</p>
+                            </div>
+                            <p><?php echo "40Y - 1M - 20D"?></p>
+                        </div>
+                        <div class="d-flex align-items-center w-50">
+                            <div style="width: 200px">
+                                <p>Sex:</p>
+                            </div>
+                            <p><?php echo "Female"?></p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center w-100">
+                        <div class="d-flex align-items-center w-50">
+                            <div style="width: 200px">
+                                <p>Telephone:</p>
+                            </div>
+                            <p><?php echo "099999922"?></p>
+                        </div>
+                        <div class="d-flex align-items-center w-50">
+                            <div style="width: 200px">
+                                <p>Address:</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center w-100">
+                        <div class="d-flex align-items-center w-50">
+                            <div style="width: 200px">
+                                <p>Card ID:</p>
+                            </div>
+                            <p><?php echo ""?></p>
                         </div>
                     </div>
                 </div>
-                <div class="d-flex align-items-center w-100 mt-2">
-                    <div class="d-block w-100 px-2">
-                        <p class="fw-bold h3">
-                            <?php echo isset($branch->name_kh) ? $branch->name_kh : null ?>
-                        </p>
-                        <p>
-                            <span class="d-block text-left" style="font-size:0.9em">
-                                <?php echo isset($branch->address_kh) ? $branch->address_kh : null ?>
-                            </span>
-                            <span class="d-block text-left text-secondary" style="font-size:0.9em">
-                                <?php echo "Tel: ".isset($branch->phone_number)." Website: ". (isset($branch->website)? $branch->website: null);?>
-                            </span>
-                            <span class="d-block text-left" style="font-size:0.9em">
-                                <?php echo "លេខអត្តសញ្ញាណ អតប: ".(isset($branch->tax_number)? $branch->tax_number: 'គ្មាន'); ?>
-                            </span>
-                        </p>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center w-100 mt-1">
-                    <div class="d-block w-25 px-2">
-                        <p class="fw-bold">BILL TO</p>
-                        <p>
-                            <span class="d-block">
-                                <?php echo isset($invoice->billing_address) ? $invoice->billing_address : '(អសយដ្ឋានអតិថិជន)' ?>
-                            </span>
-                            <span class="d-block">
-                                <?php echo 'Tel: '.(isset($invoice->customer_phone)?$invoice->customer_phone:'គ្មាន'); ?>
-                            </span>
-                        </p>
-                        <p>
-                            <?php echo 'លេខអត្តសញ្ញាណ អតប: '.(isset($invoice->customer_tax_number)?$invoice->customer_tax_number:'ក្មាន'); ?>
-                        </p>
-                    </div>
-                    <div class="d-flex w-75 px-2">
-                        <div class="d-block w-100 fw-bold">
-                            <p>INVOICE</p>
-                            <p>INVOICE DATE</p>
-                            <p>DUE DATE</p>
-                        </div>
-                        <div class="d-block w-50">
-                            <p>
-                                <?php echo isset($invoice->id) ? $invoice->ref_number : null ?>
-                            </p>
-                            <p>
-                                <?php echo isset($invoice->issue_date) ? $invoice->issue_date : null ?>
-                            </p>
-                            <p>
-                                <?php echo isset($invoice->due) ? $invoice->due_date : null ?>
-                            </p>
-                        </div>
-
-                        <div class="d-block w-50 fw-bold pe-3">
-                            <p>TERMS</p>
-                            <p>DESCRIPTION</p>
-                        </div>
-                        <div class="d-block w-50">
-                            <p>
-                                <?php echo isset($invoice->terms) ? $invoice->terms : 'គ្មាន' ?>
-                            </p>
-                            <p>
-                                <?php echo isset($invoice->invoice_notes) ? $invoice->invoice_notes : 'គ្នាន' ?>
-                            </p>
-                        </div>
-
-                    </div>
-                </div>
-                <div class="table-responsive border rounded mt-5">
+                <div class="border-responsive border rounded mt-5">
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>CODE</th>
-                                <th>DESCRIPTION</th>
+                                <th>No</th>
+                                <th>MEDICINE</th>
+                                <th>DETAIL</th>
+                                <th>USAGE</th>
                                 <th>QTY</th>
-                                <th>UNIT PRICE</th>
+                                <th>PRICE</th>
                                 <th>DISCOUNT</th>
-                                <th>TAX</th>
-                                <th>AMOUNT</th>
+                                <th>TOTAL</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($invoice->items as $item)
                                 <tr>
-                                    <td>{{ $item->item_code}}</td> 
+                                    <td><?php $cnt = 1; echo $cnt++ ?></td> 
                                     <td>{{ $item->item_name }}</td>
+                                    <td></td>
+                                    <td>The term medical is used when something has to do with medicine or the field of medicine. Medical can often be heard when discussing locations, drugs, or practices involving hospitals, doctors, and pharmacies.</td>
                                     <td><?php echo number_format((float)$item->qty,0); ?></td>
                                     <td>{{$cur_symbol}} {{$item->price }}</td>
                                     <td>{{$item->discount_percent}}%</td>
-                                    <td>{{$item->tax_rate}}%</td>
                                     <td>{{$cur_symbol}}{{ $item->line_total }}</td>
                                 </tr>
                             @endforeach
@@ -160,6 +183,31 @@
                                 <td class="fw-semibold">Total</td>
                                 <td><?php echo $cur_symbol.$invoice->amount_due; ?></td>
                             </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>SERVICE</th>
+                                <th>QTY</th>
+                                <th>PRICE</th>
+                                <th>DISCOUNT</th>
+                                <th>TOTAL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach()
+                                <tr>
+                                    <td><?php $cnt = 1; echo $cnt++ ?></td>
+                                    <td>{{ }}</td>
+                                    <td>{{ }}</td>
+                                    <td>{{ }}</td>
+                                    <td>{{ }}</td>
+                                    <td>{{ }}</td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
