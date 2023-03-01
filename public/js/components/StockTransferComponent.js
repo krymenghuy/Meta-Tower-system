@@ -1,0 +1,120 @@
+'use strict';
+let StockTransferComponent = new function(){
+    let mThis = this;
+    this.title_prop = "Stock Transfer";
+    this.self = $('#_main_stockTransferComponent');
+    this.base_url = $('#__base_url').val();
+    this.tblItems = $('#_st_tblStockTransfer');
+
+    this.init = () => {}
+
+    this.col_titles = {
+        "Date":"Date",
+        "Qty":"Qty",
+        "From":"From",
+        "To":"To",
+        "By":"By",
+        "Remark":"Remark",
+        "Status":"Status"
+    };
+
+    this.trans_title = (title_prop = 'undefined') => {
+        return (mThis.col_titles[title_prop] || 'undefined');
+    }
+
+    this.setLanguage = () => {
+        if (LocaleManager.lang !== mThis.lang) {
+            for (let prop in mThis.col_titles) {
+                mThis.col_titles[prop] = LocaleManager.trans(prop, 'items', LocaleManager.lang);
+            }
+            mThis.lang = LocaleManager.lang;
+        }
+    }
+    
+    let cnt = 1;
+    this.columns = [{
+        title: mThis.trans_title("Date"),
+        data: cnt++
+    },{
+        title: mThis.trans_title("Item Code"),
+        data: "item_code"
+    },{
+        title: mThis.trans_title("Qty"),
+        data: "qty"
+    },{
+        title: mThis.trans_title("From"),
+        data: "from"
+    },{
+        title: mThis.trans_title("To"),
+        data: "to"
+    },{
+        title: mThis.trans_title("By"),
+        data: "by"
+    },{
+        title: mThis.trans_title("Remark"),
+        data: "remark"
+    },{
+        title: mThis.trans_title("Status"),
+        data: "status"
+    }];
+
+    this.displayStockTransfer = (onFinish = null) => {
+        vsapi.call(`${mThis.base_url}/api/stock-transfer`,null).then(res => {
+            let data = [];
+            if(res.status_code === 200){
+                data = StringSanitizer.sanitizeObject(res.data);
+            }
+
+            if(mThis.table){
+                mThis.tblItems.DataTable().clear().destroy();
+                mThis.tblItems.empty();
+                mThis.table = null;
+            }
+
+            if(!mThis.table){
+                mThis.table = mThis.tblItems.DataTable({
+                    searching: false,
+                    destroy: true,
+                    paging: true,
+                    ordering: false,
+                    //dom: 'Bfrtip',
+                    retrieve: true,
+                    //scrollY:390,
+                    //scrollX:500,
+                    //pagingType:'numbers',
+                    info: true,
+                    pageLength: 10,
+                    bLengthChange: false,
+                    saveState: true,
+                    'processing': true,
+                    'language': {
+                        'loadingRecords': '&nbsp;',
+                        'processing': 'Loading...',
+                        "emptyTable": LocaleManager.trans('No data to display', 'datatable')
+                    },
+                    'data': data,
+                    'columns': mThis.columns,
+                    "createdRow": function (row, data, dataIndex) {
+                        cnt++;
+                        let tr = $(row);
+                        tr.data('id', data.id);
+                    }
+                });
+            }
+            if(typeof onFinish === 'function') onFinish();
+        });
+    }
+
+    this.show = (options) => {
+        if(!options) options = {};
+        mThis.options = options;
+        mThis.displayStockTransfer(() => {
+            main_view.setTitle(mThis.title_prop);
+            mThis.self.show().siblings().hide();
+        });
+    }
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+    StockTransferComponent.init();
+});

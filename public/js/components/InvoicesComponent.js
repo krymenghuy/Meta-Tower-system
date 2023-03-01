@@ -192,7 +192,6 @@ let InvoicesComponent = new function () {
                     window.open([main_view.base_url, '/genreceipt/', d].join(''), '_blank');
                 });
             }); 
-
         //end:: init events in Expandable Row View
     };
      
@@ -462,12 +461,6 @@ let InvoiceDialog = new function () {
             "displayType":"select",
             "width":"250px"
         },
-        // {
-        //     "name":"description",
-        //     "title":"Description",
-        //     "dataType":"string",
-        //     "displayType":"input"
-        // },
         {
             "name":"qty",
             "title":"Quantity",
@@ -888,14 +881,9 @@ let PaymentDialog = new function (){
                     });
                     mThis.elTitle.html(LocaleManager.trans(title,'titles'));
                 }else cv_interact.error(res.error_message);
-              
             }); 
-
-           
        });
-
     }
-
 }
 //end::PaymentDialog
 

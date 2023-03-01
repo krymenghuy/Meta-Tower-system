@@ -29,6 +29,7 @@
      this.mnuPositions = $('#_main_lnkPositions');
      this.mnuEmployeeDepartment = $('#_main_lnkDepartments');
      this.mnuMedicalServices = $('#_main_lnkMedicalServices');
+     this.mnuStockTransfer = $('#_main_lnkStockTransfer');
 
      this.mnuStockTracking = $('#_main_lnkStockTracking');
      this.mnuItems = $('#_main_lnkItems');
@@ -154,7 +155,7 @@
                  
                  this.mnuTickets.on('click',(e)=>{
                     e.preventDefault();
-                    QueueComponent.show(null);
+                    R_QueueComponent.show(null);
                  });
 
                  this.mnuEmployeeList.on('click',(e)=>{
@@ -175,6 +176,11 @@
                  this.mnuMedicalServices.on('click',(e)=>{
                     e.preventDefault();
                     MedicalServiceComponent.show(null);
+                 });
+
+                 this.mnuStockTransfer.on('click',(e)=>{
+                    e.preventDefault();
+                    StockTransferComponent.show(null);
                  });
 
                  this.mnuItems.on('click',(e)=>{

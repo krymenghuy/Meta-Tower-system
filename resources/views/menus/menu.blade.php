@@ -246,6 +246,15 @@
                         </li>
 
                         <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="javascript:void(0)" id="_main_lnkStockTransfer" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/stock_adjustment.svg') }}"/>
+                                </span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Stock Transfer">Stock Transfer</span>
+                            </a>
+                        </li>
+
+                        <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkItems" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/product.svg')}}"/>

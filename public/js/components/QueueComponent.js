@@ -210,7 +210,7 @@ let TicketDetails = new function () {
         let i = 0, html = '';
         (items || []).map((item) => {
             html = [html, `<li id="${item.id}" data-tid="${ticket_id}">
-            <a href="#" data-apptid="${ticket_id}" data-id="${item.id}" class="qul-remove-complaint">
+            <a href="javascript:void(0)" data-apptid="${ticket_id}" data-id="${item.id}" class="qul-remove-complaint">
             <i class="fa fa-times" style="color:red"></i>
             </a>&nbsp;${item.name}</li>`].join('');
             i++;
@@ -733,11 +733,12 @@ let ConsultTabView = new function () {
     this.base_url = main_view.base_url;
 
     //save all consult data
-    //this.btnSaveConsult = $('#_qul_dlgConsult_btnSave');
+    this.btnSaveConsult = $('#_qul_dlgConsult_btnSave');
 
     this.tblChiefComplaints = null;
     this.tblPrescribedItems = null;
     this.tblLaboTests = null;
+    this.tblServiceItems = null;
 
     //this.data is used to store form options such as chief_complaints, vital_signs, etc ...
     this.data = {};
@@ -751,11 +752,11 @@ let ConsultTabView = new function () {
         mThis.show(mThis.options, view_name, true);
     });
 
-    // this.btnSaveConsult.on('click', (e) => {
-    //     e.preventDefault();
-    //     let p = mThis.getConsultData();
-    //     console.error(JSON.stringify(p));
-    // });
+    this.btnSaveConsult.on('click', (e) => {
+        e.preventDefault();
+        let p = mThis.getConsultData();
+        console.log(p);
+    });
 
     this.getInput_chiefcomplaints = (div = null) => {
         return mThis.tblChiefComplaints ? mThis.tblChiefComplaints.getItems() : [];
@@ -814,7 +815,6 @@ let ConsultTabView = new function () {
         let el = div.find('.data-input');
         return el.val();
     }
-
 
     //returns doctor's consultation data including Chielf cpmpaint, Medical history, PE, labor test, prescription, Diagnosis
     //getData()|getInputData()
@@ -946,7 +946,6 @@ let ConsultTabView = new function () {
         mThis.historyItemPanel = $('#_history_panel');
 
         //Object variable to store bool whetther the first active menu on each tab has been set or not on first show of each TabView {'Consultation','History'}
-        mThis.has_already_init = {};
 
         mThis.consultItemPanel.on('click', 'a.consultview-add-cc', (e) => {
             e.preventDefault();
@@ -958,7 +957,7 @@ let ConsultTabView = new function () {
 
         mThis.ul_menus_consult.on('click', 'li', (e) => {
             e.preventDefault();
-            let li = $(e.currentTarget)
+            let li = $(e.currentTarget);
             let view_name = li.find('a').data('viewname');
             if (mThis.prev_selected_li_consult) mThis.prev_selected_li_consult.removeClass('consult-menu-selected');
             li.addClass('consult-menu-selected');
@@ -978,6 +977,8 @@ let ConsultTabView = new function () {
             li.addClass('history-menu-selected');
             mThis.prev_selected_li_history = li;
         });
+
+        mThis.has_already_init = {};
     }
     //end::init ConsultTabeView (menus item event handlers and so on)
 
@@ -999,6 +1000,9 @@ let ConsultTabView = new function () {
             "prescription": () => {
                 mThis.showConsultPrescription(div, "prescription");
             },
+            "service": () => {
+                mThis.showConsultService(div, "service");
+            },
             "labo-tests": () => {
                 mThis.showConsultLaboratoryTests(div, "labo-tests");
             },
@@ -1011,7 +1015,6 @@ let ConsultTabView = new function () {
             "medical-report": () => {
                 //Show report printing
                 mThis.showConsultMedicalReport(div);
-
             },
             "medical-certificate": () => {
                 mThis.showConsultMedicalCertificate(div);
@@ -1201,6 +1204,14 @@ let ConsultTabView = new function () {
         });
     }
 
+    this.loadService = (ticket_id = 0, onFinish) => {
+        vsapi.call(`${main_view.base_url}/api/settings/options-product`, null).then(res => {
+            if(res.status_code === 200){
+                onFinish(res.data);
+            }
+        });
+    }
+
     this.showConsultPrescription = (div, view_name) => {
         let wrapper_id = '_consult_pres_warpper';
         let div_id = '_consult_prescription';
@@ -1237,9 +1248,9 @@ let ConsultTabView = new function () {
                 },
                 {
                     "name": "usage",
-                    "title": "usage",
+                    "title": "Usage",
                     "dataType": "string",
-                    "displayType": "select"
+                    "displayType": "input"
                 },
                 {
                     "name": "duration_days",
@@ -1258,7 +1269,7 @@ let ConsultTabView = new function () {
             mThis.loadPrescription(ticket_id, d => {
                 //After having loaded prescription data from server => init prescription table
                 columns[0].selectOptions = d.products;
-                columns[3].selectOptions = d.usage_options;
+                //columns[3].selectOptions = d.usage_options;
                 //tblPrescribedItems
                 mThis.tblPrescribedItems = new ItemsView(div_id, {
                     "columns": columns,
@@ -1276,6 +1287,81 @@ let ConsultTabView = new function () {
                         return `<span class="text-secondary fw-bold">${numero}</span>`;
                     },
                     "emptyMessage": `<span class="text-secondary text-align-center">${LocaleManager.trans('No item prescribed', 'consult')}</span>`,
+                });
+                el = div.find(`#${wrapper_id}`);
+            });
+        }
+        el.show().siblings().hide();
+    }
+
+    this.showConsultService = (div, view_name) => {
+        let wrapper_id = '_consult_service_warpper';
+        let div_id = '_consult_service';
+        let el = div.find(`#${wrapper_id}`);
+        let ticket_id = div.data('tid');
+
+        if (!el || el.length === 0) {
+            let title = LocaleManager.trans('Service', 'consult');
+            let html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}"><h3 class="trans-text" data-langprop="consult.Service">${title}</h3>
+              <div id="${div_id}"></div>
+            </div>`;
+
+            div.html(html);
+            let columns = [
+                {
+                    "name": "item_id",
+                    "title": "Name",
+                    "dataType": "string",
+                    "displayType": "select",
+                    "width":"250px"
+                },
+                {
+                    "name": "description",
+                    "title": "Description",
+                    "dataType": "string",
+                    "displayType": "input"
+                },
+                {
+                    "name": "usage",
+                    "title": "Usage",
+                    "dataType": "string",
+                    "displayType": "input"
+                },
+                {
+                    "name": "done_by",
+                    "title": "Done By",
+                    "dataType": "string",
+                    "displayType": "input"
+                },
+                {
+                    "name": "reason",
+                    "title": "Reasons",
+                    "dataType": "string",
+                    "displayType": "input"
+                }
+            ];
+
+            mThis.loadService(ticket_id, d => {
+                //After having loaded prescription data from server => init prescription table
+                columns[0].selectOptions = d.products;
+                //columns[3].selectOptions = d.usage_options;
+                mThis.tblServiceItems = new ItemsView(div_id, {
+                    "columns": columns,
+                    "langProp": "consult",
+                    "tableClass": "table presciption-table",
+                    "showColumnHeaders": true,
+                    "showAddLineButton": true,
+                    "addLineButtonText": "Add Item",
+                    "onItemChange": (selOp, col_name, td) => {
+                        let tr = td.parentNode;
+                        //st item sku
+                        mThis.setItemInfo(col_name, tr);
+                    },
+                    "numeroFormatter": (numero, row) => {
+                        return `<span class="text-secondary fw-bold">${numero}</span>`;
+                    },
+                    "emptyMessage": `<span class="text-secondary text-align-center">${LocaleManager.trans('No item prescribed', 'consult')}</span>`,
+                    "validateColumns":{"item_id":"string"}
                 });
                 el = div.find(`#${wrapper_id}`);
             });
@@ -1873,7 +1959,7 @@ let ConsultDialog = new function () {
         console.error(JSON.stringify(p));
         vsapi.call(`${main_view.base_url}/api/consultation/save`, p).then(res => {
             if (res.status_code === 200) {
-
+                //do something from consult dialog
             }
         });
 

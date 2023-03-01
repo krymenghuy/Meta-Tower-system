@@ -62,33 +62,19 @@ class WebReportController extends Controller
             //error invalid parameters provided
             return view('errors.500');
         }
-
-        // //if(!isset($p->startdate) || !isset($p->enddate)) $p->usealldates =1;
-        $rtype = strtolower(isset($p->rtype) ? $p->rtype:null);
-        $data['rtype']= $rtype;
-        if(!$rtype){
-          //error invalid report type
-          return view('errors.500');
-        }
-
-        $branch = CompanyProfile::details($branch_id);
-
+        
+        $rtype = isset($p->rtype) ? $p->rtype : null;
+        $payment_id = isset($p->id) ? $p->id : 0;
+        $ss = (object)['branch_id'=>$branch_id];
+        $payment = new \App\Models\Invoice\Invoice($payment_id,$ss);
         switch($rtype){
           case 'medical_report':{
-            $data['branch']= $branch;
-            $data['title'] = "Medical Report";
-            $data['company_name'] = "Clinic";
-            break;
-          }
-          case 'medical_certificate':{
-            $data['branch']= $branch;
-            $data['title'] = "Medical Certificate";
-            $data['company_name'] = "Clinic";
+            $data['payment'] = $payment->getDetails();
+            $data['rtype'] = "medical_report";
             break;
           }
           default:{
-              $data['title'] = "IT SEEMS NO MATCHING REPORT NAME :)"; 
-              break;
+            $data['title'] = "PAYMENT VUNCHER";
           }
         }
         return view('reports.genreport',$data);
@@ -110,10 +96,7 @@ class WebReportController extends Controller
         $ss = (object)['branch_id'=>$branch_id];
         $invoice = new \App\Models\Invoice\Invoice($invoice_id,$ss);
         $data['invoice'] = $invoice->getDetails();
-        $data['title'] = "SALES INVOICE";
-        // echo dd($data);
-        // return;
+        $data['title'] = "ESTHEDERM Aesthetic & Dermatology";
         return view('reports.invoice', $data);
     }
-  
 }
