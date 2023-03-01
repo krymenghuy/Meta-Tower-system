@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 //begin::JsonToExcel class
 let JsonToExcel = new function()
 {

@@ -22,6 +22,8 @@
      this.mnuDashboard2 = $('#_main_lnkDashboard2');
      this.mnuAppointmentList = $('#_main_lnkAppointments');
      this.mnuPatientFinder = $('#_main_lnkPatientFinder');
+     this.mnuPatientInvoices = $('#_main_lnkPatientInvoices');
+
      this.mnuTickets = $('#_main_lnkTickets');
      this.mnuEmployeeList = $('#_main_lnkEmployeeList');
      this.mnuPositions = $('#_main_lnkPositions');
@@ -42,7 +44,7 @@
 
      this.mnuPatientDashboard = $('#_main_lnkPatientDashboard');
      this.mnuOPDList = $('#_main_lnkOPDList');
-     this.mnuPatientInvoices = $('#_main_lnkPatientInvoices');
+     this.mnuInvoices = $('#_main_lnkIncomeInvoices');
      this.mnuPatientReciepts = $('#_main_lnkPatientReceipts');
      this.mnuPatientCreditNotes = $('#_main_lnkPatientCreditNotes');
 
@@ -229,10 +231,20 @@
 
                  this.mnuConsultationQueue.on('click',(e)=>{
                     e.preventDefault();
-                    ConsultationQueueComponent.show(null);
+                    QueueComponent.show({
+                        'showPatientPhotos':true,
+                        'showConsultButton':true,
+                        'showPrescriptionButton':true,
+                        'showHistoryButton':true
+                    });
                  });
 
                  this.mnuPatientInvoices.on('click',(e) => {
+                    e.preventDefault();
+                    InvoicesComponent.show(null);
+                 });
+
+                 this.mnuInvoices.on('click',(e) => {
                     e.preventDefault();
                     InvoicesComponent.show(null);
                  });

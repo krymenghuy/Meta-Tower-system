@@ -3,22 +3,22 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use ScriptManager;
+use StyleManager;
 
-class ScriptBundleAll extends Command
+class StyleBundleAll extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'bundle:script-all';
+    protected $signature = 'bundle:style-all';
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Minifies and bundles all javascript script files into one new javascript file';
+    protected $description = 'Minifies and bundles all css files into one new file';
     protected $arguments =[];
     /**
      * Create a new command instance.
@@ -46,7 +46,7 @@ class ScriptBundleAll extends Command
         //$this->arguments = $this->arguments();
         //$bundle_name = $this->argument('bundle_name');
         //$this->info($bundle_name);
-        $res= ScriptManager::createAllBundleFiles();
+        $res= StyleManager::createAllBundleFiles();
         if($res->status==='OK')
         {
             $this->info("Bundled files created as follows:\n");

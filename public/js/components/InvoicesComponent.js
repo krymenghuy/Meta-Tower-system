@@ -18,6 +18,8 @@ let InvoicesComponent = new function () {
     this.title_prop = 'Invoices';
     this.self = $('#_main_invoicesComponent');
     this.tblInvoice = $('#_inv_tblInvoice');
+    // this.invoiceTable is native javascript object, and it is also used by InvoicesComponents
+    this.invoiceTable = document.querySelector(`#_inv_tblInvoice`);
     this.elSearchInvoice = $('#_inv_search_invoice');
     
     this.base_url = $('#__base_url').val();
@@ -57,49 +59,49 @@ let InvoicesComponent = new function () {
     this.init = () => {
         InvoiceSettings.init();
         this.tblInvoice.on('click','a.btn-ivc-delete',function(e){
-           e.preventDefault();
-           let invoice_id = $(this).data('id');
-           let tr = $(this).closest('tr');
-           let p = {'id':invoice_id};
-           cv_interact.confirm('Delete this invoice?',{'title':"Delete Invoice",'context':'delete'},(e) => {
-                if(e){
-                    vsapi.call(`${main_view.base_url}/api/invoice/delete`,p,null,null).then(res=>{
-                        if(res.status_code ===200){
-                        mThis.refreshInvoiceInfo(tr.prev(),res.data); 
-                        mThis.displayInvoices();    
-                        }else cv_interact.error(res.error_message);
-                    });
-                }
-           });
-        });
-
-        this.tblInvoice.on('click','a.btn-ivc-modify', function(e){
-           e.preventDefault();
-           let invoice_id = $(this).data('id');
-           let tr = $(this).closest('tr');
-           let op = { 'id': invoice_id, 
-                 'onClose': function(data){
-                    mThis.displayInvoices();
-                  } 
-           };
-           InvoiceDialog.show(op);
-         });
-
-        this.tblInvoice.on('click','a.btn-ivc-receivepmt',function(e){
             e.preventDefault();
-            let x = $(this);
-            let invoice_id = x.data('id');
-            let tr = x.closest('tr');
-            let op = {
-                'invoice_id':invoice_id,
-                'id':null,
-                'onClose':function(data){
-                    mThis.refreshInvoiceInfo(invoice_id,data);
-                    mThis.displayInvoicePayments(tr.next(),invoice_id);
-                }
+            let invoice_id = $(this).data('id');
+            let tr = $(this).closest('tr');
+            let p = {'id':invoice_id};
+            cv_interact.confirm('Delete this invoice?',{'title':"Delete Invoice",'context':'delete'},(e) => {
+                 if(e){
+                     vsapi.call(`${main_view.base_url}/api/invoice/delete`,p,null,null).then(res=>{
+                         if(res.status_code ===200){
+                         mThis.refreshInvoiceInfo(tr.prev(),res.data); 
+                         mThis.displayInvoices();    
+                         }else cv_interact.error(res.error_message);
+                     });
+                 }
+            });
+         });
+ 
+         this.tblInvoice.on('click','a.btn-ivc-modify', function(e){
+            e.preventDefault();
+            let invoice_id = $(this).data('id');
+            let tr = $(this).closest('tr');
+            let op = { 'id': invoice_id, 
+                  'onClose': function(data){
+                     mThis.displayInvoices();
+                   } 
             };
-            PaymentDialog.show(op);
-        });
+            InvoiceDialog.show(op);
+          });
+ 
+         this.tblInvoice.on('click','a.btn-ivc-receivepmt',function(e){
+             e.preventDefault();
+             let x = $(this);
+             let invoice_id = e.target.dataset.id? e.target.dataset.id: x.data('id');
+             let tr = mThis.invoiceTable.querySelector(`#ivc_${invoice_id}`); 
+             let op = {
+                 'invoice_id':invoice_id,
+                 'id':null,
+                 'onClose':function(data){
+                     mThis.refreshInvoiceInfo(invoice_id,data);
+                     if (tr.nextSibling) mThis.displayInvoicePayments(tr.nextSibling,invoice_id);
+                 }
+             };
+             PaymentDialog.show(op);
+         });
 
         this.tblInvoice.on('click','a.btn_print_invoice',function(e){
             e.preventDefault();
@@ -134,117 +136,143 @@ let InvoicesComponent = new function () {
             'onOpen':(container, detail_tr, parent_tr) =>{
                 let qtr = $(parent_tr);
                 let invoice_id = qtr.data('id');
-                mThis.displayInvoicePayments($(detail_tr),invoice_id);
+                mThis.displayInvoicePayments(detail_tr,invoice_id);
             }
         });
  
         //begin:: init events in Expandable Row View
-                mThis.tblInvoice.on('click','a.ivc-pmt-edit',function(e){
-                    let pmt_id = $(this).data('id');
-                    let invoice_id =$(this).data('invoiceid');
-                    let tblPmts = $(this).closest('table');
-                    let tr = tblPmts.closest('tr'); 
-                    let op = {"id":pmt_id,'invoice_id':invoice_id,
-                    'onClose':function(data){ 
-                            //"data" is data returned from api. data = {currency_code,amount_paid,amount_due}
-                             mThis.refreshInvoiceInfo(invoice_id,data);
-                             mThis.displayInvoicePayments(tr,invoice_id);
-                        }
-                    };
-                    PaymentDialog.show(op);
-                }); 
+            mThis.tblInvoice.on('click','a.ivc-pmt-edit',e=>{
+                let x = $(e.currentTarget);
+                let pmt_id = x.data('id');
+                let invoice_id =x.data('invoiceid');
+                //based on invoiceRowId to find parent row element (tr)
+                let invoiceRowId = ['ivc_',invoice_id].join('');
+                //let tblPmts = $(this).closest('table');
+                //let tr = tblPmts.closest('tr');
+                let op = {"id":pmt_id,'invoice_id':invoice_id,
+                'onClose':function(data){ 
+                        //"data" is data returned from api. data = {currency_code,amount_paid,amount_due}
+                        mThis.refreshInvoiceInfo(invoice_id,data);
+                        //NOTE that "mThis.invoiceTable" is native javascript node represent mThis.tblInvoice
+                        //whereas, "mThis.tblInvoice" is jquery object
+                        let tr = mThis.invoiceTable.querySelector(`#${invoiceRowId}`);
+                        mThis.displayInvoicePayments(tr.nextElementSibling,invoice_id);
+                    }
+                };
+                PaymentDialog.show(op);
+            }); 
 
-                mThis.tblInvoice.on('click','a.ivc-pmt-delete',function(e){
-                    let x = $(this);
-                    let pmt_id =x.data('id');
-                    let invoice_id = x.data('invoiceid');
-                    let p = {"id":pmt_id};
-                    let pmtTable = $(this).closest('table');
-                    let tr = pmtTable.closest('tr');
+            mThis.tblInvoice.on('click','a.ivc-pmt-delete',function(e){
+                let x = $(this);
+                let pmt_id =x.data('id');
+                let invoice_id = x.data('invoiceid');
+                let p = {"id":pmt_id};
+                //let pmtTable = $(this).closest('table');
+                //let tr = pmtTable.closest('tr');
+                let invoiceRowId = ['ivc_',invoice_id].join(''); 
+                cv_interact.confirm("Delete this payment?",{"title":"Delete payment",'context':"delete"},e=>{
+                    if(e){
+                        vsapi.call(`${main_view.base_url}/api/invoice-payment/delete`,p).then(res=>{
+                            if(res.status_code===200){
+                                let invoiceInfo = StringSanitizer.sanitizeObject(res.data);
+                                mThis.refreshInvoiceInfo(invoiceInfo.id,invoiceInfo);
+                                let tr = mThis.invoiceTable.querySelector(`#${invoiceRowId}`);
+                                mThis.displayInvoicePayments(tr.nextElementSibling,invoice_id);
+                            }
+                        }); 
+                    }
+                });
+            }); 
 
-                    cv_interact.confirm("Delete this payment?",{"title":"Delete payment",'context':"delete"},e=>{
-                        if(e){
-                            vsapi.call(`${main_view.base_url}/api/invoice-payment/delete`,p).then(res=>{
-                                if(res.status_code===200){
-                                    let invoiceInfo = StringSanitizer.sanitizeObject(res.data);
-                                    mThis.refreshInvoiceInfo(invoiceInfo.id,invoiceInfo);
-                                    mThis.displayInvoicePayments(tr,invoice_id);
-                                }
-                            }); 
-                        }
-                    });
-                }); 
+            mThis.tblInvoice.on('click','.ivc-pmt-print',function(e){
+                let pmt_id = $(this).data('id');
+                let qString = ['id=', pmt_id].join('');
 
-                mThis.tblInvoice.on('click','.ivc-pmt-print',function(e){
-                    let pmt_id = $(this).data('id');
-                    let qString = ['id=', pmt_id].join('');
-                    main_view.getEncryptData(qString, (d) => {
-                        window.open([main_view.base_url, '/genreceipt/', d].join(''), '_blank');
-                    });
-                }); 
+                main_view.getEncryptData(qString, (d) => {
+                    window.open([main_view.base_url, '/genreceipt/', d].join(''), '_blank');
+                });
+            }); 
         //end:: init events in Expandable Row View
     };
      
     this.displayInvoicePayments = (detail_tr, invoice_id = 0) => {
-        let div_wrapper = detail_tr.find('div.expandable-row-containter');
-        div_wrapper.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
+        let div_wrapper = detail_tr.querySelector('div.expandable-row-containter');
+        div_wrapper.innerHTML = '<div class="animation-line" style="height:2px;margin:0;"></div>';
         let p = { 'invoice_id': invoice_id };
         let div_id = ['ivc_pmt_wrapper_',invoice_id].join('');
+        let inner_table_body_id = [div_id,'_pmts_',invoice_id].join('');
+
         window.vsapi.call(`${main_view.base_url}/api/invoice/payments-with-summary`, p,null, false).then((res) => {
-            let html = null;
             if (res.status_code === 200) {
 
                 let d = StringSanitizer.sanitizeObject(res.data);
-                if(!d){
-                    div_wrapper.html(`<span class="fw-bold text-secondary text-center text-wrap">There are no payments yet</span>`);
-                    return;
-                }
+                let epanel = detail_tr.querySelector(`#${div_id}`);
+              
+
+                // if(!d){
+                //     div_wrapper.innerHTML = `<span class="fw-bold text-secondary text-center text-wrap">There are no payments yet</span>`;
+                //     return;
+                // }
                 //begin:: refresh display of total amount paid
-                    let tr = detail_tr.prev();
-                    tr.find('.amount-paid').text(d.amount_paid);
-                    tr.find('.pmt-status').text(d.pmt_status);
+                    let tr = detail_tr.previousElementSibling;
+                    if (tr){
+                        d.amount_paid = d.amount_paid?d.amount_paid:0;
+                        tr.querySelector('.col-amount-paid').textContent =  mThis.formatInvoiceAmount(d.currency_code,Number(d.amount_paid).toFixed(2));
+                        tr.querySelector('.btn-pmt-status').textContent =  d.pmt_status;
+                    }
                 //end::refresh display of total amount paid
-
-                html = `<div id="${div_id}" data-invoiceid="${d.invoice_id}" data-pmtstatus="${d.pmt_status}" class="invoice-pmt-wrapper shadow-lg d-flex" style="width:100%;">
-                        <div class="d-flex" style="width:100%">
-                           <table class="table payment-table">
-                           <thead>
-                             <tr>
-                                 <th>Ref Number</th>
-                                 <th>Payment Date</th>
-                                 <th>Amount</th>
-                                 <th>Tax Amount</th>
-                                 <th>Received By</th>
-                                 <th></th>
-                             </tr>
-                           </thead>
-                           
-                           <tbody>
-                              ${mThis.generatePaymentRows(d.currency_code,d.payments)}
-                           </tbody>
-                           
-                           </table>       
-                        </div>
-                    </div>`;
-
-            } else {
-                html = `<div class="expanded-row-error">${res.error_message}</div>`;
-            }
-            div_wrapper.html(html);
+               
+                if (!epanel){
+                    let html = `<div id="${div_id}" data-invoiceid="${d.invoice_id}" data-pmtstatus="${d.pmt_status}" class="invoice-pmt-wrapper shadow-lg d-flex" style="width:100%;">
+                                    <div class="d-flex" style="width:100%">
+                                    <table class="table payment-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Ref Number</th>
+                                            <th>Payment Date</th>
+                                            <th>Amount</th>
+                                            <th>Tax Amount</th>
+                                            <th>Received By</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    
+                                    <tbody id="${inner_table_body_id}">
+                                        ${mThis.generatePaymentRows(invoice_id,d.currency_code,d.payments)}
+                                    </tbody>
+                                    
+                                    </table>       
+                                    </div>
+                                </div>`;
+                                div_wrapper.innerHTML= html;
+                        } else {
+                            let tbody = div_wrapper.querySelector(inner_table_body_id);
+                            tbody.innerHTML = mThis.generatePaymentRows(invoice_id,d.currency_code,d.payments);
+                        }
+                        
+                } else  div_wrapper.innerHTML = `<div class="expanded-row-error">${res.error_message}</div>`;  
+            
         });
     }
 
-    this.generatePaymentRows = (currency_code,rows = [])=>{
+    this.generatePaymentRows = (invoice_id,currency_code,rows = [])=>{
        let html = ""; 
        let cur_symbol = ExchangeManager.currencies[currency_code].symbol;
+       let cnt = 0;
        rows.map(c=>{
+         //let invoiceRowId = ['ivc_',c.invoice_id?c.invoice_id: invoice_id].join('');
          html = [html,`<tr><td><a href="javascript:void(0)" class="btn_print_pmt fw-bold" data-id="${c.id}">${c.ref_number}</a></td><td>${c.payment_date}</td><td>${cur_symbol}${c.amount}</td><td>${cur_symbol}${c.tax_amount}</td><td><span class="d-block">${c.create_user}</span><span class="d-block text-secondary text-sm-left p-2">${c.notes?c.notes:''}</span></td>
          <td class="col-action">
          <a href="javascript:void(0)" class="ivc-pmt-edit" data-id="${c.id}" data-invoiceid="${c.invoice_id}"><i class="fa fa-solid fa-edit"></i></a>
          <a href="javascript:void(0)" class="ivc-pmt-delete" data-id="${c.id}" data-invoiceid="${c.invoice_id}"><i class="fa fa-solid fa-trash"></i></a>
          <a href="javascript:void(0)" class="ivc-pmt-print" data-id="${c.id}" data-invoiceid="${c.invoice_id}"><i class="fa fa-solid fa-print"></i></a>
          </td></tr>`].join('');
+         cnt++;
        });
+       if(cnt===0) {
+         let empty_text = LocaleManager.trans('No payments to display'); 
+         return `<tr><td colspan="100%" class="text-center"><span class="text-secondary text-nowrap fw-bold">${empty_text?empty_text.toUpperCase():''}</span></td></tr>`;
+       }
        return html;
     }
 
@@ -264,13 +292,13 @@ let InvoicesComponent = new function () {
             {
                 title: mThis.trans_title("Ref Number"),
                 data:(data,a,b)=>{
-                    return `<a href="javascript:void(0)" class="btn_print_invoice fw-bold" data-id="${data.id}" data-refnumber="${data.ref_number}"><i class="fa fa-print"></i>&nbsp;${data.ref_number}</a>`;
+                    return `<a href="javascript:void(0)" class="text-nowrap btn_print_invoice fw-bold" data-id="${data.id}" data-refnumber="${data.ref_number}"><i class="fa fa-print"></i>&nbsp;${data.ref_number}</a>`;
                 }
             }, {
                 title: mThis.trans_title("Customer"),
                 data: (data,a,b)=>{
                     return [`<span class="d-block fw-bold customer-name">`,data.customer_name,`</span>`,
-                `<is class="fa fa-solid fa-square-phone p-1"></i><span class="small text-left p-1">`,data.customer_phone,`</span>`].join('');
+                `<i class="fa fa-solid fa-square-phone p-1"></i><span class="small text-left p-1">`,data.customer_phone,`</span>`].join('');
                 }
             },
             {
@@ -390,7 +418,7 @@ let InvoicesComponent = new function () {
         //correct prop name if necessary from amount_paid to total_paid. Both of these fields are used here
         if (!d.amount_paid) d.amount_paid = d.total_paid;
         let tr = mThis.tblInvoice.find(`tbody>tr#ivc_${invoice_id}`);
-        tr.find('td.col-amount-paid').html([cur_symbol, d.amount_paid].join(''));
+        tr.find('td.col-amount-paid').html(mThis.formatInvoiceAmount(d.currency_code,d.amount_paid));
         tr.find('td.col-pmt-status').html(mThis.generatePmtStatus(d)); 
     }
 
@@ -751,17 +779,22 @@ let PaymentDialog = new function (){
     this.elTitle = $('#_ivc_dlgPayment_title');
     this.options = null;
 
-    this.btnSave.on('click',(e)=>{
+    this.btnSave.on('click',(e)=>{ 
        let api_end_point =`${main_view.base_url}/api/invoice-payment/receive`; 
        if(mThis.options.id>0) api_end_point =`${main_view.base_url}/api/invoice-payment/update`;
        //else api_end_point =`${main_view.base_url}/api/invoice-payment/receive`;
 
        let p = mThis.getFormData();
+       mThis.btnSave.prop('disabled',true);
        vsapi.call(api_end_point,p).then(res=>{
           if(res.status_code ===200){
              if (typeof mThis.options.onClose ==='function') mThis.options.onClose(res.data);
              mThis.self.modal('hide');
-          }else cv_interact.error(res.error_message);
+             mThis.btnSave.prop('disabled',false);
+          }else{
+            cv_interact.error(res.error_message);
+            mThis.btnSave.prop('disabled',false);
+          }
        });
     });
 

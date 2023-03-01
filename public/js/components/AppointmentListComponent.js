@@ -21,7 +21,7 @@ let AppointmentListComponent = new function () {
     this.btnNewAppointment = $('#_apl_btnNewAppointment');
     this.col_titles = {
         "Arrival Date": "Arrival Date",
-        "Arrival Time": "Time",
+        "Arrival Time": "Arrival Time",
         "Client Name": "Client Name",
         "Client Phone": "Client Phone",
         "Status": "Status",
@@ -377,7 +377,7 @@ let AppointmentListComponent = new function () {
     }
 
     this.trans_title = (title_prop = 'undefined') => {
-        return (mThis.col_titles[title_prop] || 'undefined');
+        return (mThis.col_titles[title_prop]);
     }
 
     this.createDropdownMenuHtml_loan = (items = [], data = null, data_props = []) => {
@@ -434,12 +434,14 @@ let AppointmentListComponent = new function () {
                 },
                 {
                     title: mThis.trans_title('Arrival Time'),
-                    data: "arrival_date"
+                    data:(data,a,b)=>{
+                        return [`<span class="d-block text-success">`,data.arrival_time,`</span>`].join('');
+                    }
                 },
                 {
                     title: mThis.trans_title('Client Name'),
                     data: (data, a, b) => {
-                        return [`<span style="display:block" class="client-name text-bold">`, data.client_name, `</span>`, `<span style="display:block;" class="client-code text-success">`, data.patient_code, `</span>`].join('');
+                        return [`<span style="display:block" class="client-name text-bold fw-bold">`, data.client_name, `</span>`, `<span style="display:block;" class="client-code">`, data.patient_code, `</span>`].join('');
                     }
                 },
                 {

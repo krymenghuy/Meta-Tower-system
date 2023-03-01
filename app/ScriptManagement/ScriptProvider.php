@@ -63,8 +63,10 @@ namespace App\ScriptManagement;
                     '/assets/js/jquery.datepicker2.js',
                     //'assets/js/html2canvas.min.js',
                     //'/assets/js/vs_multiple_select.js',
-                    'https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js',
-                    'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.1/xlsx.full.min.js',
+                        //'https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js',
+                    //'/assets/js/ckeditor/ckeditor.js', /** ckeditor script has its internal error or problem that causes other script to be errorous **/
+                    //'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.1/xlsx.full.min.js',
+                    '/assets/js/xlsx/xlsx.full.min.js',
                     '/assets/vendors/general/js-cookie/src/js.cookie.js',
                     '/assets/vendors/general/moment/min/moment.min.js',
                     '/assets/vendors/general/perfect-scrollbar/dist/perfect-scrollbar.js',
@@ -72,18 +74,20 @@ namespace App\ScriptManagement;
                     '/assets/js/select2.min.js',
                     '/assets/js/initializeSelect2.js',
                     '/assets/js/demo1/scripts.bundle.js',
-                    '/assets/vendors/custom/datatables/datatables.bundle.js',
+                    '/assets/js/datatables.bundle.min.js',
                     'https://js.pusher.com/7.2/pusher.min.js', 
                     '/js/app.js',
                     '/assets/js/browsercontrol.js',
                 ]
-                ,'no-minify'=>[
-                    '/assets/js/crypto-js.js', 
-                    '/js/app.js',
-                    '/assets/js/demo1/scripts.bundle.js',
-                    'https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js',
-                    'http://127.0.0.1:8000/assets/vendors/custom/datatables/datatables.bundle.js',
-                ]
+                    ,'no-minify'=>[
+                        '/assets/js/crypto-js.js',
+                        '/assets/js/ckeditor.js',
+                        //'https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js',
+                        '/assets/js/datatables.bundle.min.js'
+                        //,'http://127.0.0.1:8000/assets/vendors/custom/datatables/datatables.bundle.js',
+                        //'/assets/vendors/general/perfect-scrollbar/dist/perfect-scrollbar.js'
+
+                    ]
                 ],
                'components'=>[
                     'attr'=>'defer',

@@ -21,7 +21,7 @@ let VendorsComponent = new function () {
     };
 
     this.trans_title = (title_prop = 'undefined') => {
-        return (mThis.col_titles[title_prop] || 'undefined');
+        return (mThis.col_titles[title_prop]);
     }
 
     this.setLanguage = () => {
@@ -152,26 +152,26 @@ let VendorsComponent = new function () {
                     title: mThis.trans_title("Name"),
                     data: "name"
                 },
-                {
-                    data: "vendor_type",
-                    title: mThis.trans_title('Vendor Type')
-                },
-                {
-                    title: mThis.trans_title('Balance'),
-                    data: "balance"
-                },
-                {
-                    title: mThis.trans_title('Tax Number'),
-                    data: "tax_number"
-                },
-                {
-                    title: mThis.trans_title('Email'),
-                    data: "email"
-                },
-                {
-                    title: mThis.trans_title('Phone'),
-                    data: "phone"
-                },
+                // {
+                //     data: "vendor_type",
+                //     title: mThis.trans_title('Vendor Type')
+                // },
+                // {
+                //     title: mThis.trans_title('Balance'),
+                //     data: "balance"
+                // },
+                // {
+                //     title: mThis.trans_title('Tax Number'),
+                //     data: "tax_number"
+                // },
+                // {
+                //     title: mThis.trans_title('Email'),
+                //     data: "email"
+                // },
+                // {
+                //     title: mThis.trans_title('Phone'),
+                //     data: "phone_number"
+                // },
                 {
                     title: mThis.trans_title('Action'),
                     data: function (item, a, b) {

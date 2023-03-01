@@ -25,30 +25,11 @@ let ReportCenterComponent = new function () {
             'type': 'select',
             'width': 'full',
             'label': 'Warehouse',
-            'api_fetch': `${main_view.base_url}/api/settings/options-warehouse`,
+            'api_fetch': `${main_view.base_url}/api/inventory/settings/options-warehouse`,
             'api_params': {},
             'name': 'wid', //filter name or var name to be passed as parameter to report's fetch api
             'value_field': 'id',
             'text_field': 'warehouse_name'
-        },
-        {
-            'type': 'select',
-            //'width':'full',
-            'label': 'Driver',
-            'api_fetch': `${main_view.base_url}/api/settings/options-driver`,
-            'api_params': {},
-            'name': 'driver_id', //filter name or var name to be passed as parameter to report's fetch api
-            'value_field': 'id',
-            'text_field': 'driver_name'
-        },
-        {
-            'type': 'select',
-            'api_fetch': `${main_view.base_url}/api/settings/options-sender`,
-            'api_params': {},
-            'label': 'Sender',
-            'name': 'sender_id',
-            'value_field': 'id',
-            'text_field': 'sender_name'
         },
         {
             'name': 'start_date',

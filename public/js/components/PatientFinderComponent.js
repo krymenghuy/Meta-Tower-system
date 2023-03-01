@@ -104,7 +104,7 @@ let PatientFinderComponent = new function () {
         return (mThis.col_titles[title_prop]);
     }
 
-    this.createDropdownMenuHtml_loan = (items = [], data = null, data_props = []) => {
+    this.createDropdownMenus = (items = [], data = null, data_props = []) => {
         if (!data_props) data_props = [];
         let str_props = "";
         data_props.map((prop_name) => {
@@ -114,11 +114,11 @@ let PatientFinderComponent = new function () {
 
         //cla = 'class_list_action' = > cla_delete, cla_modify,...
         let html = ['<div class="dropdown-menu action-menus">',
-            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_edit" href="javascript:void(0)"><i class="fa fa-edit" style="color:blue;font-size:1.1em;margin-top:2px;"></i> <span>Review Application</span</a>',
-            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_disburse" href="#"><i class="fa fa-list-alt" style="color:orange"></i> Disburse Loan</a>',
+            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _pf_patient_edit" href="javascript:void(0)"><i class="fa fa-edit" style="color:blue;font-size:1.1em;margin-top:2px;"></i> <span>View Profile</span</a>',
+            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _pf_medical_history" href="#"><i class="fa fa-list-alt" style="color:orange"></i> View Medical History</a>',
             '<div class="dropdown-divider"></div>',
-            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_delete" href="#"><i class="fa fa-times" style="color:red"></i> Delete Loan Application</a>',
-            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_person_profile" href="#"><i class="fa fa-list" style="color:green"></i> Personal Profile</a>',
+            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _pf_patient_delete" href="#"><i class="fa fa-times" style="color:red"></i> Delete Profile</a>',
+            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _pf_patient_invoices" href="#"><i class="fa fa-list" style="color:green"></i> Invoices</a>',
             '</div>'].join('');
         return html;
     }
@@ -159,12 +159,12 @@ let PatientFinderComponent = new function () {
                     data: 'sex'
 
                 },
-                {
-                    title: mThis.trans_title('Age'),
-                    data: (data, a, b) => {
-                        return data.age;
-                    }
-                },
+                // {
+                //     title: mThis.trans_title('Age'),
+                //     data: (data, a, b) => {
+                //         return data.age;
+                //     }
+                // },
                 {
                     title: mThis.trans_title('Phone Number'),
                     data: (data, a, b) => {

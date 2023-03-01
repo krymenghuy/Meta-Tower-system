@@ -24,7 +24,7 @@ let EmployeeListComponent = new function () {
     };
 
     this.trans_title = (title_prop = 'undefined') => {
-        return (mThis.col_titles[title_prop] || 'undefined');
+        return (mThis.col_titles[title_prop]);
     }
 
     this.setLanguage = () => {
@@ -130,10 +130,10 @@ let EmployeeListComponent = new function () {
                     title: mThis.trans_title('Date Of Birth'),
                     data: "date_of_birth"
                 },
-                {
-                    title: mThis.trans_title('Employee Type'),
-                    data: "employment_type"
-                },
+                // {
+                //     title: mThis.trans_title('Employee Type'),
+                //     data: "employment_type"
+                // },
                 {
                     title: mThis.trans_title('Action'),
                     data: function (data, a, b) {
