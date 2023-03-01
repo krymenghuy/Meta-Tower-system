@@ -96,7 +96,7 @@ namespace App\ScriptManagement;
                         '/js/components/Dashboard2Component.js',
                         '/js/components/PersonDialog.js',
                         '/js/components/AppointmentListComponent.js',
-                        '/js/components/QueueComponent.js',
+                        '/js/components/QueueComponent.js?v=2',
                         '/js/components/ConsultationQueueComponent.js',
                         '/js/components/EmployeeListComponent.js',
                         '/js/components/PositionsComponent.js',
