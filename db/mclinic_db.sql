@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2023-02-09 08:55:07
+Date: 2023-02-22 09:53:55
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -46,22 +46,22 @@ CREATE TABLE `appointments` (
   `schedule_type` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT 'appointment_type = {followup,on demand}',
   `priority` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'priority ={urgent,normal}',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=127 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=140 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of appointments
 -- ----------------------------
-INSERT INTO `appointments` VALUES ('109', '1', '2', '2023-01-07', '2023-01-05 09:59:33', null, 'Chan Samnang', '012234324', null, null, '1', '48', null, '101', 'Samsethy', '1', '2023-01-05 09:57:40.000000', null, null, null, 'M', '3', '', 'On demand', 'Normal');
-INSERT INTO `appointments` VALUES ('110', '1', '3', '2023-02-08', '2023-01-10 18:45:28', null, 'Dyna', '0124565464', null, null, '0', '49', null, '102', 'Samsethy', '1', '2023-01-05 10:26:30.000000', null, null, null, 'M', '3', '', 'On demand', 'Normal');
-INSERT INTO `appointments` VALUES ('111', '1', '3', '2023-02-15', '2023-01-11 16:17:54', null, 'ABC pat', '012456456', null, null, '0', '0', null, '103', 'Samsethy', '1', '2023-01-11 16:17:28.000000', null, null, null, 'F', '3', 'P100089', 'On demand', 'Normal');
-INSERT INTO `appointments` VALUES ('115', '1', '2', '2023-01-20', '2023-01-20 10:00:00', null, 'DDDD', '012454545', null, null, '2', '51', null, '0', 'Samsethy', '1', '2023-01-19 18:20:17.000000', null, null, null, 'F', '1', '', 'On demand', 'Normal');
-INSERT INTO `appointments` VALUES ('116', '1', '2', '2023-01-20', '2023-01-20 10:30:00', null, 'GDGDGd', '0234456456', null, null, '2', '52', null, '0', 'Samsethy', '1', '2023-01-19 18:23:44.000000', null, null, null, 'F', '1', '', 'On demand', 'Normal');
-INSERT INTO `appointments` VALUES ('117', '1', '3', '2023-01-26', '2023-01-19 18:27:48', null, 'dfgdfhf', '02334534543', null, null, '0', '53', null, '104', 'Samsethy', '1', '2023-01-19 18:25:34.000000', null, null, null, 'F', '3', '', 'On demand', 'Normal');
-INSERT INTO `appointments` VALUES ('118', '1', '2', '2023-01-20', '2023-01-20 10:30:00', null, 'dfgdfgdfh', '0125656765', null, null, '0', '0', null, '71', 'Samsethy', '1', '2023-01-19 18:33:12.000000', null, null, null, 'F', '2', 'P100060', 'On demand', 'Normal');
-INSERT INTO `appointments` VALUES ('119', '1', '3', '2023-01-20', '2023-01-19 18:36:28', null, 'sadsfd', '012324332', null, null, '0', '54', null, '105', 'Samsethy', '1', '2023-01-19 18:34:05.000000', null, null, null, 'F', '3', '', 'On demand', 'Normal');
-INSERT INTO `appointments` VALUES ('123', '1', '2', '2023-01-20', '2023-01-20 10:30:00', null, 'dsfdfgdfgfh', '0125656765', null, null, '2', '0', null, '71', 'Samsethy', '1', '2023-01-19 18:43:58.000000', null, null, null, 'F', '2', 'P100060', 'On demand', 'Normal');
-INSERT INTO `appointments` VALUES ('124', '1', '2', '2023-01-20', '2023-02-09 07:40:25', null, 'sdfgdgf', '02324', null, null, '2', '55', null, '106', 'Samsethy', '1', '2023-01-19 18:46:20.000000', null, null, null, 'F', '3', '', 'On demand', 'Normal');
-INSERT INTO `appointments` VALUES ('126', '1', '2', '2023-01-25', '2023-01-25 10:00:00', null, 'KKKKK', '0112225653', null, null, '2', '0', null, '74', 'Samsethy', '1', '2023-01-19 18:52:28.000000', null, null, null, 'F', '2', 'P100058', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('110', '1', '3', '2023-02-08', '2023-02-22 06:37:21', null, 'GGGG', '0124565464', null, null, '0', '49', null, '108', 'Samsethy', '1', '2023-01-05 10:26:30.000000', null, null, null, 'F', '2', '', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('128', '1', '2', '2023-02-21', '2023-02-22 06:30:51', null, 'srey pov', '01255665', null, null, '2', '58', null, '107', 'Samsethy', '1', '2023-02-22 05:03:06.000000', null, null, null, 'F', '3', '', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('129', '1', '2', '2023-02-10', '2023-02-22 06:37:28', null, 'GGGG', '0124565464', null, null, '0', '49', null, '108', 'Samsethy', '1', '2023-02-22 06:19:22.000000', null, null, null, 'F', '3', '', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('132', '1', '2', '2023-02-20', '2023-02-22 06:47:42', null, 'Dyna', '01325435', null, null, '0', '60', null, '111', 'Samsethy', '1', '2023-02-22 06:47:28.000000', null, null, null, 'F', '3', '', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('133', '1', '2', '2023-02-23', '2023-02-22 08:06:03', null, 'Dyna', '0124565464', null, null, '2', '0', null, '108', 'Samsethy', '1', '2023-02-22 06:49:11.000000', null, null, null, 'M', '3', 'P100096', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('134', '1', '2', '2023-02-09', '2023-02-09 10:30:00', null, 'Dyna', '0124565464', null, null, '2', '0', null, '108', 'Samsethy', '1', '2023-02-22 08:23:48.000000', null, null, null, 'M', '2', 'P100096', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('135', '1', '2', '2023-02-09', '2023-02-09 10:30:00', null, 'Dyna', '0124565464', null, null, '2', '0', null, '108', 'Samsethy', '1', '2023-02-22 08:23:50.000000', null, null, null, 'M', '2', 'P100096', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('136', '1', '2', '2023-02-09', '2023-02-09 10:30:00', null, 'Dyna', '0124565464', null, null, '2', '0', null, '108', 'Samsethy', '1', '2023-02-22 08:23:54.000000', null, null, null, 'M', '2', 'P100096', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('137', '1', '2', '2023-02-09', '2023-02-09 10:30:00', null, 'Dyna', '0124565464', null, null, '2', '0', null, '108', 'Samsethy', '1', '2023-02-22 08:24:48.000000', null, null, null, 'M', '2', 'P100096', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('138', '1', '2', '2023-02-07', '2023-02-07 10:30:00', null, 'Dyna', '0124565464', null, null, '2', '0', null, '108', 'Samsethy', '1', '2023-02-22 08:27:14.000000', null, null, null, 'M', '2', 'P100096', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('139', '1', '2', '2023-02-06', '2023-02-06 11:30:00', null, 'Dyna', '0124565464', null, null, '1', '0', null, '108', 'Samsethy', '1', '2023-02-22 08:29:14.000000', null, null, null, 'M', '2', 'P100096', 'On demand', 'Normal');
 
 -- ----------------------------
 -- Table structure for `appt_chief_complaints`
@@ -139,6 +139,12 @@ INSERT INTO `appt_chief_complaints` VALUES ('110', '3', null, null, '2023-01-05 
 INSERT INTO `appt_chief_complaints` VALUES ('110', '4', null, null, '2023-01-05 10:30:13.477516', '88');
 INSERT INTO `appt_chief_complaints` VALUES ('124', '3', null, null, null, null);
 INSERT INTO `appt_chief_complaints` VALUES ('124', '5', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('127', '7', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('127', '5', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('131', '4', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('131', '5', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('133', '3', null, null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('133', '5', null, null, null, null);
 
 -- ----------------------------
 -- Table structure for `appt_statuses`
@@ -244,6 +250,31 @@ CREATE TABLE `com_branches` (
 -- Records of com_branches
 -- ----------------------------
 INSERT INTO `com_branches` VALUES ('1', '1', '1', 'ESTHE-DERM', 'Head Quarter');
+
+-- ----------------------------
+-- Table structure for `consultations`
+-- ----------------------------
+DROP TABLE IF EXISTS `consultations`;
+CREATE TABLE `consultations` (
+  `id` int(10) NOT NULL,
+  `branch_id` int(10) DEFAULT NULL,
+  `com_branch_id` int(10) DEFAULT NULL,
+  `consultant_id` int(10) DEFAULT NULL,
+  `consult_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `description` varchar(250) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `create_user` varchar(50) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  `update_user` varchar(50) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `ticket_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of consultations
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for `consult_advice`
@@ -478,6 +509,69 @@ INSERT INTO `currencies` VALUES ('3', '1', 'asdasd', 'USD1', '1', 'Samsethy', nu
 INSERT INTO `currencies` VALUES ('6', '1', 'asdagsd', 'USD3', '1', 'Samsethy', null, null, null, '$', '0', '2', '2023-01-14 12:11:03.000000');
 
 -- ----------------------------
+-- Table structure for `customers`
+-- ----------------------------
+DROP TABLE IF EXISTS `customers`;
+CREATE TABLE `customers` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `name` varchar(250) NOT NULL,
+  `customer_type` varchar(35) NOT NULL COMMENT 'customer_type = {individual, corporate,other}',
+  `person_id` int(10) DEFAULT NULL,
+  `phone_number` varchar(250) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `address` varchar(350) DEFAULT NULL,
+  `cp_phone_number` varchar(50) DEFAULT NULL,
+  `cp_email` varchar(100) DEFAULT NULL,
+  `cp_address` varchar(350) DEFAULT NULL,
+  `business_type` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  `inactive` tinyint(6) DEFAULT NULL,
+  `currency_code` varchar(15) DEFAULT NULL,
+  `code` varchar(25) DEFAULT NULL,
+  `remarks` varchar(150) DEFAULT NULL,
+  `cp_name` varchar(100) DEFAULT NULL,
+  `billing_address` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of customers
+-- ----------------------------
+INSERT INTO `customers` VALUES ('7', '1', 'dfgfhfgh', 'Corporate', null, '0126456456', null, null, null, null, null, null, '2022-12-21 10:24:38.060623', '1', 'Samsethy', '2022-12-21 10:24:38.060623', null, null, null, null, '100002', null, null, null);
+INSERT INTO `customers` VALUES ('8', '1', 'AAAAA', 'Corporate', null, '01245645', null, null, null, null, null, null, '2022-12-21 10:31:03.038375', '1', 'Samsethy', '2022-12-21 10:31:03.038375', null, null, null, null, '100003', null, null, null);
+INSERT INTO `customers` VALUES ('11', '1', 'AAAAA', 'Corporate', null, '01245645', null, null, null, null, null, null, '2022-12-21 12:14:06.385702', '1', 'Samsethy', '2022-12-21 12:14:06.385702', null, null, null, null, '100006', null, null, null);
+INSERT INTO `customers` VALUES ('12', '1', 'Samsethy', 'Corporate', null, '01245645', null, null, null, null, null, null, '2022-12-21 12:14:18.795927', '1', 'Samsethy', '2022-12-21 12:14:18.795927', null, null, null, null, '100007', null, null, null);
+INSERT INTO `customers` VALUES ('13', '1', 'BBBBBB', 'Corporate', null, '01245645', null, null, null, null, null, null, '2022-12-21 12:14:34.601007', '1', 'Samsethy', '2022-12-21 12:14:34.601007', null, null, null, null, '100008', null, null, null);
+INSERT INTO `customers` VALUES ('17', '1', 'Sovanna', 'Corporate', null, '012324', null, null, null, null, null, null, '2022-12-21 17:07:47.002570', '1', 'Samsethy', '2022-12-21 17:07:47.002570', 'Samsethy', '1', null, null, '100016', null, null, null);
+INSERT INTO `customers` VALUES ('19', '1', 'Chanika', 'Corporate', null, '024235', null, null, null, null, null, null, '2022-12-21 12:19:05.112574', '1', 'Samsethy', '2022-12-21 12:19:05.112574', null, null, null, null, '100014', null, null, null);
+INSERT INTO `customers` VALUES ('20', '1', 'Nika One', 'Corporate', null, '0125346456', null, null, null, null, null, null, '2022-12-21 12:19:43.668391', '1', 'Samsethy', '2022-12-21 12:19:43.668391', null, null, null, null, '100015', null, null, null);
+INSERT INTO `customers` VALUES ('23', '1', 'XYZ Col Ltd', 'Corporate', null, '0235656756', 'infoxyzcom', 'address of XYZ', '012456657', 'somanea@gmail.com', 'dfgfhggfhhgju', null, '2022-12-23 00:18:09.543663', '1', 'Samsethy', '2022-12-23 00:18:09.543663', 'Samsethy', '1', null, null, '100028', null, 'somanea', null);
+
+-- ----------------------------
+-- Table structure for `customer_code_control`
+-- ----------------------------
+DROP TABLE IF EXISTS `customer_code_control`;
+CREATE TABLE `customer_code_control` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `com_branch_id` int(10) DEFAULT NULL,
+  `last_id` int(10) NOT NULL,
+  `prefix` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of customer_code_control
+-- ----------------------------
+INSERT INTO `customer_code_control` VALUES ('1', '1', null, '28', '');
+
+-- ----------------------------
 -- Table structure for `departments`
 -- ----------------------------
 DROP TABLE IF EXISTS `departments`;
@@ -604,37 +698,167 @@ CREATE TABLE `exchange_rates` (
 -- ----------------------------
 DROP TABLE IF EXISTS `invoices`;
 CREATE TABLE `invoices` (
-  `id` int(10) NOT NULL DEFAULT 0,
-  `branch_id` int(10) NOT NULL,
-  `issue_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `customer_id` int(10) NOT NULL,
-  `customer_address` varchar(250) DEFAULT '',
-  `customer_email` varchar(100) DEFAULT '',
-  `customer_phone` varchar(50) DEFAULT '',
+  `branch_id` int(10) DEFAULT NULL,
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `entry_id` varchar(50) DEFAULT '' COMMENT 'double_entry_activity_id is linked to "transactions.activity_id"',
+  `ref_number` varchar(30) CHARACTER SET latin1 DEFAULT NULL,
+  `issue_date` timestamp(6) NOT NULL DEFAULT current_timestamp(6) ON UPDATE current_timestamp(6),
+  `terms` varchar(50) DEFAULT NULL,
+  `due_date` date DEFAULT NULL COMMENT 'Due Date is NULL => the due dates can be set in separate payment schedule by Installment, OR there is no specific due date',
+  `customer_id` int(11) DEFAULT NULL,
+  `billing_address` varchar(150) CHARACTER SET utf8 DEFAULT '',
+  `customer_email` varchar(150) CHARACTER SET latin1 DEFAULT '',
+  `customer_phone` varchar(150) CHARACTER SET latin1 DEFAULT '',
+  `customer_tax_number` varchar(150) CHARACTER SET latin1 DEFAULT '',
+  `currency_code` varchar(10) CHARACTER SET latin1 NOT NULL,
+  `exchange_rate` decimal(10,4) NOT NULL,
+  `status_code` varchar(30) CHARACTER SET latin1 NOT NULL,
+  `cashflow_activity_id` int(11) DEFAULT NULL,
+  `cashflow_activity` varchar(150) DEFAULT NULL,
+  `total_cost` decimal(10,2) NOT NULL DEFAULT 0.00,
   `amount` decimal(10,2) NOT NULL,
-  `discount` decimal(10,2) NOT NULL,
-  `discount_type` varchar(10) NOT NULL,
-  `net_amount` decimal(10,2) NOT NULL,
-  `status` varchar(15) NOT NULL,
-  `recurring` tinyint(6) NOT NULL,
-  `create_uid` int(10) NOT NULL,
-  `create_user` varchar(50) DEFAULT NULL,
-  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `discount_percent` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `payback_price` decimal(10,2) DEFAULT 0.00,
+  `reversed_cost` decimal(10,2) DEFAULT 0.00,
+  `amount_due` decimal(10,2) NOT NULL,
+  `amount_paid` decimal(10,2) NOT NULL,
+  `tax_amount` decimal(10,4) DEFAULT 0.0000,
+  `quotation_id` int(11) DEFAULT NULL,
+  `recurring_name` varchar(30) CHARACTER SET latin1 DEFAULT '',
+  `recurring_days` int(11) DEFAULT 0,
+  `description` varchar(150) CHARACTER SET utf8 DEFAULT NULL,
+  `import_session_id` int(20) DEFAULT NULL,
+  `inactive` tinyint(6) NOT NULL,
+  `create_user` varchar(255) CHARACTER SET latin1 NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `create_uid` int(8) DEFAULT NULL,
+  `authorized` tinyint(4) DEFAULT 0,
+  `auth_date` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
+  `auth_user` varchar(40) DEFAULT NULL,
+  `inactive_date` date DEFAULT NULL,
+  `invoice_type` varchar(5) DEFAULT 'CI' COMMENT 'invoice_type = {CI,TI}   TI = Tax Invoice, CI = commeercial Invoice',
+  `invoice_notes` varchar(200) CHARACTER SET utf8 DEFAULT '',
+  `receivable_account_id` int(11) DEFAULT NULL,
+  `pmt_bank_name` varchar(50) DEFAULT '',
+  `pmt_account_name` varchar(35) DEFAULT '',
+  `pmt_account_number` varchar(35) DEFAULT '',
+  `signer_name` varchar(35) DEFAULT NULL,
+  `discount_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
   `update_uid` int(10) DEFAULT NULL,
-  `update_user` varchar(50) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `total_tax` decimal(10,4) DEFAULT 0.0000,
+  `tax_rate` decimal(10,2) DEFAULT 0.00,
+  `discount_type` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of invoices
 -- ----------------------------
+INSERT INTO `invoices` VALUES ('1', '56', '', 'V12023-00026', '2023-02-17 21:39:25.149211', 'net 60', '2023-02-12', '11', null, null, '01245645', '', 'USD', '4501.0000', 'active', null, null, '0.00', '101.50', '0.00', '0.00', '0.00', '101.50', '65.00', '0.0000', null, '', '0', null, null, '0', 'Samsethy', '2023-02-16 09:45:50', '1', '0', '2023-02-17 21:39:25', null, null, 'CI', null, null, 'ABA', 'Samsethy', '00601893', 'Samsethy', '0.00', null, '2023-02-17 21:39:25.149211', null, '0.0000', '0.00', null);
+INSERT INTO `invoices` VALUES ('1', '60', '', 'V12023-00030', '2023-02-18 00:04:58.777950', 'net 60', '2023-02-12', '11', null, null, '01245645', '', 'USD', '4501.0000', 'active', null, null, '0.00', '101.50', '0.00', '0.00', '0.00', '101.50', '80.00', '0.0000', null, '', '0', null, null, '0', 'Samsethy', '2023-02-16 10:01:04', '1', '0', '2023-02-18 00:04:58', null, null, 'CI', null, null, 'ABA', 'Samsethy', '00601893', 'Samsethy', '0.00', null, '2023-02-18 00:04:58.777950', null, '0.0000', '0.00', null);
+INSERT INTO `invoices` VALUES ('1', '68', '', 'V12023-00036', '2023-02-21 15:55:15.161017', 'net 30', '2023-02-19', '20', null, null, '0125346456', '', 'USD', '4501.0000', 'active', null, null, '0.00', '800.00', '0.00', '0.00', '0.00', '800.00', '400.00', '27.5000', null, '', '0', 'sdsfsdgsd', null, '0', 'Samsethy', '2023-02-19 12:29:25', '1', '0', '2023-02-21 15:55:15', null, null, 'CI', null, null, 'ABA', 'Samsethy', '00601893', 'Samsethy', '0.00', null, '2023-02-21 15:55:15.161017', null, '40.0000', '5.00', null);
+
+-- ----------------------------
+-- Table structure for `invoice_items`
+-- ----------------------------
+DROP TABLE IF EXISTS `invoice_items`;
+CREATE TABLE `invoice_items` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) DEFAULT NULL,
+  `invoice_id` varchar(35) NOT NULL,
+  `item_id` bigint(11) DEFAULT NULL,
+  `item_name` varchar(150) CHARACTER SET latin1 DEFAULT NULL,
+  `description` varchar(250) DEFAULT NULL,
+  `sku` varchar(150) CHARACTER SET latin1 DEFAULT NULL,
+  `qty` decimal(10,2) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `discount_percent` decimal(10,2) NOT NULL,
+  `cost` decimal(10,2) DEFAULT 0.00,
+  `tax_id` int(7) DEFAULT NULL,
+  `tax_rate` decimal(7,2) NOT NULL,
+  `tax_amount` decimal(10,2) DEFAULT 0.00,
+  `net_amount` decimal(10,2) DEFAULT 0.00 COMMENT 'net_amount = qty* (price - discount) not including tax amount',
+  `create_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `create_uid` int(8) DEFAULT NULL,
+  `create_user` varchar(255) CHARACTER SET latin1 NOT NULL,
+  `import_session_id` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `discount_amount` decimal(10,2) DEFAULT 0.00,
+  `discount_type` varchar(10) DEFAULT NULL,
+  `item_code` varchar(25) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=146 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of invoice_items
+-- ----------------------------
+INSERT INTO `invoice_items` VALUES ('81', '1', '56', '1', 'Bioselenium Shampoo 100ml', 'sdddsfsdf', 'Bottle', '2.00', '25.00', '5.00', '0.00', null, '0.00', '0.00', '47.50', '2023-02-16 09:45:50', '1', 'Samsethy', null, '2023-02-16 09:45:50', '2023-02-16 09:45:50', '0.00', null, null);
+INSERT INTO `invoice_items` VALUES ('82', '1', '56', '2', 'Fixderma Moisturizing Cream', 'sdfghgjkjh', 'Tube', '3.00', '20.00', '10.00', '0.00', null, '0.00', '0.00', '54.00', '2023-02-16 09:45:50', '1', 'Samsethy', null, '2023-02-16 09:45:50', '2023-02-16 09:45:50', '0.00', null, null);
+INSERT INTO `invoice_items` VALUES ('89', '1', '60', '1', 'Bioselenium Shampoo 100ml', 'sdddsfsdf', 'Bottle', '2.00', '25.00', '5.00', '0.00', null, '0.00', '0.00', '47.50', '2023-02-16 10:01:04', '1', 'Samsethy', null, '2023-02-16 10:01:04', '2023-02-16 10:01:04', '0.00', null, null);
+INSERT INTO `invoice_items` VALUES ('90', '1', '60', '2', 'Fixderma Moisturizing Cream', 'sdfghgjkjh', 'Tube', '3.00', '20.00', '10.00', '0.00', null, '0.00', '0.00', '54.00', '2023-02-16 10:01:04', '1', 'Samsethy', null, '2023-02-16 10:01:04', '2023-02-16 10:01:04', '0.00', null, null);
+INSERT INTO `invoice_items` VALUES ('101', '1', '68', '245', 'Y Mycin A ', 'Y Mycin A ', 'Tube', '20.00', '50.00', '20.00', '0.00', null, '5.00', '40.00', '800.00', '2023-02-19 12:29:25', '1', 'Samsethy', null, '2023-02-19 12:29:25', '2023-02-19 12:29:25', '0.00', null, null);
+
+-- ----------------------------
+-- Table structure for `invoice_number_control`
+-- ----------------------------
+DROP TABLE IF EXISTS `invoice_number_control`;
+CREATE TABLE `invoice_number_control` (
+  `doc_class` varchar(25) NOT NULL,
+  `com_branch_id` int(10) DEFAULT 0 COMMENT 'voucher_type = {income,expense,expenditure}',
+  `branch_id` int(10) NOT NULL,
+  `issue_year` int(10) NOT NULL,
+  `prefix` varchar(10) DEFAULT NULL,
+  `last_id` int(10) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of invoice_number_control
+-- ----------------------------
+INSERT INTO `invoice_number_control` VALUES ('tax_line', null, '1', '2023', '', '58');
+INSERT INTO `invoice_number_control` VALUES ('tax_line', null, '1', '2025', '', '2');
+
+-- ----------------------------
+-- Table structure for `invoice_payments`
+-- ----------------------------
+DROP TABLE IF EXISTS `invoice_payments`;
+CREATE TABLE `invoice_payments` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `invoice_id` int(10) NOT NULL,
+  `payment_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `amount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `notes` varchar(250) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `create_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `currency_code` varchar(10) DEFAULT NULL,
+  `exchange_rate` decimal(10,2) DEFAULT 1.00,
+  `tax_amount` decimal(10,2) DEFAULT 0.00,
+  `ref_number` varchar(25) DEFAULT NULL,
+  `amount_after_tax` decimal(10,2) DEFAULT 0.00,
+  `payer_name` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of invoice_payments
+-- ----------------------------
+INSERT INTO `invoice_payments` VALUES ('81', '1', '60', '2023-02-17 00:00:00.000000', '80.00', null, '1', '2023-02-21 15:53:10.755930', 'Samsethy', '1', '2023-02-21 15:53:10.000000', 'Samsethy', 'USD', '1.00', '0.00', 'P12023-00074', '0.00', null);
+INSERT INTO `invoice_payments` VALUES ('87', '1', '68', '2023-02-21 15:54:42.040091', '250.00', null, '1', '2023-02-21 15:54:42.040091', 'Samsethy', null, '2023-02-21 15:54:42.040091', null, 'USD', '1.00', '12.50', 'P12023-00078', '0.00', null);
+INSERT INTO `invoice_payments` VALUES ('88', '1', '68', '2023-02-21 00:00:00.000000', '150.00', null, '1', '2023-02-21 15:55:15.155467', 'Samsethy', '1', '2023-02-21 15:55:15.000000', 'Samsethy', 'USD', '1.00', '7.50', 'P12023-00079', '0.00', null);
 
 -- ----------------------------
 -- Table structure for `inv_adjustment_types`
 -- ----------------------------
 DROP TABLE IF EXISTS `inv_adjustment_types`;
 CREATE TABLE `inv_adjustment_types` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `id` int(10) NOT NULL DEFAULT 0,
   `branch_id` int(10) NOT NULL,
   `name` varchar(100) NOT NULL,
   `description` varchar(250) DEFAULT NULL,
@@ -645,9 +869,8 @@ CREATE TABLE `inv_adjustment_types` (
   `update_uid` int(10) DEFAULT NULL,
   `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   `stock_class_id` int(10) DEFAULT NULL,
-  `warehouse_id` int(10) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
+  `warehouse_id` int(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_adjustment_types
@@ -662,7 +885,7 @@ INSERT INTO `inv_adjustment_types` VALUES ('4', '1', 'Theft', 'Theft', null, nul
 -- ----------------------------
 DROP TABLE IF EXISTS `inv_blocks`;
 CREATE TABLE `inv_blocks` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `id` int(10) NOT NULL DEFAULT 0,
   `branch_id` int(10) NOT NULL,
   `name` varchar(150) NOT NULL,
   `code` varchar(10) NOT NULL,
@@ -671,9 +894,8 @@ CREATE TABLE `inv_blocks` (
   `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   `update_uid` int(10) DEFAULT NULL,
-  `update_user` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+  `update_user` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_blocks
@@ -685,7 +907,7 @@ INSERT INTO `inv_blocks` VALUES ('1', '1', 'Block A', 'A', '1', 'Admin', null, n
 -- ----------------------------
 DROP TABLE IF EXISTS `inv_brands`;
 CREATE TABLE `inv_brands` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `id` int(10) NOT NULL DEFAULT 0,
   `name` varchar(100) NOT NULL DEFAULT '',
   `branch_id` int(10) DEFAULT NULL,
   `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
@@ -694,9 +916,8 @@ CREATE TABLE `inv_brands` (
   `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   `update_user` varchar(50) DEFAULT NULL,
   `update_uid` int(10) DEFAULT NULL,
-  `name_kh` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=123 DEFAULT CHARSET=utf8mb4;
+  `name_kh` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_brands
@@ -723,7 +944,7 @@ INSERT INTO `inv_brands` VALUES ('122', 'Vectorasoft', null, '2023-01-06 15:56:5
 -- ----------------------------
 DROP TABLE IF EXISTS `inv_categories`;
 CREATE TABLE `inv_categories` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `id` int(10) NOT NULL DEFAULT 0,
   `branch_id` int(10) NOT NULL,
   `name` varchar(150) NOT NULL,
   `create_user` varchar(50) DEFAULT NULL,
@@ -733,9 +954,8 @@ CREATE TABLE `inv_categories` (
   `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   `update_user` varchar(50) DEFAULT NULL,
   `update_uid` int(10) DEFAULT NULL,
-  `item_class` varchar(50) DEFAULT NULL COMMENT 'item_class ={RM,FG,MI}. RM = Raw Materials, FG = Finsihed Goods, MI = Merchandising Items',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4;
+  `item_class` varchar(50) DEFAULT NULL COMMENT 'item_class ={RM,FG,MI}. RM = Raw Materials, FG = Finsihed Goods, MI = Merchandising Items'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_categories
@@ -754,11 +974,10 @@ INSERT INTO `inv_categories` VALUES ('29', '1', 'Sam Category1', 'Samsethy', '1'
 -- ----------------------------
 DROP TABLE IF EXISTS `inv_countries`;
 CREATE TABLE `inv_countries` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `id` int(10) NOT NULL DEFAULT 0,
   `country_name` varchar(100) NOT NULL,
   `country_id` int(10) NOT NULL,
-  `branch_id` int(10) NOT NULL,
-  PRIMARY KEY (`id`)
+  `branch_id` int(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -786,13 +1005,14 @@ CREATE TABLE `inv_current_stocks` (
   `warehouse_id` int(10) NOT NULL,
   `stockclass_code` varchar(25) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_current_stocks
 -- ----------------------------
-INSERT INTO `inv_current_stocks` VALUES ('11', '1', '2', 'TP0002', '45.00', null, null, '2023-02-05 23:51:44.462785', 'Samsethy', '1', '2023-02-05 23:51:44.000000', 'bottle', null, '1', 'A');
-INSERT INTO `inv_current_stocks` VALUES ('12', '1', '3', 'TP0003', '45.00', null, null, '2023-02-05 23:51:44.468232', 'Samsethy', '1', '2023-02-05 23:51:44.000000', 'box', null, '1', 'A');
+INSERT INTO `inv_current_stocks` VALUES ('1', '1', '145', 'TP0061', '30.00', null, null, '2023-02-12 19:41:14.021374', 'Samsethy', '1', '2023-02-12 19:41:14.000000', 'bottle', null, '1', 'A');
+INSERT INTO `inv_current_stocks` VALUES ('2', '1', '147', 'TP0063', '110.00', null, null, '2023-02-13 11:19:05.172936', 'Samsethy', '1', '2023-02-13 11:19:05.000000', 'box', null, '1', 'A');
+INSERT INTO `inv_current_stocks` VALUES ('3', '1', '125', '100016', '60.00', null, null, '2023-02-13 11:19:05.167476', 'Samsethy', '1', '2023-02-13 11:19:05.000000', 'bottle', null, '1', 'A');
 
 -- ----------------------------
 -- Table structure for `inv_daily_stocks`
@@ -824,30 +1044,29 @@ CREATE TABLE `inv_daily_stocks` (
   `create_uid` int(10) DEFAULT NULL,
   `create_user` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_daily_stocks
 -- ----------------------------
-INSERT INTO `inv_daily_stocks` VALUES ('56', '1', 'A', '1', null, '2', 'TP0002', '2', 'bottle', '2023-02-05 16:46:00.270230', 'admin@gmail.com', '1', null, '0.00', '3.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2023-02-03 16:45:14.000000', '2023-02-05 16:46:00.270230', '1', 'admin@gmail.com');
-INSERT INTO `inv_daily_stocks` VALUES ('57', '1', 'A', '1', null, '3', 'TP0003', '3', 'box', '2023-02-05 16:46:06.124173', 'admin@gmail.com', '1', null, '0.00', '3.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2023-02-03 16:45:14.000000', '2023-02-05 16:46:06.124173', '1', 'admin@gmail.com');
-INSERT INTO `inv_daily_stocks` VALUES ('60', '1', 'A', '1', null, '2', 'TP0002', '2', 'bottle', '2023-02-05 23:51:44.000000', 'admin@gmail.com', '1', null, '3.00', '42.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2023-02-05 23:51:44.378000', '2023-02-05 23:51:44.378000', '1', 'admin@gmail.com');
-INSERT INTO `inv_daily_stocks` VALUES ('61', '1', 'A', '1', null, '3', 'TP0003', '3', 'box', '2023-02-05 23:51:44.000000', 'admin@gmail.com', '1', null, '3.00', '42.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2023-02-05 23:51:44.405579', '2023-02-05 23:51:44.405579', '1', 'admin@gmail.com');
+INSERT INTO `inv_daily_stocks` VALUES ('1', '1', 'A', '1', null, '145', 'TP0061', '145', 'bottle', '2023-02-12 19:41:13.000000', 'admin@gmail.com', '1', null, '0.00', '30.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2023-02-12 19:41:13.992328', '2023-02-12 19:41:13.992328', '1', 'admin@gmail.com');
+INSERT INTO `inv_daily_stocks` VALUES ('2', '1', 'A', '1', null, '147', 'TP0063', '147', 'box', '2023-02-12 19:41:14.000000', 'admin@gmail.com', '1', null, '0.00', '30.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2023-02-12 19:41:14.008877', '2023-02-12 19:41:14.008877', '1', 'admin@gmail.com');
+INSERT INTO `inv_daily_stocks` VALUES ('3', '1', 'A', '1', null, '147', 'TP0063', '147', 'box', '2023-02-13 11:19:05.000000', 'admin@gmail.com', '1', null, '30.00', '80.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2023-02-13 11:19:05.103073', '2023-02-13 11:19:05.103073', '1', 'admin@gmail.com');
+INSERT INTO `inv_daily_stocks` VALUES ('4', '1', 'A', '1', null, '125', '100016', '125', 'bottle', '2023-02-13 11:19:05.000000', 'admin@gmail.com', '1', null, '0.00', '60.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2023-02-13 11:19:05.077330', '2023-02-13 11:19:05.077330', '1', 'admin@gmail.com');
 
 -- ----------------------------
 -- Table structure for `inv_detailed_types`
 -- ----------------------------
 DROP TABLE IF EXISTS `inv_detailed_types`;
 CREATE TABLE `inv_detailed_types` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `id` int(10) NOT NULL DEFAULT 0,
   `branch_id` int(10) NOT NULL,
   `name` varchar(100) NOT NULL,
   `category_id` int(10) NOT NULL,
   `create_uid` int(10) NOT NULL,
   `create_user` varchar(50) DEFAULT NULL,
-  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_detailed_types
@@ -905,7 +1124,7 @@ INSERT INTO `inv_group_code_control` VALUES ('1', '5', null, 'ACN');
 -- ----------------------------
 DROP TABLE IF EXISTS `inv_items`;
 CREATE TABLE `inv_items` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `id` int(10) NOT NULL DEFAULT 0,
   `branch_id` int(10) DEFAULT NULL,
   `code` varchar(25) DEFAULT NULL,
   `name` varchar(50) DEFAULT NULL,
@@ -929,288 +1148,289 @@ CREATE TABLE `inv_items` (
   `update_uid` int(10) DEFAULT NULL,
   `selling_price` decimal(10,2) NOT NULL DEFAULT 0.00,
   `ws_selling_price` decimal(10,2) NOT NULL DEFAULT 0.00,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=615 DEFAULT CHARSET=utf8mb4;
+  `item_class` varchar(5) DEFAULT 'MI',
+  `sales_tax_rate` decimal(10,2) DEFAULT 0.00
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_items
 -- ----------------------------
-INSERT INTO `inv_items` VALUES ('1', '1', 'TP0066', 'Bioselenium Shampoo 100ml', 'Bioselenium Shampoo 100ml', 'Bioselenium Shampoo 100ml', '1', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('2', '1', '100146', 'Fixderma Moisturizing Cream', 'Fixderma Moisturizing Cream', 'Fixderma Moisturizing Cream', '2', null, null, '2023-02-06 00:12:48.217232', '2023-02-06 00:12:48.217232', 'Samsethy', null, null, null, '4', null, null, null, '0.00', 'Tube', '1', '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('3', '1', 'TP0003', 'Tidact gel', 'Tidact gel', 'Tidact gel', '3', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('4', '1', 'TP0001', 'Tacroz', 'Tacroz', 'Tacroz', '4', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('5', '1', 'TP0004', 'Disut-H Cream 15g', 'Disut-H Cream 15g', 'Disut-H Cream 15g', '5', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('6', '1', 'TP0005', 'Tacopic 0.1%', 'Tacopic 0.1%', 'Tacopic 0.1%', '6', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('7', '1', 'TP0006', 'Disuf-B cream 15g', 'Disuf-B cream 15g', 'Disuf-B cream 15g', '7', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('8', '1', 'TP0007', 'Candid-B Cream', 'Candid-B Cream', 'Candid-B Cream', '8', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('9', '1', 'TP0008', 'Candid Cream', 'Candid Cream', 'Candid Cream', '9', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('10', '1', 'TP0009', 'Elosone Cream', 'Elosone Cream', 'Elosone Cream', '10', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('11', '1', 'TP0010', 'Cloderm Cream 15g', 'Cloderm Cream 15g', 'Cloderm Cream 15g', '11', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('12', '1', 'TP0011', 'Beprosalic Ointment ', 'Beprosalic Ointment ', 'Beprosalic Ointment ', '12', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('13', '1', 'TP0012', 'Rozex gel 50g', 'Rozex gel 50g', 'Rozex gel 50g', '13', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('14', '1', 'TP0013', 'Beprogel Lotion 30ml', 'Beprogel Lotion 30ml', 'Beprogel Lotion 30ml', '14', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('15', '1', 'TP0014', 'Virest Cream', 'Virest Cream', 'Virest Cream', '15', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('16', '1', 'TP0015', 'H-cort Cream', 'H-cort Cream', 'H-cort Cream', '16', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('17', '1', 'TP0016', 'Ecocort Cream', 'Ecocort Cream', 'Ecocort Cream', '17', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('18', '1', 'TP0017', 'Disuf Cream', 'Disuf Cream', 'Disuf Cream', '18', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('19', '1', 'TP0018', 'Supirocine Ointment 5g', 'Supirocine Ointment 5g', 'Supirocine Ointment 5g', '19', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('20', '1', 'TP0019', 'Akne-Derm 5% Cream', 'Akne-Derm 5% Cream', 'Akne-Derm 5% Cream', '20', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('21', '1', 'TP0020', 'Diprosalic Pommade', 'Diprosalic Pommade', 'Diprosalic Pommade', '21', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('22', '1', 'TP0021', 'Neutriderm Moisturizing Lotion 125ml', 'Neutriderm Moisturizing Lotion 125ml', 'Neutriderm Moisturizing Lotion 125ml', '22', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('23', '1', 'TP0022', 'Dermavive Nappy Rash Cream', 'Dermavive Nappy Rash Cream', 'Dermavive Nappy Rash Cream', '23', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('24', '1', 'TP0023', 'Fixderma Moisturizing Lotion', 'Fixderma Moisturizing Lotion', 'Fixderma Moisturizing Lotion', '24', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('25', '1', 'EP0001', 'Serum physiodose 5ml', 'Serum physiodose 5ml', 'Serum physiodose 5ml', '25', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('26', '1', 'OM0001', 'Prednisolone', 'Prednisolone', 'Prednisolone', '26', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('27', '1', '100135', 'Acnotin', 'Acnotin', null, '27', null, null, '2023-01-16 15:49:04.897486', '2023-01-16 15:49:04.897486', 'Samsethy', null, null, null, '2', null, '4', null, '0.00', 'Bottle', '1', '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('28', '1', 'OM0003', 'Doxycycline cap 100mg', 'Doxycycline cap 100mg', 'Doxycycline cap 100mg', '28', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('29', '1', 'OM0004', 'Promethazine 25mg', 'Promethazine 25mg', 'Promethazine 25mg', '29', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('30', '1', 'EP0002', 'Syringe 3ml Vinahankook B/100P', 'Syringe 3ml Vinahankook B/100P', 'Syringe 3ml Vinahankook B/100P', '30', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('31', '1', 'EP0003', 'Syringe 1ml Vinahankook B/100P', 'Syringe 1ml Vinahankook B/100P', 'Syringe 1ml Vinahankook B/100P', '31', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('32', '1', 'EP0004', 'Syringe 5ml-25G Vinahankook B/100P', 'Syringe 5ml-25G Vinahankook B/100P', 'Syringe 5ml-25G Vinahankook B/100P', '32', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('33', '1', 'EP0005', 'Syringe 10ml Vinahankook B/100P', 'Syringe 10ml Vinahankook B/100P', 'Syringe 10ml Vinahankook B/100P', '33', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('34', '1', 'EP0006', 'Glove Sterile 7.0', 'Glove Sterile 7.0', 'Glove Sterile 7.0', '34', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '5', null, null, null, '0.00', 'Set', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('35', '1', 'IN0001', 'Nss 500ml China ', 'Nss 500ml China ', 'Nss 500ml China ', '35', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('36', '1', 'EP0007', 'Compress Sterile 20*20cm', 'Compress Sterile 20*20cm', 'Compress Sterile 20*20cm', '36', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('37', '1', 'EP0008', 'Catheter 18G-Healflon IND(100/BOX)', 'Catheter 18G-Healflon IND(100/BOX)', 'Catheter 18G-Healflon IND(100/BOX)', '37', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('38', '1', 'EP0009', 'Catheter 24G-Healflon B/100unit', 'Catheter 24G-Healflon B/100unit', 'Catheter 24G-Healflon B/100unit', '38', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('39', '1', 'EP0010', 'Nipro Catherter24G*3/4 B/50 ', 'Nipro Catherter24G*3/4 B/50 ', 'Nipro Catherter24G*3/4 B/50 ', '39', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('40', '1', 'EP0011', 'Trouss china(R, orange color) P/25', 'Trouss china(R, orange color) P/25', 'Trouss china(R, orange color) P/25', '40', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('41', '1', 'EP0012', 'Nipro Needle 18G B/100', 'Nipro Needle 18G B/100', 'Nipro Needle 18G B/100', '41', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('42', '1', 'EP0013', 'Nipro Needle 21G B/100', 'Nipro Needle 21G B/100', 'Nipro Needle 21G B/100', '42', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('43', '1', 'EP0014', 'Nipro Needle 30G B/100', 'Nipro Needle 30G B/100', 'Nipro Needle 30G B/100', '43', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('44', '1', 'EP0015', 'Scalp Vein set24 B/50', 'Scalp Vein set24 B/50', 'Scalp Vein set24 B/50', '44', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('45', '1', 'EP0016', 'Betadine dermique 125ml 10%Fr ', 'Betadine dermique 125ml 10%Fr ', 'Betadine dermique 125ml 10%Fr ', '45', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('46', '1', 'EP0017', 'Wellgard no powder size S ', 'Wellgard no powder size S ', 'Wellgard no powder size S ', '46', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('47', '1', 'EP0018', 'Wellgard no powder size M', 'Wellgard no powder size M', 'Wellgard no powder size M', '47', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('48', '1', 'EP0019', 'Safety box 5L', 'Safety box 5L', 'Safety box 5L', '48', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('49', '1', 'EP0020', 'Vaseline Petrolatum Gauze B/10', 'Vaseline Petrolatum Gauze B/10', 'Vaseline Petrolatum Gauze B/10', '49', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('50', '1', 'EP0021', 'Innoplastic B/100', 'Innoplastic B/100', 'Innoplastic B/100', '50', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('51', '1', 'EP0022', 'CRL-aperture adhesive plaster 18cm*4cm', 'CRL-aperture adhesive plaster 18cm*4cm', 'CRL-aperture adhesive plaster 18cm*4cm', '51', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('52', '1', '100137', 'Adhesive plaster with holes', 'Adhesive plaster with holes', 'Adhesive plaster with holes', '52', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', 'Samsethy', null, null, null, '7', null, null, null, '0.00', 'Box', '1', '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('53', '1', 'EP0024', 'Vaseline pet jelly orig 100ml/fl', 'Vaseline pet jelly orig 100ml/fl', 'Vaseline pet jelly orig 100ml/fl', '53', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('54', '1', 'EP0025', 'Needle dermapen VIP 42 ', 'Needle dermapen VIP 42 ', 'Needle dermapen VIP 42 ', '54', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('55', '1', 'IN0002', 'Prednisolone USA 1FL', 'Prednisolone USA 1FL', 'Prednisolone USA 1FL', '55', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('56', '1', 'TP0067', 'KTC Scalp solution', 'KTC Scalp solution', 'KTC Scalp solution', '56', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('57', '1', 'OM0005', 'Neocilor ', 'Neocilor ', 'Neocilor ', '57', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('58', '1', 'OM0006', 'Telfast Hd 180mg', 'Telfast Hd 180mg', 'Telfast Hd 180mg', '58', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('59', '1', 'OM0007', 'Atarax 25mg', 'Atarax 25mg', 'Atarax 25mg', '59', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('60', '1', 'OM0008', 'Cloxacap 500mg', 'Cloxacap 500mg', 'Cloxacap 500mg', '60', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('61', '1', 'OM0009', 'Terbinaforce 250mg', 'Terbinaforce 250mg', 'Terbinaforce 250mg', '61', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('62', '1', 'OM0010', 'Inox 100mg', 'Inox 100mg', 'Inox 100mg', '62', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('63', '1', 'OM0011', 'Zithrosun-250', 'Zithrosun-250', 'Zithrosun-250', '63', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('65', '1', 'OM0013', 'Codalgin Forte 500', 'Codalgin Forte 500', 'Codalgin Forte 500', '64', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('66', '1', 'OM0014', 'Alpha Choay 4.15mg', 'Alpha Choay 4.15mg', 'Alpha Choay 4.15mg', '65', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('67', '1', 'OM0015', 'Esome 40mg', 'Esome 40mg', 'Esome 40mg', '66', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('68', '1', 'TP0025', 'Deriva MS gel 15g', 'Deriva MS gel 15g', 'Deriva MS gel 15g', '67', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('69', '1', 'IN0003', 'Medi-Ceftriaxone inj', 'Medi-Ceftriaxone inj', 'Medi-Ceftriaxone inj', '68', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '8', null, null, null, '0.00', 'Vial', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('70', '1', 'IN0004', 'Clavox 1.2g IV', 'Clavox 1.2g IV', 'Clavox 1.2g IV', '69', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '9', null, null, null, '0.00', 'FL', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('71', '1', 'IN0005', 'Lidocaine 2% 50ml', 'Lidocaine 2% 50ml', 'Lidocaine 2% 50ml', '70', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '9', null, null, null, '0.00', 'FL', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('72', '1', 'IN0006', 'Tanganil 500mg/5ml IV', 'Tanganil 500mg/5ml IV', 'Tanganil 500mg/5ml IV', '71', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('73', '1', 'IN0007', 'Met-Sil 2ml', 'Met-Sil 2ml', 'Met-Sil 2ml', '72', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('74', '1', 'IN0008', 'Para Kabi 1000mg/100ml', 'Para Kabi 1000mg/100ml', 'Para Kabi 1000mg/100ml', '73', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('75', '1', 'IN0009', 'Anadol Inj 100mg/2ml', 'Anadol Inj 100mg/2ml', 'Anadol Inj 100mg/2ml', '74', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('76', '1', 'IN0010', 'Remopain 3% Inj', 'Remopain 3% Inj', 'Remopain 3% Inj', '75', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('77', '1', '100139', 'Adrenaline Inj 1ml', 'Adrenaline Inj 1ml', 'Adrenaline Inj 1ml', '76', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', 'Samsethy', null, null, null, '10', null, '1', null, '0.00', 'Amp', '1', '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('78', '1', 'IN0012', 'Dexamedico inj', 'Dexamedico inj', 'Dexamedico inj', '77', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('79', '1', 'IN0013', 'Genta inj-uto', 'Genta inj-uto', 'Genta inj-uto', '78', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('80', '1', 'IN0014', 'Hydromark-100', 'Hydromark-100', 'Hydromark-100', '79', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '8', null, null, null, '0.00', 'Vial', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('81', '1', 'IN0015', 'VIK 1-vitamin K1 inj 10mg/1ml', 'VIK 1-vitamin K1 inj 10mg/1ml', 'VIK 1-vitamin K1 inj 10mg/1ml', '80', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('82', '1', 'IN0016', 'Onasia', 'Onasia', 'Onasia', '81', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('83', '1', 'IN0017', 'Exacyl inj', 'Exacyl inj', 'Exacyl inj', '82', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('84', '1', 'TP0026', 'Effaclar Duo(+) 40ml', 'Effaclar Duo(+) 40ml', 'Effaclar Duo(+) 40ml', '83', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('85', '1', '100141', 'Anthelios Antishine', 'Anthelios Anti-shine', 'Anthelios Antishine', '84', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', 'Samsethy', null, null, null, '3', null, null, null, '0.00', 'Tube', '1', '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('86', '1', 'TP0028', 'Anthelios Fluid invisible', 'Anthelios Fluid invisible', 'Anthelios Fluid invisible', '85', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('87', '1', 'TP0029', 'Cicaplast gel B5 40ml', 'Cicaplast gel B5 40ml', 'Cicaplast gel B5 40ml', '86', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('88', '1', 'TP0030', 'Cicaplast Baume B5 100ml', 'Cicaplast Baume B5 100ml', 'Cicaplast Baume B5 100ml', '87', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('89', '1', 'TP0031', 'Water Max Milk Cleanser 1200ml', 'Water Max Milk Cleanser 1200ml', 'Water Max Milk Cleanser 1200ml', '88', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('90', '1', 'TP0032', 'Counteractive Bubble Clear 150ml', 'Counteractive Bubble Clear 150ml', 'Counteractive Bubble Clear 150ml', '89', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('91', '1', 'TP0033', 'Alpha Cleansing Foam 1200ml', 'Alpha Cleansing Foam 1200ml', 'Alpha Cleansing Foam 1200ml', '90', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('92', '1', 'TP0034', 'Peppermint Cool plus modeling mask 1kg', 'Peppermint Cool plus modeling mask 1kg', 'Peppermint Cool plus modeling mask 1kg', '91', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('93', '1', 'TP0035', 'Gold Plus Modeling mask 1kg', 'Gold Plus Modeling mask 1kg', 'Gold Plus Modeling mask 1kg', '92', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('94', '1', 'TP0036', 'Marine Aqua Plus Modeling mask 1kg', 'Marine Aqua Plus Modeling mask 1kg', 'Marine Aqua Plus Modeling mask 1kg', '93', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('95', '1', 'TP0037', 'Azulene Complex Ampoule 72 150ml', 'Azulene Complex Ampoule 72 150ml', 'Azulene Complex Ampoule 72 150ml', '94', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('96', '1', 'TP0038', 'EGF Complex Ampoule 50 150ml', 'EGF Complex Ampoule 50 150ml', 'EGF Complex Ampoule 50 150ml', '95', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('97', '1', 'TP0039', 'Hyaluron Complex Ampoule 62 150ml', 'Hyaluron Complex Ampoule 62 150ml', 'Hyaluron Complex Ampoule 62 150ml', '96', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('98', '1', 'TP0040', 'History Conductive Gel 500ml ', 'History Conductive Gel 500ml ', 'History Conductive Gel 500ml ', '97', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('99', '1', 'TP0041', 'Histo HQ Cream 1000ml', 'Histo HQ Cream 1000ml', 'Histo HQ Cream 1000ml', '98', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('100', '1', 'TP0042', 'Histo Aloe Vera gel 1200ml', 'Histo Aloe Vera gel 1200ml', 'Histo Aloe Vera gel 1200ml', '99', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('101', '1', 'TP0043', 'Gamma Crystal Serum 500ml', 'Gamma Crystal Serum 500ml', 'Gamma Crystal Serum 500ml', '100', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('102', '1', 'TP0044', 'Beta Fresh toner 1200ml', 'Beta Fresh toner 1200ml', 'Beta Fresh toner 1200ml', '101', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('103', '1', 'TP0045', 'Premium renewal Essence 500ml', 'Premium renewal Essence 500ml', 'Premium renewal Essence 500ml', '102', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('104', '1', 'TP0046', 'Premium Timeless Cream 250g', 'Premium Timeless Cream 250g', 'Premium Timeless Cream 250g', '103', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('105', '1', 'TP0047', 'Premium Eye Cream 250g', 'Premium Eye Cream 250g', 'Premium Eye Cream 250g', '104', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('106', '1', 'TP0048', 'Whiteness Lightening Serum 80ml', 'Whiteness Lightening Serum 80ml', 'Whiteness Lightening Serum 80ml', '105', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('107', '1', 'TP0049', 'Triangle Peel PA 80ml', 'Triangle Peel PA 80ml', 'Triangle Peel PA 80ml', '106', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('108', '1', 'TP0050', 'Triangle Peel PB 80ml', 'Triangle Peel PB 80ml', 'Triangle Peel PB 80ml', '107', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('109', '1', 'TP0051', 'Delta Active Cream 500ml', 'Delta Active Cream 500ml', 'Delta Active Cream 500ml', '108', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('110', '1', 'TP0052', 'Glycolic Skin Peel 70% 480ml', 'Glycolic Skin Peel 70% 480ml', 'Glycolic Skin Peel 70% 480ml', '109', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('111', '1', 'TP0053', 'Lactic acid Peel 70% 480ml', 'Lactic acid Peel 70% 480ml', 'Lactic acid Peel 70% 480ml', '110', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('112', '1', 'TP0054', 'Combination Peel 240ml', 'Combination Peel 240ml', 'Combination Peel 240ml', '111', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('113', '1', 'TP0055', 'Salicylic Peel 30% 120ml', 'Salicylic Peel 30% 120ml', 'Salicylic Peel 30% 120ml', '112', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('114', '1', 'TP0056', 'Ice Jeju Aloe 300ml(Thefaceshop)', 'Ice Jeju Aloe 300ml(Thefaceshop)', 'Ice Jeju Aloe 300ml(Thefaceshop)', '113', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('115', '1', 'TP0057', 'Aloe 99% 300ml(Thefaceshop)', 'Aloe 99% 300ml(Thefaceshop)', 'Aloe 99% 300ml(Thefaceshop)', '114', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('116', '1', 'TP0058', 'Smart Peeling Honey Scrub (thefaceshop)', 'Smart Peeling Honey Scrub (thefaceshop)', 'Smart Peeling Honey Scrub (thefaceshop)', '115', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('117', '1', 'TP0059', 'Smart Peeling white jewel', 'Smart Peeling white jewel', 'Smart Peeling white jewel', '116', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('118', '1', 'EP0026', 'Centrifuge Virtuose', 'Centrifuge Virtuose', 'Centrifuge Virtuose', '117', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('119', '1', 'EP0027', 'PRP tube 9ml Virtuose', 'PRP tube 9ml Virtuose', 'PRP tube 9ml Virtuose', '118', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('120', '1', 'EP0028', 'Dermapen A6', 'Dermapen A6', 'Dermapen A6', '119', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('121', '1', 'EP0029', 'Needle Dermapen A6 nano', 'Needle Dermapen A6 nano', 'Needle Dermapen A6 nano', '120', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('122', '1', 'EP0030', 'Needle Dermapen A6 42', 'Needle Dermapen A6 42', 'Needle Dermapen A6 42', '121', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('123', '1', 'EP0031', 'Skin marker', 'Skin marker', 'Skin marker', '122', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('124', '1', 'EP0032', 'Cotton Facial pad', 'Cotton Facial pad', 'Cotton Facial pad', '123', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('125', '1', '100016', 'Acne extraction', 'Acne extraction', 'Acne extraction', '124', null, null, '2023-01-16 15:00:50.466434', '2023-01-16 15:00:50.466434', 'Samsethy', null, null, null, '2', '0', '0', null, '0.00', 'Bottle', '1', '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('126', '1', 'EP0034', 'Cautery ', 'Cautery ', 'Cautery ', '125', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('127', '1', '100129', 'Peel', '???? Peel', 'Peel', '126', null, null, '2023-01-16 15:00:50.466434', '2023-01-16 15:00:50.466434', 'Samsethy', null, null, null, '6', null, null, null, '0.00', 'Pack', '1', '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('128', '1', 'IN0018', 'Meso GTM Gold cell PDRN8% (Box/10 3,3ml)', 'Meso GTM Gold cell PDRN8% (Box/10 3,3ml)', 'Meso GTM Gold cell PDRN8% (Box/10 3,3ml)', '127', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('129', '1', 'IN0019', 'Meso Restructurer Innoaesthetic (B/4 5ml)', 'Meso Restructurer Innoaesthetic (B/4 5ml)', 'Meso Restructurer Innoaesthetic (B/4 5ml)', '128', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('130', '1', 'IN0020', 'Meso Redness ID innoaethetic (B/4 2.5ml)', 'Meso Redness ID innoaethetic (B/4 2.5ml)', 'Meso Redness ID innoaethetic (B/4 2.5ml)', '129', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('131', '1', 'IN0021', 'Meso Melatocin Essence Melasma (B/10 5ml)', 'Meso Melatocin Essence Melasma (B/10 5ml)', 'Meso Melatocin Essence Melasma (B/10 5ml)', '130', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('132', '1', 'IN0022', 'Meso GTM mela cell 3% melasma (B/10 3,5ml)', 'Meso GTM mela cell 3% melasma (B/10 3,5ml)', 'Meso GTM mela cell 3% melasma (B/10 3,5ml)', '131', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('133', '1', 'IN0023', 'Placenta Melsmon 2ml ', 'Placenta Melsmon 2ml ', 'Placenta Melsmon 2ml ', '132', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('134', '1', 'IN0024', 'Placenta Lannec 2ml', 'Placenta Lannec 2ml', 'Placenta Lannec 2ml', '133', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('135', '1', 'IN0025', 'Botulax 100UI ', 'Botulax 100UI ', 'Botulax 100UI ', '134', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('136', '1', 'IN0027', 'AMC Slimming Drip', 'AMC Slimming Drip', 'AMC Slimming Drip', '135', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '5', null, null, null, '0.00', 'Set', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('137', '1', 'IN0026', 'Japan Whitening Drip', 'Japan Whitening Drip', 'Japan Whitening Drip', '136', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '5', null, null, null, '0.00', 'Set', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('138', '1', 'EP0036', 'Meso Multi Needle', 'Meso Multi Needle', 'Meso Multi Needle', '137', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('139', '1', 'IN0028', 'Sivkoit (Triamcinolone) 80mg', 'Sivkoit (Triamcinolone) 80mg', 'Sivkoit (Triamcinolone) 80mg', '138', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('140', '1', 'IN0029', 'Para Inj 300mg ', 'Para Inj 300mg ', 'Para Inj 300mg ', '139', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('141', '1', 'IN0030', 'NSS 100ml Thai', 'NSS 100ml Thai', 'NSS 100ml Thai', '140', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '9', null, null, null, '0.00', 'FL', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('142', '1', 'IN0031', 'NSS 500ml Thai', 'NSS 500ml Thai', 'NSS 500ml Thai', '141', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '9', null, null, null, '0.00', 'FL', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('143', '1', 'EP0037', 'Surgical cap', 'Surgical cap', 'Surgical cap', '142', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('144', '1', 'TP0060', 'Skinoren Cream 30g', 'Skinoren Cream 30g', 'Skinoren Cream 30g', '143', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('145', '1', 'TP0061', 'Skarfix-TX cream', 'Skarfix-TX cream', 'Skarfix-TX cream', '144', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('146', '1', 'TP0062', 'Isis Teen Derm gel sensitive 100ml', 'Isis Teen Derm gel sensitive 100ml', 'Isis Teen Derm gel sensitive 100ml', '145', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('147', '1', 'TP0063', 'Isis Neotone Gel 150ml', 'Isis Neotone Gel 150ml', 'Isis Neotone Gel 150ml', '146', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('148', '1', 'TP0064', 'Isis Ruboril Expert S', 'Isis Ruboril Expert S', 'Isis Ruboril Expert S', '147', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('149', '1', 'TP0065', 'Isis Aqua Ruboril 250ml', 'Isis Aqua Ruboril 250ml', 'Isis Aqua Ruboril 250ml', '148', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('150', '1', 'IN0032', 'NSS 250ml korea', 'NSS 250ml korea', 'NSS 250ml korea', '149', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '9', null, null, null, '0.00', 'FL', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('151', '1', 'IN0033', 'Neuramis gold', 'Neuramis gold', 'Neuramis gold', '150', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('152', '1', 'EP0038', 'Needle 30G 4mm', 'Needle 30G 4mm', 'Needle 30G 4mm', '151', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '11', null, null, null, '0.00', 'pcs', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('153', '1', 'IN0034', 'D5W Thai 500ml', 'D5W Thai 500ml', 'D5W Thai 500ml', '152', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '9', null, null, null, '0.00', 'FL', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('154', '1', 'IN0035', 'Lactate Thai 500ml', 'Lactate Thai 500ml', 'Lactate Thai 500ml', '153', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '9', null, null, null, '0.00', 'FL', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('155', '1', 'IN0036', 'D10W Thai ', 'D10W Thai ', 'D10W Thai ', '154', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '9', null, null, null, '0.00', 'FL', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('156', '1', 'EP0039', 'Glove Sterile 6.5', 'Glove Sterile 6.5', 'Glove Sterile 6.5', '155', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('157', '1', 'EP0040', 'Nipro Needle 30G 13mm', 'Nipro Needle 30G 13mm', 'Nipro Needle 30G 13mm', '156', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('158', '1', 'TP0068', 'Saforelle soin', 'Saforelle soin', 'Saforelle soin', '157', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('159', '1', 'SP0001', 'ISIS Aqua Ruboril 400ml', 'ISIS Aqua Ruboril 400ml', 'ISIS Aqua Ruboril 400ml', '158', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('160', '1', 'SP0002', 'ISIS Ketoplast Cracks 40ml', 'ISIS Ketoplast Cracks 40ml', 'ISIS Ketoplast Cracks 40ml', '159', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('161', '1', 'SP0003', 'ISIS Ketoplast Scars SPF50+ 40ml', 'ISIS Ketoplast Scars SPF50+ 40ml', 'ISIS Ketoplast Scars SPF50+ 40ml', '160', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('162', '1', 'SP0004', 'ISIS Neotone Aqua 250ml', 'ISIS Neotone Aqua 250ml', 'ISIS Neotone Aqua 250ml', '161', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('163', '1', 'SP0005', 'ISIS Neotone Body 100ml', 'ISIS Neotone Body 100ml', 'ISIS Neotone Body 100ml', '162', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('164', '1', 'SP0006', 'ISIS Neotone Eyes 15ml', 'ISIS Neotone Eyes 15ml', 'ISIS Neotone Eyes 15ml', '163', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('165', '1', 'SP0007', 'ISIS Neotone Prevent SPF50+ Mineral Tinted', 'ISIS Neotone Prevent SPF50+ Mineral Tinted', 'ISIS Neotone Prevent SPF50+ Mineral Tinted', '164', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('166', '1', 'SP0008', 'ISIS Neotone Radiance SPF50+ 30ml', 'ISIS Neotone Radiance SPF50+ 30ml', 'ISIS Neotone Radiance SPF50+ 30ml', '165', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('167', '1', 'SP0009', 'ISIS Neotone Sensitive 30ml', 'ISIS Neotone Sensitive 30ml', 'ISIS Neotone Sensitive 30ml', '166', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('168', '1', 'SP0011', 'ISIS Ruboril Expert M 40ml', 'ISIS Ruboril Expert M 40ml', 'ISIS Ruboril Expert M 40ml', '167', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('169', '1', 'SP0012', 'ISIS Ruboril Expert SPF 50+ 40ml', 'ISIS Ruboril Expert SPF 50+ 40ml', 'ISIS Ruboril Expert SPF 50+ 40ml', '168', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('170', '1', 'SP0013', 'ISIS Ruboril Expert Intense 15ml', 'ISIS Ruboril Expert Intense 15ml', 'ISIS Ruboril Expert Intense 15ml', '169', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('171', '1', 'SP0014', 'ISIS Ruboril Expert Lotion 250ml', 'ISIS Ruboril Expert Lotion 250ml', 'ISIS Ruboril Expert Lotion 250ml', '170', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('172', '1', 'SP0015', 'ISIS Secalia AHA 200ml', 'ISIS Secalia AHA 200ml', 'ISIS Secalia AHA 200ml', '171', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('173', '1', 'SP0016', 'ISIS Secalia Balm 200ml', 'ISIS Secalia Balm 200ml', 'ISIS Secalia Balm 200ml', '172', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('174', '1', 'SP0017', 'ISIS Secalia Ultra 200ml', 'ISIS Secalia Ultra 200ml', 'ISIS Secalia Ultra 200ml', '173', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('175', '1', 'SP0018', 'ISIS Sensylia 24h 40ml', 'ISIS Sensylia 24h 40ml', 'ISIS Sensylia 24h 40ml', '174', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('176', '1', 'SP0019', 'ISIS Sensylia 24h Legere 40ml', 'ISIS Sensylia 24h Legere 40ml', 'ISIS Sensylia 24h Legere 40ml', '175', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('177', '1', 'SP0020', 'ISIS Sensylia Aqua 100ml', 'ISIS Sensylia Aqua 100ml', 'ISIS Sensylia Aqua 100ml', '176', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('178', '1', 'SP0021', 'ISIS Sensylia Gelee 250ml', 'ISIS Sensylia Gelee 250ml', 'ISIS Sensylia Gelee 250ml', '177', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('179', '1', 'SP0022', 'ISIS Suavigel 40ml', 'ISIS Suavigel 40ml', 'ISIS Suavigel 40ml', '178', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('180', '1', 'SP0023', 'ISIS Teen Derm Aqua 100ml', 'ISIS Teen Derm Aqua 100ml', 'ISIS Teen Derm Aqua 100ml', '179', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('181', '1', 'SP0024', 'ISIS Teen Derm Aqua 250ml', 'ISIS Teen Derm Aqua 250ml', 'ISIS Teen Derm Aqua 250ml', '180', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('182', '1', 'SP0025', 'ISIS Teen Derm Alpha Pure 30ml', 'ISIS Teen Derm Alpha Pure 30ml', 'ISIS Teen Derm Alpha Pure 30ml', '181', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('183', '1', 'SP0026', 'ISIS Teen Derm Gel 40ml', 'ISIS Teen Derm Gel 40ml', 'ISIS Teen Derm Gel 40ml', '182', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('184', '1', 'SP0027', 'ISIS Teen Derm Gel 150ml', 'ISIS Teen Derm Gel 150ml', 'ISIS Teen Derm Gel 150ml', '183', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('185', '1', 'SP0028', 'ISIS Teen Derm Gel Sensitive 250ml', 'ISIS Teen Derm Gel Sensitive 250ml', 'ISIS Teen Derm Gel Sensitive 250ml', '184', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('186', '1', 'SP0029', 'ISIS Teen Derm Hydra 40ml', 'ISIS Teen Derm Hydra 40ml', 'ISIS Teen Derm Hydra 40ml', '185', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('187', '1', 'SP0030', 'ISIS Teen Derm K 30ml', 'ISIS Teen Derm K 30ml', 'ISIS Teen Derm K 30ml', '186', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('188', '1', 'SP0031', 'ISIS Teen Derm K Concentrate 30ml', 'ISIS Teen Derm K Concentrate 30ml', 'ISIS Teen Derm K Concentrate 30ml', '187', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('189', '1', 'SP0032', 'ISIS Urelia 10 150ml', 'ISIS Urelia 10 150ml', 'ISIS Urelia 10 150ml', '188', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('190', '1', 'SP0033', 'ISIS Urelia 50 40ml', 'ISIS Urelia 50 40ml', 'ISIS Urelia 50 40ml', '189', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('191', '1', 'SP0034', 'ISIS Urelia Gel 200ml', 'ISIS Urelia Gel 200ml', 'ISIS Urelia Gel 200ml', '190', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('192', '1', 'SP0035', 'ISIS SPF50+ Day Secure Invisible', 'ISIS SPF50+ Day Secure Invisible', 'ISIS SPF50+ Day Secure Invisible', '191', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('193', '1', 'SP0036', 'ISIS SPF50+ Invisible Fluid 40ml', 'ISIS SPF50+ Invisible Fluid 40ml', 'ISIS SPF50+ Invisible Fluid 40ml', '192', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('194', '1', 'SP0037', 'ISIS SPF50+ Light Tinted Fluid 40ml', 'ISIS SPF50+ Light Tinted Fluid 40ml', 'ISIS SPF50+ Light Tinted Fluid 40ml', '193', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('195', '1', 'SP0038', 'ISIS SPF50+ Tinted Mineral Cream', 'ISIS SPF50+ Tinted Mineral Cream', 'ISIS SPF50+ Tinted Mineral Cream', '194', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('196', '1', 'SP0039', 'ISIS SPF50+ Mineral Cream 40ml', 'ISIS SPF50+ Mineral Cream 40ml', 'ISIS SPF50+ Mineral Cream 40ml', '195', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('197', '1', 'SP0040', 'ISIS SPF30+ Dry Touch 40ml', 'ISIS SPF30+ Dry Touch 40ml', 'ISIS SPF30+ Dry Touch 40ml', '196', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('198', '1', 'SP0041', 'ISIS SPF80 Invisible cream 40ml', 'ISIS SPF80 Invisible cream 40ml', 'ISIS SPF80 Invisible cream 40ml', '197', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('199', '1', 'SP0042', 'ISIS Vitiskin 50ml', 'ISIS Vitiskin 50ml', 'ISIS Vitiskin 50ml', '198', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('200', '1', 'SP0043', 'Noreva Norelift Day Cream', 'Noreva Norelift Day Cream', 'Noreva Norelift Day Cream', '199', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('201', '1', 'SP0044', 'Noreva Actipur BB light 30ml', 'Noreva Actipur BB light 30ml', 'Noreva Actipur BB light 30ml', '200', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('202', '1', 'SP0045', 'Noreva Actipur BB Golden 30ml', 'Noreva Actipur BB Golden 30ml', 'Noreva Actipur BB Golden 30ml', '201', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('203', '1', 'SP0046', 'Noreva Actipur Cleansing Gel 150ml', 'Noreva Actipur Cleansing Gel 150ml', 'Noreva Actipur Cleansing Gel 150ml', '202', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('204', '1', 'SP0047', 'Noreva Exfoliac Global 6 30ml', 'Noreva Exfoliac Global 6 30ml', 'Noreva Exfoliac Global 6 30ml', '203', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('205', '1', 'SP0048', 'Noreva Exfoliac Foaming Gel 200ml', 'Noreva Exfoliac Foaming Gel 200ml', 'Noreva Exfoliac Foaming Gel 200ml', '204', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('206', '1', 'SP0049', 'Noreva Trio Dark Spot Serum 30ml', 'Noreva Trio Dark Spot Serum 30ml', 'Noreva Trio Dark Spot Serum 30ml', '205', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('207', '1', 'SP0050', 'Noreva Trio Dark Spot Care SPF 50+ ', 'Noreva Trio Dark Spot Care SPF 50+ ', 'Noreva Trio Dark Spot Care SPF 50+ ', '206', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('208', '1', 'SP0051', 'Noreva Trio Dark Spot Care 30ml', 'Noreva Trio Dark Spot Care 30ml', 'Noreva Trio Dark Spot Care 30ml', '207', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('209', '1', 'SP0052', 'Noreva Xerodiane AP+ Cream 400ml', 'Noreva Xerodiane AP+ Cream 400ml', 'Noreva Xerodiane AP+ Cream 400ml', '208', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('210', '1', 'SP0053', 'Noreva Xerodiane AP+ Cleaning Shower', 'Noreva Xerodiane AP+ Cleaning Shower', 'Noreva Xerodiane AP+ Cleaning Shower', '209', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('211', '1', 'SP0054', 'Noreva Sensidiane AR Anti-Redness cream 30ml', 'Noreva Sensidiane AR Anti-Redness cream 30ml', 'Noreva Sensidiane AR Anti-Redness cream 30ml', '210', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('212', '1', 'SP0055', 'Embryolisse Lait-Creme Concentre 30ml', 'Embryolisse Lait-Creme Concentre 30ml', 'Embryolisse Lait-Creme Concentre 30ml', '211', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('213', '1', 'SP0056', 'Embryolisse Lait-Creme Fluide 75ml', 'Embryolisse Lait-Creme Fluide 75ml', 'Embryolisse Lait-Creme Fluide 75ml', '212', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('214', '1', 'SP0057', 'Embryolisse Eua De Beaute 200ml', 'Embryolisse Eua De Beaute 200ml', 'Embryolisse Eua De Beaute 200ml', '213', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('215', '1', 'SP0058', 'Embryolisse Lotion Micellaire 250ml', 'Embryolisse Lotion Micellaire 250ml', 'Embryolisse Lotion Micellaire 250ml', '214', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('216', '1', 'SP0059', 'Embryolisse lashes & brows Booster 6.5ml', 'Embryolisse lashes & brows Booster 6.5ml', 'Embryolisse lashes & brows Booster 6.5ml', '215', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('217', '1', 'SP0060', 'Embryolisse Intense Smooth 50ml', 'Embryolisse Intense Smooth 50ml', 'Embryolisse Intense Smooth 50ml', '216', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('218', '1', 'SP0061', 'Embryolisse Complexion BB Cream', 'Embryolisse Complexion BB Cream', 'Embryolisse Complexion BB Cream', '217', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('219', '1', 'SP0062', 'Embryolisse Complexion CC Cream 30ml', 'Embryolisse Complexion CC Cream 30ml', 'Embryolisse Complexion CC Cream 30ml', '218', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('220', '1', 'SP0063', 'Embryolisse Consealer (Beige) 8ml', 'Embryolisse Consealer (Beige) 8ml', 'Embryolisse Consealer (Beige) 8ml', '219', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('221', '1', 'SP0064', 'Embryolisse Consealer (PInk) 8ml', 'Embryolisse Consealer (PInk) 8ml', 'Embryolisse Consealer (PInk) 8ml', '220', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('222', '1', 'SP0065', 'Embryolisse Smooth Rodiant 40ml', 'Embryolisse Smooth Rodiant 40ml', 'Embryolisse Smooth Rodiant 40ml', '221', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('223', '1', 'SP0066', 'Embryolisse Radiant Powder 12g', 'Embryolisse Radiant Powder 12g', 'Embryolisse Radiant Powder 12g', '222', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('224', '1', 'SP0067', 'Embryolisse Radiant Eye 4.5g', 'Embryolisse Radiant Eye 4.5g', 'Embryolisse Radiant Eye 4.5g', '223', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('225', '1', 'SP0010', 'ISIS Neotone Serum 30ml', 'ISIS Neotone Serum 30ml', 'ISIS Neotone Serum 30ml', '224', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('226', '1', 'IN0037', 'Bupivacaine ', 'Bupivacaine ', 'Bupivacaine ', '225', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('227', '1', 'IN0038', 'Glucose Thai inj 50%', 'Glucose Thai inj 50%', 'Glucose Thai inj 50%', '226', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('228', '1', 'EP0041', 'Cannula 25G*50MM', 'Cannula 25G*50MM', 'Cannula 25G*50MM', '227', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '11', null, null, null, '0.00', 'pcs', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('229', '1', 'EP0042', 'Cannula 18G*50MM', 'Cannula 18G*50MM', 'Cannula 18G*50MM', '228', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '11', null, null, null, '0.00', 'pcs', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('230', '1', 'EP0043', 'Skin marker white ', 'Skin marker white ', 'Skin marker white ', '229', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '11', null, null, null, '0.00', 'pcs', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('231', '1', 'IN0039', 'Botox USA', 'Botox USA', 'Botox USA', '230', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('232', '1', 'TP0069', 'Whiteness lightening serum', 'Whiteness lightening serum', 'Whiteness lightening serum', '231', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('233', '1', 'OM0017', 'Firide 1mg', 'Firide 1mg', 'Firide 1mg', '232', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('234', '1', '100143', 'Minoxin 5', 'Minoxin 5%', 'Minoxin 5', '233', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', 'Samsethy', null, null, null, '2', null, null, null, '0.00', 'Bottle', '1', '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('235', '1', '100132', 'Acnetin 005', 'Acnetin 0.05', 'Acnetin 005', '234', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', 'Samsethy', null, null, null, '3', null, '1', null, '0.00', 'Tube', '1', '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('236', '1', 'IN0040', 'F-ACN (FUSION)', 'F-ACN (FUSION)', 'F-ACN (FUSION)', '235', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('237', '1', 'IN0041', 'F-RADIAN (FUSION)', 'F-RADIAN (FUSION)', 'F-RADIAN (FUSION)', '236', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('238', '1', '42', 'F-EYECONTOUR (FUSION)', 'F-EYECONTOUR (FUSION)', 'F-EYECONTOUR (FUSION)', '237', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('239', '1', 'IN0043', 'F-HAIR MEN (FUSION)', 'F-HAIR MEN (FUSION)', 'F-HAIR MEN (FUSION)', '238', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('240', '1', 'TP0072', 'Minoxin 2%', 'Minoxin 2%', 'Minoxin 2%', '239', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('241', '1', 'TP0073', 'Orrepast', 'Orrepast', 'Orrepast', '240', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('242', '1', 'OM0018', 'Mediclovir 400mg', 'Mediclovir 400mg', 'Mediclovir 400mg', '241', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('243', '1', 'OM0019', 'Gofen 400mg', 'Gofen 400mg', 'Gofen 400mg', '242', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('244', '1', 'TP0074', 'Y Mycin N', 'Y Mycin N', 'Y Mycin N', '243', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('245', '1', 'TP0075', 'Y Mycin A ', 'Y Mycin A ', 'Y Mycin A ', '244', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('246', '1', 'EP0044', 'Nitrile No powder Size S', 'Nitrile No powder Size S', 'Nitrile No powder Size S', '245', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('247', '1', 'EP0045', 'Nitrile No powder Size M', 'Nitrile No powder Size M', 'Nitrile No powder Size M', '246', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('248', '1', 'OM0020', 'Lergicet 10mg', 'Lergicet 10mg', 'Lergicet 10mg', '247', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('249', '1', 'OM0021', 'Falete 250mg', 'Falete 250mg', 'Falete 250mg', '248', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('250', '1', 'IN0044', 'Medixon 125mg ', 'Medixon 125mg ', 'Medixon 125mg ', '249', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '9', null, null, null, '0.00', 'FL', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('251', '1', 'TP0076', 'Cicaplast Baume B5 40ml', 'Cicaplast Baume B5 40ml', 'Cicaplast Baume B5 40ml', '250', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('252', '1', 'TP0077', 'Bioderma Sensibio Gel moussant 200ml', 'Bioderma Sensibio Gel moussant 200ml', 'Bioderma Sensibio Gel moussant 200ml', '251', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('253', '1', 'TP0078', 'Bioderma Sensibio Gel moussant 45ml', 'Bioderma Sensibio Gel moussant 45ml', 'Bioderma Sensibio Gel moussant 45ml', '252', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('254', '1', '100138', 'AkneDerm 25 Cream', 'Akne-Derm 2.5 Cream', 'AkneDerm 25 Cream', '253', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', 'Samsethy', null, null, null, '3', null, '4', null, '0.00', 'Tube', '1', '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('255', '1', 'EP0046', 'Syringe Leur Lock 3ml', 'Syringe Leur Lock 3ml', 'Syringe Leur Lock 3ml', '254', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('256', '1', 'EP0047', 'Syringe Leur Lock 5ml', 'Syringe Leur Lock 5ml', 'Syringe Leur Lock 5ml', '255', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('257', '1', 'EP0048', 'Syringe Leur Lock 10ml', 'Syringe Leur Lock 10ml', 'Syringe Leur Lock 10ml', '256', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('258', '1', 'EP0049', 'Syringe Leur Lock 50ml', 'Syringe Leur Lock 50ml', 'Syringe Leur Lock 50ml', '257', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('259', '1', 'OM0022', 'Biotin Nature Own', 'Biotin Nature Own', 'Biotin Nature Own', '258', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('260', '1', 'TP0080', 'Hydrogel Brightening Mask', 'Hydrogel Brightening Mask', 'Hydrogel Brightening Mask', '259', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '11', null, null, null, '0.00', 'pcs', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('261', '1', 'TP0081', 'Hydrogel Gold Mask', 'Hydrogel Gold Mask', 'Hydrogel Gold Mask', '260', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '11', null, null, null, '0.00', 'pcs', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('262', '1', 'TP0082', 'Hydrogel Snail Mask', 'Hydrogel Snail Mask', 'Hydrogel Snail Mask', '261', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '11', null, null, null, '0.00', 'pcs', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('263', '1', '2', 'Grand Compress (Bloc)', 'Grand Compress (Bloc)', 'Grand Compress (Bloc)', '262', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '11', null, null, null, '0.00', 'pcs', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('264', '1', '4', 'Esome 40mg(Injection)', 'Esome 40mg(Injection)', 'Esome 40mg(Injection)', '263', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('265', '1', 'TP0083', 'LRP Spray SPF50+', 'LRP Spray SPF50+', 'LRP Spray SPF50+', '264', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('266', '1', 'TP0084', 'M-Cain Cream', 'M-Cain Cream', 'M-Cain Cream', '265', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('267', '1', 'IN0046', 'Neuramis Gray', 'Neuramis Gray', 'Neuramis Gray', '266', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('268', '1', 'IN0047', 'Liporase', 'Liporase', 'Liporase', '267', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('269', '1', 'EP0051', 'PRP Tube USA', 'PRP Tube USA', 'PRP Tube USA', '268', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('270', '1', 'IN0048', 'Genta Injection', 'Genta Injection', 'Genta Injection', '269', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('271', '1', 'IN0049', 'Cimetidine Injection', 'Cimetidine Injection', 'Cimetidine Injection', '270', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('272', '1', 'OM0023', 'Pengesic 50mg (Tramadol)', 'Pengesic 50mg (Tramadol)', 'Pengesic 50mg (Tramadol)', '271', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('273', '1', 'IN0050', 'F-MELACLEAR', 'F-MELACLEAR', 'F-MELACLEAR', '272', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('274', '1', 'TP0085', 'Vitara TXPPE', 'Vitara TXPPE', 'Vitara TXPPE', '273', null, null, '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('612', '1', '100140', 'Doliprane 500mg', null, 'Doliprane 500mg', '512', '1', 'Samsethy', '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '11', null, '1', null, '0.00', 'pcs', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('613', '1', '100142', 'Paracetamol 1000mg', null, 'Paracetamol 1000mg', '513', '1', 'Samsethy', '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '2', null, '1', null, '0.00', 'Bottle', null, '0.00', '0.00');
-INSERT INTO `inv_items` VALUES ('614', '1', '100144', 'OPR One', null, 'OPR One', '516', '1', 'Samsethy', '2023-02-06 00:02:44.182802', '2023-02-06 00:02:44.182802', null, null, null, null, '21', null, '1', null, '0.00', 'kg', null, '0.00', '0.00');
+INSERT INTO `inv_items` VALUES ('1', '1', 'TP0066', 'Bioselenium Shampoo 100ml', 'Bioselenium Shampoo 100ml', 'Bioselenium Shampoo 100ml', '1', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('2', '1', '100146', 'Fixderma Moisturizing Cream', 'Fixderma Moisturizing Cream', 'Fixderma Moisturizing Cream', '2', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', 'Samsethy', null, null, null, '4', null, null, null, '0.00', 'Tube', '1', '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('3', '1', 'TP0003', 'Tidact gel', 'Tidact gel', 'Tidact gel', '3', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('4', '1', 'TP0001', 'Tacroz', 'Tacroz', 'Tacroz', '4', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('5', '1', 'TP0004', 'Disut-H Cream 15g', 'Disut-H Cream 15g', 'Disut-H Cream 15g', '5', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('6', '1', 'TP0005', 'Tacopic 0.1%', 'Tacopic 0.1%', 'Tacopic 0.1%', '6', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('7', '1', 'TP0006', 'Disuf-B cream 15g', 'Disuf-B cream 15g', 'Disuf-B cream 15g', '7', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('8', '1', 'TP0007', 'Candid-B Cream', 'Candid-B Cream', 'Candid-B Cream', '8', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('9', '1', 'TP0008', 'Candid Cream', 'Candid Cream', 'Candid Cream', '9', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('10', '1', 'TP0009', 'Elosone Cream', 'Elosone Cream', 'Elosone Cream', '10', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('11', '1', 'TP0010', 'Cloderm Cream 15g', 'Cloderm Cream 15g', 'Cloderm Cream 15g', '11', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('12', '1', 'TP0011', 'Beprosalic Ointment ', 'Beprosalic Ointment ', 'Beprosalic Ointment ', '12', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('13', '1', 'TP0012', 'Rozex gel 50g', 'Rozex gel 50g', 'Rozex gel 50g', '13', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('14', '1', 'TP0013', 'Beprogel Lotion 30ml', 'Beprogel Lotion 30ml', 'Beprogel Lotion 30ml', '14', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('15', '1', 'TP0014', 'Virest Cream', 'Virest Cream', 'Virest Cream', '15', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('16', '1', 'TP0015', 'H-cort Cream', 'H-cort Cream', 'H-cort Cream', '16', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('17', '1', 'TP0016', 'Ecocort Cream', 'Ecocort Cream', 'Ecocort Cream', '17', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('18', '1', 'TP0017', 'Disuf Cream', 'Disuf Cream', 'Disuf Cream', '18', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('19', '1', 'TP0018', 'Supirocine Ointment 5g', 'Supirocine Ointment 5g', 'Supirocine Ointment 5g', '19', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('20', '1', 'TP0019', 'Akne-Derm 5% Cream', 'Akne-Derm 5% Cream', 'Akne-Derm 5% Cream', '20', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('21', '1', 'TP0020', 'Diprosalic Pommade', 'Diprosalic Pommade', 'Diprosalic Pommade', '21', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('22', '1', 'TP0021', 'Neutriderm Moisturizing Lotion 125ml', 'Neutriderm Moisturizing Lotion 125ml', 'Neutriderm Moisturizing Lotion 125ml', '22', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('23', '1', 'TP0022', 'Dermavive Nappy Rash Cream', 'Dermavive Nappy Rash Cream', 'Dermavive Nappy Rash Cream', '23', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('24', '1', 'TP0023', 'Fixderma Moisturizing Lotion', 'Fixderma Moisturizing Lotion', 'Fixderma Moisturizing Lotion', '24', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('25', '1', 'EP0001', 'Serum physiodose 5ml', 'Serum physiodose 5ml', 'Serum physiodose 5ml', '25', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('26', '1', 'OM0001', 'Prednisolone', 'Prednisolone', 'Prednisolone', '26', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('27', '1', '100135', 'Acnotin', 'Acnotin', null, '27', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', 'Samsethy', null, null, null, '2', null, '4', null, '0.00', 'Bottle', '1', '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('28', '1', 'OM0003', 'Doxycycline cap 100mg', 'Doxycycline cap 100mg', 'Doxycycline cap 100mg', '28', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('29', '1', 'OM0004', 'Promethazine 25mg', 'Promethazine 25mg', 'Promethazine 25mg', '29', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('30', '1', 'EP0002', 'Syringe 3ml Vinahankook B/100P', 'Syringe 3ml Vinahankook B/100P', 'Syringe 3ml Vinahankook B/100P', '30', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('31', '1', 'EP0003', 'Syringe 1ml Vinahankook B/100P', 'Syringe 1ml Vinahankook B/100P', 'Syringe 1ml Vinahankook B/100P', '31', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('32', '1', 'EP0004', 'Syringe 5ml-25G Vinahankook B/100P', 'Syringe 5ml-25G Vinahankook B/100P', 'Syringe 5ml-25G Vinahankook B/100P', '32', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('33', '1', 'EP0005', 'Syringe 10ml Vinahankook B/100P', 'Syringe 10ml Vinahankook B/100P', 'Syringe 10ml Vinahankook B/100P', '33', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('34', '1', 'EP0006', 'Glove Sterile 7.0', 'Glove Sterile 7.0', 'Glove Sterile 7.0', '34', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '5', null, null, null, '0.00', 'Set', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('35', '1', 'IN0001', 'Nss 500ml China ', 'Nss 500ml China ', 'Nss 500ml China ', '35', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('36', '1', 'EP0007', 'Compress Sterile 20*20cm', 'Compress Sterile 20*20cm', 'Compress Sterile 20*20cm', '36', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('37', '1', 'EP0008', 'Catheter 18G-Healflon IND(100/BOX)', 'Catheter 18G-Healflon IND(100/BOX)', 'Catheter 18G-Healflon IND(100/BOX)', '37', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('38', '1', 'EP0009', 'Catheter 24G-Healflon B/100unit', 'Catheter 24G-Healflon B/100unit', 'Catheter 24G-Healflon B/100unit', '38', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('39', '1', 'EP0010', 'Nipro Catherter24G*3/4 B/50 ', 'Nipro Catherter24G*3/4 B/50 ', 'Nipro Catherter24G*3/4 B/50 ', '39', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('40', '1', 'EP0011', 'Trouss china(R, orange color) P/25', 'Trouss china(R, orange color) P/25', 'Trouss china(R, orange color) P/25', '40', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('41', '1', 'EP0012', 'Nipro Needle 18G B/100', 'Nipro Needle 18G B/100', 'Nipro Needle 18G B/100', '41', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('42', '1', 'EP0013', 'Nipro Needle 21G B/100', 'Nipro Needle 21G B/100', 'Nipro Needle 21G B/100', '42', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('43', '1', 'EP0014', 'Nipro Needle 30G B/100', 'Nipro Needle 30G B/100', 'Nipro Needle 30G B/100', '43', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('44', '1', 'EP0015', 'Scalp Vein set24 B/50', 'Scalp Vein set24 B/50', 'Scalp Vein set24 B/50', '44', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('45', '1', 'EP0016', 'Betadine dermique 125ml 10%Fr ', 'Betadine dermique 125ml 10%Fr ', 'Betadine dermique 125ml 10%Fr ', '45', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('46', '1', 'EP0017', 'Wellgard no powder size S ', 'Wellgard no powder size S ', 'Wellgard no powder size S ', '46', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('47', '1', 'EP0018', 'Wellgard no powder size M', 'Wellgard no powder size M', 'Wellgard no powder size M', '47', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('48', '1', 'EP0019', 'Safety box 5L', 'Safety box 5L', 'Safety box 5L', '48', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('49', '1', 'EP0020', 'Vaseline Petrolatum Gauze B/10', 'Vaseline Petrolatum Gauze B/10', 'Vaseline Petrolatum Gauze B/10', '49', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('50', '1', 'EP0021', 'Innoplastic B/100', 'Innoplastic B/100', 'Innoplastic B/100', '50', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('51', '1', 'EP0022', 'CRL-aperture adhesive plaster 18cm*4cm', 'CRL-aperture adhesive plaster 18cm*4cm', 'CRL-aperture adhesive plaster 18cm*4cm', '51', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('52', '1', '100137', 'Adhesive plaster with holes', 'Adhesive plaster with holes', 'Adhesive plaster with holes', '52', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', 'Samsethy', null, null, null, '7', null, null, null, '0.00', 'Box', '1', '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('53', '1', 'EP0024', 'Vaseline pet jelly orig 100ml/fl', 'Vaseline pet jelly orig 100ml/fl', 'Vaseline pet jelly orig 100ml/fl', '53', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('54', '1', 'EP0025', 'Needle dermapen VIP 42 ', 'Needle dermapen VIP 42 ', 'Needle dermapen VIP 42 ', '54', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('55', '1', 'IN0002', 'Prednisolone USA 1FL', 'Prednisolone USA 1FL', 'Prednisolone USA 1FL', '55', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('56', '1', 'TP0067', 'KTC Scalp solution', 'KTC Scalp solution', 'KTC Scalp solution', '56', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('57', '1', 'OM0005', 'Neocilor ', 'Neocilor ', 'Neocilor ', '57', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('58', '1', 'OM0006', 'Telfast Hd 180mg', 'Telfast Hd 180mg', 'Telfast Hd 180mg', '58', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('59', '1', 'OM0007', 'Atarax 25mg', 'Atarax 25mg', 'Atarax 25mg', '59', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('60', '1', 'OM0008', 'Cloxacap 500mg', 'Cloxacap 500mg', 'Cloxacap 500mg', '60', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('61', '1', 'OM0009', 'Terbinaforce 250mg', 'Terbinaforce 250mg', 'Terbinaforce 250mg', '61', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('62', '1', 'OM0010', 'Inox 100mg', 'Inox 100mg', 'Inox 100mg', '62', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('63', '1', 'OM0011', 'Zithrosun-250', 'Zithrosun-250', 'Zithrosun-250', '63', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('65', '1', 'OM0013', 'Codalgin Forte 500', 'Codalgin Forte 500', 'Codalgin Forte 500', '64', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('66', '1', 'OM0014', 'Alpha Choay 4.15mg', 'Alpha Choay 4.15mg', 'Alpha Choay 4.15mg', '65', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('67', '1', 'OM0015', 'Esome 40mg', 'Esome 40mg', 'Esome 40mg', '66', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('68', '1', 'TP0025', 'Deriva MS gel 15g', 'Deriva MS gel 15g', 'Deriva MS gel 15g', '67', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('69', '1', 'IN0003', 'Medi-Ceftriaxone inj', 'Medi-Ceftriaxone inj', 'Medi-Ceftriaxone inj', '68', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '8', null, null, null, '0.00', 'Vial', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('70', '1', 'IN0004', 'Clavox 1.2g IV', 'Clavox 1.2g IV', 'Clavox 1.2g IV', '69', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '9', null, null, null, '0.00', 'FL', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('71', '1', 'IN0005', 'Lidocaine 2% 50ml', 'Lidocaine 2% 50ml', 'Lidocaine 2% 50ml', '70', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '9', null, null, null, '0.00', 'FL', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('72', '1', 'IN0006', 'Tanganil 500mg/5ml IV', 'Tanganil 500mg/5ml IV', 'Tanganil 500mg/5ml IV', '71', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('73', '1', 'IN0007', 'Met-Sil 2ml', 'Met-Sil 2ml', 'Met-Sil 2ml', '72', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('74', '1', 'IN0008', 'Para Kabi 1000mg/100ml', 'Para Kabi 1000mg/100ml', 'Para Kabi 1000mg/100ml', '73', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('75', '1', 'IN0009', 'Anadol Inj 100mg/2ml', 'Anadol Inj 100mg/2ml', 'Anadol Inj 100mg/2ml', '74', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('76', '1', 'IN0010', 'Remopain 3% Inj', 'Remopain 3% Inj', 'Remopain 3% Inj', '75', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('77', '1', '100139', 'Adrenaline Inj 1ml', 'Adrenaline Inj 1ml', 'Adrenaline Inj 1ml', '76', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', 'Samsethy', null, null, null, '10', null, '1', null, '0.00', 'Amp', '1', '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('78', '1', 'IN0012', 'Dexamedico inj', 'Dexamedico inj', 'Dexamedico inj', '77', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('79', '1', 'IN0013', 'Genta inj-uto', 'Genta inj-uto', 'Genta inj-uto', '78', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('80', '1', 'IN0014', 'Hydromark-100', 'Hydromark-100', 'Hydromark-100', '79', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '8', null, null, null, '0.00', 'Vial', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('81', '1', 'IN0015', 'VIK 1-vitamin K1 inj 10mg/1ml', 'VIK 1-vitamin K1 inj 10mg/1ml', 'VIK 1-vitamin K1 inj 10mg/1ml', '80', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('82', '1', 'IN0016', 'Onasia', 'Onasia', 'Onasia', '81', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('83', '1', 'IN0017', 'Exacyl inj', 'Exacyl inj', 'Exacyl inj', '82', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('84', '1', 'TP0026', 'Effaclar Duo(+) 40ml', 'Effaclar Duo(+) 40ml', 'Effaclar Duo(+) 40ml', '83', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('85', '1', '100141', 'Anthelios Antishine', 'Anthelios Anti-shine', 'Anthelios Antishine', '84', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', 'Samsethy', null, null, null, '3', null, null, null, '0.00', 'Tube', '1', '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('86', '1', 'TP0028', 'Anthelios Fluid invisible', 'Anthelios Fluid invisible', 'Anthelios Fluid invisible', '85', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('87', '1', 'TP0029', 'Cicaplast gel B5 40ml', 'Cicaplast gel B5 40ml', 'Cicaplast gel B5 40ml', '86', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('88', '1', 'TP0030', 'Cicaplast Baume B5 100ml', 'Cicaplast Baume B5 100ml', 'Cicaplast Baume B5 100ml', '87', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('89', '1', 'TP0031', 'Water Max Milk Cleanser 1200ml', 'Water Max Milk Cleanser 1200ml', 'Water Max Milk Cleanser 1200ml', '88', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('90', '1', 'TP0032', 'Counteractive Bubble Clear 150ml', 'Counteractive Bubble Clear 150ml', 'Counteractive Bubble Clear 150ml', '89', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('91', '1', 'TP0033', 'Alpha Cleansing Foam 1200ml', 'Alpha Cleansing Foam 1200ml', 'Alpha Cleansing Foam 1200ml', '90', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('92', '1', 'TP0034', 'Peppermint Cool plus modeling mask 1kg', 'Peppermint Cool plus modeling mask 1kg', 'Peppermint Cool plus modeling mask 1kg', '91', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('93', '1', 'TP0035', 'Gold Plus Modeling mask 1kg', 'Gold Plus Modeling mask 1kg', 'Gold Plus Modeling mask 1kg', '92', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('94', '1', 'TP0036', 'Marine Aqua Plus Modeling mask 1kg', 'Marine Aqua Plus Modeling mask 1kg', 'Marine Aqua Plus Modeling mask 1kg', '93', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('95', '1', 'TP0037', 'Azulene Complex Ampoule 72 150ml', 'Azulene Complex Ampoule 72 150ml', 'Azulene Complex Ampoule 72 150ml', '94', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('96', '1', 'TP0038', 'EGF Complex Ampoule 50 150ml', 'EGF Complex Ampoule 50 150ml', 'EGF Complex Ampoule 50 150ml', '95', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('97', '1', 'TP0039', 'Hyaluron Complex Ampoule 62 150ml', 'Hyaluron Complex Ampoule 62 150ml', 'Hyaluron Complex Ampoule 62 150ml', '96', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('98', '1', 'TP0040', 'History Conductive Gel 500ml ', 'History Conductive Gel 500ml ', 'History Conductive Gel 500ml ', '97', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('99', '1', 'TP0041', 'Histo HQ Cream 1000ml', 'Histo HQ Cream 1000ml', 'Histo HQ Cream 1000ml', '98', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('100', '1', 'TP0042', 'Histo Aloe Vera gel 1200ml', 'Histo Aloe Vera gel 1200ml', 'Histo Aloe Vera gel 1200ml', '99', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('101', '1', 'TP0043', 'Gamma Crystal Serum 500ml', 'Gamma Crystal Serum 500ml', 'Gamma Crystal Serum 500ml', '100', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('102', '1', 'TP0044', 'Beta Fresh toner 1200ml', 'Beta Fresh toner 1200ml', 'Beta Fresh toner 1200ml', '101', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('103', '1', 'TP0045', 'Premium renewal Essence 500ml', 'Premium renewal Essence 500ml', 'Premium renewal Essence 500ml', '102', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('104', '1', 'TP0046', 'Premium Timeless Cream 250g', 'Premium Timeless Cream 250g', 'Premium Timeless Cream 250g', '103', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('105', '1', 'TP0047', 'Premium Eye Cream 250g', 'Premium Eye Cream 250g', 'Premium Eye Cream 250g', '104', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('106', '1', 'TP0048', 'Whiteness Lightening Serum 80ml', 'Whiteness Lightening Serum 80ml', 'Whiteness Lightening Serum 80ml', '105', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('107', '1', 'TP0049', 'Triangle Peel PA 80ml', 'Triangle Peel PA 80ml', 'Triangle Peel PA 80ml', '106', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('108', '1', 'TP0050', 'Triangle Peel PB 80ml', 'Triangle Peel PB 80ml', 'Triangle Peel PB 80ml', '107', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('109', '1', 'TP0051', 'Delta Active Cream 500ml', 'Delta Active Cream 500ml', 'Delta Active Cream 500ml', '108', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('110', '1', 'TP0052', 'Glycolic Skin Peel 70% 480ml', 'Glycolic Skin Peel 70% 480ml', 'Glycolic Skin Peel 70% 480ml', '109', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('111', '1', 'TP0053', 'Lactic acid Peel 70% 480ml', 'Lactic acid Peel 70% 480ml', 'Lactic acid Peel 70% 480ml', '110', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('112', '1', 'TP0054', 'Combination Peel 240ml', 'Combination Peel 240ml', 'Combination Peel 240ml', '111', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('113', '1', 'TP0055', 'Salicylic Peel 30% 120ml', 'Salicylic Peel 30% 120ml', 'Salicylic Peel 30% 120ml', '112', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('114', '1', 'TP0056', 'Ice Jeju Aloe 300ml(Thefaceshop)', 'Ice Jeju Aloe 300ml(Thefaceshop)', 'Ice Jeju Aloe 300ml(Thefaceshop)', '113', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('115', '1', 'TP0057', 'Aloe 99% 300ml(Thefaceshop)', 'Aloe 99% 300ml(Thefaceshop)', 'Aloe 99% 300ml(Thefaceshop)', '114', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('116', '1', 'TP0058', 'Smart Peeling Honey Scrub (thefaceshop)', 'Smart Peeling Honey Scrub (thefaceshop)', 'Smart Peeling Honey Scrub (thefaceshop)', '115', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('117', '1', 'TP0059', 'Smart Peeling white jewel', 'Smart Peeling white jewel', 'Smart Peeling white jewel', '116', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('118', '1', 'EP0026', 'Centrifuge Virtuose', 'Centrifuge Virtuose', 'Centrifuge Virtuose', '117', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('119', '1', 'EP0027', 'PRP tube 9ml Virtuose', 'PRP tube 9ml Virtuose', 'PRP tube 9ml Virtuose', '118', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('120', '1', 'EP0028', 'Dermapen A6', 'Dermapen A6', 'Dermapen A6', '119', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('121', '1', 'EP0029', 'Needle Dermapen A6 nano', 'Needle Dermapen A6 nano', 'Needle Dermapen A6 nano', '120', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('122', '1', 'EP0030', 'Needle Dermapen A6 42', 'Needle Dermapen A6 42', 'Needle Dermapen A6 42', '121', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('123', '1', 'EP0031', 'Skin marker', 'Skin marker', 'Skin marker', '122', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('124', '1', '100148', 'Cotton Facial pad', 'Cotton Facial pad', 'Cotton Facial pad', '123', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', 'Samsethy', null, null, null, '6', null, null, null, '0.00', 'Pack', '1', '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('125', '1', '100016', 'Acne extraction', 'Acne extraction', 'Acne extraction', '124', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', 'Samsethy', null, null, null, '2', '0', '0', null, '0.00', 'Bottle', '1', '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('126', '1', 'EP0034', 'Cautery ', 'Cautery ', 'Cautery ', '125', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('127', '1', '100129', 'Peel', '???? Peel', 'Peel', '126', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', 'Samsethy', null, null, null, '6', null, null, null, '0.00', 'Pack', '1', '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('128', '1', 'IN0018', 'Meso GTM Gold cell PDRN8% (Box/10 3,3ml)', 'Meso GTM Gold cell PDRN8% (Box/10 3,3ml)', 'Meso GTM Gold cell PDRN8% (Box/10 3,3ml)', '127', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('129', '1', 'IN0019', 'Meso Restructurer Innoaesthetic (B/4 5ml)', 'Meso Restructurer Innoaesthetic (B/4 5ml)', 'Meso Restructurer Innoaesthetic (B/4 5ml)', '128', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('130', '1', 'IN0020', 'Meso Redness ID innoaethetic (B/4 2.5ml)', 'Meso Redness ID innoaethetic (B/4 2.5ml)', 'Meso Redness ID innoaethetic (B/4 2.5ml)', '129', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('131', '1', 'IN0021', 'Meso Melatocin Essence Melasma (B/10 5ml)', 'Meso Melatocin Essence Melasma (B/10 5ml)', 'Meso Melatocin Essence Melasma (B/10 5ml)', '130', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('132', '1', 'IN0022', 'Meso GTM mela cell 3% melasma (B/10 3,5ml)', 'Meso GTM mela cell 3% melasma (B/10 3,5ml)', 'Meso GTM mela cell 3% melasma (B/10 3,5ml)', '131', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('133', '1', 'IN0023', 'Placenta Melsmon 2ml ', 'Placenta Melsmon 2ml ', 'Placenta Melsmon 2ml ', '132', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('134', '1', 'IN0024', 'Placenta Lannec 2ml', 'Placenta Lannec 2ml', 'Placenta Lannec 2ml', '133', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('135', '1', 'IN0025', 'Botulax 100UI ', 'Botulax 100UI ', 'Botulax 100UI ', '134', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('136', '1', 'IN0027', 'AMC Slimming Drip', 'AMC Slimming Drip', 'AMC Slimming Drip', '135', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '5', null, null, null, '0.00', 'Set', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('137', '1', 'IN0026', 'Japan Whitening Drip', 'Japan Whitening Drip', 'Japan Whitening Drip', '136', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '5', null, null, null, '0.00', 'Set', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('138', '1', 'EP0036', 'Meso Multi Needle', 'Meso Multi Needle', 'Meso Multi Needle', '137', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('139', '1', 'IN0028', 'Sivkoit (Triamcinolone) 80mg', 'Sivkoit (Triamcinolone) 80mg', 'Sivkoit (Triamcinolone) 80mg', '138', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('140', '1', 'IN0029', 'Para Inj 300mg ', 'Para Inj 300mg ', 'Para Inj 300mg ', '139', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('141', '1', 'IN0030', 'NSS 100ml Thai', 'NSS 100ml Thai', 'NSS 100ml Thai', '140', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '9', null, null, null, '0.00', 'FL', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('142', '1', 'IN0031', 'NSS 500ml Thai', 'NSS 500ml Thai', 'NSS 500ml Thai', '141', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '9', null, null, null, '0.00', 'FL', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('143', '1', 'EP0037', 'Surgical cap', 'Surgical cap', 'Surgical cap', '142', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('144', '1', 'TP0060', 'Skinoren Cream 30g', 'Skinoren Cream 30g', 'Skinoren Cream 30g', '143', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('145', '1', 'TP0061', 'Skarfix-TX cream', 'Skarfix-TX cream', 'Skarfix-TX cream', '144', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('146', '1', 'TP0062', 'Isis Teen Derm gel sensitive 100ml', 'Isis Teen Derm gel sensitive 100ml', 'Isis Teen Derm gel sensitive 100ml', '145', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('147', '1', 'TP0063', 'Isis Neotone Gel 150ml', 'Isis Neotone Gel 150ml', 'Isis Neotone Gel 150ml', '146', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('148', '1', 'TP0064', 'Isis Ruboril Expert S', 'Isis Ruboril Expert S', 'Isis Ruboril Expert S', '147', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('149', '1', 'TP0065', 'Isis Aqua Ruboril 250ml', 'Isis Aqua Ruboril 250ml', 'Isis Aqua Ruboril 250ml', '148', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('150', '1', 'IN0032', 'NSS 250ml korea', 'NSS 250ml korea', 'NSS 250ml korea', '149', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '9', null, null, null, '0.00', 'FL', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('151', '1', 'IN0033', 'Neuramis gold', 'Neuramis gold', 'Neuramis gold', '150', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('152', '1', 'EP0038', 'Needle 30G 4mm', 'Needle 30G 4mm', 'Needle 30G 4mm', '151', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '11', null, null, null, '0.00', 'pcs', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('153', '1', 'IN0034', 'D5W Thai 500ml', 'D5W Thai 500ml', 'D5W Thai 500ml', '152', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '9', null, null, null, '0.00', 'FL', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('154', '1', 'IN0035', 'Lactate Thai 500ml', 'Lactate Thai 500ml', 'Lactate Thai 500ml', '153', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '9', null, null, null, '0.00', 'FL', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('155', '1', 'IN0036', 'D10W Thai ', 'D10W Thai ', 'D10W Thai ', '154', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '9', null, null, null, '0.00', 'FL', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('156', '1', 'EP0039', 'Glove Sterile 6.5', 'Glove Sterile 6.5', 'Glove Sterile 6.5', '155', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '6', null, null, null, '0.00', 'Pack', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('157', '1', 'EP0040', 'Nipro Needle 30G 13mm', 'Nipro Needle 30G 13mm', 'Nipro Needle 30G 13mm', '156', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('158', '1', 'TP0068', 'Saforelle soin', 'Saforelle soin', 'Saforelle soin', '157', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('159', '1', 'SP0001', 'ISIS Aqua Ruboril 400ml', 'ISIS Aqua Ruboril 400ml', 'ISIS Aqua Ruboril 400ml', '158', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('160', '1', 'SP0002', 'ISIS Ketoplast Cracks 40ml', 'ISIS Ketoplast Cracks 40ml', 'ISIS Ketoplast Cracks 40ml', '159', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('161', '1', 'SP0003', 'ISIS Ketoplast Scars SPF50+ 40ml', 'ISIS Ketoplast Scars SPF50+ 40ml', 'ISIS Ketoplast Scars SPF50+ 40ml', '160', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('162', '1', 'SP0004', 'ISIS Neotone Aqua 250ml', 'ISIS Neotone Aqua 250ml', 'ISIS Neotone Aqua 250ml', '161', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('163', '1', 'SP0005', 'ISIS Neotone Body 100ml', 'ISIS Neotone Body 100ml', 'ISIS Neotone Body 100ml', '162', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('164', '1', 'SP0006', 'ISIS Neotone Eyes 15ml', 'ISIS Neotone Eyes 15ml', 'ISIS Neotone Eyes 15ml', '163', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('165', '1', 'SP0007', 'ISIS Neotone Prevent SPF50+ Mineral Tinted', 'ISIS Neotone Prevent SPF50+ Mineral Tinted', 'ISIS Neotone Prevent SPF50+ Mineral Tinted', '164', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('166', '1', 'SP0008', 'ISIS Neotone Radiance SPF50+ 30ml', 'ISIS Neotone Radiance SPF50+ 30ml', 'ISIS Neotone Radiance SPF50+ 30ml', '165', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('167', '1', 'SP0009', 'ISIS Neotone Sensitive 30ml', 'ISIS Neotone Sensitive 30ml', 'ISIS Neotone Sensitive 30ml', '166', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('168', '1', 'SP0011', 'ISIS Ruboril Expert M 40ml', 'ISIS Ruboril Expert M 40ml', 'ISIS Ruboril Expert M 40ml', '167', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('169', '1', 'SP0012', 'ISIS Ruboril Expert SPF 50+ 40ml', 'ISIS Ruboril Expert SPF 50+ 40ml', 'ISIS Ruboril Expert SPF 50+ 40ml', '168', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('170', '1', 'SP0013', 'ISIS Ruboril Expert Intense 15ml', 'ISIS Ruboril Expert Intense 15ml', 'ISIS Ruboril Expert Intense 15ml', '169', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('171', '1', 'SP0014', 'ISIS Ruboril Expert Lotion 250ml', 'ISIS Ruboril Expert Lotion 250ml', 'ISIS Ruboril Expert Lotion 250ml', '170', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('172', '1', 'SP0015', 'ISIS Secalia AHA 200ml', 'ISIS Secalia AHA 200ml', 'ISIS Secalia AHA 200ml', '171', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('173', '1', 'SP0016', 'ISIS Secalia Balm 200ml', 'ISIS Secalia Balm 200ml', 'ISIS Secalia Balm 200ml', '172', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('174', '1', 'SP0017', 'ISIS Secalia Ultra 200ml', 'ISIS Secalia Ultra 200ml', 'ISIS Secalia Ultra 200ml', '173', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('175', '1', 'SP0018', 'ISIS Sensylia 24h 40ml', 'ISIS Sensylia 24h 40ml', 'ISIS Sensylia 24h 40ml', '174', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('176', '1', 'SP0019', 'ISIS Sensylia 24h Legere 40ml', 'ISIS Sensylia 24h Legere 40ml', 'ISIS Sensylia 24h Legere 40ml', '175', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('177', '1', 'SP0020', 'ISIS Sensylia Aqua 100ml', 'ISIS Sensylia Aqua 100ml', 'ISIS Sensylia Aqua 100ml', '176', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('178', '1', 'SP0021', 'ISIS Sensylia Gelee 250ml', 'ISIS Sensylia Gelee 250ml', 'ISIS Sensylia Gelee 250ml', '177', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('179', '1', 'SP0022', 'ISIS Suavigel 40ml', 'ISIS Suavigel 40ml', 'ISIS Suavigel 40ml', '178', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('180', '1', 'SP0023', 'ISIS Teen Derm Aqua 100ml', 'ISIS Teen Derm Aqua 100ml', 'ISIS Teen Derm Aqua 100ml', '179', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('181', '1', 'SP0024', 'ISIS Teen Derm Aqua 250ml', 'ISIS Teen Derm Aqua 250ml', 'ISIS Teen Derm Aqua 250ml', '180', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('182', '1', 'SP0025', 'ISIS Teen Derm Alpha Pure 30ml', 'ISIS Teen Derm Alpha Pure 30ml', 'ISIS Teen Derm Alpha Pure 30ml', '181', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('183', '1', 'SP0026', 'ISIS Teen Derm Gel 40ml', 'ISIS Teen Derm Gel 40ml', 'ISIS Teen Derm Gel 40ml', '182', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('184', '1', 'SP0027', 'ISIS Teen Derm Gel 150ml', 'ISIS Teen Derm Gel 150ml', 'ISIS Teen Derm Gel 150ml', '183', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('185', '1', 'SP0028', 'ISIS Teen Derm Gel Sensitive 250ml', 'ISIS Teen Derm Gel Sensitive 250ml', 'ISIS Teen Derm Gel Sensitive 250ml', '184', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('186', '1', 'SP0029', 'ISIS Teen Derm Hydra 40ml', 'ISIS Teen Derm Hydra 40ml', 'ISIS Teen Derm Hydra 40ml', '185', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('187', '1', 'SP0030', 'ISIS Teen Derm K 30ml', 'ISIS Teen Derm K 30ml', 'ISIS Teen Derm K 30ml', '186', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('188', '1', 'SP0031', 'ISIS Teen Derm K Concentrate 30ml', 'ISIS Teen Derm K Concentrate 30ml', 'ISIS Teen Derm K Concentrate 30ml', '187', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('189', '1', 'SP0032', 'ISIS Urelia 10 150ml', 'ISIS Urelia 10 150ml', 'ISIS Urelia 10 150ml', '188', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('190', '1', 'SP0033', 'ISIS Urelia 50 40ml', 'ISIS Urelia 50 40ml', 'ISIS Urelia 50 40ml', '189', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('191', '1', 'SP0034', 'ISIS Urelia Gel 200ml', 'ISIS Urelia Gel 200ml', 'ISIS Urelia Gel 200ml', '190', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('192', '1', 'SP0035', 'ISIS SPF50+ Day Secure Invisible', 'ISIS SPF50+ Day Secure Invisible', 'ISIS SPF50+ Day Secure Invisible', '191', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('193', '1', 'SP0036', 'ISIS SPF50+ Invisible Fluid 40ml', 'ISIS SPF50+ Invisible Fluid 40ml', 'ISIS SPF50+ Invisible Fluid 40ml', '192', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('194', '1', 'SP0037', 'ISIS SPF50+ Light Tinted Fluid 40ml', 'ISIS SPF50+ Light Tinted Fluid 40ml', 'ISIS SPF50+ Light Tinted Fluid 40ml', '193', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('195', '1', 'SP0038', 'ISIS SPF50+ Tinted Mineral Cream', 'ISIS SPF50+ Tinted Mineral Cream', 'ISIS SPF50+ Tinted Mineral Cream', '194', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('196', '1', 'SP0039', 'ISIS SPF50+ Mineral Cream 40ml', 'ISIS SPF50+ Mineral Cream 40ml', 'ISIS SPF50+ Mineral Cream 40ml', '195', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('197', '1', 'SP0040', 'ISIS SPF30+ Dry Touch 40ml', 'ISIS SPF30+ Dry Touch 40ml', 'ISIS SPF30+ Dry Touch 40ml', '196', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('198', '1', 'SP0041', 'ISIS SPF80 Invisible cream 40ml', 'ISIS SPF80 Invisible cream 40ml', 'ISIS SPF80 Invisible cream 40ml', '197', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('199', '1', 'SP0042', 'ISIS Vitiskin 50ml', 'ISIS Vitiskin 50ml', 'ISIS Vitiskin 50ml', '198', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('200', '1', 'SP0043', 'Noreva Norelift Day Cream', 'Noreva Norelift Day Cream', 'Noreva Norelift Day Cream', '199', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('201', '1', 'SP0044', 'Noreva Actipur BB light 30ml', 'Noreva Actipur BB light 30ml', 'Noreva Actipur BB light 30ml', '200', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('202', '1', 'SP0045', 'Noreva Actipur BB Golden 30ml', 'Noreva Actipur BB Golden 30ml', 'Noreva Actipur BB Golden 30ml', '201', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('203', '1', 'SP0046', 'Noreva Actipur Cleansing Gel 150ml', 'Noreva Actipur Cleansing Gel 150ml', 'Noreva Actipur Cleansing Gel 150ml', '202', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('204', '1', 'SP0047', 'Noreva Exfoliac Global 6 30ml', 'Noreva Exfoliac Global 6 30ml', 'Noreva Exfoliac Global 6 30ml', '203', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('205', '1', 'SP0048', 'Noreva Exfoliac Foaming Gel 200ml', 'Noreva Exfoliac Foaming Gel 200ml', 'Noreva Exfoliac Foaming Gel 200ml', '204', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('206', '1', 'SP0049', 'Noreva Trio Dark Spot Serum 30ml', 'Noreva Trio Dark Spot Serum 30ml', 'Noreva Trio Dark Spot Serum 30ml', '205', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('207', '1', 'SP0050', 'Noreva Trio Dark Spot Care SPF 50+ ', 'Noreva Trio Dark Spot Care SPF 50+ ', 'Noreva Trio Dark Spot Care SPF 50+ ', '206', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('208', '1', 'SP0051', 'Noreva Trio Dark Spot Care 30ml', 'Noreva Trio Dark Spot Care 30ml', 'Noreva Trio Dark Spot Care 30ml', '207', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('209', '1', 'SP0052', 'Noreva Xerodiane AP+ Cream 400ml', 'Noreva Xerodiane AP+ Cream 400ml', 'Noreva Xerodiane AP+ Cream 400ml', '208', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('210', '1', 'SP0053', 'Noreva Xerodiane AP+ Cleaning Shower', 'Noreva Xerodiane AP+ Cleaning Shower', 'Noreva Xerodiane AP+ Cleaning Shower', '209', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('211', '1', 'SP0054', 'Noreva Sensidiane AR Anti-Redness cream 30ml', 'Noreva Sensidiane AR Anti-Redness cream 30ml', 'Noreva Sensidiane AR Anti-Redness cream 30ml', '210', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('212', '1', 'SP0055', 'Embryolisse Lait-Creme Concentre 30ml', 'Embryolisse Lait-Creme Concentre 30ml', 'Embryolisse Lait-Creme Concentre 30ml', '211', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('213', '1', 'SP0056', 'Embryolisse Lait-Creme Fluide 75ml', 'Embryolisse Lait-Creme Fluide 75ml', 'Embryolisse Lait-Creme Fluide 75ml', '212', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('214', '1', 'SP0057', 'Embryolisse Eua De Beaute 200ml', 'Embryolisse Eua De Beaute 200ml', 'Embryolisse Eua De Beaute 200ml', '213', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('215', '1', 'SP0058', 'Embryolisse Lotion Micellaire 250ml', 'Embryolisse Lotion Micellaire 250ml', 'Embryolisse Lotion Micellaire 250ml', '214', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('216', '1', 'SP0059', 'Embryolisse lashes & brows Booster 6.5ml', 'Embryolisse lashes & brows Booster 6.5ml', 'Embryolisse lashes & brows Booster 6.5ml', '215', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('217', '1', 'SP0060', 'Embryolisse Intense Smooth 50ml', 'Embryolisse Intense Smooth 50ml', 'Embryolisse Intense Smooth 50ml', '216', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('218', '1', 'SP0061', 'Embryolisse Complexion BB Cream', 'Embryolisse Complexion BB Cream', 'Embryolisse Complexion BB Cream', '217', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('219', '1', 'SP0062', 'Embryolisse Complexion CC Cream 30ml', 'Embryolisse Complexion CC Cream 30ml', 'Embryolisse Complexion CC Cream 30ml', '218', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('220', '1', 'SP0063', 'Embryolisse Consealer (Beige) 8ml', 'Embryolisse Consealer (Beige) 8ml', 'Embryolisse Consealer (Beige) 8ml', '219', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('221', '1', 'SP0064', 'Embryolisse Consealer (PInk) 8ml', 'Embryolisse Consealer (PInk) 8ml', 'Embryolisse Consealer (PInk) 8ml', '220', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('222', '1', 'SP0065', 'Embryolisse Smooth Rodiant 40ml', 'Embryolisse Smooth Rodiant 40ml', 'Embryolisse Smooth Rodiant 40ml', '221', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('223', '1', 'SP0066', 'Embryolisse Radiant Powder 12g', 'Embryolisse Radiant Powder 12g', 'Embryolisse Radiant Powder 12g', '222', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('224', '1', 'SP0067', 'Embryolisse Radiant Eye 4.5g', 'Embryolisse Radiant Eye 4.5g', 'Embryolisse Radiant Eye 4.5g', '223', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('225', '1', 'SP0010', 'ISIS Neotone Serum 30ml', 'ISIS Neotone Serum 30ml', 'ISIS Neotone Serum 30ml', '224', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('226', '1', 'IN0037', 'Bupivacaine ', 'Bupivacaine ', 'Bupivacaine ', '225', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('227', '1', 'IN0038', 'Glucose Thai inj 50%', 'Glucose Thai inj 50%', 'Glucose Thai inj 50%', '226', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('228', '1', 'EP0041', 'Cannula 25G*50MM', 'Cannula 25G*50MM', 'Cannula 25G*50MM', '227', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '11', null, null, null, '0.00', 'pcs', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('229', '1', 'EP0042', 'Cannula 18G*50MM', 'Cannula 18G*50MM', 'Cannula 18G*50MM', '228', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '11', null, null, null, '0.00', 'pcs', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('230', '1', 'EP0043', 'Skin marker white ', 'Skin marker white ', 'Skin marker white ', '229', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '11', null, null, null, '0.00', 'pcs', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('231', '1', 'IN0039', 'Botox USA', 'Botox USA', 'Botox USA', '230', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('232', '1', 'TP0069', 'Whiteness lightening serum', 'Whiteness lightening serum', 'Whiteness lightening serum', '231', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('233', '1', 'OM0017', 'Firide 1mg', 'Firide 1mg', 'Firide 1mg', '232', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('234', '1', '100143', 'Minoxin 5', 'Minoxin 5%', 'Minoxin 5', '233', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', 'Samsethy', null, null, null, '2', null, null, null, '0.00', 'Bottle', '1', '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('235', '1', '100132', 'Acnetin 005', 'Acnetin 0.05', 'Acnetin 005', '234', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', 'Samsethy', null, null, null, '3', null, '1', null, '0.00', 'Tube', '1', '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('236', '1', 'IN0040', 'F-ACN (FUSION)', 'F-ACN (FUSION)', 'F-ACN (FUSION)', '235', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('237', '1', 'IN0041', 'F-RADIAN (FUSION)', 'F-RADIAN (FUSION)', 'F-RADIAN (FUSION)', '236', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('238', '1', '42', 'F-EYECONTOUR (FUSION)', 'F-EYECONTOUR (FUSION)', 'F-EYECONTOUR (FUSION)', '237', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('239', '1', 'IN0043', 'F-HAIR MEN (FUSION)', 'F-HAIR MEN (FUSION)', 'F-HAIR MEN (FUSION)', '238', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('240', '1', 'TP0072', 'Minoxin 2%', 'Minoxin 2%', 'Minoxin 2%', '239', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('241', '1', 'TP0073', 'Orrepast', 'Orrepast', 'Orrepast', '240', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('242', '1', 'OM0018', 'Mediclovir 400mg', 'Mediclovir 400mg', 'Mediclovir 400mg', '241', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('243', '1', 'OM0019', 'Gofen 400mg', 'Gofen 400mg', 'Gofen 400mg', '242', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('244', '1', 'TP0074', 'Y Mycin N', 'Y Mycin N', 'Y Mycin N', '243', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('245', '1', 'TP0075', 'Y Mycin A ', 'Y Mycin A ', 'Y Mycin A ', '244', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('246', '1', 'EP0044', 'Nitrile No powder Size S', 'Nitrile No powder Size S', 'Nitrile No powder Size S', '245', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('247', '1', 'EP0045', 'Nitrile No powder Size M', 'Nitrile No powder Size M', 'Nitrile No powder Size M', '246', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('248', '1', 'OM0020', 'Lergicet 10mg', 'Lergicet 10mg', 'Lergicet 10mg', '247', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('249', '1', 'OM0021', 'Falete 250mg', 'Falete 250mg', 'Falete 250mg', '248', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('250', '1', 'IN0044', 'Medixon 125mg ', 'Medixon 125mg ', 'Medixon 125mg ', '249', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '9', null, null, null, '0.00', 'FL', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('251', '1', 'TP0076', 'Cicaplast Baume B5 40ml', 'Cicaplast Baume B5 40ml', 'Cicaplast Baume B5 40ml', '250', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('252', '1', 'TP0077', 'Bioderma Sensibio Gel moussant 200ml', 'Bioderma Sensibio Gel moussant 200ml', 'Bioderma Sensibio Gel moussant 200ml', '251', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('253', '1', 'TP0078', 'Bioderma Sensibio Gel moussant 45ml', 'Bioderma Sensibio Gel moussant 45ml', 'Bioderma Sensibio Gel moussant 45ml', '252', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('254', '1', '100138', 'AkneDerm 25 Cream', 'Akne-Derm 2.5 Cream', 'AkneDerm 25 Cream', '253', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', 'Samsethy', null, null, null, '3', null, '4', null, '0.00', 'Tube', '1', '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('255', '1', 'EP0046', 'Syringe Leur Lock 3ml', 'Syringe Leur Lock 3ml', 'Syringe Leur Lock 3ml', '254', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('256', '1', 'EP0047', 'Syringe Leur Lock 5ml', 'Syringe Leur Lock 5ml', 'Syringe Leur Lock 5ml', '255', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('257', '1', 'EP0048', 'Syringe Leur Lock 10ml', 'Syringe Leur Lock 10ml', 'Syringe Leur Lock 10ml', '256', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('258', '1', 'EP0049', 'Syringe Leur Lock 50ml', 'Syringe Leur Lock 50ml', 'Syringe Leur Lock 50ml', '257', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('259', '1', 'OM0022', 'Biotin Nature Own', 'Biotin Nature Own', 'Biotin Nature Own', '258', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('260', '1', 'TP0080', 'Hydrogel Brightening Mask', 'Hydrogel Brightening Mask', 'Hydrogel Brightening Mask', '259', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '11', null, null, null, '0.00', 'pcs', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('261', '1', 'TP0081', 'Hydrogel Gold Mask', 'Hydrogel Gold Mask', 'Hydrogel Gold Mask', '260', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '11', null, null, null, '0.00', 'pcs', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('262', '1', 'TP0082', 'Hydrogel Snail Mask', 'Hydrogel Snail Mask', 'Hydrogel Snail Mask', '261', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '11', null, null, null, '0.00', 'pcs', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('263', '1', '2', 'Grand Compress (Bloc)', 'Grand Compress (Bloc)', 'Grand Compress (Bloc)', '262', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '11', null, null, null, '0.00', 'pcs', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('264', '1', '4', 'Esome 40mg(Injection)', 'Esome 40mg(Injection)', 'Esome 40mg(Injection)', '263', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('265', '1', 'TP0083', 'LRP Spray SPF50+', 'LRP Spray SPF50+', 'LRP Spray SPF50+', '264', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('266', '1', 'TP0084', 'M-Cain Cream', 'M-Cain Cream', 'M-Cain Cream', '265', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('267', '1', 'IN0046', 'Neuramis Gray', 'Neuramis Gray', 'Neuramis Gray', '266', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '7', null, null, null, '0.00', 'Box', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('268', '1', 'IN0047', 'Liporase', 'Liporase', 'Liporase', '267', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('269', '1', 'EP0051', 'PRP Tube USA', 'PRP Tube USA', 'PRP Tube USA', '268', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('270', '1', 'IN0048', 'Genta Injection', 'Genta Injection', 'Genta Injection', '269', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('271', '1', 'IN0049', 'Cimetidine Injection', 'Cimetidine Injection', 'Cimetidine Injection', '270', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '10', null, null, null, '0.00', 'Amp', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('272', '1', 'OM0023', 'Pengesic 50mg (Tramadol)', 'Pengesic 50mg (Tramadol)', 'Pengesic 50mg (Tramadol)', '271', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '4', null, null, null, '0.00', 'Tablet', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('273', '1', 'IN0050', 'F-MELACLEAR', 'F-MELACLEAR', 'F-MELACLEAR', '272', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, null, null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('274', '1', 'TP0085', 'Vitara TXPPE', 'Vitara TXPPE', 'Vitara TXPPE', '273', null, null, '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '3', null, null, null, '0.00', 'Tube', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('612', '1', '100140', 'Doliprane 500mg', null, 'Doliprane 500mg', '512', '1', 'Samsethy', '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '11', null, '1', null, '0.00', 'pcs', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('613', '1', '100142', 'Paracetamol 1000mg', null, 'Paracetamol 1000mg', '513', '1', 'Samsethy', '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '2', null, '1', null, '0.00', 'Bottle', null, '0.00', '0.00', 'MI', '5.00');
+INSERT INTO `inv_items` VALUES ('614', '1', '100144', 'OPR One', null, 'OPR One', '516', '1', 'Samsethy', '2023-02-19 11:48:36.836746', '2023-02-19 11:48:36.836746', null, null, null, null, '21', null, '1', null, '0.00', 'kg', null, '0.00', '0.00', 'MI', '5.00');
 
 -- ----------------------------
 -- Table structure for `inv_item_attributes`
@@ -1242,14 +1462,14 @@ CREATE TABLE `inv_item_code_control` (
 -- ----------------------------
 -- Records of inv_item_code_control
 -- ----------------------------
-INSERT INTO `inv_item_code_control` VALUES ('1', '146', null, null);
+INSERT INTO `inv_item_code_control` VALUES ('1', '148', null, null);
 
 -- ----------------------------
 -- Table structure for `inv_item_groups`
 -- ----------------------------
 DROP TABLE IF EXISTS `inv_item_groups`;
 CREATE TABLE `inv_item_groups` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `id` int(10) NOT NULL DEFAULT 0,
   `branch_id` int(10) NOT NULL,
   `name` varchar(150) NOT NULL,
   `create_user` varchar(50) DEFAULT NULL,
@@ -1270,9 +1490,8 @@ CREATE TABLE `inv_item_groups` (
   `brand_id` int(10) DEFAULT NULL,
   `cost` decimal(10,2) NOT NULL DEFAULT 0.00,
   `selling_price` decimal(20,2) NOT NULL DEFAULT 0.00,
-  `ws_selling_price` decimal(10,2) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=519 DEFAULT CHARSET=utf8mb4;
+  `ws_selling_price` decimal(10,2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_item_groups
@@ -1399,8 +1618,8 @@ INSERT INTO `inv_item_groups` VALUES ('119', '1', 'Dermapen A6', 'Admin', '1', '
 INSERT INTO `inv_item_groups` VALUES ('120', '1', 'Needle Dermapen A6 nano', 'Admin', '1', '2023-02-06 00:08:17.533105', null, '2023-02-06 00:08:17.533105', null, null, '2', 'GEP0029', null, null, null, 'Pack', '6', '0', null, '0.00', '0.00', null);
 INSERT INTO `inv_item_groups` VALUES ('121', '1', 'Needle Dermapen A6 42', 'Admin', '1', '2023-02-06 00:08:17.533105', null, '2023-02-06 00:08:17.533105', null, null, '2', 'GEP0030', null, null, null, 'Pack', '6', '0', null, '0.00', '0.00', null);
 INSERT INTO `inv_item_groups` VALUES ('122', '1', 'Skin marker', 'Admin', '1', '2023-02-06 00:08:17.533105', null, '2023-02-06 00:08:17.533105', null, null, '2', 'GEP0031', null, null, null, 'Pack', '6', '0', null, '0.00', '0.00', null);
-INSERT INTO `inv_item_groups` VALUES ('123', '1', 'Cotton Facial pad', 'Admin', '1', '2023-02-06 00:08:17.533105', null, '2023-02-06 00:08:17.533105', null, null, '2', 'GEP0032', null, null, null, 'Pack', '6', '0', null, '0.00', '0.00', null);
-INSERT INTO `inv_item_groups` VALUES ('124', '1', 'Acne extraction', 'Admin', '1', '2023-02-07 23:18:52.764498', 'zxcxvxvcxbcxv', '2023-02-07 23:18:52.000000', 'Samsethy', '1', '2', 'G100016', null, null, null, 'Bottle', '2', '0', null, '0.00', '0.00', null);
+INSERT INTO `inv_item_groups` VALUES ('123', '1', 'Cotton Facial pad', 'Admin', '1', '2023-02-13 07:49:53.377633', null, '2023-02-13 07:49:53.000000', 'Samsethy', '1', '2', 'GEP0032', null, null, null, 'Pack', '6', '0', null, '0.00', '0.00', null);
+INSERT INTO `inv_item_groups` VALUES ('124', '1', 'Acne extraction', 'Admin', '1', '2023-02-13 08:11:32.147728', 'dsfgdfg efdsgd sdfdfg', '2023-02-13 08:11:32.000000', 'Samsethy', '1', '2', 'G100016', null, null, null, 'Bottle', '2', '0', null, '0.00', '0.00', null);
 INSERT INTO `inv_item_groups` VALUES ('125', '1', 'Cautery ', 'Admin', '1', '2023-02-06 00:08:17.533105', null, '2023-02-06 00:08:17.533105', null, null, '2', 'GEP0034', null, null, null, 'Pack', '6', '0', null, '0.00', '0.00', null);
 INSERT INTO `inv_item_groups` VALUES ('126', '1', 'Peel', 'Admin', '1', '2023-02-06 00:08:17.533105', null, '2023-02-06 00:08:17.533105', null, null, '2', 'G100129', null, null, null, 'Pack', '6', '0', null, '0.00', '0.00', null);
 INSERT INTO `inv_item_groups` VALUES ('127', '1', 'Meso GTM Gold cell PDRN8% (Box/10 3,3ml)', 'Admin', '1', '2023-02-06 00:08:17.533105', null, '2023-02-06 00:08:17.533105', null, null, '2', 'GIN0018', null, null, null, 'Bottle', '2', '0', null, '0.00', '0.00', null);
@@ -1615,7 +1834,7 @@ CREATE TABLE `inv_last_stocks` (
 -- ----------------------------
 DROP TABLE IF EXISTS `inv_manufacturers`;
 CREATE TABLE `inv_manufacturers` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `id` int(10) NOT NULL DEFAULT 0,
   `branch_id` int(10) NOT NULL,
   `name` varchar(150) NOT NULL,
   `country_id` int(10) DEFAULT NULL,
@@ -1624,9 +1843,8 @@ CREATE TABLE `inv_manufacturers` (
   `update_uid` int(10) DEFAULT NULL,
   `update_user` varchar(50) DEFAULT NULL,
   `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_manufacturers
@@ -1870,7 +2088,7 @@ CREATE TABLE `inv_stock_adjustments` (
 -- ----------------------------
 DROP TABLE IF EXISTS `inv_stock_classes`;
 CREATE TABLE `inv_stock_classes` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `id` int(10) NOT NULL DEFAULT 0,
   `branch_id` int(10) NOT NULL,
   `code` varchar(5) NOT NULL COMMENT 'code ={A,B,C, etc...}',
   `name` varchar(50) NOT NULL COMMENT 'name ={"For Sales","Internal Usage"}',
@@ -1879,9 +2097,8 @@ CREATE TABLE `inv_stock_classes` (
   `create_uid` int(10) DEFAULT NULL,
   `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   `update_user` varchar(50) DEFAULT NULL,
-  `update_uid` int(10) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+  `update_uid` int(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_stock_classes
@@ -1895,7 +2112,7 @@ INSERT INTO `inv_stock_classes` VALUES ('3', '1', 'C', 'Charitty', null, 'Admin'
 -- ----------------------------
 DROP TABLE IF EXISTS `inv_stock_log`;
 CREATE TABLE `inv_stock_log` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `id` int(10) NOT NULL DEFAULT 0,
   `branch_id` int(10) NOT NULL,
   `create_user` varchar(50) NOT NULL,
   `description` varchar(250) NOT NULL,
@@ -1903,9 +2120,8 @@ CREATE TABLE `inv_stock_log` (
   `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   `create_uid` int(10) DEFAULT NULL,
   `qty` decimal(10,2) NOT NULL DEFAULT 0.00,
-  `trx_id` int(10) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=241 DEFAULT CHARSET=utf8mb4;
+  `trx_id` int(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_stock_log
@@ -2014,6 +2230,62 @@ INSERT INTO `inv_stock_log` VALUES ('237', '1', 'admin@gmail.com', 'Samsethy rec
 INSERT INTO `inv_stock_log` VALUES ('238', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-05 17:16:54.000000', '1', '0.00', '61');
 INSERT INTO `inv_stock_log` VALUES ('239', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-05 23:51:44.000000', '1', '0.00', '60');
 INSERT INTO `inv_stock_log` VALUES ('240', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-05 23:51:44.000000', '1', '0.00', '61');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 09:38:41.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 09:38:41.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 09:43:06.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 09:43:06.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 09:43:33.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 09:43:33.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 10:34:26.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 10:34:26.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 10:34:28.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 10:34:28.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 10:34:29.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 10:34:29.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 14:38:47.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 14:38:47.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 17:33:05.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 17:33:05.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 17:33:34.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 17:33:34.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 18:04:51.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 18:04:51.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 18:05:50.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 18:05:50.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 19:10:30.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 19:10:30.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 19:12:56.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 19:12:56.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 19:15:24.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 19:15:24.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 19:15:43.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 19:15:43.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 19:16:04.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 19:16:04.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 19:17:04.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 19:17:04.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 19:19:32.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 19:19:32.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 19:27:27.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 19:27:27.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 19:28:17.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 19:28:17.000000', '1', '0.00', '0');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 19:31:13.000000', '1', '0.00', '1');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 19:31:13.000000', '1', '0.00', '2');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-12 19:41:14.000000', '1', '0.00', '1');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-12 19:41:14.000000', '1', '0.00', '2');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-13 07:51:37.000000', '1', '0.00', '3');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-13 07:52:04.000000', '1', '0.00', '4');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-13 07:52:04.000000', '1', '0.00', '3');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-13 07:58:52.000000', '1', '0.00', '4');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-13 07:58:52.000000', '1', '0.00', '3');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-13 08:00:08.000000', '1', '0.00', '4');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-13 08:00:08.000000', '1', '0.00', '3');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-13 08:00:16.000000', '1', '0.00', '3');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-13 08:00:31.000000', '1', '0.00', '4');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-13 08:00:31.000000', '1', '0.00', '3');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 bottle', 'receive', '2023-02-13 11:19:05.000000', '1', '0.00', '4');
+INSERT INTO `inv_stock_log` VALUES ('0', '1', 'admin@gmail.com', 'Samsethy receives PO 10 box', 'receive', '2023-02-13 11:19:05.000000', '1', '0.00', '3');
 
 -- ----------------------------
 -- Table structure for `inv_stock_trans`
@@ -2080,7 +2352,7 @@ CREATE TABLE `inv_transfers` (
 -- ----------------------------
 DROP TABLE IF EXISTS `inv_units`;
 CREATE TABLE `inv_units` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `id` int(10) NOT NULL DEFAULT 0,
   `name` varchar(50) NOT NULL,
   `description` varchar(100) DEFAULT NULL,
   `parent_unit_id` int(10) DEFAULT NULL,
@@ -2092,9 +2364,8 @@ CREATE TABLE `inv_units` (
   `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   `update_user` varchar(50) DEFAULT NULL,
   `update_uid` int(10) DEFAULT NULL,
-  `item_id` int(10) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4;
+  `item_id` int(10) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_units
@@ -2161,7 +2432,7 @@ CREATE TABLE `leads` (
   `branch_id` int(10) DEFAULT NULL,
   `email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of leads
@@ -2210,6 +2481,10 @@ INSERT INTO `leads` VALUES ('53', 'dfgdfhf', 'F', '02334534543', '2', '1', 'Sams
 INSERT INTO `leads` VALUES ('54', 'sadsfd', 'F', '012324332', '2', '1', 'Samsethy', null, null, '2023-01-19 18:34:05', null, '1', null);
 INSERT INTO `leads` VALUES ('55', 'sdfgdgf', 'F', '02324', '2', '1', 'Samsethy', null, null, '2023-01-19 18:46:20', null, '1', null);
 INSERT INTO `leads` VALUES ('56', 'dfdfg', 'F', 'sdffdg', '2', '1', 'Samsethy', null, null, '2023-01-19 18:47:01', null, '1', null);
+INSERT INTO `leads` VALUES ('57', 'Sovanny', 'F', '012235456', '2', '1', 'Samsethy', null, null, '2023-02-22 05:01:38', null, '1', null);
+INSERT INTO `leads` VALUES ('58', 'srey pov', 'F', '01255665', '2', '1', 'Samsethy', null, null, '2023-02-22 05:03:06', null, '1', null);
+INSERT INTO `leads` VALUES ('59', 'jghjghjg', 'F', '012324235', '2', '1', 'Samsethy', null, null, '2023-02-22 06:45:25', null, '1', null);
+INSERT INTO `leads` VALUES ('60', 'Dyna', 'F', '01325435', '2', '1', 'Samsethy', null, null, '2023-02-22 06:47:28', null, '1', null);
 
 -- ----------------------------
 -- Table structure for `loc_cities`
@@ -2461,7 +2736,6 @@ DROP TABLE IF EXISTS `medical_services`;
 CREATE TABLE `medical_services` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `branch_id` int(10) NOT NULL,
-  `com_branch_id` int(10) NULL DEFAULT NULL,
   `name` varchar(250) NOT NULL,
   `description` varchar(250) NOT NULL,
   `create_uid` int(10) NOT NULL,
@@ -2477,7 +2751,7 @@ CREATE TABLE `medical_services` (
   `treatment_method` varchar(25) DEFAULT '' COMMENT 'treatment_type ={non-surgery,minor suregery,surgery}',
   `service_type` varchar(25) DEFAULT 'treatment' COMMENT 'service_type = {treatment, labo,consultation}',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of medical_services
@@ -2489,7 +2763,7 @@ INSERT INTO `medical_services` VALUES ('10', '1', 'Mole removal', 'Facial treatm
 INSERT INTO `medical_services` VALUES ('11', '1', 'Skin whitening Natural', 'Facial treatment', '1', 'Samsethy', '2023-01-09 16:57:25.187427', '2023-01-09 16:57:25.000000', 'Samsethy', '1', '10.00', 'USD', null, '1', 'nonsurgery', 'treatment');
 INSERT INTO `medical_services` VALUES ('22', '1', 'Body message', 'Facial treatment', '1', 'Samsethy', '2023-01-09 16:57:06.508011', '2023-01-09 16:57:06.000000', 'Samsethy', '1', null, 'USD', null, '1', 'nonsurgery', 'treatment');
 INSERT INTO `medical_services` VALUES ('27', '1', 'Blood test', 'Blood test', '1', 'Samsethy', '2023-01-07 00:23:42.000000', null, null, null, null, 'USD', null, '1', 'nonsurgery', 'labo');
-INSERT INTO `medical_services` VALUES ('28', '1', 'Medical Consultation', 'Medical Consultation', '1', 'Samsethy', '2023-01-07 00:24:42.000000', null, null, null, null, 'USD', null, '1', 'none', 'consultation');
+INSERT INTO `medical_services` VALUES ('28', '1', 'Medical Consultation', 'Medical Consultation', '1', 'Samsethy', '2023-02-22 09:50:07.603905', '2023-02-22 09:50:07.000000', 'Samsethy', '1', null, 'USD', null, '1', 'none', 'consultation');
 
 -- ----------------------------
 -- Table structure for `migrations`
@@ -2575,7 +2849,7 @@ CREATE TABLE `patients` (
   `remarks` varchar(350) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `patient_type` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'patient_type = {OPD,IPD}',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=107 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=112 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of patients
@@ -2595,12 +2869,11 @@ INSERT INTO `patients` VALUES ('81', '1', '1', '61', 'P100066', 'Samsethy', '1',
 INSERT INTO `patients` VALUES ('82', '1', '1', '62', 'P100067', 'Samsethy', '1', '2022-12-09 10:04:17', null, null, null, null, 'OPD');
 INSERT INTO `patients` VALUES ('96', '1', '1', '81', 'P100082', 'Samsethy', '1', '2023-01-01 16:08:04', null, null, null, null, 'OPD');
 INSERT INTO `patients` VALUES ('97', '1', '1', '82', 'P100083', 'Samsethy', '1', '2023-01-01 16:15:20', null, null, null, null, 'OPD');
-INSERT INTO `patients` VALUES ('98', '1', '1', '83', 'P100084', 'Samsethy', '1', '2023-01-01 16:19:36', null, null, null, null, 'OPD');
-INSERT INTO `patients` VALUES ('99', '1', '1', '84', 'P100085', 'Samsethy', '1', '2023-01-01 16:27:42', null, null, null, null, 'OPD');
-INSERT INTO `patients` VALUES ('100', '1', '1', '85', 'P100086', 'Samsethy', '1', '2023-01-02 22:15:53', null, null, null, null, 'OPD');
-INSERT INTO `patients` VALUES ('101', '1', '1', '86', 'P100087', 'Samsethy', '1', '2023-01-05 09:57:54', null, null, null, null, 'OPD');
-INSERT INTO `patients` VALUES ('102', '1', '1', '87', 'P100088', 'Samsethy', '1', '2023-01-05 10:28:35', null, null, null, null, 'OPD');
-INSERT INTO `patients` VALUES ('106', '1', '1', '107', 'P100093', 'Samsethy', '1', '2023-02-09 07:40:25', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('107', '1', '1', '108', 'P100094', 'Samsethy', '1', '2023-02-22 06:19:49', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('108', '1', '1', '87', 'P100096', 'Samsethy', '1', '2023-02-22 06:37:19', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('109', '1', '1', '73', 'P100097', 'Samsethy', '1', '2023-02-22 06:39:19', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('110', '1', '1', '109', 'P100098', 'Samsethy', '1', '2023-02-22 06:45:38', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('111', '1', '1', '110', 'P100099', 'Samsethy', '1', '2023-02-22 06:47:42', null, null, null, null, 'OPD');
 
 -- ----------------------------
 -- Table structure for `patient_code_control`
@@ -2616,7 +2889,7 @@ CREATE TABLE `patient_code_control` (
 -- ----------------------------
 -- Records of patient_code_control
 -- ----------------------------
-INSERT INTO `patient_code_control` VALUES ('1', '93', null, 'P');
+INSERT INTO `patient_code_control` VALUES ('1', '99', null, 'P');
 
 -- ----------------------------
 -- Table structure for `patient_consult_items`
@@ -2693,7 +2966,7 @@ CREATE TABLE `patient_medical_conditions` (
   `description` varchar(150) DEFAULT NULL,
   `display_order` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=223 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=235 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of patient_medical_conditions
@@ -2738,6 +3011,11 @@ INSERT INTO `patient_medical_conditions` VALUES ('214', '1', '103', '3', '0', 'A
 INSERT INTO `patient_medical_conditions` VALUES ('218', '1', '104', '3', '0', 'Active', '2023-01-19 18:32:32.000000', '1', 'Samsethy', '2023-01-19 18:32:32.000000', null, null, null, 'Conjunctivitis', null);
 INSERT INTO `patient_medical_conditions` VALUES ('220', '1', '105', '3', '0', 'Active', '2023-01-19 18:36:28.000000', '1', 'Samsethy', '2023-01-19 18:36:28.000000', null, null, null, 'Conjunctivitis', null);
 INSERT INTO `patient_medical_conditions` VALUES ('222', '1', '106', '3', '0', 'Active', '2023-02-09 07:40:26.000000', '1', 'Samsethy', '2023-02-09 07:40:26.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('224', '1', '107', '3', '0', 'Active', '2023-02-22 06:19:49.000000', '1', 'Samsethy', '2023-02-22 06:19:49.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('228', '1', '108', '3', '0', 'Active', '2023-02-22 06:37:21.000000', '1', 'Samsethy', '2023-02-22 06:37:21.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('230', '1', '109', '3', '0', 'Active', '2023-02-22 06:39:19.000000', '1', 'Samsethy', '2023-02-22 06:39:19.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('232', '1', '110', '3', '0', 'Active', '2023-02-22 06:45:38.000000', '1', 'Samsethy', '2023-02-22 06:45:38.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('234', '1', '111', '3', '0', 'Active', '2023-02-22 06:47:42.000000', '1', 'Samsethy', '2023-02-22 06:47:42.000000', null, null, null, 'Conjunctivitis', null);
 
 -- ----------------------------
 -- Table structure for `patient_pe`
@@ -2830,7 +3108,7 @@ CREATE TABLE `patient_vital_signs` (
   `appt_id` int(10) DEFAULT NULL,
   `ticket_id` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=409 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=433 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of patient_vital_signs
@@ -3199,6 +3477,26 @@ INSERT INTO `patient_vital_signs` VALUES ('405', null, '106', '1', null, 'Body t
 INSERT INTO `patient_vital_signs` VALUES ('406', null, '106', '2', null, 'Impulse rate', '2023-02-09 07:40:25.000000', '2023-02-09 07:40:25.000000', '1', 'Samsethy', null, null, null, '1', null, null);
 INSERT INTO `patient_vital_signs` VALUES ('407', null, '106', '3', null, 'Respiration Rate', '2023-02-09 07:40:25.000000', '2023-02-09 07:40:25.000000', '1', 'Samsethy', null, null, null, '1', null, null);
 INSERT INTO `patient_vital_signs` VALUES ('408', null, '106', '4', null, 'Blood pressure', '2023-02-09 07:40:25.000000', '2023-02-09 07:40:25.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('409', null, '107', '1', null, 'Body temperature', '2023-02-22 06:19:49.000000', '2023-02-22 06:19:49.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('410', null, '107', '2', null, 'Impulse rate', '2023-02-22 06:19:49.000000', '2023-02-22 06:19:49.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('411', null, '107', '3', null, 'Respiration Rate', '2023-02-22 06:19:49.000000', '2023-02-22 06:19:49.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('412', null, '107', '4', null, 'Blood pressure', '2023-02-22 06:19:49.000000', '2023-02-22 06:19:49.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('417', null, '108', '1', '2412.00', 'Body temperature', '2023-02-22 06:37:21.000000', '2023-02-22 06:37:21.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('418', null, '108', '2', '2.00', 'Impulse rate', '2023-02-22 06:37:21.000000', '2023-02-22 06:37:21.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('419', null, '108', '3', '4.00', 'Respiration Rate', '2023-02-22 06:37:21.000000', '2023-02-22 06:37:21.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('420', null, '108', '4', '5.00', 'Blood pressure', '2023-02-22 06:37:21.000000', '2023-02-22 06:37:21.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('421', null, '109', '1', null, 'Body temperature', '2023-02-22 06:39:19.000000', '2023-02-22 06:39:19.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('422', null, '109', '2', null, 'Impulse rate', '2023-02-22 06:39:19.000000', '2023-02-22 06:39:19.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('423', null, '109', '3', null, 'Respiration Rate', '2023-02-22 06:39:19.000000', '2023-02-22 06:39:19.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('424', null, '109', '4', null, 'Blood pressure', '2023-02-22 06:39:19.000000', '2023-02-22 06:39:19.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('425', null, '110', '1', null, 'Body temperature', '2023-02-22 06:45:38.000000', '2023-02-22 06:45:38.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('426', null, '110', '2', null, 'Impulse rate', '2023-02-22 06:45:38.000000', '2023-02-22 06:45:38.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('427', null, '110', '3', null, 'Respiration Rate', '2023-02-22 06:45:38.000000', '2023-02-22 06:45:38.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('428', null, '110', '4', null, 'Blood pressure', '2023-02-22 06:45:38.000000', '2023-02-22 06:45:38.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('429', null, '111', '1', null, 'Body temperature', '2023-02-22 06:47:42.000000', '2023-02-22 06:47:42.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('430', null, '111', '2', null, 'Impulse rate', '2023-02-22 06:47:42.000000', '2023-02-22 06:47:42.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('431', null, '111', '3', null, 'Respiration Rate', '2023-02-22 06:47:42.000000', '2023-02-22 06:47:42.000000', '1', 'Samsethy', null, null, null, '1', null, null);
+INSERT INTO `patient_vital_signs` VALUES ('432', null, '111', '4', null, 'Blood pressure', '2023-02-22 06:47:42.000000', '2023-02-22 06:47:42.000000', '1', 'Samsethy', null, null, null, '1', null, null);
 
 -- ----------------------------
 -- Table structure for `persons`
@@ -3228,7 +3526,7 @@ CREATE TABLE `persons` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `cp_email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=108 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=111 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of persons
@@ -3287,12 +3585,15 @@ INSERT INTO `persons` VALUES ('98', '1', 'Samsethy THOUN', null, null, 'M', '200
 INSERT INTO `persons` VALUES ('99', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:28', null, null, null, null);
 INSERT INTO `persons` VALUES ('100', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:28', null, null, null, null);
 INSERT INTO `persons` VALUES ('101', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:29', null, null, null, null);
-INSERT INTO `persons` VALUES ('102', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:29', 'Samsethy', '1', '2023-02-04 09:34:33', null);
+INSERT INTO `persons` VALUES ('102', '1', 'Samsethy THOUNefd', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:29', 'Samsethy', '1', '2023-02-22 04:43:50', null);
 INSERT INTO `persons` VALUES ('103', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:41', 'Samsethy', '1', '2023-01-14 22:29:45', null);
 INSERT INTO `persons` VALUES ('104', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 13:48:25', null, null, null, null);
 INSERT INTO `persons` VALUES ('105', '1', 'dfgdfhf', '', 'dfgdfhf', 'F', null, '14', '02334534543', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-19 18:27:48', null, null, null, null);
 INSERT INTO `persons` VALUES ('106', '1', 'sadsfd', '', 'sadsfd', 'F', '2023-01-02', '14', '012324332', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-19 18:36:28', null, null, null, null);
 INSERT INTO `persons` VALUES ('107', '1', 'sdfgdgf', '', 'sdfgdgf', 'F', null, '14', '02324', null, null, null, null, null, null, 'Samsethy', '1', '2023-02-09 07:40:25', null, null, null, null);
+INSERT INTO `persons` VALUES ('108', '1', 'srey pov', 'pov', 'srey', 'F', null, '14', '01255665', null, null, null, null, null, null, 'Samsethy', '1', '2023-02-22 06:19:49', null, null, null, null);
+INSERT INTO `persons` VALUES ('109', '1', 'jghjghjg', '', 'jghjghjg', 'F', null, '14', '012324235', null, null, null, null, null, null, 'Samsethy', '1', '2023-02-22 06:45:38', null, null, null, null);
+INSERT INTO `persons` VALUES ('110', '1', 'Dyna', '', 'Dyna', 'F', null, '14', '01325435', null, null, null, null, null, null, 'Samsethy', '1', '2023-02-22 06:47:42', null, null, null, null);
 
 -- ----------------------------
 -- Table structure for `positions`
@@ -3418,6 +3719,27 @@ INSERT INTO `queue_ticket_control` VALUES ('1', '2', '2', 'D', '2023-01-05', '1'
 INSERT INTO `queue_ticket_control` VALUES ('1', '1', '1', 'G', '2023-01-11', '1');
 INSERT INTO `queue_ticket_control` VALUES ('1', '3', '1', 'G', '2023-01-19', '1');
 INSERT INTO `queue_ticket_control` VALUES ('1', '1', '1', 'G', '2023-02-09', '1');
+INSERT INTO `queue_ticket_control` VALUES ('1', '1', '1', 'G', '2023-02-21', '1');
+INSERT INTO `queue_ticket_control` VALUES ('1', '8', '1', 'G', '2023-02-22', null);
+INSERT INTO `queue_ticket_control` VALUES ('1', '3', '2', 'D', '2023-02-22', null);
+
+-- ----------------------------
+-- Table structure for `receipt_number_control`
+-- ----------------------------
+DROP TABLE IF EXISTS `receipt_number_control`;
+CREATE TABLE `receipt_number_control` (
+  `doc_class` varchar(25) NOT NULL,
+  `com_branch_id` int(10) DEFAULT 0 COMMENT 'voucher_type = {income,expense,expenditure}',
+  `branch_id` int(10) NOT NULL,
+  `issue_year` int(10) NOT NULL,
+  `prefix` varchar(10) DEFAULT NULL,
+  `last_id` int(10) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of receipt_number_control
+-- ----------------------------
+INSERT INTO `receipt_number_control` VALUES ('tax_line', null, '1', '2023', 'P', '79');
 
 -- ----------------------------
 -- Table structure for `reports`
@@ -3497,39 +3819,51 @@ CREATE TABLE `service_queue` (
   `priority` varchar(35) DEFAULT NULL,
   `schedule_type` varchar(35) DEFAULT NULL,
   `remarks` varchar(250) DEFAULT NULL,
+  `com_branch_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=94 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of service_queue
 -- ----------------------------
-INSERT INTO `service_queue` VALUES ('55', 'D100010', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '77', '2', null, '2022-12-09', '1', '1', '60', '57', '1', null, 'On Demand', 'Notes about the patient');
-INSERT INTO `service_queue` VALUES ('58', 'D100003', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '83', '2', null, '2022-12-10', null, '1', '70', '63', '1', null, 'On Demand', null);
-INSERT INTO `service_queue` VALUES ('59', 'D100004', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '84', '2', null, '2022-12-10', '1', '1', null, '64', '1', null, 'On Demand', null);
-INSERT INTO `service_queue` VALUES ('60', 'D100005', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '85', '2', null, '2022-12-10', null, '1', '72', '65', '1', null, 'On Demand', null);
-INSERT INTO `service_queue` VALUES ('61', 'D100006', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '85', '2', null, '2022-12-10', null, '1', '72', '65', '1', null, 'On Demand', null);
-INSERT INTO `service_queue` VALUES ('62', 'G100001', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '85', '1', null, '2022-12-10', null, '1', '72', '65', '1', null, 'On Demand', null);
-INSERT INTO `service_queue` VALUES ('63', 'D100007', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '85', '2', null, '2022-12-10', null, '1', '72', '65', '1', null, 'On Demand', null);
-INSERT INTO `service_queue` VALUES ('64', 'D100008', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '86', '2', null, '2022-12-10', null, '1', '73', '66', '1', null, 'On Demand', null);
-INSERT INTO `service_queue` VALUES ('65', 'P100001', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '87', '3', null, '2022-12-10', null, '1', '74', '67', '1', null, 'On Demand', null);
-INSERT INTO `service_queue` VALUES ('66', 'D100009', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '88', '2', null, '2022-12-10', null, null, '89', '68', '1', null, 'On Demand', null);
-INSERT INTO `service_queue` VALUES ('67', 'D100001', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '90', '2', null, '2022-12-11', '2', null, '91', '70', '1', null, 'On Demand', null);
-INSERT INTO `service_queue` VALUES ('68', 'D100002', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '89', '2', null, '2022-12-11', null, null, '87', '69', '1', null, 'On Demand', null);
-INSERT INTO `service_queue` VALUES ('69', 'D100003', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '89', '2', null, '2022-12-11', null, null, '83', '69', '1', null, 'On Demand', null);
-INSERT INTO `service_queue` VALUES ('70', 'D100004', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '89', '2', null, '2022-12-11', null, null, '86', '69', '1', null, 'On Demand', null);
-INSERT INTO `service_queue` VALUES ('71', 'D100005', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '91', '2', null, '2022-12-11', '1', '1', '92', '71', '1', null, 'On Demand', 'asdsfsdgdgdfg');
-INSERT INTO `service_queue` VALUES ('72', 'D100006', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '91', '2', null, '2022-12-11', '2', '1', '92', '71', '1', null, 'On Demand', 'asdsfsdgdgdfg');
-INSERT INTO `service_queue` VALUES ('73', 'D100007', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '91', '2', null, '2022-12-11', '2', '1', '92', '71', '1', null, 'On Demand', 'asdsfsdgdgdfg');
-INSERT INTO `service_queue` VALUES ('74', 'D100008', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '91', '2', null, '2022-12-11', '2', '1', '92', '71', '1', null, 'On Demand', 'asdsfsdgdgdfg');
-INSERT INTO `service_queue` VALUES ('75', 'P100001', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '92', '3', null, '2022-12-12', '1', '1', null, '72', '1', null, 'On Demand', null);
-INSERT INTO `service_queue` VALUES ('76', 'D100001', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '93', '2', null, '2022-12-16', null, '1', '95', '73', '1', null, 'On Demand', null);
-INSERT INTO `service_queue` VALUES ('87', 'D100001', '2023-01-05 09:58:10.000000', 'Samsethy', '1', '101', '2', null, '2023-01-05', '1', '1', '109', '86', '1', null, 'On Demand', null);
-INSERT INTO `service_queue` VALUES ('88', 'D100002', '2023-01-05 10:30:13.000000', 'Samsethy', '1', '102', '2', null, '2023-01-05', '1', '1', '110', '87', '1', null, 'On Demand', 'xcvdcgdgdf');
-INSERT INTO `service_queue` VALUES ('89', 'G100001', '2023-01-11 16:17:54.000000', 'Samsethy', '1', '103', '1', null, '2023-01-11', '1', '1', '111', '88', '1', null, 'On Demand', null);
-INSERT INTO `service_queue` VALUES ('90', 'G100001', '2023-01-19 18:27:48.000000', 'Samsethy', '1', '104', '1', null, '2023-01-19', '1', '1', null, '105', '1', null, 'On Demand', null);
-INSERT INTO `service_queue` VALUES ('91', 'G100002', '2023-01-19 18:32:32.000000', 'Samsethy', '1', '104', '1', null, '2023-01-19', '1', '1', null, '105', '1', null, 'On Demand', null);
-INSERT INTO `service_queue` VALUES ('92', 'G100003', '2023-01-19 18:36:28.000000', 'Samsethy', '1', '105', '1', null, '2023-01-19', '2', '1', null, '106', '1', null, 'On Demand', null);
-INSERT INTO `service_queue` VALUES ('93', 'G100001', '2023-02-09 07:40:26.000000', 'Samsethy', '1', '106', '1', null, '2023-02-09', '2', '1', null, '107', '1', null, 'On Demand', null);
+INSERT INTO `service_queue` VALUES ('55', 'D100010', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '77', '2', null, '2022-12-09', '1', '1', '60', '57', '1', null, 'On Demand', 'Notes about the patient', null);
+INSERT INTO `service_queue` VALUES ('58', 'D100003', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '83', '2', null, '2022-12-10', null, '1', '70', '63', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('59', 'D100004', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '84', '2', null, '2022-12-10', '1', '1', null, '64', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('60', 'D100005', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '85', '2', null, '2022-12-10', null, '1', '72', '65', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('61', 'D100006', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '85', '2', null, '2022-12-10', null, '1', '72', '65', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('62', 'G100001', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '85', '1', null, '2022-12-10', null, '1', '72', '65', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('63', 'D100007', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '85', '2', null, '2022-12-10', null, '1', '72', '65', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('64', 'D100008', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '86', '2', null, '2022-12-10', null, '1', '73', '66', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('65', 'P100001', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '87', '3', null, '2022-12-10', null, '1', '74', '67', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('66', 'D100009', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '88', '2', null, '2022-12-10', null, null, '89', '68', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('67', 'D100001', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '90', '2', null, '2022-12-11', '2', null, '91', '70', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('68', 'D100002', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '89', '2', null, '2022-12-11', null, null, '87', '69', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('69', 'D100003', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '89', '2', null, '2022-12-11', null, null, '83', '69', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('70', 'D100004', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '89', '2', null, '2022-12-11', null, null, '86', '69', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('71', 'D100005', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '91', '2', null, '2022-12-11', '1', '1', '92', '71', '1', null, 'On Demand', 'asdsfsdgdgdfg', null);
+INSERT INTO `service_queue` VALUES ('72', 'D100006', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '91', '2', null, '2022-12-11', '2', '1', '92', '71', '1', null, 'On Demand', 'asdsfsdgdgdfg', null);
+INSERT INTO `service_queue` VALUES ('73', 'D100007', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '91', '2', null, '2022-12-11', '2', '1', '92', '71', '1', null, 'On Demand', 'asdsfsdgdgdfg', null);
+INSERT INTO `service_queue` VALUES ('74', 'D100008', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '91', '2', null, '2022-12-11', '2', '1', '92', '71', '1', null, 'On Demand', 'asdsfsdgdgdfg', null);
+INSERT INTO `service_queue` VALUES ('75', 'P100001', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '92', '3', null, '2022-12-12', '1', '1', null, '72', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('76', 'D100001', '2023-01-02 22:24:27.234849', 'Samsethy', '1', '93', '2', null, '2022-12-16', null, '1', '95', '73', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('87', 'D100001', '2023-01-05 09:58:10.000000', 'Samsethy', '1', '101', '2', null, '2023-01-05', '1', '1', '109', '86', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('88', 'D100002', '2023-01-05 10:30:13.000000', 'Samsethy', '1', '102', '2', null, '2023-01-05', '1', '1', '110', '87', '1', null, 'On Demand', 'xcvdcgdgdf', null);
+INSERT INTO `service_queue` VALUES ('89', 'G100001', '2023-01-11 16:17:54.000000', 'Samsethy', '1', '103', '1', null, '2023-01-11', '1', '1', '111', '88', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('90', 'G100001', '2023-01-19 18:27:48.000000', 'Samsethy', '1', '104', '1', null, '2023-01-19', '1', '1', null, '105', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('91', 'G100002', '2023-01-19 18:32:32.000000', 'Samsethy', '1', '104', '1', null, '2023-01-19', '1', '1', null, '105', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('92', 'G100003', '2023-01-19 18:36:28.000000', 'Samsethy', '1', '105', '1', null, '2023-01-19', '2', '1', null, '106', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('93', 'G100001', '2023-02-09 07:40:26.000000', 'Samsethy', '1', '106', '1', null, '2023-02-09', '2', '1', null, '107', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('94', 'G100001', '2023-02-21 18:00:53.000000', 'Samsethy', '1', '74', '1', null, '2023-02-21', '1', '1', '126', '54', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('95', 'G100002', '2023-02-22 06:30:51.000000', 'Samsethy', '1', '107', '1', null, '2023-02-22', '1', '1', '128', '108', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('96', 'G100003', '2023-02-22 06:32:47.000000', 'Samsethy', '1', '107', '1', null, '2023-02-22', '1', '1', '128', '108', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('97', 'G100004', '2023-02-22 06:33:43.000000', 'Samsethy', '1', '107', '1', null, '2023-02-22', '2', '1', '128', '108', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('98', 'G100005', '2023-02-22 06:34:36.000000', 'Samsethy', '1', '107', '1', null, '2023-02-22', '1', '1', '128', '108', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('99', 'D100001', '2023-02-22 06:34:46.000000', 'Samsethy', '1', '107', '2', null, '2023-02-22', '2', '1', '128', '108', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('100', 'G100006', '2023-02-22 06:37:28.000000', 'Samsethy', '1', '108', '1', null, '2023-02-22', '2', '1', '129', '87', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('101', 'D100002', '2023-02-22 06:39:25.000000', 'Samsethy', '1', '109', '2', null, '2023-02-22', '1', '1', '130', '73', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('102', 'G100007', '2023-02-22 06:45:38.000000', 'Samsethy', '1', '110', '1', null, '2023-02-22', '1', '1', null, '109', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('103', 'D100003', '2023-02-22 06:47:42.000000', 'Samsethy', '1', '111', '2', null, '2023-02-22', '1', '1', null, '110', '1', null, 'On Demand', null, null);
+INSERT INTO `service_queue` VALUES ('104', 'G100008', '2023-02-22 08:06:03.000000', 'Samsethy', '1', '108', '1', null, '2023-02-22', '1', '1', '133', '87', '1', null, 'On Demand', null, null);
 
 -- ----------------------------
 -- Table structure for `temp`
@@ -3917,7 +4251,7 @@ CREATE TABLE `um_branches` (
 -- ----------------------------
 -- Records of um_branches
 -- ----------------------------
-INSERT INTO `um_branches` VALUES ('1', 'ESTHEDERM CLINIC', 'ESTHEDERM CLINIC', null, 'png', '#458 Street 24BT Sangkat Boeung Tompon Khan Meanchey Phnom Penh Cambodia', '012222333', 'solida', null, null, null, null, null, null, 'ផ្ទះលេខ៤៥៨ ផ្លូវ២៤BT សង្កាត់បឹងទំពន់ ខណ្ឌមានជ័យ រាធធានីភ្នំពេញ', 'infopucedukh', '', '2022-05-11 14:30:08.139686', null, '2023-02-02 10:51:33');
+INSERT INTO `um_branches` VALUES ('1', 'ESTHEDERM CLINIC', 'ESTHEDERM CLINIC', '1_logo_20230221_050206.jpg', 'jpg', '#458 Street 24BT Sangkat Boeung Tompon Khan Meanchey Phnom Penh Cambodia', '012222333', 'solida', null, null, null, null, null, null, 'ផ្ទះលេខ៤៥៨ ផ្លូវ២៤BT សង្កាត់បឹងទំពន់ ខណ្ឌមានជ័យ រាធធានីភ្នំពេញ', 'infopucedukh', 'admin@gmail.com', '2023-02-21 17:28:06.176328', null, '2023-02-02 10:51:33');
 
 -- ----------------------------
 -- Table structure for `um_permissions`
@@ -4022,13 +4356,13 @@ CREATE TABLE `um_sessions` (
   `status` varchar(10) DEFAULT NULL COMMENT 'status ={online,offline}',
   `lang` varchar(50) DEFAULT 'en',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1890 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1904 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of um_sessions
 -- ----------------------------
 INSERT INTO `um_sessions` VALUES ('1840', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'Bory', '2', '2023-02-02 11:04:47', '2023-02-02 11:04:47', 'TWY286rzc1Oucpp07znsiww3n89D8dF5UkwK8P', 'ukswNQRSy9ek72svrQlPHIs8RGQu68D3oMXCJ8', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjc1MzEwNjg3LCJuYmYiOjE2NzUzMTA2ODcsImV4cCI6MTY3NTMxNDI4NywibGFuZyI6ImVuIiwiaWQiOjIsInVzZXJfY2xhc3MiOiJhZG1pbiIsIm9mZmljaWFsX2lkIjpudWxsLCJvZmZpY2lhbF9jb2RlIjpudWxsLCJsb2dpbl9uYW1lIjoiQm9yeSIsImJyYW5jaF9pZCI6MSwiZnVsbF9uYW1lIjoiQm9yeSIsInN0YXR1cyI6ImFjdGl2ZSIsImlzX2xvY2tlZCI6MCwiZW1haWwiOm51bGwsInBob25lX251bWJlciI6bnVsbCwib3RwX2NvZGUiOm51bGx9.YsJr6g2Lqu2QLmArmZ3-tTLHU7jP2ceDspbDvCXD4Zg', null, 'en');
-INSERT INTO `um_sessions` VALUES ('1889', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-02-09 07:39:48', '2023-02-09 07:39:48', 'pvuoQ7YCKd7QAQT6D9v9TTbXyYlb3ab8KTxByK', 'pGRjvyEmVMuMizBONyyBmBJCK9751FXFGDAdPF', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjc1OTAzMTg4LCJuYmYiOjE2NzU5MDMxODgsImV4cCI6MTY3NTkxMzk4OCwibGFuZyI6ImVuIiwiaWQiOjEsInVzZXJfY2xhc3MiOiJhZG1pbiIsIm9mZmljaWFsX2lkIjpudWxsLCJvZmZpY2lhbF9jb2RlIjoiMDAwMSIsImxvZ2luX25hbWUiOiJhZG1pbkBnbWFpbC5jb20iLCJicmFuY2hfaWQiOjEsImZ1bGxfbmFtZSI6IlNhbXNldGh5Iiwic3RhdHVzIjoiYWN0aXZlIiwiaXNfbG9ja2VkIjowLCJlbWFpbCI6bnVsbCwicGhvbmVfbnVtYmVyIjoiMDEyNTc4OTAiLCJvdHBfY29kZSI6bnVsbH0.uX_IxHn8N0wXeuQ9fvLiC9Dwy6mVkqrthHXC-S3CuQc', null, 'en');
+INSERT INTO `um_sessions` VALUES ('1903', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-02-22 08:05:28', '2023-02-22 08:05:28', 'NccNe6XWwQ4aa8LXRb5X9p8O11vufTfC1O7Jm7', 'GqMIT6Thw01RPSDR9Lf2Kx8HsnmMuCIy745gJW', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjc3MDI3OTI4LCJuYmYiOjE2NzcwMjc5MjgsImV4cCI6MTY3NzAzODcyOCwibGFuZyI6ImVuIiwiaWQiOjEsInVzZXJfY2xhc3MiOiJhZG1pbiIsIm9mZmljaWFsX2lkIjpudWxsLCJvZmZpY2lhbF9jb2RlIjoiMDAwMSIsImxvZ2luX25hbWUiOiJhZG1pbkBnbWFpbC5jb20iLCJicmFuY2hfaWQiOjEsImZ1bGxfbmFtZSI6IlNhbXNldGh5Iiwic3RhdHVzIjoiYWN0aXZlIiwiaXNfbG9ja2VkIjowLCJlbWFpbCI6bnVsbCwicGhvbmVfbnVtYmVyIjoiMDEyNTc4OTAiLCJvdHBfY29kZSI6bnVsbH0.vzywDOxvvdUVyI0kPEwOQvdU8QMa9nzLJqKuZ3WqELE', null, 'en');
 
 -- ----------------------------
 -- Table structure for `um_users`
@@ -4064,7 +4398,7 @@ CREATE TABLE `um_users` (
 -- ----------------------------
 -- Records of um_users
 -- ----------------------------
-INSERT INTO `um_users` VALUES ('1', 'admin@gmail.com', '01257890', null, '$2y$10$9s0nFmOKK6xEc8c63nT7KeQSGb4UoUio39dTBoQKrArZ3TlRh7LYK', '2023-02-03 13:43:31.359273', 'DXM20FKAEFC711EH2E7C9801A7BZD311', null, '1', 'Admin', '0', 'active', 'Samsethy', null, 'admin', 'admin@gmail.com', '3', '2021-09-13 04:00:26', '0001', null, null, 'en', '2023-02-02 11:01:45');
+INSERT INTO `um_users` VALUES ('1', 'admin@gmail.com', '01257890', null, '$2y$10$9s0nFmOKK6xEc8c63nT7KeQSGb4UoUio39dTBoQKrArZ3TlRh7LYK', '2023-02-17 10:59:01.040229', 'DXM20FKAEFC711EH2E7C9801A7BZD311', null, '1', 'Admin', '0', 'active', 'Samsethy', null, 'admin', 'admin@gmail.com', '3', '2021-09-13 04:00:26', '0001', null, null, 'en', '2023-02-02 11:01:45');
 INSERT INTO `um_users` VALUES ('2', 'Bory', null, null, '$2y$10$L7GTLkc8nljBQlTXBe8Pb.iYD7WohbkziOO5BpH1VqXb/.Z/CObx2', null, 'DXM20FKAEFC711EH2E7C9801A7BZD311', null, '1', 'standard', '0', 'active', 'Bory', null, 'admin', 'Samsethy', '1', null, null, null, null, 'en', '2023-02-02 11:01:53');
 INSERT INTO `um_users` VALUES ('3', 'Admin1', null, null, '$2y$10$i9dEkdttYHGKXuUBS2a23.IDs30JcUhC5f/cdcLzzdogBfiHLIzi2', null, 'DXM20FKAEFC711EH2E7C9801A7BZD311', null, '1', 'standard', '0', 'active', 'Admin1', null, 'admin', 'Samsethy', '1', null, null, null, null, 'en', '2023-02-02 11:03:48');
 
@@ -4198,3 +4532,249 @@ CREATE TABLE `warehouses` (
 -- Records of warehouses
 -- ----------------------------
 INSERT INTO `warehouses` VALUES ('1', '1', 'Main warehouse', '0', '0', null, null, null, null, null, null, null, null, null, null, null);
+
+-- ----------------------------
+-- Function structure for `displayMoney`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `displayMoney`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `displayMoney`(amt decimal(10,2),ccode varchar(10)) RETURNS varchar(100) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+  declare sym varchar(15);
+  declare symbol_after int;
+  declare dec_points int;
+  declare val varchar(100);
+  if (amt IS null) then
+    set amt =0;
+  end if;
+ 
+  SELECT  c.symbol, c.symbol_after, c.decimal_points INTO sym, symbol_after,dec_points FROM currencies as c WHERE c.code =ccode limit 1;
+  IF (symbol_after =1) THEN
+    set val = concat(amt,sym);
+  ELSE set val= concat(sym,amt); 
+  END IF;
+  return val; 
+end
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `formatDate`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `formatDate`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `formatDate`(mDate Date) RETURNS varchar(50) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+  return DATE_FORMAT(mDate,'%d %b %Y');
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `formatDateTime`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `formatDateTime`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `formatDateTime`(mDate Date) RETURNS varchar(50) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+  return DATE_FORMAT(mDate,'%d %b %Y %r');
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `formatTime`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `formatTime`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `formatTime`(mDate Date) RETURNS varchar(30) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+  return DATE_FORMAT(mDate,'%r');
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `getApptStatus`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getApptStatus`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `getApptStatus`(branchid INT,statusid INT) RETURNS varchar(20) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+   declare ss varchar(20); 
+   SET ss = (select `name` from appt_statuses where id =statusid AND branch_id =branchid LIMIT 1);  
+   return IFNULL(ss,'Pending');
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `getConsultanName`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getConsultanName`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `getConsultanName`(consultantid INT) RETURNS varchar(50) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+ declare cname varchar(50);
+ set cname = (select `name` from persons as p INNER JOIN employees as e ON e.person_id = p.id WHERE p.id = consultantid LIMIT 1);
+ return cname; 
+end
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `getCurSymbol`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getCurSymbol`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `getCurSymbol`(ccode varchar(10)) RETURNS varchar(10) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+  declare ss varchar(10);
+  SET ss = (select `symbol` from currencies as c where c.`code` = ccode limit 1);
+  return ss;
+end
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `getGroupQty`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getGroupQty`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `getGroupQty`(groupid INT) RETURNS decimal(10,2)
+    DETERMINISTIC
+BEGIN
+  declare qty decimal(10,2);
+  SET qty = (SELECT SUM(IFNULL(c.qty,0)) AS qty FROM inv_item_groups AS g INNER JOIN inv_items AS i ON i.group_id = g.id INNER JOIN inv_current_stocks AS c ON i.id = c.item_id WHERE g.id =groupid LIMIT 1);
+  return qty;      
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `getItemDetailType`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getItemDetailType`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `getItemDetailType`(detailtypeid INT) RETURNS varchar(150) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+  declare detailtype varchar(150);
+  SET detailtype = (select d.`name` from inv_detailed_types as d where d.id =detailtypeid LIMIT 1);
+  RETURN detailtype;   
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `getItemQty`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getItemQty`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `getItemQty`(itemid INT) RETURNS decimal(10,2)
+    DETERMINISTIC
+BEGIN
+  declare qty decimal(10,2);
+  SET qty = (SELECT IFNULL(c.qty,0) AS qty FROM inv_current_stocks AS c INNER JOIN inv_items AS i ON i.id = c.item_id WHERE i.id =itemid LIMIT 1);
+  return qty;      
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `getLastStockDate`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getLastStockDate`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `getLastStockDate`(itemid int,stockclass_code varchar(25)) RETURNS varchar(30) CHARSET utf8mb4
+BEGIN
+  declare stockdate varchar(30);
+  IF (IFNULL(stockclass_code,'') ='') THEN
+    set stockdate = (select created_at from inv_current_stocks as d where d.item_id = itemid and d.stockclass_code = stockclass_code ORDER BY d.id DESC LIMIT 1);
+  ELSE
+    set stockdate = (select created_at from inv_current_stocks as d where d.item_id = itemid and d.stockclass_code = stockclass_code LIMIT 1);
+  END IF;
+  return stockdate;
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `getPatientCode`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getPatientCode`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `getPatientCode`(branchid INT,clientid INT) RETURNS varchar(30) CHARSET utf8mb4
+    DETERMINISTIC
+begin
+  DECLARE cc varchar(30); 
+  set cc = (select `code` from patients as p where p.branch_id =branchid AND p.id =clientid LIMIT 1);
+  return cc;
+end
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `getTicketNumber`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getTicketNumber`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `getTicketNumber`(branchid INT,apptid INT) RETURNS varchar(30) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+ declare ticket varchar(30); 
+ SET ticket = (SELECT ticket_number FROM service_queue where branch_id=branchid and appt_id = apptid LIMIT 1);
+ RETURN ticket; 
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `getTicketStatus`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getTicketStatus`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `getTicketStatus`(branchid INT,ticketid INT) RETURNS varchar(30) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+  declare tstatus varchar(30);
+  SET tstatus = (select sts.`name` from ticket_statuses AS sts INNER JOIN service_queue as s ON s.status_id = sts.id where s.id =ticketid LIMIT 1);
+  return tstatus;
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `hasPosition`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `hasPosition`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `hasPosition`(empid INT,posid INT) RETURNS int(11)
+    DETERMINISTIC
+BEGIN
+  SET @d= (EXISTS(select id from employee_positions as e WHERE e.emp_id = empid AND e.position_id = posid LIMIT 1));
+  RETURN @d;
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `hasPositions`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `hasPositions`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `hasPositions`(empid INT,posid INT) RETURNS int(11)
+    DETERMINISTIC
+BEGIN
+  SET @d= (EXISTS(select id from employee_positions as e WHERE e.emp_id = empid AND e.position_id = posid LIMIT 1));
+  RETURN @d;
+END
+;;
+DELIMITER ;

@@ -1,19 +1,15 @@
 <?php
-namespace App\ScriptManagement;
-use App\ScriptManagement\ScriptProvider;
-use App\ScriptManagement\Minifier;
+namespace App\StyleManagement;
+use App\StyleManagement\StyleProvider;
+use App\StyleManagement\Minifier;
+class StyleManager{
+    // function __construct(){
+        
+    // }
 
-class ScriptManager{
- 
-    protected static $script_path = "";
-
-    function __construct(){
-        self::$script_path = getcwd()."/js/";
-    }
-
-    function __destruct(){
-        return null;
-    }
+    // function __destruct(){
+    //     return null;
+    // }
 
     // static function getBaseUrl(){
     //     $server_name = $_SERVER['SERVER_NAME'];
@@ -21,8 +17,8 @@ class ScriptManager{
     //     return $protocol.$server_name;
     // }
    
-    //remove comments from codes
-    static function removeComments( $js ) {
+    //remove comments and spaces from css style
+    static function minify_css( $js ) {
 		
 		// Remove a tab
 		$js = str_replace("\t", " ", $js);
@@ -159,7 +155,7 @@ class ScriptManager{
         $tmp_path = str_replace('//','/',$tmp_path);
         //Use method "explode" in ordder to exclude question mark "?", if any, from the $path string. NOTE: "?v=2" may be used for versioning and client cache control 
         $path = explode('?',$tmp_path)[0];
-        $last_seven_chars = substr($f, strlen($f)-7,7);
+        $last_eight_chars = substr($f, strlen($f)-8,8);
  
         if (in_array($f,$excepts)){
             $content_last_char = mb_substr(trim($str), -1);
@@ -172,13 +168,13 @@ class ScriptManager{
                 //$new_content = self::getFileContent($path);
                 if ($res->error_message) return (object)['error'=>$res->error_message,"content"=>null];
                 //just remove comments from js codes
-                $new_content = self::removeComments($res->content);
+                $new_content = Minifier::minify($res->content);
             }
-            else $new_content = self::removeComments(self::getFileContent($path));
+            else $new_content = Minifier::minify(self::getFileContent($path));
             if (empty(trim($new_content))) return (object)['error'=>"Failed to fetch content from file $path","content"=>null]; 
-            $str.= ($content_last_char==';'? " " : ";").$new_content;
+            $str.= ($content_last_char=='}'? " " : " ").$new_content;
         }else {
-            if ($last_seven_chars ==='.min.js')
+            if ($last_eight_chars ==='.min.css')
             {
                 $content_last_char = mb_substr(trim($str), -1);
                 $new_content =null;
@@ -186,12 +182,12 @@ class ScriptManager{
                 {
                     $res = self::getFileContentFromUrl($f);
                     if ($res->error_message) return (object)['error'=>$res->error_message,"content"=>null];
-                    $new_content = self::removeComments($res->content);
+                    $new_content = Minifier::minify($res->content);
                 }
-                else $new_content = self::removeComments(self::getFileContent($path));
+                else $new_content = Minifier::minify(self::getFileContent($path));
 
                 if (empty(trim($new_content))) return (object)['error'=>"Failed to fetch content from file $path","content"=>null]; 
-                $str.=($content_last_char==';'? " " : ";").$new_content;
+                $str.=($content_last_char=='}' ? " " : " ").$new_content;
             }    
             else{
                 $content_last_char = mb_substr(trim($str), -1);
@@ -206,7 +202,7 @@ class ScriptManager{
                 else $new_content = self::getFileContent($path);
 
                 if (empty(trim($new_content)))  return (object)['error'=>"Failed to fetch content from file $path","content"=>null];
-                $str.=($content_last_char==';'? " " : ";").Minifier::minify($new_content,  ['flaggedComments' => false]);
+                $str.=($content_last_char=='}'? " " : " ").Minifier::minify($new_content,  ['flaggedComments' => false]);
             }
         }
            
@@ -221,8 +217,8 @@ class ScriptManager{
         //always put script in public_path => "/public"
         $dir = public_path(); // getcwd();  // physical disk path to "public"
         //NOTE: $b['output_file'] should starts with "/" 
-        $fpath = $dir.$b['output_file'];
-
+        $fpath = $dir."/".$b['output_file'];
+        $fpath = str_replace("//","/",$fpath);
         if (file_exists($fpath))
          {
              $err = deleteFile($fpath);
@@ -235,14 +231,14 @@ class ScriptManager{
     }
 
     static function createBundleFile($bundle_name){
-       $b = ScriptProvider::bundle($bundle_name);
+       $b = StyleProvider::bundle($bundle_name);
        if(!$b) return (object)['status'=>'Error','error_message'=>"The script bundle named $bundle_name is not found!"];
        return self::createBundleFileFromArray($b);
        
     }
     
     static function createAllBundleFiles(){
-        $bs = ScriptProvider::getBundles();
+        $bs = StyleProvider::getBundles();
         $files = []; 
         foreach($bs as $b){
             $res = self::createBundleFileFromArray($b);
@@ -284,7 +280,7 @@ class ScriptManager{
              if (!$is_external_link) $url_path = $base_url.$public_dir.$filePath;
              $vers="";
              if($version) $vers ="?v=$version";
-             if ($url_path) $ss .= "<script $attr src='$url_path$vers' type='text/javascript'></script>\n";
+             if ($url_path) $ss .= "<link  href='$url_path$vers' type=\"text/css\" rel=\"stylesheet\"/>\n";
           }
           return $ss;
     }
@@ -292,9 +288,9 @@ class ScriptManager{
     //create script tags by each bundle's name. Todo: bundle and minify all scripts into one file
     //$degbugMode =1 then it does not render one combined script tag, it will create multple script tags based on orginal js files. default =1
     static function render($bundle_name, $degbugMode=0,$version=null){
-        $b = ScriptProvider::bundle($bundle_name);
+        $b = StyleProvider::bundle($bundle_name);
         if(!$b) return;
-        $attr = $b?$b['attr']:"";
+        $attr = null; //$b?$b['attr']:"";
         if ($degbugMode === 1){
             $files = $b?$b['files']:[];
             echo self::createTags($files,$attr,$version);
