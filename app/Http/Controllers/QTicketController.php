@@ -23,21 +23,14 @@ class QTicketController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss,[]); //user not authenticated
         //$d ={branch_id,id} 
-        $d = [
-            'branch_id'=>$ss->branch_id,
-            'id'=>$req->id
-        ];
-        return JDV::raw(QTicket::deletePermanent($d));
+        $ticket = new QTicket($req->id,$ss); 
+        return JDV::raw($ticket->delete());
     }
 
     function getTicketDetails(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return JDV::emptyResult($ss,null); //user not authenticated
-        $row = QTicket::info([
-            'branch_id'=>$ss->branch_id,
-            'id'=>$req->id
-        ]);
-        return JDV::result($row);
+        if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+        return JDV::result(QTicket::info($req->id,$ss)); 
     }
 
     function addChiefComplaint(Request $req){
@@ -48,6 +41,17 @@ class QTicketController extends Controller
             'chief_complaint_id'=>$req->chief_complaint_id
         ]);
        return JDV::raw($res);
+    }
+
+    function savePatientPhoto(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+        $branch_id = $ss->branch_id;
+        $ticket_id = $req->ticket_id? $req->ticket_id:$req->id;
+        $ticket = new QTicket($ticket_id,$ss);
+        $res = $ticket->savePatientPhoto(['photoData'=>$req->photoData,'ext'=>$req->ext]);
+        if($res->status_code ===200) return JDV::raw(['id'=>$res->id,'file_name'=>$res->file_name]);
+        return JDV::error($res->error_message);
     }
 
     function getPatientVitalSigns(Request $req){

@@ -2,18 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+//use Illuminate\Database\Eloquent\Factories\HasFactory;
+//use Illuminate\Database\Eloquent\Model;
 //If we use UUID instead of integer appointment_id
 //use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use DB;
 use App\Models\DV;
 use App\Models\ServiceQ\QTicket;
 
-class Appointment extends Model
+class Appointment //extends Model
 {
-    use HasFactory;
-
+    //use HasFactory;
     protected $id =null;
     protected $userInfo = null;
 
@@ -231,6 +230,7 @@ class Appointment extends Model
     function delete($appt_id=null,$ss=null){
         if (!$appt_id) $appt_id = $this->getId();
         if(!$ss) $ss = $this->getUserInfo();
+        DB::table('patient_vital_signs')->where('appt_id',$appt_id)->delete();
         DB::table('appointments')->where('id',$appt_id)->where('branch_id',$ss->branch_id)->delete();
         return DV::success();
     }

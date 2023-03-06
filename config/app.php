@@ -255,7 +255,7 @@ return [
         'PHPCrypto'=>App\Security\PHPCrypto::class,
         'SQLDB'=>App\DB\SQLDB::class,
         'ScriptManager'=>App\ScriptManagement\ScriptManager::class,
-        'StyleManager'=>App\ScriptManagement\StyleManager::class
+        'StyleManager'=>App\StyleManagement\StyleManager::class
     ],
 
 ];

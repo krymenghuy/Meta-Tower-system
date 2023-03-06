@@ -18,10 +18,32 @@ let TicketDetails = new function () {
             $(this).addClass('btn-ticket-tab--active').siblings().removeClass('btn-ticket-tab--active');
         });
 
+        mThis.tblTickets.on('click','.qul-add-photo',(e)=>{
+            //e.preventDefault();
+            FileChooser.chooseFile(null,(d)=>{
+                if(!d) return ;
+                let p = {
+                    ext: d.ext,
+                    photoData: d.photoData
+                };
+                vsapi.call(`${main_view.base_url}/api/ticket/save-patient-photo`,p,null,false).then(res=>{
+                    if(res.status_code===200){
+                        cv_interact.info('Photo uploaded');
+                    }
+                }); 
+            });
+        });
+
         mThis.tblTickets.on('click', '.qul-btn-info', function (e) {
             e.preventDefault();
             let div_wrapper = $(this).closest('div.ticket-info-wrapper');
             mThis.showInfo(div_wrapper);
+        });
+
+        mThis.tblTickets.on('click', 'a.qul-btn-history', function (e) {
+            e.preventDefault();
+            let div_wrapper = $(this).closest('div.ticket-info-wrapper');
+            mThis.showHistory(div_wrapper);
         });
 
         mThis.tblTickets.on('click', 'a.qul-btn-photo', function (e) {
@@ -35,14 +57,29 @@ let TicketDetails = new function () {
 
             let ticket_id = $(this).data('tid');
             let patient_id = $(this).data('clientid');
-            let op = {
-                patient_id: patient_id,
-                ticket_id: ticket_id,
-                onClose: (d) => {
-                    alert('Consult Window is closing');
+            let that = $(this);
+
+            //let text = LocaleManager.trans('Start consultation now?');
+            cv_interact.confirm('Start consultation now?',{title:'Consultation','confirmButtonText':'Consult Now','cancelButtonText':'Later',context:'other'},(e)=>{
+                if(e){
+                    //start Consultation Window or Dialog
+                    let op = {
+                        patient_id: patient_id,
+                        ticket_id: ticket_id,
+                        onClose: (d) => {
+                            alert('Consult Window is closing');
+                        }
+                    };
+                    ConsultDialog.show(op);
+
+                }else{
+                    //If user choose Not to Consult Now, then display History Tab
+                    let tr = that.closest('tr.detail-row');  //find parent TR with class "detail-row"
+                    let div_panel = tr.find('div.ticket-info-wrapper');
+                    mThis.setActiveTabButton(div_panel, 'qul-btn-history')
+                    mThis.showHistory(div_panel);
                 }
-            };
-            ConsultDialog.show(op);
+            });
         });
 
         //remove Chief complaint item, on Appoinment list expanaded view
@@ -149,8 +186,8 @@ let TicketDetails = new function () {
         let html_prescribption_button =``;
         if (QueueComponent.options.showPatientPhotos || QueueComponent.options.showPatientPhoto) html_photo_button = `<a style="padding:5px" type="button"  data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-photo trans-text" data-langprop="buttons.Photo">Photo</a>`;
         if (QueueComponent.options.showConsultButton) html_consult_button =`<a style="padding:5px" type="button" data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-consult trans-text" data-langprop="buttons.Consult Now">Consult Now</a>`;
-        if (QueueComponent.options.showPrescriptionButton) html_prescribption_button =``;
-        if (QueueComponent.options.showHistoryButton) html_history_button =`<a style="padding:5px" type="button" data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-historytrans-text" data-langprop="buttons.History">History</a>`;
+        if (!QueueComponent.options.showPrescriptionButton) html_prescribption_button =``;
+        if (QueueComponent.options.showHistoryButton) html_history_button =`<a style="padding:5px" type="button" data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-history trans-text" data-langprop="buttons.History">History</a>`;
         
         let html = `<div data-tid="${d.ticket_id}" data-clientid="${d.client_id}" data-personid="${d.person_id}" data-statusid="${d.status_id}" class="ticket-info-wrapper shadow-lg d-flex" style="width:100%;">
                     <div class="form-inline ticket-tab-buttons" role="group" aria-label="ticket tabs" style="display:block">
@@ -171,13 +208,18 @@ let TicketDetails = new function () {
                 mThis.showInfo(div_panel);
                 break;
             }
+            case 'history': {
+                mThis.setActiveTabButton(div_panel, 'qul-btn-history')
+                mThis.showHistory(div_panel);
+                break;
+            }
             case 'photo': {
                 mThis.setActiveTabButton(div_panel, 'qul-btn-photo')
                 mThis.showPhoto(div_panel);
                 break;
             }
             case 'consult': {
-                mThis.setActiveTabButton(div_panel, 'qul-btn-consult')
+                mThis.setActiveTabButton(div_panel, 'qul-btn-consult');
                 mThis.startConsult(div_panel);
                 break;
             }
@@ -238,7 +280,8 @@ let TicketDetails = new function () {
                     let email = d.email ? d.email : 'N.A.';
                    
                     let ticket_id = d.id;
-                  
+                    let html_prescription_button =``;
+                    if (QueueComponent.options.showPrescriptionButton) html_prescription_button =` <button class="btn btnsm btn-outline-primary qul-btn-prescribe">Prescription</button>`;
                     //if(div.length ===0){
                                         html = [`<div id="${ws_id}" data-ticketid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="row">
                                         <div class="d-flex" style="max-width: 1300px; width:100%">
@@ -332,7 +375,7 @@ let TicketDetails = new function () {
                                                 <div>${mThis.displayMedicalConditions(d.mc_items)}</div>
                                             </div>
                                             <div class="col-sm-4">
-                                                <button class="btn btnsm btn-outline-primary qul-btn-prescribe">Prescription</button>
+                                               ${html_prescription_button}
                                             </div>
                                         </div>
                                     </div>`
@@ -361,8 +404,8 @@ let TicketDetails = new function () {
         (items || []).map((v) => {
             html = [html,
                 `<div class="detail-item">
-                    <p class="detail-item-label col-6 py-0">${v.name}</p>
-                    <p class="detail-item-value col-6 py-0" data-id="${v.id}" data-field="${v.name}">${v.vital_sign_value}</p>
+                    <p class="detail-item-label text-nowrap col-6 py-0">${v.description}</p>
+                    <p class="detail-item-value text-nowrap col-6 py-0" data-id="${v.id}" data-code="${v.code}" data-field="${v.description}">${v.vital_sign_value}</p>
                 </div>`].join('');
         });
         return html ? html : '<span class="detail-item-empty">No vital signs</span>';
@@ -372,6 +415,11 @@ let TicketDetails = new function () {
         if (!ticket_id) ticket_id = div_panel.data('tid');
         let div_workspace = div_panel.find('div.qul-workspace');
         div_workspace.html(`<div class="d-flex align-items-center justify-content-center">
+            <div class="d-flex flex-column gx-3">
+               <div class="center d-flex flex-column p-3">
+                  <button data-id="${ticket_id}" class="btn btn-sm btn-primary qul-add-photo">Add Photo</button> 
+               </div>   
+            </div>
             <div class="d-flex gx-4">
                 <div class="">
                     <img class="img-thumbnail rounded" src="${VSUtil.asset_url()}/images/icons/client-girl.png"/>
@@ -387,6 +435,21 @@ let TicketDetails = new function () {
         mThis.current_view_name = 'photo';
     };
 
+    this.showHistory = (div_panel,ticket_id=null) => {
+        //if (!ticket_id) ticket_id = div_panel.data('tid');
+        let div_workspace = div_panel.find('div.qul-workspace');
+        div_workspace.html(`<div class="d-flex align-items-center justify-content-center">
+            <div style="max-height:450px;overflow-y:auto">
+               <ul>
+                 <li>report One</li>
+                 <li>report Two</li>
+                 <li>report Three</li>
+               </ul> 
+            </div>
+        </div>`);
+        mThis.current_view_name = 'history';
+    };
+ 
     this.startConsult = (div_panel, ticket_id = null) => {
         if (!ticket_id) ticket_id = div_panel.data('tid');
         let div_workspace = div_panel.find('div.qul-workspace');
@@ -504,6 +567,11 @@ let QueueComponent = new function () {
             e.preventDefault();
         });
 
+        mThis.tblTickets.on('click', 'a.btn_ticket_print', function (e) {
+            e.preventDefault();
+            alert('todo: print ticket');
+        });
+
         mThis.tblTickets.on('click', '.btn_ticket_status', function (e) {
             e.preventDefault();
             let btn = $(this);
@@ -517,11 +585,12 @@ let QueueComponent = new function () {
         });
 
         this.cfg = new ExpandableRowConfig('_qul_tblTickets', {
-            'dontExpandByClickingOn': ['btn_ticket_modify', 'btn_apt_delete', 'btn_ticket_action'],
+            'dontExpandByClickingOn': ['btn_ticket_modify', 'btn_ticket_delete', 'btn_ticket_print','btn_ticket_action'],
             'onOpen': (container, detail_tr, parent_tr) => {
                 let q_tr = $(parent_tr);
                 let ticket_id = q_tr.data('id');
                 //Show Expandable Details of each ticket (QTicket)
+                if (ticket_id > 0)
                 TicketDetails.show($(detail_tr), {
                     'ticket_id': ticket_id,
                     'client_id': q_tr.data('clientid'),
@@ -531,7 +600,7 @@ let QueueComponent = new function () {
             }
         });
 
-        mThis.tblTickets.on('click', 'a.btn_apt_delete', function (e) {
+        mThis.tblTickets.on('click', 'a.btn_ticket_delete', function (e) {
             e.preventDefault();
             let lnk = $(this);
             let p = { 'id': lnk.data('id') };
@@ -548,7 +617,7 @@ let QueueComponent = new function () {
     }
 
     this.trans_title = (title_prop = 'undefined') => {
-        return (mThis.col_titles[title_prop] || 'undefined');
+        return (mThis.col_titles[title_prop]);
     }
 
     this.createDropdownMenuHtml_loan = (items = [], data = null, data_props = []) => {
@@ -642,10 +711,10 @@ let QueueComponent = new function () {
                     data: function (data, a, b) {
                         let status_class = null; //mThis.getStatusClass(data.status_id);
                         return [`<div class="form-inline">`,
-                            `<a href="javascript:void(0)" class="btn_co_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
+                            `<a href="javascript:void(0)" class="btn_ticket_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a style="display:${data.status_id > 2 ? 'none' : 'block'}" href="javascript:void(0)" class="btn_ticket_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
-                            `<a href="javascript:void(0);" data-id="${data.id}" class="btn_apt_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
-                            `&nbsp;<a href="#" data-id="${data.id}" class="btn_apt_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
+                            `<a href="javascript:void(0);" data-id="${data.id}" class="btn_ticket_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
+                            //`&nbsp;<a href="#" data-id="${data.id}" class="btn_ticket_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
                             `</div>`
                         ].join('');
                     }

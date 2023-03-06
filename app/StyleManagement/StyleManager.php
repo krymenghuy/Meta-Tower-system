@@ -1,7 +1,8 @@
 <?php
 namespace App\StyleManagement;
 use App\StyleManagement\StyleProvider;
-use App\StyleManagement\Minifier;
+//use App\StyleManagement\Minifier;
+
 class StyleManager{
     // function __construct(){
         
@@ -18,28 +19,32 @@ class StyleManager{
     // }
    
     //remove comments and spaces from css style
-    static function minify_css( $js ) {
-		
-		// Remove a tab
-		$js = str_replace("\t", " ", $js);
+    //NOTE: $buffer is css content
+    static function minify_css($buffer ="") {
+		   // Remove comments
+            $buffer = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $buffer);
 
-		// Remove comments with "// "
-		$js = preg_replace('/\n(\s+)?\/\/[^\n]*/', "", $js);	
+            // Remove space after colons
+            $buffer = str_replace(': ', ':', $buffer);
 
-		// Remove other comments
-		$js = preg_replace("!/\*[^*]*\*+([^/][^*]*\*+)*/!", "", $js);
-		$js = preg_replace("/\/\*[^\/]*\*\//", "", $js);
-		$js = preg_replace("/\/\*\*((\r\n|\n) \*[^\n]*)+(\r\n|\n) \*\//", "", $js);		
+            // Remove whitespace
+            $buffer = str_replace(array("\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $buffer);
+            $buffer = str_replace(array(";--",), '--', $buffer);
+            return $buffer;
+            // // Enable GZip encoding.
+            // ob_start("ob_gzhandler");
 
-		// Remove a carriage return
-		$js = str_replace("\r", "", $js);
+            // // Enable caching
+            // header('Cache-Control: public');
 
-		// Remove whitespaces
-		$js = preg_replace("/\s+\n/", "\n", $js);	
-		$js = preg_replace("/\n\s+/", "\n ", $js);
-		$js = preg_replace("/ +/", " ", $js);
+            // // Expire in one day
+            // header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 86400) . ' GMT');
 
-		return $js;
+            // // Set the correct MIME type, because Apache won't set it for us
+            // header("Content-type: text/css");
+
+            // // Write everything out
+            // echo($buffer);
 	}
 
     //get_file_contens from url
@@ -168,9 +173,9 @@ class StyleManager{
                 //$new_content = self::getFileContent($path);
                 if ($res->error_message) return (object)['error'=>$res->error_message,"content"=>null];
                 //just remove comments from js codes
-                $new_content = Minifier::minify($res->content);
+                $new_content = self::minify_css($res->content);
             }
-            else $new_content = Minifier::minify(self::getFileContent($path));
+            else $new_content = self::minify_css(self::getFileContent($path));
             if (empty(trim($new_content))) return (object)['error'=>"Failed to fetch content from file $path","content"=>null]; 
             $str.= ($content_last_char=='}'? " " : " ").$new_content;
         }else {
@@ -182,9 +187,9 @@ class StyleManager{
                 {
                     $res = self::getFileContentFromUrl($f);
                     if ($res->error_message) return (object)['error'=>$res->error_message,"content"=>null];
-                    $new_content = Minifier::minify($res->content);
+                    $new_content = self::minify_css($res->content);
                 }
-                else $new_content = Minifier::minify(self::getFileContent($path));
+                else $new_content = self::minify_css(self::getFileContent($path));
 
                 if (empty(trim($new_content))) return (object)['error'=>"Failed to fetch content from file $path","content"=>null]; 
                 $str.=($content_last_char=='}' ? " " : " ").$new_content;
@@ -202,7 +207,7 @@ class StyleManager{
                 else $new_content = self::getFileContent($path);
 
                 if (empty(trim($new_content)))  return (object)['error'=>"Failed to fetch content from file $path","content"=>null];
-                $str.=($content_last_char=='}'? " " : " ").Minifier::minify($new_content,  ['flaggedComments' => false]);
+                $str.=($content_last_char=='}'? " " : " ").self::minify_css($new_content,  ['flaggedComments' => false]);
             }
         }
            
