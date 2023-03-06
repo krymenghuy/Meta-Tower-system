@@ -9,16 +9,16 @@ namespace App\ScriptManagement;
          protected static $bundles = [
             'priority-one'=>[
                 'attr'=>'async',
-                'output_file'=>'/js/dist/priority-one.min.js',
+                'output_file'=>'/dist/js/clinic.priority-one.min.js',
                 'files'=>[
                     '/assets/js/vsapi.js',
                     '/assets/js/LocaleManager.js',
-                    '/js/priority-load.js'
+                    '/assets/js/priority-load.js'
                 ]
             ],
             'primary'=>[
                 'attr'=>null,
-                'output_file'=>'/js/dist/lms.primary.js',
+                'output_file'=>'/dist/js/clinic.primary.js',
                 'files'=>[
                     '/assets/material-js/jquery.min.js',
                     '/assets/plugins/chart.js/Chart.js'
@@ -26,59 +26,68 @@ namespace App\ScriptManagement;
             ],
            'primary-async'=>[
                 'attr'=>'async',
-                'output_file'=>'/js/dist/lms.primary-async.js',
+                'output_file'=>'/dist/js/clinic.primary-async.js',
                 'files'=>[
-                    '/js/AuthManager.js'
+                    '/js/components/AuthManager.js'
                 ]
            ],
-           'pdfmake'=>[
-             'attr'=>'defer',
-             'minify'=>0,
-             'files'=>[
-                '/assets/js/pdfmake.min.js',
-                '/assets/js/vfs_fonts.js',
-             ]
-           ],
-           'primary-defer'=>[
-                'attr'=>'defer',
-                'output_file'=>'/js/dist/lms.primary-defer.js',
-                'files'=>[
-                    '/assets/js/vsutil.js',
-                    '/assets/js/formUtils.js',
-                    '/assets/js/vsdom.js',
-                    '/assets/js/ItemsView.js',
-                    '/assets/js/ExchangeManager.js',
-                    '/assets/js/expandableTableRow.js',
-                    '/assets/plugins/chart.js/Chart.js',
-                    '/assets/js/Popper.js', //Popper 2.10
-                    '/assets/material-js/bootstrap.min.js', //bootstrap 5.0.2
-                    '/assets/js/string_san.js',
-                    '/assets/js/sweetalert2.all.min.js',
-                     //Initialize Toast style and options
-                    '/assets/js/sweetalert2.toast.js',
-                    '/assets/js/validator.js',
-                    '/assets/js/cv_interact.js',
-                    '/assets/js/datehelper.js',
-                    '/assets/js/date.js',
-                    '/assets/js/jquery.datepicker2.js',
-                    //'assets/js/html2canvas.min.js',
-                    //'/assets/js/vs_multiple_select.js',
-                        //'https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js',
-                    //'/assets/js/ckeditor/ckeditor.js', /** ckeditor script has its internal error or problem that causes other script to be errorous **/
-                    //'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.1/xlsx.full.min.js',
-                    '/assets/js/xlsx/xlsx.full.min.js',
-                    '/assets/vendors/general/js-cookie/src/js.cookie.js',
-                    '/assets/vendors/general/moment/min/moment.min.js',
-                    '/assets/vendors/general/perfect-scrollbar/dist/perfect-scrollbar.js',
-                    '/assets/vendors/general/sticky-js/dist/sticky.min.js',
-                    '/assets/js/select2.min.js',
-                    '/assets/js/initializeSelect2.js',
-                    '/assets/js/demo1/scripts.bundle.js',
-                    '/assets/js/datatables.bundle.min.js',
-                    'https://js.pusher.com/7.2/pusher.min.js', 
-                    '/js/app.js',
-                    '/assets/js/browsercontrol.js',
-                ]
+        //    'pdfmake'=>[
+        //      'attr'=>'defer',
+        //      'minify'=>0,
+        //      'files'=>[
+        //         '/assets/js/pdfmake.min.js',
+        //         '/assets/js/vfs_fonts.js',
+        //      ]
+        //    ],
+        'primary-defer'=>[
+            'attr'=>'defer',
+            'output_file'=>'/dist/js/dms.primary-defer.js',
+            'files'=>[
+                //'/assets/js/crypto-js.js',
+                //'/js/security/Encrypter.js'
+                '/assets/js/string_san.js',
+                '/assets/js/vsutil.js',
+                '/assets/js/vsdom.js',
+                '/assets/js/ItemsView.js',
+                '/assets/js/ExchangeManager.js',
+                '/assets/js/expandableTableRow.js',
+                '/assets/plugins/chart.js/Chart.js',
+                '/assets/js/Popper.js', //Popper 2.10
+
+                '/assets/vendors/general/popper.js/dist/umd/popper.js',
+                ////'https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js', 2.9
+                '/assets/material-js/bootstrap.min.js', //bootstrap 5.0.2
+                ////'https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js',//bootstrap 5.0.2
+                //'/assets/vendors/general/tooltip.js/dist/umd/tooltip.min.js',
+                //"https://code.iconify.design/2/2.0.3/iconify.min.js",
+                //"{{ asset('assets/dist/js/pages/dashboard3.js') }}",
+                '/assets/js/sweetalert2.all.min.js',
+                 //Initialize Toast style and options
+                //'/assets/js/sweetalert2.toast.js',
+                '/assets/js/validator.js',
+                '/assets/js/cv_interact.js',
+                '/assets/js/datehelper.js',
+                '/assets/js/date.js',
+                '/assets/js/jquery.datepicker2.js',
+                //'assets/js/html2canvas.min.js',
+                //'/assets/js/vs_multiple_select.js',
+                //'https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js',
+                //'/assets/js/ckeditor/ckeditor.js', /** ckeditor script has its internal error or problem that causes other script to be errorous **/
+                //'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.1/xlsx.full.min.js',
+                '/assets/js/xlsx/xlsx.full.min.js',
+                '/assets/vendors/general/js-cookie/src/js.cookie.js',
+                '/assets/vendors/general/moment/min/moment.min.js',
+                '/assets/vendors/general/perfect-scrollbar/dist/perfect-scrollbar.js',
+                '/assets/vendors/general/sticky-js/dist/sticky.min.js',
+                '/assets/js/select2.min.js',
+                '/assets/js/initializeSelect2.js',
+                '/assets/js/demo1/scripts.bundle.js',
+                '/assets/js/datatables.bundle.min.js',
+                '/assets/js/toastr.min.js', /** for event toast **/
+                '/assets/js/init.toastr.js',
+                //'/js/app.js',
+                '/assets/js/browsercontrol.js',
+            ]
                     ,'no-minify'=>[
                         '/assets/js/crypto-js.js',
                         '/assets/js/ckeditor.js',
@@ -91,9 +100,16 @@ namespace App\ScriptManagement;
                 ],
                'components'=>[
                     'attr'=>'defer',
-                    'output_file'=>'/js/dist/lms.components.js',
+                    'output_file'=>'/dist/js/clinic.components.js',
                     'files'=>[
-                        '/js/components/Dashboard2Component.js',
+                        '/assets/js/formUtils.js',
+                        '/js/layout/main.js',
+                        '/assets/js/vfs_fonts.js',
+                        '/assets/js/pdfmake.min.js',
+                        '/js/components/PDFReport.js',
+                        '/js/components/FileChooser.js',
+                        //'/js/components/Dashboard2Component.js',
+                        '/js/components/DashboardComponent.js',
                         '/js/components/PersonDialog.js',
                         '/js/components/AppointmentListComponent.js',
                         '/js/components/QueueComponent.js?v=2',
@@ -115,7 +131,6 @@ namespace App\ScriptManagement;
                         '/js/components/ReportCenterComponent.js',
                         '/js/components/InputBoxes.js',
                         '/js/components/FindPersonDialog.js',
-                        '/js/components/DashboardComponent.js',
                         '/js/components/CompanyComponent.js?v=1',
                         '/js/components/MobileBrandImagesComponent.js',
                         '/js/components/PromotionComponent.js',
@@ -125,20 +140,20 @@ namespace App\ScriptManagement;
                         '/js/components/GeneralSettingsComponent.js',
                         '/js/components/RoleManagementComponent.js',
                         '/js/components/ExchangeRateComponent.js',
-                        '/js/components/R_QueueComponent.js',
                         '/js/components/StockTransferComponent.js',
                         '/js/components/UserManagementComponent.js',
+                        'assets/js/pusher/pusher.min.js',
                         '/js/components/pusher_connect.js'
                     ]
 
                     ],
-                    'mainjs'=>[
-                        'attr'=>'defer',
-                        'output_file'=>'/js/dist/lms.main.js',
-                        'files'=>[
-                            '/js/layout/main.js',
-                        ]
-                    ]
+                    // 'mainjs'=>[
+                    //     'attr'=>'defer',
+                    //     'output_file'=>'/js/dist/lms.main.js',
+                    //     'files'=>[
+                    //         '/js/layout/main.js',
+                    //     ]
+                    // ]
          ];
 
          static function bundle($bundle_name=null){

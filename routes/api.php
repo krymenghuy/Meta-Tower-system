@@ -112,7 +112,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('ticket/patient-diagnosis', [QTicketController::class, 'getPatientDiagnosis']);
         Route::post('ticket/patient-prescription', [QTicketController::class, 'getPatientPrescription']);
         Route::post('ticket/doctor-advice', [QTicketController::class, 'getDoctorAdvice']);
-        
+
+        Route::post('ticket/save-patient-photo', [QTicketController::class, 'savePatientPhoto']);
     //End::QTicketController
     
   //begin::MedicalServiceController

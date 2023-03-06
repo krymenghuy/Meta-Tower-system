@@ -351,10 +351,10 @@
     </style>
 
     <?php
-    ScriptManager::render('primary',1);
-    ScriptManager::render('primary-async',1);
+    ScriptManager::render('primary',0);
+    ScriptManager::render('primary-async',0);
     ScriptManager::render('primary-defer',1);
-    ScriptManager::render('pdfmake',1);
+    ScriptManager::render('components',1);
   ?>
 
 </head>
@@ -616,17 +616,12 @@
                             @include('layouts.serviceDepartmentsComponent')
                             @include('layouts.chiefComplaintsComponent')
                             @include('layouts.exchangeRateComponent')
-                            @include('layouts.rQueueComponent')
                             @include('layouts.stockTransferComponent')
                             @include('layouts.um.userManagementComponent')
                             @include('layouts.um.roleManagementComponent')
                             @include('layouts.mobileBrandImagesComponent')
                         </div>
                         <!--end:: div#_app_content-->
-                        <?php 
-                            ScriptManager::render('mainjs',1); 
-                            ScriptManager::render('components',1); 
-                        ?>
                     </div>
                 </div>
             </div>
@@ -653,31 +648,7 @@
             <i class="fa fa-arrow-up"></i>
         </div>
         <!-- end::Scrolltop -->
-
-        <!-- begin::Global Config(global config for global JS scripts) -->
-        <script>
-            let KTAppOptions = {
-                "colors": {
-                    "state": {
-                        "brand": "#5d78ff",
-                        "dark": "#282a3c",
-                        "light": "#ffffff",
-                        "primary": "#5867dd",
-                        "success": "#34bfa3",
-                        "info": "#36a3f7",
-                        "warning": "#ffb822",
-                        "danger": "#fd3995"
-                    },
-                    "base": {
-                        "label": ["#c5cbe3", "#a1a8c3", "#3d4465", "#3e4466"],
-                        "shape": ["#f0f3ff", "#d9dffa", "#afb4d4", "#646c9a"]
-                    }
-                }
-            };
-
-        </script>
-
-        <!-- end::Global Config -->
+ 
 </body>
 <!-- end::Body -->
 

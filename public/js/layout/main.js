@@ -155,7 +155,7 @@
                  
                  this.mnuTickets.on('click',(e)=>{
                     e.preventDefault();
-                    R_QueueComponent.show(null);
+                    QueueComponent.show(null);
                  });
 
                  this.mnuEmployeeList.on('click',(e)=>{
