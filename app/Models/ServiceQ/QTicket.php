@@ -52,7 +52,7 @@ class QTicket //extends Model
     
     protected $id = null;
     protected $userInfo = null;
-    function __construct($id=null,$userInfo){
+    function __construct($id=null,$userInfo=null){
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
@@ -248,38 +248,71 @@ class QTicket //extends Model
         return null;
     }
 
+    static function countPatientPhotos($patient_id){
+        $rows = DB::table("patient_photos")->where('patient_id',$patient_id)->selectRaw("COUNT(id) AS cnt")->get();
+        foreach($rows as $row) return $row->cnt;
+        return -1;
+    }
+
     function savePatientPhoto($d =[],$ss=[]){
         $id = $this->getId();
         $ss = $ss?$ss:$this->getUserInfo();
         $branch_id = $ss->branch_id;
         $patient_id = isset($d['patient_id'])?$d['patient_id']:null;
         $ticket_id = isset($d['ticket_id'])? $d['ticket_id']:null;
+        if (!$ticket_id) return DV::error("Ticket ID is not valid");
+        if (!$patient_id){
+            $ticket = $this->getProps($ticket_id,["client_id AS patient_id"]);
+            if($ticket) $patient_id = $ticket->patient_id;
+        }
+        if (!$patient_id) return DV::error("Failed to identify patient for the ticket ID $ticket_id");
+        $photo_count = self::countPatientPhotos($patient_id);
+        if($photo_count>=3) return DV::error("Cannot upload more than three photos");
         //Patient photo category is for example, "Before","After"
         $category = isset($d['category'])?$d['category']:'general';
-
-        $res = PublicStorage::saveImage($branch_id,'patient',$d['ext'],$d['photoData']);
+        $file_ext = isset($d['file_type'])?$d['file_type']:$d['file_ext'];
+        $res = PublicStorage::saveImage($branch_id,'patient',$file_ext,$d['photoData']);
         if($res->status==='OK'){
-            $inputs = ['patient_id'=>$patient_id,'ticket_id'=>$ticket_id,'file_name'=>$res->file_name,'file_type'=>$d['ext'],'category'=>$category];
+            $inputs = ['patient_id'=>$patient_id,'ticket_id'=>$ticket_id,'file_name'=>$res->file_name,'file_type'=>$file_ext,'category'=>$category];
             $new_photo_id = saveData($ss,'patient_photos',['id'=>null],$inputs,[],1);
-            if ( $new_photo_id > 0)
-              return DV::success(['id'=>$new_photo_id,'file_name'=>$res->file_name]);
+            if ($new_photo_id > 0)
+            {
+                $image_url=PublicStorage::getUrl($branch_id,"patient","image").$res->file_name;
+                //return new_image_id, new_image_url, image_urls
+                return DV::success(['id'=>$new_photo_id,'new_image_url'=>$image_url,'image_urls'=>$this->getPatientPhotos($ticket_id,$ss)]);
+            }
             return DV::error('Something went wrong saving image file');
         }
         return DV::error($res->error_message);      
     }
 
     //use ticket_id to retrieve patient's photos
-    function getPatientPhotos($branch_id,$ticket_id =0){
-        $ticket = self::getProps($ticket_id,["id","patient_id"]);
+    function getPatientPhotos($ticket_id =0,$ss=[]){
+        $ticket_id = $ticket_id? $ticket_id:$this->getId();
+        $ss = $ss? $ss:$this->getUserInfo();
+        $branch_id = $ss->branch_id;
+        $ticket = self::getProps($ticket_id,["id","client_id AS patient_id"]);
         if(!$ticket) return [];
         $patient_id = $ticket->patient_id;
-        $rows = DB::table('patient_photos')->where('patient_id',$patient_id)->select("file_name","file_ext","category")->orderBy("category","ASC")->get();
+        $rows = DB::table('patient_photos')->where('patient_id',$patient_id)->select("id","file_name","category")->orderBy("category","ASC")->get();
         foreach($rows as $row){
             $url = PublicStorage::getUrl($branch_id,'patient','image');
             $url .=$row->file_name;
             $row->image_url = $url;
         }
         return $rows;
+    }
+
+    function deletePatientPhoto($image_id,$ss){
+       $branch_id = $ss->branch_id;
+       $img = getDataRow("patient_photos",['id'=>$image_id],"ticket_id,file_name,category");
+       if(!$img) return DV::error("Image ID is not valid"); 
+       $ticket_id = $img->ticket_id;
+       $file = PublicStorage::getDiskPath($branch_id,"patient","image").$img->file_name;
+       $res = PublicStorage::deleteFile($file);
+       DB::table('patient_photos')->where('id',$image_id)->where('branch_id',$branch_id)->delete();
+       //return remaining list of photos for frontend to refresh phoho list
+       return DV::success(['image_urls'=>$this->getPatientPhotos($ticket_id,$ss)]);
     }
 
     function getDetails($id=null,$ss= [],$include_cc=true,$include_vs=true,$include_mc=true){

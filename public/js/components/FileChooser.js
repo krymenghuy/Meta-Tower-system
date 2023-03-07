@@ -55,6 +55,7 @@ let FileChooser = new function(){
             p.photoData = base64result; /* NOTE: base64result contains only base64String ready to converted into image. There is no type information in this string */
             p.file_type = fileType;
             p.ext = fileType;
+            mThis.fileInput1.val(null);
             if(typeof mThis.onClose ==='function') mThis.onClose(p);
         }
     }
@@ -66,7 +67,6 @@ let FileChooser = new function(){
         if(!options.accept) options.accept =`image/*`; 
         mThis.fileInput1.attr('accept',options.accept);
         mThis.fileInput1.trigger('click');
-        mThis.fileInput1.val(null);
     }
 }
 //FileChooser.js must be loaded with "defer" attribute or otherwise it can be loaded after DOM Content Loaded
