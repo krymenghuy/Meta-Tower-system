@@ -130,7 +130,15 @@
                         </div>
                     </div>
                 </div>
-                <div class="row mt-4">
+                <div class="row mt-4 border border-2 border-success rounded-2 p-2">
+                    <div class="d-flex align-items-center gap-2 px-2">
+                        <div class="p-2">
+                            <p class="fw-semibold tab-item p-2" role="button" data-viewname="product">Product</p>
+                        </div>
+                        <div>
+                            <p class="fw-semibold tab-item p-2" role="button" data-viewname="service">Service</p>
+                        </div>
+                    </div>
                     <div id="_inv_items_panel" class="col-12 table-responsive">
                     </div>
                 </div>

@@ -386,7 +386,7 @@ let InvoicesComponent = new function () {
 
     this.generatePmtStatus = (d)=>{
         let amount_paid = Number(d.amount_paid);
-        let pmt_status = (Number(d.amount_due) <= amount_paid)? 'Paid': (amount_paid > 0? 'Partially Paid':'Unpaid');
+        let pmt_status = (Number(d.amount_due) <= amount_paid) ? 'Paid' : (amount_paid > 0? 'Partially Paid':'Unpaid');
         return [`<button class="btn btn-sm ${mThis.getPmtStatusClass(pmt_status)} btn-pmt-status">`,pmt_status,`</button>`].join('');
     }
 
@@ -396,9 +396,11 @@ let InvoicesComponent = new function () {
             case 'paid':{
                 return 'btn-outline-success';
             }
+
             case 'partially paid':{
                 return 'btn-outline-primary';
             }
+
             case 'partially-paid':{
                 return 'btn-outline-primary';
             }
@@ -450,64 +452,118 @@ let InvoiceDialog = new function () {
     this.elSummary_taxAmount = $('#ivc_tax_amount');
     this.elSummary_grandTotal = $('#ivc_grand_total');
    
-    //begin:: method to initialize ItemsView
+    this.cols_product = [{
+        "name":"item_id",
+        "displayName":"item_name", /** used with Dropdown column only because dropdown column has options = {value,text}**/
+        "title":"Item Name",
+        "dataType":"string",
+        "displayType":"select",
+        "width":"250px"
+    },
+    {
+        "name":"qty",
+        "title":"Quantity",
+        "dataType":"number",
+        "defaultValue":1,
+        "displayType":"input"
+    },
+    {
+        "name":"sku",
+        "title":"SKU",
+        "dataType":"string",
+        "displayType":"input",
+        "readOnly":true
+    },
+    {
+        "currencySymbol":mThis.cur_symbol,
+        "name":"price",
+        "title":"Price",
+        "dataType":"number",
+        "displayType":"input"
+    },
+    {
+        "showPercentage":true,
+        "name":"discount_percent",
+        "title":"Discount (%)",
+        "dataType":"number",
+        "displayType":"input"
+    },
+    {
+        "isPercentage":true,
+        "name":"tax_rate",
+        "title":"Tax (%)",
+        "dataType":"number",
+        "displayType":"input"
+    },
+    {
+        "currencySymbol":mThis.cur_symbol,
+        "name":"line_total",
+        "title":"Line Total",
+        "dataType":"number",
+        "displayType":"input",
+        "readOnly": true
+    }];
+
+    this.cols_service = [{
+        "name":"service_id",
+        "title":"Service",
+        "dataType":"string",
+        "displayType":"select"
+    },{
+        "name":"qty",
+        "title":"Qty",
+        "dataType":"number",
+        "displayType":"input"
+    },{
+        "name":"price",
+        "title":"Price",
+        "dataType":"number",
+        "displayType":"input"
+    }];
+
     this.initItemsView = ()=>{
-        let cur_symbol =  mThis.getCurrencySymbol();
-        this.cols = [{
-            "name":"item_id",
-            "displayName":"item_name", /** used with Dropdown column only because dropdown column has options = {value,text}**/
-            "title":"Item Name",
-            "dataType":"string",
-            "displayType":"select",
-            "width":"250px"
-        },
+        mThis.tblItemProduct();
+
+        mThis.self.on('click','.tab-item',function(e){
+            e.preventDefault();
+            el = $(this).data("viewname");
+
+            switch(el){
+                case 'product':{
+                    mThis.tblItemProduct();
+                    $('.tab-item').css({"backgroundColor":"transparent",
+                    "border":"none"});
+                    $(this).css({"border-bottom":"1.5px solid green",
+                    "backgroundColor":"rgb(228 242 228)",
+                    "padding":"10px",
+                    "borderRadius":"10px"});
+                    break;
+                }
+                case 'service':{
+                    mThis.tblItemService();
+                    $('.tab-item').css({"backgroundColor":"transparent","border":"none"});
+                    $(this).css({"border-bottom":"1.5px solid green","backgroundColor":"rgb(228 242 228)","padding":"10px","borderRadius":"10px"});
+                    break;
+                }
+                default:
+                    mThis.tblItemProduct();
+            }
+        });
+    }
+
+    this.tblItemService = () => {
+        mThis.tblServiceItems = new ItemsView('_inv_items_panel',{
+            columns: mThis.cols_service,
+            showColumnHeaders: true,
+            showAddLineButton: true,
+            validateColumns: {'item_id':'string','qty':'number','price':'number'},
+        });
+    }
+
+    this.tblItemProduct = () => {
+        mThis.tblProductItems = new ItemsView('_inv_items_panel',
         {
-            "name":"qty",
-            "title":"Quantity",
-            "dataType":"number",
-            "defaultValue":1,
-            "displayType":"input"
-        },
-        {
-            "name":"sku",
-            "title":"SKU",
-            "dataType":"string",
-            "displayType":"input",
-            "readOnly":true
-        },
-        {
-            "currencySymbol":cur_symbol,
-            "name":"price",
-            "title":"Price",
-            "dataType":"number",
-            "displayType":"input"
-        },
-        {
-            "showPercentage":true,
-            "name":"discount_percent",
-            "title":"Discount (%)",
-            "dataType":"number",
-            "displayType":"input"
-        },
-        {
-            "isPercentage":true,
-            "name":"tax_rate",
-            "title":"Tax (%)",
-            "dataType":"number",
-            "displayType":"input"
-        },
-        {
-            "currencySymbol":cur_symbol,
-            "name":"line_total",
-            "title":"Line Total",
-            "dataType":"number",
-            "displayType":"input",
-            "readOnly": true
-        }];
-    
-        this.tblInvoiceItems = new ItemsView('_inv_items_panel',
-        {
-            columns: mThis.cols,
+            columns: mThis.cols_product,
             showColumnHeaders: true,
             showAddLineButton: true,
             validateColumns: {'item_id':'string','qty':'number','price':'number'},
@@ -518,31 +574,30 @@ let InvoiceDialog = new function () {
                 mThis.setItemInfo(col_name, tr);
             },
             onInputChange:(el,col_name,td)=>{
-              let tr = td.parentNode;  
-              mThis.setLineTotal(tr);
+                let tr = td.parentNode;  
+                mThis.setLineTotal(tr);
             },
-            onItemDeleted:(tr)=>{
-               mThis.setTotals(null);
+                onItemDeleted:(tr)=>{
+                mThis.setTotals(null);
             }
         });
     }
-    //end::method to initialize ItemsView
 
         //setInvoiceItemInfo()
         this.setItemInfo = (col_name, tr) => {
             if (col_name === 'item_id') {
-                let d = mThis.tblInvoiceItems.getDataRow(tr);
+                let d = mThis.tblProductItems.getDataRow(tr);
                 let p = { 'id': d.item_id };
     
                 vsapi.call(`${main_view.base_url}/api/inventory/item-info`, p).then(res => {
                     if (res.status_code === 200){
                         let item = res.data?res.data:{};
-                        mThis.tblInvoiceItems.setCellValue(tr, 'sku', StringSanitizer.sanitizeOut(item.sku));
+                        mThis.tblProductItems.setCellValue(tr, 'sku', StringSanitizer.sanitizeOut(item.sku));
                         let price = item.ws_selling_price;
                         if (InvoiceSettings.default_price_type ==='retail') price = item.selling_price;  
-                        mThis.tblInvoiceItems.setCellValue(tr, 'price',price);
-                        mThis.tblInvoiceItems.setCellValue(tr, 'qty',1);
-                        mThis.tblInvoiceItems.setCellValue(tr, 'tax_rate',item.sales_tax_rate>=0? item.sales_tax_rate:0);
+                        mThis.tblProductItems.setCellValue(tr, 'price',price);
+                        mThis.tblProductItems.setCellValue(tr, 'qty',1);
+                        mThis.tblProductItems.setCellValue(tr, 'tax_rate',item.sales_tax_rate>=0? item.sales_tax_rate:0);
                         mThis.setLineTotal(tr);
                     }
                 });
@@ -577,7 +632,7 @@ let InvoiceDialog = new function () {
     
         this.setLineTotal = (tr)=>{
             let cur_symbol = mThis.getCurrencySymbol(); 
-            let d = mThis.tblInvoiceItems.getDataRow(tr);
+            let d = mThis.tblProductItems.getDataRow(tr);
             
             let price = parseFloat(d.price); 
             let qty = parseFloat(d.qty);
@@ -589,7 +644,7 @@ let InvoiceDialog = new function () {
             let tax_amount = (line_total - discount_amt) * tax_rate/100; 
             line_total = isNaN(line_total)? 0:line_total - discount_amt + tax_amount;
             d.line_total = line_total;
-            mThis.tblInvoiceItems.setCellValue(tr, 'line_total',d.line_total);
+            mThis.tblProductItems.setCellValue(tr, 'line_total',d.line_total);
             mThis.setTotals(cur_symbol);
         }
      
@@ -598,7 +653,7 @@ let InvoiceDialog = new function () {
             if (!cur_symbol) cur_symbol = mThis.getCurrencySymbol(); 
             let sub_total =0;
             let total_tax =0;
-            let items = mThis.tblInvoiceItems.getItems();
+            let items = mThis.tblProductItems.getItems();
             (items || []).map(i =>{
                 //*** IMPORTANT NOTE: i.line_total inludes Discount and Tax Amount for each item
               
@@ -699,7 +754,7 @@ let InvoiceDialog = new function () {
             else el.val(d[f]);
         });
         //if (!d.items) d.items = [];  
-        mThis.tblInvoiceItems.setData(d.items);
+        mThis.tblProductItems.setData(d.items);
 
         //NOTE: in database table invoices.amount represent the invoice's SubTotal
         d.sub_total = d.amount;
@@ -738,7 +793,7 @@ let InvoiceDialog = new function () {
         mThis.options = options;
 
         mThis.loadInvoiceFormOptions((d) => {
-            mThis.tblInvoiceItems.setSelectOptions('item_id',d.items);
+            mThis.tblProductItems.setSelectOptions('item_id',d.items);
             VSUtil.setComboItems(mThis.SelectPmtTerms,d.pmt_terms,'code','description',true,'(select terms)',null);
             VSUtil.setComboItems(mThis.SelectCustomer,d.customers,'id','customer_name',true,'(select customer)',null);
 
