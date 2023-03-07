@@ -19,21 +19,51 @@ let TicketDetails = new function () {
         });
 
         mThis.tblTickets.on('click','.qul-add-photo',(e)=>{
-            //e.preventDefault();
+            e.preventDefault();
+            let x = $(e.currentTarget);
+            let ticket_id = x.data('id');
+            //let patient_id = x.data('patientid');
+            
             FileChooser.chooseFile(null,(d)=>{
-                if(!d) return ;
+                if(!d) return ; 
                 let p = {
-                    ext: d.ext,
+                    ticket_id:ticket_id,
+                    //patient_id:patient_id,
+                    //file_ext:d.ext,
+                    file_type: d.file_type,
                     photoData: d.photoData
                 };
                 vsapi.call(`${main_view.base_url}/api/ticket/save-patient-photo`,p,null,false).then(res=>{
-                    if(res.status_code===200){
-                        cv_interact.info('Photo uploaded');
-                    }
+                    if(res.status_code === 200){
+                        let data = res.data;
+                        //NOTE @data contains {id, new_image_url,image_urls}
+                        mThis.refreshPhotos(ticket_id,data.image_urls);
+                        //cv_interact.success('Photo uploaded'); 
+                    }else cv_interact.error(res.error_message);
                 }); 
             });
         });
 
+        mThis.tblTickets.on('click','.qul-delete-photo',(e)=>{
+            let x = $(e.currentTarget);
+            let image_id = x.data('id');
+            let ticket_id =x.data('ticketid');
+            cv_interact.confirm("Delete this photo?",{title:'Delete Photo',context:'delete'},e=>{
+                if(e){
+                    let p = {'id':image_id};
+                    vsapi.call(`${main_view.base_url}/api/ticket/delete-patient-photo`,p,null,false).then(res=>{
+                        if(res.status_code === 200){
+                            let data = res.data;
+                            //NOTE @data contains {id, new_image_url,image_urls}
+                            mThis.refreshPhotos(ticket_id,data.image_urls);
+                        }else cv_interact.error(res.error_message);
+                    });
+                }
+            });
+
+  
+        });
+        
         mThis.tblTickets.on('click', '.qul-btn-info', function (e) {
             e.preventDefault();
             let div_wrapper = $(this).closest('div.ticket-info-wrapper');
@@ -411,28 +441,53 @@ let TicketDetails = new function () {
         return html ? html : '<span class="detail-item-empty">No vital signs</span>';
     }
 
+    //Given array of image urls, create html string ready to render images
+    this.createPhotoItems =(ticket_id,items=[])=>{
+        let html ="";
+        items.map(img =>{
+            html = [html,`<div class="d-flex flex-column">
+                  <img style="width:120px;height:150px" class="img-thumbnail rounded" src="${img.image_url}"/>
+                  <button type="button" class="btn btn-sm btn-outline-danger qul-delete-photo" data-ticketid="${ticket_id}" data-id="${img.id}">Remove</button>
+                </div>`].join('');
+        });
+       return html;
+    }
+
+    this.refreshPhotos = (ticket_id,imgs =[])=>{
+      let div = $(`#qul_photo_list_${ticket_id}`);  
+      div.html(mThis.createPhotoItems(ticket_id,imgs));
+    }
+
     this.showPhoto = (div_panel, ticket_id = null) => {
         if (!ticket_id) ticket_id = div_panel.data('tid');
         let div_workspace = div_panel.find('div.qul-workspace');
-        div_workspace.html(`<div class="d-flex align-items-center justify-content-center">
-            <div class="d-flex flex-column gx-3">
-               <div class="center d-flex flex-column p-3">
-                  <button data-id="${ticket_id}" class="btn btn-sm btn-primary qul-add-photo">Add Photo</button> 
-               </div>   
-            </div>
-            <div class="d-flex gx-4">
-                <div class="">
-                    <img class="img-thumbnail rounded" src="${VSUtil.asset_url()}/images/icons/client-girl.png"/>
-                </div>
-                <div class="">
-                    <img class="img-thumbnail rounded" src="${VSUtil.asset_url()}/images/icons/client-girl.png"/>
-                </div>
-                <div class="">
-                    <img class="img-thumbnail rounded" src="${VSUtil.asset_url()}/images/icons/client-girl.png"/>
-                </div>
-            </div>
-        </div>`);
-        mThis.current_view_name = 'photo';
+        let div_id =['div_photos_',ticket_id].join('');
+
+        let dv = div_workspace.find(`#${div_id}`);
+        let p = {'ticket_id':ticket_id};
+        vsapi.call(`${main_view.base_url}/api/ticket/patient-photos`,p).then(res=>{
+           if(res.status_code===200){
+                let imgs = res.data;
+                if(dv.length>0){
+                    mThis.refreshPhotos(ticket_id,imgs);
+                    dv.show();
+                    mThis.current_view_name = 'photo';
+                    return;
+                }
+               
+                div_workspace.html(`<div id="${div_id}" class="d-flex align-items-center justify-content-center">
+                    <div class="d-flex flex-column gx-3">
+                    <div class="center d-flex flex-column p-3">
+                        <button data-id="${ticket_id}" class="btn btn-sm btn-primary qul-add-photo">Add Photo</button> 
+                    </div>   
+                    </div>
+                    <div id="qul_photo_list_${ticket_id}" class="d-flex gx-4 qul-photo-list">
+                    ${mThis.createPhotoItems(ticket_id,imgs)}
+                    </div>
+                </div>`);
+               mThis.current_view_name = 'photo';
+           } 
+        });
     };
 
     this.showHistory = (div_panel,ticket_id=null) => {
