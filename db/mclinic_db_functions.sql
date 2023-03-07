@@ -1,6 +1,5 @@
 DROP FUNCTION IF EXISTS `displayMoney`;
-CREATE  FUNCTION `displayMoney`(amt decimal(10,2),ccode varchar(10)) RETURNS varchar(100) CHARSET utf8mb4
-    DETERMINISTIC
+CREATE  FUNCTION `displayMoney`(amt decimal(10,2),ccode varchar(10)) RETURNS varchar(100) CHARSET utf8mb4 DETERMINISTIC
 BEGIN
   declare sym varchar(15);
   declare symbol_after int;
@@ -18,8 +17,7 @@ BEGIN
   return val; 
 end;
 DROP FUNCTION IF EXISTS `formatDate`;
-CREATE  FUNCTION `formatDate`(mDate Date) RETURNS varchar(50) CHARSET utf8mb4
-    DETERMINISTIC
+CREATE  FUNCTION `formatDate`(mDate Date) RETURNS varchar(50) CHARSET utf8mb4 DETERMINISTIC
 BEGIN
   return DATE_FORMAT(mDate,'%d %b %Y');
 END;
