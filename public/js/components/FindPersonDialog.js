@@ -129,202 +129,110 @@ var FindPersonDialog = new function () {
 }
 //endFindPersonDialog
 
-//begin::JsonToExcel class
-var JsonToExcel = new function () {
-    let mThis = this;
-    this.in_array = (val, m_array = []) => {
-        let i = 0, c;
-        do {
-            c = m_array[i];
-            if (!c) break;
-            if ($.isNumeric(val)) if (parseFloat(val) == parseFloat(c)) return true;
-            else if ((val + '').toLowerCase() == (c + '').toLowerCase()) return true;
-            i++;
-        } while (c);
-        return false;
-    };
+// //begin::JsonToExcel class
+// var JsonToExcel = new function () {
+//     let mThis = this;
+//     this.in_array = (val, m_array = []) => {
+//         let i = 0, c;
+//         do {
+//             c = m_array[i];
+//             if (!c) break;
+//             if ($.isNumeric(val)) if (parseFloat(val) == parseFloat(c)) return true;
+//             else if ((val + '').toLowerCase() == (c + '').toLowerCase()) return true;
+//             i++;
+//         } while (c);
+//         return false;
+//     };
 
-    this.exportToExcel = function (JSONData, fileTitle, titles, first_row_label = false, exceptColNames = []) {
-        let filename = [fileTitle, '-', (new Date().getUTCMilliseconds()), '.xlsx'].join('');
-        var ws = XLSX.utils.json_to_sheet(JSONData);
-        var wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, fileTitle);
-        XLSX.writeFile(wb, filename);
-    }
+//     this.exportToExcel = function (JSONData, fileTitle, titles, first_row_label = false, exceptColNames = []) {
+//         let filename = [fileTitle, '-', (new Date().getUTCMilliseconds()), '.xlsx'].join('');
+//         var ws = XLSX.utils.json_to_sheet(JSONData);
+//         var wb = XLSX.utils.book_new();
+//         XLSX.utils.book_append_sheet(wb, ws, fileTitle);
+//         XLSX.writeFile(wb, filename);
+//     }
 
-    this.exportToCSV = function (JSONData, FileTitle, titles, first_row_label = true, exceptColNames = []) {
-        //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
-        let arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
-        let CSV = '';
-        let except_col_indexes = [];
-        //This condition will generate the Label/Header
-        if (Array.isArray(titles)) {
-            let row = "";
-            //This loop will extract the label from 1st index of on array
-            let row_index = 0;
-            for (let index in titles) {
-                //Now convert each value to string and comma-seprated
-                let col_name = titles[index];
-                if (!mThis.in_array(col_name, exceptColNames)) {
-                    row = [row, col_name, ','].join('');
-                } else except_col_indexes.push(index);
-            }
-            row_index++;
-            row = row.slice(0, -1);
-            //append Label row with line break
-            CSV = [CSV, row, '\r\n'].join('');
-        } else {
-            if (first_row_label) {
-                let row = "";
-                //This loop will extract the label from 1st index of on array
-                for (let index in arrData[0]) {
-                    //Now convert each value to string and comma-seprated
-                    row += (index + '').replace('_', ' ') + ',';
-                }
-                row = row.slice(0, -1);
-                //append Label row with line break
-                CSV += row + '\r\n';
-            }
-        }
+//     this.exportToCSV = function (JSONData, FileTitle, titles, first_row_label = true, exceptColNames = []) {
+//         //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
+//         let arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
+//         let CSV = '';
+//         let except_col_indexes = [];
+//         //This condition will generate the Label/Header
+//         if (Array.isArray(titles)) {
+//             let row = "";
+//             //This loop will extract the label from 1st index of on array
+//             let row_index = 0;
+//             for (let index in titles) {
+//                 //Now convert each value to string and comma-seprated
+//                 let col_name = titles[index];
+//                 if (!mThis.in_array(col_name, exceptColNames)) {
+//                     row = [row, col_name, ','].join('');
+//                 } else except_col_indexes.push(index);
+//             }
+//             row_index++;
+//             row = row.slice(0, -1);
+//             //append Label row with line break
+//             CSV = [CSV, row, '\r\n'].join('');
+//         } else {
+//             if (first_row_label) {
+//                 let row = "";
+//                 //This loop will extract the label from 1st index of on array
+//                 for (let index in arrData[0]) {
+//                     //Now convert each value to string and comma-seprated
+//                     row += (index + '').replace('_', ' ') + ',';
+//                 }
+//                 row = row.slice(0, -1);
+//                 //append Label row with line break
+//                 CSV += row + '\r\n';
+//             }
+//         }
 
-        //1st loop is to extract each row
-        let i = 0, c;
-        do {
-            c = arrData[i]; //c is array of columns
-            if (!c) break;
-            let row = "";
-            for (let index in c) {
-                let val = c[index];
-                val = $.isNumeric(val) ? (val + ' ') : val; //To prevent Excel display Number in Cell not formmatted as Text
-                if (!mThis.in_array(index, except_col_indexes)) row = [row, `"${val}"`]; //row += '"' + val + '",';
-            }
-            row.slice(0, row.length - 1);
-            //add a line break after each row
-            CSV = [CSV, row, '\r\n'].join('');
-            i++;
-        } while (c);
+//         //1st loop is to extract each row
+//         let i = 0, c;
+//         do {
+//             c = arrData[i]; //c is array of columns
+//             if (!c) break;
+//             let row = "";
+//             for (let index in c) {
+//                 let val = c[index];
+//                 val = $.isNumeric(val) ? (val + ' ') : val; //To prevent Excel display Number in Cell not formmatted as Text
+//                 if (!mThis.in_array(index, except_col_indexes)) row = [row, `"${val}"`]; //row += '"' + val + '",';
+//             }
+//             row.slice(0, row.length - 1);
+//             //add a line break after each row
+//             CSV = [CSV, row, '\r\n'].join('');
+//             i++;
+//         } while (c);
 
-        if (CSV == '' || !CSV) {
-            alert("Failed to create CSV file because the provided data is invalid");
-            return;
-        }
+//         if (CSV == '' || !CSV) {
+//             alert("Failed to create CSV file because the provided data is invalid");
+//             return;
+//         }
 
-        //Generate a file name
-        let filename = [FileTitle, '-', (new Date().getUTCMilliseconds())].join('');
+//         //Generate a file name
+//         let filename = [FileTitle, '-', (new Date().getUTCMilliseconds())].join('');
 
-        //To ensure that blob and CSV file show Khmer unicode correctly
-        let blob = new Blob([["\uFEFF", CSV].join('')], {
-            type: 'text/csv; charset=utf-18'
-        });
+//         //To ensure that blob and CSV file show Khmer unicode correctly
+//         let blob = new Blob([["\uFEFF", CSV].join('')], {
+//             type: 'text/csv; charset=utf-18'
+//         });
 
-        if (navigator.msSaveBlob) { // IE 10+
-            navigator.msSaveBlob(blob, filename);
-        } else {
-            let link = document.createElement("a");
-            if (link.download !== undefined) { // feature detection
-                // Browsers that support HTML5 download attribute
-                let url = URL.createObjectURL(blob);
-                link.setAttribute("href", url);
-                link.style = "visibility:hidden";
-                link.download = filename + ".csv";
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-        }
-    };
-};
-//end::JsonToExcel class
-
-/** class that contains commonly used functions in DMS system **/
-var DUtil = new function () {
-    //process_statuses() is to remove unnecessary statuses for Completed Delviery View. For example, Filter statuses shoud be only "All Statuses", "Delivered","Returned" 
-    this.process_statuses = (statuses, removes = [], first_item = null) => {
-        let i = 0, c;
-        let new_list = [];
-        if (first_item) new_list.push(first_item);
-        do {
-            c = statuses[i];
-            if (!c) break;
-            if (removes.indexOf(c.id) == -1) new_list.push(c);
-            i++;
-        } while (c);
-        return new_list;
-    }
-
-    //size-string returned from db example "2.5 30.3 80.0" becomes "25 303 800" because dot sign is removed by normal sanitization.
-    //to avoid this problem = > sanitizePackageSize() is used
-    this.sanitizePackageSize = (size, display = false) => {
-        size = (size + '').split(' ').join('').toLowerCase();
-        let sts = size.split('x');
-        let size_nums = [];
-        for (let i = 0; i <= 2; i++) {
-            if (!sts[i]) break;
-            p = sts[i];
-            if (p.slice(-2) === 'cm') p = p.slice(0, p.length - 2);
-            size_nums.push(p);
-        }
-        return (size_nums.join(' '));
-    }
-
-    this.formatNumberToUnits = (number, precision) => {
-        const abbrev = ['', 'k', 'm', 'b', 't'];
-        const unrangifiedOrder = Math.floor(Math.log10(Math.abs(number)) / 3)
-        const order = Math.max(0, Math.min(unrangifiedOrder, abbrev.length - 1))
-        const suffix = abbrev[order];
-
-        return (number / Math.pow(10, order * 3)).toFixed(precision) + suffix;
-    }
-
-    //does the same job as htmlspecialchars() PHP
-    this.escapeHtml = (str) => {
-        let map =
-        {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-        };
-        return str.replace(/[&<>"']/g, function (m) { return map[m]; });
-    }
-
-    //decode string that is encoded by htmlspecialchars() in php
-    this.decodeHtml = (str) => {
-        let map =
-        {
-            '&amp;': '&',
-            '&lt;': '<',
-            '&gt;': '>',
-            '&quot;': '"',
-            '&#039;': "'"
-        };
-        return (str + '').replace(/&amp;|&lt;|&gt;|&quot;|&#039;/g, function (m) { return map[m]; });
-    }
-
-    this.properCase = (text = '') => {
-        return [text.slice(0, 1).toUpperCase(), text.slice(1)].join('');
-    }
-
-    this.getFriendlySize = (size_str) => {
-        size_str = (size_str + '').trim();
-        if (size_str == '') return null;
-        let parts = size_str.split(' ');
-        if (!parts[0])
-            return false;
-        if (!parts[0])
-            return null;
-        else if (!$.isNumeric(parts[2]) || !$.isNumeric(parts[1]) || !$.isNumeric(parts[0]))
-            return null;
-        else {
-            let length = parseFloat(parts[0]);
-            let width = parseFloat(parts[1]);
-            let height = parseFloat(parts[2]);
-            return [length, 'cm X ', width, 'cm X ', height, 'cm'].join('');
-        }
-    }
-
-    this.createGUID = function () {
-        return Date.now().toString(36) + Math.random().toString(36).substr(2);
-    }
-}
+//         if (navigator.msSaveBlob) { // IE 10+
+//             navigator.msSaveBlob(blob, filename);
+//         } else {
+//             let link = document.createElement("a");
+//             if (link.download !== undefined) { // feature detection
+//                 // Browsers that support HTML5 download attribute
+//                 let url = URL.createObjectURL(blob);
+//                 link.setAttribute("href", url);
+//                 link.style = "visibility:hidden";
+//                 link.download = filename + ".csv";
+//                 document.body.appendChild(link);
+//                 link.click();
+//                 document.body.removeChild(link);
+//             }
+//         }
+//     };
+// };
+// //end::JsonToExcel class
+ 

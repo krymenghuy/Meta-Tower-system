@@ -2,26 +2,27 @@
 
 namespace App\Models\ServiceQ;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+//use Illuminate\Database\Eloquent\Factories\HasFactory;
+//use Illuminate\Database\Eloquent\Model;
 use App\Models\Consultation;
 use App\Models\UM;
 use DB;
+use App\Models\PublicStorage;
 use App\Models\DV;
 use App\Models\Notifier;
 
-class QTicket extends Model
+class QTicket //extends Model
 {
-    use HasFactory;
-    protected $table = 'service_queue';
-    protected $guarded = ['id'];
-    protected $fillable =['id','ticket_number','client_id','client_name','section_id','section_type','created_at','create_user','create_uid'];
+    //use HasFactory;
+    //protected $table = 'tickets';
+    //protected $guarded = ['id'];
+    // protected $fillable =['id','ticket_number','client_id','client_name','section_id','section_type','created_at','create_user','create_uid'];
       
-    protected $primaryKey = 'id';
-    public $incrementing = true;
-    //protected $keyType = 'string';
-    public $timestamps = true;
-    protected $dateFormat = 'Y-m-d';
+    // protected $primaryKey = 'id';
+    // public $incrementing = true;
+    // //protected $keyType = 'string';
+    // public $timestamps = true;
+    // protected $dateFormat = 'Y-m-d';
     
     protected static $validation_rule = [
         "id"=>"0|number|identity=1",
@@ -51,7 +52,7 @@ class QTicket extends Model
     
     protected $id = null;
     protected $userInfo = null;
-    function __construct($id=null,$userInfo){
+    function __construct($id=null,$userInfo=null){
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
@@ -73,7 +74,7 @@ class QTicket extends Model
         $res = validateObject($d,self::$validation_rule,true,self::$sanitize_rule,false,$ss->lang,self::$checkUnique);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
-
+        
         $department_id = $inputs['department_id'];
         $today_date = date('Y-m-d');
         $def_ticket_prefix = isset(self::DEFAULT_TICKET_PREFIXES[$department_id])?self::DEFAULT_TICKET_PREFIXES[$department_id]:"P";
@@ -100,7 +101,7 @@ class QTicket extends Model
 
         //In case of Registering patient and add them to Queque directly
         $inputs['status_id'] =1;
-        $ticket_id = saveData($ss,'service_queue',['id'=>0],$inputs,[],1);
+        $ticket_id = saveData($ss,'tickets',['id'=>0],$inputs,[],1);
         if($ticket_id >0){
             $status_id_queued =3;
 
@@ -108,8 +109,9 @@ class QTicket extends Model
                 DB::table('appointments')->where('id',$appt_id)->where('branch_id',$branch_id)->update(['status_id'=>$status_id_queued]);
                 DB::table('appt_chief_complaints')->where('appt_id',$appt_id)->update(['ticket_id'=>$ticket_id]);
                 DB::table('patient_vital_signs')->where('appt_id',$appt_id)->where('branch_id',$branch_id)->update(['ticket_id'=>$ticket_id]);
+                return DV::error("appt_id = $appt_id");
             }
-
+            
             $statusInfo = (object)['status_id'=>$status_id_queued,'status'=>'Queued'];
             Notifier::notify_admin('TicketAdded',["user_id"=>$ss->user_id,"login_name"=>$ss->login_name,"ticket_id"=>$ticket_id,"ticket_number"=>$ticket_number]);
             return DV::success(['id'=>$ticket_id,'ticket_number'=>$ticket_number,'status_info'=>$statusInfo]);
@@ -184,14 +186,14 @@ class QTicket extends Model
         }
 
         $cols ="s.id,s.consultant_id,s.ticket_number,formatDate(s.q_date) AS q_date,s.client_id,s.person_id,s.create_user,formatDate(s.created_at) AS created_at,p.name as client_name,p.phone_number as client_phone_number,p.email as client_email,p.sex as client_sex,s.schedule_type,s.priority,s.remarks, s.status_id, sts.name AS status, cl.code AS client_code";
-        $rows = DB::table('service_queue as s')->join('ticket_statuses as sts','sts.id','=','s.status_id')->join('persons as p','p.id','=','s.person_id')->join('patients as cl','p.id','=','cl.person_id')->where('s.branch_id',$branch_id)->whereRaw($str_where)->selectRaw($cols)->orderByRaw('s.created_at DESC')->get();
+        $rows = DB::table('tickets as s')->join('ticket_statuses as sts','sts.id','=','s.status_id')->join('persons as p','p.id','=','s.person_id')->join('patients as cl','p.id','=','cl.person_id')->where('s.branch_id',$branch_id)->whereRaw($str_where)->selectRaw($cols)->orderByRaw('s.created_at DESC')->get();
         return $rows;
     }
 
     //@param $d = ['chief_complaint_id','ticket_id']
     static function addChiefComplaint($ss,$d){ 
         $ticket_id = $d['ticket_id'];  
-        $ticket= getDataRow('service_queue',['id'=>$ticket_id],"appt_id");
+        $ticket= getDataRow('tickets',['id'=>$ticket_id],"appt_id");
         $appt_id = null;
         if($ticket) $ticket = $ticket->appt_id;
         $d['appt_id'] = $appt_id; 
@@ -201,30 +203,126 @@ class QTicket extends Model
         //else return DV::error('Something when wrong in saving Chief Complaint. There might be no auto-increment ID field');
     } 
 
-    static function deletePermanent($d){
-        $branch_id = $d['branch_id'];
-        $id = $d['id'];
-        $x = DB::table('service_queue')->where('id',$id)->where('branch_id',$branch_id)->delete();
+    static function canDelete($id){
+        $row = getDataRow('tickets',['id'=>$id],"id,status_id");
+        if(!$row) return true;
+        //Served ticket cannot be deleted
+        if($row->status_id ===3) return false;
+        return true;
+    }
+
+    static function getProps($id,$cols=[]){
+       $rows = DB::table('tickets as t')->where('t.id',$id)->select($cols)->take(1)->get();
+       return isset($rows[0])?$rows[0]:null; 
+    }
+
+    function delete($id=null,$ss=null){
+        $id = $id? $id:$this->getId();
+        $ss = $ss?$ss:$this->getUserInfo();
+
+        $ticket = self::getProps($id,['appt_id','status_id']);
+        if(!$ticket) return DV::error('invalid ticket ID');
+        if($ticket->status_id ===3) return DV::error("Served ticket cannot be deleted");
+        DB::table('patient_vital_signs')->where('ticket_id',$id)->delete();
+        $x = DB::table('tickets')->where('id',$id)->delete();
+        //Change Appointment Status back to "Registered"
+        DB::table('appointments')->where('id',$ticket->appt_id)->update([
+            'status_id'=>2
+        ]);
         return DV::success(['id'=>$id]);
     }
 
     //@param $d = {'branch_id','id'}
-    static function info($d){
-        $ticket_id = $d['id'];
-        $branch_id = $d['branch_id'];
+    static function info($id,$ss,$include_cc=true,$include_vs=true,$include_mc=true){
+        $ticket_id = $id? $id:$this->getId();
+        $ss = $ss?$ss:$this->getUserInfo();
+        $branch_id = $ss->branch_id;
         $cols ="s.branch_id,s.id,s.appt_id,s.person_id,getPatientCode(s.branch_id,s.client_id) as client_code,s.client_id,p.name as client_name,p.sex as client_sex,p.phone_number as client_phone_number,p.email as client_email,s.ticket_number,s.status_id, getConsultanName(s.consultant_id) as consultant_name,'None' AS membership_card";
-        $rows = DB::table('service_queue as s')->join('ticket_statuses as sts','sts.id','=','s.status_id')->join('persons as p','p.id','=','s.person_id')->where('s.id',$ticket_id)->where('s.branch_id',$branch_id)->selectRaw($cols)->take(1)->get();
+        $rows = DB::table('tickets as s')->join('ticket_statuses as sts','sts.id','=','s.status_id')->join('persons as p','p.id','=','s.person_id')->where('s.id',$ticket_id)->where('s.branch_id',$branch_id)->selectRaw($cols)->take(1)->get();
         foreach($rows as $row){
-            $row->chief_complaints = self::getChiefComplaints($row->branch_id,$row->id);
-            $row->vital_signs = self::getVitalSigns($row->branch_id,$row->id);
-            $row->mc_items = self::getMedicalConditions($row->branch_id,$row->id);
+            if ($include_cc) $row->chief_complaints = self::getChiefComplaints($row->branch_id,$row->id);
+            if ($include_vs) $row->vital_signs = self::getVitalSigns($row->branch_id,$row->id);
+            if($include_mc) $row->mc_items = self::getMedicalConditions($row->branch_id,$row->id);
             return $row;
         }
         return null;
     }
 
+    static function countPatientPhotos($patient_id){
+        $rows = DB::table("patient_photos")->where('patient_id',$patient_id)->selectRaw("COUNT(id) AS cnt")->get();
+        foreach($rows as $row) return $row->cnt;
+        return -1;
+    }
+
+    function savePatientPhoto($d =[],$ss=[]){
+        $id = $this->getId();
+        $ss = $ss?$ss:$this->getUserInfo();
+        $branch_id = $ss->branch_id;
+        $patient_id = isset($d['patient_id'])?$d['patient_id']:null;
+        $ticket_id = isset($d['ticket_id'])? $d['ticket_id']:null;
+        if (!$ticket_id) return DV::error("Ticket ID is not valid");
+        if (!$patient_id){
+            $ticket = $this->getProps($ticket_id,["client_id AS patient_id"]);
+            if($ticket) $patient_id = $ticket->patient_id;
+        }
+        if (!$patient_id) return DV::error("Failed to identify patient for the ticket ID $ticket_id");
+        $photo_count = self::countPatientPhotos($patient_id);
+        if($photo_count>=3) return DV::error("Cannot upload more than three photos");
+        //Patient photo category is for example, "Before","After"
+        $category = isset($d['category'])?$d['category']:'general';
+        $file_ext = isset($d['file_type'])?$d['file_type']:$d['file_ext'];
+        $res = PublicStorage::saveImage($branch_id,'patient',$file_ext,$d['photoData']);
+        if($res->status==='OK'){
+            $inputs = ['patient_id'=>$patient_id,'ticket_id'=>$ticket_id,'file_name'=>$res->file_name,'file_type'=>$file_ext,'category'=>$category];
+            $new_photo_id = saveData($ss,'patient_photos',['id'=>null],$inputs,[],1);
+            if ($new_photo_id > 0)
+            {
+                $image_url=PublicStorage::getUrl($branch_id,"patient","image").$res->file_name;
+                //return new_image_id, new_image_url, image_urls
+                return DV::success(['id'=>$new_photo_id,'new_image_url'=>$image_url,'image_urls'=>$this->getPatientPhotos($ticket_id,$ss)]);
+            }
+            return DV::error('Something went wrong saving image file');
+        }
+        return DV::error($res->error_message);      
+    }
+
+    //use ticket_id to retrieve patient's photos
+    function getPatientPhotos($ticket_id =0,$ss=[]){
+        $ticket_id = $ticket_id? $ticket_id:$this->getId();
+        $ss = $ss? $ss:$this->getUserInfo();
+        $branch_id = $ss->branch_id;
+        $ticket = self::getProps($ticket_id,["id","client_id AS patient_id"]);
+        if(!$ticket) return [];
+        $patient_id = $ticket->patient_id;
+        $rows = DB::table('patient_photos')->where('patient_id',$patient_id)->select("id","file_name","category")->orderBy("category","ASC")->get();
+        foreach($rows as $row){
+            $url = PublicStorage::getUrl($branch_id,'patient','image');
+            $url .=$row->file_name;
+            $row->image_url = $url;
+        }
+        return $rows;
+    }
+
+    function deletePatientPhoto($image_id,$ss){
+       $branch_id = $ss->branch_id;
+       $img = getDataRow("patient_photos",['id'=>$image_id],"ticket_id,file_name,category");
+       if(!$img) return DV::error("Image ID is not valid"); 
+       $ticket_id = $img->ticket_id;
+       $file = PublicStorage::getDiskPath($branch_id,"patient","image").$img->file_name;
+       $res = PublicStorage::deleteFile($file);
+       DB::table('patient_photos')->where('id',$image_id)->where('branch_id',$branch_id)->delete();
+       //return remaining list of photos for frontend to refresh phoho list
+       return DV::success(['image_urls'=>$this->getPatientPhotos($ticket_id,$ss)]);
+    }
+
+    function getDetails($id=null,$ss= [],$include_cc=true,$include_vs=true,$include_mc=true){
+        $id = $id? $id:$this->getId();
+        $ss = $ss?$ss:$this->getUserInfo();
+        return self::info($id,$ss,$include_cc,$include_vs,$include_mc);
+    }
+
     static function getVitalSigns($branch_id,$ticket_id=0){
-        return DB::table('consult_vital_signs as tvs')->join('vital_signs as vs','vs.id','=','tvs.vs_id')->where('tvs.ticket_id',$ticket_id)->where('tvs.branch_id',$branch_id)->select("vs.id","tvs.description","tvs.observed_value")->take(4)->get();
+        return DB::table('patient_vital_signs as pvs')->join('vital_signs as vs','vs.id','=','pvs.vital_sign_id')->where('pvs.ticket_id',$ticket_id)->where('pvs.branch_id',$branch_id)->select(["vs.id","pvs.description","pvs.vital_sign_value"])->take(4)->get();
     }
 
     static function getChiefComplaints($branch_id,$ticket_id=0){
@@ -246,7 +344,7 @@ class QTicket extends Model
     }
 
     static function patientId($branch_id,$ticket_id){
-      $rows = DB::table('service_queue as s')->where('id',$ticket_id)->where('branch_id',$branch_id)->selectRaw('client_id')->take(1)->get();
+      $rows = DB::table('tickets as s')->where('id',$ticket_id)->where('branch_id',$branch_id)->selectRaw('client_id')->take(1)->get();
       return isset($rows[0])? $rows[0]->client_id:null;
     }
 

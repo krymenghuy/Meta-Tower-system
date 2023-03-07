@@ -16,7 +16,7 @@ let DashboardComponent = new function () {
   this.init = () => { }
 
   this.displayDashboardTable = () => {
-    vsapi.call(`${mThis.base_url}/api/dashboard`, null).then(res => {
+    vsapi.call(`${mThis.base_url}/api/dashboard/board-data`, null).then(res => {
       let data = StringSanitizer.sanitizeObject(res.data);
 
       if (mThis.table) {

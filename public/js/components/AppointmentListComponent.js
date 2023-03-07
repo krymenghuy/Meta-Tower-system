@@ -21,7 +21,7 @@ let AppointmentListComponent = new function () {
     this.btnNewAppointment = $('#_apl_btnNewAppointment');
     this.col_titles = {
         "Arrival Date": "Arrival Date",
-        "Arrival Time": "Time",
+        "Arrival Time": "Arrival Time",
         "Client Name": "Client Name",
         "Client Phone": "Client Phone",
         "Status": "Status",
@@ -256,8 +256,7 @@ let AppointmentListComponent = new function () {
             let detail_tr = x.closest('tr');
             let client_id = x.data('patientid');
             let appt_id = x.data('apptid');
-            let op = { 'client_id': client_id, 'appt_id': appt_id };
-
+            let op = { 'client_id': client_id, 'appt_id': appt_id }; 
             ServiceQueueDialog.show(op, (p) => {
                 if (p) {
                     vsapi.call(`${main_view.base_url}/api/ticket/create`, p).then((res) => {
@@ -328,7 +327,7 @@ let AppointmentListComponent = new function () {
             let tr = lnk.closest('tr');
             let appt_id = tr.data('id');
             let op = {}; //{'identity_value':appt_id}; //appt_id for editing Appointment
-            op.id = appt_id;
+            //op.id = appt_id; // option.id MUST be NULL when editing person info
             op.onClose = (e) => {
                 if (e) {
                     mThis.displayAppointmentDetails(tr.next(), appt_id);
@@ -339,14 +338,18 @@ let AppointmentListComponent = new function () {
 
             //Edit only Personal demogrpahic (name,sex, phone, email) when status_id > 2 (Quued)
             if (status_id > 2) {
-                //In case of Editing Person Info only => also use @appt_id (instad of "id") to edit person info
+                //For Editing Person Info only, we can use either app_id (for appointment_id) or id (for person_id) to edit person info
                 /***
                  @op = {'appt_id':##} => api/person/save() will use appt_id to retrieve @person_id in order to update person profile 
                 **/
-                op.appt_id = appt_id;
+                //if op.id > 0 then PersonDialog() use op.id as person_id to edit and update person
+                // if op.app_id > 0 then PersonDialog() uses op.app_id to find person_id for editing and updating person info
+                op.appt_id = appt_id; //appt_id, NOT app_id
                 PersonDialog.show(op);
 
             } else if (status_id <= 2) {
+                //op.id here represent app_id (or appointment id)
+                op.id = appt_id;
                 AppointmentDialog.show(op);
             } else console.error(`Error: Editing Appointment or personal profile requires status_id to be known exactly`);
         });
@@ -356,6 +359,7 @@ let AppointmentListComponent = new function () {
             'onOpen': (container, detail_tr, parent_tr) => {
                 let qtr = $(parent_tr);
                 let appt_id = qtr.data('id');
+                if (appt_id > 0)
                 mThis.displayAppointmentDetails($(detail_tr), appt_id);
             }
         });
@@ -377,7 +381,7 @@ let AppointmentListComponent = new function () {
     }
 
     this.trans_title = (title_prop = 'undefined') => {
-        return (mThis.col_titles[title_prop] || 'undefined');
+        return (mThis.col_titles[title_prop]);
     }
 
     this.createDropdownMenuHtml_loan = (items = [], data = null, data_props = []) => {
@@ -434,12 +438,14 @@ let AppointmentListComponent = new function () {
                 },
                 {
                     title: mThis.trans_title('Arrival Time'),
-                    data: "arrival_date"
+                    data:(data,a,b)=>{
+                        return [`<span class="d-block text-success">`,data.arrival_time,`</span>`].join('');
+                    }
                 },
                 {
                     title: mThis.trans_title('Client Name'),
                     data: (data, a, b) => {
-                        return [`<span style="display:block" class="client-name text-bold">`, data.client_name, `</span>`, `<span style="display:block;" class="client-code text-success">`, data.patient_code, `</span>`].join('');
+                        return [`<span style="display:block" class="client-name text-bold fw-bold">`, data.client_name, `</span>`, `<span style="display:block;" class="client-code">`, data.patient_code, `</span>`].join('');
                     }
                 },
                 {
@@ -543,9 +549,7 @@ let AppointmentListComponent = new function () {
         });
     }
 }
-
-
-
+ 
 let AppointmentDialog = new function () {
     let mThis = this;
     this.self = $('#_apl_dlgAppt');
@@ -641,8 +645,10 @@ let AppointmentDialog = new function () {
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['lead_id', 'client_id'],
         "sub_prop": "chief_complaint_items",
-        "sub_prop_function": mThis.getChiefComplaints,
-        "sanitize_excepts": ['email', 'client_email', 'arrival_time'],
+        "sub_prop_function": ()=>{
+            return mThis.getChiefComplaints();
+        },
+        "sanitize_excepts": ['email', 'client_email', 'arrival_time','items'],
         'use_alert_error': true,
         "init": () => {
 
@@ -655,30 +661,23 @@ let AppointmentDialog = new function () {
 
             mThis.elSearch.on('keyup', (e) => {
                 e.preventDefault();
-                if (e.keyCode === 13) mThis.btnFindClient.trigger('click');
+                let d = mThis.elSearch.val();
+                if((d+'').length>=3) mThis.findClient(d);
+            });
+
+            mThis.elPhoneNumber.on('keyup', (e) => {
+                e.preventDefault();
+                let d = mThis.elPhoneNumber.val();
+                if((d+'').length>=3) mThis.findClient(d,'by_phone_number');
             });
 
             mThis.elSearch.on('blur', (e) => {
                 e.preventDefault();
-                mThis.btnFindClient.trigger('click');
+                mThis.findClient(mThis.elSearch.val());
             });
 
             mThis.btnFindClient.on('click', (e) => {
-                let p = { "search_value": mThis.elSearch.val() };
-                window.vsapi.call(`${main_view.base_url}/api/appointment/find-client`, p).then((res) => {
-                    if (res.status_code === 200) {
-                        let c = StringSanitizer.sanitizeObject(res.data);
-                        if (!c) c = {};
-                        mThis.elPatientCode.val(c.patient_code);
-                        mThis.elName.val(c.name).trigger('change');
-                        mThis.elEmail.val(c.email);
-                        mThis.elPhoneNumber.val(c.phone_number).trigger('change');
-                        mThis.elSex.val(c.sex).trigger('change');
-                        mThis.lead_id = c.lead_id;
-                        mThis.client_id = c.client_id;
-                    }
-
-                });
+                mThis.findClient(mThis.elSearch.val());
             });
 
             mThis.elChiefComplaint.on('change', (e) => {
@@ -703,6 +702,27 @@ let AppointmentDialog = new function () {
             });
         }
     });
+
+    this.findClient = (search_value=null,findBy =null)=>{
+        let p = { "search_value": search_value };
+        window.vsapi.call(`${main_view.base_url}/api/appointment/find-client`, p).then((res) => {
+            if (res.status_code === 200) {
+                let c = StringSanitizer.sanitizeObject(res.data);
+                if (!c){
+                    if (findBy === 'by_phone_number') return;
+                    else c = {};
+                }
+                mThis.elPatientCode.val(c.patient_code);
+                mThis.elName.val(c.name).trigger('change');
+                mThis.elEmail.val(c.email);
+                //if user enter phone number field
+                if (findBy != 'by_phone_number') mThis.elPhoneNumber.val(c.phone_number).trigger('change');
+                mThis.elSex.val(c.sex).trigger('change');
+                mThis.lead_id = c.lead_id;
+                mThis.client_id = c.client_id;
+            }
+        });
+    }
 
     this.show = (option = null) => {
         if (option.identity_value > 0)
@@ -897,6 +917,7 @@ let PatientDialog = new function () {
         option = option ? option : {};
         mThis.option = option;
         mThis.onClose = option.onClose;
+        mThis.appt_id = option.appt_id;
 
         mThis.prepareOptions(() => {
 

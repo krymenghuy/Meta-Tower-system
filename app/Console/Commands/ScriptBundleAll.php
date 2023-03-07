@@ -59,6 +59,6 @@ class ScriptBundleAll extends Command
                }
             }
         }
-        else $this->error($res->error_message);
+        else $this->error(" $res->error_message");
     }
 }

@@ -52,7 +52,7 @@
     <div class="row">
         <div class="col-lg-6">
             <img src="<?php if(isset($logodata)) echo $logodata; ?>" id="com_imgLogo" class="img-thumbnail" alt="" style="width: 300px; height: 300px"/>
-            <input id="com_logoFileChooser" type="file" accept="image/*" style="display:none"/>
+            <!-- <input id="com_logoFileChooser" type="file" accept="image/*" style="display:none"/> -->
         </div>
         <div class="col-lg-6">
             <div class="d-flex align-items-center h-100 gap-2 justify-content-end">
