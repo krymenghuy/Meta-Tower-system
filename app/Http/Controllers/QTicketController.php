@@ -13,7 +13,7 @@ class QTicketController extends Controller
 {
     function getTicketList(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return JDV::emptyResult($ss); //user not authenticated
+        if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
         $d = $req->all();
         $d['branch_id'] = $ss->branch_id;
         return JDV::result(QTicket::list($d));
@@ -77,10 +77,18 @@ class QTicketController extends Controller
     function getPatientVitalSigns(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
-        $branch_id = $ss->branch_id;
-        $ticket_id = $req->ticket_id;
+        $id = $req->id?$req->id:$req->ticket_id;
+        $ticket = new QTicket($id,$ss);
+        $res = $ticket->getVitalSigns();
+        return JDV::result($res);
+    }
 
-        $res = QTicket::vitalSigns($branch_id,$ticket_id);
+    function getChiefComplaints(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+        $id = $req->id?$req->id:$req->ticket_id;
+        $ticket = new QTicket($id,$ss);
+        $res = $ticket->getChiefComplaints();
         return JDV::result($res);
     }
 

@@ -240,9 +240,9 @@ class QTicket //extends Model
         $cols ="s.branch_id,s.id,s.appt_id,s.person_id,getPatientCode(s.branch_id,s.client_id) as client_code,s.client_id,p.name as client_name,p.sex as client_sex,p.phone_number as client_phone_number,p.email as client_email,s.ticket_number,s.status_id, getConsultanName(s.consultant_id) as consultant_name,'None' AS membership_card";
         $rows = DB::table('tickets as s')->join('ticket_statuses as sts','sts.id','=','s.status_id')->join('persons as p','p.id','=','s.person_id')->where('s.id',$ticket_id)->where('s.branch_id',$branch_id)->selectRaw($cols)->take(1)->get();
         foreach($rows as $row){
-            if ($include_cc) $row->chief_complaints = self::getChiefComplaints($row->branch_id,$row->id);
-            if ($include_vs) $row->vital_signs = self::getVitalSigns($row->branch_id,$row->id);
-            if($include_mc) $row->mc_items = self::getMedicalConditions($row->branch_id,$row->id);
+            if ($include_cc) $row->chief_complaints = self::chiefComplaints($row->branch_id,$row->id);
+            if ($include_vs) $row->vital_signs = self::vitalSigns($row->branch_id,$row->id);
+            if($include_mc) $row->mc_items = self::medicalConditions($row->branch_id,$row->id);
             return $row;
         }
         return null;
@@ -321,13 +321,22 @@ class QTicket //extends Model
         return self::info($id,$ss,$include_cc,$include_vs,$include_mc);
     }
 
-    static function getVitalSigns($branch_id,$ticket_id=0){
-        return DB::table('patient_vital_signs as pvs')->join('vital_signs as vs','vs.id','=','pvs.vital_sign_id')->where('pvs.ticket_id',$ticket_id)->where('pvs.branch_id',$branch_id)->select(["vs.id","pvs.description","pvs.vital_sign_value"])->take(4)->get();
+    function getVitalSigns($ticket_id=0,$ss=[]){
+        $ticket_id = $ticket_id?$ticket_id:$this->getId();
+        $ss = $ss?$ss:$this->getUserInfo();
+        $branch_id = $ss->branch_id;
+        return self::vitalSigns($branch_id,$ticket_id);
     }
 
-    static function getChiefComplaints($branch_id,$ticket_id=0){
+    static function chiefComplaints($branch_id,$ticket_id=0){
         //NOTE: table appt_chief_complaints does not have column "branch_id"
         return DB::table('appt_chief_complaints as ct')->join('chief_complaints as cc','cc.id','=','ct.chief_complaint_id')->where('ct.ticket_id',$ticket_id)->selectRaw("cc.id,cc.name")->get();
+    }
+
+    function getChiefComplaints($ticket_id=null,$ss=null){
+        $ss = $ss?$ss:$this->getUserInfo();
+        $ticket_id = $ticket_id?$ticket_id:$this->getId();
+        return self::chiefComplaints($ss->branch_id,$ticket_id);
     }
 
     //@param $d = ['ticket_id','chief_complaint_id']
@@ -338,9 +347,15 @@ class QTicket //extends Model
         return DV::success();
     }
 
-    static function getMedicalConditions($branch_id,$ticket_id=0){
+    static function medicalConditions($branch_id,$ticket_id=0){
        $patient_id = self::patientId($branch_id,$ticket_id); 
        return DB::table('patient_medical_conditions AS pmc')->where('pmc.patient_id',$patient_id)->selectRaw("pmc.id,pmc.description,pmc.mc_value,pmc.display_order")->orderByRaw("pmc.display_order")->get(); 
+    }
+
+    function getMedicalConditions($ticket_id = null,$ss=[]){
+      $ss = $ss?$ss:$this->getUserInfo();
+      $ticket_id = $ticket_id?$ticket_id: $this->getId();  
+      return self::medicalConditions($ss->branch_id,$ticket_id);
     }
 
     static function patientId($branch_id,$ticket_id){
@@ -351,7 +366,7 @@ class QTicket //extends Model
     static function vitalSigns($branch_id,$ticket_id=0){
       return DB::table('patient_vital_signs as pvt')->where('pvt.branch_id',$branch_id)->where('pvt.ticket_id',$ticket_id)->selectRaw("pvt.id,vital_sign_id,vital_sign_value,pvt.description")->take(5)->get();
     }
- 
+     
     static function laboTests($branch_id,$ticket_id=0){
         return DB::table('patient_labo_tests as l')->join('labo_tests as t','t.id','=','l.test_id')->where('l.branch_id',$branch_id)->where('l.ticket_id',$ticket_id)->selectRaw("l.id,l.test_id,t.name, l.result_description,l.consultant_comment")->take(5)->get();
     }

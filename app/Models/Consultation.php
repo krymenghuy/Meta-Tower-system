@@ -83,6 +83,25 @@ class Consultation extends Model
         $rows = DB::table("service_queue")->where('id',$ticket_id)->where('branch_id',$branch_id)->select("client_id as patient_id")->get();
         return isset($rows[0])?$rows[0]->patient_id:null;
     }
+    
+    function getChiefComplaints($ticket_id,$ss=null){
+        $ss = $ss?$ss:$this->getUserInfo();
+        return (object)[
+          'cc_items'=>DB::table('appt_chief_complaints as ct')->join('chief_complaints as cc','cc.id','=','ct.chief_complaint_id')->where('ct.ticket_id',$ticket_id)->selectRaw("cc.id,cc.name")->get(),
+          'chief_complaint_options'=>DB::table("chief_complaints")->where('branch_id',$ss->branch_id)->select('id','name as chief_complaint','code')->get()
+        ];
+    }
+
+    function getLaboTestData($ticket_id=null,$ss=null){
+        $ss = $ss?$ss:$this->getUserInfo();
+        $ticket_id = $ticket_id?$ticket_id:$tjis->getId();
+        $branch_id = $ss->branch_id;
+        return (object)[
+            'labo_test_options'=>DB::table('medical_services AS s')->join('test_labos as l','s.id','=','l.test_id')->where('s.branch_id',$branch_id)->select(['s.id as value','s.name as text'])->orderBy('s.name','ASC')->get(),
+            'labo_options'=>DB::table('test_labos as l')->join('partners as p','p.id','=','l.labo_id')->where('p.branch_id',$branch_id)->select(['p.id as value','p.name as text'])->orderBy('p.name','ASC')->get(),
+            'labo_tests'=>self::laboTests($ticket_id,$ss)
+        ];
+    }
 
     static function getVitalSignInfo($vs_id =0){
         $rows = DB::table("vital_signs")->where('id',$vs_id)->select("id","display_name as description")->take(1)->get();

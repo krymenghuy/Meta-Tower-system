@@ -163,4 +163,24 @@ class GeneralSettings extends Model
         $id =isset($d->id)?sanitize($d->id):0;
         return  DB::table('organizations as org')->whereRaw('IFNULL(org.inactive,0) =0')->where('org.branch_id',$branch_id)->selectRaw("org.id,org.name as org_name")->get();
     }
+
+    static function options_labo($ss){
+        $branch_id = $ss->branch_id;
+        return  DB::table('partners AS l')->whereRaw('IFNULL(l.status_id,0) =1')->where('l.branch_id',$branch_id)->selectRaw("l.id,l.name as labo_name")->orderBy('l.name','ASC')->get();
+    }
+    static function options_partner($ss){
+        $branch_id = $ss->branch_id;
+        return  DB::table('partners AS l')->whereRaw('IFNULL(l.status_id,0) =1')->where('l.branch_id',$branch_id)->selectRaw("l.id,l.name as labo_name")->orderBy('l.name','ASC')->get();
+    }
+
+    static function options_labo_test($ss){
+        $branch_id = $ss->branch_id;
+        return  DB::table('medical_services AS s')->whereIn('s.service_type',['labo','labo test'])->where('s.branch_id',$branch_id)->selectRaw("s.id,s.name,s.description,s.price")->orderBy('s.name','ASC')->get();
+    }
+
+    //given one test_id, it returns a list of labos who provide the test
+    static function getLaboTestProviders($testId,$ss){
+       $branch_id = $ss->branch_id; 
+       return DB::table('test_labos as l')->join('medical_services as s','s.id','=','l.test_id')->where('s.branch_id',$branch_id)->selectRaw("s.id,l.price,s.price as default_price,l.description")->get();  
+    }
 }

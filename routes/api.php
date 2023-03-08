@@ -96,6 +96,9 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('consultation/save', [ConsultationController::class, 'saveConsultationData']);
         Route::post('consultation/delete', [ConsultationController::class, 'deleteConsultationData']);
         Route::post('consultation/details', [ConsultationController::class, 'getConsultationData']);
+        Route::post('consultation/chief-complaints', [ConsultationController::class, 'getChiefComplaints']);
+        //NOTE: getLaboTestData() returns object = {laboTests=> [{id,name,description,labo_id},...], labo_test_options=>[{value,text},...], labo_options=>[{value,text},...]}
+        Route::post('consultation/labo-test-data', [ConsultationController::class, 'getLaboTestData']); 
     //end::ConsultationController
 
     //begin::QTicketController
@@ -106,6 +109,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('ticket/add-chief-complaint', [QTicketController::class, 'addChiefComplaint']);
         Route::post('ticket/remove-chief-complaint', [QTicketController::class, 'deleteChiefComplaint']);
         Route::post('ticket/patient-vital-signs', [QTicketController::class, 'getPatientVitalSigns']);
+        Route::post('ticket/chief-complaints', [QTicketController::class, 'getChiefComplaints']);
+
         //getPatientPhysicalExamination()
         Route::post('ticket/patient-pe', [QTicketController::class, 'getPatientPE']);
         Route::post('ticket/patient-labo-tests', [QTicketController::class, 'getPatientLaboTests']);
