@@ -493,15 +493,7 @@ let TicketDetails = new function () {
     this.showHistory = (div_panel,ticket_id=null) => {
         //if (!ticket_id) ticket_id = div_panel.data('tid');
         let div_workspace = div_panel.find('div.qul-workspace');
-        div_workspace.html(`<div class="d-flex align-items-center justify-content-center">
-            <div style="max-height:450px;overflow-y:auto">
-               <ul>
-                 <li>report One</li>
-                 <li>report Two</li>
-                 <li>report Three</li>
-               </ul> 
-            </div>
-        </div>`);
+        div_workspace.html(ConsultTabView.showHistoryMedicalReports);
         mThis.current_view_name = 'history';
     };
  
@@ -768,9 +760,7 @@ let QueueComponent = new function () {
                         return [`<div class="form-inline">`,
                             `<a href="javascript:void(0)" class="btn_ticket_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a style="display:${data.status_id > 2 ? 'none' : 'block'}" href="javascript:void(0)" class="btn_ticket_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
-                            `<a href="javascript:void(0);" data-id="${data.id}" class="btn_ticket_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
-                            //`&nbsp;<a href="#" data-id="${data.id}" class="btn_ticket_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
-                            `</div>`
+                            `<a href="javascript:void(0);" data-id="${data.id}" class="btn_ticket_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,`</div>`
                         ].join('');
                     }
                 }
@@ -795,9 +785,6 @@ let QueueComponent = new function () {
                     pageLength: 10,
                     bLengthChange: false,
                     saveState: true,
-                    // rowReorder: {
-                    // dataSrc: 'sequence'
-                    // },
                     'processing': true,
                     'language': {
                         'loadingRecords': '&nbsp;',
@@ -835,11 +822,6 @@ let QueueComponent = new function () {
         });
     }
 
-    // //QueueComponent.show( {
-       //     'showPatientPhotos':false,
-       //     'showConsultButton':false,
-       //     'showPrescriptionButton':false
-    // })
     this.show = (options = null) => {
         if(!options) options = {};
         mThis.displayTicketList(() => {
@@ -869,7 +851,7 @@ let ConsultTabView = new function () {
 
     this.cur_view = 'consultation';
 
-    this.self.on('click', 'div.tab-header>a.tab-button', function (e) {
+    this.self.on('click', 'div.tab-header > a.tab-button', function (e) {
         e.preventDefault();
         $(this).addClass('active').siblings().removeClass('active');
         let view_name = $(this).data('viewname').toLowerCase();
@@ -1150,24 +1132,6 @@ let ConsultTabView = new function () {
     //Define menu routes on History tab
     this.defineDetailRoutesHistory = (div) => {
         return {
-            "chief-complaints": () => {
-                mThis.showHistoryChiefComplaints(div);
-            },
-            "pe": () => {
-                mThis.showHistoryPhysicalExamination(div);
-            },
-            "labo-tests": () => {
-                mThis.showHistoryLaboratoryTests(div);
-            },
-            "diagnosis": () => {
-                mThis.showHistoryDiagnosis(div);
-            },
-            "prescriptions": () => {
-                mThis.showHistoryPrescription(div);
-            },
-            "advice": () => {
-                mThis.showHistoryRecommendations(div);
-            },
             "medical-reports": () => {
                 mThis.showHistoryMedicalReports(div);
             }
@@ -1180,7 +1144,6 @@ let ConsultTabView = new function () {
         let div_id = '_consult_cc_list';
         let el = div.find(`#${wrapper_id}`);
         let ticket_id = div.data('tid');
-        //let patient_id = div.data('patientid');
 
             if (el.length > 0){
                 let p = {'ticket_id':ticket_id};
@@ -2077,7 +2040,7 @@ let ConsultTabView = new function () {
                `;
 
                 div.html(html);
-                let el = $(`#${wrapper_id}`);
+                el = $(`#${wrapper_id}`);
             }
 
             LocaleManager.translateZone(wrapper_id);

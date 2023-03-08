@@ -132,10 +132,12 @@
                 </div>
                 <div class="row mt-4 border border-2 border-success rounded-2 p-2">
                     <div class="d-flex align-items-center gap-2 px-2">
-                        <p class="fw-semibold tab-item p-2 bg-success rounded-3" role="button" data-viewname="product">Product</p>
-                        <p class="fw-semibold tab-item p-2 rounded-3" role="button" data-viewname="service">Service</p>
+                        <p class="fw-semibold tab-item tab-item-product p-2 bg-success rounded-3" role="button" data-target="_ivc_product_panel" data-viewname="product">Product</p>
+                        <p class="fw-semibold tab-item tab-item-service p-2 rounded-3" role="button" data-target="_ivc_service_panel" data-viewname="service">Service</p>
                     </div>
-                    <div id="_inv_items_panel" class="col-12 table-responsive">
+                    <div id="_ivc_items_panel">
+                       <div style="display:none" data-viewname="product" id="_ivc_product_panel" class="col-12 table-responsive"></div>
+                       <div style="display:none" data-viewname="service" id="_ivc_service_panel" class="col-12 table-responsive"></div>
                     </div>
                 </div>
                 <div class="row gy-2 mt-3">
