@@ -25,6 +25,14 @@ class ConsultationController extends Controller
         $res = Consultation::commitDelete($ss,$req->id);
         return JDV::raw($res);
     }
+    
+    function getChiefComplaints(Request $req){
+        $ss = UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $c = new Consultation(null,$ss);
+        $data = $c->getChiefComplaints($req->ticket_id,$ss);
+        return JDV::result($data);
+    }
 
     function getConsultationData(Request $req){
         $ss = UM::getUserInfoBytoken($req,-1);
@@ -32,6 +40,15 @@ class ConsultationController extends Controller
         $section_name = $req->section_name;
         $row = Consultation::findBy($ss,$res->id,$section_name);
         return JDV::result($row);
+    }
+
+    function getLaboTestData(){
+        $ss = UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $section_name = $req->section_name;
+        $c = new Consultation($req->ticket_id,$ss);
+        $data = $c->getLaboTestData();
+        return JDV::result($data);
     }
 
 }

@@ -1043,7 +1043,7 @@ let ConsultTabView = new function () {
     this.setFirstActiveMenu = (tabViewName = null) => {
         if (mThis.has_already_init[tabViewName]) return;
         if (tabViewName === 'consultation') {
-            //Initialize activ menu on Consultation tab
+            //Initialize active menu on Consultation Tab view
             let def_consult_view = 'medical-history';
             mThis.details_routes_consult[def_consult_view]();
             let li = mThis.ul_menus_consult.find(`[data-viewname="${def_consult_view}"]`).closest('li');
@@ -1182,7 +1182,19 @@ let ConsultTabView = new function () {
         let ticket_id = div.data('tid');
         //let patient_id = div.data('patientid');
 
-        if (!el || el.length === 0) {
+            if (el.length > 0){
+                let p = {'ticket_id':ticket_id};
+                vsapi.call(`${main_view.base_url}/api/ticket/chief-complaints`,p,null,false).then(res =>{
+                    if (res.status_code===200){
+                        let cc_items = StringSanitizer.sanitizeObject(res.data);
+                        mThis.tblChiefComplaints.setData(cc_items);
+                        el.show().siblings().hide();
+                    } 
+                });
+              return;
+              //return, to stop the code below to be executed in case when el.length > 0 or div#_consult_cc_warpper exists 
+            }
+
             let title = LocaleManager.trans('Chief Complaints', 'consult');
             let html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none"><h3 class="trans-text" data-langprop="consult.Chief Complaints">${title} &nbsp;<a href="#" class="consultview-add-cc"><i class="fa fa-plus-circle"></i></a></h3>
               <div id="${div_id}"></div>
@@ -1200,12 +1212,13 @@ let ConsultTabView = new function () {
                 }
             ];
 
-            mThis.loadChiefComplaintOptions(ticket_id, cc_items => {
+            mThis.loadChiefComplaintOptions(ticket_id, d => {
                 //After having loaded chief complaint options from server => init cc-table
-
-                columns[0].selectOptions = cc_items;
+                let cc_options = StringSanitizer.sanitizeObject(d.chief_complaint_options);
+                columns[0].selectOptions = cc_options;
                 mThis.tblChiefComplaints = new ItemsView(div_id, {
                     "columns": columns,
+                    "validateColumns":{'id':'positive'},
                     "langProp": "consult",
                     "tableClass": "table",
                     "showColumnHeaders": false,
@@ -1223,30 +1236,34 @@ let ConsultTabView = new function () {
 
                 });
 
+                mThis.tblChiefComplaints.setData(StringSanitizer.sanitizeObject(d.cc_items));
                 //mThis.tblChiefComplaints.setSelectOptions('name',cc_items);
                 el = div.find(`#${wrapper_id}`);
+                el.show().siblings().hide();
             });
-        }
-        el.show().siblings().hide();
     }
 
-    this.loadChiefComplaintOptions = (patient_id = 0, onFinish = null) => {
-        vsapi.call(`${main_view.base_url}/api/settings/options-chief-complaint`, null).then(res => {
+    this.loadChiefComplaintOptions = (ticket_id = 0, onFinish = null) => {
+        let p = {'ticket_id':ticket_id};
+        //NOTE: api/consultation/chief-complaints() returns data object {'chief_complaint_options','cc_items'}
+        //NOTE: api/ticket/chief-complaints() return only array "cc_items" that belong to a ticket
+        vsapi.call(`${main_view.base_url}/api/consultation/chief-complaints`, p).then(res => {
             if (res.status_code === 200) {
-                let items = res.data;
-                (items || []).map(c => {
-                    c.value = c.code;
-                    c.text = c.name;
+                let data = res.data?res.data:{};
+                let op_items = [];
+                (data.chief_complaint_options || []).map(c => {
+                    op_items.push({'value':c.id,'text':c.chief_complaint});
                 });
-                onFinish(items);
-            } else onFinish([]);
+                onFinish({'chief_complaint_options':op_items,'cc_items':data.cc_items});
+            } else onFinish({});
         });
         //onFinish(mThis.data.chief_complaint_options);
     }
 
     //LoadPatientVitalSigns() | Load vital signs for one patient
     this.loadVitalSigns_patient = (ticket_id = 0, onFinish) => {
-        vsapi.call(`${main_view.base_url}/api/ticket/patient-vital-signs`, null).then(res => {
+        let p = {'ticket_id':ticket_id};
+        vsapi.call(`${main_view.base_url}/api/ticket/patient-vital-signs`, p).then(res => {
             if (res.status_code === 200) {
                 let items = StringSanitizer.sanitizeObject(res.data);
                 onFinish(items);
@@ -1260,7 +1277,7 @@ let ConsultTabView = new function () {
         let el = div.find(`#${wrapper_id}`);
 
         mThis.loadVitalSigns_patient(ticket_id, items => {
-            let html_vs_items = "";
+            let html_vs_items = null;
             items.map(t => {
                 html_vs_items = [html_vs_items, `<tr data-id="${t.id}" data-tid="${ticket_id}"><td>`, t.description, `</td><td><input data-id="${t.id}" class="data-input form-control w-50" type="text" value ="`, t.vital_sign_value, `"></td></tr>`].join('');
             });
@@ -1273,7 +1290,7 @@ let ConsultTabView = new function () {
                         <div class="">
                             <table class="table">
                                     <tbody>
-                                        ${html_vs_items}
+                                        ${html_vs_items?html_vs_items:'No vital signs to display'}
                                     </tbody>
                             </table>
                         </div>
@@ -1281,8 +1298,8 @@ let ConsultTabView = new function () {
                     `;
                 div.append(html);
                 el = div.find(`#${wrapper_id}`);
+                el.show().siblings().hide();
             }
-
             el.show().siblings().hide();
         });
     }
@@ -1588,33 +1605,52 @@ let ConsultTabView = new function () {
                 {
                     name: 'labo_test_id',
                     title: 'Test Name',
-                    selectOptions: [
-                        { 'value': "Boold test", 'text': 'Blood Test' },
-                        { 'value': "Other Test", 'text': 'Other Test' },
-                    ]
+                    displayType:'select'
                 },
                 {
                     name: 'description',
-                    title: 'Description'
+                    title: 'Description',
+                    //displayType:'input'
                 },
                 {
                     name: 'labo_id',
                     title: 'Labo Name',
-                    selectOPtions: []
+                    displayType:'select',
+                    //selectOPtions: [],
+                    //readOnly:true
                 }
             ];
 
-            mThis.tblLaboTests = new ItemsView(div_labotest_panel_id, {
+            mThis.tblLaboTests = new ItemsView(div_labotest_panel_id,{
                 columns: cols,
+                validateColumns:{'labo_test_id':'string','labo_id':'string'},
                 tableClass: "table",
                 addLineButtonText: "Add Labo Test",
-                langProp: 'labotest'
+                langProp: 'labotest',
+                onItemChange:(option,col_name,td)=>{
+                     let tr = td.parentNode;
+                     if (col_name ==='labo_test_id') mThis.displayTestInfo(option,tr);
+                }
             });
-
+            
+            //begin::load labo test options, and labo name options for user to select in dropdown list
+                vsapi.call(`${main_view.base_url}/api/consultation/labo-test-data`,p,null,false).then(res=>{
+                    if(res.status_code===200){
+                        mThis.tblLaboTests.setSelectOptions('labo_test_id',d.labo_test_options);
+                        mThis.tblLaboTests.setSelectOptions('labo_id',d.labo_options);
+                        mThis.tblLaboTests.setData(d.laboTests);
+                    }
+                });
+            //end::load labo test options, and labo name options for user to select in dropdown list
         }
 
         el.show().siblings().hide();
         LocaleManager.translateZone(wrapper_id);
+    }
+
+    this.displayTestInfo =(selectedOp,tr)=>{
+        mThis.tblLaboTests.setCellValue(tr,'description',selectedOp.text);
+        //set default Laboratory and allow user to choose if there are more than one labo providing the same test
     }
 
     this.showConsultDiagnosis = (div, view_name) => {
@@ -2106,7 +2142,7 @@ let ConsultDialog = new function () {
 }
 //end::ConsultDialog
 
-$(document).ready(() => {
+window.addEventListener('DOMContentLoaded', e => {
     TicketDetails.init('_qul_tblTickets');
     QueueComponent.init();
 });
