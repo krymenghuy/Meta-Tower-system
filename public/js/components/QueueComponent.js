@@ -22,14 +22,11 @@ let TicketDetails = new function () {
             e.preventDefault();
             let x = $(e.currentTarget);
             let ticket_id = x.data('id');
-            //let patient_id = x.data('patientid');
             
             FileChooser.chooseFile(null,(d)=>{
                 if(!d) return ; 
                 let p = {
                     ticket_id:ticket_id,
-                    //patient_id:patient_id,
-                    //file_ext:d.ext,
                     file_type: d.file_type,
                     photoData: d.photoData
                 };
@@ -60,8 +57,6 @@ let TicketDetails = new function () {
                     });
                 }
             });
-
-  
         });
         
         mThis.tblTickets.on('click', '.qul-btn-info', function (e) {
@@ -217,7 +212,7 @@ let TicketDetails = new function () {
         if (QueueComponent.options.showPatientPhotos || QueueComponent.options.showPatientPhoto) html_photo_button = `<a style="padding:5px" type="button"  data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-photo trans-text" data-langprop="buttons.Photo">Photo</a>`;
         if (QueueComponent.options.showConsultButton) html_consult_button =`<a style="padding:5px" type="button" data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-consult trans-text" data-langprop="buttons.Consult Now">Consult Now</a>`;
         if (!QueueComponent.options.showPrescriptionButton) html_prescribption_button =``;
-        if (QueueComponent.options.showHistoryButton) html_history_button =`<a style="padding:5px" type="button" data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-history trans-text" data-langprop="buttons.History">History</a>`;
+        if (QueueComponent.options.showHistoryButton) html_history_button =`<a style="padding:5px" type="button" data-clientid="${d.client_id}" data-tid="${d.ticket_id}" data-patientid="${d.patient_code}" class="btn-ticket-tab qul-btn-history trans-text" data-langprop="buttons.History">History</a>`;
         
         let html = `<div data-tid="${d.ticket_id}" data-clientid="${d.client_id}" data-personid="${d.person_id}" data-statusid="${d.status_id}" class="ticket-info-wrapper shadow-lg d-flex" style="width:100%;">
                     <div class="form-inline ticket-tab-buttons" role="group" aria-label="ticket tabs" style="display:block">
@@ -225,7 +220,6 @@ let TicketDetails = new function () {
                         ${html_history_button}
                         ${html_photo_button}
                         ${html_consult_button}
-                       
                     </div>
                     <div data-tid="${d.ticket_id}" class="qul-workspace pt-3" style="width:100%;display:block;">
                     </div>
@@ -312,115 +306,109 @@ let TicketDetails = new function () {
                     let ticket_id = d.id;
                     let html_prescription_button =``;
                     if (QueueComponent.options.showPrescriptionButton) html_prescription_button =` <button class="btn btnsm btn-outline-primary qul-btn-prescribe">Prescription</button>`;
-                    //if(div.length ===0){
-                                        html = [`<div id="${ws_id}" data-ticketid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="row">
-                                        <div class="d-flex" style="max-width: 1300px; width:100%">
-                                            <div class="row gy-3 w-100">
-                                                <div class="col-xl-6">
-                                                    <div class="row d-flex flex-nowrap">
-                                                        <div style="width:163px; max-width: 165px;">
-                                                            <img src="${mThis.icon_url()}/client-girl.png" class="profile-thumbnail pe-2"/>
-                                                        </div>
-                                                        <div class="col-8">
-                                                            <div class="row g-1">
-                                                                <p class="trans-text fw-bold fs-5 text-nowrap" data-langprop="patient.Client Information"></p>
-                                                            </div>
-                                                            <div class="row g-1">
-                                                                <div class="detail-item">
-                                                                    <p class="detail-item-label col-6 py-0 text-nowrap">Patient ID</p>
-                                                                    <p class="detail-item-value col-6 py-0" data-field="patient_code">${d.client_code}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row g-1">
-                                                                <div class="detail-item">
-                                                                    <p class="detail-item-label col-6 py-0">Name</p>
-                                                                    <p class="detail-item-value col-6 py-0" data-field="name">${d.client_name}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row g-1">
-                                                                <div class="detail-item">
-                                                                    <p class="detail-item-label col-6 py-0">Gender</p>
-                                                                    <p class="detail-item-value col-6 py-0" data-field="sex">${d.client_sex}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row g-1">
-                                                                <div class="detail-item">
-                                                                    <p class="detail-item-label col-6 py-0">Phone</p>
-                                                                    <p class="detail-item-value col-6 py-0" data-field="phone_number">${d.client_phone_number}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row g-1">
-                                                                <div class="detail-item">
-                                                                    <p class="detail-item-label col-6 py-0">Email</p>
-                                                                    <p class="detail-item-value col-6 py-0" data-field="email">${email}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row g-1">
-                                                                <div class="detail-item">
-                                                                    <p class="detail-item-label col-6 py-0">Membership</p>
-                                                                    <p class="detail-item-value col-6 py-0" data-field="membership_card">${d.membership_card}</p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                        html = [`<div id="${ws_id}" data-ticketid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="row">
+                            <div class="d-flex" style="max-width: 1300px; width:100%">
+                                <div class="row gy-3 w-100">
+                                    <div class="col-xl-6">
+                                        <div class="row d-flex flex-nowrap">
+                                            <div style="width:163px; max-width: 165px;">
+                                                <img src="${mThis.icon_url()}/client-girl.png" class="profile-thumbnail pe-2"/>
+                                            </div>
+                                            <div class="col-8">
+                                                <div class="row g-1">
+                                                    <p class="trans-text fw-bold fs-5 text-nowrap" data-langprop="patient.Client Information"></p>
+                                                </div>
+                                                <div class="row g-1">
+                                                    <div class="detail-item">
+                                                        <p class="detail-item-label col-6 py-0 text-nowrap">Patient ID</p>
+                                                        <p class="detail-item-value col-6 py-0" data-field="patient_code">${d.client_code}</p>
                                                     </div>
                                                 </div>
-                                                <div class="col-xl-6">
-                                                    <div class="row gy-3 d-flex justify-content-center">
-                                                        <div class="col-sm-6">
-                                                            <div class="row">
-                                                                <p class="trans-text text-nowrap fw-bold fs-5" data-langprop="patient.Vital Signs"></p>
-                                                            </div>
-                                                            <div class="row">${mThis.displayVitalSignItems(d.vital_signs)}</div>
-                                                        </div>
-                                                        <div class="col-sm-6">
-                                                            <div class="row">
-                                                                <p class="detail-header-text">Consultant/Doctor</p>
-                                                            </div>
-                                                            <div class="row">
-                                                                <p class="text-normal">${d.consultant_name}</span>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="d-flex px-0">
-                                                                    <p class="detail-header-text trans-text text-nowrap" data-langprop="patient.Chief Complaints"></p>
-                                                                    <a href="javascript:void(0)" data-ulid="qul-complaint-list-${ticket_id}" data-tid="${ticket_id}" class="qul-add-complaint">
-                                                                        <i class="fa fa-plus-circle mt-1" style="color:#14b1d1; font-size:1.5em"></i>
-                                                                    </a>
-                                                                </div>
-                                                                <div class="apl-cc-wrapper">
-                                                                    <ul id="qul-complaint-list-${ticket_id}" data-tid="${ticket_id}" class="apl-complaint-list" style="list-style:none">
-                                                                        ${mThis.displayCCList(['qul-complaint-list-', ticket_id].join(''), d.chief_complaints)}  
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                <div class="row g-1">
+                                                    <div class="detail-item">
+                                                        <p class="detail-item-label col-6 py-0">Name</p>
+                                                        <p class="detail-item-value col-6 py-0" data-field="name">${d.client_name}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="row g-1">
+                                                    <div class="detail-item">
+                                                        <p class="detail-item-label col-6 py-0">Gender</p>
+                                                        <p class="detail-item-value col-6 py-0" data-field="sex">${d.client_sex}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="row g-1">
+                                                    <div class="detail-item">
+                                                        <p class="detail-item-label col-6 py-0">Phone</p>
+                                                        <p class="detail-item-value col-6 py-0" data-field="phone_number">${d.client_phone_number}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="row g-1">
+                                                    <div class="detail-item">
+                                                        <p class="detail-item-label col-6 py-0">Email</p>
+                                                        <p class="detail-item-value col-6 py-0" data-field="email">${email}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="row g-1">
+                                                    <div class="detail-item">
+                                                        <p class="detail-item-label col-6 py-0">Membership</p>
+                                                        <p class="detail-item-value col-6 py-0" data-field="membership_card">${d.membership_card}</p>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div style="margin-top:10px; margin-bottom:10px; width:100%; background-color:#aeabaa; border:1px solid #abaeaa;"></div>
-                                        <div class="row">
-                                            <div class="col-sm-4">
-                                                <p class="detail-header-text trans-text" data-langprop="patient.Medical Conditions"></p>
-                                                <div class="divider"></div>
-                                                <div>${mThis.displayMedicalConditions(d.mc_items)}</div>
+                                    </div>
+                                    <div class="col-xl-6">
+                                        <div class="row gy-3 d-flex justify-content-center">
+                                            <div class="col-sm-6">
+                                                <div class="row">
+                                                    <p class="trans-text text-nowrap fw-bold fs-5" data-langprop="patient.Vital Signs"></p>
+                                                </div>
+                                                <div class="row">${mThis.displayVitalSignItems(d.vital_signs)}</div>
                                             </div>
-                                            <div class="col-sm-4">
-                                               ${html_prescription_button}
+                                            <div class="col-sm-6">
+                                                <div class="row">
+                                                    <p class="detail-header-text">Consultant/Doctor</p>
+                                                </div>
+                                                <div class="row">
+                                                    <p class="text-normal">${d.consultant_name}</span>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="d-flex px-0">
+                                                        <p class="detail-header-text trans-text text-nowrap" data-langprop="patient.Chief Complaints"></p>
+                                                        <a href="javascript:void(0)" data-ulid="qul-complaint-list-${ticket_id}" data-tid="${ticket_id}" class="qul-add-complaint">
+                                                            <i class="fa fa-plus-circle mt-1" style="color:#14b1d1; font-size:1.5em"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="apl-cc-wrapper">
+                                                        <ul id="qul-complaint-list-${ticket_id}" data-tid="${ticket_id}" class="apl-complaint-list" style="list-style:none">
+                                                            ${mThis.displayCCList(['qul-complaint-list-', ticket_id].join(''), d.chief_complaints)}  
+                                                        </ul>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>`
-                                ].join('');
-                            } else {
-                                html = `<div class="expanded-row-error">${error_message}</div>`;
-                            }
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-top:10px; margin-bottom:10px; width:100%; background-color:#aeabaa; border:1px solid #abaeaa;"></div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <p class="detail-header-text trans-text" data-langprop="patient.Medical Conditions"></p>
+                                    <div class="divider"></div>
+                                    <div>${mThis.displayMedicalConditions(d.mc_items)}</div>
+                                </div>
+                                <div class="col-sm-4">
+                                    ${html_prescription_button}
+                                </div>
+                            </div>
+                        </div>`
+                        ].join('');
+                    } else {
+                        html = `<div class="expanded-row-error">${error_message}</div>`;
+                    }
     
-                            div_workspace.html(html);
-                            div.show();
-                    // }
-                    // //In case the div#_ticket_# already exists
-                    // else {
-                    //     div.show(); 
-                    // }
+                    div_workspace.html(html);
+                    div.show();
                    
                 LocaleManager.translateZone(ws_id);
                 mThis.current_view_name = 'info';
@@ -445,9 +433,9 @@ let TicketDetails = new function () {
     this.createPhotoItems =(ticket_id,items=[])=>{
         let html ="";
         items.map(img =>{
-            html = [html,`<div class="d-flex flex-column">
-                  <img style="width:120px;height:150px" class="img-thumbnail rounded" src="${img.image_url}"/>
-                  <button type="button" class="btn btn-sm btn-outline-danger qul-delete-photo" data-ticketid="${ticket_id}" data-id="${img.id}">Remove</button>
+            html = [html,`<div class="d-flex flex-column mx-2">
+                  <img style="width:150px; height:150px" class="img-thumbnail rounded" src="${img.image_url}"/>
+                  <button type="button" class="btn btn-sm btn-outline-danger qul-delete-photo mt-2" data-ticketid="${ticket_id}" data-id="${img.id}">Remove</button>
                 </div>`].join('');
         });
        return html;
@@ -491,17 +479,8 @@ let TicketDetails = new function () {
     };
 
     this.showHistory = (div_panel,ticket_id=null) => {
-        //if (!ticket_id) ticket_id = div_panel.data('tid');
         let div_workspace = div_panel.find('div.qul-workspace');
-        div_workspace.html(`<div class="d-flex align-items-center justify-content-center">
-            <div style="max-height:450px;overflow-y:auto">
-               <ul>
-                 <li>report One</li>
-                 <li>report Two</li>
-                 <li>report Three</li>
-               </ul> 
-            </div>
-        </div>`);
+        div_workspace.html(mThis.showHistoryMedicalReports());
         mThis.current_view_name = 'history';
     };
  
@@ -511,6 +490,48 @@ let TicketDetails = new function () {
         div_workspace.html();
         mThis.current_view_name = 'consult';
     };
+
+    this.showHistoryMedicalReports = () => {
+        this.loadDataTable = () => {
+            let data = [
+                {"id":"D07452","date":"12-9-2093","consultant":"Dr.A"},
+                {"id":"D07450","date":"12-9-2092","consultant":"Dr.B"}
+            ];
+
+            let tr = null;
+            data.map(i => {
+                tr = [tr,`
+                    <tr class="border">
+                        <td>${i.id}</td>
+                        <td>
+                            <a href="javascript:void(0)">
+                                <i class="fa-solid fa-print pe-1"></i>
+                                ${i.date}
+                            </a>
+                        </td>
+                        <td>${i.consultant}</td>
+                    </tr>
+                `].join('');
+            });
+            return tr;
+        }
+
+        let html = [`
+            <div class="table-responsive border border-success rounded-3">
+                <table class="table table-hover">
+                    <thead>
+                        <tr class="border">
+                            <th class="fw-semibold">No</th>
+                            <th class="fw-semibold">Date</th>
+                            <th class="fw-semibold">Consultant</th>
+                        </tr>
+                    </thead>
+                    <tbody>`,mThis.loadDataTable(),`</tbody>
+                </table>
+            </div>
+        `].join('');
+        return html;
+    }
 }
 //end::TicketDetails class
 
@@ -768,9 +789,7 @@ let QueueComponent = new function () {
                         return [`<div class="form-inline">`,
                             `<a href="javascript:void(0)" class="btn_ticket_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a style="display:${data.status_id > 2 ? 'none' : 'block'}" href="javascript:void(0)" class="btn_ticket_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
-                            `<a href="javascript:void(0);" data-id="${data.id}" class="btn_ticket_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
-                            //`&nbsp;<a href="#" data-id="${data.id}" class="btn_ticket_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
-                            `</div>`
+                            `<a href="javascript:void(0);" data-id="${data.id}" class="btn_ticket_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,`</div>`
                         ].join('');
                     }
                 }
@@ -795,9 +814,6 @@ let QueueComponent = new function () {
                     pageLength: 10,
                     bLengthChange: false,
                     saveState: true,
-                    // rowReorder: {
-                    // dataSrc: 'sequence'
-                    // },
                     'processing': true,
                     'language': {
                         'loadingRecords': '&nbsp;',
@@ -835,11 +851,6 @@ let QueueComponent = new function () {
         });
     }
 
-    // //QueueComponent.show( {
-       //     'showPatientPhotos':false,
-       //     'showConsultButton':false,
-       //     'showPrescriptionButton':false
-    // })
     this.show = (options = null) => {
         if(!options) options = {};
         mThis.displayTicketList(() => {
@@ -869,7 +880,7 @@ let ConsultTabView = new function () {
 
     this.cur_view = 'consultation';
 
-    this.self.on('click', 'div.tab-header>a.tab-button', function (e) {
+    this.self.on('click', 'div.tab-header > a.tab-button', function (e) {
         e.preventDefault();
         $(this).addClass('active').siblings().removeClass('active');
         let view_name = $(this).data('viewname').toLowerCase();
@@ -1150,24 +1161,6 @@ let ConsultTabView = new function () {
     //Define menu routes on History tab
     this.defineDetailRoutesHistory = (div) => {
         return {
-            "chief-complaints": () => {
-                mThis.showHistoryChiefComplaints(div);
-            },
-            "pe": () => {
-                mThis.showHistoryPhysicalExamination(div);
-            },
-            "labo-tests": () => {
-                mThis.showHistoryLaboratoryTests(div);
-            },
-            "diagnosis": () => {
-                mThis.showHistoryDiagnosis(div);
-            },
-            "prescriptions": () => {
-                mThis.showHistoryPrescription(div);
-            },
-            "advice": () => {
-                mThis.showHistoryRecommendations(div);
-            },
             "medical-reports": () => {
                 mThis.showHistoryMedicalReports(div);
             }
@@ -1180,7 +1173,6 @@ let ConsultTabView = new function () {
         let div_id = '_consult_cc_list';
         let el = div.find(`#${wrapper_id}`);
         let ticket_id = div.data('tid');
-        //let patient_id = div.data('patientid');
 
             if (el.length > 0){
                 let p = {'ticket_id':ticket_id};
@@ -2044,23 +2036,23 @@ let ConsultTabView = new function () {
                    <div class="d-flex flex-column history-mr-header border border-success rounded p-2 my-3">
                        <div class="d-flex flex-row">
                           <span class="w-25 lh-lg fw-bold trans-text" data-langprop="patient.Patient ID"></span>
-                          <span class="">${d.patient_code}</span>
+                          <span>${d.patient_code}</span>
                        </div>
 
                        <div class="d-flex flex-row">
                          <span class="w-25 lh-lg fw-bold trans-text" data-langprop="patient.Patient Name"></span>
-                         <span class="">${d.patient_name}</span>
+                         <span>${d.patient_name}</span>
                       </div>
 
                       <div class="d-flex flex-row">
                         <span class="w-25 lh-lg fw-bold trans-text" data-langprop="patient.Sex"></span>
-                        <span class="">${d.patient_sex}</span>
+                        <span>${d.patient_sex}</span>
                       </div>
 
                       <div class="d-flex flex-row">
                         <span class="w-25 lh-lg fw-bold trans-text" data-langprop="patient.Phone Number"></span>
-                        <span class="">${d.patient_phone_number}</span>
-                     </div>
+                        <span>${d.patient_phone_number}</span>
+                      </div>
                    </div>
                    
                    <div class="table-responsive border border-success rounded-3 shadow-sm">
@@ -2077,7 +2069,6 @@ let ConsultTabView = new function () {
                `;
 
                 div.html(html);
-                let el = $(`#${wrapper_id}`);
             }
 
             LocaleManager.translateZone(wrapper_id);

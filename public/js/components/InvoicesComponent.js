@@ -412,12 +412,13 @@ let InvoicesComponent = new function () {
 
         //correct prop name if necessary from amount_paid to total_paid. Both of these fields are used here
         if (!d.amount_paid) d.amount_paid = d.total_paid;
-        let tr = mThis.tblInvoice.find(`tbody>tr#ivc_${invoice_id}`);
+        let tr = mThis.tblInvoice.find(`tbody > tr#ivc_${invoice_id}`);
         tr.find('td.col-amount-paid').html(mThis.formatInvoiceAmount(d.currency_code,d.amount_paid));
         tr.find('td.col-pmt-status').html(mThis.generatePmtStatus(d)); 
     }
 
     this.show = (option = null) => {
+        if(!option) option = {};
         mThis.displayInvoices(() => {
             mThis.self.show().siblings().hide();
             main_view.setTitle(mThis.title_prop);
@@ -445,6 +446,10 @@ let InvoiceDialog = new function () {
     this.elSummary_taxAmount = $('#ivc_tax_amount');
     this.elSummary_grandTotal = $('#ivc_grand_total');
    
+    this.div_item_panel = $('#_ivc_items_panel');
+    this.div_product_panel = $('#_ivc_product_panel');
+    this.div_service_panel = $('#_ivc_service_panel');
+
     this.cols_product = [{
         "name":"item_id",
         "displayName":"item_name", /** used with Dropdown column only because dropdown column has options = {value,text}**/
@@ -508,14 +513,24 @@ let InvoiceDialog = new function () {
         "title":"Qty",
         "dataType":"number",
         "displayType":"input"
-    },{
+    },
+    {
         "name":"price",
         "title":"Price",
         "dataType":"number",
         "displayType":"input"
-    },{
-        "name":"tax",
+    },
+    {
+        "name":"discount_percent",
+        "title":"Discount(%)",
+        "isPercentage":true,
+        "dataType":"number",
+        "displayType":"input"
+    },
+    {
+        "name":"tax_rate",
         "title":"Tax",
+        "isPercentage":true,
         "dataType":"number",
         "displayType":"input"
     },{
@@ -525,41 +540,30 @@ let InvoiceDialog = new function () {
         "displayType":"input",
         "readOnly":true
     }];
-
+    
+    
     this.initItemsView = ()=>{
-        mThis.tblItemProduct();
-
+        mThis.initServiceItemView();
+        mThis.initProductItemView();
+        mThis.itemTabs = {
+            'product':{
+                'pane':mThis.div_product_panel,
+                'tabButtonClass':'tab-item-product'
+            },
+            'service':{
+                'pane':mThis.div_service_panel,
+                'tabButtonClass':'tab-item-service'
+            }
+        }
         mThis.self.on('click','.tab-item',function(e){
             e.preventDefault();
-            let el = $(this).data("viewname");
-
-            switch(el){
-                case 'product':{
-                    mThis.tblItemProduct();
-                    $(this).addClass('bg-success');
-                    if($(this).siblings().hasClass('bg-success'))
-                        $(this).siblings().removeClass('bg-success');
-                    break;
-                }
-                case 'service':{
-                    mThis.tblItemService();
-                    $(this).addClass('bg-success');
-                    if($(this).siblings().hasClass('bg-success'))
-                        $(this).siblings().removeClass('bg-success');
-                    break;
-                }
-                default:{
-                    mThis.tblItemProduct();
-                    $(this).addClass('bg-success');
-                    if($(this).siblings().hasClass('bg-success'))
-                        $(this).siblings().removeClass('bg-success');
-                }
-            }
+            let viewname = $(this).data("viewname");
+            mThis.setActiveItemView(viewname);
         });
     }
 
-    this.tblItemService = () => {
-        mThis.tblServiceItems = new ItemsView('_inv_items_panel',{
+    this.initServiceItemView = () => {
+        mThis.tblServiceItems = new ItemsView('_ivc_service_panel',{
             columns: mThis.cols_service,
             showColumnHeaders: true,
             showAddLineButton: true,
@@ -567,19 +571,41 @@ let InvoiceDialog = new function () {
             onItemChange:(selOp, cols_name, td) => {
                 //todo: It seems this event is fired two times and need to be fixed
                 let tr = td.parentNode;
-                mThis.setItemService(cols_name, tr);
+                mThis.setItemServiceInfo(cols_name, tr);
             },
+            onInputChange:(el,col_name,td)=>{
+                let tr = td.parentNode;  
+                mThis.setLineTotal_service(tr);
+            },
+        });
+
+        //load service options
+        vsapi.call(`${mThis.base_url}/api/settings/options-service`,null).then(res => {
+            if(res.status_code === 200){
+                let data = res.data;
+                mThis.tblServiceItems.setSelectOptions('service_id',data);
+            }
         });
     }
 
-    this.setItemService = (col_name, tr) => {
+    this.setItemServiceInfo = (col_name, tr) => {
         if(col_name === 'service_id'){
-            let d = mThis.tblProductItems.getDataRow(tr), p = { 'id': d.item_id };
+            let d = mThis.tblServiceItems.getDataRow(tr);
+            let p = { 'id': d.service_id };
+            vsapi.call(`${mThis.base_url}/api/service/info`,p,null,false).then(res => {
+                if(res.status_code === 200){
+                    let item = res.data?res.data:{};
+                    mThis.tblServiceItems.setCellValue(tr,'qty',1);
+                    mThis.tblServiceItems.setCellValue(tr,'price',item.price);
+                    mThis.tblServiceItems.setCellValue(tr,'tax_rate',item.tax_rate);
+                    mThis.setLineTotal_service(tr);
+                }
+            });
         }
     }
 
-    this.tblItemProduct = () => {
-        mThis.tblProductItems = new ItemsView('_inv_items_panel',
+    this.initProductItemView = () => {
+        mThis.tblProductItems = new ItemsView('_ivc_product_panel',
         {
             columns: mThis.cols_product,
             showColumnHeaders: true,
@@ -593,7 +619,7 @@ let InvoiceDialog = new function () {
             },
             onInputChange:(el,col_name,td)=>{
                 let tr = td.parentNode;  
-                mThis.setLineTotal(tr);
+                mThis.setLineTotal_product(tr);
             },
                 onItemDeleted:(tr)=>{
                 mThis.setTotals(null);
@@ -616,7 +642,7 @@ let InvoiceDialog = new function () {
                     mThis.tblProductItems.setCellValue(tr, 'price',price);
                     mThis.tblProductItems.setCellValue(tr, 'qty',1);
                     mThis.tblProductItems.setCellValue(tr, 'tax_rate',item.sales_tax_rate>=0? item.sales_tax_rate:0);
-                    mThis.setLineTotal(tr);
+                    mThis.setLineTotal_product(tr);
                 }
             });
         }
@@ -627,7 +653,7 @@ let InvoiceDialog = new function () {
         //sub_total = isNaN(sub_total)?0:sub_total;
         let discount_type = InvoiceSettings.default_discount_type;
 
-        if(discount_type==='percentage' || discount_type==='percent'){
+        if(discount_type ==='percentage' || discount_type==='percent'){
             return {
             'discount_type':'percentage',
             'discount_percent':discount,
@@ -647,7 +673,7 @@ let InvoiceDialog = new function () {
         return mThis.currency_symbol? mThis.currency_symbol:InvoiceSettings.currency.symbol;
     }
 
-    this.setLineTotal = (tr)=>{
+    this.setLineTotal_product = (tr)=>{
         let cur_symbol = mThis.getCurrencySymbol(); 
         let d = mThis.tblProductItems.getDataRow(tr);
         
@@ -665,11 +691,30 @@ let InvoiceDialog = new function () {
         mThis.setTotals(cur_symbol);
     }
      
+    this.setLineTotal_service = (tr)=>{
+        let cur_symbol = mThis.getCurrencySymbol(); 
+        let d = mThis.tblServiceItems.getDataRow(tr);
+        let price = parseFloat(d.price); 
+        let qty = parseFloat(d.qty);
+        let discount_percent = parseFloat(d.discount_percent);
+        let line_total = price * qty;
+        let discount_amt = line_total * discount_percent/100;
+        
+        let tax_rate = parseFloat(d.tax_rate); //Not sales_tax_rate here
+        let tax_amount = (line_total - discount_amt) * tax_rate/100; 
+        line_total = isNaN(line_total)? 0:line_total - discount_amt + tax_amount;
+        d.line_total = line_total;
+        mThis.tblServiceItems.setCellValue(tr, 'line_total',d.line_total);
+        mThis.setTotals(cur_symbol);
+    }
+
     //Calculate Totals on invoice form. Totals include: sub_total, total tax amount, invoice's discount, grand_total
     this.setTotals = (cur_symbol =null)=>{
         if (!cur_symbol) cur_symbol = mThis.getCurrencySymbol(); 
         let sub_total =0;
         let total_tax =0;
+
+        //Calcualte Totals for Product Items
         let items = mThis.tblProductItems.getItems();
         (items || []).map(i =>{
             //*** IMPORTANT NOTE: i.line_total inludes Discount and Tax Amount for each item
@@ -681,17 +726,26 @@ let InvoiceDialog = new function () {
             total_tax += parseFloat(tax_amt);
             sub_total += parseFloat(line_total);
         });
+        
+        //Calculate Totals for service items
+        let service_items = mThis.tblServiceItems.getItems();
+        (service_items || []).map(i =>{
+            //*** IMPORTANT NOTE: i.line_total inludes Discount and Tax Amount for each item
+            let line_total = parseFloat(i.line_total);
+            let tax_rate = parseFloat(i.tax_rate);
+            let amount_before_tax = (line_total*100)/(100+tax_rate);
+            let tax_amt = line_total - amount_before_tax;
+            total_tax += parseFloat(tax_amt);
+            sub_total += parseFloat(line_total);
+        });
         sub_total = isNaN(sub_total)? 0:sub_total;
         total_tax = isNaN(total_tax)? 0:total_tax;
-        
+
         //Invoice discount is applied on Invoice's total before tax (that means base amount not including tax yet)
         //discountInfo holds info about invoice's overall discount only (discount_type, discount_amount, discount_percent)
         let discount_base = sub_total - total_tax;
         let discountInfo = mThis.calculateInvoiceDiscount(mThis.elSummary_discount.val(),Number(discount_base));
 
-        //if(isNaN(invoice_discount_percent)) invoice_discount_percent =0;
-        //let invoice_discount_amt = sub_total * invoice_discount_percent/100;
-        //if(isNaN(invoice_discount_amt)) invoice_discount_amt =0;
         let grand_total = Number(sub_total - discountInfo.discount_amount).toFixed(2);
         //sub_total already includes tax amount. so "total_tax" is just ONLY displayed at bottom invoice
         mThis.elSummary_subTotal.text([cur_symbol,' ',sub_total].join(''));
@@ -704,7 +758,7 @@ let InvoiceDialog = new function () {
     this.initItemsView();
  
     this.elSummary_discount.on('keyup',(e)=>{
-        //refresh total amounts and amount Due
+        e.preventDefault();
         mThis.setTotals();
     });
 
@@ -730,7 +784,7 @@ let InvoiceDialog = new function () {
         e.preventDefault();
         let p = mThis.getDataForm();
         let api_endpoint = `${mThis.base_url}/api/invoice/create`;
-        if(p.id>0) api_endpoint = `${mThis.base_url}/api/invoice/update`;
+        if(p.id > 0) api_endpoint = `${mThis.base_url}/api/invoice/update`;
         vsapi.call(api_endpoint,p,'POST',null).then(res => {
             if(res.status_code === 200)
             {
@@ -755,7 +809,6 @@ let InvoiceDialog = new function () {
             }
         });
     }
- 
     //set d = NULL for clearing form
     this.setData = (d=null) => {
         if(!d) d ={};
@@ -777,7 +830,7 @@ let InvoiceDialog = new function () {
         d.sub_total = d.amount;
         d.grand_total = d.amount_due;
 
-        mThis.elSummary_discount.val(d.discount_type ==='percentage'? d.discount_percent : d.discount_amount);
+        mThis.elSummary_discount.val(d.discount_type === 'percentage' ? d.discount_percent : d.discount_amount);
         mThis.elSummary_subTotal.text([cur_symbol,' ',d.sub_total].join(''));
         mThis.elSummary_taxAmount.text([cur_symbol,' ',Number(d.tax_amount)].join('')); //display ONLY for user's information
         mThis.elSummary_grandTotal.text([cur_symbol,' ',d.grand_total].join(''));
@@ -802,6 +855,12 @@ let InvoiceDialog = new function () {
         return p;
         //NOTE To DARA: this line cause error invalid data input. No need of data prop
         //return {'data': p};
+    }
+
+    this.setActiveItemView = (viewname)=>{
+        let x =  mThis.itemTabs[viewname];
+         x.pane.show().siblings().hide();
+         mThis.self.find(`.${x.tabButtonClass}`).addClass('bg-success').siblings().removeClass('bg-success');
     }
 
     this.show = (options) => {
@@ -837,6 +896,9 @@ let InvoiceDialog = new function () {
                     backdrop: 'static'
                 });
             }
+
+            //Set initial view of Items
+            mThis.setActiveItemView('product');
         });
     }
 }
