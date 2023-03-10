@@ -22,7 +22,7 @@
 
         //tr_id is the incremental integer used to create element ID for each exapandable row (tr)
         this.tr_id = 0; 
-        this.wrapperClass ='expandable-row-containter'; //option.wrapperClass?option.wrapperClass:'expandable-row-content';
+        this.wrapperClass ='expandable-row-container'; //option.wrapperClass?option.wrapperClass:'expandable-row-content';
 
         //clicking on one of these elements => will not trigger Expanding row Panel. dontExpandByClickingOn is array of css classes, such as 'btn_item_edit'
         this.dontExpandByClickingOn = option.dontExpandByClickingOn?option.dontExpandByClickingOn:[];
@@ -66,7 +66,7 @@
                     // }
 
                     /** Check if the "tr" belongs to sub table or table inside main table that may cause confusion in expanding behavior **/
-                    let div = that.getClosestParentByClass(e.target,'expandable-row-containter');
+                    let div = that.getClosestParentByClass(e.target,'expandable-row-container');
                     if(!div) if (that.shouldExpand(tr,e.target)) that.toggleOpen(tr);
                 }
               

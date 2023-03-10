@@ -234,11 +234,11 @@ class QTicket //extends Model
 
     //@param $d = {'branch_id','id'}
     static function info($id,$ss,$include_cc=true,$include_vs=true,$include_mc=true){
-        $ticket_id = $id? $id:$this->getId();
-        $ss = $ss?$ss:$this->getUserInfo();
+        //$ticket_id = $id? $id: $this->getId();
+        //$ss = $ss?$ss:$this->getUserInfo();
         $branch_id = $ss->branch_id;
         $cols ="s.branch_id,s.id,s.appt_id,s.person_id,getPatientCode(s.branch_id,s.client_id) as client_code,s.client_id,p.name as client_name,p.sex as client_sex,p.phone_number as client_phone_number,p.email as client_email,s.ticket_number,s.status_id, getConsultanName(s.consultant_id) as consultant_name,'None' AS membership_card";
-        $rows = DB::table('tickets as s')->join('ticket_statuses as sts','sts.id','=','s.status_id')->join('persons as p','p.id','=','s.person_id')->where('s.id',$ticket_id)->where('s.branch_id',$branch_id)->selectRaw($cols)->take(1)->get();
+        $rows = DB::table('tickets as s')->join('ticket_statuses as sts','sts.id','=','s.status_id')->join('persons as p','p.id','=','s.person_id')->where('s.id',$id)->where('s.branch_id',$branch_id)->selectRaw($cols)->take(1)->get();
         foreach($rows as $row){
             if ($include_cc) $row->chief_complaints = self::chiefComplaints($row->branch_id,$row->id);
             if ($include_vs) $row->vital_signs = self::vitalSigns($row->branch_id,$row->id);
@@ -332,9 +332,8 @@ class QTicket //extends Model
         //NOTE: table appt_chief_complaints does not have column "branch_id"
         return DB::table('appt_chief_complaints as ct')->join('chief_complaints as cc','cc.id','=','ct.chief_complaint_id')->where('ct.ticket_id',$ticket_id)->selectRaw("cc.id,cc.name")->get();
     }
-
     function getChiefComplaints($ticket_id=null,$ss=null){
-        $ss = $ss?$ss:$this->getUserInfo();
+        $ss = $ss? $ss:$this->getUserInfo();
         $ticket_id = $ticket_id?$ticket_id:$this->getId();
         return self::chiefComplaints($ss->branch_id,$ticket_id);
     }
@@ -368,7 +367,7 @@ class QTicket //extends Model
     }
      
     static function laboTests($branch_id,$ticket_id=0){
-        return DB::table('patient_labo_tests as l')->join('labo_tests as t','t.id','=','l.test_id')->where('l.branch_id',$branch_id)->where('l.ticket_id',$ticket_id)->selectRaw("l.id,l.test_id,t.name, l.result_description,l.consultant_comment")->take(5)->get();
+        return DB::table('patient_labo_tests as l')->join('medical_services as s','s.id','=','l.test_id')->where('l.branch_id',$branch_id)->where('l.ticket_id',$ticket_id)->selectRaw("l.id,l.test_id,s.name, l.result_description,l.consultant_comments,l.test_date,l.result_date")->take(5)->get();
     }
     static function physicalExamination($branch_id,$ticket_id=0){
         return getDataValue('patient_consult_items',['ticket_id'=>$ticket_id,'branch_id'=>$branch_id,'item_type'=>'pe'],"description");

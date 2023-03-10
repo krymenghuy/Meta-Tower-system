@@ -92,9 +92,21 @@ class Consultation extends Model
         ];
     }
 
+    static function laboTests($ticket_id,$ss){
+        $branch_id = $ss->branch_id;
+        $cols = ['s.id as test_id','s.name as test_name','t.test_date','t.result_date','t.consultant_comments','t.result_description','t.file_name','t.file_type'];
+        return DB::table('patient_labo_tests as t')->join('medical_services as s','s.id','=','t.test_id')->where('t.branch_id',$branch_id)->where('ticket_id',$ticket_id)->select($cols)->get();
+    }
+
+    function getLaboTests($ticket_id,$ss=null){
+        $ticket_id =$ticket_id? $ticket_id:$this->getId();
+        $ss = $ss?$ss:$this->getUserInfo();
+        return self::laboTests($ticket_id,$ss); 
+    }
+
     function getLaboTestData($ticket_id=null,$ss=null){
         $ss = $ss?$ss:$this->getUserInfo();
-        $ticket_id = $ticket_id?$ticket_id:$tjis->getId();
+        $ticket_id = $ticket_id?$ticket_id:$this->getId();
         $branch_id = $ss->branch_id;
         return (object)[
             'labo_test_options'=>DB::table('medical_services AS s')->join('test_labos as l','s.id','=','l.test_id')->where('s.branch_id',$branch_id)->select(['s.id as value','s.name as text'])->orderBy('s.name','ASC')->get(),

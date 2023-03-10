@@ -42,7 +42,7 @@ class ConsultationController extends Controller
         return JDV::result($row);
     }
 
-    function getLaboTestData(){
+    function getLaboTestData(Request $req){
         $ss = UM::getUserInfoBytoken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
         $section_name = $req->section_name;
