@@ -107,42 +107,6 @@
                                 <div class="row">
                                     <div class="col-xl-3 custom-width">
                                         <ul id="_history_menus" class="nav flex-column">
-                                            <!-- <li class="nav-item history_style_custom d-flex align-items-center">
-                                                <span class="history_icon">
-                                                    <i class="fa-solid fa-user ps-2"></i>
-                                                </span>
-                                                <a href="javascript:void(0)" data-viewname="chief-complaints" class="nav-link trans-text" data-langprop="history.Chief Complaints"></a>
-                                            </li>
-                                            <li class="nav-item history_style_custom d-flex align-items-center">
-                                                <span class="history_icon">
-                                                    <i class="fa-solid fa-user ps-2"></i>
-                                                </span>
-                                                <a href="javascript:void(0)" data-viewname="pe" class="nav-link trans-text" data-langprop="history.Physical Examinations"></a>
-                                            </li>
-                                            <li class="nav-item history_style_custom d-flex align-items-center">
-                                                <span class="history_icon">
-                                                    <i class="fa-solid fa-user ps-2"></i>
-                                                </span>
-                                                <a href="javascript:void(0)" data-viewname="labo-tests" class="nav-link trans-text" data-langprop="history.Laboratory Tests"></a>
-                                            </li>
-                                            <li class="nav-item history_style_custom d-flex align-items-center">
-                                                <span class="history_icon">
-                                                    <i class="fa-solid fa-user ps-2"></i>
-                                                </span>
-                                                <a href="javascript:void(0)" data-viewname="diagnosis" class="nav-link trans-text" data-langprop="history.Diagnosis"></a>
-                                            </li>
-                                            <li class="nav-item history_style_custom d-flex align-items-center">
-                                                <span class="history_icon">
-                                                    <i class="fa-solid fa-user ps-2"></i>
-                                                </span>
-                                                <a href="javascript:void(0)" data-viewname="prescriptions" class="nav-link trans-text" data-langprop="history.Prescriptions"></a>
-                                            </li>
-                                            <li class="nav-item history_style_custom d-flex align-items-center">
-                                                <span class="history_icon">
-                                                    <i class="fa-solid fa-user ps-2"></i>
-                                                </span>
-                                                <a href="javascript:void(0)" data-viewname="advice" class="nav-link trans-text" data-langprop="history.Recommendations"></a>
-                                            </li> -->
                                             <li class="nav-item history_style_custom d-flex align-items-center">
                                                 <span class="history_icon">
                                                     <i class="fa-solid fa-user ps-2"></i>
@@ -152,8 +116,7 @@
                                         </ul>
                                     </div>
                                     <div class="col-xl-9">
-                                        <div id="_history_panel" style="width:100%">
-                                        </div>
+                                        <div id="_history_panel" style="width:100%"></div>
                                     </div>
                                 </div>
                             </div>

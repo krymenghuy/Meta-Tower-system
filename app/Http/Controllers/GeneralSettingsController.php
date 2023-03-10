@@ -31,7 +31,12 @@ class GeneralSettingsController extends Controller
         $rows = DB::table('contact_channels as cc')->where('cc.branch_id',0)->selectRaw("cc.id,cc.name as channel_name")->get();
         return JDV::result($rows);
     }
-  
+
+    function getComboItems_service(Request $req){
+      $rows = DB::table('medical_services as s')->selectRaw("s.id as value,s.name as text")->get();
+      return JDV::result($rows);
+  }
+    
     function getProductData(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !=200) return JDV::emptyResult($ss); //user not authenticated
@@ -98,14 +103,14 @@ class GeneralSettingsController extends Controller
       else return JDV::error("Something went wrong when trying to save Chief complaint data");
     }
 
-    function getComboItems_position(Request $req){
-      $ss = UM::getUserInfoByToken($req,-1);
-      if($ss->status_code !=200) return JDV::emptyResult($ss->status_code,null); //user not authenticated
-      $branch_id = $ss->branch_id;
-      $id =isset($d->id)?sanitize($d->id):0;
-      $rows = DB::table('positions as l')->whereRaw('IFNULL(l.inactive,0) =0')->where('l.branch_id',$branch_id)->selectRaw("l.id,l.name as position_title")->get();
-      return JDV::result($rows);
-    }
+    // function getComboItems_position(Request $req){
+    //   // $ss = UM::getUserInfoByToken($req,-1);
+    //   // if($ss->status_code !=200) return JDV::emptyResult($ss->status_code,null); //user not authenticated
+    //   // $branch_id = $ss->branch_id;
+    //   // $id =isset($d->id)?sanitize($d->id):0;
+    //   // $rows = DB::table('positions as l')->whereRaw('IFNULL(l.inactive,0) =0')->where('l.branch_id',$branch_id)->selectRaw("l.id,l.name as position_title")->get();
+    //   return JDV::result($rows);
+    // }
 
     function department_exists($dep_id){
       $row = getDataRow('departments',['id'=>$dep_id],"id");

@@ -132,6 +132,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
      Route::post('service/items', [MedicalServiceController::class, 'getMedicalServices']);
      Route::post('service/delete', [MedicalServiceController::class, 'deleteMedicalService']);
      Route::post('service/save', [MedicalServiceController::class, 'saveMedicalService']);
+     Route::post('service/info', [MedicalServiceController::class, 'getMedicalServiceInfo']);
   //End::MedicalServiceController
  
    //begin::ItemController
@@ -573,6 +574,8 @@ Route::post('test/test-api',function(){
     Route::post('settings/save-chief-complaint', [GeneralSettingsController::class, 'saveChiefComplaint']);
     Route::post('settings/options-labo-test', [GeneralSettingsController::class, 'getComboItems_laboTest']);
    
+   Route::post('settings/options-service', [GeneralSettingsController::class, 'getComboItems_service']);
+
     //getProductData() return object {"products"=> [], "usages"=>[]} for doctor's editing prescription
     Route::post('settings/options-product', [GeneralSettingsController::class, 'getProductData']);
 
