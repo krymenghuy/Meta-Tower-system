@@ -37,7 +37,7 @@
                     <div class="col-12">
                         <label class="form-label trans-text" data-langprop="service.Treatment method"></label>
                         <select data-required="1" data-field="treatment_method" data-ffield="Treatment method" class="form-select data-input">
-                           <option value="none">None</option>
+                           <option value="none">NA</option>
                            <option value="nonsurgery">Non-surgery</option>
                            <option value="minor surgery">Minor Surgery</option>
                            <option value="surgery">Surgery</option>
@@ -49,7 +49,7 @@
                         <select data-required="1" data-field="service_type" data-ffield="Service type" class="form-select data-input">
                            <option value="consultation">Consultation</option>
                            <option value="treatment">Treatment</option>
-                           <option value="labotest">Labo Test</option>
+                           <option value="labo">Labo Test</option>
                         </select>
                     </div>
 

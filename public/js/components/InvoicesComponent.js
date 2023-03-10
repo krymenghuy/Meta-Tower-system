@@ -755,18 +755,7 @@ let InvoiceDialog = new function () {
             }
         });
     }
-
-    this.loadDataServiceOptions = (onFinish = null) => {
-        vsapi.call(`${mThis.base_url}/api/service/items`,null).then(res => {
-            if(res.status_code === 200){
-                let data = res.data;
-                onFinish(data);
-                console.log(data);
-            }
-        });
-    }
-    mThis.loadDataServiceOptions();
-
+ 
     //set d = NULL for clearing form
     this.setData = (d=null) => {
         if(!d) d ={};

@@ -137,6 +137,14 @@ class GeneralSettingsController extends Controller
        $rows = DB::table("departments as d")->selectRaw("d.id,d.name as department_name")->orderBy('d.id','ASC')->get();
        return JDV::result($rows);
     }
+ 
+    static function getComboItems_laboTest(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !=200) return $ss; //user not authenticated
+      $branch_id = $ss->branch_id;
+      $rows = DB::table("medical_services as s")->where('s.service_type','labo')->selectRaw("s.id,s.name as test_name")->orderBy('s.name','ASC')->get();
+      return JDV::result($rows);
+    }
 
     static function getComboItems_appt_status(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
