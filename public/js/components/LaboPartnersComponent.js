@@ -154,7 +154,7 @@ let LaboPartnersComponent = new function () {
                 {
                     title: mThis.trans_title('Address'),
                     data: (data,a,b)=>{
-                        return data.address?data.address:'(Address not available)';
+                        return data.address ? data.address:'(Address not available)';
                     }
                 },
                 {
@@ -268,6 +268,7 @@ const LaboTestList = new function(){
 
      SelectTestDialog.show(op); 
    });
+
    LaboPartnersComponent.tblPartners.on('click','.btn-remove-parnter-test',function(e){
     let labo_id =$(this).data('laboid');
     let test_id =$(this).data('testid');
@@ -337,23 +338,21 @@ const LaboTestList = new function(){
             //in case of api error
             div_test_list.html(`<span class="text-center text-warning">${res.error_message}</span>`);
           }
-          
        });
-       
    }
  
    this.displayTestList = (labo_id,container,items=[])=>{
         let cnt=0;
         let html_tests = null;;
         items.map(i=>{
-                let c =ExchangeManager.currencies[i.currency_code];
+                let c = ExchangeManager.currencies[i.currency_code];
                 let cur_symbol = c?c.symbol:'$';
                 let price = [cur_symbol,i.price].join('');
                 html_tests =[html_tests,`<div data-id="${i.id}" data-testid="${i.test_id}" class="card pn-test-item">
                 <div class="card-body">
                     <h5 class="card-title">${i.name}</h5>
                     <span class="d-block text-center fw-bold">${price}</span>
-                    <a data-id="${i.id}" data-testid="${i.test_id}" data-laboid="${i.labo_id}" class="btn-remove-parnter-test" href="javascript:void(0)"><i class="fa fa-times text-danger"></i></a> 
+                    <a data-id="${i.id}" data-testid="${i.test_id}" data-laboid="${i.labo_id}" class="btn-remove-parnter-test" href="javascript:void(0)"><i class="fa fa-times text-danger"></i></a>
                 </div>
                 </div>`].join('');
                 cnt++;
@@ -362,7 +361,7 @@ const LaboTestList = new function(){
         //begin:: display test rows
         let div_test_list_id = `pn_test_list_${labo_id}`;
         let div_test_list = container.find(`#${div_test_list_id}`);
-        if (div_test_list.length >0){
+        if (div_test_list.length > 0){
             div_test_list.html(html_tests);
             return;
         }
@@ -370,13 +369,12 @@ const LaboTestList = new function(){
         if (cnt>0) 
             container.html(html_tests);
         else { 
-            let empty_html =`<div id="${div_test_list_id}" class="labo-test-list-container"><span class="d-block text-secondary">No labo tests offered by this partner</span>
+            let empty_html =`<div id="${div_test_list_id}" class="labo-test-list-container d-block"><p class="text-secondary">No labo tests offered by this partner</p>
             <button class="btn btn-sm btn-outline-success pn-add-test mt-2" data-id="${labo_id}">Add Test</button></div>`;
             container.html(empty_html);
         }
       //end:: display test row
    }
- 
 }
 //end::LaboTestList Component
 
@@ -417,8 +415,7 @@ const SelectTestDialog = new function(){
             backdrop:'static'
           });
       });
-   } 
-    
+   }
 }
 
 window.addEventListener('DOMContentLoaded',function (e) {
