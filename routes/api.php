@@ -113,6 +113,10 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
         //getPatientPhysicalExamination()
         Route::post('ticket/patient-pe', [QTicketController::class, 'getPatientPE']);
+        Route::post('ticket/labo-tests', [QTicketController::class, 'getPatientLaboTests']);
+        Route::post('ticket/diagnosis', [QTicketController::class, 'getPatientDiagnosis']);
+        //Route::post('ticket/history', [QTicketController::class, 'getPatientDiagnosis']);
+
         Route::post('ticket/patient-labo-tests', [QTicketController::class, 'getPatientLaboTests']);
         Route::post('ticket/patient-diagnosis', [QTicketController::class, 'getPatientDiagnosis']);
         Route::post('ticket/patient-prescription', [QTicketController::class, 'getPatientPrescription']);

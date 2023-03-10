@@ -115,6 +115,7 @@ class PartnerController extends Controller
         $branch_id = $ss->branch_id;
         $id = $req->id;
         if(!$this->canDeletePartner($id)) return JDV::error("Cannot delete partner because of some existing data");
+        DB::table('test_labos')->where('labo_id',$id)->delete();
         DB::table('partners')->where('id',$id)->where('branch_id',$branch_id)->delete();
         return JDV::success();
     }

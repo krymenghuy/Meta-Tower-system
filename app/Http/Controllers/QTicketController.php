@@ -30,7 +30,8 @@ class QTicketController extends Controller
     function getTicketDetails(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
-        return JDV::result(QTicket::info($req->id,$ss)); 
+        $id = $req->id?$req->id:$req->ticket_id;
+        return JDV::result(QTicket::info($id,$ss)); 
     }
 
     function addChiefComplaint(Request $req){

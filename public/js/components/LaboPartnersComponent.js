@@ -38,7 +38,7 @@ let LaboPartnersComponent = new function () {
     //Expandable row contains list of labo tests provided by each partners
     this.initExpandableRow =()=>{
         this.tblLaboTests = new ExpandableRowConfig('_lbp_tblLaboPartners', {
-            'dontExpandByClickingOn': ['btn_lbp_modify','btn_lbp_delete'],
+            'dontExpandByClickingOn': ['pn-add-test','btn_lbp_modify','btn_lbp_delete'],
             //'wrapperClass':'expandable-row-container',
             'onOpen': (container, detail_tr, parent_tr) => {
                 let q_tr = $(parent_tr);
@@ -161,7 +161,7 @@ let LaboPartnersComponent = new function () {
                     title: mThis.trans_title('Action'),
                     data: function (data, a, b) {
                         let status_class = null; //mThis.getStatusClass(data.status_id);
-                        return [`<div class="form-inline">`,
+                        return [`<div class="d-flex flex-row flex-nowrap">`,
                             //`<a href="javascript:void(0)" class="btn_lbp_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" class="pn-add-test" data-id="${data.id}"><i class="fa fa-plus-circle"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" class="btn_lbp_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
@@ -259,7 +259,12 @@ const LaboTestList = new function(){
    let mThis = this;
    LaboPartnersComponent.tblPartners.on('click','.pn-add-test',function(e){
      let labo_id =$(this).data('id');
+     
      let container = $(this).closest('div.expandable-row-container');
+     if (container.length ===0){
+        let tr = $(this).closest('tr');
+        container = tr.next().find('div.expandable-row-container');
+     }
      let op = {'labo_id':labo_id,onClose:(items)=>{
         if(items){
             LaboTestList.displayTestList(labo_id,container,items);
@@ -277,12 +282,12 @@ const LaboTestList = new function(){
         if(e){
              let p = {'labo_id':labo_id,'test_id':test_id,'id':id};
              vsapi.call(`${main_view.base_url}/api/partner-labo/remove-test`,p,null,false).then(res=>{
-                if(res.status_code===200){
+                if(res.status_code === 200){
                   LaboTestList.displayTestList(labo_id,container,res.data);
                 }
              });
         }
-    }); 
+    });
   });
   
 //    this.createTestRows = (labo_id)=>{
@@ -358,10 +363,15 @@ const LaboTestList = new function(){
                 </div>`].join('');
                 cnt++;
         });
- 
+        html_tests = [html_tests,`<a href="javascript:void(0)" data-id="${labo_id}" class="pn-add-test d-block border rounded-circle border-primary p-3 m-auto text-center" style="max-width:160px"><span class="text-center d-block"><i class="fa fa-solid fa-plus fs-3"></i></span><span class="text-center text-secondary">Add labo test</span></a>`].join('');
         //begin:: display test rows
         let div_test_list_id = `pn_test_list_${labo_id}`;
         let div_test_list = container.find(`#${div_test_list_id}`);
+ 
+        let empty_html =`<a href="javascript:void(0)" data-id="${labo_id}" class="pn-add-test d-block border rounded-circle border-primary p-3 m-auto text-center" style="max-width:160px"><span class="text-center d-block"><i class="fa fa-solid fa-plus fs-3"></i></span><span class="text-center text-secondary">Add labo test</span></a>`;
+        //`<div id="${div_test_list_id}" class="labo-test-list-container"><span class="d-block text-secondary">No labo tests offered by this partner</span> <button class="btn btn-sm btn-outline-success pn-add-test mt-2" data-id="${labo_id}">Add Test</button></div>`;
+        if (cnt ===0) html_tests = empty_html;
+
         if (div_test_list.length >0){
             div_test_list.html(html_tests);
             return;
@@ -370,8 +380,6 @@ const LaboTestList = new function(){
         if (cnt>0) 
             container.html(html_tests);
         else { 
-            let empty_html =`<div id="${div_test_list_id}" class="labo-test-list-container"><span class="d-block text-secondary">No labo tests offered by this partner</span>
-            <button class="btn btn-sm btn-outline-success pn-add-test mt-2" data-id="${labo_id}">Add Test</button></div>`;
             container.html(empty_html);
         }
       //end:: display test row

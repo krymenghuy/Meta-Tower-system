@@ -208,7 +208,7 @@ let TicketDetails = new function () {
 
     //Display Ticket Detail panel, by displaying the "Info" tab as default view
     this.show = (detail_tr, d = {}) => {
-        let div_wrapper = detail_tr.find('div.expandable-row-containter');
+        let div_wrapper = detail_tr.find('div.expandable-row-container');
 
         let html_photo_button =``;
         let html_consult_button =``;
@@ -1579,6 +1579,14 @@ let ConsultTabView = new function () {
         LocaleManager.translateZone(wrapper_id);
     }
 
+    this.getTicketInfo_laboTest =(ticket_id,onFinish)=>{
+        let p = {'ticket_id':ticket_id};
+       vsapi.call(`${main_view.base_url}/api/ticket/labo-tests`,p,null,false).then(res=>{
+           if(res.status_code===200) 
+           onFinish(res.data);
+           else onFinish([]);
+       });
+    }
 
     this.showConsultLaboratoryTests = (div, view_name) => {
         let wrapper_id = '_consult_labo_warpper';
@@ -1588,9 +1596,17 @@ let ConsultTabView = new function () {
         let patient_id = div.data('patientid');
         let el = div.find(`#${wrapper_id}`);
 
-        if (el.length === 0 || !el) {
-            let html =
-                `<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
+        if (el.length > 0) {
+            mThis.getTicketInfo_laboTest(ticket_id,d=>{
+                mThis.tblLaboTests.setData(d);
+                LocaleManager.translateZone(wrapper_id);
+                el.show().siblings().hide();
+            });
+           
+            return;
+        }
+
+        let html =`<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                 <h3 class="trans-text" data-langprop="consult.Laboratory Tests">Laboratory Tests</h3>
                 <div class="d-flex">
                     <div id="${div_labotest_panel_id}" class="table-responsive">  
@@ -1603,7 +1619,7 @@ let ConsultTabView = new function () {
             //initialize mThis.tblLaboTests for the first time
             let cols = [
                 {
-                    name: 'labo_test_id',
+                    name: 'test_id',
                     title: 'Test Name',
                     displayType:'select'
                 },
@@ -1620,7 +1636,6 @@ let ConsultTabView = new function () {
                     //readOnly:true
                 }
             ];
-
             mThis.tblLaboTests = new ItemsView(div_labotest_panel_id,{
                 columns: cols,
                 validateColumns:{'labo_test_id':'string','labo_id':'string'},
@@ -1634,18 +1649,20 @@ let ConsultTabView = new function () {
             });
             
             //begin::load labo test options, and labo name options for user to select in dropdown list
+               let p = {'ticket_id':ticket_id};
                 vsapi.call(`${main_view.base_url}/api/consultation/labo-test-data`,p,null,false).then(res=>{
                     if(res.status_code===200){
+                        let d = res.data;
                         mThis.tblLaboTests.setSelectOptions('labo_test_id',d.labo_test_options);
                         mThis.tblLaboTests.setSelectOptions('labo_id',d.labo_options);
                         mThis.tblLaboTests.setData(d.laboTests);
-                    }
+                        el.show().siblings().hide();
+                        LocaleManager.translateZone(wrapper_id);
+                    }else cv_interact.error(res.error_message);
                 });
             //end::load labo test options, and labo name options for user to select in dropdown list
-        }
-
-        el.show().siblings().hide();
-        LocaleManager.translateZone(wrapper_id);
+           
+       
     }
 
     this.displayTestInfo =(selectedOp,tr)=>{
