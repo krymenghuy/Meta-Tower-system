@@ -264,6 +264,6 @@ let MedicalServiceDialog = new function () {
     }
 }
 
-$(document).ready(function () {
+window.addEventListener('DOMContentLoaded',function () {
     MedicalServiceComponent.init();
 });

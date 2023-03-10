@@ -809,7 +809,6 @@ let InvoiceDialog = new function () {
             }
         });
     }
-    
     //set d = NULL for clearing form
     this.setData = (d=null) => {
         if(!d) d ={};

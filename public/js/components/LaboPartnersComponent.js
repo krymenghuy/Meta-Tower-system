@@ -17,13 +17,13 @@ let LaboPartnersComponent = new function () {
         "Phone": "Phone",
         "CP Name": "CP Name",
         "CP Phone": "CP Phone",
-        "Partner Type": "Partner Type",
+        "Partner Type": "Type",
         "Address": "Address",
         "Action": "Action"
     };
 
     this.trans_title = (title_prop = 'undefined') => {
-        return (mThis.col_titles[title_prop] || 'undefined');
+        return (mThis.col_titles[title_prop]);
     }
 
     this.setLanguage = () => {
@@ -35,7 +35,27 @@ let LaboPartnersComponent = new function () {
         }
     }
 
+    //Expandable row contains list of labo tests provided by each partners
+    this.initExpandableRow =()=>{
+        this.tblLaboTests = new ExpandableRowConfig('_lbp_tblLaboPartners', {
+            'dontExpandByClickingOn': ['btn_lbp_modify','btn_lbp_delete'],
+            //'wrapperClass':'expandable-row-container',
+            'onOpen': (container, detail_tr, parent_tr) => {
+                let q_tr = $(parent_tr);
+                let partner_id = q_tr.data('id');
+                let status_id = q_tr.data('statusid');
+                //Show Expandable Details of each ticket (QTicket)
+                if (partner_id > 0)
+                LaboTestList.show($(container), {
+                    'labo_id': partner_id,
+                    'status_id':status_id
+                });
+            }
+        });
+    }
+
     this.init = () => {
+        mThis.initExpandableRow();
         mThis.btnNew.on('click', (e) => {
             let op = {
                 onClose: (e) => {
@@ -133,17 +153,20 @@ let LaboPartnersComponent = new function () {
                 },
                 {
                     title: mThis.trans_title('Address'),
-                    data: "address"
+                    data: (data,a,b)=>{
+                        return data.address?data.address:'(Address not available)';
+                    }
                 },
                 {
                     title: mThis.trans_title('Action'),
                     data: function (data, a, b) {
                         let status_class = null; //mThis.getStatusClass(data.status_id);
                         return [`<div class="form-inline">`,
-                            `<a href="javascript:void(0)" class="btn_lbp_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
+                            //`<a href="javascript:void(0)" class="btn_lbp_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
+                            `<a href="javascript:void(0)" class="pn-add-test" data-id="${data.id}"><i class="fa fa-plus-circle"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" class="btn_lbp_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
                             `<a href="javascript:void(0);" data-id="${data.id}" class="btn_lbp_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
-                            `&nbsp;<a href="#" data-id="${data.id}" class="btn_lbp_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
+                            //`&nbsp;<a href="#" data-id="${data.id}" class="btn_lbp_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
                             `</div>`
                         ].join('');
                     }
@@ -181,6 +204,7 @@ let LaboPartnersComponent = new function () {
                         cnt++;
                         let tr = $(row);
                         tr.data('id', data.id);
+                        tr.data('statusid', data.status_id);
                     }
                 });
             if (typeof onFinish === 'function') onFinish();
@@ -212,7 +236,7 @@ let LaboPartnersDialog = new function () {
         "apiSave": `${main_view.base_url}/api/partner/save`,
         "apiGet": `${main_view.base_url}/api/partner/details`,
         //"identityProp":"id",
-        "modifyTitle": "Modify Product Group",
+        "modifyTitle": "Modify Parnter",
         "createTitle": "New Partner",
         "identityProps": ['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
@@ -230,6 +254,173 @@ let LaboPartnersDialog = new function () {
 }
 //end::LaboPartnersDialog
 
-$(document).ready(function () {
+//begin::LaboTestList component
+const LaboTestList = new function(){
+   let mThis = this;
+   LaboPartnersComponent.tblPartners.on('click','.pn-add-test',function(e){
+     let labo_id =$(this).data('id');
+     let container = $(this).closest('div.expandable-row-container');
+     let op = {'labo_id':labo_id,onClose:(items)=>{
+        if(items){
+            LaboTestList.displayTestList(labo_id,container,items);
+        } 
+     }};
+
+     SelectTestDialog.show(op); 
+   });
+   LaboPartnersComponent.tblPartners.on('click','.btn-remove-parnter-test',function(e){
+    let labo_id =$(this).data('laboid');
+    let test_id =$(this).data('testid');
+    let id = $(this).data('id');
+    let container = $(this).closest('div.expandable-row-container');
+    cv_interact.confirm(`Remove this test?`,{title:'Remove Partner Test','context':'delete'},(e)=>{
+        if(e){
+             let p = {'labo_id':labo_id,'test_id':test_id,'id':id};
+             vsapi.call(`${main_view.base_url}/api/partner-labo/remove-test`,p,null,false).then(res=>{
+                if(res.status_code===200){
+                  LaboTestList.displayTestList(labo_id,container,res.data);
+                }
+             });
+        }
+    }); 
+  });
+  
+//    this.createTestRows = (labo_id)=>{
+//     let p = {'labo_id':labo_id};
+//     let html ="";
+//      vsapi.call(`${main_view.base_url}/api/partner-labo/tests`,p,null,false).then(res=>{
+//         if(res.status_code===200){
+//             let items = res.data;
+//             items.map(i=>{
+//                 let cur_symbol = ExchangeManager.currencies[i.currency_code].symbol;
+//                 let price = [cur_symbol,i.price].join('');
+//                 html =[html,`<tr><td>`,i.name,`</td><td>`,price,`</td></tr>`].join('');
+//             });
+            
+//         }
+//      });
+//    }
+
+//    this.createTestRows = (labo_id)=>{
+//     let p = {'labo_id':labo_id};
+//     let html ="";
+//      vsapi.call(`${main_view.base_url}/api/partner-labo/tests`,p,null,false).then(res=>{
+//         if(res.status_code===200){
+//             let items = res.data;
+//             items.map(i=>{
+//                 let cur_symbol = ExchangeManager.currencies[i.currency_code].symbol;
+//                 let price = [cur_symbol,i.price].join('');
+//                 html =[html,`<div data-id="${i.id}" data-testid="${i.test_id}" class="card pn-test-item">
+//                 <div class="card-title">${i.name}</div>
+//                 <div class="card-body">
+//                    <span class="d-block text-center fw-bold">${price}</span> 
+//                 </div>
+//               </div>`].join('');
+//             });
+            
+//         }
+//      });
+//    }
+ 
+ //options.labo_id
+   this.show = (container,options)=>{
+      let labo_id = options.labo_id;
+      let div_test_list_id = `pn_test_list_${labo_id}`;
+      let div_test_list = container.find(`#${div_test_list_id}`);
+
+      let p = {'labo_id':labo_id};
+       vsapi.call(`${main_view.base_url}/api/partner-labo/tests`,p,null,false).then(res=>{
+          if(res.status_code===200){
+              let items = res.data;
+              mThis.displayTestList(labo_id,container,items); 
+          }else{
+            //in case of api error
+            div_test_list.html(`<span class="text-center text-warning">${res.error_message}</span>`);
+          }
+          
+       });
+       
+   }
+ 
+   this.displayTestList = (labo_id,container,items=[])=>{
+        let cnt=0;
+        let html_tests = null;;
+        items.map(i=>{
+                let c =ExchangeManager.currencies[i.currency_code];
+                let cur_symbol = c?c.symbol:'$';
+                let price = [cur_symbol,i.price].join('');
+                html_tests =[html_tests,`<div data-id="${i.id}" data-testid="${i.test_id}" class="card pn-test-item">
+                <div class="card-body">
+                    <h5 class="card-title">${i.name}</h5>
+                    <span class="d-block text-center fw-bold">${price}</span>
+                    <a data-id="${i.id}" data-testid="${i.test_id}" data-laboid="${i.labo_id}" class="btn-remove-parnter-test" href="javascript:void(0)"><i class="fa fa-times text-danger"></i></a> 
+                </div>
+                </div>`].join('');
+                cnt++;
+        });
+ 
+        //begin:: display test rows
+        let div_test_list_id = `pn_test_list_${labo_id}`;
+        let div_test_list = container.find(`#${div_test_list_id}`);
+        if (div_test_list.length >0){
+            div_test_list.html(html_tests);
+            return;
+        }
+        html_tests = [`<div id="${div_test_list_id}" class="labo-test-list-container">`,html_tests,`</div>`].join('');
+        if (cnt>0) 
+            container.html(html_tests);
+        else { 
+            let empty_html =`<div id="${div_test_list_id}" class="labo-test-list-container"><span class="d-block text-secondary">No labo tests offered by this partner</span>
+            <button class="btn btn-sm btn-outline-success pn-add-test mt-2" data-id="${labo_id}">Add Test</button></div>`;
+            container.html(empty_html);
+        }
+      //end:: display test row
+   }
+ 
+}
+//end::LaboTestList Component
+
+const SelectTestDialog = new function(){
+   let mThis = this;
+   this.self = $('#_lbp_dlgTestSelector');
+   this.elTest = $('#_lbp_test');
+   this.elPrice = $('#_lbp_test_price');
+   this.btnOK = $('#_lbp_dlgTestSelector_btnOK');
+   
+   this.btnOK.on('click',(e)=>{
+      let p = {
+        'labo_id':mThis.labo_id,
+        'test_id':mThis.elTest.val(),
+        'price':mThis.elPrice.val()
+      }
+      vsapi.call(`${main_view.base_url}/api/partner-labo/add-test`,p,null,false).then(res =>{
+         if(res.status_code===200){
+            let items =StringSanitizer.sanitizeObject(res.data);
+            if(typeof mThis.onClose ==='function') mThis.onClose(items);
+            mThis.self.modal('hide');
+         }else cv_interact.error(res.error_message);
+      });     
+   });
+   
+   this.loadTests =(onFinish)=>{
+    vsapi.call(`${main_view.base_url}/api/settings/options-labo-test`,null,null,false).then(res=>{
+        onFinish(res.data);
+    });
+   }
+
+   this.show =(options)=>{
+      mThis.labo_id = options.labo_id;
+      mThis.onClose = options.onClose;
+      mThis.loadTests((tests)=>{
+        VSUtil.setComboItems(mThis.elTest,tests,'id','test_name',false,false,null);
+        mThis.self.modal({
+            backdrop:'static'
+          });
+      });
+   } 
+    
+}
+
+window.addEventListener('DOMContentLoaded',function (e) {
     LaboPartnersComponent.init();
 });

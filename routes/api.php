@@ -279,6 +279,9 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
      Route::post('partner/delete', [PartnerController::class, 'deletePartner']);
      Route::post('partner/save', [PartnerController::class, 'savePartner']);
      Route::post('partner/details', [PartnerController::class, 'getPartnerDetails']);
+     Route::post('partner-labo/tests', [PartnerController::class, 'getLaboTestsByPartner']);
+     Route::post('partner-labo/add-test', [PartnerController::class, 'addLaboTestByPartner']);
+     Route::post('partner-labo/remove-test', [PartnerController::class, 'removeLaboTestByPartner']);
   //End::PartnerController
  
     //begin::Currency APIs
@@ -549,7 +552,7 @@ Route::post('test/test-api',function(){
     Route::post('settings/save-department', [GeneralSettingsController::class, 'saveDepartment']);
     Route::post('settings/delete-department', [GeneralSettingsController::class, 'deleteDepartment']);
     Route::post('settings/department-info', [GeneralSettingsController::class, 'getDepartmentDetails']);
-
+     
     Route::post('settings/save-position', [GeneralSettingsController::class, 'savePosition']);
     Route::post('settings/options-position', [GeneralSettingsController::class, 'getComboItems_position']);
     Route::post('settings/create-org', [GeneralSettingsController::class, 'createOrganization']);
@@ -565,9 +568,10 @@ Route::post('test/test-api',function(){
     Route::post('settings/options-consultant', [GeneralSettingsController::class, 'getComboItems_consultant']);   
     Route::post('settings/options-chief-complaint', [GeneralSettingsController::class, 'getComboItems_chief_complaint']);
     Route::post('settings/save-chief-complaint', [GeneralSettingsController::class, 'saveChiefComplaint']);
+    Route::post('settings/options-labo-test', [GeneralSettingsController::class, 'getComboItems_laboTest']);
+   
    Route::post('settings/options-service', [GeneralSettingsController::class, 'getComboItems_service']);
-  
-    
+
     //getProductData() return object {"products"=> [], "usages"=>[]} for doctor's editing prescription
     Route::post('settings/options-product', [GeneralSettingsController::class, 'getProductData']);
 
