@@ -98,7 +98,11 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('consultation/details', [ConsultationController::class, 'getConsultationData']);
         Route::post('consultation/chief-complaints', [ConsultationController::class, 'getChiefComplaints']);
         //NOTE: getLaboTestData() returns object = {laboTests=> [{id,name,description,labo_id},...], labo_test_options=>[{value,text},...], labo_options=>[{value,text},...]}
-        Route::post('consultation/labo-test-data', [ConsultationController::class, 'getLaboTestData']); 
+        Route::post('consultation/labo-test-data', [ConsultationController::class, 'getLaboTestData']);
+
+        Route::post('consultation/save-chief-complaint', [ConsultationController::class, 'saveChiefComplaint']);
+        Route::post('consultation/save-medical-history', [ConsultationController::class, 'saveMedicalHistory']);
+        Route::post('consultation/save-vital-signs', [ConsultationController::class, 'saveVitalSigns']);
     //end::ConsultationController
 
     //begin::QTicketController

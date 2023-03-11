@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2023-03-07 12:46:48
+Date: 2023-03-11 14:51:48
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -64,124 +64,14 @@ CREATE TABLE `appt_chief_complaints` (
   `create_uid` int(10) DEFAULT NULL,
   `create_user` varchar(50) DEFAULT NULL,
   `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `ticket_id` int(10) DEFAULT NULL
+  `ticket_id` int(10) DEFAULT NULL,
+  `description` varchar(250) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of appt_chief_complaints
 -- ----------------------------
-INSERT INTO `appt_chief_complaints` VALUES ('35', '3', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('35', '4', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('35', '4', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('26', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('26', '6', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('11', '4', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('26', '3', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('26', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('11', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('11', '11', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('48', '2', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('48', '4', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('52', '2', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('52', '3', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('64', '3', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('64', '6', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('64', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('57', '2', null, null, '2022-12-29 23:28:18.220609', '78');
-INSERT INTO `appt_chief_complaints` VALUES ('57', '5', null, null, '2022-12-29 23:28:18.220609', '78');
-INSERT INTO `appt_chief_complaints` VALUES ('59', '3', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('59', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('53', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('65', '2', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('65', '3', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('67', '3', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('67', '4', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('69', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('55', '3', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('55', '4', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('60', '4', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('74', '3', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('74', '4', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('88', '1', '1', 'Samsethy', '2022-12-10 20:47:04.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('88', '4', '1', 'Samsethy', '2022-12-10 20:47:04.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('89', '1', '1', 'Samsethy', '2022-12-10 20:47:36.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('89', '4', '1', 'Samsethy', '2022-12-10 20:47:36.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('90', '2', '1', 'Samsethy', '2022-12-11 11:36:05.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('91', '1', '1', 'Samsethy', '2022-12-11 11:45:38.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('92', '2', '1', 'Samsethy', '2022-12-11 19:52:33.411700', '74');
-INSERT INTO `appt_chief_complaints` VALUES ('92', '4', '1', 'Samsethy', '2022-12-11 19:52:33.411700', '74');
-INSERT INTO `appt_chief_complaints` VALUES (null, '3', '1', 'Samsethy', '2022-12-11 18:57:25.000000', '51');
-INSERT INTO `appt_chief_complaints` VALUES (null, '5', '1', 'Samsethy', '2022-12-11 18:57:28.000000', '51');
-INSERT INTO `appt_chief_complaints` VALUES (null, '3', '1', 'Samsethy', '2022-12-11 19:52:58.000000', '50');
-INSERT INTO `appt_chief_complaints` VALUES ('95', '3', '1', 'Samsethy', '2022-12-16 14:10:32.753681', '76');
-INSERT INTO `appt_chief_complaints` VALUES ('94', '3', null, null, '2022-12-17 09:37:50.103780', '77');
-INSERT INTO `appt_chief_complaints` VALUES ('94', '4', null, null, '2022-12-17 09:37:50.103780', '77');
-INSERT INTO `appt_chief_complaints` VALUES (null, '5', '1', 'Samsethy', '2023-01-02 16:21:09.000000', '52');
-INSERT INTO `appt_chief_complaints` VALUES (null, '4', '1', 'Samsethy', '2023-01-02 22:04:50.000000', '52');
-INSERT INTO `appt_chief_complaints` VALUES (null, '2', '1', 'Samsethy', '2023-01-02 22:07:00.000000', '53');
-INSERT INTO `appt_chief_complaints` VALUES (null, '6', '1', 'Samsethy', '2023-01-02 22:07:05.000000', '53');
-INSERT INTO `appt_chief_complaints` VALUES (null, '8', '1', 'Samsethy', '2023-01-02 22:07:24.000000', '53');
-INSERT INTO `appt_chief_complaints` VALUES (null, '3', '1', 'Samsethy', '2023-01-02 22:08:24.000000', '52');
-INSERT INTO `appt_chief_complaints` VALUES (null, '3', '1', 'Samsethy', '2023-01-02 23:53:19.000000', '81');
-INSERT INTO `appt_chief_complaints` VALUES (null, '4', '1', 'Samsethy', '2023-01-02 23:53:23.000000', '81');
-INSERT INTO `appt_chief_complaints` VALUES (null, '3', '1', 'Samsethy', '2023-01-03 17:19:03.000000', '80');
-INSERT INTO `appt_chief_complaints` VALUES (null, '5', '1', 'Samsethy', '2023-01-03 17:19:07.000000', '80');
-INSERT INTO `appt_chief_complaints` VALUES ('110', '3', null, null, '2023-01-05 10:30:13.477516', '88');
-INSERT INTO `appt_chief_complaints` VALUES ('110', '4', null, null, '2023-01-05 10:30:13.477516', '88');
-INSERT INTO `appt_chief_complaints` VALUES ('124', '3', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('124', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('127', '7', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('127', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('131', '4', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('131', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('133', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('140', '4', null, null, '2023-03-01 16:12:12.955050', '105');
-INSERT INTO `appt_chief_complaints` VALUES ('178', '3', '1', 'Samsethy', '2023-03-05 10:21:40.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('178', '1', '1', 'Samsethy', '2023-03-05 10:21:40.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('179', '2', '1', 'Samsethy', '2023-03-05 10:43:36.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('179', '4', '1', 'Samsethy', '2023-03-05 10:43:36.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('179', '11', '1', 'Samsethy', '2023-03-05 10:43:36.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('180', '2', '1', 'Samsethy', '2023-03-06 11:25:27.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('180', '4', '1', 'Samsethy', '2023-03-06 11:25:27.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('180', '1', '1', 'Samsethy', '2023-03-06 11:25:27.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('181', '3', '1', 'Samsethy', '2023-03-06 11:27:46.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('181', '1', '1', 'Samsethy', '2023-03-06 11:27:46.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('182', '3', '1', 'Samsethy', '2023-03-06 11:29:03.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('182', '1', '1', 'Samsethy', '2023-03-06 11:29:03.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('182', '5', '1', 'Samsethy', '2023-03-06 11:29:03.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('183', '3', '1', 'Samsethy', '2023-03-06 11:30:06.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('183', '2', '1', 'Samsethy', '2023-03-06 11:30:06.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('183', '5', '1', 'Samsethy', '2023-03-06 11:30:06.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('184', '3', '1', 'Samsethy', '2023-03-06 11:31:05.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('184', '1', '1', 'Samsethy', '2023-03-06 11:31:05.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('184', '5', '1', 'Samsethy', '2023-03-06 11:31:05.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('185', '4', '1', 'Samsethy', '2023-03-06 11:35:08.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('185', '2', '1', 'Samsethy', '2023-03-06 11:35:08.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('185', '8', '1', 'Samsethy', '2023-03-06 11:35:08.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('186', '2', '1', 'Samsethy', '2023-03-06 11:36:13.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('186', '1', '1', 'Samsethy', '2023-03-06 11:36:13.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('186', '2', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('187', '4', '1', 'Samsethy', '2023-03-06 14:01:47.691755', '107');
-INSERT INTO `appt_chief_complaints` VALUES ('187', '2', '1', 'Samsethy', '2023-03-06 14:01:47.691755', '107');
-INSERT INTO `appt_chief_complaints` VALUES ('188', '3', '1', 'Samsethy', '2023-03-06 14:15:22.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('188', '2', '1', 'Samsethy', '2023-03-06 14:15:22.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('188', '1', '1', 'Samsethy', '2023-03-06 14:15:22.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('189', '3', '1', 'Samsethy', '2023-03-06 14:30:59.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('189', '1', '1', 'Samsethy', '2023-03-06 14:30:59.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('189', '5', '1', 'Samsethy', '2023-03-06 14:30:59.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('190', '4', '1', 'Samsethy', '2023-03-06 15:08:29.547441', '111');
-INSERT INTO `appt_chief_complaints` VALUES ('190', '2', '1', 'Samsethy', '2023-03-06 15:08:29.547441', '111');
-INSERT INTO `appt_chief_complaints` VALUES ('190', '1', '1', 'Samsethy', '2023-03-06 15:08:29.547441', '111');
-INSERT INTO `appt_chief_complaints` VALUES ('191', '3', '1', 'Samsethy', '2023-03-06 15:05:22.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('191', '1', '1', 'Samsethy', '2023-03-06 15:05:22.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('192', '2', '1', 'Samsethy', '2023-03-06 15:27:20.384650', '113');
-INSERT INTO `appt_chief_complaints` VALUES ('192', '3', '1', 'Samsethy', '2023-03-06 15:27:20.384650', '113');
-INSERT INTO `appt_chief_complaints` VALUES ('192', '4', '1', 'Samsethy', '2023-03-06 15:27:20.384650', '113');
-INSERT INTO `appt_chief_complaints` VALUES ('194', '2', '1', 'Samsethy', '2023-03-06 16:20:07.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('194', '3', '1', 'Samsethy', '2023-03-06 16:20:07.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('194', '5', '1', 'Samsethy', '2023-03-06 16:20:07.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES (null, '4', '1', 'Samsethy', '2023-03-06 16:28:14.000000', '114');
-INSERT INTO `appt_chief_complaints` VALUES (null, '5', '1', 'Samsethy', '2023-03-06 16:28:18.000000', '114');
+INSERT INTO `appt_chief_complaints` VALUES (null, '3', '1', 'Samsethy', '2023-03-11 11:10:41.000000', '1', 'Bruised');
 
 -- ----------------------------
 -- Table structure for `appt_statuses`
@@ -311,134 +201,6 @@ CREATE TABLE `consultations` (
 
 -- ----------------------------
 -- Records of consultations
--- ----------------------------
-
--- ----------------------------
--- Table structure for `consult_advice`
--- ----------------------------
-DROP TABLE IF EXISTS `consult_advice`;
-CREATE TABLE `consult_advice` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `branch_id` int(10) DEFAULT NULL,
-  `patient_id` int(10) DEFAULT NULL,
-  `ticket_id` int(10) DEFAULT NULL,
-  `content` varchar(800) DEFAULT '',
-  `category` varchar(50) DEFAULT NULL,
-  `create_uid` int(10) DEFAULT NULL,
-  `create_user` varchar(50) DEFAULT NULL,
-  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `update_user` varchar(50) DEFAULT NULL,
-  `update_uid` int(10) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- ----------------------------
--- Records of consult_advice
--- ----------------------------
-
--- ----------------------------
--- Table structure for `consult_chief_complaints`
--- ----------------------------
-DROP TABLE IF EXISTS `consult_chief_complaints`;
-CREATE TABLE `consult_chief_complaints` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `branch_id` int(10) NOT NULL,
-  `category` varchar(50) NOT NULL,
-  `description` varchar(150) NOT NULL,
-  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `create_user` varchar(50) DEFAULT NULL,
-  `create_uid` int(10) DEFAULT NULL,
-  `update_uid` int(10) DEFAULT NULL,
-  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `update_user` varchar(50) DEFAULT NULL,
-  `cc_id` int(11) DEFAULT NULL,
-  `ticket_id` int(10) DEFAULT NULL,
-  `patient_id` int(10) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
-
--- ----------------------------
--- Records of consult_chief_complaints
--- ----------------------------
-
--- ----------------------------
--- Table structure for `consult_diagnosis`
--- ----------------------------
-DROP TABLE IF EXISTS `consult_diagnosis`;
-CREATE TABLE `consult_diagnosis` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `branch_id` int(10) DEFAULT NULL,
-  `patient_id` int(10) DEFAULT NULL,
-  `consult_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `ticket_id` int(10) DEFAULT NULL,
-  `content` varchar(800) DEFAULT '',
-  `category` varchar(50) DEFAULT NULL,
-  `create_uid` int(10) DEFAULT NULL,
-  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `create_user` varchar(50) DEFAULT NULL,
-  `update_uid` int(10) DEFAULT NULL,
-  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `update_user` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- ----------------------------
--- Records of consult_diagnosis
--- ----------------------------
-
--- ----------------------------
--- Table structure for `consult_labo_tests`
--- ----------------------------
-DROP TABLE IF EXISTS `consult_labo_tests`;
-CREATE TABLE `consult_labo_tests` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `test_id` int(10) NOT NULL,
-  `branch_id` int(10) NOT NULL,
-  `test_name` varchar(10) NOT NULL,
-  `description` varchar(250) DEFAULT NULL,
-  `result_summary` varchar(350) DEFAULT NULL,
-  `provider_id` int(10) DEFAULT NULL,
-  `file_name` varchar(150) DEFAULT NULL,
-  `file_ext` varchar(15) DEFAULT NULL,
-  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `create_user` varchar(50) DEFAULT NULL,
-  `create_uid` int(10) DEFAULT NULL,
-  `update_uid` int(10) DEFAULT NULL,
-  `update_user` varchar(50) DEFAULT NULL,
-  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `status_id` tinyint(6) DEFAULT 1 COMMENT 'status_id =>  1=Pending,2 =Finished, 3 =Doctor commented, and patient aware of the result',
-  `followup_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `followup_time` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `ticket_id` int(10) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- ----------------------------
--- Records of consult_labo_tests
--- ----------------------------
-
--- ----------------------------
--- Table structure for `consult_medical_history`
--- ----------------------------
-DROP TABLE IF EXISTS `consult_medical_history`;
-CREATE TABLE `consult_medical_history` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `branch_id` int(10) NOT NULL,
-  `ticket_id` int(10) NOT NULL,
-  `category` varchar(50) NOT NULL,
-  `content` varchar(800) DEFAULT '',
-  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `create_user` varchar(50) DEFAULT NULL,
-  `create_uid` int(10) DEFAULT NULL,
-  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `update_user` varchar(50) DEFAULT NULL,
-  `update_uid` int(6) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- ----------------------------
--- Records of consult_medical_history
 -- ----------------------------
 
 -- ----------------------------
@@ -626,13 +388,14 @@ CREATE TABLE `departments` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of departments
 -- ----------------------------
 INSERT INTO `departments` VALUES ('1', '1', '0', 'Dermatology', null, 'Dermatology', 'Samsethy', '1', null, null, '2023-01-06 19:40:15', null);
 INSERT INTO `departments` VALUES ('2', '1', '0', 'Pastic Surgery', null, 'Pastic Surgery', 'Samsethy', '1', null, null, '2023-01-06 19:40:16', null);
+INSERT INTO `departments` VALUES ('12', '1', '0', 'General', null, 'General', 'Samsethy', '1', null, null, '2023-03-07 18:07:23', null);
 
 -- ----------------------------
 -- Table structure for `employees`
@@ -794,8 +557,8 @@ CREATE TABLE `invoices` (
 -- Records of invoices
 -- ----------------------------
 INSERT INTO `invoices` VALUES ('1', '56', '', 'V12023-00026', '2023-02-25 11:38:12.007421', 'net 60', '2023-02-12', '11', null, null, '01245645', '', 'USD', '4501.0000', 'active', null, null, '0.00', '101.50', '0.00', '0.00', '0.00', '101.50', '100.00', '0.0000', null, '', '0', null, null, '0', 'Samsethy', '2023-02-16 09:45:50', '1', '0', '2023-02-25 11:38:12', null, null, 'CI', null, null, 'ABA', 'Samsethy', '00601893', 'Samsethy', '0.00', null, '2023-02-25 11:38:12.007421', null, '0.0000', '0.00', null);
-INSERT INTO `invoices` VALUES ('1', '60', '', 'V12023-00030', '2023-02-25 11:36:56.803089', 'net 60', '2023-02-12', '11', null, null, '01245645', '', 'USD', '4501.0000', 'active', null, null, '0.00', '101.50', '0.00', '0.00', '0.00', '101.50', '90.00', '0.0000', null, '', '0', null, null, '0', 'Samsethy', '2023-02-16 10:01:04', '1', '0', '2023-02-25 11:36:56', null, null, 'CI', null, null, 'ABA', 'Samsethy', '00601893', 'Samsethy', '0.00', null, '2023-02-25 11:36:56.803089', null, '0.0000', '0.00', null);
-INSERT INTO `invoices` VALUES ('1', '68', '', 'V12023-00036', '2023-02-25 11:31:56.853705', 'net 30', '2023-02-19', '20', null, null, '0125346456', '', 'USD', '4501.0000', 'active', null, null, '0.00', '800.00', '0.00', '0.00', '0.00', '800.00', '0.00', '27.5000', null, '', '0', 'sdsfsdgsd', null, '0', 'Samsethy', '2023-02-19 12:29:25', '1', '0', '2023-02-25 11:31:56', null, null, 'CI', null, null, 'ABA', 'Samsethy', '00601893', 'Samsethy', '0.00', null, '2023-02-25 11:31:56.853705', null, '40.0000', '5.00', null);
+INSERT INTO `invoices` VALUES ('1', '60', '', 'V12023-00030', '2023-03-07 14:53:40.850070', 'net 60', '2023-02-12', '11', null, null, '01245645', '', 'USD', '4501.0000', 'active', null, null, '0.00', '101.50', '0.00', '0.00', '0.00', '101.50', '0.00', '0.0000', null, '', '0', null, null, '0', 'Samsethy', '2023-02-16 10:01:04', '1', '0', '2023-03-07 14:53:40', null, null, 'CI', null, null, 'ABA', 'Samsethy', '00601893', 'Samsethy', '0.00', null, '2023-03-07 14:53:40.850070', null, '0.0000', '0.00', null);
+INSERT INTO `invoices` VALUES ('1', '68', '', 'V12023-00036', '2023-03-07 14:53:08.897653', 'net 30', '2023-02-19', '20', null, null, '0125346456', '', 'USD', '4501.0000', 'active', null, null, '0.00', '800.00', '0.00', '0.00', '0.00', '800.00', '50.00', '2.5000', null, '', '0', 'sdsfsdgsd', null, '0', 'Samsethy', '2023-02-19 12:29:25', '1', '0', '2023-03-07 14:53:08', null, null, 'CI', null, null, 'ABA', 'Samsethy', '00601893', 'Samsethy', '0.00', null, '2023-03-07 14:53:08.897653', null, '40.0000', '5.00', null);
 
 -- ----------------------------
 -- Table structure for `invoice_items`
@@ -881,16 +644,14 @@ CREATE TABLE `invoice_payments` (
   `amount_after_tax` decimal(10,2) DEFAULT 0.00,
   `payer_name` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=95 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of invoice_payments
 -- ----------------------------
-INSERT INTO `invoice_payments` VALUES ('89', '1', '60', '2023-02-25 00:00:00.000000', '60.00', null, '1', '2023-02-25 11:34:39.670795', 'Samsethy', '1', '2023-02-25 11:34:39.000000', 'Samsethy', 'USD', '1.00', '0.00', 'P12023-00080', '0.00', null);
-INSERT INTO `invoice_payments` VALUES ('90', '1', '60', '2023-02-25 11:35:00.479226', '10.00', null, '1', '2023-02-25 11:35:00.479226', 'Samsethy', null, '2023-02-25 11:35:00.479226', null, 'USD', '1.00', '0.00', 'P12023-00081', '0.00', null);
-INSERT INTO `invoice_payments` VALUES ('92', '1', '60', '2023-02-25 11:36:56.793480', '20.00', null, '1', '2023-02-25 11:36:56.793480', 'Samsethy', null, '2023-02-25 11:36:56.793480', null, 'USD', '1.00', '0.00', 'P12023-00083', '0.00', null);
 INSERT INTO `invoice_payments` VALUES ('93', '1', '56', '2023-02-25 11:37:58.827754', '50.00', null, '1', '2023-02-25 11:37:58.827754', 'Samsethy', null, '2023-02-25 11:37:58.827754', null, 'USD', '1.00', '0.00', 'P12023-00084', '0.00', null);
 INSERT INTO `invoice_payments` VALUES ('94', '1', '56', '2023-02-25 11:38:11.989372', '50.00', null, '1', '2023-02-25 11:38:11.989372', 'Samsethy', null, '2023-02-25 11:38:11.989372', null, 'USD', '1.00', '0.00', 'P12023-00085', '0.00', null);
+INSERT INTO `invoice_payments` VALUES ('95', '1', '68', '2023-03-07 14:53:08.886449', '50.00', 'sdgdfgfd', '1', '2023-03-07 14:53:08.886449', 'Samsethy', null, '2023-03-07 14:53:08.886449', null, 'USD', '1.00', '2.50', 'P12023-00086', '0.00', null);
 
 -- ----------------------------
 -- Table structure for `inv_adjustment_types`
@@ -2799,20 +2560,23 @@ CREATE TABLE `medical_services` (
   `department_id` int(10) NOT NULL,
   `treatment_method` varchar(25) DEFAULT '' COMMENT 'treatment_type ={non-surgery,minor suregery,surgery}',
   `service_type` varchar(25) DEFAULT 'treatment' COMMENT 'service_type = {treatment, labo,consultation}',
+  `tax_rate` decimal(10,2) DEFAULT 0.00,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of medical_services
 -- ----------------------------
-INSERT INTO `medical_services` VALUES ('1', '1', 'Skin cleaning', 'Skin cleaning', '1', 'Admin', '2023-01-06 17:22:21.590731', '2023-01-06 17:22:21.590731', null, null, '0.00', 'USD', '0.00', '0', null, 'treatment');
-INSERT INTO `medical_services` VALUES ('2', '1', 'Facial treatment', 'Facial Treatment', '1', 'Admin', '2023-01-06 17:22:26.077659', '2023-01-06 17:22:26.077659', null, null, '0.00', 'USD', '0.00', '0', null, 'treatment');
-INSERT INTO `medical_services` VALUES ('9', '1', 'Facial treatment', 'Facial treatment', '1', 'Samsethy', '2023-01-07 00:10:00.000000', null, null, null, null, 'USD', null, '1', 'nonsurgery', 'treatment');
-INSERT INTO `medical_services` VALUES ('10', '1', 'Mole removal', 'Facial treatment', '1', 'Samsethy', '2023-01-09 16:57:48.089617', '2023-01-09 16:57:48.000000', 'Samsethy', '1', null, 'USD', null, '1', 'nonsurgery', 'treatment');
-INSERT INTO `medical_services` VALUES ('11', '1', 'Skin whitening Natural', 'Facial treatment', '1', 'Samsethy', '2023-01-09 16:57:25.187427', '2023-01-09 16:57:25.000000', 'Samsethy', '1', '10.00', 'USD', null, '1', 'nonsurgery', 'treatment');
-INSERT INTO `medical_services` VALUES ('22', '1', 'Body message', 'Facial treatment', '1', 'Samsethy', '2023-01-09 16:57:06.508011', '2023-01-09 16:57:06.000000', 'Samsethy', '1', null, 'USD', null, '1', 'nonsurgery', 'treatment');
-INSERT INTO `medical_services` VALUES ('27', '1', 'Blood test', 'Blood test', '1', 'Samsethy', '2023-01-07 00:23:42.000000', null, null, null, null, 'USD', null, '1', 'nonsurgery', 'labo');
-INSERT INTO `medical_services` VALUES ('28', '1', 'Medical Consultation', 'Medical Consultation', '1', 'Samsethy', '2023-02-22 09:50:07.603905', '2023-02-22 09:50:07.000000', 'Samsethy', '1', null, 'USD', null, '1', 'none', 'consultation');
+INSERT INTO `medical_services` VALUES ('1', '1', 'Skin cleaning', 'Skin cleaning', '1', 'Admin', '2023-01-06 17:22:21.590731', '2023-01-06 17:22:21.590731', null, null, '0.00', 'USD', '0.00', '0', null, 'treatment', '0.00');
+INSERT INTO `medical_services` VALUES ('2', '1', 'Facial treatment', 'Facial Treatment', '1', 'Admin', '2023-01-06 17:22:26.077659', '2023-01-06 17:22:26.077659', null, null, '0.00', 'USD', '0.00', '0', null, 'treatment', '0.00');
+INSERT INTO `medical_services` VALUES ('9', '1', 'Facial treatment', 'Facial treatment', '1', 'Samsethy', '2023-01-07 00:10:00.000000', null, null, null, null, 'USD', null, '1', 'nonsurgery', 'treatment', '0.00');
+INSERT INTO `medical_services` VALUES ('10', '1', 'Mole removal', 'Facial treatment', '1', 'Samsethy', '2023-01-09 16:57:48.089617', '2023-01-09 16:57:48.000000', 'Samsethy', '1', null, 'USD', null, '1', 'nonsurgery', 'treatment', '0.00');
+INSERT INTO `medical_services` VALUES ('11', '1', 'Skin whitening Natural', 'Facial treatment', '1', 'Samsethy', '2023-01-09 16:57:25.187427', '2023-01-09 16:57:25.000000', 'Samsethy', '1', '10.00', 'USD', null, '1', 'nonsurgery', 'treatment', '0.00');
+INSERT INTO `medical_services` VALUES ('22', '1', 'Body message', 'Facial treatment', '1', 'Samsethy', '2023-01-09 16:57:06.508011', '2023-01-09 16:57:06.000000', 'Samsethy', '1', null, 'USD', null, '1', 'nonsurgery', 'treatment', '0.00');
+INSERT INTO `medical_services` VALUES ('27', '1', 'Blood test', 'Blood test', '1', 'Samsethy', '2023-01-07 00:23:42.000000', null, null, null, null, 'USD', null, '1', 'nonsurgery', 'labo', '0.00');
+INSERT INTO `medical_services` VALUES ('28', '1', 'Medical Consultation', 'Medical Consultation', '1', 'Samsethy', '2023-02-22 09:50:07.603905', '2023-02-22 09:50:07.000000', 'Samsethy', '1', null, 'USD', null, '1', 'none', 'consultation', '0.00');
+INSERT INTO `medical_services` VALUES ('32', '1', 'Urine test', 'Urine test', '1', 'Samsethy', '2023-03-10 14:37:57.518130', '2023-03-10 14:37:57.000000', 'Samsethy', '1', '20.00', 'USD', null, '12', 'none', 'labo', '0.00');
+INSERT INTO `medical_services` VALUES ('33', '1', 'Blood test special', 'special test', '1', 'Samsethy', '2023-03-10 12:38:00.000000', null, null, null, '15.00', 'USD', null, '12', 'none', 'labo', '0.00');
 
 -- ----------------------------
 -- Table structure for `migrations`
@@ -2823,7 +2587,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of migrations
@@ -2845,6 +2609,7 @@ INSERT INTO `migrations` VALUES ('14', '2022_12_23_233609_create_db', '1');
 INSERT INTO `migrations` VALUES ('15', '2022_12_23_233609_create_db', '1');
 INSERT INTO `migrations` VALUES ('16', '2022_12_23_233609_create_db', '1');
 INSERT INTO `migrations` VALUES ('17', '2022_12_23_233609_create_db', '1');
+INSERT INTO `migrations` VALUES ('18', '2022_12_23_233609_create_db', '1');
 
 -- ----------------------------
 -- Table structure for `partners`
@@ -2869,15 +2634,16 @@ CREATE TABLE `partners` (
   `cp_name` varchar(100) DEFAULT NULL,
   `cp_phone_number` varchar(100) DEFAULT NULL,
   `cp_email` varchar(100) DEFAULT NULL,
+  `status_id` int(11) DEFAULT 1,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of partners
 -- ----------------------------
-INSERT INTO `partners` VALUES ('1', '1', 'Biomed', null, null, '012345345', null, 'institution', 'Samsethy', '1', '2023-02-03 14:40:37.368067', '2023-02-03 14:40:37.000000', '1', 'Samsethy', null, 'some one', '012345345', null);
-INSERT INTO `partners` VALUES ('4', '1', 'Super Lab', null, null, '012345345', null, 'institution', 'Samsethy', '1', '2023-01-07 00:48:26.000000', null, null, null, null, 'some one', '012345345', 'ccgmailcom');
-INSERT INTO `partners` VALUES ('6', '1', 'ABD Lab', null, 'dsds', '012345345', null, 'institution', 'Samsethy', '1', '2023-02-03 14:45:44.000000', null, null, null, null, 'someone', '0122234234', null);
+INSERT INTO `partners` VALUES ('1', '1', 'Biomed', 'fdsgfgfdg', null, '012345345', null, 'institution', 'Samsethy', '1', '2023-03-10 10:55:20.103175', '2023-03-10 10:55:20.000000', '1', 'Samsethy', null, 'some one', '012345345', null, '1');
+INSERT INTO `partners` VALUES ('4', '1', 'Super Lab', null, null, '012345345', null, 'institution', 'Samsethy', '1', '2023-03-10 17:36:06.879696', '2023-03-10 17:36:06.000000', '1', 'Samsethy', null, 'some one', '012345345', null, '1');
+INSERT INTO `partners` VALUES ('6', '1', 'ABD Lab', null, 'dsds', '012345345', null, 'institution', 'Samsethy', '1', '2023-02-03 14:45:44.000000', null, null, null, null, 'someone', '0122234234', null, '1');
 
 -- ----------------------------
 -- Table structure for `patients`
@@ -2957,6 +2723,31 @@ CREATE TABLE `patient_consult_items` (
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for `patient_diagnosis`
+-- ----------------------------
+DROP TABLE IF EXISTS `patient_diagnosis`;
+CREATE TABLE `patient_diagnosis` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) DEFAULT NULL,
+  `patient_id` int(10) DEFAULT NULL,
+  `consult_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `ticket_id` int(10) DEFAULT NULL,
+  `content` varchar(800) DEFAULT '',
+  `category` varchar(50) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `create_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of patient_diagnosis
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for `patient_labo_tests`
 -- ----------------------------
 DROP TABLE IF EXISTS `patient_labo_tests`;
@@ -2969,7 +2760,7 @@ CREATE TABLE `patient_labo_tests` (
   `labor_id` int(10) NOT NULL,
   `test_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   `result_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `consultant_comment` varchar(800) DEFAULT NULL,
+  `consultant_comments` varchar(800) DEFAULT '',
   `result_description` varchar(800) DEFAULT NULL,
   `file_name` varchar(300) DEFAULT NULL,
   `file_type` varchar(10) DEFAULT NULL,
@@ -2985,6 +2776,30 @@ CREATE TABLE `patient_labo_tests` (
 
 -- ----------------------------
 -- Records of patient_labo_tests
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `patient_medical_advice`
+-- ----------------------------
+DROP TABLE IF EXISTS `patient_medical_advice`;
+CREATE TABLE `patient_medical_advice` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) DEFAULT NULL,
+  `patient_id` int(10) DEFAULT NULL,
+  `ticket_id` int(10) DEFAULT NULL,
+  `content` varchar(800) DEFAULT '',
+  `category` varchar(50) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of patient_medical_advice
 -- ----------------------------
 
 -- ----------------------------
@@ -3068,6 +2883,32 @@ INSERT INTO `patient_medical_conditions` VALUES ('248', '1', '118', '3', '0', 'A
 INSERT INTO `patient_medical_conditions` VALUES ('250', '1', '119', '3', '0', 'Active', '2023-03-06 16:20:43.000000', '1', 'Samsethy', '2023-03-06 16:20:43.000000', null, null, null, 'Conjunctivitis', null);
 
 -- ----------------------------
+-- Table structure for `patient_medical_history`
+-- ----------------------------
+DROP TABLE IF EXISTS `patient_medical_history`;
+CREATE TABLE `patient_medical_history` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `ticket_id` int(10) NOT NULL,
+  `category` varchar(50) NOT NULL,
+  `content` varchar(800) DEFAULT '',
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `create_user` varchar(50) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(6) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of patient_medical_history
+-- ----------------------------
+INSERT INTO `patient_medical_history` VALUES ('6', '1', '1', 'Traveling Abroad', 'Yes', '2023-03-11 14:50:14.000000', 'Samsethy', '1', null, null, null);
+INSERT INTO `patient_medical_history` VALUES ('7', '1', '1', 'Family Diabete', 'Maybe', '2023-03-11 14:50:14.000000', 'Samsethy', '1', null, null, null);
+INSERT INTO `patient_medical_history` VALUES ('8', '1', '1', 'Allergy', 'No', '2023-03-11 14:50:14.000000', 'Samsethy', '1', null, null, null);
+
+-- ----------------------------
 -- Table structure for `patient_pe`
 -- ----------------------------
 DROP TABLE IF EXISTS `patient_pe`;
@@ -3108,14 +2949,14 @@ CREATE TABLE `patient_photos` (
   `ticket_id` int(10) DEFAULT NULL,
   `patient_id` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of patient_photos
 -- ----------------------------
 INSERT INTO `patient_photos` VALUES ('20', '1', 'general', '1_6406cb4a4fca9_20230307_120338.jpg', 'jpg', 'Samsethy', '2023-03-07 12:27:38.000000', '1', null, null, null, '114', '119');
 INSERT INTO `patient_photos` VALUES ('21', '1', 'general', '1_6406cc9eadd76_20230307_120318.jpg', 'jpg', 'Samsethy', '2023-03-07 12:33:18.000000', '1', null, null, null, '114', '119');
-INSERT INTO `patient_photos` VALUES ('22', '1', 'general', '1_6406ccaa4a8fd_20230307_120330.jpg', 'jpg', 'Samsethy', '2023-03-07 12:33:30.000000', '1', null, null, null, '114', '119');
+INSERT INTO `patient_photos` VALUES ('24', '1', 'general', '1_6406d67249819_20230307_010314.jpg', 'jpg', 'Samsethy', '2023-03-07 13:15:14.000000', '1', null, null, null, '114', '119');
 
 -- ----------------------------
 -- Table structure for `patient_prescribed_items`
@@ -3421,7 +3262,7 @@ CREATE TABLE `receipt_number_control` (
 -- ----------------------------
 -- Records of receipt_number_control
 -- ----------------------------
-INSERT INTO `receipt_number_control` VALUES ('tax_line', null, '1', '2023', 'P', '85');
+INSERT INTO `receipt_number_control` VALUES ('tax_line', null, '1', '2023', 'P', '86');
 
 -- ----------------------------
 -- Table structure for `reports`
@@ -3771,6 +3612,34 @@ INSERT INTO `temp` VALUES ('Injection', 'IN0050', 'F-MELACLEAR', 'Bottle', '2', 
 INSERT INTO `temp` VALUES ('Topical Product', 'TP0085', 'Vitara TXPPE', 'Tube', '3', '1');
 
 -- ----------------------------
+-- Table structure for `test_labos`
+-- ----------------------------
+DROP TABLE IF EXISTS `test_labos`;
+CREATE TABLE `test_labos` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `test_id` int(10) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `labo_id` int(10) NOT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_uid` int(10) DEFAULT NULL,
+  `update_user` varchar(50) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `description` varchar(250) DEFAULT NULL,
+  `branch_id` int(11) DEFAULT NULL,
+  `currency_code` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of test_labos
+-- ----------------------------
+INSERT INTO `test_labos` VALUES ('24', '27', '37.00', '4', '1', 'Samsethy', '2023-03-10 17:06:09.000000', null, null, null, null, '1', 'USD');
+INSERT INTO `test_labos` VALUES ('26', '32', '19.00', '6', '1', 'Samsethy', '2023-03-10 17:08:42.000000', null, null, null, null, '1', 'USD');
+INSERT INTO `test_labos` VALUES ('27', '27', '10.00', '6', '1', 'Samsethy', '2023-03-10 17:53:10.000000', null, null, null, null, '1', 'USD');
+
+-- ----------------------------
 -- Table structure for `tickets`
 -- ----------------------------
 DROP TABLE IF EXISTS `tickets`;
@@ -4034,13 +3903,13 @@ CREATE TABLE `um_sessions` (
   `status` varchar(10) DEFAULT NULL COMMENT 'status ={online,offline}',
   `lang` varchar(50) DEFAULT 'en',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1925 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1941 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of um_sessions
 -- ----------------------------
 INSERT INTO `um_sessions` VALUES ('1840', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'Bory', '2', '2023-02-02 11:04:47', '2023-02-02 11:04:47', 'TWY286rzc1Oucpp07znsiww3n89D8dF5UkwK8P', 'ukswNQRSy9ek72svrQlPHIs8RGQu68D3oMXCJ8', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjc1MzEwNjg3LCJuYmYiOjE2NzUzMTA2ODcsImV4cCI6MTY3NTMxNDI4NywibGFuZyI6ImVuIiwiaWQiOjIsInVzZXJfY2xhc3MiOiJhZG1pbiIsIm9mZmljaWFsX2lkIjpudWxsLCJvZmZpY2lhbF9jb2RlIjpudWxsLCJsb2dpbl9uYW1lIjoiQm9yeSIsImJyYW5jaF9pZCI6MSwiZnVsbF9uYW1lIjoiQm9yeSIsInN0YXR1cyI6ImFjdGl2ZSIsImlzX2xvY2tlZCI6MCwiZW1haWwiOm51bGwsInBob25lX251bWJlciI6bnVsbCwib3RwX2NvZGUiOm51bGx9.YsJr6g2Lqu2QLmArmZ3-tTLHU7jP2ceDspbDvCXD4Zg', null, 'en');
-INSERT INTO `um_sessions` VALUES ('1924', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-03-07 12:17:39', '2023-03-07 12:17:39', 'xShNkUxh7VHrBs3m34AAY5q6xgYP6pRq636eBj', 'P29FfivRHLI89YafnNUGQ4wcF8SoOK0dM2y9DM', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjc4MTY2MjU5LCJuYmYiOjE2NzgxNjYyNTksImV4cCI6MTY3ODE3NzA1OSwibGFuZyI6ImVuIiwiaWQiOjEsInVzZXJfY2xhc3MiOiJhZG1pbiIsIm9mZmljaWFsX2lkIjpudWxsLCJvZmZpY2lhbF9jb2RlIjoiMDAwMSIsImxvZ2luX25hbWUiOiJhZG1pbkBnbWFpbC5jb20iLCJicmFuY2hfaWQiOjEsImZ1bGxfbmFtZSI6IlNhbXNldGh5Iiwic3RhdHVzIjoiYWN0aXZlIiwiaXNfbG9ja2VkIjowLCJlbWFpbCI6bnVsbCwicGhvbmVfbnVtYmVyIjoiMDEyNTc4OTAiLCJvdHBfY29kZSI6bnVsbH0.D8DRHtRnNZS7LO1uUTY1I5HZHUdtGtwTJenBCmsaPLw', null, 'en');
+INSERT INTO `um_sessions` VALUES ('1940', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-03-11 14:47:39', '2023-03-11 14:47:39', 'yvG75VVC2ksknFndz4WEw904voRFhH12w64wG2', '116v6Psea5oggF72pH2Gj1Pjoi6un8SScX3h24', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjc4NTIwODU5LCJuYmYiOjE2Nzg1MjA4NTksImV4cCI6MTY3ODUzMTY1OSwibGFuZyI6ImVuIiwiaWQiOjEsInVzZXJfY2xhc3MiOiJhZG1pbiIsIm9mZmljaWFsX2lkIjpudWxsLCJvZmZpY2lhbF9jb2RlIjoiMDAwMSIsImxvZ2luX25hbWUiOiJhZG1pbkBnbWFpbC5jb20iLCJicmFuY2hfaWQiOjEsImZ1bGxfbmFtZSI6IlNhbXNldGh5Iiwic3RhdHVzIjoiYWN0aXZlIiwiaXNfbG9ja2VkIjowLCJlbWFpbCI6bnVsbCwicGhvbmVfbnVtYmVyIjoiMDEyNTc4OTAiLCJvdHBfY29kZSI6bnVsbH0.1QFZaBm3FHGGNmPMW6tx4gXREtCNYfVVesy1YASZnI4', null, 'en');
 
 -- ----------------------------
 -- Table structure for `um_users`
@@ -4210,4 +4079,5 @@ CREATE TABLE `warehouses` (
 -- Records of warehouses
 -- ----------------------------
 INSERT INTO `warehouses` VALUES ('1', '1', 'Main warehouse', '0', '0', null, null, null, null, null, null, null, null, null, null, null);
+
  

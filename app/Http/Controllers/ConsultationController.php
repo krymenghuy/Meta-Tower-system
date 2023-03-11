@@ -34,13 +34,37 @@ class ConsultationController extends Controller
         return JDV::result($data);
     }
 
+    //Save one chief complaint
     function saveChiefComplaint(Request $req){
         $ss = UM::getUserInfoBytoken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
-        $c = new Consultation(null,$ss);
-        $res= $c->saveChiefComplaints();
+        $c = new Consultation();
+        $res= $c->saveChiefComplaint($req->cc_id,$req->ticket_id,$ss);
+        return JDV::success();
+    }
+    // //Save many chief complaints
+    // function saveChiefComplaint(Request $req){
+    //     $ss = UM::getUserInfoBytoken($req,-1);
+    //     if($ss->status_code !==200) return JDV::raw($ss);
+    //     $c = new Consultation(null,$ss);
+    //     $res= $c->saveChiefComplaints($req->all());
+    // }
+
+    function saveVitalSigns(Request $req){
+        $ss = UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $c = new Consultation();
+        $res= $c->saveVitalSigns($req->all(),$req->ticket_id,$ss);
+        return JDV::success();
     }
 
+    function saveMedicalHistory(Request $req){
+        $ss = UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $c = new Consultation();
+        $res= $c->saveMedicalHistory($req->items,$req->ticket_id,$ss);
+        return JDV::raw($res);
+    }
     function getConsultationData(Request $req){
         $ss = UM::getUserInfoBytoken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
