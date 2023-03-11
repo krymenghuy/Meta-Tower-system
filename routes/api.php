@@ -100,7 +100,9 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         //NOTE: getLaboTestData() returns object = {laboTests=> [{id,name,description,labo_id},...], labo_test_options=>[{value,text},...], labo_options=>[{value,text},...]}
         Route::post('consultation/labo-test-data', [ConsultationController::class, 'getLaboTestData']);
 
+        Route::post('consultation/medical-history', [ConsultationController::class, 'getMedicalHistory']);
         Route::post('consultation/save-chief-complaint', [ConsultationController::class, 'saveChiefComplaint']);
+        Route::post('consultation/remove-chief-complaint', [ConsultationController::class, 'deleteChiefComplaint']);
         Route::post('consultation/save-medical-history', [ConsultationController::class, 'saveMedicalHistory']);
         Route::post('consultation/save-vital-signs', [ConsultationController::class, 'saveVitalSigns']);
     //end::ConsultationController

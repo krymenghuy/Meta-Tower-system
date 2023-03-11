@@ -1533,60 +1533,53 @@ let ConsultTabView = new function () {
         }
     }
 
+    this.loadMedicalHistory =(ticket_id,onFinish)=>{
+        let p = {'tiket_id':ticket_id};
+        vsapi.call(`${main_view.base_url}/api/consultation/medical-history`,p,null,false).then(res=>{
+           if(res.status_code===200){
+              onFinish(res.data); 
+           }else onFinish({});
+        });
+    }
+
     //showConsultMedicalHistory()
     this.showConsultMedicalHistory = (div, view_name) => {
         let wrapper_id = '_consult_medical_history_warpper';
         let ticket_id = div.data('tid');
         let patient_id = div.data('patientid');
         let el = div.find(`#${wrapper_id}`);
+       
+        mThis.loadMedicalHistory(ticket_id,d =>{
+            let categories =['Personal History','Family History','Traveling','Vacination','Allergy','Surgery'];
+            if (el.length > 0){
+                el.show().siblings().hide();
+                el.find('.data-input').each(function(){
+                    let e = $(this);
+                    let cat = e.data('category');
+                    e.val(d[cat]);
+                });
+                LocaleManager.translateZone(wrapper_id);
+                return;
+            }
+            let html =`<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
+            <h3 class="trans-text" data-langprop="consult.Medical History">Medical History</h3>
+            <div class="d-flex flex-column">`;
 
-        if (el.length === 0 || !el) {
-            let html =
-                `<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
-              <h3 class="trans-text" data-langprop="consult.Medical History">Medical History</h3>
-              <div class="d-flex flex-column">
-                <div>
-                   <label class="control-label">Personal History</label>
-                   <textarea data-category="Personal History" class="data-input form-control" cols="10" rows="3" id="_consul_history_personal"></textarea>
-                </div>
+            categories.map(c=>{
+              html= [html,`<div>
+              <label class="control-label">${c}</label>
+              <textarea data-category="${c}" class="data-input form-control" cols="10" rows="3">${d[c]}</textarea>
+              </div>`].join('');
+            });
 
-                <div>
-                  <label class="control-label">Family History</label>
-                  <textarea data-category="Family History" class="data-input form-control" cols="10" rows="3" id="_consul_history_familiy"></textarea>
-                </div>
-
-                <div>
-                  <label class="control-label">Traveling</label>
-                  <textarea data-category ="Traveling" class="data-input form-control" cols="10" rows="3" id="_consul_history_traveling"></textarea>
-                </div>
-                
-                <div>
-                  <label class="control-label">Vacination</label>
-                  <textarea data-category ="Vacination" class="data-input form-control" cols="10" rows="3" id="_consul_history_vacination"></textarea>
-                </div>
-
-                <div>
-                  <label class="control-label">Allergy</label>
-                  <textarea data-category="Allergy" class="data-input form-control" cols="10" rows="3" id="_consul_history_allergy"></textarea>
-                </div>
-
-                <div>
-                  <label class="control-label">Surgery</label>
-                  <textarea data-category="Surgery" class="data-input form-control" cols="10" rows="3" id="_consul_history_surgery"></textarea>
-                </div>
-
-                <div>
-                  <label class="control-label">Others</label>
-                  <textarea data-category="Others" class="data-input form-control" cols="10" rows="3" id="_consul_history_others"></textarea>
-                </div>
-              </div>
-           </div>`;
+            html = [html,`</div></div>`].join('');
+ 
             div.append(html);
             el = $(`#${wrapper_id}`);
-        }
+            el.show().siblings().hide();
+            LocaleManager.translateZone(wrapper_id);
 
-        el.show().siblings().hide();
-        LocaleManager.translateZone(wrapper_id);
+        });
     }
 
     this.getTicketInfo_laboTest =(ticket_id,onFinish)=>{
