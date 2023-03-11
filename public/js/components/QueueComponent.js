@@ -1203,7 +1203,7 @@ let ConsultTabView = new function () {
                     "cssClass": "",
                 }
             ];
-
+ 
             mThis.loadChiefComplaintOptions(ticket_id, d => {
                 //After having loaded chief complaint options from server => init cc-table
                 let cc_options = StringSanitizer.sanitizeObject(d.chief_complaint_options);
@@ -1216,7 +1216,7 @@ let ConsultTabView = new function () {
                     "showColumnHeaders": false,
                     "showAddLineButton": false,
                     "onItemChange": (item,col_name,td) => {
-                        //console.error(JSON.stringify(col_name) + ' has changed');
+                       mThis.saveChiefComplaint({'cc_id':item.value,'description':item.text}); 
                     },
                     // "onItemDeleted": (tr) => {
                     //     //console.error(JSON.stringify(col_name) + ' has changed');
@@ -1233,6 +1233,24 @@ let ConsultTabView = new function () {
                 el = div.find(`#${wrapper_id}`);
                 el.show().siblings().hide();
             });
+    }
+
+    this.saveChiefComplaint = (item)=>{
+        item.ticket_id = mThis.ticket_id;
+        vsapi.call(`${main_view.base_url}/api/consult/save-chief-complaint`,item,null,false).then(res=>{
+            if(res.status_code===200){
+
+            }
+        }); 
+    }
+    
+    this.saveMedicalHistory = (item)=>{
+        item.ticket_id = mThis.ticket_id;
+        vsapi.call(`${main_view.base_url}/api/consult/save-medical-history`,item,null,false).then(res=>{
+            if(res.status_code===200){
+                
+            }
+        }); 
     }
 
     this.loadChiefComplaintOptions = (ticket_id = 0, onFinish = null) => {
