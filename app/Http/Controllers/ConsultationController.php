@@ -34,6 +34,13 @@ class ConsultationController extends Controller
         return JDV::result($data);
     }
 
+    function saveChiefComplaint(Request $req){
+        $ss = UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $c = new Consultation(null,$ss);
+        $res= $c->saveChiefComplaints();
+    }
+
     function getConsultationData(Request $req){
         $ss = UM::getUserInfoBytoken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
@@ -42,7 +49,7 @@ class ConsultationController extends Controller
         return JDV::result($row);
     }
 
-    function getLaboTestData(){
+    function getLaboTestData(Request $req){
         $ss = UM::getUserInfoBytoken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
         $section_name = $req->section_name;

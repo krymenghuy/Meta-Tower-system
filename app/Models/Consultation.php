@@ -67,13 +67,13 @@ class Consultation extends Model
 
        $consult_id = saveData($ss,'consultations',['id'=>$consult_id],[],1);
        if ($consult_id >0){
-            $this->saveChiefComplaints($ticket_id,$inputs['chief_complaints']);
-            $this->saveVitalSigns($ticket_id,$inputs['vital_signs']);
-            $this->saveMedicalHistory($ticket_id,$inputs['medical_history']);
-            $this->savePrescription($ticket_id,$inputs['prescription']);
-            $this->saveLaboTests($ticket_id,$inputs['labo_tests']);
-            $this->savePE($ticket_id,$inputs['physical_examination']);
-            $this->saveAdvice($ticket_id,$inputs['advice']);
+            $this->saveChiefComplaints($inputs['chief_complaints'],$ticket_id,$ss);
+            $this->saveVitalSigns($inputs['vital_signs'],$ticket_id,$ss);
+            $this->saveMedicalHistory($inputs['medical_history'],$ticket_id,$ss);
+            $this->savePrescription($inputs['prescription'],$ticket_id,$ss);
+            $this->saveLaboTests($inputs['labo_tests'],$ticket_id,$ss);
+            $this->savePE($inputs['physical_examination'],$ticket_id,$ss);
+            $this->saveAdvice($inputs['advice'],$ticket_id,$ss);
             return DV::success(['id'=>$consult_id]);
        }
        return DV::error('Failed to save consultation data');
@@ -92,9 +92,21 @@ class Consultation extends Model
         ];
     }
 
+    static function laboTests($ticket_id,$ss){
+        $branch_id = $ss->branch_id;
+        $cols = ['s.id as test_id','s.name as test_name','t.test_date','t.result_date','t.consultant_comments','t.result_description','t.file_name','t.file_type'];
+        return DB::table('patient_labo_tests as t')->join('medical_services as s','s.id','=','t.test_id')->where('t.branch_id',$branch_id)->where('ticket_id',$ticket_id)->select($cols)->get();
+    }
+
+    function getLaboTests($ticket_id,$ss=null){
+        $ticket_id =$ticket_id? $ticket_id:$this->getId();
+        $ss = $ss?$ss:$this->getUserInfo();
+        return self::laboTests($ticket_id,$ss); 
+    }
+
     function getLaboTestData($ticket_id=null,$ss=null){
         $ss = $ss?$ss:$this->getUserInfo();
-        $ticket_id = $ticket_id?$ticket_id:$tjis->getId();
+        $ticket_id = $ticket_id?$ticket_id:$this->getId();
         $branch_id = $ss->branch_id;
         return (object)[
             'labo_test_options'=>DB::table('medical_services AS s')->join('test_labos as l','s.id','=','l.test_id')->where('s.branch_id',$branch_id)->select(['s.id as value','s.name as text'])->orderBy('s.name','ASC')->get(),
@@ -113,7 +125,35 @@ class Consultation extends Model
        return isset($rows[0])?$rows[0]:null;
     }
 
-    static function saveChiefComplaints($ss,$items,$ticket_id){
+    function saveVitalSigns($vital_sign_items =[],$ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id? $ticket_id:$this->getTicketId();
+        $ss = $ss? $ss: $this->getUserInfo();
+        foreach($vital_sign_items as $a_item){
+            $item = (object)$a_item;
+            $row = getDataRow('vital_signs',['id'=>$item->id],"id,display_name as description");
+            if($row){
+                DB::table('patient_vital_signs')->where('ticket_id',$ticket_id)->where('vital_sign_id',$item->id)->delete();
+                saveData($ss,'patient_vital_signs',['id'=>null],['ticket_id'=>$ticket_id,'vital_sign_id'=>$item->id],[],1);
+            }  
+        }
+        return DV::success();
+    }
+
+    function saveChiefComplaint($cc_id,$ticket_id=null,$ss=null){
+      $ticket_id = $ticket_id? $ticket_id:$this->getTicketId();
+      $ss = $ss? $ss: $this->getUserInfo();
+      $row = getDataRow('chief_complaints',['id'=>$cc_id],"id");
+      if(!$row) return DV::error("Chief complaint id is not correct!");
+      DB::table('appt_chief_complaints')->where('ticket_id',$ticket_id)->where('chief_complaint_id',$cc_id)->delete();
+      $inputs =[
+        'chief_complaint_id'=>$cc_id,
+        'ticket_id'=>$ticket_id
+      ];
+      saveData($ss,'appt_chief_complaints',['id'=>null],$inputs,[],1);
+      return DV::success();
+    }
+
+    static function saveChiefComplaints($ss,$ticket_id,$items=[]){
         $patient_id = self::getPatientId($ss->branch_id,$ticket_id);
         $cnt =0;
         foreach($items as $x){
@@ -122,11 +162,11 @@ class Consultation extends Model
             if($item){
                 $inputs= [
                     'ticket_id'=>$ticket_id,
-                    'patient_id'=>$patient_id,
-                    'description'=>$item->description,
-                    'category'=>$item->category
+                    'chief_complaint_id'=>$cc_id,
+                    'description'=>$item->description
+                    //,'category'=>$item->category
                 ];
-                $id = saveData($ss,'consult_chief_complaints',["ticket_id"=>":ticket_id","cc_id"=>$cc_id],$inputs,[],1,true);
+                $id = saveData($ss,'appt_chief_complaints',["ticket_id"=>":ticket_id","chief_complaint_id"=>$cc_id],$inputs,[],1,true);
                 $cnt++;
             } 
           
@@ -134,55 +174,57 @@ class Consultation extends Model
         return DV::success();
     }
 
-    static function saveVitalSigns($ss,$items,$ticket_id){
-        $patient_id = self::getPatientId($ss->branch_id,$ticket_id);
-        $cnt =0;
-        $patient_id = self::getPatientId($ss->branch_id,$ticket_id);
-        foreach($items as $x){
-            $vs_id = isset($x['id'])?$x['id']:0;
-            $item = self::getVitalSignInfo($vs_id);
-            if($item){
-                $inputs= [
-                    'ticket_id'=>$ticket_id,
-                    'patient_id'=>$patient_id,
-                    'description'=>$item->description,
-                    'category'=>$item->category,
-                    'observed_value'=>$x['observed_value']
-                ];
-                $id = saveData($ss,'consult_vital_signs',['ticket_id'=>$ticket_id,'vs_id'=>$vs_id],$inputs,[],1,true);
-                $cn++;
-            }
-        }
-        return DV::success(); 
-    }
+    // static function saveVitalSigns($ss,$items,$ticket_id){
+    //     $patient_id = self::getPatientId($ss->branch_id,$ticket_id);
+    //     $cnt =0;
+    //     $patient_id = self::getPatientId($ss->branch_id,$ticket_id);
+    //     foreach($items as $x){
+    //         $vs_id = isset($x['id'])?$x['id']:0;
+    //         $item = self::getVitalSignInfo($vs_id);
+    //         if($item){
+    //             $inputs= [
+    //                 'ticket_id'=>$ticket_id,
+    //                 'patient_id'=>$patient_id,
+    //                 'description'=>$item->description,
+    //                 'category'=>$item->category,
+    //                 'observed_value'=>$x['observed_value']
+    //             ];
+    //             $id = saveData($ss,'consult_vital_signs',['ticket_id'=>$ticket_id,'vs_id'=>$vs_id],$inputs,[],1,true);
+    //             $cn++;
+    //         }
+    //     }
+    //     return DV::success(); 
+    // }
 
 
-    static function saveDiagnosis($ss,$items,$ticket_id){
-        foreach($items as $item){
+    static function saveDiagnosis($items =[],$ticket_id=null,$ss=null){
+        foreach($items as $a_item){
+            $item = (object)$a_item;
             $inputs= [
                 'ticket_id'=>$ticket_id,
                 'content'=>$item->content,
                 'category'=>$item->category
             ];
-            $id = saveData($ss,'consult_diagnosis',$inputs,[],1);
+            $id = saveData($ss,'patient_diagnosis',$inputs,[],1);
         }
         return DV::success(); 
     }
  
     //Medical history is array of items [{category,content},{category,content},{...}]
-    static function saveMedicalHistory($ss,$items,$ticket_id){
-        foreach($items as $item){
+    function saveMedicalHistory($items=[],$ticket_id=null,$ss=null){
+        foreach($items as $arr_item){
+            $item = (object)$arr_item;
             $inputs= [
                 'ticket_id'=>$ticket_id,
                 'content'=>$item->content,
                 'category'=>$item->category
             ];
-            $id = saveData($ss,'consult_medical_history',$inputs,[],1);
+            $id = saveData($ss,'patient_medical_history',$inputs,[],1);
         }
         return DV::success(); 
     }
 
-    static function savePE($ss,$items,$ticket_id){
+    function savePE($ss,$items,$ticket_id){
         foreach($items as $item){
             $inputs= [
                 'ticket_id'=>$ticket_id,
