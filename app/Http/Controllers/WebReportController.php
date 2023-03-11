@@ -37,7 +37,7 @@ class WebReportController extends Controller
       $data->users= DB::select("SELECT id as `user_id`,  full_name As `user_name` FROM um_users AS u WHERE u.branch_id = '$branch_id' ORDER BY u.full_name asc");
       return JDV::json($data); 
    }
- 
+
     public function receipt($query_string) { 
       // if (!Session::get('login_name',null)) return redirect('/');
       // $branch_id =Session::get('branch_id',0);
@@ -74,7 +74,7 @@ class WebReportController extends Controller
             break;
           }
           default:{
-            $data['title'] = "PAYMENT VUNCHER";
+            $data['title'] = "PAYMENT VOUCHER";
           }
         }
         return view('reports.genreport',$data);
@@ -91,7 +91,6 @@ class WebReportController extends Controller
           //error invalid parameters provided
           return view('errors.500');
         }
-
         $invoice_id = isset($p->id)?$p->id:0;
         $ss = (object)['branch_id'=>$branch_id];
         $invoice = new \App\Models\Invoice\Invoice($invoice_id,$ss);
