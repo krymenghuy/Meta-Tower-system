@@ -128,50 +128,74 @@ class Consultation extends Model
     function saveVitalSigns($vital_sign_items =[],$ticket_id=null,$ss=null){
         $ticket_id = $ticket_id? $ticket_id:$this->getTicketId();
         $ss = $ss? $ss: $this->getUserInfo();
+        $patient_id = self::getPatientId($ticket_id);
         foreach($vital_sign_items as $a_item){
             $item = (object)$a_item;
             $row = getDataRow('vital_signs',['id'=>$item->id],"id,display_name as description");
             if($row){
+                $description = $row->description;
                 DB::table('patient_vital_signs')->where('ticket_id',$ticket_id)->where('vital_sign_id',$item->id)->delete();
-                saveData($ss,'patient_vital_signs',['id'=>null],['ticket_id'=>$ticket_id,'vital_sign_id'=>$item->id],[],1);
+                saveData($ss,'patient_vital_signs',['id'=>null],['ticket_id'=>$ticket_id,'patient_id'=>$patient_id,'vital_sign_id'=>$item->id,'vital_sign_value'=>$item->observed_value,'description'=>$description],[],1);
             }  
         }
         return DV::success();
     }
 
+    //saveChiefComplaint() saves one chief complaint at a time. It returns NULL if no error, and returns error message if error
     function saveChiefComplaint($cc_id,$ticket_id=null,$ss=null){
       $ticket_id = $ticket_id? $ticket_id:$this->getTicketId();
       $ss = $ss? $ss: $this->getUserInfo();
-      $row = getDataRow('chief_complaints',['id'=>$cc_id],"id");
-      if(!$row) return DV::error("Chief complaint id is not correct!");
+
+      $appt_id = null;
+      $row = getDataRow('tickets',['id'=>$ticket_id],"appt_id");
+      if($row) $appt_id = $row->appt_id;
+
+      $row = getDataRow('chief_complaints',['id'=>$cc_id],"id,name AS description");
+      if(!$row) return "Chief complaint id is not correct!";
+      $description = $row->description;
       DB::table('appt_chief_complaints')->where('ticket_id',$ticket_id)->where('chief_complaint_id',$cc_id)->delete();
       $inputs =[
+        'appt_id'=>$appt_id,
         'chief_complaint_id'=>$cc_id,
-        'ticket_id'=>$ticket_id
+        'ticket_id'=>$ticket_id,
+        'description'=>$description
       ];
-      saveData($ss,'appt_chief_complaints',['id'=>null],$inputs,[],1);
-      return DV::success();
+      $new_id = saveData($ss,'appt_chief_complaints',['id'=>null],$inputs,[],0);
+      if($new_id > 0) return null;
+      return "Something went wrong in saving chief complaint";
     }
 
-    static function saveChiefComplaints($ss,$ticket_id,$items=[]){
+    //save many chiefComplaints. $items = [{cc_id,description},{cc_id,description},...]
+    function saveChiefComplaints($items=[],$ticket_id=null,$ss=null){
         $patient_id = self::getPatientId($ss->branch_id,$ticket_id);
-        $cnt =0;
-        foreach($items as $x){
-            $cc_id = $x['id'];
-            $item = self::getChieComplaintInfo($cc_id);
-            if($item){
-                $inputs= [
-                    'ticket_id'=>$ticket_id,
-                    'chief_complaint_id'=>$cc_id,
-                    'description'=>$item->description
-                    //,'category'=>$item->category
-                ];
-                $id = saveData($ss,'appt_chief_complaints',["ticket_id"=>":ticket_id","chief_complaint_id"=>$cc_id],$inputs,[],1,true);
-                $cnt++;
-            } 
-          
+        $errors = [];
+        $error_count =0;
+        foreach($items as $arr_item){
+            $item = (object)$arr_item;
+            $err = $this->saveChiefComplaint($item->cc_id,$ticket_id,$ss);
+            if($err){
+                $error_count++;
+                $errors[] = $err;
+            }
         }
-        return DV::success();
+        return DV::success(['error_count'=>$error_count,'errors'=>$errors]);
+        // $cnt =0;
+        // foreach($items as $x){
+        //     $cc_id = $x['id'];
+        //     $item = self::getChieComplaintInfo($cc_id);
+        //     if($item){
+        //         $inputs= [
+        //             'ticket_id'=>$ticket_id,
+        //             'chief_complaint_id'=>$cc_id,
+        //             'description'=>$item->description
+        //             //,'category'=>$item->category
+        //         ];
+        //         $id = saveData($ss,'appt_chief_complaints',["ticket_id"=>":ticket_id","chief_complaint_id"=>$cc_id],$inputs,[],1,true);
+        //         $cnt++;
+        //     } 
+          
+        // }
+        // return DV::success();
     }
 
     // static function saveVitalSigns($ss,$items,$ticket_id){
@@ -205,21 +229,26 @@ class Consultation extends Model
                 'content'=>$item->content,
                 'category'=>$item->category
             ];
-            $id = saveData($ss,'patient_diagnosis',$inputs,[],1);
+            $id = saveData($ss,'patient_diagnosis',['id'=>null],$inputs,[],1);
         }
         return DV::success(); 
     }
  
     //Medical history is array of items [{category,content},{category,content},{...}]
     function saveMedicalHistory($items=[],$ticket_id=null,$ss=null){
-        foreach($items as $arr_item){
-            $item = (object)$arr_item;
-            $inputs= [
-                'ticket_id'=>$ticket_id,
-                'content'=>$item->content,
-                'category'=>$item->category
-            ];
-            $id = saveData($ss,'patient_medical_history',$inputs,[],1);
+        foreach($items as $item){
+            //$item = (object)$arr_item;
+            $category = $item['category'];
+            $content = $item['content'];
+            if($content && $category){
+                $inputs= [
+                    'ticket_id'=>$ticket_id,
+                    'content'=>$content,
+                    'category'=>$category
+                ];
+                $x = DB::table('patient_medical_history')->where('ticket_id',$ticket_id)->where('category',$category)->update(['content'=>$content,'update_user'=>$ss->full_name,'updated_at'=>getNowTime()]);
+                if(!$x) saveData($ss,'patient_medical_history',['id'=>null],$inputs,[],1);
+            }
         }
         return DV::success(); 
     }

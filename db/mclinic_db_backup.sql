@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2023-03-10 16:31:43
+Date: 2023-03-11 14:51:48
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -64,124 +64,14 @@ CREATE TABLE `appt_chief_complaints` (
   `create_uid` int(10) DEFAULT NULL,
   `create_user` varchar(50) DEFAULT NULL,
   `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `ticket_id` int(10) DEFAULT NULL
+  `ticket_id` int(10) DEFAULT NULL,
+  `description` varchar(250) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of appt_chief_complaints
 -- ----------------------------
-INSERT INTO `appt_chief_complaints` VALUES ('35', '3', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('35', '4', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('35', '4', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('26', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('26', '6', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('11', '4', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('26', '3', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('26', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('11', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('11', '11', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('48', '2', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('48', '4', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('52', '2', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('52', '3', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('64', '3', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('64', '6', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('64', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('57', '2', null, null, '2022-12-29 23:28:18.220609', '78');
-INSERT INTO `appt_chief_complaints` VALUES ('57', '5', null, null, '2022-12-29 23:28:18.220609', '78');
-INSERT INTO `appt_chief_complaints` VALUES ('59', '3', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('59', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('53', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('65', '2', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('65', '3', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('67', '3', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('67', '4', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('69', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('55', '3', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('55', '4', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('60', '4', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('74', '3', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('74', '4', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('88', '1', '1', 'Samsethy', '2022-12-10 20:47:04.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('88', '4', '1', 'Samsethy', '2022-12-10 20:47:04.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('89', '1', '1', 'Samsethy', '2022-12-10 20:47:36.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('89', '4', '1', 'Samsethy', '2022-12-10 20:47:36.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('90', '2', '1', 'Samsethy', '2022-12-11 11:36:05.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('91', '1', '1', 'Samsethy', '2022-12-11 11:45:38.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('92', '2', '1', 'Samsethy', '2022-12-11 19:52:33.411700', '74');
-INSERT INTO `appt_chief_complaints` VALUES ('92', '4', '1', 'Samsethy', '2022-12-11 19:52:33.411700', '74');
-INSERT INTO `appt_chief_complaints` VALUES (null, '3', '1', 'Samsethy', '2022-12-11 18:57:25.000000', '51');
-INSERT INTO `appt_chief_complaints` VALUES (null, '5', '1', 'Samsethy', '2022-12-11 18:57:28.000000', '51');
-INSERT INTO `appt_chief_complaints` VALUES (null, '3', '1', 'Samsethy', '2022-12-11 19:52:58.000000', '50');
-INSERT INTO `appt_chief_complaints` VALUES ('95', '3', '1', 'Samsethy', '2022-12-16 14:10:32.753681', '76');
-INSERT INTO `appt_chief_complaints` VALUES ('94', '3', null, null, '2022-12-17 09:37:50.103780', '77');
-INSERT INTO `appt_chief_complaints` VALUES ('94', '4', null, null, '2022-12-17 09:37:50.103780', '77');
-INSERT INTO `appt_chief_complaints` VALUES (null, '5', '1', 'Samsethy', '2023-01-02 16:21:09.000000', '52');
-INSERT INTO `appt_chief_complaints` VALUES (null, '4', '1', 'Samsethy', '2023-01-02 22:04:50.000000', '52');
-INSERT INTO `appt_chief_complaints` VALUES (null, '2', '1', 'Samsethy', '2023-01-02 22:07:00.000000', '53');
-INSERT INTO `appt_chief_complaints` VALUES (null, '6', '1', 'Samsethy', '2023-01-02 22:07:05.000000', '53');
-INSERT INTO `appt_chief_complaints` VALUES (null, '8', '1', 'Samsethy', '2023-01-02 22:07:24.000000', '53');
-INSERT INTO `appt_chief_complaints` VALUES (null, '3', '1', 'Samsethy', '2023-01-02 22:08:24.000000', '52');
-INSERT INTO `appt_chief_complaints` VALUES (null, '3', '1', 'Samsethy', '2023-01-02 23:53:19.000000', '81');
-INSERT INTO `appt_chief_complaints` VALUES (null, '4', '1', 'Samsethy', '2023-01-02 23:53:23.000000', '81');
-INSERT INTO `appt_chief_complaints` VALUES (null, '3', '1', 'Samsethy', '2023-01-03 17:19:03.000000', '80');
-INSERT INTO `appt_chief_complaints` VALUES (null, '5', '1', 'Samsethy', '2023-01-03 17:19:07.000000', '80');
-INSERT INTO `appt_chief_complaints` VALUES ('110', '3', null, null, '2023-01-05 10:30:13.477516', '88');
-INSERT INTO `appt_chief_complaints` VALUES ('110', '4', null, null, '2023-01-05 10:30:13.477516', '88');
-INSERT INTO `appt_chief_complaints` VALUES ('124', '3', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('124', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('127', '7', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('127', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('131', '4', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('131', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('133', '5', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('140', '4', null, null, '2023-03-01 16:12:12.955050', '105');
-INSERT INTO `appt_chief_complaints` VALUES ('178', '3', '1', 'Samsethy', '2023-03-05 10:21:40.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('178', '1', '1', 'Samsethy', '2023-03-05 10:21:40.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('179', '2', '1', 'Samsethy', '2023-03-05 10:43:36.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('179', '4', '1', 'Samsethy', '2023-03-05 10:43:36.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('179', '11', '1', 'Samsethy', '2023-03-05 10:43:36.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('180', '2', '1', 'Samsethy', '2023-03-06 11:25:27.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('180', '4', '1', 'Samsethy', '2023-03-06 11:25:27.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('180', '1', '1', 'Samsethy', '2023-03-06 11:25:27.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('181', '3', '1', 'Samsethy', '2023-03-06 11:27:46.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('181', '1', '1', 'Samsethy', '2023-03-06 11:27:46.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('182', '3', '1', 'Samsethy', '2023-03-06 11:29:03.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('182', '1', '1', 'Samsethy', '2023-03-06 11:29:03.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('182', '5', '1', 'Samsethy', '2023-03-06 11:29:03.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('183', '3', '1', 'Samsethy', '2023-03-06 11:30:06.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('183', '2', '1', 'Samsethy', '2023-03-06 11:30:06.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('183', '5', '1', 'Samsethy', '2023-03-06 11:30:06.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('184', '3', '1', 'Samsethy', '2023-03-06 11:31:05.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('184', '1', '1', 'Samsethy', '2023-03-06 11:31:05.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('184', '5', '1', 'Samsethy', '2023-03-06 11:31:05.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('185', '4', '1', 'Samsethy', '2023-03-06 11:35:08.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('185', '2', '1', 'Samsethy', '2023-03-06 11:35:08.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('185', '8', '1', 'Samsethy', '2023-03-06 11:35:08.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('186', '2', '1', 'Samsethy', '2023-03-06 11:36:13.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('186', '1', '1', 'Samsethy', '2023-03-06 11:36:13.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('186', '2', null, null, null, null);
-INSERT INTO `appt_chief_complaints` VALUES ('187', '4', '1', 'Samsethy', '2023-03-06 14:01:47.691755', '107');
-INSERT INTO `appt_chief_complaints` VALUES ('187', '2', '1', 'Samsethy', '2023-03-06 14:01:47.691755', '107');
-INSERT INTO `appt_chief_complaints` VALUES ('188', '3', '1', 'Samsethy', '2023-03-06 14:15:22.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('188', '2', '1', 'Samsethy', '2023-03-06 14:15:22.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('188', '1', '1', 'Samsethy', '2023-03-06 14:15:22.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('189', '3', '1', 'Samsethy', '2023-03-06 14:30:59.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('189', '1', '1', 'Samsethy', '2023-03-06 14:30:59.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('189', '5', '1', 'Samsethy', '2023-03-06 14:30:59.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('190', '4', '1', 'Samsethy', '2023-03-06 15:08:29.547441', '111');
-INSERT INTO `appt_chief_complaints` VALUES ('190', '2', '1', 'Samsethy', '2023-03-06 15:08:29.547441', '111');
-INSERT INTO `appt_chief_complaints` VALUES ('190', '1', '1', 'Samsethy', '2023-03-06 15:08:29.547441', '111');
-INSERT INTO `appt_chief_complaints` VALUES ('191', '3', '1', 'Samsethy', '2023-03-06 15:05:22.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('191', '1', '1', 'Samsethy', '2023-03-06 15:05:22.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('192', '2', '1', 'Samsethy', '2023-03-06 15:27:20.384650', '113');
-INSERT INTO `appt_chief_complaints` VALUES ('192', '3', '1', 'Samsethy', '2023-03-06 15:27:20.384650', '113');
-INSERT INTO `appt_chief_complaints` VALUES ('192', '4', '1', 'Samsethy', '2023-03-06 15:27:20.384650', '113');
-INSERT INTO `appt_chief_complaints` VALUES ('194', '2', '1', 'Samsethy', '2023-03-06 16:20:07.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('194', '3', '1', 'Samsethy', '2023-03-06 16:20:07.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES ('194', '5', '1', 'Samsethy', '2023-03-06 16:20:07.000000', null);
-INSERT INTO `appt_chief_complaints` VALUES (null, '4', '1', 'Samsethy', '2023-03-06 16:28:14.000000', '114');
-INSERT INTO `appt_chief_complaints` VALUES (null, '5', '1', 'Samsethy', '2023-03-06 16:28:18.000000', '114');
+INSERT INTO `appt_chief_complaints` VALUES (null, '3', '1', 'Samsethy', '2023-03-11 11:10:41.000000', '1', 'Bruised');
 
 -- ----------------------------
 -- Table structure for `appt_statuses`
@@ -311,134 +201,6 @@ CREATE TABLE `consultations` (
 
 -- ----------------------------
 -- Records of consultations
--- ----------------------------
-
--- ----------------------------
--- Table structure for `consult_advice`
--- ----------------------------
-DROP TABLE IF EXISTS `consult_advice`;
-CREATE TABLE `consult_advice` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `branch_id` int(10) DEFAULT NULL,
-  `patient_id` int(10) DEFAULT NULL,
-  `ticket_id` int(10) DEFAULT NULL,
-  `content` varchar(800) DEFAULT '',
-  `category` varchar(50) DEFAULT NULL,
-  `create_uid` int(10) DEFAULT NULL,
-  `create_user` varchar(50) DEFAULT NULL,
-  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `update_user` varchar(50) DEFAULT NULL,
-  `update_uid` int(10) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- ----------------------------
--- Records of consult_advice
--- ----------------------------
-
--- ----------------------------
--- Table structure for `consult_chief_complaints`
--- ----------------------------
-DROP TABLE IF EXISTS `consult_chief_complaints`;
-CREATE TABLE `consult_chief_complaints` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `branch_id` int(10) NOT NULL,
-  `category` varchar(50) NOT NULL,
-  `description` varchar(150) NOT NULL,
-  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `create_user` varchar(50) DEFAULT NULL,
-  `create_uid` int(10) DEFAULT NULL,
-  `update_uid` int(10) DEFAULT NULL,
-  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `update_user` varchar(50) DEFAULT NULL,
-  `cc_id` int(11) DEFAULT NULL,
-  `ticket_id` int(10) DEFAULT NULL,
-  `patient_id` int(10) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
-
--- ----------------------------
--- Records of consult_chief_complaints
--- ----------------------------
-
--- ----------------------------
--- Table structure for `consult_diagnosis`
--- ----------------------------
-DROP TABLE IF EXISTS `consult_diagnosis`;
-CREATE TABLE `consult_diagnosis` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `branch_id` int(10) DEFAULT NULL,
-  `patient_id` int(10) DEFAULT NULL,
-  `consult_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `ticket_id` int(10) DEFAULT NULL,
-  `content` varchar(800) DEFAULT '',
-  `category` varchar(50) DEFAULT NULL,
-  `create_uid` int(10) DEFAULT NULL,
-  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `create_user` varchar(50) DEFAULT NULL,
-  `update_uid` int(10) DEFAULT NULL,
-  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `update_user` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- ----------------------------
--- Records of consult_diagnosis
--- ----------------------------
-
--- ----------------------------
--- Table structure for `consult_labo_tests`
--- ----------------------------
-DROP TABLE IF EXISTS `consult_labo_tests`;
-CREATE TABLE `consult_labo_tests` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `test_id` int(10) NOT NULL,
-  `branch_id` int(10) NOT NULL,
-  `test_name` varchar(10) NOT NULL,
-  `description` varchar(250) DEFAULT NULL,
-  `result_summary` varchar(350) DEFAULT NULL,
-  `provider_id` int(10) DEFAULT NULL,
-  `file_name` varchar(150) DEFAULT NULL,
-  `file_ext` varchar(15) DEFAULT NULL,
-  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `create_user` varchar(50) DEFAULT NULL,
-  `create_uid` int(10) DEFAULT NULL,
-  `update_uid` int(10) DEFAULT NULL,
-  `update_user` varchar(50) DEFAULT NULL,
-  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `status_id` tinyint(6) DEFAULT 1 COMMENT 'status_id =>  1=Pending,2 =Finished, 3 =Doctor commented, and patient aware of the result',
-  `followup_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `followup_time` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `ticket_id` int(10) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- ----------------------------
--- Records of consult_labo_tests
--- ----------------------------
-
--- ----------------------------
--- Table structure for `consult_medical_history`
--- ----------------------------
-DROP TABLE IF EXISTS `consult_medical_history`;
-CREATE TABLE `consult_medical_history` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `branch_id` int(10) NOT NULL,
-  `ticket_id` int(10) NOT NULL,
-  `category` varchar(50) NOT NULL,
-  `content` varchar(800) DEFAULT '',
-  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `create_user` varchar(50) DEFAULT NULL,
-  `create_uid` int(10) DEFAULT NULL,
-  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `update_user` varchar(50) DEFAULT NULL,
-  `update_uid` int(6) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- ----------------------------
--- Records of consult_medical_history
 -- ----------------------------
 
 -- ----------------------------
@@ -2880,7 +2642,7 @@ CREATE TABLE `partners` (
 -- Records of partners
 -- ----------------------------
 INSERT INTO `partners` VALUES ('1', '1', 'Biomed', 'fdsgfgfdg', null, '012345345', null, 'institution', 'Samsethy', '1', '2023-03-10 10:55:20.103175', '2023-03-10 10:55:20.000000', '1', 'Samsethy', null, 'some one', '012345345', null, '1');
-INSERT INTO `partners` VALUES ('4', '1', 'Super Lab', null, null, '012345345', null, 'institution', 'Samsethy', '1', '2023-01-07 00:48:26.000000', null, null, null, null, 'some one', '012345345', 'ccgmailcom', '1');
+INSERT INTO `partners` VALUES ('4', '1', 'Super Lab', null, null, '012345345', null, 'institution', 'Samsethy', '1', '2023-03-10 17:36:06.879696', '2023-03-10 17:36:06.000000', '1', 'Samsethy', null, 'some one', '012345345', null, '1');
 INSERT INTO `partners` VALUES ('6', '1', 'ABD Lab', null, 'dsds', '012345345', null, 'institution', 'Samsethy', '1', '2023-02-03 14:45:44.000000', null, null, null, null, 'someone', '0122234234', null, '1');
 
 -- ----------------------------
@@ -2961,6 +2723,31 @@ CREATE TABLE `patient_consult_items` (
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for `patient_diagnosis`
+-- ----------------------------
+DROP TABLE IF EXISTS `patient_diagnosis`;
+CREATE TABLE `patient_diagnosis` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) DEFAULT NULL,
+  `patient_id` int(10) DEFAULT NULL,
+  `consult_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `ticket_id` int(10) DEFAULT NULL,
+  `content` varchar(800) DEFAULT '',
+  `category` varchar(50) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `create_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of patient_diagnosis
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for `patient_labo_tests`
 -- ----------------------------
 DROP TABLE IF EXISTS `patient_labo_tests`;
@@ -2973,7 +2760,7 @@ CREATE TABLE `patient_labo_tests` (
   `labor_id` int(10) NOT NULL,
   `test_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   `result_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
-  `consultant_comment` varchar(800) DEFAULT NULL,
+  `consultant_comments` varchar(800) DEFAULT '',
   `result_description` varchar(800) DEFAULT NULL,
   `file_name` varchar(300) DEFAULT NULL,
   `file_type` varchar(10) DEFAULT NULL,
@@ -2989,6 +2776,30 @@ CREATE TABLE `patient_labo_tests` (
 
 -- ----------------------------
 -- Records of patient_labo_tests
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `patient_medical_advice`
+-- ----------------------------
+DROP TABLE IF EXISTS `patient_medical_advice`;
+CREATE TABLE `patient_medical_advice` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) DEFAULT NULL,
+  `patient_id` int(10) DEFAULT NULL,
+  `ticket_id` int(10) DEFAULT NULL,
+  `content` varchar(800) DEFAULT '',
+  `category` varchar(50) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of patient_medical_advice
 -- ----------------------------
 
 -- ----------------------------
@@ -3070,6 +2881,32 @@ INSERT INTO `patient_medical_conditions` VALUES ('244', '1', '116', '3', '0', 'A
 INSERT INTO `patient_medical_conditions` VALUES ('246', '1', '117', '3', '0', 'Active', '2023-03-06 15:25:24.000000', '1', 'Samsethy', '2023-03-06 15:25:24.000000', null, null, null, 'Conjunctivitis', null);
 INSERT INTO `patient_medical_conditions` VALUES ('248', '1', '118', '3', '0', 'Active', '2023-03-06 15:29:47.000000', '1', 'Samsethy', '2023-03-06 15:29:47.000000', null, null, null, 'Conjunctivitis', null);
 INSERT INTO `patient_medical_conditions` VALUES ('250', '1', '119', '3', '0', 'Active', '2023-03-06 16:20:43.000000', '1', 'Samsethy', '2023-03-06 16:20:43.000000', null, null, null, 'Conjunctivitis', null);
+
+-- ----------------------------
+-- Table structure for `patient_medical_history`
+-- ----------------------------
+DROP TABLE IF EXISTS `patient_medical_history`;
+CREATE TABLE `patient_medical_history` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `ticket_id` int(10) NOT NULL,
+  `category` varchar(50) NOT NULL,
+  `content` varchar(800) DEFAULT '',
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `create_user` varchar(50) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_user` varchar(50) DEFAULT NULL,
+  `update_uid` int(6) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of patient_medical_history
+-- ----------------------------
+INSERT INTO `patient_medical_history` VALUES ('6', '1', '1', 'Traveling Abroad', 'Yes', '2023-03-11 14:50:14.000000', 'Samsethy', '1', null, null, null);
+INSERT INTO `patient_medical_history` VALUES ('7', '1', '1', 'Family Diabete', 'Maybe', '2023-03-11 14:50:14.000000', 'Samsethy', '1', null, null, null);
+INSERT INTO `patient_medical_history` VALUES ('8', '1', '1', 'Allergy', 'No', '2023-03-11 14:50:14.000000', 'Samsethy', '1', null, null, null);
 
 -- ----------------------------
 -- Table structure for `patient_pe`
@@ -3793,16 +3630,14 @@ CREATE TABLE `test_labos` (
   `branch_id` int(11) DEFAULT NULL,
   `currency_code` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of test_labos
 -- ----------------------------
-INSERT INTO `test_labos` VALUES ('9', '27', '30.00', '1', '1', 'Samsethy', '2023-03-10 15:39:22.000000', null, null, null, null, '1', 'USD');
-INSERT INTO `test_labos` VALUES ('10', '27', '0.00', '4', '1', 'Samsethy', '2023-03-10 15:41:03.000000', null, null, null, null, '1', 'USD');
-INSERT INTO `test_labos` VALUES ('13', '33', '0.00', '1', '1', 'Samsethy', '2023-03-10 15:43:43.000000', null, null, null, null, '1', 'USD');
-INSERT INTO `test_labos` VALUES ('16', '32', '30.00', '4', '1', 'Samsethy', '2023-03-10 16:08:49.000000', null, null, null, null, '1', 'USD');
-INSERT INTO `test_labos` VALUES ('17', '27', '30.00', '6', '1', 'Samsethy', '2023-03-10 16:09:08.000000', null, null, null, null, '1', 'USD');
+INSERT INTO `test_labos` VALUES ('24', '27', '37.00', '4', '1', 'Samsethy', '2023-03-10 17:06:09.000000', null, null, null, null, '1', 'USD');
+INSERT INTO `test_labos` VALUES ('26', '32', '19.00', '6', '1', 'Samsethy', '2023-03-10 17:08:42.000000', null, null, null, null, '1', 'USD');
+INSERT INTO `test_labos` VALUES ('27', '27', '10.00', '6', '1', 'Samsethy', '2023-03-10 17:53:10.000000', null, null, null, null, '1', 'USD');
 
 -- ----------------------------
 -- Table structure for `tickets`
@@ -4068,13 +3903,13 @@ CREATE TABLE `um_sessions` (
   `status` varchar(10) DEFAULT NULL COMMENT 'status ={online,offline}',
   `lang` varchar(50) DEFAULT 'en',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1933 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1941 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of um_sessions
 -- ----------------------------
 INSERT INTO `um_sessions` VALUES ('1840', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'Bory', '2', '2023-02-02 11:04:47', '2023-02-02 11:04:47', 'TWY286rzc1Oucpp07znsiww3n89D8dF5UkwK8P', 'ukswNQRSy9ek72svrQlPHIs8RGQu68D3oMXCJ8', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjc1MzEwNjg3LCJuYmYiOjE2NzUzMTA2ODcsImV4cCI6MTY3NTMxNDI4NywibGFuZyI6ImVuIiwiaWQiOjIsInVzZXJfY2xhc3MiOiJhZG1pbiIsIm9mZmljaWFsX2lkIjpudWxsLCJvZmZpY2lhbF9jb2RlIjpudWxsLCJsb2dpbl9uYW1lIjoiQm9yeSIsImJyYW5jaF9pZCI6MSwiZnVsbF9uYW1lIjoiQm9yeSIsInN0YXR1cyI6ImFjdGl2ZSIsImlzX2xvY2tlZCI6MCwiZW1haWwiOm51bGwsInBob25lX251bWJlciI6bnVsbCwib3RwX2NvZGUiOm51bGx9.YsJr6g2Lqu2QLmArmZ3-tTLHU7jP2ceDspbDvCXD4Zg', null, 'en');
-INSERT INTO `um_sessions` VALUES ('1932', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-03-10 15:37:22', '2023-03-10 15:37:22', 'MZITOzxGXt7QS0829LRik2T59Uc3nIICsI2g4j', '0p57wy6jRKrSSoVTx65hRS5acubopALdM9x6wo', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjc4NDM3NDQyLCJuYmYiOjE2Nzg0Mzc0NDIsImV4cCI6MTY3ODQ0ODI0MiwibGFuZyI6ImVuIiwiaWQiOjEsInVzZXJfY2xhc3MiOiJhZG1pbiIsIm9mZmljaWFsX2lkIjpudWxsLCJvZmZpY2lhbF9jb2RlIjoiMDAwMSIsImxvZ2luX25hbWUiOiJhZG1pbkBnbWFpbC5jb20iLCJicmFuY2hfaWQiOjEsImZ1bGxfbmFtZSI6IlNhbXNldGh5Iiwic3RhdHVzIjoiYWN0aXZlIiwiaXNfbG9ja2VkIjowLCJlbWFpbCI6bnVsbCwicGhvbmVfbnVtYmVyIjoiMDEyNTc4OTAiLCJvdHBfY29kZSI6bnVsbH0.lc14k4U3v8a3JFF2fqLRewP1jumFGvLN57i9a2N1RsU', null, 'en');
+INSERT INTO `um_sessions` VALUES ('1940', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-03-11 14:47:39', '2023-03-11 14:47:39', 'yvG75VVC2ksknFndz4WEw904voRFhH12w64wG2', '116v6Psea5oggF72pH2Gj1Pjoi6un8SScX3h24', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjc4NTIwODU5LCJuYmYiOjE2Nzg1MjA4NTksImV4cCI6MTY3ODUzMTY1OSwibGFuZyI6ImVuIiwiaWQiOjEsInVzZXJfY2xhc3MiOiJhZG1pbiIsIm9mZmljaWFsX2lkIjpudWxsLCJvZmZpY2lhbF9jb2RlIjoiMDAwMSIsImxvZ2luX25hbWUiOiJhZG1pbkBnbWFpbC5jb20iLCJicmFuY2hfaWQiOjEsImZ1bGxfbmFtZSI6IlNhbXNldGh5Iiwic3RhdHVzIjoiYWN0aXZlIiwiaXNfbG9ja2VkIjowLCJlbWFpbCI6bnVsbCwicGhvbmVfbnVtYmVyIjoiMDEyNTc4OTAiLCJvdHBfY29kZSI6bnVsbH0.1QFZaBm3FHGGNmPMW6tx4gXREtCNYfVVesy1YASZnI4', null, 'en');
 
 -- ----------------------------
 -- Table structure for `um_users`
@@ -4245,248 +4080,4 @@ CREATE TABLE `warehouses` (
 -- ----------------------------
 INSERT INTO `warehouses` VALUES ('1', '1', 'Main warehouse', '0', '0', null, null, null, null, null, null, null, null, null, null, null);
 
--- ----------------------------
--- Function structure for `displayMoney`
--- ----------------------------
-DROP FUNCTION IF EXISTS `displayMoney`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `displayMoney`(amt decimal(10,2),ccode varchar(10)) RETURNS varchar(100) CHARSET utf8mb4
-    DETERMINISTIC
-BEGIN
-  declare sym varchar(15);
-  declare symbol_after int;
-  declare dec_points int;
-  declare val varchar(100);
-  if (amt IS null) then
-    set amt =0;
-  end if;
  
-  SELECT c.symbol, c.symbol_after, c.decimal_points INTO sym, symbol_after,dec_points FROM currencies as c WHERE c.code =ccode limit 1;
-  IF (symbol_after =1) THEN
-    set val = concat(amt,sym);
-  ELSE set val= concat(sym,amt); 
-  END IF;
-  return val; 
-end
-;;
-DELIMITER ;
-
--- ----------------------------
--- Function structure for `formatDate`
--- ----------------------------
-DROP FUNCTION IF EXISTS `formatDate`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `formatDate`(mDate Date) RETURNS varchar(50) CHARSET utf8mb4
-    DETERMINISTIC
-BEGIN
-  return DATE_FORMAT(mDate,'%d %b %Y');
-END
-;;
-DELIMITER ;
-
--- ----------------------------
--- Function structure for `formatDateTime`
--- ----------------------------
-DROP FUNCTION IF EXISTS `formatDateTime`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `formatDateTime`(mDate Date) RETURNS varchar(50) CHARSET utf8mb4
-    DETERMINISTIC
-BEGIN
-  return DATE_FORMAT(mDate,'%d %b %Y %r');
-END
-;;
-DELIMITER ;
-
--- ----------------------------
--- Function structure for `formatTime`
--- ----------------------------
-DROP FUNCTION IF EXISTS `formatTime`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `formatTime`(mDate Date) RETURNS varchar(30) CHARSET utf8mb4
-    DETERMINISTIC
-BEGIN
-  return DATE_FORMAT(mDate,'%r');
-END
-;;
-DELIMITER ;
-
--- ----------------------------
--- Function structure for `getApptStatus`
--- ----------------------------
-DROP FUNCTION IF EXISTS `getApptStatus`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getApptStatus`(branchid INT,statusid INT) RETURNS varchar(20) CHARSET utf8mb4
-    DETERMINISTIC
-BEGIN
-   declare ss varchar(20); 
-   SET ss = (select `name` from appt_statuses where id =statusid AND branch_id =branchid LIMIT 1);  
-   return IFNULL(ss,'Pending');
-END
-;;
-DELIMITER ;
-
--- ----------------------------
--- Function structure for `getConsultanName`
--- ----------------------------
-DROP FUNCTION IF EXISTS `getConsultanName`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getConsultanName`(consultantid INT) RETURNS varchar(50) CHARSET utf8mb4
-    DETERMINISTIC
-BEGIN
- declare cname varchar(50);
- set cname = (select `name` from persons as p INNER JOIN employees as e ON e.person_id = p.id WHERE p.id = consultantid LIMIT 1);
- return cname; 
-end
-;;
-DELIMITER ;
-
--- ----------------------------
--- Function structure for `getCurSymbol`
--- ----------------------------
-DROP FUNCTION IF EXISTS `getCurSymbol`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getCurSymbol`(ccode varchar(10)) RETURNS varchar(10) CHARSET utf8mb4
-    DETERMINISTIC
-BEGIN
-  declare ss varchar(10);
-  SET ss = (select `symbol` from currencies as c where c.`code` = ccode limit 1);
-  return ss;
-end
-;;
-DELIMITER ;
-
--- ----------------------------
--- Function structure for `getGroupQty`
--- ----------------------------
-DROP FUNCTION IF EXISTS `getGroupQty`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getGroupQty`(groupid INT) RETURNS decimal(10,2)
-    DETERMINISTIC
-BEGIN
-  declare qty decimal(10,2);
-  SET qty = (SELECT SUM(IFNULL(c.qty,0)) AS qty FROM inv_item_groups AS g INNER JOIN inv_items AS i ON i.group_id = g.id INNER JOIN inv_current_stocks AS c ON i.id = c.item_id WHERE g.id =groupid LIMIT 1);
-  return qty;      
-END
-;;
-DELIMITER ;
-
--- ----------------------------
--- Function structure for `getItemDetailType`
--- ----------------------------
-DROP FUNCTION IF EXISTS `getItemDetailType`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getItemDetailType`(detailtypeid INT) RETURNS varchar(150) CHARSET utf8mb4
-    DETERMINISTIC
-BEGIN
-  declare detailtype varchar(150);
-  SET detailtype = (select d.`name` from inv_detailed_types as d where d.id =detailtypeid LIMIT 1);
-  RETURN detailtype;   
-END
-;;
-DELIMITER ;
-
--- ----------------------------
--- Function structure for `getItemQty`
--- ----------------------------
-DROP FUNCTION IF EXISTS `getItemQty`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getItemQty`(itemid INT) RETURNS decimal(10,2)
-    DETERMINISTIC
-BEGIN
-  declare qty decimal(10,2);
-  SET qty = (SELECT IFNULL(c.qty,0) AS qty FROM inv_current_stocks AS c INNER JOIN inv_items AS i ON i.id = c.item_id WHERE i.id =itemid LIMIT 1);
-  return qty;      
-END
-;;
-DELIMITER ;
-
--- ----------------------------
--- Function structure for `getLastStockDate`
--- ----------------------------
-DROP FUNCTION IF EXISTS `getLastStockDate`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getLastStockDate`(itemid int,stockclass_code varchar(25)) RETURNS varchar(30) CHARSET utf8mb4
-BEGIN
-  declare stockdate varchar(30);
-  IF (IFNULL(stockclass_code,'') ='') THEN
-    set stockdate = (select created_at from inv_current_stocks as d where d.item_id = itemid and d.stockclass_code = stockclass_code ORDER BY d.id DESC LIMIT 1);
-  ELSE
-    set stockdate = (select created_at from inv_current_stocks as d where d.item_id = itemid and d.stockclass_code = stockclass_code LIMIT 1);
-  END IF;
-  return stockdate;
-END
-;;
-DELIMITER ;
-
--- ----------------------------
--- Function structure for `getPatientCode`
--- ----------------------------
-DROP FUNCTION IF EXISTS `getPatientCode`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getPatientCode`(branchid INT,clientid INT) RETURNS varchar(30) CHARSET utf8mb4
-    DETERMINISTIC
-begin
-  DECLARE cc varchar(30); 
-  set cc = (select `code` from patients as p where p.branch_id =branchid AND p.id =clientid LIMIT 1);
-  return cc;
-end
-;;
-DELIMITER ;
-
--- ----------------------------
--- Function structure for `getTicketNumber`
--- ----------------------------
-DROP FUNCTION IF EXISTS `getTicketNumber`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getTicketNumber`(branchid INT,apptid INT) RETURNS varchar(30) CHARSET utf8mb4
-    DETERMINISTIC
-BEGIN
- declare ticket varchar(30); 
- SET ticket = (SELECT ticket_number FROM tickets where branch_id=branchid and appt_id = apptid LIMIT 1);
- RETURN ticket; 
-END
-;;
-DELIMITER ;
-
--- ----------------------------
--- Function structure for `getTicketStatus`
--- ----------------------------
-DROP FUNCTION IF EXISTS `getTicketStatus`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getTicketStatus`(branchid INT,ticketid INT) RETURNS varchar(30) CHARSET utf8mb4
-    DETERMINISTIC
-BEGIN
-  declare tstatus varchar(30);
-  SET tstatus = (select sts.`name` from ticket_statuses AS sts INNER JOIN service_queue as s ON s.status_id = sts.id where s.id =ticketid LIMIT 1);
-  return tstatus;
-END
-;;
-DELIMITER ;
-
--- ----------------------------
--- Function structure for `hasPosition`
--- ----------------------------
-DROP FUNCTION IF EXISTS `hasPosition`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `hasPosition`(empid INT,posid INT) RETURNS int(11)
-    DETERMINISTIC
-BEGIN
-  SET @d= (EXISTS(select id from employee_positions as e WHERE e.emp_id = empid AND e.position_id = posid LIMIT 1));
-  RETURN @d;
-END
-;;
-DELIMITER ;
-
--- ----------------------------
--- Function structure for `hasPositions`
--- ----------------------------
-DROP FUNCTION IF EXISTS `hasPositions`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `hasPositions`(empid INT,posid INT) RETURNS int(11)
-    DETERMINISTIC
-BEGIN
-  SET @d= (EXISTS(select id from employee_positions as e WHERE e.emp_id = empid AND e.position_id = posid LIMIT 1));
-  RETURN @d;
-END
-;;
-DELIMITER ;
