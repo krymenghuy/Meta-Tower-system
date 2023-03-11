@@ -351,17 +351,26 @@ const LaboTestList = new function(){
         let html_tests = null;;
         items.map(i=>{
                 let c = ExchangeManager.currencies[i.currency_code];
-                let cur_symbol = c?c.symbol:'$';
+                let cur_symbol = c ? c.symbol:'$';
                 let price = [cur_symbol,i.price].join('');
-                html_tests =[html_tests,`<div data-id="${i.id}" data-testid="${i.test_id}" class="card pn-test-item">
-                <div class="card-body">
-                    <h5 class="card-title">${i.name}</h5>
-                    <span class="d-block text-center fw-bold">${price}</span>
-                    <a data-id="${i.id}" data-testid="${i.test_id}" data-laboid="${i.labo_id}" class="btn-remove-parnter-test" href="javascript:void(0)"><i class="fa fa-times text-danger"></i></a>
-                </div>
+                html_tests =[html_tests,`<div data-id="${i.id}" data-testid="${i.test_id}" class="pn-test-item">
+                    <div class="border border-1 rounded-2">
+                        <div class="border border-1 p-2" style="background-color: #98D3AB">
+                            <h5 class="card-title">${i.name}</h5>
+                        </div>
+                        <div class="py-2">
+                            <span class="d-block text-center fw-bold">${price}</span>
+                        </div>
+                        <div class="p-2">
+                            <a data-id="${i.id}" data-testid="${i.test_id}" data-laboid="${i.labo_id}" class="btn-remove-parnter-test" href="javascript:void(0)">
+                                <i class="fa fa-times text-danger"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>`].join('');
                 cnt++;
         });
+
         html_tests = [html_tests,`<a href="javascript:void(0)" data-id="${labo_id}" class="pn-add-test d-block border rounded-circle border-primary p-3 m-auto text-center" style="max-width:160px"><span class="text-center d-block"><i class="fa fa-solid fa-plus fs-3"></i></span><span class="text-center text-secondary">Add labo test</span></a>`].join('');
         //begin:: display test rows
         let div_test_list_id = `pn_test_list_${labo_id}`;
