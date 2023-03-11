@@ -39,9 +39,7 @@ class Consultation extends Model
    }
 
    function getTicketId(){
-     return $this->id;
-    //  $rows = DB::table('consultations AS c')->where('id',$id)->select('ticket_id')->take(1)->get();
-    //  return isset($rows[0])? $rows[0]->ticket_id: null; 
+    return $this->id;
    }
    
    static function ticketInfo($consult_id =0){
@@ -204,8 +202,8 @@ class Consultation extends Model
         return DV::success(); 
     }
  
-    function getMedicalHistory($ticket_id =null,$ss=null){
-      $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+    function getMedicalHistory($ticket_id,$ss=null){
+      //$ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
       $ss = $ss?$ss:$this->getUserInfo();
       $rows = DB::table('patient_medical_history as h')->where('h.ticket_id',$ticket_id)->select('h.id','h.category','h.content')->get();
       $data =[];

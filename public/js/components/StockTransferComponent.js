@@ -5,8 +5,15 @@ let StockTransferComponent = new function(){
     this.self = $('#_main_stockTransferComponent');
     this.base_url = $('#__base_url').val();
     this.tblItems = $('#_st_tblStockTransfer');
+    this.btnNew = $('#_st_btnNew');
 
-    this.init = () => {}
+    this.init = () => {
+        mThis.btnNew.on('click',function(e){
+            e.preventDefault();
+            let op = {};
+            StockTransferDialog.show(op);
+        });
+    }
 
     this.col_titles = {
         "Date":"Date",
@@ -108,9 +115,34 @@ let StockTransferComponent = new function(){
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;
-        mThis.displayStockTransfer(() => {
+        // mThis.displayStockTransfer(() => {
             main_view.setTitle(mThis.title_prop);
             mThis.self.show().siblings().hide();
+        // });
+    }
+}
+
+let StockTransferDialog = new function(){
+    let mThis = this;
+    this.self = $('#_st_dlgStockTransfer');
+    this.btnSave = $('#_st_dlgStockTransfer_btnSave');
+
+    this.init = () => {
+        mThis.btnSave.on('click',function(e){
+            e.preventDefault();
+            let p = {};
+            mThis.self.find('.data-input').each(function(){
+                let el = $(this);
+                let f = el.data('field');
+                p[f] = el.val();
+            });
+        });
+    }
+
+    this.show = (options) => {
+        if(!options) options = {};
+        mThis.self.modal({
+            backdrop: 'static'
         });
     }
 }
