@@ -1578,7 +1578,6 @@ let ConsultTabView = new function () {
             el = $(`#${wrapper_id}`);
             el.show().siblings().hide();
             LocaleManager.translateZone(wrapper_id);
-
         });
     }
 

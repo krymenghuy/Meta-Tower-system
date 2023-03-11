@@ -38,9 +38,10 @@ class Consultation extends Model
     return $this->id;
    }
 
-   function getTicketId($id){
-     $rows = DB::table('consultations AS c')->where('id',$id)->select('ticket_id')->take(1)->get();
-     return isset($rows[0])? $rows[0]->ticket_id: null; 
+   function getTicketId(){
+     return $this->id;
+    //  $rows = DB::table('consultations AS c')->where('id',$id)->select('ticket_id')->take(1)->get();
+    //  return isset($rows[0])? $rows[0]->ticket_id: null; 
    }
    
    static function ticketInfo($consult_id =0){
@@ -203,8 +204,8 @@ class Consultation extends Model
         return DV::success(); 
     }
  
-    function getMedicalHistory($ticket_id,$ss=null){
-      //$ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+    function getMedicalHistory($ticket_id =null,$ss=null){
+      $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
       $ss = $ss?$ss:$this->getUserInfo();
       $rows = DB::table('patient_medical_history as h')->where('h.ticket_id',$ticket_id)->select('h.id','h.category','h.content')->get();
       $data =[];
@@ -233,16 +234,32 @@ class Consultation extends Model
         return DV::success(); 
     }
 
-    function savePE($ss,$items,$ticket_id){
+    //savePhysicalExamination()
+    function savePE($items,$ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+        $ss = $ss?$ss:$this->getUserInfo();
         foreach($items as $item){
-            $inputs= [
-                'ticket_id'=>$ticket_id,
-                'content'=>$item->content,
-                'category'=>$item->category
-            ];
-            $id = saveData($ss,'consult_pe',$inputs,[],1);
+            $category = $item['category'];
+            $content = $item['content'];
+            if($content){
+                $inputs= [
+                    'ticket_id'=>$ticket_id,
+                    'content'=>$content,
+                    'category'=>$category,
+                    'update_uid'=>$ss->user_id,
+                    'updated_at'=>getNowTime(),
+                    'update_user'=>$ss->full_name
+                ];
+                $x = DB::table("patient_pe")->where('ticket_id',$ticket_id)->where('category',$category)->update($inputs);
+                if(!$x) saveData($ss,'patient_pe',['id'=>null],$inputs,[],1);
+            }
+           
         }
-        return DV::success(); 
+        return null; 
+    }
+    
+    function getPE($ticket_id=null,$ss=null){
+       return getDataRow($ss,'patient_pe',['ticket_id'=>$ticket_id,'cateory'=>'general'],"category,content");
     }
 
     static function saveLaboTests($ss,$items,$ticket_id){

@@ -84,6 +84,24 @@ class ConsultationController extends Controller
         return JDV::result($data);
     }
 
+    function getPE(Request $req){
+        $ss = UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $id =$req->ticket_id?$req->ticket_id:$req->id;
+        $c = new Consultation($id,$ss);
+        $row= $c->getPE();
+        return JDV::result($row);
+    }
+
+    function savePE(Request $req){
+        $ss = UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $id =$req->ticket_id?$req->ticket_id:$req->id;
+        $c = new Consultation($id,$ss);
+        $res= $c->savePE($req->items);
+        return JDV::result($res);
+    }
+ 
     function getConsultationData(Request $req){
         $ss = UM::getUserInfoBytoken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);

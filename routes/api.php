@@ -105,6 +105,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('consultation/remove-chief-complaint', [ConsultationController::class, 'deleteChiefComplaint']);
         Route::post('consultation/save-medical-history', [ConsultationController::class, 'saveMedicalHistory']);
         Route::post('consultation/save-vital-signs', [ConsultationController::class, 'saveVitalSigns']);
+        Route::post('consultation/save-pe', [ConsultationController::class, 'savePE']);
+        Route::post('consultation/pe', [ConsultationController::class, 'getPE']);
     //end::ConsultationController
 
     //begin::QTicketController
