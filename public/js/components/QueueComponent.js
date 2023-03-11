@@ -1001,19 +1001,14 @@ let ConsultTabView = new function () {
     }
 
     //begin::get data with auto save
-    // this.getDataInput_ChiefComplaintsAutoSave = () => {
-    //     mThis.tblChiefComplaints.getItems();
-    //      onItemChange = (item,col_name,td) => {
-    //         mThis.saveChiefComplaint({'cc_id':item.value,'description':item.text}); 
-    //     }
-    // }
     this.getDataInput_VitalSignsAutoSave = () => {
         let div = $('#_consult_vt_wrapper');
         let ps = [];
         div.find('.consult-vt-input').each(function(){
             let el = $(this);
             let id = el.data('id');
-            ps.push({'id':id,'observed_value':el.val()});
+            let ticket_id = el.data('tid');
+            ps.push({'ticket_id':ticket_id,'id':id,'observed_value':el.val()});
         });
         return ps;
     }
@@ -1024,7 +1019,8 @@ let ConsultTabView = new function () {
         div.find('._consult_medical_history_input').each(function(){
             let el = $(this);
             let category = el.data('category');
-            pm.push({'category': category, 'value': el.val()});
+            let ticket_id = el.data('tid');
+            pm.push({'ticket_id': ticket_id,'category': category, 'value': el.val()});
         });
         return pm;
     }
@@ -1277,11 +1273,14 @@ let ConsultTabView = new function () {
                     "showColumnHeaders": false,
                     "showAddLineButton": false,
                     "onItemChange": (item,col_name,td) => {
-                       mThis.saveChiefComplaint({'cc_id':item.value,'description':item.text}); 
-                       //save item
+                       //mThis.saveChiefComplaint({'cc_id':item.value,'description':item.text});
+                       let p= {'cc_id':item.value,'ticket_id':ticket_id};
+                       vsapi.call(`${main_view.base_url}/api/consultation/save-chief-complaint`,p,null,false).then(res => {
+                            if(res.status_code === 200){}
+                       });
                     },
                     "onItemDeleted": (tr) => {
-                        console.error(' has changed');
+                        console.error('has changed');
                     },
                     "numeroFormatter": (numero, row) => {
                         return `<span class="text-secondary fw-bold">${numero}</span>`;
@@ -1351,7 +1350,7 @@ let ConsultTabView = new function () {
         mThis.loadVitalSigns_patient(ticket_id, items => {
             let html_vs_items = null;
             items.map(t => {
-                html_vs_items = [html_vs_items, `<tr data-id="${t.id}" data-tid="${ticket_id}"><td>`, t.description, `</td><td><input data-id="${t.id}" class="consult-vt-input data-input form-control w-50" type="text" value ="`, t.vital_sign_value, `"></td></tr>`].join('');
+                html_vs_items = [html_vs_items, `<tr data-id="${t.id}" data-tid="${ticket_id}"><td>`, t.description, `</td><td><input data-id="${t.id}" data-tid="${ticket_id}" class="consult-vt-input data-input form-control w-50" type="text" value ="`, t.vital_sign_value, `"></td></tr>`].join('');
             });
 
             if (!el || el.length === 0) {
@@ -1374,7 +1373,9 @@ let ConsultTabView = new function () {
          
                 el.on('change','input.consult-vt-input',(e)=>{
                     let d = mThis.getDataInput_VitalSignsAutoSave();
-                    console.error(d);
+                    vsapi.call(`${main_view.base_url}/api/consultation/save-vital-signs`,d,null,false).then(res => {
+                        if(res.status_code === 200){}
+                    });
                 });
             }
             el.show().siblings().hide();
