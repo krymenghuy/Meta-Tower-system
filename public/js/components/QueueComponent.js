@@ -956,6 +956,7 @@ let ConsultTabView = new function () {
     this.getConsultData = () => {
         let consult_panel = mThis.self.find('div#_consult_panel');
         let p = {};
+
         consult_panel.find('.consult-content-panel').each(function () {
             let div = $(this);
             let view_name = div.attr('viewname');
@@ -998,6 +999,66 @@ let ConsultTabView = new function () {
 
         return p;
     }
+
+    //begin::get data with auto save
+    // this.getDataInput_ChiefComplaintsAutoSave = () => {
+    //     mThis.tblChiefComplaints.getItems();
+    //      onItemChange = (item,col_name,td) => {
+    //         mThis.saveChiefComplaint({'cc_id':item.value,'description':item.text}); 
+    //     }
+    // }
+    this.getDataInput_VitalSignsAutoSave = () => {
+        let div = $('#_consult_vt_wrapper');
+        let ps = [];
+        div.find('.consult-vt-input').each(function(){
+            let el = $(this);
+            let id = el.data('id');
+            ps.push({'id':id,'observed_value':el.val()});
+        });
+        return ps;
+    }
+
+    this.getDataInput_MedicalHistoryAutoSave = () => {
+        let div = $('#_consult_medical_history_warpper');
+        let pm = [];
+        div.find('._consult_medical_history_input').each(function(){
+            let el = $(this);
+            let category = el.data('category');
+            pm.push({'category': category, 'value': el.val()});
+        });
+        return pm;
+    }
+
+    this.getDataInput_PhysicalExaminationAutoSave = () => {
+        let div = $('#_consult_pe_wrapper');
+        let pe = [];
+        div.find('._consult_pe_input').each(function(){
+            let el = $(this);
+            pe.push({'physical_examination': el.val()});
+        });
+        return pe;
+    }
+
+    this.getDataInput_DiagnosisAutoSave = () => {
+        let div = $('#_consult_diagnosis_warpper');
+        let pd = [];
+        div.find('._consult_diagnosis_input').each(function(){
+            let el = $(this);
+            pd.push({'diagnosis': el.val()});
+        });
+        return pd;
+    }
+
+    this.getDataInput_RecommedationsAutoSave = () => {
+        let div = $('#_consult_advice_warpper');
+        let pr = [];
+        div.find('._consult_advice_input').each(function(){
+            let el = $(this);
+            pr.push({"advice":el.val()});
+        });
+        return pr;
+    }
+    //end::get data with auto save
 
     //options = {patient_id,ticket_id}
     this.show = function (options, view_name, tab_button_clicked = false) {
@@ -1086,7 +1147,7 @@ let ConsultTabView = new function () {
             e.preventDefault();
             (mThis.tblChiefComplaints || {}).addRow();
         });
-
+   
         mThis.details_routes_history = mThis.defineDetailRoutesHistory(mThis.historyItemPanel);
         mThis.details_routes_consult = mThis.defineDetailRoutesConsult(mThis.consultItemPanel);
 
@@ -1217,10 +1278,11 @@ let ConsultTabView = new function () {
                     "showAddLineButton": false,
                     "onItemChange": (item,col_name,td) => {
                        mThis.saveChiefComplaint({'cc_id':item.value,'description':item.text}); 
+                       //save item
                     },
-                    // "onItemDeleted": (tr) => {
-                    //     //console.error(JSON.stringify(col_name) + ' has changed');
-                    // },
+                    "onItemDeleted": (tr) => {
+                        console.error(' has changed');
+                    },
                     "numeroFormatter": (numero, row) => {
                         return `<span class="text-secondary fw-bold">${numero}</span>`;
                     },
@@ -1289,7 +1351,7 @@ let ConsultTabView = new function () {
         mThis.loadVitalSigns_patient(ticket_id, items => {
             let html_vs_items = null;
             items.map(t => {
-                html_vs_items = [html_vs_items, `<tr data-id="${t.id}" data-tid="${ticket_id}"><td>`, t.description, `</td><td><input data-id="${t.id}" class="data-input form-control w-50" type="text" value ="`, t.vital_sign_value, `"></td></tr>`].join('');
+                html_vs_items = [html_vs_items, `<tr data-id="${t.id}" data-tid="${ticket_id}"><td>`, t.description, `</td><td><input data-id="${t.id}" class="consult-vt-input data-input form-control w-50" type="text" value ="`, t.vital_sign_value, `"></td></tr>`].join('');
             });
 
             if (!el || el.length === 0) {
@@ -1309,6 +1371,11 @@ let ConsultTabView = new function () {
                 div.append(html);
                 el = div.find(`#${wrapper_id}`);
                 el.show().siblings().hide();
+         
+                el.on('change','input.consult-vt-input',(e)=>{
+                    let d = mThis.getDataInput_VitalSignsAutoSave();
+                    console.error(d);
+                });
             }
             el.show().siblings().hide();
         });
@@ -1337,11 +1404,16 @@ let ConsultTabView = new function () {
                 html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                         <h3 class="trans-text" data-langprop="consult.Pysical Examination">${title}</a></h3>
                         <div class="">
-                           <textarea class="form-control data-input" cols="10" rows="5">${pe}</textarea>
+                           <textarea class="_consult_pe_input form-control data-input" cols="10" rows="5">${pe}</textarea>
                         </div>
                     </div>`;
                 div.append(html);
                 el = div.find(`#${wrapper_id}`);
+
+                el.on('change','textarea._consult_pe_input',function(){
+                    let d = mThis.getDataInput_PhysicalExaminationAutoSave();
+                    console.log(d);
+                });
             }
             el.show().siblings().hide();
         });
@@ -1547,42 +1619,46 @@ let ConsultTabView = new function () {
               <div class="d-flex flex-column">
                 <div>
                    <label class="control-label">Personal History</label>
-                   <textarea data-category="Personal History" class="data-input form-control" cols="10" rows="3" id="_consul_history_personal"></textarea>
+                   <textarea data-category="Personal History" class="_consult_medical_history_input data-input form-control" cols="10" rows="3" id="_consul_history_personal"></textarea>
                 </div>
 
                 <div>
                   <label class="control-label">Family History</label>
-                  <textarea data-category="Family History" class="data-input form-control" cols="10" rows="3" id="_consul_history_familiy"></textarea>
+                  <textarea data-category="Family History" class="_consult_medical_history_input data-input form-control" cols="10" rows="3" id="_consul_history_familiy"></textarea>
                 </div>
 
                 <div>
                   <label class="control-label">Traveling</label>
-                  <textarea data-category ="Traveling" class="data-input form-control" cols="10" rows="3" id="_consul_history_traveling"></textarea>
+                  <textarea data-category ="Traveling" class="_consult_medical_history_input data-input form-control" cols="10" rows="3" id="_consul_history_traveling"></textarea>
                 </div>
                 
                 <div>
                   <label class="control-label">Vacination</label>
-                  <textarea data-category ="Vacination" class="data-input form-control" cols="10" rows="3" id="_consul_history_vacination"></textarea>
+                  <textarea data-category ="Vacination" class="_consult_medical_history_input data-input form-control" cols="10" rows="3" id="_consul_history_vacination"></textarea>
                 </div>
 
                 <div>
                   <label class="control-label">Allergy</label>
-                  <textarea data-category="Allergy" class="data-input form-control" cols="10" rows="3" id="_consul_history_allergy"></textarea>
+                  <textarea data-category="Allergy" class=" _consult_medical_history_input data-input form-control" cols="10" rows="3" id="_consul_history_allergy"></textarea>
                 </div>
 
                 <div>
                   <label class="control-label">Surgery</label>
-                  <textarea data-category="Surgery" class="data-input form-control" cols="10" rows="3" id="_consul_history_surgery"></textarea>
+                  <textarea data-category="Surgery" class="_consult_medical_history_input data-input form-control" cols="10" rows="3" id="_consul_history_surgery"></textarea>
                 </div>
 
                 <div>
                   <label class="control-label">Others</label>
-                  <textarea data-category="Others" class="data-input form-control" cols="10" rows="3" id="_consul_history_others"></textarea>
+                  <textarea data-category="Others" class="_consult_medical_history_input data-input form-control" cols="10" rows="3" id="_consul_history_others"></textarea>
                 </div>
               </div>
            </div>`;
             div.append(html);
             el = $(`#${wrapper_id}`);
+
+            el.on('change','textarea._consult_medical_history_input',function(){
+                let d = mThis.getDataInput_MedicalHistoryAutoSave();
+            });
         }
 
         el.show().siblings().hide();
@@ -1612,7 +1688,6 @@ let ConsultTabView = new function () {
                 LocaleManager.translateZone(wrapper_id);
                 el.show().siblings().hide();
             });
-           
             return;
         }
 
@@ -1636,16 +1711,17 @@ let ConsultTabView = new function () {
                 {
                     name: 'description',
                     title: 'Description',
-                    //displayType:'input'
+                    displayType:'input'
                 },
                 {
                     name: 'labo_id',
                     title: 'Labo Name',
                     displayType:'select',
-                    //selectOPtions: [],
-                    //readOnly:true
+                    selectOPtions: [],
+                    readOnly:true
                 }
             ];
+
             mThis.tblLaboTests = new ItemsView(div_labotest_panel_id,{
                 columns: cols,
                 validateColumns:{'labo_test_id':'string','labo_id':'string'},
@@ -1671,8 +1747,6 @@ let ConsultTabView = new function () {
                     }else cv_interact.error(res.error_message);
                 });
             //end::load labo test options, and labo name options for user to select in dropdown list
-           
-       
     }
 
     this.displayTestInfo =(selectedOp,tr)=>{
@@ -1692,12 +1766,15 @@ let ConsultTabView = new function () {
               <h3 class="trans-text" data-langprop="consult.Diagnosis">Diagnosis</h3>
               <div class="d-flex flex-column">
                  <label class="control-label">Diagnosis details</label>
-                 <textarea class="form-control data-input" cols="10" rows="3" id="_consul_diagnosis"></textarea>
+                 <textarea class="_consult_diagnosis_input form-control data-input" cols="10" rows="3" id="_consul_diagnosis"></textarea>
               </div>
-           
             </div>`;
             div.append(html);
             el = div.find(`#${wrapper_id}`);
+
+            el.on('change','textarea._consult_diagnosis_input',function(){
+                let d = mThis.getDataInput_DiagnosisAutoSave();
+            });
         }
 
         el.show().siblings().hide();
@@ -1714,12 +1791,16 @@ let ConsultTabView = new function () {
               <h3 class="trans-text" data-langprop="consult.Recommendations">Recommendations</h3>
               <div class="d-flex flex-column">
                  <label class="control-label">Doctor's recommendation</label>
-                 <textarea class="form-control data-input" cols="10" rows="3" id="_consul_advice"></textarea>
+                 <textarea class="_consult_advice_input form-control data-input" cols="10" rows="3" id="_consul_advice"></textarea>
               </div>
             </div>  
            `;
             div.append(html);
             el = div.find(`#${wrapper_id}`);
+
+            el.on('change','textarea._consult_advice_input',function(){
+                let d = mThis.getDataInput_RecommedationsAutoSave();
+            });
         }
 
         el.show().siblings().hide();
@@ -1986,10 +2067,7 @@ let ConsultTabView = new function () {
                 });
             }
         });
-
-
         el.show().siblings().hide();
-
     }
 
     this.showHistoryPrescription = (div) => {
