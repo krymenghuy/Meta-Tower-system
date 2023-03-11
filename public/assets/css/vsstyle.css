@@ -11,6 +11,19 @@
   --vs-btn-export: #ffd7a5;
 }
 
+.vs-text-danger{
+  color:#f6241d;
+  background-color:#fff;
+  padding:5px 10px;
+  font-size:20px;
+}
+
+.vs-text-danger:hover{
+  color:#fff;
+  background-color:#f6241d;
+  border-radius:10px;
+}
+
 .btn {
   padding-top: 2px !important;
   padding-bottom: 2px !important;

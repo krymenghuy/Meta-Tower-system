@@ -268,7 +268,7 @@ const LaboTestList = new function(){
      let op = {'labo_id':labo_id,onClose:(items)=>{
         if(items){
             LaboTestList.displayTestList(labo_id,container,items);
-        } 
+        }
      }};
 
      SelectTestDialog.show(op); 
@@ -358,12 +358,12 @@ const LaboTestList = new function(){
                         <div class="border border-1 p-2" style="background-color: #98D3AB">
                             <h5 class="card-title">${i.name}</h5>
                         </div>
-                        <div class="py-2">
+                        <div class="py-3">
                             <span class="d-block text-center fw-bold">${price}</span>
                         </div>
-                        <div class="p-2">
+                        <div>
                             <a data-id="${i.id}" data-testid="${i.test_id}" data-laboid="${i.labo_id}" class="btn-remove-parnter-test" href="javascript:void(0)">
-                                <i class="fa fa-times text-danger"></i>
+                                <i class="fa fa-times vs-text-danger"></i>
                             </a>
                         </div>
                     </div>
@@ -371,13 +371,22 @@ const LaboTestList = new function(){
                 cnt++;
         });
 
-        html_tests = [html_tests,`<a href="javascript:void(0)" data-id="${labo_id}" class="pn-add-test d-block border rounded-circle border-primary p-3 m-auto text-center" style="max-width:160px"><span class="text-center d-block"><i class="fa fa-solid fa-plus fs-3"></i></span><span class="text-center text-secondary">Add labo test</span></a>`].join('');
+        html_tests = [html_tests,`<a href="javascript:void(0)" data-id="${labo_id}" class="pn-add-test border border-primary btn btn-outline-primary p-2 my-auto">
+            <span>
+                <i class="fa fa-solid fa-plus pe-0"></i>
+            </span>
+            <span>Add Labo Test</span>
+        </a>`].join('');
         //begin:: display test rows
         let div_test_list_id = `pn_test_list_${labo_id}`;
         let div_test_list = container.find(`#${div_test_list_id}`);
  
-        let empty_html =`<a href="javascript:void(0)" data-id="${labo_id}" class="pn-add-test d-block border rounded-circle border-primary p-3 m-auto text-center" style="max-width:160px"><span class="text-center d-block"><i class="fa fa-solid fa-plus fs-3"></i></span><span class="text-center text-secondary">Add labo test</span></a>`;
-        //`<div id="${div_test_list_id}" class="labo-test-list-container"><span class="d-block text-secondary">No labo tests offered by this partner</span> <button class="btn btn-sm btn-outline-success pn-add-test mt-2" data-id="${labo_id}">Add Test</button></div>`;
+        let empty_html =`<a href="javascript:void(0)" data-id="${labo_id}" class="pn-add-test border border-primary btn btn-outline-primary p-2 my-auto">
+            <span>
+                <i class="fa fa-solid fa-plus pe-0"></i>
+            </span>
+            <span>Add Labo Test</span>
+        </a>`;
         if (cnt ===0) html_tests = empty_html;
 
         if (div_test_list.length >0){
@@ -387,9 +396,7 @@ const LaboTestList = new function(){
         html_tests = [`<div id="${div_test_list_id}" class="labo-test-list-container">`,html_tests,`</div>`].join('');
         if (cnt>0) 
             container.html(html_tests);
-        else { 
-            let empty_html =`<div id="${div_test_list_id}" class="labo-test-list-container"><span class="d-block text-secondary">No labo tests offered by this partner</span>
-            <button class="btn btn-sm btn-outline-success pn-add-test mt-2" data-id="${labo_id}">Add Test</button></div>`;
+        else {
             container.html(empty_html);
         }
       //end:: display test row
