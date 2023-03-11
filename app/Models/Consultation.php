@@ -153,16 +153,25 @@ class Consultation extends Model
       $row = getDataRow('chief_complaints',['id'=>$cc_id],"id,name AS description");
       if(!$row) return "Chief complaint id is not correct!";
       $description = $row->description;
-      DB::table('appt_chief_complaints')->where('ticket_id',$ticket_id)->where('chief_complaint_id',$cc_id)->delete();
-      $inputs =[
-        'appt_id'=>$appt_id,
-        'chief_complaint_id'=>$cc_id,
-        'ticket_id'=>$ticket_id,
-        'description'=>$description
-      ];
-      $new_id = saveData($ss,'appt_chief_complaints',['id'=>null],$inputs,[],0);
-      if($new_id > 0) return null;
-      return "Something went wrong in saving chief complaint";
+      $x = DB::table('appt_chief_complaints')->where('ticket_id',$ticket_id)->where('chief_complaint_id',$cc_id)->update(['description'=>$description]);
+      if (!$x)
+        {
+            $inputs =[
+                'appt_id'=>$appt_id,
+                'chief_complaint_id'=>$cc_id,
+                'ticket_id'=>$ticket_id,
+                'description'=>$description
+            ];
+            $new_id = saveData($ss,'appt_chief_complaints',['id'=>null],$inputs,[],0);
+            if($new_id > 0) return null;
+        } else return null;
+    }
+    
+    function deleteChiefComplaint($cc_id,$tiket_id =null,$ss=null){
+        $ticket_id = $ticket_id? $ticket_id : $this->getTicketId();
+        //$ss= $ss?$ss:$this->getUserInfo();
+        DB::table('appt_chief_complaints')->where('ticket_id',$ticket_id)->where('chief_complaint_id',$cc_id)->delete();
+        return null;
     }
 
     //save many chiefComplaints. $items = [{cc_id,description},{cc_id,description},...]
@@ -179,48 +188,8 @@ class Consultation extends Model
             }
         }
         return DV::success(['error_count'=>$error_count,'errors'=>$errors]);
-        // $cnt =0;
-        // foreach($items as $x){
-        //     $cc_id = $x['id'];
-        //     $item = self::getChieComplaintInfo($cc_id);
-        //     if($item){
-        //         $inputs= [
-        //             'ticket_id'=>$ticket_id,
-        //             'chief_complaint_id'=>$cc_id,
-        //             'description'=>$item->description
-        //             //,'category'=>$item->category
-        //         ];
-        //         $id = saveData($ss,'appt_chief_complaints',["ticket_id"=>":ticket_id","chief_complaint_id"=>$cc_id],$inputs,[],1,true);
-        //         $cnt++;
-        //     } 
-          
-        // }
-        // return DV::success();
     }
-
-    // static function saveVitalSigns($ss,$items,$ticket_id){
-    //     $patient_id = self::getPatientId($ss->branch_id,$ticket_id);
-    //     $cnt =0;
-    //     $patient_id = self::getPatientId($ss->branch_id,$ticket_id);
-    //     foreach($items as $x){
-    //         $vs_id = isset($x['id'])?$x['id']:0;
-    //         $item = self::getVitalSignInfo($vs_id);
-    //         if($item){
-    //             $inputs= [
-    //                 'ticket_id'=>$ticket_id,
-    //                 'patient_id'=>$patient_id,
-    //                 'description'=>$item->description,
-    //                 'category'=>$item->category,
-    //                 'observed_value'=>$x['observed_value']
-    //             ];
-    //             $id = saveData($ss,'consult_vital_signs',['ticket_id'=>$ticket_id,'vs_id'=>$vs_id],$inputs,[],1,true);
-    //             $cn++;
-    //         }
-    //     }
-    //     return DV::success(); 
-    // }
-
-
+   
     static function saveDiagnosis($items =[],$ticket_id=null,$ss=null){
         foreach($items as $a_item){
             $item = (object)$a_item;
@@ -234,6 +203,17 @@ class Consultation extends Model
         return DV::success(); 
     }
  
+    function getMedicalHistory($ticket_id,$ss=null){
+      //$ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+      $ss = $ss?$ss:$this->getUserInfo();
+      $rows = DB::table('patient_medical_history as h')->where('h.ticket_id',$ticket_id)->select('h.id','h.category','h.content')->get();
+      $data =[];
+      foreach($rows as $row){
+          $data[$row->category] = $row->content; 
+      }
+      return (object)$data;
+    }
+
     //Medical history is array of items [{category,content},{category,content},{...}]
     function saveMedicalHistory($items=[],$ticket_id=null,$ss=null){
         foreach($items as $item){
