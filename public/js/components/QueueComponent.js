@@ -1019,8 +1019,7 @@ let ConsultTabView = new function () {
         div.find('._consult_medical_history_input').each(function(){
             let el = $(this);
             let category = el.data('category');
-            let ticket_id = el.data('tid');
-            pm.push({'ticket_id': ticket_id,'category': category, 'value': el.val()});
+            pm.push({'category': category, 'content': el.val()});
         });
         return pm;
     }
@@ -1610,7 +1609,8 @@ let ConsultTabView = new function () {
         let p = {'tiket_id':ticket_id};
         vsapi.call(`${main_view.base_url}/api/consultation/medical-history`,p,null,false).then(res=>{
            if(res.status_code===200){
-              onFinish(res.data); 
+              onFinish(res.data);
+              console.log(res.data);
            }else onFinish({});
         });
     }
@@ -1619,7 +1619,6 @@ let ConsultTabView = new function () {
     this.showConsultMedicalHistory = (div, view_name) => {
         let wrapper_id = '_consult_medical_history_warpper';
         let ticket_id = div.data('tid');
-        let patient_id = div.data('patientid');
         let el = div.find(`#${wrapper_id}`);
        
         mThis.loadMedicalHistory(ticket_id,d =>{
@@ -1641,7 +1640,7 @@ let ConsultTabView = new function () {
             categories.map(c=>{
               html= [html,`<div>
               <label class="control-label">${c}</label>
-              <textarea data-category="${c}" class="data-input form-control" cols="10" rows="3">${d[c]}</textarea>
+              <textarea data-category="${c}" class="_consult_medical_history_input data-input form-control" cols="10" rows="3">${d[c]}</textarea>
               </div>`].join('');
             });
             html = [html,`</div></div>`].join('');
@@ -1650,6 +1649,15 @@ let ConsultTabView = new function () {
             el = $(`#${wrapper_id}`);
             el.show().siblings().hide();
             LocaleManager.translateZone(wrapper_id);
+
+            el.on('change','textarea._consult_medical_history_input',function(){
+                let p = {'ticket_id':ticket_id,'items':mThis.getDataInput_MedicalHistoryAutoSave()};
+                vsapi.call(`${main_view.base_url}/api/consultation/save-medical-history`,p,null,false).then(res => {
+                    if(res.status_code === 200){
+                        console.log(p);
+                    }
+                });
+            });
         });
     }
 

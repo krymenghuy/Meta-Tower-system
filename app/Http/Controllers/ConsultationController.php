@@ -79,8 +79,8 @@ class ConsultationController extends Controller
         $ss = UM::getUserInfoBytoken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
         $id =$req->ticket_id?$req->ticket_id:$req->id;
-        $c = new Consultation();
-        $data= $c->getMedicalHistory($id,$ss);
+        $c = new Consultation($id,$ss);
+        $data= $c->getMedicalHistory();
         return JDV::result($data);
     }
 
