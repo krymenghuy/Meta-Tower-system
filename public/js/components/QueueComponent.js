@@ -1245,7 +1245,7 @@ let ConsultTabView = new function () {
 
             let title = LocaleManager.trans('Chief Complaints', 'consult');
             let html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none"><h3 class="trans-text" data-langprop="consult.Chief Complaints">${title} &nbsp;<a href="#" class="consultview-add-cc"><i class="fa fa-plus-circle"></i></a></h3>
-              <div id="${div_id}"></div>
+              <div class="border border-1 border-success rounded-3 p-3" id="${div_id}"></div>
             </div>`;
 
             div.append(html);
@@ -1362,7 +1362,7 @@ let ConsultTabView = new function () {
                 let html = `
                         <div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                         <h3 class="trans-text" data-langprop="consult.Vital Signs">${title}</a></h3>
-                        <div class="">
+                        <div class="border border-1 border-success rounded-3 p-3 shadow-sm">
                             <table class="table">
                                     <tbody>
                                         ${html_vs_items?html_vs_items:'No vital signs to display'}
@@ -1461,7 +1461,7 @@ let ConsultTabView = new function () {
                   //begin:: Init Prescription view by rendering html
                   let title = LocaleManager.trans('Prescription', 'consult');
                   let html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}"><h3 class="trans-text" data-langprop="consult.Prescription">${title}</h3>
-                  <div id="${div_id}"></div>
+                  <div class="border border-1 border-success rounded-3 shadow-sm p-3 w-100" id="${div_id}"></div>
                   </div>`;
                   div.html(html);
                   let columns = [
@@ -1575,7 +1575,7 @@ let ConsultTabView = new function () {
         }else{
               
                 let html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}"><h3 class="trans-text" data-langprop="consult.Service">${title}</h3>
-                <div id="${div_id}"></div>
+                <div class="border border-1 border-success p-3 rounded-3" id="${div_id}"></div>
                 </div>`;
 
                 div.html(html);
@@ -1783,7 +1783,7 @@ let ConsultTabView = new function () {
         let html =`<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                 <h3 class="trans-text" data-langprop="consult.Laboratory Tests">Laboratory Tests</h3>
                 <div class="d-flex">
-                    <div id="${div_labotest_panel_id}" class="table-responsive">  
+                    <div class="border border-1 border-success rounded-3 p-3 shadow-sm w-100" id="${div_labotest_panel_id}" class="table-responsive">  
                     </div>
                 </div>
            </div>`;

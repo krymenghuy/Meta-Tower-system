@@ -20,7 +20,7 @@
             body{
                 width: 100%;
                 height: 100%;
-                zoom: 97%;
+                zoom: 88%;
                 font-size: 16px;
             }
         }
@@ -199,6 +199,7 @@
                         </thead>
                         <tbody>
                             <?php
+<<<<<<< HEAD
                               $cur = $invoice->currency_code==='KHR'?'$':"$";
                               $cnt =0;
                               $numero = 0;
@@ -217,6 +218,26 @@
                                $cnt++;
                               }
                             ?>
+=======
+                             $cnt =0;
+                             $cur ="$";
+                             foreach($invoice->service_items as $item){
+                                $numero = $cnt+1;
+                                $qty = $item->qty.$item->sku;
+                                $discount = $item->discount;
+                                echo " <tr>
+                                   <td>$numero</td>
+                                   <td>$item->name</td>
+                                   <td>$qty</td>
+                                   <td>$cur.$item->price</td>
+                                   <td>$discount</td>
+                                   <td>$item->line_total</td>
+                                   </tr>";
+                                   $cnt++;
+                             }
+                            ?>
+                            
+>>>>>>> c3d6a35b41a9c3476959614fc5a3ebfc3f2026fb
                         </tbody>
                     </table>
                 </div>
