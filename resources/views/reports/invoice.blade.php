@@ -20,7 +20,7 @@
             body{
                 width: 100%;
                 height: 100%;
-                zoom: 97%;
+                zoom: 88%;
                 font-size: 16px;
             }
         }
@@ -198,16 +198,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach()
-                                <tr>
-                                    <td><?php $cnt = 1; echo $cnt++ ?></td>
-                                    <td>{{ }}</td>
-                                    <td>{{ }}</td>
-                                    <td>{{ }}</td>
-                                    <td>{{ }}</td>
-                                    <td>{{ }}</td>
-                                </tr>
-                            @endforeach
+                            
                         </tbody>
                     </table>
                 </div>
