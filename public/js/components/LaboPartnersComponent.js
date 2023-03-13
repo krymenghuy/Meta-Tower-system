@@ -290,43 +290,6 @@ const LaboTestList = new function(){
         }
     });
   });
-  
-//    this.createTestRows = (labo_id)=>{
-//     let p = {'labo_id':labo_id};
-//     let html ="";
-//      vsapi.call(`${main_view.base_url}/api/partner-labo/tests`,p,null,false).then(res=>{
-//         if(res.status_code===200){
-//             let items = res.data;
-//             items.map(i=>{
-//                 let cur_symbol = ExchangeManager.currencies[i.currency_code].symbol;
-//                 let price = [cur_symbol,i.price].join('');
-//                 html =[html,`<tr><td>`,i.name,`</td><td>`,price,`</td></tr>`].join('');
-//             });
-            
-//         }
-//      });
-//    }
-
-//    this.createTestRows = (labo_id)=>{
-//     let p = {'labo_id':labo_id};
-//     let html ="";
-//      vsapi.call(`${main_view.base_url}/api/partner-labo/tests`,p,null,false).then(res=>{
-//         if(res.status_code===200){
-//             let items = res.data;
-//             items.map(i=>{
-//                 let cur_symbol = ExchangeManager.currencies[i.currency_code].symbol;
-//                 let price = [cur_symbol,i.price].join('');
-//                 html =[html,`<div data-id="${i.id}" data-testid="${i.test_id}" class="card pn-test-item">
-//                 <div class="card-title">${i.name}</div>
-//                 <div class="card-body">
-//                    <span class="d-block text-center fw-bold">${price}</span> 
-//                 </div>
-//               </div>`].join('');
-//             });
-            
-//         }
-//      });
-//    }
  
  //options.labo_id
    this.show = (container,options)=>{
@@ -337,8 +300,10 @@ const LaboTestList = new function(){
       let p = {'labo_id':labo_id};
        vsapi.call(`${main_view.base_url}/api/partner-labo/tests`,p,null,false).then(res=>{
           if(res.status_code===200){
-              let items = res.data;
-              mThis.displayTestList(labo_id,container,items); 
+                let items = res.data;
+                mThis.displayTestList(labo_id,container,items);
+                // let test = div_test_list.find(".pn-test-item").html();
+                // console.log(test);
           }else{
             //in case of api error
             div_test_list.html(`<span class="text-center text-warning">${res.error_message}</span>`);
@@ -371,28 +336,24 @@ const LaboTestList = new function(){
                 cnt++;
         });
 
-        html_tests = [html_tests,`<a href="javascript:void(0)" data-id="${labo_id}" class="pn-add-test border border-primary btn btn-outline-primary p-2 my-auto">
-            <span>
-                <i class="fa fa-solid fa-plus pe-0"></i>
-            </span>
-            <span>Add Labo Test</span>
-        </a>`].join('');
+        html_tests = [html_tests,`<button data-id="${labo_id}" class="pn-add-test border border-primary btn btn-outline-primary p-2 pn-test-item">
+            <i class="fa fa-solid fa-plus pe-0"></i>
+        </button>`].join('');
         //begin:: display test rows
         let div_test_list_id = `pn_test_list_${labo_id}`;
         let div_test_list = container.find(`#${div_test_list_id}`);
  
-        let empty_html =`<a href="javascript:void(0)" data-id="${labo_id}" class="pn-add-test border border-primary btn btn-outline-primary p-2 my-auto">
-            <span>
-                <i class="fa fa-solid fa-plus pe-0"></i>
-            </span>
-            <span>Add Labo Test</span>
-        </a>`;
+        let empty_html =`<button data-id="${labo_id}" class="pn-add-test border border-primary btn btn-outline-primary p-2 pn-test-item height-button">
+            <i class="fa fa-solid fa-plus pe-0"></i>
+        </button>`;
+
         if (cnt ===0) html_tests = empty_html;
 
         if (div_test_list.length >0){
             div_test_list.html(html_tests);
             return;
         }
+
         html_tests = [`<div id="${div_test_list_id}" class="labo-test-list-container">`,html_tests,`</div>`].join('');
         if (cnt>0) 
             container.html(html_tests);

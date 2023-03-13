@@ -133,7 +133,7 @@ let InvoicesComponent = new function () {
         this.cfg = new ExpandableRowConfig('_inv_tblInvoice',{
             'dontExpandByClickingOn': ['btn_print_invoice', 'btn-ivc-receivepmt', 'btn-ivc-modify', 'btn-ivc-delete'],
             'wrapperClass':'invoice-pmt-wrapper',
-            'onOpen':(container, detail_tr, parent_tr) =>{
+            'onOpen':(container, detail_tr, parent_tr) => {
                 let qtr = $(parent_tr);
                 let invoice_id = qtr.data('id');
                 mThis.displayInvoicePayments(detail_tr,invoice_id);
@@ -147,8 +147,6 @@ let InvoicesComponent = new function () {
                 let invoice_id =x.data('invoiceid');
                 //based on invoiceRowId to find parent row element (tr)
                 let invoiceRowId = ['ivc_',invoice_id].join('');
-                //let tblPmts = $(this).closest('table');
-                //let tr = tblPmts.closest('tr');
                 let op = {"id":pmt_id,'invoice_id':invoice_id,
                 'onClose':function(data){ 
                         //"data" is data returned from api. data = {currency_code,amount_paid,amount_due}
@@ -187,7 +185,7 @@ let InvoicesComponent = new function () {
                 let qString = ['id=', pmt_id].join('');
 
                 main_view.getEncryptData(qString, (d) => {
-                    window.open([main_view.base_url, '/genreceipt/', d].join(''), '_blank');
+                    window.open([main_view.base_url, '/receipt/', d].join(''), '_blank');
                 });
             }); 
         //end:: init events in Expandable Row View
@@ -237,7 +235,7 @@ let InvoicesComponent = new function () {
                                     </table>       
                                     </div>
                                 </div>`;
-                                div_wrapper.innerHTML= html;
+                                div_wrapper.innerHTML = html;
                         } else {
                             let tbody = div_wrapper.querySelector(inner_table_body_id);
                             tbody.innerHTML = mThis.generatePaymentRows(invoice_id,d.currency_code,d.payments);
@@ -570,7 +568,7 @@ let InvoiceDialog = new function () {
             validateColumns: {'service_id':'string','qty':'number','price':'number'},
             onItemChange:(row_id,item, cols_name, td) => {
                 //todo: It seems this event is fired two times and need to be fixed
-                let tr = td.parentNode;
+                //let tr = td.parentNode;
                 mThis.setItemServiceInfo(cols_name, tr);
             },
             onInputChange:(el,col_name,td)=>{
@@ -613,7 +611,7 @@ let InvoiceDialog = new function () {
             validateColumns: {'item_id':'string','qty':'number','price':'number'},
             onItemChange:(row_id,sitem, col_name, td) => { 
                 //todo: It seems this event is fired two times and need to be fixed
-                let tr = td.parentNode;
+                //let tr = td.parentNode;
                 //set item sku  
                 mThis.setItemInfo(col_name, tr);
             },
@@ -753,7 +751,7 @@ let InvoiceDialog = new function () {
         mThis.elSummary_grandTotal.text([cur_symbol,' ',grand_total].join(''));
         mThis.elSummary_balanceDue.text([cur_symbol,' ',grand_total].join(''));
     }
-        
+
     //Call to function to initialize ItemsView
     this.initItemsView();
  
@@ -843,7 +841,7 @@ let InvoiceDialog = new function () {
             'id':(mThis.options || {}).id
         };
 
-        mThis.self.find('.data-input').each(function () {
+        mThis.self.find('.data-input').each(function() {
             let el = $(this);
             let f = el.data('field');
 

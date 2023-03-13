@@ -22,7 +22,6 @@
 
           body {
             width: 100vw;
-            height: 100vh;
             zoom: 97%;
             font-size: 16px;
             padding: 10px;

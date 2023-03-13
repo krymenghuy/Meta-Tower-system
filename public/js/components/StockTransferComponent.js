@@ -127,16 +127,20 @@ let StockTransferDialog = new function(){
     this.self = $('#_st_dlgStockTransfer');
     this.btnSave = $('#_st_dlgStockTransfer_btnSave');
 
-    this.init = () => {
-        mThis.btnSave.on('click',function(e){
-            e.preventDefault();
-            let p = {};
-            mThis.self.find('.data-input').each(function(){
-                let el = $(this);
-                let f = el.data('field');
-                p[f] = el.val();
-            });
+    mThis.btnSave.on('click',function(e){
+        e.preventDefault();
+        let p = mThis.getDataForm();
+        console.log(p);
+    });
+
+    this.getDataForm = () => {
+        let p = {};
+        mThis.self.find(".data-input").each(function(){
+            let el = $(this);
+            let f = el.data('field');
+            p[f] = el.val();
         });
+        return p;
     }
 
     this.show = (options) => {

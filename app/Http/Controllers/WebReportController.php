@@ -44,7 +44,7 @@ class WebReportController extends Controller
       // if (!$branch_id) return redirect('/');
         
         $p = processQueryString($query_string);
-        $trx_id = $p->tid; 
+        //$trx_id = $p->tid; 
         
         $data['receipt'] = null;; 
         return view('reports.receipt',$data);
