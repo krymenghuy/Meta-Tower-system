@@ -118,7 +118,7 @@ namespace App\ScriptManagement;
                         '/js/components/PositionsComponent.js',
                         '/js/components/LaboPartnersComponent.js',
                         '/js/components/VendorsComponent.js',
-                        '/js/components/InvoicesComponent.js?v=1',
+                        '/js/components/InvoicesComponent.js?v=2',
                         '/js/components/PatientReceiptsComponent.js',
                         '/js/components/MedicalServiceComponent.js',
                         '/js/components/ItemsComponent.js',
