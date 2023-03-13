@@ -2123,7 +2123,7 @@ if (user_token) {
   //For Mobile api authentication, we use UM->getUserInfoByToken($request). It looks for $request->bearerToken()  
   //***start: read cookie for access token
 
-  let cookie_name = 'vsdms997891zb';
+  let cookie_name = 'vsmclinic997891zb';
   let access_token = null;
   let c_match = document.cookie.match(new RegExp('(^| )' + cookie_name + '=([^;]+)'));
   if (c_match) access_token = c_match[2]; 
@@ -30311,5 +30311,5 @@ module.exports = JSON.parse('{"_args":[["axios@0.21.4","E:\\\\LaravelApps\\\\DMS
 /******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["css/app"], () => (__webpack_require__("./resources/sass/app.scss")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
-/******/ 
-})();
+/******/ })()
+;

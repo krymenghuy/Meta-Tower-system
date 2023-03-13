@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2023-03-13 09:31:18
+Date: 2023-03-13 17:34:15
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -2665,7 +2665,7 @@ CREATE TABLE `patient_advice` (
 -- ----------------------------
 -- Records of patient_advice
 -- ----------------------------
-INSERT INTO `patient_advice` VALUES ('1', '1', 'General', 'DO NOT DRINK ALCOHOL', '2023-03-13 09:30:25.440806', '2023-03-13 09:30:25.000000', '1', '1', 'Samsethy', 'Samsethy', '114', '119');
+INSERT INTO `patient_advice` VALUES ('1', '1', 'General', 'DO NOT DRINK ALCOHOL sdfdsfsdfsd', '2023-03-13 16:15:26.163323', '2023-03-13 16:15:26.000000', '1', '1', 'Samsethy', 'Samsethy', '114', '119');
 
 -- ----------------------------
 -- Table structure for `patient_code_control`
@@ -2730,7 +2730,7 @@ CREATE TABLE `patient_diagnosis` (
 -- ----------------------------
 -- Records of patient_diagnosis
 -- ----------------------------
-INSERT INTO `patient_diagnosis` VALUES ('1', '1', '119', '2023-03-12 20:42:55.000000', '114', 'This is doing fine now dfdgg', 'General', '1', '2023-03-12 20:42:55.660824', 'Samsethy', '1', '2023-03-12 20:42:55.000000', 'Samsethy');
+INSERT INTO `patient_diagnosis` VALUES ('1', '1', '119', '2023-03-13 16:15:17.000000', '114', 'This is doing fine now dfdgg esfdgdfg', 'General', '1', '2023-03-13 16:15:17.638809', 'Samsethy', '1', '2023-03-13 16:15:17.000000', 'Samsethy');
 
 -- ----------------------------
 -- Table structure for `patient_labo_tests`
@@ -2895,12 +2895,12 @@ CREATE TABLE `patient_medical_history` (
 INSERT INTO `patient_medical_history` VALUES ('6', '1', '1', 'Traveling Abroad', 'Yes', '2023-03-11 14:50:14.000000', 'Samsethy', '1', null, null, null);
 INSERT INTO `patient_medical_history` VALUES ('7', '1', '1', 'Family Diabete', 'Maybe', '2023-03-11 14:50:14.000000', 'Samsethy', '1', null, null, null);
 INSERT INTO `patient_medical_history` VALUES ('8', '1', '1', 'Allergy', 'No', '2023-03-11 14:50:14.000000', 'Samsethy', '1', null, null, null);
-INSERT INTO `patient_medical_history` VALUES ('9', '1', '114', 'Personal History', 'AAADSFSGF', '2023-03-12 10:42:21.588607', 'Samsethy', '1', '2023-03-12 10:42:21.000000', 'Samsethy', null);
-INSERT INTO `patient_medical_history` VALUES ('10', '1', '114', 'Family History', 'sdfdgdfhfg sdfgdfgfdgdfh ffdgdfgfdghf', '2023-03-12 10:42:21.593743', 'Samsethy', '1', '2023-03-12 10:42:21.000000', 'Samsethy', null);
-INSERT INTO `patient_medical_history` VALUES ('11', '1', '114', 'Traveling', 'asfsdgdfhgh', '2023-03-12 10:42:21.598077', 'Samsethy', '1', '2023-03-12 10:42:21.000000', 'Samsethy', null);
-INSERT INTO `patient_medical_history` VALUES ('12', '1', '114', 'Vacination', 'sdfbnfnghjkkyhjkggdfghtfyrfhtrhundefined', '2023-03-12 10:42:21.602518', 'Samsethy', '1', '2023-03-12 10:42:21.000000', 'Samsethy', null);
-INSERT INTO `patient_medical_history` VALUES ('13', '1', '114', 'Allergy', 'sdfdfgdfgfdhfgdfdsfdsf', '2023-03-12 10:42:21.607920', 'Samsethy', '1', '2023-03-12 10:42:21.000000', 'Samsethy', null);
-INSERT INTO `patient_medical_history` VALUES ('14', '1', '114', 'Surgery', 'sdfdggdfhdf dfgdfgfdgf', '2023-03-12 10:42:21.612190', 'Samsethy', '1', '2023-03-12 10:42:21.000000', 'Samsethy', null);
+INSERT INTO `patient_medical_history` VALUES ('9', '1', '114', 'Personal History', 'AAADSFSGFsdfgfdhfg \nsdfgfdhgf\nh', '2023-03-13 16:15:10.509287', 'Samsethy', '1', '2023-03-13 16:15:10.000000', 'Samsethy', null);
+INSERT INTO `patient_medical_history` VALUES ('10', '1', '114', 'Family History', 'sdfdgdfhfg sdfgdfgfdgdfh  sdfgfdgfd sdfgfdgfd', '2023-03-13 16:15:10.515593', 'Samsethy', '1', '2023-03-13 16:15:10.000000', 'Samsethy', null);
+INSERT INTO `patient_medical_history` VALUES ('11', '1', '114', 'Traveling', 'asfsdgdfhgh', '2023-03-13 16:15:10.520377', 'Samsethy', '1', '2023-03-13 16:15:10.000000', 'Samsethy', null);
+INSERT INTO `patient_medical_history` VALUES ('12', '1', '114', 'Vacination', 'sdfbnfnghjkkyhjkggdfghtfyrfhtrhundefined', '2023-03-13 16:15:10.525313', 'Samsethy', '1', '2023-03-13 16:15:10.000000', 'Samsethy', null);
+INSERT INTO `patient_medical_history` VALUES ('13', '1', '114', 'Allergy', 'sdfdfgdfgfdhfgdfdsfdsf', '2023-03-13 16:15:10.531424', 'Samsethy', '1', '2023-03-13 16:15:10.000000', 'Samsethy', null);
+INSERT INTO `patient_medical_history` VALUES ('14', '1', '114', 'Surgery', 'sdfdggdfhdf dfgdfgfdgf', '2023-03-13 16:15:10.536214', 'Samsethy', '1', '2023-03-13 16:15:10.000000', 'Samsethy', null);
 
 -- ----------------------------
 -- Table structure for `patient_pe`
@@ -2947,14 +2947,14 @@ CREATE TABLE `patient_photos` (
   `ticket_id` int(10) DEFAULT NULL,
   `patient_id` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of patient_photos
 -- ----------------------------
-INSERT INTO `patient_photos` VALUES ('20', '1', 'general', '1_6406cb4a4fca9_20230307_120338.jpg', 'jpg', 'Samsethy', '2023-03-07 12:27:38.000000', '1', null, null, null, '114', '119');
-INSERT INTO `patient_photos` VALUES ('21', '1', 'general', '1_6406cc9eadd76_20230307_120318.jpg', 'jpg', 'Samsethy', '2023-03-07 12:33:18.000000', '1', null, null, null, '114', '119');
-INSERT INTO `patient_photos` VALUES ('24', '1', 'general', '1_6406d67249819_20230307_010314.jpg', 'jpg', 'Samsethy', '2023-03-07 13:15:14.000000', '1', null, null, null, '114', '119');
+INSERT INTO `patient_photos` VALUES ('25', '1', 'general', '1_640eef88f1325_20230313_040324.jpg', 'jpg', 'Samsethy', '2023-03-13 16:40:24.000000', '1', null, null, null, '114', '119');
+INSERT INTO `patient_photos` VALUES ('26', '1', 'general', '1_640eef8d85302_20230313_040329.jpg', 'jpg', 'Samsethy', '2023-03-13 16:40:29.000000', '1', null, null, null, '114', '119');
+INSERT INTO `patient_photos` VALUES ('27', '1', 'general', '1_640eef9aefc62_20230313_040342.jpg', 'jpg', 'Samsethy', '2023-03-13 16:40:42.000000', '1', null, null, null, '114', '119');
 
 -- ----------------------------
 -- Table structure for `patient_prescription_items`
@@ -3941,13 +3941,13 @@ CREATE TABLE `um_sessions` (
   `status` varchar(10) DEFAULT NULL COMMENT 'status ={online,offline}',
   `lang` varchar(50) DEFAULT 'en',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1950 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1966 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of um_sessions
 -- ----------------------------
 INSERT INTO `um_sessions` VALUES ('1840', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'Bory', '2', '2023-02-02 11:04:47', '2023-02-02 11:04:47', 'TWY286rzc1Oucpp07znsiww3n89D8dF5UkwK8P', 'ukswNQRSy9ek72svrQlPHIs8RGQu68D3oMXCJ8', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjc1MzEwNjg3LCJuYmYiOjE2NzUzMTA2ODcsImV4cCI6MTY3NTMxNDI4NywibGFuZyI6ImVuIiwiaWQiOjIsInVzZXJfY2xhc3MiOiJhZG1pbiIsIm9mZmljaWFsX2lkIjpudWxsLCJvZmZpY2lhbF9jb2RlIjpudWxsLCJsb2dpbl9uYW1lIjoiQm9yeSIsImJyYW5jaF9pZCI6MSwiZnVsbF9uYW1lIjoiQm9yeSIsInN0YXR1cyI6ImFjdGl2ZSIsImlzX2xvY2tlZCI6MCwiZW1haWwiOm51bGwsInBob25lX251bWJlciI6bnVsbCwib3RwX2NvZGUiOm51bGx9.YsJr6g2Lqu2QLmArmZ3-tTLHU7jP2ceDspbDvCXD4Zg', null, 'en');
-INSERT INTO `um_sessions` VALUES ('1949', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-03-13 09:16:07', '2023-03-13 09:16:07', 'rFpL63fS9rNGsCC0wjNyRzERgw19m5ucVe60pd', 'K4v1l1oDKPgsOXbO5qD4ZU5xFQ5SzbJ568e684', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjc4NjczNzY3LCJuYmYiOjE2Nzg2NzM3NjcsImV4cCI6MTY3ODY4NDU2NywibGFuZyI6ImVuIiwiaWQiOjEsInVzZXJfY2xhc3MiOiJhZG1pbiIsIm9mZmljaWFsX2lkIjpudWxsLCJvZmZpY2lhbF9jb2RlIjoiMDAwMSIsImxvZ2luX25hbWUiOiJhZG1pbkBnbWFpbC5jb20iLCJicmFuY2hfaWQiOjEsImZ1bGxfbmFtZSI6IlNhbXNldGh5Iiwic3RhdHVzIjoiYWN0aXZlIiwiaXNfbG9ja2VkIjowLCJlbWFpbCI6bnVsbCwicGhvbmVfbnVtYmVyIjoiMDEyNTc4OTAiLCJvdHBfY29kZSI6bnVsbH0.HZVBS77Cmb8T8EeGQw6Q2vzrATIjIFmOi0XJPo6GQmU', null, 'en');
+INSERT INTO `um_sessions` VALUES ('1965', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-03-13 17:19:05', '2023-03-13 17:19:05', '9boVFJ5cvvIlMBWhlOJS6r95awiEYPbnUO3e0T', 'zR5ES1RhD8BH4o6cj8JCkKWgVPBI5lN14QLwHG', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjc4NzAyNzQ1LCJuYmYiOjE2Nzg3MDI3NDUsImV4cCI6MTY3ODcxMzU0NSwibGFuZyI6ImVuIiwiaWQiOjEsInVzZXJfY2xhc3MiOiJhZG1pbiIsIm9mZmljaWFsX2lkIjpudWxsLCJvZmZpY2lhbF9jb2RlIjoiMDAwMSIsImxvZ2luX25hbWUiOiJhZG1pbkBnbWFpbC5jb20iLCJicmFuY2hfaWQiOjEsImZ1bGxfbmFtZSI6IlNhbXNldGh5Iiwic3RhdHVzIjoiYWN0aXZlIiwiaXNfbG9ja2VkIjowLCJlbWFpbCI6bnVsbCwicGhvbmVfbnVtYmVyIjoiMDEyNTc4OTAiLCJvdHBfY29kZSI6bnVsbH0.jDXs5jjdC-U1HStZTsRwfL1Joho9nU5Pl158BGPvR6o', null, 'en');
 
 -- ----------------------------
 -- Table structure for `um_users`
@@ -4123,7 +4123,7 @@ INSERT INTO `warehouses` VALUES ('1', '1', 'Main warehouse', '0', '0', null, nul
 -- ----------------------------
 DROP FUNCTION IF EXISTS `displayMoney`;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `displayMoney`(amt decimal(10,2),ccode varchar(10)) RETURNS varchar(100) CHARSET utf8mb4
+CREATE  FUNCTION `displayMoney`(amt decimal(10,2),ccode varchar(10)) RETURNS varchar(100) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
   declare sym varchar(15);
@@ -4149,7 +4149,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `formatDate`;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `formatDate`(mDate Date) RETURNS varchar(50) CHARSET utf8mb4
+CREATE  FUNCTION `formatDate`(mDate Date) RETURNS varchar(50) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
   return DATE_FORMAT(mDate,'%d %b %Y');
@@ -4162,7 +4162,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `formatDateTime`;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `formatDateTime`(mDate Date) RETURNS varchar(50) CHARSET utf8mb4
+CREATE  FUNCTION `formatDateTime`(mDate Date) RETURNS varchar(50) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
   return DATE_FORMAT(mDate,'%d %b %Y %r');
@@ -4175,7 +4175,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `formatTime`;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `formatTime`(mDate Date) RETURNS varchar(30) CHARSET utf8mb4
+CREATE  FUNCTION `formatTime`(mDate Date) RETURNS varchar(30) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
   return DATE_FORMAT(mDate,'%r');
@@ -4188,7 +4188,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `getApptStatus`;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getApptStatus`(branchid INT,statusid INT) RETURNS varchar(20) CHARSET utf8mb4
+CREATE  FUNCTION `getApptStatus`(branchid INT,statusid INT) RETURNS varchar(20) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
    declare ss varchar(20); 
@@ -4203,7 +4203,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `getConsultanName`;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getConsultanName`(consultantid INT) RETURNS varchar(50) CHARSET utf8mb4
+CREATE  FUNCTION `getConsultanName`(consultantid INT) RETURNS varchar(50) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
  declare cname varchar(50);
@@ -4218,7 +4218,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `getCurSymbol`;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getCurSymbol`(ccode varchar(10)) RETURNS varchar(10) CHARSET utf8mb4
+CREATE  FUNCTION `getCurSymbol`(ccode varchar(10)) RETURNS varchar(10) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
   declare ss varchar(10);
@@ -4233,7 +4233,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `getGroupQty`;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getGroupQty`(groupid INT) RETURNS decimal(10,2)
+CREATE  FUNCTION `getGroupQty`(groupid INT) RETURNS decimal(10,2)
     DETERMINISTIC
 BEGIN
   declare qty decimal(10,2);
@@ -4248,7 +4248,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `getItemDetailType`;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getItemDetailType`(detailtypeid INT) RETURNS varchar(150) CHARSET utf8mb4
+CREATE  FUNCTION `getItemDetailType`(detailtypeid INT) RETURNS varchar(150) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
   declare detailtype varchar(150);
@@ -4263,7 +4263,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `getItemQty`;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getItemQty`(itemid INT) RETURNS decimal(10,2)
+CREATE  FUNCTION `getItemQty`(itemid INT) RETURNS decimal(10,2)
     DETERMINISTIC
 BEGIN
   declare qty decimal(10,2);
@@ -4278,7 +4278,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `getLastStockDate`;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getLastStockDate`(itemid int,stockclass_code varchar(25)) RETURNS varchar(30) CHARSET utf8mb4
+CREATE  FUNCTION `getLastStockDate`(itemid int,stockclass_code varchar(25)) RETURNS varchar(30) CHARSET utf8mb4
 BEGIN
   declare stockdate varchar(30);
   IF (IFNULL(stockclass_code,'') ='') THEN
@@ -4296,7 +4296,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `getPatientCode`;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getPatientCode`(branchid INT,clientid INT) RETURNS varchar(30) CHARSET utf8mb4
+CREATE  FUNCTION `getPatientCode`(branchid INT,clientid INT) RETURNS varchar(30) CHARSET utf8mb4
     DETERMINISTIC
 begin
   DECLARE cc varchar(30); 
@@ -4311,7 +4311,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `getTicketNumber`;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getTicketNumber`(branchid INT,apptid INT) RETURNS varchar(30) CHARSET utf8mb4
+CREATE  FUNCTION `getTicketNumber`(branchid INT,apptid INT) RETURNS varchar(30) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
  declare ticket varchar(30); 
@@ -4326,7 +4326,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `getTicketStatus`;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getTicketStatus`(branchid INT,ticketid INT) RETURNS varchar(30) CHARSET utf8mb4
+CREATE  FUNCTION `getTicketStatus`(branchid INT,ticketid INT) RETURNS varchar(30) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
   declare tstatus varchar(30);
@@ -4341,7 +4341,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `hasPosition`;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `hasPosition`(empid INT,posid INT) RETURNS int(11)
+CREATE  FUNCTION `hasPosition`(empid INT,posid INT) RETURNS int(11)
     DETERMINISTIC
 BEGIN
   SET @d= (EXISTS(select id from employee_positions as e WHERE e.emp_id = empid AND e.position_id = posid LIMIT 1));
@@ -4355,7 +4355,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `hasPositions`;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `hasPositions`(empid INT,posid INT) RETURNS int(11)
+CREATE  FUNCTION `hasPositions`(empid INT,posid INT) RETURNS int(11)
     DETERMINISTIC
 BEGIN
   SET @d= (EXISTS(select id from employee_positions as e WHERE e.emp_id = empid AND e.position_id = posid LIMIT 1));

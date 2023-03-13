@@ -566,7 +566,7 @@ let InvoiceDialog = new function () {
             showColumnHeaders: true,
             showAddLineButton: true,
             validateColumns: {'service_id':'string','qty':'number','price':'number'},
-            onItemChange:(row_id,item, cols_name, td) => {
+            onItemChange:(row_id,item, cols_name, td,tr) => {
                 //todo: It seems this event is fired two times and need to be fixed
                 //let tr = td.parentNode;
                 mThis.setItemServiceInfo(cols_name, tr);

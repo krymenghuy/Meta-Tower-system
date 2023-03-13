@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Communication;
+namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-//use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 use Session;
 use Carbon\Carbon;
 use DB;
 
-class SMS
+class SMS extends Model
 {
     use HasFactory;
 

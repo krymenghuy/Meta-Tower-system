@@ -112,13 +112,13 @@ namespace App\ScriptManagement;
                         '/js/components/DashboardComponent.js',
                         '/js/components/PersonDialog.js',
                         '/js/components/AppointmentListComponent.js?v=2',
-                        '/js/components/QueueComponent.js?v=3',
+                        '/js/components/QueueComponent.js?v=5',
                         '/js/components/ConsultationQueueComponent.js?v=1',
                         '/js/components/EmployeeListComponent.js',
                         '/js/components/PositionsComponent.js',
                         '/js/components/LaboPartnersComponent.js',
                         '/js/components/VendorsComponent.js',
-                        '/js/components/InvoicesComponent.js',
+                        '/js/components/InvoicesComponent.js?v=2',
                         '/js/components/PatientReceiptsComponent.js',
                         '/js/components/MedicalServiceComponent.js',
                         '/js/components/ItemsComponent.js',
@@ -167,19 +167,19 @@ namespace App\ScriptManagement;
     }
 
 
-    class StyleProvider{
-        protected static $bundles = [
-           'primary'=>[
-               'files'=>[
-                   '/assets/material-js/jquery.min.css',
-               ]
-           ],
+//     class StyleProvider{
+//         protected static $bundles = [
+//            'primary'=>[
+//                'files'=>[
+//                    '/assets/material-js/jquery.min.css',
+//                ]
+//            ],
           
-        ];
+//         ];
 
-        static function bundle($bundle_name=null){
-            if(!$bundle_name) return [];
-            return isset(self::$bundles[$bundle_name])?self::$bundles[$bundle_name]:[];
-        }
-   }
+//         static function bundle($bundle_name=null){
+//             if(!$bundle_name) return [];
+//             return isset(self::$bundles[$bundle_name])?self::$bundles[$bundle_name]:[];
+//         }
+//    }
 ?>

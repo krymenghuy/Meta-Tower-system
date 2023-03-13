@@ -10,22 +10,23 @@ class FormUntil{
    // *** "titleId,errorId,saveButtonId" are optional props
    //***  identityProps can be string or array of possible identity props when the dialog form is used in multiple contexts such as updating person profile based on person_id and sometimes based on appointment_id etc. This multiple context means => dialog may take different identity prop names in different situations */
 
-    constructor(option={}){
+    constructor(option){
       if(!option) option= {};
-      //this.option = option;
+      this.option = option;
+     
       //let form_id = option.formId;
       this.form_id = option.formId; //this.form_id is used in this.setData(@d) 
       this.self = $(`#${this.form_id}`);
       this.me = option.instance;
       this.identity_prop = option.identityProp; //key_field_name
       this.identityProps  = option.identityProps?option.identityProps:[];
-      this.sub_prop = option.sub_prop;
-      this.sub_prop_function = (typeof option.sub_prop_function ==='function')? option.sub_prop_function: ()=>{ return []};
       this.itemName = option.itemName;
+
       this.api_save = option.apiSave;
       this.api_get = option.apiGet;
       this.sanitize_excepts = option.sanitize_excepts?option.sanitize_excepts:[];
       this.use_alert_error = option.use_alert_error;
+
       this.elTitle = $(`#${this.form_id}_title`);
       this.elError = $(`#${this.form_id}_error`);
       if (option.saveButtonId) 
@@ -38,7 +39,6 @@ class FormUntil{
         
       if (option.titleId) this.elTitle = $(`#${option.titleId}`);
       if (option.errorId) this.elError = $(`#${option.errorId}`);
-      
       //*** For non-jquery
       //if (this.elError.length ===0) this.elError = document.querySelector(`#${this.form_id}`).querySelector('.dialog-error>.dialog-error-text');
      
@@ -53,7 +53,6 @@ class FormUntil{
       this.modifyTitle = option.modifyTitle?option.modifyTitle:['Modify ',option.itemName].join('');
     
       if (this.elError.length ===0 || !this.elError) this.use_alert_error = true;
-      this.option = option;
       //option.saveButtonId=option.saveButtonId?option.saveButtonId: [this.form_id,'_btnOK'].join('');
        
       // document.querySelector(`#_appt_contact_channel`).addEventListener('change',(e)=>{
@@ -63,12 +62,11 @@ class FormUntil{
       this.btnSave.off('click').on('click',(e)=>{
          e.preventDefault();
          let that = this;
-         let d = this.getData(this);
-         if(d.has_error) return;
-         //console.error(JSON.stringify(option.sub_prop_function()));
+         let d = this.getData();
+         if(d.has_error) return;   
          window.vsapi.call(this.api_save,d.data).then(res=>{
                if(res.status_code === 200){
-                  if(typeof that.form_option.onClose === 'function') that.form_option.onClose(res);
+                  if(typeof this.option.onClose === 'function') this.option.onClose(res);
                   this.self.modal('hide');
                   //if (this.option.previousComponent) this.option.previousComponent.show(this.option.previousComponentOptions);
                }else{
@@ -80,7 +78,7 @@ class FormUntil{
                   else cv_interact.error(res.error_message);
                }
          }).catch((e)=>{
-             console.error("Error occured at "+ that.api_save);
+             console.error("Error occured at "+ this.api_save);
          }); 
       });
  
@@ -102,7 +100,7 @@ class FormUntil{
     }
 
     //return input data for sending to server api
-     getData(){
+     getData = ()=>{
         if(!this.self) return null;
         let p = {};
         let err_element = null;
@@ -121,8 +119,7 @@ class FormUntil{
             }
             p[f] = el.val();
         });
-
-        if(this.sub_prop) p[this.sub_prop]= this.sub_prop_function();  
+        if(this.option.sub_prop) p[this.option.sub_prop]= this.option.sub_prop_function();  
         if(has_error) return {'element':err_element,'field':field,'ff':ff,'data':null,'has_error':has_error};
 
         return {'data':p};
@@ -227,16 +224,12 @@ class FormUntil{
      }
 
    //picks on identity prop from array this.options.identityProps and then returns it as object {idenityProp, identityValue}
-   //NOTE that "identity prop" is the primary key in table for editing and updating purpose.
-   //method  getIdentityInfo() will choose the first supplied valid value from the props in the array of "this.identityProps". The first one that is NOT null is choosen   
     getIdentityInfo(){
       let i=0,c;
       do{
          c = this.identityProps[i];
          if(!c) break;
-           //alert( typeof(this.form_option) +" | " + JSON.stringify(this.form_option) + " | " +  this.form_option[c] + '=> '+ c);
-           //this.form_option is Options passed by method furmUtil.show(@options), Not passed by FormUtil's constructor
-           if(this.form_option[c]) return {identityProp:c, identityValue:this.form_option[c]};   
+           if(this.option[c]) return {identityProp:c, identityValue:this.option[c]};   
          i++;
       }while(c);
       return {'identityProp':this.identity_prop?this.identity_prop:'id',identityValue:null};
@@ -247,6 +240,7 @@ class FormUntil{
      show(option){
        if (!option) option = {};
        //that = this; = this.me
+
        //this.me.onClose = onClose;
        //option for this.show()
 
@@ -257,8 +251,8 @@ class FormUntil{
            if(this.isDialog(option.previousComponent)) option.previousComponent.self.modal('hide');  
        }
       //end:: Hide previous component if it is Modal Dialog
-       //NOTE: there are two options. One in constructor(options), the other in this.show(options).
-       this.form_option = option;
+
+       this.option = option;
        this.item_name = option.item_name;
 
        /** By defult, formUtil uses "id" as identity prop, which is the primary key field name used to update existing record.

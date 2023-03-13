@@ -1626,8 +1626,8 @@ let ConsultTabView = new function () {
                     "showColumnHeaders": true,
                     "showAddLineButton": true,
                     "addLineButtonText": "Add Item",
-                    "onItemChange": (row_id,selOp, col_name, td) => {
-                        let tr = td.parentNode;
+                    "onItemChange": (row_id,selOp, col_name, td,tr) => {
+                        //let tr = td.parentNode;
                         //st item sku
                         mThis.setServiceInfo(col_name, tr);
                     },

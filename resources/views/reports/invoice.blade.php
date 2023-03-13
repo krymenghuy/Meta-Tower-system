@@ -199,6 +199,26 @@
                         </thead>
                         <tbody>
                             <?php
+<<<<<<< HEAD
+                              $cur = $invoice->currency_code==='KHR'?'$':"$";
+                              $cnt =0;
+                              $numero = 0;
+                              foreach($invoice->service_items as $item){
+                               $numero++;
+                               $qty = $item->qty.$item->sku;
+                               $price = $cur.$item->price;
+                               $line_total = $cur.$item->line_total;
+                                 echo "<tr>
+                                 <td>$numero</td>
+                                 <td>$item->name</td>
+                                 <td>$qty</td>
+                                 <td>$price</td>
+                                 <td>$line_total</td>
+                                 </tr>";  
+                               $cnt++;
+                              }
+                            ?>
+=======
                              $cnt =0;
                              $cur ="$";
                              foreach($invoice->service_items as $item){
@@ -217,6 +237,7 @@
                              }
                             ?>
                             
+>>>>>>> c3d6a35b41a9c3476959614fc5a3ebfc3f2026fb
                         </tbody>
                     </table>
                 </div>

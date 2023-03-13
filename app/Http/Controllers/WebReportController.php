@@ -40,13 +40,14 @@ class WebReportController extends Controller
 
     public function receipt($query_string) { 
       // if (!Session::get('login_name',null)) return redirect('/');
-      // $branch_id =Session::get('branch_id',0);
+       $branch_id =Session::get('branch_id',0);
       // if (!$branch_id) return redirect('/');
         
         $p = processQueryString($query_string);
-        //$trx_id = $p->tid; 
-        
-        $data['receipt'] = null;; 
+        $pmt_id = $p->id; 
+        $ss = (object)['branch_id'=>$branch_id];
+        $payment = new \App\Models\Invoice\Payment($pmt_id,$ss);
+        $data['receipt'] = $payment->getDetails();; 
         return view('reports.receipt',$data);
     }
 
@@ -64,13 +65,13 @@ class WebReportController extends Controller
         }
         
         $rtype = isset($p->rtype) ? $p->rtype : null;
-        $payment_id = isset($p->id) ? $p->id : 0;
+        $ticket_id = isset($p->id) ? $p->id : 0;
         $ss = (object)['branch_id'=>$branch_id];
-        $payment = new \App\Models\Invoice\Invoice($payment_id,$ss);
+        $consultation = new \App\Models\Consultation($ticket_id,$ss);
         switch($rtype){
           case 'medical_report':{
-            $data['payment'] = $payment->getDetails();
-            $data['rtype'] = "medical_report";
+            $data['consultation'] = $consultation->getDetails();
+            //$data['rtype'] = "medical_report";
             break;
           }
           default:{
@@ -92,7 +93,7 @@ class WebReportController extends Controller
         }
         $invoice_id = isset($p->id)?$p->id:0;
         $ss = (object)['branch_id'=>$branch_id];
-        $invoice =new \App\Models\Invoice\MedicalInvoice($invoice_id,$ss);
+        $invoice = new \App\Models\Invoice\MedicalInvoice($invoice_id,$ss);
         $data['invoice'] = $invoice->getDetails();
         $data['title'] = "ESTHEDERM Aesthetic & Dermatology";
        
