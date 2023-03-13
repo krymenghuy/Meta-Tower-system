@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-//use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 use Localization;
+use Session;
 
 //JDV is the Data Valiator class
-class JDV
+class JDV extends Model
 {
     use HasFactory;
 
@@ -44,6 +45,7 @@ class JDV
 
     static function emptyResult($status_code =0,$def_result=null,$lang='en',$error_message=null){
        if (!$lang) $lang = Session('lang','en');
+       if (is_object($status_code)) $status_code = $status_code->status_code;
        $error_message = match($status_code){
           401 => $error_message? $error_message:"Authentication failed",
           402 => $error_message?$error_message:"Token Expired",

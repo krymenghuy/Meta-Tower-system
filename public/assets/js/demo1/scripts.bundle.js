@@ -328,11 +328,10 @@ var KTApp = function () {
     };
 }();
 
-// // Initialize KTApp class on document ready
-// $(document).ready(function () {
-//     KTApp.init(KTAppOptions);
-// });
-
+// Initialize KTApp class on document ready
+$(document).ready(function () {
+    KTApp.init(KTAppOptions);
+});
 "use strict";
 /**
  * @class KTUtil  base utilize class that privides helper functions
@@ -8880,82 +8879,82 @@ var KTChat = function () {
             }
         });
 
-        // // messaging
-        // var handleMessaging = function () {
-        //     var scrollEl = KTUtil.find(parentEl, '.kt-scroll');
-        //     var messagesEl = KTUtil.find(parentEl, '.kt-chat__messages');
-        //     var textarea = KTUtil.find(parentEl, '.kt-chat__input textarea');
+        // messaging
+        var handleMessaging = function () {
+            var scrollEl = KTUtil.find(parentEl, '.kt-scroll');
+            var messagesEl = KTUtil.find(parentEl, '.kt-chat__messages');
+            var textarea = KTUtil.find(parentEl, '.kt-chat__input textarea');
 
-        //     if (textarea.value.length === 0) {
-        //         return;
-        //     }
+            if (textarea.value.length === 0) {
+                return;
+            }
 
-        //     var node = document.createElement("DIV");
-        //     KTUtil.addClass(node, 'kt-chat__message kt-chat__message--brand kt-chat__message--right');
+            var node = document.createElement("DIV");
+            KTUtil.addClass(node, 'kt-chat__message kt-chat__message--brand kt-chat__message--right');
 
-        //     var html =
-        //         '<div class="kt-chat__user">' +
-        //         '<span class="kt-chat__datetime">Just now</span>' +
-        //         '<a href="#" class="kt-chat__username">Jason Muller</span></a>' +
-        //         '<span class="kt-userpic kt-userpic--circle kt-userpic--sm">' +
-        //         '<img src="./assets/media/users/100_12.jpg" alt="image">' +
-        //         '</span>' +
-        //         '</div>' +
-        //         '<div class="kt-chat__text kt-bg-light-brand">' +
-        //         textarea.value +
-        //     '</div>';
+            var html =
+                '<div class="kt-chat__user">' +
+                '<span class="kt-chat__datetime">Just now</span>' +
+                '<a href="#" class="kt-chat__username">Jason Muller</span></a>' +
+                '<span class="kt-userpic kt-userpic--circle kt-userpic--sm">' +
+                '<img src="./assets/media/users/100_12.jpg" alt="image">' +
+                '</span>' +
+                '</div>' +
+                '<div class="kt-chat__text kt-bg-light-brand">' +
+                textarea.value
+            '</div>';
 
-        //     KTUtil.setHTML(node, html);
-        //     messagesEl.appendChild(node);
-        //     textarea.value = '';
-        //     scrollEl.scrollTop = parseInt(KTUtil.css(messagesEl, 'height'));
+            KTUtil.setHTML(node, html);
+            messagesEl.appendChild(node);
+            textarea.value = '';
+            scrollEl.scrollTop = parseInt(KTUtil.css(messagesEl, 'height'));
 
-        //     var ps;
-        //     if (ps = KTUtil.data(scrollEl).get('ps')) {
-        //         ps.update();
-        //     }
+            var ps;
+            if (ps = KTUtil.data(scrollEl).get('ps')) {
+                ps.update();
+            }
 
-        //     setTimeout(function () {
-        //         var node = document.createElement("DIV");
-        //         KTUtil.addClass(node, 'kt-chat__message kt-chat__message--success');
+            setTimeout(function () {
+                var node = document.createElement("DIV");
+                KTUtil.addClass(node, 'kt-chat__message kt-chat__message--success');
 
-        //         var html =
-        //             '<div class="kt-chat__user">' +
-        //             '<span class="kt-userpic kt-userpic--circle kt-userpic--sm">' +
-        //             '<img src="./assets/media/users/100_13.jpg" alt="image">' +
-        //             '</span>' +
-        //             '<a href="#" class="kt-chat__username">Max Born</span></a>' +
-        //             '<span class="kt-chat__datetime">Just now</span>' +
-        //             '</div>' +
-        //             '<div class="kt-chat__text kt-bg-light-success">' +
-        //             'Right before vacation season we have the next Big Deal for you. <br>Book the car of your dreams and save up to <b>25%*</b> worldwide.'+
-        //         '</div>';
+                var html =
+                    '<div class="kt-chat__user">' +
+                    '<span class="kt-userpic kt-userpic--circle kt-userpic--sm">' +
+                    '<img src="./assets/media/users/100_13.jpg" alt="image">' +
+                    '</span>' +
+                    '<a href="#" class="kt-chat__username">Max Born</span></a>' +
+                    '<span class="kt-chat__datetime">Just now</span>' +
+                    '</div>' +
+                    '<div class="kt-chat__text kt-bg-light-success">' +
+                    'Right before vacation season we have the next Big Deal for you. <br>Book the car of your dreams and save up to <b>25%*</b> worldwide.'
+                '</div>';
 
-        //         KTUtil.setHTML(node, html);
-        //         messagesEl.appendChild(node);
-        //         textarea.value = '';
-        //         scrollEl.scrollTop = parseInt(KTUtil.css(messagesEl, 'height'));
+                KTUtil.setHTML(node, html);
+                messagesEl.appendChild(node);
+                textarea.value = '';
+                scrollEl.scrollTop = parseInt(KTUtil.css(messagesEl, 'height'));
 
-        //         var ps;
-        //         if (ps = KTUtil.data(scrollEl).get('ps')) {
-        //             ps.update();
-        //         }
-        //     }, 2000);
-        // }
+                var ps;
+                if (ps = KTUtil.data(scrollEl).get('ps')) {
+                    ps.update();
+                }
+            }, 2000);
+        }
 
-        // // attach events
-        // KTUtil.on(parentEl, '.kt-chat__input textarea', 'keydown', function (e) {
-        //     if (e.keyCode == 13) {
-        //         handleMessaging();
-        //         e.preventDefault();
+        // attach events
+        KTUtil.on(parentEl, '.kt-chat__input textarea', 'keydown', function (e) {
+            if (e.keyCode == 13) {
+                handleMessaging();
+                e.preventDefault();
 
-        //         return false;
-        //     }
-        // });
+                return false;
+            }
+        });
 
-        // KTUtil.on(parentEl, '.kt-chat__input .kt-chat__reply', 'click', function (e) {
-        //     handleMessaging();
-        // });
+        KTUtil.on(parentEl, '.kt-chat__input .kt-chat__reply', 'click', function (e) {
+            handleMessaging();
+        });
     }
 
     return {

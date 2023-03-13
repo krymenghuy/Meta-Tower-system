@@ -32,15 +32,6 @@ class MedicalServiceController extends Controller
         return JDV::result($rows);
     }
 
-    function getMedicalServiceInfo(Request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-        //$branch_id = $ss->branch_id;
-        $id = $req->id;
-        $row = getDataRow('medical_services',['id'=>$id],"id,name,ifnull(price,0) as price,tax_rate");
-        return JDV::result($row);
-    }
-
     function department_exists($branch_id,$dep_id){
        return DB::table('departments')->where('id',$dep_id)->where('branch_id',$branch_id)->select("id")->exists();
     }

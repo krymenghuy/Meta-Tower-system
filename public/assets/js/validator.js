@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
  /** Dependency info 
   validator.js depends on the following js files
   1. jquery and bootstrap (js and css) for expecially "has-error" class

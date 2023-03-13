@@ -6,6 +6,7 @@
    - string_san.js,
    - LocaleManager.js for transaction. LocaleManager.trans()
 ****/
+
 class ItemsView{
 
     /***
@@ -40,12 +41,10 @@ class ItemsView{
         if(!options.columns) options.columns = this.getDefaultColumns(); 
         this.options = options;
         if (typeof(this.options.onItemChange) != 'function') this.options.onItemChange = (e)=>{ return;};
-        if (typeof(this.options.onItemValidated) != 'function') this.options.onItemValidated = (e)=>{ return;};
 
         if(!this.options.onKeyUp) this.options.onKeyUp = this.options.keyup;
         if (typeof(this.options.onKeyUp) != 'function') this.options.onKeyUp = (e)=>{ return;};
         if (typeof(this.options.onInputChange) != 'function') this.options.onInputChange = (e)=>{ return;};
-        if (typeof(this.options.onItemDeleted) != 'function') this.options.onItemDeleted = (e)=>{ return;};
         if (typeof(this.options.totalChange) != 'function') this.options.totalChange = (e)=>{ return;};
 
         this.self = document.querySelector(`#${div_id}`);
@@ -71,15 +70,12 @@ class ItemsView{
         this.div_footer = document.querySelector(`#${this.table_id}_footer`);
  
         //Add initial empty Row
-        this.addRow(null,0,false);
+        this.addRow(null);
         
         let that = this;
         this.table.addEventListener('change',(e)=>{
           if(e.target.classList.contains('td-input')){
              let td = VSDOM.getClosestParentByType(e.target,'TD');
-             let tr = td.parentNode;
-             let item = that.getDataRow(tr);
-             if (that.validateRow(tr,that.options.validateColumns,true)) that.options.onItemValidated(tr.dataset.id,item,tr); 
              that.options.onInputChange(e.target,td.dataset.name,td); 
           }
         });
@@ -95,7 +91,6 @@ class ItemsView{
                         cv_interact.confirm("Delete this item?",{title:'Delete Item',OKButtonText:'Delete',context:'delete'},
                             (e)=>{
                               if(e){
-                                  that.options.onItemDeleted(tr.dataset.id,tr); 
                                   tr.remove();
                                   that.resetNumero();
                                   that.displayEmptyMessage();
@@ -125,9 +120,7 @@ class ItemsView{
             e.preventDefault();
             let el = VSDOM.getClosestParentByClass(e.target,'btn-item-addline');        
             if (el){
-                //true = validate cell inputs base on the given prop "validateColumns"
-                //last param is "user_action_add" = true => it means when user click Add Line button
-                this.addRow(null,null,true,true);
+                this.addRow(null);
                 //alert(JSON.stringify(this.getItems()));
                 //this.resetNumero(); //addRow() will also resetNumero()
             } 
@@ -209,17 +202,17 @@ class ItemsView{
             let col_name = td.dataset.name;
             let text = td.dataset.text;
             let value = td.dataset.value;
-            if(!text) text= value;
-          //let data_type = td.dataset.datatype;
-           
-          //let display_type = td.dataset.displaytype;
+          //   let data_type = td.dataset.datatype;
+         
+          
+          // let display_type = td.dataset.displaytype;
             let col = this.getColumnPropsByName(col_name);
             if(col){
                 let def_class ='form-control';
                 let select2_cssClass ='modal-select3';
                 let is_read_only= "";
                 if (col.readOnly){
-                   if(col.displayType === 'select') is_read_only="disabled";
+                   if(col.displayType==='select') is_read_only="disabled";
                    else is_read_only="readonly";
                 }
                 if(!col) throw `Error ItemsView.getColumnPropsByName(@colName) failed to find column by name ${col_name}`;
@@ -232,24 +225,17 @@ class ItemsView{
                 if (col.displayType ==='select'){
                     if(!col.selectOptions) col.selectOptions = col.selectItems;
                     col.selectOptions = col.selectOptions?col.selectOptions:[];
-                    let el = document.createElement('select');
-                    el.classList.add(select2_cssClass,`td-input`);
-                    el.innerHTML = this.createSelectOptions(col_name,null);
-                    td.innerHTML=null;
-                    td.appendChild(el);
-                    this.initSelect2(el,td,{"value":value,"width":col.width,items:col.selectOptions});
-                    // html = [`<select class="${select2_cssClass} td-input" value="${value}" ${is_read_only}>`,
-                    //         this.createSelectOptions(col_name,value),
-                    //       `</select>`].join('');
+                    html = [`<select class="${select2_cssClass} td-input" value="${value}" ${is_read_only}>`,
+                            this.createSelectOptions(col_name,value),
+                          `</select>`].join('');
                      
                 }else {
                     //Set detault data type to string
                     if(!col.dataType) col.dataType ='string';
                     if (col.dataType ==='date'){
-                       //So far, use default HTML input type="date"
-                       html = `<input type="date" class="${def_class} ${col.cssClass} td-input" value="${text}" data-select="datepicker" ${is_read_only}/>`;
+                       html = `<input class="${def_class} ${col.cssClass} td-input" value="${text}" data-select="datepicker" ${is_read_only}/>`;
                     }else if (col.dataType ==='time'){
-                      html = `<input type="date" class="${def_class} ${col.cssClass} td-input" value="${text}" data-select="datepicker" ${is_read_only}/>`;
+                      html = `<input class="${def_class} ${col.cssClass} td-input" value="${text}" data-select="datepicker" ${is_read_only}/>`;
                     }else{
                       let dType = (col.dataType ==='string')? 'text':'number';
 
@@ -257,15 +243,23 @@ class ItemsView{
                       if(dType==='number' && !text) text="0"; 
                       html = `<input type="${dType}" class="${def_class} ${col.cssClass} td-input" value="${text}" ${is_read_only}/>`;
                     }
-                    td.innerHTML= html;   
+                    
                 }
+
+                td.innerHTML= html;
                 //If the displayType is SELECT,and we use select2 with "modal-select2" class => so we need to init select2 script to transform standard SELECT to SELECT2
                 
-                // if (col.displayType ==='select'){
-                //     let cb = td.querySelector('select.td-input');
-                //     this.initSelect2(cb,td,{"value":value,"width":col.width});
-                // }
-                
+                if (col.displayType ==='select'){
+                    let cb = td.querySelector('select.td-input');
+                    // cb.addEventListener('change',(e)=>{
+                    //   that.options.onItemChange(col.name);
+                    // });
+                    this.initSelect2(cb,td,{"value":value,"width":col.width});
+                }
+                // else{
+                //    //cb.setAttribute('readOnly',false);
+                    
+                // }  
             } 
             
          });
@@ -362,27 +356,12 @@ class ItemsView{
             //x.val(op.value);
 
             let that = this;
-            //x.off('change') is important to avoid dubplicate event firing. "onItemChange"
-            x.off('change').on('change',e=>{
+            x.on('change',(e)=>{
               e.preventDefault();
-              let nextSib = el.nextSibling;
-              //We can also use "if (nextSib) ..." in order to avoid error when nextSib is NULL
-              //if(nextSib){
-                 //console.error(nextSib.innerHTML);
-                  nextSib.querySelector('.select2-selection__rendered');
-                  let span = nextSib.querySelector('.select2-selection__rendered');
-                  if(span){
-                    let item_text = x.find('option:selected').text();
-                    span.setAttribute('title',item_text);
-                    span.textContent = item_text;
-                  }
-             //}
-            
-              let tr = td.parentNode;
-              let row_id = tr.dataset.id; //tr?tr.dataset.id:null;
-              let new_item = this.getDataRow(tr);
-              if (that.validateRow(tr,that.options.validateColumns,true)) that.options.onItemValidated(row_id,new_item,tr); 
-              that.options.onItemChange(row_id,new_item,td.dataset.name,td,tr); 
+              that.options.onItemChange({
+                "value":x.val(),
+                "text":x.find('option:selected').text()
+              },td.dataset.name,td); 
             });
  
             //if(value !== undefined) VSUtil.setSelect2_value(el,value);
@@ -443,11 +422,11 @@ class ItemsView{
        or @check_cols = ['name|string','price|number','qty|positive'];
       *  **/
      //validateCols()
-     validateRow(tr=null,validateColumns=null,silent_mode=false){
+     validateRow(tr=null,valiateColumns=null,silent_mode=false){
         if(!tr) tr=this.prev_edit_row;
-        //if (this.self.getAttribute('id') ==='_consult_cc_list') 
         if(!tr) return true;
-        if (!validateColumns) return true;
+        if (!valiateColumns) return true;
+
         //  let check_cols1 = [];
         //  (check_cols || []).map(rule=>{
         //     let parts = (rule+'').split('|');
@@ -456,30 +435,27 @@ class ItemsView{
         //     if(f_name) check_cols1.push({f_name}); 
         //  });
 
-        //if (!tr.children[1].dataset.value) return false;
-
         let validate_succeed =true;
         let cols =[];
         tr.querySelectorAll(`td`).forEach(td=>{
-           let col_name =td.dataset.name;
-           let v_rule = validateColumns[col_name];
-
+          let col_name =td.dataset.name;
+           let v_rule = valiateColumns[col_name];
+            
            if(v_rule){
-            cols.push(col_name.replace(/_/g,' '));
+            cols.push(col_name.replace('_',' '));
             if(typeof(v_rule)==='function')
             {
               let input = td.querySelector('.td-input');
-              let val =input?input.value:td.dataset.value;
-              return v_rule(val,td,tr);
+              return ff(input?input.value:"",td,tr);
             }
             else{
               //***if v_rule is not a function
                 let input = td.querySelector('.td-input');
-                let val = input?input.value:td.dataset.value; 
-                      switch(v_rule){
+                let data = input?input.value:null;
+                 
+                        switch(v_rule){
                         case 'positive':{
-                          if(col_name ==='service_id') console.error(`v_rule = ${v_rule} | value =${val}`);
-                          if(!(val>0)){
+                          if(!(data>0)){
                                 validate_succeed= false;
                                 //exit forEach (td)
                                 return false;
@@ -488,7 +464,7 @@ class ItemsView{
                         }
                         case 'number':{
         
-                          if(!(val>=0 || val <0)){
+                          if(!$.isNumeric(data)){
                             validate_succeed= false;
                             //exit forEach (td)
                             return false;
@@ -497,7 +473,7 @@ class ItemsView{
                         }
                         case 'string':{
         
-                          if(!val || (val+'').trim() ===''){
+                          if(!data || (data+'') ===''){
                             validate_succeed= false;
                             //exit forEach (td)
                             return false;
@@ -505,7 +481,7 @@ class ItemsView{
                           break;
                         }
                         default:{
-                          if(!val || (val+'').trim() ===''){
+                          if(!data || (data+'') ===''){
                             validate_succeed= false;
                             //exit forEach (td)
                             return false;
@@ -567,9 +543,8 @@ class ItemsView{
         //   },
           {
             cssClass:'item-name',
-            title:'Item Name', /** item value or Item Id **/
-            name:'item_id',
-            displayName:'item_name', /** item's text or Item Name to be displayed **/
+            title:'Item Name',
+            name:'name',
             langProp:'dt_columns',
             displayType:'select'
           },
@@ -600,7 +575,7 @@ class ItemsView{
             cssClass:'item-discount',
             title:'Discount',
             langProp:'dt_columns',
-            isPercentage:true, /** or 'showPercentage': true **/
+            isPercentage:true,
             'dataType':'number'
           },
           {
@@ -615,71 +590,38 @@ class ItemsView{
 
         ];
      }
-     
-     getLastRow_tr(){
-       return this.table_body.lastElementChild;
-     }
 
-     addRow(d=null,rowIndex = 0,validateItem=true,user_action_add = false){
+     addRow(d=null,rowIndex = 0){
             let html_cols = "";
             d = d?d:{};
-            rowIndex = rowIndex?rowIndex:0; 
+
              //Validate currently editing row based on the provided "this.options.validateColumns" , if validation is successful then can add new row
-             if(validateItem) if (!this.validateRow(null,this.options.validateColumns)) return;
+             if (!this.validateRow(null,this.options.validateColumns)) return;
 
             //before adding any new row, Remove empty row, if exists.
               let empty_row = this.table_body.firstChild;
               if(empty_row){
                  if (empty_row.classList.contains('empty-row')) empty_row.remove();
               }
-
-            if(user_action_add){
-              let last_tr = this.getLastRow_tr();
-              let aa = this.validateRow(last_tr,this.options.validateColumns,true);
-              if(!aa){
-                  this.changeRowState(last_tr,'edit');
-                  return;
-              } 
-            } 
              
             (this.options.columns || []).map(col=>{
                 let value ='';
-              
-                if (typeof col.data ==='function')
-                  value = col.data(d[col.name],d); 
+                if (typeof col.data ==='function') value = col.data(d[col.name],d); 
                 else{
-                    
-                    //if col.selectOptons is supplied or given => then automically set col.displayType to be "select" that means the column is a Dropdown-list column 
-                     if(col.selectOptions) col.displayType ='select';
-                  
-                     //In case the column is to display formatted or display value or text value (i.e: Combo comlumn)
-                     //for example, col.name ="item_id" and col.displayName ="item_name" for "Item Name" dropdown column   
-                     if (col.displayName)
-                       //{
-                        value = d[col.displayName]; 
-                        //alert(col.displayName);
-                       //}           
-                    else if (col.displayType==='select'){
-                           //For SELECT or Dropdown column, if the col.displayName is not supplied or given= > then get display text from column's selectOptions "col.selectOptions" array
-                            //if (!col.selectOptions) console.error(`selectOptions is required for column ${col.name}`); 
-                            let items = (col.selectOptions || []).filter(e=>{
-                              return (e.value ==d[col.name]);
-                            });
-                            if (items[0]) value = items[0].text; 
-                    }else {
-                        //this case: col.displayName is NULL and col.displayType != 'select'
-                        ////value = d[col.displayName? col.displayName : col.name];
-                        value = d[col.name];
-                        if(col.isPercentage || col.showPercentage || col.showAsPercentage) 
-                          value = [value,'%'].join('');
-                        else if(col.currencySymbol)
-                          value = [col.currencySymbol,value].join('');
-                        }
+                    value = d[col.name];
+                    if(col.isPercentage || col.showAsPercentage) 
+                    value = [value,'%'].join('');
+                    else if(col.currencySymbol)
+                    value = [col.currencySymbol,value].join('');
                 }
+                //In case the column is to display formated or display value or text value (Combo comlumn)   
+                if (!col.displayName) col.displayName = col.name; 
 
+                if(col.selectOptions) col.displayType ='select';
+                
                 let style_width="";
                 if(col.width) style_width =['style="width:',col.width,'"'].join('');
-                if(!value) if(col.dataType === 'number') value =col.defaultValue?col.defaultValue:0;
+                if(!value) if(col.dataType==='number') value ="0";  
                 html_cols = [html_cols,
                               `<td ${style_width} class="ivc-`,col.name,' ',col.cssClass,`" data-name="`,col.name,`" data-editortype="${col.displayType?col.displayType:""}" data-text="`,d[col.displayName],`" data-value="`,d[col.name],`">`,value,`</td>`
                             ].join('');
@@ -700,6 +642,7 @@ class ItemsView{
                 tr.innerHTML = [numero_col,html_cols,action_col].join('');
                 this.table_body.appendChild(tr);
                 if (!d.id) this.changeRowState(tr,'edit');
+
                 this.setFieldFocus(tr,null); 
                 this.resetNumero();
      }
@@ -748,22 +691,15 @@ class ItemsView{
          }
     }
 
-    setRowId(tr,id){
-        tr.dataset.id = id;
-    }
 
      //Set data for display in ItemView
-     setData(rows = null){
+     setData(rows){
+       
        let rowIndex= 0;
        this.table_body.innerHTML = null;
-       //let html = ""; 
-       if(!rows || !rows[0]) {
-          this.addRow(null,0,false); 
-          return ;
-       }
+       let html = ""; 
        (rows || []).map(d =>{
-            //add row without validate item data
-            this.addRow(d,rowIndex,false); 
+            this.addRow(d,rowIndex); 
             rowIndex++;
       });
           

@@ -6,8 +6,9 @@ let PositionsComponent = new function(){
     this.self = $('#_main_positionsComponent');
     this.btnNew = $('#_pos_btnNew');
     this.elSearchItem = $('#_pos_search');
+    // this.elFilter_department = $('#_msl_filter_service');
     this.tblPosition = $('#_pos_tblPosition');
-    this.form_data = {};
+    // this.form_data = {};
 
     this.col_titles = {
         "No":"No",
@@ -116,7 +117,7 @@ let PositionsComponent = new function(){
                         return [`<div class="form-inline">`,
                         `<a href="javascript:void(0)" class="btn_pos_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                         `<a href="javascript:void(0)" class="btn_pos_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
-                        `<a href="javascript:void(0);" data-id="${data.id}" class="btn_pos_delete"><i class="fa-solid fa-trash-can text-danger"></i></i></a>`,
+                        `<a href="javascript:void(0);" data-id="${data.id}" class="btn_pos_delete"><i class="fa fa-trash" style="color:red"></i></a>`,
                         `&nbsp;<a href="#" data-id="${data.id}" class="btn_pos_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
                         `</div>`
                        ].join('');
@@ -171,10 +172,12 @@ let PositionsComponent = new function(){
     }
 }
 
+//begin::MedicalServiceDialog
 let PositionsDialog = new function(){
     let mThis = this;
     this.self = $(`#_pos_dlgPosition`);
 
+    //AppointmentDialog
     this.formUntil = new FormUntil({
         "itemName":"Position",
         "formId":'_pos_dlgPosition',
@@ -195,12 +198,16 @@ let PositionsDialog = new function(){
         "sanitize_excepts":[],
         'use_alert_error':true,
         'beforeShow': () => {}
+        // "init": ()=>{
+            
+        //  }
     });
 
     this.show = (options)=>{
         mThis.formUntil.show(options);
     }
 }
+//end::MedicalServiceDialog
 
 $(document).ready(function() {
     PositionsComponent.init();

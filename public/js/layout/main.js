@@ -22,14 +22,11 @@
      this.mnuDashboard2 = $('#_main_lnkDashboard2');
      this.mnuAppointmentList = $('#_main_lnkAppointments');
      this.mnuPatientFinder = $('#_main_lnkPatientFinder');
-     this.mnuPatientInvoices = $('#_main_lnkPatientInvoices');
-
      this.mnuTickets = $('#_main_lnkTickets');
      this.mnuEmployeeList = $('#_main_lnkEmployeeList');
      this.mnuPositions = $('#_main_lnkPositions');
      this.mnuEmployeeDepartment = $('#_main_lnkDepartments');
      this.mnuMedicalServices = $('#_main_lnkMedicalServices');
-     this.mnuStockTransfer = $('#_main_lnkStockTransfer');
 
      this.mnuStockTracking = $('#_main_lnkStockTracking');
      this.mnuItems = $('#_main_lnkItems');
@@ -44,7 +41,7 @@
 
      this.mnuPatientDashboard = $('#_main_lnkPatientDashboard');
      this.mnuOPDList = $('#_main_lnkOPDList');
-     this.mnuInvoices = $('#_main_lnkIncomeInvoices');
+     this.mnuPatientInvoices = $('#_main_lnkPatientInvoices');
      this.mnuPatientReciepts = $('#_main_lnkPatientReceipts');
      this.mnuPatientCreditNotes = $('#_main_lnkPatientCreditNotes');
 
@@ -178,11 +175,6 @@
                     MedicalServiceComponent.show(null);
                  });
 
-                 this.mnuStockTransfer.on('click',(e)=>{
-                    e.preventDefault();
-                    StockTransferComponent.show(null);
-                 });
-
                  this.mnuItems.on('click',(e)=>{
                     e.preventDefault();
                     ItemsComponent.show(null);
@@ -231,22 +223,12 @@
 
                  this.mnuConsultationQueue.on('click',(e)=>{
                     e.preventDefault();
-                    QueueComponent.show({
-                        'showPatientPhotos':true,
-                        'showConsultButton':true,
-                        'showPrescriptionButton':true,
-                        'showHistoryButton':true
-                    });
+                    ConsultationQueueComponent.show(null);
                  });
 
                  this.mnuPatientInvoices.on('click',(e) => {
                     e.preventDefault();
-                    InvoicesComponent.show(null);
-                 });
-
-                 this.mnuInvoices.on('click',(e) => {
-                    e.preventDefault();
-                    InvoicesComponent.show(null);
+                    PatientInvoicesComponent.show(null);
                  });
 
                  this.mnuPatientReciepts.on('click',(e)=>{

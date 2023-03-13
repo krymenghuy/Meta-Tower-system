@@ -19,7 +19,7 @@
 
     <!--end::Base Path -->
     <meta charset="utf-8" />
-    <title>Clinic Management System</title>
+    <title>Esthederm Clinic Management</title>
     <link type="images/png" rel="icon" href="{{ asset('assets/images/logo/logo.jpg') }}">
     <meta name="description" content="Updates and statistics">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -55,10 +55,17 @@
     <!-- <link rel="stylesheet" href="{{ asset('assets/material-css/bootstrap.min.css') }}"> -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
         type="text/css" />
+    <!-- <link rel="stylesheet" href="{{ asset('assets/material-css/mdb.min.css') }}"> -->
+    <!-- <link rel="stylesheet" href="{{ asset('assets/material-css/compiled-addons-4.20.0.min.css') }}"> -->
 
     <!--begin::Page Vendors Styles(used by this page) -->
     <link href="{{ asset('assets/vendors/custom/datatables/datatables.bundle.css') }}"
         rel="stylesheet" type="text/css" />
+    <!--end::Page Vendors Styles -->
+
+    <!--begin::Page Vendors Styles(used by this page) -->
+    <!-- <link href="{{ asset('assets/vendors/custom/fullcalendar/fullcalendar.bundle.css') }}" rel="stylesheet" type="text/css" /> -->
+
     <!--end::Page Vendors Styles -->
 
     <!--begin:: Global Mandatory Vendors -->
@@ -67,6 +74,9 @@
         rel="stylesheet" type="text/css" />
 
     <!--end:: Global Mandatory Vendors -->
+
+    <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        rel="stylesheet"> -->
 
     <!--begin:: Global Optional Vendors -->
     <link href="{{ asset('assets/vendors/general/tether/dist/css/tether.css') }}"
@@ -132,6 +142,11 @@
     <!-- ::End AndimLte -->
 
     <style type="text/css">
+        /* html,body{
+          font-size:1em; 
+          font-family:'Robotto','Khmer OS Content','DaunPenh','Francois One','Bayon','Verdana','Arial Black (sans-serif)',"Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",'Arial (sans-serif)','Tahoma (sans-serif)';
+        }
+         */
         <blade media|%20(min-width%3A%201025px)%20%7B>.kt-header--fixed.kt-subheader--fixed.kt-subheader--enabled .kt-wrapper {
             padding-top: 65px !important;
         }
@@ -344,17 +359,38 @@
             opacity:0.7;
         }
 
+        /* #kt_header{
+          background-image: url("{{ asset('assets/images/bg/silver1.jpg') }}");
+          background-repeat: no-repeat, repeat;
+        }
+        #kt_aside_brand {
+          background-image: url("{{ asset('assets/images/bg/silver.jpg') }}");
+          background-repeat: no-repeat, no-repeat;
+        } */
+
         /** ensure dropdown menus inside table appear above table **/
         .table .dropdown {
             position: absolute;
         }
+
+        /* .backdrop {
+        z-index:100;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background: black;
+        opacity: 0.5;
+      } */
+
     </style>
 
     <?php
-    ScriptManager::render('primary',0);
-    ScriptManager::render('primary-async',0);
+    ScriptManager::render('primary',1);
+    ScriptManager::render('primary-async',1);
     ScriptManager::render('primary-defer',1);
-    ScriptManager::render('components',1);
+    ScriptManager::render('pdfmake',0);
   ?>
 
 </head>
@@ -483,8 +519,8 @@
                             <div id="_main_top_right_menus" class="mainview-top-right" style="float:right">
                                 <div class="form-inline">
                                     <div class="dropdown">
-                                        <button style="display:none" id="_main_btn_lang" class="btn-dropdown" data-menu="lang"
-                                            style="margin-right:10px;padding:0px;border:none;background:none;">
+                                        <button id="_main_btn_lang" class="btn-dropdown" data-menu="lang"
+                                            style="display:none;margin-right:10px;padding:0px;border:none;background:none;">
                                             <img class="mr-1"
                                                 src="{{ asset('assets/images/icons/khmer.png') }}"
                                                 style="height:25px;" />
@@ -601,7 +637,7 @@
                             @include('layouts.positionsComponent')
                             @include('layouts.laboPartnersComponent')
                             @include('layouts.vendorsComponent')
-                            @include('layouts.invoicesComponent')
+                            @include('layouts.patientInvoicesComponent')
                             @include('layouts.patientRecieptsComponent')
                             @include('layouts.medicalServiceComponent')
                             @include('layouts.itemsComponent')
@@ -616,12 +652,15 @@
                             @include('layouts.serviceDepartmentsComponent')
                             @include('layouts.chiefComplaintsComponent')
                             @include('layouts.exchangeRateComponent')
-                            @include('layouts.stockTransferComponent')
                             @include('layouts.um.userManagementComponent')
                             @include('layouts.um.roleManagementComponent')
                             @include('layouts.mobileBrandImagesComponent')
                         </div>
                         <!--end:: div#_app_content-->
+                        <?php 
+            ScriptManager::render('mainjs',1); 
+            ScriptManager::render('components',1); 
+          ?>
                     </div>
                 </div>
             </div>
@@ -637,9 +676,18 @@
                 <div class="kt-footer__copyright">
                     2021&nbsp;&copy;&nbsp;<a href="www.vectorasoft.com" target="_blank" class="kt-link">Vectorasoft</a>
                 </div>
+                <!-- <div class="kt-footer__menu">
+        <a href="http://keenthemes.com/metronic" target="_blank" class="kt-footer__menu-link kt-link">About</a>
+        <a href="http://keenthemes.com/metronic" target="_blank" class="kt-footer__menu-link kt-link">Team</a>
+        <a href="http://keenthemes.com/metronic" target="_blank" class="kt-footer__menu-link kt-link">Contact</a>
+      </div> -->
             </div>
         </div>
+
+        <!-- end:: Footer -->
     </div>
+    <!-- </div>
+</div>  -->
     <div>
         <!-- end:: Page -->
 
@@ -648,7 +696,32 @@
             <i class="fa fa-arrow-up"></i>
         </div>
         <!-- end::Scrolltop -->
- 
+
+
+        <!-- begin::Global Config(global config for global JS scripts) -->
+        <script>
+            let KTAppOptions = {
+                "colors": {
+                    "state": {
+                        "brand": "#5d78ff",
+                        "dark": "#282a3c",
+                        "light": "#ffffff",
+                        "primary": "#5867dd",
+                        "success": "#34bfa3",
+                        "info": "#36a3f7",
+                        "warning": "#ffb822",
+                        "danger": "#fd3995"
+                    },
+                    "base": {
+                        "label": ["#c5cbe3", "#a1a8c3", "#3d4465", "#3e4466"],
+                        "shape": ["#f0f3ff", "#d9dffa", "#afb4d4", "#646c9a"]
+                    }
+                }
+            };
+
+        </script>
+
+        <!-- end::Global Config -->
 </body>
 <!-- end::Body -->
 

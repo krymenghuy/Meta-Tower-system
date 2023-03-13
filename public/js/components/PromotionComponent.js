@@ -4,6 +4,8 @@ let PromotionComponent = new function () {
   this.self = $('#_main_promotionComponent');
   this.title_prop = "Promotion";
   this.base_url = $('#__base_url').val();
+  //this.tblIamges = $('#_mobile_brand_tblIamges');
+  //this.tblIamges_body = $('#_mobile_brand_tblIamges_body');
 
   this.img_container = $('#promo_img_container');
 
@@ -47,7 +49,7 @@ let PromotionComponent = new function () {
 
   this.deletePromotion = (promo_id, user_class) => {
     let p = { 'id': promo_id, 'user_class': user_class };
-    cv_interact.confirm('Delete this promotion?', { title: 'Delete Promotion', context: 'delete' }, (e) => {
+    cv_interact.confirm('Delete this promotion?', {title: 'Delete Promotion',context: 'delete'}, (e) => {
       if (e) {
         vsapi.call([mThis.base_url, '/api/deletePromotion'].join(''), p).then(res => {
           if (res.status_code !== 200) cv_interact.error(res.error_message);
@@ -102,6 +104,7 @@ let PromotionComponent = new function () {
   }
 }
 //end::PromotionComponent
+
 
 //begin::PromoDialog
 var PromoDialog = new function () {
@@ -170,7 +173,14 @@ var PromoDialog = new function () {
     var file = files[0];
     if (file) {
       if (file.type.match(/^image\/.*/)) {
+        //if (file.size >2000) {
+        //    alertify.showWarning('The image file is too big');
+        //} else {
         mThis.fileReader.readAsDataURL(file); /*return a data that can be set directly to Image.src property */
+
+        //}
+
+
       } else {
         cv_interact.warning('The chosen image file is invalid!');
       }
@@ -193,10 +203,10 @@ var PromoDialog = new function () {
 
     vsapi.call([mThis.base_url, '/api/savePromotion'].join(''), p).then(res => {
       if (res.status_code === 200) {
-        if (typeof mThis.onClose == 'function') mThis.onClose(p);
-        mThis.self.modal('hide');
-        PromotionComponent.displayPromotionList();
-      } else mThis.elError.text(res.error_message);
+          if (typeof mThis.onClose == 'function') mThis.onClose(p);
+          mThis.self.modal('hide');
+          PromotionComponent.displayPromotionList();
+        } else mThis.elError.text(res.error_message);
     });
   });
 
@@ -206,6 +216,8 @@ var PromoDialog = new function () {
       "id": mThis.promo_id,
       "Promo_id": mThis.promo_id,
       "user_class": "merchant",
+      //"user_id":mThis.elUser.val(),
+      //"user_group":mThis.elUserGroup.val(),
       "description": mThis.elDes.val(),
       "category": mThis.elCategory.val(),
       "title": mThis.elPromoTitle.val(),
@@ -262,6 +274,7 @@ var PromoDialog = new function () {
       });
     }
   }
+
 }
 //end::PromoDialog
 

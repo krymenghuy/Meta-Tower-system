@@ -4,58 +4,43 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-//use Session;
+use Session;
 use App\Models\CompanyProfile;
-use App\Models\UM;
-use App\Models\JDV;
 
 class CompanyProfileController extends Controller
 {
  
-  // protected $companyProfileModel;
-  // public function __construct(){
-	//    $this->companyProfileModel = new CompanyProfile();
-  // }
-
-  function saveCompanyInfo(Request $req) {
-	   $ss= UM::getUserInfoByToken($req,-1);
-     if($ss->status_code !==200) return JDV::raw($ss);
-     $c = new CompanyProfile($ss);
-     $res = $c->save($req->all());
-     return JDV::raw($res); 
+  protected $companyProfileModel;
+  public function __construct(){
+	$this->companyProfileModel = new CompanyProfile();
   }
 
-  function getCompanyInfo(Request $req) {
-    $ss= UM::getUserInfoByToken($req,-1);
-    if($ss->status_code !==200) return JDV::raw($ss);
-    $c = new CompanyProfile($ss);
-    return JDV::result($c->getDetails());
+  function saveCompanyInfo(Request $request) {
+	$r = $this->companyProfileModel->saveCompanyInfo($request);
+	return makeJsonResponse($r);
+  }
+  function getCompanyInfo(Request $request) {
+    $r = $this->companyProfileModel->getCompanyInfo($request);
+    return makeJsonResponse($r);
   }
 
  /** Start Save  and retrieve company's logo **/
-  function saveCompanyLogo(Request $req)
-  {  
-    $ss= UM::getUserInfoByToken($req,-1);
-    if($ss->status_code !==200) return JDV::raw($ss);
-     $c = new CompanyProfile($ss);
-     $res = $c->saveLogo($req->all());
-     return JDV::raw($res);
+  function saveCompanyLogo(Request $request)
+  {   
+     $r = $this->companyProfileModel->saveCompanyLogo($request);
+     return makeJsonResponse($r);
   } 
 
-  function getCompanyLogo(Request $req)
+  function getCompanyLogo(Request $request)
   {
-    $ss= UM::getUserInfoByToken($req,-1);
-    if($ss->status_code !==200) return JDV::raw($ss);
-     $c = new CompanyProfile($ss);
-    return JDV::result($c->getLogoUrl());
+	  $r = $this->companyProfileModel->getCompanyLogo($request);
+    return makeJsonResponse($r);
   }
   
-  function deleteCompanyLogo(Request $req)
+  function deleteCompanyLogo(Request $request)
   {
-    $ss= UM::getUserInfoByToken($req,-1);
-    if($ss->status_code !==200) return JDV::raw($ss);
-    $c = new CompanyProfile($ss);
-    return JDV::raw($c->deleteLogo());
+    $r = $this->companyProfileModel->deleteCompanyLogo($request);
+    return makeJsonResponse($r);
   }
 
 }

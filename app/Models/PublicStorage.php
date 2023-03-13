@@ -196,10 +196,10 @@ class PublicStorage extends Model
     //@user_class = {general,person,loan}
     static function getSpecificFolder($user_class,$upload_type ="document"){
         $folder_name ="general";
-        if($user_class =='staff') 
-           $folder_name ="staff";
-        else if ($user_class =="patient")
-           $folder_name ="patient";
+        if($user_class =='person') 
+           $folder_name ="person";
+        else if ($user_class =="loan")
+           $folder_name ="loan";
         else // $user_class ='general' or else
            $folder_name ="general";
         if ($upload_type =="image" || $upload_type =="photo")   

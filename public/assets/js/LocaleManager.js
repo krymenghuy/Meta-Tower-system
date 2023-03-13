@@ -1,5 +1,4 @@
-    'use strict';
-	//##### begin:: Translater | Translator| Locale|
+    //##### begin:: Translater | Translator| Locale|
         let LocaleManager = new function(){
             let mThis = this;
             this.base_url = window.location.origin; //$('#__base_url').val();

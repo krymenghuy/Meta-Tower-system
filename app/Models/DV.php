@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-//use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 use Localization;
 
 //DV is the Data Valiator class
-class DV
+class DV extends Model
 {
     use HasFactory;
 
