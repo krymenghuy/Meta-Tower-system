@@ -20,9 +20,16 @@ class Item extends Model
     public $timestamps = true;
     protected $dateFormat = 'Y-m-d';
      
-    static function info($id){
-       $cols = "i.id,i.code,i.name,i.description,i.sku,i.unit_id,i.group_id,g.name AS group_name,g.category_id,i.cost,i.ws_selling_price,i.selling_price"; 
-       $rows = DB::table("inv_items as i")->join('inv_item_groups AS g','g.id','=','i.group_id')->where("i.id",$id)->selectRaw($cols)->take(1)->get();
+    static function info($id,$byCode=false,$branch_id=null){
+       $cols = "i.id,i.code,i.name,i.description,i.sku,i.unit_id,i.group_id,g.name AS group_name,g.category_id,i.cost,i.ws_selling_price,i.selling_price,i.sales_tax_rate"; 
+       $rows = [];
+       if($byCode){
+         //if search item by code, user must supply $branch_id
+         if(!$branch_id) return null;
+         $rows = DB::table("inv_items as i")->join('inv_item_groups AS g','g.id','=','i.group_id')->where("i.code",$id)->where('i.branch_id',$branch_id)->selectRaw($cols)->take(1)->get();
+       }
+       else
+         $rows = DB::table("inv_items as i")->join('inv_item_groups AS g','g.id','=','i.group_id')->where("i.id",$id)->selectRaw($cols)->take(1)->get();
        return isset($rows[0])?$rows[0]:null;    
     }
 
@@ -187,11 +194,11 @@ class Item extends Model
                "item_id"=>$item->id,
                "item_code"=>$item->code,
                "begin_qty"=>$begin_qty,
-               "purchase_qty"=>0,
-               "sold_qty"=>0,
-               "customer_return_qty"=>0,
-               "vendor_return_qty"=>0,
-               "adjust_qty"=>0,
+               "purchase_qty"=>isset($item->purchase_qty)?$item->purchase_qty:0,
+               "sold_qty"=>isset($item->sold_qty)?$item->sold_qty:0,
+               "customer_return_qty"=>isset($item->customer_return_qty)?$item->customer_return_qty:0,
+               "vendor_return_qty"=>isset($item->vendor_return_qty)?$item->vendor_return_qty:0,
+               "adjust_qty"=>isset($item->adjust_qty)?$item->adjust_qty:0,
                "sku"=>$item->sku,
                "unit_id"=>$item->id,
                "created_at"=>getNowTime(),

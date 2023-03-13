@@ -11,6 +11,19 @@
   --vs-btn-export: #ffd7a5;
 }
 
+.vs-text-danger{
+  color:#f6241d;
+  background-color:#fff;
+  padding:5px 10px;
+  font-size:20px;
+}
+
+.vs-text-danger:hover{
+  color:#fff;
+  background-color:#f6241d;
+  border-radius:10px;
+}
+
 .btn {
   padding-top: 2px !important;
   padding-bottom: 2px !important;
@@ -155,7 +168,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 span.span::before{
-  content:'show more';
+  content: 'show more';
   color:#2f43c6;
   cursor:pointer;
 }
@@ -172,7 +185,7 @@ span.span::before{
 }
 
 .vs-contain-custom.active span.span::before{
-  content:'show less';
+  content: 'show less';
   color:#2f43c6;
   cursor:pointer;
 }
@@ -706,7 +719,6 @@ tbody, td, tfoot, th, thead, tr{
   border-style:none;
 }
 
-.vs-modal-body-input{}
 
 /*Begin style of modal dialog*/
 .vs-modal-dialog .form-control,

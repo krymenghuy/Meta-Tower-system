@@ -81,10 +81,10 @@ class Patient extends Model
     //     });
     // }
  
-    protected static function saveVitalSigns($ss,$patient_id,$vitalSigns =[]){
+    protected static function saveVitalSigns($ss,$appt_id,$patient_id,$ticket_id=null,$vitalSigns =[]){
         $branch_id = $ss->branch_id;
         //Assume that the Vital sign's Check Time (check_time) is equal to booking time (created_at)
-
+        //NOTE: $ticket_id is NOT empty when $addToQueue = true. (User Register patient and Add to Queue at the same time)
         DB::table('patient_vital_signs')->where('patient_id',$patient_id)->where('branch_id',$branch_id)->delete();
         foreach($vitalSigns as $item){
             $create_time = getNowTime();
@@ -95,6 +95,8 @@ class Patient extends Model
                 //"session_id"=>null,
                 "branch_id"=>$branch_id,
                 "patient_id"=>$patient_id,
+                "appt_id"=>$appt_id,
+                "ticket_id"=>$ticket_id,
                 "vital_sign_id"=>$item['id'],
                 "vital_sign_value"=>$item['value'],
                 "description"=>$description,
@@ -210,18 +212,23 @@ class Patient extends Model
             //Save vital_sign items
             $medicalConditions = isset($d['mc_items'])?$d['mc_items']:[];
             $vital_signs = isset($d['vital_signs'])?$d['vital_signs']:[];
-            self::saveVitalSigns($ss,$patient_id,$vital_signs); 
+           
             //Save medical conditions such as Alergic, and other condition
             self::saveMedicalConditions($ss,$patient_id,$medicalConditions);
 
             $statusInfo = (object)['status'=>'Registered','status_id'=>2];  /** status_id => 0=Canceled, 1= Pending , 2 = Registered, 3=Queued, 4 = Served **/
             //register patient to Servicing department such as Cardiology, or Dermatology, or Heart Center
+            $ticket = null;
             if ($addToQueue == 1){
-                $qr = QTicket::create($ss,['client_id'=>$patient_id,'department_id'=>$department_id,'consultant_id'=>$consultant_id]);
-                if($qr->status==='Error') return $qr;
-                $statusInfo = (object)['status'=>'Queued','status_id'=>3]; 
+                $ticket = new QTicket(null,$ss);
+                $t_res = $ticket->create(['client_id'=>$patient_id,'department_id'=>$department_id,'consultant_id'=>$consultant_id]); 
+                //Save patient's vital signs with Ticket ID
+                self::saveVitalSigns($ss,$appt_id,$patient_id,$t_res->id,$vital_signs);
+            }else{
+                //save patient's vital signs without Ticket ID
+                self::saveVitalSigns($ss,$appt_id,$patient_id,null,$vital_signs); 
             }
-            
+
             return DV::success(['person_id'=>$person_id,'patient_id'=>$patient_id,'patient_code'=>$ff? $ff->code:null,'status_info'=>$statusInfo]);
         }else return DV::error('Something went wrong during saving patient data');
 

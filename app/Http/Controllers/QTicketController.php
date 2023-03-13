@@ -13,7 +13,7 @@ class QTicketController extends Controller
 {
     function getTicketList(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return JDV::emptyResult($ss); //user not authenticated
+        if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
         $d = $req->all();
         $d['branch_id'] = $ss->branch_id;
         return JDV::result(QTicket::list($d));
@@ -23,21 +23,15 @@ class QTicketController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss,[]); //user not authenticated
         //$d ={branch_id,id} 
-        $d = [
-            'branch_id'=>$ss->branch_id,
-            'id'=>$req->id
-        ];
-        return JDV::raw(QTicket::deletePermanent($d));
+        $ticket = new QTicket($req->id,$ss); 
+        return JDV::raw($ticket->delete());
     }
 
     function getTicketDetails(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return JDV::emptyResult($ss,null); //user not authenticated
-        $row = QTicket::info([
-            'branch_id'=>$ss->branch_id,
-            'id'=>$req->id
-        ]);
-        return JDV::result($row);
+        if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+        $id = $req->id?$req->id:$req->ticket_id;
+        return JDV::result(QTicket::info($id,$ss)); 
     }
 
     function addChiefComplaint(Request $req){
@@ -50,13 +44,52 @@ class QTicketController extends Controller
        return JDV::raw($res);
     }
 
-    function getPatientVitalSigns(Request $req){
+    function savePatientPhoto(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
         $branch_id = $ss->branch_id;
-        $ticket_id = $req->ticket_id;
+        $ticket_id = $req->ticket_id? $req->ticket_id:$req->id;
+        $ticket = new QTicket($ticket_id,$ss);
+        $res = $ticket->savePatientPhoto($req->all());
+        if($res->status_code ===200) return JDV::result(['id'=>$res->id,'new_image_url'=>$res->new_image_url,'image_urls'=>$res->image_urls]);
+        return JDV::error($res->error_message);
+    }
+    
+    function deletePatientPhoto(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+        $branch_id = $ss->branch_id;
+        $ticket = new QTicket();
+        $res = $ticket->deletePatientPhoto($req->id,$ss);
+        if($res->status_code ===200) return JDV::result(['image_urls'=>$res->image_urls]);
+        return JDV::error($res->error_message);
+    }
 
-        $res = QTicket::vitalSigns($branch_id,$ticket_id);
+    function getPatientPhotos(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+        $branch_id = $ss->branch_id;
+        $ticket_id = $req->ticket_id? $req->ticket_id:$req->id;
+        $ticket = new QTicket($ticket_id,$ss);
+        $rows = $ticket->getPatientPhotos();
+        return JDV::result($rows);
+    }
+
+    function getPatientVitalSigns(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+        $id = $req->id?$req->id:$req->ticket_id;
+        $ticket = new QTicket($id,$ss);
+        $res = $ticket->getVitalSigns();
+        return JDV::result($res);
+    }
+
+    function getChiefComplaints(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+        $id = $req->id?$req->id:$req->ticket_id;
+        $ticket = new QTicket($id,$ss);
+        $res = $ticket->getChiefComplaints();
         return JDV::result($res);
     }
 
@@ -134,7 +167,9 @@ class QTicketController extends Controller
             'schedule_type'=>$req->schedule_type,
             'remarks'=>$req->remarks
         ];
-        $res = QTicket::create($ss,$inputs);
+        $ticket = new QTicket(null,$ss);
+        $res = $ticket->create($inputs);
+        if ($res->status_code ===200) return JDV::success(['id'=>$res->id,'ticket_number'=>$res->ticket_number,'status_info'=>$res->status_info]);
         return JDV::raw($res);
     }
 }

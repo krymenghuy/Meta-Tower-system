@@ -52,7 +52,7 @@
      }
 
      .detail-item .detail-item-label {
-         max-width: 157px;
+         max-width: 192px;
          font-weight: bold;
          font-size: 1em;
          padding: 3px;
@@ -282,8 +282,7 @@
                              <a href="javascript:void(0)" id="appt_lnkAddChiefComplaint"><i class="fa fa-plus-circle"
                                      style="color:#14B1D1;font-size:1.2em"></i></a>
                          </span>
-                         <div><select data-field="chief_complaint_code" data-ffield="Chief Complaint"
-                                 class="modal-select2 data-input" id="_appt_chief_complaint"></select></div>
+                         <div><select class="modal-select2 data-input" id="_appt_chief_complaint"></select></div>
                      </div>
                      <div class="form-group col-lg-12 cc-input">
                          <div style="padding:10px">

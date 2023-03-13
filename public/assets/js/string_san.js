@@ -1,4 +1,4 @@
-﻿'use strict'
+﻿'use strict';
 /*StringSanitizer class */
 /* IMPORTANT When updating the array of whiteList characters ==> please also update the escapeHtml() function defined in Scripts/bootstrap-table.js (for URM project) */
 let StringSanitizer = new function () {
@@ -281,7 +281,14 @@ let StringSanitizer = new function () {
                         if (except_props.indexOf(property) ===-1) {
                             if (Array.isArray(myObj[property]))  
                                myObj[property] = this.sanitizeObject(myObj[property]);
-                            else myObj[property] = this.sanitizeOut(myObj[property], this.getItemName(property), allowedChars); //NOTE: this.Sanitize() = Sanitize output for display     
+                            else{
+                                //if (typeof(myObj)==='string'){
+
+                                //}else{
+                                    myObj[property] = this.sanitizeOut(myObj[property], this.getItemName(property), allowedChars); //NOTE: this.Sanitize() = Sanitize output for display     
+                               //}   
+                            }
+                            
                         }  
                                                           
 				    //}
