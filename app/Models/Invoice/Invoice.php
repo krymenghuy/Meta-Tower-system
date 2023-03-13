@@ -19,21 +19,25 @@ class Invoice
     protected $this_invoice_id =null;
     protected $userInfo = null;
 
-    function __construct($id=0,$userInfo=null){
+    public function __construct($id=0,$userInfo=null){
        $this->userInfo = $userInfo;
        $this->this_invoice_id = $id; 
     }
    
-    function getUserInfo(){
+     function getUserInfo(){
       return $this->userInfo;
     }
 
-    function getInvoiceId(){
+     function getId(){
+      return $this->this_invoice_id;
+    }
+
+    public function getInvoiceId(){
       return $this->this_invoice_id;
     }
 
     //CreateInvoice() | saveInvoice()
-     function create($d,$ss=null){
+     public function create($d,$ss=null){
        if(!$ss) $ss = $this->getUserInfo();
        $branch_id = $ss->branch_id;
        $validate_rule =[
@@ -62,7 +66,9 @@ class Invoice
        $invoice_id = $res->id;
        $inputs = $res->values;
   
-       if(!(bool)strtotime($inputs['issue_date'])) $inputs['issue_date'] =getNowTime();
+       /** Always use today date for Issue date **/
+       //if(!(bool)strtotime($inputs['issue_date'])) 
+       $inputs['issue_date'] =getNowTime();
 
        $inputs['issue_date'] = convertDate($inputs['issue_date']); 
        $inputs['due_date'] = convertDate($inputs['due_date']);
@@ -106,7 +112,7 @@ class Invoice
     }
  
     //CreateInvoice() | saveInvoice()
-    function update($d,$ss=null){
+    public function update($d,$ss=null){
       if(!$ss) $ss = $this->getUserInfo();
       $branch_id = $ss->branch_id;
       if ($this->hasPayments(isset($d['id'])? $d['id']:0,$ss)) return DV::error("Cannot modify invoice with existing payments");
@@ -179,7 +185,7 @@ class Invoice
          return DV::success(['invoice_id'=>$invoice_id,'item_count'=>$m->item_count]);
    }
    
-   function hasPayments($id=null,$ss=null){
+   public function hasPayments($id=null,$ss=null){
       if(!$id) $id = $this->getInvoiceId();
       if(!$ss) $ss = $this->getUserInfo();
       return DB::table('invoice_payments')->where('invoice_id',$id)->where('branch_id',$ss->branch_id)->select('id')->take(1)->exists();
@@ -211,7 +217,7 @@ class Invoice
     }
 
     //$doc_class is invlice line. It is invoice line based on which to issue invoice for different Tax processing or tax treatment.
-    static function setInvoiceNumber($branch_id,$invoice_id=0,$doc_class=null,$issue_date=null,$len=5,$onSuccess=null){
+    public static function setInvoiceNumber($branch_id,$invoice_id=0,$doc_class=null,$issue_date=null,$len=5,$onSuccess=null){
       if(!$len) $len=5;
       $def_prefix ="V";
       $table_name="invoice_number_control";
@@ -382,7 +388,7 @@ class Invoice
       ////if (!$ss) $ss = $this->getUserInfo();
       ////if(!$id) $id = $this->getInvoiceId(); 
       $branch_id = $ss->branch_id;
-      $cols = ['v.id','ref_number',DB::raw('formatDate(v.issue_date) AS issue_date'),DB::raw('formatDate(v.due_date) as due_date'),'customer_id','v.customer_phone','v.customer_email',DB::raw('NULL AS customer_tax_number'),'terms','v.billing_address','v.amount','v.discount_percent','v.discount_amount','discount_type','v.total_cost','signer_name','v.currency_code','v.exchange_rate','v.amount_due','v.tax_amount','v.tax_rate',DB::raw("(SELECT SUM(IFNULL(amount,0)) FROM invoice_payments WHERE invoice_id =v.id) AS amount_paid"),'v.pmt_bank_name','v.pmt_account_number','v.pmt_account_name','v.description','v.invoice_notes'];
+      $cols = ['v.id','ref_number','exchange_rate',DB::raw('formatDate(v.issue_date) AS issue_date'),DB::raw('formatDate(v.due_date) as due_date'),'customer_id','v.customer_phone','v.customer_email',DB::raw('NULL AS customer_tax_number'),'terms','v.billing_address','v.amount','v.discount_percent','v.discount_amount','discount_type','v.total_cost','signer_name','v.currency_code','v.exchange_rate','v.amount_due','v.tax_amount','v.tax_rate',DB::raw("(SELECT SUM(IFNULL(amount,0)) FROM invoice_payments WHERE invoice_id =v.id) AS amount_paid"),'v.pmt_bank_name','v.pmt_account_number','v.pmt_account_name','v.description','v.invoice_notes'];
       $rows =DB::table('invoices as v')->where('v.id',$id)->where('v.branch_id',$branch_id)->select($cols)->take(1)->get();
       foreach($rows as $row){
          $row->items = self::getInvoiceItems($ss,$id);
@@ -391,9 +397,10 @@ class Invoice
       return null;
     }
    
+   
   function getDetails($id=null,$ss=null){
     if (!$ss) $ss = $this->getUserInfo();
-    if(!$id) $id = $this->getInvoiceId(); 
+    if(!$id) $id = $this->getInvoiceId();
     return self::details($id,$ss);
   }
 
@@ -415,7 +422,7 @@ class Invoice
       $rows = DB::table("invoices AS v")->join('customers as c','c.id','=','v.customer_id')->where('v.branch_id',$branch_id)->select($cols)->orderBy("v.id", "DESC")->get(); 
       return $rows;
    }
-   function getInvoiceList($d,$ss=null){
+   public function getInvoiceList($d,$ss=null){
       if(!$ss) $ss = $this->getUserInfo();
       return self::list($d,$ss);
    }
@@ -425,13 +432,13 @@ class Invoice
    }
 
    //return Invoice's basic info (display info when receiving payment) => such as amount due, amount paid, ref_number, open amount
-   function getBasicInfo($id=null,$ss=null){
+   public function getBasicInfo($id=null,$ss=null){
       if(!$id) $id = $this->getInvoiceId();
       if(!$ss) $ss = $this->getUserInfo();
       return getDataRow('invoices',['invoices.id'=>$id],"id,amount_due,(SELECT SUM(IFNULL(amount,0)) FROM invoice_payments WHERE invoice_id =invoices.id) AS amount_paid,tax_amount,currency_code");
    }
 
-   function getPayments($invoice_id=null, $filter=[],$ss=null){
+   public function getPayments($invoice_id=null, $filter=[],$ss=null){
       if (!$ss) $ss = $this->getUserInfo();
       $inv_id = $invoice_id?$invoice_id:$this->getInvoiceId();
       $branch_id = isset($ss->branch_id)? $ss->branch_id:null;
@@ -441,12 +448,13 @@ class Invoice
       //return DB::table("invoice_payments as pmt")->where('pmt.invoice_id',$inv_id)->where('pmt.branch_id',$branch_id)->select($cols)->get();
   }
 
-  function getPaymentDetails($pmt_id,$ss=null){
+  public function getPaymentDetails($pmt_id,$ss=null){
     if (!$ss) $ss = $this->getUserInfo();
     return Payment::get($pmt_id,$ss)->details();
   }
 
-  function receivePayment($d,$ss=null){
+  //d = array {'id','invoice_id',[payer_name],amount,[payment_date]}
+  public function receivePayment($d,$ss=null){
     if(!isset($ss)) $ss = $this->getUserInfo(); 
     $branch_id = $ss->branch_id;
     $validate_rule = [
@@ -465,6 +473,8 @@ class Invoice
     
     $id = $res->id;
     $inputs = $res->values;
+    //always use today date for receive payment
+    $inputs['payment_date'] = getNowTime();
     $invoice_id = $inputs['invoice_id'];
     $payment_date = $inputs['payment_date'];
     //$tax_amount =$inputs['tax_amount'];
@@ -520,7 +530,7 @@ class Invoice
     return 0;
   }
 
-  function receivePayments($pmts=[]){
+  public function receivePayments($pmts=[]){
     $success_cnt =0;
     $failed_cnt=0;
     $total_paid = 0;

@@ -30,8 +30,10 @@
 		let op = {
 			icon: 'info',
 			title: title,
-			text: message
-		  };
+			text: message,
+			position:"center"
+	   	   };
+
 		  if (position) op.position = position;
 		  if (footer) op.footer = footer;  
 		Swal.fire(op).then((result)=>{

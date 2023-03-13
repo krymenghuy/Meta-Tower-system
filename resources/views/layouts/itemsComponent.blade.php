@@ -12,7 +12,7 @@
                         <select class="modal-select2 form-select" id="_itm_filter_category" style="min-width:250px"></select>
                     </div>
                 </div>
-                <button class="btn btn-outline-primary py-1 px-2" type="button" id="_itm_btnFilterProduct">
+                <button class="btn btn-outline-primary py-1 px-2" type="button">
                     <i class="fa-solid fa-bars-staggered"></i>
                 </button>
             </div>
@@ -94,50 +94,6 @@
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
                 <button class="btn btn-primary" type="button" id="_itm_dlgProduct_btnSave">
-                    <span class="trans-text" data-langprop="buttons.Save"></span>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="_itm_dlgFilterProduct" class="modal fade" aria-labelledby="_itm_dlgFilterProduct_title" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="_itm_dlgFilterProduct_title"></h4>
-            </div>
-            <div class="modal-body">
-                <div class="row gy-2 py-2">
-                    <div class="col-4">
-                        <p class="fw-semibold trans-text" data-langprop="item.Code"></p>
-                    </div>
-                    <div class="col-8">
-                        <input type="text" class="form-control" id="_itm_dlgFilterProduct_Code" placeholder="Code"/>
-                    </div>
-                </div>
-                <div class="row gy-2 py-2">
-                    <div class="col-4">
-                        <p class="fw-semibold trans-text" data-langprop="item.Name"></p>
-                    </div>
-                    <div class="col-8">
-                        <input type="text" class="form-control" id="_itm_dlgFilterProduct_Name" placeholder="Name"/>
-                    </div>
-                </div>
-                <div class="row gy-2 py-2">
-                    <div class="col-4">
-                        <p class="fw-semibold trans-text" data-langprop="item.Type"></p>
-                    </div>
-                    <div class="col-8">
-                        <input type="text" class="form-control" id="_itm_dlgFilterProduct_Type" placeholder="Type"/>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary btn-default" type="button" data-dismiss="modal">
-                    <span class="trans-text" data-langprop="buttons.Cancel"></span>
-                </button>
-                <button class="btn btn-primary" type="button" id="_itm_dlgFilterProduct_btnSave">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>

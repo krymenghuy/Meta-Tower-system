@@ -1,21 +1,3 @@
-<style>
-    .labo-test-list-container{
-        padding:10px;
-        border-radius:5px;
-        border:1.2px solid #F8F6F5;
-        display:flex;
-        flex-direction:row;
-        align-items:flex-start;
-        overflow-y:auto;
-    }
-    .tbl-partner-tests th{
-      font-weight:bold;
-    }
-    .pn-test-item{
-        margin:3px;
-        width:190px;
-      }
-</style>
 <div id="_main_laboPartnersComponent" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
         <div class="d-flex align-items-center gap-2 ms-3">
@@ -38,7 +20,6 @@
     </div>
 </div>
 
-<!--begin:: PartnerDialog -->
 <div id="_lbp_dlgPartners" class="modal fade" tabindex="-1" aria-labelledby="_lbp_dlgPartners_title" aria-hidden="true">
     <div class="modal-dialog modal-xl vs-modal-dialog">
         <div class="modal-content">
@@ -98,36 +79,3 @@
         </div>
     </div>
 </div>
-<!--end:: PartnerDialog -->
-
-<!--begin:: LaboTest Selector Dialog -->
-<div id="_lbp_dlgTestSelector" class="modal fade" tabindex="-1" aria-labelledby="_lbp_dlgTestSelector_title" aria-hidden="true">
-    <div class="modal-dialog vs-modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="_lbp_dlgTestSelector_title">Choose Labo Test</h4>
-            </div>
-            <div class="modal-body">
-                <div class="row gy-2 py-2">
-                    <div class="col-lg-12">
-                        <label for="name" class="form-label trans-text" data-langprop="partners.Test Name"></label>
-                        <select id="_lbp_test" class="modal-select2 data-input" data-field="test_id" data-required="1" data-ffield="Labo Test"></select>
-                    </div>
-                    <div class="col-lg-12">
-                        <label for="email" class="form-label trans-text" data-langprop="partners.Price"></label>
-                        <input id="_lbp_test_price" type="number" class="form-control data-input" data-field="price" data-required="1" data-ffield="Price" placeholder="0.00"/>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary btn-default" type="button" data-dismiss="modal">
-                    <span class="trans-text" data-langprop="buttons.Cancel"></span>
-                </button>
-                <button class="btn btn-primary" type="button" id="_lbp_dlgTestSelector_btnOK">
-                    <span class="trans-text" data-langprop="buttons.Save"></span>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-<!--end:: labo Test select dialog -->

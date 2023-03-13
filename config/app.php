@@ -254,8 +254,7 @@ return [
         'Sanitizer'=>App\Security\Sanitizer::class,
         'PHPCrypto'=>App\Security\PHPCrypto::class,
         'SQLDB'=>App\DB\SQLDB::class,
-        'ScriptManager'=>App\ScriptManagement\ScriptManager::class,
-        'StyleManager'=>App\StyleManagement\StyleManager::class
+        'ScriptManager'=>App\ScriptManagement\ScriptManager::class, 
     ],
 
 ];

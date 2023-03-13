@@ -167,19 +167,19 @@ namespace App\ScriptManagement;
     }
 
 
-    class StyleProvider{
-        protected static $bundles = [
-           'primary'=>[
-               'files'=>[
-                   '/assets/material-js/jquery.min.css',
-               ]
-           ],
+//     class StyleProvider{
+//         protected static $bundles = [
+//            'primary'=>[
+//                'files'=>[
+//                    '/assets/material-js/jquery.min.css',
+//                ]
+//            ],
           
-        ];
+//         ];
 
-        static function bundle($bundle_name=null){
-            if(!$bundle_name) return [];
-            return isset(self::$bundles[$bundle_name])?self::$bundles[$bundle_name]:[];
-        }
-   }
+//         static function bundle($bundle_name=null){
+//             if(!$bundle_name) return [];
+//             return isset(self::$bundles[$bundle_name])?self::$bundles[$bundle_name]:[];
+//         }
+//    }
 ?>

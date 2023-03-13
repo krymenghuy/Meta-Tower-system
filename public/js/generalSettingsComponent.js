@@ -1,0 +1,106 @@
+'use strict'
+var generalSettingsComponent = new function(){
+   let mThis = this;
+   this.elScreenTitle = $('#screen_title');
+   this.base_url = $('#__base_url').val();
+   this.self = $('#_main_generalSettingsComponent');
+   this.btnNewProductType = $('#_gsttn_btnNewProductType');
+   this.btnNewBusinessType = $('#_gsttn_btnNewBusinessType');
+   
+   this.tblBusinessTypes = $('#_gsttn_tblBusinessTypes');
+   this.tblBusinessTypes_body = $('#_gsttn_tblBusinessTypes_body');
+   this.tblProductTypes = $('#_gsttn_tblProductTypes');
+   this.tblProductTypes_body = $('#_gsttn_tblProductTypes_body');
+
+    this.btnSendMessage = $('#btnSendMessage');
+    this.elTextEditor = $('#_textEditor');
+
+   this.displayBusinessTypes = ()=>{
+     post_ajax([mThis.base_url,'/api/getBusinessTypes'].join(''),null,function(rows){
+         if(rows) {
+             mThis.tblBusinessTypes_body.empty();
+             rows = StringSanitizer.sanitizeObject(rows);
+             let i =0, c;
+             do{
+                 c = rows[i];
+                 if(!c) break;
+                 let html_tr = ['<tr data-id="',c.id,'"><td>',(i+1),'</td><td>',c.name,'</td><td><a href="#" class="btn_btype_delete"><i class="fa fa-times" style="color:red"></i></td></tr>'].join('');    
+                 mThis.tblBusinessTypes_body.append(html_tr);
+                 i++;
+             }while(c); 
+         }
+     });
+   }
+
+   this.displayProductTypes = ()=>{
+    post_ajax([mThis.base_url,'/api/getProductTypes'].join(''),null,function(rows){
+        if(rows) {
+            mThis.tblProductTypes_body.empty();
+            rows = StringSanitizer.sanitizeObject(rows);
+            let i =0, c;
+            do{
+                c = rows[i];
+                if(!c) break;
+                let html_tr = ['<tr data-id="',c.id,'"><td>',(i+1),'</td><td>',c.name,'</td><td><a href="#" class="btn_ptype_delete"><i class="fa fa-times" style="color:red"></i></td></tr>'].join('');    
+                mThis.tblProductTypes_body.append(html_tr);
+                i++;
+            }while(c); 
+        }
+    });
+  }
+   this.init = ()=>{
+     mThis.btnSendMessage.on('click',(e)=>{
+        let text = 'This is test message';
+        let p = {'phone_number':'010428632','text':text};
+        alert(JSON.stringify(p));
+        post_ajax([mThis.base_url,'/api/sendMessage'].join(''),p,(result)=>{
+            alert(result);
+        });
+     });
+   }
+
+   this.show = (option)=>{
+       if(!option) option={};
+       mThis.elScreenTitle.html(option.title);
+       mThis.self.show().siblings().hide();
+   }
+}
+
+//begin:: ProductTypesView
+ var ProductTypesView = new function(){
+     let mThis = this;
+     this.base_url = $('#__base_url').val();
+     
+     //option = {item_name, addMethod, deleteMethod}
+     this.init = (option)=>{
+        mThis.option = option;
+        //mThis.base_url = option.base_url;
+     }
+      
+     this.deleteItem = (tr)=>{
+        let p = {};
+        p[mThis.option.key_field] = tr.data('id');   
+        cv_interact.confirm('Delete this item?','Delete Item',function(e){
+            if(e){
+                post_ajax([mThis.base_url,'/api/',mThis.option.deleteMethod].join(''),p,function(err){
+                    if(!err) {
+                        mThis.displayItems();
+                    }
+                });
+            }
+        }); 
+        
+     }
+     this.displayItems = ()=>{
+        post_ajax([mThis.base_url,'/api/getCom'].join(''),p,function(err){
+            if(!err) {
+                mThis.displayItems();
+            }
+        });
+     }
+ }
+//end:: ProductTypesView
+
+$(document).ready(()=>{
+    generalSettingsComponent.init();
+});
