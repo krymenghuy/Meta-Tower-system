@@ -6,7 +6,6 @@
    - string_san.js,
    - LocaleManager.js for transaction. LocaleManager.trans()
 ****/
-
 class ItemsView{
 
     /***
@@ -41,6 +40,7 @@ class ItemsView{
         if(!options.columns) options.columns = this.getDefaultColumns(); 
         this.options = options;
         if (typeof(this.options.onItemChange) != 'function') this.options.onItemChange = (e)=>{ return;};
+        if (typeof(this.options.onItemValidated) != 'function') this.options.onItemValidated = (e)=>{ return;};
 
         if(!this.options.onKeyUp) this.options.onKeyUp = this.options.keyup;
         if (typeof(this.options.onKeyUp) != 'function') this.options.onKeyUp = (e)=>{ return;};
@@ -77,6 +77,9 @@ class ItemsView{
         this.table.addEventListener('change',(e)=>{
           if(e.target.classList.contains('td-input')){
              let td = VSDOM.getClosestParentByType(e.target,'TD');
+             let tr = td.parentNode;
+             let item = that.getDataRow(tr);
+             if (that.validateRow(tr,that.options.validateColumns,true)) that.options.onItemValidated(tr.dataset.id,item,tr); 
              that.options.onInputChange(e.target,td.dataset.name,td); 
           }
         });
@@ -92,7 +95,7 @@ class ItemsView{
                         cv_interact.confirm("Delete this item?",{title:'Delete Item',OKButtonText:'Delete',context:'delete'},
                             (e)=>{
                               if(e){
-                                  that.options.onItemDeleted(tr); 
+                                  that.options.onItemDeleted(tr.dataset.id,tr); 
                                   tr.remove();
                                   that.resetNumero();
                                   that.displayEmptyMessage();
@@ -123,7 +126,8 @@ class ItemsView{
             let el = VSDOM.getClosestParentByClass(e.target,'btn-item-addline');        
             if (el){
                 //true = validate cell inputs base on the given prop "validateColumns"
-                this.addRow(null,null,true);
+                //last param is "user_action_add" = true => it means when user click Add Line button
+                this.addRow(null,null,true,true);
                 //alert(JSON.stringify(this.getItems()));
                 //this.resetNumero(); //addRow() will also resetNumero()
             } 
@@ -374,11 +378,11 @@ class ItemsView{
                   }
              //}
             
-
-              that.options.onItemChange({
-                "value":x.val(),
-                "text":x.find('option:selected').text()
-              },td.dataset.name,td); 
+              let tr = td.parentNode;
+              let row_id = tr.dataset.id; //tr?tr.dataset.id:null;
+              let new_item = this.getDataRow(tr);
+              if (that.validateRow(tr,that.options.validateColumns,true)) that.options.onItemValidated(row_id,new_item,tr); 
+              that.options.onItemChange(row_id,new_item,td.dataset.name,td,tr); 
             });
  
             //if(value !== undefined) VSUtil.setSelect2_value(el,value);
@@ -441,9 +445,9 @@ class ItemsView{
      //validateCols()
      validateRow(tr=null,validateColumns=null,silent_mode=false){
         if(!tr) tr=this.prev_edit_row;
+        //if (this.self.getAttribute('id') ==='_consult_cc_list') 
         if(!tr) return true;
         if (!validateColumns) return true;
-
         //  let check_cols1 = [];
         //  (check_cols || []).map(rule=>{
         //     let parts = (rule+'').split('|');
@@ -452,27 +456,30 @@ class ItemsView{
         //     if(f_name) check_cols1.push({f_name}); 
         //  });
 
+        //if (!tr.children[1].dataset.value) return false;
+
         let validate_succeed =true;
         let cols =[];
         tr.querySelectorAll(`td`).forEach(td=>{
-          let col_name =td.dataset.name;
+           let col_name =td.dataset.name;
            let v_rule = validateColumns[col_name];
-            
+
            if(v_rule){
-            cols.push(col_name.replace('_',' '));
+            cols.push(col_name.replace(/_/g,' '));
             if(typeof(v_rule)==='function')
             {
               let input = td.querySelector('.td-input');
-              return ff(input?input.value:"",td,tr);
+              let val =input?input.value:td.dataset.value;
+              return v_rule(val,td,tr);
             }
             else{
               //***if v_rule is not a function
                 let input = td.querySelector('.td-input');
-                let data = input?input.value:null;
-                 
-                        switch(v_rule){
+                let val = input?input.value:td.dataset.value; 
+                      switch(v_rule){
                         case 'positive':{
-                          if(!(data>0)){
+                          if(col_name ==='service_id') console.error(`v_rule = ${v_rule} | value =${val}`);
+                          if(!(val>0)){
                                 validate_succeed= false;
                                 //exit forEach (td)
                                 return false;
@@ -481,7 +488,7 @@ class ItemsView{
                         }
                         case 'number':{
         
-                          if(!$.isNumeric(data)){
+                          if(!(val>=0 || val <0)){
                             validate_succeed= false;
                             //exit forEach (td)
                             return false;
@@ -490,7 +497,7 @@ class ItemsView{
                         }
                         case 'string':{
         
-                          if(!data || (data+'') ===''){
+                          if(!val || (val+'').trim() ===''){
                             validate_succeed= false;
                             //exit forEach (td)
                             return false;
@@ -498,7 +505,7 @@ class ItemsView{
                           break;
                         }
                         default:{
-                          if(!data || (data+'') ===''){
+                          if(!val || (val+'').trim() ===''){
                             validate_succeed= false;
                             //exit forEach (td)
                             return false;
@@ -608,8 +615,12 @@ class ItemsView{
 
         ];
      }
+     
+     getLastRow_tr(){
+       return this.table_body.lastElementChild;
+     }
 
-     addRow(d=null,rowIndex = 0,validateItem=true){
+     addRow(d=null,rowIndex = 0,validateItem=true,user_action_add = false){
             let html_cols = "";
             d = d?d:{};
             rowIndex = rowIndex?rowIndex:0; 
@@ -621,6 +632,15 @@ class ItemsView{
               if(empty_row){
                  if (empty_row.classList.contains('empty-row')) empty_row.remove();
               }
+
+            if(user_action_add){
+              let last_tr = this.getLastRow_tr();
+              let aa = this.validateRow(last_tr,this.options.validateColumns,true);
+              if(!aa){
+                  this.changeRowState(last_tr,'edit');
+                  return;
+              } 
+            } 
              
             (this.options.columns || []).map(col=>{
                 let value ='';
@@ -659,7 +679,7 @@ class ItemsView{
 
                 let style_width="";
                 if(col.width) style_width =['style="width:',col.width,'"'].join('');
-                if(!value) if(col.dataType==='number') value =col.defaultValue?col.defaultValue:0;
+                if(!value) if(col.dataType === 'number') value =col.defaultValue?col.defaultValue:0;
                 html_cols = [html_cols,
                               `<td ${style_width} class="ivc-`,col.name,' ',col.cssClass,`" data-name="`,col.name,`" data-editortype="${col.displayType?col.displayType:""}" data-text="`,d[col.displayName],`" data-value="`,d[col.name],`">`,value,`</td>`
                             ].join('');
@@ -728,6 +748,9 @@ class ItemsView{
          }
     }
 
+    setRowId(tr,id){
+        tr.dataset.id = id;
+    }
 
      //Set data for display in ItemView
      setData(rows = null){
