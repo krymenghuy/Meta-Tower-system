@@ -198,6 +198,24 @@
                             </tr>
                         </thead>
                         <tbody>
+                            <?php
+                             $cnt =0;
+                             $cur ="$";
+                             foreach($invoice->service_items as $item){
+                                $numero = $cnt+1;
+                                $qty = $item->qty.$item->sku;
+                                $discount = $item->discount;
+                                echo " <tr>
+                                   <td>$numero</td>
+                                   <td>$item->name</td>
+                                   <td>$qty</td>
+                                   <td>$cur.$item->price</td>
+                                   <td>$discount</td>
+                                   <td>$item->line_total</td>
+                                   </tr>";
+                                   $cnt++;
+                             }
+                            ?>
                             
                         </tbody>
                     </table>
