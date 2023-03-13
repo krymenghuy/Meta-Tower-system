@@ -87,7 +87,7 @@ let ItemGroupsComponent = new function () {
     }
 
     this.displayProductsGroupDetails = (detail_tr, group_id = 0) => {
-        let div_wrapper = detail_tr.find('div.expandable-row-containter');
+        let div_wrapper = detail_tr.find('div.expandable-row-container');
         div_wrapper.html('<div class="animation-line" style="height:2px;margin:0"></div>');
         let p = { 'id': group_id };
         window.vsapi.call(`${main_view.base_url}/api/inventory/group-details`, p, 'POST', false).then((res) => {

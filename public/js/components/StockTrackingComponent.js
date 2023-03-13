@@ -42,7 +42,7 @@ let StockTrackingComponent = new function () {
     }
 
     this.displayVariances = (detail_tr, appt_id = 0) => {
-        let div_wrapper = detail_tr.find('div.expandable-row-containter');
+        let div_wrapper = detail_tr.find('div.expandable-row-container');
         div_wrapper.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
         let p = { 'id': appt_id };
         window.vsapi.call(`${main_view.base_url}/api/inventory/item-details`, p, 'POST', false).then((res) => {
@@ -184,7 +184,7 @@ let StockTrackingComponent = new function () {
 
     this.createExpandedPanelContent = (detail_tr, options) => {
         let group_id = options.group_id;
-        let div_wrapper = detail_tr.find('div.expandable-row-containter');
+        let div_wrapper = detail_tr.find('div.expandable-row-container');
         div_wrapper.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
         let p = { 'group_id': group_id };
         window.vsapi.call(`${main_view.base_url}/api/inventory/stock/group-items`, p, 'POST', false).then((res) => {
