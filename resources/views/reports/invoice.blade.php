@@ -20,7 +20,7 @@
             body{
                 width: 100%;
                 height: 100%;
-                zoom: 97%;
+                zoom: 88%;
                 font-size: 16px;
             }
         }
@@ -215,7 +215,7 @@
                                    </tr>";
                                    $cnt++;
                              }
-                            ?> 
+                            ?>
                             
                         </tbody>
                     </table>
