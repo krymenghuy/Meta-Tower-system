@@ -93,11 +93,7 @@ class WebReportController extends Controller
         }
         $invoice_id = isset($p->id)?$p->id:0;
         $ss = (object)['branch_id'=>$branch_id];
-<<<<<<< HEAD
         $invoice = new \App\Models\Invoice\MedicalInvoice($invoice_id,$ss);
-=======
-        $invoice =new \App\Models\Invoice\MedicalInvoice($invoice_id,$ss);
->>>>>>> c3d6a35b41a9c3476959614fc5a3ebfc3f2026fb
         $data['invoice'] = $invoice->getDetails();
         $data['title'] = "ESTHEDERM Aesthetic & Dermatology";
        

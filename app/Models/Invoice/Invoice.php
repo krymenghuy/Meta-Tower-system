@@ -396,14 +396,7 @@ class Invoice
       }
       return null;
     }
-   
-<<<<<<< HEAD
-   
-=======
-    function getTest($id=null,$ss=null){
-      return "sfsdfdg";
-    }
->>>>>>> c3d6a35b41a9c3476959614fc5a3ebfc3f2026fb
+
   function getDetails($id=null,$ss=null){
     if (!$ss) $ss = $this->getUserInfo();
     if(!$id) $id = $this->getInvoiceId();
