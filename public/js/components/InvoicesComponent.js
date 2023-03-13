@@ -194,7 +194,7 @@ let InvoicesComponent = new function () {
     };
      
     this.displayInvoicePayments = (detail_tr, invoice_id = 0) => {
-        let div_wrapper = detail_tr.querySelector('div.expandable-row-containter');
+        let div_wrapper = detail_tr.querySelector('div.expandable-row-container');
         div_wrapper.innerHTML = '<div class="animation-line" style="height:2px;margin:0;"></div>';
         let p = { 'invoice_id': invoice_id };
         let div_id = ['ivc_pmt_wrapper_',invoice_id].join('');
@@ -568,7 +568,7 @@ let InvoiceDialog = new function () {
             showColumnHeaders: true,
             showAddLineButton: true,
             validateColumns: {'service_id':'string','qty':'number','price':'number'},
-            onItemChange:(selOp, cols_name, td) => {
+            onItemChange:(row_id,item, cols_name, td) => {
                 //todo: It seems this event is fired two times and need to be fixed
                 let tr = td.parentNode;
                 mThis.setItemServiceInfo(cols_name, tr);
@@ -611,7 +611,7 @@ let InvoiceDialog = new function () {
             showColumnHeaders: true,
             showAddLineButton: true,
             validateColumns: {'item_id':'string','qty':'number','price':'number'},
-            onItemChange:(selOp, col_name, td) => { 
+            onItemChange:(row_id,sitem, col_name, td) => { 
                 //todo: It seems this event is fired two times and need to be fixed
                 let tr = td.parentNode;
                 //set item sku  
@@ -621,7 +621,7 @@ let InvoiceDialog = new function () {
                 let tr = td.parentNode;  
                 mThis.setLineTotal_product(tr);
             },
-                onItemDeleted:(tr)=>{
+                onItemDeleted:(row_id,tr)=>{
                 mThis.setTotals(null);
             }
         });
