@@ -566,7 +566,7 @@ let InvoiceDialog = new function () {
             showColumnHeaders: true,
             showAddLineButton: true,
             validateColumns: {'service_id':'string','qty':'number','price':'number'},
-            onItemChange:(row_id,item, cols_name, td,tr) => {
+            onItemChange:(row_id,item, cols_name, td) => {
                 //todo: It seems this event is fired two times and need to be fixed
                 //let tr = td.parentNode;
                 mThis.setItemServiceInfo(cols_name, tr);
@@ -609,7 +609,7 @@ let InvoiceDialog = new function () {
             showColumnHeaders: true,
             showAddLineButton: true,
             validateColumns: {'item_id':'string','qty':'number','price':'number'},
-            onItemChange:(row_id,item, col_name, td,tr) => { 
+            onItemChange:(row_id,sitem, col_name, td) => { 
                 //todo: It seems this event is fired two times and need to be fixed
                 //let tr = td.parentNode;
                 //set item sku  

@@ -57,7 +57,7 @@ class WebReportController extends Controller
         if (!$branch_id) return redirect('/');
         $data['branch'] = $this->reportModel->getBranchInfo($branch_id);
         $p = processQueryString($query_string);
-      
+
         if(!$p) {
             //error invalid parameters provided
             return view('errors.500');
@@ -84,18 +84,18 @@ class WebReportController extends Controller
       if (!Session::get('login_name',null)) return redirect('/');
         $branch_id =Session::get('branch_id',0);
         if (!$branch_id) return redirect('/');
-        $data['branch'] = \App\Models\CompanyProfile::details($branch_id);
+        $data['branch'] = \App\Models\CompanyProfile::details($branch_id);   
         $p = processQueryString($query_string);
-
         if(!$p) {
           //error invalid parameters provided
           return view('errors.500');
         }
         $invoice_id = isset($p->id)?$p->id:0;
         $ss = (object)['branch_id'=>$branch_id];
-        $invoice = new \App\Models\Invoice\Invoice($invoice_id,$ss);
+        $invoice =new \App\Models\Invoice\MedicalInvoice($invoice_id,$ss);
         $data['invoice'] = $invoice->getDetails();
         $data['title'] = "ESTHEDERM Aesthetic & Dermatology";
+       
         return view('reports.invoice', $data);
     }
 }
