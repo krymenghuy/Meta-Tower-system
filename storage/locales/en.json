@@ -54,6 +54,9 @@
         "Description":"Description",
         "Action":"Action"
 	},
+	"customer":{
+		
+	},
 	"patient":{
         "ID":"Patient ID",
 		"Patient ID":"Patient ID",
@@ -92,6 +95,7 @@
 	"vendors":{},
 	"dashboard":{},
 	"invoice":{},
+	"receipt":{},
 	"buttons":{
         "Cancel":"Cancel",
 		"Add":"Add",
@@ -187,9 +191,7 @@
 		"Recommendations":"Recommendations",
 		"Chief Complaints":"Chief Complaints"
 	},
-	"history":{
-
-	},
+	"history":{},
 	"item_group":{
        "Code":"Code",
 	   "Name":"Name",

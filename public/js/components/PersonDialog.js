@@ -97,7 +97,7 @@ let PersonDialog = new function(){
         "apiGet":`${main_view.base_url}/api/person/info`,
         //Tell formUtil that the primary key name is "id". This is used to update or create customer record
         //"identityProp":"id", //if not mentioned here as "id", formUtil will use default identityProp as "id",
-        "identityProps":['appt_id','id'], //If "id" is not found in this options then formUtil will use one of these props as identity property. In this case, formUtil will use "appt_id" instead of "id" (person_id)
+        "identityProps":["appt_id","id"], //If "id" is NOT found in this options then formUtil will use one of these props as identity property. In this case, formUtil will use "appt_id" instead of "id" (person_id)
         "modifyTitle":"Modify Person",
         //"createTitle":"New Person",
         //Set additional data props for method getFormData() to collect data inputs from this dialog form,
@@ -105,13 +105,10 @@ let PersonDialog = new function(){
         "sanitize_excepts":['email'],
         'use_alert_error':true,
         "init": ()=>{
-               //init code here
                return;
         }
-        //,"beforeShow":beforeShow
     });
  
-    //options = {id,appt_id}
     this.show = (options=null)=>{
         options = options?options:{};
         mThis.options =  options;

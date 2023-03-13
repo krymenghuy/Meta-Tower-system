@@ -1,8 +1,9 @@
+"use strict";
 var DateHelper = new function () {
-    var mThis = this;
+    let mThis = this;
     //Allowed date formats are dd-mm-yyyy or dd-MMM-yyyy or dd/mm/yyyy or dd.mm.yyyy
     this.isDate = function (text) {
-        var dd, mm, yy;
+        let dd, mm, yy;
         //turn text into String type
         text = [text, ''].join('');
 
@@ -10,7 +11,7 @@ var DateHelper = new function () {
 
 		//remove spaces from the @text
         text = text.split(' ').join('');
-        var st;
+        let st;
         if (text.indexOf('-') >= 0)
             st = text.split('-');
         else if (text.indexOf('/') >= 0)
@@ -72,7 +73,7 @@ var DateHelper = new function () {
         date = date.split(' ').join('');
         //also removes empty space from the given date 
         if (!mThis.isDate(date)) return null;
-        var st;
+        let st;
         if (date.indexOf('-'))
             st = date.split('-');
         else if (date.indexOf('/'))
@@ -82,7 +83,7 @@ var DateHelper = new function () {
         else
             return null;
 
-        var mm, dd, yy;
+        let mm, dd, yy;
         if ($.isNumeric(st[1])) //if mm = {'Nov','dec','Jan', etc...} 
             mm = mThis.getMonthName(st[1]);
         else
@@ -101,7 +102,7 @@ var DateHelper = new function () {
     /*For example 2018-Aug-11 is converted to 11-Aug-2018 */
     this.format = function (date) {
         if (!date) return null;
-        var st = String(date).split('-');
+        let st = String(date).split('-');
         if (st[0] > 31) /*If the first part,st[0], is greater than 31 than take it as Year and put it last. The middle part is always taken as month (either month Name or month Number) */
             return [st[2], '-', $.isNumeric(st[1]) ? mThis.getMonthName(st[1]) : st[1], '-', st[0]].join('');
         else /* if date is like: 12-Nov-2017 or 12-11-2018. The middle part is always taken as month (either month Name or month Number) */
@@ -197,10 +198,10 @@ var DateHelper = new function () {
   
     this.getTodayDate = function () {
         //*** The following code get TodayDate on client machine
-        var today = new Date();
-        var dd = today.getDate();
-        var mm = today.getMonth() + 1; /* This is sepcial in javascript that month begins from 0 */
-        var yyyy = today.getFullYear();
+        let today = new Date();
+        let dd = today.getDate();
+        let mm = today.getMonth() + 1; /* This is sepcial in javascript that month begins from 0 */
+        let yyyy = today.getFullYear();
         if (dd < 10) {
             dd = '0' + dd;
         }
@@ -214,7 +215,7 @@ var DateHelper = new function () {
       NOTE that the input @mDate must be dd-MMM-yyyy or dd-MM-yyyy
     */
     this.formatDate_general = function (mDate) {
-        var st;
+        let st;
         if (mDate.indexOf('-') >= 0)
             st = mDate.split('-');
         else if (mDate.indexOf('/') >= 0)
@@ -224,12 +225,12 @@ var DateHelper = new function () {
         else
             return 'invalid date';
 
-        var dd = st[0];
-        var mm = st[1];
-        var yyyy = st[2];
+        let dd = st[0];
+        let mm = st[1];
+        let yyyy = st[2];
         if (!$.isNumeric(mm)) mm = mThis.getMonthNumber(mm);
 
-        var retDate = yyyy + '-' + mm + '-' + dd;
+        let retDate = yyyy + '-' + mm + '-' + dd;
         return retDate;
     };
 };

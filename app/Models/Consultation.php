@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+//use Illuminate\Database\Eloquent\Factories\HasFactory;
+//use Illuminate\Database\Eloquent\Model;
 use DB;
 use App\Models\DV;
 // use App\Models\Prescription;
@@ -13,71 +13,99 @@ use App\Models\DV;
 // use App\Models\LaboTest;
 // use App\Models\PE;
 // use App\Models\Advice;
-// use App\Models\MedicalReport;
+use App\Models\Inventory\Settings;
 
-class Consultation extends Model
+class Consultation //extends Model
 {
-    use HasFactory;
+    //use HasFactory;
 
     /*** @params: 
      *   $arr = ['chief_complaints'=>[],'vital_signs'=>[], 'medical_history'=>[], 'pe'=>string, labo_tests=>[], diagnosis => string, prescription=>[], advice=>string ] 
      *   chief_complaints = [{}]
      ***/
-    
-    static function commitSave($ss,$arr){
-       $d = (object)$arr;
-       $ticket_id = $d->ticket_id;
-       //$patient_id = $d->patient_id;
-       $chief_complaints = $d->chief_complaints;
-       $vital_signs = $d->vital_signs;
-    //    $medical_history = $d->medical_history;
-    //    $pe = $d->physical_examination;
-    //    $labo_tests = $d->labo_tests;
-    //    $diagnosis = $d->diagnosis;
-    //    $prescription = $d->prescription;
-    //    $advice = $d->advice;
-       
-       $res =null;
-       $item_errors =[];
-       $res = self::saveChiefComplaints($ss,$chief_complaints,$ticket_id);
-       if($res->status ==='Error') $item_errors[] = $res->error_message;
+    protected $id = null;
+    protected $userInfo = null;
 
-       $res = self::saveVitalSigns($ss,$vital_signs,$ticket_id);
-       if($res->status ==='Error') $item_errors[] = $res->error_message;
+   function __construct($id=null, $userInfo = null){
+        $this->id = $id;
+        $this->userInfo = $userInfo;
+   }
 
-    //    $res = self::saveMedicalHistory($ss,$medical_history,$ticket_id);
-    //    if($res->status ==='Error') $item_errors[] = $res->error_message;
+   function getUserInfo(){
+    return $this->userInfo;
+   }
+   function getId(){
+    return $this->id;
+   }
 
-    //    $res = self::savePE($ss,$pe,$ticket_id);
-    //    if($res->status ==='Error') $item_errors[] = $res->error_message;
+   function getTicketId(){
+    return $this->id;
+   }
+   
+   static function ticketInfo($consult_id =0){
+     $rows = DB::table('consultations AS c')->join('service_queue as q','q.id','=','c.ticket_id')->where('c.id',$id)->select('c.id AS consult_id, q.ticket_number, q.department_id,q.q_date, q.consultant_id, q.appt_id, q.person_id, q.status_id, q.client_id, q.priority')->take(1)->get();
+   }
 
-    //    $res = self::saveLaboTests($ss,$labo_tests,$ticket_id);
-    //    if($res->status ==='Error') $item_errors[] = $res->error_message;
+   function save($d = [], $ss = null){
+       $ss = $ss? $ss: $this->getUserInfo();
+       $res = validateObject($d,[
+        'ticket_id'=>'1|positive',
+        'chief_complaints'=>'0|array',
+        'vital_signs'=>'0|array',
+         'medical_history'=>'0|array',
+        'prescription'=>'1|string|0-500',
+        'labo_tests'=>'0|array',
+        'diagnosis'=>'0|string',
+        'physical_examination'=>'0|string|0-500',
+        'advice'=>'0|string|0-500'
+       ]);
 
-    //    $res = self::saveDiagnosis($ss,$diagnosis,$ticket_id);
-    //    if($res->status ==='Error') $item_errors[] = $res->error_message;
+       if ($res->error) return DV::error($res->error);
+       $ticket_id = isset($inputs['ticket_id'])?$inputs['ticket_id']:null;
+       if(!$ticket_id) return DV::error("Ticket ID is not valid");
 
-    //    $res = self::savePrescription($ss,$prescription,$ticket_id);
-    //    if($res->status ==='Error') $item_errors[] = $res->error_message;
-
-    //    $res = self::saveAdvice($ss,$advice,$ticket_id);
-    //    if($res->status ==='Error') $item_errors[] = $res->error_message;
-       
-       $consultation_id =null;
-       return (object)[
-         'status'=>'OK',
-         'status_code'=>200,
-         'data'=>[
-                'item_errors'=>$item_errors,
-                'ticket_id'=>$ticket_id,
-                'consultation_id'=>$consultation_id
-             ]
-         ];
+       $consult_id = saveData($ss,'consultations',['id'=>$consult_id],[],1);
+       if ($consult_id >0){
+            $this->saveChiefComplaints($inputs['chief_complaints'],$ticket_id,$ss);
+            $this->saveVitalSigns($inputs['vital_signs'],$ticket_id,$ss);
+            $this->saveMedicalHistory($inputs['medical_history'],$ticket_id,$ss);
+            $this->savePrescription($inputs['prescription'],$ticket_id,$ss);
+            $this->saveLaboTests($inputs['labo_tests'],$ticket_id,$ss);
+            $this->savePE($inputs['physical_examination'],$ticket_id,$ss);
+            $this->saveAdvice($inputs['advice'],$ticket_id,$ss);
+            return DV::success(['id'=>$consult_id]);
+       }
+       return DV::error('Failed to save consultation data');
     }
 
     static function getPatientId($branch_id, $ticket_id){
-        $rows = DB::table("service_queue")->where('id',$ticket_id)->where('branch_id',$branch_id)->select("client_id as patient_id")->get();
+        $rows = DB::table("tickets")->where('id',$ticket_id)->where('branch_id',$branch_id)->select("client_id as patient_id")->get();
         return isset($rows[0])?$rows[0]->patient_id:null;
+    }
+    
+    function getChiefComplaints($ticket_id,$ss=null){
+        $ss = $ss?$ss:$this->getUserInfo();
+        return (object)[
+          'cc_items'=>DB::table('appt_chief_complaints as ct')->join('chief_complaints as cc','cc.id','=','ct.chief_complaint_id')->where('ct.ticket_id',$ticket_id)->selectRaw("cc.id,ct.chief_complaint_id,cc.name")->get(),
+          'chief_complaint_options'=>DB::table("chief_complaints")->where('branch_id',$ss->branch_id)->select('id','name as chief_complaint','code')->get()
+        ];
+    }
+
+    static function laboTests($ticket_id,$ss){
+        $branch_id = $ss->branch_id;
+        $cols = ['s.id as test_id','s.name as test_name','t.test_date','t.result_date','t.consultant_comments','t.result_description','t.remarks','t.file_name','t.file_type'];
+        return DB::table('patient_labo_tests as t')->join('medical_services as s','s.id','=','t.test_id')->where('t.branch_id',$branch_id)->where('ticket_id',$ticket_id)->select($cols)->get();
+    }
+ 
+    function getLaboTestData($ticket_id=null,$ss=null){
+        $ss = $ss?$ss:$this->getUserInfo();
+        $ticket_id = $ticket_id?$ticket_id:$this->getId();
+        $branch_id = $ss->branch_id;
+        return (object)[
+            'labo_test_options'=>DB::table('medical_services AS s')->join('test_labos as l','s.id','=','l.test_id')->where('s.branch_id',$branch_id)->select(['s.id as value','s.name as text'])->orderBy('s.name','ASC')->get(),
+            'labo_options'=>DB::table('test_labos as l')->join('partners as p','p.id','=','l.labo_id')->where('p.branch_id',$branch_id)->select(['p.id as value','p.name as text'])->orderBy('p.name','ASC')->get(),
+            'labo_tests'=>self::laboTests($ticket_id,$ss)
+        ];
     }
 
     static function getVitalSignInfo($vs_id =0){
@@ -90,103 +118,345 @@ class Consultation extends Model
        return isset($rows[0])?$rows[0]:null;
     }
 
-    static function saveChiefComplaints($ss,$items,$ticket_id){
-        $patient_id = self::getPatientId($ss->branch_id,$ticket_id);
-        $cnt =0;
-        foreach($items as $x){
-            $cc_id = $x['id'];
-            $item = self::getChieComplaintInfo($cc_id);
-            if($item){
-                $inputs= [
-                    'ticket_id'=>$ticket_id,
-                    'patient_id'=>$patient_id,
-                    'description'=>$item->description,
-                    'category'=>$item->category
-                ];
-                $id = saveData($ss,'consult_chief_complaints',["ticket_id"=>":ticket_id","cc_id"=>$cc_id],$inputs,[],1,true);
-                $cnt++;
-            } 
-          
+    function saveVitalSigns($vital_sign_items =[],$ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id? $ticket_id:$this->getTicketId();
+        $ss = $ss? $ss: $this->getUserInfo();
+        $branch_id = $ss->branch_id;
+        $patient_id = self::getPatientId($branch_id,$ticket_id);
+        foreach($vital_sign_items as $a_item){
+            $item = (object)$a_item;
+            $row = getDataRow('vital_signs',['id'=>$item->id],"id,display_name as description");
+            if($row){
+                $description = $row->description;
+                DB::table('patient_vital_signs')->where('ticket_id',$ticket_id)->where('vital_sign_id',$item->id)->delete();
+                saveData($ss,'patient_vital_signs',['id'=>null],['ticket_id'=>$ticket_id,'patient_id'=>$patient_id,'vital_sign_id'=>$item->id,'vital_sign_value'=>$item->observed_value,'description'=>$description],[],1);
+            }  
         }
         return DV::success();
     }
 
-    static function saveVitalSigns($ss,$items,$ticket_id){
+    //saveChiefComplaint() saves one chief complaint at a time. It returns NULL if no error, and returns error message if error
+    //$id is the combined key of ($cc_id,$ticket_id). $id is used in case, user select new Chief complaint to replace the old one
+    function saveChiefComplaint($id,$cc_id,$ticket_id=null,$ss=null){
+      $ticket_id = $ticket_id? $ticket_id:$this->getTicketId();
+      $ss = $ss? $ss: $this->getUserInfo();
+      $appt_id = null;
+      $row = getDataRow('tickets',['id'=>$ticket_id],"appt_id");
+      if($row) $appt_id = $row->appt_id;
+      //return "ticket $id $cc_id  $ticket_id "; 
+      $row = getDataRow('chief_complaints',['id'=>$cc_id],"id,name AS description");
+      if(!$row) return "Chief complaint id is not correct!";
+      $description = $row->description;
+      $inputs =[
+        'appt_id'=>$appt_id,
+        'ticket_id'=>$ticket_id,
+        'chief_complaint_id'=>$cc_id,
+        'description'=>$description
+        ];
+        if ($id > 0) DB::table('appt_chief_complaints')->where('id',$id)->update($inputs);
+        else{
+            $inputs['create_uid'] = $ss->user_id;
+            $inputs['create_uuser'] = $ss->full_name;
+            $inputs['create_uid'] = getNowTime();
+            DB::table('appt_chief_complaints')->insert($inputs);
+        }
+        //$new_id = saveData($ss,'appt_chief_complaints',['id'=>$id],$inputs,[],0);
+        return null;
+
+        //   $x = DB::table('appt_chief_complaints')->where('ticket_id',$ticket_id)->where('chief_complaint_id',$cc_id)->update(['description'=>$description]);
+        //   if (!$x)
+        //     {
+            
+        //     } else return null;
+    }
+    
+    function deleteChiefComplaint($id =null){
+        DB::table('appt_chief_complaints')->where('id',$id)->delete();
+        return null;
+    }
+
+    function removeServiceItem($id,$ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+        DB::table('patient_services')->where('id',$id)->where('ticket_id',$ticket_id)->delete();
+        return null;
+    }
+
+    function saveServiceItem($item=[],$ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+        $ss = $ss? $ss: $this->getUserInfo();
+        $res = validateObject($item,['id'=>'0|number|identity=1','service_id'=>'1|number|exists=medical_services.id','qty'=>'0|number|default=1','sku'=>'0|string|default=none','remarks'=>'0|string|0-150','emp_id'=>'0|number|exists=employees.id'],true,[],$ss->lang,false,null);
+        if($res->error) return DV::error($res->error);
+        $id = $res->id;
+        //important to add ticket_id
+        $res->values['ticket_id'] = $ticket_id;
+        $res->values['patient_id'] = self::getPatientId($ss->branch_id,$ticket_id);
+        $id = saveData($ss,'patient_services',['id'=>$id],$res->values,[],1);
+        if($id>0) return DV::success(['id'=>$id]);
+        return DV::error("Something went wrong saving patient service");
+    }
+
+    function getComoItems_service($ss){
+      return DB::table('medical_services as s')->where('branch_id',$ss->branch_id)->select(['id','name as service_name'])->orderBy('s.name','ASC')->get();
+    }
+
+    function getComoItems_emp($ss){
+        return DB::table('persons as p')->join('employees as e','e.person_id','=','p.id')->where('e.branch_id',$ss->branch_id)->select(['e.id','e.code',DB::raw("CONCAT(p.last_name,' ',p.first_name) AS staff_name")])->orderBy('staff_name','ASC')->get();
+    }
+
+    function getServiceDetails($ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+        $ss = $ss? $ss: $this->getUserInfo();
+        $cols = ['ps.id','ps.patient_id','ps.service_id','ps.qty','ps.sku','ps.remarks','ps.emp_id','ps.created_at','ps.create_user'];
+        
+        //Get service options for Dropdown list
+        $options= $this->getComoItems_service($ss);
+        $options_service =[];
+        foreach($options as $i){
+            $options_service[] = (object)['value'=>$i->id,'text'=>$i->service_name];
+        }
+
+        //Get staff list options for "Performed by" drop-down list
+        $options= $this->getComoItems_emp($ss);
+        $options_emp =[];
+        foreach($options as $i){
+            $options_emp[] = (object)['value'=>$i->id,'text'=>$i->staff_name?$i->staff_name:'(No name)'];
+        }
+
+        return (object)[
+            'options_service'=>$options_service,
+            'options_emp'=>$options_emp,
+            'items'=>DB::table('patient_services as ps')->where('ps.ticket_id',$ticket_id)->select($cols)->get(),
+            //'headerInfo'=>null
+         ];
+    }
+
+    function removePrescriptionItem($id,$ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+        DB::table('patient_prescription_items')->where('id',$id)->where('ticket_id',$ticket_id)->delete();
+        return null;
+    }
+
+    function savePrescriptionItem($item=[],$ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+        $ss = $ss? $ss: $this->getUserInfo();
+        $res = validateObject($item,['id'=>'0|number|identity=1','item_id'=>'1|number|exists=inv_items.id','qty'=>'1|number','sku'=>'1|string','usage'=>'0|string|0-150','duration_days'=>'0|number','reason'=>'0|string|0-200'],true,[],$ss->lang,false,null);
+        if($res->error) return DV::error($res->error);
+        $id = $res->id;
+        //important to add ticket_id
+        $res->values['ticket_id'] = $ticket_id;
+        $id = saveData($ss,'patient_prescription_items',['id'=>$id],$res->values,[],1);
+        if($id>0) return DV::success(['id'=>$id]);
+        return DV::error("Something went wrong saving prescription item");
+    }
+
+    function getPrescription($ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+        $ss = $ss? $ss: $this->getUserInfo();
+        $cols = ['pi.id','pi.item_id','pi.qty','pi.sku','pi.duration_days','pi.usage','pi.reason','pi.remarks','pi.created_at','pi.create_user'];
+        $options_product= Settings::options_product($ss);
+        $options =[];
+        foreach($options_product as $i){
+            $options[] = (object)['value'=>$i->id,'text'=>$i->name];
+        }
+        return (object)[
+            'options_product'=>$options,
+            'items'=>DB::table('patient_prescription_items as pi')->where('pi.ticket_id',$ticket_id)->select($cols)->get(),
+            //'headerInfo'=>null
+         ];
+    }
+
+    //save many chiefComplaints. $items = [{cc_id,description},{cc_id,description},...]
+    function saveChiefComplaints($items=[],$ticket_id=null,$ss=null){
         $patient_id = self::getPatientId($ss->branch_id,$ticket_id);
-      
-        $cnt =0;
-        $patient_id = self::getPatientId($ss->branch_id,$ticket_id);
-        foreach($items as $x){
-            $vs_id = isset($x['id'])?$x['id']:0;
-            $item = self::getVitalSignInfo($vs_id);
-            if($item){
+        $errors = [];
+        $error_count =0;
+        foreach($items as $arr_item){
+            $item = (object)$arr_item;
+            $err = $this->saveChiefComplaint($item->cc_id,$ticket_id,$ss);
+            if($err){
+                $error_count++;
+                $errors[] = $err;
+            }
+        }
+        return DV::success(['error_count'=>$error_count,'errors'=>$errors]);
+    }
+    
+    function getMedicalHistory($ticket_id=null,$ss=null){
+      $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+      $ss = $ss?$ss:$this->getUserInfo();
+      $rows = DB::table('patient_medical_history as h')->where('h.ticket_id',$ticket_id)->select('h.id','h.category','h.content')->get();
+      $data =[];
+      foreach($rows as $row){
+          $data[$row->category] = $row->content; 
+      }
+      return (object)$data;
+    }
+
+    //Medical history is array of items [{category,content},{category,content},{...}]
+    function saveMedicalHistory($items=[],$ticket_id=null,$ss=null){
+        foreach($items as $item){
+            //$item = (object)$arr_item;
+            $category = $item['category'];
+            $content = $item['content'];
+            if($content && $category){
                 $inputs= [
                     'ticket_id'=>$ticket_id,
-                    'patient_id'=>$patient_id,
-                    'description'=>$item->description,
-                    'category'=>$item->category,
-                    'observed_value'=>$x['observed_value']
+                    'content'=>$content,
+                    'category'=>$category
                 ];
-                $id = saveData($ss,'consult_vital_signs',['ticket_id'=>$ticket_id,'vs_id'=>$vs_id],$inputs,[],1,true);
-                $cn++;
+                $x = DB::table('patient_medical_history')->where('ticket_id',$ticket_id)->where('category',$category)->update(['content'=>$content,'update_user'=>$ss->full_name,'updated_at'=>getNowTime()]);
+                if(!$x) saveData($ss,'patient_medical_history',['id'=>null],$inputs,[],1);
             }
         }
         return DV::success(); 
     }
 
-
-    static function saveDiagnosis($ss,$items,$ticket_id){
+    //savePhysicalExamination()
+    function savePE($items,$ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+        $ss = $ss?$ss:$this->getUserInfo();
         foreach($items as $item){
-            $inputs= [
-                'ticket_id'=>$ticket_id,
-                'content'=>$item->content,
-                'category'=>$item->category
-            ];
-            $id = saveData($ss,'consult_diagnosis',$inputs,[],1);
+            $category = $item['category'];
+            $content = $item['content'];
+            if($content){
+                $inputs= [
+                    'ticket_id'=>$ticket_id,
+                    'content'=>$content,
+                    'category'=>$category,
+                    'update_uid'=>$ss->user_id,
+                    'updated_at'=>getNowTime(),
+                    'update_user'=>$ss->full_name
+                ];
+                $x = DB::table("patient_pe")->where('ticket_id',$ticket_id)->where('category',$category)->update($inputs);
+                if(!$x) saveData($ss,'patient_pe',['id'=>null],$inputs,[],1);
+            }
+           
         }
-        return DV::success(); 
+        return null; 
+    }
+    
+    function getPE($ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+        $ss = $ss? $ss : $this->getUserInfo();  
+       return getDataRow('patient_pe',['ticket_id'=>$ticket_id,'category'=>'General'],"category,content");
+    }
+
+    function saveDiagnosis($items,$ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+        $ss = $ss?$ss:$this->getUserInfo();
+        $patient_id = self::getPatientId($ss->branch_id,$ticket_id);
+        foreach($items as $item){
+            $category = isset($item['category'])?$item['category']:'General';
+            $content = $item['content'];
+            if($content){
+                $inputs= [
+                    'consult_date'=>getNowTime(), 
+                    'ticket_id'=>$ticket_id,
+                    'patient_id'=>$patient_id,
+                    'content'=>$content,
+                    'category'=>$category,
+                    'update_uid'=>$ss->user_id,
+                    'updated_at'=>getNowTime(),
+                    'update_user'=>$ss->full_name
+                ];
+                $x = DB::table("patient_diagnosis")->where('ticket_id',$ticket_id)->where('category',$category)->update($inputs);
+                if(!$x) saveData($ss,'patient_diagnosis',['id'=>null],$inputs,[],1);
+            }
+           
+        }
+        return null; 
+    }
+    
+    function getDiagnosis($ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+        $ss = $ss? $ss : $this->getUserInfo();  
+       return getDataRow('patient_diagnosis',['ticket_id'=>$ticket_id,'category'=>'General'],"category,content");
+    }
+    
+    function saveAdvice($items,$ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+        $ss = $ss?$ss:$this->getUserInfo();
+        $patient_id = self::getPatientId($ss->branch_id,$ticket_id);
+        foreach($items as $item){
+            $category = isset($item['category'])?$item['category']:'General';
+            $content = $item['content'];
+            if($content){
+                $inputs= [
+                    'ticket_id'=>$ticket_id,
+                    'patient_id'=>$patient_id,
+                    'content'=>$content,
+                    'category'=>$category,
+                    'update_uid'=>$ss->user_id,
+                    'updated_at'=>getNowTime(),
+                    'update_user'=>$ss->full_name
+                ];
+                $x = DB::table("patient_advice")->where('ticket_id',$ticket_id)->where('category',$category)->update($inputs);
+                if(!$x) saveData($ss,'patient_advice',['id'=>null],$inputs,[],1);
+            }
+           
+        }
+        return null; 
+    }
+    
+    function getAdvice($ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+        $ss = $ss? $ss : $this->getUserInfo();  
+       return getDataRow('patient_advice',['ticket_id'=>$ticket_id,'category'=>'General'],"category,content");
+    }
+
+    //save one labo test at a time
+    function saveLaboTest($test,$ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+        $ss = $ss? $ss : $this->getUserInfo();
+        $res = validateObject($test,['id'=>'0|number|identity=1','test_id'=>'1|number|exists=medical_services.id|text=Test ID is not valid','labo_id'=>'1|number|exists=partners.id|text=Labo ID does not exist','remarks'=>'0|string|0-150'],true,[],$ss->lang,false,null);
+        if($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+        $id = $res->id;
+        $patient_id = self::getPatientId($ss->branch_id,$ticket_id);
+        if(!$patient_id) return DV::error('Failed to identify patient given the ticket ID');
+        $inputs['patient_id']=$patient_id;
+        $inputs['ticket_id']=$ticket_id;
+        $id = saveData($ss,'patient_labo_tests',['id'=>$id],$inputs,[],1);
+        if ($id>0) return DV::success(['id'=>$id]);
+        return DV::error("Somethign went wrong saving patient labo test");
     }
  
-    //Medical history is array of items [{category,content},{category,content},{...}]
-    static function saveMedicalHistory($ss,$items,$ticket_id){
-        foreach($items as $item){
-            $inputs= [
-                'ticket_id'=>$ticket_id,
-                'content'=>$item->content,
-                'category'=>$item->category
-            ];
-            $id = saveData($ss,'consult_medical_history',$inputs,[],1);
-        }
-        return DV::success(); 
+    function removeLaboTest($id,$ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+        $ss = $ss? $ss : $this->getUserInfo();
+        DB::table('patient_labo_tests')->where('id',$id)->where('ticket_id',$ticket_id)->delete();
+        return null;
     }
 
-    static function savePE($ss,$items,$ticket_id){
-        foreach($items as $item){
-            $inputs= [
-                'ticket_id'=>$ticket_id,
-                'content'=>$item->content,
-                'category'=>$item->category
-            ];
-            $id = saveData($ss,'consult_pe',$inputs,[],1);
-        }
-        return DV::success(); 
+    function getLaboTests($ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+        $ss = $ss? $ss : $this->getUserInfo();
+        $cols = ['t.id','t.test_id','s.name','t.labo_id','t.result_date','t.test_date','t.file_name','file_type','t.created_at','t.create_user','t.consultant_comments','t.result_description','t.remarks'];
+        return DB::table('patient_labo_tests AS t')->join('medical_services as s','s.id','=','t.test_id')->where('ticket_id',$ticket_id)->where('service_type','labo')->where('t.branch_id',$ss->branch_id)->select($cols)->orderBy('t.name','ASC')->get();
+    }
+    
+    function getDefaultLabo($test_id){
+      $rows = DB::table('test_labos as l')
+      ->join('partners as p','p.id','=','l.labo_id')
+      ->where('l.test_id',$test_id)
+      ->select(['p.id','p.name'])
+      ->orderBy('prefer_rank','ASC')
+      ->take(1)->get();
+      return isset($rows[0])? $rows[0]:null;
     }
 
-    static function saveLaboTests($ss,$items,$ticket_id){
-        foreach($items as $item){
-            $inputs= [
-                'ticket_id'=>$ticket_id,
-                'test_name'=>$test->name,
-                'provider_id'=>$test->provider_id,
-                'description'=>$test->description,
-                'result_summary'=>null,
-                'status_id'=>1 //Pending
-            ];
-            $id = saveData($ss,'consult_labo_tests',$inputs,[],1);
-        }
-        return DV::success(); 
+    function getLaboTestInfo($test_id){
+       $cols =['s.id','s.name','s.price','s.description','sku'];
+       $rows = DB::table('medical_services as s')->where('id',$test_id)->where('s.service_type','labo')->select($cols)->take(1)->get();
+       foreach($rows as $row){
+         $labo = $this->getDefaultLabo($test_id);
+         $row->default_labo_id = $labo->id;
+         $row->default_labo_name = $labo->name;
+         return $row;
+       } 
+       return null;
     }
- 
+
     //@params $d = ['id'=>0,'consultant_id'=>number, 'issue_date'=>date, 'items'=>[]]
     static function savePrescription($ss,$d,$ticket_id){
       $d ['ticket_id'] = $ticket_id;
@@ -230,17 +500,17 @@ class Consultation extends Model
       return DV::error("Something went wrong during saving prescription");
     }
 
-    static function saveAdvice($ss,$items,$ticket_id){
-        foreach($items as $item){
-            $inputs= [
-                'ticket_id'=>$ticket_id,
-                'content'=>$item->content,
-                'category'=>$item->category
-            ];
-            $id = saveData($ss,'consult_advice',$inputs,[],1);
-        }
-        return DV::success(); 
-    }
+    // static function saveAdvice($ss,$items,$ticket_id){
+    //     foreach($items as $item){
+    //         $inputs= [
+    //             'ticket_id'=>$ticket_id,
+    //             'content'=>$item->content,
+    //             'category'=>$item->category
+    //         ];
+    //         $id = saveData($ss,'consult_advice',['id'=>$id],$inputs,[],1);
+    //     }
+    //     return DV::success(); 
+    // }
 
     static function commitDelete($ss,$ticket_id=0){
          DB::table('consult_chief_complaints')->delete('ticket_id',$ticket_id);

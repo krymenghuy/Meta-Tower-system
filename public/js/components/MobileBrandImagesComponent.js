@@ -4,8 +4,6 @@ let MobileBrandImagesComponent = new function () {
   this.self = $('#_main_mobileBrandImagesComponent');
   this.title_prop = "Brand Images";
   this.base_url = $('#__base_url').val();
-  //this.tblIamges = $('#_mobile_brand_tblIamges');
-  //this.tblIamges_body = $('#_mobile_brand_tblIamges_body');
 
   this.img_container = $('#bi_img_container');
 
@@ -28,18 +26,11 @@ let MobileBrandImagesComponent = new function () {
       var file = files[0];
       if (file) {
         if (file.type.match(/^image\/.*/)) {
-          //if (file.size >2000) {
-          //    alertify.showWarning('The image file is too big');
-          //} else {
           reader.readAsDataURL(file); /*return a data that can be set directly to Image.src property */
-
-          //}
         } else {
           cv_interact.warning('The chosen image file is invalid!');
         }
-
       }
-
     });
 
     var reader = new FileReader();
@@ -66,7 +57,6 @@ let MobileBrandImagesComponent = new function () {
       vsapi.call([mThis.base_url, '/api/saveBrandImage'].join(''), p).then(res => {
         if (res.status_code === 200) {
           mThis.displayIamges();
-          //cv_interact.alert('Brand image uploaded');
         }
         else cv_interact.error(res.error_message);
       });
@@ -85,7 +75,7 @@ let MobileBrandImagesComponent = new function () {
 
   this.deleteBrandPicture = (pic_id, user_class) => {
     let p = { 'id': pic_id, 'user_class': user_class };
-    cv_interact.confirm('Delete this picture?',{title: 'Delete Brand Picture',context:'delete'}, (e) => {
+    cv_interact.confirm('Delete this picture?', { title: 'Delete Brand Picture', context: 'delete' }, (e) => {
       if (e) {
         vsapi.call([mThis.base_url, '/api/deleteBrandImage'].join(''), p,).then(res => {
           if (res.status_code !== 200) cv_interact.error(res.error_message);
@@ -117,18 +107,6 @@ let MobileBrandImagesComponent = new function () {
             c.description,
             '</p>',
             '</div></div>'].join('');
-
-          //  let html_row = ['<tr data-id="',c.id,'">',
-          //  '<td class="col-brand-image"><div class="thumbnail"><img class="brand-img" src="',c.image_data,'"></img>',
-          //  '<div class="caption"><p class="dms-brand-image-des">',c.description,'</p>',
-          //  '</div></div>',
-          //  '</td>',
-          //  '<td class="brand-image-des">',
-          //  '<div class="flat-box">',
-          //    '<button data-id="',c.id,'" class="btn btn-danger mobile_brand_image-delete"><i class="fa fa-times"></i> Delete Picture</button>',
-          //  '<div>',  
-          //  '</td>',
-          //  '</tr>'].join('');
           mThis.img_container.append(html_row);
           i++;
         } while (c);

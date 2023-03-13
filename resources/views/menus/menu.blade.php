@@ -41,14 +41,14 @@
                 </a>
             </li>
 
-            <li class="kt-menu__item" aria-haspopup="true">
+            <li style="display:none" class="kt-menu__item" aria-haspopup="true">
                 <a href="javascript:void(0)" id="_main_lnkDashboard2" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <i>
                             <img class="icons" src="{{ asset('assets/images/icons/dashboard.svg') }}" style="height:25px;">
                         </i>
                     </span>
-                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Dashboard">Dashboard2</span>
+                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Dashboard2">Dashboard2</span>
                 </a>
             </li>
 
@@ -63,7 +63,7 @@
                 <div class="kt-menu__submenu ">
                     <span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
-                        <li class="kt-menu__item" aria-haspopup="true">
+                        <li style="display:none" class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkPatientFinder" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/patient_finder.svg')}}"/>
@@ -89,6 +89,16 @@
                                 &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Queues">Queues</span>
                             </a>
                         </li>
+
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="javascript:void(0)" id="_main_lnkPatientInvoices" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/invoice.svg') }}"/>
+                                </span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Invoices">Invoices</span>
+                            </a>
+                        </li>
+                        
                     </ul>
                 </div>
             </li>
@@ -127,14 +137,6 @@
                 <div class="kt-menu__submenu ">
                     <span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
-                        <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkConsultantDashboard" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/dashboard.svg')}}"/>
-                                </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Dashboard">Dashboard</span>
-                            </a>
-                        </li>
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkConsultantQueues" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
@@ -244,6 +246,15 @@
                         </li>
 
                         <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="javascript:void(0)" id="_main_lnkStockTransfer" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/stock_adjustment.svg') }}"/>
+                                </span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Stock Transfer">Stock Transfer</span>
+                            </a>
+                        </li>
+
+                        <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkItems" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/product.svg')}}"/>
@@ -318,7 +329,7 @@
                     <ul class="kt-menu__subnav">
                 
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkPatientInvoices" class="menu-item kt-menu__link">
+                            <a href="javascript:void(0)" id="_main_lnkIncomeInvoices" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{ asset('assets/images/icons/invoice.svg') }}"/>
                                 </span>
@@ -326,7 +337,7 @@
                             </a>
                         </li>
 
-                        <li class="kt-menu__item" aria-haspopup="true">
+                        <li style="display:none" class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkPatientReceipts" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/invoice.svg')}}"/>
@@ -449,7 +460,7 @@
                 </a>
             </li>
 
-            <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+            <li style="display:none" class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
                         <img class="icons" src="{{asset('assets/images/icons/mobile_setting.svg')}}"/>
@@ -505,7 +516,7 @@
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/autocomplete.svg')}}"/>
                                 </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Diagnosis Autocomplete">Diagnosis Autocomplete</span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Diagnosis Options">Diagnosis</span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
@@ -513,7 +524,7 @@
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/autocomplete_examination.svg')}}"/>
                                 </span>
-                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.Examination Autocomplete">Examination Autocomplete</span>
+                                &nbsp;<span class="kt-menu__link-text trans-text" data-langprop="menus.PE Options">PE Options</span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">

@@ -152,3 +152,47 @@
         </div>
     </div>
 </div>
+
+<div id="_prc_dlgFilterReceipt" class="modal fade" aria-labelledby="_prc_dlgFilterReceipt_title" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="_prc_dlgFilterReceipt_title"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row gy-2 py-2">
+                    <div class="col-4">
+                        <p class="trans-text" data-langprop="receipt.Receipt Date"></p>
+                    </div>
+                    <div class="col-8">
+                        <input data-select="datepicker" class="form-control" id="_prc_dlgFilterReceipt_Date" placeholder="Date"/>
+                    </div>
+                </div>
+                <div class="row gy-2 py-2">
+                    <div class="col-4">
+                        <p class="trans-text" data-langprop="receipt.Patient"></p>
+                    </div>
+                    <div class="col-8">
+                        <input type="text" class="form-control" id="_prc_dlgFilterReceipt_Patient" placeholder="Patient"/>
+                    </div>
+                </div>
+                <div class="row gy-2 py-2">
+                    <div class="col-4">
+                        <p class="trans-text" data-langprop="receipt.Cash Account"></p>
+                    </div>
+                    <div class="col-8">
+                        <input type="text" class="form-control" id="_prc_dlgFilterReceipt_CashAccount" placeholder="Cash Account"/>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-default" type="button" data-dismiss="modal">
+                    <span class="trans-text" data-langprop="buttons.Cancel"></span>
+                </button>
+                <button class="btn btn-primary" type="button" id="_prc_dlgFilterReceipt_btnSave">
+                    <span class="trans-text" data-langprop="buttons.Save"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -37,14 +37,14 @@ class WebReportController extends Controller
       $data->users= DB::select("SELECT id as `user_id`,  full_name As `user_name` FROM um_users AS u WHERE u.branch_id = '$branch_id' ORDER BY u.full_name asc");
       return JDV::json($data); 
    }
- 
+
     public function receipt($query_string) { 
       // if (!Session::get('login_name',null)) return redirect('/');
       // $branch_id =Session::get('branch_id',0);
       // if (!$branch_id) return redirect('/');
         
         $p = processQueryString($query_string);
-        $trx_id = $p->tid; 
+        //$trx_id = $p->tid; 
         
         $data['receipt'] = null;; 
         return view('reports.receipt',$data);
@@ -62,71 +62,40 @@ class WebReportController extends Controller
             //error invalid parameters provided
             return view('errors.500');
         }
-
-        // //if(!isset($p->startdate) || !isset($p->enddate)) $p->usealldates =1;
-        $rtype = strtolower(isset($p->rtype) ? $p->rtype:null);
-        $data['rtype']= $rtype;
-        if(!$rtype){
-          //error invalid report type
-          return view('errors.500');
-        }
-
-        $branch = CompanyProfile::details($branch_id);
-
+        
+        $rtype = isset($p->rtype) ? $p->rtype : null;
+        $payment_id = isset($p->id) ? $p->id : 0;
+        $ss = (object)['branch_id'=>$branch_id];
+        $payment = new \App\Models\Invoice\Invoice($payment_id,$ss);
         switch($rtype){
           case 'medical_report':{
-            $data['branch']= $branch;
-            $data['title'] = "Medical Report";
-            $data['company_name'] = "Clinic";
-            break;
-          }
-          case 'medical_certificate':{
-            $data['branch']= $branch;
-            $data['title'] = "Medical Certificate";
-            $data['company_name'] = "Clinic";
+            $data['payment'] = $payment->getDetails();
+            $data['rtype'] = "medical_report";
             break;
           }
           default:{
-              $data['title'] = "IT SEEMS NO MATCHING REPORT NAME :)"; 
-              break;
+            $data['title'] = "PAYMENT VOUCHER";
           }
         }
         return view('reports.genreport',$data);
     }
 
-    public function general_invoice($query_string = null){
+    public function general_invoice($query_string=null){
       if (!Session::get('login_name',null)) return redirect('/');
         $branch_id =Session::get('branch_id',0);
         if (!$branch_id) return redirect('/');
-        $data['branch'] = $this->reportModel->getBranchInfo($branch_id);
+        $data['branch'] = \App\Models\CompanyProfile::details($branch_id);
         $p = processQueryString($query_string);
-      
-        if(!$p) {
-            //error invalid parameters provided
-            return view('errors.500');
-        }
 
-        // //if(!isset($p->startdate) || !isset($p->enddate)) $p->usealldates =1;
-        $rtype = strtolower(isset($p->rtype) ? $p->rtype:null);
-        $data['rtype']= $rtype;
-        if(!$rtype){
-          //error invalid report type
+        if(!$p) {
+          //error invalid parameters provided
           return view('errors.500');
         }
-
-        $branch = CompanyProfile::details($branch_id);
-
-        switch($rtype){
-          case 'invoice_report':{
-            $data['branch'] = $branch;
-            $data['title'] = "INVOICE";
-            break;
-          }
-          default:{
-              $data['title'] = "IT SEEMS NO MATCHING REPORT NAME :)";
-              break;
-          }
-        }
-        return view('reports.geninvoice',$data);
+        $invoice_id = isset($p->id)?$p->id:0;
+        $ss = (object)['branch_id'=>$branch_id];
+        $invoice = new \App\Models\Invoice\Invoice($invoice_id,$ss);
+        $data['invoice'] = $invoice->getDetails();
+        $data['title'] = "ESTHEDERM Aesthetic & Dermatology";
+        return view('reports.invoice', $data);
     }
 }

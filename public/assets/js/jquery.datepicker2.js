@@ -285,11 +285,11 @@ THE FLOWWING CHANGES IS ADDED:
 		},
 		api: {
 			date: function(string) {
-				var date = null;
+				let date = null;
 				if (string instanceof Date) {
 					date = new Date(string);
 				} else {
-					var parts = string.match(/(\d{1,2})-(\d{1,2})-(\d{4})/);
+					let parts = string.match(/(\d{1,2})-(\d{1,2})-(\d{4})/);
 					if ( parts && parts.length == 4 ) {
 						date = new Date( parts[3], parts[1] - 1, parts[2] );
 					}
@@ -297,7 +297,7 @@ THE FLOWWING CHANGES IS ADDED:
 				return date;
 			},
 			show: function(options) {
-				var other = $('.jquery-datepicker.is-popup'),
+				let other = $('.jquery-datepicker.is-popup'),
 					widget = $.datePicker.api.createWidget(options);
 				if (other.length) {
 					$.datePicker.api.hide(other);
@@ -313,8 +313,8 @@ THE FLOWWING CHANGES IS ADDED:
 				});
 				return widget;
 			},
-			hide: function(widget) {
-				var widget = widget || $('.jquery-datepicker.is-popup');
+			hide: function(widget1) {
+				widget = widget1 || $('.jquery-datepicker.is-popup');
 				widget = widget.length ? widget.eq(0) : null;
 				if ( widget.length && widget.is(':visible') ) {
 					widget.options = widget.data('options');
@@ -324,14 +324,14 @@ THE FLOWWING CHANGES IS ADDED:
 						widget.remove();
 
 					    //Fire input's Change event when the Datepicker widger is closed
-						var newVal = widget.options.element.val();
+						let newVal = widget.options.element.val();
 						if (widget.options.originalValue != newVal) widget.options.element.trigger('change');
 					});
 				}
 				return widget;
 			},
 			createWidget: function(options) {
-				var opts = $.extend(true, {}, $.datePicker.defaults, options),
+				let opts = $.extend(true, {}, $.datePicker.defaults, options),
 					widget = $(opts.templates.widget);
 				// Check container instance
 				opts.container = opts.container instanceof jQuery ? opts.container : $(opts.container);
@@ -370,7 +370,7 @@ THE FLOWWING CHANGES IS ADDED:
 					break;
 					case 'popup':
 						if ( opts.element.length ) {
-							var offset = opts.element.offset(),
+							let offset = opts.element.offset(),
 								viewportWidth = window.innerWidth;
 								elementSize = { x: opts.element.outerWidth(), y: opts.element.outerHeight() },
 								widgetSize = { x: widget.outerWidth(), y: widget.outerHeight() };
@@ -403,11 +403,11 @@ THE FLOWWING CHANGES IS ADDED:
 				}
 				// Bind decade viewer events
 				widget.views.decade.on('click', '.header-title', function(e) {
-					var el = $(this);
+					let el = $(this);
 					e.preventDefault();
 				});
 				widget.views.decade.on('click', '.action-down', function(e) {
-					var el = $(this);
+					let el = $(this);
 					e.preventDefault();
 					if ( opts.callbacks.onChangeDecade( widget, new Date(opts.views.decade.show), 'down' ) ) {	 
 						opts.animate(widget.views.decade, 'slideLeftOut', function() {
@@ -419,7 +419,7 @@ THE FLOWWING CHANGES IS ADDED:
 					}
 				});
 				widget.views.decade.on('click', '.action-up', function(e) {
-					var el = $(this);
+					let el = $(this);
 					e.preventDefault();
 					if ( opts.callbacks.onChangeDecade( widget, new Date(opts.views.decade.show), 'up' ) ) {
 						opts.animate(widget.views.decade, 'slideRightOut', function() {
@@ -431,7 +431,7 @@ THE FLOWWING CHANGES IS ADDED:
 					}
 				});
 				widget.views.decade.on('click', '.cell-day', function(e) {
-					var cell = $(this),
+					let cell = $(this),
 						date = cell.data('date');
 					e.preventDefault();
 					if ( !cell.hasClass('cell-grayed') ) {
@@ -451,7 +451,7 @@ THE FLOWWING CHANGES IS ADDED:
 				});
 				// Bind year viewer events
 				widget.views.year.on('click', '.header-title', function(e) {
-					var el = $(this);
+					let el = $(this);
 					e.preventDefault();
 					if ( opts.callbacks.onViewDecade(widget, opts.views.decade.show) ) {
 						opts.animate(widget.views.year, 'fadeOut', function() {
@@ -469,7 +469,7 @@ THE FLOWWING CHANGES IS ADDED:
 					}
 				});
 				widget.views.year.on('click', '.action-down', function(e) {
-					var el = $(this);
+					let el = $(this);
 					e.preventDefault();
 					if ( opts.callbacks.onChangeYear( widget, new Date(opts.views.year.show), 'down' ) ) {
 						opts.animate(widget.views.year, 'slideLeftOut', function() {
@@ -481,7 +481,7 @@ THE FLOWWING CHANGES IS ADDED:
 					}
 				});
 				widget.views.year.on('click', '.action-up', function(e) {
-					var el = $(this);
+					let el = $(this);
 					e.preventDefault();
 					if ( opts.callbacks.onChangeYear( widget, new Date(opts.views.year.show), 'up' ) ) {
 						opts.animate(widget.views.year, 'slideRightOut', function() {
@@ -493,7 +493,7 @@ THE FLOWWING CHANGES IS ADDED:
 					}
 				});
 				widget.views.year.on('click', '.cell-day', function(e) {
-					var cell = $(this),
+					let cell = $(this),
 						date = cell.data('date');
 					e.preventDefault();
 					if ( !cell.hasClass('cell-grayed') ) {
@@ -513,7 +513,7 @@ THE FLOWWING CHANGES IS ADDED:
 				});
 				// Bind month viewer events
 				widget.views.month.on('click', '.header-title', function(e) {
-					var el = $(this);
+					let el = $(this);
 					e.preventDefault();
 					if ( opts.callbacks.onViewYear(widget, opts.views.year.show) ) {
 						opts.animate(widget.views.month, 'fadeOut', function() {
@@ -531,11 +531,11 @@ THE FLOWWING CHANGES IS ADDED:
 					}
 				});
 				widget.views.month.on('click', '.action-down', function(e) {
-					var el = $(this);
+					let el = $(this);
 					e.preventDefault();
 					if ( opts.callbacks.onChangeMonth( widget, new Date(opts.views.month.show), 'down' ) ) {
 						opts.animate(widget.views.month, 'slideLeftOut', function() {
-								var otherMonth =  opts.views.month.show.getMonth() - 1;
+								let otherMonth =  opts.views.month.show.getMonth() - 1;
 								if (otherMonth < 0) {
 									opts.views.month.show.setYear(opts.views.month.show.getFullYear() - 1);
 									otherMonth = 11;
@@ -548,11 +548,11 @@ THE FLOWWING CHANGES IS ADDED:
 					}
 				});
 				widget.views.month.on('click', '.action-up', function(e) {
-					var el = $(this);
+					let el = $(this);
 					e.preventDefault();
 					if ( opts.callbacks.onChangeMonth( widget, new Date(opts.views.month.show), 'up' ) ) {
 						opts.animate(widget.views.month, 'slideRightOut', function() {
-							var otherMonth =  opts.views.month.show.getMonth() + 1;
+							let otherMonth =  opts.views.month.show.getMonth() + 1;
 							if (otherMonth > 11) {
 								opts.views.month.show.setYear(opts.views.month.show.getFullYear() + 1);
 								otherMonth = 0;
@@ -565,7 +565,7 @@ THE FLOWWING CHANGES IS ADDED:
 					}
 				});
 				widget.views.month.on('click', '.cell-day', function(e) {
-					var cell = $(this),
+					let cell = $(this),
 						date = cell.data('date');
 					e.preventDefault();
 					if ( !cell.hasClass('cell-grayed') && !cell.hasClass('cell-forbidden') ) {
@@ -595,37 +595,37 @@ THE FLOWWING CHANGES IS ADDED:
 				return widget;
 			},
 			createHeader: function(title, opts) {
-				var ret = $( opts.templates.header.replace('{title}', title) );
+				let ret = $( opts.templates.header.replace('{title}', title) );
 				return ret;
 			},
-			createDecadeView: function(opts, box) {
-				var box = box || $('<div class="datepicker-box"></div>'),
+			createDecadeView: function(opts, box1) {
+				let box = box1 || $('<div class="datepicker-box"></div>'),
 					settings = opts.views.decade,
 					decade = settings.show.getFullYear() - (settings.show.getFullYear() % 10),
 					title = decade + '-' + (decade + 9),
 					header = $.datePicker.api.createHeader(title, opts),
 					values = [];
 				// Build values array
-				for (var i = 0, v = decade - 3; i < 16; i++, v++) {
+				for (let i = 0, v = decade - 3; i < 16; i++, v++) {
 					values.push(v);
 				}
 				header.addClass('js-header-decade');
 				box.append( header);
 				box.addClass('box-decade');
 				// Add rows
-				var rows = [];
-				for (var i = 0; i < 4; i++) {
-					var row = $('<div class="box-row row-week"></div>');
+				let rows = [];
+				for (let i = 0; i < 4; i++) {
+					let row = $('<div class="box-row row-week"></div>');
 					rows.push(row);
 					box.append(row);
 				}
 				// Today
-				var today = new Date();
+				let today = new Date();
 				today.setMonth(0);
 				today.setDate(1);
 				// Add months
-				for (var i = 0, j = 0, d = 1; i < 16; i++, d++) {
-					var row = rows[j],
+				for (let i = 0, j = 0, d = 1; i < 16; i++, d++) {
+					let row = rows[j],
 						day = $('<div class="box-cell cell-day">'+ values[i] +'</div>');
 					row.append(day);
 					if (d > 3) {
@@ -633,11 +633,11 @@ THE FLOWWING CHANGES IS ADDED:
 						j++;
 					}
 					// Save date
-					var date = '01-01-' + values[i];
+					let date = '01-01-' + values[i];
 					date = $.datePicker.api.date(date);
 					day.data('date', date);
 					// Grayed years
-					var disabled = false;
+					let disabled = false;
 					// Use a preset for restricted dates or a custom function
 					switch (opts.restrictDates) {
 						case 'past':
@@ -662,14 +662,14 @@ THE FLOWWING CHANGES IS ADDED:
 				}
 				return box;
 			},
-			createYearView: function(opts, box) {
-				var box = box || $('<div class="datepicker-box"></div>'),
+			createYearView: function(opts, box1) {
+				let box = box1 || $('<div class="datepicker-box"></div>'),
 					settings = opts.views.year,
 					title = settings.show.getFullYear(),
 					header = $.datePicker.api.createHeader(title, opts),
 					values = [];
 				// Build values array
-				for (var i = 0; i < 12; i++) {
+				for (let i = 0; i < 12; i++) {
 					values.push( opts.strings.months[i] );
 				}
 				// Add header
@@ -677,18 +677,18 @@ THE FLOWWING CHANGES IS ADDED:
 				box.append( header);
 				box.addClass('box-year');
 				// Add rows
-				var rows = [];
-				for (var i = 0; i < 3; i++) {
-					var row = $('<div class="box-row row-week"></div>');
+				let rows = [];
+				for (let i = 0; i < 3; i++) {
+					let row = $('<div class="box-row row-week"></div>');
 					rows.push(row);
 					box.append(row);
 				}
 				// Today
-				var today = new Date();
+				let today = new Date();
 				today.setDate(1);
 				// Add months
-				for (var i = 0, j = 0, d = 1; i < 12; i++, d++) {
-					var row = rows[j],
+				for (let i = 0, j = 0, d = 1; i < 12; i++, d++) {
+					let row = rows[j],
 						day = $('<div class="box-cell cell-day">'+ values[i].substring(0, 3) +'</div>');
 					row.append(day);
 					if (d > 3) {
@@ -696,11 +696,11 @@ THE FLOWWING CHANGES IS ADDED:
 						j++;
 					}
 					// Save date
-					var date = (i + 1) + '-01-' + settings.show.getFullYear();
+					let date = (i + 1) + '-01-' + settings.show.getFullYear();
 					date = $.datePicker.api.date(date);
 					day.data('date', date);
 					// Grayed months
-					var disabled = false;
+					let disabled = false;
 					// Use a preset for restricted dates or a custom function
 					switch (opts.restrictDates) {
 						case 'past':
@@ -724,8 +724,8 @@ THE FLOWWING CHANGES IS ADDED:
 				}
 				return box;
 			},
-			createMonthView: function(opts, box) {
-				var box = box || $('<div class="datepicker-box"></div>'),
+			createMonthView: function(opts, box1) {
+				let box = box1 || $('<div class="datepicker-box"></div>'),
 					settings = opts.views.month,
 					title = opts.strings.months[ settings.show.getMonth() ] + ' ' + settings.show.getFullYear(),
 					header =  $.datePicker.api.createHeader(title, opts),
@@ -738,7 +738,7 @@ THE FLOWWING CHANGES IS ADDED:
 					lastDayOfPastMonth = new Date(lastMonthYear, lastMonth + 1, 0).getDate(),
 					values = [];
 				// Build values array
-				for (var i = 0; i < daysInMonth; i++) {
+				for (let i = 0; i < daysInMonth; i++) {
 					values.push(i + 1);
 				}
 				// Add header
@@ -747,48 +747,48 @@ THE FLOWWING CHANGES IS ADDED:
 				box.addClass('box-month');
 				// Offset days of week depending on the first day of week
 				settings.firstDayOfWeek = settings.firstDayOfWeek < 0 ? 0 : (settings.firstDayOfWeek > 6 ? 6 : settings.firstDayOfWeek);
-				var dayNames = opts.strings.days.slice();
+				let dayNames = opts.strings.days.slice();
 				if (settings.firstDayOfWeek > 0) {
-					var plucked = dayNames.splice(0, settings.firstDayOfWeek);
+					let plucked = dayNames.splice(0, settings.firstDayOfWeek);
 					dayNames = dayNames.concat(plucked);
 				}
-				var row = $('<div class="box-row row-days"></div>');
+				let row = $('<div class="box-row row-days"></div>');
 				// Add weekdays row
-				for (var i = 0; i < 7; i++) {
+				for (let i = 0; i < 7; i++) {
 					row.append('<div class="box-cell cell-day">'+ dayNames[i].substring(0, 2) +'</div>');
 				}
 				box.append(row);
 				// Pad month days with extra grayed days
-				var daysBefore = firstDayOfMonth - settings.firstDayOfWeek,
+				let daysBefore = firstDayOfMonth - settings.firstDayOfWeek,
 					daysAfter = 42 - (daysInMonth + daysBefore);
 				if (daysBefore < 0) {
 					daysBefore = 7 + daysBefore;
 					daysAfter = 42 - (daysInMonth + daysBefore);
 				}
 				// Prepend days before
-				var temp = [];
-				for (var i = 1; i <= daysBefore; i++) {
+				let temp = [];
+				for (let i = 1; i <= daysBefore; i++) {
 					temp.push(lastDayOfPastMonth - (daysBefore - i));
 				}
 				values = temp.concat(values);
 				// Append days after
 				temp = [];
-				for (var i = 1; i <= daysAfter; i++) {
+				for (let i = 1; i <= daysAfter; i++) {
 					temp.push(i);
 				}
 				values = values.concat(temp);
 				// Add weeks
-				var weeks = [];
-				for (var i = 0; i < 6; i++) {
-					var week = $('<div class="box-row row-week"></div>');
+				let weeks = [];
+				for (let i = 0; i < 6; i++) {
+					let week = $('<div class="box-row row-week"></div>');
 					weeks.push(week);
 					box.append(week);
 				}
 				// Today
-				var today = new Date();
+				let today = new Date();
 				// Add days to weeks
-				for (var i = 0, j = 0, d = 1; i < 42; i++, d++) {
-					var week = weeks[j],
+				for (let i = 0, j = 0, d = 1; i < 42; i++, d++) {
+					let week = weeks[j],
 						day = $('<div class="box-cell cell-day">'+ values[i] +'</div>');
 					week.append(day);
 					if (d > 6) {
@@ -796,7 +796,7 @@ THE FLOWWING CHANGES IS ADDED:
 						j++;
 					}
 					// Save date
-					var date = '';
+					let date = '';
 					if (i < daysBefore) {
 						date = (lastMonth + 1) + '-' + values[i] + '-' + lastMonthYear;
 					} else if (i >= 42 - daysAfter) {
@@ -807,11 +807,11 @@ THE FLOWWING CHANGES IS ADDED:
 					date = $.datePicker.api.date(date);
 					day.data('date', date);
 					// Grayed days
-					var disabled = false;
+					let disabled = false;
 					if (settings.enabled.length) {
 						disabled = true;
 						// Iterate enabled dates
-						for (var n = 0; n < settings.enabled.length; n++) {
+						for (let n = 0; n < settings.enabled.length; n++) {
 							if (!settings.enabled[n].length) continue;
 							if (typeof settings.enabled[n] === 'string') settings.enabled[n] = $.datePicker.api.date( settings.enabled[n] );
 							if ( date.toDateString() == settings.enabled[n].toDateString() ) {
@@ -843,7 +843,7 @@ THE FLOWWING CHANGES IS ADDED:
 						}
 						// Disabled
 						if (settings.disabled.length) {
-							for (var n = 0; n < settings.disabled.length; n++) {
+							for (let n = 0; n < settings.disabled.length; n++) {
 								if (typeof settings.disabled[n] === 'string') settings.disabled[n] = $.datePicker.api.date( settings.disabled[n] );
 								if ( settings.disabled[n] && date.toDateString() == settings.disabled[n].toDateString() ) {
 									day.addClass('cell-grayed');
@@ -853,7 +853,7 @@ THE FLOWWING CHANGES IS ADDED:
 						}
 						// Forbidden
 						if (settings.forbidden.length) {
-							for (var n = 0; n < settings.forbidden.length; n++) {
+							for (let n = 0; n < settings.forbidden.length; n++) {
 								if (typeof settings.forbidden[n] === 'string') settings.forbidden[n] = $.datePicker.api.date( settings.forbidden[n] );
 								if ( settings.forbidden[n] && date.toDateString() == settings.forbidden[n].toDateString() ) {
 									day.addClass('cell-forbidden');
@@ -863,7 +863,7 @@ THE FLOWWING CHANGES IS ADDED:
 						}
 						// Marked
 						if (settings.marked.length) {
-							for (var n = 0; n < settings.marked.length; n++) {
+							for (let n = 0; n < settings.marked.length; n++) {
 								if (typeof settings.marked[n] === 'string') settings.marked[n] = $.datePicker.api.date( settings.marked[n] );
 								if ( settings.marked[n] && date.toDateString() == settings.marked[n].toDateString() ) {
 									day.addClass('cell-marked');
@@ -873,7 +873,7 @@ THE FLOWWING CHANGES IS ADDED:
 						}
 						// Selected
 						if (settings.selected.length) {
-							for (var n = 0; n < settings.selected.length; n++) {
+							for (let n = 0; n < settings.selected.length; n++) {
 								if (typeof settings.selected[n] === 'string') settings.selected[n] = $.datePicker.api.date( settings.selected[n] );
 								if ( settings.selected[n] && date.toDateString() == settings.selected[n].toDateString() ) {
 									day.addClass('cell-selected');
@@ -890,13 +890,13 @@ THE FLOWWING CHANGES IS ADDED:
 	};
 	jQuery(document).ready(function($) {
 		$('[data-select=datepicker]').each(function() {
-		    var input = $(this);
+		    let input = $(this);
 		    input.attr('placeholder','dd-mm-yyyy');
 			input.attr('autocomplete', 'off');
 			input.on('click', function() {
-				var val = input.val();
-				var date = val ? $.datePicker.defaults.dateParse(val) : null;
-				var widget = $.datePicker.api.show({
+				let val = input.val();
+				let date = val ? $.datePicker.defaults.dateParse(val) : null;
+				let widget = $.datePicker.api.show({
 					views: {
 						month: {
 							show: val ? date : '',
@@ -915,23 +915,23 @@ THE FLOWWING CHANGES IS ADDED:
 			//		return false;
 			//	}					
 		    //})
-			var num_lock_key_values = ['`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
+			let num_lock_key_values = ['`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
 			input.on('keyup', function (event, ui) {
 
 			    if (event.keyCode == 13) {
 			        input.trigger('blur');
 			        return;
 			    }
-			    var key = String.fromCharCode(event.keyCode);
+			    let key = String.fromCharCode(event.keyCode);
 			    if (!(key >= 0 && key <= 9) && num_lock_key_values.indexOf(key) < 0) $(this).val($(this).val().substr(0, $(this).val().length - 1));
-			    var value = $(this).val();
+			    let value = $(this).val();
 			    if (value.length == 1 && (event.keyCode == 32 || event.keyCode == 191 || event.keyCode == 220 || event.keyCode == 111)) $(this).val('0' + $(this).val() + '-');
 
 			    if (value.length == 2) {
 			        $(this).val($(this).val() + '-');
 			    }
 			    else if (value.length == 4) {
-			        var st = value.split('-');
+			        let st = value.split('-');
 			        if (parseInt(st[1]) > 1) {
 			            input.val([st[0], '-', st[1], '-'].join(''));
 			        }
@@ -949,11 +949,11 @@ THE FLOWWING CHANGES IS ADDED:
 			});
 
 			input.on('blur', function (event, ui) {
-			    var d = $(this).val();
-			    var ss = d.split('-');
-			    var dd = ss[0];
-			    var mm = ss[1]; //NOTE that mm can be either Month Number or Three-character month name such as jan or Feb or Mar
-			    var yy = ss[2];
+			    let d = $(this).val();
+			    let ss = d.split('-');
+			    let dd = ss[0];
+			    let mm = ss[1]; //NOTE that mm can be either Month Number or Three-character month name such as jan or Feb or Mar
+			    let yy = ss[2];
 			    if (yy == 0) {
 			        yy = 2000;
 			    } else if (yy < 99) {

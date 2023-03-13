@@ -1,47 +1,46 @@
 "use strict";
-let EmployeeListComponent = new function(){
+let EmployeeListComponent = new function () {
     let mThis = this;
     this.title_prop = 'Employee List';
     this.base_url = $('#__base_url').val();
     this.self = $('#_main_employeeListComponent');
     this.btnNew = $('#_epl_btnNew');
     this.elSearchItem = $('#_epl_search');
-    // this.elFilter_department = $('#_msl_filter_service');
     this.tblItems = $('#_epl_tblEmployee');
-    // this.form_data = {};
+    this.form_data = {};
 
     this.col_titles = {
-        "No.":"No.",
-        "ID":"ID",
-        "Name":"Name",
-        "First Name":"First Name",
-        "Last Name":"Last Name",
-        "Sex":"Sex",
-        "Email":"Email",
-        "Phone Number":"Phone Number",
-        "Date Of Birth":"Date Of Birth",
-        "Employee Type":"Employee Type",
-        "Action":"Action"
+        "No.": "No.",
+        "ID": "ID",
+        "Name": "Name",
+        "First Name": "First Name",
+        "Last Name": "Last Name",
+        "Sex": "Sex",
+        "Email": "Email",
+        "Phone Number": "Phone Number",
+        "Date Of Birth": "Date Of Birth",
+        "Employee Type": "Employee Type",
+        "Action": "Action"
     };
 
-    this.trans_title = (title_prop='undefined')=>{
-        return (mThis.col_titles[title_prop] || 'undefined');
+    this.trans_title = (title_prop = 'undefined') => {
+        return (mThis.col_titles[title_prop]);
     }
-    
-    this.setLanguage = ()=>{
-        if (LocaleManager.lang !== mThis.lang){
-            for (let prop in mThis.col_titles){
-                mThis.col_titles[prop] = LocaleManager.trans(prop,'employees',LocaleManager.lang);
+
+    this.setLanguage = () => {
+        if (LocaleManager.lang !== mThis.lang) {
+            for (let prop in mThis.col_titles) {
+                mThis.col_titles[prop] = LocaleManager.trans(prop, 'employees', LocaleManager.lang);
             }
             mThis.lang = LocaleManager.lang;
         }
     }
 
     this.init = () => {
-        mThis.btnNew.on('click',(e)=>{
+        mThis.btnNew.on('click', (e) => {
             let op = {
-                onClose:(e)=>{
-                    if(e){
+                onClose: (e) => {
+                    if (e) {
                         mThis.displayemployeeList();
                     }
                 }
@@ -49,57 +48,55 @@ let EmployeeListComponent = new function(){
             EmployeeListDialog.show(op);
         });
 
-        mThis.elSearchItem.on('keyup',(e)=>{
-            if(e.keyCode === 13) mThis.displayemployeeList();
+        mThis.elSearchItem.on('keyup', (e) => {
+            if (e.keyCode === 13) mThis.displayemployeeList();
         });
 
-        mThis.tblItems.on('click','.btn_epl_modify',function(e){
+        mThis.tblItems.on('click', '.btn_epl_modify', function (e) {
             let item_id = $(this).data("id");
             let op = {
-                id:item_id,
-                onClose:(e)=>{
-                     //do something on dialog closed
-                     if(e){
-                         mThis.displayemployeeList();
-                     }
+                id: item_id,
+                onClose: (e) => {
+                    if (e) {
+                        mThis.displayemployeeList();
+                    }
                 }
             };
-            EmployeeListDialog.show(op); 
+            EmployeeListDialog.show(op);
         });
 
-        mThis.tblItems.on('click','.btn_epl_delete',function(e){
+        mThis.tblItems.on('click', '.btn_epl_delete', function (e) {
             let item_id = $(this).data("id");
-            cv_interact.confirm(`Delete this employee?`,{title:"Delete Employee",context:"delete"},(yes)=>{
-                if(yes){
-                    let p = {"id":item_id};
-                    vsapi.call(`${main_view.base_url}/api/employee/delete`,p).then(res=>{
-                       if(res.status_code===200){
-                          mThis.displayemployeeList();
-                       }else cv_interact.error(res.error_message);
+            cv_interact.confirm(`Delete this employee?`, { title: "Delete Employee", context: "delete" }, (yes) => {
+                if (yes) {
+                    let p = { "id": item_id };
+                    vsapi.call(`${main_view.base_url}/api/employee/delete`, p).then(res => {
+                        if (res.status_code === 200) {
+                            mThis.displayemployeeList();
+                        } else cv_interact.error(res.error_message);
                     });
                 }
             });
         });
     }
 
-    this.displayemployeeList = (onFinish=null)=>
-    { 
+    this.displayemployeeList = (onFinish = null) => {
         //Initialize language for DataTable columns headers
         //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
         //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
-        let p = {'search_value':mThis.elSearchItem.val()};
-        window.vsapi.call(`${mThis.base_url}/api/employee/list`,p,'POST',null).then((result)=>{
+        let p = { 'search_value': mThis.elSearchItem.val() };
+        window.vsapi.call(`${mThis.base_url}/api/employee/list`, p, 'POST', null).then((result) => {
             let data = [];
-            if(result.status_code === 200) data = result.data;
-            if (mThis.table){
+            if (result.status_code === 200) data = result.data;
+            if (mThis.table) {
                 mThis.tblItems.DataTable().clear().destroy();
                 //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
                 mThis.tblItems.empty();
                 mThis.table = null;
             }
 
-            data = StringSanitizer.sanitizeObject(data,null);
+            data = StringSanitizer.sanitizeObject(data, null);
             let cnt = 1;
             //begin::Set up columns
             let my_columns = [
@@ -110,16 +107,16 @@ let EmployeeListComponent = new function(){
                     }
                 },
                 {
-                    data:"code",
+                    data: "code",
                     title: mThis.trans_title('ID')
                 },
                 {
                     title: mThis.trans_title('Name'),
-                    data:"name"
+                    data: "name"
                 },
                 {
                     title: mThis.trans_title('Sex'),
-                    data:"sex"
+                    data: "sex"
                 },
                 {
                     title: mThis.trans_title('Email'),
@@ -133,21 +130,21 @@ let EmployeeListComponent = new function(){
                     title: mThis.trans_title('Date Of Birth'),
                     data: "date_of_birth"
                 },
+                // {
+                //     title: mThis.trans_title('Employee Type'),
+                //     data: "employment_type"
+                // },
                 {
-                    title: mThis.trans_title('Employee Type'),
-                    data: "employment_type"
-                },
-                {
-                    title:mThis.trans_title('Action'),
-                    data: function(data,a,b){
+                    title: mThis.trans_title('Action'),
+                    data: function (data, a, b) {
                         let status_class = null; //mThis.getStatusClass(data.status_id);
                         return [`<div class="form-inline">`,
-                        `<a href="javascript:void(0)" class="btn_co_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
-                        `<a href="javascript:void(0)" class="btn_epl_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
-                        `<a href="javascript:void(0);" data-id="${data.id}" class="btn_epl_delete"><i class="fa fa-trash" style="color:red"></i></a>`,
-                        `&nbsp;<a href="#" data-id="${data.id}" class="btn_pat_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
-                        `</div>`
-                       ].join('');
+                            `<a href="javascript:void(0)" class="btn_co_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
+                            `<a href="javascript:void(0)" class="btn_epl_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
+                            `<a href="javascript:void(0);" data-id="${data.id}" class="btn_epl_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
+                            `&nbsp;<a href="#" data-id="${data.id}" class="btn_pat_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
+                            `</div>`
+                        ].join('');
                     }
                 }
             ];
@@ -155,42 +152,42 @@ let EmployeeListComponent = new function(){
 
             //translate column names
             //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
-            
+
             if (!mThis.table)
-            mThis.table = mThis.tblItems.DataTable({
-                searching:false,
-                destroy:true,
-                paging:true,
-                ordering:false,
-                //dom: 'Bfrtip',
-                retrieve: true,
-                //scrollY:390,
-                //scrollX:500,
-                //pagingType:'numbers',
-                info:true,
-                pageLength: 10,
-                bLengthChange:false,
-                saveState:true,
-                'processing': true,
-                'language': {
-                    'loadingRecords': '&nbsp;',
-                    'processing': 'Loading...',
-                    "emptyTable": LocaleManager.trans('No data to display','datatable')
+                mThis.table = mThis.tblItems.DataTable({
+                    searching: false,
+                    destroy: true,
+                    paging: true,
+                    ordering: false,
+                    //dom: 'Bfrtip',
+                    retrieve: true,
+                    //scrollY:390,
+                    //scrollX:500,
+                    //pagingType:'numbers',
+                    info: true,
+                    pageLength: 10,
+                    bLengthChange: false,
+                    saveState: true,
+                    'processing': true,
+                    'language': {
+                        'loadingRecords': '&nbsp;',
+                        'processing': 'Loading...',
+                        "emptyTable": LocaleManager.trans('No data to display', 'datatable')
                     },
-                'data':data,
-                'columns':my_columns,
-                "createdRow": function(row, data, dataIndex){
-                    cnt++;
-                    let tr = $(row);
-                    tr.data('id',data.id);
-                }						
-            });
-            if(typeof onFinish ==='function') onFinish();                
-        });     
+                    'data': data,
+                    'columns': my_columns,
+                    "createdRow": function (row, data, dataIndex) {
+                        cnt++;
+                        let tr = $(row);
+                        tr.data('id', data.id);
+                    }
+                });
+            if (typeof onFinish === 'function') onFinish();
+        });
     };
 
-    this.show = (options=null) => {
-        if(!options) options={};
+    this.show = (options = null) => {
+        if (!options) options = {};
         mThis.options = options;
         mThis.displayemployeeList(() => {
             main_view.setTitle(mThis.title_prop);
@@ -199,43 +196,37 @@ let EmployeeListComponent = new function(){
     }
 }
 
-//begin::MedicalServiceDialog
-let EmployeeListDialog = new function(){
+let EmployeeListDialog = new function () {
     let mThis = this;
     this.self = $(`#_epl_dlgEmployee`);
 
-    //AppointmentDialog
     this.formUntil = new FormUntil({
-        "itemName":"Employee List",
-        "formId":'_epl_dlgEmployee',
-        "titleId":"_epl_dlgEmployee_title",
+        "itemName": "Employee List",
+        "formId": '_epl_dlgEmployee',
+        "titleId": "_epl_dlgEmployee_title",
         //"errorId":"_msl_dlgService_error",
-        "saveButtonId":"_epl_btnSave",
-        "instance":this,
-        "apiSave":`${main_view.base_url}/api/employee/save`,
-        "apiGet":`${main_view.base_url}/api/employee/details`,
+        "saveButtonId": "_epl_btnSave",
+        "instance": this,
+        "apiSave": `${main_view.base_url}/api/employee/save`,
+        "apiGet": `${main_view.base_url}/api/employee/details`,
         //"identityProp":"id",
         //"modifyTitle":"Modify Product Group",
-        "createTitle":"New Employee",
-        "identityProps":['id'],
+        "createTitle": "New Employee",
+        "identityProps": ['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
-        "form_data_props":['id'],
+        "form_data_props": ['id'],
         //"sub_prop":"chief_complaint_items",
         //"sub_prop_function":mThis.getChiefComplaints,
-        "sanitize_excepts":[],
-        'use_alert_error':true,
-        'beforeShow': () => {}
-        // "init": ()=>{
-            
-        //  }
+        "sanitize_excepts": [],
+        'use_alert_error': true,
+        'beforeShow': () => { }
     });
 
-    this.show = (options)=>{
+    this.show = (options) => {
         mThis.formUntil.show(options);
     }
 }
-//end::MedicalServiceDialog
 
-$(document).ready(function() {
+$(document).ready(function () {
     EmployeeListComponent.init();
 });
