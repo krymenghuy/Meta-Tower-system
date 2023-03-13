@@ -25,7 +25,12 @@ class Settings extends Model
         $branch_id = $ss->branch_id;
         return DB::table('inv_categories')->where('branch_id',$branch_id)->selectRaw("id,name as category")->orderByRaw('name ASC')->get();
     }
-    
+   
+    static function options_product($ss){
+        $branch_id = $ss->branch_id;
+        return DB::table('inv_items as i')->where('i.branch_id',$branch_id)->selectRaw("i.id,i.code,i.name")->orderByRaw('i.name ASC')->get();
+    }
+
     static function options_stockclass($ss){
         $branch_id = $ss->branch_id;
         return DB::table('inv_stock_classes as c')->where('c.branch_id',$branch_id)->selectRaw("c.id,c.code,c.name as stock_class")->orderByRaw('c.name ASC')->get();

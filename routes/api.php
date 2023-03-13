@@ -105,6 +105,26 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('consultation/remove-chief-complaint', [ConsultationController::class, 'deleteChiefComplaint']);
         Route::post('consultation/save-medical-history', [ConsultationController::class, 'saveMedicalHistory']);
         Route::post('consultation/save-vital-signs', [ConsultationController::class, 'saveVitalSigns']);
+        Route::post('consultation/save-pe', [ConsultationController::class, 'savePE']);
+        Route::post('consultation/pe', [ConsultationController::class, 'getPE']);
+        Route::post('consultation/save-diagnosis', [ConsultationController::class, 'saveDiagnosis']);
+        Route::post('consultation/diagnosis', [ConsultationController::class, 'getDiagnosis']);
+        Route::post('consultation/prescription', [ConsultationController::class, 'getPrescription']);
+        Route::post('consultation/save-prescription-item', [ConsultationController::class, 'savePrescriptionItem']);
+        Route::post('consultation/remove-prescription-item', [ConsultationController::class, 'removePrescriptionItem']);
+        
+        Route::post('consultation/labo-tests', [ConsultationController::class, 'getLaboTests']);
+        Route::post('consultation/save-labo-test', [ConsultationController::class, 'saveLaboTest']);
+        Route::post('consultation/remove-labo-test', [ConsultationController::class, 'removeLaboTest']);
+
+        Route::post('consultation/services', [ConsultationController::class, 'getServiceDetails']);
+        Route::post('consultation/save-service-item', [ConsultationController::class, 'saveServiceItem']);
+        Route::post('consultation/remove-service-item', [ConsultationController::class, 'removeServiceItem']);
+        Route::post('consultation/advice', [ConsultationController::class, 'getAdvice']);
+        Route::post('consultation/save-advice', [ConsultationController::class, 'saveAdvice']);
+        Route::post('labo-test/info', [ConsultationController::class, 'getLaboTestInfo']);
+        
+
     //end::ConsultationController
 
     //begin::QTicketController

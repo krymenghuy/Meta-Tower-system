@@ -267,13 +267,12 @@ this.addCCToList=(ul,item={})=>{let appt_id=ul.data('apptid');ul.find('li[data-a
 this.displayCCList=(list_id,items=[])=>{let ul=$(`#${list_id}`);ul.empty();let appt_id=ul.data('apptid');let i=0,html='';(items||[]).map((item)=>{html=[html,`<li id="${item.id}" data-apptid="${appt_id}"><a href="#" data-apptid="${appt_id}" data-id="${item.id}" class="qul-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`].join('');i++;});if(i===0)html=`<li data-apptid="0"><span class="text-muted">(No chief complaints)</span></li>`;return html;}
 this.getChiefComplaintOptions=(onFinish)=>{if(!mThis.form_data)mThis.form_data={};mThis.form_data.chief_complaints=null;if(!mThis.form_data.chief_complaints){vsapi.call(`${main_view.base_url}/api/settings/options-chief-complaint`,null).then((res)=>{if(res.status_code===200)
 onFinish(StringSanitizer.sanitizeObject(res.data));else cv_interact.error(res.error_message);});}else onFinish(mThis.form_data.chief_complaints);}
-this.show=(detail_tr,d={})=>{let div_wrapper=detail_tr.find('div.expandable-row-containter');let html_photo_button=``;let html_consult_button=``;let html_history_button=``;let html_prescribption_button=``;if(QueueComponent.options.showPatientPhotos||QueueComponent.options.showPatientPhoto)html_photo_button=`<a style="padding:5px" type="button"  data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-photo trans-text" data-langprop="buttons.Photo">Photo</a>`;if(QueueComponent.options.showConsultButton)html_consult_button=`<a style="padding:5px" type="button" data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-consult trans-text" data-langprop="buttons.Consult Now">Consult Now</a>`;if(!QueueComponent.options.showPrescriptionButton)html_prescribption_button=``;if(QueueComponent.options.showHistoryButton)html_history_button=`<a style="padding:5px" type="button" data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-history trans-text" data-langprop="buttons.History">History</a>`;let html=`<div data-tid="${d.ticket_id}" data-clientid="${d.client_id}" data-personid="${d.person_id}" data-statusid="${d.status_id}" class="ticket-info-wrapper shadow-lg d-flex" style="width:100%;">
+this.show=(detail_tr,d={})=>{let div_wrapper=detail_tr.find('div.expandable-row-container');let html_photo_button=``;let html_consult_button=``;let html_history_button=``;let html_prescribption_button=``;if(QueueComponent.options.showPatientPhotos||QueueComponent.options.showPatientPhoto)html_photo_button=`<a style="padding:5px" type="button"  data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-photo trans-text" data-langprop="buttons.Photo">Photo</a>`;if(QueueComponent.options.showConsultButton)html_consult_button=`<a style="padding:5px" type="button" data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-consult trans-text" data-langprop="buttons.Consult Now">Consult Now</a>`;if(!QueueComponent.options.showPrescriptionButton)html_prescribption_button=``;if(QueueComponent.options.showHistoryButton)html_history_button=`<a style="padding:5px" type="button" data-clientid="${d.client_id}" data-tid="${d.ticket_id}" data-patientid="${d.patient_code}" class="btn-ticket-tab qul-btn-history trans-text" data-langprop="buttons.History">History</a>`;let html=`<div data-tid="${d.ticket_id}" data-clientid="${d.client_id}" data-personid="${d.person_id}" data-statusid="${d.status_id}" class="ticket-info-wrapper shadow-lg d-flex" style="width:100%;">
                     <div class="form-inline ticket-tab-buttons" role="group" aria-label="ticket tabs" style="display:block">
                         <a style="padding:5px" type="button"  data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-info trans-text" data-langprop="buttons.Info">Info</a>
                         ${html_history_button}
                         ${html_photo_button}
                         ${html_consult_button}
-                       
                     </div>
                     <div data-tid="${d.ticket_id}" class="qul-workspace pt-3" style="width:100%;display:block;">
                     </div>
@@ -291,109 +290,109 @@ this.displayCCList=(list_id,items=[])=>{let ul=$(`#${list_id}`);ul.empty();let t
             <i class="fa fa-times" style="color:red"></i>
             </a>&nbsp;${item.name}</li>`].join('');i++;});if(i===0)html=`<li data-apptid="0"><span class="text-muted">(No chief complaints)</span></li>`;return html;}
 this.showInfo=(div_panel,ticket_id=null)=>{if(!ticket_id)ticket_id=div_panel.data('tid');let div_workspace=div_panel.find('div.qul-workspace');let ws_id=['ticket_',ticket_id].join('');let div=div_workspace.find(`#${ws_id}`);div_workspace.html('<div class="animation-line" style="height:2px;margin:0;"></div>');let p={'id':ticket_id};window.vsapi.call(`${main_view.base_url}/api/ticket/details`,p,'POST',false).then((res)=>{let html=null;if(res.status_code===200){let d=StringSanitizer.sanitizeObject(res.data);if(!d)d={};d.patient_code=d.patient_code?d.patient_code:'N.A.';d.consultant_name=d.consultant_name?d.consultant_name:'N.A.';d.membership_card=d.membership_card?d.membership_card:'None';let email=d.email?d.email:'N.A.';let ticket_id=d.id;let html_prescription_button=``;if(QueueComponent.options.showPrescriptionButton)html_prescription_button=` <button class="btn btnsm btn-outline-primary qul-btn-prescribe">Prescription</button>`;html=[`<div id="${ws_id}" data-ticketid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="row">
-                                        <div class="d-flex" style="max-width: 1300px; width:100%">
-                                            <div class="row gy-3 w-100">
-                                                <div class="col-xl-6">
-                                                    <div class="row d-flex flex-nowrap">
-                                                        <div style="width:163px; max-width: 165px;">
-                                                            <img src="${mThis.icon_url()}/client-girl.png" class="profile-thumbnail pe-2"/>
-                                                        </div>
-                                                        <div class="col-8">
-                                                            <div class="row g-1">
-                                                                <p class="trans-text fw-bold fs-5 text-nowrap" data-langprop="patient.Client Information"></p>
-                                                            </div>
-                                                            <div class="row g-1">
-                                                                <div class="detail-item">
-                                                                    <p class="detail-item-label col-6 py-0 text-nowrap">Patient ID</p>
-                                                                    <p class="detail-item-value col-6 py-0" data-field="patient_code">${d.client_code}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row g-1">
-                                                                <div class="detail-item">
-                                                                    <p class="detail-item-label col-6 py-0">Name</p>
-                                                                    <p class="detail-item-value col-6 py-0" data-field="name">${d.client_name}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row g-1">
-                                                                <div class="detail-item">
-                                                                    <p class="detail-item-label col-6 py-0">Gender</p>
-                                                                    <p class="detail-item-value col-6 py-0" data-field="sex">${d.client_sex}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row g-1">
-                                                                <div class="detail-item">
-                                                                    <p class="detail-item-label col-6 py-0">Phone</p>
-                                                                    <p class="detail-item-value col-6 py-0" data-field="phone_number">${d.client_phone_number}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row g-1">
-                                                                <div class="detail-item">
-                                                                    <p class="detail-item-label col-6 py-0">Email</p>
-                                                                    <p class="detail-item-value col-6 py-0" data-field="email">${email}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row g-1">
-                                                                <div class="detail-item">
-                                                                    <p class="detail-item-label col-6 py-0">Membership</p>
-                                                                    <p class="detail-item-value col-6 py-0" data-field="membership_card">${d.membership_card}</p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                            <div class="d-flex" style="max-width: 1300px; width:100%">
+                                <div class="row gy-3 w-100">
+                                    <div class="col-xl-6">
+                                        <div class="row d-flex flex-nowrap">
+                                            <div style="width:163px; max-width: 165px;">
+                                                <img src="${mThis.icon_url()}/client-girl.png" class="profile-thumbnail pe-2"/>
+                                            </div>
+                                            <div class="col-8">
+                                                <div class="row g-1">
+                                                    <p class="trans-text fw-bold fs-5 text-nowrap" data-langprop="patient.Client Information"></p>
+                                                </div>
+                                                <div class="row g-1">
+                                                    <div class="detail-item">
+                                                        <p class="detail-item-label col-6 py-0 text-nowrap">Patient ID</p>
+                                                        <p class="detail-item-value col-6 py-0" data-field="patient_code">${d.client_code}</p>
                                                     </div>
                                                 </div>
-                                                <div class="col-xl-6">
-                                                    <div class="row gy-3 d-flex justify-content-center">
-                                                        <div class="col-sm-6">
-                                                            <div class="row">
-                                                                <p class="trans-text text-nowrap fw-bold fs-5" data-langprop="patient.Vital Signs"></p>
-                                                            </div>
-                                                            <div class="row">${mThis.displayVitalSignItems(d.vital_signs)}</div>
-                                                        </div>
-                                                        <div class="col-sm-6">
-                                                            <div class="row">
-                                                                <p class="detail-header-text">Consultant/Doctor</p>
-                                                            </div>
-                                                            <div class="row">
-                                                                <p class="text-normal">${d.consultant_name}</span>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="d-flex px-0">
-                                                                    <p class="detail-header-text trans-text text-nowrap" data-langprop="patient.Chief Complaints"></p>
-                                                                    <a href="javascript:void(0)" data-ulid="qul-complaint-list-${ticket_id}" data-tid="${ticket_id}" class="qul-add-complaint">
-                                                                        <i class="fa fa-plus-circle mt-1" style="color:#14b1d1; font-size:1.5em"></i>
-                                                                    </a>
-                                                                </div>
-                                                                <div class="apl-cc-wrapper">
-                                                                    <ul id="qul-complaint-list-${ticket_id}" data-tid="${ticket_id}" class="apl-complaint-list" style="list-style:none">
-                                                                        ${mThis.displayCCList(['qul-complaint-list-', ticket_id].join(''), d.chief_complaints)}  
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                <div class="row g-1">
+                                                    <div class="detail-item">
+                                                        <p class="detail-item-label col-6 py-0">Name</p>
+                                                        <p class="detail-item-value col-6 py-0" data-field="name">${d.client_name}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="row g-1">
+                                                    <div class="detail-item">
+                                                        <p class="detail-item-label col-6 py-0">Gender</p>
+                                                        <p class="detail-item-value col-6 py-0" data-field="sex">${d.client_sex}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="row g-1">
+                                                    <div class="detail-item">
+                                                        <p class="detail-item-label col-6 py-0">Phone</p>
+                                                        <p class="detail-item-value col-6 py-0" data-field="phone_number">${d.client_phone_number}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="row g-1">
+                                                    <div class="detail-item">
+                                                        <p class="detail-item-label col-6 py-0">Email</p>
+                                                        <p class="detail-item-value col-6 py-0" data-field="email">${email}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="row g-1">
+                                                    <div class="detail-item">
+                                                        <p class="detail-item-label col-6 py-0">Membership</p>
+                                                        <p class="detail-item-value col-6 py-0" data-field="membership_card">${d.membership_card}</p>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div style="margin-top:10px; margin-bottom:10px; width:100%; background-color:#aeabaa; border:1px solid #abaeaa;"></div>
-                                        <div class="row">
-                                            <div class="col-sm-4">
-                                                <p class="detail-header-text trans-text" data-langprop="patient.Medical Conditions"></p>
-                                                <div class="divider"></div>
-                                                <div>${mThis.displayMedicalConditions(d.mc_items)}</div>
+                                    </div>
+                                    <div class="col-xl-6">
+                                        <div class="row gy-3 d-flex justify-content-center">
+                                            <div class="col-sm-6">
+                                                <div class="row">
+                                                    <p class="trans-text text-nowrap fw-bold fs-5" data-langprop="patient.Vital Signs"></p>
+                                                </div>
+                                                <div class="row">${mThis.displayVitalSignItems(d.vital_signs)}</div>
                                             </div>
-                                            <div class="col-sm-4">
-                                               ${html_prescription_button}
+                                            <div class="col-sm-6">
+                                                <div class="row">
+                                                    <p class="detail-header-text">Consultant/Doctor</p>
+                                                </div>
+                                                <div class="row">
+                                                    <p class="text-normal">${d.consultant_name}</span>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="d-flex px-0">
+                                                        <p class="detail-header-text trans-text text-nowrap" data-langprop="patient.Chief Complaints"></p>
+                                                        <a href="javascript:void(0)" data-ulid="qul-complaint-list-${ticket_id}" data-tid="${ticket_id}" class="qul-add-complaint">
+                                                            <i class="fa fa-plus-circle mt-1" style="color:#14b1d1; font-size:1.5em"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="apl-cc-wrapper">
+                                                        <ul id="qul-complaint-list-${ticket_id}" data-tid="${ticket_id}" class="apl-complaint-list" style="list-style:none">
+                                                            ${mThis.displayCCList(['qul-complaint-list-', ticket_id].join(''), d.chief_complaints)}  
+                                                        </ul>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>`].join('');}else{html=`<div class="expanded-row-error">${error_message}</div>`;}
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-top:10px; margin-bottom:10px; width:100%; background-color:#aeabaa; border:1px solid #abaeaa;"></div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <p class="detail-header-text trans-text" data-langprop="patient.Medical Conditions"></p>
+                                    <div class="divider"></div>
+                                    <div>${mThis.displayMedicalConditions(d.mc_items)}</div>
+                                </div>
+                                <div class="col-sm-4">
+                                    ${html_prescription_button}
+                                </div>
+                            </div>
+                        </div>`].join('');}else{html=`<div class="expanded-row-error">${error_message}</div>`;}
 div_workspace.html(html);div.show();LocaleManager.translateZone(ws_id);mThis.current_view_name='info';});}
 this.displayVitalSignItems=(items=[])=>{let html=null;(items||[]).map((v)=>{html=[html,`<div class="detail-item">
                     <p class="detail-item-label text-nowrap col-6 py-0">${v.description}</p>
                     <p class="detail-item-value text-nowrap col-6 py-0" data-id="${v.id}" data-code="${v.code}" data-field="${v.description}">${v.vital_sign_value}</p>
                 </div>`].join('');});return html?html:'<span class="detail-item-empty">No vital signs</span>';}
-this.createPhotoItems=(ticket_id,items=[])=>{let html="";items.map(img=>{html=[html,`<div class="d-flex flex-column">
-                  <img style="width:120px;height:150px" class="img-thumbnail rounded" src="${img.image_url}"/>
-                  <button type="button" class="btn btn-sm btn-outline-danger qul-delete-photo" data-ticketid="${ticket_id}" data-id="${img.id}">Remove</button>
+this.createPhotoItems=(ticket_id,items=[])=>{let html="";items.map(img=>{html=[html,`<div class="d-flex flex-column mx-2">
+                  <img style="width:150px; height:150px" class="img-thumbnail rounded" src="${img.image_url}"/>
+                  <button type="button" class="btn btn-sm btn-outline-danger qul-delete-photo mt-2" data-ticketid="${ticket_id}" data-id="${img.id}">Remove</button>
                 </div>`].join('');});return html;}
 this.refreshPhotos=(ticket_id,imgs=[])=>{let div=$(`#qul_photo_list_${ticket_id}`);div.html(mThis.createPhotoItems(ticket_id,imgs));}
 this.showPhoto=(div_panel,ticket_id=null)=>{if(!ticket_id)ticket_id=div_panel.data('tid');let div_workspace=div_panel.find('div.qul-workspace');let div_id=['div_photos_',ticket_id].join('');let dv=div_workspace.find(`#${div_id}`);let p={'ticket_id':ticket_id};vsapi.call(`${main_view.base_url}/api/ticket/patient-photos`,p).then(res=>{if(res.status_code===200){let imgs=res.data;if(dv.length>0){mThis.refreshPhotos(ticket_id,imgs);dv.show();mThis.current_view_name='photo';return;}
@@ -406,15 +405,32 @@ div_workspace.html(`<div id="${div_id}" class="d-flex align-items-center justify
                     <div id="qul_photo_list_${ticket_id}" class="d-flex gx-4 qul-photo-list">
                     ${mThis.createPhotoItems(ticket_id,imgs)}
                     </div>
-                </div>`);mThis.current_view_name='photo';}});};this.showHistory=(div_panel,ticket_id=null)=>{let div_workspace=div_panel.find('div.qul-workspace');div_workspace.html(`<div class="d-flex align-items-center justify-content-center">
-            <div style="max-height:450px;overflow-y:auto">
-               <ul>
-                 <li>report One</li>
-                 <li>report Two</li>
-                 <li>report Three</li>
-               </ul> 
+                </div>`);mThis.current_view_name='photo';}});};this.showHistory=(div_panel,ticket_id=null)=>{let div_workspace=div_panel.find('div.qul-workspace');div_workspace.html(mThis.showHistoryMedicalReports());mThis.current_view_name='history';};this.startConsult=(div_panel,ticket_id=null)=>{if(!ticket_id)ticket_id=div_panel.data('tid');let div_workspace=div_panel.find('div.qul-workspace');div_workspace.html();mThis.current_view_name='consult';};this.showHistoryMedicalReports=()=>{this.loadDataTable=()=>{let data=[{"id":"D07452","date":"12-9-2093","consultant":"Dr.A"},{"id":"D07450","date":"12-9-2092","consultant":"Dr.B"}];let tr=null;data.map(i=>{tr=[tr,`
+                    <tr class="border">
+                        <td>${i.id}</td>
+                        <td>
+                            <a href="javascript:void(0)">
+                                <i class="fa-solid fa-print pe-1"></i>
+                                ${i.date}
+                            </a>
+                        </td>
+                        <td>${i.consultant}</td>
+                    </tr>
+                `].join('');});return tr;}
+let html=[`
+            <div class="table-responsive border border-success rounded-3">
+                <table class="table table-hover">
+                    <thead>
+                        <tr class="border">
+                            <th class="fw-semibold">No</th>
+                            <th class="fw-semibold">Date</th>
+                            <th class="fw-semibold">Consultant</th>
+                        </tr>
+                    </thead>
+                    <tbody>`,mThis.loadDataTable(),`</tbody>
+                </table>
             </div>
-        </div>`);mThis.current_view_name='history';};this.startConsult=(div_panel,ticket_id=null)=>{if(!ticket_id)ticket_id=div_panel.data('tid');let div_workspace=div_panel.find('div.qul-workspace');div_workspace.html();mThis.current_view_name='consult';};}
+        `].join('');return html;}}
 let QueueComponent=new function(){let mThis=this;this.title_prop='Queued Tickets';this.self=$('#_main_queueComponent');this.base_url=$('#__base_url').val();this.form_data={};this.tblTickets=$('#_qul_tblTickets');this.elSearchAppt=$('#_qul_search_ticket');this.btnSearchAppt=$('#_qul_btnFindTicket');this.appt_filter_status=$('#_qul_filter_status');this.appt_filter_date=$('#_qul_filter_date');this.icon_url=()=>{return`${VSUtil.asset_url()}/images/icons`;}
 this.btnNewTicket=$('#_qul_btnNewTicket');this.col_titles={"Ticket Number":"Ticket Date","Client ID":"Client ID","Client Name":"Client Name","Sex":"Sex","Client Phone":"Phone Number","Date":"Date","Priority":"Priority","Schedule Type":"Schedule Type","Status":"Status","Action":"Action"};this.setLanguage=()=>{if(LocaleManager.lang!==mThis.lang){for(let prop in mThis.col_titles){mThis.col_titles[prop]=LocaleManager.trans(prop,'ticket',LocaleManager.lang);}
 mThis.lang=LocaleManager.lang;}}
@@ -429,7 +445,7 @@ this.displayTicketList=(onFinish=null)=>{mThis.setLanguage();let p={'search_valu
 let my_columns=[{data:function(data,a,b){return['<span class="qul-ticket-number">',data.ticket_number,'</span>',].join('');},title:mThis.trans_title('Ticket Number')},{title:mThis.trans_title('Client ID'),data:'client_code'},{title:mThis.trans_title('Client Name'),data:'client_name'},{title:mThis.trans_title('Sex'),data:(data,a,b)=>{return data.client_sex;}},{title:mThis.trans_title('Schedule Type'),data:(data,a,b)=>{return data.schedule_type;}},{title:mThis.trans_title('Priority'),data:(data,a,b)=>{return data.priority;}},{title:mThis.trans_title('Status'),data:(data,a,b)=>{return[`<a href="#" style="display:block;text-align:center;width:85px;padding:5px;" data-statusid="${data.status_id}" class="btn_ticket_status border rounded-pill ${mThis.getTicketStatusClass(data.status_id)}">`,data.status,`</a>`].join('');}},{title:mThis.trans_title('Action'),data:function(data,a,b){let status_class=null;return[`<div class="form-inline">`,`<a href="javascript:void(0)" class="btn_ticket_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,`<a style="display:${data.status_id > 2 ? 'none' : 'block'}" href="javascript:void(0)" class="btn_ticket_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,`<a href="javascript:void(0);" data-id="${data.id}" class="btn_ticket_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,`</div>`].join('');}}];if(!mThis.table)
 mThis.table=mThis.tblTickets.DataTable({searching:false,destroy:true,paging:true,ordering:false,retrieve:true,info:true,pageLength:10,bLengthChange:false,saveState:true,'processing':true,'language':{'loadingRecords':'&nbsp;','processing':'Loading...',"emptyTable":LocaleManager.trans('No data to display','datatable')},'data':data,'columns':my_columns,"createdRow":function(row,data,dataIndex){let tr=$(row);tr.data('id',data.id);tr.data('tid',data.id);tr.data('statusid',data.status_id);tr.data('clientid',data.client_id);tr.data('personid',data.person_id);}});if(typeof onFinish==='function')onFinish();});};this.loadOptions=(onFinish=null)=>{window.vsapi.call(`${main_view.base_url}/api/settings/options-chief-complaint`,null).then((d)=>{mThis.form_data.chief_complaints=StringSanitizer.sanitizeObject(d.data);});window.vsapi.call(`${main_view.base_url}/api/settings/options-ticket-status`,null).then((res)=>{if(res.status_code===200){let items=StringSanitizer.sanitizeObject(res.data);VSUtil.setComboItems(mThis.appt_filter_status,items,'id','ticket_status',true,'All Statuses',0);if(onFinish)onFinish();mThis.form_data.departments=items;}});}
 this.show=(options=null)=>{if(!options)options={};mThis.displayTicketList(()=>{mThis.self.show().siblings().hide();mThis.options=options;main_view.setTitle(mThis.title_prop);});}}
-let ConsultTabView=new function(){let mThis=this;this.self=$('#_consultTabView');this.base_url=main_view.base_url;this.btnSaveConsult=$('#_qul_dlgConsult_btnSave');this.tblChiefComplaints=null;this.tblPrescribedItems=null;this.tblLaboTests=null;this.tblServiceItems=null;this.data={};this.cur_view='consultation';this.self.on('click','div.tab-header>a.tab-button',function(e){e.preventDefault();$(this).addClass('active').siblings().removeClass('active');let view_name=$(this).data('viewname').toLowerCase();mThis.show(mThis.options,view_name,true);});this.btnSaveConsult.on('click',(e)=>{e.preventDefault();let p=mThis.getConsultData();console.log(p);});this.getInput_chiefcomplaints=(div=null)=>{return mThis.tblChiefComplaints?mThis.tblChiefComplaints.getItems():[];}
+let ConsultTabView=new function(){let mThis=this;this.self=$('#_consultTabView');this.base_url=main_view.base_url;this.btnSaveConsult=$('#_qul_dlgConsult_btnSave');this.tblChiefComplaints=null;this.tblPrescribedItems=null;this.tblLaboTests=null;this.tblServiceItems=null;this.data={};this.cur_view='consultation';this.self.on('click','div.tab-header > a.tab-button',function(e){e.preventDefault();$(this).addClass('active').siblings().removeClass('active');let view_name=$(this).data('viewname').toLowerCase();mThis.show(mThis.options,view_name,true);});this.btnSaveConsult.on('click',(e)=>{e.preventDefault();let p=mThis.getConsultData();console.log(p);});this.getInput_chiefcomplaints=(div=null)=>{return mThis.tblChiefComplaints?mThis.tblChiefComplaints.getItems():[];}
 this.getInput_vitalsigns=(div=null)=>{let ps=[];div.find('.data-input').each(function(){let el=$(this);let vital_sign_id=el.data('id');ps.push({"id":vital_sign_id,"observed_value":el.val()});});return ps;}
 this.getInput_medical_history=(div=null)=>{let ps=[];div.find('.data-input').each(function(){let el=$(this);let category=el.data('category');ps.push({'category':category,'value':el.val()});});return ps;}
 this.getInput_pe=(div)=>{let el=div.find('.data-input');return el.val();}
@@ -445,6 +461,11 @@ case'labo-tests':{p.labo_tests=mThis.getInput_labotests(div);break;}
 case'diagnosis':{p.diagnosis=mThis.getInput_diagnosis(div);break;}
 case'prescription':{p.prescription=mThis.getInput_prescription(div);break;}
 case'advice':{p.advice=mThis.getInput_advice(div);break;}}});return p;}
+this.getDataInput_VitalSignsAutoSave=()=>{let div=$('#_consult_vt_wrapper');let ps=[];div.find('.consult-vt-input').each(function(){let el=$(this);let id=el.data('id');let ticket_id=el.data('tid');ps.push({'ticket_id':ticket_id,'id':id,'observed_value':el.val()});});return ps;}
+this.getDataInput_MedicalHistoryAutoSave=()=>{let div=$('#_consult_medical_history_warpper');let pm=[];div.find('._consult_medical_history_input').each(function(){let el=$(this);let category=el.data('category');pm.push({'category':category,'content':el.val()});});return pm;}
+this.getDataInput_PhysicalExaminationAutoSave=()=>{let div=$('#_consult_pe_wrapper');let pe=[];div.find('textarea._consult_pe_input').each(function(){let el=$(this);pe.push({'category':'General','content':el.val()});});return pe;}
+this.getDataInput_DiagnosisAutoSave=()=>{let div=$('#_consult_diagnosis_warpper');let pd=[];div.find('._consult_diagnosis_input').each(function(){let el=$(this);pd.push({'category':'General','content':el.val()});});return pd;}
+this.getDataInput_RecommedationsAutoSave=()=>{let div=$('#_consult_advice_warpper');let pr=[];div.find('._consult_advice_input').each(function(){let el=$(this);pr.push({"category":"General","content":el.val()});});return pr;}
 this.show=function(options,view_name,tab_button_clicked=false){if(!options)options={};mThis.options=options;mThis.consultItemPanel.data('tid',mThis.options.ticket_id);mThis.consultItemPanel.data('patientid',mThis.options.patient_id);mThis.historyItemPanel.data('tid',mThis.options.ticket_id);mThis.historyItemPanel.data('patientid',mThis.options.patient_id);if(!mThis.options.ticket_id)console.error('ConsultTabView on ConsultDialog does not have valid ticket_id, thus it is not possible to identify patient');if(!view_name)view_name=mThis.cur_view;view_name=(view_name+'').toLowerCase();mThis.self.find('div.tab-body > div.tab-panel').each(function(){let this_view_name=($(this).data('viewname')+'').toLowerCase();let div_tab_panel=$(this);if(view_name===this_view_name){mThis.cur_view=view_name;$(this).show().siblings().hide();if(view_name==='history'){mThis.displayHistory(mThis.ticket_id,div_tab_panel);}else if(view_name==='consultation'){mThis.displayConsultation(mThis.ticket_id,div_tab_panel);}
 mThis.setFirstActiveMenu(view_name);return;}});if(!tab_button_clicked){mThis.self.find('div.tab-header>a.tab-button').each(function(){let this_view_name=($(this).data('viewname')+'').toLowerCase();if(view_name===this_view_name){$(this).addClass('active').siblings().removeClass('active');}});}}
 this.displayHistory=(client_id=0,div_tab_panel=null)=>{}
@@ -453,13 +474,14 @@ this.setFirstActiveMenu=(tabViewName=null)=>{if(mThis.has_already_init[tabViewNa
 mThis.has_already_init[tabViewName]=true;}
 this.init=()=>{mThis.ul_menus_consult=$('#_consult_menus');mThis.ul_menus_history=$('#_history_menus');mThis.consultItemPanel=$('#_consult_panel');mThis.historyItemPanel=$('#_history_panel');mThis.consultItemPanel.on('click','a.consultview-add-cc',(e)=>{e.preventDefault();(mThis.tblChiefComplaints||{}).addRow();});mThis.details_routes_history=mThis.defineDetailRoutesHistory(mThis.historyItemPanel);mThis.details_routes_consult=mThis.defineDetailRoutesConsult(mThis.consultItemPanel);mThis.ul_menus_consult.on('click','li',(e)=>{e.preventDefault();let li=$(e.currentTarget);let view_name=li.find('a').data('viewname');if(mThis.prev_selected_li_consult)mThis.prev_selected_li_consult.removeClass('consult-menu-selected');li.addClass('consult-menu-selected');mThis.prev_selected_li_consult=li;mThis.details_routes_consult[view_name]();});mThis.ul_menus_history.on('click','li',(e)=>{e.preventDefault();let li=$(e.currentTarget);let view_name=li.find('a').data('viewname');mThis.details_routes_history[view_name]();if(mThis.prev_selected_li_history)mThis.prev_selected_li_history.removeClass('history-menu-selected');li.addClass('history-menu-selected');mThis.prev_selected_li_history=li;});mThis.has_already_init={};}
 this.defineDetailRoutesConsult=(div)=>{return{"chief-complaints":()=>{mThis.showConsultChiefComplaints(div,"chief-complaints");},"vital-signs":()=>{mThis.showConsultVitalSigns(div,"vital-signs");},"medical-history":()=>{mThis.showConsultMedicalHistory(div,"medical-history");},"physical-examination":()=>{mThis.showConsultPE(div,"physical-examination");},"prescription":()=>{mThis.showConsultPrescription(div,"prescription");},"service":()=>{mThis.showConsultService(div,"service");},"labo-tests":()=>{mThis.showConsultLaboratoryTests(div,"labo-tests");},"diagnosis":()=>{mThis.showConsultDiagnosis(div,"diagnosis");},"advice":()=>{mThis.showConsultRecommendations(div,"advice");},"medical-report":()=>{mThis.showConsultMedicalReport(div);},"medical-certificate":()=>{mThis.showConsultMedicalCertificate(div);},};}
-this.defineDetailRoutesHistory=(div)=>{return{"chief-complaints":()=>{mThis.showHistoryChiefComplaints(div);},"pe":()=>{mThis.showHistoryPhysicalExamination(div);},"labo-tests":()=>{mThis.showHistoryLaboratoryTests(div);},"diagnosis":()=>{mThis.showHistoryDiagnosis(div);},"prescriptions":()=>{mThis.showHistoryPrescription(div);},"advice":()=>{mThis.showHistoryRecommendations(div);},"medical-reports":()=>{mThis.showHistoryMedicalReports(div);}};};this.showConsultChiefComplaints=(div,view_name)=>{let wrapper_id='_consult_cc_warpper';let div_id='_consult_cc_list';let el=div.find(`#${wrapper_id}`);let ticket_id=div.data('tid');if(el.length>0){let p={'ticket_id':ticket_id};vsapi.call(`${main_view.base_url}/api/ticket/chief-complaints`,p,null,false).then(res=>{if(res.status_code===200){let cc_items=StringSanitizer.sanitizeObject(res.data);mThis.tblChiefComplaints.setData(cc_items);el.show().siblings().hide();}});return;}
+this.defineDetailRoutesHistory=(div)=>{return{"medical-reports":()=>{mThis.showHistoryMedicalReports(div);}};};this.showConsultChiefComplaints=(div,view_name)=>{let wrapper_id='_consult_cc_warpper';let div_id='_consult_cc_list';let el=div.find(`#${wrapper_id}`);let ticket_id=div.data('tid');if(el.length>0){let p={'ticket_id':ticket_id};vsapi.call(`${main_view.base_url}/api/ticket/chief-complaints`,p,null,false).then(res=>{if(res.status_code===200){let cc_items=StringSanitizer.sanitizeObject(res.data);mThis.tblChiefComplaints.setData(cc_items);el.show().siblings().hide();}});return;}
 let title=LocaleManager.trans('Chief Complaints','consult');let html=`<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none"><h3 class="trans-text" data-langprop="consult.Chief Complaints">${title} &nbsp;<a href="#" class="consultview-add-cc"><i class="fa fa-plus-circle"></i></a></h3>
               <div id="${div_id}"></div>
-            </div>`;div.append(html);let columns=[{"name":"id","title":"Chief Complaint","dataType":"string","displayType":"select","cssClass":"",}];mThis.loadChiefComplaintOptions(ticket_id,d=>{let cc_options=StringSanitizer.sanitizeObject(d.chief_complaint_options);columns[0].selectOptions=cc_options;mThis.tblChiefComplaints=new ItemsView(div_id,{"columns":columns,"validateColumns":{'id':'positive'},"langProp":"consult","tableClass":"table","showColumnHeaders":false,"showAddLineButton":false,"onItemChange":(item,col_name,td)=>{},"numeroFormatter":(numero,row)=>{return`<span class="text-secondary fw-bold">${numero}</span>`;},"emptyMessage":`<span class="text-secondary text-align-center">${LocaleManager.trans('No chief complaints', 'consult')}</span>`,});mThis.tblChiefComplaints.setData(StringSanitizer.sanitizeObject(d.cc_items));el=div.find(`#${wrapper_id}`);el.show().siblings().hide();});}
+            </div>`;div.append(html);let columns=[{"name":"chief_complaint_id","title":"Chief Complaint","dataType":"string","displayType":"select","cssClass":"",}];mThis.loadChiefComplaintOptions(ticket_id,d=>{let cc_options=StringSanitizer.sanitizeObject(d.chief_complaint_options);columns[0].selectOptions=cc_options;mThis.tblChiefComplaints=new ItemsView(div_id,{"columns":columns,"validateColumns":{'chief_complaint_id':'positive'},"langProp":"consult","tableClass":"table","showColumnHeaders":false,"showAddLineButton":false,"onItemValidated":(id,item,tr)=>{let p={'id':id,'cc_id':item.chief_complaint_id,'ticket_id':ticket_id};vsapi.call(`${main_view.base_url}/api/consultation/save-chief-complaint`,p,null,false).then(res=>{if(res.status_code!==200)cv_interact.error(res.error_message);});},"onItemDeleted":(id,tr)=>{let p={'id':id};vsapi.call(`${main_view.base_url}/api/consultation/remove-chief-complaint`,p,null,false).then(res=>{if(res.status_code===200){}});},"numeroFormatter":(numero,row)=>{return`<span class="text-secondary fw-bold">${numero}</span>`;},"emptyMessage":`<span class="text-secondary text-align-center">${LocaleManager.trans('No chief complaints', 'consult')}</span>`,});mThis.tblChiefComplaints.setData(StringSanitizer.sanitizeObject(d.cc_items));el=div.find(`#${wrapper_id}`);el.show().siblings().hide();});}
+this.saveMedicalHistory=(item)=>{item.ticket_id=mThis.ticket_id;vsapi.call(`${main_view.base_url}/api/consult/save-medical-history`,item,null,false).then(res=>{if(res.status_code===200){}});}
 this.loadChiefComplaintOptions=(ticket_id=0,onFinish=null)=>{let p={'ticket_id':ticket_id};vsapi.call(`${main_view.base_url}/api/consultation/chief-complaints`,p).then(res=>{if(res.status_code===200){let data=res.data?res.data:{};let op_items=[];(data.chief_complaint_options||[]).map(c=>{op_items.push({'value':c.id,'text':c.chief_complaint});});onFinish({'chief_complaint_options':op_items,'cc_items':data.cc_items});}else onFinish({});});}
 this.loadVitalSigns_patient=(ticket_id=0,onFinish)=>{let p={'ticket_id':ticket_id};vsapi.call(`${main_view.base_url}/api/ticket/patient-vital-signs`,p).then(res=>{if(res.status_code===200){let items=StringSanitizer.sanitizeObject(res.data);onFinish(items);}else onFinish({'vital_signs':[],'items':[]});});}
-this.showConsultVitalSigns=(div,view_name)=>{let ticket_id=div.data('tid');let wrapper_id='_consult_vt_wrapper';let el=div.find(`#${wrapper_id}`);mThis.loadVitalSigns_patient(ticket_id,items=>{let html_vs_items=null;items.map(t=>{html_vs_items=[html_vs_items,`<tr data-id="${t.id}" data-tid="${ticket_id}"><td>`,t.description,`</td><td><input data-id="${t.id}" class="data-input form-control w-50" type="text" value ="`,t.vital_sign_value,`"></td></tr>`].join('');});if(!el||el.length===0){let title=LocaleManager.trans('Vital Signs','consult');let html=`
+this.showConsultVitalSigns=(div,view_name)=>{let ticket_id=div.data('tid');let wrapper_id='_consult_vt_wrapper';let el=div.find(`#${wrapper_id}`);mThis.loadVitalSigns_patient(ticket_id,items=>{let html_vs_items=null;items.map(t=>{html_vs_items=[html_vs_items,`<tr data-id="${t.id}" data-tid="${ticket_id}"><td>`,t.description,`</td><td><input data-id="${t.id}" data-tid="${ticket_id}" class="consult-vt-input data-input form-control w-50" type="text" value ="`,t.vital_sign_value,`"></td></tr>`].join('');});if(!el||el.length===0){let title=LocaleManager.trans('Vital Signs','consult');let html=`
                         <div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                         <h3 class="trans-text" data-langprop="consult.Vital Signs">${title}</a></h3>
                         <div class="">
@@ -470,94 +492,67 @@ this.showConsultVitalSigns=(div,view_name)=>{let ticket_id=div.data('tid');let w
                             </table>
                         </div>
                     </div>
-                    `;div.append(html);el=div.find(`#${wrapper_id}`);el.show().siblings().hide();}
+                    `;div.append(html);el=div.find(`#${wrapper_id}`);el.show().siblings().hide();el.on('change','input.consult-vt-input',(e)=>{let d=mThis.getDataInput_VitalSignsAutoSave();vsapi.call(`${main_view.base_url}/api/consultation/save-vital-signs`,d,null,false).then(res=>{if(res.status_code===200){}});});}
 el.show().siblings().hide();});}
-this.loadConsult_PE=(ticket_id,onFinish)=>{vsapi.call(`${main_view.base_url}/api/ticket/patient-pe`,null).then(res=>{if(res.status_code===200){let d=StringSanitizer.sanitizeOut(res.data);onFinish(d);}else onFinish(null);});}
-this.showConsultPE=(div,view_name)=>{let ticket_id=div.data('tid');let wrapper_id='_consult_pe_wrapper';let el=div.find(`#${wrapper_id}`);mThis.loadConsult_PE(ticket_id,pe=>{let html="";if(!pe)pe="";if(!el||el.length===0){let title=LocaleManager.trans('Physical Examination','consult');html=`<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
+this.loadConsult_PE=(ticket_id,onFinish)=>{let p={'ticket_id':ticket_id};vsapi.call(`${main_view.base_url}/api/consultation/pe`,p,null,false).then(res=>{if(res.status_code===200){onFinish(res.data);}else onFinish(null);});}
+this.showConsultPE=(div,view_name)=>{let ticket_id=div.data('tid');let wrapper_id='_consult_pe_wrapper';let el=div.find(`#${wrapper_id}`);mThis.loadConsult_PE(ticket_id,pe=>{let html="";if(!pe)pe={};if(el.length>0){el.find('textarea._consult_pe_input').val(pe.content);el.show().siblings().hide();return;}
+let title=LocaleManager.trans('Physical Examination','consult');html=`<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                         <h3 class="trans-text" data-langprop="consult.Pysical Examination">${title}</a></h3>
                         <div class="">
-                           <textarea class="form-control data-input" cols="10" rows="5">${pe}</textarea>
+                           <textarea class="_consult_pe_input form-control data-input" cols="10" rows="5">${pe.content}</textarea>
                         </div>
-                    </div>`;div.append(html);el=div.find(`#${wrapper_id}`);}
-el.show().siblings().hide();});}
-this.loadPrescription=(ticket_id=0,onFinish)=>{vsapi.call(`${main_view.base_url}/api/settings/options-product`,null).then(res=>{if(res.status_code===200){onFinish(res.data);}});}
+                    </div>`;div.append(html);el=div.find(`#${wrapper_id}`);el.show().siblings().hide();el.on('change','textarea._consult_pe_input',function(){let p={'ticket_id':ticket_id,'items':mThis.getDataInput_PhysicalExaminationAutoSave()};vsapi.call(`${main_view.base_url}/api/consultation/save-pe`,p,null,false).then(res=>{if(res.status_code!==200)cv_interact.error(res.error_message);});});});}
+this.loadPrescription=(ticket_id=0,onFinish)=>{vsapi.call(`${main_view.base_url}/api/consultation/prescription`,{'ticket_id':ticket_id}).then(res=>{if(res.status_code===200){onFinish(res.data);}});}
 this.loadService=(ticket_id=0,onFinish)=>{vsapi.call(`${main_view.base_url}/api/settings/options-product`,null).then(res=>{if(res.status_code===200){onFinish(res.data);}});}
-this.showConsultPrescription=(div,view_name)=>{let wrapper_id='_consult_pres_warpper';let div_id='_consult_prescription';let el=div.find(`#${wrapper_id}`);let ticket_id=div.data('tid');if(!el||el.length===0){let title=LocaleManager.trans('Prescription','consult');let html=`<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}"><h3 class="trans-text" data-langprop="consult.Prescription">${title}</h3>
-              <div id="${div_id}"></div>
-            </div>`;div.html(html);let columns=[{"name":"item_id","title":"Product","dataType":"string","displayType":"select","cssClass":"",},{"name":"qty","title":"Quantity","dataType":"number","displayType":"input"},{"name":"sku","title":"UOM","dataType":"string","displayType":"input","readOnly":true},{"name":"usage","title":"Usage","dataType":"string","displayType":"input"},{"name":"duration_days","title":"Days","dataType":"number","displayType":"input"},{"name":"reason","title":"Reasons","dataType":"string","displayType":"input"}];mThis.loadPrescription(ticket_id,d=>{columns[0].selectOptions=d.products;mThis.tblPrescribedItems=new ItemsView(div_id,{"columns":columns,"langProp":"consult","tableClass":"table presciption-table","showColumnHeaders":true,"showAddLineButton":true,"addLineButtonText":"Add Item","onItemChange":(selOp,col_name,td)=>{let tr=td.parentNode;mThis.setItemInfo(col_name,tr);},"numeroFormatter":(numero,row)=>{return`<span class="text-secondary fw-bold">${numero}</span>`;},"emptyMessage":`<span class="text-secondary text-align-center">${LocaleManager.trans('No item prescribed', 'consult')}</span>`,});el=div.find(`#${wrapper_id}`);});}
-el.show().siblings().hide();}
-this.showConsultService=(div,view_name)=>{let wrapper_id='_consult_service_warpper';let div_id='_consult_service';let el=div.find(`#${wrapper_id}`);let ticket_id=div.data('tid');if(!el||el.length===0){let title=LocaleManager.trans('Service','consult');let html=`<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}"><h3 class="trans-text" data-langprop="consult.Service">${title}</h3>
-              <div id="${div_id}"></div>
-            </div>`;div.html(html);let columns=[{"name":"item_id","title":"Name","dataType":"string","displayType":"select","width":"250px"},{"name":"description","title":"Description","dataType":"string","displayType":"input"},{"name":"usage","title":"Usage","dataType":"string","displayType":"input"},{"name":"done_by","title":"Done By","dataType":"string","displayType":"input"},{"name":"reason","title":"Reasons","dataType":"string","displayType":"input"}];mThis.loadService(ticket_id,d=>{columns[0].selectOptions=d.products;mThis.tblServiceItems=new ItemsView(div_id,{"columns":columns,"langProp":"consult","tableClass":"table presciption-table","showColumnHeaders":true,"showAddLineButton":true,"addLineButtonText":"Add Item","onItemChange":(selOp,col_name,td)=>{let tr=td.parentNode;mThis.setItemInfo(col_name,tr);},"numeroFormatter":(numero,row)=>{return`<span class="text-secondary fw-bold">${numero}</span>`;},"emptyMessage":`<span class="text-secondary text-align-center">${LocaleManager.trans('No item prescribed', 'consult')}</span>`,"validateColumns":{"item_id":"string"}});el=div.find(`#${wrapper_id}`);});}
-el.show().siblings().hide();}
+this.showConsultPrescription=(div,view_name)=>{let wrapper_id='_consult_pres_warpper';let div_id='_consult_prescription';let el=div.find(`#${wrapper_id}`);let ticket_id=div.data('tid');if(el.length>0){el.show().siblings().hide();}else{let title=LocaleManager.trans('Prescription','consult');let html=`<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}"><h3 class="trans-text" data-langprop="consult.Prescription">${title}</h3>
+                  <div id="${div_id}"></div>
+                  </div>`;div.html(html);let columns=[{"name":"item_id","title":"Product","dataType":"string","displayType":"select","cssClass":"","width":250},{"name":"qty","title":"Quantity","dataType":"number","displayType":"input"},{"name":"sku","title":"UOM","dataType":"string","displayType":"input","readOnly":true},{"name":"usage","title":"Usage","dataType":"string","displayType":"input"},{"name":"duration_days","title":"Days","dataType":"number","displayType":"input"},{"name":"reason","title":"Reasons","dataType":"string","displayType":"input"}];mThis.tblPrescribedItems=new ItemsView(div_id,{"columns":columns,validateColumns:{'item_id':'positive','qty':'number','duration_days':'number','sku':'string'},"langProp":"consult","tableClass":"table presciption-table","showColumnHeaders":true,"showAddLineButton":true,"addLineButtonText":"Add Item",onItemChange:(row_id,item,col_name,td,tr)=>{mThis.setItemInfo(col_name,tr);},onItemValidated:(id,item,tr)=>{let thisItem=mThis.tblPrescribedItems.getDataRow(tr);let p={'id':id,'item_id':thisItem.item_id,'description':thisItem.name,'qty':thisItem.qty,'sku':thisItem.sku,'usage':thisItem.usage,'duration_days':thisItem.duration_days,'reason':thisItem.reason,'remarks':thisItem.remarks,'ticket_id':ticket_id};vsapi.call(`${main_view.base_url}/api/consultation/save-prescription-item`,p,null,false).then(res=>{if(res.status_code===200){let new_row_id=res.data.id;mThis.tblPrescribedItems.setRowId(tr,new_row_id);}else cv_interact.error(res.error_message);});},onItemDeleted:(row_id,tr)=>{let p={'id':row_id,'ticket_id':ticket_id};vsapi.call(`${main_view.base_url}/api/consultation/remove-prescription-item`,p,null,false).then(res=>{if(res.status_code!==200)cv_interact.error(res.error_message);});},numeroFormatter:(numero,row)=>{return`<span class="text-secondary fw-bold">${numero}</span>`;},"emptyMessage":`<span class="text-secondary text-align-center">${LocaleManager.trans('No item prescribed', 'consult')}</span>`,});el=div.find(`#${wrapper_id}`);el.show().siblings().hide();}
+mThis.loadPrescription(ticket_id,(data)=>{mThis.tblPrescribedItems.setSelectOptions('item_id',data.options_product);mThis.tblPrescribedItems.setData(data.items);});}
+this.loadService=(ticket_id,onFinish)=>{let p={'ticket_id':ticket_id};vsapi.call(`${main_view.base_url}/api/consultation/services`,p,null,false).then(res=>{onFinish(res.data?res.data:{});});}
+this.showConsultService=(div,view_name)=>{let wrapper_id='_consult_service_warpper';let div_id='_consult_service';let el=div.find(`#${wrapper_id}`);let ticket_id=div.data('tid');let title=LocaleManager.trans('Service','consult');if(el.length>0){el.show().siblings().hide();}else{let html=`<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}"><h3 class="trans-text" data-langprop="consult.Service">${title}</h3>
+                <div id="${div_id}"></div>
+                </div>`;div.html(html);let columns=[{"name":"service_id","title":"Name","dataType":"string","displayType":"select","width":"250px"},{"name":"qty","title":"Quantity","dataType":"number","displayType":"input","defaultValue":1,"readOnly":true},{"name":"emp_id","title":"Performed By","dataType":"number","displayType":"select"},{"name":"remarks","title":"Remarks","dataType":"string","displayType":"input"}];mThis.tblServiceItems=new ItemsView(div_id,{"columns":columns,validateColumns:{'service_id':'positive'},"langProp":"consult","tableClass":"table presciption-table","showColumnHeaders":true,"showAddLineButton":true,"addLineButtonText":"Add Item","onItemChange":(row_id,selOp,col_name,td)=>{let tr=td.parentNode;mThis.setServiceInfo(col_name,tr);},onItemValidated:(id,item,tr)=>{let thisItem=mThis.tblServiceItems.getDataRow(tr);let p={'ticket_id':ticket_id,'id':id,'service_id':thisItem.service_id,'description':thisItem.name,'qty':thisItem.qty?thisItem.qty:1,'sku':thisItem.sku?thisItem.sku:'none','remarks':thisItem.remarks,'emp_id':thisItem.emp_id};if(p.service_id){vsapi.call(`${main_view.base_url}/api/consultation/save-service-item`,p,null,false).then(res=>{if(res.status_code===200){mThis.tblServiceItems.setRowId(tr,res.data.id);}else cv_interact.error(res.error_message);});}},onItemDeleted:(row_id,tr)=>{let p={'id':row_id,'ticket_id':ticket_id};vsapi.call(`${main_view.base_url}/api/consultation/remove-service-item`,p,null,false).then(res=>{if(res.status_code!==200)cv_interact.error(res.error_message);});},numeroFormatter:(numero,row)=>{return`<span class="text-secondary fw-bold">${numero}</span>`;},"emptyMessage":`<span class="text-secondary text-align-center">${LocaleManager.trans('No item prescribed', 'consult')}</span>`,"validateColumns":{"item_id":"string"}});el=div.find(`#${wrapper_id}`);el.show().siblings().hide();}
+mThis.loadService(ticket_id,data=>{mThis.tblServiceItems.setSelectOptions('service_id',data.options_service);mThis.tblServiceItems.setSelectOptions('emp_id',data.options_emp);mThis.tblServiceItems.setData(data.items);});}
 this.setItemInfo=(col_name,tr)=>{if(col_name==='item_id'){let d=mThis.tblPrescribedItems.getDataRow(tr);let p={'item_id':d.item_id};vsapi.call(`${main_view.base_url}/api/inventory/item-info`,p).then(res=>{if(res.status_code===200){let item=res.data;mThis.tblPrescribedItems.setCellValue(tr,'sku',StringSanitizer.sanitizeOut(item.sku));}});}}
-this.showConsultMedicalHistory=(div,view_name)=>{let wrapper_id='_consult_medical_history_warpper';let ticket_id=div.data('tid');let patient_id=div.data('patientid');let el=div.find(`#${wrapper_id}`);if(el.length===0||!el){let html=`<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
-              <h3 class="trans-text" data-langprop="consult.Medical History">Medical History</h3>
-              <div class="d-flex flex-column">
-                <div>
-                   <label class="control-label">Personal History</label>
-                   <textarea data-category="Personal History" class="data-input form-control" cols="10" rows="3" id="_consul_history_personal"></textarea>
-                </div>
-
-                <div>
-                  <label class="control-label">Family History</label>
-                  <textarea data-category="Family History" class="data-input form-control" cols="10" rows="3" id="_consul_history_familiy"></textarea>
-                </div>
-
-                <div>
-                  <label class="control-label">Traveling</label>
-                  <textarea data-category ="Traveling" class="data-input form-control" cols="10" rows="3" id="_consul_history_traveling"></textarea>
-                </div>
-                
-                <div>
-                  <label class="control-label">Vacination</label>
-                  <textarea data-category ="Vacination" class="data-input form-control" cols="10" rows="3" id="_consul_history_vacination"></textarea>
-                </div>
-
-                <div>
-                  <label class="control-label">Allergy</label>
-                  <textarea data-category="Allergy" class="data-input form-control" cols="10" rows="3" id="_consul_history_allergy"></textarea>
-                </div>
-
-                <div>
-                  <label class="control-label">Surgery</label>
-                  <textarea data-category="Surgery" class="data-input form-control" cols="10" rows="3" id="_consul_history_surgery"></textarea>
-                </div>
-
-                <div>
-                  <label class="control-label">Others</label>
-                  <textarea data-category="Others" class="data-input form-control" cols="10" rows="3" id="_consul_history_others"></textarea>
-                </div>
-              </div>
-           </div>`;div.append(html);el=$(`#${wrapper_id}`);}
-el.show().siblings().hide();LocaleManager.translateZone(wrapper_id);}
-this.showConsultLaboratoryTests=(div,view_name)=>{let wrapper_id='_consult_labo_warpper';let div_labotest_panel_id='_consult_div_labotest_panel';let ticket_id=div.data('tid');let patient_id=div.data('patientid');let el=div.find(`#${wrapper_id}`);if(el.length===0||!el){let html=`<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
+this.setServiceInfo=(col_name,tr)=>{mThis.tblServiceItems.setCellValue(tr,'qty',1);return;}
+this.loadMedicalHistory=(ticket_id,onFinish)=>{let p={'ticket_id':ticket_id};vsapi.call(`${main_view.base_url}/api/consultation/medical-history`,p,null,false).then(res=>{if(res.status_code===200){onFinish(res.data);}else onFinish({});});}
+this.showConsultMedicalHistory=(div,view_name)=>{let wrapper_id='_consult_medical_history_warpper';let ticket_id=div.data('tid');let el=div.find(`#${wrapper_id}`);mThis.loadMedicalHistory(ticket_id,d=>{let categories=['Personal History','Family History','Traveling','Vacination','Allergy','Surgery'];if(el.length>0){el.show().siblings().hide();el.find('.data-input').each(function(){let e=$(this);let cat=e.data('category');e.val(d[cat]);});LocaleManager.translateZone(wrapper_id);return;}
+let html=`<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
+            <h3 class="trans-text" data-langprop="consult.Medical History">Medical History</h3>
+            <div class="d-flex flex-column">`;categories.map(c=>{let content=d[c]?d[c]:'';html=[html,`<div>
+              <label class="control-label">${c}</label>
+              <textarea data-category="${c}" class="_consult_medical_history_input data-input form-control" cols="10" rows="3">${content}</textarea>
+              </div>`].join('');});html=[html,`</div></div>`].join('');div.append(html);el=$(`#${wrapper_id}`);el.show().siblings().hide();LocaleManager.translateZone(wrapper_id);el.on('change','textarea._consult_medical_history_input',function(){let p={'ticket_id':ticket_id,'items':mThis.getDataInput_MedicalHistoryAutoSave()};vsapi.call(`${main_view.base_url}/api/consultation/save-medical-history`,p,null,false).then(res=>{if(res.status_code===200){console.log(p);}});});});}
+this.getTicketInfo_laboTest=(ticket_id,onFinish)=>{let p={'ticket_id':ticket_id};vsapi.call(`${main_view.base_url}/api/ticket/labo-tests`,p,null,false).then(res=>{if(res.status_code===200)
+onFinish(res.data);else onFinish([]);});}
+this.showConsultLaboratoryTests=(div,view_name)=>{let wrapper_id='_consult_labo_warpper';let div_labotest_panel_id='_consult_div_labotest_panel';let ticket_id=div.data('tid');let el=div.find(`#${wrapper_id}`);if(el.length>0){LocaleManager.translateZone(wrapper_id);el.show().siblings().hide();mThis.getTicketInfo_laboTest(ticket_id,d=>{mThis.tblLaboTests.setData(d);});return;}
+let html=`<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                 <h3 class="trans-text" data-langprop="consult.Laboratory Tests">Laboratory Tests</h3>
                 <div class="d-flex">
                     <div id="${div_labotest_panel_id}" class="table-responsive">  
                     </div>
                 </div>
-           </div>`;div.append(html);el=$(`#${wrapper_id}`);let cols=[{name:'labo_test_id',title:'Test Name',displayType:'select'},{name:'description',title:'Description',},{name:'labo_id',title:'Labo Name',displayType:'select',}];mThis.tblLaboTests=new ItemsView(div_labotest_panel_id,{columns:cols,validateColumns:{'labo_test_id':'string','labo_id':'string'},tableClass:"table",addLineButtonText:"Add Labo Test",langProp:'labotest',onItemChange:(option,col_name,td)=>{let tr=td.parentNode;if(col_name==='labo_test_id')mThis.displayTestInfo(option,tr);}});vsapi.call(`${main_view.base_url}/api/consultation/labo-test-data`,p,null,false).then(res=>{if(res.status_code===200){mThis.tblLaboTests.setSelectOptions('labo_test_id',d.labo_test_options);mThis.tblLaboTests.setSelectOptions('labo_id',d.labo_options);mThis.tblLaboTests.setData(d.laboTests);}});}
-el.show().siblings().hide();LocaleManager.translateZone(wrapper_id);}
-this.displayTestInfo=(selectedOp,tr)=>{mThis.tblLaboTests.setCellValue(tr,'description',selectedOp.text);}
-this.showConsultDiagnosis=(div,view_name)=>{let wrapper_id='_consult_diagnosis_warpper';let ticket_id=div.data('tid');let patient_id=div.data('patientid');let el=div.find(`#${wrapper_id}`);if(el.length===0||!el){let html=`<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
-              <h3 class="trans-text" data-langprop="consult.Diagnosis">Diagnosis</h3>
-              <div class="d-flex flex-column">
-                 <label class="control-label">Diagnosis details</label>
-                 <textarea class="form-control data-input" cols="10" rows="3" id="_consul_diagnosis"></textarea>
-              </div>
-           
-            </div>`;div.append(html);el=div.find(`#${wrapper_id}`);}
-el.show().siblings().hide();LocaleManager.translateZone(wrapper_id);}
-this.showConsultRecommendations=(div,view_name)=>{let wrapper_id='_consult_advice_warpper';let el=div.find(`#${wrapper_id}`);if(el.length===0||!el){let html=`<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
-              <h3 class="trans-text" data-langprop="consult.Recommendations">Recommendations</h3>
-              <div class="d-flex flex-column">
-                 <label class="control-label">Doctor's recommendation</label>
-                 <textarea class="form-control data-input" cols="10" rows="3" id="_consul_advice"></textarea>
-              </div>
+           </div>`;div.append(html);el=$(`#${wrapper_id}`);let cols=[{name:'test_id',title:'Test Name',displayType:'select'},{name:'remarks',title:'Remarks',displayType:'input'},{name:'labo_id',title:'Labo Name',displayType:'select',selectOPtions:[],readOnly:true}];mThis.tblLaboTests=new ItemsView(div_labotest_panel_id,{columns:cols,validateColumns:{'test_id':'string','labo_id':'string'},tableClass:"table",addLineButtonText:"Add Labo Test",langProp:'labotest',onItemChange:(row_id,item,col_name,td,tr)=>{if(col_name==='test_id')mThis.displayTestInfo(item.test_id,tr);},onItemValidated:(row_id,item,tr)=>{let thisItem=mThis.tblLaboTests.getDataRow(tr);let p={'id':row_id,'test_id':thisItem.test_id,'labo_id':thisItem.labo_id,'remarks':thisItem.remarks,'ticket_id':ticket_id};vsapi.call(`${main_view.base_url}/api/consultation/save-labo-test`,p,null,false).then(res=>{if(res.status_code===200){mThis.tblLaboTests.setRowId(res.data.id);}else cv_interact.error(res.error_message);});},onItemDeleted:(row_id,tr)=>{let p={'id':row_id,'ticket_id':ticket_id};vsapi.call(`${main_view.base_url}/api/consultation/remove-labo-test`,p,null,false).then(res=>{if(res.status_code!==200)cv_interact.error(res.error_message);});},});let p={'ticket_id':ticket_id};vsapi.call(`${main_view.base_url}/api/consultation/labo-test-data`,p,null,false).then(res=>{if(res.status_code===200){let d=res.data;mThis.tblLaboTests.setSelectOptions('test_id',d.labo_test_options);mThis.tblLaboTests.setSelectOptions('labo_id',d.labo_options);mThis.tblLaboTests.setData(d.laboTests);el.show().siblings().hide();LocaleManager.translateZone(wrapper_id);}else cv_interact.error(res.error_message);});}
+this.displayTestInfo=(test_id,tr)=>{vsapi.call(`${main_view.base_url}/api/labo-test/info`,{'test_id':test_id},null,false).then(res=>{if(res.status_code===200){let test=res.data?res.data:{};mThis.tblLaboTests.setCellValue(tr,'labo_id',test.labo_id);}});}
+this.loadDiagnosis=(ticket_id,onFinish)=>{let p={'ticket_id':ticket_id};vsapi.call(`${main_view.base_url}/api/consultation/diagnosis`,p,null,false).then(res=>{onFinish(res.data?res.data:{});});}
+this.showConsultDiagnosis=(div,view_name)=>{let wrapper_id='_consult_diagnosis_warpper';let ticket_id=div.data('tid');let el=div.find(`#${wrapper_id}`);if(el.length>0){LocaleManager.translateZone(wrapper_id);el.show().siblings().hide();}else{let html=`<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
+                <h3 class="trans-text" data-langprop="consult.Diagnosis">Diagnosis</h3>
+                <div class="d-flex flex-column">
+                <label class="control-label">Diagnosis details</label>
+                <textarea class="_consult_diagnosis_input form-control data-input" cols="10" rows="3" id="_consul_diagnosis"></textarea>
+                </div>
+            </div>`;div.append(html);el=div.find(`#${wrapper_id}`);el.on('change','textarea._consult_diagnosis_input',function(){let p={'ticket_id':ticket_id,'items':mThis.getDataInput_DiagnosisAutoSave()};vsapi.call(`${main_view.base_url}/api/consultation/save-diagnosis`,p,null,false).then(res=>{if(res.status_code!==200)cv_interact.error(res.error_message);});});LocaleManager.translateZone(wrapper_id);el.show().siblings().hide();}
+mThis.loadDiagnosis(ticket_id,d=>{if(el.length>0){el.find('textarea._consult_diagnosis_input').val(d.content);}});}
+this.showConsultRecommendations=(div,view_name)=>{let wrapper_id='_consult_advice_warpper';let ticket_id=div.data('tid');let el=div.find(`#${wrapper_id}`);if(el.length>0){el.show().siblings().hide();}else{let html=`<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
+                <h3 class="trans-text" data-langprop="consult.Recommendations">Recommendations</h3>
+                <div class="d-flex flex-column">
+                <label class="control-label">Doctor's recommendation</label>
+                <textarea class="_consult_advice_input form-control data-input" cols="10" rows="3" id="_consult_advice"></textarea>
+                </div>
             </div>  
-           `;div.append(html);el=div.find(`#${wrapper_id}`);}
-el.show().siblings().hide();LocaleManager.translateZone(wrapper_id);}
+            `;div.append(html);el=div.find(`#${wrapper_id}`);el.show().siblings().hide();el.on('change','textarea._consult_advice_input',function(){let p={'ticket_id':ticket_id,'items':mThis.getDataInput_RecommedationsAutoSave()};vsapi.call(`${main_view.base_url}/api/consultation/save-advice`,p,null,false).then(res=>{if(res.error_message)cv_interact.error(res.error_message);});});}
+LocaleManager.translateZone(wrapper_id);mThis.loadAdvice(ticket_id,d=>{el.find(`#_consult_advice`).val(d.content);});}
+this.loadAdvice=(ticket_id,onFinish)=>{vsapi.call(`${main_view.base_url}/api/consultation/advice`,{'ticket_id':ticket_id},null,false).then(res=>{onFinish(res.data?res.data:{});});}
 this.showConsultMedicalReport=(div=null,ticket_id=0)=>{let qString=['rtype=medical_report&ticketid=',ticket_id].join('');main_view.getEncryptData(qString,(d)=>{window.open([main_view.base_url,'/genreport/',d].join(''),'_blank');});}
 this.showConsultMedicalCertificate=(div=null,ticket_id=0)=>{let qString=[`rtype=medical_certificate&ticketid=`,ticket_id].join('');main_view.getEncryptData(qString,(d)=>{window.open([main_view.base_url,'/genreport/',d].join(''),'_blank');});}
 this.showHistoryChiefComplaints=(div)=>{let html=`<h3>Chief Complaint</h3>
@@ -728,23 +723,23 @@ this.showHistoryMedicalReports=(div)=>{let patient_id=div.data('patientid');let 
                    <div class="d-flex flex-column history-mr-header border border-success rounded p-2 my-3">
                        <div class="d-flex flex-row">
                           <span class="w-25 lh-lg fw-bold trans-text" data-langprop="patient.Patient ID"></span>
-                          <span class="">${d.patient_code}</span>
+                          <span>${d.patient_code}</span>
                        </div>
 
                        <div class="d-flex flex-row">
                          <span class="w-25 lh-lg fw-bold trans-text" data-langprop="patient.Patient Name"></span>
-                         <span class="">${d.patient_name}</span>
+                         <span>${d.patient_name}</span>
                       </div>
 
                       <div class="d-flex flex-row">
                         <span class="w-25 lh-lg fw-bold trans-text" data-langprop="patient.Sex"></span>
-                        <span class="">${d.patient_sex}</span>
+                        <span>${d.patient_sex}</span>
                       </div>
 
                       <div class="d-flex flex-row">
                         <span class="w-25 lh-lg fw-bold trans-text" data-langprop="patient.Phone Number"></span>
-                        <span class="">${d.patient_phone_number}</span>
-                     </div>
+                        <span>${d.patient_phone_number}</span>
+                      </div>
                    </div>
                    
                    <div class="table-responsive border border-success rounded-3 shadow-sm">
@@ -758,7 +753,7 @@ this.showHistoryMedicalReports=(div)=>{let patient_id=div.data('patientid');let 
                      </table>
                    </div>
                 </div>
-               `;div.html(html);let el=$(`#${wrapper_id}`);}
+               `;div.html(html);}
 LocaleManager.translateZone(wrapper_id);el.find('.history-mr-header').each(function(){let x=$(this);let f=x.data('field');x.text(d[f]);});let tbody=document.querySelector(`#${mThis.tblHistoryReports_body_id}`);let row_html='';items.map(item=>{row_html=[row_html,`<tr>
                     <td>${item.ticket_number}</td>
                     <td><a href="javascript:void(0)"><i class="fa fa-print"></i><span class="pl-1">${item.date} medical report</span></a></td>
@@ -798,7 +793,7 @@ let PositionsDialog=new function(){let mThis=this;this.self=$(`#_pos_dlgPosition
 $(document).ready(function(){PositionsComponent.init();}); "use strict";let LaboPartnersComponent=new function(){let mThis=this;this.title_prop='Labo Partners';this.base_url=$('#__base_url').val();this.self=$('#_main_laboPartnersComponent');this.btnNew=$('#_lbp_btnNew');this.elSearchPartner=$('#_lbp_input_search');this.tblPartners=$('#_lbp_tblLaboPartners');this.form_data={};this.col_titles={"ID":"ID","Name":"Name","Name":"Name","Email":"Email","Phone":"Phone","CP Name":"CP Name","CP Phone":"CP Phone","Partner Type":"Type","Address":"Address","Action":"Action"};this.trans_title=(title_prop='undefined')=>{return(mThis.col_titles[title_prop]);}
 this.setLanguage=()=>{if(LocaleManager.lang!==mThis.lang){for(let prop in mThis.col_titles){mThis.col_titles[prop]=LocaleManager.trans(prop,'partners',LocaleManager.lang);}
 mThis.lang=LocaleManager.lang;}}
-this.initExpandableRow=()=>{this.tblLaboTests=new ExpandableRowConfig('_lbp_tblLaboPartners',{'dontExpandByClickingOn':['btn_lbp_modify','btn_lbp_delete'],'onOpen':(container,detail_tr,parent_tr)=>{let q_tr=$(parent_tr);let partner_id=q_tr.data('id');let status_id=q_tr.data('statusid');if(partner_id>0)
+this.initExpandableRow=()=>{this.tblLaboTests=new ExpandableRowConfig('_lbp_tblLaboPartners',{'dontExpandByClickingOn':['pn-add-test','btn_lbp_modify','btn_lbp_delete'],'onOpen':(container,detail_tr,parent_tr)=>{let q_tr=$(parent_tr);let partner_id=q_tr.data('id');let status_id=q_tr.data('statusid');if(partner_id>0)
 LaboTestList.show($(container),{'labo_id':partner_id,'status_id':status_id});}});}
 this.init=()=>{mThis.initExpandableRow();mThis.btnNew.on('click',(e)=>{let op={onClose:(e)=>{if(e){mThis.displaylaboPartners();}}};LaboPartnersDialog.show(op);});mThis.elSearchPartner.on('keyup',(e)=>{e.preventDefault();if(e.keyCode===13){mThis.displaylaboPartners();}});mThis.tblPartners.on('click','.btn_lbp_modify',function(e){e.preventDefault();let item_id=$(this).data('id');let op={id:item_id,onClose:(e)=>{if(e)
 mThis.displaylaboPartners();}};LaboPartnersDialog.show(op);});mThis.tblPartners.on('click','.btn_lbp_delete',function(e){e.preventDefault();let partner_id=$(this).data("id");cv_interact.confirm(`Delete this partner?`,{title:"Delete Partner",context:"delete"},(yes)=>{if(yes){let p={"id":partner_id};vsapi.call(`${main_view.base_url}/api/partner/delete`,p).then(res=>{if(res.status_code===200){mThis.displaylaboPartners();}else cv_interact.error(res.error_message);});}});});}
@@ -806,17 +801,35 @@ this.displaylaboPartners=(onFinish=null)=>{mThis.setLanguage();let p={'search_va
 data=StringSanitizer.sanitizeObject(data,null,["cp_email","email"]);let cnt=1;let my_columns=[{title:mThis.trans_title("ID"),data:()=>{return cnt;}},{data:"name",title:mThis.trans_title('Name')},{title:mThis.trans_title('Email'),data:"email"},{title:mThis.trans_title('Phone'),data:"phone_number"},{title:mThis.trans_title('CP Name'),data:"cp_name"},{title:mThis.trans_title('CP Phone'),data:"cp_phone_number"},{title:mThis.trans_title('Partner Type'),data:"partner_type"},{title:mThis.trans_title('Address'),data:(data,a,b)=>{return data.address?data.address:'(Address not available)';}},{title:mThis.trans_title('Action'),data:function(data,a,b){let status_class=null;return[`<div class="d-flex flex-row flex-nowrap">`,`<a href="javascript:void(0)" class="pn-add-test" data-id="${data.id}"><i class="fa fa-plus-circle"></i></a> &nbsp;`,`<a href="javascript:void(0)" class="btn_lbp_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,`<a href="javascript:void(0);" data-id="${data.id}" class="btn_lbp_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,`</div>`].join('');}}];if(!mThis.table)
 mThis.table=mThis.tblPartners.DataTable({searching:false,destroy:true,paging:true,ordering:false,retrieve:true,info:true,pageLength:10,bLengthChange:false,saveState:true,'processing':true,'language':{'loadingRecords':'&nbsp;','processing':'Loading...',"emptyTable":LocaleManager.trans('No data to display','datatable')},'data':data,'columns':my_columns,"createdRow":function(row,data,dataIndex){cnt++;let tr=$(row);tr.data('id',data.id);tr.data('statusid',data.status_id);}});if(typeof onFinish==='function')onFinish();});};this.show=(options=null)=>{if(!options)options={};mThis.options=options;mThis.displaylaboPartners(()=>{main_view.setTitle(mThis.title_prop);mThis.self.show().siblings().hide();});}}
 let LaboPartnersDialog=new function(){let mThis=this;this.self=$(`#_lbp_dlgPartners`);this.formUntil=new FormUntil({"itemName":"Partner","formId":'_lbp_dlgPartners',"titleId":"_lbp_dlgPartners_title","saveButtonId":"_lbp_btnSave","instance":this,"apiSave":`${main_view.base_url}/api/partner/save`,"apiGet":`${main_view.base_url}/api/partner/details`,"modifyTitle":"Modify Parnter","createTitle":"New Partner","identityProps":['id'],"form_data_props":['id'],"sanitize_excepts":["cp_email","email"],'use_alert_error':true,'beforeShow':()=>{}});this.show=(options)=>{mThis.formUntil.show(options);}}
-const LaboTestList=new function(){let mThis=this;LaboPartnersComponent.tblPartners.on('click','.pn-add-test',function(e){let labo_id=$(this).data('id');let container=$(this).closest('div.expandable-row-container');let op={'labo_id':labo_id,onClose:(items)=>{if(items){LaboTestList.displayTestList(labo_id,container,items);}}};SelectTestDialog.show(op);});LaboPartnersComponent.tblPartners.on('click','.btn-remove-parnter-test',function(e){let labo_id=$(this).data('laboid');let test_id=$(this).data('testid');let id=$(this).data('id');let container=$(this).closest('div.expandable-row-container');cv_interact.confirm(`Remove this test?`,{title:'Remove Partner Test','context':'delete'},(e)=>{if(e){let p={'labo_id':labo_id,'test_id':test_id,'id':id};vsapi.call(`${main_view.base_url}/api/partner-labo/remove-test`,p,null,false).then(res=>{if(res.status_code===200){LaboTestList.displayTestList(labo_id,container,res.data);}});}});});this.show=(container,options)=>{let labo_id=options.labo_id;let div_test_list_id=`pn_test_list_${labo_id}`;let div_test_list=container.find(`#${div_test_list_id}`);let p={'labo_id':labo_id};vsapi.call(`${main_view.base_url}/api/partner-labo/tests`,p,null,false).then(res=>{if(res.status_code===200){let items=res.data;mThis.displayTestList(labo_id,container,items);}else{div_test_list.html(`<span class="text-center text-warning">${res.error_message}</span>`);}});}
-this.displayTestList=(labo_id,container,items=[])=>{let cnt=0;let html_tests=null;;items.map(i=>{let c=ExchangeManager.currencies[i.currency_code];let cur_symbol=c?c.symbol:'$';let price=[cur_symbol,i.price].join('');html_tests=[html_tests,`<div data-id="${i.id}" data-testid="${i.test_id}" class="card pn-test-item">
-                <div class="card-body">
-                    <h5 class="card-title">${i.name}</h5>
-                    <span class="d-block text-center fw-bold">${price}</span>
-                    <a data-id="${i.id}" data-testid="${i.test_id}" data-laboid="${i.labo_id}" class="btn-remove-parnter-test" href="javascript:void(0)"><i class="fa fa-times text-danger"></i></a> 
-                </div>
-                </div>`].join('');cnt++;});let div_test_list_id=`pn_test_list_${labo_id}`;let div_test_list=container.find(`#${div_test_list_id}`);if(div_test_list.length>0){div_test_list.html(html_tests);return;}
+const LaboTestList=new function(){let mThis=this;LaboPartnersComponent.tblPartners.on('click','.pn-add-test',function(e){let labo_id=$(this).data('id');let container=$(this).closest('div.expandable-row-container');if(container.length===0){let tr=$(this).closest('tr');container=tr.next().find('div.expandable-row-container');}
+let op={'labo_id':labo_id,onClose:(items)=>{if(items){LaboTestList.displayTestList(labo_id,container,items);}}};SelectTestDialog.show(op);});LaboPartnersComponent.tblPartners.on('click','.btn-remove-parnter-test',function(e){let labo_id=$(this).data('laboid');let test_id=$(this).data('testid');let id=$(this).data('id');let container=$(this).closest('div.expandable-row-container');cv_interact.confirm(`Remove this test?`,{title:'Remove Partner Test','context':'delete'},(e)=>{if(e){let p={'labo_id':labo_id,'test_id':test_id,'id':id};vsapi.call(`${main_view.base_url}/api/partner-labo/remove-test`,p,null,false).then(res=>{if(res.status_code===200){LaboTestList.displayTestList(labo_id,container,res.data);}});}});});this.show=(container,options)=>{let labo_id=options.labo_id;let div_test_list_id=`pn_test_list_${labo_id}`;let div_test_list=container.find(`#${div_test_list_id}`);let p={'labo_id':labo_id};vsapi.call(`${main_view.base_url}/api/partner-labo/tests`,p,null,false).then(res=>{if(res.status_code===200){let items=res.data;mThis.displayTestList(labo_id,container,items);}else{div_test_list.html(`<span class="text-center text-warning">${res.error_message}</span>`);}});}
+this.displayTestList=(labo_id,container,items=[])=>{let cnt=0;let html_tests=null;;items.map(i=>{let c=ExchangeManager.currencies[i.currency_code];let cur_symbol=c?c.symbol:'$';let price=[cur_symbol,i.price].join('');html_tests=[html_tests,`<div data-id="${i.id}" data-testid="${i.test_id}" class="pn-test-item">
+                    <div class="border border-1 rounded-2">
+                        <div class="border border-1 p-2" style="background-color: #98D3AB">
+                            <h5 class="card-title">${i.name}</h5>
+                        </div>
+                        <div class="py-3">
+                            <span class="d-block text-center fw-bold">${price}</span>
+                        </div>
+                        <div>
+                            <a data-id="${i.id}" data-testid="${i.test_id}" data-laboid="${i.labo_id}" class="btn-remove-parnter-test" href="javascript:void(0)">
+                                <i class="fa fa-times vs-text-danger"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>`].join('');cnt++;});html_tests=[html_tests,`<a href="javascript:void(0)" data-id="${labo_id}" class="pn-add-test border border-primary btn btn-outline-primary p-2 my-auto">
+            <span>
+                <i class="fa fa-solid fa-plus pe-0"></i>
+            </span>
+            <span>Add Labo Test</span>
+        </a>`].join('');let div_test_list_id=`pn_test_list_${labo_id}`;let div_test_list=container.find(`#${div_test_list_id}`);let empty_html=`<a href="javascript:void(0)" data-id="${labo_id}" class="pn-add-test border border-primary btn btn-outline-primary p-2 my-auto">
+            <span>
+                <i class="fa fa-solid fa-plus pe-0"></i>
+            </span>
+            <span>Add Labo Test</span>
+        </a>`;if(cnt===0)html_tests=empty_html;if(div_test_list.length>0){div_test_list.html(html_tests);return;}
 html_tests=[`<div id="${div_test_list_id}" class="labo-test-list-container">`,html_tests,`</div>`].join('');if(cnt>0)
-container.html(html_tests);else{let empty_html=`<div id="${div_test_list_id}" class="labo-test-list-container"><span class="d-block text-secondary">No labo tests offered by this partner</span>
-            <button class="btn btn-sm btn-outline-success pn-add-test mt-2" data-id="${labo_id}">Add Test</button></div>`;container.html(empty_html);}}}
+container.html(html_tests);else{container.html(empty_html);}}}
 const SelectTestDialog=new function(){let mThis=this;this.self=$('#_lbp_dlgTestSelector');this.elTest=$('#_lbp_test');this.elPrice=$('#_lbp_test_price');this.btnOK=$('#_lbp_dlgTestSelector_btnOK');this.btnOK.on('click',(e)=>{let p={'labo_id':mThis.labo_id,'test_id':mThis.elTest.val(),'price':mThis.elPrice.val()}
 vsapi.call(`${main_view.base_url}/api/partner-labo/add-test`,p,null,false).then(res=>{if(res.status_code===200){let items=StringSanitizer.sanitizeObject(res.data);if(typeof mThis.onClose==='function')mThis.onClose(items);mThis.self.modal('hide');}else cv_interact.error(res.error_message);});});this.loadTests=(onFinish)=>{vsapi.call(`${main_view.base_url}/api/settings/options-labo-test`,null,null,false).then(res=>{onFinish(res.data);});}
 this.show=(options)=>{mThis.labo_id=options.labo_id;mThis.onClose=options.onClose;mThis.loadTests((tests)=>{VSUtil.setComboItems(mThis.elTest,tests,'id','test_name',false,false,null);mThis.self.modal({backdrop:'static'});});}}
@@ -883,29 +896,28 @@ this.getPmtStatusClass=(s)=>{let p=(s||'').toLowerCase();switch(p){case'paid':{r
 case'partially paid':{return'btn-outline-primary';}
 case'partially-paid':{return'btn-outline-primary';}
 default:{return'btn-outline-danger';}}}
-this.refreshInvoiceInfo=(invoice_id,d)=>{if(!d)return;let cur_symbol=(ExchangeManager.currencies[d.currency_code]||{}).symbol;if(!cur_symbol)cur_symbol='CUR?';if(!d.amount_paid)d.amount_paid=d.total_paid;let tr=mThis.tblInvoice.find(`tbody>tr#ivc_${invoice_id}`);tr.find('td.col-amount-paid').html(mThis.formatInvoiceAmount(d.currency_code,d.amount_paid));tr.find('td.col-pmt-status').html(mThis.generatePmtStatus(d));}
-this.show=(option=null)=>{mThis.displayInvoices(()=>{mThis.self.show().siblings().hide();main_view.setTitle(mThis.title_prop);});}}
-let InvoiceDialog=new function(){let mThis=this;this.self=$('#_invs_dlgNewInvoice');this.Invoice_Title=$('#_invs_dlgInvoice_title');this.elReceiptNumber=$('#ivc_ref_number');this.btnSave=$('#_invs_dlgNewInvoice_btnSave');this.lnkAddInvoice=$('#_invs_lnkAddInvoice');this.base_url=$('#__base_url').val();this.SelectPmtTerms=$('#_inv_pmt_terms');this.SelectCustomer=$('#_inv_customers');this.options={};this.elSummary_balanceDue=$('#ivc_balance_due');this.elSummary_subTotal=$('#ivc_sub_total');this.elSummary_discount=$('#ivc_discount');this.elSummary_taxAmount=$('#ivc_tax_amount');this.elSummary_grandTotal=$('#ivc_grand_total');this.cols_product=[{"name":"item_id","displayName":"item_name","title":"Item Name","dataType":"string","displayType":"select","width":"250px"},{"name":"qty","title":"Quantity","dataType":"number","defaultValue":1,"displayType":"input"},{"name":"sku","title":"SKU","dataType":"string","displayType":"input","readOnly":true},{"currencySymbol":mThis.cur_symbol,"name":"price","title":"Price","dataType":"number","displayType":"input"},{"showPercentage":true,"name":"discount_percent","title":"Discount (%)","dataType":"number","displayType":"input"},{"isPercentage":true,"name":"tax_rate","title":"Tax (%)","dataType":"number","displayType":"input"},{"currencySymbol":mThis.cur_symbol,"name":"line_total","title":"Line Total","dataType":"number","displayType":"input","readOnly":true}];this.cols_service=[{"name":"service_id","title":"Service","dataType":"string","displayType":"select","width":"250px"},{"name":"qty","title":"Qty","dataType":"number","displayType":"input"},{"name":"price","title":"Price","dataType":"number","displayType":"input"},{"name":"tax","title":"Tax","dataType":"number","displayType":"input"},{"name":"line_total","title":"Line Total","dataType":"number","displayType":"input","readOnly":true}];this.initItemsView=()=>{mThis.tblItemProduct();mThis.self.on('click','.tab-item',function(e){e.preventDefault();let el=$(this).data("viewname");switch(el){case'product':{mThis.tblItemProduct();$(this).addClass('bg-success');if($(this).siblings().hasClass('bg-success'))
-$(this).siblings().removeClass('bg-success');break;}
-case'service':{mThis.tblItemService();$(this).addClass('bg-success');if($(this).siblings().hasClass('bg-success'))
-$(this).siblings().removeClass('bg-success');break;}
-default:{mThis.tblItemProduct();$(this).addClass('bg-success');if($(this).siblings().hasClass('bg-success'))
-$(this).siblings().removeClass('bg-success');}}});}
-this.tblItemService=()=>{mThis.tblServiceItems=new ItemsView('_inv_items_panel',{columns:mThis.cols_service,showColumnHeaders:true,showAddLineButton:true,validateColumns:{'service_id':'string','qty':'number','price':'number'},onItemChange:(selOp,cols_name,td)=>{let tr=td.parentNode;mThis.setItemService(cols_name,tr);},});}
-this.setItemService=(col_name,tr)=>{if(col_name==='service_id'){let d=mThis.tblProductItems.getDataRow(tr),p={'id':d.item_id};}}
-this.tblItemProduct=()=>{mThis.tblProductItems=new ItemsView('_inv_items_panel',{columns:mThis.cols_product,showColumnHeaders:true,showAddLineButton:true,validateColumns:{'item_id':'string','qty':'number','price':'number'},onItemChange:(selOp,col_name,td)=>{let tr=td.parentNode;mThis.setItemInfo(col_name,tr);},onInputChange:(el,col_name,td)=>{let tr=td.parentNode;mThis.setLineTotal(tr);},onItemDeleted:(tr)=>{mThis.setTotals(null);}});}
-this.setItemInfo=(col_name,tr)=>{if(col_name==='item_id'){let d=mThis.tblProductItems.getDataRow(tr);let p={'id':d.item_id};vsapi.call(`${main_view.base_url}/api/inventory/item-info`,p).then(res=>{if(res.status_code===200){let item=res.data?res.data:{};mThis.tblProductItems.setCellValue(tr,'sku',StringSanitizer.sanitizeOut(item.sku));let price=item.ws_selling_price;if(InvoiceSettings.default_price_type==='retail')price=item.selling_price;mThis.tblProductItems.setCellValue(tr,'price',price);mThis.tblProductItems.setCellValue(tr,'qty',1);mThis.tblProductItems.setCellValue(tr,'tax_rate',item.sales_tax_rate>=0?item.sales_tax_rate:0);mThis.setLineTotal(tr);}});}}
+this.refreshInvoiceInfo=(invoice_id,d)=>{if(!d)return;let cur_symbol=(ExchangeManager.currencies[d.currency_code]||{}).symbol;if(!cur_symbol)cur_symbol='CUR?';if(!d.amount_paid)d.amount_paid=d.total_paid;let tr=mThis.tblInvoice.find(`tbody > tr#ivc_${invoice_id}`);tr.find('td.col-amount-paid').html(mThis.formatInvoiceAmount(d.currency_code,d.amount_paid));tr.find('td.col-pmt-status').html(mThis.generatePmtStatus(d));}
+this.show=(option=null)=>{if(!option)option={};mThis.displayInvoices(()=>{mThis.self.show().siblings().hide();main_view.setTitle(mThis.title_prop);});}}
+let InvoiceDialog=new function(){let mThis=this;this.self=$('#_invs_dlgNewInvoice');this.Invoice_Title=$('#_invs_dlgInvoice_title');this.elReceiptNumber=$('#ivc_ref_number');this.btnSave=$('#_invs_dlgNewInvoice_btnSave');this.lnkAddInvoice=$('#_invs_lnkAddInvoice');this.base_url=$('#__base_url').val();this.SelectPmtTerms=$('#_inv_pmt_terms');this.SelectCustomer=$('#_inv_customers');this.options={};this.elSummary_balanceDue=$('#ivc_balance_due');this.elSummary_subTotal=$('#ivc_sub_total');this.elSummary_discount=$('#ivc_discount');this.elSummary_taxAmount=$('#ivc_tax_amount');this.elSummary_grandTotal=$('#ivc_grand_total');this.div_item_panel=$('#_ivc_items_panel');this.div_product_panel=$('#_ivc_product_panel');this.div_service_panel=$('#_ivc_service_panel');this.cols_product=[{"name":"item_id","displayName":"item_name","title":"Item Name","dataType":"string","displayType":"select","width":"250px"},{"name":"qty","title":"Quantity","dataType":"number","defaultValue":1,"displayType":"input"},{"name":"sku","title":"SKU","dataType":"string","displayType":"input","readOnly":true},{"currencySymbol":mThis.cur_symbol,"name":"price","title":"Price","dataType":"number","displayType":"input"},{"showPercentage":true,"name":"discount_percent","title":"Discount (%)","dataType":"number","displayType":"input"},{"isPercentage":true,"name":"tax_rate","title":"Tax (%)","dataType":"number","displayType":"input"},{"currencySymbol":mThis.cur_symbol,"name":"line_total","title":"Line Total","dataType":"number","displayType":"input","readOnly":true}];this.cols_service=[{"name":"service_id","title":"Service","dataType":"string","displayType":"select","width":"250px"},{"name":"qty","title":"Qty","dataType":"number","displayType":"input"},{"name":"price","title":"Price","dataType":"number","displayType":"input"},{"name":"discount_percent","title":"Discount(%)","isPercentage":true,"dataType":"number","displayType":"input"},{"name":"tax_rate","title":"Tax","isPercentage":true,"dataType":"number","displayType":"input"},{"name":"line_total","title":"Line Total","dataType":"number","displayType":"input","readOnly":true}];this.initItemsView=()=>{mThis.initServiceItemView();mThis.initProductItemView();mThis.itemTabs={'product':{'pane':mThis.div_product_panel,'tabButtonClass':'tab-item-product'},'service':{'pane':mThis.div_service_panel,'tabButtonClass':'tab-item-service'}}
+mThis.self.on('click','.tab-item',function(e){e.preventDefault();let viewname=$(this).data("viewname");mThis.setActiveItemView(viewname);});}
+this.initServiceItemView=()=>{mThis.tblServiceItems=new ItemsView('_ivc_service_panel',{columns:mThis.cols_service,showColumnHeaders:true,showAddLineButton:true,validateColumns:{'service_id':'string','qty':'number','price':'number'},onItemChange:(selOp,cols_name,td)=>{let tr=td.parentNode;mThis.setItemServiceInfo(cols_name,tr);},onInputChange:(el,col_name,td)=>{let tr=td.parentNode;mThis.setLineTotal_service(tr);},});vsapi.call(`${mThis.base_url}/api/settings/options-service`,null).then(res=>{if(res.status_code===200){let data=res.data;mThis.tblServiceItems.setSelectOptions('service_id',data);}});}
+this.setItemServiceInfo=(col_name,tr)=>{if(col_name==='service_id'){let d=mThis.tblServiceItems.getDataRow(tr);let p={'id':d.service_id};vsapi.call(`${mThis.base_url}/api/service/info`,p,null,false).then(res=>{if(res.status_code===200){let item=res.data?res.data:{};mThis.tblServiceItems.setCellValue(tr,'qty',1);mThis.tblServiceItems.setCellValue(tr,'price',item.price);mThis.tblServiceItems.setCellValue(tr,'tax_rate',item.tax_rate);mThis.setLineTotal_service(tr);}});}}
+this.initProductItemView=()=>{mThis.tblProductItems=new ItemsView('_ivc_product_panel',{columns:mThis.cols_product,showColumnHeaders:true,showAddLineButton:true,validateColumns:{'item_id':'string','qty':'number','price':'number'},onItemChange:(selOp,col_name,td)=>{let tr=td.parentNode;mThis.setItemInfo(col_name,tr);},onInputChange:(el,col_name,td)=>{let tr=td.parentNode;mThis.setLineTotal_product(tr);},onItemDeleted:(tr)=>{mThis.setTotals(null);}});}
+this.setItemInfo=(col_name,tr)=>{if(col_name==='item_id'){let d=mThis.tblProductItems.getDataRow(tr);let p={'id':d.item_id};vsapi.call(`${main_view.base_url}/api/inventory/item-info`,p).then(res=>{if(res.status_code===200){let item=res.data?res.data:{};mThis.tblProductItems.setCellValue(tr,'sku',StringSanitizer.sanitizeOut(item.sku));let price=item.ws_selling_price;if(InvoiceSettings.default_price_type==='retail')price=item.selling_price;mThis.tblProductItems.setCellValue(tr,'price',price);mThis.tblProductItems.setCellValue(tr,'qty',1);mThis.tblProductItems.setCellValue(tr,'tax_rate',item.sales_tax_rate>=0?item.sales_tax_rate:0);mThis.setLineTotal_product(tr);}});}}
 this.calculateInvoiceDiscount=(discount=0,sub_total=0)=>{discount=isNaN(discount)?0:discount;let discount_type=InvoiceSettings.default_discount_type;if(discount_type==='percentage'||discount_type==='percent'){return{'discount_type':'percentage','discount_percent':discount,'discount_amount':Number((sub_total*discount/100))};}else{return{'discount_type':'amount','discount_percent':Number((discount*100)/sub_total),'discount_amount':discount};}}
 this.getCurrencySymbol=(l)=>{return mThis.currency_symbol?mThis.currency_symbol:InvoiceSettings.currency.symbol;}
-this.setLineTotal=(tr)=>{let cur_symbol=mThis.getCurrencySymbol();let d=mThis.tblProductItems.getDataRow(tr);let price=parseFloat(d.price);let qty=parseFloat(d.qty);let discount_percent=parseFloat(d.discount_percent);let line_total=price*qty;let discount_amt=line_total*discount_percent/100;let tax_rate=parseFloat(d.tax_rate);let tax_amount=(line_total-discount_amt)*tax_rate/100;line_total=isNaN(line_total)?0:line_total-discount_amt+tax_amount;d.line_total=line_total;mThis.tblProductItems.setCellValue(tr,'line_total',d.line_total);mThis.setTotals(cur_symbol);}
-this.setTotals=(cur_symbol=null)=>{if(!cur_symbol)cur_symbol=mThis.getCurrencySymbol();let sub_total=0;let total_tax=0;let items=mThis.tblProductItems.getItems();(items||[]).map(i=>{let line_total=parseFloat(i.line_total);let tax_rate=parseFloat(i.tax_rate);let amount_before_tax=(line_total*100)/(100+tax_rate);let tax_amt=line_total-amount_before_tax;total_tax+=parseFloat(tax_amt);sub_total+=parseFloat(line_total);});sub_total=isNaN(sub_total)?0:sub_total;total_tax=isNaN(total_tax)?0:total_tax;let discount_base=sub_total-total_tax;let discountInfo=mThis.calculateInvoiceDiscount(mThis.elSummary_discount.val(),Number(discount_base));let grand_total=Number(sub_total-discountInfo.discount_amount).toFixed(2);mThis.elSummary_subTotal.text([cur_symbol,' ',sub_total].join(''));mThis.elSummary_taxAmount.text([cur_symbol,' ',Number(total_tax).toFixed(2)].join(''));mThis.elSummary_grandTotal.text([cur_symbol,' ',grand_total].join(''));mThis.elSummary_balanceDue.text([cur_symbol,' ',grand_total].join(''));}
-this.initItemsView();this.elSummary_discount.on('keyup',(e)=>{mThis.setTotals();});this.lnkAddInvoice.on('click',(e)=>{e.preventDefault();let op={'id':0,"previousComponent":mThis,"previousComponentOptions":mThis.options,"onClose":res=>{if(res.status_code===200){alert('New Customer created => '+JSON.stringify(res));}}};CustomerDialog.show(op);});this.btnSave.on('click',(e)=>{e.preventDefault();let p=mThis.getDataForm();let api_endpoint=`${mThis.base_url}/api/invoice/create`;if(p.id>0)api_endpoint=`${mThis.base_url}/api/invoice/update`;vsapi.call(api_endpoint,p,'POST',null).then(res=>{if(res.status_code===200){p.created=!p.id;if(p.created)
+this.setLineTotal_product=(tr)=>{let cur_symbol=mThis.getCurrencySymbol();let d=mThis.tblProductItems.getDataRow(tr);let price=parseFloat(d.price);let qty=parseFloat(d.qty);let discount_percent=parseFloat(d.discount_percent);let line_total=price*qty;let discount_amt=line_total*discount_percent/100;let tax_rate=parseFloat(d.tax_rate);let tax_amount=(line_total-discount_amt)*tax_rate/100;line_total=isNaN(line_total)?0:line_total-discount_amt+tax_amount;d.line_total=line_total;mThis.tblProductItems.setCellValue(tr,'line_total',d.line_total);mThis.setTotals(cur_symbol);}
+this.setLineTotal_service=(tr)=>{let cur_symbol=mThis.getCurrencySymbol();let d=mThis.tblServiceItems.getDataRow(tr);let price=parseFloat(d.price);let qty=parseFloat(d.qty);let discount_percent=parseFloat(d.discount_percent);let line_total=price*qty;let discount_amt=line_total*discount_percent/100;let tax_rate=parseFloat(d.tax_rate);let tax_amount=(line_total-discount_amt)*tax_rate/100;line_total=isNaN(line_total)?0:line_total-discount_amt+tax_amount;d.line_total=line_total;mThis.tblServiceItems.setCellValue(tr,'line_total',d.line_total);mThis.setTotals(cur_symbol);}
+this.setTotals=(cur_symbol=null)=>{if(!cur_symbol)cur_symbol=mThis.getCurrencySymbol();let sub_total=0;let total_tax=0;let items=mThis.tblProductItems.getItems();(items||[]).map(i=>{let line_total=parseFloat(i.line_total);let tax_rate=parseFloat(i.tax_rate);let amount_before_tax=(line_total*100)/(100+tax_rate);let tax_amt=line_total-amount_before_tax;total_tax+=parseFloat(tax_amt);sub_total+=parseFloat(line_total);});let service_items=mThis.tblServiceItems.getItems();(service_items||[]).map(i=>{let line_total=parseFloat(i.line_total);let tax_rate=parseFloat(i.tax_rate);let amount_before_tax=(line_total*100)/(100+tax_rate);let tax_amt=line_total-amount_before_tax;total_tax+=parseFloat(tax_amt);sub_total+=parseFloat(line_total);});sub_total=isNaN(sub_total)?0:sub_total;total_tax=isNaN(total_tax)?0:total_tax;let discount_base=sub_total-total_tax;let discountInfo=mThis.calculateInvoiceDiscount(mThis.elSummary_discount.val(),Number(discount_base));let grand_total=Number(sub_total-discountInfo.discount_amount).toFixed(2);mThis.elSummary_subTotal.text([cur_symbol,' ',sub_total].join(''));mThis.elSummary_taxAmount.text([cur_symbol,' ',Number(total_tax).toFixed(2)].join(''));mThis.elSummary_grandTotal.text([cur_symbol,' ',grand_total].join(''));mThis.elSummary_balanceDue.text([cur_symbol,' ',grand_total].join(''));}
+this.initItemsView();this.elSummary_discount.on('keyup',(e)=>{e.preventDefault();mThis.setTotals();});this.lnkAddInvoice.on('click',(e)=>{e.preventDefault();let op={'id':0,"previousComponent":mThis,"previousComponentOptions":mThis.options,"onClose":res=>{if(res.status_code===200){alert('New Customer created => '+JSON.stringify(res));}}};CustomerDialog.show(op);});this.btnSave.on('click',(e)=>{e.preventDefault();let p=mThis.getDataForm();let api_endpoint=`${mThis.base_url}/api/invoice/create`;if(p.id>0)api_endpoint=`${mThis.base_url}/api/invoice/update`;vsapi.call(api_endpoint,p,'POST',null).then(res=>{if(res.status_code===200){p.created=!p.id;if(p.created)
 cv_interact.success(['Invoice ',res.data.ref_number,' created!'].join(''));else cv_interact.info(['Invoice ',res.data.ref_number,' updated!'].join(''));if(typeof mThis.onClose==='function')mThis.onClose(p);mThis.self.modal('hide');}
 else
 cv_interact.error(res.error_message);});});this.loadInvoiceFormOptions=(onFinish=null)=>{vsapi.call(`${mThis.base_url}/api/inventory/settings/invoice-form-options`,null).then(res=>{if(res.status_code===200){let data=res.data;onFinish(data);}});}
 this.setData=(d=null)=>{if(!d)d={};let cur_symbol=d.currency_symbol?d.currency_symbol:InvoiceSettings.currency.symbol;mThis.currency_symbol=cur_symbol;mThis.elReceiptNumber.html(d.ref_number);mThis.self.find('.data-input').each(function(){let el=$(this);let f=el.data('field');if(el.is('select'))el.val(d[f]).trigger('change');else el.val(d[f]);});mThis.tblProductItems.setData(d.items);d.sub_total=d.amount;d.grand_total=d.amount_due;mThis.elSummary_discount.val(d.discount_type==='percentage'?d.discount_percent:d.discount_amount);mThis.elSummary_subTotal.text([cur_symbol,' ',d.sub_total].join(''));mThis.elSummary_taxAmount.text([cur_symbol,' ',Number(d.tax_amount)].join(''));mThis.elSummary_grandTotal.text([cur_symbol,' ',d.grand_total].join(''));mThis.elSummary_balanceDue.text([cur_symbol,' ',d.grand_total].join(''));}
 this.getDataForm=()=>{let p={'id':(mThis.options||{}).id};mThis.self.find('.data-input').each(function(){let el=$(this);let f=el.data('field');p[f]=el.val();});p.discount=mThis.elSummary_discount.val();p.discount_type=InvoiceSettings.default_discount_type;p.items=mThis.tblInvoiceItems.getItems();return p;}
-this.show=(options)=>{if(!options)options={};mThis.onClose=options.onClose;mThis.options=options;mThis.loadInvoiceFormOptions((d)=>{mThis.tblProductItems.setSelectOptions('item_id',d.items);VSUtil.setComboItems(mThis.SelectPmtTerms,d.pmt_terms,'code','description',true,'(select terms)',null);VSUtil.setComboItems(mThis.SelectCustomer,d.customers,'id','customer_name',true,'(select customer)',null);if(options.id>0){mThis.Invoice_Title.text("Modify Invoice");let p={'id':options.id};vsapi.call(`${mThis.base_url}/api/invoice/details`,p).then(res=>{if(res.status_code===200){let d=res.data;let items=StringSanitizer.sanitizeObject(d.items);d.items=null;let invoice=StringSanitizer.sanitizeObject(d);invoice.items=items;mThis.setData(invoice);mThis.self.modal({backdrop:'static'});}});}else{mThis.Invoice_Title.text("New Invoice");mThis.setData(null);mThis.self.modal({backdrop:'static'});}});}}
+this.setActiveItemView=(viewname)=>{let x=mThis.itemTabs[viewname];x.pane.show().siblings().hide();mThis.self.find(`.${x.tabButtonClass}`).addClass('bg-success').siblings().removeClass('bg-success');}
+this.show=(options)=>{if(!options)options={};mThis.onClose=options.onClose;mThis.options=options;mThis.loadInvoiceFormOptions((d)=>{mThis.tblProductItems.setSelectOptions('item_id',d.items);VSUtil.setComboItems(mThis.SelectPmtTerms,d.pmt_terms,'code','description',true,'(select terms)',null);VSUtil.setComboItems(mThis.SelectCustomer,d.customers,'id','customer_name',true,'(select customer)',null);if(options.id>0){mThis.Invoice_Title.text("Modify Invoice");let p={'id':options.id};vsapi.call(`${mThis.base_url}/api/invoice/details`,p).then(res=>{if(res.status_code===200){let d=res.data;let items=StringSanitizer.sanitizeObject(d.items);d.items=null;let invoice=StringSanitizer.sanitizeObject(d);invoice.items=items;mThis.setData(invoice);mThis.self.modal({backdrop:'static'});}});}else{mThis.Invoice_Title.text("New Invoice");mThis.setData(null);mThis.self.modal({backdrop:'static'});}
+mThis.setActiveItemView('product');});}}
 let PaymentDialog=new function(){let mThis=this;this.self=$(`#_ivc_dlgPayment`);this.btnSave=$('#_ivc_dlgPayment_btnSave');this.invoiceInfoPanel=$('#_ivc_dlgPayment_invoice_info');this.elTitle=$('#_ivc_dlgPayment_title');this.options=null;this.btnSave.on('click',(e)=>{let api_end_point=`${main_view.base_url}/api/invoice-payment/receive`;if(mThis.options.id>0)api_end_point=`${main_view.base_url}/api/invoice-payment/update`;let p=mThis.getFormData();mThis.btnSave.prop('disabled',true);vsapi.call(api_end_point,p).then(res=>{if(res.status_code===200){if(typeof mThis.options.onClose==='function')mThis.options.onClose(res.data);mThis.self.modal('hide');mThis.btnSave.prop('disabled',false);}else{cv_interact.error(res.error_message);mThis.btnSave.prop('disabled',false);}});});this.prepareFormOptions=(invoice_id,onFinish)=>{let d={};onFinish(d);}
 this.getFormData=()=>{let p={'id':mThis.options.id};p.invoice_id=mThis.options.invoice_id;mThis.self.find('.data-input').each(function(){let el=$(this);let f=el.data('field');p[f]=el.val();});return p;}
 this.displayPaymentData=(d={})=>{let invoice=(d||{}).invoice;if(!invoice)invoice={};let open_amount=parseFloat(invoice.amount_due)-parseFloat(invoice.amount_paid);let cur_symbol=(ExchangeManager.currencies[invoice.currency_code]||{}).symbol;if(!cur_symbol)cur_symbol='$';open_amount=(open_amount>=0||open_amount<0)?open_amount:0;invoice.open_amount=[cur_symbol,open_amount].join('');invoice.amount_due=[cur_symbol,invoice.amount_due].join('');invoice.amount_paid=[cur_symbol,invoice.amount_paid?invoice.amount_paid:0].join('');mThis.invoiceInfoPanel.find('.display-field').each(function(){let span=$(this);let f=span.data('name');span.html(invoice[f]);});let pmt=(d||{}).payment;mThis.self.find('.data-input').each(function(){let el=$(this);let f=el.data('field');if(el.is('select'))el.val(pmt[f]).trigger('change');else el.val(pmt[f]);});}
@@ -1353,7 +1365,7 @@ data=StringSanitizer.sanitizeObject(data,null);let cnt=1;let my_columns=[{title:
 mThis.table=mThis.tblItems.DataTable({searching:false,destroy:true,paging:true,ordering:false,retrieve:true,info:true,pageLength:10,bLengthChange:false,saveState:true,'processing':true,'language':{'loadingRecords':'&nbsp;','processing':'Loading...',"emptyTable":LocaleManager.trans('No data to display','datatable')},'data':data,'columns':my_columns,"createdRow":function(row,data,dataIndex){cnt++;let tr=$(row);tr.data('id',data.id);}});if(typeof onFinish==='function')onFinish();});};this.show=(options=null)=>{if(!options)options={};mThis.options=options;mThis.displayexchangeRate(()=>{main_view.setTitle(mThis.title_prop);mThis.self.show().siblings().hide();});}}
 let ExchangeRateDialog=new function(){let mThis=this;this.self=$('#_ecr_dlgexchangeRate');this.formUntil=new FormUntil({"itemName":"Currency","formId":'_ecr_dlgexchangeRate',"instance":this,"apiSave":`${main_view.base_url}/api/currency/save`,"apiGet":`${main_view.base_url}/api/currency/details`,"modifyTitle":"Modify Currency","createTitle":"New Currency","identityProps":['id'],"form_data_props":['id'],"sanitize_excepts":[],'use_alert_error':true,'beforeShow':()=>{}});this.show=(options)=>{mThis.formUntil.show(options);}}
 let ExchangeRateDetailsDialog=new function(){let mThis=this;this.self=$(`#_ecr_dlgExchangeRate_detail`);this.formUntil=new FormUntil({"itemName":"Currency Rate","formId":'_ecr_dlgExchangeRate_detail',"titleId":"_ecr_dlgExchangeRate_detail_title","saveButtonId":"_ecr_detail_btnSave","instance":this,"apiSave":`${main_view.base_url}/api/exchange-rate/save`,"apiGet":`${main_view.base_url}/api/exchange-rate/details`,"modifyTitle":"Modify Currency Rate","createTitle":"New Currency Rate","identityProps":['id'],"form_data_props":['id'],"sanitize_excepts":[],'use_alert_error':true,'beforeShow':()=>{}});this.show=(options)=>{mThis.formUntil.show(options);}}
-$(document).ready(function(){ExchangeRateComponent.init();}); 'use strict';let StockTransferComponent=new function(){let mThis=this;this.title_prop="Stock Transfer";this.self=$('#_main_stockTransferComponent');this.base_url=$('#__base_url').val();this.tblItems=$('#_st_tblStockTransfer');this.init=()=>{}
+$(document).ready(function(){ExchangeRateComponent.init();}); 'use strict';let StockTransferComponent=new function(){let mThis=this;this.title_prop="Stock Transfer";this.self=$('#_main_stockTransferComponent');this.base_url=$('#__base_url').val();this.tblItems=$('#_st_tblStockTransfer');this.btnNew=$('#_st_btnNew');this.init=()=>{mThis.btnNew.on('click',function(e){e.preventDefault();let op={};StockTransferDialog.show(op);});}
 this.col_titles={"Date":"Date","Qty":"Qty","From":"From","To":"To","By":"By","Remark":"Remark","Status":"Status"};this.trans_title=(title_prop='undefined')=>{return(mThis.col_titles[title_prop]||'undefined');}
 this.setLanguage=()=>{if(LocaleManager.lang!==mThis.lang){for(let prop in mThis.col_titles){mThis.col_titles[prop]=LocaleManager.trans(prop,'items',LocaleManager.lang);}
 mThis.lang=LocaleManager.lang;}}
@@ -1361,7 +1373,9 @@ let cnt=1;this.columns=[{title:mThis.trans_title("Date"),data:cnt++},{title:mThi
 if(mThis.table){mThis.tblItems.DataTable().clear().destroy();mThis.tblItems.empty();mThis.table=null;}
 if(!mThis.table){mThis.table=mThis.tblItems.DataTable({searching:false,destroy:true,paging:true,ordering:false,retrieve:true,info:true,pageLength:10,bLengthChange:false,saveState:true,'processing':true,'language':{'loadingRecords':'&nbsp;','processing':'Loading...',"emptyTable":LocaleManager.trans('No data to display','datatable')},'data':data,'columns':mThis.columns,"createdRow":function(row,data,dataIndex){cnt++;let tr=$(row);tr.data('id',data.id);}});}
 if(typeof onFinish==='function')onFinish();});}
-this.show=(options)=>{if(!options)options={};mThis.options=options;mThis.displayStockTransfer(()=>{main_view.setTitle(mThis.title_prop);mThis.self.show().siblings().hide();});}}
+this.show=(options)=>{if(!options)options={};mThis.options=options;main_view.setTitle(mThis.title_prop);mThis.self.show().siblings().hide();}}
+let StockTransferDialog=new function(){let mThis=this;this.self=$('#_st_dlgStockTransfer');this.btnSave=$('#_st_dlgStockTransfer_btnSave');this.init=()=>{mThis.btnSave.on('click',function(e){e.preventDefault();let p={};mThis.self.find('.data-input').each(function(){let el=$(this);let f=el.data('field');p[f]=el.val();});});}
+this.show=(options)=>{if(!options)options={};mThis.self.modal({backdrop:'static'});}}
 window.addEventListener('DOMContentLoaded',()=>{StockTransferComponent.init();}); 'use strict';let UserManagementComponent=new function(){let mThis=this;this.title_prop="User Management";mThis.base_url=$('#__base_url').val();mThis.initialized=false;this.init=function(){mThis.title='Manage Users';mThis.self=$('#_um_userManagementComponent');mThis.initialized=true;};this.show=function(options){if(!mThis.initialized)alert('UserManagementComponent.init() is not called for inialization');if(options){if(options.title)mThis.title=options.title;mThis.onClose=options.onClose;}
 main_view.setTitle(mThis.title_prop);mThis.self.show().siblings().hide();UserListPanel.show();};this.hide=function(){mThis.self.hide();};};let UserListPanel=new function(){let mThis=this;this.self=$('#_um_userListPanel');mThis.base_url=$('#__base_url').val();this.lnkNewUser=$('#_um_lnkNewUser');this.elFilter_userclass=$('#_um_filter_user_class');this.elSearch=$('#_um_userlist_search');this.tblUsers=$('#_um_tblUsers');this.div_extended_detail=$('#_um_extended_details_panel');vsapi.call(`${this.base_url}/api/getComboItems_userclass`,null).then(res=>{if(res.status_code===200){let items=StringSanitizer.sanitizeObject(res.data);items.unshift({'user_class':null,'user_class_name':'(All Classes)'});VSUtil.setComboItems(mThis.elFilter_userclass,items,'user_class','user_class_name',null,null,null);}});this.lnkNewUser.on('click',function(e){e.preventDefault();let op={user_class:mThis.elFilter_userclass.val()};AddUserPanel.show(op);});mThis.tblUsers.on('mouseover','tr',function(e){let el=$(this).find('._um_item_action_button');el.show();}).on('mouseleave','tr',function(e){let el=$(this).find('._um_item_action_button');el.hide();});this.elFilter_userclass.on('change',(e)=>{mThis.displayUserList();});this.elSearch.on('keyup',function(e){e.preventDefault();let d=$(this).val();mThis.displayUserList(d);});mThis.tblUsers.on('click','a.btn-user-setpwd',(e)=>{e.preventDefault();let tr=$(e.target).closest('tr');let id=tr.data('id');let login_name=tr.data('loginname');if(!login_name||login_name==''){cv_interact.error("Login name is empty or invalid");return;}
 let op={"login_name":login_name,"user_id":id};SetPasswordDialog.show(op);});mThis.tblUsers.on('click','a.btn-user-delete',(e)=>{e.preventDefault();let tr=$(e.target).closest('tr');let id=tr.data('id');cv_interact.confirm('Delete this user?',{title:'Delete user',context:'delete'},e=>{if(e){mThis.deleteUser(id);}});});mThis.tblUsers.on('click','a.btn-user-modify',(e)=>{e.preventDefault();let tr=$(e.target).closest('tr');let login_name=tr.find('.login_name-text').text();mThis.changeLoginName(login_name,tr);});$(document).on('click',function(e){let container=mThis.tblUsers.find('.dropdown');if(container){if(!container.is(e.target)&&container.has(e.target).length===0){mThis.tblUsers.find('.dropdown-menu').each(function(){$(this).removeClass('show');});}}

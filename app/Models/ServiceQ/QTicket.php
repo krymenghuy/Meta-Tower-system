@@ -330,7 +330,7 @@ class QTicket //extends Model
 
     static function chiefComplaints($branch_id,$ticket_id=0){
         //NOTE: table appt_chief_complaints does not have column "branch_id"
-        return DB::table('appt_chief_complaints as ct')->join('chief_complaints as cc','cc.id','=','ct.chief_complaint_id')->where('ct.ticket_id',$ticket_id)->selectRaw("cc.id,cc.name")->get();
+        return DB::table('appt_chief_complaints as ct')->join('chief_complaints as cc','cc.id','=','ct.chief_complaint_id')->where('ct.ticket_id',$ticket_id)->selectRaw("ct.id,cc.id AS chief_complaint_id,cc.name")->get();
     }
     function getChiefComplaints($ticket_id=null,$ss=null){
         $ss = $ss? $ss:$this->getUserInfo();

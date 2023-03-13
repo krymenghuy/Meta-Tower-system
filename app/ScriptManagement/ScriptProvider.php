@@ -41,7 +41,7 @@ namespace App\ScriptManagement;
         //    ],
         'primary-defer'=>[
             'attr'=>'defer',
-            'output_file'=>'/dist/js/dms.primary-defer.js',
+            'output_file'=>'/dist/js/rmi.primary-defer.js',
             'files'=>[
                 //'/assets/js/crypto-js.js',
                 //'/js/security/Encrypter.js'

@@ -1027,9 +1027,9 @@ let ConsultTabView = new function () {
     this.getDataInput_PhysicalExaminationAutoSave = () => {
         let div = $('#_consult_pe_wrapper');
         let pe = [];
-        div.find('._consult_pe_input').each(function(){
+        div.find('textarea._consult_pe_input').each(function(){
             let el = $(this);
-            pe.push({'physical_examination': el.val()});
+            pe.push({'category':'General','content': el.val()});
         });
         return pe;
     }
@@ -1039,7 +1039,7 @@ let ConsultTabView = new function () {
         let pd = [];
         div.find('._consult_diagnosis_input').each(function(){
             let el = $(this);
-            pd.push({'diagnosis': el.val()});
+            pd.push({'category':'General','content': el.val()});
         });
         return pd;
     }
@@ -1049,7 +1049,7 @@ let ConsultTabView = new function () {
         let pr = [];
         div.find('._consult_advice_input').each(function(){
             let el = $(this);
-            pr.push({"advice":el.val()});
+            pr.push({"category":"General","content":el.val()});
         });
         return pr;
     }
@@ -1252,7 +1252,7 @@ let ConsultTabView = new function () {
 
             let columns = [
                 {
-                    "name": "id",
+                    "name": "chief_complaint_id",
                     "title": "Chief Complaint",
                     "dataType": "string",
                     "displayType": "select",
@@ -1266,20 +1266,27 @@ let ConsultTabView = new function () {
                 columns[0].selectOptions = cc_options;
                 mThis.tblChiefComplaints = new ItemsView(div_id, {
                     "columns": columns,
-                    "validateColumns":{'id':'positive'},
+                    "validateColumns":{'chief_complaint_id':'positive'},
                     "langProp": "consult",
                     "tableClass": "table",
                     "showColumnHeaders": false,
                     "showAddLineButton": false,
-                    "onItemChange": (item,col_name,td) => {
-                       //mThis.saveChiefComplaint({'cc_id':item.value,'description':item.text});
-                       let p= {'cc_id':item.value,'ticket_id':ticket_id};
-                       vsapi.call(`${main_view.base_url}/api/consultation/save-chief-complaint`,p,null,false).then(res => {
-                            if(res.status_code === 200){}
-                       });
+                    // "onItemChange": (id,selOption,col_name,td) => {
+                    //    //mThis.saveChiefComplaint({'cc_id':item.value,'description':item.text});
+                    // },
+                    "onItemValidated":(id,item,tr)=>{
+                        //id = is the unique row id used when user select new Chief complaint to replace the old one.
+                        let p= {'id':id,'cc_id':item.chief_complaint_id,'ticket_id':ticket_id};
+                        vsapi.call(`${main_view.base_url}/api/consultation/save-chief-complaint`,p,null,false).then(res => {
+                            if(res.status_code !== 200) cv_interact.error(res.error_message); 
+                        });
                     },
-                    "onItemDeleted": (tr) => {
-                        console.error('has changed');
+                    "onItemDeleted": (id,tr) => {
+                        //let id = tr.dataset.id;
+                        let p= {'id':id}; //id is NOT chief_complaint_id, but it is unique row ID
+                        vsapi.call(`${main_view.base_url}/api/consultation/remove-chief-complaint`,p,null,false).then(res => {
+                             if(res.status_code === 200){}
+                        });
                     },
                     "numeroFormatter": (numero, row) => {
                         return `<span class="text-secondary fw-bold">${numero}</span>`;
@@ -1295,14 +1302,12 @@ let ConsultTabView = new function () {
             });
     }
 
-    this.saveChiefComplaint = (item)=>{
-        item.ticket_id = mThis.ticket_id;
-        vsapi.call(`${main_view.base_url}/api/consult/save-chief-complaint`,item,null,false).then(res=>{
-            if(res.status_code===200){
-
-            }
-        }); 
-    }
+    // this.saveChiefComplaint = (item)=>{
+    //     item.ticket_id = mThis.ticket_id;
+    //     vsapi.call(`${main_view.base_url}/api/consultation/save-chief-complaint`,item,null,false).then(res=>{
+    //         if(res.status_code !==200) cv_interact.error(res.error_message); 
+    //     }); 
+    // }
     
     this.saveMedicalHistory = (item)=>{
         item.ticket_id = mThis.ticket_id;
@@ -1382,10 +1387,12 @@ let ConsultTabView = new function () {
     }
 
     this.loadConsult_PE = (ticket_id, onFinish) => {
-        vsapi.call(`${main_view.base_url}/api/ticket/patient-pe`, null).then(res => {
+        let p = {'ticket_id':ticket_id};
+        vsapi.call(`${main_view.base_url}/api/consultation/pe`, p,null,false).then(res => {
             if (res.status_code === 200) {
-                let d = StringSanitizer.sanitizeOut(res.data);
-                onFinish(d);
+                //d = {'category','content'}
+                //let d = res.data;
+                onFinish(res.data);
             } else onFinish(null);
         });
     }
@@ -1395,32 +1402,39 @@ let ConsultTabView = new function () {
         let ticket_id = div.data('tid');
         let wrapper_id = '_consult_pe_wrapper';
         let el = div.find(`#${wrapper_id}`);
+
         mThis.loadConsult_PE(ticket_id, pe => {
             let html = "";
-            if (!pe) pe = "";
+            if (!pe) pe = {};
+            if(el.length > 0){
+                el.find('textarea._consult_pe_input').val(pe.content);
+                el.show().siblings().hide();
+                return;
+            } 
 
-            if (!el || el.length === 0) {
                 let title = LocaleManager.trans('Physical Examination', 'consult');
                 html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                         <h3 class="trans-text" data-langprop="consult.Pysical Examination">${title}</a></h3>
                         <div class="">
-                           <textarea class="_consult_pe_input form-control data-input" cols="10" rows="5">${pe}</textarea>
+                           <textarea class="_consult_pe_input form-control data-input" cols="10" rows="5">${pe.content}</textarea>
                         </div>
                     </div>`;
                 div.append(html);
                 el = div.find(`#${wrapper_id}`);
+                el.show().siblings().hide();
 
                 el.on('change','textarea._consult_pe_input',function(){
-                    let d = mThis.getDataInput_PhysicalExaminationAutoSave();
-                    console.log(d);
+                    let p = {'ticket_id':ticket_id,'items':mThis.getDataInput_PhysicalExaminationAutoSave()};
+                    vsapi.call(`${main_view.base_url}/api/consultation/save-pe`,p,null,false).then(res =>{
+                         if(res.status_code !==200) cv_interact.error(res.error_message);
+                    }); 
                 });
-            }
-            el.show().siblings().hide();
+            
         });
     }
 
     this.loadPrescription = (ticket_id = 0, onFinish) => {
-        vsapi.call(`${main_view.base_url}/api/settings/options-product`, null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/consultation/prescription`, {'ticket_id':ticket_id}).then(res => {
             if (res.status_code === 200) {
                 onFinish(res.data);
             }
@@ -1440,81 +1454,113 @@ let ConsultTabView = new function () {
         let div_id = '_consult_prescription';
         let el = div.find(`#${wrapper_id}`);
         let ticket_id = div.data('tid');
-
-        if (!el || el.length === 0) {
-            let title = LocaleManager.trans('Prescription', 'consult');
-            let html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}"><h3 class="trans-text" data-langprop="consult.Prescription">${title}</h3>
-              <div id="${div_id}"></div>
-            </div>`;
-
-            div.html(html);
-            let columns = [
-                {
-                    "name": "item_id",
-                    "title": "Product",
-                    "dataType": "string",
-                    "displayType": "select",
-                    "cssClass": "",
-                },
-                {
-                    "name": "qty",
-                    "title": "Quantity",
-                    "dataType": "number",
-                    "displayType": "input"
-                },
-                {
-                    "name": "sku",
-                    "title": "UOM",
-                    "dataType": "string",
-                    "displayType": "input",
-                    "readOnly": true
-                },
-                {
-                    "name": "usage",
-                    "title": "Usage",
-                    "dataType": "string",
-                    "displayType": "input"
-                },
-                {
-                    "name": "duration_days",
-                    "title": "Days",
-                    "dataType": "number",
-                    "displayType": "input"
-                },
-                {
-                    "name": "reason",
-                    "title": "Reasons",
-                    "dataType": "string",
-                    "displayType": "input"
-                }
-            ];
-
-            mThis.loadPrescription(ticket_id, d => {
-                //After having loaded prescription data from server => init prescription table
-                columns[0].selectOptions = d.products;
-                //columns[3].selectOptions = d.usage_options;
-                //tblPrescribedItems
-                mThis.tblPrescribedItems = new ItemsView(div_id, {
-                    "columns": columns,
-                    "langProp": "consult",
-                    "tableClass": "table presciption-table",
-                    "showColumnHeaders": true,
-                    "showAddLineButton": true,
-                    "addLineButtonText": "Add Item",
-                    "onItemChange": (selOp, col_name, td) => {
-                        let tr = td.parentNode;
-                        //st item sku
-                        mThis.setItemInfo(col_name, tr);
-                    },
-                    "numeroFormatter": (numero, row) => {
-                        return `<span class="text-secondary fw-bold">${numero}</span>`;
-                    },
-                    "emptyMessage": `<span class="text-secondary text-align-center">${LocaleManager.trans('No item prescribed', 'consult')}</span>`,
-                });
-                el = div.find(`#${wrapper_id}`);
-            });
+        
+        if (el.length > 0){
+            el.show().siblings().hide();
+        }else{
+                  //begin:: Init Prescription view by rendering html
+                  let title = LocaleManager.trans('Prescription', 'consult');
+                  let html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}"><h3 class="trans-text" data-langprop="consult.Prescription">${title}</h3>
+                  <div id="${div_id}"></div>
+                  </div>`;
+                  div.html(html);
+                  let columns = [
+                      {
+                          "name": "item_id",
+                          "title": "Product",
+                          "dataType": "string",
+                          "displayType": "select",
+                          "cssClass": "",
+                          "width":250
+                      },
+                      {
+                          "name": "qty",
+                          "title": "Quantity",
+                          "dataType": "number",
+                          "displayType": "input"
+                      },
+                      {
+                          "name": "sku",
+                          "title": "UOM",
+                          "dataType": "string",
+                          "displayType": "input",
+                          "readOnly": true
+                      },
+                      {
+                          "name": "usage",
+                          "title": "Usage",
+                          "dataType": "string",
+                          "displayType": "input"
+                      },
+                      {
+                          "name": "duration_days",
+                          "title": "Days",
+                          "dataType": "number",
+                          "displayType": "input"
+                      },
+                      {
+                          "name": "reason",
+                          "title": "Reasons",
+                          "dataType": "string",
+                          "displayType": "input"
+                      }
+                  ];
+       
+                  //columns[3].selectOptions = d.usage_options;
+                  //tblPrescribedItems
+                  mThis.tblPrescribedItems = new ItemsView(div_id, {
+                      "columns": columns,
+                      validateColumns:{'item_id':'positive','qty':'number','duration_days':'number','sku':'string'},
+                      "langProp": "consult",
+                      "tableClass": "table presciption-table",
+                      "showColumnHeaders": true,
+                      "showAddLineButton": true,
+                      "addLineButtonText": "Add Item",
+                      onItemChange: (row_id,item, col_name, td,tr) => {
+                          //st item sku
+                          mThis.setItemInfo(col_name, tr);
+                      },
+                      onItemValidated:(id,item,tr)=>{
+                          //id = is the unique row id used when user select new Chief complaint to replace the old one.
+                          let thisItem = mThis.tblPrescribedItems.getDataRow(tr);
+                          let p= {'id':id,'item_id':thisItem.item_id,'description':thisItem.name,'qty':thisItem.qty,'sku':thisItem.sku,'usage':thisItem.usage,'duration_days':thisItem.duration_days,'reason':thisItem.reason,'remarks':thisItem.remarks,'ticket_id':ticket_id};
+                          vsapi.call(`${main_view.base_url}/api/consultation/save-prescription-item`,p,null,false).then(res => {
+                              if(res.status_code === 200){
+                              let new_row_id = res.data.id; 
+                              mThis.tblPrescribedItems.setRowId(tr,new_row_id); 
+                              }else cv_interact.error(res.error_message); 
+                          });
+                      },
+                      onItemDeleted:(row_id,tr)=>{
+                          let p= {'id':row_id,'ticket_id':ticket_id};
+                          vsapi.call(`${main_view.base_url}/api/consultation/remove-prescription-item`,p,null,false).then(res => {
+                              if(res.status_code !== 200) cv_interact.error(res.error_message); 
+                          });
+                      },
+                      numeroFormatter: (numero, row) => {
+                          return `<span class="text-secondary fw-bold">${numero}</span>`;
+                      },
+                      "emptyMessage": `<span class="text-secondary text-align-center">${LocaleManager.trans('No item prescribed', 'consult')}</span>`,
+                  });
+                  el = div.find(`#${wrapper_id}`);
+                  el.show().siblings().hide();
+                //end:: init Prescription ItemView
         }
-        el.show().siblings().hide();
+ 
+        mThis.loadPrescription(ticket_id,(data)=>{
+             //NOE: data.items contains array of medications prescribed by doctor
+            //"data.headerInfo" may be used later
+            //"data" contains {'items','options_product'}
+            mThis.tblPrescribedItems.setSelectOptions('item_id',data.options_product);
+            mThis.tblPrescribedItems.setData(data.items);
+        });
+    }
+
+    this.loadService = (ticket_id,onFinish)=>{
+        let p = {'ticket_id':ticket_id};
+      vsapi.call(`${main_view.base_url}/api/consultation/services`,p,null,false).then(res=>{
+          onFinish(res.data?res.data:{});
+      });
     }
 
     this.showConsultService = (div, view_name) => {
@@ -1522,74 +1568,105 @@ let ConsultTabView = new function () {
         let div_id = '_consult_service';
         let el = div.find(`#${wrapper_id}`);
         let ticket_id = div.data('tid');
+   
+        let title = LocaleManager.trans('Service', 'consult');
+        if(el.length > 0){
+            el.show().siblings().hide();
+        }else{
+              
+                let html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}"><h3 class="trans-text" data-langprop="consult.Service">${title}</h3>
+                <div id="${div_id}"></div>
+                </div>`;
 
-        if (!el || el.length === 0) {
-            let title = LocaleManager.trans('Service', 'consult');
-            let html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}"><h3 class="trans-text" data-langprop="consult.Service">${title}</h3>
-              <div id="${div_id}"></div>
-            </div>`;
+                div.html(html);
+                let columns = [
+                    {
+                        "name": "service_id",
+                        "title": "Name",
+                        "dataType": "string",
+                        "displayType": "select",
+                        "width":"250px"
+                    },
+                    {
+                        "name": "qty",
+                        "title": "Quantity",
+                        "dataType": "number",
+                        "displayType": "input",
+                        "defaultValue":1,
+                        "readOnly":true
+                    },
+                    // {
+                    //     "name": "sku",
+                    //     "title": "SKU",
+                    //     "dataType": "number",
+                    //     "displayType": "input"
+                    // },
+                    {
+                        "name": "emp_id", /* performed by */
+                        "title": "Performed By",
+                        "dataType": "number",
+                        "displayType": "select"
+                    }
+                    ,{
+                        "name": "remarks",
+                        "title": "Remarks",
+                        "dataType": "string",
+                        "displayType": "input"
+                    }
+                ];
 
-            div.html(html);
-            let columns = [
-                {
-                    "name": "item_id",
-                    "title": "Name",
-                    "dataType": "string",
-                    "displayType": "select",
-                    "width":"250px"
-                },
-                {
-                    "name": "description",
-                    "title": "Description",
-                    "dataType": "string",
-                    "displayType": "input"
-                },
-                {
-                    "name": "usage",
-                    "title": "Usage",
-                    "dataType": "string",
-                    "displayType": "input"
-                },
-                {
-                    "name": "done_by",
-                    "title": "Done By",
-                    "dataType": "string",
-                    "displayType": "input"
-                },
-                {
-                    "name": "reason",
-                    "title": "Reasons",
-                    "dataType": "string",
-                    "displayType": "input"
-                }
-            ];
-
-            mThis.loadService(ticket_id, d => {
-                //After having loaded prescription data from server => init prescription table
-                columns[0].selectOptions = d.products;
+                // columns[0].selectOptions = data.options_service;
+                // columns[2].selectOptions = data.options_emp; /** performed by **/
                 //columns[3].selectOptions = d.usage_options;
                 mThis.tblServiceItems = new ItemsView(div_id, {
                     "columns": columns,
+                    validateColumns:{'service_id':'positive'},
                     "langProp": "consult",
                     "tableClass": "table presciption-table",
                     "showColumnHeaders": true,
                     "showAddLineButton": true,
                     "addLineButtonText": "Add Item",
-                    "onItemChange": (selOp, col_name, td) => {
+                    "onItemChange": (row_id,selOp, col_name, td) => {
                         let tr = td.parentNode;
                         //st item sku
-                        mThis.setItemInfo(col_name, tr);
+                        mThis.setServiceInfo(col_name, tr);
                     },
-                    "numeroFormatter": (numero, row) => {
+                    onItemValidated:(id,item,tr)=>{
+                        //id = is the unique row id used when user select new Chief complaint to replace the old one.
+                        let thisItem = mThis.tblServiceItems.getDataRow(tr);
+                        let p= {'ticket_id':ticket_id,'id':id,'service_id':thisItem.service_id,'description':thisItem.name,'qty':thisItem.qty?thisItem.qty:1,'sku':thisItem.sku?thisItem.sku:'none','remarks':thisItem.remarks,'emp_id':thisItem.emp_id};
+                        if(p.service_id){
+                            vsapi.call(`${main_view.base_url}/api/consultation/save-service-item`,p,null,false).then(res => {
+                                if(res.status_code === 200){
+                                mThis.tblServiceItems.setRowId(tr,res.data.id);
+                                }else cv_interact.error(res.error_message);  
+                            });
+                        }
+                    },
+                    onItemDeleted:(row_id,tr)=>{
+                        let p= {'id':row_id,'ticket_id':ticket_id};
+                        vsapi.call(`${main_view.base_url}/api/consultation/remove-service-item`,p,null,false).then(res => {
+                            if(res.status_code !== 200) cv_interact.error(res.error_message); 
+                        });
+                    },
+                    numeroFormatter: (numero, row) => {
                         return `<span class="text-secondary fw-bold">${numero}</span>`;
                     },
                     "emptyMessage": `<span class="text-secondary text-align-center">${LocaleManager.trans('No item prescribed', 'consult')}</span>`,
                     "validateColumns":{"item_id":"string"}
-                });
+                });               
                 el = div.find(`#${wrapper_id}`);
-            });
+                el.show().siblings().hide();
         }
-        el.show().siblings().hide();
+        
+
+        mThis.loadService(ticket_id,data=>{
+            //columns[0].selectOptions = data.options_service;
+            //columns[2].selectOptions = data.options_emp; /** performed by **/
+            mThis.tblServiceItems.setSelectOptions('service_id',data.options_service);
+            mThis.tblServiceItems.setSelectOptions('emp_id',data.options_emp);
+            mThis.tblServiceItems.setData(data.items);
+        });
     }
 
     this.setItemInfo = (col_name, tr) => {
@@ -1604,13 +1681,27 @@ let ConsultTabView = new function () {
             });
         }
     }
+ 
+    this.setServiceInfo = (col_name,tr)=>{
+        mThis.tblServiceItems.setCellValue(tr, 'qty',1);
+        return;
+        // if (col_name === 'service_id') {
+        //     let d = mThis.tblServiceItems.getDataRow(tr);
+        //     let p = { 'service_id': d.item_id };
+        //     vsapi.call(`${main_view.base_url}/api/settings/service-info`, p).then(res => {
+        //         if (res.status_code === 200) {
+        //             let item = res.data;
+        //             mThis.tblPrescribedItems.setCellValue(tr, 'sku', StringSanitizer.sanitizeOut(item.sku));
+        //         }
+        //     });
+        // }
+    }
 
     this.loadMedicalHistory =(ticket_id,onFinish)=>{
-        let p = {'tiket_id':ticket_id};
+        let p = {'ticket_id':ticket_id};
         vsapi.call(`${main_view.base_url}/api/consultation/medical-history`,p,null,false).then(res=>{
            if(res.status_code===200){
               onFinish(res.data);
-              console.log(res.data);
            }else onFinish({});
         });
     }
@@ -1638,9 +1729,10 @@ let ConsultTabView = new function () {
             <div class="d-flex flex-column">`;
 
             categories.map(c=>{
+              let content = d[c]?d[c]:'';  
               html= [html,`<div>
               <label class="control-label">${c}</label>
-              <textarea data-category="${c}" class="_consult_medical_history_input data-input form-control" cols="10" rows="3">${d[c]}</textarea>
+              <textarea data-category="${c}" class="_consult_medical_history_input data-input form-control" cols="10" rows="3">${content}</textarea>
               </div>`].join('');
             });
             html = [html,`</div></div>`].join('');
@@ -1670,19 +1762,20 @@ let ConsultTabView = new function () {
        });
     }
 
+    //showConsultLaboTests()
     this.showConsultLaboratoryTests = (div, view_name) => {
         let wrapper_id = '_consult_labo_warpper';
         let div_labotest_panel_id = '_consult_div_labotest_panel';
 
         let ticket_id = div.data('tid');
-        let patient_id = div.data('patientid');
+        //let patient_id = div.data('patientid');
         let el = div.find(`#${wrapper_id}`);
 
         if (el.length > 0) {
+            LocaleManager.translateZone(wrapper_id);
+            el.show().siblings().hide();
             mThis.getTicketInfo_laboTest(ticket_id,d=>{
                 mThis.tblLaboTests.setData(d);
-                LocaleManager.translateZone(wrapper_id);
-                el.show().siblings().hide();
             });
             return;
         }
@@ -1705,8 +1798,8 @@ let ConsultTabView = new function () {
                     displayType:'select'
                 },
                 {
-                    name: 'description',
-                    title: 'Description',
+                    name: 'remarks',
+                    title: 'Remarks',
                     displayType:'input'
                 },
                 {
@@ -1720,14 +1813,30 @@ let ConsultTabView = new function () {
 
             mThis.tblLaboTests = new ItemsView(div_labotest_panel_id,{
                 columns: cols,
-                validateColumns:{'labo_test_id':'string','labo_id':'string'},
+                validateColumns:{'test_id':'string','labo_id':'string'},
                 tableClass: "table",
                 addLineButtonText: "Add Labo Test",
                 langProp: 'labotest',
-                onItemChange:(option,col_name,td)=>{
-                     let tr = td.parentNode;
-                     if (col_name ==='labo_test_id') mThis.displayTestInfo(option,tr);
-                }
+                onItemChange:(row_id,item,col_name,td,tr)=>{
+                     //let tr = td.parentNode;
+                     if (col_name ==='test_id') mThis.displayTestInfo(item.test_id,tr);
+                },
+                onItemValidated:(row_id,item,tr)=>{
+                    //id = is the unique row id used when user select new Chief complaint to replace the old one.
+                    let thisItem = mThis.tblLaboTests.getDataRow(tr);
+                    let p= {'id':row_id,'test_id':thisItem.test_id,'labo_id':thisItem.labo_id,'remarks':thisItem.remarks,'ticket_id':ticket_id};
+                    vsapi.call(`${main_view.base_url}/api/consultation/save-labo-test`,p,null,false).then(res => {
+                        if(res.status_code === 200){
+                           mThis.tblLaboTests.setRowId(res.data.id);
+                        }else cv_interact.error(res.error_message); 
+                    });
+                },
+                onItemDeleted:(row_id,tr)=>{
+                    let p= {'id':row_id,'ticket_id':ticket_id};
+                    vsapi.call(`${main_view.base_url}/api/consultation/remove-labo-test`,p,null,false).then(res => {
+                        if(res.status_code !== 200) cv_interact.error(res.error_message); 
+                    });
+                },
             });
             
             //begin::load labo test options, and labo name options for user to select in dropdown list
@@ -1735,7 +1844,7 @@ let ConsultTabView = new function () {
                 vsapi.call(`${main_view.base_url}/api/consultation/labo-test-data`,p,null,false).then(res=>{
                     if(res.status_code===200){
                         let d = res.data;
-                        mThis.tblLaboTests.setSelectOptions('labo_test_id',d.labo_test_options);
+                        mThis.tblLaboTests.setSelectOptions('test_id',d.labo_test_options);
                         mThis.tblLaboTests.setSelectOptions('labo_id',d.labo_options);
                         mThis.tblLaboTests.setData(d.laboTests);
                         el.show().siblings().hide();
@@ -1745,62 +1854,102 @@ let ConsultTabView = new function () {
             //end::load labo test options, and labo name options for user to select in dropdown list
     }
 
-    this.displayTestInfo =(selectedOp,tr)=>{
-        mThis.tblLaboTests.setCellValue(tr,'description',selectedOp.text);
+    this.displayTestInfo =(test_id,tr)=>{
+        vsapi.call(`${main_view.base_url}/api/labo-test/info`,{'test_id':test_id},null,false).then(res=>{
+            if(res.status_code===200){ 
+                let test = res.data?res.data:{};
+                //mThis.tblLaboTests.setCellValue(tr,'description',test.description); //Allow doctor to type in remarks
+                mThis.tblLaboTests.setCellValue(tr,'labo_id',test.labo_id);
+            }
+        });
+       
         //set default Laboratory and allow user to choose if there are more than one labo providing the same test
+    }
+
+    this.loadDiagnosis = (ticket_id,onFinish)=>{
+       let p = {'ticket_id':ticket_id};
+       vsapi.call(`${main_view.base_url}/api/consultation/diagnosis`,p,null,false).then(res=>{
+          onFinish(res.data?res.data:{});
+       });
     }
 
     this.showConsultDiagnosis = (div, view_name) => {
         let wrapper_id = '_consult_diagnosis_warpper';
         let ticket_id = div.data('tid');
-        let patient_id = div.data('patientid');
+        //let patient_id = div.data('patientid');
         let el = div.find(`#${wrapper_id}`);
-
-        if (el.length === 0 || !el) {
-            let html =
-                `<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
-              <h3 class="trans-text" data-langprop="consult.Diagnosis">Diagnosis</h3>
-              <div class="d-flex flex-column">
-                 <label class="control-label">Diagnosis details</label>
-                 <textarea class="_consult_diagnosis_input form-control data-input" cols="10" rows="3" id="_consul_diagnosis"></textarea>
-              </div>
+        
+        if(el.length > 0){
+            LocaleManager.translateZone(wrapper_id);
+            el.show().siblings().hide();
+        }else{
+                let html = `<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
+                <h3 class="trans-text" data-langprop="consult.Diagnosis">Diagnosis</h3>
+                <div class="d-flex flex-column">
+                <label class="control-label">Diagnosis details</label>
+                <textarea class="_consult_diagnosis_input form-control data-input" cols="10" rows="3" id="_consul_diagnosis"></textarea>
+                </div>
             </div>`;
             div.append(html);
             el = div.find(`#${wrapper_id}`);
-
+           
             el.on('change','textarea._consult_diagnosis_input',function(){
-                let d = mThis.getDataInput_DiagnosisAutoSave();
+                let p = {'ticket_id':ticket_id,'items':mThis.getDataInput_DiagnosisAutoSave()};
+                vsapi.call(`${main_view.base_url}/api/consultation/save-diagnosis`,p,null,false).then(res=>{
+                    if(res.status_code !==200) cv_interact.error(res.error_message);
+                });
             });
+            LocaleManager.translateZone(wrapper_id);
+            el.show().siblings().hide(); 
         }
-
-        el.show().siblings().hide();
-        LocaleManager.translateZone(wrapper_id);
+        
+        mThis.loadDiagnosis(ticket_id,d=>{
+            if (el.length>0){
+                //el.show().siblings().hide();
+                el.find('textarea._consult_diagnosis_input').val(d.content);
+            }            
+        });
+ 
     }
 
     this.showConsultRecommendations = (div, view_name) => {
         let wrapper_id = '_consult_advice_warpper';
+        let ticket_id = div.data('tid');
+        //let patient_id = div.data('patientid');
         let el = div.find(`#${wrapper_id}`);
-
-        if (el.length === 0 || !el) {
-            let html =
-                `<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
-              <h3 class="trans-text" data-langprop="consult.Recommendations">Recommendations</h3>
-              <div class="d-flex flex-column">
-                 <label class="control-label">Doctor's recommendation</label>
-                 <textarea class="_consult_advice_input form-control data-input" cols="10" rows="3" id="_consul_advice"></textarea>
-              </div>
+        if(el.length>0){
+            el.show().siblings().hide();
+        }else{
+                let html =`<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
+                <h3 class="trans-text" data-langprop="consult.Recommendations">Recommendations</h3>
+                <div class="d-flex flex-column">
+                <label class="control-label">Doctor's recommendation</label>
+                <textarea class="_consult_advice_input form-control data-input" cols="10" rows="3" id="_consult_advice"></textarea>
+                </div>
             </div>  
-           `;
+            `;
             div.append(html);
             el = div.find(`#${wrapper_id}`);
-
+            el.show().siblings().hide();
+            
             el.on('change','textarea._consult_advice_input',function(){
-                let d = mThis.getDataInput_RecommedationsAutoSave();
+                let p ={'ticket_id':ticket_id,'items':mThis.getDataInput_RecommedationsAutoSave()};
+                vsapi.call(`${main_view.base_url}/api/consultation/save-advice`,p,null,false).then(res=>{
+                    if(res.error_message) cv_interact.error(res.error_message);  
+                });
             });
         }
-
-        el.show().siblings().hide();
         LocaleManager.translateZone(wrapper_id);
+        mThis.loadAdvice(ticket_id,d=>{
+            //NOTE that "d" = {category,content}
+            el.find(`#_consult_advice`).val(d.content);
+        });
+    }
+
+    this.loadAdvice = (ticket_id,onFinish)=>{
+         vsapi.call(`${main_view.base_url}/api/consultation/advice`,{'ticket_id':ticket_id},null,false).then(res=>{
+            onFinish(res.data?res.data:{});
+         });
     }
 
     this.showConsultMedicalReport = (div = null, ticket_id = 0) => {
