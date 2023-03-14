@@ -542,8 +542,8 @@
                                                 style="height:30px;" />
                                             <span>
                                                 <?php
-                        echo Session::get('login_name','Unknown');
-                      ?>
+                                                    echo Session::get('login_name','Unknown');
+                                                ?>
                                             </span>
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right">
