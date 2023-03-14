@@ -6,7 +6,7 @@
          text-transform: uppercase;
          border-bottom: 1px solid #F4DCAD;
          font-size: 0.8em;
-         font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+         font-family: 'Khmer OS Content','Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
      }
 
     .ticket-info-wrapper {
@@ -127,7 +127,7 @@
                                         <ul id="_consult_menus" class="nav flex-column">
                                             <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
-                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                    <img class="size_of_icons_consult" src="{{ asset('assets/images/icons/chief_complaints.svg') }}"/>
                                                 </span>
                                                 <a href="javascript:void(0)" data-viewname="chief-complaints" class="nav-link trans-text" data-langprop="consult.Chief Complaints"></a>
                                             </li>
@@ -171,7 +171,7 @@
                                             </li>
                                             <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
-                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                    <img class="size_of_icons_consult" src="{{ asset('assets/images/icons/service.svg') }}"/>
                                                 </span>
                                                 <a href="javascript:void(0)" data-viewname="service" class="nav-link trans-text" data-langprop="consult.Service"></a>
                                             </li>
