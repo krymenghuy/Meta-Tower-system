@@ -81,17 +81,18 @@ let ExpenseBookComponent = new function () {
     }
 
     this.displayExpenses = (onFinish = null) => {
-        //Initialize language for DataTable columns headers
-        //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-        //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
+        let data = [];
+        for(let i = 0; i<30; i++){
+            data.push({'date':'12-03-2022','pay_to':'admin','amount':'20$','payment_account':'097452437454','payment_method':'ABA','ref_number':'D0197465'});
+        }
+        
         mThis.setLanguage();
         let p = { 'search_value': mThis.elSearchPartner.val() };
-        window.vsapi.call(`${mThis.base_url}/api/partner/list`, p, 'POST', null).then((result) => {
-            let data = [];
-            if (result.status_code === 200) data = result.data;
+        vsapi.call(`${mThis.base_url}/api/partner/list`,p,'POST',null).then((result) => {
+            // let data = [];
+            // if (result.status_code === 200) data = result.data;
             if (mThis.table) {
                 mThis.tblPartners.DataTable().clear().destroy();
-                //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
                 mThis.tblPartners.empty();
                 mThis.table = null;
             }
@@ -107,8 +108,8 @@ let ExpenseBookComponent = new function () {
                     }
                 },
                 {
-                    data: "date",
-                    title: mThis.trans_title('Date')
+                    title: mThis.trans_title('Date'),
+                    data: "date"
                 },
                 {
                     title: mThis.trans_title('Pay To'),
@@ -133,7 +134,6 @@ let ExpenseBookComponent = new function () {
                 {
                     title: mThis.trans_title('Action'),
                     data: function (data, a, b) {
-                        let status_class = null; //mThis.getStatusClass(data.status_id);
                         return [`<div class="form-inline">`,
                             `<a href="javascript:void(0)" class="btn_lbp_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" class="btn_lbp_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
@@ -147,19 +147,13 @@ let ExpenseBookComponent = new function () {
             //END Define colum
 
             //translate column names
-            //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
-
             if (!mThis.table)
                 mThis.table = mThis.tblPartners.DataTable({
                     searching: false,
                     destroy: true,
                     paging: true,
                     ordering: false,
-                    //dom: 'Bfrtip',
                     retrieve: true,
-                    //scrollY:390,
-                    //scrollX:500,
-                    //pagingType:'numbers',
                     info: true,
                     pageLength: 10,
                     bLengthChange: false,
@@ -222,19 +216,14 @@ let ExpenseBookDialog = new function () {
         "itemName": "Expense Book",
         "formId": '_epb_dlgExpenseBook',
         "titleId": "_epb_dlgExpenseBook_title",
-        //"errorId":"_msl_dlgService_error",
-        //"saveButtonId":"_epb_btnSave",
         "instance": this,
         "apiSave": `${main_view.base_url}/api/partner/save`,
         "apiGet": `${main_view.base_url}/api/partner/details`,
-        //"identityProp":"id",
         "modifyTitle": "Modify Expense Book",
         "createTitle": "New Expense Book",
         "identityProps": ['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['id'],
-        //"sub_prop":"chief_complaint_items",
-        //"sub_prop_function":mThis.getChiefComplaints,
         "sanitize_excepts": ["cp_email", "email"],
         'use_alert_error': true,
         "init": () => {

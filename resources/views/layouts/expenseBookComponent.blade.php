@@ -15,7 +15,7 @@
             </div>
         </div>
         <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;min-height:350px;">
-            <table class="table header-light-blue header-uppercase" id="_epb_tblExpenseBook"></table>
+            <table class="table header-light-blue header-uppercase table-hover" id="_epb_tblExpenseBook"></table>
         </div>
     </div>
 </div>

@@ -109,7 +109,7 @@
                                         <ul id="_history_menus" class="nav flex-column">
                                             <li class="nav-item history_style_custom d-flex align-items-center">
                                                 <span class="history_icon">
-                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                    <img class="size_of_icons_consult" src="{{ asset('assets/images/icons/medical_history_consult.svg') }}"/>
                                                 </span>
                                                 <a href="javascript:void(0)" data-viewname="medical-reports" class="nav-link trans-text" data-langprop="history.Medical Reports"></a>
                                             </li>
@@ -133,39 +133,39 @@
                                             </li>
                                             <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
-                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                    <img class="size_of_icons_consult" src="{{ asset('assets/images/icons/vital_signs.svg') }}"/>
                                                 </span>
                                                 <a href="javascript:void(0)" data-viewname="vital-signs" class="nav-link trans-text" data-langprop="consult.Vital Signs"></a>
                                             </li>
 
                                             <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
-                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                    <img class="size_of_icons_consult" src="{{ asset('assets/images/icons/medical_history_consult.svg') }}"/>
                                                 </span>
                                                 <a href="javascript:void(0)" data-viewname="medical-history" class="nav-link trans-text" data-langprop="consult.Medical History"></a>
                                             </li>
 
                                             <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
-                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                    <img class="size_of_icons_consult" src="{{ asset('assets/images/icons/physical_examination.svg') }}"/>
                                                 </span>
                                                 <a href="javascript:void(0)" data-viewname="physical-examination" class="nav-link trans-text" data-langprop="consult.Physical Examination"></a>
                                             </li>
                                             <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
-                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                    <img class="size_of_icons_consult" src="{{ asset('assets/images/icons/laboratory_tests.svg') }}"/>
                                                 </span>
                                                 <a href="javascript:void(0)" data-viewname="labo-tests" class="nav-link trans-text" data-langprop="consult.Laboratory Tests"></a>
                                             </li>
                                             <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
-                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                    <img class="size_of_icons_consult" src="{{ asset('assets/images/icons/diagnosis.svg') }}"/>
                                                 </span>
                                                 <a href="javascript:void(0)" data-viewname="diagnosis" class="nav-link trans-text" data-langprop="consult.Diagnosis"></a>
                                             </li>
                                             <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
-                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                    <img class="size_of_icons_consult" src="{{ asset('assets/images/icons/prescription.svg') }}"/>
                                                 </span>
                                                 <a href="javascript:void(0)" data-viewname="prescription" class="nav-link trans-text" data-langprop="consult.Prescription"></a>
                                             </li>
@@ -177,19 +177,19 @@
                                             </li>
                                             <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
-                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                    <img class="size_of_icons_consult" src="{{ asset('assets/images/icons/recommendations.svg') }}"/>
                                                 </span>
                                                 <a href="javascript:void(0)" data-viewname="advice" class="nav-link trans-text" data-langprop="consult.Recommendations"></a>
                                             </li>
                                             <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
-                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                    <img class="size_of_icons_consult" src="{{ asset('assets/images/icons/medical_report.svg') }}"/>
                                                 </span>
                                                 <a href="javascript:void(0)" data-viewname="medical-report" class="nav-link trans-text" data-langprop="consult.Medical Report"></a>
                                             </li>
                                             <li class="nav-item consult-style-custom d-flex align-items-center">
                                                 <span class="consult-icon">
-                                                    <i class="fa-solid fa-user ps-2"></i>
+                                                    <img class="size_of_icons_consult" src="{{ asset('assets/images/icons/medical_certificate.svg') }}"/>
                                                 </span>
                                                 <a href="javascript:void(0)" data-viewname="medical-certificate" class="nav-link trans-text" data-langprop="consult.Medical Certificate"></a>
                                             </li>

@@ -92,7 +92,7 @@ let VendorsComponent = new function () {
         let div_wrapper = detail_tr.find('div.expandable-row-containter');
         div_wrapper.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
         let p = { 'group_id': group_id };
-        window.vsapi.call(`${main_view.base_url}/api/inventory/stock/group-items`, p, 'GET', false).then((res) => {
+        window.vsapi.call(`${main_view.base_url}/api/inventory/stock/group-items`,p,null,false).then((res) => {
             let html = null;
             if (res.status_code === 200) {
 
@@ -118,7 +118,6 @@ let VendorsComponent = new function () {
             }
 
             div_wrapper.html(html);
-            //div_wrapper.slideDown(500);
         });
     }
 
@@ -152,26 +151,6 @@ let VendorsComponent = new function () {
                     title: mThis.trans_title("Name"),
                     data: "name"
                 },
-                // {
-                //     data: "vendor_type",
-                //     title: mThis.trans_title('Vendor Type')
-                // },
-                // {
-                //     title: mThis.trans_title('Balance'),
-                //     data: "balance"
-                // },
-                // {
-                //     title: mThis.trans_title('Tax Number'),
-                //     data: "tax_number"
-                // },
-                // {
-                //     title: mThis.trans_title('Email'),
-                //     data: "email"
-                // },
-                // {
-                //     title: mThis.trans_title('Phone'),
-                //     data: "phone_number"
-                // },
                 {
                     title: mThis.trans_title('Action'),
                     data: function (item, a, b) {
@@ -194,11 +173,7 @@ let VendorsComponent = new function () {
                     destroy: true,
                     paging: true,
                     ordering: false,
-                    //dom: 'Bfrtip',
                     retrieve: true,
-                    //scrollY:390,
-                    //scrollX:500,
-                    //pagingType:'numbers',
                     info: true,
                     pageLength: 10,
                     bLengthChange: false,
@@ -238,19 +213,14 @@ let VendorsDialog = new function () {
         "itemName": "Vendor",
         "formId": '_vdr_dlgVendors',
         "titleId": "_vdr_dlgVendors_title",
-        //"errorId":"_msl_dlgService_error",
-        //"saveButtonId":"_msl_dlgService_btnSave",
         "instance": this,
         "apiSave": `${main_view.base_url}/api/inventory/save-item`,
         "apiGet": `${main_view.base_url}/api/inventory/details-item`,
-        //"identityProp":"id",
         "modifyTitle": "Modify Vendor",
         "createTitle": "New Vendor",
         "identityProps": ['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['id'],
-        //"sub_prop":"chief_complaint_items",
-        //"sub_prop_function":mThis.getChiefComplaints,
         "sanitize_excepts": [],
         'use_alert_error': true,
         'beforeShow': () => { }

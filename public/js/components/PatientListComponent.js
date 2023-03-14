@@ -9,7 +9,7 @@ let PatientListComponent = new function () {
     this.elSearch = $('#_pal_search');
 
     this.icon_url = () => {
-        return `${[VSUtil.base_url(), '/', VSUtil.asset_url()].join('')}/images/icons`;
+        return `${[VSUtil.asset_url()].join('')}/images/icons`;
     }
 
     this.btnNewPatient = $('#_pal_btnNewPatient');
@@ -176,7 +176,6 @@ let PatientListComponent = new function () {
                 {
                     title: mThis.trans_title('Action'),
                     data: function (data, a, b) {
-                        let status_class = null; //mThis.getStatusClass(data.status_id);
                         return [`<div class="form-inline">`,
                             `<a href="javascript:void(0)" class="btn_co_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" class="btn_pat_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
@@ -198,11 +197,7 @@ let PatientListComponent = new function () {
                     destroy: true,
                     paging: true,
                     ordering: false,
-                    //dom: 'Bfrtip',
                     retrieve: true,
-                    //scrollY:390,
-                    //scrollX:500,
-                    //pagingType:'numbers',
                     info: true,
                     pageLength: 10,
                     bLengthChange: false,
@@ -217,7 +212,7 @@ let PatientListComponent = new function () {
                     'columns': my_columns
                     , "createdRow": function (row, data, dataIndex) {
                         let tr = $(row);
-                        tr.data('id', data.id); //patient_id
+                        tr.data('id', data.id);
                         tr.data('statusid', data.status_id);
                         tr.data('personid', data.person_id);
                     }
@@ -229,6 +224,7 @@ let PatientListComponent = new function () {
     };
 
     this.show = (option = null) => {
+        if(!option) option = {}; 
         mThis.displayPatients(() => {
             mThis.self.show().siblings().hide();
             main_view.setTitle(mThis.title_prop);
