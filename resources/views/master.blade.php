@@ -408,7 +408,7 @@
 
                     <div class="kt-aside__brand-tools">
                         <button class="kt-aside__brand-aside-toggler" id="kt_aside_toggler"
-                            style="padding;10px;font-size:1.3em !important">
+                            style="padding:10px;font-size:1.3em !important">
                             <span>
                                 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                                     width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon">
