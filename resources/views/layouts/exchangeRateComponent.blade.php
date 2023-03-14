@@ -9,7 +9,7 @@
             </button>
         </div>
         <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;min-height:350px;">
-            <table class="table header-light-blue header-uppercase" id="_ecr_tblexchangeRate"></table>
+            <table class="table header-light-blue header-uppercase table-hover" id="_ecr_tblexchangeRate"></table>
         </div>
     </div>
 </div>

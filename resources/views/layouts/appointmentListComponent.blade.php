@@ -147,9 +147,6 @@
                  <div class="d-flex justify-content-end col-md-4">
                      <input class="input-sm form-control" data-select="datepicker" placeholder="Filter date" id="_apl_filter_date"/>&nbsp;
                      <select class="input-sm combo-box combo-box-strong" placeholder="Status" id="_apl_filter_status"></select>
-                     <!-- <a id="_apl_btnPrint" href="javascript:void(0)"  class="btn btn-sm btn-primary" style="border-radius:10px;"><i class="fa-solid fas fa-print"></i> Print</a>&nbsp; -->
-                     <!-- <a id="_apl_btnPDF" href="javascript:void(0)" class="btn btn-sm btn-success" style="border-radius:10px"><i class="fa-solid fas fa-file-pdf"></i> PDF</a>&nbsp; -->
-                     <!-- <a id="_apl_btnExcel" href="javascript:void(0)"  class="btn btn-sm btn-default" style="border-radius:10px"><i class="fa-solid fas fa-file-pdf"></i> Excel</a> -->
                  </div>
              </div>
 

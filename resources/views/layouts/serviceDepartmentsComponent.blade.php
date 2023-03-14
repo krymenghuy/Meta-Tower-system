@@ -9,7 +9,7 @@
             </button>
         </div>
         <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;min-height:350px;">
-            <table class="table header-light-blue header-uppercase" id="_svd_tblItem"></table>
+            <table class="table header-light-blue header-uppercase table-hover" id="_svd_tblItem"></table>
         </div>
     </div>
 </div>

@@ -35,7 +35,7 @@
                       </div>
                     
                       <div id="_um_tblUsers_wrapper"  class="table_wrapper border-style1">
-                         <table id="_um_tblUsers" class="table" style="width:100%"></table>
+                         <table id="_um_tblUsers" class="table table-hover" style="width:100%"></table>
                       </div>                  
               
                 </div> <!--end::div.col-lg-12-->

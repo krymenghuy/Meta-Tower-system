@@ -10,11 +10,11 @@
         </div>
 
         <div class="d-flex justify-content-end col-md-6">
-            <a style="padding:5px; 10px 0 10px; border-radius:3px;background:#e6ecff;margin-right:10px;" href="#"><i
+            <a style="padding:5px 10px 0 10px; border-radius:3px;background:#e6ecff;margin-right:10px;" href="#"><i
                     class="fa-solid fas fa-print"></i> Print</a>
-            <a style="padding:5px; 10px 0 10px; border-radius:3px;background:#ffe6e6;margin-right:10px;" href="#"><i
+            <a style="padding:5px 10px 0 10px; border-radius:3px;background:#ffe6e6;margin-right:10px;" href="#"><i
                     class="fa-solid fas fa-file-pdf"></i> PDF</a>
-            <a style="padding:5px; 10px 0 10px; border-radius:3px;background:#ccffcc;" href="#"><i
+            <a style="padding:5px 10px 0 10px; border-radius:3px;background:#ccffcc;" href="#"><i
                     class="fa-solid fas fa-file-pdf"></i> Excel</a>
         </div>
     </div>
