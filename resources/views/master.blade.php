@@ -1,5 +1,5 @@
-<?php 
-   if(!Session::get('login_name')) return view('login.index'); 
+<?php
+   if(!Session::get('login_name')) return view('login.index');
    $role= \App\Models\UM::firstRole(Session::get('user_id'));
    $role_id = $role?$role->id:null;
    if ($role_id != 1 && $role_id != 2){
@@ -132,8 +132,10 @@
     <!-- ::End AndimLte -->
 
     <style type="text/css">
-        <blade media|%20(min-width%3A%201025px)%20%7B>.kt-header--fixed.kt-subheader--fixed.kt-subheader--enabled .kt-wrapper {
-            padding-top: 65px !important;
+        @media screen and (min-width: 1025px){
+            .kt-header--fixed.kt-subheader--fixed.kt-subheader--enabled .kt-wrapper {
+                padding-top: 65px !important;
+            }
         }
 
         .required:after {
@@ -319,13 +321,12 @@
         */
         .kt-menu__link-text {
             font-size: 0.9em;
-            font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+            font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
         }
 
         table th td {
             font-size: 0.9em;
-            font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
-
+            font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
         }
 
         .kt-menu__item--open {
@@ -371,7 +372,6 @@
         <input type="hidden" id="__xsp_value" value="<?php echo Str::random(30); ?>" />
     </div>
 
-    <!-- <div class="backdrop"></div> -->
     <img id="vs_loader1" width="270" height="170" style="display:none;position:fixed;z-index:1000;top:40%;left:40%"
         class="vs-loader" src="{{ asset('assets/images/vslogo1.gif') }}">
     <!-- begin:: Page -->
@@ -387,9 +387,6 @@
             <button class="kt-header-mobile__toggler kt-header-mobile__toggler--left" id="kt_aside_mobile_toggler">
                 <span class="text-primary"></span>
             </button>
-            <!-- <button class="kt-header-mobile__toggler" id="kt_header_mobile_toggler">
-          <span class="text-success"></span>
-        </button> -->
             <button class="kt-header-mobile__topbar-toggler" id="kt_header_mobile_topbar_toggler">
                 <i class="flaticon-more"></i>
             </button>
@@ -398,11 +395,6 @@
     <!-- end:: Header Mobile -->
     <div class="kt-grid kt-grid--hor kt-grid--root">
         <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--ver kt-page">
-
-            <!-- begin:: Aside -->
-            <!-- <button class="kt-aside-close " id="kt_aside_close_btn">
-          <i class="la la-close"></i>
-        </button> -->
             <div class="kt-aside  kt-aside--fixed  kt-grid__item kt-grid kt-grid--desktop kt-grid--hor-desktop"
                 id="kt_aside">
 
@@ -416,7 +408,7 @@
 
                     <div class="kt-aside__brand-tools">
                         <button class="kt-aside__brand-aside-toggler" id="kt_aside_toggler"
-                            style="padding;10px;font-size:1.3em !important">
+                            style="padding:10px;font-size:1.3em !important">
                             <span>
                                 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                                     width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon">
@@ -523,7 +515,7 @@
                     <span style="position:absolute;top:-15%;right:5%;color:red;" id="_main_span_task_count">0</span>
                   </button>
                   <div class="dropdown-menu dropdown-menu-right">
-                    <span class="task-header">Requests</span> 
+                    <span class="task-header">Requests</span>
                     <div class="main-task-panel"></div>
                   </div>
                 </div> -->
@@ -648,8 +640,6 @@
             <i class="fa fa-arrow-up"></i>
         </div>
         <!-- end::Scrolltop -->
- 
 </body>
 <!-- end::Body -->
-
 </html>

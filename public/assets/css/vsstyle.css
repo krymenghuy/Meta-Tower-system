@@ -34,6 +34,10 @@
   max-width: 200px;
 }
 
+.size_of_icons_consult{
+  width:1.5vw;
+}
+
 .kt-aside .kt-aside-menu {
   margin: 0;
   background-color: var(--menu-bg-color);
@@ -820,11 +824,6 @@ tbody, td, tfoot, th, thead, tr{
       --border-angle: 2turn;
     }
   }
-
-  /* 
-  &:hover {
-     animation-play-state: paused;
-  } */
 }
 
 @property --border-angle {

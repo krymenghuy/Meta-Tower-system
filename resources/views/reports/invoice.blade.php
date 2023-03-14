@@ -16,7 +16,7 @@
                 margin: 0;
                 size: A4 portrait;
             }
-            
+
             body{
                 width: 100%;
                 height: 100%;
@@ -28,7 +28,7 @@
 </head>
 
 <body>
-    <?php 
+    <?php
       if ($invoice->currency_code === 'USD') $cur_symbol ='$';
       else if ($invoice->currency_code == 'KHR') $cur_symbol ='រ';
     ?>
@@ -153,7 +153,7 @@
                         <tbody>
                             @foreach($invoice->items as $item)
                                 <tr>
-                                    <td><?php $cnt = 1; echo $cnt++ ?></td> 
+                                    <td><?php $cnt = 1; echo $cnt++ ?></td>
                                     <td>{{ $item->item_name }}</td>
                                     <td></td>
                                     <td>The term medical is used when something has to do with medicine or the field of medicine. Medical can often be heard when discussing locations, drugs, or practices involving hospitals, doctors, and pharmacies.</td>
@@ -213,7 +213,7 @@
                                  <td>$qty</td>
                                  <td>$price</td>
                                  <td>$line_total</td>
-                                 </tr>";  
+                                 </tr>";
                                $cnt++;
                               }
                             ?>

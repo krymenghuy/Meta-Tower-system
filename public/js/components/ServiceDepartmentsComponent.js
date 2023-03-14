@@ -115,7 +115,7 @@ let ServiceDepartmentsComponent = new function () {
                 },
                 {
                     title: mThis.trans_title('Create At'),
-                    data: "create_at"
+                    data: "created_at"
                 },
                 {
                     title: mThis.trans_title('Action'),
