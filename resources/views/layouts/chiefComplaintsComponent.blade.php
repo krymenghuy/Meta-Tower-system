@@ -1,4 +1,4 @@
-<div id="_main_chiefComplaintsComponent" style="display:none;padding-top:15px">
+<div id="_main_chiefComplaintsComponent" class="mobile-padding" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom border border-1 border-success rounded-3 p-3 mx-3">
         <div id="_ccp_panel"></div>
     </div>

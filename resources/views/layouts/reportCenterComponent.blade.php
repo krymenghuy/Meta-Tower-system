@@ -61,7 +61,7 @@
     }
 
 </style>
-<div id="_rpc_reportCenterComponent" style="display:none">
+<div id="_rpc_reportCenterComponent" class="mobile-padding" style="display:none">
     <div class="container-fluid" style="padding:35px;">
         <div class="row">
             <div class="col-lg-6">

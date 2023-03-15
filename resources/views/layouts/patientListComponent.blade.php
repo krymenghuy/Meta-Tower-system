@@ -13,7 +13,7 @@
      }
  </style>
 
- <div id="_main_patientListComponent" style="display:none;">
+ <div id="_main_patientListComponent" class="mobile-padding" style="display:none">
      <section class="content">
          <div class="container-fluid">
              <div class="d-flex justify-content-between" style="padding:10px">

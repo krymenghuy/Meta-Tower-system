@@ -1,4 +1,4 @@
-<div id="_main_expenseBookComponent" style="display:none;padding-top:15px">
+<div id="_main_expenseBookComponent" class="mobile-padding" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
         <div class="d-flex align-items-center gap-2 ms-3">
             <button class="vs-btn-custom-primary" type="button" id="_epb_btnNew">
@@ -14,7 +14,7 @@
                 </div>
             </div>
         </div>
-        <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;min-height:350px;">
+        <div class="flat-box" style="margin:17px; padding:15px; overflow:auto; min-height:350px">
             <table class="table header-light-blue header-uppercase table-hover" id="_epb_tblExpenseBook"></table>
         </div>
     </div>
