@@ -1,4 +1,4 @@
-<div id="_main_positionsComponent" style="display:none;padding-top:15px">
+<div id="_main_positionsComponent" class="mobile-padding" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
         <div class="d-flex align-items-center gap-2 ms-3">
             <button class="vs-btn-custom-primary" type="button" id="_pos_btnNew">

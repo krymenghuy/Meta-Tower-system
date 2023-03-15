@@ -1,7 +1,4 @@
-<style>
-</style>
-
-<div id="_main_dashboardComponent" style="display:none;padding:35px">
+<div id="_main_dashboardComponent" class="mobile-padding" style="display:none;padding:35px">
     <div class="row g-4">
         <div class="col-lg-6">
             <div class="w-100 shadow rounded-4 chart-container position-relative p-3">
@@ -112,7 +109,7 @@
             </div>
         </div>
     </div>
-    <div class="table-responsive">
-        <table class="table" id="_dash_tblDashboard"></table>
+    <div class="table-responsive p-3 border border-success rounded-3 mt-3">
+        <table class="table table-hover" id="_dash_tblDashboard"></table>
     </div>
 </div>

@@ -46,7 +46,7 @@
     .pg-sender_name {
         color: #41CCCE;
         font-size: 1.1em !important;
-        font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+        font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
     }
 
     .pg-sender_type {
@@ -78,13 +78,11 @@
         color: #85929E;
         display: block;
         font-size: 0.9em;
-        font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+        font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
     }
 
     .vc-value:hover {
         border-bottom: 1.1px solid red;
-        /* transform:scale(1.0); */
-        /* transition: border-bottom 0.5s ease-in; */
     }
 
     .vc-value {
@@ -142,7 +140,7 @@
     span.pg-pickup_time {
         margin-top: 5px;
         display: block;
-        font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+        font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
         font-size: 0.9em !important;
         padding: 3px;
     }
@@ -174,8 +172,7 @@
 
 </style>
 
-<div id="_main_itemListComponent" style="display:none;padding:15px;margin-left:2px">
-    <!--begin::Portlet-->
+<div id="_main_itemListComponent" class="mobile-padding" style="display:none;padding:15px;margin-left:2px">
     <div style="display:flex;flex-direction:row">
 
         <div class="form-inline" style="width:60%;">
