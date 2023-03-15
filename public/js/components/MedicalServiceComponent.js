@@ -1,7 +1,7 @@
 "use strict";
 let MedicalServiceComponent = new function () {
     let mThis = this;
-    this.title_prop = 'Medical Services';
+    this.title_prop = "Medical Services";
     this.base_url = $('#__base_url').val();
     this.self = $('#_main_medicalServiceComponent');
     this.btnNew = $('#_msl_btnNew');
@@ -91,7 +91,7 @@ let MedicalServiceComponent = new function () {
         //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
         let p = { 'search_value': mThis.elSearchItem.val(), "department_id": mThis.elFilter_department.val() };
-        window.vsapi.call(`${mThis.base_url}/api/service/items`, p, 'POST', null).then((result) => {
+        vsapi.call(`${mThis.base_url}/api/service/items`, p, 'POST', null).then((result) => {
             let data = [];
             if (result.status_code === 200) data = result.data;
             if (mThis.table) {
@@ -160,18 +160,11 @@ let MedicalServiceComponent = new function () {
                     destroy: true,
                     paging: true,
                     ordering: false,
-                    //dom: 'Bfrtip',
                     retrieve: true,
-                    //scrollY:390,
-                    //scrollX:500,
-                    //pagingType:'numbers',
                     info: true,
                     pageLength: 10,
                     bLengthChange: false,
                     saveState: true,
-                    // rowReorder: {
-                    // dataSrc: 'sequence'
-                    // },
                     'processing': true,
                     'language': {
                         'loadingRecords': '&nbsp;',
@@ -227,7 +220,7 @@ let MedicalServiceDialog = new function () {
 
     //on ServiceDialog: display department items in Select2/Dropdown list for user to select
     this.prepareFormOptions = (default_id, onFinish) => {
-        window.vsapi.call(`${main_view.base_url}/api/settings/departments`, null).then((res) => {
+        vsapi.call(`${main_view.base_url}/api/settings/departments`, null).then((res) => {
             let items = StringSanitizer.sanitizeObject(res.data);
             VSUtil.setComboItems(mThis.elDepartment, items, 'id', 'name', true, '(Select Department)', default_id);
             if (default_id) mThis.elDepartment.trigger('change');
@@ -238,20 +231,14 @@ let MedicalServiceDialog = new function () {
     this.formUntil = new FormUntil({
         "itemName": "Service",
         "formId": '_msl_dlgService',
-        //"titleId":"_msl_dlgService_title",
-        //"errorId":"_msl_dlgService_error",
-        //"saveButtonId":"_msl_dlgService_btnSave",
         "instance": this,
         "apiSave": `${main_view.base_url}/api/service/save`,
         "apiGet": `${main_view.base_url}/api/service/details`,
-        //"identityProp":"id",
         "modifyTitle": "Modify Service",
         "createTitle": "New Service",
         "identityProps": ['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['id'],
-        //"sub_prop":"chief_complaint_items",
-        //"sub_prop_function":mThis.getChiefComplaints,
         "sanitize_excepts": [],
         'use_alert_error': true,
         'beforeShow': () => { }
