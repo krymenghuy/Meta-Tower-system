@@ -39,6 +39,30 @@
   padding-left:10px;
 }
 
+.pn-test-item{
+  width:190px;
+  position: relative;
+}
+
+.labo-test-list-container{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.btn-remove-parnter-test{
+  font-size:17px;
+  padding:0 10px;
+}
+
+.btn-remove-parnter-test:hover{
+  border:1px solid #ff0000;
+  background-color:#ff0000;
+  color:#ffffff;
+  border-top-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
 .kt-aside .kt-aside-menu {
   margin: 0;
   background-color: var(--menu-bg-color);
