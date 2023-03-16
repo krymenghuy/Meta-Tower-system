@@ -7,7 +7,6 @@
      return;
    }
 ?>
-
 <!DOCTYPE html>
 <html lang="<?php echo Session::get('lang','en'); ?>">
 <!-- begin::Head -->
