@@ -9,7 +9,7 @@ let ExpenseBookComponent = new function () {
     this.tblPartners = $('#_epb_tblExpenseBook');
     this.form_data = {};
 
-    this.col_titles = {
+    this.col_titles ={
         "No": "No",
         "Date": "Date",
         "Pay To": "Pay To",
@@ -24,7 +24,6 @@ let ExpenseBookComponent = new function () {
     this.trans_title = (title_prop = 'undefined') => {
         return (mThis.col_titles[title_prop] || 'undefined');
     }
-
     this.setLanguage = () => {
         if (LocaleManager.lang !== mThis.lang) {
             for (let prop in mThis.col_titles) {
