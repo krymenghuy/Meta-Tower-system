@@ -33,7 +33,86 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <?php StyleManager::render('vsmclinic-style',1); ?> 
+ 
+    <!-- <link rel="stylesheet" href="{{ asset('assets/material-css/bootstrap.min.css') }}"> -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        type="text/css" />
+
+    <!--begin::Page Vendors Styles(used by this page) -->
+    <link href="{{ asset('assets/vendors/custom/datatables/datatables.bundle.css') }}"
+        rel="stylesheet" type="text/css" />
+    <!--end::Page Vendors Styles -->
+
+    <!--begin:: Global Mandatory Vendors -->
+    <link
+        href="{{ asset('assets/vendors/general/perfect-scrollbar/css/perfect-scrollbar.css') }}"
+        rel="stylesheet" type="text/css" />
+
+    <!--end:: Global Mandatory Vendors -->
+
+    <!--begin:: Global Optional Vendors -->
+    <link href="{{ asset('assets/vendors/general/tether/dist/css/tether.css') }}"
+        rel="stylesheet" type="text/css" />
+    <link
+        href="{{ asset('assets/vendors/general/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css') }}"
+        rel="stylesheet" type="text/css" />
+    <link
+        href="{{ asset('assets/vendors/general/bootstrap-datetime-picker/css/bootstrap-datetimepicker.css') }}"
+        rel="stylesheet" type="text/css" />
+    <link
+        href="{{ asset('assets/vendors/general/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.css') }}"
+        rel="stylesheet" type="text/css" />
+
+    <link href="{{ asset('assets/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
+    <link
+        href="{{ asset('assets/vendors/general/owl.carousel/dist/assets/owl.theme.default.css') }}"
+        rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/vendors/general/dropzone/dist/dropzone.css') }}"
+        rel="stylesheet" type="text/css" />
+
+    <link
+        href="{{ asset('assets/vendors/general/bootstrap-markdown/css/bootstrap-markdown.min.css') }}"
+        rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/vendors/general/animate.css/animate.css') }}"
+        rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/vendors/general/toastr/build/toastr.css') }}"
+        rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/vendors/general/morris.js/morris.css') }}" rel="stylesheet"
+        type="text/css" />
+
+    <!-- <link href="{{ asset('assets/vendors/general/socicon/css/socicon.css') }}" rel="stylesheet" type="text/css" /> -->
+    <link
+        href="{{ asset('assets/vendors/custom/vendors/line-awesome/css/line-awesome.css') }}"
+        rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/font-awesome/6.2.0/css/all.min.css') }}"
+        rel="stylesheet" type="text/css" />
+
+    <!--end:: Global Optional Vendors -->
+
+    <!--begin::Global Theme Styles(used by all pages) -->
+    <link href="{{ asset('assets/css/demo1/style.bundle.css') }}" rel="stylesheet"
+        type="text/css" />
+    <!--end::Global Theme Styles -->
+
+    <!--begin::Layout Skins(used by all pages) -->
+    <link href="{{ asset('assets/css/demo1/skins/header/base/light.css') }}"
+        rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/loader.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/jquery.datepicker2.css') }}" rel="stylesheet"
+        type="text/css" />
+    <!-- <link href="{{ asset('assets/css/vs_multiple_select.css') }}" rel="stylesheet" type="text/css" /> -->
+    <link href="{{ asset('assets/css/kt_override.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/app.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/vsstyle.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+
+    <!-- Admin LTE -->
+    <!-- <link href="{{ asset('assets/css/adminlte.css') }}" rel="stylesheet" type="text/css" /> -->
+    <link rel="stylesheet" href="{{ asset('assets/plugins/chart.js/Chart.css') }}">
+    <!-- Ionicons -->
+    <!-- <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"> -->
+    <!-- ::End AndimLte -->
+
     <style type="text/css">
         <blade media|%20(min-width%3A%201025px)%20%7B>.kt-header--fixed.kt-subheader--fixed.kt-subheader--enabled .kt-wrapper {
             padding-top: 65px !important;
