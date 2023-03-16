@@ -33,7 +33,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <?php StyleManager::render('vsmclinic-style',1); ?> 
+    <?php StyleManager::render('vsmclinic-style',0); ?> 
     <style type="text/css">
         <blade media|%20(min-width%3A%201025px)%20%7B>.kt-header--fixed.kt-subheader--fixed.kt-subheader--enabled .kt-wrapper {
             padding-top: 65px !important;
