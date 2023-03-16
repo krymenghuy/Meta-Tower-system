@@ -39,7 +39,6 @@ let LaboPartnersComponent = new function () {
     this.initExpandableRow =()=>{
         this.tblLaboTests = new ExpandableRowConfig('_lbp_tblLaboPartners', {
             'dontExpandByClickingOn': ['pn-add-test','btn_lbp_modify','btn_lbp_delete'],
-            //'wrapperClass':'expandable-row-container',
             'onOpen': (container, detail_tr, parent_tr) => {
                 let q_tr = $(parent_tr);
                 let partner_id = q_tr.data('id');
@@ -119,7 +118,6 @@ let LaboPartnersComponent = new function () {
 
             data = StringSanitizer.sanitizeObject(data, null, ["cp_email", "email"]);
             let cnt = 1;
-            //begin::Set up columns
             let my_columns = [
                 {
                     title: mThis.trans_title("ID"),
@@ -160,13 +158,10 @@ let LaboPartnersComponent = new function () {
                 {
                     title: mThis.trans_title('Action'),
                     data: function (data, a, b) {
-                        let status_class = null; //mThis.getStatusClass(data.status_id);
                         return [`<div class="d-flex flex-row flex-nowrap">`,
-                            //`<a href="javascript:void(0)" class="btn_lbp_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" class="pn-add-test" data-id="${data.id}"><i class="fa fa-plus-circle"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" class="btn_lbp_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
                             `<a href="javascript:void(0);" data-id="${data.id}" class="btn_lbp_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
-                            //`&nbsp;<a href="#" data-id="${data.id}" class="btn_lbp_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
                             `</div>`
                         ].join('');
                     }
@@ -183,11 +178,7 @@ let LaboPartnersComponent = new function () {
                     destroy: true,
                     paging: true,
                     ordering: false,
-                    //dom: 'Bfrtip',
                     retrieve: true,
-                    //scrollY:390,
-                    //scrollX:500,
-                    //pagingType:'numbers',
                     info: true,
                     pageLength: 10,
                     bLengthChange: false,
@@ -230,19 +221,15 @@ let LaboPartnersDialog = new function () {
         "itemName": "Partner",
         "formId": '_lbp_dlgPartners',
         "titleId": "_lbp_dlgPartners_title",
-        //"errorId":"_msl_dlgService_error",
         "saveButtonId": "_lbp_btnSave",
         "instance": this,
         "apiSave": `${main_view.base_url}/api/partner/save`,
         "apiGet": `${main_view.base_url}/api/partner/details`,
-        //"identityProp":"id",
         "modifyTitle": "Modify Parnter",
         "createTitle": "New Partner",
         "identityProps": ['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['id'],
-        //"sub_prop":"chief_complaint_items",
-        //"sub_prop_function":mThis.getChiefComplaints,
         "sanitize_excepts": ["cp_email", "email"],
         'use_alert_error': true,
         'beforeShow': () => { }
@@ -261,7 +248,7 @@ const LaboTestList = new function(){
      let labo_id =$(this).data('id');
      
      let container = $(this).closest('div.expandable-row-container');
-     if (container.length ===0){
+     if (container.length === 0){
         let tr = $(this).closest('tr');
         container = tr.next().find('div.expandable-row-container');
      }
@@ -281,12 +268,12 @@ const LaboTestList = new function(){
     let container = $(this).closest('div.expandable-row-container');
     cv_interact.confirm(`Remove this test?`,{title:'Remove Partner Test','context':'delete'},(e)=>{
         if(e){
-             let p = {'labo_id':labo_id,'test_id':test_id,'id':id};
-             vsapi.call(`${main_view.base_url}/api/partner-labo/remove-test`,p,null,false).then(res=>{
+            let p = {'labo_id':labo_id,'test_id':test_id,'id':id};
+            vsapi.call(`${main_view.base_url}/api/partner-labo/remove-test`,p,null,false).then(res=>{
                 if(res.status_code === 200){
-                  LaboTestList.displayTestList(labo_id,container,res.data);
+                    LaboTestList.displayTestList(labo_id,container,res.data);
                 }
-             });
+            });
         }
     });
   });
@@ -302,8 +289,11 @@ const LaboTestList = new function(){
           if(res.status_code===200){
                 let items = res.data;
                 mThis.displayTestList(labo_id,container,items);
-                // let test = div_test_list.find(".pn-test-item").html();
-                // console.log(test);
+                LaboPartnersComponent.tblPartners.find('.card-height:first-child').each(function(){
+                    $(this).siblings('button').css({
+                        height: $(this).height()
+                    }).addClass('rounded-circle').children().addClass('fs-2');
+                });
           }else{
             //in case of api error
             div_test_list.html(`<span class="text-center text-warning">${res.error_message}</span>`);
@@ -318,15 +308,15 @@ const LaboTestList = new function(){
                 let c = ExchangeManager.currencies[i.currency_code];
                 let cur_symbol = c ? c.symbol:'$';
                 let price = [cur_symbol,i.price].join('');
-                html_tests =[html_tests,`<div data-id="${i.id}" data-testid="${i.test_id}" class="pn-test-item">
-                    <div class="border border-1 rounded-2">
-                        <div class="border border-1 p-2" style="background-color: #98D3AB">
-                            <h5 class="card-title">${i.name}</h5>
+                html_tests =[html_tests,`<div data-id="${i.id}" data-testid="${i.test_id}" class="pn-test-item card-height">
+                    <div class="border border-1 rounded-2 position-relative">
+                        <div class="border border-1 p-2">
+                            <h5 class="card-title text-uppercase fw-semibold align-middle">${i.name}</h5>
                         </div>
                         <div class="py-3">
                             <span class="d-block text-center fw-bold">${price}</span>
                         </div>
-                        <div>
+                        <div class="position-relative">
                             <a data-id="${i.id}" data-testid="${i.test_id}" data-laboid="${i.labo_id}" class="btn-remove-parnter-test" href="javascript:void(0)">
                                 <i class="fa fa-times vs-text-danger"></i>
                             </a>
@@ -360,7 +350,6 @@ const LaboTestList = new function(){
         else {
             container.html(empty_html);
         }
-      //end:: display test row
    }
 }
 //end::LaboTestList Component
@@ -388,9 +377,9 @@ const SelectTestDialog = new function(){
    });
    
    this.loadTests =(onFinish)=>{
-    vsapi.call(`${main_view.base_url}/api/settings/options-labo-test`,null,null,false).then(res=>{
-        onFinish(res.data);
-    });
+        vsapi.call(`${main_view.base_url}/api/settings/options-labo-test`,null,null,false).then(res=>{
+            onFinish(res.data);
+        });
    }
 
    this.show =(options)=>{

@@ -38,7 +38,7 @@
    } */
 </style>
 
-<div id="_um_roleManagementComponent" style="width:auto;display:none;margin:15px 15px 15px">
+<div id="_um_roleManagementComponent" class="mobile-padding" style="width:auto;display:none;margin:15px 15px 15px">
     <!--begin::div.row  RoleList-->
         <div id="_um_roleListPanel" style="width:auto;display:none">
           <div class="row">

@@ -11,20 +11,6 @@
         border-color: grey !important;
     }
 
-    /* div.answer-wrapper{
-        display:flex;
-        flex-direction:row;
-        align-item:justify;
-    } */
-
-    /* div.m-choice{
-        padding:5px;
-        margin-right:10px;
-        min-width:150px;
-        border-radius:3px;
-        padding:10px;
-        border:1px solid #D5DBDC;
-    } */
 
     input.solid-check[type="checkbox"] {
         /* Add if not using autoprefixer */
@@ -84,11 +70,6 @@
         /* Windows High Contrast Mode */
         background-color: CanvasText;
     }
-
-    /* input[type="checkbox"]::before {
-    transform-origin: bottom left;
-    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
-    } */
     .checkbox-label {
         font-weight: bold;
         font-size: 1.1em;
@@ -97,7 +78,7 @@
 
 </style>
 
-<div id="_main_itemFormComponent" style="display:none;">
+<div id="_main_itemFormComponent" class="mobile-padding" style="display:none;">
     <div style="width:100%">
 
         <div id="_itemform_general_info" class="card vs-card">

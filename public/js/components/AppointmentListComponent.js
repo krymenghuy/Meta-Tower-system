@@ -1,5 +1,4 @@
 "use strict";
-//begin:: AppointmentListComponent
 let AppointmentListComponent = new function () {
     let mThis = this;
     this.title_prop = 'Appointments';
@@ -30,9 +29,6 @@ let AppointmentListComponent = new function () {
         "Action": "Action"
     };
 
-    //Initialize langauge translation tasks (for dataTable columns headers)
-    //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-    //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
     this.setLanguage = () => {
         if (LocaleManager.lang !== mThis.lang) {
             for (let prop in mThis.col_titles) {
@@ -48,16 +44,13 @@ let AppointmentListComponent = new function () {
         });
     }
 
-    //AddChiefComplaintToList() on Appointment List' s expanded view
     this.addCCToList = (ul, item = {}) => {
         let appt_id = ul.data('apptid');
 
-        //Remove first default element "(No chief complaint)"
         ul.find('li[data-apptid="0"]').remove();
         ul.append(`<li id="${item.id}" data-apptid="${appt_id}"><a href="#" data-apptid="${appt_id}" data-id="${item.id}" class="appt-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`);
     }
 
-    //return html string for array of <li>
     this.displayCCList = (list_id, items = []) => {
         let ul = $(`#${list_id}`);
         ul.empty();
@@ -100,15 +93,12 @@ let AppointmentListComponent = new function () {
             let html = null;
             if (res.status_code === 200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
-                //d.chief_complaints = d.chief_complaints?d.chief_complaints:[];
                 d.patient_code = d.patient_code ? d.patient_code : 'N.A.';
                 d.consultant_name = d.consultant_name ? d.consultant_name : 'Any';
 
-                //begin:: refresh display of Client name and client code
                 let tr = detail_tr.prev();
                 tr.find('.client-name').text(d.client_name);
                 tr.find('.client-code').text(d.patient_code);
-                //end::refresh display of Client name and client code
 
                 html = `<div data-apptid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="appt-info-wrapper shadow-lg d-flex" style="width:100%;">
                         <div class="thumbnail-wrapper">
@@ -146,18 +136,14 @@ let AppointmentListComponent = new function () {
                                     </div>
                                 </div>
                         </div> 
-                    
                     </div>`;
-
             } else {
                 html = `<div class="expanded-row-error">${res.error_message}</div>`;
             }
-
             div_wrapper.html(html);
         });
     }
 
-    //return json object about Appointment's client details (name,sex,phone_number,...) from expandable view
     this.getClientInfo = (tr) => {
         let div = tr.find('.appt-info-wrapper');
         let appt_id = div.data('apptid');
@@ -172,13 +158,10 @@ let AppointmentListComponent = new function () {
     }
 
     this.init = () => {
-
-        //This is to refresh Datatable's header texts when language changes
         LocaleManager.setLanguageChangeHandler((lang) => {
             mThis.displayAppointmentList(false);
         });
 
-        //loadChiefComplaints() will retrieve list of chief complaints and stores them in "mThis.chief_complaints"
         mThis.loadOptions();
 
         mThis.btnSearchAppt.on('click', (e) => {
@@ -186,7 +169,6 @@ let AppointmentListComponent = new function () {
             mThis.displayAppointmentList(false);
         });
 
-        //Search Appointment on Appointment List view
         mThis.elSearchAppt.on('keyup', (e) => {
             e.preventDefault();
             if (e.key === "Enter") mThis.displayAppointmentList(false);
@@ -229,9 +211,8 @@ let AppointmentListComponent = new function () {
 
             let option = { 'title': 'Choose Chief Complaint', 'dataLabel': 'Select Chief Complaint', 'valueMember': 'id', 'textMember': 'name', 'data': mThis.form_data.chief_complaints, 'blankErrorMessage': "Please choose chief complaint" };
             InputBox2.show(option, function (d) {
-                //NOTE: d is object with {value,text}
                 if (d) {
-                    let p = { "cc_id": d.value, "name": d.text, 'appt_id': appt_id }; /** d.value = chief complaint id **/
+                    let p = { "cc_id": d.value, "name": d.text, 'appt_id': appt_id };
                     window.vsapi.call(`${main_view.base_url}/api/appointment/add-chief-complaint`, p, null, null).then((res) => {
                         if (res.status_code === 200) {
                             let item = {
@@ -248,7 +229,6 @@ let AppointmentListComponent = new function () {
 
         mThis.tblAppointments.on('click', '.btn-view-profile', (e) => {
             e.preventDefault();
-
         });
 
         mThis.tblAppointments.on('click', '.btn-add-queue', function (e) {
@@ -288,7 +268,6 @@ let AppointmentListComponent = new function () {
             PatientDialog.show(op);
         });
 
-        //remove Chief complaint item, on Appoinment list expanaded view
         mThis.tblAppointments.on('click', 'a.appt-remove-complaint', function (e) {
             e.preventDefault();
             let lnk = $(this);
@@ -326,8 +305,7 @@ let AppointmentListComponent = new function () {
             let lnk = $(this);
             let tr = lnk.closest('tr');
             let appt_id = tr.data('id');
-            let op = {}; //{'identity_value':appt_id}; //appt_id for editing Appointment
-            //op.id = appt_id; // option.id MUST be NULL when editing person info
+            let op = {};
             op.onClose = (e) => {
                 if (e) {
                     mThis.displayAppointmentDetails(tr.next(), appt_id);
@@ -336,22 +314,16 @@ let AppointmentListComponent = new function () {
 
             let status_id = tr.data('statusid');
 
-            //Edit only Personal demogrpahic (name,sex, phone, email) when status_id > 2 (Quued)
-            if (status_id > 2) {
-                //For Editing Person Info only, we can use either app_id (for appointment_id) or id (for person_id) to edit person info
-                /***
-                 @op = {'appt_id':##} => api/person/save() will use appt_id to retrieve @person_id in order to update person profile 
-                **/
-                //if op.id > 0 then PersonDialog() use op.id as person_id to edit and update person
-                // if op.app_id > 0 then PersonDialog() uses op.app_id to find person_id for editing and updating person info
-                op.appt_id = appt_id; //appt_id, NOT app_id
+            if(status_id > 2) {
+                op.appt_id = appt_id;
                 PersonDialog.show(op);
 
-            } else if (status_id <= 2) {
-                //op.id here represent app_id (or appointment id)
+            }
+            else if (status_id <= 2) {
                 op.id = appt_id;
                 AppointmentDialog.show(op);
-            } else console.error(`Error: Editing Appointment or personal profile requires status_id to be known exactly`);
+            }
+            else console.error(`Error: Editing Appointment or personal profile requires status_id to be known exactly`);
         });
 
         this.cfg = new ExpandableRowConfig('_apl_tblAppts', {
@@ -392,7 +364,6 @@ let AppointmentListComponent = new function () {
             if (prop_name) str_props = [str_props, str_props ? " " : "", prop_name, `="${data[prop_name]}"`].join('');
         });
 
-        //cla = 'class_list_action' = > cla_delete, cla_modify,...
         let html = ['<div class="dropdown-menu action-menus">',
             '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_edit" href="javascript:void(0)"><i class="fa fa-edit" style="color:blue;font-size:1.1em;margin-top:2px;"></i> <span>Review Application</span</a>',
             '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_disburse" href="#"><i class="fa fa-list-alt" style="color:orange"></i> Disburse Loan</a>',
@@ -410,11 +381,7 @@ let AppointmentListComponent = new function () {
         else 'btn btn-outline-warning';
     }
 
-    //displayCreditOfficerList()| displayCO|
-    this.displayAppointmentList = (order_by_id=false,onFinish = null) => {
-        //Initialize language for DataTable columns headers
-        //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-        //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
+    this.displayAppointmentList = (order_by_id=false,onFinish = null) => { 
         mThis.setLanguage();
         let p = {'order_by_id':order_by_id?1:0, 'search_value': mThis.elSearchAppt.val(), 'date': mThis.appt_filter_date.val(), 'status_id': mThis.appt_filter_status.val() };
         window.vsapi.call(`${mThis.base_url}/api/appointment/list`, p, 'POST', null).then((result) => {
@@ -422,12 +389,10 @@ let AppointmentListComponent = new function () {
             if (result.status_code === 200) data = result.data;
             if (mThis.table) {
                 mThis.tblAppointments.DataTable().clear().destroy();
-                //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
                 mThis.tblAppointments.empty();
                 mThis.table = null;
             }
             data = StringSanitizer.sanitizeObject(data, null, ['cur_symbol', 'arrival_time']);
-            //begin::Set up columns
             let my_columns = [
                 {
                     data: function (data, a, b) {
@@ -486,10 +451,6 @@ let AppointmentListComponent = new function () {
                     }
                 }
             ];
-            //END Define colum
-
-            //translate column names
-            //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
 
             if (!mThis.table)
                 mThis.table = mThis.tblAppointments.DataTable({
@@ -497,11 +458,7 @@ let AppointmentListComponent = new function () {
                     destroy: true,
                     paging: true,
                     ordering: false,
-                    //dom: 'Bfrtip',
                     retrieve: true,
-                    //scrollY:390,
-                    //scrollX:500,
-                    //pagingType:'numbers',
                     info: true,
                     pageLength: 10,
                     bLengthChange: false,
@@ -516,7 +473,7 @@ let AppointmentListComponent = new function () {
                     'columns': my_columns
                     , "createdRow": function (row, data, dataIndex) {
                         let tr = $(row);
-                        tr.data('id', data.id); //appt_id
+                        tr.data('id', data.id);
                         tr.data('statusid', data.status_id);
                         tr.data('leadid', data.lead_id);
                         tr.data('clientid', data.client_id);
@@ -524,7 +481,6 @@ let AppointmentListComponent = new function () {
                 });
             if (typeof onFinish === 'function') onFinish();
         });
-
     };
 
     this.loadOptions = (onFinish = null) => {
@@ -543,6 +499,7 @@ let AppointmentListComponent = new function () {
     }
 
     this.show = (option = null) => {
+        if(!option) option = {};
         mThis.displayAppointmentList(false,() => {
             mThis.self.show().siblings().hide();
             main_view.setTitle(mThis.title_prop);
@@ -558,7 +515,6 @@ let AppointmentDialog = new function () {
     this.elConsultant = $('#_appt_consultant');
     this.elChiefComplaint = $('#_appt_chief_complaint');
 
-    //On AppointmentDialog, find client
     this.elSearch = $('#_appt_search_client');
     this.btnSearchClient = $('#_appt_btnSearch');
     this.elPatientCode = $('#_appt_client_code');
@@ -590,8 +546,6 @@ let AppointmentDialog = new function () {
         return ps;
     }
 
-    //*** On New Appointment Dialog, when user select a Chief Complaint => add the selected Chief complaint to the <ul> list below ***/
-    //NOTE: item is object = {id,name}
     this.addChiefComplaintToList = (item = null) => {
         if (!item) {
             item = {
@@ -612,15 +566,12 @@ let AppointmentDialog = new function () {
         if (!found_item) mThis.cc_list.append(html);
     }
 
-    //Display Chief complaint Items in context of user's Editing or Updating Appointment info, and add/Remove Chief complaints
-    //items is array [{id,name},{id,name}, ...]
     this.displayChiefComplaints = (items) => {
         items.map((i) => {
             mThis.addChiefComplaintToList(i);
         });
     }
 
-    //on AppointmentDialog: display Chief Complaint items in Select2/Dropdown list for user to select
     this.displayComboItems_cc = (id) => {
         window.vsapi.call(`${main_view.base_url}/api/settings/options-chief-complaint`, null).then((d) => {
             let items = StringSanitizer.sanitizeObject(d.data);
@@ -632,17 +583,12 @@ let AppointmentDialog = new function () {
     this.formUntil = new FormUntil({
         "itemName": "Appointment",
         "formId": '_apl_dlgAppt',
-        //"titleId":"_apl_dlgAppt_title",
-        //"errorId":"_apl_dlgAppt_error",
-        //"saveButtonId":"_apl_dlgAppt_btnSave",
         "instance": this,
         "apiSave": `${main_view.base_url}/api/appointment/save`,
         "apiGet": `${main_view.base_url}/api/appointment/details`,
-        //"identityProp":"id",
         "modifyTitle": "Modify Appointment",
         "createTitle": "New Appointment",
         "identityProps": ['id'],
-        //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['lead_id', 'client_id'],
         "sub_prop": "chief_complaint_items",
         "sub_prop_function": ()=>{
@@ -651,7 +597,6 @@ let AppointmentDialog = new function () {
         "sanitize_excepts": ['email', 'client_email', 'arrival_time','items'],
         'use_alert_error': true,
         "init": () => {
-
             mThis.displayComboItems_cc();
 
             mThis.cc_list.on('click', '.cc-item-delete', function (e) {
@@ -683,14 +628,14 @@ let AppointmentDialog = new function () {
             mThis.elChiefComplaint.on('change', (e) => {
                 mThis.addChiefComplaintToList();
             });
-            // //Add Event listeners or event handlers
+
             $('#appt_lnkAddChiefComplaint').on('click', (e) => {
                 e.preventDefault();
 
                 let option = { 'previousDialog': mThis.self, 'title': 'New Chief Complaint', 'dataLabel': 'Enter new chief complaint', 'valueMember': 'id', 'textMember': 'name', 'blankErrorMessage': "Please enter new chief complaint" };
                 InputBox1.show(option, function (d) {
                     if (d) {
-                        let p = { "name": d }; /** d.value = chief complaint id **/
+                        let p = { "name": d };
                         window.vsapi.call(`${main_view.base_url}/api/settings/save-chief-complaint`, p).then((res) => {
                             if (res.status_code === 200) {
                                 mThis.displayComboItems_cc(res.data.id);
@@ -698,7 +643,6 @@ let AppointmentDialog = new function () {
                         });
                     }
                 });
-
             });
         }
     });
@@ -715,7 +659,6 @@ let AppointmentDialog = new function () {
                 mThis.elPatientCode.val(c.patient_code);
                 mThis.elName.val(c.name).trigger('change');
                 mThis.elEmail.val(c.email);
-                //if user enter phone number field
                 if (findBy != 'by_phone_number') mThis.elPhoneNumber.val(c.phone_number).trigger('change');
                 mThis.elSex.val(c.sex).trigger('change');
                 mThis.lead_id = c.lead_id;
@@ -725,9 +668,9 @@ let AppointmentDialog = new function () {
     }
 
     this.show = (option = null) => {
-        if (option.identity_value > 0)
+        if(option.identity_value > 0)
             mThis.self.find('.cc-input').hide();
-        else {
+        else{
             mThis.cc_list.empty();
             mThis.self.find('.cc-input').show();
         }
@@ -736,7 +679,6 @@ let AppointmentDialog = new function () {
     }
 }
 
-//begin::PatientDialog => register Patient
 let PatientDialog = new function () {
     let mThis = this;
     this.self = $('#_apl_dlgPatient');
@@ -751,7 +693,7 @@ let PatientDialog = new function () {
 
     this.elDateOfBirth = $('#_pat_dob');
     this.elAge = $('#_pat_age');
-    this.elAgeUnit = $('#_pat_age_unit'); //span
+    this.elAgeUnit = $('#_pat_age_unit');
     this.divVitalSign = $('#pat_vital_signs');
     this.divMedConditions = $('#med_con_panel');
 
@@ -784,18 +726,16 @@ let PatientDialog = new function () {
         mThis.elAge.val(d);
     });
 
-    //save patient details (profile), or/and Add the patient to Waiting Queue 
     this.registerPatient = (addToQueue = 0) => {
         let p = mThis.getFormData();
         p.addToQueue = addToQueue;
         window.vsapi.call(`${main_view.base_url}/api/patient/register`, p, null, null).then((res) => {
-            if (res.status_code === 200) {
-                //Refresh data in Expanded panel
+            if(res.status_code === 200) {
                 if (typeof mThis.onClose === 'function') mThis.onClose(res);
                 mThis.self.modal('hide');
-            } else {
+            }
+            else{
                 cv_interact.error(res.error_message);
-                //VSUtil.showDialogError('_apl_dlgPatient', res.error_message, 5000);
             }
         });
     }
@@ -835,7 +775,6 @@ let PatientDialog = new function () {
         });
     }
 
-    //Prepare Medical Conditions Fields for user to input
     this.prepareMCFields = (fields = []) => {
         mThis.divMedConditions.empty();
         (fields || []).map((f, index) => {
@@ -848,7 +787,6 @@ let PatientDialog = new function () {
 
     this.getFormData = () => {
         let p = {};
-        //Appointment ID (appt_id). If Regisering patient from Appointment List, there is mThis.appt_id > 0
         p.appt_id = mThis.appt_id;
         p.lead_id = mThis.lead_id;
         mThis.self.find('.data-input-reg').each(function () {
@@ -864,12 +802,10 @@ let PatientDialog = new function () {
     }
 
     this.prepareOptions = (onFinish) => {
-        /** "api/patient-reg-options" returns object {nationalities: [], vital_sign_fields:[] } that is used as nationality options and vital sign fields **/
         window.vsapi.call(`${main_view.base_url}/api/patient-reg-options`, null).then((res) => {
             if (res.status_code === 200) {
                 let nats = StringSanitizer.sanitizeObject(res.data.nationalities);
                 let vital_sign_fields = StringSanitizer.sanitizeObject(res.data.vital_sign_fields);
-                //mc_items is array of medical condition items
                 let mc_items = StringSanitizer.sanitizeObject(res.data.mc_items);
                 let departments = StringSanitizer.sanitizeObject(res.data.departments);
                 let consultants = StringSanitizer.sanitizeObject(res.data.consultants);
@@ -892,7 +828,6 @@ let PatientDialog = new function () {
         VSUtil.hideDialogError('_apl_dlgPatient');
     }
 
-    //setData() on PatientDialog
     this.setData = (d) => {
         d = d ? d : {};
         mThis.appt_id = d.appt_id;
@@ -900,19 +835,16 @@ let PatientDialog = new function () {
         mThis.elAgeUnit.text(null);
         mThis.elError.val(null);
 
-        // class "data-input-reg" is for person's data input such as "name, date_of_birth,phone_number,email, ..."
         mThis.self.find('.data-input-reg').each(function () {
             let el = $(this);
             let f = el.data('field');
             if (el.is('select')) {
                 el.val(d[f]).trigger('change');
-                //set data attribute data-error =0 (i.e: No data validation error on first load)
                 el.data('error', 0);
             } else el.val(d[f]);
         });
     }
 
-    //option = {id,default_nationality}
     this.show = (option) => {
         option = option ? option : {};
         mThis.option = option;
@@ -924,11 +856,9 @@ let PatientDialog = new function () {
             if (option.id > 0) {
                 mThis.elTitle.text(LocaleManager.trans('Modify Patient', 'titles'));
             } else {
-                //Clear previous data
                 mThis.clearForm();
                 mThis.elTitle.text(LocaleManager.trans('Register Patient', 'titles'));
 
-                //Set default nationality
                 if (!option.default_data) option.default_data = {};
                 option.default_data.nationality = "Cambodia";
                 if (option.default_data.nationality) {
@@ -945,19 +875,14 @@ let PatientDialog = new function () {
                         option.default_data.nationality_id = nat_id;
                     }
                 }
-
-                //Set default data on Patient Form
                 mThis.setData(option.default_data);
             }
 
             mThis.self.modal({
                 backdrop: 'static'
             });
-
         });
-
     }
-
 }
 
 let ServiceQueueDialog = new function () {

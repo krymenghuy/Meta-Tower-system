@@ -135,7 +135,7 @@ let ExchangeRateComponent = new function () {
         let div_wrapper = detail_tr.find('div.expandable-row-containter');
         div_wrapper.html('<div class="animation-line" style="height:2px;margin:0"></div>');
         let p = { 'id': rate_id, 'search_value': mThis.elSearchDate.val() };
-        window.vsapi.call(`${main_view.base_url}/api/currency/details`, p, 'POST', false).then((res) => {
+        vsapi.call(`${main_view.base_url}/api/currency/details`,p, 'POST', false).then((res) => {
             let html = null;
             if (res.status_code === 200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
@@ -188,7 +188,7 @@ let ExchangeRateComponent = new function () {
         //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
         let p = {};
-        window.vsapi.call(`${mThis.base_url}/api/currency/list`, p, 'POST', null).then((result) => {
+        vsapi.call(`${mThis.base_url}/api/currency/list`, p, 'POST', null).then((result) => {
             let data = [];
             if (result.status_code === 200) data = result.data;
             if (mThis.table) {
@@ -218,7 +218,7 @@ let ExchangeRateComponent = new function () {
                 },
                 {
                     title: mThis.trans_title('Symbol'),
-                    data: "cur_symbol"
+                    data: "symbol"
                 },
                 {
                     title: mThis.trans_title('Symbol After'),
@@ -227,7 +227,6 @@ let ExchangeRateComponent = new function () {
                 {
                     title: mThis.trans_title('Action'),
                     data: function (data, a, b) {
-                        let status_class = null; //mThis.getStatusClass(data.status_id);
                         return [`<div class="form-inline">`,
                             `<a href="javascript:void(0)" class="btn_ecr_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" class="btn_ecr_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
@@ -249,11 +248,7 @@ let ExchangeRateComponent = new function () {
                     destroy: true,
                     paging: true,
                     ordering: false,
-                    //dom: 'Bfrtip',
                     retrieve: true,
-                    //scrollY:390,
-                    //scrollX:500,
-                    //pagingType:'numbers',
                     info: true,
                     pageLength: 10,
                     bLengthChange: false,
@@ -293,20 +288,14 @@ let ExchangeRateDialog = new function () {
     this.formUntil = new FormUntil({
         "itemName": "Currency",
         "formId": '_ecr_dlgexchangeRate',
-        //"titleId": "_ecr_dlgexchangeRate_title",
-        //"errorId":"_msl_dlgService_error",
-        //"saveButtonId": "_ecr_btnSave",
         "instance": this,
         "apiSave": `${main_view.base_url}/api/currency/save`,
         "apiGet": `${main_view.base_url}/api/currency/details`,
-        //"identityProp":"id",
         "modifyTitle":"Modify Currency",
         "createTitle": "New Currency",
         "identityProps": ['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['id'],
-        //"sub_prop":"chief_complaint_items",
-        //"sub_prop_function":mThis.getChiefComplaints,
         "sanitize_excepts": [],
         'use_alert_error': true,
         'beforeShow': () => {}
@@ -325,19 +314,15 @@ let ExchangeRateDetailsDialog = new function () {
         "itemName": "Currency Rate",
         "formId": '_ecr_dlgExchangeRate_detail',
         "titleId": "_ecr_dlgExchangeRate_detail_title",
-        //"errorId":"_msl_dlgService_error",
         "saveButtonId": "_ecr_detail_btnSave",
         "instance": this,
         "apiSave": `${main_view.base_url}/api/exchange-rate/save`,
         "apiGet": `${main_view.base_url}/api/exchange-rate/details`,
-        //"identityProp":"id",
         "modifyTitle": "Modify Currency Rate",
         "createTitle": "New Currency Rate",
         "identityProps": ['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['id'],
-        //"sub_prop":"chief_complaint_items",
-        //"sub_prop_function":mThis.getChiefComplaints,
         "sanitize_excepts": [],
         'use_alert_error': true,
         'beforeShow': () => { }

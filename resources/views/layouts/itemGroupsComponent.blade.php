@@ -1,4 +1,4 @@
-<div id="_main_itemGroupsComponent" style="display:none;padding-top:15px">
+<div id="_main_itemGroupsComponent" class="mobile-padding" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
         <div class="d-flex align-items-center gap-2 ms-3">
             <div class="input-group flex-nowrap">

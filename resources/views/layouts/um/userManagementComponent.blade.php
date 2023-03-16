@@ -15,7 +15,7 @@
       color:grey;
   }
 </style>
-<div id="_um_userManagementComponent" style="width:auto;display:none">
+<div id="_um_userManagementComponent" class="mobile-padding" style="width:auto;display:none">
       <!--begin::div#_um_userListPanel -->
       <div id="_um_userListPanel" style="display:none;padding:15px 15px 15px">
           <div class="row">
@@ -35,7 +35,7 @@
                       </div>
                     
                       <div id="_um_tblUsers_wrapper"  class="table_wrapper border-style1">
-                         <table id="_um_tblUsers" class="table" style="width:100%"></table>
+                         <table id="_um_tblUsers" class="table table-hover" style="width:100%"></table>
                       </div>                  
               
                 </div> <!--end::div.col-lg-12-->

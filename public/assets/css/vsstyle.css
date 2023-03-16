@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@600&display=swap');
 
-/*Started customize at 22/12/2022*/
 :root {
   --menu-bg-color: #e1eaee;
   --menu-color: #8DA0C1;
@@ -9,6 +8,16 @@
   --vs-btn-secondary: #8e8e93;
   --vs-btn-danger: #ff4036;
   --vs-btn-export: #ffd7a5;
+}
+
+body{
+  overflow-x:hidden;
+}
+
+@media screen and (max-width:820px){
+  .mobile-padding{
+    padding-top:60px !important;
+  }
 }
 
 .btn {
@@ -32,6 +41,35 @@
 
 .width_at_input_discount {
   max-width: 200px;
+}
+
+.size_of_icons_consult{
+  width:1.5vw;
+  padding-left:10px;
+}
+
+.pn-test-item{
+  width:190px;
+  position: relative;
+}
+
+.labo-test-list-container{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.btn-remove-parnter-test{
+  font-size:17px;
+  padding:0 10px;
+}
+
+.btn-remove-parnter-test:hover{
+  border:1px solid #ff0000;
+  background-color:#ff0000;
+  color:#ffffff;
+  border-top-right-radius: 10px;
+  border-bottom-left-radius: 10px;
 }
 
 .kt-aside .kt-aside-menu {
@@ -117,8 +155,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   background-color: var(--vs-btn-export);
   color: #000;
 }
-
-.consult-style-custom{}
 
 .presciption-table > thead th{
    font-weight: bold;
@@ -233,8 +269,6 @@ span.span::before{
   }
 }
 
-/*End*/
-
 .select2-error {
   border: 1px solid red !important;
 }
@@ -258,13 +292,11 @@ div#kt_aside_menu_wrapper {
   overflow-y: hidden;
 }
 
-/**begin::scrollbar style for all**/
 * {
   scrollbar-width: thin;
   scrollbar-color: #C0C3C2 #CBD6D2;
 }
 
-/* Works on Chrome, Edge, and Safari */
 *::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -278,18 +310,13 @@ div#kt_aside_menu_wrapper {
 *::-webkit-scrollbar-thumb {
   background-color: #91D1EE;
   border-radius: 10px;
-  /* border:  1.2px solid #91D1EE; */
 }
 
-/**end:: scrollbar style for all **/
-
-/** begin:: scrollbar for aside menu **/
 ul#_dms_aside_menus {
   scrollbar-width: 3px;
   scrollbar-color: #C0C3C2 #696D6B;
 }
 
-/* Works on Chrome, Edge, and Safari */
 ul#_dms_aside_menus::-webkit-scrollbar {
   width: 5px;
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
@@ -305,7 +332,6 @@ ul#_dms_aside_menus::-webkit-scrollbar-thumb {
   border: 1.2px solid #91D1EE;
 }
 
-/**end:: scrollbar for aside menu**/
 .has-error {
   border-radius: 3px;
 }
@@ -326,7 +352,6 @@ div.dms-content-body {
   width: 100%;
 }
 
-/** begin::override btn style| override button style **/
 .btn-default {
   background-color: #F5F4DF !important;
   color: #000 !important;
@@ -340,9 +365,6 @@ div.dms-content-body {
   font-size: 1em;
 }
 
-/** end::override btn style| override button style **/
-
-/** begin::Select2 style modification**/
 .select2-container--default,
 .select2-search--dropdown {
   min-width: 160px;
@@ -358,11 +380,8 @@ div.dms-content-body {
   color: #fff !important;
 }
 
-/** end::Select2 style modification**/
-
-/** begin::make textbox, select box, table support Khmer unicode font **/
 .unicode-text {
-  font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+  font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
 }
 
 .select2,
@@ -385,11 +404,9 @@ div.flat-box {
   min-width: 120px;
 }
 
-
-/** Begin:: VS button style **/
 .vs-btn-md {
   font-size: 0.9em;
-  font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+  font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
   border-radius: 15px;
   border: none;
   padding: 7px 10px 7px 10px;
@@ -424,7 +441,7 @@ div.flat-box {
 .vs-btn-round {
   display: block;
   font-size: 19px;
-  font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+  font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
   border-radius: 6px;
   width: auto;
   text-align: center;
@@ -496,9 +513,6 @@ div.flat-box {
   background-color: orange;
 }
 
-/** end:: VS Button style **/
-
-/** begin::line animation Loader**/
 .animation-line {
   position: relative;
   height: 3px;
@@ -517,7 +531,6 @@ div.flat-box {
   }
 }
 
-/**end:: Line animation loader **/
 .img-left-sidebar {
   background: rgb(33, 29, 102);
   background: linear-gradient(160deg, rgba(33, 29, 102, 1) 0%, rgba(80, 80, 231, 1) 35%, rgba(0, 212, 255, 1) 100%);
@@ -606,7 +619,6 @@ div.flat-box {
   width: auto;
   border-radius: 25px;
   border: 1px solid red;
-  /* background-color: #F5900F; */
   transition-property: border;
   transition: transform 0.7s cubic-bezier(0.32, 0, 0.67, 0);
 }
@@ -640,11 +652,6 @@ tr.detail-row td {
   font-size: 1em !important;
 }
 
-/* .swal2-styled.swal2-cancel {
-  color: #fff !important;
-  background-color: #E9ECDF;
-} */
-
 .text-success {
   font-weight: bold;
   color: green;
@@ -652,7 +659,7 @@ tr.detail-row td {
 
 span.simple-label,
 label.simple-label {
-  font-family: 'Robotto', 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+  font-family: 'Robotto', 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
   margin-top: 10px;
   font-size: 1em;
   padding: 3px;
@@ -684,7 +691,7 @@ span.v-label-focus {
   color: red;
   font-size: 1em;
   padding: 3px;
-  font-family: 'Khmer OS Content', 'DaunPenh', 'Robotto', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+  font-family: 'Khmer OS Content', 'Robotto', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
   display: block;
 }
 
@@ -706,9 +713,6 @@ tbody, td, tfoot, th, thead, tr{
   border-style:none;
 }
 
-.vs-modal-body-input{}
-
-/*Begin style of modal dialog*/
 .vs-modal-dialog .form-control,
 .vs-modal-dialog .form-select{
   border:1px solid #ced4da80;
@@ -775,7 +779,6 @@ tbody, td, tfoot, th, thead, tr{
 .vs-modal-dialog .modal-title{
   font-weight: 550 !important;
 }
-/*End style of modal dialog*/
 
 .frame-photo{
   width:210px;
@@ -803,31 +806,19 @@ tbody, td, tfoot, th, thead, tr{
   --border-size: 2px;
   --border-angle: 0turn;
   --border-radius: 15px;
-  background-image: conic-gradient(from var(--border-angle),
-      #213,
-      #112 50%,
-      #213),
-    conic-gradient(from var(--border-angle), transparent 20%, #08f, #f03);
-  background-size: calc(100% - (var(--border-size) * 2)) calc(100% - (var(--border-size) * 2)),
-    cover;
+  background-image: conic-gradient(from var(--border-angle),#213,#112 50%,#213), conic-gradient(from var(--border-angle), transparent 20%, #08f,#f03);
+  background-size: calc(100% - (var(--border-size) * 2)) calc(100% - (var(--border-size) * 2)), cover;
   background-position: center center;
   background-repeat: no-repeat;
-
   animation: bg-spin 2s linear infinite;
-
   @keyframes bg-spin {
-    to {
+    to{
       --border-angle: 2turn;
     }
   }
-
-  /* 
-  &:hover {
-     animation-play-state: paused;
-  } */
 }
 
-@property --border-angle {
+@property --border-angle{
   syntax: "<angle>";
   inherits: true;
   initial-value: 0turn;

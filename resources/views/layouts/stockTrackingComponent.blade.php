@@ -19,9 +19,9 @@
     }
 </style>
 
-<div id="_main_stockTrackingComponent" style="display:none;padding-top:15px">
+<div id="_main_stockTrackingComponent" class="mobile-padding" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center w-100" style="overflow-x:auto; overflow-y:hidden">
             <div class="d-flex align-items-center gap-2 ms-3">
                 <div class="input-group flex-nowrap">
                     <input type="search" class="form-control" id="_stk_search" placeholder="Search item" style="min-width:250px"/>
@@ -43,14 +43,8 @@
             </div>
             <div class="container-fluid d-flex align-items-center justify-content-end gap-2">
                 <button class="vs-btn-custom-primary" type="button" id="_stk_btnNew_ReceiveStock">
-                    <span class="trans-text" data-langprop="buttons.Receive Stock"></span>
+                    <span class="trans-text text-nowrap" data-langprop="buttons.Receive Stock"></span>
                 </button>
-                <!-- <button id="_stk_btnNew" class="vs-btn-custom-primary" type="button">
-                    <div class="d-flex align-items-center">
-                        <i class="fa-solid fa-plus me-1"></i>
-                        <span class="trans-text text-nowrap" data-langprop="buttons.Add New"></span>
-                    </div>
-                </button> -->
             </div>
         </div>
         <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;min-height:350px;">
