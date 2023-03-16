@@ -10,273 +10,282 @@
 ?>
 
 <!DOCTYPE html>
-<html lang="<?php echo Session::get('lang','en') ?>">
-    <head>
-        <?php ScriptManager::render('priority-one',0)?>
-        <base href="../">
-        <meta charset="utf-8" />
-        <title>Clinic Management System</title>
-        <link type="images/png" rel="icon" href="{{ asset('assets/images/logo/logo.jpg') }}"/>
-        <meta name="description" content="Updates and statistics"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-        <meta name="csrf-token" content="{{ csrf_token() }}"/>
-        <meta name="sess_branch_id" content="{{ sess_company_id() }}"/>
-        <meta name="sess_user_id" content="{{ sess_user_id() }}"/>
-        <meta name="base_url" content="{{ url('/') }}"/>
-        <meta name="asset_url" content="{{ asset('assets/') }}"/>
-        <link rel="preconnect" href="https://fonts.googleapis.com"/>
-        <link rel="preconnect" href="https://fonts.gstatic.com"/>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-        <link href="{{ asset('assets/vendors/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
-        <link href="{{ asset('assets/vendors/general/perfect-scrollbar/css/perfect-scrollbar.css') }}" rel="stylesheet" type="text/css"/>
-        <link href="{{ asset('assets/vendors/general/tether/dist/css/tether.css') }}" rel="stylesheet" type="text/css"/>
-        <link href="{{ asset('assets/vendors/general/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css') }}" rel="stylesheet" type="text/css"/>
-        <link href="{{ asset('assets/vendors/general/bootstrap-datetime-picker/css/bootstrap-datetimepicker.css') }}" rel="stylesheet" type="text/css"/>
-        <link href="{{ asset('assets/vendors/general/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('assets/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('assets/vendors/general/owl.carousel/dist/assets/owl.theme.default.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('assets/vendors/general/dropzone/dist/dropzone.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('assets/vendors/general/bootstrap-markdown/css/bootstrap-markdown.min.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('assets/vendors/general/animate.css/animate.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('assets/vendors/general/toastr/build/toastr.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('assets/vendors/general/morris.js/morris.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('assets/vendors/custom/vendors/line-awesome/css/line-awesome.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('assets/css/font-awesome/6.2.0/css/all.min.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('assets/css/demo1/style.bundle.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('assets/css/demo1/skins/header/base/light.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('assets/css/loader.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('assets/css/jquery.datepicker2.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('assets/css/kt_override.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('assets/css/app.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('assets/css/vsstyle.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('assets/css/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
-        <link rel="stylesheet" href="{{ asset('assets/plugins/chart.js/Chart.css') }}">
-        <style type="text/css">
-            @media screen and (min-width: 1025px){
-                .kt-header--fixed.kt-subheader--fixed.kt-subheader--enabled .kt-wrapper {
-                    padding-top: 65px !important;
-                }
-            }
+<html lang="<?php echo Session::get('lang','en'); ?>">
+<!-- begin::Head -->
 
-            .required:after {
-                content: '*';
-                color: red;
-                padding-left: 5px;
-            }
+<head>
+    <?php ScriptManager::render('priority-one',0);?>
+    <!--begin::Base Path (base relative path for assets of this page) -->
+    <base href="../">
 
-            .btn-dropdown {
-                min-width: 36px;
-            }
+    <!--end::Base Path -->
+    <meta charset="utf-8" />
+    <title>Clinic Management System</title>
+    <link type="images/png" rel="icon" href="{{ asset('assets/images/logo/logo.jpg') }}">
+    <meta name="description" content="Updates and statistics">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-            .required:after {
-                content: '*';
-                color: red;
-                padding-left: 5px;
-            }
+    <!-- Prevent error 419 when we use ajax -->
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <meta name="sess_branch_id" content="{{ sess_company_id() }}" />
+    <meta name="sess_user_id" content="{{ sess_user_id() }}" />
+    <meta name="base_url" content="{{ url('/') }}" />
+    <meta name="asset_url" content="{{ asset('assets/') }}" />
 
-            .mainview-top-right {
-                margin-right: 0;
-                display: block;
-            }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <?php StyleManager::render('vsmclinic-style',0); ?> 
+    <style type="text/css">
+        <blade media|%20(min-width%3A%201025px)%20%7B>.kt-header--fixed.kt-subheader--fixed.kt-subheader--enabled .kt-wrapper {
+            padding-top: 65px !important;
+        }
 
-            .mainview-top-right .dropdown-menu {
-                padding: 0;
-            }
+        .required:after {
+            content: '*';
+            color: red;
+            padding-left: 5px;
+        }
 
-            .main-task-item {
-                display: block;
-                padding: 5px;
-                border-radius: 3px;
-                border: 1px solid #CDEDF1;
-                margin: 0;
-                font-size: 0.9em;
-            }
+        .btn-dropdown {
+            min-width: 36px;
+        }
 
-            .main-task-item .task-text {
-                color: grey;
-                display: block;
-                padding: 3px;
-                font-size: 0.89em;
-            }
+        .required:after {
+            content: '*';
+            color: red;
+            padding-left: 5px;
+        }
 
-            .main-task-item .task-buttons {
-                position: relative;
-            }
+        .mainview-top-right {
+            margin-right: 0;
+            display: block;
+        }
 
-            .main-task-item .task-title {
-                color: #000;
-                display: block;
-                padding: 3px;
-            }
+        .mainview-top-right .dropdown-menu {
+            padding: 0;
+        }
 
-            .main-notif-item {
-                display: block;
-                padding: 3px;
-                border-radius: 5px;
-                border: 1px solid #F5EFD8;
-                margin: 0;
-            }
+        .main-task-item {
+            display: block;
+            padding: 5px;
+            border-radius: 3px;
+            border: 1px solid #CDEDF1;
+            margin: 0;
+            font-size: 0.9em;
+        }
 
-            .main-notif-item .notif-title {
-                display: inline-block;
-                padding: 3px;
-                font-weight: bold;
-                color: grey;
-                font-size: 0.9em;
-            }
+        .main-task-item .task-text {
+            color: grey;
+            display: block;
+            padding: 3px;
+            font-size: 0.89em;
+        }
 
-            .main-notif-item .notif-text {
-                display: block;
-                padding: 3px;
-                color: grey;
-                font-size: 0.89em;
-            }
+        .main-task-item .task-buttons {
+            position: relative;
+        }
 
-            .menu-item-icon {
-                height: 25px;
-                width: 25px;
-            }
+        .main-task-item .task-title {
+            color: #000;
+            display: block;
+            padding: 3px;
+        }
 
-            .user-menu-item {
-                width: 100%;
-                padding: 10px 20px 10px 20px;
-                font-size: 1.1em;
-                display: inline-block;
-                border-bottom: 1px solid lightgrey;
-            }
+        .main-notif-item {
+            display: block;
+            padding: 3px;
+            border-radius: 5px;
+            border: 1px solid #F5EFD8;
+            margin: 0;
+        }
 
-            .lang-menu-item {
-                width: 100%;
-                padding: 5px 5px 10px 10px;
-                font-size: 1.1em;
-                display: inline-block;
-                border-bottom: 1px solid lightgrey;
-            }
+        .main-notif-item .notif-title {
+            display: inline-block;
+            padding: 3px;
+            font-weight: bold;
+            color: grey;
+            font-size: 0.9em;
+        }
 
-            .main-task-panel {
-                margin-top: -7px;
-                width: 450px;
-                max-height: 500px;
-                overflow: auto;
-            }
+        .main-notif-item .notif-text {
+            display: block;
+            padding: 3px;
+            color: grey;
+            font-size: 0.89em;
+        }
 
-            .main-notif-panel {
-                margin-top: -7px;
-                border-radius: 5px;
-                width: 450px;
-                max-height: 35vwpx;
-                overflow: auto;
-            }
+        .menu-item-icon {
+            height: 25px;
+            width: 25px;
+        }
 
-            .main-user-menus {
-                width: 250px;
-                margin-top: -7px;
-                max-height: 500px;
-                overflow: auto;
-            }
+        .user-menu-item {
+            width: 100%;
+            padding: 10px 20px 10px 20px;
+            font-size: 1.1em;
+            display: inline-block;
+            border-bottom: 1px solid lightgrey;
+        }
 
-            .main-lang-menus {
-                width: 250px;
-                margin-top: -7px;
-                max-height: 500px;
-                overflow: auto;
-            }
+        .lang-menu-item {
+            width: 100%;
+            padding: 5px 5px 10px 10px;
+            font-size: 1.1em;
+            display: inline-block;
+            border-bottom: 1px solid lightgrey;
+        }
 
-            .task-header,
-            .notif-header {
-                margin-top: -7px;
-                border-radius: 5px 5px 0px 0px;
-                display: inline-block;
-                width: 100%;
-                padding: 3px;
-                font-weight: bold;
-                color: #fff;
-                font-size: 1em;
-            }
+        .main-task-panel {
+            margin-top: -7px;
+            width: 450px;
+            max-height: 500px;
+            overflow: auto;
+        }
 
-            .user-menu-header {
-                margin-top: -7px;
-                display: inline-block;
-                width: 100%;
-                font-size: 1.2em;
-                background-color: #1CB6CD;
-                font-weight: bold;
-            }
+        .main-notif-panel {
+            margin-top: -7px;
+            border-radius: 5px;
+            width: 450px;
+            max-height: 35vwpx;
+            overflow: auto;
+        }
 
-            .lang-menu-header {
-                margin-top: -7px;
-                display: inline-block;
-                width: 100%;
-                font-size: 1.1em;
-                background-color: #1CB6CD;
-                font-weight: bold;
-            }
+        .main-user-menus {
+            width: 250px;
+            margin-top: -7px;
+            max-height: 500px;
+            overflow: auto;
+        }
 
-            .task-header {
-                background-color: #1CB6CD;
-            }
+        .main-lang-menus {
+            width: 250px;
+            margin-top: -7px;
+            max-height: 500px;
+            overflow: auto;
+        }
 
-            .notif-header {
-                background-color: #E5C40A;
-            }
+        .task-header,
+        .notif-header {
+            margin-top: -7px;
+            border-radius: 5px 5px 0px 0px;
+            display: inline-block;
+            width: 100%;
+            padding: 3px;
+            font-weight: bold;
+            color: #fff;
+            font-size: 1em;
+        }
 
-            .task-btn-approved,
-            .task-btn-rejected {
-                font-size: 0.9em;
-            }
+        .user-menu-header {
+            margin-top: -7px;
+            display: inline-block;
+            width: 100%;
+            font-size: 1.2em;
+            background-color: #1CB6CD;
+            font-weight: bold;
+        }
 
-            .input-group-addon {
-                background: #F2F7F7;
-                text-align: center;
-                padding: 5px;
-                min-width: 35px;
-                border: 0.9px solid #DBDFDF;
-                border-radius: 3px 0px 0px 3px;
-            }
+        .lang-menu-header {
+            margin-top: -7px;
+            display: inline-block;
+            width: 100%;
+            font-size: 1.1em;
+            background-color: #1CB6CD;
+            font-weight: bold;
+        }
 
-            .kt-menu__link-text {
-                font-size: 0.9em;
-                font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
-            }
+        .task-header {
+            background-color: #1CB6CD;
+        }
 
-            table th td {
-                font-size: 0.9em;
-                font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
-            }
+        .notif-header {
+            background-color: #E5C40A;
+        }
 
-            .kt-menu__item--open {
-                background-color: #fff;
-            }
+        .task-btn-approved,
+        .task-btn-rejected {
+            font-size: 0.9em;
+        }
 
-            .kt-menu__item--open>a .kt-menu__link-text {
-                font-weight: bold !important;
-            }
+        .input-group-addon {
+            background: #F2F7F7;
+            text-align: center;
+            padding: 5px;
+            min-width: 35px;
+            border: 0.9px solid #DBDFDF;
+            border-radius: 3px 0px 0px 3px;
+        }
 
-            .screen-title {
-                color: #000 !important;
-                font-size: 1.2em;
-                font-weight: bold;
-                font-family:Montserrat;
-                opacity:0.7;
-            }
+        /* .btn-outline-success, .btn-outline-danger, .btn-outline-primary, .btn-outline-warning{
+          border-width:0.9px !important;
+          font-family:'Khmer OS Content','DaunPenh','Francois One','Bayon','Verdana','Arial Black (sans-serif)','Arial (sans-serif)','Tahoma (sans-serif)' !important;
+        }
+        */
+        .kt-menu__link-text {
+            font-size: 0.9em;
+            font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+        }
 
-            .table .dropdown {
-                position: absolute;
-            }
-        </style>
+        table th td {
+            font-size: 0.9em;
+            font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
 
-        <?php
-            ScriptManager::render('primary',0);
-            ScriptManager::render('primary-async',0);
-            ScriptManager::render('primary-defer',1);
-            ScriptManager::render('components',1);
-        ?>
-    </head>
-    <body class="kt-quick-panel--right kt-demo-panel--right kt-offcanvas-panel--right kt-header--fixed kt-header-mobile--fixed kt-subheader--enabled kt-subheader--fixed kt-subheader--solid kt-aside--enabled kt-aside--fixed kt-page--loading">
-        <div id="_main_hidden_fields">
-            <input type="hidden" id="__base_url" value="{{ url('/') }}">
-            <input type="hidden" id="__xsp_name" value="_csrf_115578"/>
-            <input type="hidden" id="__xsp_value" value="<?php echo Str::random(30) ?>"/>
+        }
+
+        .kt-menu__item--open {
+            background-color: #fff;
+        }
+
+        .kt-menu__item--open>a .kt-menu__link-text {
+            font-weight: bold !important;
+        }
+
+        .screen-title {
+            color: #000 !important;
+            font-size: 1.2em;
+            font-weight: bold;
+            font-family:Montserrat;
+            opacity:0.7;
+        }
+
+        /** ensure dropdown menus inside table appear above table **/
+        .table .dropdown {
+            position: absolute;
+        }
+    </style>
+
+    <?php
+    ScriptManager::render('primary',0);
+    ScriptManager::render('primary-async',0);
+    ScriptManager::render('primary-defer',1);
+    ScriptManager::render('components',1);
+  ?>
+
+</head>
+
+<!-- end::Head -->
+
+<!-- begin::Body -->
+
+<body
+    class="kt-quick-panel--right kt-demo-panel--right kt-offcanvas-panel--right kt-header--fixed kt-header-mobile--fixed kt-subheader--enabled kt-subheader--fixed kt-subheader--solid kt-aside--enabled kt-aside--fixed kt-page--loading">
+    <div id="_main_hidden_fields">
+        <input type="hidden" id="__base_url" value="{{ url('/') }}">
+        <input type="hidden" id="__xsp_name" value="_csrf_115578" />
+        <input type="hidden" id="__xsp_value" value="<?php echo Str::random(30); ?>" />
+    </div>
+
+    <!-- <div class="backdrop"></div> -->
+    <img id="vs_loader1" width="270" height="170" style="display:none;position:fixed;z-index:1000;top:40%;left:40%"
+        class="vs-loader" src="{{ asset('assets/images/vslogo1.gif') }}">
+    <!-- begin:: Page -->
+
+    <!-- begin:: Header Mobile -->
+    <div id="kt_header_mobile" class="kt-header-mobile  kt-header-mobile--fixed ">
+        <div class="kt-header-mobile__logo">
+            <a href="javascript:;">
+                <img alt="Logo" src="{{ asset('assets/media/logos/logo-light.png') }}" />
+            </a>
         </div>
 
         <img id="vs_loader1" width="270" height="170" style="display:none; position:fixed; z-index:1000; top:40%; left:40%" class="vs-loader" src="{{ asset('assets/images/vslogo1.gif') }}"/>

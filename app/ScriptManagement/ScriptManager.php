@@ -21,18 +21,105 @@ class ScriptManager{
     //     return $protocol.$server_name;
     // }
    
+    //remove comments from codes
+    static function removeComments( $js ) {
+		
+		// Remove a tab
+		$js = str_replace("\t", " ", $js);
 
-    protected static function createFile($ext =null,$file_name,$content=null){
+		// Remove comments with "// "
+		$js = preg_replace('/\n(\s+)?\/\/[^\n]*/', "", $js);	
+
+		// Remove other comments
+		$js = preg_replace("!/\*[^*]*\*+([^/][^*]*\*+)*/!", "", $js);
+		$js = preg_replace("/\/\*[^\/]*\*\//", "", $js);
+		$js = preg_replace("/\/\*\*((\r\n|\n) \*[^\n]*)+(\r\n|\n) \*\//", "", $js);		
+
+		// Remove a carriage return
+		$js = str_replace("\r", "", $js);
+
+		// Remove whitespaces
+		$js = preg_replace("/\s+\n/", "\n", $js);	
+		$js = preg_replace("/\n\s+/", "\n ", $js);
+		$js = preg_replace("/ +/", " ", $js);
+
+		return $js;
+	}
+
+    //get_file_contens from url
+    static function getFileContentFromUrl($url) {
+        $ch = curl_init();
+    
+        curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_ENCODING, 0);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST , "GET");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);  
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+    
+        $data = curl_exec($ch);
+    
+        $info = curl_getinfo($ch);
+     
+        if(curl_errno($ch)) {
+            return (object)['status'=>'Error','error_message'=>"Failed to fectch url $url.Error: ".curl_error($ch)];
+            //throw new Exception('Curl error: ' . curl_error($ch));
+        }
+    
+        curl_close($ch);
+    
+        if ($data === FALSE) {
+            return (object)['status'=>'Error','error_message'=>"Failed to fectch url $url. Info: ".$info];
+            //throw new Exception("curl_exec returned FALSE. Info follows:\n" . print_r($info, TRUE));
+        }
+        return (object)['content'=>$data,'error_message'=>null,'status'=>'OK'];
+    }
+
+    static function downloadUrlToFile($url, $outFileName)
+    {   
+            if(is_file($url)) {
+                copy($url, $outFileName); 
+            } else {
+               try{
+                $options = array(
+                    CURLOPT_FILE    => fopen($outFileName, 'w'),
+                    CURLOPT_TIMEOUT =>  28800, // set this to 8 hours so we dont timeout on big files
+                    CURLOPT_URL     => $url
+                    );
+    
+                    $ch = curl_init();
+                    curl_setopt_array($ch, $options);
+                    curl_exec($ch);
+                    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                    curl_close($ch);
+                    return (object)['error_message'=>null,'info'=>$httpcode];
+               }catch(Exception $e){
+                 return (object)['error_message'=>$e->getMessage()." File: ".$outFileName,'status'=>'Error'];
+               }
+            }
+    }
+
+    protected static function createFile($content=null,$file_name=null,$ext =null){
+        if (!$file_name) return (object)["status"=>"Error","error_message"=>"Error in createFile() method because parameter file_name is not supplied"];
         if (!$content) return (object)["status"=>"Error","error_message"=>"Cannot create file $file_name.$ext with NULL content"];
         $dir = dirname($file_name);
+        //If file extension is Not supplied, get extention from $file_name
+        if (!$ext) $ext = pathinfo($file_name, PATHINFO_EXTENSION);
         if (!file_exists($dir)) {
            mkdir($dir, 0755, true); //permission
             //$result->error = 'Storage file or folder does not exist';
             //return $result;
         }
-        $success = file_put_contents($file_name.$ext, $content);
-        if (!$success) return  (object)["status"=>"Error","error_message"=>"Error creating file $file_name.$ext"];
-        else return (object)['status'=>'OK','file_name'=>$file_name.$ext];
+        $ext = trim($ext?$ext:"");
+        if (mb_substr($ext,0,1) !==".") $ext = ".$ext";
+        if (substr($file_name,-strlen($ext)) !==$ext) $file_name .=$ext;
+        $success = file_put_contents($file_name, $content);
+        if (!$success) return  (object)["status"=>"Error","error_message"=>"Error creating file $file_name"];
+        else return (object)['status'=>'OK','file_name'=>$file_name];
     }
 
     protected static function deleteFile($filePath){
@@ -53,26 +140,81 @@ class ScriptManager{
         return $contents;
     }
 
+    static function is_cdn_file($path=''){
+       return (substr(trim($path),0,5) =='http:' || substr(trim($path),0,6) =='https:');
+    }
+
     static function combineFileContents($b=[]){
       $str = "";
+      //contains last 10 chars of the latest combined script content
+      $trailing_str="";
+
       $files = isset($b['files'])?$b['files']:[];
       $dir = getcwd();
       $excepts = $b? (isset($b['no-minify'])?$b['no-minify']:[]) :[];
       //NOTE that: each file path is  $dir.$f = "E:\LaravelApps\GTS/assets/material-js/jquery.min.js"
       // then we need to add directory called "public" to it => "E:\LaravelApps\GTS/public/assets/material-js/jquery.min.js"
       foreach($files as $f){
-        $path = $dir."/public".$f;
+        $tmp_path = $dir."/public/".$f;
+        $tmp_path = str_replace('//','/',$tmp_path);
+        //Use method "explode" in ordder to exclude question mark "?", if any, from the $path string. NOTE: "?v=2" may be used for versioning and client cache control 
+        $path = explode('?',$tmp_path)[0];
         $last_seven_chars = substr($f, strlen($f)-7,7);
+ 
         if (in_array($f,$excepts)){
-            $str.= ';'.self::getFileContent($path); 
+            $content_last_char = mb_substr(trim($str), -1);
+            $new_content = null;
+            if (self::is_cdn_file($f))
+            {
+                $res = self::getFileContentFromUrl($f);
+                //$path = $dir."/public/js/temp/".basename($f);
+                //$res = self::downloadUrlToFile($f,$path);
+                //$new_content = self::getFileContent($path);
+                if ($res->error_message) return (object)['error'=>$res->error_message,"content"=>null];
+                //just remove comments from js codes
+                if (!$res->content) return (object)['error'=>"Error: File $path is empty","content"=>null]; 
+                $new_content = self::removeComments($res->content);
+            }
+            else $new_content = self::removeComments(self::getFileContent($path));
+            if (empty(trim($new_content))) return (object)['error'=>"Failed to fetch content from file $path","content"=>null]; 
+            $str.= ($content_last_char==';'? " " : ";").$new_content;
         }else {
             if ($last_seven_chars ==='.min.js')
-               $str.= ';'.self::getFileContent($path);
-            else $str.=';'.Minifier::minify(self::getFileContent($path),  ['flaggedComments' => false]);
+            {
+                $content_last_char = mb_substr(trim($str), -1);
+                $new_content =null;
+                if (self::is_cdn_file($f))
+                {
+                    $res = self::getFileContentFromUrl($f);
+                    if ($res->error_message) return (object)['error'=>$res->error_message,"content"=>null];
+                    if (!$res->content) return (object)['error'=>"Error: File $path is empty","content"=>null]; 
+                    $new_content = self::removeComments($res->content);
+                }
+                else $new_content = self::removeComments(self::getFileContent($path));
+
+                if (empty(trim($new_content))) return (object)['error'=>"Failed to fetch content from file $path","content"=>null]; 
+                $str.=($content_last_char==';'? " " : ";").$new_content;
+            }    
+            else{
+                $content_last_char = mb_substr(trim($str), -1);
+                //$str.= " ".self::minify_js(self::getFileContent($path),  ['flaggedComments' => false]);
+                $new_content = null;
+                if (self::is_cdn_file($f))
+                {
+                    $res = self::getFileContentFromUrl($f);
+                    if ($res->error_message) return (object)['error'=>$res->error_message,"content"=>null];
+                    if (!$res->content) return (object)['error'=>"Error: File $path is empty","content"=>null]; 
+                    $new_content = $res->content;
+                }
+                else $new_content = self::getFileContent($path);
+
+                if (empty(trim($new_content)))  return (object)['error'=>"Failed to fetch content from file $path","content"=>null];
+                $str.=($content_last_char==';'? " " : ";").Minifier::minify($new_content,  ['flaggedComments' => false]);
+            }
         }
            
       }
-      return $str;
+      return (object)['content'=>$str,'error'=>null];
     }
 
     static function createBundleFileFromArray($b=[]){
@@ -90,8 +232,9 @@ class ScriptManager{
              if ($err) return (object)["status"=>"Error","error_message"=>$err];
          }
       
-        $content = self::combineFileContents($b);
-        return self::createFile(null,$fpath,$content);
+        $res = self::combineFileContents($b);
+        if($res->error) return (object)['status'=>'Error','error_message'=>$res->error];
+        return self::createFile($res->content,$fpath,null);
     }
 
     static function createBundleFile($bundle_name){
