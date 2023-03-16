@@ -1,4 +1,4 @@
-<div id="_main_stockTransferComponent" style="display:none; padding-top:15px">
+<div id="_main_stockTransferComponent" class="mobile-padding" style="display:none; padding-top:15px">
     <div class="d-flex align-items-center px-3">
         <button class="btn btn-primary" type="button" id="_st_btnNew">
             <span class="trans-text" data-langprop="buttons.Transfer Stock"></span>

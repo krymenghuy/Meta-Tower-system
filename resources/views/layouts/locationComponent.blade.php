@@ -1,5 +1,4 @@
-<div id="_sttn_locationsComponent" style="width:auto;display:none;margin:15px 15px 15px">
-
+<div id="_sttn_locationsComponent" class="mobile-padding" style="width:auto;display:none;margin:15px 15px 15px">
     <div class="row">
         <div class="col-lg-6">
             <div id="_sttn_loc_countryListpanel" class="border-style1"

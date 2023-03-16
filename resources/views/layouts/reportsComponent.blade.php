@@ -15,7 +15,7 @@
     }
 
 </style>
-<div id="_main_reportsComponent" style="display:none;width;100%;background:#fff;">
+<div id="_main_reportsComponent" class="mobile-padding" style="display:none;width:100%;background:#fff;">
     <div style="height:35px"></div>
     <div id="_rpt_filter_panel" style="border:1.1px solid #84E4EF;padding:3px;margin:35px;border-radius:5px">
         <div style="margin:35px;width:100%">

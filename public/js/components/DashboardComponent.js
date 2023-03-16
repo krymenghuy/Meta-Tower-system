@@ -39,11 +39,7 @@ let DashboardComponent = new function () {
           destroy: true,
           paging: true,
           ordering: false,
-          //dom: 'Bfrtip',
           retrieve: true,
-          //scrollY:390,
-          //scrollX:500,
-          //pagingType:'numbers',
           info: true,
           pageLength: 10,
           bLengthChange: false,
@@ -288,7 +284,8 @@ let DashboardComponent = new function () {
     });
   }
 
-  this.show = (option) => {
+  this.show = (options) => {
+    if(!options) options = {};
     main_view.setTitle(mThis.title_prop);
     mThis.self.show().siblings().hide();
     mThis.displayDashboardTable();

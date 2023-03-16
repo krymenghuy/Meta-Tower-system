@@ -14,7 +14,7 @@
        width:120px;
     }
 </style>
-<div id="_main_invoicesComponent" style="display:none;padding-top:15px">
+<div id="_main_invoicesComponent" class="mobile-padding" style="display:none;padding-top:15px">
     <div class="d-flex align-item-center px-3 w-100 mt-3">
         <div class="d-flex align-items-center gap-2 w-100">
             <button id="_invs_btnNewInvoice" class="btn btn-primary d-flex flex-nowrap" type="button">

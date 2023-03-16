@@ -1,4 +1,4 @@
-<div id="_main_medicalServiceComponent" style="display:none;padding-top:15px">
+<div id="_main_medicalServiceComponent" class="mobile-padding" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
         <div class="d-flex align-items-center gap-2 ms-3">
             <button class="vs-btn-custom-primary" id="_msl_btnNew">
