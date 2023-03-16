@@ -100,7 +100,7 @@ namespace App\ScriptManagement;
                 ],
                'components'=>[
                     'attr'=>'defer',
-                    'output_file'=>'/dist/js/clinic.components.js',
+                    'output_file'=>'/dist/js/clinic.components.js?v=1',
                     'files'=>[
                         '/assets/js/formUtils.js',
                         //'assets/js/pusher/pusher.min.js',
@@ -111,9 +111,9 @@ namespace App\ScriptManagement;
                         '/js/components/FileChooser.js',
                         '/js/components/DashboardComponent.js',
                         '/js/components/PersonDialog.js',
-                        '/js/components/AppointmentListComponent.js?v=3',
+                        '/js/components/AppointmentListComponent.js?v=5',
                         '/js/components/QueueComponent.js?v=5',
-                        '/js/components/ConsultationQueueComponent.js?v=2',
+                        '/js/components/ConsultationQueueComponent.js?v=3',
                         '/js/components/EmployeeListComponent.js',
                         '/js/components/PositionsComponent.js',
                         '/js/components/LaboPartnersComponent.js',
