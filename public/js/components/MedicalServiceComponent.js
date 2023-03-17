@@ -86,9 +86,6 @@ let MedicalServiceComponent = new function () {
     }
 
     this.displayMedicalServices = (onFinish = null) => {
-        //Initialize language for DataTable columns headers
-        //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-        //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
         let p = { 'search_value': mThis.elSearchItem.val(), "department_id": mThis.elFilter_department.val() };
         vsapi.call(`${mThis.base_url}/api/service/items`, p, 'POST', null).then((result) => {
@@ -96,15 +93,12 @@ let MedicalServiceComponent = new function () {
             if (result.status_code === 200) data = result.data;
             if (mThis.table) {
                 mThis.tblItems.DataTable().clear().destroy();
-                //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
                 mThis.tblItems.empty();
                 mThis.table = null;
             }
 
             data = StringSanitizer.sanitizeObject(data, null, ['display_price']);
-            //begin::Set up columns
             let cnt = 1;
-            //data = [ {name: "sffdf", description:"sddfsf",price:100, cur_symbol:"$"},{}, ... ]
             let my_columns = [
                 {
                     data: (item, a, b) => {
@@ -149,10 +143,6 @@ let MedicalServiceComponent = new function () {
                     }
                 }
             ];
-            //END Define colum
-
-            //translate column names
-            //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
 
             if (!mThis.table)
                 mThis.table = mThis.tblItems.DataTable({
@@ -165,15 +155,15 @@ let MedicalServiceComponent = new function () {
                     pageLength: 10,
                     bLengthChange: false,
                     saveState: true,
-                    'processing': true,
-                    'language': {
+                    processing: true,
+                    language: {
                         'loadingRecords': '&nbsp;',
                         'processing': 'Loading...',
                         "emptyTable": LocaleManager.trans('No data to display', 'datatable')
                     },
-                    'data': data,
-                    'columns': my_columns
-                    , "createdRow": function (row, data, dataIndex) {
+                    data: data,
+                    columns: my_columns,
+                    createdRow: function (row, data, dataIndex) {
                         cnt++;
 
                         let tr = $(row);
@@ -207,7 +197,7 @@ let MedicalServiceComponent = new function () {
             mThis.displayMedicalServices(() => {
                 main_view.setTitle(mThis.title_prop);
                 mThis.self.show().siblings().hide();
-            });
+            })
         });
     }
 }

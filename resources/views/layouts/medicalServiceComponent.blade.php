@@ -11,7 +11,7 @@
             </select>
         </div>
         <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;min-height:350px;">
-            <table class="table header-light-blue header-uppercase" id="_msl_tblItems"></table>
+            <table class="table header-light-blue header-uppercase table-hover" id="_msl_tblItems"></table>
         </div>
     </div>
 </div>

@@ -28,7 +28,7 @@ class MedicalServiceController extends Controller
             $str_search = "d.name LIKE '%$search_value%' OR ms.name LIKE '%$search_value%'";
         }
       
-        $rows = DB::table('medical_services as ms')->join('departments as d','d.id','=','ms.department_id')->where('d.id',$department_id)->where('ms.branch_id',$branch_id)->whereRaw($str_search)->selectRaw("ms.id,ms.name,ms.description,ms.price,displayMoney(price,currency_code) as display_price,ms.cost,displayMoney(cost,currency_code) as display_cost,ms.department_id,d.name as department_name,treatment_method,service_type")->get(); 
+        $rows = DB::table('medical_services as ms')->join('departments as d','d.id','=','ms.department_id')->where('d.id',$department_id)->where('ms.branch_id',$branch_id)->whereRaw($str_search)->selectRaw("ms.id,ms.name,ms.description,ms.price,displayMoney(price,currency_code) as display_price,ms.cost,displayMoney(cost,currency_code) as display_cost,ms.department_id,d.name as department_name,treatment_method,service_type")->get();
         return JDV::result($rows);
     }
 
