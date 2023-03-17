@@ -297,7 +297,7 @@ let TicketDetails = new function () {
                                 <div class="col-xl-6">
                                     <div class="row d-flex flex-nowrap">
                                         <div style="width:163px; max-width: 165px;">
-                                            <img src="${mThis.icon_url()}/client-girl.png" class="profile-thumbnail pe-2"/>
+                                            <img src="${mThis.icon_url()}/client-girl.png" class="profile-thumbnail pe-2 img-thumbnail"/>
                                         </div>
                                         <div class="col-8">
                                             <div class="row g-1">
@@ -1178,7 +1178,7 @@ let ConsultTabView = new function () {
 
             let title = LocaleManager.trans('Chief Complaints', 'consult');
             let html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none"><h3 class="trans-text" data-langprop="consult.Chief Complaints">${title} &nbsp;<a href="#" class="consultview-add-cc"><i class="fa fa-plus-circle"></i></a></h3>
-              <div class="border border-1 border-success rounded-3 p-3" id="${div_id}"></div>
+              <div class="border border-1 border-success rounded-3 p-3 pt-5" id="${div_id}"></div>
             </div>`;
 
             div.append(html);
@@ -1274,7 +1274,7 @@ let ConsultTabView = new function () {
                 let html = `
                         <div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                         <h3 class="trans-text" data-langprop="consult.Vital Signs">${title}</a></h3>
-                        <div class="border border-1 border-success rounded-3 p-3 shadow-sm">
+                        <div class="border border-1 border-success rounded-3 p-3 pt-5 shadow-sm">
                             <table class="table">
                                     <tbody>
                                         ${html_vs_items?html_vs_items:'No vital signs to display'}
