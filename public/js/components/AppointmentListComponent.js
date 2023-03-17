@@ -102,7 +102,7 @@ let AppointmentListComponent = new function () {
 
                 html = `<div data-apptid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="appt-info-wrapper shadow-lg d-flex" style="width:100%;">
                         <div class="thumbnail-wrapper">
-                        <img src="${mThis.icon_url()}/client-girl.png" class="profile-thumbnail">
+                        <img src="${mThis.icon_url()}/client-girl.png" class="profile-thumbnail img-thumbnail">
                         </div>
 
                         <div class="d-flex" style="width:100%">

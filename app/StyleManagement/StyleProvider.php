@@ -37,7 +37,7 @@ namespace App\StyleManagement;
                     'assets/css/vsstyle.css',
                     'assets/css/sweetalert2.min.css',
                     //'assets/css/adminlte.css',
-                    'assets/plugins/chart.js/Chart.css'
+                    'assets/plugins/chart.js/Chart.css',
                 ]
                 ]
             // ,'ionicons'=>[
