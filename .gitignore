@@ -1,3 +1,7 @@
+/app/ScriptManagement/ScriptManager.php
+/app/ScriptManagement/ScriptManager1.php
+/app/ScriptManagement/Minifier.php
+/app/StyleManagement/StyleManager.php
 /node_modules
 /public/hot
 /public/storage

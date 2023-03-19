@@ -9,6 +9,7 @@ namespace App\ScriptManagement;
          protected static $bundles = [
             'priority-one'=>[
                 'attr'=>'async',
+                'single_file'=>1,
                 'output_file'=>'/dist/js/clinic.priority-one.min.js',
                 'files'=>[
                     '/assets/js/vsapi.js',
@@ -18,7 +19,8 @@ namespace App\ScriptManagement;
             ],
             'primary'=>[
                 'attr'=>null,
-                'output_file'=>'/dist/js/clinic.primary.js',
+                'single_file'=>1,
+                'output_file'=>'/dist/js/clinic.primary.js?v=1',
                 'files'=>[
                     '/assets/material-js/jquery.min.js',
                     '/assets/plugins/chart.js/Chart.js'
@@ -26,6 +28,7 @@ namespace App\ScriptManagement;
             ],
            'primary-async'=>[
                 'attr'=>'async',
+                'single_file'=>1,
                 'output_file'=>'/dist/js/clinic.primary-async.js',
                 'files'=>[
                     '/js/components/AuthManager.js'
@@ -33,6 +36,7 @@ namespace App\ScriptManagement;
            ],
            'pdfmake'=>[
              'attr'=>'defer',
+             'single_file'=>0,
              'output_file'=>'/dist/js/vs.pdfmake.js',
              'minify'=>0,
              'files'=>[
@@ -42,6 +46,7 @@ namespace App\ScriptManagement;
            ],
         'primary-defer'=>[
             'attr'=>'defer',
+            'single_file'=>1,
             'output_file'=>'/dist/js/rmi.primary-defer.js',
             'files'=>[
                 '/assets/js/string_san.js',
@@ -49,7 +54,7 @@ namespace App\ScriptManagement;
                 '/assets/js/vsdom.js',
                 '/assets/js/sweetalert2.all.min.js',
                 //Initialize Toast style and options
-               '/assets/js/sweetalert2.toast.js',
+                '/assets/js/sweetalert2.toast.js',
                 '/assets/js/ItemsView.js',
                 '/assets/js/ExchangeManager.js',
                 '/assets/js/expandableTableRow.js',
@@ -81,7 +86,7 @@ namespace App\ScriptManagement;
                 '/assets/js/toastr.min.js', /** for event toast **/
                 '/assets/js/init.toastr.js',
                 '/assets/js/demo1/scripts.bundle.js',
-                '/assets/js/jquery.datatables.min.js',
+                '/assets/js/datatables.bundle.min.js',
                 //'/assets/plugins/chart.js/Chart.js',
                 '/assets/js/datatables.bundle.min.js',
                 //'https://js.pusher.com/7.2/pusher.min.js', 
@@ -100,7 +105,8 @@ namespace App\ScriptManagement;
                 ],
                'components'=>[
                     'attr'=>'defer',
-                    'output_file'=>'/dist/js/clinic.components.js?v=1',
+                    'single_file'=>1,
+                    'output_file'=>'/dist/js/clinic.components.js',
                     'files'=>[
                         '/assets/js/formUtils.js',
                         //'assets/js/pusher/pusher.min.js',
@@ -165,21 +171,4 @@ namespace App\ScriptManagement;
             return self::$bundles;
         }
     }
-
-
-//     class StyleProvider{
-//         protected static $bundles = [
-//            'primary'=>[
-//                'files'=>[
-//                    '/assets/material-js/jquery.min.css',
-//                ]
-//            ],
-          
-//         ];
-
-//         static function bundle($bundle_name=null){
-//             if(!$bundle_name) return [];
-//             return isset(self::$bundles[$bundle_name])?self::$bundles[$bundle_name]:[];
-//         }
-//    }
 ?>
