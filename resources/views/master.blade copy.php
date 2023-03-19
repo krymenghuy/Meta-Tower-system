@@ -19,7 +19,7 @@
 
     <!--end::Base Path -->
     <meta charset="utf-8" />
-    <title>Clinic Management System</title>
+    <title>DMS Management System</title>
     <link type="images/png" rel="icon" href="{{ asset('assets/images/logo/logo.jpg') }}">
     <meta name="description" content="Updates and statistics">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -33,87 +33,13 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
- 
-    <!-- <link rel="stylesheet" href="{{ asset('assets/material-css/bootstrap.min.css') }}"> -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-        type="text/css" />
-
-    <!--begin::Page Vendors Styles(used by this page) -->
-    <link href="{{ asset('assets/vendors/custom/datatables/datatables.bundle.css') }}"
-        rel="stylesheet" type="text/css" />
-    <!--end::Page Vendors Styles -->
-
-    <!--begin:: Global Mandatory Vendors -->
-    <link
-        href="{{ asset('assets/vendors/general/perfect-scrollbar/css/perfect-scrollbar.css') }}"
-        rel="stylesheet" type="text/css" />
-
-    <!--end:: Global Mandatory Vendors -->
-
-    <!--begin:: Global Optional Vendors -->
-    <link href="{{ asset('assets/vendors/general/tether/dist/css/tether.css') }}"
-        rel="stylesheet" type="text/css" />
-    <link
-        href="{{ asset('assets/vendors/general/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css') }}"
-        rel="stylesheet" type="text/css" />
-    <link
-        href="{{ asset('assets/vendors/general/bootstrap-datetime-picker/css/bootstrap-datetimepicker.css') }}"
-        rel="stylesheet" type="text/css" />
-    <link
-        href="{{ asset('assets/vendors/general/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.css') }}"
-        rel="stylesheet" type="text/css" />
-
-    <link href="{{ asset('assets/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
-    <link
-        href="{{ asset('assets/vendors/general/owl.carousel/dist/assets/owl.theme.default.css') }}"
-        rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/vendors/general/dropzone/dist/dropzone.css') }}"
-        rel="stylesheet" type="text/css" />
-
-    <link
-        href="{{ asset('assets/vendors/general/bootstrap-markdown/css/bootstrap-markdown.min.css') }}"
-        rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/vendors/general/animate.css/animate.css') }}"
-        rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/vendors/general/toastr/build/toastr.css') }}"
-        rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/vendors/general/morris.js/morris.css') }}" rel="stylesheet"
-        type="text/css" />
-
-    <!-- <link href="{{ asset('assets/vendors/general/socicon/css/socicon.css') }}" rel="stylesheet" type="text/css" /> -->
-    <link
-        href="{{ asset('assets/vendors/custom/vendors/line-awesome/css/line-awesome.css') }}"
-        rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/css/font-awesome/6.2.0/css/all.min.css') }}"
-        rel="stylesheet" type="text/css" />
-
-    <!--end:: Global Optional Vendors -->
-
-    <!--begin::Global Theme Styles(used by all pages) -->
-    <link href="{{ asset('assets/css/demo1/style.bundle.css') }}" rel="stylesheet"
-        type="text/css" />
-    <!--end::Global Theme Styles -->
-
-    <!--begin::Layout Skins(used by all pages) -->
-    <link href="{{ asset('assets/css/demo1/skins/header/base/light.css') }}"
-        rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/css/loader.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/css/jquery.datepicker2.css') }}" rel="stylesheet"
-        type="text/css" />
-    <!-- <link href="{{ asset('assets/css/vs_multiple_select.css') }}" rel="stylesheet" type="text/css" /> -->
-    <link href="{{ asset('assets/css/kt_override.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/css/app.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/css/vsstyle.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/css/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
-
-    <!-- Admin LTE -->
-    <!-- <link href="{{ asset('assets/css/adminlte.css') }}" rel="stylesheet" type="text/css" /> -->
-    <link rel="stylesheet" href="{{ asset('assets/plugins/chart.js/Chart.css') }}">
-    <!-- Ionicons -->
-    <!-- <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"> -->
-    <!-- ::End AndimLte -->
-
+    <?php StyleManager::render('vsdmstyle',0);?>
     <style type="text/css">
+        /* html,body{
+          font-size:1em; 
+          font-family:'Robotto','Khmer OS Content','DaunPenh','Francois One','Bayon','Verdana','Arial Black (sans-serif)',"Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",'Arial (sans-serif)','Tahoma (sans-serif)';
+        }
+         */
         <blade media|%20(min-width%3A%201025px)%20%7B>.kt-header--fixed.kt-subheader--fixed.kt-subheader--enabled .kt-wrapper {
             padding-top: 65px !important;
         }
@@ -294,19 +220,14 @@
             border-radius: 3px 0px 0px 3px;
         }
 
-        /* .btn-outline-success, .btn-outline-danger, .btn-outline-primary, .btn-outline-warning{
-          border-width:0.9px !important;
-          font-family:'Khmer OS Content','DaunPenh','Francois One','Bayon','Verdana','Arial Black (sans-serif)','Arial (sans-serif)','Tahoma (sans-serif)' !important;
-        }
-        */
         .kt-menu__link-text {
             font-size: 0.9em;
-            font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+            font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
         }
 
         table th td {
             font-size: 0.9em;
-            font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+            font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
 
         }
 
@@ -333,11 +254,12 @@
     </style>
 
     <?php
-    ScriptManager::render('primary',0);
-    ScriptManager::render('primary-async',0);
-    ScriptManager::render('primary-defer',1);
-    ScriptManager::render('components',1);
-  ?>
+        ScriptManager::render('primary',0);
+        ScriptManager::render('primary-async',0);
+        ScriptManager::render('pdfmake',0);
+        ScriptManager::render('primary-defer',1);
+        ScriptManager::render('components',1);
+    ?>
 
 </head>
 
@@ -456,8 +378,7 @@
                             <div class="form-inline" style="float:left">
                                 <div class="screen-info">
                                     <div>
-                                        <h5 class="screen-title trans-text" data-langprop="titles.dashboard"
-                                            style="text-transform:uppercase" id="screen_title"></h5>
+                                        <h5 class="screen-title trans-text" data-langprop="titles.dashboard" style="text-transform:uppercase" id="screen_title"></h5>
                                     </div>
                                 </div>
                             </div>
@@ -465,15 +386,15 @@
                             <div id="_main_top_right_menus" class="mainview-top-right" style="float:right">
                                 <div class="form-inline">
                                     <div class="dropdown">
-                                        <button style="display:none" id="_main_btn_lang" class="btn-dropdown" data-menu="lang"
+                                        <button id="_main_btn_lang" class="btn-dropdown" data-menu="lang"
                                             style="margin-right:10px;padding:0px;border:none;background:none;">
                                             <img class="mr-1"
                                                 src="{{ asset('assets/images/icons/khmer.png') }}"
                                                 style="height:25px;" />
                                             <span id="_main_lang_name">
                                                 <?php
-                                                echo Session::get('lang_name','Khmer');
-                                                ?>
+                              echo Session::get('lang_name','Khmer');
+                            ?>
                                             </span>
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right">
@@ -542,7 +463,7 @@
                                                 <span class="user-menu-item">
                                                     <a id="_main_mnu_about" class="dropdown-item"
                                                         href="javascript:void(0)">
-                                                        <i class="fas fa-cog"></i> About MClinic
+                                                        <i class="fas fa-cog"></i> About DMS
                                                     </a>
                                                 </span>
                                                 <span class="user-menu-item">
@@ -574,34 +495,28 @@
                             <!-- if put "layouts.tripListComponent" at bottom  => then there is error in pages -->
                             @include('layouts.inputBoxes')
                             @include('layouts.dashboardComponent')
-                            @include('layouts.dashboard2Component')
-                            @include('layouts.patientFinderComponent')
-                            @include('layouts.appointmentListComponent')
-                            @include('layouts.queueComponent')
-                            @include('layouts.consultationQueueComponent')
-                            @include('layouts.employeeListComponent')
-                            @include('layouts.positionsComponent')
-                            @include('layouts.laboPartnersComponent')
-                            @include('layouts.vendorsComponent')
-                            @include('layouts.invoicesComponent')
-                            @include('layouts.patientRecieptsComponent')
-                            @include('layouts.medicalServiceComponent')
-                            @include('layouts.itemsComponent')
-                            @include('layouts.itemGroupsComponent')
-                            @include('layouts.stockTrackingComponent')
-                            @include('layouts.categoriesComponent')
-                            @include('layouts.patientListComponent')
-                            @include('layouts.expenseBookComponent')
-                            @include('layouts.reportCenterComponent')
+                            @include('layouts.orderImagesComponent')
+                            @include('layouts.pickupListComponent')
+                            @include('layouts.packageListComponent')
+                            @include('layouts.completedPackageListComponent')
+                            @include('layouts.tripListComponent')
                             @include('layouts.companyComponent')
-                            @include('layouts.locationComponent')
-                            @include('layouts.serviceDepartmentsComponent')
-                            @include('layouts.chiefComplaintsComponent')
-                            @include('layouts.exchangeRateComponent')
-                            @include('layouts.stockTransferComponent')
+                            @include('layouts.generalSettingsComponent')
+                            @include('layouts.driverPaymentComponent')
+                            @include('layouts.senderPaymentComponent')
+                            @include('layouts.driverListComponent')
+                            @include('layouts.salesAgentsComponent')
+                            @include('layouts.senderListComponent')
                             @include('layouts.um.userManagementComponent')
                             @include('layouts.um.roleManagementComponent')
+                            @include('layouts.locationComponent')
                             @include('layouts.mobileBrandImagesComponent')
+                            @include('layouts.promotionComponent')
+                            @include('layouts.deliveryZoneComponent')
+                            @include('layouts.priceSettingsComponent')
+                            @include('layouts.exchangeRatesComponent')
+                            @include('layouts.productCategoriesComponent')
+                            @include('layouts.reportCenterComponent')
                         </div>
                         <!--end:: div#_app_content-->
                     </div>
@@ -619,9 +534,18 @@
                 <div class="kt-footer__copyright">
                     2021&nbsp;&copy;&nbsp;<a href="www.vectorasoft.com" target="_blank" class="kt-link">Vectorasoft</a>
                 </div>
+                <!-- <div class="kt-footer__menu">
+        <a href="http://keenthemes.com/metronic" target="_blank" class="kt-footer__menu-link kt-link">About</a>
+        <a href="http://keenthemes.com/metronic" target="_blank" class="kt-footer__menu-link kt-link">Team</a>
+        <a href="http://keenthemes.com/metronic" target="_blank" class="kt-footer__menu-link kt-link">Contact</a>
+      </div> -->
             </div>
         </div>
+
+        <!-- end:: Footer -->
     </div>
+    <!-- </div>
+</div>  -->
     <div>
         <!-- end:: Page -->
 
@@ -630,7 +554,6 @@
             <i class="fa fa-arrow-up"></i>
         </div>
         <!-- end::Scrolltop -->
- 
 </body>
 <!-- end::Body -->
 

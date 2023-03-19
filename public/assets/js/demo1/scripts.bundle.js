@@ -25,7 +25,7 @@ let KTApp = new function(){
             dropdownMenu.hide();
         });
     }
-}
+};
 
 //let KTApp = function () {
     /** @type {object} colors State colors **/
