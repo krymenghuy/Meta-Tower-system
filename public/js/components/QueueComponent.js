@@ -660,11 +660,12 @@ let QueueComponent = new function () {
             let lnk = $(this);
             let p = { 'id': lnk.data('id') };
             cv_interact.confirm('Remove this ticket?', { 'confirmButtonText': 'Delete', 'cancelButtonText': 'Cancel', title: null, 'context': 'delete' }, (e) => {
-                if (e) {
+                if(e){
                     vsapi.call(`${mThis.base_url}/api/ticket/delete`, p).then((res) => {
-                        if (res.status_code === 200) {
+                        if(res.status_code === 200){
                             mThis.displayTicketList();
-                        } else cv_interact.error(res.error_message);
+                        }
+                        else cv_interact.error(res.error_message);
                     });
                 }
             });

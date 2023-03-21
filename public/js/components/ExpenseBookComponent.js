@@ -88,9 +88,7 @@ let ExpenseBookComponent = new function () {
         
         mThis.setLanguage();
         let p = { 'search_value': mThis.elSearchPartner.val() };
-        vsapi.call(`${mThis.base_url}/api/partner/list`,p,'POST',null).then((result) => {
-            // let data = [];
-            // if (result.status_code === 200) data = result.data;
+        vsapi.call(`${mThis.base_url}/api/list`,p,'POST',null).then((result) => {
             if (mThis.table) {
                 mThis.tblPartners.DataTable().clear().destroy();
                 mThis.tblPartners.empty();
@@ -99,7 +97,6 @@ let ExpenseBookComponent = new function () {
 
             data = StringSanitizer.sanitizeObject(data, null, ["cp_email", "email"]);
             let cnt = 1;
-            //begin::Set up columns
             let my_columns = [
                 {
                     title: mThis.trans_title("No"),
@@ -144,9 +141,7 @@ let ExpenseBookComponent = new function () {
                     }
                 }
             ];
-            //END Define colum
 
-            //translate column names
             if (!mThis.table)
                 mThis.table = mThis.tblPartners.DataTable({
                     searching: false,

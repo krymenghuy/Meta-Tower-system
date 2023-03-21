@@ -454,7 +454,6 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
                 // });         
      //end::LocationController
 
-  
     //begin:: PromotionController 
             Route::post('getPromotionList', [PromotionController::class, 'getPromotionList']);
             Route::post('savePromotion', [PromotionController::class, 'savePromotion']);
@@ -599,7 +598,7 @@ Route::post('test/test-api',function(){
     Route::post('settings/options-chief-complaint', [GeneralSettingsController::class, 'getComboItems_chief_complaint']);
     Route::post('settings/save-chief-complaint', [GeneralSettingsController::class, 'saveChiefComplaint']);
     Route::post('settings/options-labo-test', [GeneralSettingsController::class, 'getComboItems_laboTest']);
-   
+
    Route::post('settings/options-service', [GeneralSettingsController::class, 'getComboItems_service']);
 
     //getProductData() return object {"products"=> [], "usages"=>[]} for doctor's editing prescription
@@ -615,11 +614,4 @@ Route::post('test/test-api',function(){
     Route::post('location/cities', [LocationController::class, 'getCityList']);
     Route::post('location/districts', [LocationController::class, 'getDistrictList']);
     Route::post('location/communes', [LocationController::class, 'getCommuneList']);
-     
-    // Route::group(['middleware' => 'cors'], function(){
-         
-       
-
-    // });
-
 //end::API routes for external calls

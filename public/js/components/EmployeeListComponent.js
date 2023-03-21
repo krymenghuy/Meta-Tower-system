@@ -81,9 +81,6 @@ let EmployeeListComponent = new function () {
     }
 
     this.displayemployeeList = (onFinish = null) => {
-        //Initialize language for DataTable columns headers
-        //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-        //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
         let p = { 'search_value': mThis.elSearchItem.val() };
         window.vsapi.call(`${mThis.base_url}/api/employee/list`, p, 'POST', null).then((result) => {
@@ -91,14 +88,12 @@ let EmployeeListComponent = new function () {
             if (result.status_code === 200) data = result.data;
             if (mThis.table) {
                 mThis.tblItems.DataTable().clear().destroy();
-                //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
                 mThis.tblItems.empty();
                 mThis.table = null;
             }
 
-            data = StringSanitizer.sanitizeObject(data, null);
+            data = StringSanitizer.sanitizeObject(data, ['email']);
             let cnt = 1;
-            //begin::Set up columns
             let my_columns = [
                 {
                     title: mThis.trans_title("No."),
@@ -130,14 +125,9 @@ let EmployeeListComponent = new function () {
                     title: mThis.trans_title('Date Of Birth'),
                     data: "date_of_birth"
                 },
-                // {
-                //     title: mThis.trans_title('Employee Type'),
-                //     data: "employment_type"
-                // },
                 {
                     title: mThis.trans_title('Action'),
                     data: function (data, a, b) {
-                        let status_class = null; //mThis.getStatusClass(data.status_id);
                         return [`<div class="form-inline">`,
                             `<a href="javascript:void(0)" class="btn_co_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" class="btn_epl_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
@@ -148,10 +138,6 @@ let EmployeeListComponent = new function () {
                     }
                 }
             ];
-            //END Define colum
-
-            //translate column names
-            //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
 
             if (!mThis.table)
                 mThis.table = mThis.tblItems.DataTable({
@@ -159,11 +145,7 @@ let EmployeeListComponent = new function () {
                     destroy: true,
                     paging: true,
                     ordering: false,
-                    //dom: 'Bfrtip',
                     retrieve: true,
-                    //scrollY:390,
-                    //scrollX:500,
-                    //pagingType:'numbers',
                     info: true,
                     pageLength: 10,
                     bLengthChange: false,
@@ -204,22 +186,17 @@ let EmployeeListDialog = new function () {
         "itemName": "Employee List",
         "formId": '_epl_dlgEmployee',
         "titleId": "_epl_dlgEmployee_title",
-        //"errorId":"_msl_dlgService_error",
         "saveButtonId": "_epl_btnSave",
         "instance": this,
         "apiSave": `${main_view.base_url}/api/employee/save`,
         "apiGet": `${main_view.base_url}/api/employee/details`,
-        //"identityProp":"id",
-        //"modifyTitle":"Modify Product Group",
         "createTitle": "New Employee",
         "identityProps": ['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['id'],
-        //"sub_prop":"chief_complaint_items",
-        //"sub_prop_function":mThis.getChiefComplaints,
         "sanitize_excepts": [],
         'use_alert_error': true,
-        'beforeShow': () => { }
+        'beforeShow': () => {}
     });
 
     this.show = (options) => {

@@ -190,6 +190,12 @@
 	"history":{
 
 	},
+	"customer":{
+
+	},
+	"departments":{
+
+	},
 	"item_group":{
        "Code":"Code",
 	   "Name":"Name",

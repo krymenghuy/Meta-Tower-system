@@ -59,7 +59,7 @@
                                     <div class="input-group-text">
                                         <i class="fa-solid fa-user"></i>
                                     </div>
-                                    <select class="modal-select2 data-input" data-field="customer_id" id="_inv_customers">
+                                    <select class="modal-select2 data-input" data-field="customer_id" id="_inv_customers" data-required="1">
                                     </select>
                                     <div id="_invs_lnkAddInvoice" class="input-group-text" role="button">
                                         <i class="fa-solid fa-plus text-primary"></i>
@@ -72,7 +72,7 @@
                                     <div class="input-group-text">
                                         <i class="fa-solid fa-user"></i>
                                     </div>
-                                    <select class="modal-select2 data-input" data-field="customer_type" id="_inv_customers_type">
+                                    <select class="modal-select2 data-input" data-field="customer_type" id="_inv_customers_type" data-required="1">
                                     </select>
                                 </div>
                             </div>
@@ -82,17 +82,17 @@
                         <div class="d-flex flex-column">
                             <div class="w-100 mb-2">
                                 <label for="customerPhone" class="form-label trans-text" data-langprop="customer.Customer Phone"></label>
-                                <input type="text" placeholder="Enter your phone number" class="form-control data-input" data-field="customer_phone"/>
+                                <input type="text" placeholder="Enter your phone number" class="form-control data-input" data-field="customer_phone" data-ffield="Customer Phone" data-required="1"/>
                             </div>
                             <div class="w-100 my-2">
                                <label for="emailAddress" class="form-label trans-text" data-langprop="customer.Email Address"></label>
-                               <input type="email" name="email" placeholder="Enter your email" class="form-control data-input" data-field="email_address" required/>
-                            </div>   
+                               <input type="email" name="email" placeholder="Enter your email" class="form-control data-input" data-field="email_address" data-ffield="Email Address" data-required="1"/>
+                            </div> 
                         </div>
                     </div>
                     <div class="col-lg-3">
                         <label for="billingAddress" class="form-label trans-text" data-langprop="customer.Billing Addresss"></label>
-                        <textarea class="form-control data-input" data-field="billing_address" placeholder="Billing Address" style="min-width:281px;height:105px"></textarea>
+                        <textarea class="form-control data-input" data-field="billing_address" data-ffield="Billing Address" data-required="1" placeholder="Billing Address" style="min-width:281px;height:105px"></textarea>
                     </div>
                     <div class="col-lg-3">
                         <div class="d-flex justify-content-center">
@@ -109,7 +109,7 @@
                 <div class="row gy-2 my-2">
                     <div class="col-lg-3">
                         <label for="terms" class="form-label trans-text" data-langprop="titles.Terms"></label>
-                        <select class="modal-select2 data-input" data-field="terms" id="_inv_pmt_terms"></select>
+                        <select class="modal-select2 data-input" data-field="terms" id="_inv_pmt_terms" data-ffield="Terms" data-required="1"></select>
                     </div>
                     <div class="col-lg-3">
                         <label for="issueDate" class="form-label trans-text" data-langprop="titles.Issue Date"></label>
@@ -117,7 +117,7 @@
                             <div class="input-group-text">
                                 <i class="fa-regular fa-calendar-days"></i>
                             </div>
-                            <input data-select="datepicker" class="form-control data-input" data-field="issue_date"/>
+                            <input data-select="datepicker" class="form-control data-input" data-field="issue_date" data-ffield="Issue Date" data-required="1"/>
                         </div>
                     </div>
                     <div class="col-lg-3">
@@ -126,7 +126,7 @@
                             <div class="input-group-text">
                                 <i class="fa-regular fa-calendar-days"></i>
                             </div>
-                            <input data-select="datepicker" name="dueDate" class="form-control data-input" data-field="due_date"/>
+                            <input data-select="datepicker" name="dueDate" class="form-control data-input" data-field="due_date" data-ffield="Due Date" data-required="1"/>
                         </div>
                     </div>
                 </div>
@@ -143,7 +143,7 @@
                 <div class="row gy-2 mt-3">
                     <div class="col-lg-6">
                         <label for="description" class="form-label trans-text" data-langprop="titles.Description"></label>
-                        <textarea class="form-control data-input" data-field="description"></textarea>
+                        <textarea class="form-control data-input" data-field="description" data-ffield="Description" data-required="1"></textarea>
                     </div>
                     <div class="col-lg-6">
                         <div class="d-flex justify-content-center">
@@ -189,7 +189,7 @@
                 <div class="row gy-2">
                     <div class="col-lg-6">
                         <label for="messageDisplayedOnInvoice" class="form-label trans-text" data-langprop="titles.Message Displayed On Invoice"></label>
-                        <textarea class="form-control data-input" data-field="message_invoice"></textarea>
+                        <textarea class="form-control data-input" data-field="message_invoice" data-ffield="Message Displayed On Invoice" data-required="1"></textarea>
                     </div>
                 </div>
             </div>
