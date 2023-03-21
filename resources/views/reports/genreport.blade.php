@@ -21,6 +21,10 @@
             
             body{
                 margin: 20px;
+                -webkit-print-color-adjust: exact;
+                -moz-print-color-adjust: exact;
+                -ms-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
 
             div.vs-print-top{

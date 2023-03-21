@@ -53,6 +53,7 @@ let EmployeeListComponent = new function () {
         });
 
         mThis.tblItems.on('click', '.btn_epl_modify', function (e) {
+            e.preventDefault();
             let item_id = $(this).data("id");
             let op = {
                 id: item_id,
@@ -66,6 +67,7 @@ let EmployeeListComponent = new function () {
         });
 
         mThis.tblItems.on('click', '.btn_epl_delete', function (e) {
+            e.preventDefault();
             let item_id = $(this).data("id");
             cv_interact.confirm(`Delete this employee?`, { title: "Delete Employee", context: "delete" }, (yes) => {
                 if (yes) {
@@ -76,6 +78,15 @@ let EmployeeListComponent = new function () {
                         } else cv_interact.error(res.error_message);
                     });
                 }
+            });
+        });
+
+        mThis.tblItems.on('click','.btn_epl_print',function(e){
+            e.preventDefault();
+            let id = $(this).data('id');
+            let qString = ['id=',id].join('');
+            main_view.getEncryptData(qString, (d) => {
+                window.open([main_view.base_url, '/employee_profile/', d].join(''), '_blank');
             });
         });
     }
@@ -129,7 +140,7 @@ let EmployeeListComponent = new function () {
                     title: mThis.trans_title('Action'),
                     data: function (data, a, b) {
                         return [`<div class="form-inline">`,
-                            `<a href="javascript:void(0)" class="btn_co_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
+                            `<a href="javascript:void(0)" class="btn_epl_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" class="btn_epl_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
                             `<a href="javascript:void(0);" data-id="${data.id}" class="btn_epl_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
                             `&nbsp;<a href="#" data-id="${data.id}" class="btn_pat_action"><i class="fa-solid fa-grip-vertical"></i></a>`,

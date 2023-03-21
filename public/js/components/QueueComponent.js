@@ -760,7 +760,7 @@ let QueueComponent = new function () {
                     title: mThis.trans_title('Action'),
                     data: function (data, a, b) {
                         return [`<div class="form-inline">`,
-                            `<a href="javascript:void(0)" class="btn_ticket_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
+                            // `<a href="javascript:void(0)" class="btn_ticket_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a style="display:${data.status_id > 2 ? 'none' : 'block'}" href="javascript:void(0)" class="btn_ticket_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
                             `<a href="javascript:void(0);" data-id="${data.id}" class="btn_ticket_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,`</div>`
                         ].join('');
@@ -1043,7 +1043,7 @@ let ConsultTabView = new function () {
         if (!tab_button_clicked) {
             mThis.self.find('div.tab-header>a.tab-button').each(function () {
                 let this_view_name = ($(this).data('viewname') + '').toLowerCase();
-                if (view_name === this_view_name) {
+                if(view_name === this_view_name){
                     $(this).addClass('active').siblings().removeClass('active');
                 }
             });
@@ -1178,9 +1178,9 @@ let ConsultTabView = new function () {
             }
 
             let title = LocaleManager.trans('Chief Complaints', 'consult');
-            title=title?title:'Chief Complaints';
+            title=title ? title:'Chief Complaints';
             let html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none"><h3 class="trans-text" data-langprop="consult.Chief Complaints">${title} &nbsp;<a href="#" class="consultview-add-cc"><i class="fa fa-plus-circle"></i></a></h3>
-              <div class="border border-1 border-success rounded-3 p-3 pt-5" id="${div_id}"></div>
+              <div class="border border-1 border-success rounded-3 p-4 pt-5 mt-5" id="${div_id}"></div>
             </div>`;
 
             div.append(html);
@@ -1277,7 +1277,7 @@ let ConsultTabView = new function () {
                 let html = `
                         <div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                         <h3 class="trans-text" data-langprop="consult.Vital Signs">${title}</a></h3>
-                        <div class="border border-1 border-success rounded-3 p-3 pt-5 shadow-sm">
+                        <div class="border border-1 border-success rounded-3 p-3 pt-5 shadow-sm mt-5">
                             <table class="table">
                                     <tbody>
                                         ${html_vs_items?html_vs_items:'No vital signs to display'}
@@ -1329,7 +1329,7 @@ let ConsultTabView = new function () {
                 let title = LocaleManager.trans('Physical Examination', 'consult');      
                 html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                         <h3 class="trans-text" data-langprop="consult.Pysical Examination">${title}</a></h3>
-                        <div class="">
+                        <div class="mt-5">
                            <textarea data-category="${pe?pe.category:''}" class="_consult_pe_input form-control data-input" cols="10" rows="5">${pe?pe.content:''}</textarea>
                         </div>
                     </div>`;
@@ -1373,7 +1373,7 @@ let ConsultTabView = new function () {
         }else{
                 let title = LocaleManager.trans('Prescription', 'consult');
                 let html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}"><h3 class="trans-text" data-langprop="consult.Prescription">${title}</h3>
-                <div class="border border-1 border-success rounded-3 shadow-sm p-3 w-100" id="${div_id}"></div>
+                <div class="border border-1 border-success rounded-3 shadow-sm p-3 w-100 mt-5" id="${div_id}"></div>
                 </div>`;
                 div.html(html);
                 let columns = [
@@ -1479,7 +1479,7 @@ let ConsultTabView = new function () {
         }
         else{
                 let html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}"><h3 class="trans-text" data-langprop="consult.Service">${title}</h3>
-                <div class="border border-1 border-success p-3 rounded-3" id="${div_id}"></div>
+                <div class="border border-1 border-success p-3 rounded-3 mt-5" id="${div_id}"></div>
                 </div>`;
 
                 div.html(html);
@@ -1609,8 +1609,8 @@ let ConsultTabView = new function () {
 
             categories.map(c=>{
               let content = d[c]?d[c]:'';  
-              html= [html,`<div>
-              <label class="control-label">${c}</label>
+              html= [html,`<div class="mt-4">
+              <label class="control-label fw-semibold">${c}</label>
               <textarea data-category="${c}" class="_consult_medical_history_input data-input form-control" cols="10" rows="3">${content}</textarea>
               </div>`].join('');
             });
@@ -1659,7 +1659,7 @@ let ConsultTabView = new function () {
 
         let html =`<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                 <h3 class="trans-text" data-langprop="consult.Laboratory Tests">Laboratory Tests</h3>
-                <div class="d-flex">
+                <div class="d-flex mt-5">
                     <div class="border border-1 border-success rounded-3 p-3 shadow-sm w-100" id="${div_labotest_panel_id}" class="table-responsive">  
                     </div>
                 </div>
@@ -1730,7 +1730,6 @@ let ConsultTabView = new function () {
         vsapi.call(`${main_view.base_url}/api/labo-test/info`,{'test_id':test_id},null,false).then(res=>{
             if(res.status_code===200){ 
                 let test = res.data?res.data:{};
-                //here: default lao does not seems to show here
                 mThis.tblLaboTests.setCellValue(tr,'labo_id',test.labo_id);
             }
         });
@@ -1755,8 +1754,8 @@ let ConsultTabView = new function () {
         }else{
                 let html = `<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                 <h3 class="trans-text" data-langprop="consult.Diagnosis">Diagnosis</h3>
-                <div class="d-flex flex-column">
-                <label class="control-label">Diagnosis details</label>
+                <div class="d-flex flex-column mt-3">
+                <label class="control-label fw-semibold">Diagnosis details</label>
                 <textarea class="_consult_diagnosis_input form-control data-input" cols="10" rows="3" id="_consul_diagnosis"></textarea>
                 </div>
             </div>`;
@@ -1775,7 +1774,6 @@ let ConsultTabView = new function () {
         
         mThis.loadDiagnosis(ticket_id,d=>{
             if (el.length>0){
-                //el.attr('category',d.category);
                 el.find('textarea._consult_diagnosis_input').val(d?d.content:'');
             }            
         });
@@ -1791,8 +1789,8 @@ let ConsultTabView = new function () {
         }else{
                 let html =`<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                 <h3 class="trans-text" data-langprop="consult.Recommendations">Recommendations</h3>
-                <div class="d-flex flex-column">
-                <label class="control-label">Doctor's recommendation</label>
+                <div class="d-flex flex-column mt-3">
+                <label class="control-label fw-semibold">Doctor's recommendation</label>
                 <textarea class="_consult_advice_input form-control data-input" cols="10" rows="3" id="_consult_advice"></textarea>
                 </div>
             </div>  
