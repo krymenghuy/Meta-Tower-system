@@ -230,7 +230,11 @@ let AppointmentListComponent = new function () {
         mThis.tblAppointments.on('click', '.btn-view-profile', function(e) {
             e.preventDefault();
             let patient_id = $(this).data('patientid');
-            alert(`View profile for ${patient_id}`);
+            let qString = ['rtype=general_report&patient_id=', patient_id].join('');
+            main_view.getEncryptData(qString, (d) => {
+                window.open([main_view.base_url, '/genreport/', d].join(''), '_blank');
+            });
+            //alert(`View profile for ${patient_id}`);
         });
 
         mThis.tblAppointments.on('click', '.btn-add-queue', function (e) {

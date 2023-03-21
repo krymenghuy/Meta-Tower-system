@@ -5,16 +5,13 @@
     <link href="{{ base_url('assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" id="bootstrap-css" />
     <script src="{{ base_url('assets/vendors/general/jquery/dist/jquery.js') }}" type="text/javascript"></script>
     <script defer src="{{ base_url('assets/vendors/general/bootstrap/dist/js/bootstrap.min.js') }}" type="text/javascript"></script>
-    <!------ Include the above in your HEAD tag ---------->
     <style>
-        /* main.css */
-
-        body {
-            font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+        body{
+            font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
         }
 
         .rpt-body {
-            font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+            font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
         }
 
         @media print{
@@ -36,35 +33,50 @@
 <body>
     <div class="border border-1 border-success rounded mt-2" style="margin-left:0.5cm;margin-right:0.5cm;">
         <div class="d-block">
-            <div class="vs-print-top d-flex align-items-center border border-1 border-success rounded" style="background-color: #05A8B5">
-                <div style="width: 108px; height:108px;">
-                    <img class="img-thumbnail rounded w-100 h-100" src="<?php echo isset($branch->logo_url) ? $branch->logo_url:null; ?>"/>
-                </div>
-                <div class="d-flex align-items-center justify-content-end w-100">
-                    <div class="px-2">
-                        <h2>
-                            <?php echo (isset($company_name) ? $company_name:null); ?>
-                        </h2>
+            @if($rtype != "general_report")
+                <div class="vs-print-top d-flex align-items-center border border-1 border-success rounded" style="background-color: #05A8B5">
+                    <div style="width: 108px; height:108px;">
+                        <img class="img-thumbnail rounded w-100 h-100" src="<?php echo isset($branch->logo_url) ? $branch->logo_url:null; ?>"/>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-end w-100">
+                        <div class="px-2">
+                            <h2>
+                                <?php echo (isset($company_name) ? $company_name:null); ?>
+                            </h2>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="d-block mt-4 px-2">
-                <div class="d-flex align-items-center">
-                    <h3 style="color: #05A8B5">
-                        <?php echo (isset($company_name) ? $company_name:null); ?>
-                    </h3>
+                <div class="d-block mt-4 px-2">
+                    <div class="d-flex align-items-center">
+                        <h3 style="color: #05A8B5">
+                            <?php echo (isset($company_name) ? $company_name:null); ?>
+                        </h3>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <h2>
+                            <?php echo (isset($title) ? $title: '(Report Title)'); ?>
+                        </h2>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <h4>
+                            <?php echo (isset($subtitle) ? $subtitle: null); ?>
+                        </h4>
+                    </div>
                 </div>
-                <div class="d-flex align-items-center">
-                    <h2>
-                        <?php echo (isset($title) ? $title: '(Report Title)'); ?>
-                    </h2>
+            @else
+                <div class="d-block mt-4 px-2">
+                    <div class="d-flex align-items-center">
+                        <h2>
+                            <?php echo (isset($title) ? $title: '(Report Title)'); ?>
+                        </h2>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <h4>
+                            <?php echo (isset($subtitle) ? $subtitle: null); ?>
+                        </h4>
+                    </div>
                 </div>
-                <div class="d-flex align-items-center">
-                    <h4>
-                        <?php echo (isset($subtitle) ? $subtitle: null); ?>
-                    </h4>
-                </div>
-            </div>
+            @endif
         </div>
         <div class="rpt-body">
             @switch($rtype)
@@ -85,10 +97,13 @@
                     @break
                 @case('medical_certificate')
                     @include('reports.medical_certificate')
-                    @break;
+                    @break
                 @case('invoice_report')
                     @include('reports.invoice_report')
-                    @break;
+                    @break
+                @case('general_report')
+                    @include('reports.general_report')
+                    @break
                 @default
                     @break
             @endswitch
