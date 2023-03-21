@@ -14,7 +14,6 @@ use App\Models\DV;
 // use App\Models\PE;
 // use App\Models\Advice;
 use App\Models\Inventory\Settings;
-
 class Consultation //extends Model
 {
     //use HasFactory;
@@ -93,7 +92,7 @@ class Consultation //extends Model
 
     static function laboTests($ticket_id,$ss){
         $branch_id = $ss->branch_id;
-        $cols = ['s.id as test_id','s.name as test_name','t.test_date','t.result_date','t.consultant_comments','t.result_description','t.remarks','t.file_name','t.file_type'];
+        $cols = ['s.id as test_id','t.labo_id','s.name as test_name','t.test_date','t.result_date','t.consultant_comments','t.result_description','t.remarks','t.file_name','t.file_type'];
         return DB::table('patient_labo_tests as t')->join('medical_services as s','s.id','=','t.test_id')->where('t.branch_id',$branch_id)->where('ticket_id',$ticket_id)->select($cols)->get();
     }
  
@@ -156,8 +155,8 @@ class Consultation //extends Model
         if ($id > 0) DB::table('appt_chief_complaints')->where('id',$id)->update($inputs);
         else{
             $inputs['create_uid'] = $ss->user_id;
-            $inputs['create_uuser'] = $ss->full_name;
-            $inputs['create_uid'] = getNowTime();
+            $inputs['create_user'] = $ss->full_name;
+            $inputs['created_at'] = getNowTime();
             DB::table('appt_chief_complaints')->insert($inputs);
         }
         //$new_id = saveData($ss,'appt_chief_complaints',['id'=>$id],$inputs,[],0);
@@ -335,10 +334,11 @@ class Consultation //extends Model
         return null; 
     }
     
+    //returns array of pe items. pe-items => [{category,content},...]
     function getPE($ticket_id=null,$ss=null){
         $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
         $ss = $ss? $ss : $this->getUserInfo();  
-       return getDataRow('patient_pe',['ticket_id'=>$ticket_id,'category'=>'General'],"category,content");
+        return [getDataRow('patient_pe',['ticket_id'=>$ticket_id,'category'=>'General'],"category,content")];
     }
 
     function saveDiagnosis($items,$ticket_id=null,$ss=null){
@@ -367,10 +367,11 @@ class Consultation //extends Model
         return null; 
     }
     
+    //returns array of diagnosis items. items => [{category,content},...]. There can be Primary diagnosis or secondary dianosis
     function getDiagnosis($ticket_id=null,$ss=null){
         $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
         $ss = $ss? $ss : $this->getUserInfo();  
-       return getDataRow('patient_diagnosis',['ticket_id'=>$ticket_id,'category'=>'General'],"category,content");
+       return [getDataRow('patient_diagnosis',['ticket_id'=>$ticket_id,'category'=>'General'],"category,content")];
     }
     
     function saveAdvice($items,$ticket_id=null,$ss=null){
@@ -401,7 +402,7 @@ class Consultation //extends Model
     function getAdvice($ticket_id=null,$ss=null){
         $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
         $ss = $ss? $ss : $this->getUserInfo();  
-       return getDataRow('patient_advice',['ticket_id'=>$ticket_id,'category'=>'General'],"category,content");
+       return [getDataRow('patient_advice',['ticket_id'=>$ticket_id,'category'=>'General'],"category,content")];
     }
 
     //save one labo test at a time
@@ -508,12 +509,17 @@ class Consultation //extends Model
     function getDetails($id=null,$ss=null){
       $id = $id?$id:$this->getId();
       $ss = $ss?$ss:$this->getUserInfo();
-      $items = $this->getPE($id,$ss);
-      $pe="(NA)";
-      foreach($items as $i) $pe = $i->content;
-      $dia = null;
+      $items= $this->getPE($id,$ss);
+      $pe="";
+      foreach($items as $i) $pe = $i?$i->content:'គ្មាន';
+      $dia = "";
       $items = $this->getDiagnosis($id,$ss);
-      foreach($items as $i) $dia = $i->content;
+      foreach($items as $i) $dia = $i?$i->content:'គ្មាន';
+
+      $advice="";
+      $items = $this->getAdvice($id,$ss);
+      foreach($items as $i) $advice = $i?$i->content:'គ្មាន';
+
       return (object)[
         'chief_complaints'=>$this->getChiefComplaints($id,$ss),
         'vital_signs'=>$this->getVitalSigns($id,$ss),
@@ -523,7 +529,7 @@ class Consultation //extends Model
         'diagnosis'=>$dia,
         'prescription'=>$this->getPrescription($id,$ss),
         'services'=>$this->getServiceDetails($id,$ss),
-        'advice'=>$this->getAdvice($id,$ss)
+        'advice'=>$advice
       ];
     }
     // function delete($id,$id=null,$ss=null){

@@ -185,7 +185,8 @@
 		"Prescription":"Prescription",
 		"History":"History",
 		"Recommendations":"Recommendations",
-		"Chief Complaints":"Chief Complaints"
+		"Chief Complaints":"Chief Complaints",
+		"Physical Examination":"Physical Examination"
 	},
 	"history":{
 
