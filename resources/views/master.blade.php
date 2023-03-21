@@ -258,7 +258,7 @@
     <?php
     ScriptManager::render('primary',0);
     ScriptManager::render('primary-async',0);
-    ScriptManager::render('primary-defer',0);
+    ScriptManager::render('primary-defer',1);
     ScriptManager::render('components',1);
   ?>
 

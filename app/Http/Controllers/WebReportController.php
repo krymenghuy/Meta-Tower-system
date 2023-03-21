@@ -80,8 +80,16 @@ class WebReportController extends Controller
             $data["client"] = "";
             break;
           }
+          case 'medical_certificate':{
+            $data['title']="Medical Certificate";
+            $data['consult'] = $consultation->getDetails();
+            //dd($data);return;
+            break;
+          }
           default:{
             $data['title'] = "Title Report";
+            return view('reports.genreport',$data);
+            break;
           }
         }
         return view('reports.genreport',$data);
@@ -102,6 +110,6 @@ class WebReportController extends Controller
         $data['invoice'] = $invoice->getDetails();
         $data['title'] = "ESTHEDERM Aesthetic & Dermatology";
        
-        return view('reports.invoice', $data);
+        return view('error.404', $data);
     }
 }

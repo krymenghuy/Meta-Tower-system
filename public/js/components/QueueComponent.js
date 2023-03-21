@@ -1168,7 +1168,7 @@ let ConsultTabView = new function () {
             if (el.length > 0){
                 let p = {'ticket_id':ticket_id};
                 vsapi.call(`${main_view.base_url}/api/ticket/chief-complaints`,p,null,false).then(res =>{
-                    if (res.status_code===200){
+                    if (res.status_code === 200){
                         let cc_items = StringSanitizer.sanitizeObject(res.data);
                         mThis.tblChiefComplaints.setData(cc_items);
                         el.show().siblings().hide();
@@ -1178,6 +1178,7 @@ let ConsultTabView = new function () {
             }
 
             let title = LocaleManager.trans('Chief Complaints', 'consult');
+            title=title?title:'Chief Complaints';
             let html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none"><h3 class="trans-text" data-langprop="consult.Chief Complaints">${title} &nbsp;<a href="#" class="consultview-add-cc"><i class="fa fa-plus-circle"></i></a></h3>
               <div class="border border-1 border-success rounded-3 p-3 pt-5" id="${div_id}"></div>
             </div>`;
@@ -1272,6 +1273,7 @@ let ConsultTabView = new function () {
 
             if (!el || el.length === 0) {
                 let title = LocaleManager.trans('Vital Signs', 'consult');
+                title=title?title:'Vital Signs';
                 let html = `
                         <div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                         <h3 class="trans-text" data-langprop="consult.Vital Signs">${title}</a></h3>
@@ -1303,7 +1305,9 @@ let ConsultTabView = new function () {
         let p = {'ticket_id':ticket_id};
         vsapi.call(`${main_view.base_url}/api/consultation/pe`, p,null,false).then(res => {
             if (res.status_code === 200) {
-                onFinish(res.data);
+                let items = res.data?res.data:[];
+                //NOTE item = {category:'General',content:" ... "}
+                onFinish(items[0]);
             } else onFinish(null);
         });
     }
@@ -1316,17 +1320,17 @@ let ConsultTabView = new function () {
         mThis.loadConsult_PE(ticket_id, pe => {
             let html = "";
             if (!pe) pe = {};
+           
             if(el.length > 0){
                 el.find('textarea._consult_pe_input').val(pe.content);
                 el.show().siblings().hide();
                 return;
-            } 
-
-                let title = LocaleManager.trans('Physical Examination', 'consult');
+            }      
+                let title = LocaleManager.trans('Physical Examination', 'consult');      
                 html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">
                         <h3 class="trans-text" data-langprop="consult.Pysical Examination">${title}</a></h3>
                         <div class="">
-                           <textarea class="_consult_pe_input form-control data-input" cols="10" rows="5">${pe.content}</textarea>
+                           <textarea data-category="${pe?pe.category:''}" class="_consult_pe_input form-control data-input" cols="10" rows="5">${pe?pe.content:''}</textarea>
                         </div>
                     </div>`;
                 div.append(html);
@@ -1697,7 +1701,7 @@ let ConsultTabView = new function () {
                     let p= {'id':row_id,'test_id':thisItem.test_id,'labo_id':thisItem.labo_id,'remarks':thisItem.remarks,'ticket_id':ticket_id};
                     vsapi.call(`${main_view.base_url}/api/consultation/save-labo-test`,p,null,false).then(res => {
                         if(res.status_code === 200){
-                           mThis.tblLaboTests.setRowId(res.data.id);
+                           mThis.tblLaboTests.setRowId(tr,res.data.id);
                         }else cv_interact.error(res.error_message); 
                     });
                 },
@@ -1715,7 +1719,7 @@ let ConsultTabView = new function () {
                     let d = res.data;
                     mThis.tblLaboTests.setSelectOptions('test_id',d.labo_test_options);
                     mThis.tblLaboTests.setSelectOptions('labo_id',d.labo_options);
-                    mThis.tblLaboTests.setData(d.laboTests);
+                    mThis.tblLaboTests.setData(d.labo_tests);
                     el.show().siblings().hide();
                     LocaleManager.translateZone(wrapper_id);
                 }else cv_interact.error(res.error_message);
@@ -1726,6 +1730,7 @@ let ConsultTabView = new function () {
         vsapi.call(`${main_view.base_url}/api/labo-test/info`,{'test_id':test_id},null,false).then(res=>{
             if(res.status_code===200){ 
                 let test = res.data?res.data:{};
+                //here: default lao does not seems to show here
                 mThis.tblLaboTests.setCellValue(tr,'labo_id',test.labo_id);
             }
         });
@@ -1734,7 +1739,8 @@ let ConsultTabView = new function () {
     this.loadDiagnosis = (ticket_id,onFinish)=>{
        let p = {'ticket_id':ticket_id};
        vsapi.call(`${main_view.base_url}/api/consultation/diagnosis`,p,null,false).then(res=>{
-          onFinish(res.data?res.data:{});
+          let items = res.data?res.data:[];
+          onFinish(items[0]);
        });
     }
 
@@ -1769,7 +1775,8 @@ let ConsultTabView = new function () {
         
         mThis.loadDiagnosis(ticket_id,d=>{
             if (el.length>0){
-                el.find('textarea._consult_diagnosis_input').val(d.content);
+                //el.attr('category',d.category);
+                el.find('textarea._consult_diagnosis_input').val(d?d.content:'');
             }            
         });
  
@@ -1803,13 +1810,14 @@ let ConsultTabView = new function () {
         }
         LocaleManager.translateZone(wrapper_id);
         mThis.loadAdvice(ticket_id,d=>{
-            el.find(`#_consult_advice`).val(d.content);
+            el.find(`#_consult_advice`).val(d?d.content:'');
         });
     }
 
     this.loadAdvice = (ticket_id,onFinish)=>{
          vsapi.call(`${main_view.base_url}/api/consultation/advice`,{'ticket_id':ticket_id},null,false).then(res=>{
-            onFinish(res.data?res.data:{});
+            let items = res.data?res.data:[];
+            onFinish(items[0]);
          });
     }
 
