@@ -76,9 +76,6 @@ let PositionsComponent = new function(){
 
     this.displaypositions = (onFinish=null)=>
     { 
-        //Initialize language for DataTable columns headers
-        //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-        //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
         let p = {'search_value':mThis.elSearchItem.val()};
         window.vsapi.call(`${mThis.base_url}/api/position/list`,p,'POST',null).then((result)=>{
@@ -86,14 +83,12 @@ let PositionsComponent = new function(){
             if(result.status_code === 200) data = result.data;
             if (mThis.table){
                 mThis.tblPosition.DataTable().clear().destroy();
-                //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
                 mThis.tblPosition.empty();
                 mThis.table = null;
             }
 
             data = StringSanitizer.sanitizeObject(data,null);
             let cnt = 1;
-            //begin::Set up columns
             let my_columns = [
                 {
                     title: mThis.trans_title("No"),
@@ -112,7 +107,6 @@ let PositionsComponent = new function(){
                 {
                     title:mThis.trans_title('Action'),
                     data: function(data,a,b){
-                        let status_class = null; //mThis.getStatusClass(data.status_id);
                         return [`<div class="form-inline">`,
                         `<a href="javascript:void(0)" class="btn_pos_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                         `<a href="javascript:void(0)" class="btn_pos_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
@@ -123,10 +117,6 @@ let PositionsComponent = new function(){
                     }
                 }
             ];
-            //END Define colum
-
-            //translate column names
-            //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
             
             if (!mThis.table)
             mThis.table = mThis.tblPosition.DataTable({
@@ -134,11 +124,7 @@ let PositionsComponent = new function(){
                 destroy:true,
                 paging:true,
                 ordering:false,
-                //dom: 'Bfrtip',
                 retrieve: true,
-                //scrollY:390,
-                //scrollX:500,
-                //pagingType:'numbers',
                 info:true,
                 pageLength: 10,
                 bLengthChange:false,
@@ -179,19 +165,14 @@ let PositionsDialog = new function(){
         "itemName":"Position",
         "formId":'_pos_dlgPosition',
         "titleId":"_pos_dlgPosition_title",
-        //"errorId":"_msl_dlgService_error",
-        //"saveButtonId":"_msl_dlgService_btnSave",
         "instance":this,
         "apiSave":`${main_view.base_url}/api/position/save`,
         "apiGet":`${main_view.base_url}/api/position/list`,
-        //"identityProp":"id",
         "modifyTitle":"Modify Position",
         "createTitle":"New Position",
         "identityProps":['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props":['id'],
-        //"sub_prop":"chief_complaint_items",
-        //"sub_prop_function":mThis.getChiefComplaints,
         "sanitize_excepts":[],
         'use_alert_error':true,
         'beforeShow': () => {}

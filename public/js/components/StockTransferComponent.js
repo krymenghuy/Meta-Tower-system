@@ -84,11 +84,7 @@ let StockTransferComponent = new function(){
                     destroy: true,
                     paging: true,
                     ordering: false,
-                    //dom: 'Bfrtip',
                     retrieve: true,
-                    //scrollY:390,
-                    //scrollX:500,
-                    //pagingType:'numbers',
                     info: true,
                     pageLength: 10,
                     bLengthChange: false,
@@ -115,10 +111,10 @@ let StockTransferComponent = new function(){
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;
-        // mThis.displayStockTransfer(() => {
+        mThis.displayStockTransfer(() => {
             main_view.setTitle(mThis.title_prop);
             mThis.self.show().siblings().hide();
-        // });
+        });
     }
 }
 
