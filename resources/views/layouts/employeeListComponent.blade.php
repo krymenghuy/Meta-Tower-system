@@ -84,7 +84,9 @@
                     </div>
                     <div class="col-lg-3">
                         <div class="d-block">
-                            <div class="frame-photo"><img id="_epl_dlgEmployee_img" src="" class="data-input" data-field="photo_url" alt="" style="width:200px;height:200px"></div>
+                            <div class="frame-photo">
+                                <img id="_epl_dlgEmployee_img" src="" class="w-100 h-100 border-0 frame-photo data-input" data-field="photo_url" alt=""/>
+                            </div>
                             <div class="d-flex align-items-center gap-2">
                                 <button id="_epl_dlgEmployee_btnChooseFile" class="btn btn-outline-success trans-text" data-langprop="buttons.Choose">
                                 </button>
