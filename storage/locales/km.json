@@ -211,5 +211,8 @@
 	"Service type":"Service Type",
 	"Description":"Description",
     "Price":"Price"
+   },
+   "consult":{
+	 "Physical Examination":"Physical Examination"
    }
 }
