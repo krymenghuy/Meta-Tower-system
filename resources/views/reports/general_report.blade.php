@@ -1,7 +1,9 @@
 <style>
     .width-paragraph{
         width:150px;
+        font-weight:500;
     }
+
     .photo-profile{
         width:10vw;
         height:10vw;
@@ -10,7 +12,6 @@
     }
 </style>
 
-
 <div class="p-3">
     <div class="d-flex align-items-center gap-4">
         <div class="d-flex align-items-center">
@@ -18,23 +19,23 @@
         </div>
         <div class="d-flex align-items-center">
             <div class="d-block">
-                <div class="d-flex">
+                <div class="d-flex py-0 my-0">
                     <p class="text-muted pe-3">Patient ID</p>
                     <p class="text-muted">12112</p>
                 </div>
-                <div class="d-flex">
+                <div class="d-flex py-0 my-0">
                     <p class="fw-bold fs-5">Joe Root</p>
                 </div>
-                <div class="d-flex align-items-center text-muted">
+                <div class="d-flex align-items-center text-muted py-0 my-0">
                     <p class="pe-3">M</p>
-                    <div class="vr" style="height:10px"></div>
+                    <div class="vr" style="height:20px; opacity:1"></div>
                     <p class="ps-3">25</p>
                 </div>
             </div>
         </div>
     </div>
-    <div class="d-block">
-        <h5>Personal Info</h5>
+    <div class="d-block mt-5">
+        <h5 class="pb-2 fw-bold">Personal Info</h5>
         <div class="d-flex align-items-center">
             <p class="width-paragraph">Date of Birth</p>
             <p>20/04/1993</p>
@@ -64,15 +65,15 @@
             <p>Indian</p>
         </div>
     </div>
-    <div class="d-block">
-        <h5>Medication Details</h5>
+    <div class="d-block mt-3">
+        <h5 class="pb-2 fw-bold">Medication Details</h5>
         <div class="d-flex align-items-center">
             <p class="width-paragraph">Doctor</p>
-            <p>Dr.</p>
+            <p>Dr.Madhav Baug</p>
         </div>
         <div class="d-flex align-items-center">
-            <p class="width-paragraph">Doctor</p>
-            <p>Dr.</p>
+            <p class="width-paragraph">Assistant</p>
+            <p>Dr.Smitha Thorat</p>
         </div>
     </div>
 </div>
