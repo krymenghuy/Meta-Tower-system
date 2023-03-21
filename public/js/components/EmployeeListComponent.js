@@ -96,7 +96,7 @@ let EmployeeListComponent = new function () {
                 mThis.table = null;
             }
 
-            data = StringSanitizer.sanitizeObject(data, null);
+            data = StringSanitizer.sanitizeObject(data, null,['email']);
             let cnt = 1;
             //begin::Set up columns
             let my_columns = [
@@ -199,6 +199,18 @@ let EmployeeListComponent = new function () {
 let EmployeeListDialog = new function () {
     let mThis = this;
     this.self = $(`#_epl_dlgEmployee`);
+    this.btnChooseFile = $('#_epl_dlgEmployee_btnChooseFile');
+    this.imgPhoto = $('#_epl_dlgEmployee_img');
+    this.elNationality = $('#_epl_dlgEmployee_nat');
+
+    this.loadNationalities = ()=>{
+        vsapi.call(`${main_view.base_url}/api/options-nationality`,null,null,false).then(res=>{
+            if(res.status_code ===200){
+                let items = res.data;
+               VSUtil.setComboItems(mThis.elNationality,items,'id','nationality',false,false,null);
+            }
+        });
+    }
 
     this.formUntil = new FormUntil({
         "itemName": "Employee List",
@@ -217,16 +229,26 @@ let EmployeeListDialog = new function () {
         "form_data_props": ['id'],
         //"sub_prop":"chief_complaint_items",
         //"sub_prop_function":mThis.getChiefComplaints,
-        "sanitize_excepts": [],
+        "sanitize_excepts": ['email','photo_url'],
         'use_alert_error': true,
-        'beforeShow': () => { }
+        //'beforeShow': () => { },
+        'init':()=>{
+            mThis.loadNationalities();
+            mThis.btnChooseFile.on('click',(e)=>{
+                FileChooser.chooseFile(null,(d)=>{
+                    if(d){
+                         mThis.imgPhoto.prop('src',d.dataUrl);
+                    }
+                });
+            });
+        }
     });
-
+ 
     this.show = (options) => {
         mThis.formUntil.show(options);
     }
 }
 
-$(document).ready(function () {
+window.addEventListener('DOMContentLoaded',(e)=> {
     EmployeeListComponent.init();
 });

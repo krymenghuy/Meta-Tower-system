@@ -166,10 +166,10 @@ class Patient extends Model
        //end:: In case of AddingToQueue =1
 
         //NOTE: $person_id is always Overwritten here because method Person::quickInfo() will always find out person identity using phone number, nationality, or email
-        $person = Person::quickInfo($branch_id,$person_id,['national_id'=>$national_id,'phone_number'=>$phone_number]);
+        $person = Person::detailsBy(['national_id'=>$national_id,'phone_number'=>$phone_number],"id,name,phone_number,email");
         if(!$person){
             $d['date_of_birth'] = convertDate($d['date_of_birth']);
-            $x = Person::forceSave($ss,$d);
+            $x = Person::forceSave($d,$ss);
             if($x->status === 'Error') return DV::error($x->error_message);
             $person_id = $x->person_id;
         }else $person_id = $person->id;
@@ -189,7 +189,7 @@ class Patient extends Model
         
         if ($patient_id > 0){
             //Set Patient Code / Official Patient ID
-            $ff = setOfficialCode($branch_id,'patient_code_control','patients',['id'=>$patient_id],self::$default_official_id_prefix,self::$official_id_length);
+            if ($new_patient_register) $ff = setOfficialCode($branch_id,'patient_code_control','patients',['id'=>$patient_id],self::$default_official_id_prefix,self::$official_id_length);
 
             //In case user registers Client from Appointment view, there is appointment ID (appt_id) that can be used to update field "appointments.client_id to patient_id and appointments.client_type to 'client' "  
             if($lead_id > 0){
