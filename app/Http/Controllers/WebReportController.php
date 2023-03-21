@@ -65,13 +65,16 @@ class WebReportController extends Controller
         }
         
         $rtype = isset($p->rtype) ? $p->rtype : null;
-        $ticket_id = isset($p->id) ? $p->id : 0;
+        $ticket_id = isset($p->id) ? $p->id : null;
+        //$ticket_id =isset($p->ticketid)?$p->ticketid:null;
         $ss = (object)['branch_id'=>$branch_id];
         $consultation = new \App\Models\Consultation($ticket_id,$ss);
+        $data['rtype'] = "medical_report";
         switch($rtype){
           case 'medical_report':{
-            $data['consultation'] = $consultation->getDetails();
-            //$data['rtype'] = "medical_report";
+            $data['title']="Medical Report";
+            $data['consult'] = $consultation->getDetails();
+            //dd($data);return;
             break;
           }
           default:{

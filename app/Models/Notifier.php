@@ -22,7 +22,6 @@ use DB;
 class Notifier extends Model
 {
     use HasFactory;
-
     static function notify_admin($event_name, $d){
       if (!$d) $data = (object)[];
       $data = (object)$d;
@@ -399,24 +398,21 @@ static function notify_mobile($branch_id,$data=[]){
    }
 
    //$d= {'branch_id','user_class','user_id'}
-   static function getNotificationListByUser($d){
-      $ss = UM::getUserInfoByToken($d,-1);
-      if ($ss->status_code !=200) return DV::emptyResult($ss->status_code,[]);
-      return [];
-      $branch_id = $ss->branch_id;
-      $user_id = $d->user_id;
-      $user_class = $d->user_class;
-      
-      $app_id = getAdminAppId();
-     
-      $more_wheres =null;
-      if ($user_id > 0)
-        $more_wheres .="(n.user_id ='".$user_id."' OR IFNULL(n.user_id,0) =0)";
-      else  $more_wheres ="n.user_id = -1";  //return empty rows if there is user_id supplied
-      $rows = DB::table('notifications AS n')->where('branch_id',$branch_id)->where('app_id',$app_id)->whereRaw($more_wheres)->selectRaw("n.id,is_read(n.id,n.user_id) AS is_read,CASE IFNULL(user_id,0) WHEN 0 THEN 'all' ELSE 'me' END AS target_user,message,title,is_read,image_url,create_date")->orderByRaw("create_date DESC")->get();
-      return $rows;
-   }
- 
+   static function getNotificationListByUser($user_id){ 
+    $user = \App\Models\UM::getUserProps($user_id,"id,user_class,app_id,branch_id");
+    if(!$user) return [];
+     $branch_id = $user->branch_id;
+     $user_id = $user->id;
+     $user_class = $user->user_class;  
+     $app_id = getAppIdByUserClass($user_class);
+   
+     $more_wheres ="";
+     if ($user_id > 0)
+       $more_wheres .="(n.user_id =$user_id OR IFNULL(n.user_id,0) =0)";
+     else  $more_wheres ="n.user_id = -1";  //return empty rows if there is user_id supplied
+     return DB::table('notifications AS n')->where('branch_id',$branch_id)->where('app_id',$app_id)->whereRaw($more_wheres)->selectRaw("n.id,is_read(n.id,n.user_id) AS is_read,CASE IFNULL(user_id,0) WHEN 0 THEN 'all' ELSE 'me' END AS target_user,message,title,image_url,create_date")->orderByRaw("create_date DESC")->get();
+    }
+
     static function point2point_distance($lat1, $lon1, $lat2, $lon2, $unit='K') 
     { 
         $theta = $lon1 - $lon2; 

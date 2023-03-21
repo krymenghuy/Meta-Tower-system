@@ -1562,7 +1562,7 @@ let ConsultTabView = new function () {
             vsapi.call(`${main_view.base_url}/api/inventory/item-info`, p).then(res => {
                 if (res.status_code === 200) {
                     let item = res.data;
-                    mThis.tblPrescribedItems.setCellValue(tr, 'sku', StringSanitizer.sanitizeOut(item.sku));
+                    if(item) mThis.tblPrescribedItems.setCellValue(tr, 'sku', StringSanitizer.sanitizeOut(item.sku));
                 }
             });
         }
@@ -1813,15 +1813,17 @@ let ConsultTabView = new function () {
          });
     }
 
-    this.showConsultMedicalReport = (div = null, ticket_id = 0) => {
-        let qString = ['rtype=medical_report&ticketid=', ticket_id].join('');
+    this.showConsultMedicalReport = (div) => {
+        let ticket_id = div.data('tid');
+        let qString = ['rtype=medical_report&ticketid=', ticket_id,'&id=',ticket_id].join('');
         main_view.getEncryptData(qString, (d) => {
             window.open([main_view.base_url, '/genreport/', d].join(''), '_blank');
         });
     }
 
-    this.showConsultMedicalCertificate = (div = null, ticket_id = 0) => {
-        let qString = [`rtype=medical_certificate&ticketid=`, ticket_id].join('');
+    this.showConsultMedicalCertificate = (div) => {
+        let ticket_id = div.data('tid');
+        let qString = [`rtype=medical_certificate&ticketid=`, ticket_id,'&id=',ticket_id].join('');
         main_view.getEncryptData(qString, (d) => {
             window.open([main_view.base_url, '/genreport/', d].join(''), '_blank');
         });

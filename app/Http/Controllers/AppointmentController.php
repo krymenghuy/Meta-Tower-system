@@ -18,7 +18,7 @@ class AppointmentController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
         $appt = new Appointment(null,$ss);
-        return JDV::result($appt->list());
+        return JDV::result($appt->list($req->all()));
     }
 
     function addToQueue(Request $req){

@@ -108,8 +108,7 @@ class QTicket //extends Model
             if($appt_id > 0){
                 DB::table('appointments')->where('id',$appt_id)->where('branch_id',$branch_id)->update(['status_id'=>$status_id_queued]);
                 DB::table('appt_chief_complaints')->where('appt_id',$appt_id)->update(['ticket_id'=>$ticket_id]);
-                DB::table('patient_vital_signs')->where('appt_id',$appt_id)->where('branch_id',$branch_id)->update(['ticket_id'=>$ticket_id]);
-                return DV::error("appt_id = $appt_id");
+                DB::table('patient_vital_signs')->where('appt_id',$appt_id)->where('branch_id',$branch_id)->update(['ticket_id'=>$ticket_id]);  
             }
             
             $statusInfo = (object)['status_id'=>$status_id_queued,'status'=>'Queued'];

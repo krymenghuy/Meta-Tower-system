@@ -432,7 +432,7 @@ class Consultation //extends Model
         $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
         $ss = $ss? $ss : $this->getUserInfo();
         $cols = ['t.id','t.test_id','s.name','t.labo_id','t.result_date','t.test_date','t.file_name','file_type','t.created_at','t.create_user','t.consultant_comments','t.result_description','t.remarks'];
-        return DB::table('patient_labo_tests AS t')->join('medical_services as s','s.id','=','t.test_id')->where('ticket_id',$ticket_id)->where('service_type','labo')->where('t.branch_id',$ss->branch_id)->select($cols)->orderBy('t.name','ASC')->get();
+        return DB::table('patient_labo_tests AS t')->join('medical_services as s','s.id','=','t.test_id')->where('ticket_id',$ticket_id)->where('service_type','labo')->where('t.branch_id',$ss->branch_id)->select($cols)->orderBy('s.name','ASC')->get();
     }
     
     function getDefaultLabo($test_id){
@@ -499,32 +499,47 @@ class Consultation //extends Model
       }
       return DV::error("Something went wrong during saving prescription");
     }
-
-    // static function saveAdvice($ss,$items,$ticket_id){
-    //     foreach($items as $item){
-    //         $inputs= [
-    //             'ticket_id'=>$ticket_id,
-    //             'content'=>$item->content,
-    //             'category'=>$item->category
-    //         ];
-    //         $id = saveData($ss,'consult_advice',['id'=>$id],$inputs,[],1);
-    //     }
-    //     return DV::success(); 
-    // }
-
-    static function commitDelete($ss,$ticket_id=0){
-         DB::table('consult_chief_complaints')->delete('ticket_id',$ticket_id);
-         DB::table('consult_vital_signs')->delete('ticket_id',$ticket_id);
-         DB::table('consult_pe')->delete('ticket_id',$ticket_id);
-         DB::table('consult_labo_tests')->delete('ticket_id',$ticket_id);
-         DB::table('prescription_items')->delete('ticket_id',$ticket_id);
-         DB::table('prescriptions')->delete('ticket_id',$ticket_id);
-         DB::table('consult_advice')->delete('ticket_id',$ticket_id);
-         DB::table('consult_diagnosis')->delete('ticket_id',$ticket_id);
-         //1= Waiting, 2 = Serving, 3 = Closed
-         DB::table('service_queue')->where('id',$ticket_id)->update(['status_id'=>2]);
-         return DV::success();
+  
+    function getVitalSigns($id=null,$ss=null){
+        $branch_id = $ss->branch_id;
+        return DB::table('patient_vital_signs as pvt')->where('pvt.branch_id',$branch_id)->where('pvt.ticket_id',$id)->selectRaw("pvt.id,vital_sign_id,vital_sign_value,pvt.description")->take(5)->get();
     }
+
+    function getDetails($id=null,$ss=null){
+      $id = $id?$id:$this->getId();
+      $ss = $ss?$ss:$this->getUserInfo();
+      $items = $this->getPE($id,$ss);
+      $pe="(NA)";
+      foreach($items as $i) $pe = $i->content;
+      $dia = null;
+      $items = $this->getDiagnosis($id,$ss);
+      foreach($items as $i) $dia = $i->content;
+      return (object)[
+        'chief_complaints'=>$this->getChiefComplaints($id,$ss),
+        'vital_signs'=>$this->getVitalSigns($id,$ss),
+        'medical_history'=>$this->getMedicalHistory($id,$ss),
+        'pe'=>$pe,
+        'labo_tests'=>$this->getLaboTests($id,$ss),
+        'diagnosis'=>$dia,
+        'prescription'=>$this->getPrescription($id,$ss),
+        'services'=>$this->getServiceDetails($id,$ss),
+        'advice'=>$this->getAdvice($id,$ss)
+      ];
+    }
+    // function delete($id,$id=null,$ss=null){
+    //      //DB::table('appt_chief_complaints')->delete('ticket_id',$ticket_id);
+    //      DB::table('ticket_vital_signs')->delete('ticket_id',$ticket_id);
+    //      DB::table('patient_pe')->delete('ticket_id',$ticket_id);
+    //      DB::table('patient_labo_tests')->delete('ticket_id',$ticket_id);
+    //      DB::table('prescription_items')->delete('ticket_id',$ticket_id);
+    //      DB::table('prescriptions')->delete('ticket_id',$ticket_id);
+    //      DB::table('patient_services')->delete('ticket_id',$ticket_id);
+    //      DB::table('patient_advice')->delete('ticket_id',$ticket_id);
+    //      DB::table('patient_diagnosis')->delete('ticket_id',$ticket_id);
+    //      //1= Waiting, 2 = Serving, 3 = Closed
+    //      //DB::table('tickets')->where('id',$ticket_id)->update(['status_id'=>2]);
+    //      return DV::success();
+    // }
  
     static function findById($ss,$id){
 

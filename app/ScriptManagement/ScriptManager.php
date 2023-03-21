@@ -106,6 +106,7 @@ class ScriptManager{
     protected static function createFile($content=null,$file_name=null,$ext =null){
         if (!$file_name) return (object)["status"=>"Error","error_message"=>"Error in createFile() method because parameter file_name is not supplied"];
         if (!$content) return (object)["status"=>"Error","error_message"=>"Cannot create file $file_name.$ext with NULL content"];
+        $file_name = explode('?',$file_name)[0];
         $dir = dirname($file_name);
         //If file extension is Not supplied, get extention from $file_name
         if (!$ext) $ext = pathinfo($file_name, PATHINFO_EXTENSION);
@@ -144,6 +145,89 @@ class ScriptManager{
        return (substr(trim($path),0,5) =='http:' || substr(trim($path),0,6) =='https:');
     }
 
+    //create minified files | createMinifiedFiles()
+    static function createMinFiles($b=[]){
+        $str = "";
+        //contains last 10 chars of the latest combined script content
+        $trailing_str="";
+    
+        $res_files=[];
+        $files = isset($b['files'])?$b['files']:[];
+        $dir = getcwd();
+        $excepts = $b? (isset($b['no-minify'])?$b['no-minify']:[]) :[];
+        //NOTE that: each file path is  $dir.$f = "E:\LaravelApps\GTS/assets/material-js/jquery.min.js"
+        // then we need to add directory called "public" to it => "E:\LaravelApps\GTS/public/assets/material-js/jquery.min.js"
+        foreach($files as $f){
+          $tmp_path = $dir."/public/".$f;
+          $tmp_path = str_replace('//','/',$tmp_path);
+          //Use method "explode" in ordder to exclude question mark "?", if any, from the $path string. NOTE: "?v=2" may be used for versioning and client cache control 
+          $path = explode('?',$tmp_path)[0];
+          $last_seven_chars = substr($f, strlen($f)-7,7);
+   
+          if (in_array($f,$excepts)){
+              $content_last_char = mb_substr(trim($str), -1);
+              $new_content = null;
+              if (self::is_cdn_file($f))
+              {
+                  $res = self::getFileContentFromUrl($f);
+                  //$path = $dir."/public/js/temp/".basename($f);
+                  //$res = self::downloadUrlToFile($f,$path);
+                  //$new_content = self::getFileContent($path);
+                  if ($res->error_message) return (object)['error_message'=>$res->error_message,"content"=>null];
+                  //just remove comments from js codes
+                  if (!$res->content) return (object)['error_message'=>"Error: File $path is empty","content"=>null]; 
+                  $new_content = self::removeComments($res->content);
+              }
+              else $new_content = self::removeComments(self::getFileContent($path));
+              if (empty(trim($new_content))) return (object)['error_message'=>"Failed to fetch content from file $path","content"=>null]; 
+               $des_path = $dir."/public/dist/js/".basename($f); 
+               $res = self::createFile($new_content,$des_path,null);
+               if($res->status ==='Error') return $res; else $res_files[] = $res->file_name;
+          }else {
+              if ($last_seven_chars ==='.min.js')
+              {
+                  $content_last_char = mb_substr(trim($str), -1);
+                  $new_content =null;
+                  if (self::is_cdn_file($f))
+                  {
+                      $res = self::getFileContentFromUrl($f);
+                      if ($res->error_message) return (object)['error_message'=>$res->error_message,"content"=>null];
+                      if (!$res->content) return (object)['error_message'=>"Error: File $path is empty","content"=>null]; 
+                      $new_content = self::removeComments($res->content);
+                  }
+                  else $new_content = self::removeComments(self::getFileContent($path));
+  
+                  if (empty(trim($new_content))) return (object)['error_message'=>"Failed to fetch content from file $path","content"=>null]; 
+                  $des_path = $dir."/public/dist/js/".basename($f); 
+                  $res = self::createFile($new_content,$des_path,null);
+                  if($res->status ==='Error') return $res; else $res_files[] = $res->file_name;
+              }    
+              else{
+                  $content_last_char = mb_substr(trim($str), -1);
+                  //$str.= " ".self::minify_js(self::getFileContent($path),  ['flaggedComments' => false]);
+                  $new_content = null;
+                  if (self::is_cdn_file($f))
+                  {
+                      $res = self::getFileContentFromUrl($f);
+                      if ($res->error_message) return (object)['error_message'=>$res->error_message,"content"=>null];
+                      if (!$res->content) return (object)['error_message'=>"Error: File $path is empty","content"=>null]; 
+                      $new_content = $res->content;
+                  }
+                  else $new_content = self::getFileContent($path);
+  
+                  if (empty(trim($new_content)))  return (object)['error_message'=>"Failed to fetch content from file $path","content"=>null];
+                  $des_path = $dir."/public/dist/js/".basename($f);
+                  $new_content = Minifier::minify($new_content); 
+                  $res = self::createFile($new_content,$des_path,null);
+                  if($res->status ==='Error') return $res; else $res_files[] = $res->file_name;
+              }
+          }
+             
+        }
+        return (object)['status'=>'OK','files'=>$res_files];
+      }
+  
+
     static function combineFileContents($b=[]){
       $str = "";
       //contains last 10 chars of the latest combined script content
@@ -170,13 +254,13 @@ class ScriptManager{
                 //$path = $dir."/public/js/temp/".basename($f);
                 //$res = self::downloadUrlToFile($f,$path);
                 //$new_content = self::getFileContent($path);
-                if ($res->error_message) return (object)['error'=>$res->error_message,"content"=>null];
+                if ($res->error_message) return (object)['error_message'=>$res->error_message,"content"=>null];
                 //just remove comments from js codes
-                if (!$res->content) return (object)['error'=>"Error: File $path is empty","content"=>null]; 
+                if (!$res->content) return (object)['error_message'=>"Error: File $path is empty","content"=>null]; 
                 $new_content = self::removeComments($res->content);
             }
             else $new_content = self::removeComments(self::getFileContent($path));
-            if (empty(trim($new_content))) return (object)['error'=>"Failed to fetch content from file $path","content"=>null]; 
+            if (empty(trim($new_content))) return (object)['error_message'=>"Failed to fetch content from file $path","content"=>null]; 
             $str.= ($content_last_char==';'? " " : ";").$new_content;
         }else {
             if ($last_seven_chars ==='.min.js')
@@ -186,13 +270,13 @@ class ScriptManager{
                 if (self::is_cdn_file($f))
                 {
                     $res = self::getFileContentFromUrl($f);
-                    if ($res->error_message) return (object)['error'=>$res->error_message,"content"=>null];
-                    if (!$res->content) return (object)['error'=>"Error: File $path is empty","content"=>null]; 
+                    if ($res->error_message) return (object)['error_message'=>$res->error_message,"content"=>null];
+                    if (!$res->content) return (object)['error_message'=>"Error: File $path is empty","content"=>null]; 
                     $new_content = self::removeComments($res->content);
                 }
                 else $new_content = self::removeComments(self::getFileContent($path));
 
-                if (empty(trim($new_content))) return (object)['error'=>"Failed to fetch content from file $path","content"=>null]; 
+                if (empty(trim($new_content))) return (object)['error_message'=>"Failed to fetch content from file $path","content"=>null]; 
                 $str.=($content_last_char==';'? " " : ";").$new_content;
             }    
             else{
@@ -202,19 +286,19 @@ class ScriptManager{
                 if (self::is_cdn_file($f))
                 {
                     $res = self::getFileContentFromUrl($f);
-                    if ($res->error_message) return (object)['error'=>$res->error_message,"content"=>null];
-                    if (!$res->content) return (object)['error'=>"Error: File $path is empty","content"=>null]; 
+                    if ($res->error_message) return (object)['error_message'=>$res->error_message,"content"=>null];
+                    if (!$res->content) return (object)['error_message'=>"Error: File $path is empty","content"=>null]; 
                     $new_content = $res->content;
                 }
                 else $new_content = self::getFileContent($path);
 
-                if (empty(trim($new_content)))  return (object)['error'=>"Failed to fetch content from file $path","content"=>null];
+                if (empty(trim($new_content)))  return (object)['error_message'=>"Failed to fetch content from file $path","content"=>null];
                 $str.=($content_last_char==';'? " " : ";").Minifier::minify($new_content,  ['flaggedComments' => false]);
             }
         }
            
       }
-      return (object)['content'=>$str,'error'=>null];
+      return (object)['content'=>$str,'error_message'=>null];
     }
 
     static function createBundleFileFromArray($b=[]){
@@ -224,32 +308,43 @@ class ScriptManager{
         //always put script in public_path => "/public"
         $dir = public_path(); // getcwd();  // physical disk path to "public"
         //NOTE: $b['output_file'] should starts with "/" 
-        $fpath = $dir.$b['output_file'];
 
-        if (file_exists($fpath))
-         {
-             $err = deleteFile($fpath);
-             if ($err) return (object)["status"=>"Error","error_message"=>$err];
-         }
-      
-        $res = self::combineFileContents($b);
-        if($res->error) return (object)['status'=>'Error','error_message'=>$res->error];
-        return self::createFile($res->content,$fpath,null);
+        $single_file = isset($b['single_file'])?$b['single_file']:1;
+        if($single_file ===1){
+            $fpath = explode('?',$dir.$b['output_file'])[0];
+            if (file_exists($fpath))
+             {
+                 $err = deleteFile($fpath);
+                 if ($err) return (object)["status"=>"Error","error_message"=>$err];
+             }
+          
+            $res = self::combineFileContents($b);
+            if($res->error_message) return (object)['status'=>'Error','error_message'=>$res->error_message];
+            return self::createFile($res->content,$fpath,null);
+        }else{
+            return self::createMinFiles($b);
+        } 
+       
     }
 
     static function createBundleFile($bundle_name){
        $b = ScriptProvider::bundle($bundle_name);
        if(!$b) return (object)['status'=>'Error','error_message'=>"The script bundle named $bundle_name is not found!"];
        return self::createBundleFileFromArray($b);
-       
     }
     
     static function createAllBundleFiles(){
         $bs = ScriptProvider::getBundles();
         $files = []; 
         foreach($bs as $b){
-            $res = self::createBundleFileFromArray($b);
-            if ($res->status ==='Error') return $res; else   $files[] = $res->file_name;
+            $single_file = isset($b['single_file'])?$b['single_file']:1;
+            if($single_file === 1){
+                $res = self::createBundleFileFromArray($b);
+                if ($res->status ==='Error') return $res; else  $files[] = $res->file_name;
+            }else{
+                $res = self::createMinFiles($b);
+                foreach($res->files as $file) $files[]=$file; 
+            }
         }
         return (object)['status'=>'OK','files'=>$files];
     }
@@ -302,15 +397,36 @@ class ScriptManager{
             $files = $b?$b['files']:[];
             echo self::createTags($files,$attr,$version);
         }else {
-            $output_file = isset($b['output_file'])?$b['output_file']:null;
             $base_url = url('/');
             $public_dir= self::getPublicDirectory();
 
-            $is_external_link = true;
-            if (substr($output_file,0,1) ==='/' || substr($output_file,0,1) ==='\\') $is_external_link  = false;
-            $url_path =$output_file;
-            if (!$is_external_link) $url_path = $base_url.$public_dir.$output_file;
-            if ($url_path) echo self::createTags([$url_path],$attr,$version);
+            $single_file = $b?$b['single_file']:1;
+            if ($single_file ===1){
+                $output_file = isset($b['output_file'])?$b['output_file']:null;
+                $sts = explode('?',$output_file);
+                $output_file = $sts[0];
+                $is_external_link = true;
+                if (substr($output_file,0,1) ==='/' || substr($output_file,0,1) ==='\\') $is_external_link  = false;
+                $url_path =$output_file;
+                if (!$is_external_link) $url_path = $base_url.$public_dir.$output_file;
+                if ($url_path) echo self::createTags([$url_path],$attr,$version);
+            }else{
+
+                //create script tag for EACH minified file
+                $files = [];
+                $bFiles = $b?$b['files']:[];
+                foreach($bFiles as $file){
+                    $sts = explode('?',$file);
+                    $path = $sts[0];
+                    $file_name = basename($path);
+                    $fPath = $base_url.$public_dir."/dist/js/".$file_name;
+                    $files[] = $fPath;  
+                }
+
+                echo self::createTags($files,$attr,$version);
+                     
+            }
+           
         }
 
        

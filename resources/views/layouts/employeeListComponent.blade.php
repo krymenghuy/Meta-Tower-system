@@ -34,7 +34,7 @@
                     <div class="col-lg-9">
                         <div class="row gy-2 py-2">
                         <div class="col-lg-6">
-                            <label for="code" class="form-label trans-text" data-langprop="employees.Code"></label>
+                            <label for="code" class="form-label trans-text" data-langprop="employees.ID"></label>
                             <input type="text" class="form-control data-input" data-field="code" readonly/>
                         </div>
                         <div class="col-lg-6">
@@ -75,14 +75,18 @@
                                     <option value="other">Other</option>
                                 </select>
                             </div>
+                            <div class="col-lg-6">
+                                <label for="nationality_id" class="form-label trans-text" data-langprop="employees.Nationality"></label>
+                                <select id="_epl_dlgEmployee_nat" class="modal-select2 data-input" data-field="nationality_id" data-required="1" data-ffield="Nationality">  
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="col-lg-3">
                         <div class="d-block">
-                            <div class="frame-photo"></div>
+                            <div class="frame-photo"><img id="_epl_dlgEmployee_img" src="" class="data-input" data-field="photo_url" alt="" style="width:200px;height:200px"></div>
                             <div class="d-flex align-items-center gap-2">
-                                <button class="btn btn-outline-success trans-text" data-langprop="buttons.Choose">
-                                    <input type="file" class="data-input" data-field="picture" data-required="0"/>
+                                <button id="_epl_dlgEmployee_btnChooseFile" class="btn btn-outline-success trans-text" data-langprop="buttons.Choose">
                                 </button>
                                 <button class="btn btn-outline-danger trans-text" data-langprop="buttons.Delete"></button>
                             </div>
