@@ -197,11 +197,15 @@ class FormUntil{
   
          document.getElementById(this.form_id).querySelectorAll('.data-input').forEach(el=>{
             let f = el.dataset.field; // el.getAttribute('field');
-            if(el.classList.contains('modal-select2') || el.classList.contains('select2')){
-               VSUtil.setSelect2_value(el,d[f]);
-               //el.dispatchEvent(new Event('change'));
-            }else  el.value = d[f]?d[f]:'';
-
+            if(el.tagName.toLowerCase() === 'img'){
+               el.setAttribute('src',d[f]);    
+            }else{
+               if(el.classList.contains('modal-select2') || el.classList.contains('select2')){
+                  VSUtil.setSelect2_value(el,d[f]);
+                  //el.dispatchEvent(new Event('change'));
+               }else el.value = d[f]?d[f]:'';
+            }
+           
             //set data-error =0 (No data validation error on first show) attribute of each input or SELECT box
             el.dataset.error = 0;
          });

@@ -117,7 +117,7 @@ let AppointmentListComponent = new function () {
                                         <button style="display:${d.status_id > 2 ? 'block' : 'none'}" type="button" data-apptid="${d.id}" data-patientid="${d.client_id}" class="btn btn-sm btn-outline-success btn-view-profile">View Profile</button>&nbsp;
                                         <button style="display:${d.status_id < 2 ? 'block' : 'none'}" type="button" data-apptid="${d.id}" data-patientid="${d.client_id}" class="btn btn-sm btn-outline-warning btn-register"><i class="fa fa-list-alt"></i><span class="trans-text" data-langprop="buttons.Register">Register</span></button>
                                         <button style="display:${d.status_id == 2 ? 'block' : 'none'}" type="button" data-apptid="${d.id}" data-patientid="${d.client_id}" class="btn btn-sm btn-outline-success btn-add-queue"><i class="fa fa-tasks"></i><span class="trans-text" data-langprop="buttons.Add to Queue">Queue</span></button>
-                                        <button style="display:${d.status_id === 3 ? 'block' : 'none'}" type="button" data-apptid="${d.id}" data-patientid="${d.client_id}" class="btn btn-sm btn-outline-success btn-start-consult"><i class="fa fa-user-check"></i><span class="trans-text" data-langprop="buttons.Serve">Serve</span></button>
+                                        <button style="display:none" type="button" data-apptid="${d.id}" data-patientid="${d.client_id}" class="btn btn-sm btn-outline-success btn-start-consult"><i class="fa fa-user-check"></i><span class="trans-text" data-langprop="buttons.Serve">Serve</span></button>
                                         </div>
                                 </div>
 
@@ -227,8 +227,10 @@ let AppointmentListComponent = new function () {
             });
         });
 
-        mThis.tblAppointments.on('click', '.btn-view-profile', (e) => {
+        mThis.tblAppointments.on('click', '.btn-view-profile', function(e) {
             e.preventDefault();
+            let patient_id = $(this).data('patientid');
+            alert(`View profile for ${patient_id}`);
         });
 
         mThis.tblAppointments.on('click', '.btn-add-queue', function (e) {
@@ -442,10 +444,10 @@ let AppointmentListComponent = new function () {
                     data: function (data, a, b) {
                         let status_class = null;
                         return [`<div class="form-inline">`,
-                            `<a href="javascript:void(0)" class="btn_appt_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
+                            //`<a href="javascript:void(0)" class="btn_appt_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" class="btn_appt_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
                             `<a href="javascript:void(0);" data-id="${data.id}" class="btn_appt_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
-                            `&nbsp;<a href="#" data-id="${data.id}" class="btn_appt_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
+                            //`&nbsp;<a href="#" data-id="${data.id}" class="btn_appt_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
                             `</div>`
                         ].join('');
                     }

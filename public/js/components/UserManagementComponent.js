@@ -248,7 +248,7 @@ let UserListPanel = new function () {
                 vsapi.call([mThis.base_url, '/api/setLockStatus'].join(''), p).then(res => {
                     if (res.status_code === 200) {
                         mThis.displayUserList(mThis.elSearch.val());
-                    } else cv_interact.alert(re.error_message);
+                    } else cv_interact.error(re.error_message);
                 });
             }
         });
@@ -543,7 +543,7 @@ let AddUserPanel = new function () {
 
         let user_class = mThis.elUserClass.val();
         if (!user_class) {
-            cv_interact.alert("Please select one user class");
+            cv_interact.error("Please select one user class");
             return;
         }
         user_class = (user_class + '').toLowerCase();
@@ -551,7 +551,7 @@ let AddUserPanel = new function () {
         if (allowed_find_userclasses.indexOf(user_class) >= 0)
             title = `Find ${user_class}`;
         else {
-            cv_interact.alert('Admin Support users do not need to have profile details');
+            cv_interact.error('Admin Support users do not need to have profile details');
             return;
         }
 
@@ -824,6 +824,6 @@ let SetPasswordDialog = new function () {
 }
 //end::SetPasswordDialog
 
-$(document).ready(function () {
+window.addEventListener('DOMContentLoaded',function () {
     UserManagementComponent.init();
 });

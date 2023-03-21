@@ -1,27 +1,26 @@
 <?php
 
 namespace App\Models;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+//use Illuminate\Database\Eloquent\Factories\HasFactory;
+//use Illuminate\Database\Eloquent\Model;
 use DB;
 use App\Models\DV;
 
-class Person extends Model
+class Person //extends Model
 {
-    use HasFactory;
-    protected $table = 'persons';
-    protected $guarded = ['id'];
-    protected $fillable =[]; // ['id','name','first_name','last_name','sex','date_of_birth','nationality_id','cp_name','cp_phone_number'];
+   // use HasFactory;
+    // protected $table = 'persons';
+    // protected $guarded = ['id'];
+    // protected $fillable =[]; // ['id','name','first_name','last_name','sex','date_of_birth','nationality_id','cp_name','cp_phone_number'];
       
-    protected $primaryKey = 'id';
-    public $incrementing = true;
-    //protected $keyType = 'string';
-    public $timestamps = true;
-    protected $dateFormat = 'Y-m-d';
+    // protected $primaryKey = 'id';
+    // public $incrementing = true;
+    // //protected $keyType = 'string';
+    // public $timestamps = true;
+    // protected $dateFormat = 'Y-m-d';
     
     protected static $validate_rule = [
-        "id"=>"0|identity=1",
+        "id"=>"0|number|identity=1",
         "national_id"=>"0|positive",
         "name"=>"1|string|0-50",
         "sex"=>"1|choice|M,F,O",
@@ -32,26 +31,61 @@ class Person extends Model
         "email"=>"0|email",
         "address"=>"0|string",
         "cp_name"=>"0|string",
-        "cp_phone_number"=>"0|string"
+        "cp_phone_number"=>"0|string",
+        "photo_data"=>"0|image",
+        "photo_file_type"=>"0|string|0-100"
      ];
 
-     //quickInfo() is similar to info(), but it returns only a few fields "id,name,phone_number"
-     static function quickInfo($branch_id,$person_id,$retrieveByFields=[]){
-        $more_where =null;
-        foreach($retrieveByFields as $field_name=>$value){
-           if($value){
-             $str = "$field_name ='$value'";
-             $more_where .= ($more_where?" OR ":"").$str;
-           }
-        }
-        if(!$more_where) return null;
-        $more_where =$more_where? "($more_where)" : "1=2";
- 
-        $rows = self::where('branch_id',$branch_id)->whereRaw($more_where)->selectRaw("id,name,phone_number")->take(1)->get();
-        return isset($rows[0])?$rows[0]:null;
-    }
+     protected $id = null;
+     protected $userInfo = null;
+     function __constructor($id=null,$userInfo=null){
+        $this->id = $id;
+        $this->userInfo = $userInfo;
+     }
 
-     static function existsByFields($branch_id,$person_id,$retrieveByFields=[]){
+     function getUserInfo(){
+       return $this->userInfo;
+     }
+     function getPersonId(){
+        return $this->id;
+     }
+     function getId(){
+        return $this->id;
+     }
+
+    //  //quickInfo() is similar to info(), but it returns only a few fields "id,name,phone_number,email"
+    //  static function quickInfo($retrieveByFields=[]){
+    //     $more_where =null;
+    //     foreach($retrieveByFields as $field_name=>$value){
+    //        if($value){
+    //          $str = "$field_name ='$value'";
+    //          $more_where .= ($more_where?" OR ":"").$str;
+    //        }
+    //     }
+    //     if(!$more_where) return null;
+    //     $more_where =$more_where? "($more_where)" : "1=2";
+ 
+    //     $rows = self::whereRaw($more_where)->selectRaw("id,name,phone_number,email")->take(1)->get();
+    //     return isset($rows[0])?$rows[0]:null;
+    // }
+
+    static function props($id,$cols=""){
+       return getDataRow('persons',['id'=>$id],$cols);
+    }
+    function getProps($cols="",$id=null,$ss=null){
+        $id =$id?$id:$this->getId();
+        //$ss = $ss?$ss:$this->getUserInfo();
+        return getDataRow('persons',['id'=>$id],$cols);
+    }
+    function saveProps($inputs=[],$id=null,$ss=null){
+       $id = $id?$id:$this->getId();
+       //$ss = $ss?$ss:$this->getUserInfo(); 
+       return saveData('persons',['id'=>$id],$inputs,[],1);
+    }
+  
+    function existsByFields($retrieveByFields=[],$ss=null){
+        $ss = $ss?$ss:$this->getUserInfo();
+        $branch_id = $ss->branch_id;
         $more_where =null;
         foreach($retrieveByFields as $field_name=>$value){
             if($value){
@@ -61,12 +95,12 @@ class Person extends Model
         }
         if(!$more_where) return 0;
         $more_where =$more_where?$more_where:"1=2";
-        $rows = self::where('branch_id',$branch_id)->whereRaw($more_where)->selectRaw("id")->take(1)->get();
+        $rows = DB::table('persons')->where('branch_id',$branch_id)->whereRaw($more_where)->selectRaw("id")->take(1)->get();
         return isset($rows[0]);
     }
  
     //@param $retrieveByFields =['id'=>10,'phone_number'=>'01245656','national_id'=>'02345656'] 
-    static function info($branch_id,$person_id,$retrieveByFields=[]){
+    static function detailsBy($retrieveByFields,$cols=null){
         $more_where =null;
         foreach($retrieveByFields as $field_name=>$value){
             if($value){
@@ -77,60 +111,102 @@ class Person extends Model
         if($more_where) return null;
         $more_where = $more_where?$more_where:"1=2";
 
-        $cols ="p.id,p.name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
-        $rows = self::where('branch_id',$branch_id)->whereRaw($more_where)->selectRaw($cols)->take(1)->get();
+        if ($cols) $cols ="p.id,p.name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
+        $rows = self::whereRaw($more_where)->selectRaw($cols)->take(1)->get();
         return isset($rows[0])? $rows[0]:null;
     }
+    
+    static function details($id,$ss){
+        return self::detailsBy(['id'=>$id,'branch_id'=>$ss->branch_id]);
+    }
 
-    static function commitSave($ss,$d){
-        //$user = (object)Session('user');
+    function getDetails($id=null,$ss=null){
+        $id = $id?$id:$this->getId();
+        $ss = $ss?$ss:$this->getUserInfo();
+        return self::detailsBy(['id'=>$id,'branch_id'=>$ss->branch_id]);
+    }
+
+    function save($d,$ss=null){
+        $ss = $ss?$ss:$this->getUserInfo();
+        $branch_id = $ss->branch_id;
         $sanitize_options = ['email'=>['@'],'address'=>['#','.']];
-        $res = DV::validateProps($d,self::$validate_rule,true,$sanitize_options,false);
+        $checkUnique =null;//["$branch_id|persons|name,phone_number,email|id=id"];
+        $res = validateObject($d,self::$validate_rule,true,$sanitize_options,$ss->lang,false,$checkUnique);
         if($res->error) return DV::error($res->error);
         $person_id =isset($res->id)? $res->id:0;
 
-        $inputs = $res->inputs;
+        $inputs = $res->values;
         //divide $name into first_name and last_name using function Helper/getNameParts()
         $o_name = getNameParts($inputs['name']);
         $inputs['first_name'] = $o_name->first_name;
         $inputs['last_name'] = $o_name->last_name;
+        unset($inputs['name']);
+        $photo_data = $inputs['photo_data'];
+        unset( $inputs['photo_data']);
+        $file_type = $inputs['photo_file_type'];
+        $dob = $inputs['date_of_birth'];
+        $inputs['date_of_birth'] = convertDate($dob);
+
         $person_id = saveData($ss,'persons',['id'=>$person_id],$inputs,[],1);
-        if($person_id>0) return DV::success(['person_id'=>$person_id]);
+        $inputs['id'] = $person_id;
+        if($person_id>0) {
+            if($this->isImage($photo_data)){
+                $f_res = PublicStorage::saveImage($branch_id,'person',$file_type,$photo_data);
+                if($f_res->status ==='OK'){
+                  $field_name = $f_res->file_name;
+                  $inputs['photo_file_name'] = $field_name;
+                  $inputs['photo_file_type'] = $f_res->file_type;
+                }
+            }
+            return DV::success(['person'=>$inputs]);
+        }
+    }
+
+    function isImage($data){
+        return true;
     }
 
     //forceSave() will create a new person profile if the given @person_id is not supplied or zero 
-    static function forceSave($ss,$d){
-        //$user = (object)Session('user');
+    static function forceSave($d,$ss){
+        //$ss = $ss?$ss:$this->getUserInfo(); 
         $sanitize_options = ['email'=>['@'],'address'=>['#','.']];
-        $res = DV::validateProps($d,self::$validate_rule,true,$sanitize_options,false);
+        $res = validateObject($d,self::$validate_rule,true,$sanitize_options,$ss->lang,false,null);
         if($res->error) return DV::error($res->error);
-        $person_id =isset($res->id)? $res->id:0;
+        $person_id =$res->id;
 
-        $inputs = $res->inputs;
+        $inputs = $res->values;
         //divide $name into first_name and last_name using function Helper/getNameParts()
         $o_name = getNameParts($inputs['name']);
         $inputs['first_name'] = $o_name->first_name;
         $inputs['last_name'] = $o_name->last_name;
+        unset($inputs['photo_data']);
         $person_id = saveData($ss,'persons',['id'=>$person_id],$inputs,[],1);
         if($person_id>0) return DV::success(['person_id'=>$person_id]);
+        return DV::error('Something went wrong saving Person profile');
     }
 
-    static function deleteSoft($id){
-       $x = self::where('id',$id)->update(['inactive'=>1]);
+    function deleteSoft($id=null,$ss=null){
+       $id = $id?$id:$this->getId();
+       $ss = $ss?$ss:$this->getUserInfo(); 
+       $x = self::where('id',$id)->where('branch_id',$branch_id)->update(['inactive'=>1]);
        if ($x) return DV::success();
-       else return DV::error("failed to soft delete person $id");
+       else return DV::error("Failed to soft delete person $id");
     }
 
-    static function deletePermanent($id){
-        $x = self::where('id',$id)->delete();
+    function delete($id=null,$ss=null){
+        $id = $id?$id:$this->getId();
+        $ss = $ss?$ss:$this->getUserInfo(); 
+        $x = self::where('id',$id)->where('branch_id',$branch_id)->delete();
         if ($x) return DV::success();
-        else return DV::error("failed to delete person $id");
+        else return DV::error("Failed to delete person $id");
     }
- 
-    static function commitDelete($id){
-        $x = self::where('id',$id)->delete();
-        if ($x) return DV::success();
-        else return DV::error("failed to delete person $id");
+   
+    //$show_url=false => returns base64 string
+    function getProfilePhoto($show_url=true,$id=null,$ss=null){
+        $id = $id?$id:$this->getId();
+        $ss = $ss?$ss:$this->getUserInfo();
+        $p = self::getProps($id,"photo_file_type,photo_file_name");
+        if(!$p) return null;
+        return PublicStorage($branch_id,'person','image').$p->file_name;
     }
-
 }
