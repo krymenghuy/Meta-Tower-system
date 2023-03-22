@@ -259,7 +259,7 @@
     ScriptManager::render('primary',0);
     ScriptManager::render('primary-async',0);
     ScriptManager::render('primary-defer',0);
-    ScriptManager::render('components',0);
+    ScriptManager::render('components',1);
   ?>
 
 </head>

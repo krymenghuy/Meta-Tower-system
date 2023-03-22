@@ -34,6 +34,8 @@ let ExchangeRateComponent = new function () {
     }
 
     this.init = () => {
+        $('#_ecr_dp_curr_pair').text($('#_ecr_currency_pair option:selected').text());
+
         mThis.btnNew.on('click', (e) => {
             let op = {
                 onClose: (e) => {
@@ -123,22 +125,22 @@ let ExchangeRateComponent = new function () {
             'tr_dataset': ['patient_id'],
             'onOpen': (container, detail_tr, parent_tr) => {
                 let q_tr = $(parent_tr);
-                //It is IMPORTANT to access patient_id using jquery object here because the "createdRow" event passes data-id atttribue using jquery method
                 let rate_id = q_tr.data('id');
-                //Show Expandable Details of each rate
+                console.log(rate_id);
                 mThis.displayExchangeRateDetails($(detail_tr), rate_id);
             }
         });
     }
 
     this.displayExchangeRateDetails = (detail_tr, rate_id = 0) => {
-        let div_wrapper = detail_tr.find('div.expandable-row-containter');
+        let div_wrapper = detail_tr.find('div.expandable-row-container');
         div_wrapper.html('<div class="animation-line" style="height:2px;margin:0"></div>');
         let p = { 'id': rate_id, 'search_value': mThis.elSearchDate.val() };
-        vsapi.call(`${main_view.base_url}/api/currency/details`,p, 'POST', false).then((res) => {
+        vsapi.call(`${main_view.base_url}/api/currency/history`,p, 'POST', false).then((res) => {
             let html = null;
             if (res.status_code === 200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
+                console.log(d);
                 html = `<div class="d-flex align-items-center">
                 <div class="input-group flex-nowrap">
                     <div class="input-group-text">
@@ -307,8 +309,8 @@ let ExchangeRateDetailsDialog = new function () {
         "titleId": "_ecr_dlgExchangeRate_detail_title",
         "saveButtonId": "_ecr_detail_btnSave",
         "instance": this,
-        "apiSave": `${main_view.base_url}/api/exchange-rate/save`,
-        "apiGet": `${main_view.base_url}/api/exchange-rate/details`,
+        "apiSave": `${main_view.base_url}/api/x-rate/save`,
+        "apiGet": `${main_view.base_url}/api/x-rate/details`,
         "modifyTitle": "Modify Currency Rate",
         "createTitle": "New Currency Rate",
         "identityProps": ['id'],
