@@ -143,7 +143,7 @@ let EmployeeListComponent = new function () {
                             `<a href="javascript:void(0)" class="btn_epl_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" class="btn_epl_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
                             `<a href="javascript:void(0);" data-id="${data.id}" class="btn_epl_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
-                            `&nbsp;<a href="#" data-id="${data.id}" class="btn_pat_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
+                            `&nbsp;<a href="javascript:void(0)" data-id="${data.id}" class="btn_pat_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
                             `</div>`
                         ].join('');
                     }
@@ -215,7 +215,6 @@ let EmployeeListDialog = new function () {
         "apiGet": `${main_view.base_url}/api/employee/details`,
         "createTitle": "New Employee",
         "identityProps": ['id'],
-        //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['id'],
         "sanitize_excepts": ['email','photo_url'],
         'use_alert_error': true,

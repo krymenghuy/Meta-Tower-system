@@ -101,16 +101,18 @@ class WebReportController extends Controller
         if (!$branch_id) return redirect('/');
         $data['branch'] = \App\Models\CompanyProfile::details($branch_id);   
         $p = processQueryString($query_string);
+
         if(!$p) {
           return view('errors.500');
         }
+
         $invoice_id = isset($p->id)?$p->id:0;
         $ss = (object)['branch_id'=>$branch_id];
         $invoice = new \App\Models\Invoice\MedicalInvoice($invoice_id,$ss);
         $data['invoice'] = $invoice->getDetails();
         $data['title'] = "ESTHEDERM Aesthetic & Dermatology";
        
-        return view('error.404', $data);
+        return view('reports.invoice', $data);
     }
 
     public function employee_profile($query_string = null){

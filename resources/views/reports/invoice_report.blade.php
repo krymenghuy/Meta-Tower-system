@@ -1,6 +1,3 @@
-<style type="text/css">
-</style>
-
 <div class="d-block px-3">
     <div class="d-flex align-items-center w-100">
         <div class="d-flex align-items-center">

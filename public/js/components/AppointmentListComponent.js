@@ -234,7 +234,6 @@ let AppointmentListComponent = new function () {
             main_view.getEncryptData(qString, (d) => {
                 window.open([main_view.base_url, '/genreport/', d].join(''), '_blank');
             });
-            //alert(`View profile for ${patient_id}`);
         });
 
         mThis.tblAppointments.on('click', '.btn-add-queue', function (e) {

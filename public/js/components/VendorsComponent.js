@@ -89,13 +89,12 @@ let VendorsComponent = new function () {
 
     this.displayVendorsDetails = (detail_tr, options) => {
         let group_id = options.group_id;
-        let div_wrapper = detail_tr.find('div.expandable-row-containter');
+        let div_wrapper = detail_tr.find('div.expandable-row-container');
         div_wrapper.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
         let p = { 'group_id': group_id };
         window.vsapi.call(`${main_view.base_url}/api/inventory/stock/group-items`,p,null,false).then((res) => {
             let html = null;
             if (res.status_code === 200) {
-
                 let items = StringSanitizer.sanitizeObject(res.data);
 
                 html = [
@@ -108,12 +107,11 @@ let VendorsComponent = new function () {
                     `<th>Qty</th>`,
                     `<th>Last Updated</th>`,
                     `</tr></thead>`,
-                    `<tbody class="tbody-stock-items">`,
-                    mThis.createRowItems(items)
-                    , `</tbody>
-                        </table>`,
+                    `<tbody class="tbody-stock-items">`,mThis.createTableRow(items)
+                    ,`</tbody></table>`,
                     `</div>`].join('');
-            } else {
+            }
+            else {
                 html = `<div class="expanded-row-error">${res.error_message}</div>`;
             }
 
@@ -121,10 +119,21 @@ let VendorsComponent = new function () {
         });
     }
 
+    this.createTableRow = (items) => {
+        let tr = null;
+        for(let i=0; i<items.length; i++){
+            tr = [tr,`<tr>
+                <td>${items[i].code ? items[i].code : ""}</td>
+                <td>${items[i].name ? items[i].name : ""}</td>
+                <td>${items[i].description ? items[i].description : ""}</td>
+                <td>${items[i].qty ? items[i].qty : ""}</td>
+                <td>${items[i].last_updated ? items[i].last_updated : ""}</td>
+            </tr>`].join('');
+        }
+        return tr;
+    }
+
     this.displayVendors = (onFinish = null) => {
-        //Initialize language for DataTable columns headers
-        //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-        //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
         let p = { 'search_value': mThis.elSearchItem.val() };
         window.vsapi.call(`${mThis.base_url}/api/inventory/stock/group-list`, p, 'POST', null).then((result) => {
@@ -132,7 +141,6 @@ let VendorsComponent = new function () {
             if (result.status_code === 200) data = result.data;
             if (mThis.table) {
                 mThis.tblVendors.DataTable().clear().destroy();
-                //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
                 mThis.tblVendors.empty();
                 mThis.table = null;
             }
@@ -219,11 +227,10 @@ let VendorsDialog = new function () {
         "modifyTitle": "Modify Vendor",
         "createTitle": "New Vendor",
         "identityProps": ['id'],
-        //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['id'],
         "sanitize_excepts": [],
         'use_alert_error': true,
-        'beforeShow': () => { }
+        'beforeShow': () => {}
     });
 
     this.show = (options) => {

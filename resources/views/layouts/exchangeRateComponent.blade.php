@@ -2,11 +2,22 @@
     <div class="vs-contianer-custom">
         <div class="d-flex align-items-center gap-2 ms-3">
             <button class="vs-btn-custom-primary" type="button" id="_ecr_btnNew">
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center text-nowrap">
                     <i class="fa-solid fa-plus me-1"></i>
-                    <span class="trans-text" data-langprop="buttons.Add New"></span>
+                    <span class="trans-text" data-langprop="buttons.New Currency"></span>
                 </div>
             </button>
+            <div style="width:390px">
+                <select class="modal-select2 form-select w-100" id="_ecr_currency_pair">
+                    <option value="usd-khr">USD-KHR</select>
+                </select>
+            </div>
+            <div class="d-flex align-items-center justify-content-end w-100 text-nowrap">
+                <button class="btn btn-success" type="button" id="_ecr_btnNew_title">
+                    <i class="fa-solid fa-plus me-1 pe-0 me-0"></i>
+                    <span class="trans-text" data-langprop="buttons.New Exchange Rate"></span>
+                </button>
+            </div>
         </div>
         <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;min-height:350px;">
             <table class="table header-light-blue header-uppercase table-hover" id="_ecr_tblexchangeRate"></table>
@@ -65,7 +76,10 @@
     <div class="modal-dialog vs-modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="_ecr_dlgExchangeRate_detail_title"></h4>
+                <div class="d-flex align-items-center">
+                    <h4 class="modal-title" id="_ecr_dlgExchangeRate_detail_title"></h4>
+                    <p class="px-3 fw-semibold border border-success rounded-3 ms-3 pb-0 mb-0 data-input" data-field="currency_pair" id="_ecr_dp_curr_pair"></p>
+                </div>
             </div>
             <div class="modal-body">
                 <div class="row gy-2 py-2">
