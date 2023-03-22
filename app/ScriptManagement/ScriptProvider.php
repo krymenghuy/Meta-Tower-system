@@ -47,7 +47,7 @@ namespace App\ScriptManagement;
         'primary-defer'=>[
             'attr'=>'defer',
             'single_file'=>1,
-            'output_file'=>'/dist/js/rmi.primary-defer.js',
+            'output_file'=>'/dist/js/clinic.primary-defer.js',
             'files'=>[
                 '/assets/js/string_san.js',
                 '/assets/js/vsutil.js',
@@ -153,13 +153,16 @@ namespace App\ScriptManagement;
                     ]
 
                     ],
-                    // 'mainjs'=>[
-                    //     'attr'=>'defer',
-                    //     'output_file'=>'/js/dist/lms.main.js',
-                    //     'files'=>[
-                    //         '/js/layout/main.js',
-                    //     ]
-                    // ]
+
+                    'report-scripts'=>[
+                        'attr'=>'defer',
+                        'single_file'=>1,
+                        'output_file'=>'/dist/js/report-scripts.js',
+                        'files'=>[
+                            '/assets/material-js/jquery.min.js',
+                            '/assets/material-js/bootstrap.min.js'
+                        ]
+                    ]
          ];
 
          static function bundle($bundle_name=null){

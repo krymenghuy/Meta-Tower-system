@@ -20,7 +20,7 @@
     <!--end::Base Path -->
     <meta charset="utf-8" />
     <title>Clinic Management System</title>
-    <link type="images/png" rel="icon" href="{{ asset('assets/images/logo/logo.jpg') }}">
+    <link type="images/png" rel="icon" href="{{ asset('assets/images/logo/logo.png') }}">
     <meta name="description" content="Updates and statistics">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -33,7 +33,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <?php StyleManager::render('vsmclinic-style',1); ?> 
+    <?php StyleManager::render('vsmclinic-style',0); ?> 
     <style type="text/css">
         @media (min-width:1025px){
             .kt-header--fixed.kt-subheader--fixed.kt-subheader--enabled .kt-wrapper {
@@ -255,11 +255,11 @@
         }
     </style>
 
-    <?php
+   <?php
     ScriptManager::render('primary',0);
     ScriptManager::render('primary-async',0);
-    ScriptManager::render('primary-defer',1);
-    ScriptManager::render('components',1);
+    ScriptManager::render('primary-defer',0);
+    ScriptManager::render('components',0);
   ?>
 
 </head>
@@ -285,7 +285,7 @@
     <div id="kt_header_mobile" class="kt-header-mobile  kt-header-mobile--fixed ">
         <div class="kt-header-mobile__logo">
             <a href="javascript:;">
-                <img alt="Logo" src="{{ asset('assets/media/logos/logo-light.png') }}" />
+                <img alt="Logo" src="{{ asset('assets/images/logo/logo.png') }}" />
             </a>
         </div>
         <div class="kt-header-mobile__toolbar">
