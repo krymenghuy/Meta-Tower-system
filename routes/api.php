@@ -319,12 +319,13 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
   //End::PartnerController
  
     //begin::Currency APIs
-        Route::prefix('currency')->group(function(){
-            Route::post('details', [CurrencyController::class,'getCurrencyDetails']);          
-            Route::post('save', [CurrencyController::class,'saveCurrency']); 
-            Route::post('delete', [CurrencyController::class,'deleteCurrency']);   
-            Route::post('list', [CurrencyController::class,'getCurrencies']);
-        });
+    Route::prefix('currency')->group(function(){
+        Route::post('details', [CurrencyController::class,'getCurrencyDetails']);       
+        Route::post('save', [CurrencyController::class,'saveCurrency']);
+        Route::post('delete', [CurrencyController::class,'deleteCurrency']);
+        Route::post('list', [CurrencyController::class,'getCurrencies']);
+        Route::post('history', [CurrencyController::class,'getExchangeRateInfo']);
+    });
     //end::Currency APIs
 
     //begin::Exchange Rate APIs
@@ -337,7 +338,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
             Route::post('info', [ExchangeRateController::class,'getExchangeRateInfo']);
             Route::post('delete', [ExchangeRateController::class,'deleteExchangeRate']);
             Route::post('list', [ExchangeRateController::class,'getExchangeRates']);
-            Route::post('save', [ExchangeRateController::class,'saveExchangeRate']);
+            Route::post('save', [CurrencyController::class,'saveExchangeRate']);
             Route::post('apply', [ExchangeRateController::class,'applyExchangeRate']);
             Route::post('apply-rate', [ExchangeRateController::class,'applyExchangeRate']);  
         });

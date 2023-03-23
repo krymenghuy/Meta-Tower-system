@@ -101,6 +101,7 @@ class WebReportController extends Controller
         if (!$branch_id) return redirect('/');
         $data['branch'] = \App\Models\CompanyProfile::details($branch_id);   
         $p = processQueryString($query_string);
+
         if(!$p) {
           return view('errors.500');
         }
@@ -112,5 +113,24 @@ class WebReportController extends Controller
         $data['title'] = "ESTHEDERM Aesthetic & Dermatology";
         $data['rtype'] =$p->rtype;
         return view('reports.invoice', $data);
+    }
+
+    public function employee_profile($query_string = null){
+      if (!Session::get('login_name',null)) return redirect('/');
+        $branch_id =Session::get('branch_id',0);
+        if (!$branch_id) return redirect('/');
+        $data['branch'] = \App\Models\CompanyProfile::details($branch_id);   
+        $p = processQueryString($query_string);
+
+        if(!$p) {
+          return view('errors.500');
+        }
+
+        $employee_id = isset($p->id) ? $p->id : 0;
+        $ss = (object)['branch_id'=>$branch_id];
+
+        $data["title"] = "Employee Profile";
+
+        return view("reports.employee_profile",$data);
     }
 }

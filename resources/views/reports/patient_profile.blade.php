@@ -1,7 +1,3 @@
-    <style>
-     
-    </style> 
-    <?php
-      echo "Patient profile";               
-    ?>
-                        
+<?php
+  echo "Patient profile";               
+?>

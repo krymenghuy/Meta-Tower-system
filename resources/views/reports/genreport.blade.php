@@ -4,9 +4,6 @@
 <head>
     <?php StyleManager::render('report-styles'); ?>
     <?php ScriptManager::render('report-scripts'); ?>
-    <!-- <link href="{{ base_url('assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" id="bootstrap-css" /> -->
-    <!-- <script src="{{ base_url('assets/vendors/general/jquery/dist/jquery.js') }}" type="text/javascript"></script> -->
-    <!-- <script defer src="{{ base_url('assets/vendors/general/bootstrap/dist/js/bootstrap.min.js') }}" type="text/javascript"></script> -->
     <style>
         body{
             font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
@@ -23,6 +20,10 @@
             
             body{
                 margin: 20px;
+                -webkit-print-color-adjust: exact;
+                -moz-print-color-adjust: exact;
+                -ms-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
 
             div.vs-print-top{

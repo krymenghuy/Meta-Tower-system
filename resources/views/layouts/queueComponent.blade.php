@@ -116,7 +116,7 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="col-xl-9">
+                                <div class="col-xl-9" style="margin-top:-55px">
                                     <div id="_history_panel" style="width:100%"></div>
                                 </div>
                             </div>
@@ -195,7 +195,7 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="col-xl-9">
+                                <div class="col-xl-9" style="margin-top:-55px">
                                     <div id="_consult_panel" style="width:100%"></div>
                                 </div>
                             </div>

@@ -135,6 +135,7 @@ Route::get('test',function(){
 Route::get('package_barcode/{id}', [WebReportController::class, 'package_barcode']);
 Route::get('genreport/{q}', [WebReportController::class, 'general_report']);
 Route::get('geninvoice/{q}',[WebReportController::class, 'general_invoice']);
+Route::get('employee_profile/{q}',[WebReportController::class,'employee_profile']);
 Route::get('pawncontract/{q}', [WebReportController::class, 'pawn_contract']);
 Route::get('loancontract/{q}', [WebReportController::class, 'loan_contract']);
 
