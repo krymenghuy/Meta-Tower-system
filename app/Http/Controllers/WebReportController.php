@@ -104,12 +104,13 @@ class WebReportController extends Controller
         if(!$p) {
           return view('errors.500');
         }
+
         $invoice_id = isset($p->id)?$p->id:0;
         $ss = (object)['branch_id'=>$branch_id];
         $invoice = new \App\Models\Invoice\MedicalInvoice($invoice_id,$ss);
         $data['invoice'] = $invoice->getDetails();
         $data['title'] = "ESTHEDERM Aesthetic & Dermatology";
-       
-        return view('error.404', $data);
+        $data['rtype'] =$p->rtype;
+        return view('reports.invoice', $data);
     }
 }

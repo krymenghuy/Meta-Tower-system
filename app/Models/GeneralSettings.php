@@ -10,61 +10,47 @@ use DB;
 class GeneralSettings extends Model
 {
     use HasFactory;
-  
-    function getReportFilter_options($d){
-        $ss = getSessionInfo($d);
-        if(!$ss) return '#350'; //user not authenticated
-        if (!prn_allowed(-1)) return '@'; //need permission to do this task
-        $branch_id = sanitize($ss->branch_id);
-        $rows = DB::table('loans as l')->join('persons as p','p.id','=','l.borrower_id')->where('l.branch_id',$branch_id)->where('l.status_id',1)->whereRaw('IFNULL(l.inactive,0) =0')->selectRaw("l.id,l.code as loan_code, CONCAT(p.last_name,' ',p.first_name, ' (', l.code,')') AS loan_name, l.status_id,l.monthly_interest_rate")->get();
-        return (object)[
-            'loans'=>$rows,
-            'staffs'=>UM::user_list_by_roles($branch_id,[1,2])
-        ];
-
-    }
- 
     function position_exists($branch_id, $name){
         $rows = DB::table('positions')->where('branch_id',$branch_id)->where('name',$name)->selectRaw("id")->limit(1)->get();
         foreach($rows as $row) return true;
         return false;
     }
  
-    function sendMessage($d){
-        $ss = getSessionInfo($d);
-        if(!$ss) return '#350'; //user not authenticated
-        if (!prn_allowed(100)) return '@'; //need permission to do this task
-        $branch_id = sanitize($ss->branch_id);
-        $phone_number = isset($d->phone_number)?sanitize($d->phone_number):null;
-        $text = isset($d->text)?sanitize($d->text):null;
+    // function sendMessage($d){
+    //     $ss = getSessionInfo($d);
+    //     if(!$ss) return '#350'; //user not authenticated
+    //     if (!prn_allowed(100)) return '@'; //need permission to do this task
+    //     $branch_id = sanitize($ss->branch_id);
+    //     $phone_number = isset($d->phone_number)?sanitize($d->phone_number):null;
+    //     $text = isset($d->text)?sanitize($d->text):null;
 
-                $fields = array(
-                    //'app_id' => "5eb5a37e-b458-11e3-ac11-000c2940e62c",
-                    'gw-username'=>'xperasoft',
-                    'gw-password'=>'bchsd',
-                    'gw-to'=>$phone_number,
-                    'gw-from'=>'Dolgoal',
-                    'gw-text'=>$text
-                    //'token' =>'di5B9xXcZeULyNAFSsdv9COWOzBPWE',
-                );
+    //             $fields = array(
+    //                 //'app_id' => "5eb5a37e-b458-11e3-ac11-000c2940e62c",
+    //                 'gw-username'=>'xperasoft',
+    //                 'gw-password'=>'bchsd',
+    //                 'gw-to'=>$phone_number,
+    //                 'gw-from'=>'Dolgoal',
+    //                 'gw-text'=>$text
+    //                 //'token' =>'di5B9xXcZeULyNAFSsdv9COWOzBPWE',
+    //             );
 
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, "http://sms.plasgate.com:29062/cgi-bin/sendsms");
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                'Content-Type: application/json; charset=utf-8',
-                'Authorization: Basic di5B9xXcZeULyNAFSsdv9COWOzBPWE'
-            ));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-            curl_setopt($ch, CURLOPT_HEADER, FALSE);
-            curl_setopt($ch, CURLOPT_POST, TRUE);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+    //         $ch = curl_init();
+    //         curl_setopt($ch, CURLOPT_URL, "http://sms.plasgate.com:29062/cgi-bin/sendsms");
+    //         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+    //             'Content-Type: application/json; charset=utf-8',
+    //             'Authorization: Basic di5B9xXcZeULyNAFSsdv9COWOzBPWE'
+    //         ));
+    //         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    //         curl_setopt($ch, CURLOPT_HEADER, FALSE);
+    //         curl_setopt($ch, CURLOPT_POST, TRUE);
+    //         curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+    //         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
             
-            $response = curl_exec($ch);
-            curl_close($ch);
+    //         $response = curl_exec($ch);
+    //         curl_close($ch);
             
-            return $response;
-    }
+    //         return $response;
+    // }
 
     function org_exists($name,$id){
         if(!$name) return false;
@@ -129,32 +115,46 @@ class GeneralSettings extends Model
         return DV::success();
     }
 
-    function getComboitems_emp_options($d){
+    static function employee_form_options($ss){
      return (object)[
-         'positions'=> $this->getComboItems_position(),
-         'organizations'=>$this->getComboItems_org(),
-         'industries'=>$this->getComboItems_industry()
+         'positions'=> self::options_position($ss),
+         'departments'=>self::options_department($ss),
+         'nationalities'=>self::options_nationality($ss),
+         'employment_types'=>self::options_emp_type($ss)
+         //'organizations'=>$this->getComboItems_org(),
+         //'industries'=>$this->getComboItems_industry()
      ];
     }
 
     function getComboItems_industry(){
-        //$ss = getSessionInfo($d);
-        //if(!$ss) return '#350'; //user not authenticated
-        //if (!prn_allowed(-1)) return '@'; //need permission to do this task
-        //$branch_id = sanitize($ss->branch_id);
         $id =isset($d->id)?sanitize($d->id):0;
         return  DB::table('industries as i')->whereRaw('IFNULL(inactive,0) =0')->selectRaw("i.id,i.name as industry")->get();
     }
     
     function getComboItems_position(){
-        //$ss = getSessionInfo($d);
-        //if(!$ss) return '#350'; //user not authenticated
-        //if (!prn_allowed(-1)) return '@'; //need permission to do this task
         $branch_id = Session::get('branch_id',0);
-        $id =isset($d->id)?sanitize($d->id):0;
         return  DB::table('positions as l')->whereRaw('IFNULL(l.inactive,0) =0')->where('l.branch_id',$branch_id)->selectRaw("l.id,l.name as position_title")->get();
     }
-
+    static function options_position($ss){
+        $branch_id = $ss->branch_id;
+        return  DB::table('positions as l')->whereRaw('IFNULL(l.inactive,0) =0')->where('l.branch_id',$branch_id)->selectRaw("l.id,l.name as position_title")->get();
+    }
+    static function options_department($ss){
+        $branch_id = $ss->branch_id;
+        return  DB::table('departments as d')->whereRaw('IFNULL(d.inactive,0) =0')->where('d.branch_id',$branch_id)->selectRaw("d.id,d.name as department")->orderBy('d.name','ASC')->get();
+    }
+    static function options_nationality($ss){
+        $branch_id = $ss->branch_id;
+        return  DB::table('loc_countries as c')->where('c.branch_id',$branch_id)->selectRaw("c.id,c.nationality as nationality")->orderBy('nationality','ASC')->get();
+    }
+    static function options_emp_type($ss){
+        $branch_id = $ss->branch_id;
+        return [
+            (object)['employment_type'=>'Part Time'],
+            (object)['employment_type'=>'Full Time'],
+            (object)['employment_type'=>'Freelance']
+        ];
+    }
     function getComboItems_org(){
         //$ss = getSessionInfo($d);
         //if(!$ss) return '#350'; //user not authenticated

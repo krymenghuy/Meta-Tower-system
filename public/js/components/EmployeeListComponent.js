@@ -7,7 +7,8 @@ let EmployeeListComponent = new function () {
     this.btnNew = $('#_epl_btnNew');
     this.elSearchItem = $('#_epl_search');
     this.tblItems = $('#_epl_tblEmployee');
-    this.form_data = {};
+     
+    this.form_data = null;
 
     this.col_titles = {
         "No.": "No.",
@@ -129,10 +130,10 @@ let EmployeeListComponent = new function () {
                     title: mThis.trans_title('Action'),
                     data: function (data, a, b) {
                         return [`<div class="form-inline">`,
-                            `<a href="javascript:void(0)" class="btn_co_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
+                            //`<a href="javascript:void(0)" class="btn_co_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" class="btn_epl_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
                             `<a href="javascript:void(0);" data-id="${data.id}" class="btn_epl_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
-                            `&nbsp;<a href="#" data-id="${data.id}" class="btn_pat_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
+                            //`&nbsp;<a href="#" data-id="${data.id}" class="btn_pat_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
                             `</div>`
                         ].join('');
                     }
@@ -184,18 +185,36 @@ let EmployeeListDialog = new function () {
     this.btnChooseFile = $('#_epl_dlgEmployee_btnChooseFile');
     this.imgPhoto = $('#_epl_dlgEmployee_img');
     this.elNationality = $('#_epl_dlgEmployee_nat');
-
-    this.loadNationalities = ()=>{
-        vsapi.call(`${main_view.base_url}/api/options-nationality`,null,null,false).then(res=>{
+    this.elDepartment = $('#_epl_dlgEmployee_department');
+    this.elPosition = $('#_epl_dlgEmployee_position');
+    this.elEmploymentType = $('#_epl_dlgEmployee_emp_type');
+    // this.loadNationalities = ()=>{
+    //     vsapi.call(`${main_view.base_url}/api/options-nationality`,null,null,false).then(res=>{
+    //         if(res.status_code ===200){
+    //             let items = res.data;
+    //            VSUtil.setComboItems(mThis.elNationality,items,'id','nationality',false,false,null);
+    //         }
+    //     });
+    // }
+    
+    this.loadFormOptions =(refresh=false,onFinish)=>{
+        if(!refresh){
+            if(mThis.form_data){
+                onFinish(mThis.form_data);
+                return;
+            }
+        }
+        vsapi.call(`${main_view.base_url}/api/employee/form-options`,null,null,false).then(res=>{
             if(res.status_code ===200){
-                let items = res.data;
-               VSUtil.setComboItems(mThis.elNationality,items,'id','nationality',false,false,null);
+                //let d = StringSanitizer.sanitizeObject(res.data);
+                mThis.form_data = res.data;
+                onFinish(mThis.form_data);
             }
         });
     }
 
     this.formUntil = new FormUntil({
-        "itemName": "Employee List",
+        "itemName": "Employee",
         "formId": '_epl_dlgEmployee',
         "titleId": "_epl_dlgEmployee_title",
         "saveButtonId": "_epl_btnSave",
@@ -203,13 +222,15 @@ let EmployeeListDialog = new function () {
         "apiSave": `${main_view.base_url}/api/employee/save`,
         "apiGet": `${main_view.base_url}/api/employee/details`,
         "createTitle": "New Employee",
+        "modifyTitle": "Modify Employee",
         "identityProps": ['id'],
         //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['id'],
-        "sanitize_excepts": ['email','photo_url'],
+        //photo can be either base64 string or url to image depending on wther it is Saving or Retrieving action
+        "sanitize_excepts": ['email','photo'],
         'use_alert_error': true,
         'init':()=>{
-            mThis.loadNationalities();
+            //mThis.loadNationalities();
             mThis.btnChooseFile.on('click',(e)=>{
                 FileChooser.chooseFile(null,(d)=>{
                     if(d){
@@ -221,7 +242,13 @@ let EmployeeListDialog = new function () {
     });
  
     this.show = (options) => {
-        mThis.formUntil.show(options);
+        mThis.loadFormOptions(true,d=>{
+            VSUtil.setComboItems(mThis.elNationality,d.nationalities,'id','nationality',false,false,null);
+            VSUtil.setComboItems(mThis.elDepartment,d.departments,'id','department',false,false,null);
+            VSUtil.setComboItems(mThis.elPosition,d.positions,'id','position_title',false,false,null);
+            mThis.formUntil.show(options);
+        })
+       
     }
 }
 

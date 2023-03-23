@@ -29,7 +29,13 @@ class Employee //extends Person
         $e = getDataRow('employees',['id'=>$id],'person_id');
         return $e?$e->person_id:null;
     }
-     
+
+    //$table_name can be "persons" if we need to update "name,sex,date_of_birth".
+    //$table_name ="employees", if we update "code","photo_file_name",hire_date
+    static function updateProps($id,$inputs=[],$table_name="employees"){
+      return DB::table($table_name)->where('id',$id)->update($inputs);
+    }
+
     function getDetails($id = null,$ss=null){
         $ss = $ss?$ss:$this->getUserInfo();
         $id =$id?$id:$this->getId();
@@ -37,8 +43,9 @@ class Employee //extends Person
         $cols ="e.id,e.code,CONCAT(p.last_name,' ',p.first_name) as name,p.first_name,p.last_name,p.nationality_id,p.sex,p.phone_number,p.email,p.address,DATE_FORMAT(p.date_of_birth,'%d %b %Y') AS date_of_birth, p.cp_name,p.cp_phone_number,e.employment_type,e.photo_file_type,e.photo_file_name,e.created_at,e.create_user";
         $rows = DB::table('persons as p')->join('employees as e','e.person_id','=','p.id')->where('e.id',$id)->where('e.branch_id',$branch_id)->selectRaw($cols)->take(1)->get();
         foreach($rows as $row){
-            $url = PublicStorage::getUrl($branch_id,'person','image').$row->photo_file_name;
-            $row->photo_url = $url;
+            $url = PublicStorage::getUrl($branch_id,'staff','image').$row->photo_file_name;
+            //NOTE: that prop named "photo" has to be the same with the prop name "photo" used to pass input to save() method, so that formUtil will handle correctly for Editing employee, and saving employee profile form
+            $row->photo = $url;
             return $row;
         }
         return null;
@@ -48,6 +55,11 @@ class Employee //extends Person
         $ss = $ss?$ss:$this->getUserInfo();
         $branch_id = $ss->branch_id;
         $id = isset($d['id'])?$d['id']:null;
+        $photo= null;
+        if(isset($d['photo'])){
+            $photo = isset($d['photo'])?$d['photo']:null;
+            unset($d['photo']);
+        }
         $res = (new \App\Models\Person())->save($d,$ss);
         if($res->status ==='OK'){
             $inputs = [
@@ -58,19 +70,25 @@ class Employee //extends Person
                 'currency_code'=>'USD',
                 'employment_type'=>'full time'
             ];
-
+         
            $new_code = $inputs['code']; 
            $emp_created = false; 
            if (!$id) $emp_created = true; 
             $id = saveData($ss,'employees',['id'=>$id],$inputs,[],1);
             if($id>0){
                if($emp_created) $new_code = setOfficialCode($branch_id,'employee_code_control','employees',['id'=>$emp_id],$def_prefix,$def_code_length);
+               if($photo){
+                $file = PublicStorage::saveProfilePicture($branch_id,'staff','png',$photo,100,['store'=>"employees.photo_file_name","id"=>$id]);
+                // if($file->status ==='OK'){
+                //     self::updateProps($id,["photo_file_type"=>$file->extension,"photo_file_name"=>$file->file_name]);
+                // }
+              } 
             }
             return DV::success(['id'=>$id]);
         }
         return DV::error($res->error_message);
     }
-
+ 
     // static function personId($id){
     //     $row = getDataRow('employees',['id'=>$id],"person_id");
     //     if($row) return $row->person_id;

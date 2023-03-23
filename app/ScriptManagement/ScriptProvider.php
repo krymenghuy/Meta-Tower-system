@@ -145,7 +145,7 @@ namespace App\ScriptManagement;
                         '/js/components/ChiefComplaintsComponent.js',
                         '/js/components/GeneralSettingsComponent.js',
                         '/js/components/RoleManagementComponent.js',
-                        '/js/components/ExchangeRateComponent.js',
+                        '/js/components/ExchangeRatesComponent.js',
                         '/js/components/StockTransferComponent.js',
                         '/js/components/UserManagementComponent.js',
                         'assets/js/pusher/pusher.min.js',

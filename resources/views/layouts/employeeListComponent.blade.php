@@ -4,7 +4,7 @@
             <button class="vs-btn-custom-primary" type="button" id="_epl_btnNew">
                 <div class="d-flex align-items-center">
                     <i class="fa-solid fa-plus me-1"></i>
-                    <span class="trans-text text-nowrap" data-langprop="buttons.Add New"></span>
+                    <span class="trans-text text-nowrap" data-langprop="buttons.New Employee"></span>
                 </div>
             </button>
             <div class="input-group flex-nowrap">
@@ -81,11 +81,23 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="row gy-2 py-2">
+                            <div class="col-lg-6">
+                                <label for="employment_type" class="form-label trans-text" data-langprop="employees.Department"></label>
+                                <select id ="_epl_dlgEmployee_department" class="modal-select2 data-input" data-field="department_id" data-ffield="Department" data-required="0">
+                                </select>
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="position_id" class="form-label trans-text" data-langprop="employees.Position"></label>
+                                <select id="_epl_dlgEmployee_position" class="modal-select2 data-input" data-field="position_id" data-required="0" data-ffield="Postion">  
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-lg-3">
                         <div class="d-block">
                             <div class="frame-photo">
-                                <img id="_epl_dlgEmployee_img" src="" class="w-100 h-100 border-0 frame-photo data-input" data-field="photo_url" alt=""/>
+                                <img id="_epl_dlgEmployee_img" class="w-100 h-100 border-0 frame-photo data-input" data-field="photo" alt=""/>
                             </div>
                             <div class="d-flex align-items-center gap-2">
                                 <button id="_epl_dlgEmployee_btnChooseFile" class="btn btn-outline-success trans-text" data-langprop="buttons.Choose">

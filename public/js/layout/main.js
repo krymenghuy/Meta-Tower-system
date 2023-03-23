@@ -197,7 +197,7 @@ let main_view = new function(){
 
         this.mnuExchangeRate.on('click',(e)=>{
             e.preventDefault();
-            ExchangeRateComponent.show(null);
+            ExchangeRatesComponent.show(null);
         });
 
         this.mnuExpenseBook.on('click',(e)=>{

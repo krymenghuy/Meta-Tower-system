@@ -63,7 +63,7 @@ class FormUntil{
          e.preventDefault();
          let that = this;
          let d = this.getData();
-         if(d.has_error) return;   
+         if(d.has_error) return;
          window.vsapi.call(this.api_save,d.data).then(res=>{
                if(res.status_code === 200){
                   if(typeof this.option.onClose === 'function') this.option.onClose(res);
@@ -117,7 +117,13 @@ class FormUntil{
                 field= f;
                 return false;
             }
-            p[f] = el.val();
+            if (el.is('img'))
+            {
+               let image_data = el.attr('src');
+               if(!image_data) image_data = el.prop('src');
+               p[f] = image_data;
+            } 
+            else p[f] = el.val();
         });
         if(this.option.sub_prop) p[this.option.sub_prop]= this.option.sub_prop_function();  
         if(has_error) return {'element':err_element,'field':field,'ff':ff,'data':null,'has_error':has_error};

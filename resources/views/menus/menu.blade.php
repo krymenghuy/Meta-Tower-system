@@ -316,7 +316,16 @@
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Employee List">Employee List</span>
                             </a>
                         </li>
-                        <li class="kt-menu__item" aria-haspopup="true">
+                         <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="javascript:void(0)" id="_main_lnkWorkSchedules" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/position.svg') }}"/>
+                                </span>
+                                &nbsp;
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Work Schedules">Work Schedues</span>
+                            </a>
+                        </li>
+                        <!-- <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkPositions" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{ asset('assets/images/icons/position.svg') }}"/>
@@ -324,7 +333,7 @@
                                 &nbsp;
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Positions">Positions</span>
                             </a>
-                        </li>
+                        </li> -->
                     </ul>
                 </div>
             </li>
@@ -534,7 +543,7 @@
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Chief Complaints">Chief Complaints</span>
                             </a>
                         </li>
-                        <li class="kt-menu__item" aria-haspopup="true">
+                        <!-- <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkDiagnosisAutocomplete" class="menu-item kt-menu__link ">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/autocomplete.svg')}}"/>
@@ -542,8 +551,8 @@
                                 &nbsp;
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Diagnosis Options">Diagnosis</span>
                             </a>
-                        </li>
-                        <li class="kt-menu__item" aria-haspopup="true">
+                        </li> -->
+                        <!-- <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkPEAutocomplete" class="menu-item kt-menu__link ">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/autocomplete_examination.svg')}}"/>
@@ -551,8 +560,8 @@
                                 &nbsp;
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.PE Options">PE Options</span>
                             </a>
-                        </li>
-                        <li class="kt-menu__item" aria-haspopup="true">
+                        </li> -->
+                        <!-- <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkMedicalHistory" class="menu-item kt-menu__link ">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/medical_history.svg')}}"/>
@@ -560,7 +569,7 @@
                                 &nbsp;
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Medical History">Medical History</span>
                             </a>
-                        </li>
+                        </li> -->
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkServiceDepartments" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">

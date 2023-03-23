@@ -5,6 +5,7 @@ namespace App\Models;
 //use Illuminate\Database\Eloquent\Model;
 use DB;
 use App\Models\DV;
+use Intervention\Image\Facades\Image;
 
 class Person //extends Model
 {
@@ -32,7 +33,7 @@ class Person //extends Model
         "address"=>"0|string",
         "cp_name"=>"0|string",
         "cp_phone_number"=>"0|string",
-        "photo_data"=>"0|image",
+        "photo"=>"0|image",
         "photo_file_type"=>"0|string|0-100"
      ];
 
@@ -141,31 +142,21 @@ class Person //extends Model
         $inputs['first_name'] = $o_name->first_name;
         $inputs['last_name'] = $o_name->last_name;
         unset($inputs['name']);
-        $photo_data = $inputs['photo_data'];
-        unset( $inputs['photo_data']);
+        //$photo is instance of Image => Image->resize()->save($path);
+        $photo = isset($inputs['photo'])?$inputs['photo']:null;
+        unset( $inputs['photo']);
         $file_type = $inputs['photo_file_type'];
         $dob = $inputs['date_of_birth'];
         $inputs['date_of_birth'] = convertDate($dob);
 
         $person_id = saveData($ss,'persons',['id'=>$person_id],$inputs,[],1);
         $inputs['id'] = $person_id;
-        if($person_id>0) {
-            if($this->isImage($photo_data)){
-                $f_res = PublicStorage::saveImage($branch_id,'person',$file_type,$photo_data);
-                if($f_res->status ==='OK'){
-                  $field_name = $f_res->file_name;
-                  $inputs['photo_file_name'] = $field_name;
-                  $inputs['photo_file_type'] = $f_res->file_type;
-                }
-            }
+        if($person_id>0){
+            if($photo) PublicStorage::saveProfilePicture($branch_id,'person','png',$photo,null,['store'=>"persons.photo_file_name","id"=>$person_id]); 
             return DV::success(['person'=>$inputs]);
         }
     }
-
-    function isImage($data){
-        return true;
-    }
-
+ 
     //forceSave() will create a new person profile if the given @person_id is not supplied or zero 
     static function forceSave($d,$ss){
         //$ss = $ss?$ss:$this->getUserInfo(); 
@@ -179,7 +170,7 @@ class Person //extends Model
         $o_name = getNameParts($inputs['name']);
         $inputs['first_name'] = $o_name->first_name;
         $inputs['last_name'] = $o_name->last_name;
-        unset($inputs['photo_data']);
+        unset($inputs['photo']);
         $person_id = saveData($ss,'persons',['id'=>$person_id],$inputs,[],1);
         if($person_id>0) return DV::success(['person_id'=>$person_id]);
         return DV::error('Something went wrong saving Person profile');
