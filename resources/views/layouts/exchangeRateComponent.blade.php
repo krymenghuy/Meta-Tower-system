@@ -78,7 +78,7 @@
             <div class="modal-header">
                 <div class="d-flex align-items-center">
                     <h4 class="modal-title" id="_ecr_dlgExchangeRate_detail_title"></h4>
-                    <p class="px-3 fw-semibold border border-success rounded-3 ms-3 pb-0 mb-0 data-input" data-field="currency_pair" id="_ecr_dp_curr_pair"></p>
+                    <p class="px-3 fw-semibold border border-success rounded-3 ms-3 pb-0 mb-0 data-input" id="_ecr_dp_curr_pair"></p>
                 </div>
             </div>
             <div class="modal-body">
