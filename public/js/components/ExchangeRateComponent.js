@@ -140,7 +140,6 @@ let ExchangeRateComponent = new function () {
             let html = null;
             if (res.status_code === 200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
-                console.log(d);
                 html = `<div class="d-flex align-items-center">
                 <div class="input-group flex-nowrap">
                     <div class="input-group-text">
