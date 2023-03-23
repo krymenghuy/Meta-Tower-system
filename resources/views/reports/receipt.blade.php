@@ -1,5 +1,43 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <?php StyleManager::render('report-styles'); ?>
+    <?php ScriptManager::render('report-scripts'); ?>
+    <style>
+          body {
+              font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+          }
+
+          .rpt-body {
+              font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+          }
+
+          @media print{
+            @page{
+              margin: 0;
+              size: A4 portrait;
+            }
+            .print{
+              width:100% !important;
+              box-shadow: none !important;
+            }
+            .print-middle{
+              height: 60% !important;
+            }
+          }
+
+          body {
+            width: 100vw;
+            height: 100vh;
+            zoom: 97%;
+            font-size: 16px;
+            padding: 10px;
+            margin: 10px;
+          }
+      </style>
+  </head>
+<!DOCTYPE html>
+<html>
     <head>
         <?php StyleManager::render('report-styles'); ?>
         <?php ScriptManager::render('report-scripts'); ?>

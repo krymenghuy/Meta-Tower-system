@@ -254,6 +254,10 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
    Route::post('employee/list', [EmployeeController::class, 'getEmployeeList']);
    Route::post('employee/delete', [EmployeeController::class, 'deleteEmployee']);
    Route::post('employee/save', [EmployeeController::class, 'saveEmployee']);
+   Route::post('employee/form-options', [EmployeeController::class, 'getEmployeeFormOptions']);
+   Route::post('employee/options-nationality', [EmployeeController::class, 'getCombItems_nationality']);
+   Route::post('employee/options-department', [EmployeeController::class, 'getCombItems_department']);
+   Route::post('employee/options-position', [EmployeeController::class, 'getCombItems_position']);
 //End::EmployeeController
 
 //begin::InventorySettingsController =>  Inventory Settings.
@@ -383,76 +387,73 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //end::PatientController
  
         //begin::LocationController
-        
-                Route::post('patient-reg-options',[GeneralSettingsController::class, 'getPatientRegisterOptions']);
-                
-                Route::post('options-nationality',function(Request $req){
-                    $rows = App\Models\Location\Country::selectRaw("id,name as nationality,name_kh as nationality_kh")->orderByRaw("name asc")->get();
-                    return JDV::json($rows);
-                })->middleware('vs-auth');
+        Route::post('location/countries', [LocationController::class, 'getCountryList']);
+        Route::post('location/cities', [LocationController::class, 'getCityList']);
+        Route::post('location/districts', [LocationController::class, 'getDistrictList']);
+        Route::post('location/communes', [LocationController::class, 'getCommuneList']);
 
-                Route::post('options-country',function(Request $req){
-                    $rows = App\Models\Location\Country::selectRaw("id,name,name_kh")->orderByRaw("name asc")->get();
-                    return JDV::json($rows);
-                })->middleware('vs-auth');
+        Route::post('location/options-country',function(Request $req){
+            $rows = App\Models\Location\Country::selectRaw("id,name,name_kh")->orderByRaw("name asc")->get();
+            return JDV::json($rows);
+        })->middleware('vs-auth');
 
-                Route::post('options-city',function(Request $req){
-                    $country_id = $req->country_id?$req->country_id:0;
-                    $rows = App\Models\Location\City::where("country_id",$country_id)->selectRaw("country_id,id,name,name_kh")->orderByRaw("name asc")->get();
-                    return JDV::json($rows);
-                })->middleware('vs-auth');
+        Route::post('location/options-city',function(Request $req){
+            $country_id = $req->country_id?$req->country_id:0;
+            $rows = App\Models\Location\City::where("country_id",$country_id)->selectRaw("country_id,id,name,name_kh")->orderByRaw("name asc")->get();
+            return JDV::json($rows);
+        })->middleware('vs-auth');
 
-                Route::post('options-district',function(Request $req){
-                    $city_id = $req->city_id?$req->city_id:0;
-                    $rows = App\Models\Location\District::where("city_id",$city_id)->selectRaw("city_id,id,name,name_kh")->orderByRaw("name asc")->get();
-                    return JDV::json($rows);
-                })->middleware('vs-auth');
+        Route::post('location/options-district',function(Request $req){
+            $city_id = $req->city_id?$req->city_id:0;
+            $rows = App\Models\Location\District::where("city_id",$city_id)->selectRaw("city_id,id,name,name_kh")->orderByRaw("name asc")->get();
+            return JDV::json($rows);
+        })->middleware('vs-auth');
 
-                Route::post('options-commune',function(Request $req){
-                    $district_id = $req->district_id?$req->district_id:0;
-                    $rows = App\Models\Location\Commune::where("district_id",$district_id)->selectRaw("district_id,id,name,name_kh")->orderByRaw("name asc")->get();
-                    return JDV::json($rows);
-                })->middleware('vs-auth');
+        Route::post('location/options-commune',function(Request $req){
+            $district_id = $req->district_id?$req->district_id:0;
+            $rows = App\Models\Location\Commune::where("district_id",$district_id)->selectRaw("district_id,id,name,name_kh")->orderByRaw("name asc")->get();
+            return JDV::json($rows);
+        })->middleware('vs-auth');
 
-                // Route::post('country/save',function(Request $req){
-                //     $res = App\Models\Location\Country::save($req);
-                //     return response()->json($res);
-                // });
+        Route::post('location/country/save',function(Request $req){
+            $res = App\Models\Location\Country::save($req);
+            return response()->json($res);
+        });
 
-                // Route::post('country/delete',function(Request $req){
-                //     $res = App\Models\Location\Country::delete($req);
-                //     return response()->json($res);
-                // });
+        Route::post('location/country/delete',function(Request $req){
+            $res = App\Models\Location\Country::delete($req);
+            return response()->json($res);
+        });
 
-                // Route::post('city/save',function(Request $req){
-                //     $res = App\Models\Location\City::save($req);
-                //     return response()->json($res);
-                // });
+        Route::post('location/city/save',function(Request $req){
+            $res = App\Models\Location\City::save($req);
+            return response()->json($res);
+        });
 
-                // Route::post('city/delete',function(Request $req){
-                //     $res = App\Models\Location\City::delete($req);
-                //     return response()->json($res);
-                // });
+        Route::post('location/city/delete',function(Request $req){
+            $res = App\Models\Location\City::delete($req);
+            return response()->json($res);
+        });
 
-                // Route::post('district/save',function(Request $req){
-                //     $res = App\Models\Location\District::save($req);
-                //     return response()->json($res);
-                // });
+        Route::post('location/district/save',function(Request $req){
+            $res = App\Models\Location\District::save($req);
+            return response()->json($res);
+        });
 
-                // Route::post('district/delete',function(Request $req){
-                //     $res = App\Models\Location\District::delete($req);
-                //     return response()->json($res);
-                // });
+        Route::post('location/district/delete',function(Request $req){
+            $res = App\Models\Location\District::delete($req);
+            return response()->json($res);
+        });
 
-                // Route::post('commune/save',function(Request $req){
-                //     $res = App\Models\Location\Commune::save($req);
-                //     return response()->json($res);
-                // });
+        Route::post('location/commune/save',function(Request $req){
+            $res = App\Models\Location\Commune::save($req);
+            return response()->json($res);
+        });
 
-                // Route::post('commune/delete',function(Request $req){
-                //     $res = App\Models\Location\Commune::delete($req);
-                //     return response()->json($res);
-                // });         
+        Route::post('location/commune/delete',function(Request $req){
+            $res = App\Models\Location\Commune::delete($req);
+            return response()->json($res);
+        });         
      //end::LocationController
 
     //begin:: PromotionController 
@@ -584,7 +585,9 @@ Route::post('test/test-api',function(){
     Route::post('settings/department-info', [GeneralSettingsController::class, 'getDepartmentDetails']);
      
     Route::post('settings/save-position', [GeneralSettingsController::class, 'savePosition']);
+    Route::post('settings/options-department', [GeneralSettingsController::class, 'getComboItems_department']);
     Route::post('settings/options-position', [GeneralSettingsController::class, 'getComboItems_position']);
+    Route::post('settings/options-nationality', [GeneralSettingsController::class, 'getComboItems_nationality']);
     Route::post('settings/create-org', [GeneralSettingsController::class, 'createOrganization']);
     Route::post('settings/delete-org', [GeneralSettingsController::class, 'deleteOrganization']);
     Route::post('settings/create-industry', [GeneralSettingsController::class, 'createIndustry']);
@@ -594,7 +597,7 @@ Route::post('test/test-api',function(){
     Route::post('settings/options-contact-channel', [GeneralSettingsController::class, 'getComboItems_channel']);
     Route::post('settings/options-appt-status', [GeneralSettingsController::class, 'getComboItems_appt_status']);
     Route::post('settings/options-ticket-status', [GeneralSettingsController::class, 'getComboItems_ticket_status']);
-    Route::post('settings/options-department', [GeneralSettingsController::class, 'getComboItems_department']);
+     
     Route::post('settings/options-consultant', [GeneralSettingsController::class, 'getComboItems_consultant']);   
     Route::post('settings/options-chief-complaint', [GeneralSettingsController::class, 'getComboItems_chief_complaint']);
     Route::post('settings/save-chief-complaint', [GeneralSettingsController::class, 'saveChiefComplaint']);

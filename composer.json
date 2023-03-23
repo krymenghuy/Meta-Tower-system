@@ -11,7 +11,7 @@
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "guzzlehttp/psr7": "^1.5",
-        "intervention/image": "dev-master",
+        "intervention/image": "^2.7",
         "laravel-notification-channels/fcm": "~2.0",
         "laravel/framework": "^8.54",
         "laravel/tinker": "^2.5",

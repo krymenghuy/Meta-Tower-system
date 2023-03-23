@@ -111,7 +111,7 @@ class WebReportController extends Controller
         $invoice = new \App\Models\Invoice\MedicalInvoice($invoice_id,$ss);
         $data['invoice'] = $invoice->getDetails();
         $data['title'] = "ESTHEDERM Aesthetic & Dermatology";
-       
+        $data['rtype'] =$p->rtype;
         return view('reports.invoice', $data);
     }
 

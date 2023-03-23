@@ -4,7 +4,7 @@
  use App\Models\UM;
  use Carbon\Carbon;
  use App\Models\DV;
- 
+ use Intervention\Image\Facades\Image;
  //BEGIN:: LocaleManager class
   
  //END:: LocaleManager class
@@ -710,6 +710,162 @@ function readFileContent($fileName=null)
         return $out;
     }
 
+    //compress Image Size
+    //default max_size to 500 KB
+    function resizeImage_base64($base64_string,$maxSize=500000){
+        //For quick process, we can check if the provided $base64_string is a URL or not. IF not, go further to process the base64 into image object
+        if(filter_var($base64_string, FILTER_VALIDATE_URL)) return null;
+        // Set maximum allowed image size (in bytes)
+        $maxSize =$maxSize? $maxSize:1000000; // 1 MB
+        $image = null;
+        try{
+            $image = Image::make($base64_string);
+        }catch(\Exception $e){
+            //return NULL if the base64 is NOT valid image
+            return null;
+        }
+
+        // Get image size (in bytes)
+        $imageSize = $image->filesize();
+
+        // Check if image size exceeds the maximum allowed size
+        if ($imageSize > $maxSize) {
+            // Resize image to a smaller size
+            $image->resize(800, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+        }
+        // Save image to disk
+        //$image->save('path/to/saved-image.jpg');
+        return $image;
+    }
+
+    // //returns compressed image as base64 format in png. By default, compression to 500 KB
+    // function getCompressedImage($base64_str, $size_kb = 500,$default_ext ="png"){
+    //     // // Base64 encoded string of an image
+    //     // $base64_str = "base64-encoded-string-of-image";
+
+    //     // Maximum file size limit in bytes
+    //     $max_file_size = $size_kb * 1024; // 500 KB
+
+    //     // Decode the base64 string to binary data
+    //     $image_data = base64_decode($base64_str);
+
+    //     // Create an image resource from the binary data using GD library
+    //     $image = imagecreatefromstring($image_data);
+    //     if (!$image) return (object)[
+    //         'status'=>'Error',
+    //         'error_message'=>'Image data is not valid',
+    //         'data'=>null
+    //     ]; 
+
+    //     // Get the current image size
+    //     $image_width = imagesx($image);
+    //     $image_height = imagesy($image);
+
+    //     // Set the target width and height based on the current size
+    //     $target_width = $image_width;
+    //     $target_height = $image_height;
+
+    //     // Calculate the maximum size of the compressed image
+    //     $default_ext = $default_ext?$default_ext:"png";
+    //     $max_compressed_size = $max_file_size - strlen("data:image/$default_ext;base64,");
+
+    //     // Loop until the compressed image size is within the limit
+    //     do {
+    //         // Create a blank canvas for the new image
+    //         $new_image = imagecreatetruecolor($target_width, $target_height);
+
+    //         // Copy the image data from the old image to the new image
+    //         imagecopy($new_image, $image, 0, 0, 0, 0, $target_width, $target_height);
+
+    //         // Get the binary data of the compressed image
+    //         ob_start();
+    //         imagepng($new_image, null, 9); // 9 is the highest compression level
+    //         $compressed_image_data = ob_get_clean();
+
+    //         // Destroy the new image resource
+    //         imagedestroy($new_image);
+
+    //         // Get the size of the compressed image data
+    //         $compressed_size = strlen($compressed_image_data);
+
+    //         // Adjust the target size based on the current size and the compressed size
+    //         if ($compressed_size > $max_compressed_size) {
+    //             $target_width = floor($target_width * sqrt($max_compressed_size / $compressed_size));
+    //             $target_height = floor($target_height * sqrt($max_compressed_size / $compressed_size));
+    //         }
+    //     } while ($compressed_size > $max_compressed_size);
+
+    //     // // Save the compressed image as a PNG file
+    //     // file_put_contents("path/to/new-image.png", $compressed_image_data);
+
+    //     // Free up memory by destroying the image resources
+    //     imagedestroy($image);
+    //     return (object)['status'=>'OK','data'=>$compressed_image_data]; 
+    // }
+
+    // //return object {photo_data,extension}. If the given $data is not an image, this method returns object with photo_data equal to NULL
+    // function checkImage($base64_string){
+    //     $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif','heif','heic','svg'];
+
+    //     $parts = explode("/",$base64_string);
+    //     if(!isset($parts[1])) return null;
+   
+    //     $sts = explode(";",$parts[1]);
+    //     $ext = isset($sts[0])?$sts[0]:null;
+  
+    //     if (in_array($ext, $allowed_extensions)){
+    //         $base64_string_without_extension = str_replace('data:image/'.$ext.';base64,', '', $base64_string);
+    //         $d = getCompressedImage($base64_string_without_extension);
+    //         if($d->status ==='Error') 
+    //           return (object)[
+	//             'photo_data'=>null,
+	//             'extension'=>null,
+	//             'error_message'=>'Image data is not valid',
+	//             'status'=>'Error'
+	//             ];
+        
+    //         return (object)[
+    //         	'status'=>'OK',
+    //             'photo_data'=>$d->image_data,
+    //             'extension'=>$ext
+    //         ];
+    //     }else return (object)[
+    //         'photo_data'=>null,
+    //         'extension'=>null,
+    //         'error_message'=>'The file extension is not allowed image format',
+    //         'status'=>'Error'
+    //     ];  
+    // }
+    
+    //get file extension from base64 image only. for documents, the prefix of base64 string contains mime-type instead
+    function getFileExtensionFromBase64($base64_string){
+        $parts = explode("/",$base64_string);
+        if(!isset($parts[1])) return null;
+        $sts = explode(";",$parts[1]);
+        return isset($sts[0])?$sts[0]:null;
+    }
+
+    //Check if base64 is an image. NOTE this method is to check based on extension information of the base64 string, 
+    //so the provided base64 must be something like this "data:image/jpeg;base64,/9j/4AAQSkZJRgABA..."
+    function isImage($base64_string){
+        $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif','heif','heic','svg'];
+        $ext = getFileExtensionFromBase64($base64_string);
+        //$file_extension = strtolower(pathinfo($base64_string, PATHINFO_EXTENSION));
+        return in_array($ext, $allowed_extensions);
+    }
+
+    function isValidImage_base64($base64_string){
+        try {
+            $image = Image::make($base64String);
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
     //return memory size in B, KB, MB
     //getImageSize() | 
      function getBase64ImageSize($base64Image=null){ 
@@ -724,51 +880,7 @@ function readFileContent($fileName=null)
             return -1;
         }
     }
-
-    function getFileExtensionFromBase64($b){
-        return null;
-    }
-
-    function processImage($b){
-         return $b;
-    }
-
-    // function getLangText($lang='en',$text_prop=null,$section='validation'){
-    //    if (!$text_prop) return 'no translated text'; 
-    //    if (!isset($langContents[$lang]) || !$langContents[$lang]) $langContents[$lang] = Localization::loadLangContent($lang);
-    //    $c = $langContents[$lang];
-    //    if (isset($c[$section])) return isset($c[$section][$text_prop])?$c[$section][$text_prop]:$text_prop;
-    //    else return $text_prop;
-    //    //return $text_prop;
-    // }
- 
-    // //loadLangContent() return php array of lanage content from file such as .\locales\km.php
-    // function loadLangContent($lang='en'){
-    //    $file_path = isset($langRoutes[$lang])?$langRoutes[$lang]:getcwd()."/locales/km.php";
-    //    $dat = readFileContent($file_path);
-    //    if ($dat){
-    //       try{
-    //          $arr = eval($dat);
-    //          return $arr;
-    //       }catch(Throwable $e){
-    //         return null; 
-    //       }
-    //    } else return null;
-    // }
-
-    //translate a given $text_prop to current lanaguage and replace some occurences in the text if the array $replacements[] is provided.
-    /***
-     Example: translateText('km','value must be between',[5,50]); 
-     //translateText() will look for khmer text in file ./locales/km.php for text like this "តំលៃត្រូវនៅចន្លោះពី ? ទៅ ?" ​and then translateText() replaces the two question marks by the respective elements in the given array [5,50], so
-     //so the output will be "តំលៃត្រូវនៅចន្លោះពី 5 ទៅ 50"  
-    ***/
-    //  function translateText($lang,$text_prop,$replacements=null){
-    //      $text = getLangText($lang,$text_prop,'validation');
-    //      if(!$replacements) 
-    //         return $text;
-    //      else return replace_marks($text,$replacements);   
-    //  }
- 
+  
      function getInterval($part3=null){
          if (!$part3) return (object)['min'=>-1,'max'=>-1]; /** No interval specificed and No number specified **/
 
@@ -992,14 +1104,16 @@ function readFileContent($fileName=null)
                         if (!in_array($ext, $types)) return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name file type is not allowed")];
                         $size = getBase64ImageSize($val);
                         if ($interval->min===-1 && $interval->max===-1){
-                            $b = processImage($val);
-                            if ($b) return (object)['error'=>null,'default_value'=>$b];
+                            $image = resizeImage_base64($val);
+                            //if ($b) 
+                            return (object)['error'=>null,'default_value'=>$image];
                         }else{
                             if ($size < $interval->min || $size > $interval->max) 
                             return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name file size should be between ? and ?"),[$interval->min, $interval->max]];
                             else{
-                                $b = processImage($val);
-                                if ($b) return (object)['error'=>null,'default_value'=>$b];
+                                $image = resizeImage_base64($val);
+                                //if ($b) 
+                                return (object)['error'=>null,'default_value'=>$image];
                             }
                         }
                 }

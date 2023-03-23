@@ -129,19 +129,6 @@ class GeneralSettingsController extends Controller
       if($id > 0) return JDV::success(['id'=>$id]);
       return JDV::error("Failed to save position"); 
     }
-
-    static function getComboItems_consultant_internal($branch_id,$department_id=0){
-      $str_where ="ep.position_id IN(2,3) and ep.status ='Active'";
-      return DB::table("employees as e")->join('persons as p','p.id','=','e.person_id')->join('employee_positions as ep','ep.emp_id','=','e.id')->where('e.branch_id',$branch_id)->whereRaw($str_where)->selectRaw("e.id,p.name as consultant_name,e.code")->get();
-    }
-
-    static function getComboItems_department(Request $req){
-       $ss = UM::getUserInfoByToken($req,-1);
-       if($ss->status_code !=200) return $ss; //user not authenticated
-       $branch_id = $ss->branch_id;
-       $rows = DB::table("departments as d")->selectRaw("d.id,d.name as department_name")->orderBy('d.id','ASC')->get();
-       return JDV::result($rows);
-    }
  
     static function getComboItems_laboTest(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
@@ -237,6 +224,35 @@ class GeneralSettingsController extends Controller
       return JDV::error("Something wrong in saving department data");    
    }
 
+   function getComboItems_department(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+    return JDV::result(\App\Models\GeneralSettings::employee_department($ss));
+  }
+  function getComboItems_position(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+    return JDV::result(\App\Models\GeneralSettings::employee_position($ss));
+  }
+  function getComboItems_nationality(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+    return JDV::result(\App\Models\GeneralSettings::employee_nationality($ss));
+  }
+
+  static function getComboItems_consultant_internal($branch_id,$department_id=0){
+    $str_where ="ep.position_id IN(2,3) and ep.status ='Active'";
+    return DB::table("employees as e")->join('persons as p','p.id','=','e.person_id')->join('employee_positions as ep','ep.emp_id','=','e.id')->where('e.branch_id',$branch_id)->whereRaw($str_where)->selectRaw("e.id,p.name as consultant_name,e.code")->get();
+  }
+
+  // static function getComboItems_department(Request $req){
+  //    $ss = UM::getUserInfoByToken($req,-1);
+  //    if($ss->status_code !=200) return $ss; //user not authenticated
+  //    $branch_id = $ss->branch_id;
+  //    $rows = DB::table("departments as d")->selectRaw("d.id,d.name as department_name")->orderBy('d.id','ASC')->get();
+  //    return JDV::result($rows);
+  // }
+  
     //api/settings/test-sql
     function testSQL(Request $req){
         //$ss = UM::getUserInfoByToken($req,-1);

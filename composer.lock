@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c00c7dbdff174ed28608048c2cc48850",
+    "content-hash": "f89057bc0d7b6f8906097fa7667df279",
     "packages": [
         {
             "name": "apility/laravel-fcm",
@@ -1375,16 +1375,16 @@
         },
         {
             "name": "intervention/image",
-            "version": "dev-master",
+            "version": "2.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Intervention/image.git",
-                "reference": "54934ae8ea3661fd189437df90fb09ec3b679c74"
+                "reference": "04be355f8d6734c826045d02a1079ad658322dad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Intervention/image/zipball/54934ae8ea3661fd189437df90fb09ec3b679c74",
-                "reference": "54934ae8ea3661fd189437df90fb09ec3b679c74",
+                "url": "https://api.github.com/repos/Intervention/image/zipball/04be355f8d6734c826045d02a1079ad658322dad",
+                "reference": "04be355f8d6734c826045d02a1079ad658322dad",
                 "shasum": ""
             },
             "require": {
@@ -1401,7 +1401,6 @@
                 "ext-imagick": "to use Imagick based image processing.",
                 "intervention/imagecache": "Caching extension for the Intervention Image library"
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -1444,7 +1443,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Intervention/image/issues",
-                "source": "https://github.com/Intervention/image/tree/master"
+                "source": "https://github.com/Intervention/image/tree/2.7.2"
             },
             "funding": [
                 {
@@ -1456,7 +1455,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-07-05T13:51:54+00:00"
+            "time": "2022-05-21T17:30:32+00:00"
         },
         {
             "name": "kreait/clock",
@@ -9799,9 +9798,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "intervention/image": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

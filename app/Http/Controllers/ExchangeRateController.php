@@ -7,49 +7,11 @@ use App\Models\JDV;
 use Config;
 use DB;
  
-class CurrencyController extends Controller
+class ExchangeRateController extends Controller
 {
-    
     //Exhcnage rate update period = {'intra-day','daily','monthly'}
     protected static $update_period ='daily';
-    //protected $UMModel;
-    // function __construct(){
-    //     $this->UMModel = new UM();
-    // }
-    
-    function getCurrencyDetails(){
-        $auth = UM::getUserInfoByToken($req,-1);
-        if($auth->status_code !=200) return JDV::raw($auth);
-        $branch_id = $auth->branch_id;
-        $rows = DB::table('currencies as c')->where('id',$req->id)->select('c.id','c.name','c.symbol','c.symbol_after')->take(1)->get();
-        return JDV::result(isset($rows[0])? $rows[0]:null);
-    }
-
-    //Create/Update currency
-    //$d = {code,name,symbol,symbol_after,decimal_points}
-    function saveCurrency(Request $req){
-        $auth = UM::getUserInfoByToken($req,-1);
-        if($auth->status_code !=200) return JDV::raw($auth);
-        $branch_id = $auth->branch_id;
-        $validate_rule =['id'=>"0|identity=1",'code'=>"1|string|1-5","name"=>"1|string|1-50","symbol"=>"1|string|1-3|text=Currency symbol is required","symbol_after"=>"1|choice|0,1|default=0"];
-        $check_unique =["$branch_id|currencies|code|id|text=Currency code already exists"];
-        $res = validateReq($req,$validate_rule,true,['symbol'=>['$']],$auth->lang,false,$check_unique);
-        if($res->error) return JDV::error($res->error);
-        $inputs = $res->values;
-        $id = $res->id;
-        $id = saveData($auth,'currencies',['id'=>$id],$inputs,[],1);
-        return JDV::success(["id"=>$id]);
-    }
-
-    function deleteCurrency(Request $req){
-        $auth = UM::getUserInfoByToken($req,-1);
-        if($auth->status_code !=200) return JDV::raw($auth);
-        $branch_id = $auth->branch_id;
-        $id = $req->id;
-        DB::table("currencies")->where("id",$id)->delete();
-        return JDV::success();
-    }
-    
+     
     function deleteCurrencyPair(Request $req){
         $auth = UM::getUserInfoByToken($req,-1);
         if($auth->status_code !=200) return JDV::raw($auth);
@@ -127,7 +89,7 @@ class CurrencyController extends Controller
         if($auth->status_code !=200) return JDV::raw($auth);
         $branch_id = $auth->branch_id;
         $id = $req->id;
-        $cols = "r.id,r.x_date,r.x_month,r.currency_pair,r.buy_rate,r.sell_rate,r.create_user,DATE_FORMAT(r.create_date,'%d %b %Y') as create_date";
+        $cols = "r.id,formatDate(r.x_date) as x_date,r.x_month,r.currency_pair,r.buy_rate,r.sell_rate,r.create_user,DATE_FORMAT(r.created_at,'%d %b %Y') as created_at";
         $rows = DB::table('exchange_rates as r')->where('id',$id)->where('branch_id',$branch_id)->selectRaw($cols)->take(1)->get();
         return JDV::result(isset($rows[0])?$rows[0]:null);
     }
@@ -162,7 +124,7 @@ class CurrencyController extends Controller
 
         $str_pair = "1=1";
         if($currency_pair) $str_pair ="r.currency_pair ='$currency_pair'";
-        $rows = DB::table("exchange_rates as r")->whereRaw($str_period)->whereRaw($str_pair)->where('r.branch_id',$branch_id)->selectRaw("r.id,DATE_FORMAT(r.x_date,'%d %b %Y %r') as x_date,r.currency_pair,r.buy_rate,r.sell_rate")->orderByRaw("r.x_date DESC")->get();
+        $rows = DB::table("exchange_rates as r")->whereRaw($str_period)->whereRaw($str_pair)->where('r.branch_id',$branch_id)->selectRaw("r.id,DATE_FORMAT(r.x_date,'%d %b %Y') as x_date,r.currency_pair,r.buy_rate,r.sell_rate")->orderByRaw("r.x_date DESC")->get();
         return JDV::result($rows);
     }
 

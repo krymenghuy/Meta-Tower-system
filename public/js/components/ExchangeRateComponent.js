@@ -326,6 +326,6 @@ let ExchangeRateDetailsDialog = new function () {
     }
 }
 
-$(document).ready(function () {
+window.addEventListener('DOMContentLoaded',(e)=>{
     ExchangeRateComponent.init();
 });

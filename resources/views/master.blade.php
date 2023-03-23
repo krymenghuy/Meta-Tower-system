@@ -258,7 +258,7 @@
    <?php
     ScriptManager::render('primary',0);
     ScriptManager::render('primary-async',0);
-    ScriptManager::render('primary-defer',0);
+    ScriptManager::render('primary-defer',1);
     ScriptManager::render('components',1);
   ?>
 
@@ -520,7 +520,7 @@
                             @include('layouts.locationComponent')
                             @include('layouts.serviceDepartmentsComponent')
                             @include('layouts.chiefComplaintsComponent')
-                            @include('layouts.exchangeRateComponent')
+                            @include('layouts.exchangeRatesComponent')
                             @include('layouts.stockTransferComponent')
                             @include('layouts.um.userManagementComponent')
                             @include('layouts.um.roleManagementComponent')

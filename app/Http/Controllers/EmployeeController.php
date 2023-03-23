@@ -43,6 +43,27 @@ class EmployeeController extends Controller
       return JDV::error($res->error_message);
     }
 
+    function getEmployeeFormOptions(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+      return JDV::result(\App\Models\GeneralSettings::employee_form_options($ss));
+    }
+
+    function getComboItems_department(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+      return JDV::result(\App\Models\GeneralSettings::employee_department($ss));
+    }
+    function getComboItems_position(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+      return JDV::result(\App\Models\GeneralSettings::employee_position($ss));
+    }
+    function getComboItems_nationality(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+      return JDV::result(\App\Models\GeneralSettings::employee_nationality($ss));
+    }
     // function saveEmployee1(Request $req) { 
     //     $ss = UM::getUserInfoByToken($req,-1);
     //     if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
