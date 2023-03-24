@@ -28,7 +28,7 @@
                             <div class="d-flex align-items-start pt-3 w-100">
                                 <p class="fw-bold trans-text" data-langprop="dashboard.Number of Appointments"></p>
                             </div>
-                            <div class="d-flex align-items-center justify-content-end w-100 py-2">
+                            <div class="d-flex align-items-center justify-content-end w-100 py-2 overflow-x-auto">
                                 <canvas id="_dash_sm_lineChart"></canvas>
                             </div>
                         </div>
@@ -48,7 +48,7 @@
                             <div class="d-flex align-items-start pt-3 w-100">
                                 <p class="fw-bold trans-text" data-langprop="dashboard.Total Revenues"></p>
                             </div>
-                            <div class="d-flex align-items-center justify-content-end w-100 py-2">
+                            <div class="d-flex align-items-center justify-content-end w-100 py-2 overflow-x-auto">
                                 <canvas id="_dash_sm_barChart"></canvas>
                             </div>
                         </div>
@@ -72,7 +72,7 @@
                             <div class="d-flex align-items-start pt-3 w-100">
                                 <p class="fw-bold trans-text" data-langprop="dashboard.Total Number of Patients"></p>
                             </div>
-                            <div class="d-flex align-items-center justify-content-end w-100 py-2">
+                            <div class="d-flex align-items-center justify-content-end w-100 py-2 overflow-x-auto">
                                 <canvas id="_dash_sm_doughnutChart"></canvas>
                             </div>
                         </div>
@@ -92,7 +92,7 @@
                             <div class="d-flex align-items-start pt-3 w-100">
                                 <p class="fw-bold trans-text" data-langprop="dashboard.Number of Consultants/Doctors"></p>
                             </div>
-                            <div class="d-flex align-items-center justify-content-end w-100 py-2">
+                            <div class="d-flex align-items-center justify-content-end w-100 py-2 overflow-x-auto">
                                 <canvas id="_dash_sm_polyAreaChart"></canvas>
                             </div>
                         </div>
