@@ -294,25 +294,25 @@ const LaboTestList = new function(){
         let cnt=0;
         let html_tests = null;;
         items.map(i=>{
-                let c = ExchangeManager.currencies[i.currency_code];
-                let cur_symbol = c ? c.symbol:'$';
-                let price = [cur_symbol,i.price].join('');
-                html_tests =[html_tests,`<div data-id="${i.id}" data-testid="${i.test_id}" class="pn-test-item card-height">
-                    <div class="border border-1 rounded-2 position-relative">
-                        <div class="border border-1 p-2">
-                            <h5 class="card-title text-uppercase fw-semibold align-middle">${i.name}</h5>
-                        </div>
-                        <div class="py-3">
-                            <span class="d-block text-center fw-bold">${price}</span>
-                        </div>
-                        <div class="position-relative">
-                            <a data-id="${i.id}" data-testid="${i.test_id}" data-laboid="${i.labo_id}" class="btn-remove-parnter-test" href="javascript:void(0)">
-                                <i class="fa fa-times vs-text-danger"></i>
-                            </a>
-                        </div>
+            let c = ExchangeManager.currencies[i.currency_code];
+            let cur_symbol = c ? c.symbol:'$';
+            let price = [cur_symbol,i.price].join('');
+            html_tests =[html_tests,`<div data-id="${i.id}" data-testid="${i.test_id}" class="pn-test-item card-height">
+                <div class="border border-1 rounded-2 position-relative">
+                    <div class="border border-1 p-2">
+                        <h5 class="card-title text-uppercase fw-semibold align-middle">${i.name}</h5>
                     </div>
-                </div>`].join('');
-                cnt++;
+                    <div class="py-3">
+                        <span class="d-block text-center fw-bold">${price}</span>
+                    </div>
+                    <div class="position-relative">
+                        <a data-id="${i.id}" data-testid="${i.test_id}" data-laboid="${i.labo_id}" class="btn-remove-parnter-test" href="javascript:void(0)">
+                            <i class="fa fa-times vs-text-danger"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>`].join('');
+            cnt++;
         });
 
         html_tests = [html_tests,`<button data-id="${labo_id}" class="pn-add-test border border-primary btn btn-primary p-2">
