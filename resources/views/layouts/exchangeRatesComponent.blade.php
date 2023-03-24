@@ -12,7 +12,7 @@
             <div class="col-3">
                 <div class="input-group flex-nowrap">
                     <select class="modal-select2 height" id="_ecr_list_pair">
-                        <option value="USDKHR">USD-KHR</option>
+                        <option value="USDKHR">USDKHR</option>
                     </select>
                     <div class="input-group-text d-none" id="_ecr_currency">
                         <i class="fa-solid fa-plus"></i>
@@ -20,8 +20,8 @@
                 </div>
             </div>
         </div>
-        <div class="table-responsive mt-3 border-1 border-success">
-            <table class="table header-uppercase" id="tbl_ecr_exchangeRate">
+        <div class="table-responsive mt-3 border-1 border-success p-3 border border-success rounded-3">
+            <table class="table table-hover header-uppercase" id="tbl_ecr_exchangeRate">
             </table>
         </div>
     </div>

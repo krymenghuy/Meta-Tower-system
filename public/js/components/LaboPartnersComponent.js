@@ -93,7 +93,9 @@ let LaboPartnersComponent = new function () {
                     vsapi.call(`${main_view.base_url}/api/partner/delete`, p).then(res => {
                         if (res.status_code === 200) {
                             mThis.displaylaboPartners();
-                        } else cv_interact.error(res.error_message);
+                        }
+                        else
+                            cv_interact.error(res.error_message);
                     });
                 }
             });
@@ -101,9 +103,6 @@ let LaboPartnersComponent = new function () {
     }
 
     this.displaylaboPartners = (onFinish = null) => {
-        //Initialize language for DataTable columns headers
-        //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-        //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
         let p = { 'search_value': mThis.elSearchPartner.val() };
         window.vsapi.call(`${mThis.base_url}/api/partner/list`, p, 'POST', null).then((result) => {
@@ -111,7 +110,6 @@ let LaboPartnersComponent = new function () {
             if (result.status_code === 200) data = result.data;
             if (mThis.table) {
                 mThis.tblPartners.DataTable().clear().destroy();
-                //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
                 mThis.tblPartners.empty();
                 mThis.table = null;
             }
@@ -167,10 +165,6 @@ let LaboPartnersComponent = new function () {
                     }
                 }
             ];
-            //END Define colum
-
-            //translate column names
-            //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
 
             if (!mThis.table)
                 mThis.table = mThis.tblPartners.DataTable({
@@ -212,7 +206,6 @@ let LaboPartnersComponent = new function () {
     }
 }
 
-//begin::LaboPartnersDialog
 let LaboPartnersDialog = new function () {
     let mThis = this;
     this.self = $(`#_lbp_dlgPartners`);
@@ -228,7 +221,6 @@ let LaboPartnersDialog = new function () {
         "modifyTitle": "Modify Parnter",
         "createTitle": "New Partner",
         "identityProps": ['id'],
-        //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['id'],
         "sanitize_excepts": ["cp_email", "email"],
         'use_alert_error': true,
@@ -239,9 +231,7 @@ let LaboPartnersDialog = new function () {
         mThis.formUntil.show(options);
     }
 }
-//end::LaboPartnersDialog
 
-//begin::LaboTestList component
 const LaboTestList = new function(){
    let mThis = this;
    LaboPartnersComponent.tblPartners.on('click','.pn-add-test',function(e){
@@ -277,8 +267,7 @@ const LaboTestList = new function(){
         }
     });
   });
- 
- //options.labo_id
+
    this.show = (container,options)=>{
       let labo_id = options.labo_id;
       let div_test_list_id = `pn_test_list_${labo_id}`;
@@ -291,11 +280,11 @@ const LaboTestList = new function(){
                 mThis.displayTestList(labo_id,container,items);
                 LaboPartnersComponent.tblPartners.find('.card-height:first-child').each(function(){
                     $(this).siblings('button').css({
-                        height: $(this).height()
-                    }).addClass('rounded-circle').children().addClass('fs-2');
+                        height: $(this).height()/3,
+                        width: $(this).height()/3
+                    }).addClass('rounded-circle').children().addClass('fs-5');
                 });
           }else{
-            //in case of api error
             div_test_list.html(`<span class="text-center text-warning">${res.error_message}</span>`);
           }
        });
@@ -326,18 +315,18 @@ const LaboTestList = new function(){
                 cnt++;
         });
 
-        html_tests = [html_tests,`<button data-id="${labo_id}" class="pn-add-test border border-primary btn btn-outline-primary p-2 pn-test-item">
+        html_tests = [html_tests,`<button data-id="${labo_id}" class="pn-add-test border border-primary btn btn-primary p-2">
             <i class="fa fa-solid fa-plus pe-0"></i>
         </button>`].join('');
         //begin:: display test rows
         let div_test_list_id = `pn_test_list_${labo_id}`;
         let div_test_list = container.find(`#${div_test_list_id}`);
  
-        let empty_html =`<button data-id="${labo_id}" class="pn-add-test border border-primary btn btn-outline-primary p-2 pn-test-item height-button">
+        let empty_html =`<button data-id="${labo_id}" class="pn-add-test border border-primary btn btn-primary p-2 height-button">
             <i class="fa fa-solid fa-plus pe-0"></i>
         </button>`;
 
-        if (cnt ===0) html_tests = empty_html;
+        if (cnt === 0) html_tests = empty_html;
 
         if (div_test_list.length >0){
             div_test_list.html(html_tests);
@@ -345,7 +334,7 @@ const LaboTestList = new function(){
         }
 
         html_tests = [`<div id="${div_test_list_id}" class="labo-test-list-container">`,html_tests,`</div>`].join('');
-        if (cnt>0) 
+        if (cnt > 0) 
             container.html(html_tests);
         else {
             container.html(empty_html);
@@ -361,37 +350,38 @@ const SelectTestDialog = new function(){
    this.elPrice = $('#_lbp_test_price');
    this.btnOK = $('#_lbp_dlgTestSelector_btnOK');
    
-   this.btnOK.on('click',(e)=>{
-      let p = {
-        'labo_id':mThis.labo_id,
-        'test_id':mThis.elTest.val(),
-        'price':mThis.elPrice.val()
-      }
-      vsapi.call(`${main_view.base_url}/api/partner-labo/add-test`,p,null,false).then(res =>{
-         if(res.status_code===200){
-            let items =StringSanitizer.sanitizeObject(res.data);
-            if(typeof mThis.onClose ==='function') mThis.onClose(items);
-            mThis.self.modal('hide');
-         }else cv_interact.error(res.error_message);
-      });     
-   });
-   
-   this.loadTests =(onFinish)=>{
+    this.btnOK.on('click',(e)=>{
+        e.preventDefault();
+        let p = {
+            'labo_id':mThis.labo_id,
+            'test_id':mThis.elTest.val(),
+            'price':mThis.elPrice.val()
+        }
+        vsapi.call(`${main_view.base_url}/api/partner-labo/add-test`,p,null,false).then(res =>{
+            if(res.status_code===200){
+                let items =StringSanitizer.sanitizeObject(res.data);
+                if(typeof mThis.onClose ==='function') mThis.onClose(items);
+                mThis.self.modal('hide');
+            }else cv_interact.error(res.error_message);
+        });     
+    });
+
+    this.loadTests =(onFinish)=>{
         vsapi.call(`${main_view.base_url}/api/settings/options-labo-test`,null,null,false).then(res=>{
             onFinish(res.data);
         });
-   }
+    }
 
    this.show =(options)=>{
-      mThis.labo_id = options.labo_id;
-      mThis.onClose = options.onClose;
-      mThis.loadTests((tests)=>{
-        VSUtil.setComboItems(mThis.elTest,tests,'id','test_name',false,false,null);
-        mThis.self.modal({
-            backdrop:'static'
-          });
-      });
-   }
+        mThis.labo_id = options.labo_id;
+        mThis.onClose = options.onClose;
+        mThis.loadTests((tests)=>{
+            VSUtil.setComboItems(mThis.elTest,tests,'id','test_name',false,false,null);
+            mThis.self.modal({
+                backdrop:'static'
+            });
+        });
+    }
 }
 
 window.addEventListener('DOMContentLoaded',function (e) {
