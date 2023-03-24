@@ -45,7 +45,6 @@ let ReportCenterComponent = new function () {
 
     this.renderFilterFields = (filterHeight = 350) => {
         let cnt = 0;
-        //mThis.div_filter_fields.hide();
         mThis.filter_fields.map(f => {
             if (!f.id) f.id = [mThis.div_filter_fields.attr('id'), '-', (cnt + 1)].join('');
             let width_class = 'col-lg-12';
@@ -76,9 +75,7 @@ let ReportCenterComponent = new function () {
             let el = mThis.div_filter_fields.find(`#${f.id}`);
 
             if (f.type === 'date') {
-                //el.datePicker({'format':'dd M Y'});
                 el.attr('autocomplete', 'off"');
-                //el.attr('autocomplete','chrome-off"');
 
             } else if (f.type === 'select') {
                 mThis.initSelect2(el, null, null);
@@ -166,25 +163,15 @@ let ReportCenterComponent = new function () {
 
     //Set Report name (text) ins the sate of Hover or Normal. while function 'selectReportItem()' will set report item in the Selected state.
     this.setReportItemState = (div_row, state_name = 'hover') => {
-        //if (div_row.hasClass('report-selected')) return;
         let hover_color = 'orange';
         let normal_color = 'grey';
 
         let selected = div_row.hasClass('report-selected');
         if (state_name === 'hover') {
-            // mThis.div_report_list.find('.div-row').each(function(){
-            //     if(!$(this).hasClass('report-selected')){
-            //        $(this).find('i').removeClass('fa-check').addClass('fa-list-alt').css('color',normal_color);
-            //     }
-            //  });
-
             div_row.find('span').css('color', hover_color);
-            //if (!selected) div_row.find('i').removeClass('fa-list-alt').addClass('fa-check').css('color',hover_color);
-            //console.log('hover = > selected =' + selected);
         } else {
             div_row.find('span').css('color', normal_color);
             if (!selected) div_row.find('i').removeClass('fa-check').addClass('fa-list-alt').css('color', normal_color);
-            //console.log('normal = > selected =' + selected);
         }
     }
 
