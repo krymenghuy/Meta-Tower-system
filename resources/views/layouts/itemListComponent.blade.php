@@ -1,19 +1,19 @@
 <style>
-    table#_itemlist_tblItems>thead th {
+    table#_itemlist_tblItems > thead th {
         color: #66BAF2;
         border-bottom: 1.5px inset #92D7EC;
         text-transform: uppercase;
         font-size: 0.8em;
     }
 
-    table#_itemlist_tblItems>tbody td span {
+    table#_itemlist_tblItems > tbody td span {
         font-size: 0.9em;
-        font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+        font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
     }
 
-    table#_itemlist_tblItems>tbody td {
+    table#_itemlist_tblItems > tbody td {
         font-size: 0.9em;
-        font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+        font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
     }
 
     .pg-no_customer_phone {
@@ -124,7 +124,6 @@
         content: '$';
     }
 
-    /** style for input box class on the expanded detail EDIT view**/
     .vc-value-edit {
         border: 1px solid #F4F9F9;
         border-radius: 3px;
@@ -169,49 +168,51 @@
         padding: 3px;
         font-size: 0.9em;
     }
-
 </style>
 
 <div id="_main_itemListComponent" class="mobile-padding" style="display:none;padding:15px;margin-left:2px">
     <div style="display:flex;flex-direction:row">
-
-        <div class="form-inline" style="width:60%;">
+        <div class="form-inline" style="width:60%">
             <div class="btn-group">
-                <button type="button" class="btn btn-primary" id="_itemlist_btnNew"><i class="fa fa-plus"></i> New
-                    Item</button>
+                <button type="button" class="btn btn-primary" id="_itemlist_btnNew">
+                    <i class="fa fa-plus"></i>
+                    New Item
+                </button>
             </div>
-            <div style="width:25px;"></div>
-            <input type="text" id="_itemlist_search" class="form-control" placeholder="Search package"> &nbsp;<button
-                type="button" id="_itemlist_btnSearch" class="btn btn-outline-primary"><i
-                    class="fas fa-sync-alt"></i></button> &nbsp;&nbsp;
-            <button id="_itemlist_btnToggleFilter" role="button" class="btn btn-outline-success"><i
-                    class="fas fa-list-alt"></i></button>
-
+            <div style="width:25px"></div>
+            <input type="text" id="_itemlist_search" class="form-control" placeholder="Search package">
+            &nbsp;
+            <button type="button" id="_itemlist_btnSearch" class="btn btn-outline-primary">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            &nbsp;
+            &nbsp;
+            <button id="_itemlist_btnToggleFilter" role="button" class="btn btn-outline-success">
+                <i class="fas fa-list-alt"></i>
+            </button>
         </div>
         <div style="width:40%;margin-right:15px">
             <div style="float:right">
                 <div class="btn-group">
-                    <button type="button" id="_itemlist_btnPrint" class="btn btn-success"><i class="fas fa-print"></i>
-                        Print</button>&nbsp;
-                    <button type="button" id="_itemlist_btnPDF" class="btn btn-primary"><i class="fas fa-file-pdf"></i>
-                        PDF</button>&nbsp;
-                    <!-- <button type="button" id="_itemlist_btnExcel" class="btn btn-default"><i class="fas fa-file-excel"></i> Excel</button>   -->
+                    <button type="button" id="_itemlist_btnPrint" class="btn btn-success">
+                        <i class="fas fa-print"></i>
+                        Print
+                    </button>
+                    &nbsp;
+                    <button type="button" id="_itemlist_btnPDF" class="btn btn-primary">
+                        <i class="fas fa-file-pdf"></i>
+                        PDF
+                    </button>
+                    &nbsp;
                 </div>
             </div>
         </div>
-
     </div>
-    <div
-        style="width:100%;padding:10px 5px 10px 10px;margin-top:5px;border:1px solid #EAEDED;border-radius:5px;min-height:43vw">
+    <div style="width:100%;padding:10px 5px 10px 10px;margin-top:5px;border:1px solid #EAEDED;border-radius:5px;min-height:43vw">
         <table id="_itemlist_tblItems" class="table"></table>
     </div>
-    <!--end::Portlet-->
 </div>
-<!--end::packageListComponent -->
 
-
-
-<!--begin::FilterDialog_package -->
 <div class="modal fade" id="_itemlist_dlgFilter" tabindex="-1" role="dialog" aria-labelledby="_itemlist_dlgFilterTitle"
     aria-hidden="true">
     <div class="modal-dialog" role="dialog">
@@ -225,35 +226,37 @@
             <div class="modal-body">
                 <div class="form-group">
                     <span class="simple-label">Warehouse</span>
-                    <select id="_itemlist_filter_warehouse" class="form-control dl_filter_field"></select>&nbsp;
+                    <select id="_itemlist_filter_warehouse" class="form-control dl_filter_field"></select>
+                    &nbsp;
                 </div>
                 <div class="row">
                     <div class="col-lg-3">
                         <span class="simple-label">From date</span>
-                        <div> <input id="_itemlist_filter_startdate" class="form-control dl_filter_field"
-                                data-select="datepicker" autocomplete="off"></div>
+                        <div>
+                            <input id="_itemlist_filter_startdate" class="form-control dl_filter_field" data-select="datepicker" autocomplete="off">
+                        </div>
                     </div>
                     <div class="col-lg-3">
                         <span class="simple-label">To date</span>
-                        <div><input id="_itemlist_filter_enddate" class="form-control dl_filter_field"
-                                data-select="datepicker" autocomplete="off"></div>
+                        <div>
+                            <input id="_itemlist_filter_enddate" class="form-control dl_filter_field" data-select="datepicker" autocomplete="off">
+                        </div>
                     </div>
                     <div class="col-lg-6">
                         <span class="simple-label">Merchant</span>
                         <select id="_itemlist_filter_sender" class="modal-select2 dl_filter_field"></select>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-lg-6">
                         <span class="simple-label">Driver</span>
-                        <select id="_itemlist_filter_driver" class="modal-select2 dl_filter_field"></select> </div>
+                        <select id="_itemlist_filter_driver" class="modal-select2 dl_filter_field"></select>
+                    </div>
                     <div class="col-lg-6">
                         <span class="simple-label">Destination</span>
                         <select id="_itemlist_filter_zone" class="modal-select2 dl_filter_field"></select>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-lg-6">
                         <span class="simple-label">Type</span>
@@ -265,20 +268,22 @@
                     </div>
                     <div class="col-lg-6">
                         <span class="simple-label">Status</span>
-                        <select id="_itemlist_filter_status"
-                            class="v-select form-control dl_filter_field"></select>&nbsp;
+                        <select id="_itemlist_filter_status" class="v-select form-control dl_filter_field"></select>
+                        &nbsp;
                     </div>
                 </div>
             </div>
-            <!--end::dlgFilter modal-body -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times"
-                        style="color:red"></i>Cancel</button>
-                <button type="button" class="btn btn-primary" id="_itemlist_dlgFilter_btnOK"><i class="fa fa-list-alt"
-                        style="color:#fff"></i>OK</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fa fa-times" style="color:red"></i>
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-primary" id="_itemlist_dlgFilter_btnOK">
+                    <i class="fa fa-list-alt" style="color:#fff"></i>
+                    OK
+                </button>
             </div>
         </div>
     </div>
 </div>
-<!--end::FilterDialog_package -->
 <script src="{{ asset('js/itemListComponent.js') }}"></script>

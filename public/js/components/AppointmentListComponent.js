@@ -447,10 +447,8 @@ let AppointmentListComponent = new function () {
                     data: function (data, a, b) {
                         let status_class = null;
                         return [`<div class="form-inline">`,
-                            //`<a href="javascript:void(0)" class="btn_appt_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" class="btn_appt_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
                             `<a href="javascript:void(0);" data-id="${data.id}" class="btn_appt_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
-                            //`&nbsp;<a href="#" data-id="${data.id}" class="btn_appt_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
                             `</div>`
                         ].join('');
                     }

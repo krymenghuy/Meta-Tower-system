@@ -216,7 +216,6 @@ let ExpenseBookDialog = new function () {
         "modifyTitle": "Modify Expense Book",
         "createTitle": "New Expense Book",
         "identityProps": ['id'],
-        //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['id'],
         "sanitize_excepts": ["cp_email", "email"],
         'use_alert_error': true,

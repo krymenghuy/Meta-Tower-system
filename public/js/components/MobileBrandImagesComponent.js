@@ -22,11 +22,10 @@ let MobileBrandImagesComponent = new function () {
 
     this.btnFileChoose.off('change').on('change', function () {
       var files = mThis.btnFileChoose.prop('files');
-      //Note:  reader.readAsDataURL() triggers the reader.onLoad event above
       var file = files[0];
       if (file) {
         if (file.type.match(/^image\/.*/)) {
-          reader.readAsDataURL(file); /*return a data that can be set directly to Image.src property */
+          reader.readAsDataURL(file);
         } else {
           cv_interact.warning('The chosen image file is invalid!');
         }
@@ -36,22 +35,12 @@ let MobileBrandImagesComponent = new function () {
     var reader = new FileReader();
     reader.onload = function (e) {
       e.preventDefault();
-      // console.log(e.total); // file size 
-      //Sanitize photo data or photo stream
-      //var photoData = StringSanitizer.sanitizeOut(e.target.result, 'image');
-      var photoData = e.target.result; //No need to sanitize photo stream because Server will sanitize it anyway
-
-      /* Strip off the image type from the base64 String because when we create image file on Server Photos directory, we need only pure byte stream that represents the image */
-      var base64result = photoData.split(',')[1]; /* strip the type off the base64String" 'data:image/jpeg;base64,'" */
-      /*Get file extention or fileType from the base64 String */
+      var photoData = e.target.result;
+      var base64result = photoData.split(',')[1];
       var fileType = photoData.split('/')[1].split(';')[0];
-      if (fileType == 'jpeg') fileType = 'jpg'; /* make file extension to 3 characters only */
-      /* Display the selected photo image */
-      //mThis.imgLogo.prop('src', photoData); // putting file in dom without server upload.
-
-      //begin:: upload brand image
+      if (fileType == 'jpeg') fileType = 'jpg';
       var p = {};
-      p.photo_data = base64result; /* NOTE: base64result contains only base64String ready to converted into image. There is no type information in this string */
+      p.photo_data = base64result;
       p.file_type = fileType;
       p.user_class = (mThis.elFilter_app.val() + '').toLowerCase();
       vsapi.call([mThis.base_url, '/api/saveBrandImage'].join(''), p).then(res => {
@@ -60,10 +49,9 @@ let MobileBrandImagesComponent = new function () {
         }
         else cv_interact.error(res.error_message);
       });
-      //end::upload brand image
       mThis.btnFileChoose.val(null);
     }
-  } //end:: init()
+  }
 
   mThis.img_container.on('click', '.mobile_brand_image-delete', function (e) {
     e.preventDefault();
@@ -92,8 +80,6 @@ let MobileBrandImagesComponent = new function () {
         let imgs = res.data;
         let i = 0, c;
         mThis.img_container.empty();
-        //sanitize all Json props except "image_url"
-        //imgs = StringSanitizer.sanitizeObject(imgs,null,['image_url']); 
         do {
           c = imgs[i];
           if (!c) break;

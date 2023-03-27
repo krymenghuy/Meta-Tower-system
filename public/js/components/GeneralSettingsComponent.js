@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 var generalSettingsComponent = new function () {
     let mThis = this;
     this.elScreenTitle = $('#screen_title');

@@ -21,8 +21,7 @@
             </div>
         </div>
         <div class="table-responsive mt-3 border-1 border-success p-3 border border-success rounded-3">
-            <table class="table table-hover header-uppercase" id="tbl_ecr_exchangeRate">
-            </table>
+            <table class="table table-hover header-uppercase" id="tbl_ecr_exchangeRate"></table>
         </div>
     </div>
 </div>
@@ -72,7 +71,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary btn-default height" type="button" data-dismiss="modal">
-                <span class="trans-text" data-langprop="buttons.Cancel">Cancel</span>
+                    <span class="trans-text" data-langprop="buttons.Cancel">Cancel</span>
                 </button>
                 <button class="btn btn-primary height" type="button" id="_ecr_dlgExchangeRate_btnSave">
                     <span class="trans-text" data-langprop="buttons.Save">Save</span>

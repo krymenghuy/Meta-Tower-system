@@ -1,5 +1,5 @@
- <style>
-    table#_apl_tblAppts>thead th {
+<style>
+    table#_apl_tblAppts > thead th {
         height: 38px;
         padding-bottom: 3px;
         font-weight: normal;
@@ -127,7 +127,7 @@
     #_main_appointmentListComponent .btn-outline-warning {
         border-radius: 15px;
     }
- </style>
+</style>
 
 <div id="_main_appointmentListComponent" class="mobile-padding" style="display:none;padding-top:15px">
     <section class="content">

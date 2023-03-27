@@ -1,9 +1,4 @@
-/** 
-    - This file required html codes as bootstrap dialogs for inputBox1, InputBox2
-    - This script files must run after the html codes or its corresponding DOM objects have been rendered by browser  
-**/
 'use strict';
-//begin::InputBox1 (User type in one value)
 let InputBox1 = new function(){
   let mThis = this;
   this.self = $('#_dlgInputBox1');
@@ -35,13 +30,10 @@ let InputBox1 = new function(){
   });
 
   this.close = ()=>{
-     mThis.self.modal('hide'); 
+    mThis.self.modal('hide'); 
   }
 
-  //option = {title,def_value,dataLabel,btnOKText,btnCancelText,allowBlankValue =false,blankErrorMessage,'previousDialog','manualClosing':false}
   this.show = function(option,onClose){
-      //mThis.option = option;
-      //option.manualClosing = false (by default) 
       mThis.elError.html(null);
       if(option){
           mThis.title = option.title;
@@ -66,7 +58,6 @@ let InputBox1 = new function(){
            mThis.data = option.data;
            
            if (option.btnOKText) mThis.btnOK.text(option.btnOKText);
-           //if (option.btnCancelText) mThis.btnCancel.text(option.btnCancelText);
       }
        mThis.onClose = onClose;
        
@@ -89,9 +80,7 @@ let InputBox1 = new function(){
 
   }
 }
-//end::InputBox1(User type in one value)
 
-//begin::InputBox2 (Select one value)
 let InputBox2 = new function(){
   let mThis = this;
   this.self = $('#_dlgInputBox2');
@@ -124,9 +113,7 @@ let InputBox2 = new function(){
      mThis.self.modal('hide');
   });
 
-  //option = {title,def_value,dataLabel,btnOKText,btnCancelText,allowBlankValue =false,'blankErrorMessage','previousDialog'}
   this.show = function(option,onClose){
-      //mThis.option = option;
        mThis.elError.html(null);
       if(option){
           mThis.title = option.title;
@@ -134,8 +121,7 @@ let InputBox2 = new function(){
             mThis.def_value = option.defaultValue;
           else 
             mThis.def_value = option.def_value;
-
-         //Store previous dialog, if any   
+ 
          mThis.previousDialog = option.previousDialog;   
          if(option.label)   
            mThis.label = option.label; 
@@ -150,15 +136,11 @@ let InputBox2 = new function(){
            mThis.data = option.data;
            
            if (option.btnOKText) mThis.btnOK.text(option.btnOKText);
-           //if (option.btnCancelText) mThis.btnCancel.text(option.btnCancelText);
       }
        mThis.onClose = onClose;
        
       mThis.lblTitle.html(option.title);
       mThis.lblLabel.html(mThis.label);
-      //mThis.elData.val(mThis.def_value);
-
-      //If there SELECT box 's options are provided through option.data
       if(mThis.data) {
           let i =0, c;
           let value="id", text ="name";
@@ -171,7 +153,6 @@ let InputBox2 = new function(){
                mThis.elData.append($('<option/>').val(c[value]).text(c[text]));
              i++;
          }while(c);
-        
       }
       
       if(mThis.previousDialog) mThis.previousDialog.modal('hide');
@@ -188,7 +169,5 @@ let InputBox2 = new function(){
       mThis.self.on('hide.bs.modal',function(){   
          if(mThis.previousDialog) mThis.previousDialog.modal('show');
       });
-
   }
 }
-//end::InputBox2(Select one Value)

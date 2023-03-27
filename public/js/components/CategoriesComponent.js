@@ -77,9 +77,7 @@ let CategoriesComponent = new function () {
             'dontExpandByClickingOn': ['btn-cat-modify', 'btn-cat-delete', 'btn-cat-action'],
             'onOpen': (container, detail_tr, parent_tr) => {
                 let q_tr = $(parent_tr);
-                //It is IMPORTANT to access patient_id using jquery object here because the "createdRow" event passes data-id atttribue using jquery method
                 let group_id = q_tr.data('id');
-                //Show Expandable Details of each rate
                 mThis.displayCategoryDetails($(detail_tr), group_id);
             }
         });
@@ -103,9 +101,6 @@ let CategoriesComponent = new function () {
     }
 
     this.displayCategories = (onFinish = null) => {
-        //Initialize language for DataTable columns headers
-        //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-        //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
         let p = { 'search_value': mThis.elSearchItem.val() };
         window.vsapi.call(`${mThis.base_url}/api/category/list`, p, 'POST', null).then((result) => {
@@ -113,14 +108,12 @@ let CategoriesComponent = new function () {
             if (result.status_code === 200) data = result.data;
             if (mThis.table) {
                 mThis.tblItems.DataTable().clear().destroy();
-                //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
                 mThis.tblItems.empty();
                 mThis.table = null;
             }
 
             data = StringSanitizer.sanitizeObject(data, null);
             let cnt = 1;
-            //begin::Set up columns
             let my_columns = [
                 {
                     title: mThis.trans_title("No."),
@@ -153,10 +146,6 @@ let CategoriesComponent = new function () {
                     }
                 }
             ];
-            //END Define colum
-
-            //translate column names
-            //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
 
             if (!mThis.table)
                 mThis.table = mThis.tblItems.DataTable({
@@ -164,11 +153,7 @@ let CategoriesComponent = new function () {
                     destroy: true,
                     paging: true,
                     ordering: false,
-                    //dom: 'Bfrtip',
                     retrieve: true,
-                    //scrollY:390,
-                    //scrollX:500,
-                    //pagingType:'numbers',
                     info: true,
                     pageLength: 10,
                     bLengthChange: false,
@@ -209,22 +194,16 @@ let CategoryDialog = new function () {
         "itemName": "Category",
         "formId": '_cat_dlgCategory',
         "titleId": "_cat_dlgCategory_title",
-        //"errorId":"_cat_dlgCategory_error",
-        //"saveButtonId":"_cat_btnSave",
         "instance": this,
         "apiSave": `${main_view.base_url}/api/category/save`,
         "apiGet": `${main_view.base_url}/api/category/details`,
-        //"identityProp":"id",
         "modifyTitle": "Modify Category",
         "createTitle": "New Category",
         "identityProps": ['id'],
-        //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['id'],
-        //"sub_prop":"chief_complaint_items",
-        //"sub_prop_function":mThis.getChiefComplaints,
         "sanitize_excepts": [],
         'use_alert_error': true,
-        'beforeShow': () => { }
+        'beforeShow': () => {}
     });
 
     this.show = (options) => {

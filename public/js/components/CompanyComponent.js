@@ -15,9 +15,10 @@ var CompanyComponent = new function () {
 		let p = mThis.getData();
 
 		vsapi.call([mThis.base_url, '/api/saveCompanyInfo'].join(''), p).then(res => {
-			if (res.status_code === 200) {
+			if(res.status_code === 200) {
 				cv_interact.info('Company information updated!');
-			} else cv_interact.error(res.error_message);
+			}
+			else cv_interact.error(res.error_message);
 		});
 	});
 
@@ -35,7 +36,6 @@ var CompanyComponent = new function () {
 			mThis.fields.push({ "element": $(this), "dataMember": $(this).data('field') });
 		});
         
-
 		this.btnDeleteLogo.off('click').on('click', function (e) {
 			e.preventDefault();
 			cv_interact.confirm('Delete this logo?', { title: 'Delete Logo', context: 'delete' }, function (e) {
@@ -52,7 +52,8 @@ var CompanyComponent = new function () {
 		});
 
 		this.btnChooseLogo.off('click').on('click', function (e) {
-			 FileChooser.chooseFile({accept:`image/.*`}, data=>{
+			e.preventDefault();
+			FileChooser.chooseFile({accept:`image/.*`}, data=>{
 				if(data){
 					mThis.imgLogo.prop('src',data.dataUrl);
 					let p ={'fileType':data.ext,'photoData':data.photoData};
@@ -62,17 +63,15 @@ var CompanyComponent = new function () {
 							cv_interact.info('Logo uploaded');
 						}
 						else cv_interact.error(res.error_message);
-						mThis.logoFileChooser.val(null);//clear to ensure second time it works for same file chosen
+						mThis.logoFileChooser.val(null);
 					});
 				}
-			
-			 });
+			});
 		});
-	 
 	}
-	//end::init()
 
 	this.show = (option) => {
+		if(!option) option = {};
 		main_view.setTitle(mThis.title_prop);
 		mThis.displayCompanyInfo();
 		mThis.self.show().siblings().hide();
@@ -99,20 +98,20 @@ var CompanyComponent = new function () {
 			mThis.imgLogo.prop('src', d);
 		});
 	}
+
 	this.getData = function () {
 		var i = 0, c;
 		var d = {};
-		do {
+		do{
 			c = mThis.fields[i];
 			if (!c) break;
 			d[c.dataMember] = c.element.val();
 			i++;
 		} while (c);
-
 		return d;
 	};
 }
 
-window.addEventListener('DOMContentLoaded', e=> {
+window.addEventListener('DOMContentLoaded', () => {
 	CompanyComponent.init();
 });
