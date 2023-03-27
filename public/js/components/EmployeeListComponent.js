@@ -144,7 +144,6 @@ let EmployeeListComponent = new function () {
                             `<a href="javascript:void(0)" class="btn_epl_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" class="btn_epl_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
                             `<a href="javascript:void(0);" data-id="${data.id}" class="btn_epl_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
-                            //`&nbsp;<a href="#" data-id="${data.id}" class="btn_pat_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
                             `</div>`
                         ].join('');
                     }
@@ -199,14 +198,6 @@ let EmployeeListDialog = new function () {
     this.elDepartment = $('#_epl_dlgEmployee_department');
     this.elPosition = $('#_epl_dlgEmployee_position');
     this.elEmploymentType = $('#_epl_dlgEmployee_emp_type');
-    // this.loadNationalities = ()=>{
-    //     vsapi.call(`${main_view.base_url}/api/options-nationality`,null,null,false).then(res=>{
-    //         if(res.status_code ===200){
-    //             let items = res.data;
-    //            VSUtil.setComboItems(mThis.elNationality,items,'id','nationality',false,false,null);
-    //         }
-    //     });
-    // }
     
     this.loadFormOptions =(refresh=false,onFinish)=>{
         if(!refresh){
@@ -217,7 +208,6 @@ let EmployeeListDialog = new function () {
         }
         vsapi.call(`${main_view.base_url}/api/employee/form-options`,null,null,false).then(res=>{
             if(res.status_code ===200){
-                //let d = StringSanitizer.sanitizeObject(res.data);
                 mThis.form_data = res.data;
                 onFinish(mThis.form_data);
             }
@@ -236,15 +226,13 @@ let EmployeeListDialog = new function () {
         "modifyTitle": "Modify Employee",
         "identityProps": ['id'],
         "form_data_props": ['id'],
-        //photo can be either base64 string or url to image depending on wther it is Saving or Retrieving action
         "sanitize_excepts": ['email','photo'],
         'use_alert_error': true,
         'init':()=>{
-            //mThis.loadNationalities();
             mThis.btnChooseFile.on('click',(e)=>{
                 FileChooser.chooseFile(null,(d)=>{
                     if(d){
-                         mThis.imgPhoto.prop('src',d.dataUrl);
+                        mThis.imgPhoto.prop('src',d.dataUrl);
                     }
                 });
             });
@@ -252,16 +240,16 @@ let EmployeeListDialog = new function () {
     });
  
     this.show = (options) => {
+        if(!options) options = {};
         mThis.loadFormOptions(true,d=>{
             VSUtil.setComboItems(mThis.elNationality,d.nationalities,'id','nationality',false,false,null);
             VSUtil.setComboItems(mThis.elDepartment,d.departments,'id','department',false,false,null);
             VSUtil.setComboItems(mThis.elPosition,d.positions,'id','position_title',false,false,null);
             mThis.formUntil.show(options);
-        })
-       
+        });
     }
 }
 
-window.addEventListener('DOMContentLoaded',(e)=> {
+window.addEventListener('DOMContentLoaded',()=> {
     EmployeeListComponent.init();
 });

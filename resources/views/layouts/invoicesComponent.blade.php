@@ -14,6 +14,7 @@
        width:120px;
     }
 </style>
+
 <div id="_main_invoicesComponent" class="mobile-padding" style="display:none;padding-top:15px">
     <div class="d-flex align-item-center px-3 w-100 mt-3">
         <div class="d-flex align-items-center gap-2 w-100">
@@ -42,12 +43,14 @@
     </div>
 </div>
 
-<!--Modal of New Invoice-->
 <div id="_invs_dlgNewInvoice" class="modal fade" tabindex="-1" aria-labelledby="_invs_dlgInvoice_title" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
             <div class="modal-header">
-               <div class="d-flex flex-flow w-100"> <h4 id="_invs_dlgInvoice_title" class="modal-title text-nowrap"></h4><span class="ml-2 text-left fw-bold fs-5" id="ivc_ref_number"></span></div>
+                <div class="d-flex flex-flow w-100">
+                    <h4 id="_invs_dlgInvoice_title" class="modal-title text-nowrap"></h4>
+                    <span class="ml-2 text-left fw-bold fs-5" id="ivc_ref_number"></span>
+                </div>
             </div>
             <div class="modal-body">
                 <div class="row gy-2">
@@ -59,8 +62,7 @@
                                     <div class="input-group-text">
                                         <i class="fa-solid fa-user"></i>
                                     </div>
-                                    <select class="modal-select2 data-input" data-field="customer_id" id="_inv_customers" data-required="1">
-                                    </select>
+                                    <select class="modal-select2 data-input" data-field="customer_id" id="_inv_customers" data-required="1"></select>
                                     <div id="_invs_lnkAddInvoice" class="input-group-text" role="button">
                                         <i class="fa-solid fa-plus text-primary"></i>
                                     </div>
@@ -72,8 +74,7 @@
                                     <div class="input-group-text">
                                         <i class="fa-solid fa-user"></i>
                                     </div>
-                                    <select class="modal-select2 data-input" data-field="customer_type" id="_inv_customers_type" data-required="1">
-                                    </select>
+                                    <select class="modal-select2 data-input" data-field="customer_type" id="_inv_customers_type" data-required="1"></select>
                                 </div>
                             </div>
                         </div>
@@ -87,7 +88,7 @@
                             <div class="w-100 my-2">
                                <label for="emailAddress" class="form-label trans-text" data-langprop="customer.Email Address"></label>
                                <input type="email" name="email" placeholder="Enter your email" class="form-control data-input" data-field="email_address" data-ffield="Email Address" data-required="1"/>
-                            </div> 
+                            </div>
                         </div>
                     </div>
                     <div class="col-lg-3">
@@ -98,8 +99,7 @@
                         <div class="d-flex justify-content-center">
                             <div style="padding:10%; border-radius:50%; border:2.5px dotted grey;overflow:hidden">
                                 <div class="d-block">
-                                    <span for="balanceDue" class="h3 trans-text"
-                                        data-langprop="titles.Balance Due"></span>
+                                    <span for="balanceDue" class="h3 trans-text" data-langprop="titles.Balance Due"></span>
                                     <p class="h3 text-center fw-bold ivc-balance-due mt-2" id="ivc_balance_due">$ 0.00</p>
                                 </div>
                             </div>
@@ -198,84 +198,77 @@
                     <i class="fa fa-gears"></i>
                 </a>
                 <button type="button" class="btn btn-default btn-secondary" data-dismiss="modal">
-                   <i class="fa fa-times"></i> <span class="trans-text" data-langprop="buttons.Cancel"></span>
+                   <i class="fa fa-times"></i>
+                   <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
                 <button id="_invs_dlgNewInvoice_btnSave" type="button" class="btn btn-success">
-                   <i class="fa fa-save"></i> <span class="trans-text" data-langprop="buttons.Save"></span>
+                   <i class="fa fa-save"></i>
+                   <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-
-<!--begin::PaymentDialog-->
-<div class="modal fade" id="_ivc_dlgPayment" tabindex="-1" role="dialog" aria-labelledby="_ivc_dlgPayment_title"
-     aria-hidden="true">
-     <div class="modal-dialog modal-lg" role="dialog">
-         <div class="modal-content">
-             <div class="modal-header">
-                 <h5 class="modal-title​ trans-text" data-langprop="titles.New Payment"
-                     id="_ivc_dlgPayment_title"></h5>
-                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
-             </div>
-             <div class="modal-body">
-                 <div id="_ivc_dlgPayment_invoice_info" class="border border-rouded border-lg border-warning p-2">
-                        <div class="row">
-                            <div class="form-group col-lg-3">
-                                <span class="simple-label trans-text" data-langprop="invoice.Invoice"></span>
-                                <span class="fw-bold display-field" data-name="ref_number">2324343</span>  
-                            </div>
-                            <div class="form-group col-lg-3">
-                                <span class="simple-label trans-text" data-langprop="invoice.Amount Due"></span>
-                                <span class="fw-bold display-field" data-name="amount_due">2324343</span>  
-                            </div>
-                            <div class="form-group col-lg-3">
-                            <span class="simple-label trans-text" data-langprop="invoice.Paid"></span>
-                                <span class="fw-bold display-field" data-name="amount_paid">2324343</span>  
-                            </div>
-                            <div class="form-group col-lg-3">
-                            <span class="simple-label trans-text" data-langprop="invoice.Open"></span>
-                                <span class="fw-bold display-field" data-name="open_amount">2324343</span>  
-                            </div>
+<div class="modal fade" id="_ivc_dlgPayment" tabindex="-1" role="dialog" aria-labelledby="_ivc_dlgPayment_title" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title​ trans-text" data-langprop="titles.New Payment" id="_ivc_dlgPayment_title"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="_ivc_dlgPayment_invoice_info" class="border border-rouded border-lg border-warning p-2">
+                    <div class="row">
+                        <div class="form-group col-lg-3">
+                            <span class="simple-label trans-text" data-langprop="invoice.Invoice"></span>
+                            <span class="fw-bold display-field" data-name="ref_number">2324343</span>  
                         </div>
-                 </div>
-                 <div class="row" id="_ivc_dlgPayment_body">
-                     <div class="form-group col-lg-6">
-                         <span class="simple-label trans-text" data-langprop="payment.Payment Date"></span>
-                         <div>
-                             <input data-required="1" data-field="payment_date" data-ffield="Payment Date"
-                                 class="form-control data-input" data-select="datepicker"/>
-                         </div>
-                     </div>
-                     <div class="form-group col-lg-6">
-                         <span class="simple-label trans-text" data-langprop="payment.amount"></span>
-                         <div>
-                             <input type="number" data-field="amount" data-ffield="Amount"
-                                 class="form-control data-input"/>
-                         </div>
-                     </div>
-
-                     <div class="form-group col-lg-12">
-                         <span class="simple-label trans-text" data-langprop="payment.notes">Notes</span>
-                         <div><input type="text" data-field="notes" data-ffield="Notes"
-                                 class="form-control data-input"></div>
-                     </div>
-  
-                 </div>
-                 <!--Close row-->
-             </div>
-             <!--close body-->
-             <div class="modal-footer">
-                 <button type="button" class="btn btn-default btn-secondary" data-dismiss="modal"><i class="fa fa-times"></i> <span
-                         class="trans-text" data-langprop="buttons.Cancel">Cancel</span></button>
-                 <button type="button" class="btn btn-primary" id="_ivc_dlgPayment_btnSave"><i
-                         class="fa fa-save"></i><span class="trans-text"
-                         data-langprop="buttons.Save">Save</span></button>
-             </div>
-         </div>
-         <!--close Content-->
-     </div>
- </div>
- 
-<!--end::PaymentDialog-->
+                        <div class="form-group col-lg-3">
+                            <span class="simple-label trans-text" data-langprop="invoice.Amount Due"></span>
+                            <span class="fw-bold display-field" data-name="amount_due">2324343</span>  
+                        </div>
+                        <div class="form-group col-lg-3">
+                            <span class="simple-label trans-text" data-langprop="invoice.Paid"></span>
+                            <span class="fw-bold display-field" data-name="amount_paid">2324343</span>  
+                        </div>
+                        <div class="form-group col-lg-3">
+                            <span class="simple-label trans-text" data-langprop="invoice.Open"></span>
+                            <span class="fw-bold display-field" data-name="open_amount">2324343</span>  
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="_ivc_dlgPayment_body">
+                    <div class="form-group col-lg-6">
+                        <span class="simple-label trans-text" data-langprop="payment.Payment Date"></span>
+                        <div>
+                            <input data-required="1" data-field="payment_date" data-ffield="Payment Date" class="form-control data-input" data-select="datepicker"/>
+                        </div>
+                    </div>
+                    <div class="form-group col-lg-6">
+                        <span class="simple-label trans-text" data-langprop="payment.amount"></span>
+                        <div>
+                            <input type="number" data-field="amount" data-ffield="Amount" class="form-control data-input"/>
+                        </div>
+                    </div>
+                    <div class="form-group col-lg-12">
+                        <span class="simple-label trans-text" data-langprop="payment.notes">Notes</span>
+                        <div>
+                            <input type="text" data-field="notes" data-ffield="Notes" class="form-control data-input">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-default btn-secondary" data-dismiss="modal">
+                <i class="fa fa-times"></i>
+                <span class="trans-text" data-langprop="buttons.Cancel">Cancel</span>
+            </button>
+            <button type="button" class="btn btn-primary" id="_ivc_dlgPayment_btnSave">
+                <i class="fa fa-save"></i>
+                <span class="trans-text" data-langprop="buttons.Save">Save</span>
+            </button>
+            </div>
+        </div>
+    </div>
+</div>

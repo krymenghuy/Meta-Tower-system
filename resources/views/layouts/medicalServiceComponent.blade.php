@@ -24,16 +24,14 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                  <div class="col-12">
+                    <div class="col-12">
                         <label for="name" class="form-label trans-text" data-langprop="service.Department Name"></label>
                         <select class="modal-select2 data-input" id="_msl_dlgService_department" data-field="department_id" data-required="1" data-ffield="Department"></select>
                     </div>
-
                     <div class="col-12">
                         <label for="name" class="form-label trans-text" data-langprop="service.Name"></label>
                         <input type="text" data-required="1" data-field="name" data-ffield="Service name" class="form-control data-input" placeholder="Name"/>
                     </div>
-
                     <div class="col-12">
                         <label class="form-label trans-text" data-langprop="service.Treatment method"></label>
                         <select data-required="1" data-field="treatment_method" data-ffield="Treatment method" class="form-select data-input">
@@ -43,7 +41,6 @@
                            <option value="surgery">Surgery</option>
                         </select>
                     </div>
-
                     <div class="col-12">
                         <label class="form-label trans-text" data-langprop="service.Type"></label>
                         <select data-required="1" data-field="service_type" data-ffield="Service type" class="form-select data-input">
@@ -52,7 +49,6 @@
                            <option value="labotest">Labo Test</option>
                         </select>
                     </div>
-
                     <div class="col-12">
                         <label for="description" class="form-label trans-text" data-langprop="service.Description"></label>
                         <textarea class="form-control data-input" data-required="0" data-field="description" placeholder="Description"></textarea>
@@ -71,7 +67,6 @@
                 <button class="btn btn-secondary btn-default" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-
                 <button id="_msl_dlgService_btnSave" class="btn btn-primary" type="button">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>

@@ -14,7 +14,7 @@
                 </div>
             </button>
         </div>
-        <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;min-height:350px;">
+        <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;min-height:350px">
             <table class="table header-light-blue header-uppercase" id="_cat_tblCategories"></table>
         </div>
     </div>
@@ -39,8 +39,7 @@
                         <textarea class="form-control data-input" data-field="description" data-required="0" data-ffield="Description" placeholder="Description"></textarea>
                     </div>
                 </div>
-               <div class="dialog-error" id="_cat_dlgCategory_error">
-               </div>
+               <div class="dialog-error" id="_cat_dlgCategory_error"></div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary btn-default" type="button" data-dismiss="modal">

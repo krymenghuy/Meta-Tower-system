@@ -6,15 +6,18 @@
        color:#409CBF !important;
        padding:10px !important;
     }
-    .inner-item-table>tbody td{
+
+    .inner-item-table > tbody td{
        padding:10px;
     }
+
     .stock-items-panel{
         border:1.1px solid #4797C2;
         border-radius:5px;
         padding:10px !important;
     }
-    #_stk_tblItems>tr.row-expanded td{
+
+    #_stk_tblItems > tr.row-expanded td{
         font-weight:bold;
     }
 </style>
@@ -53,7 +56,6 @@
     </div>
 </div>
 
-<!--Begin::FilterDialog-->
 <div id="_stk_dlgFilterStockTracking" class="modal fade" tabindex="-1" aria-labelledby="_stk_dlgFilterStockTracking_title" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content vs-modal-dialog">
@@ -114,9 +116,7 @@
         </div>
     </div>
 </div>
-<!--End::FilterDialog-->
 
-<!--Begin::ReceiveStock-->
 <div id="_stk_dlgReceiveStock" class="modal fade" tabindex="-1" aria-labelledby="_stk_dlgReceiveStock_title" aria-hidden="true">
     <div class="modal-dialog modal-xl vs-modal-dialog">
         <div class="modal-content">
@@ -168,4 +168,3 @@
         </div>
     </div>
 </div>
-<!--End::ReceiveStock-->

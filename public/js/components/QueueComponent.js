@@ -101,7 +101,7 @@ let TicketDetails = new function () {
             });
         });
 
-        mThis.tblTickets.on('click', 'tbody>tr> td a.qul-remove-complaint', function (e) {
+        mThis.tblTickets.on('click', 'tbody > tr > td a.qul-remove-complaint', function (e) {
             e.preventDefault();
             let lnk = $(this);
             let ul = lnk.closest('ul');
@@ -126,7 +126,7 @@ let TicketDetails = new function () {
             });
         });
 
-        mThis.tblTickets.on('click', 'tbody>tr>td a.qul-add-complaint', function (e) {
+        mThis.tblTickets.on('click', 'tbody > tr > td a.qul-add-complaint', function (e) {
             e.preventDefault();
             let x = $(this);
             let ul_id = x.data('ulid');
@@ -158,7 +158,7 @@ let TicketDetails = new function () {
         let appt_id = ul.data('apptid');
 
         ul.find('li[data-apptid="0"]').remove();
-        ul.append(`<li id="${item.id}" data-apptid="${appt_id}"><a href="#" data-apptid="${appt_id}" data-id="${item.id}" class="qul-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`);
+        ul.append(`<li id="${item.id}" data-apptid="${appt_id}"><a href="javascript:void(0)" data-apptid="${appt_id}" data-id="${item.id}" class="qul-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`);
     }
 
     this.displayCCList = (list_id, items = []) => {
@@ -167,7 +167,7 @@ let TicketDetails = new function () {
         let appt_id = ul.data('apptid');
         let i = 0, html = '';
         (items || []).map((item) => {
-            html = [html, `<li id="${item.id}" data-apptid="${appt_id}"><a href="#" data-apptid="${appt_id}" data-id="${item.id}" class="qul-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`].join('');
+            html = [html, `<li id="${item.id}" data-apptid="${appt_id}"><a href="javascript:void(0)" data-apptid="${appt_id}" data-id="${item.id}" class="qul-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`].join('');
             i++;
         });
         if (i === 0) html = `<li data-apptid="0"><span class="text-muted">(No chief complaints)</span></li>`;
@@ -290,7 +290,7 @@ let TicketDetails = new function () {
                 
                 let ticket_id = d.id;
                 let html_prescription_button =``;
-                if (QueueComponent.options.showPrescriptionButton) html_prescription_button =` <button class="btn btnsm btn-outline-primary qul-btn-prescribe">Prescription</button>`;
+                if (QueueComponent.options.showPrescriptionButton) html_prescription_button =` <button class="btn btnsm btn-outline-primary qul-btn-prescribe" id="qul-btn-prescribe_${ticket_id}">Prescription</button>`;
                     html = [`<div id="${ws_id}" data-ticketid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="row">
                         <div class="d-flex" style="max-width: 1300px; width:100%">
                             <div class="row gy-3 w-100">
@@ -385,7 +385,7 @@ let TicketDetails = new function () {
                             <div class="col-sm-4">
                                 <div class="d-block">
                                     ${html_prescription_button}
-                                    <button data-tid="${ticket_id}" class="btn btn-sm btn-outline-primary trans-text" data-langprop="buttons.Generate Invoice" id="_generate_patient_inv"></button>
+                                    <button data-tid="${ticket_id}" class="btn btn-sm btn-outline-primary trans-text" data-langprop="buttons.Generate Invoice" id="_generate_patient_inv_${ticket_id}"></button>
                                 </div>
                             </div>
                         </div>
@@ -396,14 +396,20 @@ let TicketDetails = new function () {
                 }
 
                 div_workspace.html(html);
-                $('#_generate_patient_inv').on('click',function(e){
-                    e.preventDefault();
-                    let d = $(this).data('tid');
-                });
                 div.show();
-                
-            LocaleManager.translateZone(ws_id);
-            mThis.current_view_name = 'info';
+                LocaleManager.translateZone(ws_id);
+                mThis.current_view_name = 'info';
+
+                //begin: Set click handlers for Prescription button and Generate Invoice button
+                div_workspace.find([`#_generate_patient_inv_${ticket_id}`].join('')).on('click',function(e){
+                        e.preventDefault();
+                        let d = $(this).data('tid');
+                        console.log(d);
+                    });
+                div_workspace.find([`#qul-btn-prescribe_${ticket_id}`].join('')).on('click',function(e){
+                        e.preventDefault();
+                        alert("Welcome");
+                    });
         });
     }
 

@@ -2,7 +2,7 @@
     #_main_companyComponent > .data-input {
         font-size: 0.8em !important;
         color: red;
-        font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+        font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
     }
 </style>
 
@@ -51,7 +51,7 @@
     <div style="height:25px"></div>
     <div class="row">
         <div class="col-lg-6">
-            <img src="<?php if(isset($logodata)) echo $logodata; ?>" id="com_imgLogo" class="img-thumbnail" alt="" style="margin:-10px;height:235px;"/>
+            <img src="<?php if(isset($logodata)) echo $logodata; ?>" id="com_imgLogo" class="img-thumbnail" alt="" style="margin:-10px;height:235px"/>
             <input id="com_logoFileChooser" type="file" accept="image/*" style="display:none"/>
         </div>
         <div class="col-lg-6">

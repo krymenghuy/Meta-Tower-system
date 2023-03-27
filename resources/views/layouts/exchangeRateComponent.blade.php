@@ -25,7 +25,6 @@
     </div>
 </div>
 
-<!--Begin::ExchangRateDialog-->
 <div id="_ecr_dlgexchangeRate" class="modal fade" tabindex="-1" aria-labelledby="_ecr_dlgexchangeRate_title" aria-hidden="true">
     <div class="modal-dialog modal-xl vs-modal-dialog">
         <div class="modal-content">
@@ -69,9 +68,7 @@
         </div>
     </div>
 </div>
-<!--End::ExchangeRateDialog-->
 
-<!--Begin::ExchangeRateDetailsDialog-->
 <div id="_ecr_dlgExchangeRate_detail" class="modal fade" tabindex="-1" aria-labelledby="_ecr_dlgExchangeRate_detail_title" aria-hidden="true">
     <div class="modal-dialog vs-modal-dialog">
         <div class="modal-content">
@@ -113,4 +110,3 @@
         </div>
     </div>
 </div>
-<!--End::ExchangeRateDetailsDialog-->

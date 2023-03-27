@@ -15,7 +15,7 @@ let ExchangeRatesComponent = new function(){
         vsapi.call(`${mThis.base_url}/api/x-rate/options-month`,null).then(res=>{
             if(res.status_code===200){
                 let items = res.data;
-                let latest_mnonth = null; // (items || []).first().year_month;
+                let latest_mnonth = null;
                 let items1 = [];
                 (items || []).map(m=>{
                     let sts = (m.year_month+'').split('.');
@@ -109,9 +109,7 @@ let ExchangeRatesComponent = new function(){
         vsapi.call(`${mThis.base_url}/api/x-rate/list`,p).then(res => {
             if(mThis.table){
                 mThis.tblRate.DataTable().clear().destroy();
-                //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
                 mThis.tblRate.empty();
-                //alert('destroyed => '+  mThis.tblPackages.html());
                 mThis.table = null;
             }
 
@@ -125,7 +123,6 @@ let ExchangeRatesComponent = new function(){
             {
                 title: "Currency Pair",
                 data: "currency_pair"
-                //,ordering: true
             },
             {
                 title: "Buy Rate",
@@ -146,7 +143,6 @@ let ExchangeRatesComponent = new function(){
                             <i class="fa-solid fa-trash-can text-danger"></i>
                         </a>
                     </div>`].join('');
-    
                     return html;
                 }
             }];
@@ -157,9 +153,6 @@ let ExchangeRatesComponent = new function(){
                     destroy:true,
                     paging:true,
                     retrieve: true,
-                    //scrollY:390,
-                    //scrollX:500,
-                    //pagingType:'numbers',
                     info:true,
                     bLengthChange:false,
                     saveState:true,
@@ -181,6 +174,7 @@ let ExchangeRatesComponent = new function(){
     }
 
     this.show = (option) => {
+        if(!option) option = {};
         mThis.loadFilter_options_month();
         mThis.displayExchangeRate();
         mThis.self.show().siblings().hide();
@@ -192,29 +186,17 @@ let ExchangeRatesDialog = new function(){
     let mThis = this;
     this.self = $('#_ecr_dlgExchangeRate');
     this.elCurrencyPair = $('#_ecr_currency_pair');
-    
-    //this.init = () => {}
 
     this.formUtil = new FormUntil({
         "itemName":"Exchange Rate",
         "formId":'_ecr_dlgExchangeRate',
-        //"titleId":"_apl_dlgAppt_title",
-        //"errorId":"_apl_dlgAppt_error",
-        //"saveButtonId":"_ecr_dlgExchangeRate_btnSave",
         "instance":this,
         "apiSave":`${main_view.base_url}/api/x-rate/save`,
         "apiGet":`${main_view.base_url}/api/x-rate/info`,
-        //"identityProp":"id",
         "modifyTitle":"Modify Exchange Rate",
         "createTitle":"New Exchange Rate",
         "identityProps":['id'],
-        //Set additional data props for getFormData() to collect on gathering data inputs from this form,
-        // "form_data_props":['lead_id','client_id'],
-        // "sub_prop":"chief_complaint_items",
-        // "sub_prop_function":mThis.getChiefComplaints,
-        // "sanitize_excepts":['email','client_email','arrival_time'],
-         'use_alert_error':true,
-        // "init":""
+        'use_alert_error':true,
     });
 
     this.show = (option) => {

@@ -35,7 +35,6 @@ let LaboPartnersComponent = new function () {
         }
     }
 
-    //Expandable row contains list of labo tests provided by each partners
     this.initExpandableRow =()=>{
         this.tblLaboTests = new ExpandableRowConfig('_lbp_tblLaboPartners', {
             'dontExpandByClickingOn': ['pn-add-test','btn_lbp_modify','btn_lbp_delete'],
@@ -43,7 +42,6 @@ let LaboPartnersComponent = new function () {
                 let q_tr = $(parent_tr);
                 let partner_id = q_tr.data('id');
                 let status_id = q_tr.data('statusid');
-                //Show Expandable Details of each ticket (QTicket)
                 if (partner_id > 0)
                 LaboTestList.show($(container), {
                     'labo_id': partner_id,
@@ -318,7 +316,6 @@ const LaboTestList = new function(){
         html_tests = [html_tests,`<button data-id="${labo_id}" class="pn-add-test border border-primary btn btn-primary p-2">
             <i class="fa fa-solid fa-plus pe-0"></i>
         </button>`].join('');
-        //begin:: display test rows
         let div_test_list_id = `pn_test_list_${labo_id}`;
         let div_test_list = container.find(`#${div_test_list_id}`);
  
@@ -341,7 +338,6 @@ const LaboTestList = new function(){
         }
    }
 }
-//end::LaboTestList Component
 
 const SelectTestDialog = new function(){
    let mThis = this;

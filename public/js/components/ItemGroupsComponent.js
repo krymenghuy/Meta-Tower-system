@@ -78,9 +78,7 @@ let ItemGroupsComponent = new function () {
             'dontExpandByClickingOn': ['btn_item_modify', 'btn_item_delete', 'btn_item_action'],
             'onOpen': (container, detail_tr, parent_tr) => {
                 let q_tr = $(parent_tr);
-                //It is IMPORTANT to access patient_id using jquery object here because the "createdRow" event passes data-id atttribue using jquery method
                 let group_id = q_tr.data('id');
-                //Show Expandable Details of each rate
                 mThis.displayProductsGroupDetails($(detail_tr), group_id);
             }
         });
@@ -224,9 +222,6 @@ let ItemGroupsComponent = new function () {
     }
 
     this.displayProductsGroup = (onFinish = null) => {
-        //Initialize language for DataTable columns headers
-        //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-        //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
         let p = { 'search_value': mThis.elSearchItem.val() };
         window.vsapi.call(`${mThis.base_url}/api/inventory/groups`, p, 'POST', null).then((result) => {
@@ -234,14 +229,12 @@ let ItemGroupsComponent = new function () {
             if (result.status_code === 200) data = result.data;
             if (mThis.table) {
                 mThis.tblItems.DataTable().clear().destroy();
-                //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
                 mThis.tblItems.empty();
                 mThis.table = null;
             }
 
             data = StringSanitizer.sanitizeObject(data, null);
             let cnt = 1;
-            //begin::Set up columns
             let my_columns = [
                 {
                     title: mThis.trans_title("No."),
@@ -282,10 +275,6 @@ let ItemGroupsComponent = new function () {
                     }
                 }
             ];
-            //END Define colum
-
-            //translate column names
-            //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
 
             if (!mThis.table)
                 mThis.table = mThis.tblItems.DataTable({
@@ -293,11 +282,7 @@ let ItemGroupsComponent = new function () {
                     destroy: true,
                     paging: true,
                     ordering: false,
-                    //dom: 'Bfrtip',
                     retrieve: true,
-                    //scrollY:390,
-                    //scrollX:500,
-                    //pagingType:'numbers',
                     info: true,
                     pageLength: 10,
                     bLengthChange: false,
@@ -330,7 +315,6 @@ let ItemGroupsComponent = new function () {
     }
 }
 
-//begin::MedicalServiceDialog
 let ItemGroupDialog = new function () {
     let mThis = this;
     this.self = $(`#_pdg_dlgProductGroup`);
@@ -350,19 +334,13 @@ let ItemGroupDialog = new function () {
         "itemName": "Item Group",
         "formId": '_pdg_dlgProductGroup',
         "titleId": "_pdg_dlgProductGroup_title",
-        //"errorId":"_msl_dlgService_error",
-        //"saveButtonId":"_pdg_dlgProductGroup_btnSave",
         "instance": this,
         "apiSave": `${main_view.base_url}/api/inventory/save-group`,
         "apiGet": `${main_view.base_url}/api/inventory/group-details`,
-        //"identityProp":"id",
         "modifyTitle": "Modify Product Group",
         "createTitle": "New Product Group",
         "identityProps": ['id'],
-        //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['id'],
-        //"sub_prop":"chief_complaint_items",
-        //"sub_prop_function":mThis.getChiefComplaints,
         "sanitize_excepts": [],
         'use_alert_error': true,
     });

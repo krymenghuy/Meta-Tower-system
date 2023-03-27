@@ -5,171 +5,171 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/login/login-style.css') }}" />
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/font-awesome/6.2.0/css/all.min.css') }}" />
-    <title>M-Clinic</title>
-    <style type="text/css">
-        *{
-            padding:0;
-            margin:0;
-            box-sizing: border-box;
-        }
-        
-        .vs-container{
-            width:100vw;
-            height:100vh;
-            overflow:hidden;
-        }
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/login/login-style.css') }}" />
+        <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/font-awesome/6.2.0/css/all.min.css') }}" />
+        <title>M-Clinic</title>
+        <style type="text/css">
+            *{
+                padding:0;
+                margin:0;
+                box-sizing: border-box;
+            }
+            
+            .vs-container{
+                width:100vw;
+                height:100vh;
+                overflow:hidden;
+            }
 
-        .img-background{
-            width:100vw;
-            height:100vh;
-            background-size:cover;
-            background-repeat:no-repeat;
-            background-position: center;
-            position:absolute;
-        }
+            .img-background{
+                width:100vw;
+                height:100vh;
+                background-size:cover;
+                background-repeat:no-repeat;
+                background-position: center;
+                position:absolute;
+            }
 
-        .vs-contain-imgFront-form{
-            width:100vw;
-            height:100vh;
-            position:absolute;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-        }
+            .vs-contain-imgFront-form{
+                width:100vw;
+                height:100vh;
+                position:absolute;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+            }
 
-        .sub-vs-contain-imgFront-form{
-            width:70vw;
-            height:80vh;
-            border-radius:5vh;
-            background-color:red;
-            display:flex;
-        }
-
-        .img-size,
-        .form-size{
-            width:50%;
-            height:100%;
-        }
-
-        .form-size{
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            background-color:#f6cb1ba3;
-            border-radius:5vh 0 0 5vh;
-            flex-direction: column;
-        }
-
-        .img-front{
-            width:100%;
-            height:100%;
-            border-radius:0 5vh 5vh 0;
-            filter:opacity(0.75);
-        }
-
-        .vs-form-group,
-        .vs-btn-group{
-            width:100%;
-            padding:1.5vh 0;
-        }
-
-        .vs-btn-group{
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            flex-direction: column;
-        }
-
-        .form-inside{
-            width:100%;
-            padding:0 6vw;
-            height:70%;
-        }
-
-        .form-inside form{
-            width:100%;
-        }
-
-        .vs-form-group .vs-form-label{
-            padding:1vh 0;
-            color:#fff;
-            font-size:2vh;
-        }
-
-        .vs-form-group .vs-form-control{
-            padding:1.5vh 1.5vw;
-            border:none;
-            outline:none;
-            border-radius:1vh;
-            margin:2vh 0;
-            font-size:1.5vh;
-        }
-
-        ::placeholder{
-            padding:0 0.1vw;
-        }
-
-        .vs-form-control{
-            width:100%;
-        }
-
-        .vs-btn-group .vs-btn{
-            width:95%;
-            padding:0.5vh 0;
-            border-radius:3vh;
-            outline:none;
-            background-color:transparent;
-            border:0.3vh solid #fff;
-            font-size:2.3vh;
-            color:#fff;
-            cursor:pointer;
-        }
-
-        .vs-logo{
-            display:flex;
-            justify-content:center;
-            width:100%;
-            height:30%;
-            align-items:end;
-        }
-
-        .logo-img{
-            position: relative;
-            width: 30vw;
-            display: flex;
-            justify-content:center;
-        }
-
-        .logo-img img{
-            background-image: cover;
-            background-repeat: no-repeat;
-            height:15vh;
-        }
-
-        @media screen and (max-width:820px){
             .sub-vs-contain-imgFront-form{
-                width:95vw;
+                width:70vw;
+                height:80vh;
+                border-radius:5vh;
+                background-color:red;
+                display:flex;
             }
 
-            .form-inside p{
-                height:auto;
+            .img-size,
+            .form-size{
+                width:50%;
+                height:100%;
             }
-        }
 
-        @media screen and (min-width:821px) and (max-width:1200px){
-            .sub-vs-contain-imgFront-form{
-                width:90vw;
+            .form-size{
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                background-color:#f6cb1ba3;
+                border-radius:5vh 0 0 5vh;
+                flex-direction: column;
             }
-        }
-    </style>
 
-</head>
+            .img-front{
+                width:100%;
+                height:100%;
+                border-radius:0 5vh 5vh 0;
+                filter:opacity(0.75);
+            }
+
+            .vs-form-group,
+            .vs-btn-group{
+                width:100%;
+                padding:1.5vh 0;
+            }
+
+            .vs-btn-group{
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                flex-direction: column;
+            }
+
+            .form-inside{
+                width:100%;
+                padding:0 6vw;
+                height:70%;
+            }
+
+            .form-inside form{
+                width:100%;
+            }
+
+            .vs-form-group .vs-form-label{
+                padding:1vh 0;
+                color:#fff;
+                font-size:2vh;
+            }
+
+            .vs-form-group .vs-form-control{
+                padding:1.5vh 1.5vw;
+                border:none;
+                outline:none;
+                border-radius:1vh;
+                margin:2vh 0;
+                font-size:1.5vh;
+            }
+
+            ::placeholder{
+                padding:0 0.1vw;
+            }
+
+            .vs-form-control{
+                width:100%;
+            }
+
+            .vs-btn-group .vs-btn{
+                width:95%;
+                padding:0.5vh 0;
+                border-radius:3vh;
+                outline:none;
+                background-color:transparent;
+                border:0.3vh solid #fff;
+                font-size:2.3vh;
+                color:#fff;
+                cursor:pointer;
+            }
+
+            .vs-logo{
+                display:flex;
+                justify-content:center;
+                width:100%;
+                height:30%;
+                align-items:end;
+            }
+
+            .logo-img{
+                position: relative;
+                width: 30vw;
+                display: flex;
+                justify-content:center;
+            }
+
+            .logo-img img{
+                background-image: cover;
+                background-repeat: no-repeat;
+                height:15vh;
+            }
+
+            @media screen and (max-width:820px){
+                .sub-vs-contain-imgFront-form{
+                    width:95vw;
+                }
+
+                .form-inside p{
+                    height:auto;
+                }
+            }
+
+            @media screen and (min-width:821px) and (max-width:1200px){
+                .sub-vs-contain-imgFront-form{
+                    width:90vw;
+                }
+            }
+        </style>
+
+    </head>
     <body>
         <div class="vs-container">
             <img class="img-background" src="{{ asset('assets/images/background-image.jpeg') }}"/>
