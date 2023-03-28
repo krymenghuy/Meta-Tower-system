@@ -135,7 +135,7 @@
                         <p class="fw-semibold tab-item tab-item-product p-2 bg-success rounded-3" role="button" data-target="_ivc_product_panel" data-viewname="product">Product</p>
                         <p class="fw-semibold tab-item tab-item-service p-2 rounded-3" role="button" data-target="_ivc_service_panel" data-viewname="service">Service</p>
                     </div>
-                    <div id="_ivc_items_panel">
+                    <div id="_ivc_items_panel" class="overflow-y-auto" style="max-height:385px">
                        <div style="display:none" data-viewname="product" id="_ivc_product_panel" class="col-12 table-responsive"></div>
                        <div style="display:none" data-viewname="service" id="_ivc_service_panel" class="col-12 table-responsive"></div>
                     </div>

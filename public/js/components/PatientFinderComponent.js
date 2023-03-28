@@ -81,7 +81,7 @@ let PatientFinderComponent = new function () {
             e.preventDefault();
             let lnk = $(this);
             let p = { 'id': lnk.data('id') };
-            cv_interact.confirm('Remove this patient?', { 'confirmButtonText': 'Delete', 'cancelButtonText': 'Dont Delete', title: null, 'context': 'delete' }, (e) => {
+            cv_interact.confirm('Remove this patient?', { 'confirmButtonText': 'Delete', 'cancelButtonText': "Don't Delete", title: null, 'context': 'delete' }, (e) => {
                 if (e) {
                     vsapi.call(`${mThis.base_url}/api/patient/delete`, p).then((res) => {
                         if (res.status_code === 200) {
