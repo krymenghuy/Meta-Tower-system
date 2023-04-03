@@ -79,3 +79,27 @@
         </div>
     </div>
 </div>
+
+<div id="_lbp_dlgTestSelector" class="modal fade" tabindex="-1" aria-labelledby="_lbp_dlgTestSelector_title" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Laboratory Test</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row-col-1">
+                    <label for="test_category" class="form-label trans-text" data-langprop="titles.Test Category"></label>
+                    <select class="form-control modal-select2" id="_lbp_test"></select>
+                </div>
+                <div class="row-col-1">
+                    <label for="test_price" class="form-label trans-text" data-langprop="titles.Test Price"></label>
+                    <input type="number" class="form-control" id="_lbp_test_price"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary" type="button" id="_lbp_dlgTestSelector_btnOK">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
