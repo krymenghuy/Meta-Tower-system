@@ -246,7 +246,7 @@ const LaboTestList = new function(){
         }
      }};
 
-     SelectTestDialog.show(op); 
+     SelectTestDialog.show(op);
    });
 
    LaboPartnersComponent.tblPartners.on('click','.btn-remove-parnter-test',function(e){
@@ -356,9 +356,10 @@ const SelectTestDialog = new function(){
         vsapi.call(`${main_view.base_url}/api/partner-labo/add-test`,p,null,false).then(res =>{
             if(res.status_code===200){
                 let items =StringSanitizer.sanitizeObject(res.data);
-                if(typeof mThis.onClose ==='function') mThis.onClose(items);
+                if(typeof mThis.onClose === 'function') mThis.onClose(items);
                 mThis.self.modal('hide');
-            }else cv_interact.error(res.error_message);
+            }
+            else cv_interact.error(res.error_message);
         });     
     });
 
