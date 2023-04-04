@@ -34,7 +34,7 @@
     <body>
         <div class="border border-1 border-success rounded mt-2" style="margin-left:0.5cm;margin-right:0.5cm">
             <div class="d-block">
-                @if($rtype != "general_report")
+                @if($rtype != "patient_profile" && $rtype != "employee_profile")
                     <div class="vs-print-top d-flex align-items-center border border-1 border-success rounded" style="background-color: #05A8B5">
                         <div style="width: 108px; height:108px;">
                             <img class="img-thumbnail rounded w-100 h-100" src="<?php echo isset($branch->logo_url) ? $branch->logo_url:null; ?>"/>
@@ -81,29 +81,15 @@
             </div>
             <div class="rpt-body">
                 @switch($rtype)
-                    @case('client_list')
-                        @include('reports.client_list')
+                    @case('patient_profile')
+                        @include('reports.patient_profile')
                         @break
-                    @case('employee_list')
-                        @include('reports.employee_list')
-                        @break
-                    @case('product_list')
-                        @include('reports.product_list')
-                        @break
-                    @case('medical_report')
-                        @include('reports.medical_report')
-                        @break
-                    @case('medical_certificate')
-                        @include('reports.medical_certificate')
-                        @break
-                    @case('invoice_report')
-                        @include('reports.invoice_report')
-                        @break
-                    @case('general_report')
-                        @include('reports.general_report')
+                    @case('employee_profile')
+                        @include('reports.employee_profile')
                         @break
                     @default
-                        @break
+                       @include('reports.no_report') 
+                       @break
                 @endswitch
             </div>
         </div>

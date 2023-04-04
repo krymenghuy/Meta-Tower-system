@@ -191,12 +191,18 @@ class Patient //extends Model
         }else return DV::error('Something went wrong during saving patient data');
 
     }
-    
+    static function profilePhoto($patient_id){
+        $row = getDataRow('patients',['id'=>$patient_id],'photo_file_name,branch_id');
+        if(!$row) return null;
+        $branch_id = $row->branch_id;
+        return PublicStorage::getUrl($branch_id,'patient','image').$row->photo_file_name;
+    }
     static function profileInfo($patient_id,$include_medical_history=false,$include_medication_details=false){
          $person_id = self::personId($patient_id);
-         $cols="id as person_id,first_name,last_name,sex,date_of_birth,phone_number,address";
+         $cols="id as person_id,'NA' AS code,concat(last_name,' ',first_name) as name, first_name,last_name,sex,date_of_birth,phone_number,address,p.email,'Cambodian' AS nationality,0 AS height, 0 as weight, 0 AS age";
          $data = (object)[];
          $data->basic_info = Person::detailsBy(['id'=>$person_id],$cols);
+         $data->basic_info->image_url = Patient::profilePhoto($patient_id);
          if($include_medical_history) $data->medical_history = self::medicalHistory($patient_id);
          if($include_medication_details) $data->include_medication_details = self::medicationDetails($patient_id);
          return $data;
@@ -218,9 +224,8 @@ class Patient //extends Model
         $last_ticket = self::latestTicket($patient_id);
         if(!$last_ticket) return [];
         $ticket_id = $last_ticket->id;
-        return DB::table('patient_prescription_items as pi')->join('inv_items as i','pi.item_id','=','pi.id')->where('pi.ticket_id',$ticket_id)->select('pi.id','pi.item_id','pi.sku','pi.qty','pi.usage','pi.duration_days','pi.remarks','reason','pi.created_at')->get();
+        return DB::table('patient_prescription_items as pi')->join('inv_items as itm','pi.item_id','=','itm.id')->where('pi.ticket_id',$ticket_id)->select('pi.id','pi.item_id','itm.code','itm.name','pi.sku','pi.qty','pi.usage','pi.duration_days','pi.remarks','reason','pi.created_at')->get();
     }
-
     // static function deletePermanent($req){
     //     $com_branch_id=1;
     //     $ss = UM::getUserInfoByToken($req,-1);
