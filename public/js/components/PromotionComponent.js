@@ -2,11 +2,12 @@
 let PromotionComponent = new function () {
   let mThis = this;
   this.self = $('#_main_promotionComponent');
-  this.title_prop = "Promotion";
+  this.title_prop = "Promotions";
   this.base_url = $('#__base_url').val();
+  //this.tblIamges = $('#_mobile_brand_tblIamges');
+  //this.tblIamges_body = $('#_mobile_brand_tblIamges_body');
 
   this.img_container = $('#promo_img_container');
-
   this.elFilter_app = $('#_mobile_promo_app');
   this.btnNewPromo = $('#promo_btnNewPromo');
 
@@ -17,7 +18,6 @@ let PromotionComponent = new function () {
 
     mThis.btnNewPromo.on('click', (e) => {
       e.preventDefault();
-
       let op = { 'title': 'New Promotion', 'user_class': mThis.elFilter_app.val() };
       PromoDialog.show(op);
     });
@@ -29,7 +29,6 @@ let PromotionComponent = new function () {
     let x = $(this);
     let promo_id = x.data('id');
     let user_class = mThis.elFilter_app.val();
-
     mThis.deletePromotion(promo_id, user_class);
   });
 
@@ -43,11 +42,12 @@ let PromotionComponent = new function () {
     }
     let op = { 'title': 'Modify Promotion', 'user_class': mThis.elFilter_app.val(), 'promo_id': promo_id };
     PromoDialog.show(op);
+
   });
 
   this.deletePromotion = (promo_id, user_class) => {
     let p = { 'id': promo_id, 'user_class': user_class };
-    cv_interact.confirm('Delete this promotion?', { title: 'Delete Promotion', context: 'delete' }, (e) => {
+    cv_interact.confirm('Delete this promotion?', { title: 'Delete Promotion', confirmButtonText: 'Delete', cancelButtonText: 'Close', context: 'delete' }, (e) => {
       if (e) {
         vsapi.call([mThis.base_url, '/api/deletePromotion'].join(''), p).then(res => {
           if (res.status_code !== 200) cv_interact.error(res.error_message);
@@ -61,7 +61,9 @@ let PromotionComponent = new function () {
     let p = { 'user_class': (mThis.elFilter_app.val() + '').toLowerCase() };
     vsapi.call([mThis.base_url, '/api/getPromotionList'].join(''), p).then(res => {
       if (res.status_code === 200) {
+        //let imgs = StringSanitizer.sanitizeObject(res.data,null,['image_url','title','description']);
         let imgs = res.data;
+
         let i = 0, c;
         mThis.img_container.empty();
         //sanitize all Json props except "image_url"
@@ -74,12 +76,12 @@ let PromotionComponent = new function () {
           c.image_url = DUtil.escapeHtml(c.image_url);
           c.description = DUtil.escapeHtml(c.description);
           let html_row = [
-            '<div>',
-            '<a href="javascript:void(0)" data-id="', c.id, '" class="mobile-promo-delete">Delete</a>&nbsp;&nbsp;',
-            '<a href="javascript:void(0)" data-id="', c.id, '" class="mobile-promo-edit">Edit</a>',
-            '<div class="thumbnail">',
-            '<img class="promo-img" src="', c.image_url, '"></img>',
-            '<div class="caption"><span class="promo-title" style="width:180px">', c.title, '</span><p class="promo-des-text" style="width:180px">', c.description, '</p></div>',
+            '<div class="py-3">',
+            '<a href="javascript:void(0)" data-id="', c.id, '" class="btn btn-danger text-white mobile-promo-delete">Delete</a>&nbsp;&nbsp;',
+            '<a href="javascript:void(0)" data-id="', c.id, '" class="btn btn-primary mobile-promo-edit">Edit</a>',
+            '<div class="thumbnail py-2">',
+            '<img class="promo-img img-thumbnail" src="', c.image_url, '"></img>',
+            '<div class="caption px-1 py-2"><span class="promo-title" style="width:180px">', c.title, '</span><p class="promo-des-text" style="width:180px">', c.description, '</p></div>',
             '</div>',
             '</div>'].join('');
 
@@ -104,7 +106,7 @@ let PromotionComponent = new function () {
 //end::PromotionComponent
 
 //begin::PromoDialog
-var PromoDialog = new function () {
+let PromoDialog = new function () {
   let mThis = this;
   this.self = $('#promo_dlgPromo');
   this.base_url = $('#__base_url').val();
@@ -142,13 +144,13 @@ var PromoDialog = new function () {
     e.preventDefault();
     // console.log(e.total); // file size 
     //Sanitize photo data or photo stream
-    //var photoData = StringSanitizer.sanitizeOut(e.target.result, 'image');
+    //let photoData = StringSanitizer.sanitizeOut(e.target.result, 'image');
     let photoData = e.target.result; //No need to sanitize photo stream because Server will sanitize it anyway
 
     /* Strip off the image type from the base64 String because when we create image file on Server Photos directory, we need only pure byte stream that represents the image */
-    var base64result = photoData.split(',')[1]; /* strip the type off the base64String" 'data:image/jpeg;base64,'" */
+    let base64result = photoData.split(',')[1]; /* strip the type off the base64String" 'data:image/jpeg;base64,'" */
     /*Get file extention or fileType from the base64 String */
-    var fileType = photoData.split('/')[1].split(';')[0];
+    let fileType = photoData.split('/')[1].split(';')[0];
     if (fileType == 'jpeg') fileType = 'jpg'; /* make file extension to 3 characters only */
     /* Display the selected photo image */
     //mThis.imgLogo.prop('src', photoData); // putting file in dom without server upload.
@@ -165,14 +167,21 @@ var PromoDialog = new function () {
 
   //begin:: initialize fileChooser's onChange event
   this.elFileChooser.off('change').on('change', function () {
-    var files = mThis.elFileChooser.prop('files');
+    let files = mThis.elFileChooser.prop('files');
     //Note:  reader.readAsDataURL() triggers the reader.onLoad event above
-    var file = files[0];
+    let file = files[0];
     if (file) {
       if (file.type.match(/^image\/.*/)) {
+        //if (file.size >2000) {
+        //    alertify.showWarning('The image file is too big');
+        //} else {
         mThis.fileReader.readAsDataURL(file); /*return a data that can be set directly to Image.src property */
+
+        //}
+
+
       } else {
-        cv_interact.warning('The chosen image file is invalid!');
+        cv_interact.error('The chosen image file is invalid!');
       }
 
     }
@@ -193,11 +202,12 @@ var PromoDialog = new function () {
 
     vsapi.call([mThis.base_url, '/api/savePromotion'].join(''), p).then(res => {
       if (res.status_code === 200) {
-        if (typeof mThis.onClose == 'function') mThis.onClose(p);
+        if (typeof mThis.onClose === 'function') mThis.onClose(p);
         mThis.self.modal('hide');
         PromotionComponent.displayPromotionList();
       } else mThis.elError.text(res.error_message);
     });
+
   });
 
   this.getData = () => {
@@ -206,6 +216,8 @@ var PromoDialog = new function () {
       "id": mThis.promo_id,
       "Promo_id": mThis.promo_id,
       "user_class": "merchant",
+      //"user_id":mThis.elUser.val(),
+      //"user_group":mThis.elUserGroup.val(),
       "description": mThis.elDes.val(),
       "category": mThis.elCategory.val(),
       "title": mThis.elPromoTitle.val(),
@@ -223,12 +235,12 @@ var PromoDialog = new function () {
       let p = { 'id': id, 'user_class': mThis.user_class };
       vsapi.call([mThis.base_url, '/api/getPromotionInfo'].join(''), p).then(res => {
         if (res.status_code === 200) {
-          let d = res.data;
+          let d = StringSanitizer.sanitizeObject(res.data, ['.', '-', '?'], ['description', 'image_url']);
           mThis.elCategory.val(d.category);
           mThis.elDays.val(d.days_to_expire);
           mThis.elDes.val(d.description);
           mThis.elPromoTitle.val(d.title);
-          mThis.preview_img.prop('src', DUtil.decodeHtml(d.image_url));
+          mThis.preview_img.prop('src', DUtil.escapeHtml(d.image_url));
           onFinish();
         }
       });
@@ -242,13 +254,16 @@ var PromoDialog = new function () {
   }
 
   this.show = (op, onClose) => {
-    mThis.elTitle.html(op.title);
+    if (!op) op = {};
+    let text1 = LocaleManager.trans(op.title);
+    mThis.elTitle.html(text1);
     mThis.promo_id = op.promo_id;
     mThis.onClose = onClose;
     //if user_class is not correct => Modify Promotion, not display image preview
     mThis.user_class = op.user_class;
     mThis.preview_img.prop('src', null);
 
+    mThis.photo_data = null;
     if (mThis.promo_id > 0) {
       mThis.setData(mThis.promo_id, () => {
         mThis.self.modal({
@@ -262,8 +277,10 @@ var PromoDialog = new function () {
       });
     }
   }
+
 }
 //end::PromoDialog
+
 
 $(document).ready(() => {
   PromotionComponent.init();

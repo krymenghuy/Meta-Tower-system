@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Intervention\Image\Facades\Image;
+//use Illuminate\Database\Eloquent\Factories\HasFactory;
+//use Illuminate\Database\Eloquent\Model;
+//use Intervention\Image\Facades\Image;
 
 //use App\Models\Notifier;
 //use Storage;
@@ -14,9 +14,9 @@ use App\Models\DV;
 use Carbon\Carbon;
 use Exception;
 
-class PublicStorage extends Model
+class PublicStorage //extends Model
 {
-    use HasFactory;
+    //use HasFactory;
 
     //map from $user_class to upload directory name
     protected static $upload_dirs =[
@@ -33,7 +33,9 @@ class PublicStorage extends Model
       "vendor"=>"vendor",
       "customer"=>"customer",
       "client"=>"customer",
-      "admin"=>"general"  
+      "admin"=>"general",
+      "brand-image"=>"brand-images",
+      "identity"=>"identity"
     ];
 
     protected static $mimeTypes = [
@@ -86,8 +88,13 @@ class PublicStorage extends Model
             return $k?$k:$mimeType;
     }
 
-       static function deleteFile($fileName)
-       {
+    static function delete($branch_id,$user_class,$category,$file_name){
+         $file = self::getDiskPath($branch_id,$user_class,$category).$file_name;
+         return self::deleteFile($file);
+    }
+
+    static function deleteFile($fileName)
+    {
                 if (file_exists($fileName)) {
                     try{
                         unlink($fileName);
@@ -97,9 +104,9 @@ class PublicStorage extends Model
                   
                     return null;
                 } else return "File not found for deleting";  
-       }
+    }
 
-        static function getBase64ImageSize($base64Image){ //return memory size in B, KB, MB
+    static function getBase64ImageSize($base64Image){ //return memory size in B, KB, MB
             try{
                 $size_in_bytes = (int) (strlen(rtrim($base64Image, '=')) * 3 / 4);
                 $size_in_kb    = $size_in_bytes / 1024;
@@ -229,7 +236,12 @@ class PublicStorage extends Model
     //create a full-path including random file name,and return object = {path,file_name,extension}
     static function createFullPath($branch_id,$user_class,$category,$ext){
        $file_name = $branch_id."_file_".uniqid($branch_id).date('Ymd_hms').".".$ext;
-       $path = self::getDiskPath($branch_id,$user_class,$category).$file_name;
+       $path = self::getDiskPath($branch_id,$user_class,$category);
+       if (!file_exists($path)) {
+          mkdir($path, 0777, true);
+       }
+       $path .= $file_name;
+       
        return (object)[
         'path'=>$path,
         'file_name'=>$file_name,
@@ -247,8 +259,11 @@ class PublicStorage extends Model
     }
    
     //NOTE: $storeInfo is associative array {"id"=>row_id,"store"=>'table_name.column_name'} Example $storeInfo =['id'=>122,'store'=>'employees.photo_file_name'] 
-    static function saveProfilePicture($branch_id, $user_class,$ext,$photo,$maxSize=null,$storeInfo=[]){
+    //$userInfo = {branch_id,user_class}
+    static function saveProfilePicture($userInfo,$ext,$photo,$maxSize=null,$storeInfo=[]){
        $maxSize =$maxSize?$maxSize:500000; 
+       $branch_id = $userInfo->branch_id;
+       $user_class = $userInfo->user_class;
        $store = isset($storeInfo['store'])?$storeInfo['store']:null;
        $sts = explode('.',$store);
        $table = $sts[0];
@@ -256,8 +271,10 @@ class PublicStorage extends Model
        $id = isset($storeInfo['id'])?$storeInfo['id']:null;
        if($id && $table && $col){
             $rows = DB::table($table)->where('id',$id)->select([$col])->take(1)->get();
-            foreach($rows as $row){
-                $path = self::getDiskPath($branch_id,$user_class,'image').$row->{$col};
+            foreach($rows as $row)
+            {
+                $file_name = $row->{$col}; 
+                $path = self::getDiskPath($branch_id,$user_class,'image').$file_name;
                 //delete previous picture file
                 self::deleteFile($path);
             }
@@ -283,7 +300,7 @@ class PublicStorage extends Model
                 try{
                     //Through this senario, it means the $file_content is instance of Intervention/Image class and has been compressed to, by default, 500 KB
                     $file_content->save($p->path);
-                    return (object)['file_name'=>$p->file_name,'file_type'=>$p->extension,'ext'=>$p->extension,'extension'=>$p->extension,'status'=>"OK"];
+                    return (object)['status'=>'OK','file_name'=>$p->file_name,'file_type'=>$p->extension,'ext'=>$p->extension,'extension'=>$p->extension,'image_url'=>self::getUrl($branch_id,$user_class,'image').$p->file_name];
                 }catch(\Exception $e){
                     return (object)['error_message'=>$e->getMessage(),'status'=>'Error'];
                 }
@@ -295,7 +312,7 @@ class PublicStorage extends Model
                 $image = resizeImage_base64($file_content,$maxSize);
                 if(!$image) return (object)['error_message'=>"Invalid image data",'status'=>'Error'];
                 $image->save($p->path);
-                return (object)['file_name'=>$p->file_name,'file_type'=>$p->extension,'ext'=>$p->extension,'extension'=>$p->extension,'status'=>"OK"];
+                return (object)['status'=>'OK','file_name'=>$p->file_name,'file_type'=>$p->extension,'ext'=>$p->extension,'extension'=>$p->extension,'image_url'=>self::getUrl($branch_id,$user_class,'image').$p->file_name];
                 //Image::make($file_content)->save($full_path);
                 // Do something with the image
             } catch (\Exception $e) {
@@ -402,121 +419,117 @@ class PublicStorage extends Model
 //      return self::deleteFile($full_path); 
 //    }
 
-   static function saveMerchantProfilePhoto($branch_id,$sender_id,$file_type,$file_content){
-        $result = (object)array('error_message'=>null,'status'=>'OK');
-        $fileTypes = ['jpg','png','jpeg'];
+//    static function saveMerchantProfilePhoto($branch_id,$sender_id,$file_type,$file_content){
+//         $result = (object)array('error_message'=>null,'status'=>'OK');
+//         $fileTypes = ['jpg','png','jpeg'];
         
-        if (!$branch_id){
-            $result->error_message = "Failed to upload file due to invalid company identity";
-            $result->status ='Error';
-            return $result;
-        }
+//         if (!$branch_id){
+//             $result->error_message = "Failed to upload file due to invalid company identity";
+//             $result->status ='Error';
+//             return $result;
+//         }
   
-        if (!in_array($file_type,$fileTypes)){
-            $result->error_message = "Photo file type is not allowed. Allowed file type are png, jpg,jpeg";
-            $result->status ='Error';
-            return $result;
-        }
-        $ext = $file_type; //self::mime_to_ext($file_type);
+//         if (!in_array($file_type,$fileTypes)){
+//             $result->error_message = "Photo file type is not allowed. Allowed file type are png, jpg,jpeg";
+//             $result->status ='Error';
+//             return $result;
+//         }
+//         $ext = $file_type; //self::mime_to_ext($file_type);
 
-        if (!$ext){
-            $result->error_message = "Invalid file type or mime type ";
-            $result->status ='Error';
-            return $result;
-        }
+//         if (!$ext){
+//             $result->error_message = "Invalid file type or mime type ";
+//             $result->status ='Error';
+//             return $result;
+//         }
   
-        $file_name = $branch_id."_merchant_photo_".uniqid($branch_id).date('Ymd_hms');
+//         $file_name = $branch_id."_merchant_photo_".uniqid($branch_id).date('Ymd_hms');
 
-        $full_path = self::getDiskPath($branch_id,'merchant','image').$file_name;
-        $mErr = self::makeFile($file_type,$full_path,$file_content);
+//         $full_path = self::getDiskPath($branch_id,'merchant','image').$file_name;
+//         $mErr = self::makeFile($file_type,$full_path,$file_content);
 
-        if (!$mErr->error){
-            $rows = DB::table('sender')->where('branch_id',$branch_id)->where('id',$sender_id)->selectRaw('photo_file_name')->limit(1)->get();  
-            //todo: detect for error when two users try to delete this file at same time
-            foreach($rows as $row) {
-                if(!empty($row->photo_file_name)){
-                    $del_path = self::getDiskPath($branch_id,'merchant','image').$row->photo_file_name;
-                    $del_err = self::deleteFile($del_path);
-                }
-            }
-            $file_name .=".".$ext; 
-            DB::table('sender')->where('branch_id',$branch_id)->where('id',$sender_id)->update(array('photo_file_type'=>$file_type,'photo_file_name'=>$file_name));
-            $result->error_message =null;
-            $result->status ='OK'; 
-        }else{
-            $result->error_message = $mErr->error;
-            $result->status ='Error';
-            return $result;
-        }
-   }
+//         if (!$mErr->error){
+//             $rows = DB::table('sender')->where('branch_id',$branch_id)->where('id',$sender_id)->selectRaw('photo_file_name')->limit(1)->get();  
+//             //todo: detect for error when two users try to delete this file at same time
+//             foreach($rows as $row) {
+//                 if(!empty($row->photo_file_name)){
+//                     $del_path = self::getDiskPath($branch_id,'merchant','image').$row->photo_file_name;
+//                     $del_err = self::deleteFile($del_path);
+//                 }
+//             }
+//             $file_name .=".".$ext; 
+//             DB::table('sender')->where('branch_id',$branch_id)->where('id',$sender_id)->update(array('photo_file_type'=>$file_type,'photo_file_name'=>$file_name));
+//             $result->error_message =null;
+//             $result->status ='OK'; 
+//         }else{
+//             $result->error_message = $mErr->error;
+//             $result->status ='Error';
+//             return $result;
+//         }
+//    }
    
-   static function saveDriverProfilePhoto($branch_id,$driver_id,$file_type,$file_content){
-    $result = (object)array('error_message'=>null,'status'=>'OK');
-    $fileTypes = ['jpg','png','jpeg','svg'];
+//    static function saveDriverProfilePhoto($branch_id,$driver_id,$file_type,$file_content){
+//     $result = (object)array('error_message'=>null,'status'=>'OK');
+//     $fileTypes = ['jpg','png','jpeg','svg'];
     
-    if (!$branch_id){
-        $result->error_message = "Failed to upload file due to invalid company identity";
-        $result->status ='Error';
-        return $result;
-    }
+//     if (!$branch_id){
+//         $result->error_message = "Failed to upload file due to invalid company identity";
+//         $result->status ='Error';
+//         return $result;
+//     }
 
-    if (!in_array($file_type,$fileTypes)){
-        $result->error_message = "Photo file type is not allowed!";
-        $result->status ='Error';
-        return $result;
-    }
-        $file_name = $branch_id."_driver_profile_".date('Ymd_hms');
-        $ext= $file_type;
-        //$ext = self::mime_to_ext($file_type);
-        if (!$ext){
-            $result->error_message = "Invalid file type or mime type";
-            $result->status ='Error';
-            return $result;
-        }
+//     if (!in_array($file_type,$fileTypes)){
+//         $result->error_message = "Photo file type is not allowed!";
+//         $result->status ='Error';
+//         return $result;
+//     }
+//         $file_name = $branch_id."_driver_profile_".date('Ymd_hms');
+//         $ext= $file_type;
+//         //$ext = self::mime_to_ext($file_type);
+//         if (!$ext){
+//             $result->error_message = "Invalid file type or mime type";
+//             $result->status ='Error';
+//             return $result;
+//         }
 
-        $file_name .= ".".$file_type; 
-        $full_path = self::getDiskPath($branch_id,'driver','image').$file_name;
+//         $file_name .= ".".$file_type; 
+//         $full_path = self::getDiskPath($branch_id,'driver','image').$file_name;
         
-        $mErr = self::makeFile($file_type,$full_path,$file_content);
-        if(!$mErr->error){
-            $rows = DB::table('driver')->where('branch_id',$branch_id)->where('id',$driver_id)->selectRaw('photo_file_name')->limit(1)->get();  
-            //todo: detect for error when two users try to delete this file at same time
-            foreach($rows as $row) {
-                if(!empty($row->photo_file_name)){
-                    $del_path = self::getDiskPath($branch_id,'driver','image').$row->photo_file_name;
-                    self::deleteFile($del_path);
-                }
-            }
-            $file_name .=".".$ext;
-            DB::table('driver')->where('branch_id',$branch_id)->where('id',$driver_id)->update(array('photo_file_type'=>$file_type,'photo_file_name'=>$file_name));
-            $result->error_message =null;
-            $result->status ='OK'; 
-        }else {
-            $result->error_message = $mErr->error;
-            $result->status ='Error';
-            return $result;
-        } 
+//         $mErr = self::makeFile($file_type,$full_path,$file_content);
+//         if(!$mErr->error){
+//             $rows = DB::table('driver')->where('branch_id',$branch_id)->where('id',$driver_id)->selectRaw('photo_file_name')->limit(1)->get();  
+//             //todo: detect for error when two users try to delete this file at same time
+//             foreach($rows as $row) {
+//                 if(!empty($row->photo_file_name)){
+//                     $del_path = self::getDiskPath($branch_id,'driver','image').$row->photo_file_name;
+//                     self::deleteFile($del_path);
+//                 }
+//             }
+//             $file_name .=".".$ext;
+//             DB::table('driver')->where('branch_id',$branch_id)->where('id',$driver_id)->update(array('photo_file_type'=>$file_type,'photo_file_name'=>$file_name));
+//             $result->error_message =null;
+//             $result->status ='OK'; 
+//         }else {
+//             $result->error_message = $mErr->error;
+//             $result->status ='Error';
+//             return $result;
+//         } 
  
-   }
+//    }
 
-    static function getProfilePhoto_url($branch_id,$user_class,$official_id){
-            if($user_class =='staff' || $user_class =='employee') 
-             {
-                return null;
-                // $rows = DB::table('sender AS d')->where('d.branch_id',$branch_id)->where('d.id',$sender_id)->selectRaw('photo_file_name,photo_file_type')->limit(1)->get();
-                // foreach($rows as $row) {
-                //     if (empty($row->photo_file_name)) 
-                //     return null;
-                //     else
-                //     return self::getUrl($branch_id,'merchant','image').$row->photo_file_name; 
-                // } 
-                // return $sender_id;
-             }
-            else if ($user_class ==='staff') 
-            {
-                return null;
-            }
-            return null;
+    static function getProfilePhoto_url($user_id){
+       $user = UM::getUserProps($user_id,"id,branch_id,user_class,official_id");
+       if(!$user) return null;
+       $table = null;
+       $user_class = $user->user_class;
+       if ($user_class==='driver') 
+        $table ="driver";
+       else if ($user_class ==='merchant' || $user_class ==='sender') 
+         $table ="sender";
+       if(!$table) return null;
+
+       $row = getDataRow($table,['id'=>$user->official_id],"photo_file_name");
+       if(!$row) return null;
+       return self::getURl($user->branch_id,$user->user_class,'image').$row->photo_file_name;       
     }
 
    //return base64 content of image

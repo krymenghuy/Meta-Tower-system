@@ -192,11 +192,19 @@ let MedicalServiceComponent = new function () {
         mThis.options = options;
 
         mThis.loadFilterOptions((items) => {
-            VSUtil.setComboItems(mThis.elFilter_department, items, 'id', 'name', true, '(Select department)', 0);
-            mThis.displayMedicalServices(() => {
-                main_view.setTitle(mThis.title_prop);
-                mThis.self.show().siblings().hide();
-            })
+            VSUtil.setComboItems(mThis.elFilter_department, items, 'id', 'name', true, '(Select department)', null);
+                let first_option = null;
+                if(!mThis.elFilter_department.val()) first_option = items[0];
+                if(first_option){
+                    mThis.elFilter_department.val(first_option.id).trigger('change');
+                    main_view.setTitle(mThis.title_prop);
+                    mThis.self.show().siblings().hide();
+                    return;
+                }  
+                // mThis.displayMedicalServices(() => {
+                //         main_view.setTitle(mThis.title_prop);
+                //         mThis.self.show().siblings().hide();
+                // });
         });
     }
 }

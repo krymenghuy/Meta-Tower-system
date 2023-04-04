@@ -155,6 +155,7 @@ class Person //extends Model
             if($photo) PublicStorage::saveProfilePicture($branch_id,'person','png',$photo,null,['store'=>"persons.photo_file_name","id"=>$person_id]); 
             return DV::success(['person'=>$inputs]);
         }
+        return JDV::error('Something when wrong in saving person profile');
     }
  
     //forceSave() will create a new person profile if the given @person_id is not supplied or zero 
@@ -170,6 +171,7 @@ class Person //extends Model
         $o_name = getNameParts($inputs['name']);
         $inputs['first_name'] = $o_name->first_name;
         $inputs['last_name'] = $o_name->last_name;
+        unset($inputs['name']);
         unset($inputs['photo']);
         $person_id = saveData($ss,'persons',['id'=>$person_id],$inputs,[],1);
         if($person_id>0) return DV::success(['person_id'=>$person_id]);

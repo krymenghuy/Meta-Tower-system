@@ -227,22 +227,22 @@ class GeneralSettingsController extends Controller
    function getComboItems_department(Request $req){
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
-    return JDV::result(\App\Models\GeneralSettings::employee_department($ss));
+    return JDV::result(\App\Models\GeneralSettings::options_department($ss));
   }
   function getComboItems_position(Request $req){
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
-    return JDV::result(\App\Models\GeneralSettings::employee_position($ss));
+    return JDV::result(\App\Models\GeneralSettings::options_position($ss));
   }
   function getComboItems_nationality(Request $req){
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
-    return JDV::result(\App\Models\GeneralSettings::employee_nationality($ss));
+    return JDV::result(\App\Models\GeneralSettings::options_nationality($ss));
   }
 
   static function getComboItems_consultant_internal($branch_id,$department_id=0){
     $str_where ="ep.position_id IN(2,3) and ep.status ='Active'";
-    return DB::table("employees as e")->join('persons as p','p.id','=','e.person_id')->join('employee_positions as ep','ep.emp_id','=','e.id')->where('e.branch_id',$branch_id)->whereRaw($str_where)->selectRaw("e.id,p.name as consultant_name,e.code")->get();
+    return DB::table("employees as e")->join('persons as p','p.id','=','e.person_id')->join('employee_positions as ep','ep.emp_id','=','e.id')->where('e.branch_id',$branch_id)->whereRaw($str_where)->selectRaw("e.id,concat(p.last_name,' ',p.first_name) AS consultant_name,e.code")->get();
   }
 
   // static function getComboItems_department(Request $req){

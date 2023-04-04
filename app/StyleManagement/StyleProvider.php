@@ -51,7 +51,14 @@ namespace App\StyleManagement;
                     'files'=>[
                         'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css'
                     ]
-                ]                  
+                ],
+            'login-styles'=>[
+                'output_file'=>'/dist/css/login-styles.css',
+                'files'=>[
+                    '/assets/css/login/login-style.css',
+                    '/assets/css/font-awesome/6.2.0/css/all.min.css'
+                ]
+            ]                   
          ];
 
          static function bundle($bundle_name=null){

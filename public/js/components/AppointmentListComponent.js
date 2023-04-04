@@ -805,7 +805,7 @@ let PatientDialog = new function () {
     }
 
     this.prepareOptions = (onFinish) => {
-        window.vsapi.call(`${main_view.base_url}/api/patient-reg-options`, null).then((res) => {
+        window.vsapi.call(`${main_view.base_url}/api/settings/patient-reg-options`, null).then((res) => {
             if (res.status_code === 200) {
                 let nats = StringSanitizer.sanitizeObject(res.data.nationalities);
                 let vital_sign_fields = StringSanitizer.sanitizeObject(res.data.vital_sign_fields);
@@ -929,7 +929,7 @@ let ServiceQueueDialog = new function () {
         window.vsapi.call(`${main_view.base_url}/api/settings/options-department`, null).then((res) => {
             if (res.status_code === 200) {
                 let items = StringSanitizer.sanitizeObject(res.data);
-                VSUtil.setComboItems(mThis.elDepartment, items, 'id', 'department_name', null, null);
+                VSUtil.setComboItems(mThis.elDepartment, items, 'id', 'department', null, null);
                 onFinish();
             }
         });
@@ -960,6 +960,6 @@ let ServiceQueueDialog = new function () {
     }
 }
 
-$(document).ready(() => {
+window.addEventListener('DOMContentLoaded',e=> {
     AppointmentListComponent.init();
 });

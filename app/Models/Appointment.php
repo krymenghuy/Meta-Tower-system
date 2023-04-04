@@ -234,7 +234,7 @@ class Appointment //extends Model
         DB::table('appointments')->where('id',$appt_id)->where('branch_id',$ss->branch_id)->delete();
         return DV::success();
     }
-
+    
     protected function validateChiefComplaintItems($items=[]){
         $inputs = [];  
         foreach($items as $item){
@@ -257,7 +257,7 @@ class Appointment //extends Model
             $search_value = escape_like_str($search_value);
             $str_search ="p.phone_number ='$search_value' OR pt.code ='$search_value'";
         }
-        $rows = DB::table('persons as p')->join('patients as pt','pt.person_id','=','p.id')->where('pt.branch_id',$branch_id)->whereRaw($str_search)->selectRaw("pt.id as patient_id,p.id as person_id,p.name,p.sex,p.phone_number,p.email,p.cp_phone_number")->get();
+        $rows = DB::table('persons as p')->join('patients as pt','pt.person_id','=','p.id')->where('pt.branch_id',$branch_id)->whereRaw($str_search)->selectRaw("pt.id as patient_id,p.id as person_id,concat(p.last_name,' ',p.first_name) AS `name`,p.sex,p.phone_number,p.email,p.cp_phone_number")->get();
         //$person = Patient::retrieveBy($branch_id,['phone_number'=>$phone_number,'national_id'=>$national_id]);
         if(!isset($rows[0])){
             if($search_value){

@@ -11,7 +11,9 @@ class Employee //extends Person
 {
     protected $id = null;
     protected $userInfo =null;
-    
+    protected static $def_prefix="";
+    protected static $def_code_length= 5;
+
     function __construct($id =null,$userInfo = null){
          $this->id = $id;
          $this->userInfo = $userInfo;
@@ -76,7 +78,7 @@ class Employee //extends Person
            if (!$id) $emp_created = true; 
             $id = saveData($ss,'employees',['id'=>$id],$inputs,[],1);
             if($id>0){
-               if($emp_created) $new_code = setOfficialCode($branch_id,'employee_code_control','employees',['id'=>$emp_id],$def_prefix,$def_code_length);
+               if($emp_created) $new_code = setOfficialCode($branch_id,'employee_code_control','employees',['id'=>$id],self::$def_prefix,self::$def_code_length);
                if($photo){
                 $file = PublicStorage::saveProfilePicture($branch_id,'staff','png',$photo,100,['store'=>"employees.photo_file_name","id"=>$id]);
                 // if($file->status ==='OK'){
@@ -100,7 +102,8 @@ class Employee //extends Person
     }
 
     function delete($id=null,$ss=null){
-       $id = $id?$id:$this->getId(); 
+       $id = $id?$id:$this->getId();
+       $ss = $ss?$ss:$this->getUserInfo(); 
        $branch_id = $ss->branch_id;
        $person_id = self::personId($id);
        if (!self::canDelete($ss,$id)) return DV::error("Employee profile is locked");

@@ -5,25 +5,24 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/login/login-style.css') }}" />
-        <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/font-awesome/6.2.0/css/all.min.css') }}" />
-        <title>M-Clinic</title>
-        <style type="text/css">
-            *{
-                padding:0;
-                margin:0;
-                box-sizing: border-box;
-            }
-            
-            .vs-container{
-                width:100vw;
-                height:100vh;
-                overflow:hidden;
-            }
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <?php StyleManager::render('login-styles'); ?>
+    <title>M-Clinic</title>
+    <style type="text/css">
+        *{
+            padding:0;
+            margin:0;
+            box-sizing: border-box;
+        }
+        
+        .vs-container{
+            width:100vw;
+            height:100vh;
+            overflow:hidden;
+        }
 
             .img-background{
                 width:100vw;

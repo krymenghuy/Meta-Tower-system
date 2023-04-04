@@ -37,7 +37,7 @@ class Invoice
     }
 
     //CreateInvoice() | saveInvoice()
-     public function create($d,$ss=null){
+    function create($d,$ss=null){
        if(!$ss) $ss = $this->getUserInfo();
        $branch_id = $ss->branch_id;
        $validate_rule =[
