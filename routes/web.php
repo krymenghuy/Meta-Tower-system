@@ -23,15 +23,6 @@ use Illuminate\Contracts\Session\Session;
 |
 */
 
-// Route::get('/getlogin', function(){
-//     $email = 'admin@gmail.com';
-//     $password = '123456';
-//     $data = (object ) array('email'=>$email, 'password'=>$password);
-//     return response()->json($data);
-// });
-
-// Route::get('view-pdf', [PdfController::class, 'previewPdf']);
-
 Route::get('view-pdf', function(){
     $datas = \DB::SELECT('SELECT * FROM package');
         $fileName = 'UserList.pdf';

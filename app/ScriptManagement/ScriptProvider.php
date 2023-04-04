@@ -53,54 +53,35 @@ namespace App\ScriptManagement;
                 '/assets/js/vsutil.js',
                 '/assets/js/vsdom.js',
                 '/assets/js/sweetalert2.all.min.js',
-                //Initialize Toast style and options
                 '/assets/js/sweetalert2.toast.js',
                 '/assets/js/ItemsView.js',
                 '/assets/js/ExchangeManager.js',
                 '/assets/js/expandableTableRow.js',
-                '/assets/js/Popper.js', //Popper 2.10
-                //'/assets/plugins/chart.js/Chart.js',
+                '/assets/js/Popper.js',
                 '/assets/vendors/general/popper.js/dist/umd/popper.js',
-                ////'https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js', 2.9
-                '/assets/material-js/bootstrap.min.js', //bootstrap 5.0.2
-                ////'https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js',//bootstrap 5.0.2
-                //'/assets/vendors/general/tooltip.js/dist/umd/tooltip.min.js',
-                //"https://code.iconify.design/2/2.0.3/iconify.min.js",
-                //"{{ asset('assets/dist/js/pages/dashboard3.js') }}",                  
+                '/assets/material-js/bootstrap.min.js',                
                 '/assets/js/validator.js',
                 '/assets/js/cv_interact.js',
                 '/assets/js/datehelper.js',
                 '/assets/js/date.js',
                 '/assets/js/jquery.datepicker2.js',
-                //'assets/js/html2canvas.min.js',
-                //'/assets/js/vs_multiple_select.js',
-                //'https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js',
                 '/assets/js/xlsx/xlsx.full.min.js',
-                //'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.1/xlsx.full.min.js',
                 '/assets/vendors/general/js-cookie/src/js.cookie.js',
                 '/assets/vendors/general/moment/min/moment.min.js',
                 '/assets/vendors/general/perfect-scrollbar/dist/perfect-scrollbar.js',
                 '/assets/vendors/general/sticky-js/dist/sticky.min.js',
                 '/assets/js/select2.min.js',
                 '/assets/js/initializeSelect2.js',
-                '/assets/js/toastr.min.js', /** for event toast **/
+                '/assets/js/toastr.min.js',
                 '/assets/js/init.toastr.js',
                 '/assets/js/demo1/scripts.bundle.js',
                 '/assets/js/datatables.bundle.min.js',
-                //'/assets/plugins/chart.js/Chart.js',
                 '/assets/js/datatables.bundle.min.js',
-                //'https://js.pusher.com/7.2/pusher.min.js', 
-                //'/js/app.js',
                 '/assets/js/browsercontrol.js'
             ]
                     ,'no-minify'=>[
                         '/assets/js/crypto-js.js',
                         '/assets/js/ckeditor.js',
-                        //'https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js',
-                        //'/assets/js/datatables.bundle.min.js'
-                        //,'http://127.0.0.1:8000/assets/vendors/custom/datatables/datatables.bundle.js',
-                        //'/assets/vendors/general/perfect-scrollbar/dist/perfect-scrollbar.js'
-
                     ]
                 ],
                'components'=>[
@@ -109,10 +90,7 @@ namespace App\ScriptManagement;
                     'output_file'=>'/dist/js/clinic.components.js',
                     'files'=>[
                         '/assets/js/formUtils.js',
-                        //'assets/js/pusher/pusher.min.js',
                         '/js/layout/main.js?v=1',
-                        // '/assets/js/vfs_fonts.js',
-                        // '/assets/js/pdfmake.min.js',
                         '/js/components/PDFReport.js',
                         '/js/components/FileChooser.js',
                         '/js/components/DashboardComponent.js',
@@ -136,7 +114,6 @@ namespace App\ScriptManagement;
                         '/js/components/ExpenseBookComponent.js',
                         '/js/components/ReportCenterComponent.js',
                         '/js/components/InputBoxes.js',
-                        //'/js/components/FindPersonDialog.js',
                         '/js/components/CompanyComponent.js?v=1',
                         '/js/components/MobileBrandImagesComponent.js',
                         '/js/components/PromotionComponent.js',

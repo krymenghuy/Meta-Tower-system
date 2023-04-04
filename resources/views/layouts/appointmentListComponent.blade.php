@@ -161,7 +161,9 @@
     <div class="modal-dialog vs-modal-dialog modal-lg" role="dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title​ trans-text" data-langprop="titles.New Appointment" id="_apl_dlgAppt_title">New Appointment</h5>
+                <h5 class="modal-title​ trans-text" data-langprop="titles.New Appointment" id="_apl_dlgAppt_title">
+                    New Appointment
+                </h5>
             </div>
             <div class="modal-body">
                 <div class="row" id="_apl_dlgAppt_body">
@@ -188,7 +190,6 @@
                             <select data-field="client_sex" data-ffield="Sex" class="modal-select2 data-input" id="_appt_client_sex">
                                 <option value="M">Male</option>
                                 <option value="F">Female</option>
-                                <option value="O">Other</option>
                             </select>
                         </div>
                     </div>
@@ -311,7 +312,9 @@
     <div class="modal-dialog modal-lg vs-modal-dialog" role="dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title trans-text " data-langprop="titles.Register Patient" id="_apl_dlgAppt_title">Register Patient</h5>
+                <h5 class="modal-title trans-text " data-langprop="titles.Register Patient" id="_apl_dlgAppt_title">
+                    Register Patient
+                </h5>
             </div>
             <div class="modal-body">
                 <div class="row" id="_apl_dlgPatient_body">
@@ -328,7 +331,6 @@
                             <select data-field="sex" data-ffield="Sex" class="modal-select2 data-input-reg">
                                 <option value="M">Male</option>
                                 <option value="F">Female</option>
-                                <option value="O">Other</option>
                             </select>
                         </div>
                     </div>

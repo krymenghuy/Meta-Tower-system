@@ -4,7 +4,6 @@ use App\ScriptManagement\ScriptProvider;
 use App\ScriptManagement\Minifier;
 
 class ScriptManager{
- 
     protected static $script_path = "";
 
     function __construct(){
@@ -14,12 +13,6 @@ class ScriptManager{
     function __destruct(){
         return null;
     }
-
-    // static function getBaseUrl(){
-    //     $server_name = $_SERVER['SERVER_NAME'];
-    //     $protocol = stripos($_SERVER['SERVER_PROTOCOL'],'https') === 0 ? 'https://' : 'http://';
-    //     return $protocol.$server_name;
-    // }
    
     //remove comments from codes
     static function removeComments( $js ) {
@@ -67,14 +60,12 @@ class ScriptManager{
      
         if(curl_errno($ch)) {
             return (object)['status'=>'Error','error_message'=>"Failed to fectch url $url.Error: ".curl_error($ch)];
-            //throw new Exception('Curl error: ' . curl_error($ch));
         }
     
         curl_close($ch);
     
         if ($data === FALSE) {
             return (object)['status'=>'Error','error_message'=>"Failed to fectch url $url. Info: ".$info];
-            //throw new Exception("curl_exec returned FALSE. Info follows:\n" . print_r($info, TRUE));
         }
         return (object)['content'=>$data,'error_message'=>null,'status'=>'OK'];
     }
@@ -453,5 +444,3 @@ class ScriptManager{
        echo $ss;
     }
 }
-
-?>
