@@ -1,5 +1,4 @@
 "use strict";
-//begin:: PatientFinderComponent
 let PatientFinderComponent = new function () {
     let mThis = this;
     this.title_prop = 'Find Patient';
@@ -19,9 +18,6 @@ let PatientFinderComponent = new function () {
         "Action": "Action"
     };
 
-    //Initialize langauge translation tasks (for dataTable columns headers)
-    //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-    //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
     this.setLanguage = () => {
         if (LocaleManager.lang !== mThis.lang) {
             for (let prop in mThis.col_titles) {
@@ -70,11 +66,8 @@ let PatientFinderComponent = new function () {
             'tr_dataset': ['patient_id'],
             'onOpen': (container, detail_tr, parent_tr) => {
                 let q_tr = $(parent_tr);
-                //It is IMPORTANT to access patient_id using jquery object here because the "createdRow" event passes data-id atttribue using jquery method
                 let patient_id = q_tr.data('id');
-                //Capture value using jquery
                 let current_view_name = detail_tr.dataset.currentview;
-                //Show Expandable Details of each ticket (QTicket)
                 PatientDetails.show($(detail_tr), {
                     'default_tab_view': current_view_name ? current_view_name : 'invoices',
                     'patient_id': patient_id,
@@ -88,7 +81,7 @@ let PatientFinderComponent = new function () {
             e.preventDefault();
             let lnk = $(this);
             let p = { 'id': lnk.data('id') };
-            cv_interact.confirm('Remove this patient?', { 'confirmButtonText': 'Delete', 'cancelButtonText': 'Dont Delete', title: null, 'context': 'delete' }, (e) => {
+            cv_interact.confirm('Remove this patient?', { 'confirmButtonText': 'Delete', 'cancelButtonText': "Don't Delete", title: null, 'context': 'delete' }, (e) => {
                 if (e) {
                     vsapi.call(`${mThis.base_url}/api/patient/delete`, p).then((res) => {
                         if (res.status_code === 200) {
@@ -112,22 +105,17 @@ let PatientFinderComponent = new function () {
             if (prop_name) str_props = [str_props, str_props ? " " : "", prop_name, `="${data[prop_name]}"`].join('');
         });
 
-        //cla = 'class_list_action' = > cla_delete, cla_modify,...
         let html = ['<div class="dropdown-menu action-menus">',
             '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _pf_patient_edit" href="javascript:void(0)"><i class="fa fa-edit" style="color:blue;font-size:1.1em;margin-top:2px;"></i> <span>View Profile</span</a>',
-            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _pf_medical_history" href="#"><i class="fa fa-list-alt" style="color:orange"></i> View Medical History</a>',
+            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _pf_medical_history" href="javascript:void(0)"><i class="fa fa-list-alt" style="color:orange"></i> View Medical History</a>',
             '<div class="dropdown-divider"></div>',
-            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _pf_patient_delete" href="#"><i class="fa fa-times" style="color:red"></i> Delete Profile</a>',
-            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _pf_patient_invoices" href="#"><i class="fa fa-list" style="color:green"></i> Invoices</a>',
+            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _pf_patient_delete" href="javascript:void(0)"><i class="fa fa-times" style="color:red"></i> Delete Profile</a>',
+            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _pf_patient_invoices" href="javascript:void(0)"><i class="fa fa-list" style="color:green"></i> Invoices</a>',
             '</div>'].join('');
         return html;
     }
 
-    //displayCreditOfficerList()| displayCO|
     this.displayPatients = (onFinish = null) => {
-        //Initialize language for DataTable columns headers
-        //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-        //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
         let p = { 'search_value': mThis.elSearch.val() };
         window.vsapi.call(`${mThis.base_url}/api/patient/list`, p, 'POST', null).then((result) => {
@@ -135,12 +123,11 @@ let PatientFinderComponent = new function () {
             if (result.status_code === 200) data = result.data;
             if (mThis.table) {
                 mThis.tblPatients.DataTable().clear().destroy();
-                //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
                 mThis.tblPatients.empty();
                 mThis.table = null;
             }
             data = StringSanitizer.sanitizeObject(data, null, ['cur_symbol']);
-            //begin::Set up columns
+
             let my_columns = [
                 {
                     data: function (data, a, b) {
@@ -159,12 +146,6 @@ let PatientFinderComponent = new function () {
                     data: 'sex'
 
                 },
-                // {
-                //     title: mThis.trans_title('Age'),
-                //     data: (data, a, b) => {
-                //         return data.age;
-                //     }
-                // },
                 {
                     title: mThis.trans_title('Phone Number'),
                     data: (data, a, b) => {
@@ -180,7 +161,6 @@ let PatientFinderComponent = new function () {
                 {
                     title: mThis.trans_title('Action'),
                     data: function (data, a, b) {
-                        let status_class = null; //mThis.getStatusClass(data.status_id);
                         return [`<div class="form-inline">`,
                             `<a href="javascript:void(0)" class="btn_co_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" class="btn_patient_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
@@ -191,10 +171,6 @@ let PatientFinderComponent = new function () {
                     }
                 }
             ];
-            //END Define colum
-
-            //translate column names
-            //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
 
             if (!mThis.table)
                 mThis.table = mThis.tblPatients.DataTable({
@@ -202,7 +178,6 @@ let PatientFinderComponent = new function () {
                     destroy: true,
                     paging: true,
                     ordering: false,
-                    //dom: 'Bfrtip',
                     retrieve: true,
                     //scrollY:390,
                     //scrollX:500,
@@ -226,7 +201,6 @@ let PatientFinderComponent = new function () {
                         tr.data('personid', data.person_id);
                     }
                 });
-
             if (typeof onFinish === 'function') onFinish();
         });
 
@@ -249,7 +223,6 @@ let PatientDetails = new function () {
         return `${VSUtil.asset_url()}/images/icons`;
     }
 
-    //begin:: initialize PatientDetails. Eventhandler bindlings
     this.init = () => {
         mThis.tblPatients.on('click', 'a.btn-ticket-tab', function (e) {
             e.preventDefault();
@@ -260,7 +233,6 @@ let PatientDetails = new function () {
             mThis.displayPatientTab(ws, view_name);
         });
     }
-    //end::TicketDetails.init()
 
     this.setActiveTabButton = (div_wrapper, view_name = null) => {
         div_wrapper.find('.btn-ticket-tab').each(function () {
@@ -268,14 +240,12 @@ let PatientDetails = new function () {
             if (btn.data('viewname') === view_name) {
                 btn.addClass('btn-ticket-tab--active').siblings().removeClass('btn-ticket-tab--active');
 
-                //Set "data-currentview" to ba accessible by Vanila javascript syntax (dataset)
                 div_wrapper.closest('tr').attr('data-currentview', view_name);
                 return false;
             }
         });
     }
 
-    //default view is "invoices" for Receiptionist
     this.displayPatientTab = (div_workspace, view_name = null) => {
         let div_main_wrapper = div_workspace.parent();
 
@@ -409,22 +379,17 @@ let PatientDetails = new function () {
         };
 
         mThis.setActiveTabButton(div_main_wrapper, view_name);
-        //Render patient's details by section or view_name
         renderPatientDetails[view_name]();
     }
 
-    //Display Patient Details panel, by displaying the "History" tab as default view
     this.show = (detail_tr, options) => {
         let patient_id = options.patient_id;
-        //options.default_tab_view = options.default_tab_view?options.default_tab_view:"invoices";
         let div_wrapper = detail_tr.find('div.expandable-row-containter');
         let div_wrapper_id = `patient_details_wrapper_${patient_id}`;
         let div_id = `ws_${patient_id}`;
 
         let div_tab_pane = detail_tr.find(`div#${div_wrapper_id}`);
         if (div_tab_pane.length === 0 || !div_tab_pane) {
-            //todo: replace class "ticket-info-wrapper" with class "patient-details-wrapper" to make the class list shorter
-            //NOTE: css class "patient-details-wrapper" is used to detect if the detail panel is already rendered before
             let html = `<div id = "${div_wrapper_id}" class="ticket-info-wrapper shadow-lg d-flex" style="width:100%;dislay:none">
                             <div class="form-inline ticket-tab-buttons" role="group" aria-label="ticket tabs" style="display:block">
                                 <a style="padding:5px" data-viewname="history" data-target ="${div_id}" type="button" class="btn-ticket-tab btn-patient-history trans-text" data-langprop="buttons.History">History</a>
@@ -438,9 +403,7 @@ let PatientDetails = new function () {
             div_tab_pane = detail_tr.find(`div#${div_wrapper_id}`);
         }
         div_tab_pane.show();
-        //Display default tab view on Expandable Row. Every time when user (e.g: Receiptionist user) clicks to expand patient's details
         mThis.displayPatientTab(div_wrapper.find(`#${div_id}`), options.default_tab_view);
-        ///todo: show detaul tab "History"
     }
 }
 

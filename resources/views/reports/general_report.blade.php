@@ -11,7 +11,6 @@
         min-height:130px
     }
 </style>
-
 <div class="p-3">
     <div class="d-flex align-items-center gap-4">
         <div class="d-flex align-items-center">

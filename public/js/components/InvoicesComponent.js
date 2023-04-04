@@ -2,23 +2,18 @@
 let InvoiceSettings = new function(){
    this.currency = {'code':'USD','symbol':'$'};
    this.default_discount_type = 'percentage';
-   // this.default_price_type ='retail' => use retail price, Not wholesaleprice
-   this.default_price_type ='retail'; /** {'retail','wholesale'} **/
+   this.default_price_type ='retail';
    this.init = ()=>{
-     //todo: load invoice's defualt currency info from api
-     //todl: load default discount type from api
-     return;
+    return;
    }
 }
 
 let InvoicesComponent = new function () {
-    //By default set invoice to be Retail Sales invoice, so the item's price is retail price
     this.retail_sales =1;
     let mThis = this;
     this.title_prop = 'Invoices';
     this.self = $('#_main_invoicesComponent');
     this.tblInvoice = $('#_inv_tblInvoice');
-    // this.invoiceTable is native javascript object, and it is also used by InvoicesComponents
     this.invoiceTable = document.querySelector(`#_inv_tblInvoice`);
     this.elSearchInvoice = $('#_inv_search_invoice');
     
@@ -65,12 +60,12 @@ let InvoicesComponent = new function () {
             let p = {'id':invoice_id};
             cv_interact.confirm('Delete this invoice?',{'title':"Delete Invoice",'context':'delete'},(e) => {
                  if(e){
-                     vsapi.call(`${main_view.base_url}/api/invoice/delete`,p,null,null).then(res=>{
-                         if(res.status_code ===200){
-                         mThis.refreshInvoiceInfo(tr.prev(),res.data); 
-                         mThis.displayInvoices();    
-                         }else cv_interact.error(res.error_message);
-                     });
+                    vsapi.call(`${main_view.base_url}/api/invoice/delete`,p,null,null).then(res=>{
+                        if(res.status_code ===200){
+                        mThis.refreshInvoiceInfo(tr.prev(),res.data); 
+                        mThis.displayInvoices();    
+                        }else cv_interact.error(res.error_message);
+                    });
                  }
             });
          });
@@ -140,19 +135,14 @@ let InvoicesComponent = new function () {
             }
         });
  
-        //begin:: init events in Expandable Row View
             mThis.tblInvoice.on('click','a.ivc-pmt-edit',e=>{
                 let x = $(e.currentTarget);
                 let pmt_id = x.data('id');
                 let invoice_id =x.data('invoiceid');
-                //based on invoiceRowId to find parent row element (tr)
                 let invoiceRowId = ['ivc_',invoice_id].join('');
                 let op = {"id":pmt_id,'invoice_id':invoice_id,
-                'onClose':function(data){ 
-                        //"data" is data returned from api. data = {currency_code,amount_paid,amount_due}
+                'onClose':function(data){
                         mThis.refreshInvoiceInfo(invoice_id,data);
-                        //NOTE that "mThis.invoiceTable" is native javascript node represent mThis.tblInvoice
-                        //whereas, "mThis.tblInvoice" is jquery object
                         let tr = mThis.invoiceTable.querySelector(`#${invoiceRowId}`);
                         mThis.displayInvoicePayments(tr.nextElementSibling,invoice_id);
                     }
@@ -187,8 +177,7 @@ let InvoicesComponent = new function () {
                 main_view.getEncryptData(qString, (d) => {
                     window.open([main_view.base_url, '/receipt/', d].join(''), '_blank');
                 });
-            }); 
-        //end:: init events in Expandable Row View
+            });
     };
      
     this.displayInvoicePayments = (detail_tr, invoice_id = 0) => {
@@ -204,14 +193,12 @@ let InvoicesComponent = new function () {
                 let d = StringSanitizer.sanitizeObject(res.data);
                 let epanel = detail_tr.querySelector(`#${div_id}`);
 
-                //begin:: refresh display of total amount paid
                     let tr = detail_tr.previousElementSibling;
                     if (tr){
                         d.amount_paid = d.amount_paid?d.amount_paid:0;
                         tr.querySelector('.col-amount-paid').textContent =  mThis.formatInvoiceAmount(d.currency_code,Number(d.amount_paid).toFixed(2));
                         tr.querySelector('.btn-pmt-status').textContent =  d.pmt_status;
                     }
-                //end::refresh display of total amount paid
                
                 if (!epanel){
                     let html = `<div id="${div_id}" data-invoiceid="${d.invoice_id}" data-pmtstatus="${d.pmt_status}" class="invoice-pmt-wrapper shadow-lg d-flex" style="width:100%;">
@@ -251,7 +238,6 @@ let InvoicesComponent = new function () {
        let cur_symbol = ExchangeManager.currencies[currency_code].symbol;
        let cnt = 0;
        rows.map(c=>{
-         //let invoiceRowId = ['ivc_',c.invoice_id?c.invoice_id: invoice_id].join('');
          html = [html,`<tr><td><a href="javascript:void(0)" class="btn_print_pmt fw-bold" data-id="${c.id}">${c.ref_number}</a></td><td>${c.payment_date}</td><td>${cur_symbol}${c.amount}</td><td>${cur_symbol}${c.tax_amount}</td><td><span class="d-block">${c.create_user}</span><span class="d-block text-secondary text-sm-left p-2">${c.notes?c.notes:''}</span></td>
          <td class="col-action">
          <a href="javascript:void(0)" class="ivc-pmt-edit" data-id="${c.id}" data-invoiceid="${c.invoice_id}"><i class="fa fa-solid fa-edit"></i></a>
@@ -344,18 +330,11 @@ let InvoicesComponent = new function () {
                     destroy: true,
                     paging: true,
                     ordering: false,
-                    //dom: 'Bfrtip',
                     retrieve: true,
-                    //scrollY:390,
-                    //scrollX:500,
-                    //pagingType:'numbers',
                     info: true,
                     pageLength: 10,
                     bLengthChange: false,
                     saveState: true,
-                    // rowReorder: {
-                    // dataSrc: 'sequence'
-                    // },
                     'processing': true,
                     'language': {
                         'loadingRecords': '&nbsp;',
@@ -396,19 +375,16 @@ let InvoicesComponent = new function () {
                 return 'btn-outline-primary';
             }
             default:{
-                //unpaid
                 return 'btn-outline-danger';
             }
         }
     }
     
-    //@params $d = {amount_due,amount_paid,currency_code}
     this.refreshInvoiceInfo = (invoice_id,d)=>{
         if (!d) return;
         let cur_symbol = (ExchangeManager.currencies[d.currency_code] || {}).symbol;
         if(!cur_symbol) cur_symbol='CUR?';
 
-        //correct prop name if necessary from amount_paid to total_paid. Both of these fields are used here
         if (!d.amount_paid) d.amount_paid = d.total_paid;
         let tr = mThis.tblInvoice.find(`tbody > tr#ivc_${invoice_id}`);
         tr.find('td.col-amount-paid').html(mThis.formatInvoiceAmount(d.currency_code,d.amount_paid));
@@ -423,7 +399,6 @@ let InvoicesComponent = new function () {
         });
     }
 }
-/*End of Invoice Component*/
 
 let InvoiceDialog = new function () {
     let mThis = this;
@@ -440,7 +415,7 @@ let InvoiceDialog = new function () {
 
     this.elSummary_balanceDue = $('#ivc_balance_due');
     this.elSummary_subTotal = $('#ivc_sub_total');
-    this.elSummary_discount = $('#ivc_discount'); //discount as percent
+    this.elSummary_discount = $('#ivc_discount');
     this.elSummary_taxAmount = $('#ivc_tax_amount');
     this.elSummary_grandTotal = $('#ivc_grand_total');
    
@@ -450,7 +425,7 @@ let InvoiceDialog = new function () {
 
     this.cols_product = [{
         "name":"item_id",
-        "displayName":"item_name", /** used with Dropdown column only because dropdown column has options = {value,text}**/
+        "displayName":"item_name",
         "title":"Item Name",
         "dataType":"string",
         "displayType":"select",
@@ -539,7 +514,6 @@ let InvoiceDialog = new function () {
         "readOnly":true
     }];
     
-    
     this.initItemsView = ()=>{
         mThis.initServiceItemView();
         mThis.initProductItemView();
@@ -567,8 +541,6 @@ let InvoiceDialog = new function () {
             showAddLineButton: true,
             validateColumns: {'service_id':'string','qty':'number','price':'number'},
             onItemChange:(row_id,item, cols_name,td,tr) => {
-                //todo: It seems this event is fired two times and need to be fixed
-                //let tr = td.parentNode;
                 mThis.setItemServiceInfo(cols_name, tr);
             },
             onInputChange:(el,col_name,td)=>{
@@ -577,7 +549,6 @@ let InvoiceDialog = new function () {
             },
         });
 
-        //load service options
         vsapi.call(`${mThis.base_url}/api/settings/options-service`,null).then(res => {
             if(res.status_code === 200){
                 let data = res.data;
@@ -609,10 +580,7 @@ let InvoiceDialog = new function () {
             showColumnHeaders: true,
             showAddLineButton: true,
             validateColumns: {'item_id':'string','qty':'number','price':'number'},
-            onItemChange:(row_id,sitem, col_name, td, tr) => { 
-                //todo: It seems this event is fired two times and need to be fixed
-                //let tr = td.parentNode;
-                //set item sku  
+            onItemChange:(row_id,sitem, col_name, td, tr) => {   
                 mThis.setItemInfo(col_name, tr);
             },
             onInputChange:(el,col_name,td)=>{
@@ -625,7 +593,6 @@ let InvoiceDialog = new function () {
         });
     }
 
-    //setInvoiceItemInfo()
     this.setItemInfo = (col_name, tr) => {
         if (col_name === 'item_id') {
             let d = mThis.tblProductItems.getDataRow(tr);
@@ -648,7 +615,6 @@ let InvoiceDialog = new function () {
 
     this.calculateInvoiceDiscount = (discount=0,sub_total=0) =>{
         discount = isNaN(discount)?0:discount;
-        //sub_total = isNaN(sub_total)?0:sub_total;
         let discount_type = InvoiceSettings.default_discount_type;
 
         if(discount_type ==='percentage' || discount_type==='percent'){
@@ -667,7 +633,6 @@ let InvoiceDialog = new function () {
     }
       
     this.getCurrencySymbol = (l)=>{
-        //mThis.currency_symbol is the currently displayed invoice's currency_symbol
         return mThis.currency_symbol? mThis.currency_symbol:InvoiceSettings.currency.symbol;
     }
 
@@ -681,7 +646,7 @@ let InvoiceDialog = new function () {
         let line_total = price * qty;
         let discount_amt = line_total * discount_percent/100;
         
-        let tax_rate = parseFloat(d.tax_rate); //Not sales_tax_rate here
+        let tax_rate = parseFloat(d.tax_rate);
         let tax_amount = (line_total - discount_amt) * tax_rate/100; 
         line_total = isNaN(line_total)? 0:line_total - discount_amt + tax_amount;
         d.line_total = line_total;
@@ -698,7 +663,7 @@ let InvoiceDialog = new function () {
         let line_total = price * qty;
         let discount_amt = line_total * discount_percent/100;
         
-        let tax_rate = parseFloat(d.tax_rate); //Not sales_tax_rate here
+        let tax_rate = parseFloat(d.tax_rate);
         let tax_amount = (line_total - discount_amt) * tax_rate/100; 
         line_total = isNaN(line_total)? 0:line_total - discount_amt + tax_amount;
         d.line_total = line_total;
@@ -706,17 +671,13 @@ let InvoiceDialog = new function () {
         mThis.setTotals(cur_symbol);
     }
 
-    //Calculate Totals on invoice form. Totals include: sub_total, total tax amount, invoice's discount, grand_total
     this.setTotals = (cur_symbol =null)=>{
         if (!cur_symbol) cur_symbol = mThis.getCurrencySymbol(); 
         let sub_total =0;
         let total_tax =0;
 
-        //Calcualte Totals for Product Items
         let items = mThis.tblProductItems.getItems();
         (items || []).map(i =>{
-            //*** IMPORTANT NOTE: i.line_total inludes Discount and Tax Amount for each item
-            
             let line_total = parseFloat(i.line_total);
             let tax_rate = parseFloat(i.tax_rate);
             let amount_before_tax = (line_total*100)/(100+tax_rate);
@@ -725,10 +686,8 @@ let InvoiceDialog = new function () {
             sub_total += parseFloat(line_total);
         });
         
-        //Calculate Totals for service items
         let service_items = mThis.tblServiceItems.getItems();
         (service_items || []).map(i =>{
-            //*** IMPORTANT NOTE: i.line_total inludes Discount and Tax Amount for each item
             let line_total = parseFloat(i.line_total);
             let tax_rate = parseFloat(i.tax_rate);
             let amount_before_tax = (line_total*100)/(100+tax_rate);
@@ -738,21 +697,16 @@ let InvoiceDialog = new function () {
         });
         sub_total = isNaN(sub_total)? 0:sub_total;
         total_tax = isNaN(total_tax)? 0:total_tax;
-
-        //Invoice discount is applied on Invoice's total before tax (that means base amount not including tax yet)
-        //discountInfo holds info about invoice's overall discount only (discount_type, discount_amount, discount_percent)
         let discount_base = sub_total - total_tax;
         let discountInfo = mThis.calculateInvoiceDiscount(mThis.elSummary_discount.val(),Number(discount_base));
 
         let grand_total = Number(sub_total - discountInfo.discount_amount).toFixed(2);
-        //sub_total already includes tax amount. so "total_tax" is just ONLY displayed at bottom invoice
         mThis.elSummary_subTotal.text([cur_symbol,' ',sub_total].join(''));
-        mThis.elSummary_taxAmount.text([cur_symbol,' ',Number(total_tax).toFixed(2)].join('')); //display ONLY for user's information
+        mThis.elSummary_taxAmount.text([cur_symbol,' ',Number(total_tax).toFixed(2)].join(''));
         mThis.elSummary_grandTotal.text([cur_symbol,' ',grand_total].join(''));
         mThis.elSummary_balanceDue.text([cur_symbol,' ',grand_total].join(''));
     }
 
-    //Call to function to initialize ItemsView
     this.initItemsView();
  
     this.elSummary_discount.on('keyup',(e)=>{
@@ -760,12 +714,10 @@ let InvoiceDialog = new function () {
         mThis.setTotals();
     });
 
-    //When user click on Plus sign to create new customer on the fly
     this.lnkAddInvoice.on('click', (e) => {
         e.preventDefault();
         let op = {
             'id': 0,
-            //Show this Receipt Dialog again after closing the CustomerDialog
             "previousComponent": mThis,
             "previousComponentOptions": mThis.options,
             "onClose": res => {
@@ -777,7 +729,6 @@ let InvoiceDialog = new function () {
         CustomerDialog.show(op);
     });
 
-    //btnSaveInvoice
     this.btnSave.on('click', (e) => {
         e.preventDefault();
         let p = mThis.getDataForm();
@@ -807,12 +758,10 @@ let InvoiceDialog = new function () {
             }
         });
     }
-    //set d = NULL for clearing form
+
     this.setData = (d=null) => {
         if(!d) d ={};
-        //if(d.currency_code) cur_symbol = ExchangeManager.currencies[d.currency_code].symbol;
         let cur_symbol = d.currency_symbol? d.currency_symbol:InvoiceSettings.currency.symbol;
-        //Store currency symbol for use in other places
         mThis.currency_symbol = cur_symbol;
         mThis.elReceiptNumber.html(d.ref_number);
         mThis.self.find('.data-input').each(function (){
@@ -821,21 +770,18 @@ let InvoiceDialog = new function () {
             if(el.is('select')) el.val(d[f]).trigger('change');
             else el.val(d[f]);
         });
-        //if (!d.items) d.items = [];  
         mThis.tblProductItems.setData(d.items);
 
-        //NOTE: in database table invoices.amount represent the invoice's SubTotal
         d.sub_total = d.amount;
         d.grand_total = d.amount_due;
 
         mThis.elSummary_discount.val(d.discount_type === 'percentage' ? d.discount_percent : d.discount_amount);
         mThis.elSummary_subTotal.text([cur_symbol,' ',d.sub_total].join(''));
-        mThis.elSummary_taxAmount.text([cur_symbol,' ',Number(d.tax_amount)].join('')); //display ONLY for user's information
+        mThis.elSummary_taxAmount.text([cur_symbol,' ',Number(d.tax_amount)].join(''));
         mThis.elSummary_grandTotal.text([cur_symbol,' ',d.grand_total].join(''));
         mThis.elSummary_balanceDue.text([cur_symbol,' ',d.grand_total].join(''));
     }
 
-    //getFormData() for createing and updating invoice
     this.getDataForm = () => {
         let p = {
             'id':(mThis.options || {}).id
@@ -851,8 +797,6 @@ let InvoiceDialog = new function () {
         p.discount_type = InvoiceSettings.default_discount_type;
         p.items = mThis.tblInvoiceItems.getItems();
         return p;
-        //NOTE To DARA: this line cause error invalid data input. No need of data prop
-        //return {'data': p};
     }
 
     this.setActiveItemView = (viewname)=>{
@@ -894,15 +838,11 @@ let InvoiceDialog = new function () {
                     backdrop: 'static'
                 });
             }
-
-            //Set initial view of Items
             mThis.setActiveItemView('product');
         });
     }
 }
-/*End of Invoice Dialog*/
 
-//begin::PaymentDialog
 let PaymentDialog = new function (){
     let mThis = this;
     this.self = $(`#_ivc_dlgPayment`);
@@ -914,7 +854,6 @@ let PaymentDialog = new function (){
     this.btnSave.on('click',(e)=>{ 
        let api_end_point =`${main_view.base_url}/api/invoice-payment/receive`; 
        if(mThis.options.id>0) api_end_point =`${main_view.base_url}/api/invoice-payment/update`;
-       //else api_end_point =`${main_view.base_url}/api/invoice-payment/receive`;
 
        let p = mThis.getFormData();
        mThis.btnSave.prop('disabled',true);
@@ -946,7 +885,6 @@ let PaymentDialog = new function (){
        return p;
     }
 
-    //display data for Edit case
     this.displayPaymentData = (d ={})=>{
        let invoice = (d ||{}).invoice;
      if (!invoice) invoice = {};
@@ -1000,7 +938,6 @@ let PaymentDialog = new function (){
                 return;
             }
 
-            //get basic info of the invoice (ref_number, amount_due, amount_paid)
             let p = {'id':options.invoice_id};
             vsapi.call(`${main_view.base_url}/api/invoice/basic-info`,p).then(res=>{
                 if(res.status_code===200){
@@ -1017,8 +954,7 @@ let PaymentDialog = new function (){
        });
     }
 }
-//end::PaymentDialog
 
-document.addEventListener('DOMContentLoaded',(e)=>{
+document.addEventListener('DOMContentLoaded',()=>{
     InvoicesComponent.init();
 });

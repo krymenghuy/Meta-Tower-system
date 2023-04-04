@@ -20,7 +20,6 @@
     </div>
 </div>
 
-<!--Begin::ExpenseBookDialog-->
 <div id="_epb_dlgExpenseBook" class="modal fade" tabindex="-1" aria-labelledby="_epb_dlgExpenseBook_title" aria-hidden="true">
     <div class="modal-dialog modal-xl vs-modal-dialog">
         <div class="modal-content">
@@ -95,4 +94,3 @@
         </div>
     </div>
 </div>
-<!--End::ExpenseBookDialog-->

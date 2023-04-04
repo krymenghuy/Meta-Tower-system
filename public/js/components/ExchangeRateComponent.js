@@ -140,25 +140,24 @@ let ExchangeRateComponent = new function () {
             let html = null;
             if (res.status_code === 200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
-                console.log(d);
                 html = `<div class="d-flex align-items-center">
-                <div class="input-group flex-nowrap">
-                    <div class="input-group-text">
-                        <span class="trans-text" data-langprop="currencies.Search"></span>
+                    <div class="input-group flex-nowrap">
+                        <div class="input-group-text">
+                            <span class="trans-text" data-langprop="currencies.Search"></span>
+                        </div>
+                        <input data-select="datepicker" class="form-control" id="_ecr_search"/>
                     </div>
-                    <input data-select="datepicker" class="form-control" id="_ecr_search"/>
                 </div>
-            </div>
-            <div class="table-responsive">
-            <table class="table" id="_ecr_exchangeRate_details">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Buy Rate</th>
-                    <th>Sell Rate</th>
-                </tr>
-            </thead>
-            <tbody>`;
+                <div class="table-responsive">
+                <table class="table" id="_ecr_exchangeRate_details">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Buy Rate</th>
+                        <th>Sell Rate</th>
+                    </tr>
+                </thead>
+                <tbody>`;
                 (d || {}).map(currency => {
                     html = [html, `<tr>
                     <td>${currency.date}</td>
@@ -287,7 +286,6 @@ let ExchangeRateDialog = new function () {
         "modifyTitle":"Modify Currency",
         "createTitle": "New Currency",
         "identityProps": ['id'],
-        //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['id'],
         "sanitize_excepts": [],
         'use_alert_error': true,
@@ -314,7 +312,6 @@ let ExchangeRateDetailsDialog = new function () {
         "modifyTitle": "Modify Currency Rate",
         "createTitle": "New Currency Rate",
         "identityProps": ['id'],
-        //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['id'],
         "sanitize_excepts": [],
         'use_alert_error': true,

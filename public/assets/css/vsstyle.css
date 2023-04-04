@@ -251,6 +251,16 @@ span.span::before{
   border:1px solid #008000;
 }
 
+@media (max-width: 1024px){
+  .kt-aside__brand{
+    display: flex;
+  }
+  
+  .kt-aside--minimize .kt-aside__brand .kt-aside__brand-logo img {
+    display: block;
+  }
+}
+
 @media screen and (max-width:820px) {
   .kt-aside__brand {
     display: flex;
@@ -386,7 +396,7 @@ div.dms-content-body {
 
 .select2,
 .modal-select2 {
-  font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+  font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
 }
 
 .cur-riel {
@@ -695,21 +705,26 @@ span.v-label-focus {
   display: block;
 }
 
-table.header-light-blue>thead th {
+table.header-light-blue > thead th {
   font-weight: bold !important;
   color: #185c81 !important;
   font-family:Poppins;
 }
 
-table.header-uppercase>thead th {
+table.header-uppercase > thead th {
   text-transform: uppercase;
 }
 
-table.table>thead th {
+table.table > thead th {
   border-bottom: none !important;
 }
 
-tbody, td, tfoot, th, thead, tr{
+tbody,
+td,
+tfoot,
+th,
+thead,
+tr{
   border-style:none;
 }
 

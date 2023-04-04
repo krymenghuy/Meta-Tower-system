@@ -2,7 +2,7 @@
     #_main_companyComponent > .data-input {
         font-size: 0.8em !important;
         color: red;
-        font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+        font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
     }
 </style>
 
@@ -51,17 +51,13 @@
     <div style="height:25px"></div>
     <div class="row">
         <div class="col-lg-6">
-            <img src="<?php if(isset($logodata)) echo $logodata; ?>" id="com_imgLogo" class="img-thumbnail" alt="" style="margin:-10px;height:235px;"/>
+            <img src="<?php if(isset($logodata)) echo $logodata; ?>" id="com_imgLogo" class="img-thumbnail" alt="" style="margin:-10px;height:235px"/>
             <input id="com_logoFileChooser" type="file" accept="image/*" style="display:none"/>
-
-            <div class="py-2" style="margin-top:30px">
+        </div>
+        <div class="col-lg-6">
+            <div class="d-flex align-items-center gap-2 h-100">
                 <button id="com_btnChooseLogo" class="btn btn-primary">Choose Logo</button>
                 <button id="com_btnDeleteLogo" class="btn btn-default">Delete Logo</button>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="form-inline">
                 <button id="_main_comp_btnSaveProfile" type="button" class="btn btn-success">
                     <i class="la la-save"></i>
                     <span class="kt-hidden-mobile">Save Changes</span>

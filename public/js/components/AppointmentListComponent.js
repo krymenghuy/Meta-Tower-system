@@ -48,7 +48,7 @@ let AppointmentListComponent = new function () {
         let appt_id = ul.data('apptid');
 
         ul.find('li[data-apptid="0"]').remove();
-        ul.append(`<li id="${item.id}" data-apptid="${appt_id}"><a href="#" data-apptid="${appt_id}" data-id="${item.id}" class="appt-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`);
+        ul.append(`<li id="${item.id}" data-apptid="${appt_id}"><a href="javascript:void(0)" data-apptid="${appt_id}" data-id="${item.id}" class="appt-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`);
     }
 
     this.displayCCList = (list_id, items = []) => {
@@ -57,7 +57,7 @@ let AppointmentListComponent = new function () {
         let appt_id = ul.data('apptid');
         let i = 0, html = '';
         (items || []).map((item) => {
-            html = [html, `<li id="${item.id}" data-apptid="${appt_id}"><a href="#" data-apptid="${appt_id}" data-id="${item.id}" class="appt-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`].join('');
+            html = [html, `<li id="${item.id}" data-apptid="${appt_id}"><a href="javascript:void(0)" data-apptid="${appt_id}" data-id="${item.id}" class="appt-remove-complaint"><i class="fa fa-times" style="color:red"></i></a>&nbsp;${item.name}</li>`].join('');
             i++;
         });
         if (i === 0) html = `<li data-apptid="0"><span class="text-muted">(No chief complaints)</span></li>`;
@@ -127,7 +127,7 @@ let AppointmentListComponent = new function () {
 
                                     <div class="d-flex flex-row">
                                         <span class="detail-header-text trans-text" data-langprop="appointment.Chief Compalaints">Chief Complaints</span>&nbsp;
-                                        <a href="#" data-ulid="apl-complaint-list-${d.id}" data-apptid="${d.id}" class="appt-add-complaint" style="margin-top:5px;"><i class="fa fa-plus-circle" style="color:#14B1D1;font-size:1.5em"></i></a>
+                                        <a href="javascript:void(0)" data-ulid="apl-complaint-list-${d.id}" data-apptid="${d.id}" class="appt-add-complaint" style="margin-top:5px;"><i class="fa fa-plus-circle" style="color:#14B1D1;font-size:1.5em"></i></a>
                                     </div>
                                     <div class="apl-cc-wrapper">
                                         <ul id ="apl-complaint-list-${d.id}" data-apptid="${d.id}" class="apl-complaint-list" style="list-style:none">
@@ -371,10 +371,10 @@ let AppointmentListComponent = new function () {
 
         let html = ['<div class="dropdown-menu action-menus">',
             '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_edit" href="javascript:void(0)"><i class="fa fa-edit" style="color:blue;font-size:1.1em;margin-top:2px;"></i> <span>Review Application</span</a>',
-            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_disburse" href="#"><i class="fa fa-list-alt" style="color:orange"></i> Disburse Loan</a>',
+            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_disburse" href="javascript:void(0)"><i class="fa fa-list-alt" style="color:orange"></i> Disburse Loan</a>',
             '<div class="dropdown-divider"></div>',
-            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_delete" href="#"><i class="fa fa-times" style="color:red"></i> Delete Loan Application</a>',
-            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_person_profile" href="#"><i class="fa fa-list" style="color:green"></i> Personal Profile</a>',
+            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_delete" href="javascript:void(0)"><i class="fa fa-times" style="color:red"></i> Delete Loan Application</a>',
+            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_person_profile" href="javascript:void(0)"><i class="fa fa-list" style="color:green"></i> Personal Profile</a>',
             '</div>'].join('');
         return html;
     }
@@ -439,7 +439,7 @@ let AppointmentListComponent = new function () {
                 {
                     title: mThis.trans_title('Status'),
                     data: (data, a, b) => {
-                        return [`<a href="#" style="display:block;text-align:center;min-width:75px;padding:5px;" data-statusid="${data.status_id}" class="btn-appt-status border rounded-pill ${mThis.getApptStatusClass(data.status_id)}">`, data.status, `</a>`].join('');
+                        return [`<a href="javascript:void(0)" style="display:block;text-align:center;min-width:75px;padding:5px;" data-statusid="${data.status_id}" class="btn-appt-status border rounded-pill ${mThis.getApptStatusClass(data.status_id)}">`, data.status, `</a>`].join('');
                     }
                 },
                 {
@@ -447,10 +447,8 @@ let AppointmentListComponent = new function () {
                     data: function (data, a, b) {
                         let status_class = null;
                         return [`<div class="form-inline">`,
-                            //`<a href="javascript:void(0)" class="btn_appt_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" class="btn_appt_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
                             `<a href="javascript:void(0);" data-id="${data.id}" class="btn_appt_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
-                            //`&nbsp;<a href="#" data-id="${data.id}" class="btn_appt_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
                             `</div>`
                         ].join('');
                     }

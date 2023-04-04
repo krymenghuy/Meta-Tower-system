@@ -1,5 +1,5 @@
- <style>
-    table#_qul_tblTickets>thead th {
+<style>
+    table#_qul_tblTickets > thead th {
         height: 38px;
         padding-bottom: 3px;
         font-weight: normal;
@@ -58,8 +58,7 @@
         font-weight: bold;
         transform: scale(1);
     }
- </style>
-
+</style>
 <div id="_main_queueComponent" class="mobile-padding" style="display:none;padding-top:15px">
     <section class="content">
         <div class="container-fluid">
@@ -75,16 +74,13 @@
                         <i class="fas fa-sync-alt"></i>
                     </a>
                 </div>
-
                 <div class="d-flex justify-content-end col-md-4">
                     <input data-select="datepicker" class="input-sm form-control" placeholder="Filter date" id="_qul_filter_date" autocomplete="off"/>&nbsp;
                     <select class="input-sm" placeholder="Status" id="_qul_filter_status"></select>
                 </div>
             </div>
-
-            <div class="flat-box"
-                style="margin:17px;padding:15px;overflow:auto;border-color:#A0DFF3;min-height:350px;">
-                <table class="table header-light-blue header-uppercase" id="_qul_tblTickets" style="margin-top:-25px !important;"></table>
+            <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;border-color:#A0DFF3;min-height:350px">
+                <table class="table header-light-blue header-uppercase" id="_qul_tblTickets" style="margin-top:-25px !important"></table>
             </div>
         </div>
     </section>
@@ -102,7 +98,6 @@
                         <a href="javascript:void(0)" class="tab-button trans-text" data-viewname="history" data-target="tab_panel_history" data-langprop="patient.HISTORY">History</a>
                         <a href="javascript:void(0)" class="tab-button trans-text" data-langprop="patient.CONSULTATION" data-viewname="consultation" data-target="tab_panel_consult">Consultation</a>
                     </div>
-
                     <div class="tab-body">
                         <div class="tab-panel border-3d" data-viewname="history" id="tab_panel_history">
                             <div class="row">
@@ -206,6 +201,21 @@
             <div class="modal-footer">
                 <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">Cancel</button>
                 <button id="_qul_dlgConsult_btnSave" class="vs-btn-custom-primary" type="button">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="_qul_dlgPrescription" class="modal fade" aria-labelledby="_qul_dlgPrescription_title" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content rounded-3">
+            <div class="modal-header">
+                <h5 class="modal-title trans-text" data-langprop="consult.Prescription"></h5>
+            </div>
+            <div id="_qul_dlgPrescription_body" class="modal-body overflow-x-auto" style="max-height:500px"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" type="button" data-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary btn-sm" type="button" id="_qul_dlgPrescription_btnSave">Save</button>
             </div>
         </div>
     </div>

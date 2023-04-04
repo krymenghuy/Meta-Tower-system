@@ -30,15 +30,12 @@ let ItemsComponent = new function () {
             let html = null;
             if (res.status_code === 200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
-                //d.chief_complaints = d.chief_complaints?d.chief_complaints:[];
                 d.patient_code = d.patient_code ? d.patient_code : 'N.A.';
                 d.consultant_name = d.consultant_name ? d.consultant_name : 'Any';
 
-                //begin:: refresh display of Client name and client code
                 let tr = detail_tr.prev();
                 tr.find('.client-name').text(d.client_name);
                 tr.find('.client-code').text(d.patient_code);
-                //end::refresh display of Client name and client code
 
                 html = `<div data-apptid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="appt-info-wrapper shadow-lg d-flex" style="width:100%;">
                     <div class="thumbnail-wrapper">
@@ -46,10 +43,10 @@ let ItemsComponent = new function () {
                     </div>
 
                     <div class="d-flex" style="width:100%">
-                            <div style="width:50%">   
-                            </div>
-                            <div style="width:50%">
-                            </div>
+                        <div style="width:50%">   
+                        </div>
+                        <div style="width:50%">
+                        </div>
                     </div> 
                 </div>`;
             } else {
@@ -143,9 +140,6 @@ let ItemsComponent = new function () {
     }
 
     this.displayItems = (options, onFinish = null) => {
-        //Initialize language for DataTable columns headers
-        //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-        //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
         let p = { 'search_value': mThis.elSearchItem.val(), 'category_id': mThis.elFilter_category.val(), 'code': options.code, 'name': options.name, 'type': options.type };
         window.vsapi.call(`${mThis.base_url}/api/inventory/items`, p, 'POST', null).then((result) => {
@@ -153,14 +147,13 @@ let ItemsComponent = new function () {
             if (result.status_code === 200) data = result.data;
             if (mThis.table) {
                 mThis.tblItems.DataTable().clear().destroy();
-                //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
                 mThis.tblItems.empty();
                 mThis.table = null;
             }
 
             data = StringSanitizer.sanitizeObject(data, null);
             let cnt = 1;
-            //begin::Set up columns
+
             let my_columns = [
                 {
                     title: mThis.trans_title("No."),
@@ -205,10 +198,6 @@ let ItemsComponent = new function () {
                     }
                 }
             ];
-            //END Define colum
-
-            //translate column names
-            //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
 
             if (!mThis.table)
                 mThis.table = mThis.tblItems.DataTable({
@@ -216,11 +205,7 @@ let ItemsComponent = new function () {
                     destroy: true,
                     paging: true,
                     ordering: false,
-                    //dom: 'Bfrtip',
                     retrieve: true,
-                    //scrollY:390,
-                    //scrollX:500,
-                    //pagingType:'numbers',
                     info: true,
                     pageLength: 10,
                     bLengthChange: false,
@@ -243,7 +228,6 @@ let ItemsComponent = new function () {
         });
     };
 
-    //prepareOptions()| prepareFormOptions() for StockTrackingComponent.show()
     this.prepareOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/api/inventory/settings/options-category`, null).then(res => {
             if (res.status_code === 200) {
@@ -262,7 +246,6 @@ let ItemsComponent = new function () {
         mThis.prepareOptions(d => {
             let cats = d.categories;
             VSUtil.setComboItems(mThis.elFilter_category, cats, 'id', 'category', true, '(All categories)', 0);
-            //VSUtil.setComboItems(mThis.elFilter_category,d.stock_classes,'id','stock_class',true,'(All Classes)',0);
             mThis.displayItems(options, () => {
                 main_view.setTitle(mThis.title_prop);
                 mThis.self.show().siblings().hide();
@@ -271,7 +254,6 @@ let ItemsComponent = new function () {
     }
 }
 
-//begin::ItemDialog
 let ItemDialog = new function () {
     let mThis = this;
     this.form_data = {};
@@ -288,15 +270,13 @@ let ItemDialog = new function () {
     this.lnkAddUnit = $(`#_itm_lnkAddUnit`);
     this.lnkAddManufacturer = $(`#_itm_lnkAddManufacturer`);
 
-    //prepareFormOptions() for ItemDialog
     this.prepareOptions = (def = {}, onFinish) => {
         if (!def) def = {};
         if (mThis.form_data.groups) {
             onFinish(mThis.form_data);
             return;
         }
-
-        //api/settings/item-form-options returns all sets of options for productDialog including arrays of "units,item-groups" 
+ 
         vsapi.call(`${main_view.base_url}/api/inventory/settings/item-form-options`, null).then(res => {
             if (res.status_code === 200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
@@ -309,24 +289,16 @@ let ItemDialog = new function () {
         });
     }
 
-    //ProductDialog using FormUtil as helper
     this.formUntil = new FormUntil({
         "itemName": "Products",
         "formId": '_itm_dlgProduct',
-        //"titleId":"_itm_dlgProduct_title",
-        //"errorId":"_itm_dlgProduct_error",
-        //"saveButtonId":"_itm_dlgProduct_btnSave",
         "instance": this,
         "apiSave": `${main_view.base_url}/api/inventory/save-item`,
         "apiGet": `${main_view.base_url}/api/inventory/item-details`,
-        //"identityProp":"id",
         "modifyTitle": "Modify Product",
         "createTitle": "New Product",
         "identityProps": ['id'],
-        //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['id'],
-        //"sub_prop":"chief_complaint_items",
-        //"sub_prop_function":mThis.getChiefComplaints,
         "sanitize_excepts": [],
         'use_alert_error': true,
         "init": () => {
@@ -351,7 +323,6 @@ let ItemDialog = new function () {
             });
 
             mThis.lnkAddGroup.on('click', (e) => {
-                //General name = "Product Line" or "Variance Group" or "Product Name" in which, there can be more than one variances of the product
                 let op = {
                     previousDialog: mThis.self,
                     title: "Add General Name",
@@ -367,14 +338,11 @@ let ItemDialog = new function () {
                         let code = parts[0];
                         let group_name = parts[1];
                         let p = { code: code, name: group_name };
-                        //if input string does not contains ":" then use the first part of string as "name" and code is to be auto-generated by backend
                         if (!p.name && p.code) {
                             p.name = p.code;
-                            //Make sure that p.code is empty => api will auto generate code for the item_group
                             p.code = null;
                         }
 
-                        //inventory/group/save
                         vsapi.call(`${main_view.base_url}/api/inventory/save-group`, p).then(res => {
                             if (res.status_code === 200) {
                                 let new_id = res.data.id;
@@ -387,7 +355,6 @@ let ItemDialog = new function () {
             });
 
             mThis.lnkAddCategory.on('click', (e) => {
-                //General name = "Product Line" or "Variance Group" or "Product Name" in which, there can be more than one variances of the product
                 let op = {
                     previousDialog: mThis.self,
                     title: "Add Category",
@@ -416,7 +383,6 @@ let ItemDialog = new function () {
                 });
             });
 
-            //Add New SKU
             mThis.lnkAddUnit.on('click', (e) => {
                 let op = {
                     previousDialog: mThis.self,
@@ -424,12 +390,11 @@ let ItemDialog = new function () {
                     label: `<span style="display:block">Enter new SKU</span>
                     <span class="text-secondary">Example:box =10 bottles</span>`,
                     allowBlankValue: false,
-                    manualClosing: true, //wait until we call "InputBox1.close()"
+                    manualClosing: true,
                 };
 
                 InputBox1.show(op, d => {
                     if (d) {
-                        //mThis.processUnit(string) => processes the given string such as "box= 10 bottles" into JSON object such as {name:box,sub_unit_name:bottles,sub_unit_qty:10}
                         let unit = mThis.processUnit(d);
                         if (unit.error) {
                             cv_interact.warning(unit.error);
@@ -447,15 +412,13 @@ let ItemDialog = new function () {
                 });
             });
 
-            //Add New manufacturer
             mThis.lnkAddManufacturer.on('click', (e) => {
-                //example input is "box=10 bottles"
                 let op = {
                     previousDialog: mThis.self,
                     title: "Add Manufacturer",
                     label: `<span style="display:block">Enter new manufacturer</span>`,
                     allowBlankValue: false,
-                    manualClosing: true, //wait until we call "InputBox1.close()"
+                    manualClosing: true,
                 };
 
                 InputBox1.show(op, d => {
@@ -472,14 +435,12 @@ let ItemDialog = new function () {
                 });
             });
         }
-        //end::init
     });
 
     this.refreshOptions = (field_name, def_value = 0, onFinish = null) => {
         let method_name = '';
         let el = null;
         let text_field = '';
-        //data_prop is property name of mThis.form_data such as mThis.form_data[data_prop] => example mThis.form_data.categories that is used to remmember categories options
         let data_prop = '';
         switch (field_name) {
             case 'group':
@@ -549,8 +510,6 @@ let ItemDialog = new function () {
         "ampuls": "ampul"
     };
 
-    //processUnit() or processSKU() converts skuInfo into JSON object
-    //unitInfo can be  "box =10 bottles" or "bottle = 60 pills"
     this.processUnit = (unitInfo = null) => {
         if (!unitInfo) return {};
         let parts = unitInfo.split('=');
@@ -560,7 +519,6 @@ let ItemDialog = new function () {
         let sub_unit_qty = 0;
 
         let i = 0, c = null;
-        //NOTE: make sure there must NEVER be NULL in the middle of string "unitInfo"
         let sts = (parts[1] + '').trim().split(' ');
         sub_unit_qty = sts[0];
         sub_unit_name = [sts[1], sts[2]].join('');
@@ -568,7 +526,7 @@ let ItemDialog = new function () {
         let translated_unit_name = mThis.unitNames[sub_unit_name];
 
         return {
-            'error': null, //translated_unit_name?null:`Unit name ${sub_unit_name} is not allowed`,
+            'error': null,
             'name': unit_name,
             'sub_unit_name': sub_unit_name,
             'sub_unit_qty': sub_unit_qty
@@ -576,7 +534,6 @@ let ItemDialog = new function () {
     }
 
     this.show = (options) => {
-        //default_input = {group_id, unit_id, etc...}. This is default selections when Dialog is shown for better user experiences
         if (!options.default_input) options.default_input = {};
         mThis.prepareOptions(options.default_input, (d) => {
             VSUtil.setComboItems(mThis.elItemGroup, d.groups, 'id', 'group_name', false, null, options.default_input.group_id);
@@ -587,7 +544,6 @@ let ItemDialog = new function () {
         });
     }
 }
-//end::ItemDialog
 
 let FilterDialog_Product = new function () {
     let mThis = this;

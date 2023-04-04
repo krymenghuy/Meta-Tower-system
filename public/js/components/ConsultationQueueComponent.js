@@ -1,5 +1,4 @@
 "use strict";
-//begin:: QueueComponent
 let ConsultationQueueComponent = new function () {
     let mThis = this;
     this.title_prop = 'Queued Tickets';
@@ -32,9 +31,6 @@ let ConsultationQueueComponent = new function () {
         "Action": "Action"
     };
 
-    //Initialize langauge translation tasks (for dataTable columns headers)
-    //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-    //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
     this.setLanguage = () => {
         if (LocaleManager.lang !== mThis.lang) {
             for (let prop in mThis.col_titles) {
@@ -44,7 +40,6 @@ let ConsultationQueueComponent = new function () {
         }
     }
 
-    //SetQueueStatus()
     this.setTicketStatus = (detail_tr, d = {}) => {
         let tr = detail_tr.prev();
         let btn = tr.find('a.btn_ticket_status');
@@ -54,7 +49,8 @@ let ConsultationQueueComponent = new function () {
         if (d.status_id > 2) {
             btnQ.hide();
             tr.find('a.btn_ticket_modify').hide();
-        } else {
+        }
+        else {
             btnQ.show();
             tr.find('a.btn_ticket_modify').show();
         }
@@ -62,12 +58,10 @@ let ConsultationQueueComponent = new function () {
     }
 
     this.init = () => {
-        //This is to refresh Datatable's header texts when language changes
         LocaleManager.setLanguageChangeHandler((lang) => {
             mThis.displayTicketList();
         });
 
-        //loadChiefComplaints() will retrieve list of chief complaints and stores them in "mThis.chief_complaints"
         mThis.loadOptions();
 
         mThis.btnSearchAppt.on('click', (e) => {
@@ -75,7 +69,6 @@ let ConsultationQueueComponent = new function () {
             mThis.displayTicketList();
         });
 
-        //Search Appointment on Appointment List view
         mThis.elSearchAppt.on('keyup', (e) => {
             e.preventDefault();
             let d = mThis.elSearchAppt.val();
@@ -124,7 +117,6 @@ let ConsultationQueueComponent = new function () {
             'onOpen': (container, detail_tr, parent_tr) => {
                 let q_tr = $(parent_tr);
                 let ticket_id = q_tr.data('id');
-                //Show Expandable Details of each ticket (QTicket)
                 TicketDetails.show($(detail_tr), {
                     'ticket_id': ticket_id,
                     'client_id': q_tr.data('clientid'),
@@ -141,9 +133,10 @@ let ConsultationQueueComponent = new function () {
             cv_interact.confirm('Remove this ticket?', { 'confirmButtonText': 'Delete', 'cancelButtonText': 'Dont Delete', title: null, 'context': 'delete' }, (e) => {
                 if (e) {
                     vsapi.call(`${mThis.base_url}/api/ticket/delete`, p).then((res) => {
-                        if (res.status_code === 200) {
+                        if(res.status_code === 200) {
                             mThis.displayTicketList();
-                        } else cv_interact.error(res.error_message);
+                        }
+                        else cv_interact.error(res.error_message);
                     });
                 }
             });
@@ -162,7 +155,6 @@ let ConsultationQueueComponent = new function () {
             if (prop_name) str_props = [str_props, str_props ? " " : "", prop_name, `="${data[prop_name]}"`].join('');
         });
 
-        //cla = 'class_list_action' = > cla_delete, cla_modify,...
         let html = ['<div class="dropdown-menu action-menus">',
             '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_edit" href="javascript:void(0)"><i class="fa fa-edit" style="color:blue;font-size:1.1em;margin-top:2px;"></i> <span>Review Application</span</a>',
             '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_disburse" href="#"><i class="fa fa-list-alt" style="color:orange"></i> Disburse Loan</a>',
@@ -180,11 +172,7 @@ let ConsultationQueueComponent = new function () {
         else 'btn btn-outline-warning';
     }
 
-    //displayCreditOfficerList()| displayCO|
     this.displayTicketList = (onFinish = null) => {
-        //Initialize language for DataTable columns headers
-        //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-        //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
         let p = { 'search_value': mThis.elSearchAppt.val(), 'date': mThis.appt_filter_date.val(), 'status_id': mThis.appt_filter_status.val() };
         window.vsapi.call(`${mThis.base_url}/api/ticket/list`, p).then((result) => {
@@ -193,11 +181,10 @@ let ConsultationQueueComponent = new function () {
             if (result.status_code === 200) data = StringSanitizer.sanitizeObject(result.data, null, ['cur_symbol', 'arrival_time']);
             if (mThis.table) {
                 mThis.tblTickets.DataTable().clear().destroy();
-                //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
                 mThis.tblTickets.empty();
                 mThis.table = null;
             }
-            //begin::Set up columns
+
             let my_columns = [
                 {
                     data: function (data, a, b) {
@@ -243,7 +230,6 @@ let ConsultationQueueComponent = new function () {
                 {
                     title: mThis.trans_title('Action'),
                     data: function (data, a, b) {
-                        let status_class = null; //mThis.getStatusClass(data.status_id);
                         return [`<div class="form-inline">`,
                             `<a href="javascript:void(0)" class="btn_co_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a style="display:${data.status_id > 2 ? 'none' : 'block'}" href="javascript:void(0)" class="btn_ticket_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
@@ -254,27 +240,18 @@ let ConsultationQueueComponent = new function () {
                     }
                 }
             ];
-            //END Define colum
 
-            //translate column names
             if (!mThis.table)
                 mThis.table = mThis.tblTickets.DataTable({
                     searching: false,
                     destroy: true,
                     paging: true,
                     ordering: false,
-                    //dom: 'Bfrtip',
                     retrieve: true,
-                    //scrollY:390,
-                    //scrollX:500,
-                    //pagingType:'numbers',
                     info: true,
                     pageLength: 10,
                     bLengthChange: false,
                     saveState: true,
-                    // rowReorder: {
-                    // dataSrc: 'sequence'
-                    // },
                     'processing': true,
                     'language': {
                         'loadingRecords': '&nbsp;',
@@ -287,7 +264,6 @@ let ConsultationQueueComponent = new function () {
                         let tr = $(row);
                         tr.data('id', data.id);
                         tr.data('tid', data.id);
-                        //both of the above "tid" and "id" are the same. It is ticket ID
                         tr.data('statusid', data.status_id);
                         tr.data('clientid', data.client_id);
                         tr.data('personid', data.person_id);
@@ -313,6 +289,7 @@ let ConsultationQueueComponent = new function () {
     }
 
     this.show = (option = null) => {
+        if(!option) option = {};
         mThis.displayTicketList(() => {
             mThis.self.show().siblings().hide();
             main_view.setTitle(mThis.title_prop);

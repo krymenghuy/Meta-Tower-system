@@ -34,7 +34,6 @@ let MedicalServiceComponent = new function () {
         }
     }
 
-    //begin:: MedicalServiceCompoent.int()
     this.init = () => {
 
         mThis.elSearchItem.on('keyup', (e) => {
@@ -210,13 +209,11 @@ let MedicalServiceComponent = new function () {
     }
 }
 
-//begin::MedicalServiceDialog
 let MedicalServiceDialog = new function () {
     let mThis = this;
     this.self = $(`#_msl_dlgService`);
     this.elDepartment = $('#_msl_dlgService_department');
 
-    //on ServiceDialog: display department items in Select2/Dropdown list for user to select
     this.prepareFormOptions = (default_id, onFinish) => {
         vsapi.call(`${main_view.base_url}/api/settings/departments`, null).then((res) => {
             let items = StringSanitizer.sanitizeObject(res.data);
@@ -235,7 +232,6 @@ let MedicalServiceDialog = new function () {
         "modifyTitle": "Modify Service",
         "createTitle": "New Service",
         "identityProps": ['id'],
-        //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['id'],
         "sanitize_excepts": [],
         'use_alert_error': true,
