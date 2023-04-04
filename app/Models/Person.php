@@ -112,7 +112,7 @@ class Person //extends Model
         if(!$more_where) return null;
         $more_where = $more_where?$more_where:"1=2";
 
-        if ($cols) $cols ="p.id,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
+        if (!$cols) $cols ="p.id,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
         $rows = DB::table('persons AS p')->whereRaw($more_where)->selectRaw($cols)->take(1)->get();
         return isset($rows[0])? $rows[0]:null;
     }

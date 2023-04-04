@@ -135,10 +135,7 @@ Route::get('test',function(){
 Route::get('package_barcode/{id}', [WebReportController::class, 'package_barcode']);
 Route::get('genreport/{q}', [WebReportController::class, 'general_report']);
 Route::get('geninvoice/{q}',[WebReportController::class, 'general_invoice']);
-Route::get('employee_profile/{q}',[WebReportController::class,'employee_profile']);
-Route::get('pawncontract/{q}', [WebReportController::class, 'pawn_contract']);
-Route::get('loancontract/{q}', [WebReportController::class, 'loan_contract']);
-
+Route::get('person-profile/{q}',[WebReportController::class,'person_profile']);
 // Route::get('view-receipt/{q}',[MailController::class, 'view_receipt']);
 Route::get('receipt/{q}', [WebReportController::class, 'receipt']);
 Route::get('mail-receipt/{q}', [MailController::class, 'receipt']);

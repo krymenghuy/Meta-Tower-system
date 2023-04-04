@@ -84,14 +84,12 @@ class WebReportController extends Controller
           case 'medical_certificate':{
             $data['title']="Medical Certificate";
             $data['consult'] = $consultation->getDetails();
-            //dd($data);return;
             break;
           }
           case "patient_profile":{
             $data['title']="Patient Profile";
             $d = \App\Models\Patient::profileInfo($patient_id,true,true);
             $data['patient'] = $d;
-            dd($data);return;
             break;
           }
           default:{
@@ -109,8 +107,7 @@ class WebReportController extends Controller
         if (!$branch_id) return redirect('/');
         $data['branch'] = \App\Models\CompanyProfile::details($branch_id);   
         $p = processQueryString($query_string);
-
-        if(!$p) {
+        if(!$p){
           return view('errors.500');
         }
 
@@ -123,7 +120,7 @@ class WebReportController extends Controller
         return view('reports.invoice', $data);
     }
 
-    public function employee_profile($query_string = null){
+    public function person_profile($query_string = null){
       if (!Session::get('login_name',null)) return redirect('/');
         $branch_id =Session::get('branch_id',0);
         if (!$branch_id) return redirect('/');
@@ -134,11 +131,28 @@ class WebReportController extends Controller
           return view('errors.500');
         }
 
-        $employee_id = isset($p->id) ? $p->id : 0;
+        $rtype = $p->rtype;
+        $data['rtype'] = $rtype; 
+        $id = isset($p->id) ? $p->id : 0;
         $ss = (object)['branch_id'=>$branch_id];
 
-        $data["title"] = "Employee Profile";
-
-        return view("reports.employee_profile",$data);
+        $data["employee"] = \App\Models\CompanyProfile::details($branch_id);
+        switch($rtype){
+          case 'patient_profile':{
+            $data["title"] = "Patient Profile";
+            $data["patient"] = \App\Models\Patient::profileInfo($id);
+            break;
+          }
+          case 'employee_profile':{
+            $data["employee"] = \App\Models\Employee::profileInfo($id);
+            break;
+          }
+          default:{
+            return view("reports.no_report");
+          }
+        }    
+      
+        return view("reports.person_profile",$data);
     }
+    
 }
