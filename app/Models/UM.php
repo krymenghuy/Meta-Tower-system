@@ -1,13 +1,13 @@
 <?php
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+//use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-//use App\Models;
+use App\Models;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-use App\Communication\SMS;
+use App\Models\SMS;
 use Session;
 use DB;
 use Carbon\Carbon;
@@ -16,10 +16,9 @@ use Localization;
 use Sanitizer;
 use Config;
 
-class UM
+class UM //extends Model
 {
-    use HasFactory;
-    
+    //use HasFactory;
     protected static $app_id = null; /** app_id for Admin Back Office **/
     protected static $user_classes = [];
     
@@ -32,7 +31,7 @@ class UM
     //### The variables below for JWT merchanism
         protected static $use_jwt = 1; //Tell UM class to use JWT mechanism to verify user'stoken
         protected static $jwt_encode ='HS256';
-        protected static $jwt_lifespan =180*60; //default lifespan of JWT token (Time to expire)
+        protected static $jwt_lifespan =43800; //180*60; // one month = 43800 minutes //default lifespan of JWT token (Time to expire)
         protected static $jwt_key ="This is JWT key";
         protected static $jwt_payload = [
           "iis"=>"",
@@ -42,17 +41,19 @@ class UM
         ];
        
     //### The vaiables above for JWT merchanism
- 
-    protected static $use_phone_number_login = [
-      'admin'=>0,
-      'super_admin'=>0,
-      'staff'=>0,   
-      'admin_support'=>0 /* Backend user's login can be email, phone, or any name */
+    
+    /** Login via phone number or email or name **/
+    protected static $login_kind = [
+      'staff'=>'name',
+      'admin'=>'name',
+      'super_admin'=>'name',  
+      'admin_support'=>'name' /* Backend user's login can be email, phone, or any name */
     ];
-
+  
+    //Used when creating new login, whether or not required official ID to link to official profile
     protected static $required_official_profile = [
-      'admin'=>0,
       'staff'=>1,
+      'admin'=>0,
       'super_admin'=>0,  
       'admin_support'=>0
     ];
@@ -75,31 +76,41 @@ class UM
         ];
  
         self::$user_classes = [
-          'admin'=>['used'=>1,'name'=>'Admin','app_id'=>getAdminAppId()],
-          'staff'=>['used'=>1,'name'=>'Staff','app_id'=>getAdminAppId()],
-          //'client'=>['used'=>1,'name'=>'Client','app_id'=>getClientAppId()],
-          'superadmin'=>['used'=>1,'name'=>'Super Admin','app_id'=>getAdminAppId()],
-          'admin_support'=>['used'=>0,'name'=>'Admin Support','app_id'=>getAdminAppId()],
-          'super_admin'=>['used'=>0,'name'=>'Super Admin','app_id'=>getAdminAppId()]
+          'admin'=>['used'=>1,'name'=>'Admin','app_id'=>Config::get('app.app_id')],
+          'admin_support'=>['used'=>0,'name'=>'Admin Support','app_id'=>Config::get('app.app_id')],
+          'superadmin'=>['used'=>0,'name'=>'Super Admin','app_id'=>Config::get('app.app_id')],
+          'super_admin'=>['used'=>0,'name'=>'Super Admin','app_id'=>Config::get('app.app_id')]
+          //'driver'=>['used'=>1,'name'=>'Driver','app_id'=>Config::get('app.driver_app_id')],
+          //'merchant'=>['used'=>1,'name'=>'Merchant','app_id'=>Config::get('app.merchant_app_id')],
+          //'sender'=>['used'=>0,'name'=>'Merchant','app_id'=>Config::get('app.merchant_app_id')]
         ];
         //parent::__construct($attributes);
        
     }
-
-    // //Temporary function, getting auth code
-    // function getUserInfoByToken1($req,$user_class=null){
-    //    $ss = self::getUserInfoByToken($req,-1);
-    //    if($ss->status_code !=200)
-    //       return '#350';
-    //    else{
-    //       $ss->id = $ss->official_id;
-    //       $ss->code = $ss->official_code;
-    //       return $ss;
-    //    } 
-    // }
-
+ 
     static function getUserClasses(){
       return self::$user_classes;
+    }
+
+    //change phone number for a user, and if the user's class also use phone_number as login_name, it also changes lohin_name too
+    static function updatePhoneNumber($phone_number,$id){
+      $user = self::getUserProps($id,"user_class");
+      if(!$user) return null;
+      $loginVia = isset(self::$login_kind[$user->user_class])? self::$login_kind[$user->user_class]:null;
+      if ($loginVia ==='phone'){
+         DB::table('um_users')->where('id',$id)->update(['phone_number'=>$phone_number,'login_name'=>$phone_number]);
+      }else DB::table('um_users')->where('id',$id)->update(['phone_number'=>$phone_number]);
+      return null;
+    }
+
+    static function updateEmail($email,$id){
+      $user = self::getUserProps($id,"user_class");
+      if(!$user) return null;
+      $loginVia = isset(self::$login_kind[$user->user_class])? self::$login_kind[$user->user_class]:null;
+      if ($loginVia ==='email'){
+         DB::table('um_users')->where('id',$id)->update(['email'=>$email,'login_name'=>$email]);
+      }else DB::table('um_users')->where('id',$id)->update(['email'=>$email]);
+      return null;
     }
 
      //UM::setUserSession() is a static function and is the same as UM->createSession() 
@@ -208,8 +219,8 @@ class UM
      
 /*##### begin::InApp UserModel ##### */
 
-    function getAppIdByUserClass($user_class){
-       return self::$user_classes[$user_class]['app_id'];
+    static function getAppIdByUserClass($user_class){
+       return Config::get('app.app_id');
     }
 
     function getModuleList($user_id =0){
@@ -226,9 +237,14 @@ class UM
      //sendSMS_otp()  $d = {user_id,[phone_number],[purpose]}
      //@purpose = {'change_password'}
       function sendSMS_otp($d){
-          $ss = self::getUserInfoByToken($d,-1);
-          if($ss->status_code !=200) return $ss; //user not authenticated
-
+          $need_authentication = isset($d->need_authentication)? $d->need_authentication:1;
+          $ss = (object)['branch_id'=>1];
+          
+          if($need_authentication ===1){
+            $ss = self::getUserInfoByToken($d,-1);
+            if($ss->status_code !=200) return $ss; //user not authenticated
+          } 
+          
           $branch_id = Sanitizer::sanitize($ss->branch_id);
           $user_id = isset($d->user_id)?$d->user_id:null;
           $login_name =isset($d->login_name)?$d->login_name:null;
@@ -245,10 +261,11 @@ class UM
           if (empty($phone_number)) return DV::error("Phone number not found");
 
           //$text = get_settings_value($ss,'OTP_SMS_TEMPLATE','string');
-          $text = SMS::getMessageTemplate($purpose);
+         
           $new_otp_code = $this->newOTP();
-          $text = str_replace('otp_code',$new_otp_code,$text);
-          DB::table('um_users')->where('login_name',$login_name)->update(array('otp_code'=>$new_otp_code));
+          $text = SMS::getMessageTemplate($purpose,$new_otp_code);
+          //$text = str_replace('otp_code',$new_otp_code,$text);
+          DB::table('um_users')->where('login_name',$login_name)->update(['otp_code'=>$new_otp_code]);
           $m = SMS::send($phone_number,$text,null);
           if($m->status =='Error'){
             $e = (object)["sms_error"=>$m->error_message];
@@ -256,6 +273,32 @@ class UM
             return $e;
           }
           return DV::success(["otp_code"=>$new_otp_code]);
+      }
+
+      static function resetPassword_forget($login_name,$user_class,$otp_code,$password){
+        if(self::matchOTP($login_name,$otp_code,$user_class)){
+            //begin set new password | reset password
+            //$branch_id = sanitize($ss->branch_id);
+            $login_name = htmlspecialchars($login_name);
+            if(empty($password)) return DV::error("New password is required");
+            $app_id =self::getAppIdByUserClass($user_class);
+            if(!$app_id) return DV::error('User class is not valid');
+            if(!self::existsBy('login_name',$login_name,$app_id)) return "Login name does not exist";//here
+            $str_user_class ="1=1";
+            if($user_class) $str_user_class ="user_class='$user_class'";
+           $hpwd = PASSWORD_HASH($password,PASSWORD_DEFAULT);
+           $x = DB::table('um_users')->where('login_name',$login_name)->whereRaw($str_user_class)->update(['hpwd'=>$hpwd]);
+           if($x){
+                 return DV::success();  
+           }else return DV::error("Something went wrong! The password was not reset"); //can be problem with user_class
+        }else return DV::error("OTP code is not correct");   
+     }
+ 
+      //verifyOTP()
+      static function matchOTP($login_name,$otp_code,$user_class=null){
+        $str_user_class ="1=1";
+        if($user_class) $str_user_class ="u.user_class ='$user_class'";
+        return DB::table('um_users AS u')->where('u.login_name',$login_name)->whereRaw($str_user_class)->where('otp_code',$otp_code)->take(1)->exists();
       }
    
       //verify if otp_code provided by user is correct. If correct then the otp_code is cleared out from table "um_users.otp_code"
@@ -468,36 +511,39 @@ class UM
  
       //$cols = "id,full_name"
       static function getUserProps($user_id,$cols){
-         $rows = DB::table('um_users AS u')->where('id',$user_id)->selectRaw($cols)->limit(1)->get(); 
-        
+         $rows = DB::table('um_users AS u')->where('id',$user_id)->selectRaw($cols)->take(1)->get(); 
         foreach($rows as $row) return $row;
         return null;
       }
-      
+      static function updateUserProps($user_id,$inputs=[]){
+        return DB::table('um_users')->where('id',$user_id)->update($inputs); 
+      }
+      static function updateUserByOfficialId($official_id,$inputs=[]){
+        return DB::table('um_users')->where('official_id',$official_id)->update($inputs); 
+      }
+
       /** getProfileInfo()| getUserProfile()| getOfficialProfile() **/
       //return official profile information of a user including "official_id, official_code, name, sex, phone_number,email, address" 
       static function officialProfileInfo($branch_id,$official_code,$user_class,$cols=null){
-         $profile_classes = ['staff','consultant','doctor'];
-         $tables = [
-            "staff"=>"employees",
-            "consultant"=>"employees",
-            "doctor"=>"employees"
-         ];
-
          $rows = [];
          //NOTE: column_name can be also prefixed with alias "s."
-         if(!$cols) $cols = "p.id as person_id,t.id as official_id, t.code as official_code,p.name,p.email,p.phone_number";
-         if(in_array($user_class,$profile_classes)){
-            $tblname = $tables[$user_class];
-            if($tblname) $rows = DB::table("persons as p")->join("$tblname as t",'t.person_id','=','p.id')->where('t.code',$official_code)->where('t.branch_id',$branch_id)->selectRaw($cols)->get();
-            return isset($rows[0])?$rows[0]:null;
+         if(!$cols) $cols = "s.id as official_id, s.code as official_code,s.name,s.email,s.phone_number";
+         if($user_class === 'merchant' || $user_class === 'sender'){
+            $rows = DB::table("sender as s")->where('s.code',$official_code)->where('s.branch_id',$branch_id)->selectRaw($cols)->get();
+            return isset($rows[0])?$rows[0]:null;   
+         }else if($user_class === 'driver'){
+            $rows = DB::table("driver as s")->where('s.code',$official_code)->where('s.branch_id',$branch_id)->selectRaw($cols)->get();
+            return isset($rows[0])?$rows[0]:null;   
+          }else if ($user_class === 'admin'){
+            //todo: Later, we can return admin profile as a person info such as full_name, NID, phone, email, address
+            return null;
          }else if ($user_class ==='superadmin' || $user_class ==='super_admin'){
            //todo: Later, we can return admin profile as a person info such as full_name, NID, phone, email, address
            return null;
          }else{
             //todo: Later, we can return admin profile as a person info such as full_name, NID, phone, email, address
             return null; 
-         }
+         } 
       }
   
     //Check if current user is super admin (with user_id =1)
@@ -551,7 +597,7 @@ class UM
 
           if (!self::correctUserClass($user_class)) return DV::error("User Type or User Class is not correct",$ss->lang);
           //Get app_id based on a given @user_class;
-          $app_id = $this->getAppIdByUserClass($user_class);
+          $app_id = self::getAppIdByUserClass($user_class);
           ////$app_id = self::$app_id;
            
           //if official profile info is required
@@ -573,7 +619,8 @@ class UM
 
           //$single_role_name =null;// $first_role->name;
           //$first_role =self::firstRole($d->role_id);
-          if (self::$use_phone_number_login[$user_class]==1){
+          $loginVia = isset(self::$login_kind[$user_class])?self::$login_kind[$user_class]:null;
+          if ($loginVia==='phone'){
               if(!isset($inputs['phone_number'])) $inputs['phone_number'] = $inputs['login_name']; 
           }
            
@@ -734,11 +781,13 @@ class UM
             //#begin:: Get special active fields "is_locked,status,lang". These fields need to be updated in the decoded JWT token on every api call
                 $decoded->status="active";
                 $row = self::getUserProps($decoded->user_id,"is_locked,status,lang");
-                if ($row){
+                if ($row)
+                {
                   $decoded->lang = $row->lang;
                   $decoded->is_locked = $row->is_locked;
                   $decoded->status = $row->status;
                 }
+
                 if (strtolower($decoded->status)==='disabled' || $decoded->is_locked === 1) return DV::error('User status is disabled or locked out',$def_lang,400);
             //#end::Get special active fields "is_locked,status,lang". These fields need to be updated in the decoded JWT token on every api call
             $ret =(object)['status_code'=>200,'status'=>'OK'];
@@ -746,7 +795,7 @@ class UM
             return $ret;
          }catch(\Exception $e){
               $err = $e->getMessage(); 
-              if($err==="Expired token")  return DV::error($err,$def_lang,402); 
+              if($err==="Expired token")  return DV::error($err,$def_lang,401); 
                
                 \Log::error($err, [
                   'file' => $e->getFile(),
@@ -780,6 +829,7 @@ class UM
                 ,'full_name'=>$row->full_name
              ];
           }
+          
           return DV::error('User authentication failed',null,401);
       }
    }
@@ -1018,11 +1068,22 @@ class UM
         return null;
       }
 
-      function sendOTPCode_phone($d){
-        $ss = self::getUserInfoByToken($d,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-          $branch_id = Sanitizer::sanitize($ss->branch_id);
-          $phone_number = Sanitizer::sanitize($d->phone_number);
+      //sendOTP() | sendPhoneOTP()
+      function sendOTPCode_phone($ss,$arr){
+          //$ss = self::getUserInfoByToken($d,-1);
+          //if($ss->status_code !=200) return $ss; //user not authenticated
+          //$branch_id = Sanitizer::sanitize($ss->branch_id);
+          $d = (object)$arr;
+          $phone_number = $d->phone_number;
+          $new_otp_code = $this->newOTP();
+          $message = SMS::getMessageTemplate('forget_password',$new_otp_code);
+          $res  = SMS::send($phone_number,$message);
+          if($res->status ==='OK'){
+            $x = DB::table('um_users')->where('login_name',$phone_number)->update(['otp_code'=>$new_otp_code]);
+            if(!$x) return DV::error("Login name $phone_number does not exist");
+            return DV::success(['otp_code'=>$new_otp_code]);
+          }
+          return DV::error("Failed to send OTP code");
       }
       
       //For Admin user to reset password for other user, or user themselve to just save password after otp_code code has been verified correctly
@@ -1480,9 +1541,8 @@ class UM
 
     static function correctUserClass($user_class){
       foreach(self::$user_classes as $key=>$c){
-           if($key === $user_class) return true;
+           if($key == $user_class) return true;
       }
       return false;
     }
-
 }

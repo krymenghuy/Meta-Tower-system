@@ -25,6 +25,7 @@ class Consultation //extends Model
     protected $id = null;
     protected $userInfo = null;
 
+    //NOTE that $id is ticket_id
    function __construct($id=null, $userInfo = null){
         $this->id = $id;
         $this->userInfo = $userInfo;
@@ -227,6 +228,15 @@ class Consultation //extends Model
             'items'=>DB::table('patient_services as ps')->where('ps.ticket_id',$ticket_id)->select($cols)->get(),
             //'headerInfo'=>null
          ];
+    }
+
+    //getAssignedServices()
+    function getPrescribedServices($ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+        $ss = $ss? $ss: $this->getUserInfo();
+        $branch_id = $ss->branch_id;
+        $cols = ['ps.id','ps.patient_id','ps.service_id','ps.qty','ps.sku','ps.remarks','ps.emp_id','ps.created_at','ps.create_user'];
+        return DB::table('patient_services as ps')->where('ps.ticket_id',$ticket_id)->where('ps.branch_id',$branch_id)->select($cols)->get(); 
     }
 
     function removePrescriptionItem($id,$ticket_id=null,$ss=null){

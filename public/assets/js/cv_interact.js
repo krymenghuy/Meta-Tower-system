@@ -214,7 +214,7 @@
 				showCancelButton: behavior_option.showCancelButton,
 				reverseButtons:true, //make OK button to the right
 				'inputValidator': (value) => {
-				  if(typeof behavior_option.inputValidator ==='function') behavior_option.inputValidator(value);
+				  if(typeof behavior_option.inputValidator ==='function') return behavior_option.inputValidator(value);
 				}
 			  });
 			  //result = {'value':'some value here'}

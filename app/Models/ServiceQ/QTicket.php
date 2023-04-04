@@ -184,7 +184,7 @@ class QTicket //extends Model
           $str_where .= ($str_where? ' AND ':'')."s.status_id =$filter_status_id";  
         }
 
-        $cols ="s.id,s.consultant_id,s.ticket_number,formatDate(s.q_date) AS q_date,s.client_id,s.person_id,s.create_user,formatDate(s.created_at) AS created_at,p.name as client_name,p.phone_number as client_phone_number,p.email as client_email,p.sex as client_sex,s.schedule_type,s.priority,s.remarks, s.status_id, sts.name AS status, cl.code AS client_code";
+        $cols ="s.id,s.consultant_id,s.ticket_number,formatDate(s.q_date) AS q_date,s.client_id,s.person_id,s.create_user,formatDate(s.created_at) AS created_at,concat(p.last_name,' ',p.first_name) as client_name,p.phone_number as client_phone_number,p.email as client_email,p.sex as client_sex,s.schedule_type,s.priority,s.remarks, s.status_id, sts.name AS status, cl.code AS client_code";
         $rows = DB::table('tickets as s')->join('ticket_statuses as sts','sts.id','=','s.status_id')->join('persons as p','p.id','=','s.person_id')->join('patients as cl','p.id','=','cl.person_id')->where('s.branch_id',$branch_id)->whereRaw($str_where)->selectRaw($cols)->orderByRaw('s.created_at DESC')->get();
         return $rows;
     }
@@ -236,7 +236,7 @@ class QTicket //extends Model
         //$ticket_id = $id? $id: $this->getId();
         //$ss = $ss?$ss:$this->getUserInfo();
         $branch_id = $ss->branch_id;
-        $cols ="s.branch_id,s.id,s.appt_id,s.person_id,getPatientCode(s.branch_id,s.client_id) as client_code,s.client_id,p.name as client_name,p.sex as client_sex,p.phone_number as client_phone_number,p.email as client_email,s.ticket_number,s.status_id, getConsultanName(s.consultant_id) as consultant_name,'None' AS membership_card";
+        $cols ="s.branch_id,s.id,s.appt_id,s.person_id,getPatientCode(s.branch_id,s.client_id) as client_code,s.client_id,CONCAT(p.last_name,' ',p.first_name) as client_name,p.sex as client_sex,p.phone_number as client_phone_number,p.email as client_email,s.ticket_number,s.status_id, getConsultanName(s.consultant_id) as consultant_name,'None' AS membership_card";
         $rows = DB::table('tickets as s')->join('ticket_statuses as sts','sts.id','=','s.status_id')->join('persons as p','p.id','=','s.person_id')->where('s.id',$id)->where('s.branch_id',$branch_id)->selectRaw($cols)->take(1)->get();
         foreach($rows as $row){
             if ($include_cc) $row->chief_complaints = self::chiefComplaints($row->branch_id,$row->id);

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+//use Illuminate\Database\Eloquent\Factories\HasFactory;
+//use Illuminate\Database\Eloquent\Model;
 use Session;
 use DB;
 use App\Models\DV;
@@ -11,66 +11,25 @@ use App\Models\Person;
 use App\Models\Lead;
 use App\Models\ServiceQ\QTicket;
 
-class Patient extends Model
+class Patient //extends Model
 {
-    use HasFactory;
+    //use HasFactory;
     protected static $default_official_id_prefix="P";
     protected static $official_id_length=5;
-
-    protected $table = 'patients';
-    protected $guarded = ['id'];
-    protected $fillable = [];
-      
-    protected $primaryKey = 'id';
-    public $incrementing = true;
-    //protected $keyType = 'string';
-    public $timestamps = true;
-    protected $dateFormat = 'Y-m-d';
-    
-    protected $attributes = [
-        //'inactive' => 0,
-        'code'=>0
-    ];
-
-     /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    // protected $hidden = [
-    //     'password',
-    //     'remember_token',
-    // ];
- 
-    protected $casts = [
-        'id' => 'integer',
-        'branch_id'=>'integer',
-        'code'=>'string',
-        'patient_type'=>'string', //OPD,IPD
-        'department_id' => 'integer', //ID of servicing department. Example: some client go to Cardio care Center, some patient to Skin Care department
-        'regis' => 'datetime',
-        'consultant_id' => 'integer',
-        'notes' => 'string'
-    ];
-
-    // public function boot()
-    // {
-    //     Model::observe(PatientObserver::class);
-    // }
-
+  
     static function personId($id){
       $rows = self::where('id',$id)->selectRaw("person_id")->take(1)->get();
       foreach($rows as $row) return $row->person_id;
       return null;
     }
 
-    static function getDataPropsBy($branch_id,$retrieve_by_fields = [], $select_cols="id",$conj ="AND"){
-       $str_where="";
+    static function getDataPropsBy($retrieve_by_fields = [], $select_cols="id",$conj ="AND"){
+       $str_where="1=2";
        if($conj) $conj=" AND ";
        foreach($retrieve_by_fields as $field_name=>$value){
          $str_where .= ($str_where? $conj : "")." $field_name ='$value'";
        }
-       $rows = DB::table('patients')->whereRaw($str_where)->where('branch_id',$branch_id)->selectRaw($select_cols)->take(1)->get();
+       $rows = DB::table('patients')->whereRaw($str_where)->selectRaw($select_cols)->take(1)->get();
       return isset($rows[0])? $rows[0] : null;
     }
 
@@ -177,7 +136,7 @@ class Patient extends Model
         $patient_id = isset($d['id'])?$d['id']:0;
         if ($patient_id > 0) return DV::error("Patient identity $patient_id should not be given because you are attempting to register new patient profile");
         //If Person_id is supplied => use @person_id to get patient_id from "patients" table. NOTE. in patients table, there is unique (person_id,patient_id,[patient_code])
-        if($person_id>0) $patient = self::getDataPropsBy($branch_id,['person_id'=>$person_id],"id");
+        if($person_id>0) $patient = self::getDataPropsBy(['branch_id'=>$branch_id,'person_id'=>$person_id],"id");
         if ($patient) $patient_id = $patient->id;
         //if(self::where("person_id",$person_id)->exists()) return DV::error("The person with phone number ? is already a patient::$phone_number"); 
         
@@ -257,8 +216,8 @@ class Patient extends Model
         $search_value = escape_like_str($req->search_value);
 
         $str_search="1=1";
-        if($search_value) $str_search ="(p.phone_number ='$search_value' OR pt.code ='$search_value' OR p.name LIKE '%$search_value%' OR p.national_id ='$search_value')";
-        $cols ="pt.id,pt.code,p.id as person_id,p.name,p.sex, formatDate(pt.created_at) AS created_at,p.phone_number,p.email,p.address,pt.remarks,pt.create_user";
+        if($search_value) $str_search ="(p.phone_number ='$search_value' OR pt.code ='$search_value' OR concat(p.last_name,' ',p.first_name) LIKE '%$search_value%' OR p.national_id ='$search_value')";
+        $cols ="pt.id,pt.code,p.id as person_id,concat(p.last_name,' ',p.first_name) AS name,p.sex, formatDate(pt.created_at) AS created_at,p.phone_number,p.email,p.address,pt.remarks,pt.create_user";
         $rows = DB::table("patients AS pt")->join('persons as p','p.id','=','pt.person_id')->where('pt.branch_id',$branch_id)->whereRaw($str_search)->selectRaw($cols)->orderByRaw("pt.created_at desc")->get();    
         return DV::result($rows);
     }
@@ -293,7 +252,7 @@ class Patient extends Model
         if(!$more_where) return null;
         $more_where =$more_where?$more_where:"1=2";
 
-        $cols ="pt.id,p.id as person_id,pt.code,p.name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
+        $cols ="pt.id,p.id as person_id,pt.code,concat(p.last_name,' ',p.first_name) as name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
         $rows =  DB::table('persons as p')->join('patients as pt','pt.person_id','=','p.id')->where('pt.branch_id',$branch_id)->whereRaw($more_where)->selectRaw($cols)->take(1)->get();
         return isset($rows[0])?$rows[0]:null;
     }
@@ -301,7 +260,7 @@ class Patient extends Model
     //returns details of one patient (including personal details and medical conditions)
     static function info($id){
         $more_where =null;
-        $cols ="p.id,p.name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
+        $cols ="p.id,,concat(p.last_name,' ',p.first_name) as name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
         $rows =  DB::table('persons as p')->join('patients as pt','pt.person_id','=','p.id')->where('pt.id',$id)->selectRaw($cols)->take(1)->get();
         foreach($rows as $row){
             $cols1 ="pmc.id,pmc.mc_value,pmc.description";
@@ -314,7 +273,7 @@ class Patient extends Model
     //returns details of one patient's personal details. and does not include medical conditions
     static function quickInfo($id){
         $more_where =null;
-        $cols ="p.id,p.name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
+        $cols ="p.id,concat(p.last_name,' ',p.first_name) as name, p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
         $rows =  DB::table('persons as p')->join('patients as pt','pt.person_id','=','p.id')->where('pt.id',$id)->selectRaw($cols)->take(1)->get();
         return null;
     }
@@ -324,7 +283,7 @@ class Patient extends Model
         if($ss->status_code !=200) return $ss; //user not authenticated
         $branch_id = $ss->branch_id;
         $search_value = $req->search_value;
-        $cols ="pt.id,pt.code,p.id as person_id,p.name,p.sex, formatDate(pt.created_at) AS created_at,p.phone_number,p.email,p.address,pt.remarks,pt.create_user";
+        $cols ="pt.id,pt.code,p.id as person_id,concat(p.last_name,' ',p.first_name) as name,p.sex, formatDate(pt.created_at) AS created_at,p.phone_number,p.email,p.address,pt.remarks,pt.create_user";
         $rows= DB::table("patients AS pt")->join('persons as p','p.id','=','pt.person_id')->where('pt.branch_id',$branch_id)->selectRaw($cols)->orderByRaw("pt.created_at desc")->get();  
         return DV::result($rows);
     }

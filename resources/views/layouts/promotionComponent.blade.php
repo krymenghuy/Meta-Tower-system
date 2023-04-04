@@ -25,6 +25,7 @@
     .promo-des-text {
         font-size: 0.9em;
     }
+
 </style>
 <div id="_main_promotionComponent" style="display:none;margin:auto;width:90%;background:#fff">
     <div style="margin:auto;width:100%">
@@ -32,17 +33,12 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="form-inline" style="margin-bottom:10px">
-                        <select id="_mobile_promo_app" class="form-control">
-                            <option value="admin">Student/Customer App</option>
+                        <select id="_mobile_promo_app" class="form-control height">
+                            <option value="merchant">Merchant Mobile App</option>
                         </select>
                         &nbsp;
-                        <button id="promo_btnNewPromo" type="button" class="btn btn-outline-primary">
-                            <i class="fa fa-plus"></i>
-                            New Promotion
-                        </button>
-                        <div style="display:none">
-                            <input id="_mobile_promo_fileChooser" type="file" accept="image/*" style="display:none" />
-                        </div>
+                        <button id="promo_btnNewPromo" type="button" class="btn btn-outline-primary"><i
+                                class="fa fa-plus"></i> New Promotion</button>
                     </div>
                     <div id="promo_img_container" class="img-container"></div>
                 </div>
@@ -102,8 +98,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="promo_dlgPromo_btnOK">Save</button>
+                    <button type="button" class="btn btn-secondary btn-default height" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary height" id="promo_dlgPromo_btnOK">Save</button>
                 </div>
             </div>
         </div>
