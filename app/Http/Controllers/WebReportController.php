@@ -65,6 +65,7 @@ class WebReportController extends Controller
         
         $rtype = isset($p->rtype) ? $p->rtype : null;
         $ticket_id = isset($p->id) ? $p->id : null;
+        $patient_id = isset($p->patientid)?$p->patientid:null;
         $ss = (object)['branch_id'=>$branch_id];
         $consultation = new \App\Models\Consultation($ticket_id,$ss);
         $data['rtype'] = $rtype;
@@ -84,6 +85,13 @@ class WebReportController extends Controller
             $data['title']="Medical Certificate";
             $data['consult'] = $consultation->getDetails();
             //dd($data);return;
+            break;
+          }
+          case "patient_profile":{
+            $data['title']="Patient Profile";
+            $d = \App\Models\Patient::profileInfo($patient_id,true,true);
+            $data['patient'] = $d;
+            dd($data);return;
             break;
           }
           default:{
