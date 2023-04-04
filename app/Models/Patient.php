@@ -18,9 +18,8 @@ class Patient //extends Model
     protected static $official_id_length=5;
   
     static function personId($id){
-      $rows = self::where('id',$id)->selectRaw("person_id")->take(1)->get();
-      foreach($rows as $row) return $row->person_id;
-      return null;
+      $rows = DB::table('patients')->where('id',$id)->selectRaw("person_id")->take(1)->get();
+      return isset($rows[0])?$rows[0]->person_id:null;
     }
 
     static function getDataPropsBy($retrieve_by_fields = [], $select_cols="id",$conj ="AND"){
@@ -192,22 +191,51 @@ class Patient //extends Model
         }else return DV::error('Something went wrong during saving patient data');
 
     }
-
-    static function deletePermanent($req){
-        $com_branch_id=1;
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-        $branch_id = $ss->branch_id;
-        $id = $req->id;
-        $x = self::where('branch_id',$branch_id)->where('id',$id)->delete(); 
-        if ($x===1) return DV::success(['result'=>$x]);
-        else return DV::error("No matching patient found for deleting!");
+    
+    static function profileInfo($patient_id,$include_medical_history=false,$include_medication_details=false){
+         $person_id = self::personId($patient_id);
+         $cols="id as person_id,first_name,last_name,sex,date_of_birth,phone_number,address";
+         $data = (object)[];
+         $data->basic_info = Person::detailsBy(['id'=>$person_id],$cols);
+         if($include_medical_history) $data->medical_history = self::medicalHistory($patient_id);
+         if($include_medication_details) $data->include_medication_details = self::medicationDetails($patient_id);
+         return $data;
     }
 
-     //set patient code or patient official ID number
-     function setFriendlyId($id,$branch_id=0,$len=5){
+    static function latestTicket($patient_id){
+      $rows = DB::table("tickets as t")->where('client_id',$patient_id)->select('id','ticket_number','created_at')->orderBy('t.id','DESC')->take(1)->get();
+      return isset($rows[0])?$rows[0]:null; 
+    }
+
+    static function medicalHistory($patient_id){
+      $last_ticket = self::latestTicket($patient_id);
+      if(!$last_ticket) return [];
+      $ticket_id = $last_ticket->id;
+      return DB::table('patient_medical_history as h')->where('ticket_id',$ticket_id)->select('id','category','content','created_at')->get();
+    }
+
+    static function medicationDetails($patient_id){
+        $last_ticket = self::latestTicket($patient_id);
+        if(!$last_ticket) return [];
+        $ticket_id = $last_ticket->id;
+        return DB::table('patient_prescription_items as pi')->join('inv_items as i','pi.item_id','=','pi.id')->where('pi.ticket_id',$ticket_id)->select('pi.id','pi.item_id','pi.sku','pi.qty','pi.usage','pi.duration_days','pi.remarks','reason','pi.created_at')->get();
+    }
+
+    // static function deletePermanent($req){
+    //     $com_branch_id=1;
+    //     $ss = UM::getUserInfoByToken($req,-1);
+    //     if($ss->status_code !=200) return $ss; //user not authenticated
+    //     $branch_id = $ss->branch_id;
+    //     $id = $req->id;
+    //     $x = self::where('branch_id',$branch_id)->where('id',$id)->delete(); 
+    //     if ($x===1) return DV::success(['result'=>$x]);
+    //     else return DV::error("No matching patient found for deleting!");
+    // }
+
+    //  //set patient code or patient official ID number
+    //  function setFriendlyId($id,$branch_id=0,$len=5){
  
-    }
+    // }
 
     static function findSimilar($req){
         $ss = UM::getUserInfoByToken($req,-1);

@@ -408,17 +408,17 @@ let TicketDetails = new function () {
                     div_workspace.find('.qul-btn-generate-invoice').off('click').on('click',e=>{
                         e.preventDefault();
                         //let ticket_id = div_workspace.data('tid');
-                        let op = {
-                            'ticket_id': ticket_id
-                        };
-                        PrescriptionDialog.show(op);
-
+                        alert(`Create Invoice for ticket ${ticket_id}`);
                     });
 
                     div_workspace.find('.qul-btn-prescribe').off('click').on('click',e=>{
                         e.preventDefault();
                         //let ticket_id = div_workspace.data('tid');
-                        alert(`Create Prescription for ticket ${ticket_id}`);
+      
+                        let op = {
+                            'ticket_id': ticket_id
+                        };
+                        PrescriptionDialog.show(op);
 
                     });
               //#end:: set event handle for "Generate Invoice" and "Prescription" buttons
