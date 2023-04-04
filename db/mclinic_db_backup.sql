@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2023-03-17 10:15:06
+Date: 2023-03-31 09:47:07
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -46,13 +46,15 @@ CREATE TABLE `appointments` (
   `schedule_type` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT 'appointment_type = {followup,on demand}',
   `priority` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'priority ={urgent,normal}',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=195 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=197 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of appointments
 -- ----------------------------
-INSERT INTO `appointments` VALUES ('193', '1', '2', '2023-03-07', '2023-03-06 15:29:47', null, 'Dyna', '023546657567', null, null, '1', '80', null, '118', 'Samsethy', '1', '2023-03-06 15:29:32.000000', null, null, null, 'F', '2', '', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('193', '1', '2', '2023-03-07', '2023-03-21 03:56:21', null, 'Dyna', '023546657567', null, null, '1', '80', null, '118', 'Samsethy', '1', '2023-03-06 15:29:32.000000', null, null, null, 'F', '3', '', 'On demand', 'Normal');
 INSERT INTO `appointments` VALUES ('194', '1', '2', '2023-03-06', '2023-03-06 16:20:43', null, 'Gonna', '0123543546', null, null, '1', '81', null, '119', 'Samsethy', '1', '2023-03-06 16:20:07.000000', null, null, null, 'F', '3', '', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('195', '1', '2', '2023-03-22', '2023-03-21 03:44:24', null, 'Sovana sam', '011255671', null, null, '1', '82', null, '120', 'Samsethy', '1', '2023-03-21 03:10:55.000000', null, null, null, 'F', '3', '', 'On demand', 'Normal');
+INSERT INTO `appointments` VALUES ('196', '1', '2', '2023-03-25', '2023-03-27 16:13:19', null, 'Dyna', '023546657567', null, null, '0', '0', null, '118', 'Samsethy', '1', '2023-03-21 03:57:17.000000', null, null, null, 'F', '3', 'P100111', 'On demand', 'Normal');
 
 -- ----------------------------
 -- Table structure for `appt_chief_complaints`
@@ -71,7 +73,7 @@ CREATE TABLE `appt_chief_complaints` (
   `update_user` int(11) DEFAULT NULL,
   `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of appt_chief_complaints
@@ -79,6 +81,11 @@ CREATE TABLE `appt_chief_complaints` (
 INSERT INTO `appt_chief_complaints` VALUES (null, '3', '1', 'Samsethy', '2023-03-11 11:10:41.000000', '1', 'Bruised', '1', null, null, null);
 INSERT INTO `appt_chief_complaints` VALUES (null, '5', '1', 'Samsethy', '2023-03-12 10:41:53.137473', '114', 'Facial Cleansing', '7', null, null, '2023-03-12 10:41:53.137473');
 INSERT INTO `appt_chief_complaints` VALUES (null, '4', '1', 'Samsethy', '2023-03-13 08:57:59.797536', '114', 'Dark skin', '9', null, null, '2023-03-13 08:57:59.797536');
+INSERT INTO `appt_chief_complaints` VALUES ('195', '3', null, null, null, null, null, '10', null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('195', '5', null, null, null, null, null, '12', null, null, null);
+INSERT INTO `appt_chief_complaints` VALUES ('196', '11', '1', 'Samsethy', '2023-03-27 16:13:19.044591', '122', 'Im too beautiful ', '13', null, null, '2023-03-27 16:13:19.044591');
+INSERT INTO `appt_chief_complaints` VALUES ('196', '14', '1', 'Samsethy', '2023-03-27 16:13:19.044591', '122', 'dgsdfgdfhf', '14', null, null, '2023-03-27 16:13:19.044591');
+INSERT INTO `appt_chief_complaints` VALUES ('193', '11', '1', 'Samsethy', '2023-03-21 11:55:23.000000', '120', 'Im too beautiful ', '15', null, null, null);
 
 -- ----------------------------
 -- Table structure for `appt_statuses`
@@ -266,6 +273,32 @@ INSERT INTO `currencies` VALUES ('3', '1', 'asdasd', 'USD1', '1', 'Samsethy', nu
 INSERT INTO `currencies` VALUES ('6', '1', 'asdagsd', 'USD3', '1', 'Samsethy', null, null, null, '$', '0', '2', '2023-01-14 12:11:03.000000');
 
 -- ----------------------------
+-- Table structure for `currency_pairs`
+-- ----------------------------
+DROP TABLE IF EXISTS `currency_pairs`;
+CREATE TABLE `currency_pairs` (
+  `id` int(10) NOT NULL DEFAULT 0,
+  `currency_pair` varchar(25) CHARACTER SET utf8 NOT NULL,
+  `create_user` varchar(50) CHARACTER SET utf8 NOT NULL,
+  `create_uid` int(10) NOT NULL,
+  `create_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `update_uid` int(10) DEFAULT NULL,
+  `update_user` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
+  `update_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `branch_id` int(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of currency_pairs
+-- ----------------------------
+INSERT INTO `currency_pairs` VALUES ('1', 'USDKHR', 'Samsethy', '1', '2023-01-24 18:15:27.000000', null, null, null, '1');
+INSERT INTO `currency_pairs` VALUES ('14', 'USDKHR', 'Samsethy', '1', '2023-01-24 18:49:32.000000', null, null, null, '1');
+INSERT INTO `currency_pairs` VALUES ('15', 'USDKHR', 'Samsethy', '1', '2023-01-24 18:49:33.000000', null, null, null, '1');
+INSERT INTO `currency_pairs` VALUES ('16', 'USDKHR', 'Samsethy', '1', '2023-01-24 18:49:34.000000', null, null, null, '1');
+INSERT INTO `currency_pairs` VALUES ('17', 'USD-KHR', 'Samsethy', '1', '2023-01-24 18:52:12.000000', null, null, null, '1');
+INSERT INTO `currency_pairs` VALUES ('18', 'USD-KHR1', 'Samsethy', '1', '2023-01-24 18:52:35.000000', null, null, null, '1');
+
+-- ----------------------------
 -- Table structure for `customers`
 -- ----------------------------
 DROP TABLE IF EXISTS `customers`;
@@ -345,15 +378,16 @@ CREATE TABLE `departments` (
   `update_uid` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL,
+  `inactive` tinyint(4) DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of departments
 -- ----------------------------
-INSERT INTO `departments` VALUES ('1', '1', '0', 'Dermatology', null, 'Dermatology', 'Samsethy', '1', null, null, '2023-01-06 19:40:15', null);
-INSERT INTO `departments` VALUES ('2', '1', '0', 'Pastic Surgery', null, 'Pastic Surgery', 'Samsethy', '1', null, null, '2023-01-06 19:40:16', null);
-INSERT INTO `departments` VALUES ('12', '1', '0', 'General', null, 'General', 'Samsethy', '1', null, null, '2023-03-07 18:07:23', null);
+INSERT INTO `departments` VALUES ('1', '1', '0', 'Dermatology', null, 'Dermatology', 'Samsethy', '1', 'Samsethy', '1', '2023-03-23 10:32:58', '2023-03-23 10:32:58', '0');
+INSERT INTO `departments` VALUES ('2', '1', '0', 'Pastic Surgery', null, 'Pastic Surgery', 'Samsethy', '1', null, null, '2023-01-06 19:40:16', null, '0');
+INSERT INTO `departments` VALUES ('12', '1', '0', 'General', null, 'General', 'Samsethy', '1', null, null, '2023-03-07 18:07:23', null, '0');
 
 -- ----------------------------
 -- Table structure for `employees`
@@ -375,19 +409,16 @@ CREATE TABLE `employees` (
   `update_uid` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL,
+  `photo_file_type` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `photo_file_name` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of employees
 -- ----------------------------
-INSERT INTO `employees` VALUES ('1', '1', '1', '11111', '2', '1', 'full time', '0.00', 'USD', '1', '0', null, null, '2022-12-03 18:02:35', null);
-INSERT INTO `employees` VALUES ('2', '1', '104', '100013', '3', '1', 'full time', '0.00', 'USD', '1', '0', 'Samsethy', '1', '2023-01-12 13:48:25', '2023-01-12 13:48:25');
-INSERT INTO `employees` VALUES ('9', '1', '97', '100006', null, null, 'full time', '0.00', 'USD', 'Samsethy', '1', null, null, '2023-01-12 09:52:42', null);
-INSERT INTO `employees` VALUES ('11', '1', '99', '100008', null, null, 'full time', '0.00', 'USD', 'Samsethy', '1', null, null, '2023-01-12 10:10:28', null);
-INSERT INTO `employees` VALUES ('12', '1', '100', '100009', null, null, 'full time', '0.00', 'USD', 'Samsethy', '1', null, null, '2023-01-12 10:10:28', null);
-INSERT INTO `employees` VALUES ('13', '1', '101', '100010', null, null, 'full time', '0.00', 'USD', 'Samsethy', '1', null, null, '2023-01-12 10:10:29', null);
-INSERT INTO `employees` VALUES ('15', '1', '103', '100012', null, null, 'full time', '0.00', 'USD', 'Samsethy', '1', null, null, '2023-01-12 10:10:41', null);
+INSERT INTO `employees` VALUES ('1', '1', '1', '11111', '2', '1', 'full time', '0.00', 'USD', '1', '0', 'Samsethy', '1', '2023-03-22 15:44:29', '2023-03-22 15:44:29', 'png', '1_file_1641abfed8914720230322_030329.png');
+INSERT INTO `employees` VALUES ('2', '1', '2', '100014', '3', '1', 'full time', '0.00', 'USD', '1', '0', 'Samsethy', '1', '2023-03-23 11:02:11', '2023-03-23 11:02:11', 'png', '1_file_1641bcf4317e1820230323_110311.png');
 
 -- ----------------------------
 -- Table structure for `employee_code_control`
@@ -403,7 +434,7 @@ CREATE TABLE `employee_code_control` (
 -- ----------------------------
 -- Records of employee_code_control
 -- ----------------------------
-INSERT INTO `employee_code_control` VALUES ('1', '13', null, null);
+INSERT INTO `employee_code_control` VALUES ('1', '14', null, null);
 
 -- ----------------------------
 -- Table structure for `employee_positions`
@@ -433,8 +464,6 @@ INSERT INTO `employee_positions` VALUES ('2', '3', 'Active', '2022-12-03 19:37:0
 DROP TABLE IF EXISTS `exchange_rates`;
 CREATE TABLE `exchange_rates` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
-  `currency_code` varchar(10) NOT NULL,
-  `base_currency_code` varchar(10) NOT NULL,
   `buy_rate` decimal(10,4) NOT NULL,
   `sell_rate` decimal(10,4) DEFAULT NULL,
   `x_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
@@ -444,12 +473,18 @@ CREATE TABLE `exchange_rates` (
   `create_uid` int(10) DEFAULT NULL,
   `create_user` varchar(50) DEFAULT NULL,
   `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `currency_pair` varchar(25) DEFAULT NULL,
+  `update_uid` int(11) DEFAULT NULL,
+  `update_user` varchar(50) DEFAULT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of exchange_rates
 -- ----------------------------
+INSERT INTO `exchange_rates` VALUES ('1', '4000.0000', '4000.0000', null, '1', '1970', '1', '1', 'Samsethy', '2023-03-23 10:27:30.235421', 'USDKHR', '1', 'Samsethy', '2023-03-23 10:27:30');
+INSERT INTO `exchange_rates` VALUES ('2', '4100.0000', '4200.0000', '2023-03-22 00:00:00.000000', '3', '2023', '1', '1', 'Samsethy', '2023-03-23 10:30:47.144100', 'USDKHR', '1', 'Samsethy', '2023-03-23 10:30:47');
 
 -- ----------------------------
 -- Table structure for `invoices`
@@ -2179,7 +2214,7 @@ CREATE TABLE `leads` (
   `branch_id` int(10) DEFAULT NULL,
   `email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=83 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of leads
@@ -2253,6 +2288,7 @@ INSERT INTO `leads` VALUES ('78', 'Sin Sophana', 'F', '0234565756', '2', '1', 'S
 INSERT INTO `leads` VALUES ('79', 'Solika', 'F', '012464565', '2', '1', 'Samsethy', null, null, '2023-03-06 14:30:59', null, '1', null);
 INSERT INTO `leads` VALUES ('80', 'Dyna', 'F', '023546657567', '2', '1', 'Samsethy', null, null, '2023-03-06 15:29:32', null, '1', null);
 INSERT INTO `leads` VALUES ('81', 'Gonna', 'F', '0123543546', '2', '1', 'Samsethy', null, null, '2023-03-06 16:20:07', null, '1', null);
+INSERT INTO `leads` VALUES ('82', 'GGG', 'F', '011255671', '2', '1', 'Samsethy', null, null, '2023-03-21 03:10:55', null, '1', null);
 
 -- ----------------------------
 -- Table structure for `loc_cities`
@@ -2268,6 +2304,11 @@ CREATE TABLE `loc_cities` (
   `update_user` varchar(35) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `branch_id` int(10) DEFAULT NULL,
   `map_location` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `create_uid` int(11) DEFAULT NULL,
+  `update_uid` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `update_date` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `loc_cities_country_id_foreign` (`country_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2275,8 +2316,8 @@ CREATE TABLE `loc_cities` (
 -- ----------------------------
 -- Records of loc_cities
 -- ----------------------------
-INSERT INTO `loc_cities` VALUES ('13', '14', 'ក្រុងភ្នំពេញ', 'ក្រុងភ្នំពេញ', 'Puthea', '2021-11-22 06:45:27', null, '1', null);
-INSERT INTO `loc_cities` VALUES ('14', '15', 'Bangkok', 'Bangkok', 'admin@gmail.com', '2022-04-20 09:41:06', null, '1', null);
+INSERT INTO `loc_cities` VALUES ('13', '14', 'ក្រុងភ្នំពេញ', 'ក្រុងភ្នំពេញ', 'Puthea', '2021-11-22 06:45:27', null, '1', null, null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_cities` VALUES ('14', '15', 'Bangkok', 'Bangkok', 'admin@gmail.com', '2022-04-20 09:41:06', null, '1', null, null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48', '2023-03-28 00:22:48');
 
 -- ----------------------------
 -- Table structure for `loc_communes`
@@ -2293,6 +2334,11 @@ CREATE TABLE `loc_communes` (
   `map_location` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `create_user` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `create_date` timestamp NULL DEFAULT NULL,
+  `update_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `create_uid` int(11) DEFAULT NULL,
+  `update_uid` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `loc_communes_country_id_foreign` (`country_id`),
   KEY `loc_communes_city_id_foreign` (`city_id`),
@@ -2302,100 +2348,100 @@ CREATE TABLE `loc_communes` (
 -- ----------------------------
 -- Records of loc_communes
 -- ----------------------------
-INSERT INTO `loc_communes` VALUES ('57', '14', '13', '37', 'ទន្លេបាសាក់', '1', 'ទន្លេបាសាក់', null, 'Puthea', '2021-11-22 06:57:18');
-INSERT INTO `loc_communes` VALUES ('58', '14', '13', '37', 'បឹងកេងកងទី ១', '1', 'បឹងកេងកងទី ១', null, 'Puthea', '2021-11-22 07:00:18');
-INSERT INTO `loc_communes` VALUES ('59', '14', '13', '37', 'បឹងកេងកងទី ២', '1', 'បឹងកេងកងទី ២', null, 'Puthea', '2021-11-22 07:00:30');
-INSERT INTO `loc_communes` VALUES ('60', '14', '13', '37', 'បឹងកេងកងទី ៣', '1', 'បឹងកេងកងទី ៣', null, 'Puthea', '2021-11-22 07:00:53');
-INSERT INTO `loc_communes` VALUES ('61', '14', '13', '37', 'អូឡាំពិក', '1', 'អូឡាំពិក', null, 'Puthea', '2021-11-22 07:01:34');
-INSERT INTO `loc_communes` VALUES ('62', '14', '13', '37', 'ទួលស្វាយព្រៃទី ១', '1', 'ទួលស្វាយព្រៃទី ១', null, 'Puthea', '2021-11-22 07:01:53');
-INSERT INTO `loc_communes` VALUES ('63', '14', '13', '37', 'ទួលស្វាយព្រៃទី ២', '1', 'ទួលស្វាយព្រៃទី ២', null, 'Puthea', '2021-11-22 07:02:08');
-INSERT INTO `loc_communes` VALUES ('64', '14', '13', '37', 'ទំនប់ទឹក', '1', 'ទំនប់ទឹក', null, 'Puthea', '2021-11-22 07:02:24');
-INSERT INTO `loc_communes` VALUES ('65', '14', '13', '37', 'ទួលទំពូងទី២', '1', 'ទួលទំពូងទី២', null, 'Puthea', '2021-11-22 07:02:38');
-INSERT INTO `loc_communes` VALUES ('66', '14', '13', '37', 'ទួលទំពូងទី១', '1', 'ទួលទំពូងទី១', null, 'Puthea', '2021-11-22 07:02:51');
-INSERT INTO `loc_communes` VALUES ('67', '14', '13', '37', 'បឹងត្របែក', '1', 'បឹងត្របែក', null, 'Puthea', '2021-11-22 07:03:03');
-INSERT INTO `loc_communes` VALUES ('68', '14', '13', '37', 'ផ្សាដើមថ្កូវ', '1', 'ផ្សាដើមថ្កូវ', null, 'Puthea', '2021-11-22 07:03:13');
-INSERT INTO `loc_communes` VALUES ('69', '14', '13', '38', 'ដង្កោ', '1', 'ដង្កោ', null, 'Puthea', '2021-11-22 22:33:12');
-INSERT INTO `loc_communes` VALUES ('70', '14', '13', '38', 'ពងទឹក', '1', 'ពងទឹក', null, 'Puthea', '2021-11-22 22:34:15');
-INSERT INTO `loc_communes` VALUES ('71', '14', '13', '38', 'ព្រៃវែង', '1', 'ព្រៃវែង', null, 'Puthea', '2021-11-22 22:34:27');
-INSERT INTO `loc_communes` VALUES ('72', '14', '13', '38', 'ព្រៃស', '1', 'ព្រៃស', null, 'Puthea', '2021-11-22 22:34:45');
-INSERT INTO `loc_communes` VALUES ('73', '14', '13', '38', 'ក្រាំងពង្រ', '1', 'ក្រាំងពង្រ', null, 'Puthea', '2021-11-22 22:34:54');
-INSERT INTO `loc_communes` VALUES ('74', '14', '13', '38', 'ប្រទះឡាង', '1', 'ប្រទះឡាង', null, 'Puthea', '2021-11-22 22:35:11');
-INSERT INTO `loc_communes` VALUES ('75', '14', '13', '38', 'សាក់សំពៅ', '1', 'សាក់សំពៅ', null, 'Puthea', '2021-11-22 22:35:23');
-INSERT INTO `loc_communes` VALUES ('76', '14', '13', '38', 'ជយ័ជំនះ', '1', 'ជយ័ជំនះ', null, 'Puthea', '2021-11-22 22:35:34');
-INSERT INTO `loc_communes` VALUES ('77', '14', '13', '38', 'ផ្សាចាស់', '1', 'ផ្សាចាស់', null, 'Puthea', '2021-11-22 22:35:54');
-INSERT INTO `loc_communes` VALUES ('78', '14', '13', '38', 'វត្តភ្នំ', '1', 'វត្តភ្នំ', null, 'Puthea', '2021-11-22 22:36:09');
-INSERT INTO `loc_communes` VALUES ('79', '14', '13', '39', 'ផ្សាដេប៉ូទី១', '1', 'ផ្សាដេប៉ូទី១', null, 'Puthea', '2021-11-22 22:37:43');
-INSERT INTO `loc_communes` VALUES ('80', '14', '13', '39', 'ផ្សាដេប៉ូទី២', '1', 'ផ្សាដេប៉ូទី២', null, 'Puthea', '2021-11-22 22:48:19');
-INSERT INTO `loc_communes` VALUES ('81', '14', '13', '39', 'ផ្សាដេប៉ូទី៣', '1', 'ផ្សាដេប៉ូទី៣', null, 'Puthea', '2021-11-22 22:48:31');
-INSERT INTO `loc_communes` VALUES ('82', '14', '13', '39', 'ទឹកល្អក់ទី១', '1', 'ទឹកល្អក់ទី១', null, 'Puthea', '2021-11-22 22:48:43');
-INSERT INTO `loc_communes` VALUES ('83', '14', '13', '39', 'ទឹកល្អក់ទី២', '1', 'ទឹកល្អក់ទី២', null, 'Puthea', '2021-11-22 22:48:55');
-INSERT INTO `loc_communes` VALUES ('84', '14', '13', '39', 'ទឹកល្អក់ទី៣', '1', 'ទឹកល្អក់ទី៣', null, 'Puthea', '2021-11-22 22:49:06');
-INSERT INTO `loc_communes` VALUES ('85', '14', '13', '39', 'បឹងកក់ទី១', '1', 'បឹងកក់ទី១', null, 'Puthea', '2021-11-22 22:49:17');
-INSERT INTO `loc_communes` VALUES ('86', '14', '13', '39', 'ជើងអែក', '1', 'ជើងអែក', null, 'Puthea', '2021-11-22 22:49:53');
-INSERT INTO `loc_communes` VALUES ('87', '14', '13', '39', 'គងនយ', '1', 'គងនយ', null, 'Puthea', '2021-11-22 22:50:06');
-INSERT INTO `loc_communes` VALUES ('88', '14', '13', '39', 'ព្រែកកំពឹស', '1', 'ព្រែកកំពឹស', null, 'Puthea', '2021-11-22 22:50:16');
-INSERT INTO `loc_communes` VALUES ('89', '14', '13', '39', 'រលួស', '1', 'រលួស', null, 'Puthea', '2021-11-22 22:50:27');
-INSERT INTO `loc_communes` VALUES ('90', '14', '13', '39', 'ស្ពានថ្ម', '1', 'ស្ពានថ្ម', null, 'Puthea', '2021-11-22 22:50:39');
-INSERT INTO `loc_communes` VALUES ('91', '14', '13', '39', 'ទៀន', '1', 'ទៀន', null, 'Puthea', '2021-11-22 22:50:53');
-INSERT INTO `loc_communes` VALUES ('92', '14', '13', '40', 'អូឬស្សីទី១', '1', 'អូឬស្សីទី១', null, 'Puthea', '2021-11-22 22:51:40');
-INSERT INTO `loc_communes` VALUES ('93', '14', '13', '40', 'អូឬស្សីទី៣', '1', 'អូឬស្សីទី៣', null, 'Puthea', '2021-11-22 22:52:11');
-INSERT INTO `loc_communes` VALUES ('94', '14', '13', '40', 'អូឬស្សីទី៤', '1', 'អូឬស្សីទី៤', null, 'Puthea', '2021-11-22 22:52:11');
-INSERT INTO `loc_communes` VALUES ('95', '14', '13', '40', 'មនោរម្យ', '1', 'មនោរម្យ', null, 'Puthea', '2021-11-22 22:52:23');
-INSERT INTO `loc_communes` VALUES ('96', '14', '13', '40', 'មិត្តភាព', '1', 'មិត្តភាព', null, 'Puthea', '2021-11-22 22:52:32');
-INSERT INTO `loc_communes` VALUES ('97', '14', '13', '40', 'វាលវង់', '1', 'វាលវង់', null, 'Puthea', '2021-11-22 22:52:41');
-INSERT INTO `loc_communes` VALUES ('98', '14', '13', '40', 'បឹងព្រលិត', '1', 'បឹងព្រលិត', null, 'Puthea', '2021-11-22 22:52:51');
-INSERT INTO `loc_communes` VALUES ('99', '14', '13', '41', 'ទួលសង្កែ', '1', 'ទួលសង្កែ', null, 'Puthea', '2021-11-22 22:53:08');
-INSERT INTO `loc_communes` VALUES ('100', '14', '13', '41', 'ស្វាយប៉ាក', '1', 'ស្វាយប៉ាក', null, 'Puthea', '2021-11-22 22:53:21');
-INSERT INTO `loc_communes` VALUES ('101', '14', '13', '41', 'គីឡូម៉ែតលេខ៦', '1', 'គីឡូម៉ែតលេខ៦', null, 'Puthea', '2021-11-22 22:53:32');
-INSERT INTO `loc_communes` VALUES ('102', '14', '13', '41', 'ឬស្សីកែង', '1', 'ឬស្សីកែង', null, 'Puthea', '2021-11-22 22:53:43');
-INSERT INTO `loc_communes` VALUES ('103', '14', '13', '41', 'ច្រាំងចំរេះទី១', '1', 'ច្រាំងចំរេះទី១', null, 'Puthea', '2021-11-22 22:53:53');
-INSERT INTO `loc_communes` VALUES ('104', '14', '13', '41', 'ច្រាំងចំរេះទី២', '1', 'ច្រាំងចំរេះទី២', null, 'Puthea', '2021-11-22 22:54:03');
-INSERT INTO `loc_communes` VALUES ('105', '14', '13', '42', 'ភ្នំពេញថ្មី', '1', 'ភ្នំពេញថ្មី', null, 'Puthea', '2021-11-22 22:54:23');
-INSERT INTO `loc_communes` VALUES ('106', '14', '13', '42', 'ទឹកថ្លា', '1', 'ទឹកថ្លា', null, 'Puthea', '2021-11-22 22:54:34');
-INSERT INTO `loc_communes` VALUES ('107', '14', '13', '42', 'ឈ្នួល', '1', 'ឈ្នួល', null, 'Puthea', '2021-11-22 22:54:47');
-INSERT INTO `loc_communes` VALUES ('108', '14', '13', '42', 'ក្រាំងថ្នង់', '1', 'ក្រាំងថ្នង់', null, 'Puthea', '2021-11-22 22:55:00');
-INSERT INTO `loc_communes` VALUES ('109', '14', '13', '43', 'ត្រពាំងក្រសាំង', '1', 'ត្រពាំងក្រសាំង', null, 'Puthea', '2021-11-22 22:55:24');
-INSERT INTO `loc_communes` VALUES ('110', '14', '13', '43', 'ភ្លើងឆេះរទិះ', '1', 'ភ្លើងឆេះរទិះ', null, 'Puthea', '2021-11-22 22:55:43');
-INSERT INTO `loc_communes` VALUES ('111', '14', '13', '43', 'ចោមចៅ', '1', 'ចោមចៅ', null, 'Puthea', '2021-11-22 22:55:43');
-INSERT INTO `loc_communes` VALUES ('112', '14', '13', '43', 'កាកាប', '1', 'កាកាប', null, 'Puthea', '2021-11-22 22:55:52');
-INSERT INTO `loc_communes` VALUES ('113', '14', '13', '43', 'សំរោងក្រោម', '1', 'សំរោងក្រោម', null, 'Puthea', '2021-11-22 22:56:02');
-INSERT INTO `loc_communes` VALUES ('114', '14', '13', '43', 'បឹងធំ', '1', 'បឹងធំ', null, 'Puthea', '2021-11-22 22:56:11');
-INSERT INTO `loc_communes` VALUES ('115', '14', '13', '43', 'កំបូល', '1', 'កំបូល', null, 'Puthea', '2021-11-22 22:56:22');
-INSERT INTO `loc_communes` VALUES ('116', '14', '13', '43', 'កន្ទោក', '1', 'កន្ទោក', null, 'Puthea', '2021-11-22 22:56:32');
-INSERT INTO `loc_communes` VALUES ('117', '14', '13', '43', 'ឪឡោក', '1', 'ឪឡោក', null, 'Puthea', '2021-11-22 22:56:42');
-INSERT INTO `loc_communes` VALUES ('118', '14', '13', '43', 'ស្នើរ', '1', 'ស្នើរ', null, 'Puthea', '2021-11-22 22:56:51');
-INSERT INTO `loc_communes` VALUES ('119', '14', '13', '44', 'ព្រែកភ្នៅ', '1', 'ព្រែកភ្នៅ', null, 'Puthea', '2021-11-22 22:57:08');
-INSERT INTO `loc_communes` VALUES ('120', '14', '13', '44', 'ពញាពន់', '1', 'ពញាពន់', null, 'Puthea', '2021-11-22 22:57:18');
-INSERT INTO `loc_communes` VALUES ('121', '14', '13', '44', 'សំរោង', '1', 'សំរោង', null, 'Puthea', '2021-11-22 22:57:27');
-INSERT INTO `loc_communes` VALUES ('122', '14', '13', '44', 'គោករកា', '1', 'គោករកា', null, 'Puthea', '2021-11-22 22:57:38');
-INSERT INTO `loc_communes` VALUES ('123', '14', '13', '44', 'កន្សែង', '1', 'កន្សែង', null, 'Puthea', '2021-11-22 22:57:47');
-INSERT INTO `loc_communes` VALUES ('124', '14', '13', '45', 'ផ្សារថ្មីទី១', '1', 'ផ្សារថ្មីទី១', null, 'Puthea', '2021-11-22 22:58:06');
-INSERT INTO `loc_communes` VALUES ('125', '14', '13', '45', 'ផ្សារថ្មីទី២', '1', 'ផ្សារថ្មីទី២', null, 'Puthea', '2021-11-22 22:58:18');
-INSERT INTO `loc_communes` VALUES ('126', '14', '13', '45', 'ផ្សារថ្មីទី៣', '1', 'ផ្សារថ្មីទី៣', null, 'Puthea', '2021-11-22 22:58:34');
-INSERT INTO `loc_communes` VALUES ('127', '14', '13', '45', 'បឹងរាំង', '1', 'បឹងរាំង', null, 'Puthea', '2021-11-22 22:58:45');
-INSERT INTO `loc_communes` VALUES ('128', '14', '13', '45', 'ផ្សាកណ្ដាលទី១', '1', 'ផ្សាកណ្ដាលទី១', null, 'Puthea', '2021-11-22 22:58:54');
-INSERT INTO `loc_communes` VALUES ('129', '14', '13', '45', 'ផ្សាកណ្ដាលទី២', '1', 'ផ្សាកណ្ដាលទី២', null, 'Puthea', '2021-11-22 22:59:03');
-INSERT INTO `loc_communes` VALUES ('130', '14', '13', '45', 'ចតុមុខ', '1', 'ចតុមុខ', null, 'Puthea', '2021-11-22 22:59:17');
-INSERT INTO `loc_communes` VALUES ('131', '14', '13', '46', 'ស្ទឹងមានជយ័', '1', 'ស្ទឹងមានជយ័', null, 'Puthea', '2021-11-22 22:59:50');
-INSERT INTO `loc_communes` VALUES ('132', '14', '13', '46', 'បឹងទំពុន', '1', 'បឹងទំពុន', null, 'Puthea', '2021-11-22 23:00:01');
-INSERT INTO `loc_communes` VALUES ('133', '14', '13', '46', 'ចាក់អង្រែលើ', '1', 'ចាក់អង្រែលើ', null, 'Puthea', '2021-11-22 23:00:10');
-INSERT INTO `loc_communes` VALUES ('134', '14', '13', '46', 'ចាក់អង្រែក្រោម', '1', 'ចាក់អង្រែក្រោម', null, 'Puthea', '2021-11-22 23:00:21');
-INSERT INTO `loc_communes` VALUES ('136', '14', '13', '47', 'ព្រែកលាប', '1', 'ព្រែកលាប', null, 'Puthea', '2021-11-22 23:00:50');
-INSERT INTO `loc_communes` VALUES ('137', '14', '13', '47', 'ព្រែកតាសេក', '1', 'ព្រែកតាសេក', null, 'Puthea', '2021-11-22 23:01:09');
-INSERT INTO `loc_communes` VALUES ('138', '14', '13', '47', 'កោះដាច់', '1', 'កោះដាច់', null, 'Puthea', '2021-11-22 23:01:09');
-INSERT INTO `loc_communes` VALUES ('139', '14', '13', '47', 'បាក់ខែង', '1', 'បាក់ខែង', null, 'Puthea', '2021-11-22 23:02:59');
-INSERT INTO `loc_communes` VALUES ('140', '14', '13', '48', 'ច្បាអំពៅទី១', '1', 'ច្បាអំពៅទី១', null, 'Puthea', '2021-11-22 23:03:49');
-INSERT INTO `loc_communes` VALUES ('141', '14', '13', '48', 'ច្បាអំពៅទី២', '1', 'ច្បាអំពៅទី២', null, 'Puthea', '2021-11-22 23:03:59');
-INSERT INTO `loc_communes` VALUES ('142', '14', '13', '48', 'និរោធ', '1', 'និរោធ', null, 'Puthea', '2021-11-22 23:04:09');
-INSERT INTO `loc_communes` VALUES ('143', '14', '13', '48', 'ព្រែកប្រា', '1', 'ព្រែកប្រា', null, 'Puthea', '2021-11-22 23:04:29');
-INSERT INTO `loc_communes` VALUES ('144', '14', '13', '48', 'វាលស្បូវ', '1', 'វាលស្បូវ', null, 'Puthea', '2021-11-22 23:04:30');
-INSERT INTO `loc_communes` VALUES ('145', '14', '13', '48', 'ព្រែកអែង', '1', 'ព្រែកអែង', null, 'Puthea', '2021-11-22 23:04:51');
-INSERT INTO `loc_communes` VALUES ('146', '14', '13', '48', 'ក្បាលកោះ', '1', 'ក្បាលកោះ', null, 'Puthea', '2021-11-22 23:05:05');
-INSERT INTO `loc_communes` VALUES ('147', '14', '13', '38', 'ស្រះចក', '1', 'ស្រះចក', null, 'Puthea', '2021-11-22 23:08:13');
-INSERT INTO `loc_communes` VALUES ('148', '14', '13', '40', 'អូឬស្សីទី២', '1', 'អូឬស្សីទី២', null, 'Puthea', '2021-11-22 23:10:43');
-INSERT INTO `loc_communes` VALUES ('149', '14', '13', '48', 'ព្រែកថ្មី', '1', 'ព្រែកថ្មី', null, 'Puthea', '2021-11-22 23:13:40');
-INSERT INTO `loc_communes` VALUES ('150', '14', '13', '47', 'ជ្រោយចង្វារ', '1', 'ជ្រោយចង្វារ', null, 'Puthea', '2021-11-24 03:20:41');
-INSERT INTO `loc_communes` VALUES ('151', '14', '13', '39', 'Kabol', '1', 'Kabol', null, 'admin@gmail.com', '2021-12-24 08:45:20');
+INSERT INTO `loc_communes` VALUES ('57', '14', '13', '37', 'ទន្លេបាសាក់', '1', 'ទន្លេបាសាក់', null, 'Puthea', '2021-11-22 06:57:18', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('58', '14', '13', '37', 'បឹងកេងកងទី ១', '1', 'បឹងកេងកងទី ១', null, 'Puthea', '2021-11-22 07:00:18', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('59', '14', '13', '37', 'បឹងកេងកងទី ២', '1', 'បឹងកេងកងទី ២', null, 'Puthea', '2021-11-22 07:00:30', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('60', '14', '13', '37', 'បឹងកេងកងទី ៣', '1', 'បឹងកេងកងទី ៣', null, 'Puthea', '2021-11-22 07:00:53', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('61', '14', '13', '37', 'អូឡាំពិក', '1', 'អូឡាំពិក', null, 'Puthea', '2021-11-22 07:01:34', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('62', '14', '13', '37', 'ទួលស្វាយព្រៃទី ១', '1', 'ទួលស្វាយព្រៃទី ១', null, 'Puthea', '2021-11-22 07:01:53', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('63', '14', '13', '37', 'ទួលស្វាយព្រៃទី ២', '1', 'ទួលស្វាយព្រៃទី ២', null, 'Puthea', '2021-11-22 07:02:08', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('64', '14', '13', '37', 'ទំនប់ទឹក', '1', 'ទំនប់ទឹក', null, 'Puthea', '2021-11-22 07:02:24', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('65', '14', '13', '37', 'ទួលទំពូងទី២', '1', 'ទួលទំពូងទី២', null, 'Puthea', '2021-11-22 07:02:38', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('66', '14', '13', '37', 'ទួលទំពូងទី១', '1', 'ទួលទំពូងទី១', null, 'Puthea', '2021-11-22 07:02:51', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('67', '14', '13', '37', 'បឹងត្របែក', '1', 'បឹងត្របែក', null, 'Puthea', '2021-11-22 07:03:03', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('68', '14', '13', '37', 'ផ្សាដើមថ្កូវ', '1', 'ផ្សាដើមថ្កូវ', null, 'Puthea', '2021-11-22 07:03:13', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('69', '14', '13', '38', 'ដង្កោ', '1', 'ដង្កោ', null, 'Puthea', '2021-11-22 22:33:12', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('70', '14', '13', '38', 'ពងទឹក', '1', 'ពងទឹក', null, 'Puthea', '2021-11-22 22:34:15', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('71', '14', '13', '38', 'ព្រៃវែង', '1', 'ព្រៃវែង', null, 'Puthea', '2021-11-22 22:34:27', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('72', '14', '13', '38', 'ព្រៃស', '1', 'ព្រៃស', null, 'Puthea', '2021-11-22 22:34:45', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('73', '14', '13', '38', 'ក្រាំងពង្រ', '1', 'ក្រាំងពង្រ', null, 'Puthea', '2021-11-22 22:34:54', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('74', '14', '13', '38', 'ប្រទះឡាង', '1', 'ប្រទះឡាង', null, 'Puthea', '2021-11-22 22:35:11', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('75', '14', '13', '38', 'សាក់សំពៅ', '1', 'សាក់សំពៅ', null, 'Puthea', '2021-11-22 22:35:23', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('76', '14', '13', '38', 'ជយ័ជំនះ', '1', 'ជយ័ជំនះ', null, 'Puthea', '2021-11-22 22:35:34', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('77', '14', '13', '38', 'ផ្សាចាស់', '1', 'ផ្សាចាស់', null, 'Puthea', '2021-11-22 22:35:54', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('78', '14', '13', '38', 'វត្តភ្នំ', '1', 'វត្តភ្នំ', null, 'Puthea', '2021-11-22 22:36:09', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('79', '14', '13', '39', 'ផ្សាដេប៉ូទី១', '1', 'ផ្សាដេប៉ូទី១', null, 'Puthea', '2021-11-22 22:37:43', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('80', '14', '13', '39', 'ផ្សាដេប៉ូទី២', '1', 'ផ្សាដេប៉ូទី២', null, 'Puthea', '2021-11-22 22:48:19', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('81', '14', '13', '39', 'ផ្សាដេប៉ូទី៣', '1', 'ផ្សាដេប៉ូទី៣', null, 'Puthea', '2021-11-22 22:48:31', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('82', '14', '13', '39', 'ទឹកល្អក់ទី១', '1', 'ទឹកល្អក់ទី១', null, 'Puthea', '2021-11-22 22:48:43', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('83', '14', '13', '39', 'ទឹកល្អក់ទី២', '1', 'ទឹកល្អក់ទី២', null, 'Puthea', '2021-11-22 22:48:55', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('84', '14', '13', '39', 'ទឹកល្អក់ទី៣', '1', 'ទឹកល្អក់ទី៣', null, 'Puthea', '2021-11-22 22:49:06', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('85', '14', '13', '39', 'បឹងកក់ទី១', '1', 'បឹងកក់ទី១', null, 'Puthea', '2021-11-22 22:49:17', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('86', '14', '13', '39', 'ជើងអែក', '1', 'ជើងអែក', null, 'Puthea', '2021-11-22 22:49:53', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('87', '14', '13', '39', 'គងនយ', '1', 'គងនយ', null, 'Puthea', '2021-11-22 22:50:06', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('88', '14', '13', '39', 'ព្រែកកំពឹស', '1', 'ព្រែកកំពឹស', null, 'Puthea', '2021-11-22 22:50:16', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('89', '14', '13', '39', 'រលួស', '1', 'រលួស', null, 'Puthea', '2021-11-22 22:50:27', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('90', '14', '13', '39', 'ស្ពានថ្ម', '1', 'ស្ពានថ្ម', null, 'Puthea', '2021-11-22 22:50:39', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('91', '14', '13', '39', 'ទៀន', '1', 'ទៀន', null, 'Puthea', '2021-11-22 22:50:53', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('92', '14', '13', '40', 'អូឬស្សីទី១', '1', 'អូឬស្សីទី១', null, 'Puthea', '2021-11-22 22:51:40', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('93', '14', '13', '40', 'អូឬស្សីទី៣', '1', 'អូឬស្សីទី៣', null, 'Puthea', '2021-11-22 22:52:11', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('94', '14', '13', '40', 'អូឬស្សីទី៤', '1', 'អូឬស្សីទី៤', null, 'Puthea', '2021-11-22 22:52:11', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('95', '14', '13', '40', 'មនោរម្យ', '1', 'មនោរម្យ', null, 'Puthea', '2021-11-22 22:52:23', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('96', '14', '13', '40', 'មិត្តភាព', '1', 'មិត្តភាព', null, 'Puthea', '2021-11-22 22:52:32', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('97', '14', '13', '40', 'វាលវង់', '1', 'វាលវង់', null, 'Puthea', '2021-11-22 22:52:41', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('98', '14', '13', '40', 'បឹងព្រលិត', '1', 'បឹងព្រលិត', null, 'Puthea', '2021-11-22 22:52:51', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('99', '14', '13', '41', 'ទួលសង្កែ', '1', 'ទួលសង្កែ', null, 'Puthea', '2021-11-22 22:53:08', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('100', '14', '13', '41', 'ស្វាយប៉ាក', '1', 'ស្វាយប៉ាក', null, 'Puthea', '2021-11-22 22:53:21', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('101', '14', '13', '41', 'គីឡូម៉ែតលេខ៦', '1', 'គីឡូម៉ែតលេខ៦', null, 'Puthea', '2021-11-22 22:53:32', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('102', '14', '13', '41', 'ឬស្សីកែង', '1', 'ឬស្សីកែង', null, 'Puthea', '2021-11-22 22:53:43', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('103', '14', '13', '41', 'ច្រាំងចំរេះទី១', '1', 'ច្រាំងចំរេះទី១', null, 'Puthea', '2021-11-22 22:53:53', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('104', '14', '13', '41', 'ច្រាំងចំរេះទី២', '1', 'ច្រាំងចំរេះទី២', null, 'Puthea', '2021-11-22 22:54:03', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('105', '14', '13', '42', 'ភ្នំពេញថ្មី', '1', 'ភ្នំពេញថ្មី', null, 'Puthea', '2021-11-22 22:54:23', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('106', '14', '13', '42', 'ទឹកថ្លា', '1', 'ទឹកថ្លា', null, 'Puthea', '2021-11-22 22:54:34', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('107', '14', '13', '42', 'ឈ្នួល', '1', 'ឈ្នួល', null, 'Puthea', '2021-11-22 22:54:47', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('108', '14', '13', '42', 'ក្រាំងថ្នង់', '1', 'ក្រាំងថ្នង់', null, 'Puthea', '2021-11-22 22:55:00', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('109', '14', '13', '43', 'ត្រពាំងក្រសាំង', '1', 'ត្រពាំងក្រសាំង', null, 'Puthea', '2021-11-22 22:55:24', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('110', '14', '13', '43', 'ភ្លើងឆេះរទិះ', '1', 'ភ្លើងឆេះរទិះ', null, 'Puthea', '2021-11-22 22:55:43', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('111', '14', '13', '43', 'ចោមចៅ', '1', 'ចោមចៅ', null, 'Puthea', '2021-11-22 22:55:43', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('112', '14', '13', '43', 'កាកាប', '1', 'កាកាប', null, 'Puthea', '2021-11-22 22:55:52', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('113', '14', '13', '43', 'សំរោងក្រោម', '1', 'សំរោងក្រោម', null, 'Puthea', '2021-11-22 22:56:02', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('114', '14', '13', '43', 'បឹងធំ', '1', 'បឹងធំ', null, 'Puthea', '2021-11-22 22:56:11', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('115', '14', '13', '43', 'កំបូល', '1', 'កំបូល', null, 'Puthea', '2021-11-22 22:56:22', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('116', '14', '13', '43', 'កន្ទោក', '1', 'កន្ទោក', null, 'Puthea', '2021-11-22 22:56:32', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('117', '14', '13', '43', 'ឪឡោក', '1', 'ឪឡោក', null, 'Puthea', '2021-11-22 22:56:42', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('118', '14', '13', '43', 'ស្នើរ', '1', 'ស្នើរ', null, 'Puthea', '2021-11-22 22:56:51', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('119', '14', '13', '44', 'ព្រែកភ្នៅ', '1', 'ព្រែកភ្នៅ', null, 'Puthea', '2021-11-22 22:57:08', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('120', '14', '13', '44', 'ពញាពន់', '1', 'ពញាពន់', null, 'Puthea', '2021-11-22 22:57:18', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('121', '14', '13', '44', 'សំរោង', '1', 'សំរោង', null, 'Puthea', '2021-11-22 22:57:27', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('122', '14', '13', '44', 'គោករកា', '1', 'គោករកា', null, 'Puthea', '2021-11-22 22:57:38', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('123', '14', '13', '44', 'កន្សែង', '1', 'កន្សែង', null, 'Puthea', '2021-11-22 22:57:47', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('124', '14', '13', '45', 'ផ្សារថ្មីទី១', '1', 'ផ្សារថ្មីទី១', null, 'Puthea', '2021-11-22 22:58:06', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('125', '14', '13', '45', 'ផ្សារថ្មីទី២', '1', 'ផ្សារថ្មីទី២', null, 'Puthea', '2021-11-22 22:58:18', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('126', '14', '13', '45', 'ផ្សារថ្មីទី៣', '1', 'ផ្សារថ្មីទី៣', null, 'Puthea', '2021-11-22 22:58:34', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('127', '14', '13', '45', 'បឹងរាំង', '1', 'បឹងរាំង', null, 'Puthea', '2021-11-22 22:58:45', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('128', '14', '13', '45', 'ផ្សាកណ្ដាលទី១', '1', 'ផ្សាកណ្ដាលទី១', null, 'Puthea', '2021-11-22 22:58:54', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('129', '14', '13', '45', 'ផ្សាកណ្ដាលទី២', '1', 'ផ្សាកណ្ដាលទី២', null, 'Puthea', '2021-11-22 22:59:03', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('130', '14', '13', '45', 'ចតុមុខ', '1', 'ចតុមុខ', null, 'Puthea', '2021-11-22 22:59:17', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('131', '14', '13', '46', 'ស្ទឹងមានជយ័', '1', 'ស្ទឹងមានជយ័', null, 'Puthea', '2021-11-22 22:59:50', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('132', '14', '13', '46', 'បឹងទំពុន', '1', 'បឹងទំពុន', null, 'Puthea', '2021-11-22 23:00:01', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('133', '14', '13', '46', 'ចាក់អង្រែលើ', '1', 'ចាក់អង្រែលើ', null, 'Puthea', '2021-11-22 23:00:10', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('134', '14', '13', '46', 'ចាក់អង្រែក្រោម', '1', 'ចាក់អង្រែក្រោម', null, 'Puthea', '2021-11-22 23:00:21', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('136', '14', '13', '47', 'ព្រែកលាប', '1', 'ព្រែកលាប', null, 'Puthea', '2021-11-22 23:00:50', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('137', '14', '13', '47', 'ព្រែកតាសេក', '1', 'ព្រែកតាសេក', null, 'Puthea', '2021-11-22 23:01:09', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('138', '14', '13', '47', 'កោះដាច់', '1', 'កោះដាច់', null, 'Puthea', '2021-11-22 23:01:09', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('139', '14', '13', '47', 'បាក់ខែង', '1', 'បាក់ខែង', null, 'Puthea', '2021-11-22 23:02:59', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('140', '14', '13', '48', 'ច្បាអំពៅទី១', '1', 'ច្បាអំពៅទី១', null, 'Puthea', '2021-11-22 23:03:49', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('141', '14', '13', '48', 'ច្បាអំពៅទី២', '1', 'ច្បាអំពៅទី២', null, 'Puthea', '2021-11-22 23:03:59', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('142', '14', '13', '48', 'និរោធ', '1', 'និរោធ', null, 'Puthea', '2021-11-22 23:04:09', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('143', '14', '13', '48', 'ព្រែកប្រា', '1', 'ព្រែកប្រា', null, 'Puthea', '2021-11-22 23:04:29', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('144', '14', '13', '48', 'វាលស្បូវ', '1', 'វាលស្បូវ', null, 'Puthea', '2021-11-22 23:04:30', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('145', '14', '13', '48', 'ព្រែកអែង', '1', 'ព្រែកអែង', null, 'Puthea', '2021-11-22 23:04:51', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('146', '14', '13', '48', 'ក្បាលកោះ', '1', 'ក្បាលកោះ', null, 'Puthea', '2021-11-22 23:05:05', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('147', '14', '13', '38', 'ស្រះចក', '1', 'ស្រះចក', null, 'Puthea', '2021-11-22 23:08:13', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('148', '14', '13', '40', 'អូឬស្សីទី២', '1', 'អូឬស្សីទី២', null, 'Puthea', '2021-11-22 23:10:43', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('149', '14', '13', '48', 'ព្រែកថ្មី', '1', 'ព្រែកថ្មី', null, 'Puthea', '2021-11-22 23:13:40', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('150', '14', '13', '47', 'ជ្រោយចង្វារ', '1', 'ជ្រោយចង្វារ', null, 'Puthea', '2021-11-24 03:20:41', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_communes` VALUES ('151', '14', '13', '39', 'Kabol', '1', 'Kabol', null, 'admin@gmail.com', '2021-12-24 08:45:20', '2023-03-28 00:22:48', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48');
 
 -- ----------------------------
 -- Table structure for `loc_countries`
@@ -2410,14 +2456,19 @@ CREATE TABLE `loc_countries` (
   `branch_id` int(10) NOT NULL,
   `region_name` varchar(150) DEFAULT '',
   `nationality` varchar(150) DEFAULT NULL,
+  `create_uid` int(11) DEFAULT NULL,
+  `update_uid` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `update_date` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of loc_countries
 -- ----------------------------
-INSERT INTO `loc_countries` VALUES ('14', 'Cambodia', 'Cambodia', 'Puthea', '2021-11-22 06:30:12', '1', null, null);
-INSERT INTO `loc_countries` VALUES ('15', 'Thailand', 'Thailand', 'admin@gmail.com', '2022-04-20 09:40:50', '1', null, null);
+INSERT INTO `loc_countries` VALUES ('14', 'Cambodia', 'Cambodia', 'Puthea', '2021-11-22 06:30:12', '1', null, 'Cambodia', null, null, '2023-03-28 00:22:47', '2023-03-28 00:22:47', '2023-03-28 00:22:48');
+INSERT INTO `loc_countries` VALUES ('15', 'Thailand', 'Thailand', 'admin@gmail.com', '2022-04-20 09:40:50', '1', null, 'Thailand', null, null, '2023-03-28 00:22:47', '2023-03-28 00:22:47', '2023-03-28 00:22:48');
 
 -- ----------------------------
 -- Table structure for `loc_districts`
@@ -2432,6 +2483,11 @@ CREATE TABLE `loc_districts` (
   `create_date` timestamp NULL DEFAULT NULL,
   `map_location` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `branch_id` int(10) DEFAULT NULL,
+  `create_uid` int(11) DEFAULT NULL,
+  `update_uid` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `update_date` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `loc_districts_city_id_foreign` (`city_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2439,20 +2495,20 @@ CREATE TABLE `loc_districts` (
 -- ----------------------------
 -- Records of loc_districts
 -- ----------------------------
-INSERT INTO `loc_districts` VALUES ('35', '12', 'ខណ្ឌចំការមន', 'ខណ្ឌចំការមន', 'Puthea', '2021-11-22 06:40:17', null, '1');
-INSERT INTO `loc_districts` VALUES ('36', '12', 'ខណ្ឌ័ដង្កោ', 'ខណ្ឌ័ដង្កោ', 'Puthea', '2021-11-22 06:40:59', null, '1');
-INSERT INTO `loc_districts` VALUES ('37', '13', 'ខណ្ឌ័ចំការមន', 'ខណ្ឌ័ចំការមន', 'Sopha', '2021-11-22 06:42:11', null, '1');
-INSERT INTO `loc_districts` VALUES ('38', '13', 'ខណ្ឌ័ដង្កោ', 'ខណ្ឌ័ដង្កោ', 'Sopha', '2021-11-22 06:42:27', null, '1');
-INSERT INTO `loc_districts` VALUES ('39', '13', 'ខណ្ឌ័ទួលគក', 'ខណ្ឌ័ទួលគក', 'Puthea', '2021-11-22 06:44:55', null, '1');
-INSERT INTO `loc_districts` VALUES ('40', '13', 'ខណ្ឌ័៧មករា', 'ខណ្ឌ័៧មករា', 'Puthea', '2021-11-22 06:49:35', null, '1');
-INSERT INTO `loc_districts` VALUES ('41', '13', 'ខណ្ឌ័ឬស្សីកែវ', 'ខណ្ឌ័ឬស្សីកែវ', 'Puthea', '2021-11-22 06:50:18', null, '1');
-INSERT INTO `loc_districts` VALUES ('42', '13', 'ខណ្ឌ័សែនសុខ', 'ខណ្ឌ័សែនសុខ', 'Puthea', '2021-11-22 06:50:40', null, '1');
-INSERT INTO `loc_districts` VALUES ('43', '13', 'ខណ្ឌ័ពោសែនជយ័', 'ខណ្ឌ័ពោសែនជយ័', 'Puthea', '2021-11-22 06:50:54', null, '1');
-INSERT INTO `loc_districts` VALUES ('44', '13', 'ខណ្ឌ័ព្រែកភ្នៅ', 'ខណ្ឌ័ព្រែកភ្នៅ', 'Puthea', '2021-11-22 06:51:16', null, '1');
-INSERT INTO `loc_districts` VALUES ('45', '13', 'ខណ្ឌ័ដូនពេញ', 'ខណ្ឌ័ដូនពេញ', 'Puthea', '2021-11-22 06:51:37', null, '1');
-INSERT INTO `loc_districts` VALUES ('46', '13', 'ខណ្ឌ័មានជយ័', 'ខណ្ឌ័មានជយ័', 'Puthea', '2021-11-22 06:51:58', null, '1');
-INSERT INTO `loc_districts` VALUES ('47', '13', 'ខណ្ឌ័ជ្រោយចង្វារ', 'ខណ្ឌ័ជ្រោយចង្វារ', 'Puthea', '2021-11-22 06:52:15', null, '1');
-INSERT INTO `loc_districts` VALUES ('48', '13', 'ខណ្ឌ័ច្បាអំពៅ', 'ខណ្ឌ័ច្បាអំពៅ', 'Puthea', '2021-11-22 06:52:32', null, '1');
+INSERT INTO `loc_districts` VALUES ('35', '12', 'ខណ្ឌចំការមន', 'ខណ្ឌចំការមន', 'Puthea', '2021-11-22 06:40:17', null, '1', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_districts` VALUES ('36', '12', 'ខណ្ឌ័ដង្កោ', 'ខណ្ឌ័ដង្កោ', 'Puthea', '2021-11-22 06:40:59', null, '1', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_districts` VALUES ('37', '13', 'ខណ្ឌ័ចំការមន', 'ខណ្ឌ័ចំការមន', 'Sopha', '2021-11-22 06:42:11', null, '1', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_districts` VALUES ('38', '13', 'ខណ្ឌ័ដង្កោ', 'ខណ្ឌ័ដង្កោ', 'Sopha', '2021-11-22 06:42:27', null, '1', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_districts` VALUES ('39', '13', 'ខណ្ឌ័ទួលគក', 'ខណ្ឌ័ទួលគក', 'Puthea', '2021-11-22 06:44:55', null, '1', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_districts` VALUES ('40', '13', 'ខណ្ឌ័៧មករា', 'ខណ្ឌ័៧មករា', 'Puthea', '2021-11-22 06:49:35', null, '1', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_districts` VALUES ('41', '13', 'ខណ្ឌ័ឬស្សីកែវ', 'ខណ្ឌ័ឬស្សីកែវ', 'Puthea', '2021-11-22 06:50:18', null, '1', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_districts` VALUES ('42', '13', 'ខណ្ឌ័សែនសុខ', 'ខណ្ឌ័សែនសុខ', 'Puthea', '2021-11-22 06:50:40', null, '1', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_districts` VALUES ('43', '13', 'ខណ្ឌ័ពោសែនជយ័', 'ខណ្ឌ័ពោសែនជយ័', 'Puthea', '2021-11-22 06:50:54', null, '1', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_districts` VALUES ('44', '13', 'ខណ្ឌ័ព្រែកភ្នៅ', 'ខណ្ឌ័ព្រែកភ្នៅ', 'Puthea', '2021-11-22 06:51:16', null, '1', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_districts` VALUES ('45', '13', 'ខណ្ឌ័ដូនពេញ', 'ខណ្ឌ័ដូនពេញ', 'Puthea', '2021-11-22 06:51:37', null, '1', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_districts` VALUES ('46', '13', 'ខណ្ឌ័មានជយ័', 'ខណ្ឌ័មានជយ័', 'Puthea', '2021-11-22 06:51:58', null, '1', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_districts` VALUES ('47', '13', 'ខណ្ឌ័ជ្រោយចង្វារ', 'ខណ្ឌ័ជ្រោយចង្វារ', 'Puthea', '2021-11-22 06:52:15', null, '1', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48', '2023-03-28 00:22:48');
+INSERT INTO `loc_districts` VALUES ('48', '13', 'ខណ្ឌ័ច្បាអំពៅ', 'ខណ្ឌ័ច្បាអំពៅ', 'Puthea', '2021-11-22 06:52:32', null, '1', null, null, '2023-03-28 00:22:48', '2023-03-28 00:22:48', '2023-03-28 00:22:48');
 
 -- ----------------------------
 -- Table structure for `loc_villages`
@@ -2623,7 +2679,7 @@ CREATE TABLE `patients` (
   `remarks` varchar(350) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `patient_type` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'patient_type = {OPD,IPD}',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=120 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=121 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of patients
@@ -2639,6 +2695,7 @@ INSERT INTO `patients` VALUES ('116', '1', '1', '73', 'P100109', 'Samsethy', '1'
 INSERT INTO `patients` VALUES ('117', '1', '1', '66', 'P100110', 'Samsethy', '1', '2023-03-06 15:25:23', null, null, null, null, 'OPD');
 INSERT INTO `patients` VALUES ('118', '1', '1', '115', 'P100111', 'Samsethy', '1', '2023-03-06 15:29:47', null, null, null, null, 'OPD');
 INSERT INTO `patients` VALUES ('119', '1', '1', '116', 'P100112', 'Samsethy', '1', '2023-03-06 16:20:43', null, null, null, null, 'OPD');
+INSERT INTO `patients` VALUES ('120', '1', '1', '118', 'P100113', 'Samsethy', '1', '2023-03-21 03:32:25', null, null, null, null, 'OPD');
 
 -- ----------------------------
 -- Table structure for `patient_advice`
@@ -2658,12 +2715,14 @@ CREATE TABLE `patient_advice` (
   `ticket_id` int(10) DEFAULT NULL,
   `patient_id` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of patient_advice
 -- ----------------------------
 INSERT INTO `patient_advice` VALUES ('1', '1', 'General', 'DO NOT DRINK ALCOHOL sdfdsfsdfsd', '2023-03-13 16:15:26.163323', '2023-03-13 16:15:26.000000', '1', '1', 'Samsethy', 'Samsethy', '114', '119');
+INSERT INTO `patient_advice` VALUES ('2', '1', 'General', 'sdfdgfdhd', '2023-03-21 11:39:38.000000', '2023-03-21 11:39:38.000000', '1', '1', 'Samsethy', 'Samsethy', '121', '118');
+INSERT INTO `patient_advice` VALUES ('3', '1', 'General', 'Do not eat alcohol', '2023-03-21 12:53:08.356815', '2023-03-21 12:53:08.000000', '1', '1', 'Samsethy', 'Samsethy', '120', '118');
 
 -- ----------------------------
 -- Table structure for `patient_code_control`
@@ -2679,7 +2738,7 @@ CREATE TABLE `patient_code_control` (
 -- ----------------------------
 -- Records of patient_code_control
 -- ----------------------------
-INSERT INTO `patient_code_control` VALUES ('1', '112', null, 'P');
+INSERT INTO `patient_code_control` VALUES ('1', '113', null, 'P');
 
 -- ----------------------------
 -- Table structure for `patient_consult_items`
@@ -2723,12 +2782,14 @@ CREATE TABLE `patient_diagnosis` (
   `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   `update_user` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of patient_diagnosis
 -- ----------------------------
 INSERT INTO `patient_diagnosis` VALUES ('1', '1', '119', '2023-03-13 16:15:17.000000', '114', 'This is doing fine now dfdgg esfdgdfg', 'General', '1', '2023-03-13 16:15:17.638809', 'Samsethy', '1', '2023-03-13 16:15:17.000000', 'Samsethy');
+INSERT INTO `patient_diagnosis` VALUES ('2', '1', '118', '2023-03-21 12:07:20.000000', '120', 'dfgfdgfdgfdg', 'General', '1', '2023-03-21 12:07:20.518975', 'Samsethy', '1', '2023-03-21 12:07:20.000000', 'Samsethy');
+INSERT INTO `patient_diagnosis` VALUES ('3', '1', '120', '2023-03-21 12:49:21.000000', '119', 'sfsd  dgfdhfhf', 'General', '1', '2023-03-21 12:49:21.000000', 'Samsethy', '1', '2023-03-21 12:49:21.000000', 'Samsethy');
 
 -- ----------------------------
 -- Table structure for `patient_labo_tests`
@@ -2755,14 +2816,21 @@ CREATE TABLE `patient_labo_tests` (
   `price` decimal(10,2) NOT NULL DEFAULT 0.00,
   `remarks` varchar(150) DEFAULT NULL,
   `labo_id` int(10) NOT NULL DEFAULT 0,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of patient_labo_tests
 -- ----------------------------
-INSERT INTO `patient_labo_tests` VALUES ('2', '1', '119', '114', '27', null, null, '', null, null, null, '1', 'Samsethy', '2023-03-12 20:37:46.000000', null, null, null, '0.00', 'dfgfdhfdfgdf', '6');
-INSERT INTO `patient_labo_tests` VALUES ('6', '1', '119', '114', '32', null, null, '', null, null, null, '1', 'Samsethy', '2023-03-12 20:41:54.000000', null, null, null, '0.00', 'sdfdgfdhgfhfgjgjghgh', '6');
+INSERT INTO `patient_labo_tests` VALUES ('2', '1', '119', '114', '27', null, null, '', null, null, null, '1', 'Samsethy', '2023-03-12 20:37:46.000000', null, null, null, '0.00', 'dfgfdhfdfgdf', '6', '2023-03-21 11:46:56');
+INSERT INTO `patient_labo_tests` VALUES ('6', '1', '119', '114', '32', null, null, '', null, null, null, '1', 'Samsethy', '2023-03-12 20:41:54.000000', null, null, null, '0.00', 'sdfdgfdhgfhfgjgjghgh', '6', '2023-03-21 11:46:56');
+INSERT INTO `patient_labo_tests` VALUES ('7', '1', '118', '121', '32', '2023-03-21 11:47:59.613087', '2023-03-21 11:47:59.613087', '', null, null, null, '1', 'Samsethy', '2023-03-21 11:47:59.613087', '2023-03-21 11:47:59.613087', 'Samsethy', '1', '0.00', 'dgfdhg', '6', '2023-03-21 11:47:59');
+INSERT INTO `patient_labo_tests` VALUES ('8', '1', '118', '121', '27', '2023-03-21 11:48:04.910370', '2023-03-21 11:48:04.910370', '', null, null, null, '1', 'Samsethy', '2023-03-21 11:48:04.910370', '2023-03-21 11:48:04.910370', 'Samsethy', '1', '0.00', 'dfdgdfhfhgfh', '4', '2023-03-21 11:48:04');
+INSERT INTO `patient_labo_tests` VALUES ('9', '1', '120', '119', '27', null, null, '', null, null, null, '1', 'Samsethy', '2023-03-21 11:53:00.000000', null, null, null, '0.00', 'fdgfdghfg', '6', '2023-03-21 11:53:00');
+INSERT INTO `patient_labo_tests` VALUES ('10', '1', '120', '119', '32', null, null, '', null, null, null, '1', 'Samsethy', '2023-03-21 11:53:07.000000', null, null, null, '0.00', 'dfgfdghfd', '4', '2023-03-21 11:53:07');
+INSERT INTO `patient_labo_tests` VALUES ('11', '1', '118', '120', '27', null, null, '', null, null, null, '1', 'Samsethy', '2023-03-21 11:54:18.000000', null, null, null, '0.00', 'fgfdhf dgdf dfgdfh', '6', '2023-03-21 11:54:18');
+INSERT INTO `patient_labo_tests` VALUES ('14', '1', '118', '120', '27', null, null, '', null, null, null, '1', 'Samsethy', '2023-03-21 12:14:36.000000', null, null, null, '0.00', 'sdfdsgdf', '4', '2023-03-21 12:14:36');
 
 -- ----------------------------
 -- Table structure for `patient_medical_advice`
@@ -2809,7 +2877,7 @@ CREATE TABLE `patient_medical_conditions` (
   `description` varchar(150) DEFAULT NULL,
   `display_order` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=251 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=253 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of patient_medical_conditions
@@ -2867,6 +2935,7 @@ INSERT INTO `patient_medical_conditions` VALUES ('244', '1', '116', '3', '0', 'A
 INSERT INTO `patient_medical_conditions` VALUES ('246', '1', '117', '3', '0', 'Active', '2023-03-06 15:25:24.000000', '1', 'Samsethy', '2023-03-06 15:25:24.000000', null, null, null, 'Conjunctivitis', null);
 INSERT INTO `patient_medical_conditions` VALUES ('248', '1', '118', '3', '0', 'Active', '2023-03-06 15:29:47.000000', '1', 'Samsethy', '2023-03-06 15:29:47.000000', null, null, null, 'Conjunctivitis', null);
 INSERT INTO `patient_medical_conditions` VALUES ('250', '1', '119', '3', '0', 'Active', '2023-03-06 16:20:43.000000', '1', 'Samsethy', '2023-03-06 16:20:43.000000', null, null, null, 'Conjunctivitis', null);
+INSERT INTO `patient_medical_conditions` VALUES ('252', '1', '120', '3', '0', 'Active', '2023-03-21 03:32:25.000000', '1', 'Samsethy', '2023-03-21 03:32:25.000000', null, null, null, 'Conjunctivitis', null);
 
 -- ----------------------------
 -- Table structure for `patient_medical_history`
@@ -2885,7 +2954,7 @@ CREATE TABLE `patient_medical_history` (
   `update_user` varchar(50) DEFAULT NULL,
   `update_uid` int(6) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of patient_medical_history
@@ -2899,6 +2968,14 @@ INSERT INTO `patient_medical_history` VALUES ('11', '1', '114', 'Traveling', 'as
 INSERT INTO `patient_medical_history` VALUES ('12', '1', '114', 'Vacination', 'sdfbnfnghjkkyhjkggdfghtfyrfhtrhundefined', '2023-03-13 16:15:10.525313', 'Samsethy', '1', '2023-03-13 16:15:10.000000', 'Samsethy', null);
 INSERT INTO `patient_medical_history` VALUES ('13', '1', '114', 'Allergy', 'sdfdfgdfgfdhfgdfdsfdsf', '2023-03-13 16:15:10.531424', 'Samsethy', '1', '2023-03-13 16:15:10.000000', 'Samsethy', null);
 INSERT INTO `patient_medical_history` VALUES ('14', '1', '114', 'Surgery', 'sdfdggdfhdf dfgdfgfdgf', '2023-03-13 16:15:10.536214', 'Samsethy', '1', '2023-03-13 16:15:10.000000', 'Samsethy', null);
+INSERT INTO `patient_medical_history` VALUES ('15', '1', '121', 'Personal History', 'sdfsdg', '2023-03-21 11:40:30.380183', 'Samsethy', '1', '2023-03-21 11:40:30.000000', 'Samsethy', null);
+INSERT INTO `patient_medical_history` VALUES ('16', '1', '121', 'Family History', 'dgdgfdgdfh', '2023-03-21 11:40:30.000000', 'Samsethy', '1', null, null, null);
+INSERT INTO `patient_medical_history` VALUES ('17', '1', '120', 'Personal History', 'fg', '2023-03-21 11:54:50.303897', 'Samsethy', '1', '2023-03-21 11:54:50.000000', 'Samsethy', null);
+INSERT INTO `patient_medical_history` VALUES ('18', '1', '120', 'Family History', 'dfdgg', '2023-03-21 11:54:50.000000', 'Samsethy', '1', null, null, null);
+INSERT INTO `patient_medical_history` VALUES ('19', '1', '119', 'Personal History', 'sdfdgd dfgdff fgfhg', '2023-03-21 12:49:46.301537', 'Samsethy', '1', '2023-03-21 12:49:46.000000', 'Samsethy', null);
+INSERT INTO `patient_medical_history` VALUES ('20', '1', '119', 'Family History', 'dfgfh dfghgfhj', '2023-03-21 12:49:46.307340', 'Samsethy', '1', '2023-03-21 12:49:46.000000', 'Samsethy', null);
+INSERT INTO `patient_medical_history` VALUES ('21', '1', '119', 'Traveling', 'gfhj fgfhgfhgfjgjg', '2023-03-21 12:49:46.312915', 'Samsethy', '1', '2023-03-21 12:49:46.000000', 'Samsethy', null);
+INSERT INTO `patient_medical_history` VALUES ('22', '1', '119', 'Vacination', 'fdsfdgd', '2023-03-21 12:49:46.000000', 'Samsethy', '1', null, null, null);
 
 -- ----------------------------
 -- Table structure for `patient_pe`
@@ -2918,13 +2995,17 @@ CREATE TABLE `patient_pe` (
   `update_uid` int(10) DEFAULT NULL,
   `patient_id` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of patient_pe
 -- ----------------------------
 INSERT INTO `patient_pe` VALUES ('4', '1', '1', 'general', 'sdfsdfdfg', 'Samsethy', '1', '2023-03-11 16:53:47.160286', '2023-03-11 16:53:47.000000', 'Samsethy', '1', null);
 INSERT INTO `patient_pe` VALUES ('5', '1', '114', 'General', 'fsddxg  dfgfdhfhg\ndgfdhdf\ndhdf\nhfdfjfggfjfgjfgj', 'Samsethy', '1', '2023-03-12 10:42:34.035712', '2023-03-12 10:42:34.000000', 'Samsethy', '1', null);
+INSERT INTO `patient_pe` VALUES ('6', '1', '121', 'General', 'fgdfghd', 'Samsethy', '1', '2023-03-21 11:44:53.841541', '2023-03-21 11:44:53.000000', 'Samsethy', '1', null);
+INSERT INTO `patient_pe` VALUES ('7', '1', '119', 'General', 'sdgdfhfgh df gfdh zHzh', 'Samsethy', '1', '2023-03-21 12:49:34.429913', '2023-03-21 12:49:34.000000', 'Samsethy', '1', null);
+INSERT INTO `patient_pe` VALUES ('8', '1', '120', 'General', 'dfdgghfdhfdh', 'Samsethy', '1', '2023-03-21 12:34:59.177408', '2023-03-21 12:34:59.000000', 'Samsethy', '1', null);
+INSERT INTO `patient_pe` VALUES ('9', '1', '118', 'General', 'sfdsgdgdf sdffdgfdhfh', 'Samsethy', '1', '2023-03-21 12:37:37.862558', '2023-03-21 12:37:37.000000', 'Samsethy', '1', null);
 
 -- ----------------------------
 -- Table structure for `patient_photos`
@@ -2945,14 +3026,15 @@ CREATE TABLE `patient_photos` (
   `ticket_id` int(10) DEFAULT NULL,
   `patient_id` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of patient_photos
 -- ----------------------------
-INSERT INTO `patient_photos` VALUES ('25', '1', 'general', '1_640eef88f1325_20230313_040324.jpg', 'jpg', 'Samsethy', '2023-03-13 16:40:24.000000', '1', null, null, null, '114', '119');
-INSERT INTO `patient_photos` VALUES ('26', '1', 'general', '1_640eef8d85302_20230313_040329.jpg', 'jpg', 'Samsethy', '2023-03-13 16:40:29.000000', '1', null, null, null, '114', '119');
-INSERT INTO `patient_photos` VALUES ('27', '1', 'general', '1_640eef9aefc62_20230313_040342.jpg', 'jpg', 'Samsethy', '2023-03-13 16:40:42.000000', '1', null, null, null, '114', '119');
+INSERT INTO `patient_photos` VALUES ('29', '1', 'general', '1_file_1641ad7b9153e020230322_050301.jpg', 'jpg', 'Samsethy', '2023-03-22 17:26:01.000000', '1', null, null, null, '120', '118');
+INSERT INTO `patient_photos` VALUES ('32', '1', 'general', '1_file_1641ad9a2ddb6820230322_050310.png', 'png', 'Samsethy', '2023-03-22 17:34:10.000000', '1', null, null, null, '119', '120');
+INSERT INTO `patient_photos` VALUES ('33', '1', 'general', '1_file_1641ad9a5e9d0620230322_050313.jpg', 'jpg', 'Samsethy', '2023-03-22 17:34:14.000000', '1', null, null, null, '119', '120');
+INSERT INTO `patient_photos` VALUES ('34', '1', 'general', '1_file_1641bc9d090ad820230323_100356.jpg', 'jpg', 'Samsethy', '2023-03-23 10:38:56.000000', '1', null, null, null, '120', '118');
 
 -- ----------------------------
 -- Table structure for `patient_prescription_items`
@@ -2976,7 +3058,7 @@ CREATE TABLE `patient_prescription_items` (
   `duration_days` decimal(10,2) NOT NULL DEFAULT 0.00,
   `ticket_id` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of patient_prescription_items
@@ -2984,6 +3066,7 @@ CREATE TABLE `patient_prescription_items` (
 INSERT INTO `patient_prescription_items` VALUES ('1', '1', '15', 'sdfg', 'dfgdfg', '1', 'Samsethy', '2023-03-12 12:23:31.039009', '1', 'Samsethy', '2023-03-12 12:23:31.000000', null, '20.00', 'Box', '30.00', '114');
 INSERT INTO `patient_prescription_items` VALUES ('5', '1', '245', 'sdfdghfgf', 'fghhgfhfg', '1', 'Samsethy', '2023-03-12 12:23:39.267598', '1', 'Samsethy', '2023-03-12 12:23:39.000000', null, '30.00', 'Tube', '15.00', '114');
 INSERT INTO `patient_prescription_items` VALUES ('6', '1', '46', 'sdfdgfdh', 'dfdgfdh', '1', 'Samsethy', '2023-03-12 12:24:46.153961', '1', 'Samsethy', '2023-03-12 12:24:46.000000', null, '2.00', 'Box', '7.00', '114');
+INSERT INTO `patient_prescription_items` VALUES ('7', '1', '106', null, null, '1', 'Samsethy', '2023-03-27 16:14:19.000000', null, null, null, null, '2.00', 'Bottle', '0.00', '122');
 
 -- ----------------------------
 -- Table structure for `patient_services`
@@ -2993,7 +3076,7 @@ CREATE TABLE `patient_services` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `branch_id` int(10) NOT NULL,
   `service_id` int(10) NOT NULL,
-  `emp_id` int(10) NOT NULL,
+  `emp_id` int(11) DEFAULT NULL,
   `perform_date` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   `remarks` varchar(150) DEFAULT NULL,
   `qty` decimal(10,2) NOT NULL DEFAULT 1.00,
@@ -3007,7 +3090,7 @@ CREATE TABLE `patient_services` (
   `ticket_id` int(10) DEFAULT NULL,
   `patient_id` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of patient_services
@@ -3016,6 +3099,9 @@ INSERT INTO `patient_services` VALUES ('1', '1', '11', '1', '2023-03-12 13:38:07
 INSERT INTO `patient_services` VALUES ('2', '1', '27', '1', '2023-03-12 14:22:29.573772', 'fgeryer', '1.00', 'none', '2023-03-12 14:22:29.573772', 'Samsethy', '1', '2023-03-12 14:22:29.000000', '1', 'Samsethy', '114', '119');
 INSERT INTO `patient_services` VALUES ('4', '1', '1', '13', '2023-03-12 19:11:41.428103', 'g', '1.00', 'none', '2023-03-12 19:11:41.428103', 'Samsethy', '1', '2023-03-12 19:11:41.000000', '1', 'Samsethy', '114', '119');
 INSERT INTO `patient_services` VALUES ('5', '1', '2', '12', '2023-03-13 08:58:40.558218', 'dfdgdfh', '1.00', 'none', '2023-03-13 08:58:40.558218', 'Samsethy', '1', '2023-03-13 08:58:40.000000', '1', 'Samsethy', '114', '119');
+INSERT INTO `patient_services` VALUES ('6', '1', '10', '2', '2023-03-21 12:06:40.541989', 'kkkk', '1.00', 'none', '2023-03-21 12:06:40.541989', 'Samsethy', '1', '2023-03-21 12:06:40.000000', '1', 'Samsethy', '120', '118');
+INSERT INTO `patient_services` VALUES ('7', '1', '1', '1', '2023-03-21 12:06:36.848099', 'gggg', '0.00', 'none', '2023-03-21 12:06:36.848099', 'Samsethy', '1', '2023-03-21 12:06:36.000000', '1', 'Samsethy', '120', '118');
+INSERT INTO `patient_services` VALUES ('8', '1', '11', '1', '2023-03-21 12:06:27.420816', 'sfddgdfg', '1.00', 'none', '2023-03-21 12:06:27.420816', 'Samsethy', '1', '2023-03-21 12:06:27.000000', '1', 'Samsethy', '120', '118');
 
 -- ----------------------------
 -- Table structure for `patient_vital_signs`
@@ -3038,7 +3124,7 @@ CREATE TABLE `patient_vital_signs` (
   `branch_id` int(10) DEFAULT NULL,
   `appt_id` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=465 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=469 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of patient_vital_signs
@@ -3047,6 +3133,10 @@ INSERT INTO `patient_vital_signs` VALUES ('461', '114', '119', '1', '2.00', 'Bod
 INSERT INTO `patient_vital_signs` VALUES ('462', '114', '119', '2', '5.00', 'Impulse rate', '2023-03-06 16:20:43.000000', '2023-03-06 16:20:43.000000', '1', 'Samsethy', null, null, null, '1', '194');
 INSERT INTO `patient_vital_signs` VALUES ('463', '114', '119', '3', '6.00', 'Respiration Rate', '2023-03-06 16:20:43.000000', '2023-03-06 16:20:43.000000', '1', 'Samsethy', null, null, null, '1', '194');
 INSERT INTO `patient_vital_signs` VALUES ('464', '114', '119', '4', '1.00', 'Blood pressure', '2023-03-06 16:20:43.000000', '2023-03-06 16:20:43.000000', '1', 'Samsethy', null, null, null, '1', '194');
+INSERT INTO `patient_vital_signs` VALUES ('465', '119', '120', '1', '25.00', 'Body temperature', '2023-03-21 03:43:09.758511', '2023-03-21 03:43:09.758511', '1', 'Samsethy', '2023-03-21 03:43:09.758511', null, null, '1', '195');
+INSERT INTO `patient_vital_signs` VALUES ('466', '119', '120', '2', '12.00', 'Impulse rate', '2023-03-21 03:43:09.758511', '2023-03-21 03:43:09.758511', '1', 'Samsethy', '2023-03-21 03:43:09.758511', null, null, '1', '195');
+INSERT INTO `patient_vital_signs` VALUES ('467', '119', '120', '3', '16.00', 'Respiration Rate', '2023-03-21 03:43:09.758511', '2023-03-21 03:43:09.758511', '1', 'Samsethy', '2023-03-21 03:43:09.758511', null, null, '1', '195');
+INSERT INTO `patient_vital_signs` VALUES ('468', '119', '120', '4', '2.00', 'Blood pressure', '2023-03-21 03:43:09.758511', '2023-03-21 03:43:09.758511', '1', 'Samsethy', '2023-03-21 03:43:09.758511', null, null, '1', '195');
 
 -- ----------------------------
 -- Table structure for `persons`
@@ -3055,7 +3145,6 @@ DROP TABLE IF EXISTS `persons`;
 CREATE TABLE `persons` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `branch_id` int(11) NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `first_name` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `last_name` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `sex` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3075,81 +3164,85 @@ CREATE TABLE `persons` (
   `update_uid` int(11) DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `cp_email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `photo_file_type` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `photo_file_name` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=117 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=119 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of persons
 -- ----------------------------
-INSERT INTO `persons` VALUES ('1', '1', 'Dr. Sinora', 'Sinora', 'Sin', 'F', null, null, '012567672', null, null, null, null, null, null, '', '0', null, null, null, null, null);
-INSERT INTO `persons` VALUES ('2', '1', 'Dr. Phina', 'Phina', 'Chea', 'F', null, null, '0112225652', null, null, null, null, null, null, '', '0', null, null, null, null, null);
-INSERT INTO `persons` VALUES ('50', '1', 'Ms Darany', 'Darany', 'Ms', 'F', '2022-10-10', '14', '012555653', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-01 10:19:48', null, null, null, null);
-INSERT INTO `persons` VALUES ('51', '1', 'KKKKK', '', 'KKKKK', 'F', '2022-09-12', '14', '0125656765', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-03 17:39:11', null, null, null, null);
-INSERT INTO `persons` VALUES ('52', '1', 'new name 77777', 'name client one', 'new', 'M', '2023-01-02', '14', '012555666', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-04 13:19:03', 'Samsethy', '1', '2023-01-01 15:55:42', null);
-INSERT INTO `persons` VALUES ('53', '1', 'DDDDDD``', '', 'DDDDDD``', 'F', null, '14', '093488789', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-04 13:40:21', null, null, null, null);
-INSERT INTO `persons` VALUES ('54', '1', 'DSDF AAA', 'AAA', 'DSDF', 'F', null, '14', '0112225653', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-04 13:41:53', null, null, null, null);
-INSERT INTO `persons` VALUES ('55', '1', 'SOLIDAY', 'ONE', 'NEW', 'M', '2022-11-07', '14', '012333221', null, 'cddsg', 'fsdgdgfd', null, null, null, 'Samsethy', '1', '2022-12-04 14:09:38', 'Samsethy', '1', '2023-01-01 16:02:03', null);
-INSERT INTO `persons` VALUES ('56', '1', 'Bun Sobana', 'Sobana', 'Bun', 'F', '2022-10-03', '14', '0115656565', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-06 11:24:58', null, null, null, null);
-INSERT INTO `persons` VALUES ('57', '1', 'Borya', '', 'Borya', 'M', '2022-09-05', '14', '0125689898', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-06 12:02:15', 'Samsethy', '1', '2023-03-01 16:13:21', null);
-INSERT INTO `persons` VALUES ('58', '1', 'DDGDGDGD', '', 'DDGDGDGD', 'F', '2022-12-06', '14', '0125686455', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-07 17:20:23', null, null, null, null);
-INSERT INTO `persons` VALUES ('59', '1', 'Sonary', '', 'Sonary', 'F', '2022-08-02', '14', '0102256765', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-08 09:52:09', null, null, null, null);
-INSERT INTO `persons` VALUES ('60', '1', 'Ginara', '', 'Ginara', 'F', '2022-09-05', '14', '01023765423', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-08 10:03:45', null, null, null, null);
-INSERT INTO `persons` VALUES ('61', '1', 'Funny name', 'name', 'Funny', 'F', '2022-10-10', '14', '011235768', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-08 11:01:25', null, null, null, null);
-INSERT INTO `persons` VALUES ('62', '1', 'some one', 'one', 'some', 'M', '2022-06-06', '14', '012565656', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-09 10:04:17', 'Samsethy', '1', '2023-01-01 14:41:17', null);
-INSERT INTO `persons` VALUES ('63', '1', 'KKKKK', '', 'KKKKK', 'F', null, '14', '01025657667', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 19:10:53', null, null, null, null);
-INSERT INTO `persons` VALUES ('64', '1', 'KKK1', '', 'KKK1', 'F', null, '14', '01245656', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 19:14:08', null, null, null, null);
-INSERT INTO `persons` VALUES ('65', '1', 'HHH2', '', 'HHH2', 'F', null, '14', '011023255', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 19:23:16', null, null, null, null);
-INSERT INTO `persons` VALUES ('66', '1', 'HKKK', '', 'HKKK', 'F', null, '14', '01245657', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 19:25:59', null, null, null, null);
-INSERT INTO `persons` VALUES ('67', '1', 'GGG1', '', 'GGG1', 'M', null, '14', '0125765676', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 19:30:24', null, null, null, null);
-INSERT INTO `persons` VALUES ('68', '1', 'sfddgfdgdfgdfg', '', 'sfddgfdgdfgdfg', 'F', null, '14', '012234353', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 20:53:28', null, null, null, null);
-INSERT INTO `persons` VALUES ('69', '1', 'sdgdfhfdhgfh', '', 'sdgdfhfdhgfh', 'F', null, '14', '012456576', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 20:55:17', null, null, null, null);
-INSERT INTO `persons` VALUES ('70', '1', 'sdfdggdf', '', 'sdfdggdf', 'F', '2022-08-08', '14', '012456546', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-11 11:46:44', null, null, null, null);
-INSERT INTO `persons` VALUES ('71', '1', 'sfsdgfdgd', '', 'sfsdgfdgd', 'F', null, '14', '012565676', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-11 12:53:57', null, null, null, null);
-INSERT INTO `persons` VALUES ('72', '1', 'HJKJKJK', '', 'HJKJKJK', 'F', null, '14', '010566767', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-12 01:44:14', null, null, null, null);
-INSERT INTO `persons` VALUES ('73', '1', 'vikara', '', 'vikara', 'M', null, '14', '0102343322', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-16 14:10:24', null, null, null, null);
-INSERT INTO `persons` VALUES ('74', '1', 'some one', null, null, 'M', '2022-10-03', null, '012565656', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-01 12:42:35', null, null, null, null);
-INSERT INTO `persons` VALUES ('75', '1', 'some one', null, null, 'M', '2022-06-06', null, '012565656', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-01 12:42:54', null, null, null, null);
-INSERT INTO `persons` VALUES ('76', '1', 'some one', null, null, 'M', '2022-06-06', null, '012565656', null, null, 'admingmailcom', null, null, null, 'Samsethy', '1', '2023-01-01 12:45:07', null, null, null, null);
-INSERT INTO `persons` VALUES ('77', '1', 'some one', null, null, 'M', '1998-03-02', null, '012565656', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-01 12:45:19', null, null, null, null);
-INSERT INTO `persons` VALUES ('78', '1', 'NEW ONE 555', null, null, 'M', '2022-09-05', null, '012998898', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-01 12:46:04', null, null, null, null);
-INSERT INTO `persons` VALUES ('79', '1', 'MMMMMM', '', 'MMMMMM', 'F', '2007-07-10', '14', '012455465', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-01 14:54:26', null, null, null, null);
-INSERT INTO `persons` VALUES ('80', '1', 'HEHEERER', '', 'HEHEERER', 'F', null, '14', '0122323243', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-01 16:01:05', null, null, null, null);
-INSERT INTO `persons` VALUES ('81', '1', 'different changed name', 'changed name', 'different', 'F', '2022-11-07', '14', '01255666756', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-01 16:08:04', null, null, null, null);
-INSERT INTO `persons` VALUES ('82', '1', 'sovannary 222', '', 'sovannary', 'M', '2022-06-02', '14', '093488777', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-01 16:15:20', 'Samsethy', '1', '2023-01-01 16:33:51', null);
-INSERT INTO `persons` VALUES ('83', '1', 'Chea Dane 7777', 'Dane', 'Chea', 'M', '2022-08-08', '14', '012456565', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-01 16:19:36', 'Samsethy', '1', '2023-01-01 16:44:08', null);
-INSERT INTO `persons` VALUES ('84', '1', 'Chan raingey', '', 'GGGGG1', 'M', '2023-01-09', '14', '012546565', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-01 16:27:42', 'Samsethy', '1', '2023-01-01 16:44:49', null);
-INSERT INTO `persons` VALUES ('85', '1', 'Liza', '', 'Liza', 'M', '2022-11-07', '14', '01234546', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-02 22:15:53', 'Samsethy', '1', '2023-01-02 22:34:18', null);
-INSERT INTO `persons` VALUES ('86', '1', 'Chan Samnang', '', 'dsfsfdsf', 'M', '2022-09-06', '14', '012234324', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-05 09:57:54', 'Samsethy', '1', '2023-01-05 09:59:33', null);
-INSERT INTO `persons` VALUES ('87', '1', 'Dyna', '', 'Dyna', 'M', '2022-08-08', '14', '0124565464', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-05 10:28:35', 'Samsethy', '1', '2023-01-10 18:45:28', null);
-INSERT INTO `persons` VALUES ('88', '1', 'ABC pat', 'pat', 'ABC', 'F', '2022-11-06', '14', '012456456', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-11 16:12:58', null, null, null, null);
-INSERT INTO `persons` VALUES ('89', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'sam2gmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 09:39:59', null, null, null, null);
-INSERT INTO `persons` VALUES ('90', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'sam2gmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 09:40:33', null, null, null, null);
-INSERT INTO `persons` VALUES ('91', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'sam2gmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 09:44:37', null, null, null, null);
-INSERT INTO `persons` VALUES ('92', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'sam2gmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 09:44:39', null, null, null, null);
-INSERT INTO `persons` VALUES ('93', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'sam2gmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 09:44:40', null, null, null, null);
-INSERT INTO `persons` VALUES ('94', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 09:47:49', null, null, null, null);
-INSERT INTO `persons` VALUES ('95', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 09:47:51', null, null, null, null);
-INSERT INTO `persons` VALUES ('96', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 09:52:04', null, null, null, null);
-INSERT INTO `persons` VALUES ('97', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 09:52:42', null, null, null, null);
-INSERT INTO `persons` VALUES ('98', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:27', null, null, null, null);
-INSERT INTO `persons` VALUES ('99', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:28', null, null, null, null);
-INSERT INTO `persons` VALUES ('100', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:28', null, null, null, null);
-INSERT INTO `persons` VALUES ('101', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:29', null, null, null, null);
-INSERT INTO `persons` VALUES ('102', '1', 'Samsethy THOUNefd', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:29', 'Samsethy', '1', '2023-02-22 04:43:50', null);
-INSERT INTO `persons` VALUES ('103', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:41', 'Samsethy', '1', '2023-01-14 22:29:45', null);
-INSERT INTO `persons` VALUES ('104', '1', 'Samsethy THOUN', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 13:48:25', null, null, null, null);
-INSERT INTO `persons` VALUES ('105', '1', 'dfgdfhf', '', 'dfgdfhf', 'F', null, '14', '02334534543', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-19 18:27:48', null, null, null, null);
-INSERT INTO `persons` VALUES ('106', '1', 'sadsfd', '', 'sadsfd', 'F', '2023-01-02', '14', '012324332', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-19 18:36:28', null, null, null, null);
-INSERT INTO `persons` VALUES ('107', '1', 'sdfgdgf', '', 'sdfgdgf', 'F', null, '14', '02324', null, null, null, null, null, null, 'Samsethy', '1', '2023-02-09 07:40:25', null, null, null, null);
-INSERT INTO `persons` VALUES ('108', '1', 'srey pov', 'pov', 'srey', 'F', null, '14', '01255665', null, null, null, null, null, null, 'Samsethy', '1', '2023-02-22 06:19:49', null, null, null, null);
-INSERT INTO `persons` VALUES ('109', '1', 'jghjghjg', '', 'jghjghjg', 'F', null, '14', '012324235', null, null, null, null, null, null, 'Samsethy', '1', '2023-02-22 06:45:38', null, null, null, null);
-INSERT INTO `persons` VALUES ('110', '1', 'Dyna', '', 'Dyna', 'F', null, '14', '01325435', null, null, null, null, null, null, 'Samsethy', '1', '2023-02-22 06:47:42', null, null, null, null);
-INSERT INTO `persons` VALUES ('111', '1', 'Daravan', '', 'Daravan', 'M', '2023-03-06', '14', '012435455', null, null, 'sdfsdgdg', null, null, null, 'Samsethy', '1', '2023-03-06 11:36:39', 'Samsethy', '1', '2023-03-06 13:23:05', null);
-INSERT INTO `persons` VALUES ('112', '1', 'Sokolthyda', '', 'HKKK', 'M', '2023-01-08', '14', '012456575', null, null, null, null, null, null, 'Samsethy', '1', '2023-03-06 14:01:22', 'Samsethy', '1', '2023-03-06 14:14:40', null);
-INSERT INTO `persons` VALUES ('113', '1', 'Sin Sophana', 'Sophana', 'Sin', 'F', '2022-09-11', '14', '0234565756', null, null, null, null, null, null, 'Samsethy', '1', '2023-03-06 14:15:52', null, null, null, null);
-INSERT INTO `persons` VALUES ('114', '1', 'Solika', '', 'Solika', 'F', '2023-02-05', '14', '012464565', null, null, null, null, null, null, 'Samsethy', '1', '2023-03-06 14:31:31', null, null, null, null);
-INSERT INTO `persons` VALUES ('115', '1', 'Dyna', '', 'Dyna', 'F', null, '14', '023546657567', null, null, null, null, null, null, 'Samsethy', '1', '2023-03-06 15:29:47', null, null, null, null);
-INSERT INTO `persons` VALUES ('116', '1', 'Gonna', '', 'Gonna', 'F', '2023-03-26', '14', '0123543546', null, null, null, null, null, null, 'Samsethy', '1', '2023-03-06 16:20:43', null, null, null, null);
+INSERT INTO `persons` VALUES ('1', '1', 'Sinora', 'Sin', 'F', '2023-03-12', '15', '012567672', null, 'dd@gmailcom', null, null, null, null, '', '0', null, 'Samsethy', '1', '2023-03-22 15:44:29', null, null, null);
+INSERT INTO `persons` VALUES ('2', '1', 'THOUN', 'Samsethy', 'M', '2023-03-20', '14', '012345646', null, 'samg@mailcom', null, null, null, null, '', '0', null, 'Samsethy', '1', '2023-03-23 11:02:11', null, null, null);
+INSERT INTO `persons` VALUES ('50', '1', 'Darany', 'Ms', 'F', '2022-10-10', '14', '012555653', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-01 10:19:48', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('51', '1', '', 'KKKKK', 'F', '2022-09-12', '14', '0125656765', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-03 17:39:11', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('52', '1', 'name client one', 'new', 'M', '2023-01-02', '14', '012555666', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-04 13:19:03', 'Samsethy', '1', '2023-01-01 15:55:42', null, null, null);
+INSERT INTO `persons` VALUES ('53', '1', '', 'DDDDDD``', 'F', null, '14', '093488789', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-04 13:40:21', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('54', '1', 'AAA', 'DSDF', 'F', null, '14', '0112225653', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-04 13:41:53', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('55', '1', 'ONE', 'NEW', 'M', '2022-11-07', '14', '012333221', null, 'cddsg', 'fsdgdgfd', null, null, null, 'Samsethy', '1', '2022-12-04 14:09:38', 'Samsethy', '1', '2023-01-01 16:02:03', null, null, null);
+INSERT INTO `persons` VALUES ('56', '1', 'Sobana', 'Bun', 'F', '2022-10-03', '14', '0115656565', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-06 11:24:58', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('57', '1', '', 'Borya', 'M', '2022-09-05', '14', '0125689898', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-06 12:02:15', 'Samsethy', '1', '2023-03-01 16:13:21', null, null, null);
+INSERT INTO `persons` VALUES ('58', '1', '', 'DDGDGDGD', 'F', '2022-12-06', '14', '0125686455', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-07 17:20:23', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('59', '1', '', 'Sonary', 'F', '2022-08-02', '14', '0102256765', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-08 09:52:09', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('60', '1', '', 'Ginara', 'F', '2022-09-05', '14', '01023765423', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-08 10:03:45', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('61', '1', 'name', 'Funny', 'F', '2022-10-10', '14', '011235768', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-08 11:01:25', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('62', '1', 'one', 'some', 'M', '2022-06-06', '14', '012565656', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-09 10:04:17', 'Samsethy', '1', '2023-01-01 14:41:17', null, null, null);
+INSERT INTO `persons` VALUES ('63', '1', '', 'KKKKK', 'F', null, '14', '01025657667', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 19:10:53', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('64', '1', '', 'KKK1', 'F', null, '14', '01245656', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 19:14:08', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('65', '1', '', 'HHH2', 'F', null, '14', '011023255', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 19:23:16', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('66', '1', '', 'HKKK', 'F', null, '14', '01245657', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 19:25:59', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('67', '1', '', 'GGG1', 'M', null, '14', '0125765676', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 19:30:24', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('68', '1', '', 'sfddgfdgdfgdfg', 'F', null, '14', '012234353', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 20:53:28', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('69', '1', '', 'sdgdfhfdhgfh', 'F', null, '14', '012456576', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-10 20:55:17', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('70', '1', '', 'sdfdggdf', 'F', '2022-08-08', '14', '012456546', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-11 11:46:44', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('71', '1', '', 'sfsdgfdgd', 'F', null, '14', '012565676', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-11 12:53:57', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('72', '1', '', 'HJKJKJK', 'F', null, '14', '010566767', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-12 01:44:14', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('73', '1', '', 'vikara', 'M', null, '14', '0102343322', null, null, null, null, null, null, 'Samsethy', '1', '2022-12-16 14:10:24', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('74', '1', null, null, 'M', '2022-10-03', null, '012565656', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-01 12:42:35', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('75', '1', null, null, 'M', '2022-06-06', null, '012565656', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-01 12:42:54', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('76', '1', null, null, 'M', '2022-06-06', null, '012565656', null, null, 'admingmailcom', null, null, null, 'Samsethy', '1', '2023-01-01 12:45:07', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('77', '1', null, null, 'M', '1998-03-02', null, '012565656', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-01 12:45:19', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('78', '1', null, null, 'M', '2022-09-05', null, '012998898', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-01 12:46:04', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('79', '1', '', 'MMMMMM', 'F', '2007-07-10', '14', '012455465', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-01 14:54:26', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('80', '1', '', 'HEHEERER', 'F', null, '14', '0122323243', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-01 16:01:05', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('81', '1', 'changed name', 'different', 'F', '2022-11-07', '14', '01255666756', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-01 16:08:04', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('82', '1', '', 'sovannary', 'M', '2022-06-02', '14', '093488777', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-01 16:15:20', 'Samsethy', '1', '2023-01-01 16:33:51', null, null, null);
+INSERT INTO `persons` VALUES ('83', '1', 'Dane', 'Chea', 'M', '2022-08-08', '14', '012456565', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-01 16:19:36', 'Samsethy', '1', '2023-01-01 16:44:08', null, null, null);
+INSERT INTO `persons` VALUES ('84', '1', '', 'GGGGG1', 'M', '2023-01-09', '14', '012546565', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-01 16:27:42', 'Samsethy', '1', '2023-01-01 16:44:49', null, null, null);
+INSERT INTO `persons` VALUES ('85', '1', '', 'Liza', 'M', '2022-11-07', '14', '01234546', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-02 22:15:53', 'Samsethy', '1', '2023-01-02 22:34:18', null, null, null);
+INSERT INTO `persons` VALUES ('86', '1', '', 'dsfsfdsf', 'M', '2022-09-06', '14', '012234324', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-05 09:57:54', 'Samsethy', '1', '2023-01-05 09:59:33', null, null, null);
+INSERT INTO `persons` VALUES ('87', '1', '', 'Dyna', 'M', '2022-08-08', '14', '0124565464', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-05 10:28:35', 'Samsethy', '1', '2023-01-10 18:45:28', null, null, null);
+INSERT INTO `persons` VALUES ('88', '1', 'pat', 'ABC', 'F', '2022-11-06', '14', '012456456', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-11 16:12:58', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('89', '1', null, null, 'M', '2000-01-01', null, '012345646', null, 'sam2gmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 09:39:59', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('90', '1', null, null, 'M', '2000-01-01', null, '012345646', null, 'sam2gmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 09:40:33', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('91', '1', null, null, 'M', '2000-01-01', null, '012345646', null, 'sam2gmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 09:44:37', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('92', '1', null, null, 'M', '2000-01-01', null, '012345646', null, 'sam2gmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 09:44:39', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('93', '1', null, null, 'M', '2000-01-01', null, '012345646', null, 'sam2gmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 09:44:40', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('94', '1', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 09:47:49', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('95', '1', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 09:47:51', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('96', '1', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 09:52:04', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('97', '1', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 09:52:42', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('98', '1', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:27', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('99', '1', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:28', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('100', '1', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:28', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('101', '1', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:29', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('102', '1', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:29', 'Samsethy', '1', '2023-02-22 04:43:50', null, null, null);
+INSERT INTO `persons` VALUES ('103', '1', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 10:10:41', 'Samsethy', '1', '2023-01-14 22:29:45', null, null, null);
+INSERT INTO `persons` VALUES ('104', '1', null, null, 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'Samsethy', '1', '2023-01-12 13:48:25', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('105', '1', '', 'dfgdfhf', 'F', null, '14', '02334534543', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-19 18:27:48', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('106', '1', '', 'sadsfd', 'F', '2023-01-02', '14', '012324332', null, null, null, null, null, null, 'Samsethy', '1', '2023-01-19 18:36:28', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('107', '1', '', 'sdfgdgf', 'F', null, '14', '02324', null, null, null, null, null, null, 'Samsethy', '1', '2023-02-09 07:40:25', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('108', '1', 'pov', 'srey', 'F', null, '14', '01255665', null, null, null, null, null, null, 'Samsethy', '1', '2023-02-22 06:19:49', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('109', '1', '', 'jghjghjg', 'F', null, '14', '012324235', null, null, null, null, null, null, 'Samsethy', '1', '2023-02-22 06:45:38', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('110', '1', '', 'Dyna', 'F', null, '14', '01325435', null, null, null, null, null, null, 'Samsethy', '1', '2023-02-22 06:47:42', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('111', '1', '', 'Daravan', 'M', '2023-03-06', '14', '012435455', null, null, 'sdfsdgdg', null, null, null, 'Samsethy', '1', '2023-03-06 11:36:39', 'Samsethy', '1', '2023-03-06 13:23:05', null, null, null);
+INSERT INTO `persons` VALUES ('112', '1', '', 'HKKK', 'M', '2023-01-08', '14', '012456575', null, null, null, null, null, null, 'Samsethy', '1', '2023-03-06 14:01:22', 'Samsethy', '1', '2023-03-06 14:14:40', null, null, null);
+INSERT INTO `persons` VALUES ('113', '1', 'Sophana', 'Sin', 'F', '2022-09-11', '14', '0234565756', null, null, null, null, null, null, 'Samsethy', '1', '2023-03-06 14:15:52', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('114', '1', '', 'Solika', 'F', '2023-02-05', '14', '012464565', null, null, null, null, null, null, 'Samsethy', '1', '2023-03-06 14:31:31', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('115', '1', '', 'Dyna', 'F', null, '14', '023546657567', null, null, null, null, null, null, 'Samsethy', '1', '2023-03-06 15:29:47', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('116', '1', '', 'Gonna', 'F', '2023-03-26', '14', '0123543546', null, null, null, null, null, null, 'Samsethy', '1', '2023-03-06 16:20:43', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('117', '1', 'THOUN', 'Samsethy', 'M', '2000-01-01', null, '012345646', null, 'samgmailcom', null, null, null, null, 'sam', '4', '2023-03-20 19:52:13', null, null, null, null, null, null);
+INSERT INTO `persons` VALUES ('118', '1', '', 'GGG', 'F', '2022-12-05', '14', '011255671', null, null, null, null, null, null, 'Samsethy', '1', '2023-03-21 03:32:25', 'Samsethy', '1', '2023-03-21 03:44:24', null, null, null);
 
 -- ----------------------------
 -- Table structure for `positions`
@@ -3280,6 +3373,9 @@ INSERT INTO `queue_ticket_control` VALUES ('1', '8', '1', 'G', '2023-02-22', nul
 INSERT INTO `queue_ticket_control` VALUES ('1', '3', '2', 'D', '2023-02-22', null);
 INSERT INTO `queue_ticket_control` VALUES ('1', '1', '1', 'G', '2023-03-01', null);
 INSERT INTO `queue_ticket_control` VALUES ('1', '9', '1', 'G', '2023-03-06', null);
+INSERT INTO `queue_ticket_control` VALUES ('1', '6', '1', 'G', '2023-03-21', null);
+INSERT INTO `queue_ticket_control` VALUES ('1', '1', '2', 'D', '2023-03-21', null);
+INSERT INTO `queue_ticket_control` VALUES ('1', '1', '1', 'G', '2023-03-27', null);
 
 -- ----------------------------
 -- Table structure for `receipt_number_control`
@@ -3699,7 +3795,7 @@ CREATE TABLE `tickets` (
   `remarks` varchar(250) DEFAULT NULL,
   `com_branch_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=115 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=123 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of tickets
@@ -3738,6 +3834,13 @@ INSERT INTO `tickets` VALUES ('102', 'G100007', '2023-02-22 06:45:38.000000', 'S
 INSERT INTO `tickets` VALUES ('103', 'D100003', '2023-02-22 06:47:42.000000', 'Samsethy', '1', '111', '2', null, '2023-02-22', '1', '1', null, '110', '1', null, 'On Demand', null, null);
 INSERT INTO `tickets` VALUES ('104', 'G100008', '2023-02-22 08:06:03.000000', 'Samsethy', '1', '108', '1', null, '2023-02-22', '1', '1', '133', '87', '1', null, 'On Demand', null, null);
 INSERT INTO `tickets` VALUES ('114', 'G100009', '2023-03-06 16:20:43.000000', 'Samsethy', '1', '119', '1', null, '2023-03-06', '1', '1', null, '116', '1', null, 'On Demand', null, null);
+INSERT INTO `tickets` VALUES ('115', 'G100001', '2023-03-21 03:34:47.000000', 'Samsethy', '1', '120', '1', null, '2023-03-21', null, '1', '195', '118', '1', null, 'On Demand', null, null);
+INSERT INTO `tickets` VALUES ('116', 'G100002', '2023-03-21 03:35:01.000000', 'Samsethy', '1', '120', '1', null, '2023-03-21', null, '1', '195', '118', '1', null, 'On Demand', null, null);
+INSERT INTO `tickets` VALUES ('117', 'G100003', '2023-03-21 03:40:01.000000', 'Samsethy', '1', '120', '1', null, '2023-03-21', null, '1', '195', '118', '1', null, 'On Demand', null, null);
+INSERT INTO `tickets` VALUES ('118', 'G100004', '2023-03-21 03:41:08.000000', 'Samsethy', '1', '120', '1', null, '2023-03-21', null, '1', '195', '118', '1', null, 'On Demand', null, null);
+INSERT INTO `tickets` VALUES ('119', 'G100005', '2023-03-21 03:43:09.000000', 'Samsethy', '1', '120', '1', null, '2023-03-21', null, '1', '195', '118', '1', null, 'On Demand', null, null);
+INSERT INTO `tickets` VALUES ('120', 'G100006', '2023-03-21 03:56:21.000000', 'Samsethy', '1', '118', '1', null, '2023-03-21', '1', '1', '193', '115', '1', null, 'On Demand', null, null);
+INSERT INTO `tickets` VALUES ('122', 'G100001', '2023-03-27 16:13:19.000000', 'Samsethy', '1', '118', '1', null, '2023-03-27', '1', '1', '196', '115', '1', null, 'On Demand', null, null);
 
 -- ----------------------------
 -- Table structure for `ticket_statuses`
@@ -3828,13 +3931,16 @@ CREATE TABLE `um_branches` (
   `update_date` timestamp(6) NULL DEFAULT current_timestamp(6) ON UPDATE current_timestamp(6),
   `website` varchar(150) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `update_uid` int(11) DEFAULT NULL,
+  `create_uid` int(11) DEFAULT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT curtime(),
   PRIMARY KEY (`branch_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of um_branches
 -- ----------------------------
-INSERT INTO `um_branches` VALUES ('1', 'ESTHEDERM CLINIC', 'ESTHEDERM CLINIC', '1_logo_20230316_010347.jpg', 'jpg', '#458 Street 24BT Sangkat Boeung Tompon Khan Meanchey Phnom Penh Cambodia', '012222333', 'solida', null, null, null, null, null, null, 'ផ្ទះលេខ៤៥៨ ផ្លូវ២៤BT សង្កាត់បឹងទំពន់ ខណ្ឌមានជ័យ រាធធានីភ្នំពេញ', 'infopucedukh', 'admin@gmail.com', '2023-03-16 13:08:47.308767', null, '2023-02-02 10:51:33');
+INSERT INTO `um_branches` VALUES ('1', 'ESTHEDERM CLINIC', 'ESTHEDERM CLINIC', '1_logo_20230323_040355.jpg', 'jpg', '#458 Street 24BT Sangkat Boeung Tompon Khan Meanchey Phnom Penh Cambodia', '012222333', 'solida', null, null, null, null, null, null, 'ផ្ទះលេខ៤៥៨ ផ្លូវ២៤BT សង្កាត់បឹងទំពន់ ខណ្ឌមានជ័យ រាធធានីភ្នំពេញ', 'infopucedukh', 'admin@gmail.com', '2023-03-23 04:11:55.582346', null, '2023-02-02 10:51:33', null, null, '2023-03-25 20:39:28');
 
 -- ----------------------------
 -- Table structure for `um_permissions`
@@ -3939,13 +4045,14 @@ CREATE TABLE `um_sessions` (
   `status` varchar(10) DEFAULT NULL COMMENT 'status ={online,offline}',
   `lang` varchar(50) DEFAULT 'en',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1978 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1998 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of um_sessions
 -- ----------------------------
 INSERT INTO `um_sessions` VALUES ('1840', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'Bory', '2', '2023-02-02 11:04:47', '2023-02-02 11:04:47', 'TWY286rzc1Oucpp07znsiww3n89D8dF5UkwK8P', 'ukswNQRSy9ek72svrQlPHIs8RGQu68D3oMXCJ8', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjc1MzEwNjg3LCJuYmYiOjE2NzUzMTA2ODcsImV4cCI6MTY3NTMxNDI4NywibGFuZyI6ImVuIiwiaWQiOjIsInVzZXJfY2xhc3MiOiJhZG1pbiIsIm9mZmljaWFsX2lkIjpudWxsLCJvZmZpY2lhbF9jb2RlIjpudWxsLCJsb2dpbl9uYW1lIjoiQm9yeSIsImJyYW5jaF9pZCI6MSwiZnVsbF9uYW1lIjoiQm9yeSIsInN0YXR1cyI6ImFjdGl2ZSIsImlzX2xvY2tlZCI6MCwiZW1haWwiOm51bGwsInBob25lX251bWJlciI6bnVsbCwib3RwX2NvZGUiOm51bGx9.YsJr6g2Lqu2QLmArmZ3-tTLHU7jP2ceDspbDvCXD4Zg', null, 'en');
-INSERT INTO `um_sessions` VALUES ('1977', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-03-17 10:05:30', '2023-03-17 10:05:30', 'eYzvxawFJVdi39R1eGwYa7H72sBtx98Edf6Xmf', '2Oq2ijSSB6cfJ4JgRBR5YocoW22Chi5YmnCrkS', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjc5MDIyMzMwLCJuYmYiOjE2NzkwMjIzMzAsImV4cCI6MTY3OTAzMzEzMCwibGFuZyI6ImVuIiwiaWQiOjEsInVzZXJfY2xhc3MiOiJhZG1pbiIsIm9mZmljaWFsX2lkIjpudWxsLCJvZmZpY2lhbF9jb2RlIjoiMDAwMSIsImxvZ2luX25hbWUiOiJhZG1pbkBnbWFpbC5jb20iLCJicmFuY2hfaWQiOjEsImZ1bGxfbmFtZSI6IlNhbXNldGh5Iiwic3RhdHVzIjoiYWN0aXZlIiwiaXNfbG9ja2VkIjowLCJlbWFpbCI6bnVsbCwicGhvbmVfbnVtYmVyIjoiMDEyNTc4OTAiLCJvdHBfY29kZSI6bnVsbH0.sMgo2eVw6fmLCLDv4X0HS19Tx8nvzpI2ebkEGlP98hk', null, 'en');
+INSERT INTO `um_sessions` VALUES ('1982', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'sam', '4', '2023-03-20 19:49:20', '2023-03-20 19:49:20', '203n6I9eh82Ulmi32FAlGOpaNJ2vooN5w634oU', 'S9wjDJs5CWk9Yf1PhM578wndkcaoCx8EHpn9kD', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjc5MzE2NTYwLCJuYmYiOjE2NzkzMTY1NjAsImV4cCI6MTY3OTMyNzM2MCwibGFuZyI6ImVuIiwiaWQiOjQsInVzZXJfY2xhc3MiOiJhZG1pbiIsIm9mZmljaWFsX2lkIjpudWxsLCJvZmZpY2lhbF9jb2RlIjpudWxsLCJsb2dpbl9uYW1lIjoic2FtIiwiYnJhbmNoX2lkIjoxLCJmdWxsX25hbWUiOiJzYW0iLCJzdGF0dXMiOiJhY3RpdmUiLCJpc19sb2NrZWQiOjAsImVtYWlsIjpudWxsLCJwaG9uZV9udW1iZXIiOm51bGwsIm90cF9jb2RlIjpudWxsfQ.FQBl_5dutCxYYSw8ByBJDeV_a5r4cuoTF5vqm2kCPWk', null, 'en');
+INSERT INTO `um_sessions` VALUES ('1997', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-03-31 09:25:17', '2023-03-31 09:25:17', '76b7tOpsk4mI0t12GVK9OSaKOicv7vAdCP126Z', 'P2Y6epBNv5oA7bL23q7Q0zv29fqB1yO499foqC', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjgwMjI5NTE3LCJuYmYiOjE2ODAyMjk1MTcsImV4cCI6MTY4MDI3MzMxNywibGFuZyI6ImVuIiwiaWQiOjEsInVzZXJfY2xhc3MiOiJhZG1pbiIsIm9mZmljaWFsX2lkIjpudWxsLCJvZmZpY2lhbF9jb2RlIjoiMDAwMSIsImxvZ2luX25hbWUiOiJhZG1pbkBnbWFpbC5jb20iLCJicmFuY2hfaWQiOjEsImZ1bGxfbmFtZSI6IlNhbXNldGh5Iiwic3RhdHVzIjoiYWN0aXZlIiwiaXNfbG9ja2VkIjowLCJlbWFpbCI6bnVsbCwicGhvbmVfbnVtYmVyIjoiMDEyNTc4OTAiLCJvdHBfY29kZSI6bnVsbH0.UXjoUJ3ZuWN1A7KoJIjbUDkrnW09QewmlRaua19woso', null, 'en');
 
 -- ----------------------------
 -- Table structure for `um_users`
@@ -3976,7 +4083,7 @@ CREATE TABLE `um_users` (
   `lang` varchar(15) DEFAULT 'en',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of um_users
@@ -3984,6 +4091,7 @@ CREATE TABLE `um_users` (
 INSERT INTO `um_users` VALUES ('1', 'admin@gmail.com', '01257890', null, '$2y$10$9s0nFmOKK6xEc8c63nT7KeQSGb4UoUio39dTBoQKrArZ3TlRh7LYK', '2023-02-17 10:59:01.040229', 'DXM20FKAEFC711EH2E7C9801A7BZD311', null, '1', 'Admin', '0', 'active', 'Samsethy', null, 'admin', 'admin@gmail.com', '3', '2021-09-13 04:00:26', '0001', null, null, 'en', '2023-02-02 11:01:45');
 INSERT INTO `um_users` VALUES ('2', 'Bory', null, null, '$2y$10$L7GTLkc8nljBQlTXBe8Pb.iYD7WohbkziOO5BpH1VqXb/.Z/CObx2', null, 'DXM20FKAEFC711EH2E7C9801A7BZD311', null, '1', 'standard', '0', 'active', 'Bory', null, 'admin', 'Samsethy', '1', null, null, null, null, 'en', '2023-02-02 11:01:53');
 INSERT INTO `um_users` VALUES ('3', 'Admin1', null, null, '$2y$10$i9dEkdttYHGKXuUBS2a23.IDs30JcUhC5f/cdcLzzdogBfiHLIzi2', null, 'DXM20FKAEFC711EH2E7C9801A7BZD311', null, '1', 'standard', '0', 'active', 'Admin1', null, 'admin', 'Samsethy', '1', null, null, null, null, 'en', '2023-02-02 11:03:48');
+INSERT INTO `um_users` VALUES ('4', 'sam', null, null, '$2y$10$PIDtZi/IXS8kdAhxErHbFOayAP0ehJ8jxBo.s2tJiN1NqonlSvehe', null, 'DXM20FKAEFC711EH2E7C9801A7BZD311', null, '1', 'standard', '0', 'active', 'sam', null, 'admin', 'Samsethy', '1', null, null, null, null, 'en', '2023-03-20 19:49:07');
 
 -- ----------------------------
 -- Table structure for `um_user_roles`
@@ -4003,6 +4111,7 @@ CREATE TABLE `um_user_roles` (
 INSERT INTO `um_user_roles` VALUES ('1', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', '0', '1');
 INSERT INTO `um_user_roles` VALUES ('2', '2', 'DXM20FKAEFC711EH2E7C9801A7BZD311', '0', '1');
 INSERT INTO `um_user_roles` VALUES ('3', '2', 'DXM20FKAEFC711EH2E7C9801A7BZD311', '0', '1');
+INSERT INTO `um_user_roles` VALUES ('4', '2', 'DXM20FKAEFC711EH2E7C9801A7BZD311', '0', '1');
 
 -- ----------------------------
 -- Table structure for `um_worklocations`
@@ -4121,7 +4230,7 @@ INSERT INTO `warehouses` VALUES ('1', '1', 'Main warehouse', '0', '0', null, nul
 -- ----------------------------
 DROP FUNCTION IF EXISTS `displayMoney`;
 DELIMITER ;;
-CREATE  FUNCTION `displayMoney`(amt decimal(10,2),ccode varchar(10)) RETURNS varchar(100) CHARSET utf8mb4
+CREATE DEFINER=`root`@`localhost` FUNCTION `displayMoney`(amt decimal(10,2),ccode varchar(10)) RETURNS varchar(100) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
   declare sym varchar(15);
@@ -4147,7 +4256,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `formatDate`;
 DELIMITER ;;
-CREATE  FUNCTION `formatDate`(mDate Date) RETURNS varchar(50) CHARSET utf8mb4
+CREATE DEFINER=`root`@`localhost` FUNCTION `formatDate`(mDate Date) RETURNS varchar(50) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
   return DATE_FORMAT(mDate,'%d %b %Y');
@@ -4160,7 +4269,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `formatDateTime`;
 DELIMITER ;;
-CREATE  FUNCTION `formatDateTime`(mDate Date) RETURNS varchar(50) CHARSET utf8mb4
+CREATE DEFINER=`root`@`localhost` FUNCTION `formatDateTime`(mDate Date) RETURNS varchar(50) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
   return DATE_FORMAT(mDate,'%d %b %Y %r');
@@ -4173,7 +4282,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `formatTime`;
 DELIMITER ;;
-CREATE  FUNCTION `formatTime`(mDate Date) RETURNS varchar(30) CHARSET utf8mb4
+CREATE DEFINER=`root`@`localhost` FUNCTION `formatTime`(mDate Date) RETURNS varchar(30) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
   return DATE_FORMAT(mDate,'%r');
@@ -4186,7 +4295,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `getApptStatus`;
 DELIMITER ;;
-CREATE  FUNCTION `getApptStatus`(branchid INT,statusid INT) RETURNS varchar(20) CHARSET utf8mb4
+CREATE DEFINER=`root`@`localhost` FUNCTION `getApptStatus`(branchid INT,statusid INT) RETURNS varchar(20) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
    declare ss varchar(20); 
@@ -4201,11 +4310,11 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `getConsultanName`;
 DELIMITER ;;
-CREATE  FUNCTION `getConsultanName`(consultantid INT) RETURNS varchar(50) CHARSET utf8mb4
+CREATE DEFINER=`root`@`localhost` FUNCTION `getConsultanName`(consultantid INT) RETURNS varchar(50) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
  declare cname varchar(50);
- set cname = (select `name` from persons as p INNER JOIN employees as e ON e.person_id = p.id WHERE p.id = consultantid LIMIT 1);
+ set cname = (select concat(first_name,' ',last_name) as `fullname` from persons as p INNER JOIN employees as e ON e.person_id = p.id WHERE p.id = consultantid LIMIT 1);
  return cname; 
 end
 ;;
@@ -4216,7 +4325,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `getCurSymbol`;
 DELIMITER ;;
-CREATE  FUNCTION `getCurSymbol`(ccode varchar(10)) RETURNS varchar(10) CHARSET utf8mb4
+CREATE DEFINER=`root`@`localhost` FUNCTION `getCurSymbol`(ccode varchar(10)) RETURNS varchar(10) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
   declare ss varchar(10);
@@ -4231,7 +4340,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `getGroupQty`;
 DELIMITER ;;
-CREATE  FUNCTION `getGroupQty`(groupid INT) RETURNS decimal(10,2)
+CREATE DEFINER=`root`@`localhost` FUNCTION `getGroupQty`(groupid INT) RETURNS decimal(10,2)
     DETERMINISTIC
 BEGIN
   declare qty decimal(10,2);
@@ -4246,7 +4355,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `getItemDetailType`;
 DELIMITER ;;
-CREATE  FUNCTION `getItemDetailType`(detailtypeid INT) RETURNS varchar(150) CHARSET utf8mb4
+CREATE DEFINER=`root`@`localhost` FUNCTION `getItemDetailType`(detailtypeid INT) RETURNS varchar(150) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
   declare detailtype varchar(150);
@@ -4261,7 +4370,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `getItemQty`;
 DELIMITER ;;
-CREATE  FUNCTION `getItemQty`(itemid INT) RETURNS decimal(10,2)
+CREATE DEFINER=`root`@`localhost` FUNCTION `getItemQty`(itemid INT) RETURNS decimal(10,2)
     DETERMINISTIC
 BEGIN
   declare qty decimal(10,2);
@@ -4276,7 +4385,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `getLastStockDate`;
 DELIMITER ;;
-CREATE  FUNCTION `getLastStockDate`(itemid int,stockclass_code varchar(25)) RETURNS varchar(30) CHARSET utf8mb4
+CREATE DEFINER=`root`@`localhost` FUNCTION `getLastStockDate`(itemid int,stockclass_code varchar(25)) RETURNS varchar(30) CHARSET utf8mb4
 BEGIN
   declare stockdate varchar(30);
   IF (IFNULL(stockclass_code,'') ='') THEN
@@ -4294,7 +4403,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `getPatientCode`;
 DELIMITER ;;
-CREATE  FUNCTION `getPatientCode`(branchid INT,clientid INT) RETURNS varchar(30) CHARSET utf8mb4
+CREATE DEFINER=`root`@`localhost` FUNCTION `getPatientCode`(branchid INT,clientid INT) RETURNS varchar(30) CHARSET utf8mb4
     DETERMINISTIC
 begin
   DECLARE cc varchar(30); 
@@ -4309,7 +4418,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `getTicketNumber`;
 DELIMITER ;;
-CREATE  FUNCTION `getTicketNumber`(branchid INT,apptid INT) RETURNS varchar(30) CHARSET utf8mb4
+CREATE DEFINER=`root`@`localhost` FUNCTION `getTicketNumber`(branchid INT,apptid INT) RETURNS varchar(30) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
  declare ticket varchar(30); 
@@ -4324,7 +4433,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `getTicketStatus`;
 DELIMITER ;;
-CREATE  FUNCTION `getTicketStatus`(branchid INT,ticketid INT) RETURNS varchar(30) CHARSET utf8mb4
+CREATE DEFINER=`root`@`localhost` FUNCTION `getTicketStatus`(branchid INT,ticketid INT) RETURNS varchar(30) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
   declare tstatus varchar(30);
@@ -4339,7 +4448,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `hasPosition`;
 DELIMITER ;;
-CREATE  FUNCTION `hasPosition`(empid INT,posid INT) RETURNS int(11)
+CREATE DEFINER=`root`@`localhost` FUNCTION `hasPosition`(empid INT,posid INT) RETURNS int(11)
     DETERMINISTIC
 BEGIN
   SET @d= (EXISTS(select id from employee_positions as e WHERE e.emp_id = empid AND e.position_id = posid LIMIT 1));
@@ -4353,7 +4462,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `hasPositions`;
 DELIMITER ;;
-CREATE  FUNCTION `hasPositions`(empid INT,posid INT) RETURNS int(11)
+CREATE DEFINER=`root`@`localhost` FUNCTION `hasPositions`(empid INT,posid INT) RETURNS int(11)
     DETERMINISTIC
 BEGIN
   SET @d= (EXISTS(select id from employee_positions as e WHERE e.emp_id = empid AND e.position_id = posid LIMIT 1));

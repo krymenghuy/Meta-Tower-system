@@ -58,7 +58,7 @@ class FormUntil{
       // document.querySelector(`#_appt_contact_channel`).addEventListener('change',(e)=>{
       //    alert("Channel ID changed111!");
       // });
-
+      
       this.btnSave.off('click').on('click',(e)=>{
          e.preventDefault();
          let that = this;
@@ -189,7 +189,9 @@ class FormUntil{
    //   }
 
      clearErrorMessages = ()=>{
-         document.getElementById(this.form_id).querySelectorAll('.error_text').forEach(el=>{
+         let form = document.getElementById(this.form_id);
+         if(!form) return;
+         form.querySelectorAll('.error_text').forEach(el=>{
             if(el) el.remove();
          });
          VSUtil.hideDialogError(this.form_id);
@@ -200,22 +202,24 @@ class FormUntil{
         if(!d) d = {};
          if (this.elError) this.elError.text(null);
          if (this.identity_prop) this.me[this.identity_prop] = d[this.identity_prop];
-  
-         document.getElementById(this.form_id).querySelectorAll('.data-input').forEach(el=>{
-            let f = el.dataset.field; // el.getAttribute('field');
-            if(el.tagName.toLowerCase() === 'img'){
-               el.setAttribute('src',d[f]);    
-            }else{
-               if(el.classList.contains('modal-select2') || el.classList.contains('select2')){
-                  VSUtil.setSelect2_value(el,d[f]);
-                  //el.dispatchEvent(new Event('change'));
-               }else el.value = d[f]?d[f]:'';
-            }
-           
-            //set data-error =0 (No data validation error on first show) attribute of each input or SELECT box
-            el.dataset.error = 0;
-         });
-    
+         let form = document.getElementById(this.form_id);
+         if(form){
+            form.querySelectorAll('.data-input').forEach(el=>{
+               let f = el.dataset.field; // el.getAttribute('field');
+               if(el.tagName.toLowerCase() === 'img'){
+                  el.setAttribute('src',d[f]);    
+               }else{
+                  if(el.classList.contains('modal-select2') || el.classList.contains('select2')){
+                     VSUtil.setSelect2_value(el,d[f]);
+                     //el.dispatchEvent(new Event('change'));
+                  }else el.value = d[f]?d[f]:'';
+               }
+              
+               //set data-error =0 (No data validation error on first show) attribute of each input or SELECT box
+               el.dataset.error = 0;
+            });   
+         } 
+         
          //set additional special fields in mThis[field_name] = value
          if(additional_props){
             additional_props.map((prop)=>{

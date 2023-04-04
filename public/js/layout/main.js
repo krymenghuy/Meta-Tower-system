@@ -137,7 +137,12 @@ let main_view = new function(){
                  
         this.mnuTickets.on('click',(e)=>{
             e.preventDefault();
-            QueueComponent.show(null);
+            QueueComponent.show({
+                //Allow Receiptionist to click Generate Invoice button, but consultant cannot click on this button
+                'showInvoiceButton':true,
+                //For Receiptionist, by default show "info" tab view and only one tab available 
+                'default_tab_view':'info'
+            });
         });
 
         this.mnuEmployeeList.on('click',(e)=>{
@@ -216,7 +221,9 @@ let main_view = new function(){
                 'showPatientPhotos':true,
                 'showConsultButton':true,
                 'showPrescriptionButton':true,
+                'showInvoiceButton':false,
                 'showHistoryButton':true
+                ,'default_tab_view':null //For Consultant, remember the last vieved tab 
             });
         });
 

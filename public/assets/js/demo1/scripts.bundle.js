@@ -2122,9 +2122,9 @@ let KTHeader = function (elementId, options) {
             let eventTriggerState = true;
             let viewportHeight = KTUtil.getViewPort().height;
 
-            if (the.options.minimize.mobile === false && the.options.minimize.desktop === false) {
-                return;
-            }
+            // if (the.options.minimize.mobile === false && the.options.minimize.desktop === false) {
+            //     return;
+            // }
 
             window.addEventListener('scroll', function () {
                 let offset = 0, on, off, st;
@@ -2133,12 +2133,18 @@ let KTHeader = function (elementId, options) {
                     offset = the.options.offset.desktop;
                     on = the.options.minimize.desktop.on;
                     off = the.options.minimize.desktop.off;
-                } else if (KTUtil.isInResponsiveRange('tablet-and-mobile')) {
+                } 
+                else if (KTUtil.isInResponsiveRange('tablet-and-mobile')) {
                     offset = the.options.offset.mobile;
                     on = the.options.minimize.mobile.on;
                     off = the.options.minimize.mobile.off;
                 }
-
+                else if (KTUtil.isInResponsiveRange('desktop-and-tablet')) {
+                    offset = the.options.offset.tablet;
+                    on = the.options.minimize.tablet.on;
+                    off = the.options.minimize.tablet.off;
+                }
+ 
                 st = window.pageYOffset;
 
                 if (

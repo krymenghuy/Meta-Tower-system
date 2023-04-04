@@ -188,16 +188,17 @@ let TicketDetails = new function () {
         } else onFinish(mThis.form_data.chief_complaints);
     }
 
-    this.show = (detail_tr, d = {}) => {
+    this.show = (detail_tr, d = {},def_tab_view=null) => {
+        //For Receiptionist, default tab view is "info", and other tab buttons such as "History", "Photo","Consult" are not allowed
+        if(def_tab_view) mThis.current_view_name = def_tab_view;
         let div_wrapper = detail_tr.find('div.expandable-row-container');
-
         let html_photo_button =``;
         let html_consult_button =``;
         let html_history_button =``;
         let html_prescribption_button =``;
         if (QueueComponent.options.showPatientPhotos || QueueComponent.options.showPatientPhoto) html_photo_button = `<a style="padding:5px" type="button"  data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-photo trans-text" data-langprop="buttons.Photo">Photo</a>`;
         if (QueueComponent.options.showConsultButton) html_consult_button =`<a style="padding:5px" type="button" data-clientid="${d.client_id}" data-tid="${d.ticket_id}" class="btn-ticket-tab qul-btn-consult trans-text" data-langprop="buttons.Consult Now">Consult Now</a>`;
-        if (!QueueComponent.options.showPrescriptionButton) html_prescribption_button =``;
+        if (QueueComponent.options.showPrescriptionButton) html_prescribption_button =`<a href="javascript:void(0)" class="qul-btn-prescribe btn-sm btn-outline-primary trans-text" data-langprop="buttons.Prescription">Prescription</a>`;
         if (QueueComponent.options.showHistoryButton) html_history_button =`<a style="padding:5px" type="button" data-clientid="${d.client_id}" data-tid="${d.ticket_id}" data-patientid="${d.patient_code}" class="btn-ticket-tab qul-btn-history trans-text" data-langprop="buttons.History">History</a>`;
         
         let html = `<div data-tid="${d.ticket_id}" data-clientid="${d.client_id}" data-personid="${d.person_id}" data-statusid="${d.status_id}" class="ticket-info-wrapper shadow-lg d-flex" style="width:100%;">
@@ -290,8 +291,10 @@ let TicketDetails = new function () {
                 
                 let ticket_id = d.id;
                 let html_prescription_button =``;
-                if (QueueComponent.options.showPrescriptionButton) html_prescription_button =` <button class="btn btnsm btn-outline-primary qul-btn-prescribe">Prescription</button>`;
-                    html = [`<div id="${ws_id}" data-ticketid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="row">
+                let html_generate_invoice_button =``;
+                if (QueueComponent.options.showPrescriptionButton) html_prescription_button =` <button class="qul-btn-prescribe btn btnsm btn-outline-primary qul-btn-prescribe">${LocaleManager.trans('Prescription','buttons')}</button>`;
+                if (QueueComponent.options.showInvoiceButton) html_generate_invoice_button =`<button data-tid="${ticket_id}" class="qul-btn-generate-invoice btn btn-sm btn-outline-primary trans-text" data-langprop="buttons.Generate Invoice">${LocaleManager.trans('Generate Invoice','buttons')}</button>`;   
+                   html = [`<div id="${ws_id}" data-ticketid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="row">
                         <div class="d-flex" style="max-width: 1300px; width:100%">
                             <div class="row gy-3 w-100">
                                 <div class="col-xl-6">
@@ -385,7 +388,7 @@ let TicketDetails = new function () {
                             <div class="col-sm-4">
                                 <div class="d-block">
                                     ${html_prescription_button}
-                                    <button data-tid="${ticket_id}" class="btn btn-sm btn-outline-primary trans-text" data-langprop="buttons.Generate Invoice" id="_generate_patient_inv"></button>
+                                    ${html_generate_invoice_button}
                                 </div>
                             </div>
                         </div>
@@ -396,14 +399,26 @@ let TicketDetails = new function () {
                 }
 
                 div_workspace.html(html);
-                $('#_generate_patient_inv').on('click',function(e){
-                    e.preventDefault();
-                    let d = $(this).data('tid');
-                });
                 div.show();
-                
-            LocaleManager.translateZone(ws_id);
-            mThis.current_view_name = 'info';
+                ////LocaleManager.translateZone(ws_id);
+                mThis.current_view_name = 'info';
+
+            //#begin:: set event handle for "Generate Invoice" and "Prescription" buttons
+                    div_workspace.find('.qul-btn-generate-invoice').off('click').on('click',e=>{
+                        e.preventDefault();
+                        //let ticket_id = div_workspace.data('tid');
+                        alert(`Create invoice for ticket ${ticket_id}`);
+
+                    });
+
+                    div_workspace.find('.qul-btn-prescribe').off('click').on('click',e=>{
+                        e.preventDefault();
+                        //let ticket_id = div_workspace.data('tid');
+                        alert(`Create Prescription for ticket ${ticket_id}`);
+
+                    });
+              //#end:: set event handle for "Generate Invoice" and "Prescription" buttons
+             
         });
     }
 
@@ -651,7 +666,7 @@ let QueueComponent = new function () {
                     'client_id': q_tr.data('clientid'),
                     'person_id': q_tr.data('personid'),
                     'status_id': q_tr.data('statusid')
-                });
+                },QueueComponent.options.default_tab_view);
             }
         });
 
