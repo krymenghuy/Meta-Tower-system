@@ -12,7 +12,7 @@
 <!DOCTYPE html>
 <html lang="<?php echo Session::get('lang','en'); ?>">
     <head>
-        <?php ScriptManager::render('priority-one',0);?>
+        <?php ScriptManager::render('priority-one',1);?>
         <base href="../">
         <meta charset="utf-8" />
         <title>Clinic Management System</title>
@@ -241,8 +241,8 @@
             }
         </style>
         <?php
-            ScriptManager::render('primary',0);
-            ScriptManager::render('primary-async',0);
+            ScriptManager::render('primary',1);
+            ScriptManager::render('primary-async',1);
             ScriptManager::render('primary-defer',1);
             ScriptManager::render('components',1);
         ?>

@@ -1,6 +1,5 @@
 <?php
 namespace App\StyleManagement;
-
     class StyleProvider{
          //base in base_path()/public directory
          /***
@@ -12,7 +11,6 @@ namespace App\StyleManagement;
                 'output_file'=>'/dist/css/vsmclinic-style.css',
                 'files'=>[
                     'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css',
-                    //'/assets/css/bootstrap.min.css',
                     '/assets/vendors/custom/datatables/datatables.bundle.css',
                     '/assets/vendors/general/perfect-scrollbar/css/perfect-scrollbar.css',
                     '/assets/vendors/general/tether/dist/css/tether.css',
@@ -32,32 +30,24 @@ namespace App\StyleManagement;
                     'assets/css/demo1/skins/header/base/light.css',
                     'assets/css/loader.css',
                     'assets/css/jquery.datepicker2.css',
-                    //'assets/css/kt_override.css',
                     'assets/css/app.css',
                     'assets/css/vsstyle.css',
                     'assets/css/sweetalert2.min.css',
-                    //'assets/css/adminlte.css',
                     'assets/plugins/chart.js/Chart.css',
                 ]
-                ]
-            // ,'ionicons'=>[
-            //     'output_file'=>'dist/css/ionicons.min.css',
-            //     'files'=>[
-            //         'https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css'
-            //     ]
-            // ]
-            ,'report-styles'=>[
+            ],
+            'report-styles'=>[
                     'output_file'=>'/dist/css/report-styles.css',
                     'files'=>[
                         'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css'
                     ]
                 ]                  
-         ];
+        ];
 
-         static function bundle($bundle_name=null){
+        static function bundle($bundle_name=null){
             if(!$bundle_name) return [];
-             return isset(self::$bundles[$bundle_name])?self::$bundles[$bundle_name]:[];
-         }
+                return isset(self::$bundles[$bundle_name])?self::$bundles[$bundle_name]:[];
+        }
 
         static function getBundles(){
             return self::$bundles;

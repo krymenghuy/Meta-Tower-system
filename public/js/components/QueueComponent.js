@@ -770,6 +770,7 @@ let QueueComponent = new function () {
         mThis.tblTickets.on('click', 'a.btn_ticket_modify', function (e) {
             e.preventDefault();
             let lnk = $(this);
+            alert("No ADD NEW");
         });
 
         this.cfg = new ExpandableRowConfig('_qul_tblTickets', {

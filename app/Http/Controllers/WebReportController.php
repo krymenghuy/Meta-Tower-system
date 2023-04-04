@@ -83,7 +83,6 @@ class WebReportController extends Controller
           case 'medical_certificate':{
             $data['title']="Medical Certificate";
             $data['consult'] = $consultation->getDetails();
-            //dd($data);return;
             break;
           }
           default:{

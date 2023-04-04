@@ -616,7 +616,7 @@ let AppointmentDialog = new function () {
             mThis.elPhoneNumber.on('keyup', (e) => {
                 e.preventDefault();
                 let d = mThis.elPhoneNumber.val();
-                if((d+'').length>=3) mThis.findClient(d,'by_phone_number');
+                if((d+'').length >= 3) mThis.findClient(d,'by_phone_number');
             });
 
             mThis.elSearch.on('blur', (e) => {
@@ -650,7 +650,7 @@ let AppointmentDialog = new function () {
         }
     });
 
-    this.findClient = (search_value=null,findBy =null)=>{
+    this.findClient = (search_value = null,findBy = null)=>{
         let p = { "search_value": search_value };
         window.vsapi.call(`${main_view.base_url}/api/appointment/find-client`, p).then((res) => {
             if (res.status_code === 200) {
@@ -844,7 +844,8 @@ let PatientDialog = new function () {
             if (el.is('select')) {
                 el.val(d[f]).trigger('change');
                 el.data('error', 0);
-            } else el.val(d[f]);
+            }
+            else el.val(d[f]);
         });
     }
 
@@ -858,7 +859,8 @@ let PatientDialog = new function () {
 
             if (option.id > 0) {
                 mThis.elTitle.text(LocaleManager.trans('Modify Patient', 'titles'));
-            } else {
+            }
+            else {
                 mThis.clearForm();
                 mThis.elTitle.text(LocaleManager.trans('Register Patient', 'titles'));
 
