@@ -17,14 +17,14 @@ class MobileAppSettings extends Model
     use HasFactory;
  
     //$d = {'app_id'}
-    function getTermsAndConditions($d){
+    function getTermsAndConditions($app_id){
         //$ss = getSessionInfo($d);
         // if(!$ss) return '#350'; //user not authenticated
         // if (!prn_allowed(2)) return '@'; //need permission to do this task
         //$branch_id = $ss->branch_id;
         
         $file_name ='merchant_terms_and_conditions.txt';
-        $app_id = isset($d->app_id)?$d->app_id:null;
+        //$app_id = isset($d->app_id)?$d->app_id:null;
         //$merchant_app_id ='38DC051E122D11EC89909801A7B0D1FCH';
         //$driver_app_id ="584C7FF2122D11EC89909801A8B0D7XKD";
         if(empty($app_id)) return "Invalid app_id";  
