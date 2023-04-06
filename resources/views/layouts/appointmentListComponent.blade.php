@@ -312,7 +312,7 @@
     <div class="modal-dialog modal-lg vs-modal-dialog" role="dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title trans-text " data-langprop="titles.Register Patient" id="_apl_dlgAppt_title">
+                <h5 class="modal-title trans-text" data-langprop="titles.Register Patient" id="_apl_dlgAppt_title">
                     Register Patient
                 </h5>
             </div>

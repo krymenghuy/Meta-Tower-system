@@ -1,5 +1,4 @@
 "use strict";
-//begin:: PatientListComponent
 let PatientListComponent = new function () {
     let mThis = this;
     this.title_prop = 'Patients';
@@ -49,7 +48,7 @@ let PatientListComponent = new function () {
         mThis.btnNewPatient.on('click', function (e) {
             e.preventDefault();
             let op = { 'identity_value': 0 };
-            AppointmentDialog.show(op, (e) => {
+            PatientDialog.show(op, (e) => {
                 if (e) {
                     cv_interact.info('New Patient has been created', null, true);
                     mThis.displayPatients();
@@ -70,8 +69,8 @@ let PatientListComponent = new function () {
         mThis.tblPatients.on('click', 'a.btn_pat_modify', function (e) {
             e.preventDefault();
             let lnk = $(this);
-            let op = { 'identity_value': lnk.data('id') };
-            AppointmentDialog.show(op, (e) => {
+            let op = { 'identity_value': lnk.data('id')};
+            PatientDialog.show(op, (e) => {
                 if (e) {
                     cv_interact.info('Patient details has been saved', null, true);
                     mThis.displayPatients();
@@ -116,10 +115,10 @@ let PatientListComponent = new function () {
 
         let html = ['<div class="dropdown-menu action-menus">',
             '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_edit" href="javascript:void(0)"><i class="fa fa-edit" style="color:blue;font-size:1.1em;margin-top:2px;"></i> <span>Review Application</span</a>',
-            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_disburse" href="#"><i class="fa fa-list-alt" style="color:orange"></i> Disburse Loan</a>',
+            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_disburse" href="javascript:void(0)"><i class="fa fa-list-alt" style="color:orange"></i> Disburse Loan</a>',
             '<div class="dropdown-divider"></div>',
             '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_delete" href="#"><i class="fa fa-times" style="color:red"></i> Delete Loan Application</a>',
-            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_person_profile" href="#"><i class="fa fa-list" style="color:green"></i> Personal Profile</a>',
+            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_person_profile" href="javascript:void(0)"><i class="fa fa-list" style="color:green"></i> Personal Profile</a>',
             '</div>'].join('');
         return html;
     }
@@ -144,7 +143,6 @@ let PatientListComponent = new function () {
                         return [`<img class="dt-icon" src="${mThis.icon_url()}/patient.png">&nbsp;`, data.code
                         ].join('');
                     }
-
                 },
                 {
                     title: mThis.trans_title('Name'),

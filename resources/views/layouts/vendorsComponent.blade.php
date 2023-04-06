@@ -28,7 +28,9 @@
                     </div>
                     <div class="col-lg-6">
                         <label for="vendor_type" class="form-label trans-text" data-langprop="vendors.Vendor Type"></label>
-                        <select class="modal-select2 data-input" data-field="vendor_type" data-required="1" data-ffield="Vendor Type"></select>
+                        <select class="modal-select2 data-input" data-field="vendor_type" data-required="1" data-ffield="Vendor Type">
+                            <option value="test">Test</option>
+                        </select>
                     </div>
                 </div>
                 <div class="row gy-2 py-2">
