@@ -4,7 +4,7 @@ let InvoiceSettings = new function(){
    this.default_discount_type = 'percentage';
    this.default_price_type ='retail';
    this.init = ()=>{
-    return;
+        return;
    }
 }
 
@@ -74,10 +74,11 @@ let InvoicesComponent = new function () {
             e.preventDefault();
             let invoice_id = $(this).data('id');
             let tr = $(this).closest('tr');
-            let op = { 'id': invoice_id, 
-                  'onClose': function(data){
-                     mThis.displayInvoices();
-                   } 
+            let op = {
+                'id': invoice_id,
+                'onClose': function(data){
+                    mThis.displayInvoices();
+                }
             };
             InvoiceDialog.show(op);
           });
@@ -603,7 +604,7 @@ let InvoiceDialog = new function () {
                     let item = res.data?res.data:{};
                     mThis.tblProductItems.setCellValue(tr, 'sku', StringSanitizer.sanitizeOut(item.sku));
                     let price = item.ws_selling_price;
-                    if (InvoiceSettings.default_price_type ==='retail') price = item.selling_price;  
+                    if (InvoiceSettings.default_price_type === 'retail') price = item.selling_price;  
                     mThis.tblProductItems.setCellValue(tr, 'price',price);
                     mThis.tblProductItems.setCellValue(tr, 'qty',1);
                     mThis.tblProductItems.setCellValue(tr, 'tax_rate',item.sales_tax_rate>=0? item.sales_tax_rate:0);
@@ -619,9 +620,9 @@ let InvoiceDialog = new function () {
 
         if(discount_type ==='percentage' || discount_type==='percent'){
             return {
-            'discount_type':'percentage',
-            'discount_percent':discount,
-            'discount_amount': Number((sub_total * discount/100))
+                'discount_type':'percentage',
+                'discount_percent':discount,
+                'discount_amount': Number((sub_total * discount/100))
             };
         }else{
             return {
@@ -735,19 +736,18 @@ let InvoiceDialog = new function () {
         let api_endpoint = `${mThis.base_url}/api/invoice/create`;
         if(p.id > 0) api_endpoint = `${mThis.base_url}/api/invoice/update`;
         vsapi.call(api_endpoint,p,'POST',null).then(res => {
-            if(res.status_code === 200)
-            {
+            if(res.status_code === 200){
                 p.created = !p.id;
                 if(p.created)
                     cv_interact.success(['Invoice ',res.data.ref_number,' created!'].join(''));
-                else cv_interact.info(['Invoice ',res.data.ref_number,' updated!'].join(''));
+                else
+                    cv_interact.info(['Invoice ',res.data.ref_number,' updated!'].join(''));
                 if (typeof mThis.onClose === 'function') mThis.onClose(p);
                 mThis.self.modal('hide');
             }
             else
                 cv_interact.error(res.error_message);
         });
-       
     });
 
     this.loadInvoiceFormOptions = (onFinish = null) => {
@@ -784,7 +784,7 @@ let InvoiceDialog = new function () {
 
     this.getDataForm = () => {
         let p = {
-            'id':(mThis.options || {}).id
+            'id':(mThis.options || {}).id //? (mThis.options || {}).id : 0
         };
 
         mThis.self.find('.data-input').each(function() {
@@ -795,9 +795,10 @@ let InvoiceDialog = new function () {
         });
         p.discount = mThis.elSummary_discount.val();
         p.discount_type = InvoiceSettings.default_discount_type;
-        p.items = mThis.tblInvoiceItems.getItems();
+        p.items = mThis.tblProductItems.getItems();
         return p;
     }
+    console.log(mThis.getDataForm());
 
     this.setActiveItemView = (viewname)=>{
         let x =  mThis.itemTabs[viewname];
@@ -815,7 +816,7 @@ let InvoiceDialog = new function () {
             VSUtil.setComboItems(mThis.SelectPmtTerms,d.pmt_terms,'code','description',true,'(select terms)',null);
             VSUtil.setComboItems(mThis.SelectCustomer,d.customers,'id','customer_name',true,'(select customer)',null);
 
-            if(options.id>0){
+            if(options.id > 0){
                 mThis.Invoice_Title.text("Modify Invoice");
                 let p = {'id':options.id};
                 vsapi.call(`${mThis.base_url}/api/invoice/details`,p).then(res => {
@@ -831,7 +832,8 @@ let InvoiceDialog = new function () {
                         });
                     }
                 });
-            }else{
+            }
+            else{
                 mThis.Invoice_Title.text("New Invoice");
                 mThis.setData(null);
                 mThis.self.modal({
