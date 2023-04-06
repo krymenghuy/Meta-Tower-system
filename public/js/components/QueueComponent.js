@@ -401,13 +401,24 @@ let TicketDetails = new function () {
 
                 div_workspace.html(html);
                 div.show();
-
+                ////LocaleManager.translateZone(ws_id);
                 mThis.current_view_name = 'info';
 
-                div_workspace.find('.qul-btn-generate-invoice').off('click').on('click',e=>{
-                    e.preventDefault();
-                    alert(ticket_id);
-                });
+            //#begin:: set event handle for "Generate Invoice" and "Prescription" buttons
+                    div_workspace.find('.qul-btn-generate-invoice').off('click').on('click',e=>{
+                        e.preventDefault();
+                        //let ticket_id = div_workspace.data('tid');
+                        alert(`Create Invoice for ticket ${ticket_id}`);
+                    });
+
+                    div_workspace.find('.qul-btn-prescribe').off('click').on('click',e=>{
+                        e.preventDefault();
+                        //let ticket_id = div_workspace.data('tid');
+      
+                        let op = {
+                            'ticket_id': ticket_id
+                        };
+                        PrescriptionDialog.show(op);
 
                 div_workspace.find('.qul-btn-prescribe').off('click').on('click',e=>{
                     e.preventDefault();
