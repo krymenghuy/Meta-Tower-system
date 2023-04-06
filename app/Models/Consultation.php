@@ -46,38 +46,38 @@ class Consultation //extends Model
      $rows = DB::table('consultations AS c')->join('service_queue as q','q.id','=','c.ticket_id')->where('c.id',$id)->select('c.id AS consult_id, q.ticket_number, q.department_id,q.q_date, q.consultant_id, q.appt_id, q.person_id, q.status_id, q.client_id, q.priority')->take(1)->get();
    }
 
-   function save($d = [], $ss = null){
-       $ss = $ss? $ss: $this->getUserInfo();
-       $res = validateObject($d,[
-        'ticket_id'=>'1|positive',
-        'chief_complaints'=>'0|array',
-        'vital_signs'=>'0|array',
-         'medical_history'=>'0|array',
-        'prescription'=>'1|string|0-500',
-        'labo_tests'=>'0|array',
-        'diagnosis'=>'0|string',
-        'physical_examination'=>'0|string|0-500',
-        'advice'=>'0|string|0-500'
-       ]);
+//    function save($d = [], $ss = null){
+//        $ss = $ss? $ss: $this->getUserInfo();
+//        $res = validateObject($d,[
+//         'ticket_id'=>'1|positive',
+//         'chief_complaints'=>'0|array',
+//         'vital_signs'=>'0|array',
+//         'medical_history'=>'0|array',
+//         'prescription'=>'1|string|0-500',
+//         'labo_tests'=>'0|array',
+//         'diagnosis'=>'0|string',
+//         'physical_examination'=>'0|string|0-500',
+//         'advice'=>'0|string|0-500'
+//        ]);
 
-       if ($res->error) return DV::error($res->error);
-       $ticket_id = isset($inputs['ticket_id'])?$inputs['ticket_id']:null;
-       if(!$ticket_id) return DV::error("Ticket ID is not valid");
+//        if ($res->error) return DV::error($res->error);
+//        $ticket_id = isset($inputs['ticket_id'])?$inputs['ticket_id']:null;
+//        if(!$ticket_id) return DV::error("Ticket ID is not valid");
 
-       $consult_id = saveData($ss,'consultations',['id'=>$consult_id],[],1);
-       if ($consult_id >0){
-            $this->saveChiefComplaints($inputs['chief_complaints'],$ticket_id,$ss);
-            $this->saveVitalSigns($inputs['vital_signs'],$ticket_id,$ss);
-            $this->saveMedicalHistory($inputs['medical_history'],$ticket_id,$ss);
-            $this->savePrescription($inputs['prescription'],$ticket_id,$ss);
-            $this->saveLaboTests($inputs['labo_tests'],$ticket_id,$ss);
-            $this->savePE($inputs['physical_examination'],$ticket_id,$ss);
-            $this->saveAdvice($inputs['advice'],$ticket_id,$ss);
-            return DV::success(['id'=>$consult_id]);
-       }
-       return DV::error('Failed to save consultation data');
-    }
-
+//        $consult_id = saveData($ss,'consultations',['id'=>$consult_id],[],1);
+//        if ($consult_id >0){
+//             $this->saveChiefComplaints($inputs['chief_complaints'],$ticket_id,$ss);
+//             $this->saveVitalSigns($inputs['vital_signs'],$ticket_id,$ss);
+//             $this->saveMedicalHistory($inputs['medical_history'],$ticket_id,$ss);
+//             $this->savePrescription($inputs['prescription'],$ticket_id,$ss);
+//             $this->saveLaboTests($inputs['labo_tests'],$ticket_id,$ss);
+//             $this->savePE($inputs['physical_examination'],$ticket_id,$ss);
+//             $this->saveAdvice($inputs['advice'],$ticket_id,$ss);
+//             return DV::success(['id'=>$consult_id]);
+//        }
+//        return DV::error('Failed to save consultation data');
+//     }
+    
     static function getPatientId($branch_id, $ticket_id){
         $rows = DB::table("tickets")->where('id',$ticket_id)->where('branch_id',$branch_id)->select("client_id as patient_id")->get();
         return isset($rows[0])?$rows[0]->patient_id:null;
@@ -187,10 +187,15 @@ class Consultation //extends Model
         $res = validateObject($item,['id'=>'0|number|identity=1','service_id'=>'1|number|exists=medical_services.id','qty'=>'0|number|default=1','sku'=>'0|string|default=none','remarks'=>'0|string|0-150','emp_id'=>'0|number|exists=employees.id'],true,[],$ss->lang,false,null);
         if($res->error) return DV::error($res->error);
         $id = $res->id;
+        $inputs = $res->values;
         //important to add ticket_id
-        $res->values['ticket_id'] = $ticket_id;
-        $res->values['patient_id'] = self::getPatientId($ss->branch_id,$ticket_id);
-        $id = saveData($ss,'patient_services',['id'=>$id],$res->values,[],1);
+        $inputs['ticket_id'] = $ticket_id;
+        $inputs['patient_id'] = self::getPatientId($ss->branch_id,$ticket_id);
+        $service_id = $inputs['service_id'];
+        $serviceInfo = self::serviceInfo($service_id,"price");
+        if(!$serviceInfo) return DV::error("Service $service_id is not valid");
+        $inputs['price'] = $serviceInfo->price; 
+        $id = saveData($ss,'patient_services',['id'=>$id],$inputs,[],1);
         if($id>0) return DV::success(['id'=>$id]);
         return DV::error("Something went wrong saving patient service");
     }
@@ -230,12 +235,13 @@ class Consultation //extends Model
          ];
     }
 
+
     //getAssignedServices()
     function getPrescribedServices($ticket_id=null,$ss=null){
         $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
         $ss = $ss? $ss: $this->getUserInfo();
         $branch_id = $ss->branch_id;
-        $cols = ['ps.id','ps.patient_id','ps.service_id','ps.qty','ps.sku','ps.remarks','ps.emp_id','ps.created_at','ps.create_user'];
+        $cols = ['ps.id','ps.patient_id','ps.service_id','ps.qty','ps.sku','ps.remarks','ps.emp_id','ps.created_at','ps.create_user','price'];
         return DB::table('patient_services as ps')->where('ps.ticket_id',$ticket_id)->where('ps.branch_id',$branch_id)->select($cols)->get(); 
     }
 
@@ -251,9 +257,14 @@ class Consultation //extends Model
         $res = validateObject($item,['id'=>'0|number|identity=1','item_id'=>'1|number|exists=inv_items.id','qty'=>'1|number','sku'=>'1|string','usage'=>'0|string|0-150','duration_days'=>'0|number','reason'=>'0|string|0-200'],true,[],$ss->lang,false,null);
         if($res->error) return DV::error($res->error);
         $id = $res->id;
+        $inputs = $res->values;
+        $item_id = $inputs['item_id'];
         //important to add ticket_id
-        $res->values['ticket_id'] = $ticket_id;
-        $id = saveData($ss,'patient_prescription_items',['id'=>$id],$res->values,[],1);
+        $inputs['ticket_id'] = $ticket_id;
+        $itemInfo = self::itemInfo($item_id,"selling_price,ws_selling_price");
+        if(!$itemInfo) return DV::error("Item $item_id is not valid!"); 
+        $inputs['price'] = $itemInfo->selling_price;
+        $id = saveData($ss,'patient_prescription_items',['id'=>$id],$inputs,[],1);
         if($id>0) return DV::success(['id'=>$id]);
         return DV::error("Something went wrong saving prescription item");
     }
@@ -272,6 +283,13 @@ class Consultation //extends Model
             'items'=>DB::table('patient_prescription_items as pi')->where('pi.ticket_id',$ticket_id)->select($cols)->get(),
             //'headerInfo'=>null
          ];
+    }
+     
+    function getPrescribedItems($ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+        $ss = $ss? $ss: $this->getUserInfo();
+        $cols = ['pi.id','pi.item_id','pi.qty','pi.sku','pi.duration_days','pi.usage','pi.reason','pi.remarks','pi.created_at','pi.create_user','price'];
+        return DB::table('patient_prescription_items as pi')->where('pi.ticket_id',$ticket_id)->select($cols)->get();
     }
 
     //save many chiefComplaints. $items = [{cc_id,description},{cc_id,description},...]
@@ -415,6 +433,16 @@ class Consultation //extends Model
        return [getDataRow('patient_advice',['ticket_id'=>$ticket_id,'category'=>'General'],"category,content")];
     }
 
+    //getTestInfo()  return info about services, and labo test
+    static function serviceInfo($service_id,$cols =null){
+        $cols = $cols?$cols:"price";
+        return getDataRow('medical_services',['id'=>$service_id],$cols);
+    }
+    static function itemInfo($item_id,$cols =null){
+        $cols = $cols?$cols:"selling_price,cost,ws_selling_price";
+        return getDataRow('inv_items',['id'=>$item_id],$cols);
+    }
+
     //save one labo test at a time
     function saveLaboTest($test,$ticket_id=null,$ss=null){
         $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
@@ -425,13 +453,27 @@ class Consultation //extends Model
         $id = $res->id;
         $patient_id = self::getPatientId($ss->branch_id,$ticket_id);
         if(!$patient_id) return DV::error('Failed to identify patient given the ticket ID');
+        $test_id = $test['test_id']; //Not "id", but test_id, where id refers to Primary key in table "patient_labo_tests"
+        $testInfo = self::serviceInfo($test_id,"price");
+        if(!$testInfo) 
+        return DV::error("Test ID $test_id is not valid");
         $inputs['patient_id']=$patient_id;
         $inputs['ticket_id']=$ticket_id;
+        $inputs['price'] = $testInfo->price;
         $id = saveData($ss,'patient_labo_tests',['id'=>$id],$inputs,[],1);
         if ($id>0) return DV::success(['id'=>$id]);
         return DV::error("Somethign went wrong saving patient labo test");
     }
  
+    // function saveLaboTests($tests,$ticket_id=null,$ss=null){
+    //     $errors = [];
+    //     foreach($tests as $test){
+    //         $res = $this->saveLaboTest($test,$ticket_id,$ss);
+    //         if($res->status ==='Error') $errors[] = $res->error_message;
+    //     }
+    //     return null;
+    // }
+
     function removeLaboTest($id,$ticket_id=null,$ss=null){
         $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
         $ss = $ss? $ss : $this->getUserInfo();
@@ -442,8 +484,9 @@ class Consultation //extends Model
     function getLaboTests($ticket_id=null,$ss=null){
         $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
         $ss = $ss? $ss : $this->getUserInfo();
-        $cols = ['t.id','t.test_id','s.name','t.labo_id','t.result_date','t.test_date','t.file_name','file_type','t.created_at','t.create_user','t.consultant_comments','t.result_description','t.remarks'];
-        return DB::table('patient_labo_tests AS t')->join('medical_services as s','s.id','=','t.test_id')->where('ticket_id',$ticket_id)->where('service_type','labo')->where('t.branch_id',$ss->branch_id)->select($cols)->orderBy('s.name','ASC')->get();
+        $branch_id = $ss->branch_id;
+        $cols = ['t.id','t.test_id','s.name','t.labo_id','t.result_date','t.test_date','t.file_name','file_type','t.created_at','t.create_user','t.consultant_comments','t.result_description','t.remarks','t.price'];
+        return DB::table('patient_labo_tests AS t')->join('medical_services as s','s.id','=','t.test_id')->where('ticket_id',$ticket_id)->where('service_type','labo')->where('t.branch_id',$branch_id)->select($cols)->orderBy('s.name','ASC')->get();
     }
     
     function getDefaultLabo($test_id){
@@ -488,21 +531,25 @@ class Consultation //extends Model
          $items = $res['items'];
          $cnt = 0;
          foreach($items as $item){
-            $t_id = isset($item['id'])?$item['id']:0;
+             $t_id = isset($item['id'])?$item['id']:0;
              $dur_days = isset($item['duration'])?$item['duration']:0;
              $dur_unit = isset($item['duration_unit'])?$item['duration_unit']:'day';
-
-             saveData($ss,"prescription_items",['id'=>$t_id],[
-                'ticket_id'=>$ticket_id,
-                'prescription_id'=>$id,
-                'item_id'=>$item['item_id'],
-                'qty'=>$item['qty'],
-                'usage'=>$item['usage'],
-                'duration_unit'=>$dur_unit, //"day"
-                'duration'=>$dur_days, //15
-                'reason'=>$item['reason'],
-                'remarks'=>$item['remarks']
-             ],[],1);
+             $itemInfo = self::itemInfo($t_id,"price");
+             if($itemInfo){
+                saveData($ss,"patient_prescription_items",['id'=>$t_id],[
+                    'ticket_id'=>$ticket_id,
+                    'prescription_id'=>$id,
+                    'item_id'=>$item['item_id'],
+                    'qty'=>$item['qty'],
+                    'price'=>$itemInfo->price,
+                    'usage'=>$item['usage'],
+                    'duration_unit'=>$dur_unit, //"day"
+                    'duration'=>$dur_days, //15
+                    'reason'=>$item['reason'],
+                    'remarks'=>$item['remarks']
+                 ],[],1);
+             }
+             
              $cnt++;
          }
 

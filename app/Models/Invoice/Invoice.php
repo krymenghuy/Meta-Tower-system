@@ -42,6 +42,7 @@ class Invoice
        $branch_id = $ss->branch_id;
        $validate_rule =[
          "id"=>"0|identity=1",
+         "invoice_class"=>"1|choice|Medical,Regular|default=Regular",
          "issue_date"=>"0|date|text=Issue date is required",
          "due_date"=>"0|date|text=Due date is not correct",
          "customer_id"=>"1|number|exists=customers.id|text=Client ID does not exist",
@@ -217,7 +218,7 @@ class Invoice
     }
 
     //$doc_class is invlice line. It is invoice line based on which to issue invoice for different Tax processing or tax treatment.
-    public static function setInvoiceNumber($branch_id,$invoice_id=0,$doc_class=null,$issue_date=null,$len=5,$onSuccess=null){
+    static function setInvoiceNumber($branch_id,$invoice_id=0,$doc_class=null,$issue_date=null,$len=5,$onSuccess=null){
       if(!$len) $len=5;
       $def_prefix ="V";
       $table_name="invoice_number_control";
@@ -331,6 +332,7 @@ class Invoice
 
             $description =isset($x->description)?$x->description: $itemInfo->name;
             $new_id = saveData($ss,'invoice_items',['id'=>0],[
+              'invoice_item_class'=>'Product',
               'invoice_id'=>$invoice_id, 
               'item_id'=>$item_id,
               'item_name'=>$itemInfo->name,
