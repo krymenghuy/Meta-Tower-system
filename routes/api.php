@@ -39,6 +39,8 @@ use App\Http\Controllers\Inventory\FGStockController;
 use App\Http\Controllers\Inventory\RMStockController;  
 use App\Http\Controllers\Inventory\InventorySettingsController;
 
+use App\Http\Controllers\Invoice\MedicalInvoiceController;
+
 use App\Http\Controllers\Invoice\InvoiceController;
 use App\Http\Controllers\Invoice\CustomerController;
 
@@ -220,6 +222,10 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
    Route::post('inventory/save-group', [ItemGroupController::class, 'saveItemGroup']);
    Route::post('group/form-options', [ItemGroupController::class, 'getFormOptions']);
 //End::ItemGroupController
+
+//begin::MedicalInvoiceController
+    Route::post('medical-invoice/create', [MedicalInvoiceController::class, 'createInvoice']);
+//end::MedicalInvoiceController
 
 //begin::InvoiceController
   Route::post('invoice/create', [InvoiceController::class, 'createInvoice']);

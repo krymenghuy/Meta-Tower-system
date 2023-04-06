@@ -408,7 +408,16 @@ let TicketDetails = new function () {
                     div_workspace.find('.qul-btn-generate-invoice').off('click').on('click',e=>{
                         e.preventDefault();
                         //let ticket_id = div_workspace.data('tid');
-                        alert(`Create Invoice for ticket ${ticket_id}`);
+                        //alert(`Create Invoice for ticket ${ticket_id}`);
+                        let p = {'ticket_id':ticket_id};
+                        vsapi.call(`${main_view.base_url}/api/medical-invoice/create`,p,null,false).then(res=>{
+                            console.error(res);
+                            return;
+                            if(res.status_code !==200){
+                                let invoice_number = res.data;
+                                cv_interact.success(`Invoice ${invoice_number} created!`);
+                            }else cv_interact.error(res.error_message);
+                        });
                     });
 
                     div_workspace.find('.qul-btn-prescribe').off('click').on('click',e=>{

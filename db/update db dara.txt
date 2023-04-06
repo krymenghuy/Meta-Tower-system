@@ -1,0 +1,4 @@
+alter table patient_services add price DECIMAL(10,2) default 0;
+alter table patient_labo_tests add price DECIMAL(10,2) default 0;
+alter table patient_prescription_items add price decimal(10,2) default 0;
+alter table invoice_items add invoice_item_class varchar(20); 
