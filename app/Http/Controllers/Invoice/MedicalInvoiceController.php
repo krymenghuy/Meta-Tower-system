@@ -17,7 +17,7 @@ class MedicalInvoiceController extends Controller
        $medInvoice = new MedicalInvoice(null,$ss);
        $ticket_id = $req->ticket_id?$req->ticket_id:$req->id;
        $res= $medInvoice->create($ticket_id);
-       return JDV::raw($res);
+       return JDV::result($res);
     }
 
     function deleteInvoice(Request $req){

@@ -176,7 +176,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($invoice->items as $item)
+                                @foreach($invoice->products as $item)
                                     <tr>
                                         <td>
                                             <?php $cnt = 1; echo $cnt++ ?>
@@ -238,14 +238,14 @@
                                     $cur = $invoice->currency_code==='KHR'?'$':"$";
                                     $cnt =0;
                                     $numero = 0;
-                                    foreach($invoice->service_items as $item){
+                                    foreach($invoice->services as $item){
                                         $numero++;
                                         $qty = $item->qty.$item->sku;
                                         $price = $cur.$item->price;
                                         $line_total = $cur.$item->line_total;
                                         echo "<tr>
                                             <td>$numero</td>
-                                            <td>$item->name</td>
+                                            <td>$item->item_name</td>
                                             <td>$qty</td>
                                             <td>$price</td>
                                             <td>$line_total</td>

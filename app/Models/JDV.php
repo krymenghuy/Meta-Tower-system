@@ -119,7 +119,16 @@ class JDV
     //JDV::result() and DV::result() return query results inhabited under "data" property. Example $res->data = [... query result ...]
     static function result($rows=[]){
       //default status_code for create, update, delete is "200"
-       return response()->json((object)['status'=>'OK','status_code'=>200,'data'=>$rows]);
+      if(is_object($rows)){
+         if(isset($rows->status)) if($rows->status ==='Error') return self::error($rows->error_message);
+         else{
+            $outputs = [];
+            $remove_props = ['status','status_code','error_message'];
+            foreach($rows as $prop=>$val) if(!in_array($prop,$remove_props)) $outputs[$prop] = $val;
+            return self::success($outputs);
+         }
+      }
+      return response()->json((object)['status'=>'OK','status_code'=>200,'data'=>$rows]);
    }
 
    static function raw($data){
