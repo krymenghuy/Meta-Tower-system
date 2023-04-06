@@ -132,11 +132,10 @@ class WebReportController extends Controller
         }
 
         $rtype = $p->rtype;
-        $data['rtype'] = $rtype; 
+        $data['rtype'] = $rtype;
         $id = isset($p->id) ? $p->id : 0;
         $ss = (object)['branch_id'=>$branch_id];
 
-        $data["employee"] = \App\Models\CompanyProfile::details($branch_id);
         switch($rtype){
           case 'patient_profile':{
             $data["title"] = "Patient Profile";
@@ -144,15 +143,16 @@ class WebReportController extends Controller
             break;
           }
           case 'employee_profile':{
-            $data["employee"] = \App\Models\Employee::profileInfo($id);
+            $data["title"] = "Employee Profile";
+            $data["employee"] = \App\Models\CompanyProfile::details($branch_id);
+            // $data["employee"] = \App\Models\Employee::profileInfo($id);
+            // echo dd($data); return;
             break;
           }
           default:{
             return view("reports.no_report");
           }
-        }    
-      
-        return view("reports.person_profile",$data);
+        }
+      return view("reports.person_profile",$data);
     }
-    
 }

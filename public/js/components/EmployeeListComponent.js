@@ -85,9 +85,9 @@ let EmployeeListComponent = new function () {
         mThis.tblItems.on('click','.btn_epl_print',function(e){
             e.preventDefault();
             let id = $(this).data('id');
-            let qString = ['id=',id].join('');
+            let qString = ['rtype=employee_profile&id=',id].join('');
             main_view.getEncryptData(qString, (d) => {
-                window.open([main_view.base_url, '/employee_profile/', d].join(''), '_blank');
+                window.open([main_view.base_url, '/person-profile/', d].join(''), '_blank');
             });
         });
     }
