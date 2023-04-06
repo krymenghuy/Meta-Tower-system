@@ -157,6 +157,12 @@ class QTicket //extends Model
         return $new_code;
     }
 
+    function getPatentInfo($ticket_id = null){
+       $ticket_id = $ticket_id?$ticket_id:$this->getId();
+       $rows = DB::table('tickets as t')->join('persons as p','p.id','=','t.person_id')->where('t.id',$ticket_id)->select('t.client_id as id','t.id as ticket_id','p.id as person_id','p.first_name','p.last_name',DB::raw("CONCAT(p.last_name,' ',p.first_name) as name"),'sex','phone_number','email','address')->take(1)->get();
+       return isset($rows[0])?$rows[0]:null;
+    }
+
     static function getPersonId($client_id=0){
       $row = getDataRow('patients',['id'=>$client_id],"person_id");
       if($row) return $row->person_id;

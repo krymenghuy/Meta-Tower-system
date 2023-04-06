@@ -189,14 +189,15 @@ class Patient //extends Model
 
             return DV::success(['person_id'=>$person_id,'patient_id'=>$patient_id,'patient_code'=>$ff? $ff->code:null,'status_info'=>$statusInfo]);
         }else return DV::error('Something went wrong during saving patient data');
-
     }
+
     static function profilePhoto($patient_id){
         $row = getDataRow('patients',['id'=>$patient_id],'photo_file_name,branch_id');
         if(!$row) return null;
         $branch_id = $row->branch_id;
         return PublicStorage::getUrl($branch_id,'patient','image').$row->photo_file_name;
     }
+
     static function profileInfo($patient_id,$include_medical_history=false,$include_medication_details=false){
          $person_id = self::personId($patient_id);
          $cols="id as person_id,'NA' AS code,concat(last_name,' ',first_name) as name, first_name,last_name,sex,date_of_birth,phone_number,address,p.email,'Cambodian' AS nationality,0 AS height, 0 as weight, 0 AS age";
@@ -288,6 +289,12 @@ class Patient //extends Model
         $cols ="pt.id,p.id as person_id,pt.code,concat(p.last_name,' ',p.first_name) as name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
         $rows =  DB::table('persons as p')->join('patients as pt','pt.person_id','=','p.id')->where('pt.branch_id',$branch_id)->whereRaw($more_where)->selectRaw($cols)->take(1)->get();
         return isset($rows[0])?$rows[0]:null;
+    }
+
+    static function getProps($patient_id,$cols=null){
+      if(!$cols) $cols="c.id,p.id as person_id,CONCAT(p.last_name,' ',p.first_name) AS name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address";
+      $rows = DB::table('patients as c')->join('persons as p','p.id','=','c.person_id')->where('c.id',$patient_id)->selectRaw($cols)->take(1)->get();
+      return isset($rows[0])?$rows[0]:null;
     }
 
     //returns details of one patient (including personal details and medical conditions)

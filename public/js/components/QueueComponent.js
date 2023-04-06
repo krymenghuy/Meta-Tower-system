@@ -408,8 +408,8 @@ let TicketDetails = new function () {
                     e.preventDefault();
                     let p = {'ticket_id':ticket_id};
                     vsapi.call(`${main_view.base_url}/api/medical-invoice/create`,p,null,false).then(res=>{
-                        if(res.status_code !==200){
-                            let invoice_number = res.data;
+                        if(res.status_code ==200){
+                            let invoice_number = res.data.ref_number;
                             cv_interact.success(`Invoice ${invoice_number} created!`);
                         }
                         else cv_interact.error(res.error_message);

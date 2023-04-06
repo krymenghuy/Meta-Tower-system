@@ -10,6 +10,7 @@ use App\Models\Inventory\Item;
 use App\Models\Invoice\InvoiceSettings;
 use App\Models\Invoice\Customer;
 use App\Models\Invoice\Payment;
+use App\Models\Patient;
 
 class Invoice
 {
@@ -18,6 +19,7 @@ class Invoice
     //protected $table_payment ="invoice_payments";
     protected $this_invoice_id =null;
     protected $userInfo = null;
+    protected static $customer_table ="patients";
 
     public function __construct($id=0,$userInfo=null){
        $this->userInfo = $userInfo;
@@ -34,6 +36,12 @@ class Invoice
 
     public function getInvoiceId(){
       return $this->this_invoice_id;
+    }
+
+    static function getCustomerInfo($patient_id,$cols=null){
+      if(!$cols) $cols="c.id,p.id as person_id,CONCAT(p.last_name,' ',p.first_name) AS name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address";
+      $rows = DB::table('patients as c')->join('persons as p','p.id','=','c.person_id')->where('c.id',$patient_id)->selectRaw($cols)->take(1)->get();
+      return isset($rows[0])?$rows[0]:null;
     }
 
     //CreateInvoice() | saveInvoice()
@@ -81,10 +89,10 @@ class Invoice
        else $inputs['due_date'] = $issue_date;
 
        $customer_id = $inputs['customer_id'];
-       $customer = Customer::info($branch_id,$customer_id);
+       $customer = self::getCustomerInfo($customer_id,"address,phone_number,email,CONCAT(last_name,' ',first_name) AS name");
        if(!$customer) return DV::error("It seems customer ID is not valid");
        $inputs['customer_phone'] = $customer->phone_number;
-       $inputs['billing_address'] = $customer->billing_address;
+       $inputs['billing_address'] = isset($customer->billing_address)?$customer->billing_address:$customer->address;
        $inputs['customer_email'] = $customer->email; 
   
        $items = $inputs['items'];
@@ -252,7 +260,7 @@ class Invoice
          if ($onSuccess) $onSuccess();
          return (object)['status_code'=>200,'status'=>'OK','code'=>$new_code];
       } 
-      return null;      
+      return null;
     }
 
     //$doc_class is invoice line. It is invoice line based on which to issue invoice for different Tax processing or tax treatment.
@@ -324,8 +332,11 @@ class Invoice
             //if discount_percent is supplied => then we user discount as percentage, otherwise, use disocunt in currency amount
             $tax_rate = isset($x->tax_rate)?$x->tax_rate:$itemInfo->sales_tax_rate;
             if(!$tax_rate) $tax_rate =0;
-            $amount = $x->qty * $x->price;
-            $discount_amount = $amount * $x->discount_percent/100;
+            $price = isset($x->price)? $x->price:$x->selling_price;
+            if(!$price) $price=isset($itemInfo->price)?$itemInfo->price: (isset($itemInfo->selling_price)?$itemInfo->selling_price:0);
+            $amount = $x->qty * $price;
+            $discount_percent = isset($x->discount_percent)?$x->discount_percent:0;
+            $discount_amount = $amount * $discount_percent/100;
             $net_amount = $amount - $discount_amount;
             $tax_amount = $net_amount * $tax_rate/100;
             $net_amount += $tax_amount;
@@ -339,9 +350,9 @@ class Invoice
               'description'=>$description,
               'qty'=>$x->qty,
               'sku'=>$itemInfo->sku,
-              'price'=>$x->price,
+              'price'=>$price,
               'cost'=>$itemInfo->cost,
-              'discount_percent'=>$x->discount_percent,
+              'discount_percent'=>$discount_percent,
               'discount_amount'=>$discount_amount,
               'discount_type'=>$discount_type,
               'tax_rate'=>$tax_rate,
@@ -386,18 +397,35 @@ class Invoice
         return DV::success();  
     }
 
-  static function details($id=null,$ss=null){
-      ////if (!$ss) $ss = $this->getUserInfo();
-      ////if(!$id) $id = $this->getInvoiceId(); 
-      $branch_id = $ss->branch_id;
-      $cols = ['v.id','ref_number','exchange_rate',DB::raw('formatDate(v.issue_date) AS issue_date'),DB::raw('formatDate(v.due_date) as due_date'),'customer_id','v.customer_phone','v.customer_email',DB::raw('NULL AS customer_tax_number'),'terms','v.billing_address','v.amount','v.discount_percent','v.discount_amount','discount_type','v.total_cost','signer_name','v.currency_code','v.exchange_rate','v.amount_due','v.tax_amount','v.tax_rate',DB::raw("(SELECT SUM(IFNULL(amount,0)) FROM invoice_payments WHERE invoice_id =v.id) AS amount_paid"),'v.pmt_bank_name','v.pmt_account_number','v.pmt_account_name','v.description','v.invoice_notes'];
-      $rows =DB::table('invoices as v')->where('v.id',$id)->where('v.branch_id',$branch_id)->select($cols)->take(1)->get();
-      foreach($rows as $row){
-         $row->items = self::getInvoiceItems($ss,$id);
-         return $row;
-      }
-      return null;
+  // static function details($id=null,$ss=null){
+  //     ////if (!$ss) $ss = $this->getUserInfo();
+  //     ////if(!$id) $id = $this->getInvoiceId(); 
+  //     $branch_id = $ss->branch_id;
+  //     $cols = ['invoice_class','v.id','ref_number','exchange_rate',DB::raw('formatDate(v.issue_date) AS issue_date'),DB::raw('formatDate(v.due_date) as due_date'),'customer_id','v.customer_phone','v.customer_email',DB::raw('NULL AS customer_tax_number'),'terms','v.billing_address','v.amount','v.discount_percent','v.discount_amount','discount_type','v.total_cost','signer_name','v.currency_code','v.exchange_rate','v.amount_due','v.tax_amount','v.tax_rate',DB::raw("(SELECT SUM(IFNULL(amount,0)) FROM invoice_payments WHERE invoice_id =v.id) AS amount_paid"),'v.pmt_bank_name','v.pmt_account_number','v.pmt_account_name','v.description','v.invoice_notes'];
+  //     $rows =DB::table('invoices as v')->where('v.id',$id)->where('v.branch_id',$branch_id)->select($cols)->take(1)->get();
+  //     foreach($rows as $row){
+  //        $row->items = self::getInvoiceItems($ss,$id);
+  //        return $row;
+  //     }
+  //     return null;
+  // }
+
+  static function details($id,$ss){
+    ////if (!$ss) $ss = $this->getUserInfo();
+    ////if(!$id) $id = $this->getInvoiceId(); 
+    $branch_id = $ss->branch_id;
+    $cols = ['invoice_class','v.id','ref_number','exchange_rate',DB::raw('formatDate(v.issue_date) AS issue_date'),DB::raw('formatDate(v.due_date) as due_date'),'customer_id','v.customer_phone','v.customer_email',DB::raw('NULL AS customer_tax_number'),'terms','v.billing_address','v.amount','v.discount_percent','v.discount_amount','discount_type','v.total_cost','signer_name','v.currency_code','v.exchange_rate','v.amount_due','v.tax_amount','v.tax_rate',DB::raw("(SELECT SUM(IFNULL(amount,0)) FROM invoice_payments WHERE invoice_id =v.id) AS amount_paid"),'v.pmt_bank_name','v.pmt_account_number','v.pmt_account_name','v.description','v.invoice_notes'];
+    $rows =DB::table('invoices as v')->where('v.id',$id)->where('v.branch_id',$branch_id)->select($cols)->take(1)->get();
+    $data = self::getInvoiceItems($ss,$id);
+     
+    foreach($rows as $row){
+       $row->products = $data->products;
+       $row->services = $data->services;
+       $row->labo_tests = $data->labo_tests;
+       return $row;
     }
+    return null;
+  }
 
   function getDetails($id=null,$ss=null){
     if (!$ss) $ss = $this->getUserInfo();
@@ -411,16 +439,40 @@ class Invoice
       return null; 
    }
 
-   static function getInvoiceItems($ss,$id){
-     $branch_id = $ss->branch_id;
-     $cols = ['i.id','i.item_id','i.item_code','i.item_name','i.description','i.qty','i.price','i.cost','i.sku','i.discount_percent','i.discount_amount','tax_rate','i.net_amount as line_total'];
-     return DB::table('invoice_items as i')->where('i.invoice_id',$id)->where('i.branch_id',$branch_id)->select($cols)->orderBy('i.id','DESC')->get();
-   }
+  //  static function getInvoiceItems($ss,$id){
+  //    $branch_id = $ss->branch_id;
+  //    $cols = ['i.id','i.item_id','i.item_code','i.item_name','i.description','i.qty','i.price','i.cost','i.sku','i.discount_percent','i.discount_amount','tax_rate','i.net_amount as line_total'];
+  //    return DB::table('invoice_items as i')->where('i.invoice_id',$id)->where('i.branch_id',$branch_id)->select($cols)->orderBy('i.id','DESC')->get();
+  //  }
+
+  static function getInvoiceItems($ss,$id){
+    $branch_id = $ss->branch_id;
+    $cols = ['invoice_item_class','i.id','i.item_id','i.item_code','i.item_name','i.description','i.qty','i.price','i.cost','i.sku','i.discount_percent','i.discount_amount','tax_rate','i.net_amount as line_total'];
+    $rows = DB::table('invoice_items as i')->where('i.invoice_id',$id)->where('i.branch_id',$branch_id)->select($cols)->orderBy('invoice_item_class','ASC')->orderBy('i.id','DESC')->get();
+    $products =[];
+    $services = [];
+    $labo_tests = [];
+    foreach($rows as $row){
+      $inv_item_class = strtolower($row->invoice_item_class); 
+      if($inv_item_class==='labo' || $inv_item_class==='labo_test'){
+         $labo_tests[] = $row;
+      }else if($inv_item_class ==='service'){
+         $services[] = $row;
+      }else $products[] = $row;
+    }
+    return (object)[
+       'products'=>$products,
+       'services'=>$services,
+       'labo_tests'=>$labo_tests
+    ];
+  }
 
    static function list($d,$ss){
+      //NOTE: self::$customer_table = "patients" for mClinic system, "customers" for accounting system
       $branch_id = $ss->branch_id;
-      $cols = ['v.id',DB::raw('formatDate(v.issue_date) as issue_date'),DB::raw('formatDate(v.due_date) as due_date'),'v.ref_number','v.description','v.customer_id','c.name as customer_name','c.phone_number as customer_phone','c.email as customer_email','c.billing_address','v.currency_code','v.amount','v.discount_amount','v.discount_percent','v.amount_due','v.amount_paid'];
-      $rows = DB::table("invoices AS v")->join('customers as c','c.id','=','v.customer_id')->where('v.branch_id',$branch_id)->select($cols)->orderBy("v.id", "DESC")->get(); 
+      $cols = ['v.id',DB::raw('formatDate(v.issue_date) as issue_date'),DB::raw('formatDate(v.due_date) as due_date'),'v.ref_number','v.description','v.customer_id',DB::raw("CONCAT(p.last_name,' ',p.first_name) as customer_name"),'p.phone_number as customer_phone','p.email as customer_email','c.billing_address','v.currency_code','v.amount','v.discount_amount','v.discount_percent','v.amount_due','v.amount_paid'];
+      $rows = DB::table("invoices AS v")->join(self::$customer_table. " as c",'c.id','=','v.customer_id')->join('persons as p','p.id','=','c.person_id')->where('v.branch_id',$branch_id)->select($cols)->orderBy("v.id", "DESC")->get();
+      //$rows = DB::table("invoices AS v")->join('customers as c','c.id','=','v.customer_id')->where('v.branch_id',$branch_id)->select($cols)->orderBy("v.id", "DESC")->get(); 
       return $rows;
    }
    public function getInvoiceList($d,$ss=null){
