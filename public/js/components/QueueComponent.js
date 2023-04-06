@@ -401,28 +401,21 @@ let TicketDetails = new function () {
 
                 div_workspace.html(html);
                 div.show();
-                ////LocaleManager.translateZone(ws_id);
+
                 mThis.current_view_name = 'info';
 
-            //#begin:: set event handle for "Generate Invoice" and "Prescription" buttons
-                    div_workspace.find('.qul-btn-generate-invoice').off('click').on('click',e=>{
-                        e.preventDefault();
-                        //let ticket_id = div_workspace.data('tid');
-                        let op = {
-                            'ticket_id': ticket_id
-                        };
-                        PrescriptionDialog.show(op);
+                div_workspace.find('.qul-btn-generate-invoice').off('click').on('click',e=>{
+                    e.preventDefault();
+                    alert(ticket_id);
+                });
 
-                    });
-
-                    div_workspace.find('.qul-btn-prescribe').off('click').on('click',e=>{
-                        e.preventDefault();
-                        //let ticket_id = div_workspace.data('tid');
-                        alert(`Create Prescription for ticket ${ticket_id}`);
-
-                    });
-              //#end:: set event handle for "Generate Invoice" and "Prescription" buttons
-             
+                div_workspace.find('.qul-btn-prescribe').off('click').on('click',e=>{
+                    e.preventDefault();
+                    let op = {
+                        'ticket_id': ticket_id
+                    };
+                    PrescriptionDialog.show(op);
+                });
         });
     }
 
@@ -1365,7 +1358,6 @@ let ConsultTabView = new function () {
                     return `<span class="text-secondary fw-bold">${numero}</span>`;
                 },
                 "emptyMessage": `<span class="text-secondary text-align-center">${LocaleManager.trans('No chief complaints', 'consult')}</span>`,
-
             });
 
             mThis.tblChiefComplaints.setData(StringSanitizer.sanitizeObject(d.cc_items));

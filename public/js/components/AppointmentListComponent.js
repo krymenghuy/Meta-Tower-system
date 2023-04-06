@@ -312,7 +312,7 @@ let AppointmentListComponent = new function () {
             let appt_id = tr.data('id');
             let op = {};
             op.onClose = (e) => {
-                if (e) {
+                if(e){
                     mThis.displayAppointmentDetails(tr.next(), appt_id);
                 }
             };
@@ -322,7 +322,6 @@ let AppointmentListComponent = new function () {
             if(status_id > 2) {
                 op.appt_id = appt_id;
                 PersonDialog.show(op);
-
             }
             else if (status_id <= 2) {
                 op.id = appt_id;
@@ -856,8 +855,7 @@ let PatientDialog = new function () {
         mThis.appt_id = option.appt_id;
 
         mThis.prepareOptions(() => {
-
-            if (option.id > 0) {
+            if (option.id > 0 || option.identity_value > 0) {
                 mThis.elTitle.text(LocaleManager.trans('Modify Patient', 'titles'));
             }
             else {
