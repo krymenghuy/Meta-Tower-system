@@ -11,7 +11,6 @@ var MobileBrandImagesComponent= new function(){
     this.btnAddImage = $('#_mobile_brand_btnAddImage');
     this.btnFileChoose = $('#_mobile_brand_fileChooser');
 
-<<<<<<< HEAD
     this.init = ()=>{
        mThis.elFilter_app.on('change',(e)=>{
           mThis.displayIamges(); 
@@ -29,65 +28,6 @@ var MobileBrandImagesComponent= new function(){
                    });
                  }
                });
-=======
-  this.init = () => {
-    mThis.elFilter_app.on('change', (e) => {
-      mThis.displayIamges();
-    });
-
-    mThis.btnAddImage.on('click', function (e) {
-      mThis.btnFileChoose.trigger('click');
-    });
-
-    this.btnFileChoose.off('change').on('change', function () {
-      var files = mThis.btnFileChoose.prop('files');
-      var file = files[0];
-      if (file) {
-        if (file.type.match(/^image\/.*/)) {
-          reader.readAsDataURL(file);
-        } else {
-          cv_interact.warning('The chosen image file is invalid!');
-        }
-      }
-    });
-
-    var reader = new FileReader();
-    reader.onload = function (e) {
-      e.preventDefault();
-      var photoData = e.target.result;
-      var base64result = photoData.split(',')[1];
-      var fileType = photoData.split('/')[1].split(';')[0];
-      if (fileType == 'jpeg') fileType = 'jpg';
-      var p = {};
-      p.photo_data = base64result;
-      p.file_type = fileType;
-      p.user_class = (mThis.elFilter_app.val() + '').toLowerCase();
-      vsapi.call([mThis.base_url, '/api/saveBrandImage'].join(''), p).then(res => {
-        if (res.status_code === 200) {
-          mThis.displayIamges();
-        }
-        else cv_interact.error(res.error_message);
-      });
-      mThis.btnFileChoose.val(null);
-    }
-  }
-
-  mThis.img_container.on('click', '.mobile_brand_image-delete', function (e) {
-    e.preventDefault();
-    let x = $(this);
-    let pic_id = x.data('id');
-    let app_name = mThis.elFilter_app.val();
-    mThis.deleteBrandPicture(pic_id, app_name);
-  });
-
-  this.deleteBrandPicture = (pic_id, user_class) => {
-    let p = { 'id': pic_id, 'user_class': user_class };
-    cv_interact.confirm('Delete this picture?', { title: 'Delete Brand Picture', context: 'delete' }, (e) => {
-      if (e) {
-        vsapi.call([mThis.base_url, '/api/deleteBrandImage'].join(''), p,).then(res => {
-          if (res.status_code !== 200) cv_interact.error(res.error_message);
-          mThis.displayIamges();
->>>>>>> 7cf034ce89966b5346c5acef1d3099df1756f4b9
         });
        
     } 
@@ -117,7 +57,6 @@ var MobileBrandImagesComponent= new function(){
         }); 
     }
 
-<<<<<<< HEAD
     this.renderImages = (imgs)=>{
             let i =0,c;
             mThis.img_container.empty();
@@ -135,18 +74,6 @@ var MobileBrandImagesComponent= new function(){
                   c.description,
                   '</p>',
                   '</div></div>'].join('');
-=======
-  this.displayIamges = () => {
-    let p = { 'user_class': (mThis.elFilter_app.val() + '').toLowerCase() };
-    vsapi.call([mThis.base_url, '/api/getMobileBrandImages'].join(''), p).then(res => {
-      if (res.status_code === 200) {
-        let imgs = res.data;
-        let i = 0, c;
-        mThis.img_container.empty();
-        do {
-          c = imgs[i];
-          if (!c) break;
->>>>>>> 7cf034ce89966b5346c5acef1d3099df1756f4b9
 
                 //  let html_row = ['<tr data-id="',c.id,'">',
                 //  '<td class="col-brand-image"><div class="thumbnail"><img class="brand-img" src="',c.image_data,'"></img>',

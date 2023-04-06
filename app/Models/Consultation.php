@@ -250,7 +250,6 @@ class Consultation //extends Model
         DB::table('patient_prescription_items')->where('id',$id)->where('ticket_id',$ticket_id)->delete();
         return null;
     }
-
     function savePrescriptionItem($item=[],$ticket_id=null,$ss=null){
         $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
         $ss = $ss? $ss: $this->getUserInfo();
