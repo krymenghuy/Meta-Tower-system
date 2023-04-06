@@ -8,12 +8,17 @@ use App\Models\Patient;
 //use App\Models\Lead;
 use App\Models\JDV;
 use App\Models\UM;
-use App\Models\Notifier;
-use Session;
-use DB;
+ 
 
 class AppointmentController extends Controller
 {
+    function getTest(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+        $row = (object)['name'=>'dara','phone_number'=>'012345436'];
+        return JDV::raw($row);
+    }
+    
     function getAppointmentList(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
