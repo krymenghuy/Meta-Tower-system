@@ -412,6 +412,7 @@ let InvoiceDialog = new function () {
     this.base_url = $('#__base_url').val();
     this.SelectPmtTerms = $('#_inv_pmt_terms');
     this.SelectCustomer = $('#_inv_customers');
+    this.SelectCustomerType = $('#_inv_customers_type');
     this.options = {};
 
     this.elSummary_balanceDue = $('#ivc_balance_due');
@@ -733,6 +734,7 @@ let InvoiceDialog = new function () {
     this.btnSave.on('click', (e) => {
         e.preventDefault();
         let p = mThis.getDataForm();
+        console.log(p);
         let api_endpoint = `${mThis.base_url}/api/invoice/create`;
         if(p.id > 0) api_endpoint = `${mThis.base_url}/api/invoice/update`;
         vsapi.call(api_endpoint,p,'POST',null).then(res => {
@@ -784,7 +786,7 @@ let InvoiceDialog = new function () {
 
     this.getDataForm = () => {
         let p = {
-            'id':(mThis.options || {}).id //? (mThis.options || {}).id : 0
+            'id':(mThis.options || {}).id
         };
 
         mThis.self.find('.data-input').each(function() {
@@ -798,7 +800,6 @@ let InvoiceDialog = new function () {
         p.items = mThis.tblProductItems.getItems();
         return p;
     }
-    console.log(mThis.getDataForm());
 
     this.setActiveItemView = (viewname)=>{
         let x =  mThis.itemTabs[viewname];
@@ -815,6 +816,12 @@ let InvoiceDialog = new function () {
             mThis.tblProductItems.setSelectOptions('item_id',d.items);
             VSUtil.setComboItems(mThis.SelectPmtTerms,d.pmt_terms,'code','description',true,'(select terms)',null);
             VSUtil.setComboItems(mThis.SelectCustomer,d.customers,'id','customer_name',true,'(select customer)',null);
+            vsapi.call(`${mThis.base_url}/api/invoice/customer-type`,null).then(res => {
+                if(res.status_code === 200){
+                    let d = res.data;
+                    VSUtil.setComboItems(mThis.SelectCustomerType,d.customer_type,'code','description',true,'(select customer type)',null);
+                }
+            });
 
             if(options.id > 0){
                 mThis.Invoice_Title.text("Modify Invoice");

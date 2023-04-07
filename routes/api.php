@@ -248,6 +248,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
   
   Route::post('invoice-payment/update', [InvoiceController::class, 'updatePayment']);
   Route::post('invoice-payment/delete', [InvoiceController::class, 'deletePayment']);
+
+  Route::post('invoice/customer-type',[InvoiceController::class, 'getCustomerType']);
   
 //end::InvoiceController
 
