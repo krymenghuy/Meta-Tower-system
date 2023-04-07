@@ -85,6 +85,9 @@ Route::post('auth/login', [LoginController::class, 'apiLogin']);
 // Rate Limiting for a whole group of routes= > allow 200 requests per 1 minute
 Route::group(['middleware' => 'throttle:200,1'], function () {
     //begin:: AppointmentController 
+
+    Route::post('test', [AppointmentController::class, 'getTest']);
+
         Route::post('appointment/list', [AppointmentController::class, 'getAppointmentList']);
         Route::post('appointment/save', [AppointmentController::class, 'saveAppointment']);
         Route::post('appointment/delete', [AppointmentController::class, 'deleteAppointment']);
