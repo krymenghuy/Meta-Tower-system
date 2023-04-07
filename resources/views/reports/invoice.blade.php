@@ -131,7 +131,7 @@
                                     <p>Telephone:</p>
                                 </div>
                                 <p>
-                                    <?php echo "099999922"?>
+                                    <?php echo $invoice->customer_phone; ?>
                                 </p>
                             </div>
                             <div class="d-flex align-items-center w-50">
@@ -148,14 +148,11 @@
                                 <div style="width: 200px">
                                     <p>Card ID:</p>
                                 </div>
-                                <p>
-                                    <?php echo ""?>
-                                </p>
                             </div>
                         </div>
                     </div>
-                    <div class="border-responsive border rounded mt-3">
-                        <table class="table">
+                    <div class="table-responsive mt-3">
+                        <table class="table border mb-3">
                             <thead>
                                 <tr>
                                     <th>No</th>
@@ -169,26 +166,30 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php $cnt = 1; ?>
-                                @foreach($invoice->products as $item)
-                                    <tr>
-                                        <td>
-                                            <?php echo $cnt++; ?>
-                                        </td>
-                                        <td>{{ $item->item_name }}</td>
-                                        <td></td>
-                                        <td style="max-width:15vw">{{ $item->description }}</td>
-                                        <td>
-                                            <?php echo number_format((float)$item->qty,0); ?>
-                                        </td>
-                                        <td>{{ $cur_symbol }} {{ $item->price }}</td>
-                                        <td>{{ $item->discount_percent }} %</td>
-                                        <td>{{ $cur_symbol }} {{ $item->line_total }}</td>
-                                    </tr>
-                                @endforeach
+                                <?php
+                                    $cnt = 1;
+                                    $total_product = 0;
+                                    $total_discount_percent = 0;
+                                    $total_tax_rate = 0;
+                                    foreach($invoice->products as $item){
+                                        echo "<tr>
+                                            <td>".$cnt++."</td>
+                                            <td>".$item->item_name."</td>
+                                            <td></td>
+                                            <td style='max-width:15vw'>".$item->description."</td>
+                                            <td>".number_format((float)$item->qty,0)."</td>
+                                            <td>".$cur_symbol." ".$item->price."</td>
+                                            <td>".$item->discount_percent." %</td>
+                                            <td>".$cur_symbol." ".$item->line_total."</td>
+                                        </tr>";
+                                        $total_product += $item->line_total;
+                                        $total_discount_percent += $item->discount_percent;
+                                        $total_tax_rate += $item->tax_rate;
+                                    }
+                                ?>
                             </tbody>
                         </table>
-                        <table class="table">
+                        <table class="table border mt-3">
                             <thead>
                                 <tr>
                                     <th>No</th>
@@ -201,8 +202,9 @@
                             </thead>
                             <tbody>
                                 <?php
-                                    $cur = $invoice->currency_code === 'KHR' ? '$' :"$";
+                                    $cur = $invoice->currency_code === 'KHR' ? '៛' :"$";
                                     $numero = 0;
+                                    $total_service = 0;
                                     foreach($invoice->services as $item){
                                         $numero++;
                                         $qty = $item->qty." ".$item->sku;
@@ -213,27 +215,31 @@
                                             <td>".$item->item_name."</td>
                                             <td>".$qty."</td>
                                             <td>".$price."</td>
+                                            <td>".$item->discount_percent." %</td>
                                             <td>".$line_total."</td>
                                         </tr>";
+                                        $total_service += $item->line_total;
+                                        $total_discount_percent += $item->discount_percent;
+                                        $total_tax_rate += $item->tax_rate;
                                     }
                                 ?>
                                 <tr>
                                     <td colspan="4" style="border:none"></td>
                                     <td class="fw-semibold">Subtotal</td>
-                                    <td>{{ $cur_symbol }} {{ $invoice->amount }}</td>
+                                    <td><?php echo $cur_symbol." ".$total_product + $total_service ?></td>
                                 </tr>
                                 <tr>
                                     <td colspan="4" style="border:none"></td>
                                     <td class="fw-semibold">Discount</td>
                                     <td>
-                                        <?php echo $invoice->discount_percent." %"; ?>
+                                        <?php echo $total_discount_percent." %"; ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="4" style="border:none"></td>
                                     <td class="fw-semibold">Sales Tax</td>
                                     <td>
-                                        <?php echo $cur_symbol." ".$invoice->tax_amount; ?>
+                                        <?php echo $cur_symbol." ".$total_tax_rate; ?>
                                     </td>
                                 </tr>
                                 <tr class="border-bottom border border-0">

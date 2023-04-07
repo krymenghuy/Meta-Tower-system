@@ -309,91 +309,119 @@
 </div>
 
 <div class="modal fade" id="_apl_dlgPatient" tabindex="-1" role="dialog" aria-labelledby="_apl_dlgPatient" aria-hidden="true">
-    <div class="modal-dialog modal-lg vs-modal-dialog" role="dialog">
+    <div class="modal-dialog modal-xl vs-modal-dialog" role="dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title trans-text" data-langprop="titles.Register Patient" id="_apl_dlgAppt_title">
                     Register Patient
                 </h5>
             </div>
-            <div class="modal-body">
-                <div class="row" id="_apl_dlgPatient_body">
-                    <div class="form-group col-lg-6">
-                        <span class="simple-label trans-text" data-langprop="patient.Name">Name</span>
-                        <div>
-                            <input type="text" data-required="1" data-field="name" data-ffield="Patient Name" class="form-control data-input-reg"/>
-                        </div>
-                    </div>
+            <div class="modal-body" id="_apl_dlgPatient_body">
+                <div class="d-flex align-items-center">
+                    <div class="w-75">
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <span class="simple-label trans-text" data-langprop="patient.Name">Name</span>
+                                <div>
+                                    <input type="text" data-required="1" data-field="name" data-ffield="Patient Name" class="form-control data-input-reg"/>
+                                </div>
+                            </div>
 
-                    <div class="form-group col-lg-6">
-                        <span class="simple-label trans-text" data-langprop="patient.Gender">Gender</span>
-                        <div>
-                            <select data-field="sex" data-ffield="Sex" class="modal-select2 data-input-reg">
-                                <option value="M">Male</option>
-                                <option value="F">Female</option>
-                            </select>
+                            <div class="form-group col-lg-6">
+                                <span class="simple-label trans-text" data-langprop="patient.Gender">Gender</span>
+                                <div>
+                                    <select data-field="sex" data-ffield="Sex" class="modal-select2 data-input-reg">
+                                        <option value="M">Male</option>
+                                        <option value="F">Female</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <span class="simple-label trans-text" data-langprop="patient.Nationality">Nationality</span>
+                                <div>
+                                    <select data-required="1" data-field="nationality_id" data-ffield="Nationality" class="modal-select2 data-input-reg" id="_pat_nationality"></select>
+                                </div>
+                            </div>
 
-                    <div class="form-group col-lg-6">
-                        <span class="simple-label trans-text" data-langprop="patient.Nationality">Nationality</span>
-                        <div>
-                            <select data-required="1" data-field="nationality_id" data-ffield="Nationality" class="modal-select2 data-input-reg" id="_pat_nationality"></select>
-                        </div>
-                    </div>
+                            <div class="form-group col-lg-3">
+                                <span class="simple-label trans-text" data-langprop="patient.Date of birth">Date of birth</span>
+                                <div>
+                                    <input data-required="1" data-field="date_of_birth" data-ffield="Date of birth" class="form-control data-input-reg" data-select="datepicker" id="_pat_dob"/>
+                                </div>
+                            </div>
 
-                    <div class="form-group col-lg-3">
-                        <span class="simple-label trans-text" data-langprop="patient.Date of birth">Date of birth</span>
-                        <div>
-                            <input data-required="1" data-field="date_of_birth" data-ffield="Date of birth" class="form-control data-input-reg" data-select="datepicker" id="_pat_dob"/>
+                            <div class="form-group col-lg-3">
+                                <span class="simple-label">
+                                    <span class="trans-text" data-langprop="patient.Age">Age</span>
+                                    &nbsp;
+                                    <span style="color:orange" id="_pat_age_unit"></span>
+                                </span>
+                                <div>
+                                    <input type="number" data-required="0" data-field="age" data-ffield="Patient Age" class="form-control data-input-reg" id="_pat_age"/>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <span class="simple-label trans-text" data-langprop="patient.Phone number">Phone Number</span>
+                                <div>
+                                    <input type="number" data-required="1" data-field="phone_number" data-ffield="Phone number" class="form-control data-input-reg"/>
+                                </div>
+                            </div>
 
-                    <div class="form-group col-lg-3">
-                        <span class="simple-label">
-                            <span class="trans-text" data-langprop="patient.Age">Age</span>
-                            &nbsp;
-                            <span style="color:orange" id="_pat_age_unit"></span>
-                        </span>
-                        <div>
-                            <input type="number" data-required="0" data-field="age" data-ffield="Patient Age" class="form-control data-input-reg" id="_pat_age"/>
+                            <div class="form-group col-lg-6">
+                                <span class="simple-label trans-text" data-langprop="patient.Email">Email</span>
+                                <div>
+                                    <input type="text" data-type="email" data-ffield="Email" data-field="email" class="form-control data-input-reg"/>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group col-lg-6">
-                        <span class="simple-label trans-text" data-langprop="patient.Phone number">Phone Number</span>
-                        <div>
-                            <input type="number" data-required="1" data-field="phone_number" data-ffield="Phone number" class="form-control data-input-reg"/>
+                    <div class="w-25">
+                        <div class="row">
+                            <div class="col-lg-12 d-flex justify-content-center">
+                                <div class="d-block">
+                                    <img id="_img_preView_patient" class="img-thumbnail frame-photo"/>
+                                    <div style="width:210px">
+                                        <button class="btn btn-outline-success" type="button" id="_img_patient">
+                                            <span class="trans-text" data-langprop="buttons.Choose"></span>
+                                        </button>
+                                        <button class="btn btn-outline-danger" type="button" id="del_img_patient">
+                                            <span class="trans-text" data-langprop="buttons.Delete"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="form-group col-lg-6">
-                        <span class="simple-label trans-text" data-langprop="patient.Email">Email</span>
-                        <div>
-                            <input type="text" data-type="email" data-ffield="Email" data-field="email" class="form-control data-input-reg"/>
-                        </div>
-                    </div>
-
+                </div>
+                <div class="row">
                     <div class="form-group col-lg-12" style="display:none">
                         <span class="simple-label trans-text" data-langprop="patient.Remarks">Remarks</span>
                         <div>
                             <input type="text" data-field="notes" data-ffield="Remarks" class="form-control data-input-reg"/>
                         </div>
                     </div>
-
+                </div>
+                <div class="row">
                     <div class="form-group col-lg-12">
                         <span style="margin-bottom:3px;display:block" class="header-text text-bold trans-text" data-langprop="patient.Medical Conditions">Medical Conditions</span>
                         <div class="medical-condition-panel">
                             <div class="row" id="med_con_panel"></div>
                         </div>
                     </div>
-
+                </div>
+                <div class="row">
                     <div class="form-group col-lg-12 reg-only">
                         <span style="margin-bottom:3px;display:block" class="header-text text-bold trans-text" data-langprop="patient.Vital Signs">Vital signs</span>
                         <div class="vital-signs">
                             <div class="row" id="pat_vital_signs"></div>
                         </div>
                     </div>
-
+                </div>
+                <div class="row">
                     <div class="form-group col-lg-12 reg-only">
                         <span style="margin-bottom:3px;display:block" class="header-text text-bold trans-text" data-langprop="patient.Service Registration">Service Registration</span>
                         <div class="service-reg-panel">

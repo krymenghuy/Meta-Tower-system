@@ -102,7 +102,7 @@
                             <div class="d-flex align-items-center gap-2">
                                 <button id="_epl_dlgEmployee_btnChooseFile" class="btn btn-outline-success trans-text" data-langprop="buttons.Choose">
                                 </button>
-                                <button class="btn btn-outline-danger trans-text" data-langprop="buttons.Delete"></button>
+                                <button class="btn btn-outline-danger trans-text" data-langprop="buttons.Delete" id="_epl_del_imgPreview"></button>
                             </div>
                         </div>
                     </div>

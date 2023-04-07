@@ -194,6 +194,7 @@ let EmployeeListDialog = new function () {
     this.self = $(`#_epl_dlgEmployee`);
     this.btnChooseFile = $('#_epl_dlgEmployee_btnChooseFile');
     this.imgPhoto = $('#_epl_dlgEmployee_img');
+    this.btnDeleteImg = $('#_epl_del_imgPreview');
     this.elNationality = $('#_epl_dlgEmployee_nat');
     this.elDepartment = $('#_epl_dlgEmployee_department');
     this.elPosition = $('#_epl_dlgEmployee_position');
@@ -230,11 +231,17 @@ let EmployeeListDialog = new function () {
         'use_alert_error': true,
         'init':()=>{
             mThis.btnChooseFile.on('click',(e)=>{
+                e.preventDefault();
                 FileChooser.chooseFile(null,(d)=>{
                     if(d){
-                        mThis.imgPhoto.prop('src',d.dataUrl);
+                        mThis.imgPhoto.attr('src',d.dataUrl);
                     }
                 });
+            });
+
+            mThis.btnDeleteImg.on('click',(e)=>{
+                e.preventDefault();
+                mThis.imgPhoto.removeAttr('src');
             });
         }
     });
