@@ -9,6 +9,7 @@ use App\Models\JDV;
 use App\Models\Invoice\Invoice;
 use App\Models\Invoice\InvoiceSettings;
 use App\Models\Invoice\Payment;
+use App\Models\Invoice\Customer;
 
 class InvoiceController extends Controller
 {
@@ -33,6 +34,13 @@ class InvoiceController extends Controller
         return JDV::result(InvoiceSettings::invoice_form_options($ss));
     }
  
+    function getCustomerInfo(Request $req){
+        $ss= UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $id = $req->id?$req->id:$req->customer_id;
+        return JDV::result(Customer::getProps($id,"phone_number,billing_address,email,'Individual' AS customer_type"));
+    }
+
     function getInvoiceDetails(Request $req){
         $ss= UM::getUserInfoBytoken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
