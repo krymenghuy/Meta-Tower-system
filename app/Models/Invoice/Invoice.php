@@ -53,7 +53,7 @@ class Invoice
          "invoice_class"=>"1|choice|Medical,Regular|default=Regular",
          "issue_date"=>"0|date|text=Issue date is required",
          "due_date"=>"0|date|text=Due date is not correct",
-         "customer_id"=>"1|number|exists=customers.id|text=Client ID does not exist",
+         "customer_id"=>"1|number|exists=patients.id|text=Client ID does not exist",
          "billing_address"=>"0|string|0-250",
          "customer_phone"=>"0|phone|0-30",
          "customer_email"=>"0|phone|0-30",

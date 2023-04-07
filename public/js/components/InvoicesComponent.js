@@ -16,7 +16,7 @@ let InvoicesComponent = new function () {
     this.tblInvoice = $('#_inv_tblInvoice');
     this.invoiceTable = document.querySelector(`#_inv_tblInvoice`);
     this.elSearchInvoice = $('#_inv_search_invoice');
-    
+
     this.base_url = $('#__base_url').val();
     this.form_data = {};
 
@@ -70,9 +70,7 @@ let InvoicesComponent = new function () {
                  }
             });
          });
-
-         this.elCustomer.on('change',(e)=>{});
-
+ 
          this.tblInvoice.on('click','a.btn-ivc-modify', function(e){
             e.preventDefault();
             let invoice_id = $(this).data('id');
@@ -413,9 +411,14 @@ let InvoiceDialog = new function () {
     this.btnSave = $('#_invs_dlgNewInvoice_btnSave');
     this.lnkAddInvoice = $('#_invs_lnkAddInvoice');
     this.base_url = $('#__base_url').val();
-    this.SelectPmtTerms = $('#_inv_pmt_terms');
-    this.SelectCustomer = $('#_inv_customers');
-    this.SelectCustomerType = $('#_inv_customers_type');
+    this.elPmtTerms = $('#_inv_pmt_terms');
+    
+    this.lnkAddCustomer = $('_inv_lnkAddCustomer');
+    this.elCustomer = $('#_inv_customer');
+    this.elCustomerEmail = $('#_inv_customer_email');
+    this.elCustomerPhone = $('#_inv_customer_phone');
+    this.elCustomerAddress = $('#_inv_customer_address');
+    this.elcustomerType = $('#_inv_customer_type');
     this.options = {};
 
     this.elSummary_balanceDue = $('#ivc_balance_due');
@@ -519,6 +522,21 @@ let InvoiceDialog = new function () {
         "readOnly":true
     }];
     
+    //begin::Event hendlers for InvoiceDialog
+      this.elCustomer.on('change',e=>{
+        let p = {'id':mThis.elCustomer.val()}; 
+        vsapi.call(`${main_view.base_url}/api/invoice/customer-info`,p,null,false).then(res=>{
+            if(res.status_code===200){
+               let cus= StringSanitizer.sanitizeObject(res.data);
+               mThis.elCustomerEmail.val(cus.email);
+               mThis.elCustomerAddress.val(cus.billing_address);
+               mThis.elCustomerPhone.val(cus.phone_number).trigger('change');
+               mThis.elCustomerType.val('Individual').trigger('change');
+            }
+        });
+      });
+    //end:: Event hendlers for InvoiceDialog
+
     this.initItemsView = ()=>{
         mThis.initServiceItemView();
         mThis.initProductItemView();

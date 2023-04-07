@@ -232,6 +232,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
 //begin::InvoiceController
   Route::post('invoice/form-options',[InvoiceController::class, 'invoice_form_options']);
+  Route::post('invoice/customer-info', [InvoiceController::class, 'getCustomerInfo']);
   Route::post('invoice/create', [InvoiceController::class, 'createInvoice']);
   Route::post('invoice/update', [InvoiceController::class, 'updateInvoice']);
   Route::post('invoice/delete', [InvoiceController::class, 'deleteInvoice']);
@@ -249,8 +250,6 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
   
   Route::post('invoice-payment/update', [InvoiceController::class, 'updatePayment']);
   Route::post('invoice-payment/delete', [InvoiceController::class, 'deletePayment']);
-
-  Route::post('invoice/customer-type',[InvoiceController::class, 'getCustomerType']);
   
 //end::InvoiceController
 

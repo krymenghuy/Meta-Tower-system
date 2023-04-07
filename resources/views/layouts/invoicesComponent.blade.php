@@ -62,8 +62,8 @@
                                     <div class="input-group-text">
                                         <i class="fa-solid fa-user"></i>
                                     </div>
-                                    <select class="modal-select2 data-input" data-field="customer_id" id="_inv_customers" data-required="1"></select>
-                                    <div id="_invs_lnkAddInvoice" class="input-group-text" role="button">
+                                    <select class="modal-select2 data-input" data-field="customer_id" id="_inv_customer" data-required="1"></select>
+                                    <div id="_inv_lnkAddCustomer" class="input-group-text" role="button">
                                         <i class="fa-solid fa-plus text-primary"></i>
                                     </div>
                                 </div>
@@ -74,7 +74,10 @@
                                     <div class="input-group-text">
                                         <i class="fa-solid fa-user"></i>
                                     </div>
-                                    <select class="modal-select2 data-input" data-field="customer_type" id="_inv_customers_type" data-required="1"></select>
+                                    <select id="_inv_customer_type" class="modal-select2 data-input" data-field="customer_type" id="_inv_customers_type" data-required="1">
+                                        <option value="Individual">Individual</option>
+                                        <option value="Other">Other</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -83,17 +86,17 @@
                         <div class="d-flex flex-column">
                             <div class="w-100 mb-2">
                                 <label for="customerPhone" class="form-label trans-text" data-langprop="customer.Customer Phone"></label>
-                                <input type="text" placeholder="Enter your phone number" class="form-control data-input" data-field="customer_phone" data-ffield="Customer Phone" data-required="1"/>
+                                <input id="_inv_customer_phone" type="text" placeholder="Enter your phone number" class="form-control data-input" data-field="customer_phone" data-ffield="Customer Phone"/>
                             </div>
                             <div class="w-100 my-2">
                                <label for="emailAddress" class="form-label trans-text" data-langprop="customer.Email Address"></label>
-                               <input type="email" name="email" placeholder="Enter your email" class="form-control data-input" data-field="email_address" data-ffield="Email Address" data-required="1"/>
+                               <input type="email" id="_inv_customer_email" name="email" placeholder="Enter your email" class="form-control data-input" data-field="email_address" data-ffield="Email Address"/>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-3">
                         <label for="billingAddress" class="form-label trans-text" data-langprop="customer.Billing Addresss"></label>
-                        <textarea class="form-control data-input" data-field="billing_address" data-ffield="Billing Address" data-required="1" placeholder="Billing Address" style="min-width:281px;height:105px"></textarea>
+                        <textarea id="_inv_customer_address" class="form-control data-input" data-field="billing_address" data-ffield="Billing Address" placeholder="Billing Address" style="min-width:281px;height:105px"></textarea>
                     </div>
                     <div class="col-lg-3">
                         <div class="d-flex justify-content-center">

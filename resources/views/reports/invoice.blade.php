@@ -5,11 +5,11 @@
         <?php ScriptManager::render('report-scripts'); ?>
         <style>
             body {
-                font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+                font-family: 'Khmer OS Battambang', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
             }
 
             .rpt-body {
-                font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+                font-family: 'Khmer OS Battambang', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
             }
             
             @media print{
@@ -45,37 +45,27 @@
                             <div class="d-flex align-items-center justify-content-center w-100">
                                 <div class="px-2">
                                     <h4 class="fw-bold fs-2">
-                                        <?php echo isset($title) ? $title:null; ?>
+                                        <?php echo isset($title) ? $title : null; ?>
                                     </h4>
                                 </div>
                             </div>
                         </div>
                         <div class="d-flex align-items-center justify-content-center flex-column w-100">
-                            <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-center justify-content-center">
                                 <p>
-                                    <?php echo "The Premier Land Sensok, SteetA, House N #74, 78, Vilage Bayab"?>
-                                </p>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <p>
-                                    <?php echo "Commune, Sangkat Phnom Pehn Thmey, Khan Sensok, Phnom Penh"?>
+                                    <?php echo $branch->address; ?>
                                 </p>
                             </div>
                             <div class="d-flex align-items-center">
                                 <p class="pe-2">Tel</p>
                                 <p>
-                                    <span>
-                                        <?php echo "Cellcard 077 220 089"?>
-                                    </span>
-                                    <span>
-                                        <?php echo "Smart 098 422 000"?>
-                                    </span>
+                                    <?php echo $branch->phone_number; ?>
                                 </p>
                             </div>
                             <div class="d-flex align-items-center">
                                 <p class="pe-2">Email:</p>
                                 <p>
-                                    <?php echo "Esthemdermsurgeryclinic@gmail.com"?>
+                                    <?php echo $branch->email; ?>
                                 </p>
                             </div>
                         </div>
@@ -87,7 +77,7 @@
                                     <p>Patient ID:</p>
                                 </div>
                                 <p>
-                                    <?php echo "P000408-2-010183"?>
+                                    <?php echo $invoice->customer_id; ?>
                                 </p>
                             </div>
                             <div class="d-flex align-items-center w-50">
@@ -95,7 +85,7 @@
                                     <p>Invoice No:</p>
                                 </div>
                                 <p>
-                                    <?php echo "2310000282"?>
+                                    <?php echo $invoice->ref_number; ?>
                                 </p>
                             </div>
                         </div>
@@ -105,7 +95,7 @@
                                     <p>Patient's Name:</p>
                                 </div>
                                 <p>
-                                    <?php echo "Oeung Houng"?>
+                                    <?php echo $invoice->customer_name; ?>
                                 </p>
                             </div>
                             <div class="d-flex align-items-center w-50">
@@ -113,7 +103,7 @@
                                     <p>Invoice Date:</p>
                                 </div>
                                 <p>
-                                    <?php echo "21/02/2023"?>
+                                    <?php echo $invoice->issue_date; ?>
                                 </p>
                             </div>
                         </div>
@@ -123,7 +113,7 @@
                                     <p>Age:</p>
                                 </div>
                                 <p>
-                                    <?php echo "40Y - 1M - 20D"?>
+                                    <?php echo $invoice->age; ?>
                                 </p>
                             </div>
                             <div class="d-flex align-items-center w-50">
@@ -131,7 +121,7 @@
                                     <p>Sex:</p>
                                 </div>
                                 <p>
-                                    <?php echo "Female"?>
+                                    <?php echo $invoice->sex; ?>
                                 </p>
                             </div>
                         </div>
@@ -148,6 +138,9 @@
                                 <div style="width: 200px">
                                     <p>Address:</p>
                                 </div>
+                                <p>
+                                    <?php echo $invoice->billing_address; ?>
+                                </p>
                             </div>
                         </div>
                         <div class="d-flex align-items-center w-100">
@@ -161,7 +154,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="border-responsive border rounded mt-5">
+                    <div class="border-responsive border rounded mt-3">
                         <table class="table">
                             <thead>
                                 <tr>
@@ -176,50 +169,23 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <?php $cnt = 1; ?>
                                 @foreach($invoice->products as $item)
                                     <tr>
                                         <td>
-                                            <?php $cnt = 1; echo $cnt++ ?>
+                                            <?php echo $cnt++; ?>
                                         </td>
                                         <td>{{ $item->item_name }}</td>
                                         <td></td>
-                                        <td>
-                                            The term medical is used when something has to do with medicine or the field of medicine. Medical can often be heard when discussing locations, drugs, or practices involving hospitals, doctors, and pharmacies.
-                                        </td>
+                                        <td style="max-width:15vw">{{ $item->description }}</td>
                                         <td>
                                             <?php echo number_format((float)$item->qty,0); ?>
                                         </td>
-                                        <td>{{$cur_symbol}} {{$item->price }}</td>
-                                        <td>{{$item->discount_percent}}%</td>
-                                        <td>{{$cur_symbol}}{{ $item->line_total }}</td>
+                                        <td>{{ $cur_symbol }} {{ $item->price }}</td>
+                                        <td>{{ $item->discount_percent }} %</td>
+                                        <td>{{ $cur_symbol }} {{ $item->line_total }}</td>
                                     </tr>
                                 @endforeach
-                                <tr>
-                                    <td colspan="5" style="border:none"></td>
-                                    <td class="fw-semibold">Subtotal</td>
-                                    <td>{{$cur_symbol}}{{$invoice->amount}}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="5" style="border:none"></td>
-                                    <td class="fw-semibold">Discount</td>
-                                    <td>
-                                        <?php echo $invoice->discount_percent."%"; ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="5" style="border:none"></td>
-                                    <td class="fw-semibold">Sales Tax</td>
-                                    <td>
-                                        <?php echo $cur_symbol.$invoice->tax_amount; ?>
-                                    </td>
-                                </tr>
-                                <tr class="border-bottom border border-0">
-                                    <td colspan="5" style="border:none"></td>
-                                    <td class="fw-semibold">Total</td>
-                                    <td>
-                                        <?php echo $cur_symbol.$invoice->amount_due; ?>
-                                    </td>
-                                </tr>
                             </tbody>
                         </table>
                         <table class="table">
@@ -235,24 +201,48 @@
                             </thead>
                             <tbody>
                                 <?php
-                                    $cur = $invoice->currency_code==='KHR'?'$':"$";
-                                    $cnt =0;
+                                    $cur = $invoice->currency_code === 'KHR' ? '$' :"$";
                                     $numero = 0;
                                     foreach($invoice->services as $item){
                                         $numero++;
-                                        $qty = $item->qty.$item->sku;
-                                        $price = $cur.$item->price;
-                                        $line_total = $cur.$item->line_total;
+                                        $qty = $item->qty." ".$item->sku;
+                                        $price = $cur." ".$item->price;
+                                        $line_total = $cur." ".$item->line_total;
                                         echo "<tr>
-                                            <td>$numero</td>
-                                            <td>$item->item_name</td>
-                                            <td>$qty</td>
-                                            <td>$price</td>
-                                            <td>$line_total</td>
+                                            <td>".$numero."</td>
+                                            <td>".$item->item_name."</td>
+                                            <td>".$qty."</td>
+                                            <td>".$price."</td>
+                                            <td>".$line_total."</td>
                                         </tr>";
-                                        $cnt++;
                                     }
                                 ?>
+                                <tr>
+                                    <td colspan="4" style="border:none"></td>
+                                    <td class="fw-semibold">Subtotal</td>
+                                    <td>{{ $cur_symbol }} {{ $invoice->amount }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="border:none"></td>
+                                    <td class="fw-semibold">Discount</td>
+                                    <td>
+                                        <?php echo $invoice->discount_percent." %"; ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="border:none"></td>
+                                    <td class="fw-semibold">Sales Tax</td>
+                                    <td>
+                                        <?php echo $cur_symbol." ".$invoice->tax_amount; ?>
+                                    </td>
+                                </tr>
+                                <tr class="border-bottom border border-0">
+                                    <td colspan="4" style="border:none"></td>
+                                    <td class="fw-semibold">Total</td>
+                                    <td>
+                                        <?php echo $cur_symbol." ".$invoice->amount_due; ?>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
