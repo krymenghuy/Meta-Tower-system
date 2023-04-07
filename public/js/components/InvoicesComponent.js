@@ -64,16 +64,14 @@ let InvoicesComponent = new function () {
                     vsapi.call(`${main_view.base_url}/api/invoice/delete`,p,null,null).then(res=>{
                         if(res.status_code ===200){
                         mThis.refreshInvoiceInfo(tr.prev(),res.data); 
-                        mThis.displayInvoices();    
+                        mThis.displayInvoices();
                         }else cv_interact.error(res.error_message);
                     });
                  }
             });
          });
 
-         this.elCustomer.on('change',(e)=>{
-          // vsapi.call(`${main_view.base_url}/api/settings/customer-id`);
-         });
+         this.elCustomer.on('change',(e)=>{});
 
          this.tblInvoice.on('click','a.btn-ivc-modify', function(e){
             e.preventDefault();
@@ -555,13 +553,6 @@ let InvoiceDialog = new function () {
                 mThis.setLineTotal_service(tr);
             },
         });
-
-        // vsapi.call(`${mThis.base_url}/api/settings/options-service`,null).then(res => {
-        //     if(res.status_code === 200){
-        //         let data = res.data;
-        //         mThis.tblServiceItems.setSelectOptions('service_id',data);
-        //     }
-        // });
     }
 
     this.setItemServiceInfo = (col_name, tr) => {
@@ -818,9 +809,6 @@ let InvoiceDialog = new function () {
         mThis.options = options;
 
         mThis.loadInvoiceFormOptions((d) => {
-            //mThis.options_service = d.items;
-            //mThis.options_items = d.services;
-            
             mThis.tblProductItems.setSelectOptions('item_id',d.items);
             vsapi.call(`${mThis.base_url}/api/invoice/customer-type`,null).then(res => {
                 if(res.status_code === 200){
