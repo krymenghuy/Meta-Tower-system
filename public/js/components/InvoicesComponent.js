@@ -53,6 +53,7 @@ let InvoicesComponent = new function () {
  
     this.init = () => {
         InvoiceSettings.init();
+
         this.tblInvoice.on('click','a.btn-ivc-delete',function(e){
             e.preventDefault();
             let invoice_id = $(this).data('id');
@@ -68,6 +69,10 @@ let InvoicesComponent = new function () {
                     });
                  }
             });
+         });
+
+         this.elCustomer.on('change',(e)=>{
+          // vsapi.call(`${main_view.base_url}/api/settings/customer-id`);
          });
 
          this.tblInvoice.on('click','a.btn-ivc-modify', function(e){
@@ -410,8 +415,8 @@ let InvoiceDialog = new function () {
     this.btnSave = $('#_invs_dlgNewInvoice_btnSave');
     this.lnkAddInvoice = $('#_invs_lnkAddInvoice');
     this.base_url = $('#__base_url').val();
-    this.SelectPmtTerms = $('#_inv_pmt_terms');
-    this.SelectCustomer = $('#_inv_customers');
+    this.elPmtTerms = $('#_inv_pmt_terms');
+    this.elCustomer = $('#_inv_customers');
     this.options = {};
 
     this.elSummary_balanceDue = $('#ivc_balance_due');
@@ -550,12 +555,12 @@ let InvoiceDialog = new function () {
             },
         });
 
-        vsapi.call(`${mThis.base_url}/api/settings/options-service`,null).then(res => {
-            if(res.status_code === 200){
-                let data = res.data;
-                mThis.tblServiceItems.setSelectOptions('service_id',data);
-            }
-        });
+        // vsapi.call(`${mThis.base_url}/api/settings/options-service`,null).then(res => {
+        //     if(res.status_code === 200){
+        //         let data = res.data;
+        //         mThis.tblServiceItems.setSelectOptions('service_id',data);
+        //     }
+        // });
     }
 
     this.setItemServiceInfo = (col_name, tr) => {
@@ -751,7 +756,7 @@ let InvoiceDialog = new function () {
     });
 
     this.loadInvoiceFormOptions = (onFinish = null) => {
-        vsapi.call(`${mThis.base_url}/api/inventory/settings/invoice-form-options`,null).then(res => {
+        vsapi.call(`${mThis.base_url}/api/invoice/form-options`,null).then(res => {
             if(res.status_code === 200){
                 let data = res.data;
                 onFinish(data);
@@ -798,8 +803,7 @@ let InvoiceDialog = new function () {
         p.items = mThis.tblProductItems.getItems();
         return p;
     }
-    console.log(mThis.getDataForm());
-
+     
     this.setActiveItemView = (viewname)=>{
         let x =  mThis.itemTabs[viewname];
          x.pane.show().siblings().hide();
@@ -812,20 +816,31 @@ let InvoiceDialog = new function () {
         mThis.options = options;
 
         mThis.loadInvoiceFormOptions((d) => {
+            //mThis.options_service = d.items;
+            //mThis.options_items = d.services;
+            
             mThis.tblProductItems.setSelectOptions('item_id',d.items);
-            VSUtil.setComboItems(mThis.SelectPmtTerms,d.pmt_terms,'code','description',true,'(select terms)',null);
-            VSUtil.setComboItems(mThis.SelectCustomer,d.customers,'id','customer_name',true,'(select customer)',null);
+            mThis.tblServiceItems.setSelectOptions('service_id',d.services);
+            
+            VSUtil.setComboItems(mThis.elPmtTerms,d.pmt_terms,'code','description',true,'(select terms)',null);
+            VSUtil.setComboItems(mThis.elCustomer,d.customers,'id','customer_name',true,'(select client)',null);
 
             if(options.id > 0){
                 mThis.Invoice_Title.text("Modify Invoice");
                 let p = {'id':options.id};
                 vsapi.call(`${mThis.base_url}/api/invoice/details`,p).then(res => {
                     if(res.status_code === 200){
-                        let d = res.data;
-                        let items = StringSanitizer.sanitizeObject(d.items);
-                        d.items = null;
-                        let invoice = StringSanitizer.sanitizeObject(d);
+                        //Get invoice data (user data)
+                        let data = res.data;
+                        let items = StringSanitizer.sanitizeObject(data.items);
+                        let services = StringSanitizer.sanitizeObject(data.services);
+                        //Clear data.items and data.services in order to mamek it more efficient process for "StringSanitizer.sanitizeObject(data)"
+                        data.items = null;
+                        data.services = null;
+                        let invoice = StringSanitizer.sanitizeObject(data);
                         invoice.items = items;
+                        invoice.services = services;
+
                         mThis.setData(invoice);
                         mThis.self.modal({
                             backdrop: 'static'

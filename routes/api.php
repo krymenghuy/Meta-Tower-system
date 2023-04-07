@@ -228,6 +228,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 //end::MedicalInvoiceController
 
 //begin::InvoiceController
+  Route::post('invoice/form-options',[InvoiceController::class, 'invoice_form_options']);
   Route::post('invoice/create', [InvoiceController::class, 'createInvoice']);
   Route::post('invoice/update', [InvoiceController::class, 'updateInvoice']);
   Route::post('invoice/delete', [InvoiceController::class, 'deleteInvoice']);
@@ -267,7 +268,6 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 //End::EmployeeController
 
 //begin::InventorySettingsController =>  Inventory Settings.
-   Route::post('inventory/settings/invoice-form-options',[InventorySettingsController::class, 'invoice_form_options']);
    Route::post('inventory/settings/options-group',[InventorySettingsController::class, 'getComboItems_group']);
    Route::post('inventory/settings/item-form-options',[InventorySettingsController::class, 'getItemFormOptions']);
    Route::post('inventory/settings/stock-tracking-options', [InventorySettingsController::class, 'getStockTrackingFormOptions']);
