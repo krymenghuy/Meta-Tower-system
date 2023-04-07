@@ -11,6 +11,8 @@ use App\Models\Invoice\Customer;
 use App\Models\DV;
 use App\Models\Invoice\InvoiceSettings;
 use App\Models\ServiceQ\QTicket;
+use DateTime;
+
 class MedicalInvoice //extends Invoice //extends Model
 {
     //use HasFactory;
@@ -503,11 +505,13 @@ class MedicalInvoice //extends Invoice //extends Model
     ////if (!$ss) $ss = $this->getUserInfo();
     ////if(!$id) $id = $this->getInvoiceId(); 
     $branch_id = $ss->branch_id;
-    $cols = ['invoice_class','v.id','ref_number','exchange_rate',DB::raw('formatDate(v.issue_date) AS issue_date'),DB::raw('formatDate(v.due_date) as due_date'),'customer_id','v.customer_phone','v.customer_email',DB::raw('NULL AS customer_tax_number'),'terms','v.billing_address','v.amount','v.discount_percent','v.discount_amount','discount_type','v.total_cost','signer_name','v.currency_code','v.exchange_rate','v.amount_due','v.tax_amount','v.tax_rate',DB::raw("(SELECT SUM(IFNULL(amount,0)) FROM invoice_payments WHERE invoice_id =v.id) AS amount_paid"),'v.pmt_bank_name','v.pmt_account_number','v.pmt_account_name','v.description','v.invoice_notes'];
-    $rows =DB::table('invoices as v')->where('v.id',$id)->where('v.branch_id',$branch_id)->select($cols)->take(1)->get();
+    $cols = ['invoice_class','v.id','ref_number','exchange_rate',DB::raw('formatDate(v.issue_date) AS issue_date'),DB::raw('formatDate(v.due_date) as due_date'),'customer_id','p.date_of_birth','p.sex',DB::raw("CONCAT(p.last_name,' ',p.first_name) as customer_name"),'v.customer_phone','v.customer_email',DB::raw('NULL AS customer_tax_number'),'terms','v.billing_address','v.amount','v.discount_percent','v.discount_amount','discount_type','v.total_cost','signer_name','v.currency_code','v.exchange_rate','v.amount_due','v.tax_amount','v.tax_rate',DB::raw("(SELECT SUM(IFNULL(amount,0)) FROM invoice_payments WHERE invoice_id =v.id) AS amount_paid"),'v.pmt_bank_name','v.pmt_account_number','v.pmt_account_name','v.description','v.invoice_notes'];
+    $rows =DB::table('invoices as v')->join('patients as c','c.id','=','v.customer_id')->join('persons as p','p.id','=','c.person_id')->where('v.id',$id)->where('v.branch_id',$branch_id)->select($cols)->take(1)->get();
     $data = self::getInvoiceItems($ss,$id);
      
     foreach($rows as $row){
+       $date_of_birth = $row->date_of_birth;
+       $row->age = self::getAge($date_of_birth);
        $row->products = $data->products;
        $row->services = $data->services;
        $row->labo_tests = $data->labo_tests;
@@ -516,6 +520,19 @@ class MedicalInvoice //extends Invoice //extends Model
     return null;
   }
 
+  static function getAge($birthDate){
+    $birthDate = new DateTime($birthDate);
+    $todayDate = new DateTime(Date('Y-m-d'));
+
+    // calculate the interval between the two dates
+    $interval = $todayDate->diff($birthDate);
+
+    // extract the number of years, months, and days from the interval
+    $years = $interval->y;
+    $months = $interval->m;
+    $days = $interval->d;
+    return "$years $months $days";
+  }
   function getDetails($id=null,$ss=null){
        $id = $id?$id:$this->getId();
        $ss = $ss?$ss:$this->getUserInfo();
