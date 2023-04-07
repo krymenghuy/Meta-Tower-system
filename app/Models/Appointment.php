@@ -58,7 +58,6 @@ class Appointment //extends Model
        if($res->error) return DV::error($res->error,$ss->lang);
  
        $inputs = $res->values;
-
        $chief_complaint_items =[];
        if (isset($inputs['chief_complaint_items'])) $chief_complaint_items = $inputs['chief_complaint_items'];
        unset($inputs['chief_complaint_items']);
@@ -197,7 +196,7 @@ class Appointment //extends Model
             $row->chief_complaints = DB::table("appt_chief_complaints as apc")->join('chief_complaints as cc','cc.id','=','apc.chief_complaint_id')->where('apc.appt_id',$row->id)->selectRaw("cc.id,cc.name")->get();
             return $row;
         }
-        return null;   
+        return null;
     }
 
     function getDetails($id=null,$ss=null){
