@@ -265,10 +265,12 @@ class MedicalInvoice //extends Invoice //extends Model
       foreach($items as $x){
          $item_id = isset($x->id)?$x->id:null; // isset($x['item_id'])?$x['item_id']:null;
          if(!$item_id) $item_id = isset($x->item_id)?$x->item_id:null;
-         $itemInfo = self::itemInfo($item_id);
+         
+         $itemInfo = null;
          $itm_class = strtolower($x->invoice_item_class);
-         if($itm_class==='product') $itemInfo = self::itemInfo($item_id);
-         else $itemInfo = self::serviceInfo($item_id);
+         if($itm_class==='service') $itemInfo = self::serviceInfo($item_id);
+         else $itemInfo = self::itemInfo($item_id);
+
          if($itemInfo){
            //item's discount is always in percentage
            $discount_type ='percentage';
@@ -297,12 +299,12 @@ class MedicalInvoice //extends Invoice //extends Model
            $net_amount += $tax_amount;
 
            //Example => $x->invoice_item_class = {'product','service','labo'}
-           $description =isset($x->description)?$x->description: $itemInfo->name;
+           $description =isset($x->description)?$x->description: (isset($itemInfo->item_name)?$itemInfo->item_name:$itemInfo->name);
            $new_id = saveData($ss,'invoice_items',['id'=>0],[
              'invoice_item_class'=>$x->invoice_item_class,
              'invoice_id'=>$invoice_id, 
              'item_id'=>$item_id,
-             'item_name'=>isset($itemInfo->name)?$itemInfo->name:$itemInfo->item_name,
+             'item_name'=>isset($itemInfo->item_name)?$itemInfo->item_name:(isset($itemInfo->name)?$itemInfo->name:null),
              'description'=>$description,
              'qty'=>$x->qty,
              'sku'=>$itemInfo->sku,
@@ -396,11 +398,10 @@ class MedicalInvoice //extends Invoice //extends Model
       if(!$customer) return DV::error("It seems customer ID is not valid");
       if(empty($inputs['customer_phone'])) $inputs['customer_phone'] = $customer->phone_number;
       if(empty($inputs['billing_address'])) $inputs['billing_address'] = $customer->billing_address;
-      if(empty($inputs['customer_email'])) $inputs['customer_email'] = $customer->email; 
-      $products = $inputs['products'];
-      $services = $inputs['services'];
-
-      unset($inputs['products']);
+      if(empty($inputs['customer_email'])) $inputs['customer_email'] = $customer->email;
+      //On Update or Create => $items array contains both "products" and "services"  
+      $items = $inputs['items'];
+      unset($inputs['items']);
       //$inputs['signer_name'] = InvoiceSettings::signer_name($branch_id);
       //$account = InvoiceSettings::payment_bank($branch_id);
       //$currency = InvoiceSettings::currency($branch_id);
@@ -417,7 +418,7 @@ class MedicalInvoice //extends Invoice //extends Model
 
       if (!$invoice_id) return DV::error("Invoice ID is not valid");
       $invoice_id = saveData($ss,"invoices",['id'=>$invoice_id],$inputs,[],1);
-         $m = self::saveInvoiceItems($ss,['id'=>$invoice_id,'discount'=>$discount,'discount_type'=>$discount_type],$products,true); //True = "Delete all previous items before inserting invoice's items"
+         $m = self::saveInvoiceItems($ss,['id'=>$invoice_id,'discount'=>$discount,'discount_type'=>$discount_type],$items,true); //True = "Delete all previous items before inserting invoice's items"
          if($m->item_count<=0) return DV::error('No invoice items have been saved. Those items may be invalid');
          //$xres = self::setInvoiceNumber($branch_id,$invoice_id,"tax_line",$issue_date,null);
          //$this->updateAmounts($invoice_id,$discount,$discount_type);

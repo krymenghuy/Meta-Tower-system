@@ -417,10 +417,10 @@ let InvoiceDialog = new function () {
     this.elCustomer = $('#_inv_customer');
     this.elCustomerEmail = $('#_inv_customer_email');
     this.elCustomerPhone = $('#_inv_customer_phone');
+    this.elCustomerType = $('#_inv_customer_type');
     this.elCustomerAddress = $('#_inv_customer_address');
-    this.elcustomerType = $('#_inv_customer_type');
-    this.options = {};
 
+    this.options = {};
     this.elSummary_balanceDue = $('#ivc_balance_due');
     this.elSummary_subTotal = $('#ivc_sub_total');
     this.elSummary_discount = $('#ivc_discount');
@@ -813,7 +813,20 @@ let InvoiceDialog = new function () {
         });
         p.discount = mThis.elSummary_discount.val();
         p.discount_type = InvoiceSettings.default_discount_type;
-        p.items = mThis.tblProductItems.getItems();
+        
+        //let items = mThis.tblProductItems.getItems();
+        // let i=0,c=null;
+        // do{
+        //    c = items[i];
+        //    if(!c) break;
+        //      c.invoice_item_class ='product';
+        //    i++;
+        // }while(c);
+        const items = mThis.tblProductItems.getItems().map(obj => ({ ...obj, invoice_item_class:'Product' }));
+        //let services = mThis.tblServiceItems.getItems();
+        const services = mThis.tblServiceItems.getItems().map(obj => ({ ...obj, invoice_item_class:'Service' }));
+        //NOTE: p.items is array containing both products and services together
+        p.items= Array.from(items).concat(services);
         return p;
     }
 
