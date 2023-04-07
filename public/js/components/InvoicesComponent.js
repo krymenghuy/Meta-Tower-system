@@ -419,7 +419,6 @@ let InvoiceDialog = new function () {
     this.elCustomerPhone = $('#_inv_customer_phone');
     this.elCustomerAddress = $('#_inv_customer_address');
     this.elcustomerType = $('#_inv_customer_type');
-
     this.options = {};
 
     this.elSummary_balanceDue = $('#ivc_balance_due');
@@ -756,6 +755,7 @@ let InvoiceDialog = new function () {
     this.btnSave.on('click', (e) => {
         e.preventDefault();
         let p = mThis.getDataForm();
+        console.log(p);
         let api_endpoint = `${mThis.base_url}/api/invoice/create`;
         if(p.id > 0) api_endpoint = `${mThis.base_url}/api/invoice/update`;
         vsapi.call(api_endpoint,p,'POST',null).then(res => {
@@ -807,7 +807,7 @@ let InvoiceDialog = new function () {
 
     this.getDataForm = () => {
         let p = {
-            'id':(mThis.options || {}).id //? (mThis.options || {}).id : 0
+            'id':(mThis.options || {}).id
         };
 
         mThis.self.find('.data-input').each(function() {
@@ -821,7 +821,7 @@ let InvoiceDialog = new function () {
         p.items = mThis.tblProductItems.getItems();
         return p;
     }
-     
+
     this.setActiveItemView = (viewname)=>{
         let x =  mThis.itemTabs[viewname];
          x.pane.show().siblings().hide();
@@ -838,6 +838,12 @@ let InvoiceDialog = new function () {
             //mThis.options_items = d.services;
             
             mThis.tblProductItems.setSelectOptions('item_id',d.items);
+            vsapi.call(`${mThis.base_url}/api/invoice/customer-type`,null).then(res => {
+                if(res.status_code === 200){
+                    let d = res.data;
+                    VSUtil.setComboItems(mThis.SelectCustomerType,d.customer_type,'code','description',true,'(select customer type)',null);
+                }
+            });
             mThis.tblServiceItems.setSelectOptions('service_id',d.services);
             
             VSUtil.setComboItems(mThis.elPmtTerms,d.pmt_terms,'code','description',true,'(select terms)',null);
