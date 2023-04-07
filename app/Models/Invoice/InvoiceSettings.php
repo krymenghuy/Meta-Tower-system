@@ -2,14 +2,16 @@
 
 namespace App\Models\Invoice;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+//use Illuminate\Database\Eloquent\Factories\HasFactory;
+//use Illuminate\Database\Eloquent\Model;
 use DB;
 
-class InvoiceSettings extends Model
+class InvoiceSettings //extends Model
 {
-    use HasFactory;
-
+    //For customers list, point to table "patients", not customers. Because "customers" table is used for normal business context, Not for Hospital or Medical Clinic
+    public static $customer_table ="patients";
+    
+    //use HasFactory;
     static function signer_name($branch_id){
       $row = getDataRow('settings_string',['branch_id'=>$branch_id,'op_key'=>'invoice_signer_name'],"op_value");
       return isset($row)?$row->op_value:null;  

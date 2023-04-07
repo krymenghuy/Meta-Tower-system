@@ -484,7 +484,7 @@ let InvoiceDialog = new function () {
     }];
 
     this.cols_service = [{
-        "name":"service_id",
+        "name":"item_id", /** NOTE: we must use "item_id", not "service_id", so that the invoice's items can be processed the same way**/
         "title":"Service",
         "dataType":"string",
         "displayType":"select",
@@ -562,7 +562,7 @@ let InvoiceDialog = new function () {
             columns: mThis.cols_service,
             showColumnHeaders: true,
             showAddLineButton: true,
-            validateColumns: {'service_id':'string','qty':'number','price':'number'},
+            validateColumns: {'item_id':'string','qty':'number','price':'number'},
             onItemChange:(row_id,item, cols_name,td,tr) => {
                 mThis.setItemServiceInfo(cols_name, tr);
             },
@@ -574,9 +574,9 @@ let InvoiceDialog = new function () {
     }
 
     this.setItemServiceInfo = (col_name, tr) => {
-        if(col_name === 'service_id'){
+        if(col_name === 'item_id'){
             let d = mThis.tblServiceItems.getDataRow(tr);
-            let p = { 'id': d.service_id };
+            let p = { 'id': d.item_id }; //d.item_id is, in fact, the d.service_id
             vsapi.call(`${mThis.base_url}/api/service/info`,p,null,false).then(res => {
                 if(res.status_code === 200){
                     let item = res.data?res.data:{};
@@ -786,7 +786,9 @@ let InvoiceDialog = new function () {
             if(el.is('select')) el.val(d[f]).trigger('change');
             else el.val(d[f]);
         });
-        mThis.tblProductItems.setData(d.items);
+
+        mThis.tblProductItems.setData(d.products);
+        mThis.tblServiceItems.setData(d.services);
 
         d.sub_total = d.amount;
         d.grand_total = d.amount_due;
@@ -828,14 +830,7 @@ let InvoiceDialog = new function () {
 
         mThis.loadInvoiceFormOptions((d) => {
             mThis.tblProductItems.setSelectOptions('item_id',d.items);
-            vsapi.call(`${mThis.base_url}/api/invoice/customer-type`,null).then(res => {
-                if(res.status_code === 200){
-                    let d = res.data;
-                    VSUtil.setComboItems(mThis.SelectCustomerType,d.customer_type,'value','text',true,'(select customer type)',null);
-                }
-            });
-            mThis.tblServiceItems.setSelectOptions('service_id',d.services);
-            
+            mThis.tblServiceItems.setSelectOptions('item_id',d.services);
             VSUtil.setComboItems(mThis.elPmtTerms,d.pmt_terms,'code','description',true,'(select terms)',null);
             VSUtil.setComboItems(mThis.elCustomer,d.customers,'id','customer_name',true,'(select client)',null);
 
@@ -846,14 +841,18 @@ let InvoiceDialog = new function () {
                     if(res.status_code === 200){
                         //Get invoice data (user data)
                         let data = res.data;
-                        let items = StringSanitizer.sanitizeObject(data.items);
+                        //console.error(JSON.stringify(data));
+                        let products = StringSanitizer.sanitizeObject(data.products);
                         let services = StringSanitizer.sanitizeObject(data.services);
+                        ////let labo_tests = StringSanitizer.sanitizeObject(data.labo_tests);
                         //Clear data.items and data.services in order to mamek it more efficient process for "StringSanitizer.sanitizeObject(data)"
-                        data.items = null;
+                        data.products = null;
                         data.services = null;
+                        data.labo_tests = null;
                         let invoice = StringSanitizer.sanitizeObject(data);
-                        invoice.items = items;
+                        invoice.products = products;
                         invoice.services = services;
+                        //invoice.labo_tests = labo_tests;
 
                         mThis.setData(invoice);
                         mThis.self.modal({

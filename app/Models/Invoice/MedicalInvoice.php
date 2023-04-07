@@ -6,8 +6,10 @@ use App\Models\Consultation;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
 use DB;
-use App\Models\Patient;
+use App\Models\Invoice\Customer;
+//use App\Models\Patient;
 use App\Models\DV;
+use App\Models\Invoice\InvoiceSettings;
 use App\Models\ServiceQ\QTicket;
 use DateTime;
 
@@ -46,8 +48,9 @@ class MedicalInvoice //extends Invoice //extends Model
     }
 
     static function getCustomerInfo($patient_id,$cols=null){
+      $customer_table = InvoiceSettings::$customer_table;
       if(!$cols) $cols="c.id,p.id as person_id,CONCAT(p.last_name,' ',p.first_name) AS name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address";
-      $rows = DB::table('patients as c')->join('persons as p','p.id','=','c.person_id')->where('c.id',$patient_id)->selectRaw($cols)->take(1)->get();
+      $rows = DB::table($customer_table.' as c')->join('persons as p','p.id','=','c.person_id')->where('c.id',$patient_id)->selectRaw($cols)->take(1)->get();
       return isset($rows[0])?$rows[0]:null;
     }
  
@@ -110,13 +113,14 @@ class MedicalInvoice //extends Invoice //extends Model
     function create($ticket_id,$ss=null){
       if(!$ss) $ss = $this->getUserInfo();
       $branch_id = $ss->branch_id;
+      $customer_table = InvoiceSettings::$customer_table; /** either patients or customers table **/
       $d = self::createInvoiceHeaderInputs($ticket_id);
       $validate_rule =[
         "id"=>"0|identity=1",
         "invoice_class"=>"1|choice|Medical,Regular|default=Regular",
         "issue_date"=>"0|date|text=Issue date is required",
         "due_date"=>"0|date|text=Due date is not correct",
-        "customer_id"=>"1|number|exists=patients.id|text=Client ID does not exist",
+        "customer_id"=>"1|number|exists=$customer_table.id|text=Client ID does not exist",
         "billing_address"=>"0|string|0-250",
         "customer_phone"=>"0|phone|0-30",
         "customer_email"=>"0|phone|0-30",
@@ -155,11 +159,11 @@ class MedicalInvoice //extends Invoice //extends Model
       else $inputs['due_date'] = $issue_date;
 
       $customer_id = $inputs['customer_id'];
-      $customer =self::getCustomerInfo($customer_id,"address,phone_number,email,CONCAT(last_name,' ',first_name) AS name");
+      $customer =Customer::getProps($customer_id,null); //self::getCustomerInfo($customer_id,"address,phone_number,email,CONCAT(last_name,' ',first_name) AS name");
       if(!$customer) return DV::error("It seems that patient ID is not valid");
-      $inputs['customer_phone'] = $customer->phone_number;
-      $inputs['billing_address'] = isset($customer->billing_address)?$customer->billing_address:$customer->address;
-      $inputs['customer_email'] = $customer->email; 
+      if(empty($inputs['customer_phone'])) $inputs['customer_phone'] = $customer->phone_number;
+      if(empty($inputs['billing_address'])) $inputs['billing_address'] = $customer->billing_address;
+      if(empty($inputs['customer_email'])) $inputs['customer_email'] = $customer->email;
   
       $inputs['signer_name'] = InvoiceSettings::signer_name($branch_id);
       $account = InvoiceSettings::payment_bank($branch_id);
@@ -338,6 +342,88 @@ class MedicalInvoice //extends Invoice //extends Model
       return (object)['item_count'=>$success_cnt,'total_tax'=>$total_tax,'total_cost'=>$total_cost];
    }
 
+  function hasPayments($id=null,$ss=null){
+    if(!$id) $id = $this->getId();
+    if(!$ss) $ss = $this->getUserInfo();
+    return DB::table('invoice_payments')->where('invoice_id',$id)->where('branch_id',$ss->branch_id)->select('id')->take(1)->exists();
+   }
+ 
+    //CreateInvoice() | saveInvoice()
+    function update($d,$ss=null){
+      if(!$ss) $ss = $this->getUserInfo();
+      $branch_id = $ss->branch_id;
+      $customer_table = InvoiceSettings::$customer_table;
+      if ($this->hasPayments(isset($d['id'])? $d['id']:0,$ss)) return DV::error("Cannot modify invoice with existing payments");
+      $validate_rule =[
+        "id"=>"0|identity=1",
+        "issue_date"=>"1|date|text=Issue date is required",
+        "due_date"=>"1|date|text=Due date is not correct",
+        "customer_id"=>"1|number|exists=$customer_table.id|text=Client ID does not exist",
+        "billing_address"=>"0|string|0-250",
+        "customer_phone"=>"0|phone|0-30",
+        "customer_email"=>"0|phone|0-30",
+        "terms"=>"0|string|0-30",
+        "description"=>"0|string",
+        "invoice_notes"=>"0|string|0-200",
+        "status_code"=>"1|choice|active,inactive|default=active",
+        "discount"=>"0|number|default=0",
+        "discount_type"=>"1|choice|percentage,amount",
+        "amount"=>"0|number|default=0",
+        "amount_due"=>"0|number|default=0",
+        "amount_paid"=>"0|number|default=0",
+        //"signer_name"=>"0|string|0-50",
+        'inactive'=>'1|choice|0,1|default=0',
+        "items"=>"1|array"
+      ];
+      $res = validateObject($d,$validate_rule,true,[],$ss->lang,false,[]);
+      if($res->error) return DV::error($res->error);
+      $invoice_id = $res->id;
+      $inputs = $res->values;
+ 
+      if(!(bool)strtotime($inputs['issue_date'])) $inputs['issue_date'] =getNowTime();
+
+      $inputs['issue_date'] = convertDate($inputs['issue_date']); 
+      $inputs['due_date'] = convertDate($inputs['due_date']);
+      $issue_date = $inputs['issue_date'];
+      $due_date = $inputs['due_date'];
+
+      if((bool)strtotime($due_date))
+        if($due_date < $issue_date) return DV::error("Issue Date should be earlier or the same as Due Date");
+      else $inputs['due_date'] = $issue_date;
+
+      $customer_id = $inputs['customer_id'];
+      $customer = Customer::getProps($customer_id,null);
+      if(!$customer) return DV::error("It seems customer ID is not valid");
+      if(empty($inputs['customer_phone'])) $inputs['customer_phone'] = $customer->phone_number;
+      if(empty($inputs['billing_address'])) $inputs['billing_address'] = $customer->billing_address;
+      if(empty($inputs['customer_email'])) $inputs['customer_email'] = $customer->email; 
+      $products = $inputs['products'];
+      $services = $inputs['services'];
+
+      unset($inputs['products']);
+      //$inputs['signer_name'] = InvoiceSettings::signer_name($branch_id);
+      //$account = InvoiceSettings::payment_bank($branch_id);
+      //$currency = InvoiceSettings::currency($branch_id);
+      //$inputs['pmt_account_number'] = $account->pmt_account_number;
+      //$inputs['pmt_bank_name'] = $account->pmt_bank_name;
+      //$inputs['pmt_account_name'] = $account->pmt_account_name;
+      //$inputs['currency_code']= $currency->currency_code;
+      //$inputs['exchange_rate']= $currency->exchange_rate;
+    
+      //$inputs['invoice_number'] = null ; //self::createInvoiceNumber($branch_id,$issue_date);
+      $discount = $inputs['discount'];
+      $discount_type = $inputs['discount_type'];
+      unset($inputs['discount']);
+
+      if (!$invoice_id) return DV::error("Invoice ID is not valid");
+      $invoice_id = saveData($ss,"invoices",['id'=>$invoice_id],$inputs,[],1);
+         $m = self::saveInvoiceItems($ss,['id'=>$invoice_id,'discount'=>$discount,'discount_type'=>$discount_type],$products,true); //True = "Delete all previous items before inserting invoice's items"
+         if($m->item_count<=0) return DV::error('No invoice items have been saved. Those items may be invalid');
+         //$xres = self::setInvoiceNumber($branch_id,$invoice_id,"tax_line",$issue_date,null);
+         //$this->updateAmounts($invoice_id,$discount,$discount_type);
+         return DV::success(['invoice_id'=>$invoice_id,'item_count'=>$m->item_count]);
+   }
+
     // //NOTE: parameter $item_class = {product,service,labo,etc...}
     // static function createInvoiceItems($item_class,$items=[],$ss=null){
     //   //$ss = $ss?$ss:$this->getUserInfo();
@@ -396,13 +482,18 @@ class MedicalInvoice //extends Invoice //extends Model
     $services = [];
     $labo_tests = [];
     foreach($rows as $row){
-      $inv_item_class = strtolower($row->invoice_item_class); 
-      if($inv_item_class==='labo' || $inv_item_class==='labo_test'){
-         $labo_tests[] = $row;
-      }else if($inv_item_class ==='service'){
-         $services[] = $row;
-      }else $products[] = $row;
+      $inv_item_class = strtolower($row->invoice_item_class);
+      if($inv_item_class==='product' || $inv_item_class==='item'){
+        $products[] = $row;
+      }else $services[] = $row;
+
+      // else if($inv_item_class==='labo' || $inv_item_class==='labo_test'){
+      //    $labo_tests[] = $row;
+      // }else if($inv_item_class ==='service'){
+      //    $services[] = $row;
+      // }else $products[] = $row;
     }
+
     return (object)[
        'products'=>$products,
        'services'=>$services,
