@@ -168,7 +168,7 @@ class InvoiceController extends Controller
     function getCustomerType(Request $req){
         $ss= UM::getUserInfoBytoken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
-        $customer_type = (object)["customer_type" => ["code" => "general","description" => "General"]];
+        $customer_type = (object)["customer_type" => ["value" => "general","text" => "General"]];
         return JDV::result($customer_type);
     }
 }

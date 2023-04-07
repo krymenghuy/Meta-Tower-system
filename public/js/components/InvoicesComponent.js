@@ -819,7 +819,7 @@ let InvoiceDialog = new function () {
             vsapi.call(`${mThis.base_url}/api/invoice/customer-type`,null).then(res => {
                 if(res.status_code === 200){
                     let d = res.data;
-                    VSUtil.setComboItems(mThis.SelectCustomerType,d.customer_type,'code','description',true,'(select customer type)',null);
+                    VSUtil.setComboItems(mThis.SelectCustomerType,d.customer_type,'value','text',true,'(select customer type)',null);
                 }
             });
 
