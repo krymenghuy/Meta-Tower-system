@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\UM;
 use App\Models\JDV;
 use App\Models\Invoice\Invoice;
+use App\Models\Invoice\InvoiceSettings;
 use App\Models\Invoice\Payment;
 
 class InvoiceController extends Controller
@@ -25,6 +26,13 @@ class InvoiceController extends Controller
         return JDV::raw($invoice->delete());
     }
 
+    function invoice_form_options(Request $req){
+        $ss= UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        //$invoice = new Invoice($req->id?$req->id:$req->invoice_id,$ss);
+        return JDV::result(InvoiceSettings::invoice_form_options($ss));
+    }
+ 
     function getInvoiceDetails(Request $req){
         $ss= UM::getUserInfoBytoken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
