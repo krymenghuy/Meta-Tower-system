@@ -95,7 +95,8 @@ class Invoice
        if (empty($inputs['customer_phone'])) $inputs['customer_phone'] = $customer->phone_number;
        if(empty($inputs['billing_address'])) $inputs['billing_address'] = isset($customer->billing_address)?$customer->billing_address:$customer->address;
        if(empty($inputs['customer_email'])) $inputs['customer_email'] = $customer->email; 
-  
+      
+      //On Update or Create => $items array contains both "products" and "services"  
        $items = $inputs['items'];
        unset($inputs['items']);
        $inputs['signer_name'] = InvoiceSettings::signer_name($branch_id);
@@ -125,12 +126,13 @@ class Invoice
      function update($d,$ss=null){
       if(!$ss) $ss = $this->getUserInfo();
       $branch_id = $ss->branch_id;
+      $customer_table = InvoiceSettings::$customer_table;
       if ($this->hasPayments(isset($d['id'])? $d['id']:0,$ss)) return DV::error("Cannot modify invoice with existing payments");
       $validate_rule =[
         "id"=>"0|identity=1",
         "issue_date"=>"1|date|text=Issue date is required",
         "due_date"=>"1|date|text=Due date is not correct",
-        "customer_id"=>"1|number|exists=customers.id|text=Client ID does not exist",
+        "customer_id"=>"1|number|exists=$customer_table.id|text=Client ID does not exist",
         "billing_address"=>"0|string|0-250",
         "customer_phone"=>"0|phone|0-30",
         "customer_email"=>"0|phone|0-30",
@@ -169,7 +171,7 @@ class Invoice
       if(empty($inputs['customer_phone'])) $inputs['customer_phone'] = $customer->phone_number;
       if(empty($inputs['billing_address'])) $inputs['billing_address'] = $customer->billing_address;
       if(empty($inputs['customer_email'])) $inputs['customer_email'] = $customer->email; 
- 
+     //On Update or Create => $items array contains both "products" and "services"  
       $items = $inputs['items'];
       unset($inputs['items']);
       //$inputs['signer_name'] = InvoiceSettings::signer_name($branch_id);
@@ -302,90 +304,106 @@ class Invoice
       return null;      
     }
  
-    //@params $invoiceInfo = ['id','discount','discount_type']
-    static function saveInvoiceItems($ss,$invoiceInfo,$items,$deletePreviousItems = false){
-       $branch_id = $ss->branch_id;
-       $invoice_id =isset($invoiceInfo['id'])? $invoiceInfo['id']:0;
-       $success_cnt =0;
-       $total_cost = 0;
-       $total_amount = 0 ;
-       $total_tax =0;
-       if ($deletePreviousItems) DB::table("invoice_items")->where('invoice_id',$invoice_id)->delete();
-       foreach($items as $x){
-          $item_id = isset($x->id)?$x->id:null; // isset($x['item_id'])?$x['item_id']:null;
-          if(!$item_id) $item_id = isset($x->item_id)?$x->item_id:null;
-          $itemInfo = Item::info($item_id);
-          if($itemInfo){
-            //item's discount is always in percentage
-            $discount_type ='percentage';
-            $discount_percent = isset($x->discount_percent)?$x->discount_percent:0;
-            // $discount_type = isset($x->discount_type)?$x->discount_type:null;
-            // $discount = isset($x->discount)? $x->discount:0;
-            // if (!$discount_type){
-            //   $discount_percent = isset($x->discount_percent)?$x->discount_percent:0;
-            //   if ($discount_percent > 0){
-            //      $discount_type ='percentage';
-            //      $discount = $discount_percent;
-
-            //   } 
-            // } 
- 
-            //if discount_percent is supplied => then we user discount as percentage, otherwise, use disocunt in currency amount
-            $tax_rate = isset($x->tax_rate)?$x->tax_rate:$itemInfo->sales_tax_rate;
-            if(!$tax_rate) $tax_rate =0;
-            $price = isset($x->price)? $x->price:$x->selling_price;
-            if(!$price) $price=isset($itemInfo->price)?$itemInfo->price: (isset($itemInfo->selling_price)?$itemInfo->selling_price:0);
-            $amount = $x->qty * $price;
-            $discount_percent = isset($x->discount_percent)?$x->discount_percent:0;
-            $discount_amount = $amount * $discount_percent/100;
-            $net_amount = $amount - $discount_amount;
-            $tax_amount = $net_amount * $tax_rate/100;
-            $net_amount += $tax_amount;
-
-            $description =isset($x->description)?$x->description: $itemInfo->name;
-            $new_id = saveData($ss,'invoice_items',['id'=>0],[
-              'invoice_item_class'=>'Product',
-              'invoice_id'=>$invoice_id, 
-              'item_id'=>$item_id,
-              'item_name'=>$itemInfo->name,
-              'description'=>$description,
-              'qty'=>$x->qty,
-              'sku'=>$itemInfo->sku,
-              'price'=>$price,
-              'cost'=>$itemInfo->cost,
-              'discount_percent'=>$discount_percent,
-              'discount_amount'=>$discount_amount,
-              'discount_type'=>$discount_type,
-              'tax_rate'=>$tax_rate,
-              'tax_amount'=>$tax_amount,
-              //'amount'=>$amount,
-              'net_amount'=>$net_amount
-            ],[],1);
-
-            if ($new_id){
-              $total_amount +=$net_amount;
-              $total_tax += $tax_amount;
-              $total_cost +=$itemInfo->cost;
-              $success_cnt++;
-            }
-          }
-       }
-
-      $discount = isset($invoiceInfo['discount'])?$invoiceInfo['discount']:0;
-      $discount_type = isset($invoiceInfo['discount_type'])?$invoiceInfo['discount_type']:0;
-      self::updateAmounts($invoice_id,$discount,$discount_type);
-      //  $overall_discount_amount =0;
-      //  $overall_discount_percent =0;
-      //  DB::table('invoices')->where('id',$invoice_id)->where('branch_id',$branch_id)->update([
-      //   'total_cost'=>$total_cost,
-      //   'tax_amount'=>$total_tax
-      //   //,'amount'=>$total_amount,
-      //   //'amount_due'=>$total_amount,
-      //   //'discount_amount'=>$overall_discount_amount,
-      //   //'discount_percent'=>$overall_discount_percent
-      //  ]);
-       return (object)['item_count'=>$success_cnt,'total_tax'=>$total_tax,'total_cost'=>$total_cost];
+    static function itemInfo($item_id){
+      $cols = ["i.id","i.code","i.name as item_name","i.description","i.sku","i.group_id","g.name AS group_name","g.category_id","i.cost","i.ws_selling_price","i.selling_price","i.sales_tax_rate"]; 
+      $rows = DB::table("inv_items as i")->join('inv_item_groups AS g','g.id','=','i.group_id')->where("i.id",$item_id)->select($cols)->take(1)->get();
+      return isset($rows[0])?$rows[0]:null;    
     }
+
+    static function serviceInfo($service_id){
+      $cols = ["i.id","i.name as item_name","i.description","i.sku","i.cost","i.price","i.tax_rate as sales_tax_rate"]; 
+      $rows = DB::table("medical_services as i")->where("i.id",$service_id)->select($cols)->take(1)->get();
+      return isset($rows[0])?$rows[0]:null;    
+    }
+
+    static function saveInvoiceItems($ss,$invoiceInfo,$items,$deletePreviousItems = false){
+      $branch_id = $ss->branch_id;
+      $invoice_id =isset($invoiceInfo['id'])? $invoiceInfo['id']:0;
+      $success_cnt =0;
+      $total_cost = 0;
+      $total_amount = 0 ;
+      $total_tax =0;
+      if ($deletePreviousItems) DB::table("invoice_items")->where('invoice_id',$invoice_id)->delete();
+      foreach($items as $x){
+         $item_id = isset($x->id)?$x->id:null; // isset($x['item_id'])?$x['item_id']:null;
+         if(!$item_id) $item_id = isset($x->item_id)?$x->item_id:null;
+         $itemInfo = null;
+         $itm_class = strtolower($x->invoice_item_class);
+         if($itm_class==='service') $itemInfo = self::serviceInfo($item_id);
+         else $itemInfo = self::itemInfo($item_id);
+
+         if($itemInfo){
+           //item's discount is always in percentage
+           $discount_type ='percentage';
+           $discount_percent = isset($x->discount_percent)?$x->discount_percent:0;
+           // $discount_type = isset($x->discount_type)?$x->discount_type:null;
+           // $discount = isset($x->discount)? $x->discount:0;
+           // if (!$discount_type){
+           //   $discount_percent = isset($x->discount_percent)?$x->discount_percent:0;
+           //   if ($discount_percent > 0){
+           //      $discount_type ='percentage';
+           //      $discount = $discount_percent;
+
+           //   } 
+           // } 
+
+           //if discount_percent is supplied => then we user discount as percentage, otherwise, use disocunt in currency amount
+           $tax_rate = isset($x->tax_rate)?$x->tax_rate:$itemInfo->sales_tax_rate;
+           if(!$tax_rate) $tax_rate =0;
+           $price = isset($x->price)? $x->price:0;
+           if(!$price) $price = isset($itemInfo->selling_price)?$itemInfo->selling_price:0;
+           $amount = $x->qty * $price;
+           $discount_percent = isset($x->discount_percent)?$x->discount_percent:0;
+           $discount_amount = $amount * $discount_percent/100;
+           $net_amount = $amount - $discount_amount;
+           $tax_amount = $net_amount * $tax_rate/100;
+           $net_amount += $tax_amount;
+
+           //Example => $x->invoice_item_class = {'product','service','labo'}
+           $description =isset($x->description)?$x->description: (isset($itemInfo->item_name)?$itemInfo->item_name:$itemInfo->name);
+           $new_id = saveData($ss,'invoice_items',['id'=>0],[
+             'invoice_item_class'=>$x->invoice_item_class,
+             'invoice_id'=>$invoice_id, 
+             'item_id'=>$item_id,
+             'item_name'=>isset($itemInfo->name)?$itemInfo->name:$itemInfo->item_name,
+             'description'=>$description,
+             'qty'=>$x->qty,
+             'sku'=>$itemInfo->sku,
+             'price'=>$price,
+             'cost'=>$itemInfo->cost,
+             'discount_percent'=>$discount_percent,
+             'discount_amount'=>$discount_amount,
+             'discount_type'=>$discount_type,
+             'tax_rate'=>$tax_rate,
+             'tax_amount'=>$tax_amount,
+             //'amount'=>$amount,
+             'net_amount'=>$net_amount
+           ],[],1);
+
+           if ($new_id){
+             $total_amount +=$net_amount;
+             $total_tax += $tax_amount;
+             $total_cost +=$itemInfo->cost;
+             $success_cnt++;
+           }
+         }
+      }
+
+     $discount = isset($invoiceInfo['discount'])?$invoiceInfo['discount']:0;
+     $discount_type = isset($invoiceInfo['discount_type'])?$invoiceInfo['discount_type']:0;
+     self::updateAmounts($invoice_id,$discount,$discount_type);
+     //  $overall_discount_amount =0;
+     //  $overall_discount_percent =0;
+     //  DB::table('invoices')->where('id',$invoice_id)->where('branch_id',$branch_id)->update([
+     //   'total_cost'=>$total_cost,
+     //   'tax_amount'=>$total_tax
+     //   //,'amount'=>$total_amount,
+     //   //'amount_due'=>$total_amount,
+     //   //'discount_amount'=>$overall_discount_amount,
+     //   //'discount_percent'=>$overall_discount_percent
+     //  ]);
+      return (object)['item_count'=>$success_cnt,'total_tax'=>$total_tax,'total_cost'=>$total_cost];
+   }
 
     function delete($id=null,$ss=null){
         if (!$ss) $ss = $this->getUserInfo();
