@@ -5,13 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
 use App\Models\Patient;
-//use App\Models\Lead;
 use App\Models\JDV;
 use App\Models\UM;
- 
 
-class AppointmentController extends Controller
-{
+class AppointmentController extends Controller{
     function getTest(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
