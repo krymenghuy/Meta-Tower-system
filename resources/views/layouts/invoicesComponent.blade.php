@@ -146,7 +146,7 @@
                 <div class="row gy-2 mt-3">
                     <div class="col-lg-6">
                         <label for="description" class="form-label trans-text" data-langprop="titles.Description"></label>
-                        <textarea class="form-control data-input" data-field="description" data-ffield="Description" data-required="1"></textarea>
+                        <textarea class="form-control data-input" data-field="description" data-ffield="Description"></textarea>
                     </div>
                     <div class="col-lg-6">
                         <div class="d-flex justify-content-center">
@@ -192,7 +192,7 @@
                 <div class="row gy-2">
                     <div class="col-lg-6">
                         <label for="messageDisplayedOnInvoice" class="form-label trans-text" data-langprop="titles.Message Displayed On Invoice"></label>
-                        <textarea class="form-control data-input" data-field="message_invoice" data-ffield="Message Displayed On Invoice" data-required="1"></textarea>
+                        <textarea class="form-control data-input" data-field="message_invoice" data-ffield="Message Displayed On Invoice"></textarea>
                     </div>
                 </div>
             </div>

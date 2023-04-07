@@ -19,7 +19,7 @@ class Invoice
     //protected $table_payment ="invoice_payments";
     protected $this_invoice_id =null;
     protected $userInfo = null;
-    protected static $customer_table ="patients";
+    //protected static $customer_table ="patients";
 
     public function __construct($id=0,$userInfo=null){
        $this->userInfo = $userInfo;
@@ -48,12 +48,13 @@ class Invoice
     function create($d,$ss=null){
        if(!$ss) $ss = $this->getUserInfo();
        $branch_id = $ss->branch_id;
+       $customer_table = InvoiceSettings::$customer_table;
        $validate_rule =[
          "id"=>"0|identity=1",
          "invoice_class"=>"1|choice|Medical,Regular|default=Regular",
          "issue_date"=>"0|date|text=Issue date is required",
          "due_date"=>"0|date|text=Due date is not correct",
-         "customer_id"=>"1|number|exists=customers.id|text=Client ID does not exist",
+         "customer_id"=>"1|number|exists=$customer_table.id|text=Client ID does not exist",
          "billing_address"=>"0|string|0-250",
          "customer_phone"=>"0|phone|0-30",
          "customer_email"=>"0|phone|0-30",
@@ -89,11 +90,11 @@ class Invoice
        else $inputs['due_date'] = $issue_date;
 
        $customer_id = $inputs['customer_id'];
-       $customer = self::getCustomerInfo($customer_id,"address,phone_number,email,CONCAT(last_name,' ',first_name) AS name");
+       $customer = Customer::getProps($customer_id,null); //self::getCustomerInfo($customer_id,"address,phone_number,email,CONCAT(last_name,' ',first_name) AS name");
        if(!$customer) return DV::error("It seems customer ID is not valid");
-       $inputs['customer_phone'] = $customer->phone_number;
-       $inputs['billing_address'] = isset($customer->billing_address)?$customer->billing_address:$customer->address;
-       $inputs['customer_email'] = $customer->email; 
+       if (empty($inputs['customer_phone'])) $inputs['customer_phone'] = $customer->phone_number;
+       if(empty($inputs['billing_address'])) $inputs['billing_address'] = isset($customer->billing_address)?$customer->billing_address:$customer->address;
+       if(empty($inputs['customer_email'])) $inputs['customer_email'] = $customer->email; 
   
        $items = $inputs['items'];
        unset($inputs['items']);
@@ -121,7 +122,7 @@ class Invoice
     }
  
     //CreateInvoice() | saveInvoice()
-    public function update($d,$ss=null){
+     function update($d,$ss=null){
       if(!$ss) $ss = $this->getUserInfo();
       $branch_id = $ss->branch_id;
       if ($this->hasPayments(isset($d['id'])? $d['id']:0,$ss)) return DV::error("Cannot modify invoice with existing payments");
@@ -163,11 +164,11 @@ class Invoice
       else $inputs['due_date'] = $issue_date;
 
       $customer_id = $inputs['customer_id'];
-      $customer = Customer::info($branch_id,$customer_id);
+      $customer = Customer::getProps($customer_id,null);
       if(!$customer) return DV::error("It seems customer ID is not valid");
-      $inputs['customer_phone'] = $customer->phone_number;
-      $inputs['billing_address'] = $customer->billing_address;
-      $inputs['customer_email'] = $customer->email; 
+      if(empty($inputs['customer_phone'])) $inputs['customer_phone'] = $customer->phone_number;
+      if(empty($inputs['billing_address'])) $inputs['billing_address'] = $customer->billing_address;
+      if(empty($inputs['customer_email'])) $inputs['customer_email'] = $customer->email; 
  
       $items = $inputs['items'];
       unset($inputs['items']);
@@ -469,9 +470,10 @@ class Invoice
 
    static function list($d,$ss){
       //NOTE: self::$customer_table = "patients" for mClinic system, "customers" for accounting system
+      $customer_table = InvoiceSettings::$customer_table; /** customers or patients table **/
       $branch_id = $ss->branch_id;
       $cols = ['v.id',DB::raw('formatDate(v.issue_date) as issue_date'),DB::raw('formatDate(v.due_date) as due_date'),'v.ref_number','v.description','v.customer_id',DB::raw("CONCAT(p.last_name,' ',p.first_name) as customer_name"),'p.phone_number as customer_phone','p.email as customer_email','c.billing_address','v.currency_code','v.amount','v.discount_amount','v.discount_percent','v.amount_due','v.amount_paid'];
-      $rows = DB::table("invoices AS v")->join(self::$customer_table. " as c",'c.id','=','v.customer_id')->join('persons as p','p.id','=','c.person_id')->where('v.branch_id',$branch_id)->select($cols)->orderBy("v.id", "DESC")->get();
+      $rows = DB::table("invoices AS v")->join($customer_table. " as c",'c.id','=','v.customer_id')->join('persons as p','p.id','=','c.person_id')->where('v.branch_id',$branch_id)->select($cols)->orderBy("v.id", "DESC")->get();
       //$rows = DB::table("invoices AS v")->join('customers as c','c.id','=','v.customer_id')->where('v.branch_id',$branch_id)->select($cols)->orderBy("v.id", "DESC")->get(); 
       return $rows;
    }
