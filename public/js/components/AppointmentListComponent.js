@@ -688,6 +688,9 @@ let PatientDialog = new function () {
     this.elNat = $('#_pat_nationality');
     this.elConsultant = $('#_pat_consultant');
     this.elDepartment = $('#_pat_department');
+    this.btnFileChooser = $('#_img_patient');
+    this.imgPhoto = $('#_img_preView_patient');
+    this.btnDeleteImg = $('#del_img_patient');
 
     this.elError = $('#_apl_dlgPatient_error');
     this.btnSave = $('#_apl_dlgPatient_btnSave');
@@ -706,6 +709,19 @@ let PatientDialog = new function () {
 
     this.btnSaveAndQueue.on('click', (e) => {
         mThis.registerPatient(1);
+    });
+
+    mThis.btnFileChooser.on('click',(e)=> {
+        FileChooser.chooseFile(null,(d)=>{
+            if(d){
+                mThis.imgPhoto.attr('src',d.dataUrl);
+            }
+        });
+    });
+
+    mThis.btnDeleteImg.on('click',(e)=>{
+        e.preventDefault();
+        mThis.imgPhoto.removeAttr('src');
     });
 
     this.elDateOfBirth.on('change', (e) => {
