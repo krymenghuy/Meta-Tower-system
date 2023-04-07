@@ -114,13 +114,13 @@ class Settings extends Model
         ];
      }
 
-     static function invoice_form_options($ss){
-        return (object)[
-          "customers"=>self::options_customer($ss),
-          "pmt_terms"=>self::options_pmt_terms($ss),
-          "items"=>self::options_item($ss)
-        ];
-     }
+    //  static function invoice_form_options($ss){
+    //     return (object)[
+    //       "customers"=>self::options_customer($ss),
+    //       "pmt_terms"=>self::options_pmt_terms($ss),
+    //       "items"=>self::options_item($ss)
+    //     ];
+    //  }
 
     //saveSKU()| CreateUnit()
     static function saveUnit($ss,$d){
