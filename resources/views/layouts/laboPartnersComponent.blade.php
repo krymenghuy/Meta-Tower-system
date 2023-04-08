@@ -60,7 +60,7 @@
                 <div class="row gy-2 py-2">
                     <div class="col-lg-6">
                         <label for="partner_type" class="form-label trans-text" data-langprop="partners.Partner Type"></label>
-                        <select class="form-select data-input" data-field="partner_type" data-required="1" data-ffield="Partner Type">
+                        <select class="form-select modal-select2 data-input" data-field="partner_type" data-required="1" data-ffield="Partner Type">
                             <option value="person">Person</option>
                             <option value="institution">Institution</value>
                         </select>

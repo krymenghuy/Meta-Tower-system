@@ -184,6 +184,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .custom-width{
   max-width:272px;
+  width:272px;
 }
 
 .fw-bold{

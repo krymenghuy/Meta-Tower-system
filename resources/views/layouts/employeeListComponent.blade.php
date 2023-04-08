@@ -45,7 +45,7 @@
                         <div class="row gy-2 py-2">
                             <div class="col-lg-6">
                                 <label for="sex" class="form-label trans-text" data-langprop="employees.Sex"></label>
-                                <select class="form-select data-input" data-field="sex" data-required="1" data-ffield="Sex">
+                                <select class="form-select modal-select2 data-input" data-field="sex" data-required="1" data-ffield="Sex">
                                     <option value='M'>Male</option>
                                     <option value='F'>Female</option>
                                     <option value='O'>Other</option>
@@ -69,7 +69,7 @@
                         <div class="row gy-2 py-2">
                             <div class="col-lg-6">
                                 <label for="employment_type" class="form-label trans-text" data-langprop="employees.Employment Type"></label>
-                                <select class="form-select data-input" data-field="employment_type" data-ffield="Employee Type" data-required="1">
+                                <select class="form-select modal-select2 data-input" data-field="employment_type" data-ffield="Employee Type" data-required="1">
                                     <option value="full time">Full Time</option>
                                     <option value="part time">Part Time</option>
                                     <option value="other">Other</option>

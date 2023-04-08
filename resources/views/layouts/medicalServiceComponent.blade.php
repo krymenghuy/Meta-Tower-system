@@ -6,9 +6,9 @@
                 <span class="trans-text" data-langprop="buttons.Add New"></span>
             </button>
             <input type="search" class="search-box" id="_msl_search" placeholder="Search"/>
-            <select id="_msl_filter_service" class="form-select custom-width">
-                <option value="1">Test</option>
-            </select>
+            <div class="custom-width">
+                <select id="_msl_filter_service" class="form-select modal-select2"></select>
+            </div>
         </div>
         <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;min-height:350px;">
             <table class="table header-light-blue header-uppercase table-hover" id="_msl_tblItems"></table>
@@ -34,7 +34,7 @@
                     </div>
                     <div class="col-12">
                         <label class="form-label trans-text" data-langprop="service.Treatment method"></label>
-                        <select data-required="1" data-field="treatment_method" data-ffield="Treatment method" class="form-select data-input">
+                        <select data-required="1" data-field="treatment_method" data-ffield="Treatment method" class="form-select modal-select2 data-input">
                            <option value="none">None</option>
                            <option value="nonsurgery">Non-surgery</option>
                            <option value="minor surgery">Minor Surgery</option>
@@ -43,7 +43,7 @@
                     </div>
                     <div class="col-12">
                         <label class="form-label trans-text" data-langprop="service.Type"></label>
-                        <select data-required="1" data-field="service_type" data-ffield="Service type" class="form-select data-input">
+                        <select data-required="1" data-field="service_type" data-ffield="Service type" class="form-select modal-select2 data-input">
                            <option value="consultation">Consultation</option>
                            <option value="treatment">Treatment</option>
                            <option value="labotest">Labo Test</option>

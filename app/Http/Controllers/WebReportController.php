@@ -74,6 +74,7 @@ class WebReportController extends Controller
           case 'medical_report':{
             $data['title']="Medical Report";
             $data['consult'] = $consultation->getDetails();
+            // echo dd($data);
             break;
           }
           case 'general_report':{
@@ -117,6 +118,7 @@ class WebReportController extends Controller
         $data['invoice'] = $invoice->getDetails();
         $data['title'] = "ESTHEDERM Aesthetic & Dermatology";
         $data['rtype'] = $p->rtype;
+        // echo dd($data); return;
         return view('reports.invoice', $data);
     }
 

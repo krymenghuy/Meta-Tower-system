@@ -35,7 +35,6 @@ class ItemsView{
 
         if(this.isUndefined(options.showAddLineButton)) options.showAddLineButton = true;  
         if(this.isUndefined(options.showColumnHeaders)) options.showColumnHeaders = true;
-        //if(this.isUndefined(options.validateBeforeAddNew)) options.validateBeforeAddNew = false;
  
         if(!options.columns) options.columns = this.getDefaultColumns(); 
         this.options = options;
@@ -336,17 +335,7 @@ class ItemsView{
                     if(d.classList.style) d.classList.style.display='none';
                   }
         });
- 
-        // let opt_html ="";
-        // //unknown error if the items is not type of array
-        // if(items){
-        //   items.map(item=>{
-        //     opt_html = [opt_html,`<option value="${item.value}">${item.text}</option>`].join(''); 
-        //   });
-        //   el.innerHTML = opt_html; 
-        // }
-            
-          //NOTE: el must be converted to $(el) because .select2() is jquery function
+
             let x = $(el);
             if(op.items) VSUtil.setComboItems(x,op.items,'value','text',null,null,null);
 
@@ -384,8 +373,6 @@ class ItemsView{
               if (that.validateRow(tr,that.options.validateColumns,true)) that.options.onItemValidated(row_id,new_item,tr); 
               that.options.onItemChange(row_id,new_item,td.dataset.name,td,tr); 
             });
- 
-            //if(value !== undefined) VSUtil.setSelect2_value(el,value);
      }
   
      //@items is array = [{value,text}, {value,text}, ...] 
