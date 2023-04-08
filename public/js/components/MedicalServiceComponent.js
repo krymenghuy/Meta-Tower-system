@@ -200,11 +200,7 @@ let MedicalServiceComponent = new function () {
                     main_view.setTitle(mThis.title_prop);
                     mThis.self.show().siblings().hide();
                     return;
-                }  
-                // mThis.displayMedicalServices(() => {
-                //         main_view.setTitle(mThis.title_prop);
-                //         mThis.self.show().siblings().hide();
-                // });
+                }
         });
     }
 }

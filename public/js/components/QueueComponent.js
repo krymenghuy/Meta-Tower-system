@@ -1002,7 +1002,6 @@ let ConsultTabView = new function () {
     this.btnSaveConsult.on('click', (e) => {
         e.preventDefault();
         let p = mThis.getConsultData();
-        console.log(p);
     });
 
     this.getInput_chiefcomplaints = (div = null) => {

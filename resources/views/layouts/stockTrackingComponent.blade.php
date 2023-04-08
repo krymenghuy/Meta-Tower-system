@@ -140,7 +140,7 @@
                         <select class="modal-select2 data-input" data-field="warehouse" data-required="1" data-ffield="Warehouse" placeholder="Warehouse" id="_stk_select_warehouse"></select>
                     </div>
                     <div class="col-lg-6">
-                        <label for="class_stock" class="form-label trans-text" data-langprop="inventory.Warehouse"></label>
+                        <label for="class_stock" class="form-label trans-text" data-langprop="inventory.Stock Class"></label>
                         <select class="modal-select2 data-input" data-field="class_stock" data-required="1" data-ffield="Class of Stock" placeholder="class of stock" id="_stk_select_class_stock"></select>
                     </div>
                 </div>

@@ -200,6 +200,7 @@
 	"departments":{
 
 	},
+	"vendor":{},
 	"item_group":{
        "Code":"Code",
 	   "Name":"Name",

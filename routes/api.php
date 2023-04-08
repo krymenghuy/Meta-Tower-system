@@ -190,7 +190,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
    Route::post('inventory/stock/transfer', [MIStockController::class, 'transfer']);
    //Transfer stock items Qty from one class to another class
-   Route::post('inventory/stock/transfer-class', [MIStockController::class, 'transferClass']); 
+   Route::post('inventory/stock/transfer-class', [MIStockController::class, 'transferClass']);
    
      //update selling prices, and cost
      Route::post('inventory/item/update-prices', [MIStockController::class, 'updateItemPrices']);

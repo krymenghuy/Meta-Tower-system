@@ -20,13 +20,12 @@ class Item extends Model
     public $timestamps = true;
     protected $dateFormat = 'Y-m-d';
      
-    static function info($id,$byCode=false,$branch_id=null){
+    static function info($id,$byCode=false){
        $cols = "i.id,i.code,i.name,i.description,i.sku,i.unit_id,i.group_id,g.name AS group_name,g.category_id,i.cost,i.ws_selling_price,i.selling_price,i.sales_tax_rate"; 
        $rows = [];
        if($byCode){
          //if search item by code, user must supply $branch_id
-         if(!$branch_id) return null;
-         $rows = DB::table("inv_items as i")->join('inv_item_groups AS g','g.id','=','i.group_id')->where("i.code",$id)->where('i.branch_id',$branch_id)->selectRaw($cols)->take(1)->get();
+         $rows = DB::table("inv_items as i")->join('inv_item_groups AS g','g.id','=','i.group_id')->where("i.code",$id)->selectRaw($cols)->take(1)->get();
        }
        else
          $rows = DB::table("inv_items as i")->join('inv_item_groups AS g','g.id','=','i.group_id')->where("i.id",$id)->selectRaw($cols)->take(1)->get();

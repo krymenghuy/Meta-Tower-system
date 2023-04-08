@@ -132,7 +132,7 @@
             </div>
             <div class="form-group">
               <label class="control-label">User Class</label>
-              <select class="form-control" id="_um_edit_userclass" placeholder="User Class"></select>
+              <select class="form-select modal-select2" id="_um_edit_userclass" placeholder="User Class"></select>
             </div>
           </div>
       </div>

@@ -4,12 +4,12 @@
             <h4>Vital Signs</h4>
         </div>
         <?php
-            $i =0; 
+            $i = 0;
             foreach($consult->vital_signs as $item){
                 if($i==0) echo "<div class='row gy-2 py-3'>";
-                echo "<div class=\"col-sm-4\">
-                        <span class=\"pe-2 fw-bold\">$item->description</span>
-                        <span>$item->vital_sign_value</span>
+                echo "<div class='col-sm-4'>
+                        <span class='pe-2 fw-bold'>".$item->description."</span>
+                        <span>".$item->vital_sign_value."</span>
                     </div>";
                 if ($i==2){
                     echo "</div>";
@@ -25,7 +25,7 @@
         </div>
         <?php
             $i =0;
-            foreach($consult->medical_history as $key=>$value){
+            foreach($consult->medical_history as $key => $value){
                 if($i===0) echo " <div class='row gy-2 py-3'>";
                         echo " <div class=\"col-sm-6\">
                         <span class=\"pe-2 fw-bold d-block\">$key</span>

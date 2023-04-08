@@ -55,7 +55,7 @@
       <div class="col-lg-6">
         <div class="form-group">
           <label class="control-label">User Class</label>
-          <select type="text" class="form-control" id="_um_adduser_userclass" data-placeholder="User Type">
+          <select type="text" class="form-select modal-select2" id="_um_adduser_userclass" data-placeholder="User Type">
             <option value="merchant">Merchant</option>
             <option value="driver">Driver</option>
             <option value="admin">Admin Support</option>
@@ -93,7 +93,7 @@
       <div class="col-lg-6">
         <div class="form-group">
           <label class="control-label">Role</label>
-          <select type="text" class="form-control" id="_um_adduser_role" data-placeholder="Role"></select>
+          <select type="text" class="form-select modal-select2" id="_um_adduser_role" data-placeholder="Role"></select>
         </div>
         <div class="form-group" style="display:none">
           <label class="control-label">Work Location</label>

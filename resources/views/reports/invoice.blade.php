@@ -24,6 +24,10 @@
                     zoom: 88%;
                     font-size: 16px;
                 }
+
+                .mt-5{
+                    margin-top:10px;
+                }
             }
         </style>
     </head>
@@ -158,10 +162,10 @@
                                     <th>No</th>
                                     <th>MEDICINE</th>
                                     <th>DETAIL</th>
-                                    <th>USAGE</th>
                                     <th>QTY</th>
                                     <th>PRICE</th>
                                     <th>DISCOUNT</th>
+                                    <th>VAT</th>
                                     <th>TOTAL</th>
                                 </tr>
                             </thead>
@@ -175,11 +179,11 @@
                                         echo "<tr>
                                             <td>".$cnt++."</td>
                                             <td>".$item->item_name."</td>
-                                            <td></td>
                                             <td style='max-width:15vw'>".$item->description."</td>
-                                            <td>".number_format((float)$item->qty,0)."</td>
+                                            <td>".number_format((float)$item->qty,0)." ".$item->sku."</td>
                                             <td>".$cur_symbol." ".$item->price."</td>
                                             <td>".$item->discount_percent." %</td>
+                                            <td>".$item->tax_rate." %</td>
                                             <td>".$cur_symbol." ".$item->line_total."</td>
                                         </tr>";
                                         $total_product += $item->line_total;
@@ -197,6 +201,7 @@
                                     <th>QTY</th>
                                     <th>PRICE</th>
                                     <th>DISCOUNT</th>
+                                    <th>VAT</th>
                                     <th>TOTAL</th>
                                 </tr>
                             </thead>
@@ -207,7 +212,7 @@
                                     $total_service = 0;
                                     foreach($invoice->services as $item){
                                         $numero++;
-                                        $qty = $item->qty." ".$item->sku;
+                                        $qty = $item->qty;
                                         $price = $cur." ".$item->price;
                                         $line_total = $cur." ".$item->line_total;
                                         echo "<tr>
@@ -216,6 +221,7 @@
                                             <td>".$qty."</td>
                                             <td>".$price."</td>
                                             <td>".$item->discount_percent." %</td>
+                                            <td>".$item->tax_rate."</td>
                                             <td>".$line_total."</td>
                                         </tr>";
                                         $total_service += $item->line_total;
@@ -224,26 +230,26 @@
                                     }
                                 ?>
                                 <tr>
-                                    <td colspan="4" style="border:none"></td>
+                                    <td colspan="5" style="border:none"></td>
                                     <td class="fw-semibold">Subtotal</td>
                                     <td><?php echo $cur_symbol." ".$total_product + $total_service ?></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="4" style="border:none"></td>
+                                    <td colspan="5" style="border:none"></td>
                                     <td class="fw-semibold">Discount</td>
                                     <td>
                                         <?php echo $total_discount_percent." %"; ?>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td colspan="4" style="border:none"></td>
-                                    <td class="fw-semibold">Sales Tax</td>
+                                    <td colspan="5" style="border:none"></td>
+                                    <td class="fw-semibold">VAT</td>
                                     <td>
                                         <?php echo $cur_symbol." ".$total_tax_rate; ?>
                                     </td>
                                 </tr>
                                 <tr class="border-bottom border border-0">
-                                    <td colspan="4" style="border:none"></td>
+                                    <td colspan="5" style="border:none"></td>
                                     <td class="fw-semibold">Total</td>
                                     <td>
                                         <?php echo $cur_symbol." ".$invoice->amount_due; ?>

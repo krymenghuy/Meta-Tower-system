@@ -15,7 +15,6 @@ let StockTrackingComponent = new function () {
     this.btnReceiveStock = $('#_stk_btnNew_ReceiveStock');
 
     this.tblItems = $('#_stk_tblItems');
-    // this.form_data = {};
     this.icon_url = [VSUtil.asset_url(), '/images/icons'].join('');
 
     this.col_titles = {
@@ -230,9 +229,6 @@ let StockTrackingComponent = new function () {
 
     this.displayItemGroups = (options, onFinish = null) => {
         if (!options) options = {};
-        //Initialize language for DataTable columns headers
-        //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-        //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again
         mThis.setLanguage();
         let p = { 'search_value': mThis.elSearchItem.val(), 'category_id': mThis.elFilter_category.val(), 'stock_class_code': mThis.elFilter_stock_class.val(), 'warehouse_id': options.warehouse_id, 'block_id': options.block, 'group_id': options.group_id };
         window.vsapi.call(`${mThis.base_url}/api/inventory/stock/group-list`, p, 'POST', null).then((result) => {
@@ -240,7 +236,6 @@ let StockTrackingComponent = new function () {
             if (result.status_code === 200) data = result.data;
             if (mThis.table) {
                 mThis.tblItems.DataTable().clear().destroy();
-                //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
                 mThis.tblItems.empty();
                 mThis.table = null;
             }
@@ -378,25 +373,25 @@ let FilterDialog = new function () {
 }
 //End::FilterDialog
 
-//Begin::ReceiveStokeDialog
 let ReceiveStokeDialog = new function () {
     let mThis = this;
+    this.base_url = $('#__base_url').val();
     this.self = $('#_stk_dlgReceiveStock');
     this.elVendor = $('#_stk_select_vendors');
-
+    this.elWarehouse = $('#_stk_select_warehouse');
+    this.elStockClass = $('#_stk_select_class_stock');
     this.btnSave = $('#_stk_dlgReceiveStock_btnSave');
 
     this.loadItems = (onFinish) => {
-        vsapi.call(`${main_view.base_url}/api/inventory/settings/receive-stock-options`, null).then((res) => {
+        vsapi.call(`${main_view.base_url}/api/inventory/settings/vpo-form-options`, null).then((res) => {
             if (res.status_code === 200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
-                /*** d.vendors , d.items */
                 onFinish(d);
             }
         });
     }
 
-    mThis.columns = [
+    this.columns = [
         {
             "name": "item_id",
             "title": "Name",
@@ -449,10 +444,10 @@ let ReceiveStokeDialog = new function () {
 
     this.cfg = new ItemsView('_stk_div_items_panel', {
         columns: mThis.columns,
-        "validateColumns": { "name": "positive", "qty": "positive", "price": "positive" },
+        "validateColumns": { "item_id": "string", "qty": "positive", "price": "positive" },
         "showColumnHeaders": true,
         "showAddLineButton": true,
-        "onItemChange": (selOp, col_name, td) => {
+        "onItemChange": (id, e, col_name, td) => {
             let tr = td.parentNode;
             mThis.setTotal(col_name, tr);
         },
@@ -468,25 +463,20 @@ let ReceiveStokeDialog = new function () {
 
     this.setTotal = (col_name, tr) => {
         let d = mThis.cfg.getDataRow(tr);
-        //cause_cols contains list of columns, when values of these columns change => it will cause the Line Total to change as (line_total = price * qty - discount) 
-        let cause_cols = { 'name': 1, 'qty': 1, 'price': 1, 'discount': 1 };
-        //let cause_cols = {'name':1,'qty':1,'price':1,'discount':1,'sku':1}; //In case: we allow user to change SKU per item, when they receive stock
+        let cause_cols = { 'item_id': 1, 'qty': 1, 'price': 1, 'discount': 1 };
         let p = { "id": d.item_id };
 
-        vsapi.call(`${main_view.base_url}/api/inventory/item-info`, p).then(res => {
+        vsapi.call(`${main_view.base_url}/api/inventory/item-info`,p).then(res => {
             if (res.status_code === 200) {
                 let item = StringSanitizer.sanitizeObject(res.data);
+                if(item){
+                    mThis.cfg.setCellValue(tr, 'sku', item.sku);
+                    d.price = d.price > 0 ? d.price : parseFloat(item.cost);
+                    mThis.cfg.setCellValue(tr, 'price', d.price);
+                }
 
-                mThis.cfg.setCellValue(tr, 'sku', item.sku);
-                mThis.cfg.setCellValue(tr, 'price', item.cost);
-
-                //update to override "price" directly from API
-                d.price = parseFloat(item.cost);
-
-                //NOTE: instead of using If, we use array $cause_cols. NOTE that "price" here is the cost per unit SKU
                 if (cause_cols[col_name]) {
                     d.qty = parseFloat(d.qty);
-                    //d.price = parseFloat(d.price);
                     let total = (d.qty * d.price);
                     d.discount = parseFloat(d.discount);
                     let discount_amt = total * d.discount / 100;
@@ -500,16 +490,32 @@ let ReceiveStokeDialog = new function () {
     this.btnSave.on('click',function(e){
         e.preventDefault();
         let p = mThis.getFormData();
-        mThis.self.modal('hide');
+        p['allow_create_po'] = 1;
+        p['type'] = "FG";
+        vsapi.call(`${mThis.base_url}/api/inventory/stock/receive-vpo`,p).then(res => {
+            if(res.status_code === 200){
+                cv_interact.success([`Recieve Stock Success`,res.success_count].join(''));
+                mThis.self.modal('hide');
+                StockTrackingComponent.displayItemGroups();
+            }
+            else
+                cv_interact.error(res.error_message);
+        });
     });
 
     this.show = (option) => {
         if (!option) option = {};
         mThis.onClose = option.onClose;
+        let items = [];
         mThis.loadItems((d) => {
-            ///items [ {text,value}, {text,value}]
+            d.stockclasses.map(i => {
+                items.push({'value': i.code, 'text': i.stock_class});
+            });
+            mThis.cfg.setSelectOptions("stock_class", items);
             mThis.cfg.setSelectOptions("item_id", d.items);
             VSUtil.setComboItems(mThis.elVendor, d.vendors, 'id', 'vendor_name', true, '(select vendor)', null);
+            VSUtil.setComboItems(mThis.elWarehouse, d.warehouses, 'id', 'warehouse_name', true, '(select warehouse)', null);
+            VSUtil.setComboItems(mThis.elStockClass, d.stockclasses, 'code','stock_class', true, '(select stock class)', null);
             mThis.self.modal({
                 backdrop: 'static',
             });
@@ -527,7 +533,6 @@ let ReceiveStokeDialog = new function () {
         return p;
     }
 }
-//End::ReceiveStokeDialog
 
 $(document).ready(function () {
     StockTrackingComponent.init();

@@ -79,10 +79,10 @@ class ItemController extends Controller
     function getItemInfo(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !=200) return JDV::emptyResult($ss->status_code,null); //user not authenticated
-      $branch_id = $ss->branch_id;
+      //$branch_id = $ss->branch_id;
       $id = $req->id;
       if(!$id) $id = $req->item_id;     
-      return JDV::result(Item::info($id));
+      return JDV::result(Item::info($id,false));
     }
 
     function getItemGroupInfo(Request $req){
