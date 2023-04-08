@@ -40,7 +40,7 @@ class InvoiceSettings //extends Model
    }
    static function options_customer($ss){
     $branch_id = $ss->branch_id;
-    return DB::table('patients as c')->where('c.branch_id',$branch_id)->join('persons as p','p.id','=','c.person_id')->select("c.id",DB::raw("CONCAT(p.last_name,' ',p.first_name) AS customer_name"))->orderBy('customer_name','ASC')->get();
+    return DB::table(self::$customer_table.' as c')->where('c.branch_id',$branch_id)->join('persons as p','p.id','=','c.person_id')->select("c.id",DB::raw("CONCAT(p.last_name,' ',p.first_name) AS customer_name"))->orderBy('customer_name','ASC')->get();
    }
 
    static function options_service($ss){

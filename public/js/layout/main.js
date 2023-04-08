@@ -197,7 +197,7 @@ let main_view = new function(){
 
         this.mnuVendors.on('click',(e)=>{
             e.preventDefault();
-            VendorsComponent.show(null);
+            VendorListComponent.show(null);
         });
 
         this.mnuExchangeRate.on('click',(e)=>{
