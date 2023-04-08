@@ -1,4 +1,56 @@
-alter table patient_services add price DECIMAL(10,2) default 0;
-alter table patient_labo_tests add price DECIMAL(10,2) default 0;
-alter table patient_prescription_items add price decimal(10,2) default 0;
-alter table invoice_items add invoice_item_class varchar(20); 
+DROP TABLE IF EXISTS `vendors`;
+CREATE TABLE `vendors` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `phone_number` varchar(100) NOT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `address` varchar(200) DEFAULT NULL,
+  `city_id` int(10) DEFAULT NULL,
+  `country_id` int(10) DEFAULT NULL,
+  `create_uid` int(10) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `billing_address` varchar(200) DEFAULT NULL,
+  `vendor_type_id` int(10) DEFAULT NULL,
+  `tax_number` varchar(25) DEFAULT NULL,
+  `currency_code` varchar(10) DEFAULT NULL,
+  `person_id` int(10) DEFAULT NULL,
+  `photo_file_name` varchar(200) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  `update_user` varchar(50) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of vendors
+-- ----------------------------
+INSERT INTO `vendors` VALUES ('1', '1', 'General Vendor', '023767676', 'gen@gmail.com', null, null, null, null, null, '2023-04-07 19:12:05.200330', null, '1', null, null, null, null, '1', 'Samsethy', '2023-04-07 19:12:05.000000');
+INSERT INTO `vendors` VALUES ('2', '1', 'Phear', '012456456', 'dd@gmail.com', null, null, null, '1', 'Samsethy', '2023-04-07 19:11:33.666045', null, '4', null, null, null, null, '1', 'Samsethy', '2023-04-07 19:11:33.000000');
+
+-- ----------------------------
+-- Table structure for `vendor_types`
+-- ----------------------------
+DROP TABLE IF EXISTS `vendor_types`;
+CREATE TABLE `vendor_types` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `description` varchar(100) DEFAULT NULL,
+  `update_uid` int(10) DEFAULT NULL,
+  `update_user` varchar(50) DEFAULT NULL,
+  `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `create_user` varchar(50) DEFAULT NULL,
+  `created_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
+  `create_uid` int(10) DEFAULT NULL,
+  `branch_id` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of vendor_types
+-- ----------------------------
+INSERT INTO `vendor_types` VALUES ('1', 'Local', '1', 'Samsethy', '2023-04-07 19:12:00.000000', null, '2023-04-07 19:12:00.563361', null, null);
+INSERT INTO `vendor_types` VALUES ('2', 'Foreign', '1', 'Samsethy', '2023-04-07 18:47:11.000000', null, '2023-04-07 18:47:11.088901', null, null);
+INSERT INTO `vendor_types` VALUES ('4', 'New oneDD', '1', 'Samsethy', '2023-04-07 18:32:00.000000', 'Samsethy', '2023-04-07 18:32:00.208628', '1', '1');
+INSERT INTO `vendor_types` VALUES ('14', 'ggg', null, null, null, 'Samsethy', '2023-04-07 18:40:43.000000', '1', '1');
+

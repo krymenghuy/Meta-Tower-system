@@ -722,7 +722,7 @@ function readFileContent($fileName=null)
             $image = Image::make($base64_string);
         }catch(\Exception $e){
             //return NULL if the base64 is NOT valid image
-            return null;
+            return (object)['error'=>$e->getMessage(),'image'=>null];
         }
 
         // Get image size (in bytes)
@@ -738,7 +738,7 @@ function readFileContent($fileName=null)
         }
         // Save image to disk
         //$image->save('path/to/saved-image.jpg');
-        return $image;
+        return (object)['error'=>null,'image'=>$image];
     }
 
     // //returns compressed image as base64 format in png. By default, compression to 500 KB
@@ -1104,15 +1104,19 @@ function readFileContent($fileName=null)
                         if (!in_array($ext, $types)) return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name file type is not allowed")];
                         $size = getBase64ImageSize($val);
                         if ($interval->min===-1 && $interval->max===-1){
-                            $image = resizeImage_base64($val);
-                            //if ($b) 
+                            $image=null;
+                            $mx= resizeImage_base64($val);
+                            if(!$mx->error) $image= $mx->image;
+                            //If the provided image data is not valid returns null silently
                             return (object)['error'=>null,'default_value'=>$image];
                         }else{
                             if ($size < $interval->min || $size > $interval->max) 
                             return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name file size should be between ? and ?"),[$interval->min, $interval->max]];
                             else{
-                                $image = resizeImage_base64($val);
-                                //if ($b) 
+                                $image =null;
+                                $mx = resizeImage_base64($val);
+                                if (!$mx->error) $image = $mx->image;
+                                //If the provided image data is not valid returns null silently
                                 return (object)['error'=>null,'default_value'=>$image];
                             }
                         }

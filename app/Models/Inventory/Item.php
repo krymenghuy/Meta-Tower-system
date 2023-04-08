@@ -2,14 +2,14 @@
 
 namespace App\Models\Inventory;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\DV;
+//use Illuminate\Database\Eloquent\Factories\HasFactory;
+//use Illuminate\Database\Eloquent\Model;
+//use App\Models\DV;
 use DB;
  
-class Item extends Model
+class Item //extends Model
 {
-    use HasFactory;
+    //use HasFactory;
     protected $table = 'inv_items';
     protected $guarded = ['id'];
     protected $fillable =[]; // ['id','name','first_name','last_name','sex','date_of_birth','nationality_id','cp_name','cp_phone_number'];
@@ -137,7 +137,7 @@ class Item extends Model
       $branch_id = $ss->branch_id;
       foreach($items as $item){
          $end_qty =self::endingQty($warehouse_id,$stockclass_code,$item->id,false,null);
-         $latest_qty = self::getLatestQty($item->target_qty,$item->qty,$end_qty);
+         //$latest_qty = self::getLatestQty($item->target_qty,$item->qty,$end_qty);
          $item_stockclass = isset($item->stockclass_code)?$item->stockclass_code:$stockclass_code;
          $x =  DB::table("inv_current_stocks")->where("item_id",$item->id)->where("warehouse_id",$warehouse_id)->where("stockclass_code",$item_stockclass)->where('branch_id',$branch_id)->update([
             "qty"=>$end_qty,
@@ -172,8 +172,8 @@ class Item extends Model
        return self::updateQty_many($ss,$warehouse_id,$stockclass_code,[$item]);
     }
 
-    //create daily_stock_record, if not exists, and then return the row object {trx_id,item_id,item_code,begin_qty}
-    //NOTE: paremeter $item is object = {id*,code*,sku*,unit_id*} // start "*" means required
+    //create daily_stock_record, if it does not exist, and then return the row object {trx_id,item_id,item_code,begin_qty}
+    //NOTE: paremeter $item is object = {id*,code*,sku*,unit_id*} // start "*" means it is required prop
     static function prepareDailyStockRecord($ss,$warehouse_id, $stockclass_code, $product_item,$trx_date=null){
           $trx_date = convertDate($trx_date);
           $item = (object)$product_item;
