@@ -41,8 +41,10 @@ use App\Http\Controllers\Inventory\InventorySettingsController;
 
 use App\Http\Controllers\Invoice\MedicalInvoiceController;
 
+use App\Http\Controllers\Invoice\BillController;
 use App\Http\Controllers\Invoice\InvoiceController;
 use App\Http\Controllers\Invoice\CustomerController;
+use App\Http\Controllers\Bill\VendorController;
 
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ExchangeRateController;
@@ -226,6 +228,16 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
    Route::post('group/form-options', [ItemGroupController::class, 'getFormOptions']);
 //End::ItemGroupController
 
+//begin::VendorController
+  Route::post('vendor/save', [VendorController::class, 'saveVendor']);
+  Route::post('vendor/delete', [VendorController::class, 'deleteVendor']);
+  Route::post('vendor/details', [VendorController::class, 'getVendorDetails']);
+  Route::post('vendor/list', [VendorController::class, 'getVendorList']);
+  Route::post('bill/settings/options-vendor-type', [VendorController::class, 'getComboItems_vendor_type']);
+  Route::post('bill/settings/save-vendor-type',[VendorController::class, 'saveVendorType']);
+  Route::post('bill/settings/delete-vendor-type',[VendorController::class, 'deleteVendorType']);
+//end::VendorController
+
 //begin::MedicalInvoiceController
     Route::post('medical-invoice/create', [MedicalInvoiceController::class, 'createInvoice']);
 //end::MedicalInvoiceController
@@ -271,6 +283,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
    Route::post('employee/options-position', [EmployeeController::class, 'getCombItems_position']);
 //End::EmployeeController
 
+Route::post('Bill/settings/save-vendor-type',[VendorController::class, 'saveVendorType']);
+Route::post('Bill/settings/delete-vendor-type',[VendorController::class, 'saveVendorType']);
 //begin::InventorySettingsController =>  Inventory Settings.
    Route::post('inventory/settings/options-group',[InventorySettingsController::class, 'getComboItems_group']);
    Route::post('inventory/settings/item-form-options',[InventorySettingsController::class, 'getItemFormOptions']);

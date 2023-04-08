@@ -193,6 +193,10 @@ let InvoicesComponent = new function () {
             if (res.status_code === 200) {
 
                 let d = StringSanitizer.sanitizeObject(res.data);
+                if(!d){
+                    div_wrapper.innerHTML ="";
+                    return;
+                }
                 let epanel = detail_tr.querySelector(`#${div_id}`);
 
                     let tr = detail_tr.previousElementSibling;

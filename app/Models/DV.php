@@ -71,6 +71,12 @@ class DV
         return (object)['inputs'=>$inputs,'error'=>null];
     } 
 
+    //Check $id. If it is positive then return success([id=>$id]), otherwise return DV::error($error_message)
+    static function depends($id,$obj=null,$error_message="Something went wrong in saving data"){
+       if(!$id) return self::error($error_message);
+       else return self::result($obj);
+    }
+
     static function emptyResult($status_code =0,$def_result=null,$lang ='en',$error_message = null){
        if (!$lang) $lang = Session('lang','en');
        switch($status_code){
