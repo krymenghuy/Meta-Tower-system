@@ -17,6 +17,7 @@ use Exception;
 class PublicStorage //extends Model
 {
     //use HasFactory;
+    protected static $allowed_image_extensions = ['jpg','png','jpeg','gif','svg','heif','bmp'];
 
     //map from $user_class to upload directory name
     protected static $upload_dirs =[
@@ -250,12 +251,12 @@ class PublicStorage //extends Model
     }
 
     //$upload_type = {'image','document'}
-    static function createFile($branch_id,$user_class,$file_type,$file_name = null,$upload_type="document"){
+    static function createFile($branch_id,$user_class,$ext,$fileContent,$upload_type="document",$file_name = null){
         //Auto create file name, if filename not supplied
         //if(empty($file_name)) $file_name = $branch_id."_".unqueid()."_".date('Ymd_hms');
-        if(empty($file_name)) $file_name = $branch_id."_file_".uniqid($branch_id).date('Ymd_hms');
+        if(!$file_name) $file_name = $branch_id."_file_".uniqid($branch_id).date('Ymd_hms');
         $filePath = self::getDiskPath($branch_id,$user_class,$upload_type).$file_name;
-        return self::makeFile($file_type,$filePath,$fileContent);
+        return self::makeFile($ext,$filePath,$fileContent);
     }
    
     //NOTE: $storeInfo is associative array {"id"=>row_id,"store"=>'table_name.column_name'} Example $storeInfo =['id'=>122,'store'=>'employees.photo_file_name'] 
@@ -293,13 +294,14 @@ class PublicStorage //extends Model
 
     //NOTE: saveImage() will create image file based on the given base64 string
     //savePhoto() | saveFile()
-    static function saveImage($branch_id, $user_class,$ext,$file_content,$maxSize=500000){
+    static function saveImage($branch_id, $user_class,$ext,$image_or_base64,$maxSize=500000){
+        if(!$ext) $ext ="png";
         if(self::isImage($ext)){
             $p = self::createFullPath($branch_id,$user_class,'image',$ext);
-            if ($file_content instanceof Image){
+            if ($image_or_base64 instanceof Image){
                 try{
                     //Through this senario, it means the $file_content is instance of Intervention/Image class and has been compressed to, by default, 500 KB
-                    $file_content->save($p->path);
+                    $image_or_base64->save($p->path);
                     return (object)['status'=>'OK','file_name'=>$p->file_name,'file_type'=>$p->extension,'ext'=>$p->extension,'extension'=>$p->extension,'image_url'=>self::getUrl($branch_id,$user_class,'image').$p->file_name];
                 }catch(\Exception $e){
                     return (object)['error_message'=>$e->getMessage(),'status'=>'Error'];
@@ -309,16 +311,16 @@ class PublicStorage //extends Model
             //$full_path = self::getDiskPath($branch_id,$user_class,'image').$file_name;
             try {
                 //compress image size to, by default 500 KB
-                $image = resizeImage_base64($file_content,$maxSize);
-                if(!$image) return (object)['error_message'=>"Invalid image data",'status'=>'Error'];
-                $image->save($p->path);
+                $mx =  resizeImage_base64($image_or_base64,$maxSize);
+                if($mx->error) return (object)['error_message'=>$mx->error,'status'=>'Error'];
+                $mx->image->save($p->path);
                 return (object)['status'=>'OK','file_name'=>$p->file_name,'file_type'=>$p->extension,'ext'=>$p->extension,'extension'=>$p->extension,'image_url'=>self::getUrl($branch_id,$user_class,'image').$p->file_name];
                 //Image::make($file_content)->save($full_path);
                 // Do something with the image
             } catch (\Exception $e) {
-                if($e instanceof Intervention\Image\Exception\NotReadableException)
+                if($e instanceof \Intervention\Image\Exception\NotReadableException)
                    return (object)['error_message'=>$e->getMessage(),'status'=>'Error'];
-                else if($e instanceof Intervention\Image\Exception\NotWritableException)
+                else if($e instanceof \Intervention\Image\Exception\NotWritableException)
                    return (object)['error_message'=>$e->getMessage(),'status'=>'Error'];
                 else return (object)['error_message'=>$e->getMessage(),'status'=>'Error'];   
             }
@@ -327,13 +329,11 @@ class PublicStorage //extends Model
     }
  
     static function isImage($ext){
-        $img_exts = ['jpg','png','jpeg','gif','svg','heif','bmp'];
-        return in_array(strtolower($ext? $ext:""),$img_exts);
+        return in_array(strtolower($ext? $ext:""),self::$allowed_image_extensions);
     }
 
     static function extension_contains_invalid_char($ext){
         $chars = array(",", "-", "/","?");
-
         foreach ($chars as $char) {
             if (str_contains($ext, $char)) {
                return true;
@@ -346,26 +346,30 @@ class PublicStorage //extends Model
      static function savefile($branch_id, $user_class,$ext,$file_content,$category ='image'){
         $result = (object)array('error_message'=>null,'status'=>'OK');
         $mime_type ="";
+        $ext =$ext?$ext:"";
+
+        if (!$branch_id) return DV::error("Failed to upload file due to invalid company identity. Company information is required to identify who the file belongs to");
+
         //when extension $ext contains invlid char such as '-,?,/' etc. we suspect it can be a mimeType instead of extension
         if (self::extension_contains_invalid_char($ext))  
             $ext = self::getExtensionFromMIMEType($ext);
         else $mime_type = self::getMIMETypeFromExtension($ext);   
-        $new_content ="";
+        $new_content =null;
         //self::isImage() check extension to see if it is image extension
         $is_image =self::isImage($ext);
         if($is_image){
             //compressed base64 string into smaller size, by defaul 500 KB and default format as "png".
-            $new_content = getCompressedImage($file_content,null,null);
+            $mx  = resizeImage_base64($file_content,null,null);
+            if($mx->error) return DV::error($mx->error);
+            return self::saveImage($branch_id,$user_class,$ext,$mx->image,null);
         }else{
             $allowed_doc_exts = ['pdf','docx','doc','txt','xlsx','xls','csv'];
-            if(!in_array(strtolower($ext,$allowed_doc_exts))) return DV::error("File type $ext is not allowed for upload");
+            if(!in_array(strtolower($ext),$allowed_doc_exts)) return DV::error("File type $ext is not allowed for upload");
             else $new_content = $file_content;
         }
-        if (!$branch_id) return DV::error("Failed to upload file due to invalid company identity. Company information is required to identify who the file belongs to");
-  
-        if(!$mime_type) return DV::error("There is no matching MIME type for file .$ext");
-  
-        if (!$ext) return DV::error("Invalid file type or mime type "); 
+
+        //if(!$mime_type) return DV::error("There is no matching MIME type for file .$ext");
+        //if (!$ext) return DV::error("Invalid file type or mime type "); 
   
         $file_name = $branch_id."_".uniqid()."_".date('Ymd_hms').".$ext";
         $full_path = self::getDiskPath($branch_id,$user_class,$category).$file_name;
@@ -376,8 +380,7 @@ class PublicStorage //extends Model
             return DV::success(["file_name"=>$file_name,"file_type"=>$ext,"extension"=>$ext,"mime_type"=>$mime_type]);
         }
     }
-
-
+ 
     //return a object fileInfo = {'file_name','file_type'} by a given category
     //$category ={'merchant-profile-photo','merchant-img','merchant-doc','driver-profile-photo','driver-img','driver-doc'}
     static function getFileInfoByCategory($branch_id,$category,$id){

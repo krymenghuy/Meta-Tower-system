@@ -291,7 +291,6 @@ class MIStockManager {
       return DV::success(); 
     }
     else return DV::error("Failed to update item information");
-    
   }
 
    //Update item's selling price (wholesale price & retail price), cost

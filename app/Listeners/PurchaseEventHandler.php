@@ -37,7 +37,7 @@ class PurchaseEventHandler
         $stockclass_code = $data['stockclass_code'];
         if(!$stockclass_code) $stockclass_code = $data['stockclass'];
         $items = $data['items'];
-        $target_qty = $data['target_qty'];
+        //$target_qty = $data['target_qty'];
         Item::updateQty_many($ss,$warehouse_id,$stockclass_code,$items); 
     }
 }

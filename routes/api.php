@@ -384,7 +384,7 @@ Route::post('Bill/settings/delete-vendor-type',[VendorController::class, 'saveVe
             });
 
             Route::post('patient/delete',function(Request $req){
-                $res = Patient::deletePermanent($req);
+                $res = Patient::delete($req);
                 return response()->json($res);
             });
 
