@@ -6,6 +6,7 @@ let PatientListComponent = new function () {
     this.base_url = $('#__base_url').val();
     this.tblPatients = $('#_pal_tblPatients');
     this.elSearch = $('#_pal_search');
+    this.options = {};
 
     this.icon_url = () => {
         return `${[VSUtil.asset_url()].join('')}/images/icons`;
@@ -81,7 +82,17 @@ let PatientListComponent = new function () {
         this.cfg = new ExpandableRowConfig('_pal_tblPatients', {
             'dontExpandByClickingOn': ['btn_pat_print', 'btn_pat_modify', 'btn_pat_action', 'btn_pat_delete'],
             'onOpen': (container, detail_tr, parent_tr) => {
-                let qtr = $(parent_tr);
+                let q_tr = $(parent_tr);
+                let ticket_id = q_tr.data('id');
+
+                if (ticket_id > 0){
+                    TicketDetails.show($(detail_tr), {
+                        'ticket_id': ticket_id,
+                        'client_id': q_tr.data('clientid'),
+                        'person_id': q_tr.data('personid'),
+                        'status_id': q_tr.data('statusid')
+                    },QueueComponent.options.default_tab_view);
+                }
             }
         });
 
@@ -201,11 +212,13 @@ let PatientListComponent = new function () {
                         "emptyTable": LocaleManager.trans('No data to display', 'datatable')
                     },
                     'data': data,
-                    'columns': my_columns
-                    , "createdRow": function (row, data, dataIndex) {
+                    'columns': my_columns,
+                    "createdRow": function (row, data, dataIndex) {
                         let tr = $(row);
                         tr.data('id', data.id);
+                        tr.data('tid', data.id);
                         tr.data('statusid', data.status_id);
+                        tr.data('clientid', data.client_id);
                         tr.data('personid', data.person_id);
                     }
 
@@ -218,6 +231,7 @@ let PatientListComponent = new function () {
     this.show = (option = null) => {
         if(!option) option = {}; 
         mThis.displayPatients(() => {
+            mThis.options = option;
             mThis.self.show().siblings().hide();
             main_view.setTitle(mThis.title_prop);
         });
