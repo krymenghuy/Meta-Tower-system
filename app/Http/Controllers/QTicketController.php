@@ -6,11 +6,22 @@ use Illuminate\Http\Request;
 use App\Models\ServiceQ\QTicket;
 use App\Models\JDV;
 use App\Models\UM;
-use Session;
-use DB;
+use App\Models\GeneralSettings;
+use App\Models\Patient;
 
 class QTicketController extends Controller
 {
+    function ticket_form_options(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+        $rows = Patient::findSimilar(['search_value'=>$req->search_value],$ss);
+        return JDV::result([
+            'items'=>GeneralSettings::options_department($ss),
+            //basic Info about patient such as code, name,phone_number, email
+            'clientInfo'=>isset($rows[0])?$rows[0]:null
+        ]);
+    }
+    
     function getTicketList(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated

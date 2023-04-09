@@ -19,6 +19,9 @@ class FormUntil{
       this.self = $(`#${this.form_id}`);
       this.me = option.instance;
       this.identity_prop = option.identityProp; //key_field_name
+      this.sub_prop = option.sub_prop;
+      this.sub_prop_function = option.sub_prop_function;
+
       this.identityProps  = option.identityProps?option.identityProps:[];
       this.itemName = option.itemName;
 
@@ -125,7 +128,7 @@ class FormUntil{
             } 
             else p[f] = el.val();
         });
-        if(this.option.sub_prop) p[this.option.sub_prop]= this.option.sub_prop_function();  
+        if(this.sub_prop) p[this.sub_prop]= (typeof this.sub_prop_function ==='function')? this.sub_prop_function():null;  
         if(has_error) return {'element':err_element,'field':field,'ff':ff,'data':null,'has_error':has_error};
 
         return {'data':p};

@@ -3,7 +3,7 @@ let TicketDetails = new function () {
     let mThis = this;
     mThis.current_view_name = 'info';
     mThis.tblTickets = null;
-
+     
     this.icon_url = () => {
         return `${VSUtil.asset_url()}/images/icons`;
     }
@@ -678,6 +678,9 @@ let QueueComponent = new function () {
     let mThis = this;
     this.title_prop = 'Queued Tickets';
     this.self = $('#_main_queueComponent');
+    
+    //Create new ticket for existing client/patient without Appointment
+    this.btnNewTicket = $('#_qul_btnNewTicket');
 
     this.base_url = $('#__base_url').val();
     this.form_data = {};
@@ -692,9 +695,8 @@ let QueueComponent = new function () {
         return `${VSUtil.asset_url()}/images/icons`;
     }
 
-    this.btnNewTicket = $('#_qul_btnNewTicket');
     this.col_titles = {
-        "Ticket Number": "Ticket Date",
+        "Ticket": "Ticket",
         "Client ID": "Client ID",
         "Client Name": "Client Name",
         "Sex": "Sex",
@@ -757,17 +759,23 @@ let QueueComponent = new function () {
         mThis.appt_filter_status.on('change', (e) => {
             mThis.displayTicketList();
         });
-
+ 
         mThis.btnNewTicket.on('click', function (e) {
-            e.preventDefault();
-
-            let op = { 'identity_value': 0 };
-            PatientDialog.show(op, (e) => {
-                if (e) {
-                    cv_interact.info('New Ticket has been created', null, true);
-                    mThis.displayTicketList();
+            e.preventDefault(); 
+            let op = {'client_id':null};
+            ServiceQueueDialog.show(op, (p) => {
+                if (p) {
+                    vsapi.call(`${main_view.base_url}/api/ticket/create`, p).then((res) => {
+                        if (res.status_code === 200) {
+                            let d = (res.data || {});
+                            //let status_info = StringSanitizer.sanitizeObject(d.status_info);
+                            mThis.displayTicketList();
+                            cv_interact.info(['Queue Ticket: ', d.ticket_number].join(''));
+                        } else cv_interact.warning(res.error_message);
+                    });
                 }
             });
+             
         });
 
         mThis.tblTickets.on('click', 'a.btn_ticket_action', function (e) {
@@ -824,8 +832,8 @@ let QueueComponent = new function () {
         });
     }
 
-    this.trans_title = (title_prop = 'undefined') => {
-        return (mThis.col_titles[title_prop]);
+    this.trans_title = (title_prop ) => {
+        return (mThis.col_titles[title_prop]?mThis.col_titles[title_prop]:title_prop);
     }
 
     this.createDropdownMenuHtml_loan = (items = [], data = null, data_props = []) => {
@@ -869,10 +877,10 @@ let QueueComponent = new function () {
             let my_columns = [
                 {
                     data: function (data, a, b) {
-                        return ['<span class="qul-ticket-number">', data.ticket_number, '</span>',
+                        return [`<span class="d-block text-muted">${data.q_date}</span><span class="qul-ticket-number">`, data.ticket_number, '</span>',
                         ].join('');
                     },
-                    title: mThis.trans_title('Ticket Number')
+                    title: mThis.trans_title('Ticket')
                 },
                 {
                     title: mThis.trans_title('Client ID'),

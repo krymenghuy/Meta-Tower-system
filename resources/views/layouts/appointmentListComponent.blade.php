@@ -444,11 +444,25 @@
     <div class="modal-dialog modal-lg" role="dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title​ trans-text" data-langprop="titles.Choose Service Department" id="_qsd_dlgQService_title">Choose Service Department</h5>
+                <h5 class="modal-title​ trans-text" data-langprop="titles.Create Ticket" id="_qsd_dlgQService_title">Create Ticket</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row" id="_qsd_dlgQService_body">
+
+                   <div class="form-group col-lg-6">
+                        <span class="simple-label trans-text" data-langprop="appointment.Phone or ID">Client Phone</span>
+                        <div>
+                            <input type="text" data-field="phone_number" data-ffield="name" class="form-control data-input" id="_qsd_client_or_id" placeholder="Phone or ID"/>
+                        </div>
+                    </div>
+                    <div class="form-group col-lg-6">
+                      <span class="simple-label trans-text" data-langprop="appointment.Client Name">Client Name</span>
+                        <div>
+                            <input id="_qsd_client_name" type="text" data-field="name" data-ffield="name" class="form-control data-input" id=""/>
+                        </div>
+                    </div>
+
                     <div class="form-group col-lg-6">
                         <span class="simple-label trans-text" data-langprop="appointment.Service Department">Service Department</span>
                         <div>
@@ -482,7 +496,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group col-lg-12">
+                    <div style="display:none" class="form-group col-lg-12">
                         <span class="simple-label trans-text" data-langprop="appointment.Remarks">Remarks</span>
                         <div><input type="text" data-field="notes" data-ffield="Remarks" class="form-control data-input" id="_qsd_remarks"></div>
                     </div>

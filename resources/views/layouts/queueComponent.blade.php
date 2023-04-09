@@ -64,7 +64,7 @@
         <div class="container-fluid">
             <div class="d-flex justify-content-between" style="padding:10px">
                 <div class="d-flex col-md-6">
-                    <button class="btn btn-outline-primary border border-primary rounded-pill" id="_qul_btnNewAppointment">
+                    <button class="btn btn-outline-primary border border-primary rounded-pill" id="_qul_btnNewTicket">
                         <i class="fa fa-calendar-check"></i>
                         &nbsp;
                         <span class="trans-text" data-langprop="buttons.Add Ticket">Add Ticket</span>

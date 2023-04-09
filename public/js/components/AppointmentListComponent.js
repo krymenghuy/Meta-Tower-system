@@ -116,7 +116,7 @@ let AppointmentListComponent = new function () {
                                         <div class="btn-group">
                                         <button style="display:${d.status_id > 2 ? 'block' : 'none'}" type="button" data-apptid="${d.id}" data-patientid="${d.client_id}" class="btn btn-sm btn-outline-success btn-view-profile">View Profile</button>&nbsp;
                                         <button style="display:${d.status_id < 2 ? 'block' : 'none'}" type="button" data-apptid="${d.id}" data-patientid="${d.client_id}" class="btn btn-sm btn-outline-warning btn-register"><i class="fa fa-list-alt"></i><span class="trans-text" data-langprop="buttons.Register">Register</span></button>
-                                        <button style="display:${d.status_id == 2 ? 'block' : 'none'}" type="button" data-apptid="${d.id}" data-patientid="${d.client_id}" class="btn btn-sm btn-outline-success btn-add-queue"><i class="fa fa-tasks"></i><span class="trans-text" data-langprop="buttons.Add to Queue">Queue</span></button>
+                                        <button style="display:${d.status_id == 2 ? 'block' : 'none'}" type="button" data-apptid="${d.id}" data-patientcode ="${d.patient_code}" data-patientid="${d.client_id}" class="btn btn-sm btn-outline-success btn-add-queue"><i class="fa fa-tasks"></i><span class="trans-text" data-langprop="buttons.Add to Queue">Queue</span></button>
                                         <button style="display:none" type="button" data-apptid="${d.id}" data-patientid="${d.client_id}" class="btn btn-sm btn-outline-success btn-start-consult"><i class="fa fa-user-check"></i><span class="trans-text" data-langprop="buttons.Serve">Serve</span></button>
                                         </div>
                                 </div>
@@ -236,12 +236,13 @@ let AppointmentListComponent = new function () {
             });
         });
 
-        mThis.tblAppointments.on('click', '.btn-add-queue', function (e) {
+        mThis.tblAppointments.on('click', '.btn-add-queue', function (e){
             let x = $(this);
             let detail_tr = x.closest('tr');
             let client_id = x.data('patientid');
             let appt_id = x.data('apptid');
-            let op = { 'client_id': client_id, 'appt_id': appt_id }; 
+            let patient_code = x.data('patientcode');
+            let op = {'client_id': client_id, 'appt_id': appt_id,'search_value':patient_code};
             ServiceQueueDialog.show(op, (p) => {
                 if (p) {
                     vsapi.call(`${main_view.base_url}/api/ticket/create`, p).then((res) => {
@@ -593,7 +594,7 @@ let AppointmentDialog = new function () {
         "identityProps": ['id'],
         "form_data_props": ['lead_id', 'client_id'],
         "sub_prop": "chief_complaint_items",
-        "sub_prop_function": ()=>{
+        "sub_prop_function":()=>{
             return mThis.getChiefComplaints();
         },
         "sanitize_excepts": ['email', 'client_email', 'arrival_time','items'],
@@ -891,13 +892,30 @@ let PatientDialog = new function () {
 let ServiceQueueDialog = new function () {
     let mThis = this;
     this.elTitle = $('#_qsd_dlgQService_title');
-    this.title_prop = "Choose Department";
+    this.title_prop = "Create Ticket";
     this.dialog_id = '_qsd_dlgQService';
     this.self = $('#_qsd_dlgQService');
     this.elConsultant = $('#_qsd_consultant');
     this.elDepartment = $('#_qsd_department');
     this.elRemarks = $('#_qsd_remarks');
     this.btnOK = $('#_qsd_dlgQService_btnOK');
+    
+    this.elPhoneOrId = $('#_qsd_client_or_id');
+    this.elName = $('#_qsd_client_name');
+
+    mThis.elPhoneOrId.on('keyup',(e)=>{
+        if(e.key ==='Enter'){
+            mThis.displayClientInfo(mThis.elPhoneOrId.val());
+        }
+    });
+  
+    mThis.elPhoneOrId.on('blur',e=>{
+      if(!mThis.elPhoneOrId.prop('readOnly')) mThis.displayClientInfo(mThis.elPhoneOrId.val());
+    });
+    
+    // mThis.elName.on('focus',e=>{
+    //     if(!mThis.elPhoneOrId.prop('readOnly')) mThis.displayClientInfo(mThis.elPhoneOrId.val());
+    // });
 
     mThis.btnOK.on('click', (e) => {
         e.preventDefault();
@@ -925,12 +943,39 @@ let ServiceQueueDialog = new function () {
         if (!mThis.elDepartment.val() || mThis.elDepartment.val() == 0) return LocaleManager.trans('Service department is required', 'message_box_default');
     }
 
-    this.prepareOptions = (onFinish) => {
-        window.vsapi.call(`${main_view.base_url}/api/settings/options-department`, null).then((res) => {
+    this.displayClientInfo = (phone_or_id=null,clientInfo=null)=>{
+      if(clientInfo){
+        mThis.elPhoneOrId.val(clientInfo.phone_number).prop('readOnly',true);
+        mThis.elName.val(clientInfo.name).prop('readOnly',true);
+        mThis.client_id = clientInfo.id;
+        return;
+      }
+     
+      //NOTE: search_Value can be client's phone or ID
+      let p = {'search_value':phone_or_id?phone_or_id:-1};
+   
+      vsapi.call(`${main_view.base_url}/api/ticket/find-client`,p,null,false).then(res=>{
+         if(res.status_code ==200){
+             let rows = StringSanitizer.sanitizeObject(res.data);
+             let d = rows?rows[0]:{};
+             d =d?d:{};
+             mThis.elPhoneOrId.val(d.phone_number).prop('readOnly',false);
+             mThis.elName.val(d.name).prop('readOnly',false);
+             mThis.client_id = d.id?d.id:d.patient_id;
+         }
+      });
+    }
+
+    //NOTE : option = {appt_id, client_id}. Either one of these two props will be used to get client info such as name, phone number etc .. if is OK if option = NULL
+    this.prepareOptions = (option,onFinish) => {
+        //NOTE: option.search_value is patient_code or patient phone
+        window.vsapi.call(`${main_view.base_url}/api/ticket/form-options`,{'search_value':option.search_value}).then((res) => {
             if (res.status_code === 200) {
-                let items = StringSanitizer.sanitizeObject(res.data);
+                let d = res.data?res.data:{};
+                //NOTE @d contains d.items, and d.client (d.client can also be empty)
+                let items = StringSanitizer.sanitizeObject(d.items);
                 VSUtil.setComboItems(mThis.elDepartment, items, 'id', 'department', null, null);
-                onFinish();
+                onFinish(d);
             }
         });
     }
@@ -944,14 +989,16 @@ let ServiceQueueDialog = new function () {
             }
         });
     }
-
+ 
     this.show = (option = null, onClose) => {
         if (!option) option = {};
         mThis.appt_id = option.appt_id;
         mThis.client_id = option.client_id;
         mThis.onClose = onClose;
         VSUtil.hideDialogError(mThis.dialog_id);
-        mThis.prepareOptions(() => {
+         
+        mThis.prepareOptions(option,(data) => {
+            mThis.displayClientInfo(null,data.clientInfo);
             mThis.self.modal({
                 backdrop: 'static'
             });
