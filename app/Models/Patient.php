@@ -124,7 +124,7 @@ class Patient //extends Model
        //end:: In case of AddingToQueue =1
 
         //NOTE: $person_id is always Overwritten here because method Person::quickInfo() will always find out person identity using phone number, nationality, or email
-        $person = Person::detailsBy(['national_id'=>$national_id,'phone_number'=>$phone_number],"id,name,phone_number,email");
+        $person = Person::detailsBy(['national_id'=>$national_id,'phone_number'=>$phone_number],"id,CONCAT(last_name,' ',first_name) as name,phone_number,email");
         if(!$person){
             $d['date_of_birth'] = convertDate($d['date_of_birth']);
             $x = Person::forceSave($d,$ss);
@@ -243,17 +243,16 @@ class Patient //extends Model
  
     // }
 
-    static function findSimilar($req){
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
+    static function findSimilar($arr=[],$ss){
+      //user not authenticated
         $branch_id = $ss->branch_id;
-        $search_value = escape_like_str($req->search_value);
-
-        $str_search="1=1";
+        $search_value = escape_like_str(isset($arr['search_value'])?$arr['search_value']:null);
+        $client_id = isset($arr['client_id'])?$arr['client_id']:null; 
+        $str_search="1=2";
         if($search_value) $str_search ="(p.phone_number ='$search_value' OR pt.code ='$search_value' OR concat(p.last_name,' ',p.first_name) LIKE '%$search_value%' OR p.national_id ='$search_value')";
-        $cols ="pt.id,pt.code,p.id as person_id,concat(p.last_name,' ',p.first_name) AS name,p.sex, formatDate(pt.created_at) AS created_at,p.phone_number,p.email,p.address,pt.remarks,pt.create_user";
-        $rows = DB::table("patients AS pt")->join('persons as p','p.id','=','pt.person_id')->where('pt.branch_id',$branch_id)->whereRaw($str_search)->selectRaw($cols)->orderByRaw("pt.created_at desc")->get();    
-        return DV::result($rows);
+        if($client_id > 0) $str_search ="pt.id =$client_id";
+        $cols ="pt.id,pt.code,p.address,p.id as person_id,pt.code,concat(p.last_name,' ',p.first_name) AS name,p.sex, formatDate(pt.created_at) AS created_at,p.phone_number,p.email,p.address,pt.remarks,pt.create_user";
+        return DB::table("patients AS pt")->join('persons as p','p.id','=','pt.person_id')->where('pt.branch_id',$branch_id)->whereRaw($str_search)->selectRaw($cols)->orderByRaw("pt.created_at desc")->get();    
     }
    
     //verify if the one of the given fields (Phone, national_id, email,) is true => then he or she is a client or patient
@@ -312,10 +311,10 @@ class Patient //extends Model
 
     //returns details of one patient's personal details. and does not include medical conditions
     static function quickInfo($id){
-        $more_where =null;
-        $cols ="p.id,concat(p.last_name,' ',p.first_name) as name, p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
+        //$more_where =null;
+        $cols ="p.id,pt.code,concat(p.last_name,' ',p.first_name) as name, p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
         $rows =  DB::table('persons as p')->join('patients as pt','pt.person_id','=','p.id')->where('pt.id',$id)->selectRaw($cols)->take(1)->get();
-        return null;
+        return isset($rows[0])?$rows[0]:null;
     }
 
     static function list($req){

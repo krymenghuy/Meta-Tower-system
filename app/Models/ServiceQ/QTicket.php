@@ -173,7 +173,7 @@ class QTicket //extends Model
     static function list($d){
         $branch_id = $d['branch_id'];
         $search_value = isset($d['search_value'])?$d['search_value']:null;
-        $filter_date = isset($d['date'])? convertDate($d['date']):null;
+        $filter_date = isset($d['date'])? convertDate($d['date']):date('Y-m-d');
         $filter_status_id = isset($d['status_id'])?$d['status_id']:null;
         
         $str_where ="1=1";
@@ -191,8 +191,7 @@ class QTicket //extends Model
         }
 
         $cols ="s.id,s.consultant_id,s.ticket_number,formatDate(s.q_date) AS q_date,s.client_id,s.person_id,s.create_user,formatDate(s.created_at) AS created_at,concat(p.last_name,' ',p.first_name) as client_name,p.phone_number as client_phone_number,p.email as client_email,p.sex as client_sex,s.schedule_type,s.priority,s.remarks, s.status_id, sts.name AS status, cl.code AS client_code";
-        $rows = DB::table('tickets as s')->join('ticket_statuses as sts','sts.id','=','s.status_id')->join('persons as p','p.id','=','s.person_id')->join('patients as cl','p.id','=','cl.person_id')->where('s.branch_id',$branch_id)->whereRaw($str_where)->selectRaw($cols)->orderByRaw('s.created_at DESC')->get();
-        return $rows;
+        return DB::table('tickets as s')->join('ticket_statuses as sts','sts.id','=','s.status_id')->join('persons as p','p.id','=','s.person_id')->join('patients as cl','p.id','=','cl.person_id')->where('s.branch_id',$branch_id)->whereRaw($str_where)->selectRaw($cols)->orderByRaw('s.id DESC')->get();
     }
 
     //@param $d = ['chief_complaint_id','ticket_id']

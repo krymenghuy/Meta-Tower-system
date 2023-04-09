@@ -139,7 +139,7 @@ class MedicalInvoice //extends Invoice //extends Model
       ];
 
       $items = self::getItems($ticket_id,$ss); //pull items and services and labo-tests from Consultation data
-      if(!isset($items[0])) return DV::error('There are no invoice items');
+      if(!isset($items[0])) return DV::error('There are no payable items yet!');
       $res = validateObject($d,$validate_rule,true,[],$ss->lang,false,[]);
       if($res->error) return DV::error($res->error);
       $invoice_id = $res->id;

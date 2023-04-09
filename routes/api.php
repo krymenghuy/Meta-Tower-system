@@ -48,11 +48,12 @@ use App\Http\Controllers\Bill\VendorController;
 
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ExchangeRateController;
+use App\Http\Controllers\PatientController;
 
 use App\Http\Controllers\EmployeeController;  
 use App\Http\Controllers\PartnerController;
 //use App\Models\PublicStorage;
-use App\Models\SystemSetting;
+//use App\Models\SystemSetting;
 use App\Models\Patient;
 use App\Models\Inventory\Brand;
  
@@ -97,6 +98,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('appointment/add-chief-complaint', [AppointmentController::class, 'addChiefComplaint']);
         Route::post('appointment/remove-chief-complaint', [AppointmentController::class, 'removeChiefComplaint']);
         Route::post('appointment/find-client', [AppointmentController::class, 'findClient']);
+        Route::post('ticket/find-client', [AppointmentController::class, 'findClient']);
     //end::AppointmentController
         
     //begin::ConsultationController 
@@ -135,6 +137,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //end::ConsultationController
 
     //begin::QTicketController
+        Route::post('ticket/form-options', [QTicketController::class, 'ticket_form_options']);
         Route::post('ticket/create', [QTicketController::class, 'createTicket']);
         Route::post('ticket/list', [QTicketController::class, 'getTicketList']);
         Route::post('ticket/delete', [QTicketController::class, 'deleteTicket']);
@@ -369,6 +372,9 @@ Route::post('Bill/settings/delete-vendor-type',[VendorController::class, 'saveVe
     //begin::Exchange Rate APIs
  
     //begin::PatientController. Not using Controller
+    
+            Route::post('patient/quick-info', [PatientController::class,'getPatientQuickInfo']);
+            
             Route::post('patient/find',function(Request $req){
                 $res = Patient::findSimilar($req);
                 return response()->json($res);
