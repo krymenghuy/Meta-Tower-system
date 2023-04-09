@@ -17,6 +17,81 @@ class PatientController extends Controller
       if(!$id) $id = $req->patient_id;
       return JDV::result(Patient::quickInfo($id)); 
     }
+    function getPatientDetails(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      $id = $req->id?$req->id:$req->patient_id;
+      $patient = new Patient($id,$ss);
+     return JDV::result($patient->getDetails());
+    }
+    
+
+    function getPatientHistory(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      $id = $req->id?$req->id:$req->patient_id;
+      return JDV::result(Patient::history($id,$ss)); 
+    }
+    
+    function getPatientInvoices(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      $id = $req->client_id?$req->client_id:$req->id;
+      $patient = new Patient($id,$ss);
+       return JDV::result($patient->getInvoices($req->all()));
+    }
+    function getPatientPayments(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      $id = $req->client_id?$req->client_id:$req->id;
+      $patient = new Patient($id,$ss);
+      return JDV::result($patient->getPayments($req->all()));
+    }
+
+    function registerPatient(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      $res = Patient::register($req->all(),$ss);
+      return JDV::raw($res);
+    }
+    function getMedicationDetails(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      $id = $req->id?$req->id:$req->patient_id;
+      return JDV::result(Patient::medicationDetails($id,$ss)); 
+    }
+    function getPatientTickets(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      $id = $req->id?$req->id:$req->patient_id;
+      $patient = new Patient($id,$ss);
+      return JDV::result($patient->getTickets()); 
+    }
+    
+    function getPatientPhotos(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      $id = $req->id?$req->id:$req->patient_id;
+      $patient = new Patient($id,$ss);
+      return JDV::result($patient->getPhotos()); 
+    }
+    function getPatientList(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      return JDV::result(Patient::list($req->all(),$ss)); 
+    }
+    function findPatients(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      return JDV::result(Patient::findSimilar($req->all(),$ss)); 
+    }
+    function deletePatient(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      $id = $req->patient_id?$req->patient_id:$req->id;
+      $patient = new Patient($id,$ss);
+      return JDV::raw($patient->delete());  
+    }
 
     // function savePatient_DEL(Request $req){
     //     $ss = UM::getUserInfoByToken($req,-1);

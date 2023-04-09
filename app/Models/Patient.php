@@ -10,6 +10,7 @@ use App\Models\DV;
 use App\Models\Person;
 use App\Models\Lead;
 use App\Models\ServiceQ\QTicket;
+use App\Models\PublicStorage;
 
 class Patient //extends Model
 {
@@ -17,6 +18,21 @@ class Patient //extends Model
     protected static $default_official_id_prefix="P";
     protected static $official_id_length=5;
   
+    protected $id = null;
+    protected $userInfo = null;
+
+    function __construct($id=null,$userInfo=null)
+    {
+       $this->id = $id;
+       $this->userInfo = $userInfo;    
+    }
+    function getId(){
+        return $this->id;
+    }
+    function getUserInfo(){
+        return $this->userInfo;
+    }
+
     static function personId($id){
       $rows = DB::table('patients')->where('id',$id)->selectRaw("person_id")->take(1)->get();
       return isset($rows[0])?$rows[0]->person_id:null;
@@ -32,12 +48,21 @@ class Patient //extends Model
       return isset($rows[0])? $rows[0] : null;
     }
 
-    // public function saveQuietly(array $options = [])
-    // {
-    //     return static::withoutEvents(function () use ($options) {
-    //         return $this->save($options);
-    //     });
-    // }
+     
+   function delete($id=null,$ss=null){
+      $ss = $ss?$ss:$this->getUserInfo();
+      $id = $id?$id:$this->getId();
+      $patient = self::getProps($id,null);
+      if(!$patient) return DV::error("Patient ID does not exist");
+      $tickets = self::ticketList([],$id,$ss);
+     
+      foreach($tickets as $ticket){
+        $ticket = new QTicket($ticket->id,$ss);
+        $ticket->delete();
+      }
+      DB::table('patients')->where('id',$id)->delete();
+      return DV::success();  
+   }
  
     protected static function saveVitalSigns($ss,$appt_id,$patient_id,$ticket_id=null,$vitalSigns =[]){
         $branch_id = $ss->branch_id;
@@ -98,19 +123,30 @@ class Patient //extends Model
     //@param vital_signs = [{'id':1,'display_name':'Body temperature',value:37.5},...]
     //@param $appt_id is Appointment identifier that is available only when user register a patient profile from the Appointment list
     //@param array $d = ['appt_id'=>0,'person_id'=>0,'name'=>'','first_name','last_name', 'sex','date_of_birth','phone_number','email','address','national_id','has_membership_card'=>'0|1','vital_signs','mc_items'=>[]]
-    static function register($req){
+    static function register($d,$ss){
         $com_branch_id=1;
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
         $branch_id = $ss->branch_id;
-        
-        $d = $req->all();
-        $addToQueue = isset($d['addToQueue'])?$d['addToQueue']:0;
-        $appt_id = isset($d['appt_id'])?$d['appt_id']:0; //This one is currently not used
-        $lead_id = isset($d['lead_id'])?$d['lead_id']:0; //This is needed to update field "appointments.client_id"
-        $person_id = isset($d['person_id'])?$d['person_id']:null;
-        $national_id = isset($d['national_id'])?$d['national_id']:null;
-        $phone_number = isset($d['phone_number'])?$d['phone_number']:null;
+        $v_rule = [
+            'addToQueue'=>'1|choice|0,1',
+            'appt_id'=>'0|number',
+            'lead_id'=>'0|number',
+            'person_id'=>'0|number',
+            'national_id'=>'0|string|0-50',
+            'phone_number'=>'1|phone|0-100',
+            'photo'=>'0|image',
+            'email'=>'0|email',
+            'address'=>'0|string|0-250',
+        ];
+        $res = validateObject($d,$v_rule,true,['photo'=>[',','/',"\\",";"]],$ss->lang,false,null);
+        if($res->error) return DV::error($res->error);
+        $inputs = $res->values; 
+        $addToQueue = $inputs['addToQueue'];
+        $appt_id = $inputs['appt_id']; //This one is currently not used
+        $lead_id = $inputs['lead_id']; //This is needed to update field "appointments.client_id"
+        $person_id = $inputs['person_id'];
+        $national_id = $inputs['national_id'];
+        $phone_number = $inputs['phone_number'];
+        $photo = $inputs['photo'];
         //$email = isset($d['email'])?$d['email']:null;
 
         //begin:: In case of AddingToQueue =1
@@ -142,7 +178,7 @@ class Patient //extends Model
         $new_patient_register = false;
         if (!$patient_id){
             $patient_id = saveData($ss,'patients',['id'=>0],['person_id'=>$person_id,'patient_type'=>'OPD','com_branch_id'=>$com_branch_id,'code'=>null,'remarks'=>null],[],1);
-            $new_patient_register = true;
+            $new_patient_register = true; //patient_created = true
         }
         
         if ($patient_id > 0){
@@ -187,6 +223,8 @@ class Patient //extends Model
                 self::saveVitalSigns($ss,$appt_id,$patient_id,null,$vital_signs); 
             }
 
+            //Save patient profile photo
+            if($photo) $mx = PublicStorage::saveProfilePicture($ss,null,$photo,['id'=>$patient_id,'store'=>"patients.photo_file_name"]);
             return DV::success(['person_id'=>$person_id,'patient_id'=>$patient_id,'patient_code'=>$ff? $ff->code:null,'status_info'=>$statusInfo]);
         }else return DV::error('Something went wrong during saving patient data');
     }
@@ -198,15 +236,52 @@ class Patient //extends Model
         return PublicStorage::getUrl($branch_id,'patient','image').$row->photo_file_name;
     }
 
+    function getPayments($arr=[], $id=null,$ss=null){
+        $id = $id?$id:$this->getId();
+        $ss = $ss?$ss:$this->getUserInfo();
+        return [];
+        //$cols = ['v.id','v.issue_date','v.due_date','v.amount','v.amount_due','v.discount_percent','v.discount_amount','created_at','create_user','updated_at','update_user','invoice_class'];
+        //$str_search ="1=1";
+        //return DB::table('invoices as v')->where('v.customer_id',$id)->whereRaw($str_search)->whereRaw("IFNULL(v.inactive,0) =0")->select($cols)->orderBy('v.id','DESC')->get();
+    }
+
+    function getInvoices($arr=[], $id=null,$ss=null){
+        $id = $id?$id:$this->getId();
+        $ss = $ss?$ss:$this->getUserInfo();
+        $cols = ['v.id','v.issue_date','v.due_date','v.amount','v.amount_due','v.discount_percent','v.discount_amount','created_at','create_user','updated_at','update_user','invoice_class'];
+        $str_search ="1=1";
+        return DB::table('invoices as v')->where('v.customer_id',$id)->whereRaw($str_search)->whereRaw("IFNULL(v.inactive,0) =0")->select($cols)->orderBy('v.id','DESC')->get();
+    }
+
+    function getInvoiceCount($arr=[], $id=null,$ss=null){
+        $id = $id?$id:$this->getId();
+        $ss = $ss?$ss:$this->getUserInfo();
+        $str_search ="1=1";
+        $rows = DB::table('invoices as v')->where('v.customer_id',$id)->whereRaw($str_search)->whereRaw("IFNULL(v.inactive,0) =0")->select([DB::raw("COUNT(v.id) AS cnt")])->get();
+        foreach($rows as $row) return $row->cnt;
+        return 0;
+    }
+
+    function getProfilePhoto($id=null,$ss=null){
+        $id =$id?$id:$this->getId();
+        //$ss = $ss?$ss:$this->getUserInfo();
+        return self::profilePhoto($id);
+    }
+
     static function profileInfo($patient_id,$include_medical_history=false,$include_medication_details=false){
          $person_id = self::personId($patient_id);
          $cols="id as person_id,'NA' AS code,concat(last_name,' ',first_name) as name, first_name,last_name,sex,date_of_birth,phone_number,address,p.email,'Cambodian' AS nationality,0 AS height, 0 as weight, 0 AS age";
          $data = (object)[];
          $data->basic_info = Person::detailsBy(['id'=>$person_id],$cols);
          $data->basic_info->image_url = Patient::profilePhoto($patient_id);
-         if($include_medical_history) $data->medical_history = self::medicalHistory($patient_id);
-         if($include_medication_details) $data->include_medication_details = self::medicationDetails($patient_id);
+         if($include_medical_history) $data->medical_history = self::medicalHistory($patient_id,null);
+         if($include_medication_details) $data->include_medication_details = self::medicationDetails($patient_id,null);
          return $data;
+    }
+    function getProfileInfo($id=null,$ss=null){
+       $id =$id?$id:$this->getId();
+       $ss = $ss?$ss:$this->getUserInfo();
+       return self::profileInfo($id,$ss);
     }
 
     static function latestTicket($patient_id){
@@ -214,18 +289,32 @@ class Patient //extends Model
       return isset($rows[0])?$rows[0]:null; 
     }
 
-    static function medicalHistory($patient_id){
+    static function medicalHistory($patient_id,$ss){
       $last_ticket = self::latestTicket($patient_id);
       if(!$last_ticket) return [];
       $ticket_id = $last_ticket->id;
-      return DB::table('patient_medical_history as h')->where('ticket_id',$ticket_id)->select('id','category','content','created_at')->get();
+      $str_branch ="1=1";
+      if($ss) $str_branch ="h.branch_id = ".$ss->branch_id;
+      return DB::table('patient_medical_history as h')->where('ticket_id',$ticket_id)->whereRaw($str_branch)->select('id','category','content','created_at')->get();
     }
 
-    static function medicationDetails($patient_id){
+    static function medicationDetails($patient_id,$ss){
         $last_ticket = self::latestTicket($patient_id);
         if(!$last_ticket) return [];
         $ticket_id = $last_ticket->id;
-        return DB::table('patient_prescription_items as pi')->join('inv_items as itm','pi.item_id','=','itm.id')->where('pi.ticket_id',$ticket_id)->select('pi.id','pi.item_id','itm.code','itm.name','pi.sku','pi.qty','pi.usage','pi.duration_days','pi.remarks','reason','pi.created_at')->get();
+        $str_branch ="1=1";
+        if($ss) $str_branch ="pi.branch_id = ".$ss->branch_id;
+        $cols = ['pi.id','pi.item_id','itm.code','itm.name','pi.sku','pi.qty','pi.usage','pi.duration_days','pi.remarks','reason','pi.created_at'];
+        return DB::table('patient_prescription_items as pi')->join('inv_items as itm','pi.item_id','=','itm.id')->where('pi.ticket_id',$ticket_id)->whereRaw($str_branch)->select($cols)->get();
+    }
+    static function medicationHistory($patient_id,$ss){
+        $last_ticket = self::latestTicket($patient_id);
+        if(!$last_ticket) return [];
+        $ticket_id = $last_ticket->id;
+        $str_branch ="1=1";
+        if($ss) $str_branch ="pi.branch_id = ".$ss->branch_id;
+        $cols = ['pi.id','pi.item_id','itm.code','itm.name','pi.sku','pi.qty','pi.usage','pi.duration_days','pi.remarks','reason','pi.created_at'];
+        return DB::table('patient_prescription_items as pi')->join('inv_items as itm','pi.item_id','=','itm.id')->where('pi.ticket_id',$ticket_id)->whereRaw($str_branch)->select($cols)->get();
     }
     // static function deletePermanent($req){
     //     $com_branch_id=1;
@@ -247,7 +336,8 @@ class Patient //extends Model
       //user not authenticated
         $branch_id = $ss->branch_id;
         $search_value = escape_like_str(isset($arr['search_value'])?$arr['search_value']:null);
-        $client_id = isset($arr['client_id'])?$arr['client_id']:null; 
+        $client_id = isset($arr['client_id'])?$arr['client_id']:null;
+        if(!$client_id) $client_id = isset($arr['id'])?$arr['id']:null;
         $str_search="1=2";
         if($search_value) $str_search ="(p.phone_number ='$search_value' OR pt.code ='$search_value' OR concat(p.last_name,' ',p.first_name) LIKE '%$search_value%' OR p.national_id ='$search_value')";
         if($client_id > 0) $str_search ="pt.id =$client_id";
@@ -296,13 +386,33 @@ class Patient //extends Model
       return isset($rows[0])?$rows[0]:null;
     }
 
-    //returns details of one patient (including personal details and medical conditions)
-    static function info($id){
-        $more_where =null;
-        $cols ="p.id,,concat(p.last_name,' ',p.first_name) as name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
+    function getDetails($id=null,$ss=null){
+        //$more_where =null;
+        $id = $id?$id:$this->getId();
+        $ss = $ss?$ss:$this->getUserInfo();
+        $branch_id = $ss->branch_id;
+        $cols ="p.id,pt.photo_file_name,concat(p.last_name,' ',p.first_name) as name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
         $rows =  DB::table('persons as p')->join('patients as pt','pt.person_id','=','p.id')->where('pt.id',$id)->selectRaw($cols)->take(1)->get();
         foreach($rows as $row){
             $cols1 ="pmc.id,pmc.mc_value,pmc.description";
+            //$row->image_url = PublicStorage::getProfilePhoto_url($ss->user_id);
+            $row->image_url = PublicStorage::getUrl($branch_id,'patient','image').$row->photo_file_name;
+            $row->mc_items = DB::table("patient_medical_conditions as pmc")->where('patient_id',$id)->selectRaw($cols1)->take(1)->get();
+            return $row;
+        }
+        return null;
+    }
+
+    //returns details of one patient (including personal details and medical conditions)
+    static function info($id,$ss){
+        $more_where =null;
+        $branch_id = $ss->branch_id;
+        $cols ="p.id,,concat(p.last_name,' ',pt.photo_file_name,p.first_name) as name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
+        $rows =  DB::table('persons as p')->join('patients as pt','pt.person_id','=','p.id')->where('pt.id',$id)->selectRaw($cols)->take(1)->get();
+        foreach($rows as $row){
+            $cols1 ="pmc.id,pmc.mc_value,pmc.description";
+            $row->image_url = PublicStorage::getProfilePhoto_url($ss->user_id);
+            //$row->image_url = PublicStorage::getUrl($branch_id,'patient','image').$row->photo_file_name;
             $row->mc_items = DB::table("patient_medical_conditions as pmc")->where('patient_id',$id)->selectRaw($cols1)->take(1)->get();
             return $row;
         }
@@ -317,43 +427,61 @@ class Patient //extends Model
         return isset($rows[0])?$rows[0]:null;
     }
 
-    static function list($req){
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
+    static function list($arr,$ss){
         $branch_id = $ss->branch_id;
-        $search_value = $req->search_value;
+        $search_value = isset($arr['search_value'])?$arr['search_value']:null;
+        $str_search ="1=1";
+        if ($search_value){
+          $str_search ="(pt.code ='$search_value' OR )";
+        }
         $cols ="pt.id,pt.code,p.id as person_id,concat(p.last_name,' ',p.first_name) as name,p.sex, formatDate(pt.created_at) AS created_at,p.phone_number,p.email,p.address,pt.remarks,pt.create_user";
-        $rows= DB::table("patients AS pt")->join('persons as p','p.id','=','pt.person_id')->where('pt.branch_id',$branch_id)->selectRaw($cols)->orderByRaw("pt.created_at desc")->get();  
-        return DV::result($rows);
+       return DB::table("patients AS pt")->join('persons as p','p.id','=','pt.person_id')->where('pt.branch_id',$branch_id)->selectRaw($cols)->orderByRaw("pt.created_at desc")->get();  
+     
     }
-
-
+  
      //Before and After photos
      //::photos() returns array of image_urls (last three photos or photos taken during the last consulting session) 
-     static function photos($req){
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
+     static function photos($patient_id,$ss){
         $branch_id = $ss->branch_id;
-        $patient_id = $req->patient_id;  
-        $cols ="ph.file_name,ph.file_type,ph.create_user,ph.created_at";
-        $rows = DB::table("patient_photos AS ph")->join('patients as pt','ph.patient_id','=','pt.id')->where('ph.patient_id',$patient_id)->where('pt.branch_id',$branch_id)->selectRaw($cols)->orderByRaw("ph.created_at desc")->take(3)->get();    
+        $rows = DB::table('patient_photos')->where('patient_id',$patient_id)->select("id","file_name","category")->orderBy("category","ASC")->get();
         foreach($rows as $row){
-            $row->image_url = "";
+            $url = PublicStorage::getUrl($branch_id,'patient','image');
+            $url .=$row->file_name;
+            $row->image_url = $url;
         }
-        return DV::result($rows);
+        return $rows;
     }
- 
-    //::history() returns array of medical reports by date and doctor's name 
-    static function history($req){
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-        $branch_id = $ss->branch_id;
-        $search_value = escape_like_str($req->search_value);
+   
+    function getPhotos($id=null,$ss=null){
+       $id =$id?$id:$this->getId();
+       $ss =$ss?$ss:$this->getUserInfo();
+       return self::photos($id,$ss); 
+    }
 
-       return DV::result([
-        'medical_reports'=>[],
-        'medical_history'=>null
-       ]);
+    //::history() returns array of medical reports by date and doctor's name 
+    static function history($id,$ss){
+       return [
+        'tickets'=>self::ticketList([],$id,$ss),
+        'medications'=>self::medicationHistory($id,$ss),
+        'medical_history'=>self::medicalHistory($id,$ss)
+       ];
+    }
+    
+    //medicalReports() or ticketList() return list of ticket per patient
+    static function ticketList($arr,$patient_id,$ss){
+      if(!$arr) $arr =[]; //this array may contains start_date, end_date etc
+      $branch_id = $ss->branch_id;
+      
+      $cols = ["t.id","pt.code",'pt.id as patient_id',DB::raw("DATE_FORMAT(t.q_date,'%d %b %Y') as q_date"),"t.created_at","t.consultant_id"];
+      $served_ticket =3; //Not yet used => "todo: Select only Served ticket". Question is when the ticket status is changed to "Served"
+      return DB::table('tickets as t')->join('patients as pt','pt.id','=','t.client_id')->where('pt.id',$patient_id)->where('t.branch_id',$branch_id)->select($cols)->orderBy('t.id','DESC')->get();
+    }
+
+    //getTicketList()
+    function getTickets($arr=[],$patient_id = null,$ss=null){
+       $ss = $ss?$ss:$this->getUserInfo();
+       $patient_id = $patient_id?$patient_id:$this->getId(); //patient_id
+       return self::ticketList($arr,$patient_id,$ss);
     }
 
     //::invoice() returns array of invoice info (number, date,amount)

@@ -224,6 +224,6 @@ let PatientListComponent = new function () {
     }
 }
 
-$(document).ready(() => {
+window.addEventListener('DOMContentLoaded',e=> {
     PatientListComponent.init();
 });

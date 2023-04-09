@@ -524,10 +524,10 @@ class PublicStorage //extends Model
        if(!$user) return null;
        $table = null;
        $user_class = $user->user_class;
-       if ($user_class==='driver') 
-        $table ="driver";
-       else if ($user_class ==='merchant' || $user_class ==='sender') 
-         $table ="sender";
+       if ($user_class==='patient') 
+        $table ="patients";
+       else if ($user_class ==='employee' || $user_class ==='staff') 
+         $table ="employees";
        if(!$table) return null;
 
        $row = getDataRow($table,['id'=>$user->official_id],"photo_file_name");
