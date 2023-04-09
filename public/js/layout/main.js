@@ -249,6 +249,14 @@ let main_view = new function(){
 
         this.mnuOPDList.on('click',(e)=>{
             e.preventDefault();
+            QueueComponent.show({
+                'showPatientPhotos':true,
+                'showConsultButton':false,
+                'showPrescriptionButton':false,
+                'showInvoiceButton':false,
+                'showHistoryButton':true,
+                'default_tab_view':null //For Consultant, remember the last vieved tab 
+            });
             PatientListComponent.show(null);
         });
 

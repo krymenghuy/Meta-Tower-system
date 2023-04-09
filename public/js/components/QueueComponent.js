@@ -86,9 +86,7 @@ let TicketDetails = new function () {
                     let op = {
                         patient_id: patient_id,
                         ticket_id: ticket_id,
-                        onClose: (d) => {
-                            alert('Consult Window is closing');
-                        }
+                        onClose: (d) => {}
                     };
                     ConsultDialog.show(op);
                 }
@@ -401,7 +399,6 @@ let TicketDetails = new function () {
 
                 div_workspace.html(html);
                 div.show();
-                ////LocaleManager.translateZone(ws_id);
                 mThis.current_view_name = 'info';
 
                 div_workspace.find('.qul-btn-generate-invoice').off('click').on('click',e => {
@@ -681,6 +678,7 @@ let QueueComponent = new function () {
 
     this.base_url = $('#__base_url').val();
     this.form_data = {};
+    this.options = {};
 
     this.tblTickets = $('#_qul_tblTickets');
     this.elSearchAppt = $('#_qul_search_ticket');
@@ -913,7 +911,7 @@ let QueueComponent = new function () {
                     data: function (data, a, b) {
                         return [`<div class="form-inline">`,
                             `<a style="display:${data.status_id > 2 ? 'none' : 'block'}" href="javascript:void(0)" class="btn_ticket_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
-                            `<a href="javascript:void(0);" data-id="${data.id}" class="btn_ticket_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,`</div>`
+                            `<a href="javascript:void(0)" data-id="${data.id}" class="btn_ticket_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,`</div>`
                         ].join('');
                     }
                 }
