@@ -811,7 +811,9 @@ let PatientDialog = new function () {
         mThis.self.find('.data-input-reg').each(function () {
             let el = $(this);
             let f = el.data('field');
-            p[f] = el.val();
+            if(el.is('img'))
+              p[f] = el.prop('src');
+            else p[f] = el.val();
         });
         p.department_id = mThis.elDepartment.val();
         p.consultant_id = mThis.elConsultant.val();
@@ -860,6 +862,8 @@ let PatientDialog = new function () {
             if (el.is('select')) {
                 el.val(d[f]).trigger('change');
                 el.data('error', 0);
+            }else if (el.is('img')){
+                el.prop('src',d[f]);
             }
             else el.val(d[f]);
         });

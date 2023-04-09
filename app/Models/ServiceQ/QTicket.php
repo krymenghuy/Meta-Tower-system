@@ -64,6 +64,7 @@ class QTicket //extends Model
         return $this->id;
     }
 
+    
     //@param $d =['client_id','department_id','consultant_id','priority','schedule_type','remarks']
     function create($d=[],$ss=null){
         if (!$ss) $ss = $this->getUserInfo(); 

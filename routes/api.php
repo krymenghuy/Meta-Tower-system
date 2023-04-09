@@ -374,45 +374,54 @@ Route::post('Bill/settings/delete-vendor-type',[VendorController::class, 'saveVe
     //begin::PatientController. Not using Controller
     
             Route::post('patient/quick-info', [PatientController::class,'getPatientQuickInfo']);
-            
-            Route::post('patient/find',function(Request $req){
-                $res = Patient::findSimilar($req);
-                return response()->json($res);
-            });
+            Route::post('patient/history', [PatientController::class,'getPatientHistory']);
+            Route::post('patient/details', [PatientController::class,'getPatientDetails']);
+            Route::post('patient/info', [PatientController::class,'getPatientDetails']);
+           
+            Route::post('patient/find', [PatientController::class,'findPatients']);
+            Route::post('patient/list', [PatientController::class,'getPatientList']);
+            Route::post('patient/delete', [PatientController::class,'deletePatient']);
+            Route::post('patient/register', [PatientController::class,'registerPatient']);
+            Route::post('patient/photos', [PatientController::class,'getPatientPhotos']);
+            Route::post('patient/tickets', [PatientController::class,'getPatientTickets']);
+            Route::post('patient/medication-details', [PatientController::class,'getMedicationDetails']);
 
-            Route::post('patient/list', function(Request $req){
-                return response()->json(Patient::list($req));
-            });
+            Route::post('patient/invoices', [PatientController::class,'getPatientInvoices']);
+            Route::post('patient/payments', [PatientController::class,'getPatientPayments']);
 
-            Route::post('patient/register',function(Request $req){
-                $res = Patient::register($req);
-                return response()->json($res);
-            });
+            // Route::post('patient/register',function(Request $req){
+            //     $res = Patient::register($req);
+            //     return response()->json($res);
+            // });
 
-            Route::post('patient/delete',function(Request $req){
-                $res = Patient::delete($req);
-                return response()->json($res);
-            });
+            // Route::post('patient/list', function(Request $req){
+            //     return response()->json(Patient::list($req));
+            // });
 
-            Route::post('patient/history',function(Request $req){
-                $res = Patient::history($req);
-                return response()->json($res);
-            });
+            // Route::post('patient/delete',function(Request $req){
+            //     $res = Patient::delete($req);
+            //     return response()->json($res);
+            // });
 
-            Route::post('patient/photos',function(Request $req){
-                $res = Patient::photos($req);
-                return response()->json($res);
-            });
+            // Route::post('patient/history',function(Request $req){
+            //     $res = Patient::history($req);
+            //     return response()->json($res);
+            // });
 
-            Route::post('patient/invoices',function(Request $req){
-                $res = Patient::invoices($req);
-                return response()->json($res);
-            });
+            // Route::post('patient/photos',function(Request $req){
+            //     $res = Patient::photos($req);
+            //     return response()->json($res);
+            // });
 
-            Route::post('patient/transactions',function(Request $req){
-                $res = Patient::transactions($req);
-                return response()->json($res);
-            });
+            // Route::post('patient/invoices',function(Request $req){
+            //     $res = Patient::invoices($req);
+            //     return response()->json($res);
+            // });
+
+            // Route::post('patient/transactions',function(Request $req){
+            //     $res = Patient::transactions($req);
+            //     return response()->json($res);
+            // });
 
     //end::PatientController
  
