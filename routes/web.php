@@ -129,6 +129,7 @@ Route::get('geninvoice/{q}',[WebReportController::class, 'general_invoice']);
 Route::get('person-profile/{q}',[WebReportController::class,'person_profile']);
 // Route::get('view-receipt/{q}',[MailController::class, 'view_receipt']);
 Route::get('receipt/{q}', [WebReportController::class, 'receipt']);
+Route::get('receipt_service/{q}', [WebReportController::class, 'receipt_service']);
 Route::get('mail-receipt/{q}', [MailController::class, 'receipt']);
 
 // Route::get('clearcache', function () {

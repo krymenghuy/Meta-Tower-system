@@ -242,7 +242,6 @@ let StockTrackingComponent = new function () {
 
             data = StringSanitizer.sanitizeObject(data, null);
             let cnt = 1;
-            //begin::Set up columns
             let my_columns = [
                 {
                     title: mThis.trans_title("No."),
@@ -297,11 +296,7 @@ let StockTrackingComponent = new function () {
                     destroy: true,
                     paging: true,
                     ordering: false,
-                    //dom: 'Bfrtip',
                     retrieve: true,
-                    //scrollY:390,
-                    //scrollX:500,
-                    //pagingType:'numbers',
                     info: true,
                     pageLength: 10,
                     bLengthChange: false,

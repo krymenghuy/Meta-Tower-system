@@ -191,6 +191,12 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   font-weight:700 !important;
 }
 
+.table-th > thead > tr > th{
+  font-weight: bold;
+  font-size:1rem;
+  color:#000;
+}
+
 span.span::before{
   content:'show more';
   color:#2f43c6;

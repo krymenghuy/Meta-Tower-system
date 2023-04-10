@@ -51,6 +51,20 @@ class WebReportController extends Controller
         return view('reports.receipt',$data);
     }
 
+    public function receipt_service($query_string){
+      // if (!Session::get('login_name',null)) return redirect('/');
+      $branch_id =Session::get('branch_id',0);
+      // if (!$branch_id) return redirect('/');
+        
+        $p = processQueryString($query_string);
+        // $pmt_id = $p->id; 
+        $ss = (object)['branch_id'=>$branch_id];
+        // $payment = new \App\Models\Invoice\Payment($pmt_id,$ss);
+        // $data['receipt'] = $payment->getDetails();
+        $data = [];
+        return view('reports.receipt_service',$data);
+    }
+
    //generalReport()| genral report
     public function general_report($query_string=null) {
         if (!Session::get('login_name',null)) return redirect('/');
