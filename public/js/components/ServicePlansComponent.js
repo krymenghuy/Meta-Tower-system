@@ -11,27 +11,6 @@ let ServicePlansComponent = new function () {
     this.div_container = $('#service_plan_container');
 
     this.form_data = {};
-
-    // this.col_titles = {
-    //     "Description": "Description",
-    //     "Price": "Price",
-    //     "Validity": "Validity",
-    //     "Action": "Action"
-    // };
-
-    // this.trans_title = (title_prop = 'undefined') => {
-    //     return (mThis.col_titles[title_prop]?mThis.col_titles[title_prop]:title_prop);
-    // }
-
-    // this.setLanguage = () => {
-    //     if (LocaleManager.lang !== mThis.lang) {
-    //         for (let prop in mThis.col_titles) {
-    //             mThis.col_titles[prop] = LocaleManager.trans(prop, 'service', LocaleManager.lang);
-    //         }
-    //         mThis.lang = LocaleManager.lang;
-    //     }
-    // }
-
     this.init = () => {
         mThis.elSearchItem.on('keyup', (e) => {
             if (e.key==='Enter') mThis.displayServicePlans();
@@ -128,7 +107,7 @@ let ServicePlansComponent = new function () {
                 let html = [`<div class="row m-2" style="background:#E8F2F2;min-height:100px;border:1px solid #E7E4E4;padding:10px;margin-top:5px">
                 <div class="col-4 p-1">
                   <h5>${c.name}</h5>
-                  <p class="text-muted">${c.description?c.description:'No description'}</p>
+                  <p class="text-muted">${c.description ? c.description:'No description'}</p>
                 </div>
                 <div class="col-3 p-1">
                   <h5>Members</h5>
@@ -142,7 +121,6 @@ let ServicePlansComponent = new function () {
 
                 <div class="col-2 p-1">
                    <div class="d-flex flex-row">`
-                    //,`<a href="javascript:void(0)" class="btn-add-member" data-id="${c.id}"><i class="fa fa-plus-circle"></i></a>&nbsp;
                      ,`<a href="javascript:void(0)" class="btn-edit-plan" data-id="${c.id}"><i class="fa fa-edit"></i></a>&nbsp;`
                      ,`<a href="javascript:void(0)" class="btn-delete-plan" data-id="${c.id}"><i class="fa fa-trash"></i></a>`
                    ,`</div>
@@ -151,8 +129,6 @@ let ServicePlansComponent = new function () {
               </div>`].join('');
                mThis.div_container.append(html);
             });
-            
-             
         });
     };
 
@@ -165,18 +141,9 @@ let ServicePlansComponent = new function () {
         mThis.options = options;
 
         mThis.loadFilterOptions((items) => {
-                    mThis.elFilter_status.val(1).trigger('change');
-                    main_view.setTitle(mThis.title_prop);
-                    mThis.self.show().siblings().hide();
-            // VSUtil.setComboItems(mThis.elFilter_status, items, 'id', 'plan_status', true, '(Select status)', null);
-            //     let first_option = null;
-            //     if(!mThis.elFilter_department.val()) first_option = items[0];
-            //     if(first_option){
-            //         mThis.elFilter_department.val(first_option.id).trigger('change');
-            //         main_view.setTitle(mThis.title_prop);
-            //         mThis.self.show().siblings().hide();
-            //         return;
-            //     }
+            mThis.elFilter_status.val(1).trigger('change');
+            main_view.setTitle(mThis.title_prop);
+            mThis.self.show().siblings().hide();
         });
     }
 }
@@ -187,12 +154,6 @@ let ServicePlanDialog = new function () {
      
     this.prepareFormOptions = (default_id, onFinish) => {
         onFinish();
-        // vsapi.call(`${main_view.base_url}/api/settings/departments`, null).then((res) => {
-        //     let items = StringSanitizer.sanitizeObject(res.data);
-        //     VSUtil.setComboItems(mThis.elDepartment, items, 'id', 'name', true, '(Select Department)', default_id);
-        //     if (default_id) mThis.elDepartment.trigger('change');
-        //     onFinish();
-        // });
     }
 
     this.formUntil = new FormUntil({

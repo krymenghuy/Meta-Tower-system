@@ -194,6 +194,15 @@
                 <div class="kt-menu__submenu ">
                     <span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="javascript:void(0)" id="_main_lnkServiceTracking" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/surgery_equipment.svg') }}"/>
+                                    &nbsp;
+                                </span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Service Tracking"></span>
+                            </a>
+                        </li>
                        <li class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkServicePlans" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">

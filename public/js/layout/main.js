@@ -27,6 +27,7 @@ let main_view = new function(){
     this.mnuEmployeeList = $('#_main_lnkEmployeeList');
     this.mnuPositions = $('#_main_lnkPositions');
     this.mnuEmployeeDepartment = $('#_main_lnkDepartments');
+    this.mnuServiceTracking = $('#_main_lnkServiceTracking');
     this.mnuServicePlans = $('#_main_lnkServicePlans');
     this.mnuMedicalServices = $('#_main_lnkMedicalServices');
     this.mnuStockTransfer = $('#_main_lnkStockTransfer');
@@ -139,9 +140,7 @@ let main_view = new function(){
         this.mnuTickets.on('click',(e)=>{
             e.preventDefault();
             QueueComponent.show({
-                //Allow Receiptionist to click Generate Invoice button, but consultant cannot click on this button
                 'showInvoiceButton':true,
-                //For Receiptionist, by default show "info" tab view and only one tab available 
                 'default_tab_view':'info'
             });
         });
@@ -165,6 +164,12 @@ let main_view = new function(){
             e.preventDefault();
             MedicalServiceComponent.show(null);
         });
+
+        this.mnuServiceTracking.on('click',(e) => {
+            e.preventDefault();
+            ServiceTrackingComponent.show(null);
+        });
+
         this.mnuServicePlans.on('click',(e)=>{
             e.preventDefault();
             ServicePlansComponent.show(null);
