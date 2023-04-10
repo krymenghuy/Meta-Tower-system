@@ -375,6 +375,7 @@
                                 @include('layouts.invoicesComponent')
                                 @include('layouts.patientRecieptsComponent')
                                 @include('layouts.medicalServiceComponent')
+                                @include('layouts.servicePlansComponent')
                                 @include('layouts.itemsComponent')
                                 @include('layouts.itemGroupsComponent')
                                 @include('layouts.stockTrackingComponent')

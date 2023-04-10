@@ -3,7 +3,7 @@
         <div class="d-flex align-items-center gap-2 ms-3">
             <button class="vs-btn-custom-primary" id="_msl_btnNew">
                 <i class="fa-solid fa-plus"></i>
-                <span class="trans-text" data-langprop="buttons.Add New"></span>
+                <span class="trans-text" data-langprop="buttons.New Service"></span>
             </button>
             <input type="search" class="search-box" id="_msl_search" placeholder="Search"/>
             <div class="custom-width">

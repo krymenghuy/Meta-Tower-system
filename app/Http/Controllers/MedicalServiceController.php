@@ -28,7 +28,7 @@ class MedicalServiceController extends Controller
             $str_search = "d.name LIKE '%$search_value%' OR ms.name LIKE '%$search_value%'";
         }
       
-        $rows = DB::table('medical_services as ms')->join('departments as d','d.id','=','ms.department_id')->where('d.id',$department_id)->where('ms.branch_id',$branch_id)->whereRaw($str_search)->selectRaw("ms.id,ms.name,ms.description,ms.price,displayMoney(price,currency_code) as display_price,ms.cost,displayMoney(cost,currency_code) as display_cost,ms.department_id,d.name as department_name,treatment_method,service_type")->get();
+        $rows = DB::table('medical_services as ms')->join('departments as d','d.id','=','ms.department_id')->where('d.id',$department_id)->where('ms.branch_id',$branch_id)->whereRaw($str_search)->selectRaw("ms.id,ms.name,ms.description,ms.price,displayMoney(price,currency_code) as display_price,ms.cost,displayMoney(cost,currency_code) as display_cost,ms.department_id,d.name as department_name,treatment_method,service_type")->orderBy('ms.id','DESC')->get();
         return JDV::result($rows);
     }
 
@@ -58,17 +58,18 @@ class MedicalServiceController extends Controller
             'treatment_method'=>'1|choice|none,nonsurgery,minor surgery,surgery',
             'service_type'=>'1|choice|consultation,labo,treatment',
             'price'=>'0|number',
-            'cost'=>'0|number'
+            'cost'=>'0|number',
+            'is_package'=>'1|number|default=0'
             //'arrival_date' => 'required|date|numeric|unique:customers,phone'
         ];
-        $check_unique = ["$branch_id|medical_services|name|id=id"];
+        $check_unique =["$branch_id|medical_services|name|id=id"];
         $res = validateReq($req,$validate_rule,true,[],$ss->lang,false,$check_unique);
         if($res->error) return JDV::error($res->error);
         $inputs = $res->values;
         if(!$this->department_exists($branch_id,$inputs['department_id'])) return JDV::error("Department ID does not exist");
 
         $id = $res->id;
-        if(!isset($inputs['description'])) $inputs['description'] = $inputs['name'];
+        //if(!isset($inputs['description'])) $inputs['description'] = $inputs['name'];
         $id = saveData($ss,'medical_services',['id'=>$id],$inputs,[],1);
         if($id > 0 ) return JDV::success(['id'=>$id]);
         else return JDV::error("Something went wrong during saving medial service");
@@ -79,7 +80,7 @@ class MedicalServiceController extends Controller
         if($ss->status_code !=200) return $ss; //user not authenticated
         $branch_id = $ss->branch_id;
         $id = $req->id;
-        DB::table('medical_services')->where('id',$id)->where('branch_id',$branch_id)->delete();
+        DB::table('medical_services')->where('id',$id)->where('is_package',0)->where('branch_id',$branch_id)->delete();
         return JDV::success();
     }
 

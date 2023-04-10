@@ -456,9 +456,10 @@ class Consultation //extends Model
         $testInfo = self::serviceInfo($test_id,"price");
         if(!$testInfo) 
         return DV::error("Test ID $test_id is not valid");
+        $price = isset($testInfo->price)?$testInfo->price: (isset($testInfo->selling_price)?$testInfo->selling_price:0);
         $inputs['patient_id']=$patient_id;
         $inputs['ticket_id']=$ticket_id;
-        $inputs['price'] = $testInfo->price;
+        $inputs['price'] = $price?$price:0;
         $id = saveData($ss,'patient_labo_tests',['id'=>$id],$inputs,[],1);
         if ($id>0) return DV::success(['id'=>$id]);
         return DV::error("Somethign went wrong saving patient labo test");

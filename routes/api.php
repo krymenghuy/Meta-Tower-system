@@ -30,6 +30,7 @@ use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\QTicketController;
 use App\Http\Controllers\MedicalServiceController;
+use App\Http\Controllers\ServicePlanController;
 
 use App\Http\Controllers\Inventory\CategoryController; 
 use App\Http\Controllers\Inventory\MIStockController; 
@@ -166,11 +167,20 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
   //begin::MedicalServiceController
     Route::post('service/details', [MedicalServiceController::class, 'getMedicalServiceDetails']);
      Route::post('service/items', [MedicalServiceController::class, 'getMedicalServices']);
+     Route::post('service/list', [MedicalServiceController::class, 'getMedicalServices']);
      Route::post('service/delete', [MedicalServiceController::class, 'deleteMedicalService']);
      Route::post('service/save', [MedicalServiceController::class, 'saveMedicalService']);
      Route::post('service/info', [MedicalServiceController::class, 'getMedicalServiceInfo']);
   //End::MedicalServiceController
  
+ //begin::ServicePlanController
+    Route::post('service-plan/details', [ServicePlanController::class, 'getServicePlanDetails']);
+     Route::post('service-plan/list', [ServicePlanController::class, 'getServicePlans']);
+     Route::post('service-plan/delete', [ServicePlanController::class, 'deleteServicePlan']);
+     Route::post('service-plan/save', [ServicePlanController::class, 'saveServicePlan']);
+     Route::post('service-plan/info', [ServicePlanController::class, 'getServicePlanDetails']);
+  //End::ServicePlanController
+
    //begin::ItemController
    Route::post('inventory/item-info', [ItemController::class, 'getItemInfo']);
    Route::post('inventory/item/info', [ItemController::class, 'getItemInfo']);
@@ -243,6 +253,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
 //begin::MedicalInvoiceController
     Route::post('medical-invoice/create', [MedicalInvoiceController::class, 'createInvoice']);
+    Route::post('medical-invoice/update', [MedicalInvoiceController::class, 'updateMedicalInvoice']);
 //end::MedicalInvoiceController
 
 //begin::InvoiceController

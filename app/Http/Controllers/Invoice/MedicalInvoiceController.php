@@ -19,6 +19,11 @@ class MedicalInvoiceController extends Controller
        $res= $medInvoice->create($ticket_id);
        return JDV::result($res);
     }
+    function updateMedicalInvoice(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        return JDV::raw(MedicalInvoice::updateMedicalInvoice($req->ticket_id,$ss));
+    }
 
     function deleteInvoice(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);

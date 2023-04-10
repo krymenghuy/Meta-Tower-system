@@ -81,7 +81,7 @@
                                     <p>Patient ID:</p>
                                 </div>
                                 <p>
-                                    <?php echo $invoice->customer_id; ?>
+                                    <?php echo $invoice->customer_code; ?>
                                 </p>
                             </div>
                             <div class="d-flex align-items-center w-50">
