@@ -5,10 +5,7 @@ let ServiceDepartmentsComponent = new function () {
     this.base_url = $('#__base_url').val();
     this.self = $('#_main_serviceDepartmentsComponent');
     this.btnNew = $('#_svd_btnNew');
-    // this.elSearchItem = $('#_msl_search');
-    // this.elFilter_department = $('#_msl_filter_service');
     this.tblItems = $('#_svd_tblItem');
-    // this.form_data = {};
 
     this.col_titles = {
         "Numero": "No.",
@@ -74,9 +71,6 @@ let ServiceDepartmentsComponent = new function () {
     }
 
     this.displayServiceDepartments = (onFinish = null) => {
-        //Initialize language for DataTable columns headers
-        //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-        //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
         mThis.setLanguage();
         let p = {};
         window.vsapi.call(`${mThis.base_url}/api/settings/departments`, p, 'POST', null).then((result) => {
@@ -84,14 +78,12 @@ let ServiceDepartmentsComponent = new function () {
             if (result.status_code === 200) data = result.data;
             if (mThis.table) {
                 mThis.tblItems.DataTable().clear().destroy();
-                //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
                 mThis.tblItems.empty();
                 mThis.table = null;
             }
 
             data = StringSanitizer.sanitizeObject(data, null);
             let cnt = 1;
-            //begin::Set up columns
             let my_columns = [
                 {
                     title: mThis.trans_title("Numero"),
@@ -128,10 +120,6 @@ let ServiceDepartmentsComponent = new function () {
                     }
                 }
             ];
-            //END Define colum
-
-            //translate column names
-            //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
 
             if (!mThis.table)
                 mThis.table = mThis.tblItems.DataTable({
@@ -139,11 +127,7 @@ let ServiceDepartmentsComponent = new function () {
                     destroy: true,
                     paging: true,
                     ordering: false,
-                    //dom: 'Bfrtip',
                     retrieve: true,
-                    //scrollY:390,
-                    //scrollX:500,
-                    //pagingType:'numbers',
                     info: true,
                     pageLength: 10,
                     bLengthChange: false,
@@ -176,41 +160,29 @@ let ServiceDepartmentsComponent = new function () {
     }
 }
 
-//begin::MedicalServiceDialog
 let ServiceDepartmentsDialog = new function () {
     let mThis = this;
     this.self = $(`#_msl_dlgDepartment`);
 
-    //AppointmentDialog
     this.formUntil = new FormUntil({
         "itemName": "Service Departments",
         "formId": '_svd_dlgDepartment',
-        //"titleId":"_msl_dlgService_title",
-        //"errorId":"_msl_dlgService_error",
-        //"saveButtonId":"_msl_dlgService_btnSave",
         "instance": this,
         "apiSave": `${main_view.base_url}/api/settings/save-department`,
         "apiGet": `${main_view.base_url}/api/settings/department-info`,
-        //"identityProp":"id",
         "modifyTitle": "Modify Department",
         "createTitle": "New Department",
         "identityProps": ['id'],
-        //Set additional data props for getFormData() to collect on gathering data inputs from this form,
         "form_data_props": ['id'],
-        //"sub_prop":"chief_complaint_items",
-        //"sub_prop_function":mThis.getChiefComplaints,
         "sanitize_excepts": [],
         'use_alert_error': true,
-        'beforeShow': () => { }
-        // "init": ()=>{
-        //  }
+        'beforeShow': () => {}
     });
 
     this.show = (options) => {
         mThis.formUntil.show(options);
     }
 }
-//end::MedicalServiceDialog
 
 $(document).ready(function () {
     ServiceDepartmentsComponent.init();

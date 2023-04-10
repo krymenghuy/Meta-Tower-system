@@ -333,7 +333,6 @@ let StockTrackingComponent = new function () {
     }
 }
 
-//Begin::FilterDialog
 let FilterDialog = new function () {
     let mThis = this;
     this.self = $('#_stk_dlgFilterStockTracking');
@@ -366,7 +365,6 @@ let FilterDialog = new function () {
         });
     }
 }
-//End::FilterDialog
 
 let ReceiveStokeDialog = new function () {
     let mThis = this;

@@ -4,7 +4,7 @@
             <button class="btn btn-primary" type="button" id="st_btnNew">
                 <span class="trans-text" data-langprop="service.Add Service Tracking"></span>
             </button>
-            <button class="btn btn-info" type="button" id="st_btnRunReport">
+            <button class="btn btn-warning" type="button" id="st_btnRunReport">
                 <span class="trans-text" data-langprop="buttons.Run Report"></span>
             </button>
         </div>
@@ -89,19 +89,19 @@
                 <h5>Run Report</h5>
             </div>
             <div class="modal-body">
-                <div class="row">
-                    <div class="col-lg-6">
+                <div class="row py-2">
+                    <div class="col-lg-12">
                         <label class="form-label trans-text" data-langprop="titles.Staff Name"></label>
                         <select class="form-select modal-select2"></select>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row py-2">
                     <div class="col-lg-6">
                         <label class="form-label trans-text" data-langprop="titles.Start Date"></label>
                         <input data-select="datepicker" class="form-control"/>
                     </div>
                     <div class="col-lg-6">
-                        <label class="form-label trans-text" data-langprop="titles.Start Date"></label>
+                        <label class="form-label trans-text" data-langprop="titles.End Date"></label>
                         <input data-select="datepicker" class="form-control"/>
                     </div>
                 </div>
