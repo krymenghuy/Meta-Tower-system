@@ -11,8 +11,6 @@ let MedicalServiceComponent = new function () {
     this.form_data = {};
 
     this.col_titles = {
-        "Numero": "No.",
-        "Name": "Name",
         "Description": "Description",
         "Price": "Price",
         "Department": "Department",
@@ -22,7 +20,7 @@ let MedicalServiceComponent = new function () {
     };
 
     this.trans_title = (title_prop = 'undefined') => {
-        return (mThis.col_titles[title_prop] || 'undefined');
+        return (mThis.col_titles[title_prop]?mThis.col_titles[title_prop]:title_prop);
     }
 
     this.setLanguage = () => {
@@ -99,29 +97,21 @@ let MedicalServiceComponent = new function () {
             data = StringSanitizer.sanitizeObject(data, null, ['display_price']);
             let cnt = 1;
             let my_columns = [
+                // {
+                //     data: (item, a, b) => {
+                //         return cnt;
+                //     },
+                //     title: mThis.trans_title('Numero')
+                // },
                 {
-                    data: (item, a, b) => {
-                        return cnt;
-                    },
-                    title: mThis.trans_title('Numero')
-                },
-                {
-                    data: (item, a, b) => {
-                        return [`<div>${item.name}</div>`].join('');
-                    },
-                    title: mThis.trans_title('Name')
-                },
-                {
-                    title: mThis.trans_title('Service Type'),
-                    data: "service_type"
+                    title: mThis.trans_title('Description'),
+                    data:(data,a,b)=>{
+                        return [`<h4 class="d-block">`,data.name,`</h4>`,`<p class="">`,data.description?data.description:'<span class="text-muted">No description</span>',`</p>`].join('');
+                    }
                 },
                 {
                     title: mThis.trans_title('Treatment Method'),
                     data: "treatment_method"
-                },
-                {
-                    title: mThis.trans_title('Description'),
-                    data: "description"
                 },
                 {
                     title: mThis.trans_title('Price'),

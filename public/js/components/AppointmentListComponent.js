@@ -358,7 +358,7 @@ let AppointmentListComponent = new function () {
     }
 
     this.trans_title = (title_prop = 'undefined') => {
-        return (mThis.col_titles[title_prop]);
+        return (mThis.col_titles[title_prop]?mThis.col_titles[title_prop]:title_prop);
     }
 
     this.createDropdownMenuHtml_loan = (items = [], data = null, data_props = []) => {

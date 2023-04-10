@@ -199,8 +199,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <button id="_qul_dlgConsult_btnSave" class="vs-btn-custom-primary" type="button">Save</button>
+                <!-- <button class="vs-btn-custom-secondary" type="button" data-dismiss="modal">Cancel</button> -->
+                <button id="_qul_dlgConsult_btnSave" class="vs-btn-custom-primary" type="button">Close</button>
             </div>
         </div>
     </div>

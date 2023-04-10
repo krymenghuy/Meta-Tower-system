@@ -61,7 +61,8 @@ class MedicalInvoice //extends Invoice //extends Model
     }
 
     static function serviceInfo($service_id){
-      $cols = ["i.id","i.name as item_name","i.description","i.sku","i.cost","i.price","i.tax_rate as sales_tax_rate"]; 
+      //For services, the price is "selling_price"
+      $cols = ["i.id","i.name as item_name","i.description","i.sku","i.cost","i.price as selling_price","i.tax_rate as sales_tax_rate"]; 
       $rows = DB::table("medical_services as i")->where("i.id",$service_id)->select($cols)->take(1)->get();
       return isset($rows[0])?$rows[0]:null;    
     }
@@ -183,10 +184,28 @@ class MedicalInvoice //extends Invoice //extends Model
          $m = self::saveInvoiceItems($ss,['id'=>$invoice_id,'discount'=>$discount,'discount_type'=>$discount_type],$items);
          if($m->item_count<=0) return DV::error('No invoice items have been saved. Those items may be invalid');
          $xres = self::setInvoiceNumber($branch_id,$invoice_id,"tax_line",$issue_date,null);
+         //Update Ticket's status to be 4 (Invoice created). NOTE that ticket status 1=Waiting,2=Serving, 3= Served, 4=Payment (or invoice created), 5=Paid
+         DB::table("tickets")->where('id',$ticket_id)->update(['status_id'=>4,'invoice_id'=>$invoice_id]);
          return DV::success(['invoice_id'=>$invoice_id,'ref_number'=>$xres->code,'item_count'=>$m->item_count]);
       }
       return DV::error("Something wrong saveing invoice!");
    }
+
+   //In case, doctor adds or removes services or medications after consultation session is served/closed
+   static function updateMedicalInvoice($ticket_id,$ss){
+      $branch_id = $ss->branch_id;
+      $rows = DB::table('invoices as v')->join('tickets as t','v.id','=','t.invoice_id')->where('t.id',$ticket_id)->where('v.branch_id',$branch_id)->select(['v.id','v.discount_type','v.discount_amount','v.discount_percent'])->take(1)->get();
+      if(!isset($rows[0])) return DV::error('Ticket ID or invoice ID does not valid or maybe because the given invoice does not belong to the ticket');
+      $invoice = $rows[0];
+      $invoice_id = $invoice->id;
+      $discount=0;
+      if(strtolower($invoice->discount_type) ==='percentage') 
+       $discount =$invoice->discount_percent;
+      else $discount = $invoice->discount_amount;
+      $items = self::getItems($ticket_id,$ss); 
+      $res = self::saveInvoiceItems($ss,['id'=>$invoice_id,'discount'=>$discount,'discount_type'=>$invoice->discount_type],$items,true);
+      return DV::success();
+    }
 
    //$doc_class is invlice line. It is invoice line based on which to issue invoice for different Tax processing or tax treatment.
    static function setInvoiceNumber($branch_id,$invoice_id=0,$doc_class=null,$issue_date=null,$len=5,$onSuccess=null){
@@ -290,7 +309,9 @@ class MedicalInvoice //extends Invoice //extends Model
            $tax_rate = isset($x->tax_rate)?$x->tax_rate:$itemInfo->sales_tax_rate;
            if(!$tax_rate) $tax_rate =0;
            $price = isset($x->price)? $x->price:0;
+           //use retail price
            if(!$price) $price = isset($itemInfo->selling_price)?$itemInfo->selling_price:0;
+           //for service, the prop name is "price", not selling_price
            $amount = $x->qty * $price;
            $discount_percent = isset($x->discount_percent)?$x->discount_percent:0;
            $discount_amount = $amount * $discount_percent/100;
@@ -477,7 +498,7 @@ class MedicalInvoice //extends Invoice //extends Model
   
   static function getInvoiceItems($ss,$id){
     $branch_id = $ss->branch_id;
-    $cols = ['invoice_item_class','i.id','i.item_id','i.item_code','i.item_name','i.description','i.qty','i.price','i.cost','i.sku','i.discount_percent','i.discount_amount','tax_rate','i.net_amount as line_total'];
+    $cols = ['invoice_item_class','i.id','i.item_id','i.item_code','i.description as item_name','i.description','i.qty','i.price','i.cost','i.sku','i.discount_percent','i.discount_amount','tax_rate','i.net_amount as line_total'];
     $rows = DB::table('invoice_items as i')->where('i.invoice_id',$id)->where('i.branch_id',$branch_id)->select($cols)->orderBy('invoice_item_class','ASC')->orderBy('i.id','DESC')->get();
     $products =[];
     $services = [];
@@ -506,7 +527,8 @@ class MedicalInvoice //extends Invoice //extends Model
     ////if (!$ss) $ss = $this->getUserInfo();
     ////if(!$id) $id = $this->getInvoiceId(); 
     $branch_id = $ss->branch_id;
-    $cols = ['invoice_class','v.id','ref_number','exchange_rate',DB::raw('formatDate(v.issue_date) AS issue_date'),DB::raw('formatDate(v.due_date) as due_date'),'customer_id','p.date_of_birth','p.sex',DB::raw("CONCAT(p.last_name,' ',p.first_name) as customer_name"),'v.customer_phone','v.customer_email',DB::raw('NULL AS customer_tax_number'),'terms','v.billing_address','v.amount','v.discount_percent','v.discount_amount','discount_type','v.total_cost','signer_name','v.currency_code','v.exchange_rate','v.amount_due','v.tax_amount','v.tax_rate',DB::raw("(SELECT SUM(IFNULL(amount,0)) FROM invoice_payments WHERE invoice_id =v.id) AS amount_paid"),'v.pmt_bank_name','v.pmt_account_number','v.pmt_account_name','v.description','v.invoice_notes'];
+    $customer_table = InvoiceSettings::$customer_table;
+    $cols = ['invoice_class','v.id','ref_number','exchange_rate',DB::raw('formatDate(v.issue_date) AS issue_date'),DB::raw('formatDate(v.due_date) as due_date'),'customer_id',DB::raw("(select code from $customer_table where id =v.customer_id LIMIT 1) AS customer_code"),'p.date_of_birth','p.sex',DB::raw("CONCAT(p.last_name,' ',p.first_name) as customer_name"),'v.customer_phone','v.customer_email',DB::raw('NULL AS customer_tax_number'),'terms','v.billing_address','v.amount','v.discount_percent','v.discount_amount','discount_type','v.total_cost','signer_name','v.currency_code','v.exchange_rate','v.amount_due','v.tax_amount','v.tax_rate',DB::raw("(SELECT SUM(IFNULL(amount,0)) FROM invoice_payments WHERE invoice_id =v.id) AS amount_paid"),'v.pmt_bank_name','v.pmt_account_number','v.pmt_account_name','v.description','v.invoice_notes'];
     $rows =DB::table('invoices as v')->join('patients as c','c.id','=','v.customer_id')->join('persons as p','p.id','=','c.person_id')->where('v.id',$id)->where('v.branch_id',$branch_id)->select($cols)->take(1)->get();
     $data = self::getInvoiceItems($ss,$id);
      

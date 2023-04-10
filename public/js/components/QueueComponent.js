@@ -81,7 +81,7 @@ let TicketDetails = new function () {
             let patient_id = $(this).data('clientid');
             let that = $(this);
 
-            cv_interact.confirm('Start consultation now?',{title:'Consultation','confirmButtonText':'Consult Now','cancelButtonText':'Later',context:'other'},(e)=>{
+            cv_interact.confirm('Open Consultation now?',{title:'Consultation','confirmButtonText':'Consult Now','cancelButtonText':'Later',context:'other'},(e)=>{
                 if(e){
                     let op = {
                         patient_id: patient_id,
@@ -641,6 +641,7 @@ let PrescriptionDialog = new function(){
                 if(res.status_code === 200){
                     let new_row_id = res.data.id; 
                     this.pspDlg.setRowId(tr,new_row_id);
+                    ConsultDialog.invoice_item_changed = true;
                 }
                 else cv_interact.error(res.error_message);
             });
@@ -1689,7 +1690,8 @@ let ConsultTabView = new function () {
                     if(p.service_id){
                         vsapi.call(`${main_view.base_url}/api/consultation/save-service-item`,p,null,false).then(res => {
                             if(res.status_code === 200){
-                            mThis.tblServiceItems.setRowId(tr,res.data.id);
+                               mThis.tblServiceItems.setRowId(tr,res.data.id);
+                               ConsultDialog.invoice_item_changed = true;
                             }else cv_interact.error(res.error_message);  
                         });
                     }
@@ -1860,6 +1862,7 @@ let ConsultTabView = new function () {
                 vsapi.call(`${main_view.base_url}/api/consultation/save-labo-test`,p,null,false).then(res => {
                     if(res.status_code === 200){
                         mThis.tblLaboTests.setRowId(tr,res.data.id);
+                        ConsultDialog.invoice_item_changed = true;
                     }else cv_interact.error(res.error_message); 
                 });
             },
@@ -2380,16 +2383,29 @@ let ConsultDialog = new function () {
     this.self = $('#_qul_dlgConsult');
     this.btnSaveConsult = $('#_qul_dlgConsult_btnSave');
     this.defaultTabView = 'consultation';
+    //Check if doctor made changes to prescription, services, and labo tests, so that to update invoice accordlingly
+    this.invoice_item_changed = false;
+    this.ticket_id = null;
 
-    this.btnSaveConsult.on('click', (e) => {
+    this.updateInvoice = (ticket_id=null,onFinish)=>{
+      ticket_id= ticket_id? ticket_id: mThis.ticket_id;
+      let p = {'ticket_id':ticket_id};
+      vsapi.call(`${main_view.base_url}/api/medical-invoice/update`,p,null,false).then(res=>{
+          if(res.status_code !==200)  cv_interact.info("Patient invoice has been updated"); 
+      });
+    }
+
+    //NOTE: consultation data is saved automatically when user Close dialog
+    this.btnSaveConsult.on('click', (e) =>{
         e.preventDefault();
-        let p = ConsultTabView.getConsultData();
-        console.error(JSON.stringify(p));
-        vsapi.call(`${main_view.base_url}/api/consultation/save`, p).then(res => {
-            if (res.status_code === 200) {
-            }
-        });
-
+        // let p = ConsultTabView.getConsultData();
+        // vsapi.call(`${main_view.base_url}/api/consultation/save`, p).then(res => {
+        //     if (res.status_code === 200) {
+        //     }
+        // });
+        if (mThis.invoice_item_changed){
+            mThis.updateInvoice(mThis.ticket_id);
+        }
         mThis.self.modal('hide');
         mThis.onClose(true);
     });
@@ -2399,7 +2415,9 @@ let ConsultDialog = new function () {
     this.show = (option) => {
         if (!option) option = {};
         mThis.onClose = option.onClose;
-
+        //reset value of "invoice_item_changed" to false
+        mThis.invoice_item_changed =false;
+        mThis.ticket_id = option.ticket_id; //used to update invoice  
         ConsultTabView.show({ "ticket_id": option.ticket_id, "patient_id": option.patient_id }, this.defaultTabView);
         mThis.self.modal({
             backdrop: 'static'

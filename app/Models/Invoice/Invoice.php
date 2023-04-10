@@ -311,7 +311,7 @@ class Invoice
     }
 
     static function serviceInfo($service_id){
-      $cols = ["i.id","i.name as item_name","i.description","i.sku","i.cost","i.price","i.tax_rate as sales_tax_rate"]; 
+      $cols = ["i.id","i.name as item_name","i.description","i.sku","i.cost","i.price AS selling_price","i.tax_rate as sales_tax_rate"]; 
       $rows = DB::table("medical_services as i")->where("i.id",$service_id)->select($cols)->take(1)->get();
       return isset($rows[0])?$rows[0]:null;    
     }
@@ -433,14 +433,15 @@ class Invoice
     ////if (!$ss) $ss = $this->getUserInfo();
     ////if(!$id) $id = $this->getInvoiceId(); 
     $branch_id = $ss->branch_id;
-    $cols = ['invoice_class','v.id','ref_number','exchange_rate',DB::raw('formatDate(v.issue_date) AS issue_date'),DB::raw('formatDate(v.due_date) as due_date'),'customer_id','v.customer_phone','v.customer_email',DB::raw('NULL AS customer_tax_number'),'terms','v.billing_address','v.amount','v.discount_percent','v.discount_amount','discount_type','v.total_cost','signer_name','v.currency_code','v.exchange_rate','v.amount_due','v.tax_amount','v.tax_rate',DB::raw("(SELECT SUM(IFNULL(amount,0)) FROM invoice_payments WHERE invoice_id =v.id) AS amount_paid"),'v.pmt_bank_name','v.pmt_account_number','v.pmt_account_name','v.description','v.invoice_notes'];
+    $customer_table = InvoiceSettings::$customer_table;
+    $cols = ['invoice_class','v.id','ref_number','exchange_rate',DB::raw("(select code from $customer_table where id =v.customer_id LIMIT 1) AS customer_code"),DB::raw('formatDate(v.issue_date) AS issue_date'),DB::raw('formatDate(v.due_date) as due_date'),'customer_id','v.customer_phone','v.customer_email',DB::raw('NULL AS customer_tax_number'),'terms','v.billing_address','v.amount','v.discount_percent','v.discount_amount','discount_type','v.total_cost','signer_name','v.currency_code','v.exchange_rate','v.amount_due','v.tax_amount','v.tax_rate',DB::raw("(SELECT SUM(IFNULL(amount,0)) FROM invoice_payments WHERE invoice_id =v.id) AS amount_paid"),'v.pmt_bank_name','v.pmt_account_number','v.pmt_account_name','v.description','v.invoice_notes'];
     $rows =DB::table('invoices as v')->where('v.id',$id)->where('v.branch_id',$branch_id)->select($cols)->take(1)->get();
     $data = self::getInvoiceItems($ss,$id);
      
     foreach($rows as $row){
        $row->products = $data->products;
        $row->services = $data->services;
-       $row->labo_tests = $data->labo_tests;
+       //$row->labo_tests = $data->labo_tests;
        return $row;
     }
     return null;

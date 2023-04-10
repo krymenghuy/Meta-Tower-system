@@ -27,6 +27,7 @@ let main_view = new function(){
     this.mnuEmployeeList = $('#_main_lnkEmployeeList');
     this.mnuPositions = $('#_main_lnkPositions');
     this.mnuEmployeeDepartment = $('#_main_lnkDepartments');
+    this.mnuServicePlans = $('#_main_lnkServicePlans');
     this.mnuMedicalServices = $('#_main_lnkMedicalServices');
     this.mnuStockTransfer = $('#_main_lnkStockTransfer');
 
@@ -164,7 +165,11 @@ let main_view = new function(){
             e.preventDefault();
             MedicalServiceComponent.show(null);
         });
-
+        this.mnuServicePlans.on('click',(e)=>{
+            e.preventDefault();
+            ServicePlansComponent.show(null);
+        });
+        
         this.mnuStockTransfer.on('click',(e)=>{
             e.preventDefault();
             StockTransferComponent.show(null);
