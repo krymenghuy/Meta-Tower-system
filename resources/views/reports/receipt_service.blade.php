@@ -13,14 +13,6 @@
             @page{
                 margin:0;
             }
-
-            @page:footer{
-                display:none;
-            }
-
-            @page:header{
-                display:none;
-            }
         </style>
     </head>
     <body>

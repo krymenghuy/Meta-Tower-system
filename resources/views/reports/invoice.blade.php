@@ -40,37 +40,35 @@
             <div class="rpt-body">
                 <div class="d-block px-3">
                     <div class="d-block w-100">
-                        <div class="d-flex align-items-center w-100 py-2">
-                            <div class="d-flex align-items-center">
+                        <div class="d-flex w-100 py-2">
+                            <div class="d-flex">
                                 <div>
                                     <img style="width: 120px" class="img-thumbnail" src="<?php echo isset($branch->logo_url) ? $branch->logo_url : null ?>"/>
                                 </div>
                             </div>
-                            <div class="d-flex align-items-center justify-content-center w-100">
-                                <div class="px-2">
+                            <div class="d-block w-100">
+                                <div class="d-flex px-2 justify-content-center">
                                     <h4 class="fw-bold fs-2">
                                         <?php echo isset($title) ? $title : null; ?>
                                     </h4>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-center flex-column w-100">
-                            <div class="d-flex align-items-center justify-content-center">
-                                <p>
-                                    <?php echo $branch->address; ?>
-                                </p>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <p class="pe-2">Tel</p>
-                                <p>
-                                    <?php echo $branch->phone_number; ?>
-                                </p>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <p class="pe-2">Email:</p>
-                                <p>
-                                    <?php echo $branch->email; ?>
-                                </p>
+                                <div class="d-flex justify-content-center">
+                                    <p>
+                                        <?php echo $branch->address; ?>
+                                    </p>
+                                </div>
+                                <div class="d-flex justify-content-center">
+                                    <p class="pe-2">Tel</p>
+                                    <p>
+                                        <?php echo $branch->phone_number; ?>
+                                    </p>
+                                </div>
+                                <div class="d-flex justify-content-center">
+                                    <p class="pe-2">Email:</p>
+                                    <p>
+                                        <?php echo $branch->email; ?>
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -221,7 +219,7 @@
                                             <td>".$qty."</td>
                                             <td>".$price."</td>
                                             <td>".$item->discount_percent." %</td>
-                                            <td>".$item->tax_rate."</td>
+                                            <td>".$item->tax_rate." %</td>
                                             <td>".$line_total."</td>
                                         </tr>";
                                         $total_service += $item->line_total;
