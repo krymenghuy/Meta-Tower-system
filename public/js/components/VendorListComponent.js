@@ -93,14 +93,6 @@ let VendorListComponent = new function () {
         let id = options.id;
         let div_wrapper = detail_tr.find('div.expandable-row-container');
         div_wrapper.html("");
-        //div_wrapper.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
-        // let p = { 'group_id': group_id };
-        // window.vsapi.call(`${main_view.base_url}/api/vendor/mini-dashboard`,p,null,false).then((res) => {
-        //     let html = null;
-        //     if (res.status_code === 200) {
-        //         //display mini Vendor's dashboard here 
-        //     }
-        // });
     }
 
     this.createTableRow = (items) => {
@@ -131,14 +123,7 @@ let VendorListComponent = new function () {
 
             data = StringSanitizer.sanitizeObject(data, null);
             let cnt = 1;
-            //begin::Set up columns
             let my_columns = [
-                // {
-                //     title: mThis.trans_title("No"),
-                //     data: () => {
-                //         return cnt;
-                //     }
-                // },
                 {
                     title: mThis.trans_title("Name"),
                     data: "name"
@@ -151,10 +136,6 @@ let VendorListComponent = new function () {
                     title: mThis.trans_title("Email"),
                     data: "email"
                 },
-                // {
-                //     title: mThis.trans_title("Contact Person"),
-                //     data: "contact_person"
-                // },
                 {
                     title: mThis.trans_title('Action'),
                     data: function (item, a, b) {
@@ -166,10 +147,6 @@ let VendorListComponent = new function () {
                     }
                 }
             ];
-            //END Define column
-
-            //translate column names
-            //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
 
             if (!mThis.table)
                 mThis.table = mThis.tblVendors.DataTable({
@@ -265,9 +242,6 @@ let VendorDialog = new function () {
             let se = new SimpleItemEditor({
                 'label':'Enter new name',
                 'title':'Vendor Type',
-                //'editLinkId':'_itm_lnkEditGroup',
-                //'deleteLinkId':'_itm_lnkDeleteGroup',
-                //'createLink':$('#_ven_lnk_add_vendor_type'), //todo: work on createLink too
                 'editLink':$('#_ven_lnk_edit_vendor_type'),
                 'deleteLink':$('#_ven_lnk_delete_vendor_type'),
                 'displayElement':mThis.elVendorType, /** diaplayElement must be a Select element **/
@@ -284,8 +258,6 @@ let VendorDialog = new function () {
                     }
                 },
                 'api_save':{
-                    //NOTE that data or params object is defined in SimpleItemEditor as JSON object {id,name} 
-                    //'data':{id:mThis.elItemGroup.val(),'name':???},
                     'endpoint':`${main_view.base_url}/api/bill/settings/save-vendor-type`
                     ,'onItemSaved':()=>{
                         let def_val = mThis.elVendorType.val();

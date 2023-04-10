@@ -97,12 +97,6 @@ let MedicalServiceComponent = new function () {
             data = StringSanitizer.sanitizeObject(data, null, ['display_price']);
             let cnt = 1;
             let my_columns = [
-                // {
-                //     data: (item, a, b) => {
-                //         return cnt;
-                //     },
-                //     title: mThis.trans_title('Numero')
-                // },
                 {
                     title: mThis.trans_title('Description'),
                     data:(data,a,b)=>{
@@ -183,14 +177,14 @@ let MedicalServiceComponent = new function () {
 
         mThis.loadFilterOptions((items) => {
             VSUtil.setComboItems(mThis.elFilter_department, items, 'id', 'name', true, '(Select department)', null);
-                let first_option = null;
-                if(!mThis.elFilter_department.val()) first_option = items[0];
-                if(first_option){
-                    mThis.elFilter_department.val(first_option.id).trigger('change');
-                    main_view.setTitle(mThis.title_prop);
-                    mThis.self.show().siblings().hide();
-                    return;
-                }
+            let first_option = null;
+            if(!mThis.elFilter_department.val()) first_option = items[0];
+            if(first_option){
+                mThis.elFilter_department.val(first_option.id).trigger('change');
+                main_view.setTitle(mThis.title_prop);
+                mThis.self.show().siblings().hide();
+                return;
+            }
         });
     }
 }
