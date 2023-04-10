@@ -191,7 +191,7 @@ class QTicket //extends Model
           $str_where .= ($str_where? ' AND ':'')."s.status_id =$filter_status_id";  
         }
 
-        $cols ="s.id,s.consultant_id,s.ticket_number,formatDate(s.q_date) AS q_date,s.client_id,s.person_id,s.create_user,formatDate(s.created_at) AS created_at,concat(p.last_name,' ',p.first_name) as client_name,p.phone_number as client_phone_number,p.email as client_email,p.sex as client_sex,s.schedule_type,s.priority,s.remarks, s.status_id, sts.name AS status, cl.code AS client_code";
+        $cols ="s.id,s.invoice_id,s.consultant_id,s.ticket_number,formatDate(s.q_date) AS q_date,s.client_id,s.person_id,s.create_user,formatDate(s.created_at) AS created_at,concat(p.last_name,' ',p.first_name) as client_name,p.phone_number as client_phone_number,p.email as client_email,p.sex as client_sex,s.schedule_type,s.priority,s.remarks, s.status_id, sts.name AS status, cl.code AS client_code";
         return DB::table('tickets as s')->join('ticket_statuses as sts','sts.id','=','s.status_id')->join('persons as p','p.id','=','s.person_id')->join('patients as cl','p.id','=','cl.person_id')->where('s.branch_id',$branch_id)->whereRaw($str_where)->selectRaw($cols)->orderByRaw('s.id DESC')->get();
     }
 

@@ -56,8 +56,9 @@ class Vendor //extends Model
        return DV::depends($id,['id'=>$id,'vendor'=>$inputs],"Something went wrong in saving vendor");
    }
 
-   function delete($id,$ss=null){
+   function delete($id=null,$ss=null){
       $ss = $ss?$ss:$this->getUserInfo();
+      $id = $id?$id:$this->getId();
       DB::table("vendors")->where('id',$id)->delete();
       return DV::depends(true,self::list([],$ss)); 
    }

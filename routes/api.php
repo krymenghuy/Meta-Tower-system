@@ -231,14 +231,25 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 // //End::FGStockController
 
 //begin::ItemGroupController
-   Route::post('inventory/group-details', [ItemGroupController::class, 'getItemGroupDetails']);
-   Route::post('inventory/group-info', [ItemGroupController::class, 'getGroupInfo']);
-   Route::post('inventory/group/info', [ItemGroupController::class, 'getGroupInfo']);
-   Route::post('inventory/groups', [ItemGroupController::class, 'getItemGroups']);
-   Route::post('inventory/group-list', [ItemGroupController::class, 'getItemGroups']);
-   Route::post('inventory/delete-group', [ItemGroupController::class, 'deleteItemGroup']);
-   Route::post('inventory/save-group', [ItemGroupController::class, 'saveItemGroup']);
-   Route::post('group/form-options', [ItemGroupController::class, 'getFormOptions']);
+    Route::post('inventory/group/details', [ItemGroupController::class, 'getItemGroupDetails']);
+    Route::post('inventory/group/info', [ItemGroupController::class, 'getGroupInfo']);
+    //Route::post('inventory/group/info', [ItemGroupController::class, 'getGroupInfo']);
+    Route::post('inventory/group/list', [ItemGroupController::class, 'getItemGroups']);
+    //Route::post('inventory/group-list', [ItemGroupController::class, 'getItemGroups']);
+    Route::post('inventory/group/delete', [ItemGroupController::class, 'deleteItemGroup']);
+    Route::post('inventory/group/save', [ItemGroupController::class, 'saveItemGroup']);
+    Route::post('inventory/group/rename', [ItemGroupController::class, 'renameGroup']);
+    Route::post('inventory/group/form-options', [ItemGroupController::class, 'getFormOptions']);
+    Route::post('group/form-options', [ItemGroupController::class, 'getFormOptions']);
+
+       Route::post('inventory/group-details', [ItemGroupController::class, 'getItemGroupDetails']);
+       Route::post('inventory/group-info', [ItemGroupController::class, 'getGroupInfo']);
+       Route::post('inventory/group/info', [ItemGroupController::class, 'getGroupInfo']);
+       Route::post('inventory/groups', [ItemGroupController::class, 'getItemGroups']);
+       Route::post('inventory/group-list', [ItemGroupController::class, 'getItemGroups']);
+       Route::post('inventory/delete-group', [ItemGroupController::class, 'deleteItemGroup']);
+       Route::post('inventory/save-group', [ItemGroupController::class, 'saveItemGroup']);
+    //    Route::post('group/form-options', [ItemGroupController::class, 'getFormOptions']);
 //End::ItemGroupController
 
 //begin::VendorController

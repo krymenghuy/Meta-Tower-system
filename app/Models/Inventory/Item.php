@@ -193,7 +193,7 @@ class Item //extends Model
                "item_id"=>$item->id,
                "item_code"=>$item->code,
                "begin_qty"=>$begin_qty,
-               "purchase_qty"=>isset($item->purchase_qty)?$item->purchase_qty:0,
+               "purchase_qty"=>0,
                "sold_qty"=>isset($item->sold_qty)?$item->sold_qty:0,
                "customer_return_qty"=>isset($item->customer_return_qty)?$item->customer_return_qty:0,
                "vendor_return_qty"=>isset($item->vendor_return_qty)?$item->vendor_return_qty:0,

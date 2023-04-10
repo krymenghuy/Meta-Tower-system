@@ -650,7 +650,7 @@
 
 <script>
     let __dx = $('#_dms_aside_menus');
-    LocaleManager.translateZone('_dms_aside_menus');
+    if(LocaleManager) LocaleManager.translateZone('_dms_aside_menus');
     __dx.show();
     __dx.css('height', [(window.innerHeight) - 65, 'px'].join(''));
     __dx.css('overflow-y','auto');
