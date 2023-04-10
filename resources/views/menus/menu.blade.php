@@ -293,7 +293,7 @@
                             </a>
                         </li>
 
-                        <li class="kt-menu__item" aria-haspopup="true">
+                        <li style="display:none" class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkStockAdjustment" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{ asset('assets/images/icons/stock_adjustment.svg') }}"/>
@@ -303,7 +303,7 @@
                             </a>
                         </li>
 
-                        <li class="kt-menu__item" aria-haspopup="true">
+                        <li style="display:none" class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkStockTransfer" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{ asset('assets/images/icons/stock_adjustment.svg') }}"/>
@@ -410,7 +410,7 @@
                             </a>
                         </li>
 
-                        <li class="kt-menu__item" aria-haspopup="true">
+                        <li style="display:none" class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkIncomePayments" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/payment.svg')}}"/>
@@ -419,7 +419,7 @@
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Payments">Payments</span>
                             </a>
                         </li>
-                        <li class="kt-menu__item" aria-haspopup="true">
+                        <li style="display:none" class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkOtherRevenues" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/other_revenus.svg')}}"/>
@@ -429,7 +429,7 @@
                             </a>
                         </li>
 
-                        <li class="kt-menu__item" aria-haspopup="true">
+                        <li style="display:none" class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkIncomeCategories" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/income_category.svg')}}"/>
@@ -439,7 +439,7 @@
                             </a>
                         </li>
 
-                        <li class="kt-menu__item" aria-haspopup="true">
+                        <li style="display:none" class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkIncomeBookingTemplates"
                                 class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
@@ -453,7 +453,7 @@
                 </div>
             </li>
 
-            <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+            <li style="display:none" class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
                         <img class="icons" src="{{ asset('assets/images/icons/expenses.svg') }}"/>
@@ -574,7 +574,7 @@
                 <div class="kt-menu__submenu ">
                     <span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
-                        <li class="kt-menu__item" aria-haspopup="true">
+                        <li style="display:none" class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkChiefCompaints" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/chief_complaints_diagnosis.svg')}}"/>
