@@ -119,7 +119,7 @@ class ConsultationController extends Controller
         $c = new Consultation($ticket_id,$ss);
         $res= $c->saveLaboTest($req->all());
         if ($res->status ==='OK') return JDV::success(['id'=>$res->id]);
-        return JDV::raw($res);
+        return JDV::success(['id'=>$res->id]);
     }
  
     function getLaboTests(Request $req){

@@ -40,7 +40,7 @@
                        <select class="modal-select2 form-select" id="_stk_filter_class"></select>
                     </div>
                 </div>
-                <button class="btn btn-outline-primary py-1 px-2" type="button" id="_stk_dlg_filter">
+                <button style="display:none" class="btn btn-outline-primary py-1 px-2" type="button" id="_stk_dlg_filter">
                     <i class="fa-solid fa-bars-staggered"></i>
                 </button>
             </div>

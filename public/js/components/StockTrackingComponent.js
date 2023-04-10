@@ -79,7 +79,7 @@ let StockTrackingComponent = new function () {
     }
 
     this.trans_title = (title_prop = 'undefined') => {
-        return (mThis.col_titles[title_prop] || 'undefined');
+        return (mThis.col_titles[title_prop]?mThis.col_titles[title_prop]:title_prop);
     }
 
     this.setLanguage = () => {

@@ -74,7 +74,7 @@ let VendorListComponent = new function () {
             cv_interact.confirm(`Delete this vendor?`, { title: "Delete Vendor", context: "delete" }, (yes) => {
                 if (yes) {
                     let p = { "id": item_id };
-                    vsapi.call(`${main_view.base_url}/api/inventory/delete-item`, p).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/vendor/delete`, p).then(res => {
                         if (res.status_code === 200) {
                             mThis.displayVendors();
                         } else cv_interact.error(res.error_message);

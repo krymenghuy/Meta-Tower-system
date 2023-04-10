@@ -110,10 +110,21 @@ class MedicalInvoice //extends Invoice //extends Model
        ];
     }
 
+    static function ticketWithInvoice($ticket_id){
+       $rows = DB::table('tickets as t')->join('invoices as v','v.id','=','t.invoice_id')->select('v.id')->take(1)->get();
+       return isset($rows[0]);
+    }
+
     //CreateInvoice() | saveInvoice()
     function create($ticket_id,$ss=null){
       if(!$ss) $ss = $this->getUserInfo();
       $branch_id = $ss->branch_id;
+
+      //Check if the ticket Id already has an invoice
+      if(self::ticketWithInvoice($ticket_id)){
+         return self::updateMedicalInvoice($ticket_id,$ss);
+      }
+
       $customer_table = InvoiceSettings::$customer_table; /** either patients or customers table **/
       $d = self::createInvoiceHeaderInputs($ticket_id);
       $validate_rule =[
@@ -181,7 +192,7 @@ class MedicalInvoice //extends Invoice //extends Model
       unset($inputs['discount']);
       $invoice_id = saveData($ss,"invoices",['id'=>$invoice_id],$inputs,[],1);
       if($invoice_id>0){
-         $m = self::saveInvoiceItems($ss,['id'=>$invoice_id,'discount'=>$discount,'discount_type'=>$discount_type],$items);
+         $m = self::saveInvoiceItems($ss,['id'=>$invoice_id,'discount'=>$discount,'discount_type'=>$discount_type],$items,false);
          if($m->item_count<=0) return DV::error('No invoice items have been saved. Those items may be invalid');
          $xres = self::setInvoiceNumber($branch_id,$invoice_id,"tax_line",$issue_date,null);
          //Update Ticket's status to be 4 (Invoice created). NOTE that ticket status 1=Waiting,2=Serving, 3= Served, 4=Payment (or invoice created), 5=Paid
@@ -194,7 +205,7 @@ class MedicalInvoice //extends Invoice //extends Model
    //In case, doctor adds or removes services or medications after consultation session is served/closed
    static function updateMedicalInvoice($ticket_id,$ss){
       $branch_id = $ss->branch_id;
-      $rows = DB::table('invoices as v')->join('tickets as t','v.id','=','t.invoice_id')->where('t.id',$ticket_id)->where('v.branch_id',$branch_id)->select(['v.id','v.discount_type','v.discount_amount','v.discount_percent'])->take(1)->get();
+      $rows = DB::table('invoices as v')->join('tickets as t','v.id','=','t.invoice_id')->where('t.id',$ticket_id)->where('v.branch_id',$branch_id)->select(['v.id','v.ref_number','v.discount_type','v.discount_amount','v.discount_percent'])->take(1)->get();
       if(!isset($rows[0])) return DV::error('Ticket ID or invoice ID does not valid or maybe because the given invoice does not belong to the ticket');
       $invoice = $rows[0];
       $invoice_id = $invoice->id;
@@ -204,7 +215,8 @@ class MedicalInvoice //extends Invoice //extends Model
       else $discount = $invoice->discount_amount;
       $items = self::getItems($ticket_id,$ss); 
       $res = self::saveInvoiceItems($ss,['id'=>$invoice_id,'discount'=>$discount,'discount_type'=>$invoice->discount_type],$items,true);
-      return DV::success();
+      //return object in order to notify result that invoice with ref_number got updated
+      return DV::success(['ref_number'=>$invoice->ref_number,'invoice_updated'=>1]);
     }
 
    //$doc_class is invlice line. It is invoice line based on which to issue invoice for different Tax processing or tax treatment.
@@ -439,7 +451,7 @@ class MedicalInvoice //extends Invoice //extends Model
 
       if (!$invoice_id) return DV::error("Invoice ID is not valid");
       $invoice_id = saveData($ss,"invoices",['id'=>$invoice_id],$inputs,[],1);
-         $m = self::saveInvoiceItems($ss,['id'=>$invoice_id,'discount'=>$discount,'discount_type'=>$discount_type],$items,true); //True = "Delete all previous items before inserting invoice's items"
+         $m = self::saveInvoiceItems($ss,['id'=>$invoice_id,'discount'=>$discount,'discount_type'=>$discount_type],$items,false); //True = "Delete all previous items before inserting invoice's items"
          if($m->item_count<=0) return DV::error('No invoice items have been saved. Those items may be invalid');
          //$xres = self::setInvoiceNumber($branch_id,$invoice_id,"tax_line",$issue_date,null);
          //$this->updateAmounts($invoice_id,$discount,$discount_type);

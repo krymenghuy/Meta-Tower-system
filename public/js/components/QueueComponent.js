@@ -406,8 +406,12 @@ let TicketDetails = new function () {
                     let p = {'ticket_id':ticket_id};
                     vsapi.call(`${main_view.base_url}/api/medical-invoice/create`,p,null,false).then(res=>{
                         if(res.status_code ==200){
-                            let invoice_number = res.data.ref_number;
-                            cv_interact.success(`Invoice ${invoice_number} created!`);
+                            let x =res.data; 
+                            let invoice_number = x.ref_number;
+                            if(x.invoice_updated ==1)
+                               cv_interact.success(`Invoice ${invoice_number} UPDATED!`);
+                            else
+                               cv_interact.success(`Invoice ${invoice_number} CREATED!`);
                         }
                         else cv_interact.error(res.error_message);
                     });
@@ -1594,7 +1598,8 @@ let ConsultTabView = new function () {
                     vsapi.call(`${main_view.base_url}/api/consultation/save-prescription-item`,p,null,false).then(res => {
                         if(res.status_code === 200){
                             let new_row_id = res.data.id; 
-                            mThis.tblPrescribedItems.setRowId(tr,new_row_id); 
+                            mThis.tblPrescribedItems.setRowId(tr,new_row_id);
+                            ConsultDialog.invoice_item_changed =true; 
                         }
                         else cv_interact.error(res.error_message);
                     });
@@ -1602,7 +1607,9 @@ let ConsultTabView = new function () {
                 onItemDeleted:(row_id,tr)=>{
                     let p= {'id':row_id,'ticket_id':ticket_id};
                     vsapi.call(`${main_view.base_url}/api/consultation/remove-prescription-item`,p,null,false).then(res => {
-                        if(res.status_code !== 200) cv_interact.error(res.error_message); 
+                        if(res.status_code === 200){
+                            ConsultDialog.invoice_item_changed =true;
+                        }else cv_interact.error(res.error_message); 
                     });
                 },
                 numeroFormatter: (numero, row) => {
@@ -1699,7 +1706,9 @@ let ConsultTabView = new function () {
                 onItemDeleted:(row_id,tr)=>{
                     let p= {'id':row_id,'ticket_id':ticket_id};
                     vsapi.call(`${main_view.base_url}/api/consultation/remove-service-item`,p,null,false).then(res => {
-                        if(res.status_code !== 200) cv_interact.error(res.error_message); 
+                        if(res.status_code === 200){
+                            ConsultDialog.invoice_item_changed =true;
+                        }else cv_interact.error(res.error_message); 
                     });
                 },
                 numeroFormatter: (numero, row) => {
@@ -1868,9 +1877,15 @@ let ConsultTabView = new function () {
             },
             onItemDeleted:(row_id,tr)=>{
                 let p= {'id':row_id,'ticket_id':ticket_id};
-                vsapi.call(`${main_view.base_url}/api/consultation/remove-labo-test`,p,null,false).then(res => {
-                    if(res.status_code !== 200) cv_interact.error(res.error_message); 
-                });
+                if(!p.id) p.id = tr.dataset.id;
+                if(p.id){
+                    vsapi.call(`${main_view.base_url}/api/consultation/remove-labo-test`,p,null,false).then(res => {
+                        if(res.status_code === 200){
+                            ConsultDialog.invoice_item_changed =true;
+                        }else cv_interact.error(res.error_message); 
+                    });
+                }else cv_interact.warning('Failed to delete labo test due to invalid test ID');  
+               
             },
         });
         
@@ -2387,11 +2402,11 @@ let ConsultDialog = new function () {
     this.invoice_item_changed = false;
     this.ticket_id = null;
 
-    this.updateInvoice = (ticket_id=null,onFinish)=>{
+    this.updateInvoice = (ticket_id=null)=>{
       ticket_id= ticket_id? ticket_id: mThis.ticket_id;
       let p = {'ticket_id':ticket_id};
       vsapi.call(`${main_view.base_url}/api/medical-invoice/update`,p,null,false).then(res=>{
-          if(res.status_code !==200)  cv_interact.info("Patient invoice has been updated"); 
+          if(res.status_code ===200)  cv_interact.info("Patient invoice has been updated"); 
       });
     }
 
@@ -2403,8 +2418,9 @@ let ConsultDialog = new function () {
         //     if (res.status_code === 200) {
         //     }
         // });
-        if (mThis.invoice_item_changed){
-            mThis.updateInvoice(mThis.ticket_id);
+    
+        if (ConsultDialog.invoice_item_changed){
+            ConsultDialog.updateInvoice(mThis.ticket_id);
         }
         mThis.self.modal('hide');
         mThis.onClose(true);
@@ -2416,7 +2432,7 @@ let ConsultDialog = new function () {
         if (!option) option = {};
         mThis.onClose = option.onClose;
         //reset value of "invoice_item_changed" to false
-        mThis.invoice_item_changed =false;
+        ConsultDialog.invoice_item_changed =false;
         mThis.ticket_id = option.ticket_id; //used to update invoice  
         ConsultTabView.show({ "ticket_id": option.ticket_id, "patient_id": option.patient_id }, this.defaultTabView);
         mThis.self.modal({

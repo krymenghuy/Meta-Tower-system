@@ -93,7 +93,7 @@ class Consultation //extends Model
 
     static function laboTests($ticket_id,$ss){
         $branch_id = $ss->branch_id;
-        $cols = ['s.id as test_id','t.labo_id','s.name as test_name','t.test_date','t.result_date','t.consultant_comments','t.result_description','t.remarks','t.file_name','t.file_type'];
+        $cols = ['t.id','s.id as test_id','t.labo_id','s.name as test_name','t.test_date','t.result_date','t.consultant_comments','t.result_description','t.remarks','t.file_name','t.file_type'];
         return DB::table('patient_labo_tests as t')->join('medical_services as s','s.id','=','t.test_id')->where('t.branch_id',$branch_id)->where('ticket_id',$ticket_id)->select($cols)->get();
     }
  

@@ -106,7 +106,7 @@ class MIStockManager {
     //getGroupList()
     function getGroupList($ss,$data) { 
         $branch_id = $ss->branch_id;
-        $warehouse_id =isset($data['warehouse_id'])?$data['warehouse_id']:null;
+        $warehouse_id =isset($data['warehouse_id'])?$data['warehouse_id']:1;
         //throw new \Exception("warrehouse = $warehouse_id");
         $stock_class =isset($data['stock_class'])?$data['stock_class']:null;
         if(!$stock_class) $stock_class =isset($data['stock_class_code'])?$data['stock_class_code']:null;
@@ -130,7 +130,7 @@ class MIStockManager {
         $rows = DB::table('inv_item_groups as g')->join('inv_categories as c','c.id','=','g.category_id')->where('g.branch_id',$branch_id)->where("c.item_class",self::$item_class)->whereRaw($str_moreWhere)->whereRaw($str_search)->selectRaw("g.id,'Product' AS item_type,g.code,g.name,g.description,g.unit_id, g.sku,g.category_id, c.name AS category,g.detail_type_id,getItemDetailType(g.detail_type_id) as detail_type,g.create_user, 0 AS qty, NULL AS last_updated,formatDate(g.created_at) as created_at")->orderByRaw("g.name ASC")->get();
         foreach($rows as $row){
            $e = $this->getLastQty_group($warehouse_id,$row->id,$stock_class);
-           $row->qty = $e->qty;
+           $row->qty =$e->qty;
            $row->last_updated = $e->last_updated;
         }
         return $rows;
