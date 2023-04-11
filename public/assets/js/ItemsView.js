@@ -30,9 +30,13 @@ class ItemsView{
         options.tableClass = options.tableClass?options.tableClass:'table header-light-blue header-uppercase';
         //Use dt_columns as default langProp
         if(!options.langProp) options.langProp ="dt_columns";
+        
+        //set default maxRows, Maximum rows to 15 rows
+        this.maxRows = options.maxRows>0? options.maxRows:15;
+
         if(!options.addLineButtonClass) options.addLineButtonClass = 'btn btn-sm btn-primary';
         if(!options.addLineButtonText) options.addLineButtonText ='Add Line';
-
+        
         if(this.isUndefined(options.showAddLineButton)) options.showAddLineButton = true;  
         if(this.isUndefined(options.showColumnHeaders)) options.showColumnHeaders = true;
  
@@ -116,7 +120,7 @@ class ItemsView{
 
             } else {
                //Click outside row (tr)
-               if (this.prev_edit_row) this.changeRowState(prev_edit_row,'readonly');
+               if (this.prev_edit_row) this.changeRowState(this.prev_edit_row,'readonly');
             } 
         });
 
@@ -153,6 +157,38 @@ class ItemsView{
      isUndefined(d){
       if (d ==undefined || d ==null || d=='undefined') return true;
       return false;
+     }
+
+     //set maximun height of tbody in terms of Number of rows (tr)
+     setMaxHeightRows(row_count=5,current_row_count=0){
+        let tbody = this.table_body;
+        let thead = this.table.querySelector('thead');
+
+        let row_height = tbody.rows[0]?tbody.rows[0].offsetHeight:30;
+        current_row_count =current_row_count>0?current_row_count: tbody.rows.length;
+        //console.error(`Current_rows = ${current_row_count} VS row_count =${row_count}`);
+        
+        if (current_row_count > row_count) {
+          let tbodyHeight = parseFloat(row_height) * parseFloat(row_count);
+          this.table.style.display = 'block';
+          this.table.style.width = '100%';
+          this.table.style.tableLayout = 'fixed';
+          this.table.style.height = `${tbodyHeight + thead.offsetHeight}px`;
+          this.table.style.overflowY = 'hidden';
+          tbody.style.display = 'block';
+          //tbody.style.width = '100%';
+          tbody.style.height = `${tbodyHeight}px`;
+          tbody.style.overflowY = 'scroll';
+        }
+        return;
+     }
+        
+     //set maximun height of tbody in terms of Number of rows (tr)
+     setMaxHeightPixel(max_height=350){
+        let tbody = this.table_body;
+        tbody.style.height = max_height; // Change this to the desired fixed height
+        tbody.style.overflowY = 'scroll';
+        return;
      }
 
      displayEmptyMessage(){
@@ -266,7 +302,7 @@ class ItemsView{
                 // }
                 
             } 
-            
+            ////this.adjustHeaderWidths();
          });
          
          let that = this;
@@ -531,14 +567,21 @@ class ItemsView{
         if(!this.options.showColumnHeaders) return '';
         let this_th = '';
         let that = this;
+        //calcuate default column's as percentage
+        const col_cnt =columns.length;
+        let def_width = [Math.round(100/col_cnt,4),'%'].join('');
+        let i =0;
         columns.map(col=>{
+            col.width = def_width; //col.width>0? col.width : def_width;
+            //that.options.columns[i].width = col.width;
             if(!col.langProp) col.langProp = that.options.langProp;
-            this_th = [this_th,`<th class="trans-text" data-langprop="${col.langProp}">`,col.title,`</th>`].join('');
+            this_th = [this_th,`<th style="width:${col.width}" class="trans-text" data-langprop="${col.langProp}">`,col.title,`</th>`].join('');
+            i++;
         });
 
         let numeroHeaderText =this.options.numeroHeaderText? this.options.numeroHeaderText:"";
-        let numero_header =`<th class="" data-langprop="">${numeroHeaderText}</th>`;
-        return [`<thead><tr>`,numero_header,this_th,`<th class="trans-text" data-langprop="dt_columns.Action"></th></tr></thead>`].join('');
+        let numero_header =`<th style="width:5%" class="" data-langprop="">${numeroHeaderText}</th>`;
+        return [`<thead><tr>`,numero_header,this_th,`<th style="width:5%" class="trans-text" data-langprop="dt_columns.Action"></th></tr></thead>`].join('');
      }
  
      getDefaultColumns(){
@@ -607,6 +650,7 @@ class ItemsView{
        return this.table_body.lastElementChild;
      }
 
+     //params @user_action_add = true (It means that user clicks Add Line button to add new row)
      addRow(d=null,rowIndex = 0,validateItem=true,user_action_add = false){
             let html_cols = "";
             d = d?d:{};
@@ -677,18 +721,43 @@ class ItemsView{
                 //Add automatic Nunero column at beginning
                 let numero = rowIndex + 1;
                 if(typeof this.options.numeroFormatter ==='function') numero = this.options.numeroFormatter(numero,d);
-                let numero_col = `<td class="item-numero" style="text-align:center">${numero}</td>`;
+                let numero_col = `<td style="width:5%" class="item-numero" style="text-align:center">${numero}</td>`;
                 let tr = document.createElement('tr');
                 tr.dataset.rowIndex = rowIndex;
                 tr.dataset.id = item_id;
                 tr.dataset.editing =0;
                 if (this.options.rowClass) tr.classList.add(this.options.rowClass);
-                let action_col =[`<td><div class="form-inline"><a href="javascript:void(0)" class="btn-item-delete"><i class="fa fa-trash" style="color:red"></i></a></div></td>`].join('');
+                let action_col =[`<td style="width:5%"><div class="form-inline"><a href="javascript:void(0)" class="btn-item-delete"><i class="fa fa-trash" style="color:red"></i></a></div></td>`].join('');
                 tr.innerHTML = [numero_col,html_cols,action_col].join('');
                 this.table_body.appendChild(tr);
                 if (!d.id) this.changeRowState(tr,'edit');
                 this.setFieldFocus(tr,null); 
                 this.resetNumero();
+                
+                //If user clicks Add Line button in order to add a new row => then check Scroll
+                if(user_action_add){
+                  this.setMaxHeightRows(this.maxRows);
+                  //Scroll to the bottom empty element (.g: empty tr)
+                  this.table_body.scrollTop = this.table_body.scrollHeight;
+                }
+     }
+
+     //This function is to ensure that all header columns' width are equal to corresponding cell (td)
+      adjustHeaderWidths() {
+        const first_tr = this.table.querySelectorAll('tbody tr');
+        const cells = first_tr[0].querySelectorAll('td');
+        const headerCells = this.table.querySelectorAll('thead th');
+        let i = 0;
+        headerCells.forEach(h => {
+          const bodyCellWidth  = cells[i].getBoundingClientRect().width;
+          //const headerCellWidth = headerCells[i].getBoundingClientRect().width;
+           //if (bodyCellWidth > headerCellWidth) {
+              headerCells[i].style.width = `${bodyCellWidth}px`;
+            //}else {
+              //headerCells[i].style.width = '';
+            //}
+          i++; 
+        });
      }
 
      setFieldFocus(tr,col_name =null){
@@ -742,6 +811,7 @@ class ItemsView{
      //Set data for display in ItemView
      setData(rows = null){
        let rowIndex= 0;
+       let that = this;
        this.table_body.innerHTML = null;
        //let html = ""; 
        if(!rows || !rows[0]) {
@@ -752,8 +822,9 @@ class ItemsView{
             //add row without validate item data
             this.addRow(d,rowIndex,false); 
             rowIndex++;
-      });
-          
+           //Check if the current rowCount is greater than the option.maxRows. If so, set auto scroll of tbody
+           that.setMaxHeightRows(this.maxRows,rowIndex);
+      });   
      }
 
      getDataRow(tr){

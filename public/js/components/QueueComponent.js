@@ -1536,7 +1536,7 @@ let ConsultTabView = new function () {
         else{
             let title = LocaleManager.trans('Prescription', 'consult');
             let html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}"><h3 class="trans-text" data-langprop="consult.Prescription">${title}</h3>
-            <div class="border border-1 border-success rounded-3 shadow-sm p-3 w-100 mt-5 overflow-y-auto" id="${div_id}" style="max-height:500px"></div>
+            <div class="border border-1 border-success rounded-3 shadow-sm p-3 w-100 mt-5 overflow-y-auto" id="${div_id}"></div>
             </div>`;
             div.html(html);
             let columns = [
@@ -1552,32 +1552,37 @@ let ConsultTabView = new function () {
                     "name": "qty",
                     "title": "Quantity",
                     "dataType": "number",
-                    "displayType": "input"
+                    "displayType": "input",
+                    "width":100
                 },
                 {
                     "name": "sku",
                     "title": "UOM",
                     "dataType": "string",
                     "displayType": "input",
-                    "readOnly": true
+                    "readOnly": true,
+                    "width":80
                 },
                 {
                     "name": "usage",
                     "title": "Usage",
                     "dataType": "string",
-                    "displayType": "input"
+                    "displayType": "input",
+                    "width":150
                 },
                 {
                     "name": "duration_days",
                     "title": "Days",
                     "dataType": "number",
-                    "displayType": "input"
+                    "displayType": "input",
+                    "width":80
                 },
                 {
                     "name": "reason",
-                    "title": "Reasons",
+                    "title": "Reason",
                     "dataType": "string",
-                    "displayType": "input"
+                    "displayType": "input",
+                    "width":150
                 }
             ];
     
@@ -1588,7 +1593,8 @@ let ConsultTabView = new function () {
                 "tableClass": "table presciption-table",
                 "showColumnHeaders": true,
                 "showAddLineButton": true,
-                "addLineButtonText": "Add Item",
+                "addLineButtonText": "Add Medicine",
+                "maxRows":5,
                 onItemChange: (row_id,item, col_name, td,tr) => {
                     mThis.setItemInfo(col_name, tr);
                 },
@@ -1687,7 +1693,8 @@ let ConsultTabView = new function () {
                 "tableClass": "table presciption-table",
                 "showColumnHeaders": true,
                 "showAddLineButton": true,
-                "addLineButtonText": "Add Item",
+                "addLineButtonText": "Add Service",
+                "maxRows":5,
                 "onItemChange": (row_id,selOp, col_name, td,tr) => {
                     mThis.setServiceInfo(col_name, tr);
                 },

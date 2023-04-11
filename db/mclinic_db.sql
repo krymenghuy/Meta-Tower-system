@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2023-04-10 11:55:43
+Date: 2023-04-10 13:43:50
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -813,7 +813,7 @@ CREATE TABLE `inv_categories` (
   `update_uid` int(10) DEFAULT NULL,
   `item_class` varchar(50) DEFAULT NULL COMMENT 'item_class ={RM,FG,MI}. RM = Raw Materials, FG = Finsihed Goods, MI = Merchandising Items',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of inv_categories
@@ -3701,13 +3701,11 @@ CREATE TABLE `reports` (
 -- ----------------------------
 -- Records of reports
 -- ----------------------------
-INSERT INTO `reports` VALUES ('1', '100', 'Pending Loans', 'Pending Loans', 'Application', 'start_date|end_date', '4', '0');
-INSERT INTO `reports` VALUES ('2', '100', 'Active Loans', 'Active Loans', 'Loan', 'loan_type_id|start_date|end_date', '3', '0');
-INSERT INTO `reports` VALUES ('3', '100', 'Customer List', 'Customer List', 'Loan', 'start_date|end_date', '5', '0');
-INSERT INTO `reports` VALUES ('4', '100', 'Loan Collections', 'Loan Collections', 'Loan', 'start_date|end_date|loan_type_id|borrower_id|user_id', '2', '0');
-INSERT INTO `reports` VALUES ('5', '100', 'Interest Earnings', 'Interest Earnings', 'Loan', 'start_date|end_date', '5', '0');
-INSERT INTO `reports` VALUES ('6', '100', 'Overdue report', 'Overdue report', 'Loan', 'loan_type_id', '5', '0');
-INSERT INTO `reports` VALUES ('7', '100', 'Uncollectible Loans', 'Uncollectible Loans', 'Loan', '', '1', '0');
+INSERT INTO `reports` VALUES ('1', '100', 'revenues', 'Revenues', 'Application', 'start_date|end_date', '4', '0');
+INSERT INTO `reports` VALUES ('2', '100', 'patient_list', 'Patient List', 'Loan', 'loan_type_id|start_date|end_date', '3', '0');
+INSERT INTO `reports` VALUES ('3', '100', 'staff_list', 'Staff List', 'Loan', 'start_date|end_date', '5', '0');
+INSERT INTO `reports` VALUES ('4', '100', 'rev_by_category', 'Revenues by category', 'Loan', 'start_date|end_date|loan_type_id|borrower_id|user_id', '2', '0');
+INSERT INTO `reports` VALUES ('5', '100', 'Product List', 'Product List', 'Loan', 'start_date|end_date', '5', '0');
 
 -- ----------------------------
 -- Table structure for `reports1`
@@ -4467,14 +4465,14 @@ CREATE TABLE `um_sessions` (
   `status` varchar(10) DEFAULT NULL COMMENT 'status ={online,offline}',
   `lang` varchar(50) DEFAULT 'en',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2033 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2035 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of um_sessions
 -- ----------------------------
 INSERT INTO `um_sessions` VALUES ('1840', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'Bory', '2', '2023-02-02 11:04:47', '2023-02-02 11:04:47', 'TWY286rzc1Oucpp07znsiww3n89D8dF5UkwK8P', 'ukswNQRSy9ek72svrQlPHIs8RGQu68D3oMXCJ8', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjc1MzEwNjg3LCJuYmYiOjE2NzUzMTA2ODcsImV4cCI6MTY3NTMxNDI4NywibGFuZyI6ImVuIiwiaWQiOjIsInVzZXJfY2xhc3MiOiJhZG1pbiIsIm9mZmljaWFsX2lkIjpudWxsLCJvZmZpY2lhbF9jb2RlIjpudWxsLCJsb2dpbl9uYW1lIjoiQm9yeSIsImJyYW5jaF9pZCI6MSwiZnVsbF9uYW1lIjoiQm9yeSIsInN0YXR1cyI6ImFjdGl2ZSIsImlzX2xvY2tlZCI6MCwiZW1haWwiOm51bGwsInBob25lX251bWJlciI6bnVsbCwib3RwX2NvZGUiOm51bGx9.YsJr6g2Lqu2QLmArmZ3-tTLHU7jP2ceDspbDvCXD4Zg', null, 'en');
 INSERT INTO `um_sessions` VALUES ('1982', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'sam', '4', '2023-03-20 19:49:20', '2023-03-20 19:49:20', '203n6I9eh82Ulmi32FAlGOpaNJ2vooN5w634oU', 'S9wjDJs5CWk9Yf1PhM578wndkcaoCx8EHpn9kD', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjc5MzE2NTYwLCJuYmYiOjE2NzkzMTY1NjAsImV4cCI6MTY3OTMyNzM2MCwibGFuZyI6ImVuIiwiaWQiOjQsInVzZXJfY2xhc3MiOiJhZG1pbiIsIm9mZmljaWFsX2lkIjpudWxsLCJvZmZpY2lhbF9jb2RlIjpudWxsLCJsb2dpbl9uYW1lIjoic2FtIiwiYnJhbmNoX2lkIjoxLCJmdWxsX25hbWUiOiJzYW0iLCJzdGF0dXMiOiJhY3RpdmUiLCJpc19sb2NrZWQiOjAsImVtYWlsIjpudWxsLCJwaG9uZV9udW1iZXIiOm51bGwsIm90cF9jb2RlIjpudWxsfQ.FQBl_5dutCxYYSw8ByBJDeV_a5r4cuoTF5vqm2kCPWk', null, 'en');
-INSERT INTO `um_sessions` VALUES ('2032', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-04-10 11:01:10', '2023-04-10 11:01:10', '85ww767MTGAdhJ1fG7aKvE7auAGYB1Jx16BBmV', 'BvH5rz49S4feU1Bwtlp34Cocfgoqfx8246q8H6', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjgxMDk5MjcwLCJuYmYiOjE2ODEwOTkyNzAsImV4cCI6MTY4MTE0MzA3MCwibGFuZyI6ImVuIiwiaWQiOjEsInVzZXJfY2xhc3MiOiJhZG1pbiIsIm9mZmljaWFsX2lkIjpudWxsLCJvZmZpY2lhbF9jb2RlIjoiMDAwMSIsImxvZ2luX25hbWUiOiJhZG1pbkBnbWFpbC5jb20iLCJicmFuY2hfaWQiOjEsImZ1bGxfbmFtZSI6IlNhbXNldGh5Iiwic3RhdHVzIjoiYWN0aXZlIiwiaXNfbG9ja2VkIjowLCJlbWFpbCI6bnVsbCwicGhvbmVfbnVtYmVyIjoiMDEyNTc4OTAiLCJvdHBfY29kZSI6bnVsbH0.-78K4cken_wDgNwFN20tzSwH-FZJqZrf5YytQXRtrVo', null, 'en');
+INSERT INTO `um_sessions` VALUES ('2034', '1', 'DXM20FKAEFC711EH2E7C9801A7BZD311', 'admin@gmail.com', '1', '2023-04-10 13:15:00', '2023-04-10 13:15:00', 'ayF3BYJ6Ah7dMMVyp98UmkG2r89ZUj1w7oRLRA', 'vS9L7Pti4258B0KqYdRcf3tJMM35avGnuwrlyw', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpaXMiOm51bGwsImF1ZCI6bnVsbCwiaWF0IjoxNjgxMTA3MzAwLCJuYmYiOjE2ODExMDczMDAsImV4cCI6MTY4MTE1MTEwMCwibGFuZyI6ImVuIiwiaWQiOjEsInVzZXJfY2xhc3MiOiJhZG1pbiIsIm9mZmljaWFsX2lkIjpudWxsLCJvZmZpY2lhbF9jb2RlIjoiMDAwMSIsImxvZ2luX25hbWUiOiJhZG1pbkBnbWFpbC5jb20iLCJicmFuY2hfaWQiOjEsImZ1bGxfbmFtZSI6IlNhbXNldGh5Iiwic3RhdHVzIjoiYWN0aXZlIiwiaXNfbG9ja2VkIjowLCJlbWFpbCI6bnVsbCwicGhvbmVfbnVtYmVyIjoiMDEyNTc4OTAiLCJvdHBfY29kZSI6bnVsbH0.UUkWBKxWjiuKSuzS7Kb_arwoLxnh0WVD8KjWqG_-JpU', null, 'en');
 
 -- ----------------------------
 -- Table structure for `um_users`
@@ -4594,13 +4592,12 @@ CREATE TABLE `vendors` (
   `update_user` varchar(50) DEFAULT NULL,
   `updated_at` timestamp(6) NULL DEFAULT NULL ON UPDATE current_timestamp(6),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of vendors
 -- ----------------------------
 INSERT INTO `vendors` VALUES ('1', '1', 'General Vendor', '023767676', 'gen@gmail.com', null, null, null, null, null, '2023-04-07 19:12:05.200330', null, '1', null, null, null, null, '1', 'Samsethy', '2023-04-07 19:12:05.000000');
-INSERT INTO `vendors` VALUES ('2', '1', 'Phear', '012456456', 'dd@gmail.com', null, null, null, '1', 'Samsethy', '2023-04-07 19:11:33.666045', null, '4', null, null, null, null, '1', 'Samsethy', '2023-04-07 19:11:33.000000');
 
 -- ----------------------------
 -- Table structure for `vendor_types`
@@ -4729,4 +4726,248 @@ CREATE TABLE `warehouse_transactions` (
 -- Records of warehouse_transactions
 -- ----------------------------
 
+-- ----------------------------
+-- Function structure for `displayMoney`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `displayMoney`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `displayMoney`(amt decimal(10,2),ccode varchar(10)) RETURNS varchar(100) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+  declare sym varchar(15);
+  declare symbol_after int;
+  declare dec_points int;
+  declare val varchar(100);
+  if (amt IS null) then
+    set amt =0;
+  end if;
  
+  SELECT c.symbol, c.symbol_after, c.decimal_points INTO sym, symbol_after,dec_points FROM currencies as c WHERE c.code =ccode limit 1;
+  IF (symbol_after =1) THEN
+    set val = concat(amt,sym);
+  ELSE set val= concat(sym,amt); 
+  END IF;
+  return val; 
+end
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `formatDate`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `formatDate`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `formatDate`(mDate Date) RETURNS varchar(50) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+  return DATE_FORMAT(mDate,'%d %b %Y');
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `formatDateTime`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `formatDateTime`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `formatDateTime`(mDate Date) RETURNS varchar(50) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+  return DATE_FORMAT(mDate,'%d %b %Y %r');
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `formatTime`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `formatTime`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `formatTime`(mDate Date) RETURNS varchar(30) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+  return DATE_FORMAT(mDate,'%r');
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `getApptStatus`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getApptStatus`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `getApptStatus`(branchid INT,statusid INT) RETURNS varchar(20) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+   declare ss varchar(20); 
+   SET ss = (select `name` from appt_statuses where id =statusid AND branch_id =branchid LIMIT 1);  
+   return IFNULL(ss,'Pending');
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `getConsultanName`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getConsultanName`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `getConsultanName`(consultantid INT) RETURNS varchar(50) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+ declare cname varchar(50);
+ set cname = (select concat(first_name,' ',last_name) as `fullname` from persons as p INNER JOIN employees as e ON e.person_id = p.id WHERE p.id = consultantid LIMIT 1);
+ return cname; 
+end
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `getCurSymbol`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getCurSymbol`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `getCurSymbol`(ccode varchar(10)) RETURNS varchar(10) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+  declare ss varchar(10);
+  SET ss = (select `symbol` from currencies as c where c.`code` = ccode limit 1);
+  return ss;
+end
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `getGroupQty`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getGroupQty`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `getGroupQty`(groupid INT) RETURNS decimal(10,2)
+    DETERMINISTIC
+BEGIN
+  declare qty decimal(10,2);
+  SET qty = (SELECT SUM(IFNULL(c.qty,0)) AS qty FROM inv_item_groups AS g INNER JOIN inv_items AS i ON i.group_id = g.id INNER JOIN inv_current_stocks AS c ON i.id = c.item_id WHERE g.id =groupid LIMIT 1);
+  return qty;      
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `getItemDetailType`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getItemDetailType`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `getItemDetailType`(detailtypeid INT) RETURNS varchar(150) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+  declare detailtype varchar(150);
+  SET detailtype = (select d.`name` from inv_detailed_types as d where d.id =detailtypeid LIMIT 1);
+  RETURN detailtype;   
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `getItemQty`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getItemQty`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `getItemQty`(itemid INT) RETURNS decimal(10,2)
+    DETERMINISTIC
+BEGIN
+  declare qty decimal(10,2);
+  SET qty = (SELECT IFNULL(c.qty,0) AS qty FROM inv_current_stocks AS c INNER JOIN inv_items AS i ON i.id = c.item_id WHERE i.id =itemid LIMIT 1);
+  return qty;      
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `getLastStockDate`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getLastStockDate`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `getLastStockDate`(itemid int,stockclass_code varchar(25)) RETURNS varchar(30) CHARSET utf8mb4
+BEGIN
+  declare stockdate varchar(30);
+  IF (IFNULL(stockclass_code,'') ='') THEN
+    set stockdate = (select created_at from inv_current_stocks as d where d.item_id = itemid and d.stockclass_code = stockclass_code ORDER BY d.id DESC LIMIT 1);
+  ELSE
+    set stockdate = (select created_at from inv_current_stocks as d where d.item_id = itemid and d.stockclass_code = stockclass_code LIMIT 1);
+  END IF;
+  return stockdate;
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `getPatientCode`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getPatientCode`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `getPatientCode`(branchid INT,clientid INT) RETURNS varchar(30) CHARSET utf8mb4
+    DETERMINISTIC
+begin
+  DECLARE cc varchar(30); 
+  set cc = (select `code` from patients as p where p.branch_id =branchid AND p.id =clientid LIMIT 1);
+  return cc;
+end
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `getTicketNumber`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getTicketNumber`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `getTicketNumber`(branchid INT,apptid INT) RETURNS varchar(30) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+ declare ticket varchar(30); 
+ SET ticket = (SELECT ticket_number FROM tickets where branch_id=branchid and appt_id = apptid LIMIT 1);
+ RETURN ticket; 
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `getTicketStatus`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `getTicketStatus`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `getTicketStatus`(branchid INT,ticketid INT) RETURNS varchar(30) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+  declare tstatus varchar(30);
+  SET tstatus = (select sts.`name` from ticket_statuses AS sts INNER JOIN service_queue as s ON s.status_id = sts.id where s.id =ticketid LIMIT 1);
+  return tstatus;
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `hasPosition`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `hasPosition`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `hasPosition`(empid INT,posid INT) RETURNS int(11)
+    DETERMINISTIC
+BEGIN
+  SET @d= (EXISTS(select id from employee_positions as e WHERE e.emp_id = empid AND e.position_id = posid LIMIT 1));
+  RETURN @d;
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Function structure for `hasPositions`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `hasPositions`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `hasPositions`(empid INT,posid INT) RETURNS int(11)
+    DETERMINISTIC
+BEGIN
+  SET @d= (EXISTS(select id from employee_positions as e WHERE e.emp_id = empid AND e.position_id = posid LIMIT 1));
+  RETURN @d;
+END
+;;
+DELIMITER ;
