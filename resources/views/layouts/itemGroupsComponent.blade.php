@@ -10,7 +10,7 @@
             <button class="vs-btn-custom-primary text-nowrap" type="button" id="_pdg_btnNew">
                 <div class="d-flex align-items-center">
                     <i class="fa-solid fa-plus me-1"></i>
-                    <span class="trans-text" data-langprop="buttons.Add New"></span>
+                    <span class="trans-text" data-langprop="buttons.Add Product Group"></span>
                 </div>
             </button>
         </div>
