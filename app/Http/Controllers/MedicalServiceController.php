@@ -32,6 +32,15 @@ class MedicalServiceController extends Controller
         return JDV::result($rows);
     }
 
+    //serviceTracking
+    function getServiceTrackings(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $customer_table ="patients";
+        $rows = DB::table("service_trackings as t")->join($customer_table.' as c','c.id','=','t.client_id')->select()->orderBy('t.id','DESC')->get();
+        return JDV::result($rows);
+    }
+
     function getMedicalServiceInfo(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated

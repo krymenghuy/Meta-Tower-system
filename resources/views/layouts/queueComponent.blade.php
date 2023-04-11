@@ -89,8 +89,12 @@
 <div id="_qul_dlgConsult" class="modal fade" tabindex="-1" aria-labelledby="consult-title" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
-            <div class="modal-header">
-                <h4>Consultation Window</h4>
+            <div class="row modal-header">
+                  <div class="col-3"> <h4>Consultation Window</h4></div>
+                  <div class="col-3">Patient: SOPHAN</div>
+                  <div class="col-3">13 Apr 2023</div>
+                  <div class="col-3"><button class="btn btn-success">P10007</button></div>
+     
             </div>
             <div class="modal-body">
                 <div class="tab-view" id="_consultTabView">

@@ -157,8 +157,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .presciption-table > thead th{
    font-weight: bold;
-   font-size:1.2em;
-   color:#ABB2B9;
+   font-size:1em;
+   border-bottom:1px solid grey;
+   color:#565555;
 }
 
 .consult-icon{
