@@ -30,7 +30,7 @@
     <div id="kt_aside_menu" class="kt-aside-menu" data-ktmenu-vertical="1" data-ktmenu-scroll="1" data-ktmenu-dropdown-timeout="500">
         <div class="kt-aside__brand kt-grid__item py-2 pt-4" id="kt_aside_brand">
             <div class="kt-aside__brand-logo">
-                <img src="{{ asset('assets/images/icons/logo.jpg') }}" alt="" class="img-logo"/>
+                <img src="{{ asset('assets/images/icons/logo_esthederm.png') }}" alt="" class="img-logo"/>
             </div>
             <div class="kt-aside__brand-tools">
                 <button class="kt-aside__brand-aside-toggler" id="kt_aside_toggler" style="padding:10px;font-size:1.3em !important">

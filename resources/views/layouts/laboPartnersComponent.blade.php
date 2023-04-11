@@ -4,7 +4,7 @@
             <button class="vs-btn-custom-primary" type="button" id="_lbp_btnNew">
                 <div class="d-flex align-items-center">
                     <i class="fa-solid fa-plus me-1"></i>
-                    <span class="trans-text text-nowrap" data-langprop="buttons.Add New"></span>
+                    <span class="trans-text text-nowrap" data-langprop="buttons.Add Labo Partner"></span>
                 </div>
             </button>
             <div class="input-group flex-nowrap">
