@@ -566,7 +566,7 @@ let PrescriptionDialog = new function(){
             "dataType": "string",
             "displayType": "select",
             "cssClass": "",
-            "width":250
+            "width":'35%'
         },
         {
             "name": "qty",
@@ -634,7 +634,8 @@ let PrescriptionDialog = new function(){
         "tableClass": "table presciption-table",
         "showColumnHeaders": true,
         "showAddLineButton": true,
-        "addLineButtonText": "Add Item",
+        "addLineButtonText": "Add Medication",
+        "maxRows":"3",
         onItemChange: (row_id,item, col_name, td,tr) => {
             mThis.setItemInfo(col_name, tr);
         },
@@ -1546,43 +1547,39 @@ let ConsultTabView = new function () {
                     "dataType": "string",
                     "displayType": "select",
                     "cssClass": "",
-                    "width":250
+                    "width":"30%"
                 },
                 {
                     "name": "qty",
                     "title": "Quantity",
                     "dataType": "number",
                     "displayType": "input",
-                    "width":100
+                    "width":"20%"
                 },
                 {
                     "name": "sku",
                     "title": "UOM",
                     "dataType": "string",
                     "displayType": "input",
-                    "readOnly": true,
-                    "width":80
+                    "readOnly": true
                 },
                 {
                     "name": "usage",
                     "title": "Usage",
                     "dataType": "string",
-                    "displayType": "input",
-                    "width":150
+                    "displayType": "input"
                 },
                 {
                     "name": "duration_days",
                     "title": "Days",
                     "dataType": "number",
-                    "displayType": "input",
-                    "width":80
+                    "displayType": "input"
                 },
                 {
                     "name": "reason",
                     "title": "Reason",
                     "dataType": "string",
-                    "displayType": "input",
-                    "width":150
+                    "displayType": "input"
                 }
             ];
     
@@ -1662,7 +1659,7 @@ let ConsultTabView = new function () {
                     "title": "Name",
                     "dataType": "string",
                     "displayType": "select",
-                    "width":"250px"
+                    "width":"30%"
                 },
                 {
                     "name": "qty",

@@ -9,6 +9,7 @@
 /vendor
 /public/*.zip
 *.zip
+/db
 /docs
 /uploads
 .env

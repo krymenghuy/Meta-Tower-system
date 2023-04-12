@@ -441,7 +441,7 @@ let InvoiceDialog = new function () {
         "title":"Item Name",
         "dataType":"string",
         "displayType":"select",
-        "width":"250px"
+        "width":"30%"
     },
     {
         "name":"qty",
@@ -600,6 +600,7 @@ let InvoiceDialog = new function () {
             showColumnHeaders: true,
             showAddLineButton: true,
             validateColumns: {'item_id':'string','qty':'number','price':'number'},
+            maxRows:3,
             onItemChange:(row_id,sitem, col_name, td, tr) => {   
                 mThis.setItemInfo(col_name, tr);
             },

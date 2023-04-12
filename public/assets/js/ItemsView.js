@@ -59,8 +59,11 @@ class ItemsView{
         let addLineButton_html = `<button class="${this.options.addLineButtonClass} btn-item-addline trans-text" type="button" data-langprop="${this.options.langProp}.${this.options.addLineButtonText}">${addLineText}</button>`;
         if(this.options.showAddLineButton != true) addLineButton_html ='';
 
+        //NOTE: important to set "div.style.width =100%"" here for tprocessColumnWidths() to work correctly
+        //function processColumnWidths() will determines width of each column as percentage
+        this.processColumnWidths(options.columns,this.self.clientWidth);
         this.self.innerHTML =[
-            `<div id="${this.table_id}_wrapper"><table id="${this.table_id}" class="${options.tableClass}">`,
+            `<div style="width:100%" id="${this.table_id}_wrapper"><table id="${this.table_id}" class="${options.tableClass}">`,
                 this.createColumnHeaders_html(options.columns),
                 `<tbody id="${this.table_id}_body"></tbody>`,
             `</table></div>`,
@@ -259,7 +262,7 @@ class ItemsView{
                 }
                 if(!col) throw `Error ItemsView.getColumnPropsByName(@colName) failed to find column by name ${col_name}`;
                 col.cssClass =col.cssClass?col.cssClass:'';
-                let html = `<input type="text" class="${def_class} ${col.cssClass} td-input" value="${text}" ${is_read_only}/>`;
+                let html = `<input style="width:100%" type="text" class="${def_class} ${col.cssClass} td-input" value="${text}" ${is_read_only}/>`;
                 
                 //If there is col.selectOptions => then set displayType = 'select'
                 if (col.selectOptions) col.displayType ='select';
@@ -268,11 +271,12 @@ class ItemsView{
                     if(!col.selectOptions) col.selectOptions = col.selectItems;
                     col.selectOptions = col.selectOptions?col.selectOptions:[];
                     let el = document.createElement('select');
+                    el.style.width ='100%';
                     el.classList.add(select2_cssClass,`td-input`);
                     el.innerHTML = this.createSelectOptions(col_name,null);
                     td.innerHTML=null;
                     td.appendChild(el);
-                    this.initSelect2(el,td,{"value":value,"width":col.width,items:col.selectOptions});
+                    this.initSelect2(el,td,{"value":value,"width":"100%",items:col.selectOptions});
                     // html = [`<select class="${select2_cssClass} td-input" value="${value}" ${is_read_only}>`,
                     //         this.createSelectOptions(col_name,value),
                     //       `</select>`].join('');
@@ -282,15 +286,15 @@ class ItemsView{
                     if(!col.dataType) col.dataType ='string';
                     if (col.dataType ==='date'){
                        //So far, use default HTML input type="date"
-                       html = `<input type="date" class="${def_class} ${col.cssClass} td-input" value="${text}" data-select="datepicker" ${is_read_only}/>`;
+                       html = `<input style="width:100%" type="date" class="${def_class} ${col.cssClass} td-input" value="${text}" data-select="datepicker" ${is_read_only}/>`;
                     }else if (col.dataType ==='time'){
-                      html = `<input type="date" class="${def_class} ${col.cssClass} td-input" value="${text}" data-select="datepicker" ${is_read_only}/>`;
+                      html = `<input style="width:100%" type="date" class="${def_class} ${col.cssClass} td-input" value="${text}" data-select="datepicker" ${is_read_only}/>`;
                     }else{
                       let dType = (col.dataType ==='string')? 'text':'number';
 
                       //Set detault editor value to zero for Number field 
                       if(dType==='number' && !text) text="0"; 
-                      html = `<input type="${dType}" class="${def_class} ${col.cssClass} td-input" value="${text}" ${is_read_only}/>`;
+                      html = `<input style="width:100%" type="${dType}" class="${def_class} ${col.cssClass} td-input" value="${text}" ${is_read_only}/>`;
                     }
                     td.innerHTML= html;   
                 }
@@ -424,7 +428,7 @@ class ItemsView{
             let td = this.prev_edit_row.querySelector(`td.ivc-${col_name}`);
             if(td){
               let cb = td.querySelector(`select.td-input`);
-              if(cb) this.initSelect2(cb,td,{value:selectedValue,items:col.selectOptions,width:col.width});
+              if(cb) this.initSelect2(cb,td,{value:selectedValue,items:col.selectOptions,width:"100%"});
               //cb.setAttribute('disabled',false);
             }
            
@@ -562,18 +566,78 @@ class ItemsView{
         }
         return '';
      }
+ 
+    //compute coloumns' width based on scenario that some columns have specified Width value, some some column do not. Some columns have specified value in percentage, and some in "px"
+    //and the self.clientWidth is max table's width in px that is contraint in this method, based on which to determine column width 
+    processColumnWidths(columns,tableWidth=0){
+        // const columns = [
+        //   { name: "Name", width: "150px" },
+        //   { name: "Age", width: "10%" },
+        //   { name: "Address" },
+        //   { name: "Phone", width: "20%" },
+        // ];
+        const that = this;
+        tableWidth = this.self.clientWidth; // total width of table in pixels
+        if(!(tableWidth > 0)) return;
+
+        let totalWidth = 0; // total width of all specified columns in pixels
+        console.error('total witdh = '+tableWidth);
+        let unspecifiedColumnsCount = 0;
+        columns.forEach((column) => {
+          column.width = column.width+'';
+          if (column.width && column.width !=='undefined') {
+            //console.error('specified col = '+column.width);
+            if (column.width.endsWith("px")) {
+              totalWidth += parseInt(column.width);
+            } else //if (column.width.endsWith("%")) 
+            {
+               let w = parseInt(column.width);
+               if(w <100){
+                 totalWidth += tableWidth * w / 100;
+               }else{
+                   totalWidth += w;
+               }
+             
+            } 
+          } else {
+            unspecifiedColumnsCount++;
+          }
+        });
+        
+        const remainingWidth = tableWidth - totalWidth;
+        const unspecifiedWidth = (unspecifiedColumnsCount ==0)? 0 : remainingWidth / unspecifiedColumnsCount;
+
+        let user_col_index =0;
+        const columnWidths = columns.map((column) => {
+          column.width = column.width+'';
+          if (column.width && column.width !=='undefined') {
+            if (column.width.endsWith("px")) {
+               columns[user_col_index].width =`${parseInt(column.width)/ tableWidth * 100}%`;  
+               //return `${parseInt(column.width)/ window.innerWidth * 100}%`;
+            } else //if (column.width.endsWith("%"))
+            {
+              let w = parseInt(column.width);
+              if(w < 100)
+                 columns[user_col_index].width =`${w}%`;
+              else columns[user_col_index].width =`${w/ tableWidth * 100}%`;
+                 //return column.width;
+            } 
+          }else columns[user_col_index].width =`${unspecifiedWidth/tableWidth * 100}%`;  
+           user_col_index++;
+           //return `${unspecifiedWidth / window.innerWidth * 100}%`;
+        });
+        console.error(JSON.stringify(columns));
+        //return console.log(columnWidths); // Output: ["18.75%", "10%", "25%", "46.25%"]
+    }
 
      createColumnHeaders_html(columns =[]){
         if(!this.options.showColumnHeaders) return '';
         let this_th = '';
         let that = this;
-        //calcuate default column's as percentage
-        const col_cnt =columns.length;
-        let def_width = [Math.round(100/col_cnt,4),'%'].join('');
         let i =0;
         columns.map(col=>{
-            col.width = def_width; //col.width>0? col.width : def_width;
-            //that.options.columns[i].width = col.width;
+            ////col.width = col.width?col.width.match(/\d+/)[0]:def_width; //col.width>0? col.width : def_width;
+            ////that.options.columns[i].width = col.width;
             if(!col.langProp) col.langProp = that.options.langProp;
             this_th = [this_th,`<th style="width:${col.width}" class="trans-text" data-langprop="${col.langProp}">`,col.title,`</th>`].join('');
             i++;
@@ -742,23 +806,23 @@ class ItemsView{
                 }
      }
 
-     //This function is to ensure that all header columns' width are equal to corresponding cell (td)
-      adjustHeaderWidths() {
-        const first_tr = this.table.querySelectorAll('tbody tr');
-        const cells = first_tr[0].querySelectorAll('td');
-        const headerCells = this.table.querySelectorAll('thead th');
-        let i = 0;
-        headerCells.forEach(h => {
-          const bodyCellWidth  = cells[i].getBoundingClientRect().width;
-          //const headerCellWidth = headerCells[i].getBoundingClientRect().width;
-           //if (bodyCellWidth > headerCellWidth) {
-              headerCells[i].style.width = `${bodyCellWidth}px`;
-            //}else {
-              //headerCells[i].style.width = '';
-            //}
-          i++; 
-        });
-     }
+    //  //This function is to ensure that all header columns' width are equal to corresponding cell (td)
+    //   adjustHeaderWidths() {
+    //     const first_tr = this.table.querySelectorAll('tbody tr');
+    //     const cells = first_tr[0].querySelectorAll('td');
+    //     const headerCells = this.table.querySelectorAll('thead th');
+    //     let i = 0;
+    //     headerCells.forEach(h => {
+    //       const bodyCellWidth  = cells[i].getBoundingClientRect().width;
+    //       //const headerCellWidth = headerCells[i].getBoundingClientRect().width;
+    //        //if (bodyCellWidth > headerCellWidth) {
+    //           headerCells[i].style.width = `${bodyCellWidth}px`;
+    //         //}else {
+    //           //headerCells[i].style.width = '';
+    //         //}
+    //       i++; 
+    //     });
+    //  }
 
      setFieldFocus(tr,col_name =null){
        if(!tr || tr.length ===0) return null;
@@ -820,10 +884,10 @@ class ItemsView{
        }
        (rows || []).map(d =>{
             //add row without validate item data
-            this.addRow(d,rowIndex,false); 
+            that.addRow(d,rowIndex,false); 
             rowIndex++;
            //Check if the current rowCount is greater than the option.maxRows. If so, set auto scroll of tbody
-           that.setMaxHeightRows(this.maxRows,rowIndex);
+           that.setMaxHeightRows(that.maxRows,rowIndex);
       });   
      }
 
