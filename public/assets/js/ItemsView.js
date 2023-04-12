@@ -61,10 +61,11 @@ class ItemsView{
 
         //NOTE: important to set "div.style.width =100%"" here for tprocessColumnWidths() to work correctly
         //function processColumnWidths() will determines width of each column as percentage
-        this.processColumnWidths(options.columns,this.self.clientWidth);
+        this.processColumnWidths(this.options.columns);
+        //console.error(JSON.stringify(this.options.columns)); 
         this.self.innerHTML =[
             `<div style="width:100%" id="${this.table_id}_wrapper"><table id="${this.table_id}" class="${options.tableClass}">`,
-                this.createColumnHeaders_html(options.columns),
+                this.createColumnHeaders_html(this.options.columns),
                 `<tbody id="${this.table_id}_body"></tbody>`,
             `</table></div>`,
             `<div id="${this.table_id}_footer" class="form-inline">${addLineButton_html}</div>`
@@ -164,15 +165,18 @@ class ItemsView{
 
      //set maximun height of tbody in terms of Number of rows (tr)
      setMaxHeightRows(row_count=5,current_row_count=0){
+        if(this.has_scroll) return; 
         let tbody = this.table_body;
         let thead = this.table.querySelector('thead');
 
-        let row_height = tbody.rows[0]?tbody.rows[0].offsetHeight:30;
+        let row_height = tbody.rows[0]?tbody.rows[0].offsetHeight:60;
+        if(row_height==0) row_height=60;
         current_row_count =current_row_count>0?current_row_count: tbody.rows.length;
         //console.error(`Current_rows = ${current_row_count} VS row_count =${row_count}`);
         
         if (current_row_count > row_count) {
           let tbodyHeight = parseFloat(row_height) * parseFloat(row_count);
+          //console.error(`tbodyHeigt = ${tbodyHeight} rowHeight =${row_height} currentRowCount =${current_row_count}`);
           this.table.style.display = 'block';
           this.table.style.width = '100%';
           this.table.style.tableLayout = 'fixed';
@@ -182,6 +186,8 @@ class ItemsView{
           //tbody.style.width = '100%';
           tbody.style.height = `${tbodyHeight}px`;
           tbody.style.overflowY = 'scroll';
+          //set this.has_scroll to true. "has_scroll" indicates whether the current Items table has scroll or not (for Fixed header style only) 
+          this.has_scroll = true;
         }
         return;
      }
@@ -569,7 +575,7 @@ class ItemsView{
  
     //compute coloumns' width based on scenario that some columns have specified Width value, some some column do not. Some columns have specified value in percentage, and some in "px"
     //and the self.clientWidth is max table's width in px that is contraint in this method, based on which to determine column width 
-    processColumnWidths(columns,tableWidth=0){
+    processColumnWidths(columns){
         // const columns = [
         //   { name: "Name", width: "150px" },
         //   { name: "Age", width: "10%" },
@@ -577,11 +583,14 @@ class ItemsView{
         //   { name: "Phone", width: "20%" },
         // ];
         const that = this;
-        tableWidth = this.self.clientWidth; // total width of table in pixels
+        let tableWidth = this.self.clientWidth; // total width of table in pixels
+        if(tableWidth==0) tableWidth = this.self.parentNode.clientWidth;
+        if(tableWidth==0) tableWidth = this.self.parentNode.parentNode.clientWidth;
+        //console.error(`Column width = ${tableWidth}`);
         if(!(tableWidth > 0)) return;
 
         let totalWidth = 0; // total width of all specified columns in pixels
-        console.error('total witdh = '+tableWidth);
+        //console.error('total witdh = '+tableWidth);
         let unspecifiedColumnsCount = 0;
         columns.forEach((column) => {
           column.width = column.width+'';
@@ -612,21 +621,21 @@ class ItemsView{
           column.width = column.width+'';
           if (column.width && column.width !=='undefined') {
             if (column.width.endsWith("px")) {
-               columns[user_col_index].width =`${parseInt(column.width)/ tableWidth * 100}%`;  
+               that.options.columns[user_col_index].width =`${parseInt(column.width)/ tableWidth * 100}%`;  
                //return `${parseInt(column.width)/ window.innerWidth * 100}%`;
             } else //if (column.width.endsWith("%"))
             {
               let w = parseInt(column.width);
               if(w < 100)
-                 columns[user_col_index].width =`${w}%`;
-              else columns[user_col_index].width =`${w/ tableWidth * 100}%`;
+                 that.options.columns[user_col_index].width =`${w}%`;
+              else that.options.columns[user_col_index].width =`${w/ tableWidth * 100}%`;
                  //return column.width;
             } 
-          }else columns[user_col_index].width =`${unspecifiedWidth/tableWidth * 100}%`;  
+          }else that.options.columns[user_col_index].width =`${unspecifiedWidth/tableWidth * 100}%`;  
            user_col_index++;
            //return `${unspecifiedWidth / window.innerWidth * 100}%`;
         });
-        console.error(JSON.stringify(columns));
+        console.error("inside => " + JSON.stringify(that.options.columns));
         //return console.log(columnWidths); // Output: ["18.75%", "10%", "25%", "46.25%"]
     }
 
@@ -799,10 +808,11 @@ class ItemsView{
                 this.resetNumero();
                 
                 //If user clicks Add Line button in order to add a new row => then check Scroll
+                //NOTE: @has_scroll = true => means that the current Items table already has fixed body scroll
                 if(user_action_add){
-                  this.setMaxHeightRows(this.maxRows);
-                  //Scroll to the bottom empty element (.g: empty tr)
-                  this.table_body.scrollTop = this.table_body.scrollHeight;
+                   if (!this.has_scroll) this.setMaxHeightRows(this.maxRows);
+                   //Scroll to the bottom empty element (.g: empty tr)
+                   this.table_body.scrollTop = this.table_body.scrollHeight;
                 }
      }
 
@@ -882,6 +892,7 @@ class ItemsView{
           this.addRow(null,0,false); 
           return ;
        }
+
        (rows || []).map(d =>{
             //add row without validate item data
             that.addRow(d,rowIndex,false); 

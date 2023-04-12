@@ -216,7 +216,9 @@
             <div class="modal-header">
                 <h5 class="modal-title trans-text" data-langprop="consult.Prescription"></h5>
             </div>
-            <div id="_qul_dlgPrescription_body" class="modal-body overflow-x-auto" style="max-height:500px"></div>
+            <div class="modal-body">
+                <div id="_qul_dlgPrescription_body"></div>
+            </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary btn-sm" type="button" data-dismiss="modal">Cancel</button>
                 <button class="btn btn-primary btn-sm" type="button" id="_qul_dlgPrescription_btnSave">Save</button>
