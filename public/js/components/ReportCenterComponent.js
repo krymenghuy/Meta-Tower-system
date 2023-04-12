@@ -9,25 +9,22 @@ let ReportCenterComponent = new function(){
     this.api_fetch_report_list = [this.base_url,'/api/report-center/report-list'].join('');
     this.api_fetch_report_filter_options = [this.base_url,'/api/report-center/filter-options'].join('');
     
-    this.report_url =[this.base_url,'/dms-gen-report'].join('');
+    this.report_url =[this.base_url,'/mclinic-report'].join('');
 
      //NOTE that mThis.report_url is default report route, and special_routes is array that may contain special report routes. 
      //For example, Hou Express's merchant report does not have common grounds that fit with gen_report, so special reort route is used
-    this.special_routes = {
-        'hs_merchant_invoice':[this.base_url,'/hs-merchant-invoice'].join('')
-    };
+    this.special_routes = {};
 
     this.div_report_list = $('#_rpc_reportlist');
     this.div_filter_fields = $('#_rpc_filter_fields');
     this.no_filter_wrapper = $('#_rpc_no_filter_text_wrapper');
     this.selected_report_name = $('#_rpc_selected_report_name');
     this.api_encrypt = [`${main_view.base_url}/api/encryptData`].join('');
+    this.required_filters = {};
 
     this.btnExportPackages = $('#_rpc_btnExport');
     this.btnRunReport = $('#_rpc_btnRunReport');
-    // this.btnTest = $('#_rpc_btnTest');
     
-    //Array list of filter field objects {name,element,value_field,text_field}
     this.filter_fields = [
         {
             'visible':false,
@@ -39,27 +36,39 @@ let ReportCenterComponent = new function(){
             'name':'wid', //filter name or var name to be passed as parameter to report's fetch api
             'value_field':'id',
             'text_field':'warehouse_name'
-         },
-      {
-        'name':'start_date',
-        'label':'From',
-        'width':'half'
-      },
-      {
-        'name':'end_date',
-        'label':'To',
-        'width':'half'
-      }
-    // ,{
-    //     'type':'select',
-    //     'name':'agent_id',
-    //     'label':'Sale Agent', // {(All), Failed,delivered,Returned}
-    //     'api_fetch':`${main_view.base_url}/api/settings/options-sales-agent`,
-    //     'api_params':{},
-    //     'value_field':'id',
-    //     'text_field':'agent_name',
-    //     'width':'half'
-    //   },
+        },
+        {
+            'visible':false,
+            'type':'select',
+            'width':'full',
+            'label':'Department',
+            'api_fetch':'',
+            'api_params':{},
+            'name':'department_id',
+            'value_field':'id',
+            'text_field':'department_name'
+        },
+        {
+            'visible':false,
+            'type':'select',
+            'width':'full',
+            'label':'Customer Name',
+            'api_fetch':'',
+            'api_params':{},
+            'name':'customer_id',
+            'value_field':'id',
+            'text_field':'customer_name'
+        },
+        {
+            'name':'start_date',
+            'label':'From',
+            'width':'half'
+        },
+        {
+            'name':'end_date',
+            'label':'To',
+            'width':'half'
+        }
     ];
 
     this.renderFilterFields = (filterHeight = 350) => {
@@ -71,7 +80,7 @@ let ReportCenterComponent = new function(){
 
             let is_date='';
             if(f.type==='date' || f.name ==='start_date' || f.name ==='end_date' ){
-                is_date = ` type="date"`; // `data-select="datepicker"`;
+                is_date = ` type="date"`;
                 f.type ='date';
             }
 
@@ -130,9 +139,9 @@ let ReportCenterComponent = new function(){
 
     this.initSelect2 = (el,width,value=null) =>{
         if(!el) return;     
-            let init_op ={width:width?width:'100%'};
-            el.select2(init_op);
-            if(value) el.val(value).trigger('change');
+        let init_op ={width:width?width:'100%'};
+        el.select2(init_op);
+        if(value) el.val(value).trigger('change');
     }
 
     this.init = ()=>{
@@ -155,34 +164,9 @@ let ReportCenterComponent = new function(){
            mThis.selectReportItem($(this));
         });
         
-        // mThis.btnTest.on('click',(e)=>{
-          
-        //     let rpt_title = 'This is main title';
-        //     let sub_title ="Sub title here";
-        //     //if (mThis.lang == 'kh') rpt_title = 'This is sub title';
-        //     try {
-        //          //vsapi.call(`${mThis.base_url}/api/getCompletedPackageList_print`,p).then(res => {
-        //              //if(res.status_code === 200){
-        //                  let rows = [
-        //                     {"sender_code":"10012","merchant_name":"Puttytha","sex":"F","phone_number":"0124565465"},
-        //                     {"sender_code":"10017","merchant_name":"Dynaro","sex":"F","phone_number":"0234566578"},
-        //                  ];
-        //                  let columTitles = ['Column A','Column B','Column C','Column D'];
-        //                  let op = {'title':rpt_title,'title_color':'blue','subTitle':sub_title,'header_columns':columTitles};
-        //                  pdfReport.viewPDF_json(rows,op); 
-        //              //} 
-        //         //});
-        //     }catch(e){
-        //         cv_interact.error(e.toString());
-        //     } 
-        // });
         this.btnExportPackages.on('click',(e)=>{
             e.preventDefault();
             let p = mThis.getReportFilterData();
-            // let p = {
-            //     'start_date':mThis.elStartDate.val(),
-            //     'end_date':mThis.elEndDate.val()
-            // };
             if (!p.start_date || !p.end_date){
                 cv_interact.error('Start date and end date are required');
                 return;
@@ -193,26 +177,32 @@ let ReportCenterComponent = new function(){
                  let file_name ='dms-packages';
                  let titles = null;
                  JsonToExcel.exportToCSV(rows,file_name,titles,true,[]);
-               }else {
+               }
+               else {
                 cv_interact.error(res.error_message);
                }
-
             });
         });
 
         mThis.btnRunReport.on('click',(e)=>{
             e.preventDefault();
-            let rpt = mThis.getSelectedReport(), params = mThis.getReportFilterData();
-            //Check required report filters
-            let req_filters = mThis.required_filters[rpt.code];
-            if (req_filters){
-                req_filters.map(f=>{
-                    if(!params[f]){
-                        cv_interact.warning(`${f.replace('_',' ')} is required`);
-                        return;
-                    }else mThis.showWebReport(rpt.code,params);
-                });
-            }else mThis.showWebReport(rpt.code,params);
+            let rpt = mThis.getSelectedReport();
+            if(rpt.code){
+                let params = mThis.getReportFilterData();
+                let req_filters = mThis.required_filters[rpt.code];
+                if (req_filters){
+                    req_filters.map(f=>{
+                        if(!params[f]){
+                            cv_interact.warning(`${f.replace('_',' ')} is required`);
+                            return;
+                        }
+                        else mThis.showWebReport(rpt.code,params);
+                    });
+                }else mThis.showWebReport(rpt.code,params);
+            }
+            else{
+                cv_interact.warning("Please Select Any Options Before Run Report!");
+            }
         });
 
         //This is not general code. It is custom event handlers (or init code) that are sepcific to each project
@@ -227,10 +217,10 @@ let ReportCenterComponent = new function(){
         if (qstring) sp ='&';
         let p = {'data':`${qstring}${sp}rtype=${rpt_code}`};
         vsapi.call(mThis.api_encrypt,p,null,false).then(res=>{
-            let d = res.data?res.data:res; 
+            let d = res.data ? res.data:res;
             if(res.error_message){
                 cv_interact.error(res.error_message);
-                return;  
+                return;
             }
             window.open(`${report_route}/${d}`,'_blank');
         });
@@ -251,25 +241,15 @@ let ReportCenterComponent = new function(){
 
     //Set Report name (text) ins the sate of Hover or Normal. while function 'selectReportItem()' will set report item in the Selected state.
     this.setReportItemState = (div_row, state_name = 'hover') => {
-        //if (div_row.hasClass('report-selected')) return;
         let hover_color = 'orange';
         let normal_color = 'grey';
 
         let selected = div_row.hasClass('report-selected');
         if (state_name === 'hover') {
-            // mThis.div_report_list.find('.div-row').each(function(){
-            //     if(!$(this).hasClass('report-selected')){
-            //        $(this).find('i').removeClass('fa-check').addClass('fa-list-alt').css('color',normal_color);
-            //     }
-            //  });
-
             div_row.find('span').css('color', hover_color);
-            //if (!selected) div_row.find('i').removeClass('fa-list-alt').addClass('fa-check').css('color',hover_color);
-            //console.log('hover = > selected =' + selected);
         } else {
             div_row.find('span').css('color', normal_color);
             if (!selected) div_row.find('i').removeClass('fa-check').addClass('fa-list-alt').css('color', normal_color);
-            //console.log('normal = > selected =' + selected);
         }
     }
   
@@ -303,9 +283,6 @@ let ReportCenterComponent = new function(){
 
     //Display report items from api
      this.loadReportItems = (onFinish)=>{
-        //  vsapi.call(mThis.api_fetch_report_list,null).then((res)=>{ 
-        //  });
-
         vsapi.call(mThis.api_fetch_report_list,null).then(res=>{
             mThis.div_report_list.empty();
 
@@ -380,7 +357,7 @@ let ReportCenterComponent = new function(){
             if (filter_is_used){
                let field = el.data('field');
                p[field] = el.val();
-            } 
+            }
         });
 
         return p;

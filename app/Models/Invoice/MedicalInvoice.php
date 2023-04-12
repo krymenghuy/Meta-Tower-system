@@ -406,7 +406,6 @@ class MedicalInvoice //extends Invoice //extends Model
         "amount"=>"0|number|default=0",
         "amount_due"=>"0|number|default=0",
         "amount_paid"=>"0|number|default=0",
-        //"signer_name"=>"0|string|0-50",
         'inactive'=>'1|choice|0,1|default=0',
         "items"=>"1|array"
       ];
@@ -435,16 +434,6 @@ class MedicalInvoice //extends Invoice //extends Model
       //On Update or Create => $items array contains both "products" and "services"  
       $items = $inputs['items'];
       unset($inputs['items']);
-      //$inputs['signer_name'] = InvoiceSettings::signer_name($branch_id);
-      //$account = InvoiceSettings::payment_bank($branch_id);
-      //$currency = InvoiceSettings::currency($branch_id);
-      //$inputs['pmt_account_number'] = $account->pmt_account_number;
-      //$inputs['pmt_bank_name'] = $account->pmt_bank_name;
-      //$inputs['pmt_account_name'] = $account->pmt_account_name;
-      //$inputs['currency_code']= $currency->currency_code;
-      //$inputs['exchange_rate']= $currency->exchange_rate;
-    
-      //$inputs['invoice_number'] = null ; //self::createInvoiceNumber($branch_id,$issue_date);
       $discount = $inputs['discount'];
       $discount_type = $inputs['discount_type'];
       unset($inputs['discount']);
@@ -453,22 +442,9 @@ class MedicalInvoice //extends Invoice //extends Model
       $invoice_id = saveData($ss,"invoices",['id'=>$invoice_id],$inputs,[],1);
          $m = self::saveInvoiceItems($ss,['id'=>$invoice_id,'discount'=>$discount,'discount_type'=>$discount_type],$items,false); //True = "Delete all previous items before inserting invoice's items"
          if($m->item_count<=0) return DV::error('No invoice items have been saved. Those items may be invalid');
-         //$xres = self::setInvoiceNumber($branch_id,$invoice_id,"tax_line",$issue_date,null);
-         //$this->updateAmounts($invoice_id,$discount,$discount_type);
          return DV::success(['invoice_id'=>$invoice_id,'item_count'=>$m->item_count]);
    }
 
-    // //NOTE: parameter $item_class = {product,service,labo,etc...}
-    // static function createInvoiceItems($item_class,$items=[],$ss=null){
-    //   //$ss = $ss?$ss:$this->getUserInfo();
-    //   $i=0;$c;
-    //   do{
-    //      if(!isset($items[$i])) break;
-    //      $c = $items[$i];
-           
-    //      $i++;
-    //   }while($c); 
-    // }
 
   //Update invoices.discount_percent, discount_amount,discount_type AFTER all invoice's items are saved
   static function updateInvoiceDiscount($invoice_id,$discount=0,$discount_type='percentage'){
@@ -520,12 +496,6 @@ class MedicalInvoice //extends Invoice //extends Model
       if($inv_item_class==='product' || $inv_item_class==='item'){
         $products[] = $row;
       }else $services[] = $row;
-
-      // else if($inv_item_class==='labo' || $inv_item_class==='labo_test'){
-      //    $labo_tests[] = $row;
-      // }else if($inv_item_class ==='service'){
-      //    $services[] = $row;
-      // }else $products[] = $row;
     }
 
     return (object)[
@@ -536,8 +506,6 @@ class MedicalInvoice //extends Invoice //extends Model
   }
 
   static function details($id,$ss){
-    ////if (!$ss) $ss = $this->getUserInfo();
-    ////if(!$id) $id = $this->getInvoiceId(); 
     $branch_id = $ss->branch_id;
     $customer_table = InvoiceSettings::$customer_table;
     $cols = ['invoice_class','v.id','ref_number','exchange_rate',DB::raw('formatDate(v.issue_date) AS issue_date'),DB::raw('formatDate(v.due_date) as due_date'),'customer_id',DB::raw("(select code from $customer_table where id =v.customer_id LIMIT 1) AS customer_code"),'p.date_of_birth','p.sex',DB::raw("CONCAT(p.last_name,' ',p.first_name) as customer_name"),'v.customer_phone','v.customer_email',DB::raw('NULL AS customer_tax_number'),'terms','v.billing_address','v.amount','v.discount_percent','v.discount_amount','discount_type','v.total_cost','signer_name','v.currency_code','v.exchange_rate','v.amount_due','v.tax_amount','v.tax_rate',DB::raw("(SELECT SUM(IFNULL(amount,0)) FROM invoice_payments WHERE invoice_id =v.id) AS amount_paid"),'v.pmt_bank_name','v.pmt_account_number','v.pmt_account_name','v.description','v.invoice_notes'];

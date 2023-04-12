@@ -488,7 +488,7 @@ let InvoiceDialog = new function () {
     }];
 
     this.cols_service = [{
-        "name":"item_id", /** NOTE: we must use "item_id", not "service_id", so that the invoice's items can be processed the same way**/
+        "name":"item_id",
         "title":"Service",
         "dataType":"string",
         "displayType":"select",
@@ -599,6 +599,7 @@ let InvoiceDialog = new function () {
             columns: mThis.cols_product,
             showColumnHeaders: true,
             showAddLineButton: true,
+            "maxRows":3,
             validateColumns: {'item_id':'string','qty':'number','price':'number'},
             maxRows:3,
             onItemChange:(row_id,sitem, col_name, td, tr) => {   
