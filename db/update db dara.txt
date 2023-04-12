@@ -1,23 +1,11 @@
-DROP FUNCTION IF EXISTS `getConsultanName`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getConsultanName`(consultantid INT) RETURNS varchar(50) CHARSET utf8mb4
-    DETERMINISTIC
-BEGIN
- declare cname varchar(50);
- set cname = (select concat(first_name,' ',last_name) as `fullname` from persons as p INNER JOIN employees as e ON e.person_id = p.id WHERE p.id = consultantid LIMIT 1);
- return cname; 
-end
-;;
-DELIMITER ;
-
-DROP FUNCTION IF EXISTS `getPatientCode`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `getPatientCode`(branchid INT,clientid INT) RETURNS varchar(30) CHARSET utf8mb4
-    DETERMINISTIC
-begin
-  DECLARE cc varchar(30); 
-  set cc = (select `code` from patients as p where p.branch_id =branchid AND p.id =clientid LIMIT 1);
-  return cc;
-end
-;;
-DELIMITER ;
+INSERT INTO `reports` VALUES ('1', '100', 'revenues', 'Revenues', 'Finance', 'start_date|end_date', '1', '0');
+INSERT INTO `reports` VALUES ('1', '100', 'rev_by_category', 'Revenue by section', 'Finance', 'start_date|end_date', '2', '0');
+INSERT INTO `reports` VALUES ('1', '100', 'rev_by_client', 'Revenue by client', 'Finance', 'start_date|end_date', '2', '0');
+INSERT INTO `reports` VALUES ('1', '100', 'invoice_list', 'Invoice List', 'Finance', 'start_date|end_date', '2', '0');
+INSERT INTO `reports` VALUES ('1', '100', 'profit_and_losss', 'Profit and Loss', 'Finance', 'start_date|end_date', '2', '0');
+INSERT INTO `reports` VALUES ('2', '100', 'staff_list', 'Staff List', 'HRM', 'department_id', '3', '0');
+INSERT INTO `reports` VALUES ('3', '100', 'client_list', 'Client List', 'Sales', '', '5', '0');
+INSERT INTO `reports` VALUES ('4', '100', 'product_list', 'Product List', 'Inventory', '', '2', '0');
+INSERT INTO `reports` VALUES ('5', '100', 'on_hand_stocks', 'On-hand Stocks', 'Inventory', 'warehouse_id|start_date|end_date', '5', '0');
+INSERT INTO `reports` VALUES ('5', '100', 'labo_tests', 'Labo Tests', 'Operation', 'start_date|end_date', '5', '0');
+INSERT INTO `reports` VALUES ('5', '100', 'services', 'Services', 'Operation', 'emp_id|start_date|end_date', '5', '0'); 
