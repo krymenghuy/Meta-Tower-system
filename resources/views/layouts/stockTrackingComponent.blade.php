@@ -24,7 +24,7 @@
 
 <div id="_main_stockTrackingComponent" class="mobile-padding" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
-        <div class="d-flex align-items-center w-100" style="overflow-x:auto; overflow-y:hidden">
+        <div class="d-flex align-items-center w-100">
             <div class="d-flex align-items-center gap-2 ms-3">
                 <div class="input-group flex-nowrap">
                     <input type="search" class="form-control" id="_stk_search" placeholder="Search item" style="min-width:250px"/>

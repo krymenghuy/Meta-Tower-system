@@ -398,12 +398,13 @@ div.dms-content-body {
 }
 
 .unicode-text {
-  font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+  font-family: 'Khmer OS Battambang','Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
 }
 
 .select2,
 .modal-select2 {
-  font-family: 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+  font-family: 'Khmer OS Battambang','Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+  width:100% !important;
 }
 
 .cur-riel {
