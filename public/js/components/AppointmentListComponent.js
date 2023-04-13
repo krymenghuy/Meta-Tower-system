@@ -725,25 +725,30 @@ let PatientDialog = new function () {
         mThis.imgPhoto.removeAttr('src');
     });
 
-    this.elDateOfBirth.on('change', (e) => {
-        let now = Date();
-        let d = VSUtil.daysBetween(this.elDateOfBirth.val(), now);
-        let unit = 'months';
-        d = Number(d).toFixed(2);
-        if (d > 360) {
-            unit = 'years';
-            d = Number(d / 365).toFixed(2);
-        } else if (d < 30) {
-            unit = 'days';
-            d = Number(d).toFixed(2);
-        } else if (d >= 30) {
-            unit = 'months';
-            d = Number(d / 30.5).toFixed(2);
-        }
-
-        mThis.elAgeUnit.text(unit);
-        mThis.elAge.val(d);
+    this.elAge.on('keyup',e=>{
+        let dbo = this.calculateDOBFromAge(mThis.elAge.val());
+        mThis.elDateOfBirth.val(dbo); 
     });
+
+    // this.elDateOfBirth.on('change', (e) => {
+    //     let now = Date();
+    //     let d = VSUtil.daysBetween(this.elDateOfBirth.val(), now);
+    //     let unit = 'months';
+    //     d = Number(d).toFixed(2);
+    //     if (d > 360) {
+    //         unit = 'years';
+    //         d = Number(d / 365).toFixed(2);
+    //     } else if (d < 30) {
+    //         unit = 'days';
+    //         d = Number(d).toFixed(2);
+    //     } else if (d >= 30) {
+    //         unit = 'months';
+    //         d = Number(d / 30.5).toFixed(2);
+    //     }
+
+    //     mThis.elAgeUnit.text(unit);
+    //     mThis.elAge.val(d);
+    // });
 
     this.registerPatient = (addToQueue = 0) => {
         let p = mThis.getFormData();
@@ -839,6 +844,15 @@ let PatientDialog = new function () {
                 onFinish();
             }
         });
+    }
+
+    this.calculateDOBFromAge = (age) =>{
+        let today = new Date();
+        let yearOfBirth = today.getFullYear() - age;
+        let dob = new Date(yearOfBirth, today.getMonth(), today.getDate());
+        let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        let formattedDOB = dob.getDate() + '-' + monthNames[dob.getMonth()] + '-' + dob.getFullYear();
+        return formattedDOB;
     }
 
     this.clearForm = () => {

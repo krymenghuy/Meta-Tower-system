@@ -24,6 +24,7 @@
 	"employee":{
 
 	},
+	"payment":{},
 	"appointment":{
 		"Arrival Date":"ថ្ងៃជួប",
 		"Arrival Time":"ម៉ោង",

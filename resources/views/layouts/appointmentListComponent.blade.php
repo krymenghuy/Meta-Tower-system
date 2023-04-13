@@ -225,14 +225,14 @@
                     <div class="form-group col-lg-3">
                         <span class="simple-label trans-text" data-langprop="appointment.Arrival Date">Date</span>
                         <div>
-                            <input type="text" data-required="1" data-field="arrival_date" data-ffield="Arrival Date" class="form-control data-input" id="_appt_arrival_date" data-select="datepicker"/>
+                            <input type="text" data-field="arrival_date" data-ffield="Arrival Date" class="form-control data-input" id="_appt_arrival_date" data-select="datepicker"/>
                         </div>
                     </div>
 
                     <div class="form-group col-lg-3">
                         <span class="simple-label trans-text" data-langprop="appointment.Time">Time</span>
                         <div>
-                            <input type="text" data-required="1" data-field="arrival_time" data-ffield="Arrival Time" class="form-control data-input" id="_appt_arrival_time" data-select="timepicker"/>
+                            <input type="text" data-field="arrival_time" data-ffield="Arrival Time" class="form-control data-input" id="_appt_arrival_time" data-select="timepicker"/>
                         </div>
                     </div>
 
@@ -455,7 +455,7 @@
                     <i class="fa fa-times"></i>
                     <span class="trans-text" data-langprop="buttons.Cancel">Cancel</span>
                 </button>
-                <button type="button" class="btn btn-primary" id="_apl_dlgPatient_btnSave">
+                <button style="display:none" type="button" class="btn btn-primary" id="_apl_dlgPatient_btnSave">
                     <i class="fa fa-register"></i>
                         <span class="trans-text" data-langprop="buttons.Save">Save</span>
                 </button>

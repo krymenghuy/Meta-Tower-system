@@ -9,7 +9,7 @@ namespace App\Models;
 use DB;
 use App\Models\DV;
 use App\Models\ServiceQ\QTicket;
-
+use Carbon\Carbon;
 class Appointment //extends Model
 {
     //use HasFactory;
@@ -44,8 +44,8 @@ class Appointment //extends Model
             'client_sex'=>'1|choice|M,F|text=Gender must be M or F',
             'client_phone_number'=>'0|phone',
             'client_email'=>'0|email',
-            'arrival_date'=>'1|date|text=Arrival date is not correct',
-            'arrival_time'=>'1|time|text=',
+            'arrival_date'=>'0|date|text=Arrival date is not correct',
+            'arrival_time'=>'0|time|text=',
             'consultant_id'=>'0|number|default=0',
             'channel_id'=>'1|positive|text=Contact channel is not valid',
             'priority'=>'0|choice|Urgent,Normal',
@@ -62,11 +62,10 @@ class Appointment //extends Model
        if (isset($inputs['chief_complaint_items'])) $chief_complaint_items = $inputs['chief_complaint_items'];
        unset($inputs['chief_complaint_items']);
 
-       $arrival_time = $inputs['arrival_time'];
+       
        $client_name = $inputs['client_name'];
        $client_phone = $inputs['client_phone_number'];
-
-       $inputs['arrival_time'] = convertDate($inputs['arrival_date'])." ".date('h:i',strtotime($arrival_time));
+ 
        $patient_code="";
        $client_id =0;
        $lead_id =0;
@@ -102,11 +101,18 @@ class Appointment //extends Model
        $inputs['client_id'] = $client_id;
        $inputs['lead_id'] = $lead_id;
        $inputs['client_code'] = $patient_code;
+       
+       $arrival_time = $inputs['arrival_time'];
+       if(!$arrival_time) $inputs['arrival_time'] = getNowTime();
+       else  $inputs['arrival_time'] = getNowTime(); 
+       $arrival_date = $inputs['arrival_date'];
+       if(!(bool)strtotime($arrival_date)) $inputs['arrival_date'] = date('Y-m-d');
 
        //$create_case = 1; means creating new appointment, Not updating existing appointment
        $create_case = 0; 
        $appt_id = isset($res->id)?$res->id:0;
        if(!$appt_id) $create_case = 1;
+       $inputs['arrival_date'] = convertDate( $arrival_date? $arrival_date :date('Y-m-d') );
        $appt_id = saveData($ss,'appointments',['id'=>$appt_id],$inputs,1); 
        if($appt_id > 0)
         {
@@ -254,11 +260,11 @@ class Appointment //extends Model
         $str_search ="1=2";
         if($search_value){
             $search_value = escape_like_str($search_value);
-            $str_search ="p.phone_number ='$search_value' OR pt.code ='$search_value'";
+            $str_search ="(p.phone_number ='$search_value' OR pt.code ='$search_value' OR CONCAT(p.last_name,' ',p.first_name) LIKE '%$search_value%')";
         }
         $rows = DB::table('persons as p')->join('patients as pt','pt.person_id','=','p.id')->where('pt.branch_id',$branch_id)->whereRaw($str_search)->selectRaw("pt.id, pt.id as patient_id,pt.code,p.id as person_id,concat(p.last_name,' ',p.first_name) AS `name`,p.sex,p.phone_number,p.email,p.cp_phone_number,p.address")->get();
         //$person = Patient::retrieveBy($branch_id,['phone_number'=>$phone_number,'national_id'=>$national_id]);
-        return $rows;
+       
         if(!isset($rows[0])){
             if($search_value){
                 $search_value = escape_like_str($search_value);
