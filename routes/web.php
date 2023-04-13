@@ -71,13 +71,6 @@ Route::get('tell-driver/{user_id}', function ($user_id) {
     return response()->json($res);
 });
 
-/** test if broadcast(new event1)->toOthers() works correcly**/
-// Route::get('change-driver',function(){
-//     $message = "Order numbered 262 changed status to \"New Status\"";
-//     $event_data = (object)['branch_id'=>1,'order_id'=>262,'order_code'=>262,'sender_id'=>1,'status'=>'New Status','status_id'=>3,'completed'=>0,'driver_id'=>27,'driver_name'=>'Puthea','message'=>$message];
-//     Notifier::notify_admin('order_status_changed',$event_data); 
-// });
-
 Route::get('tell-merchant/{user_id}', function ($user_id) {
     $branch_id = 1;
     $user_class = "merchant";
@@ -118,20 +111,17 @@ Route::get('test', function () {
     $file_path = base_path() . '/storage/locales/en.json';
     $data = readFileContent($file_path);
     echo $data;
-    //    foreach($paths as $key=>$value){
-    //     echo $key.' = '.env('ASSET_URL').' =  |   ';
-    //    }
 });
 
 Route::get('package_barcode/{id}', [WebReportController::class, 'package_barcode']);
 Route::get('genreport/{q}', [WebReportController::class, 'general_report']);
 Route::get('geninvoice/{q}', [WebReportController::class, 'general_invoice']);
 Route::get('person-profile/{q}', [WebReportController::class, 'person_profile']);
-// Route::get('view-receipt/{q}',[MailController::class, 'view_receipt']);
 Route::get('receipt/{q}', [WebReportController::class, 'receipt']);
 Route::get('receipt_service/{q}', [WebReportController::class, 'receipt_service']);
 Route::get('mail-receipt/{q}', [MailController::class, 'receipt']);
 Route::get('mclinic-report/{q}', [WebReportController::class, 'general_report_center']);
+Route::get('prescription-report/{q}', [WebReportController::class, 'prescription']);
 
 Route::post('processLogin', [LoginController::class, 'processLogin']);
 //route 'dms' or Delivery Management System(DMS) routing to default Home View on firt log in
@@ -150,14 +140,6 @@ Route::get('mclinic', function () {
 Route::get('email/send', [MailController::class, 'html_email']);
 
 Route::get('download-doc/{doc_type}/{loan_app_id}/{file_id}', [LoanAppController::class, 'downloadFile']);
-
-// Route::post('/pem-login/{q}', function(Request $request, $email, $password){
-//     $email = $request->email;
-//     $password = $request->password;
-//     return redirect('http://127.0.0.1:8000/pem/pem-login'.$email.'/'.$password);
-// });
-//Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
 
 //Clear Cache facade value:
 Route::get('/clear-cache', function () {

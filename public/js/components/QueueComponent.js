@@ -557,6 +557,7 @@ let PrescriptionDialog = new function(){
     this.self = $('#_qul_dlgPrescription');
     this.base_url = $("#__base_url").val();
     this.btnSave = $('#_qul_dlgPrescription_btnSave');
+    this.btnRun = $('#_consult__pre__report');
     this.ticket_id = null;
     
     this.cols = [
@@ -604,6 +605,15 @@ let PrescriptionDialog = new function(){
     this.btnSave.on('click',function(e){
         e.preventDefault();
         mThis.self.modal('hide');
+    });
+
+    this.btnRun.on('click',function(e){
+        e.preventDefault();
+        let ticket_id = mThis.ticket_id;
+        let qString = ['rtype=prescription_report&ticketid=', ticket_id,'&id=',ticket_id].join('');
+        main_view.getEncryptData(qString, (d) => {
+            window.open([main_view.base_url, '/prescription-report/', d].join(''), '_blank');
+        });
     });
 
     this.loadPrescription = (ticket_id = 0, onFinish) => {
@@ -1536,10 +1546,21 @@ let ConsultTabView = new function () {
         }
         else{
             let title = LocaleManager.trans('Prescription', 'consult');
-            let html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}"><h3 class="trans-text" data-langprop="consult.Prescription">${title}</h3>
+            let html = `<div id="${wrapper_id}" class="consult-content-panel w-100" viewname="${view_name}">
+            <div class="d-flex gap-2"><h3 class="trans-text" data-langprop="consult.Prescription">${title}</h3>
+            <div class="d-flex justify-content-end w-100"><button class="btn btn-primary btn-sm" type="button" id="_consult_pres_report">Prescription Report</button></div></div>
             <div class="border border-1 border-success rounded-3 shadow-sm p-3 w-100 mt-5 overflow-y-auto" id="${div_id}"></div>
             </div>`;
             div.html(html);
+            $('#_consult_pres_report').on('click',function(e){
+                e.preventDefault();
+                let ticket_id = div.data('tid');
+                let qString = ['rtype=prescription_report&ticketid=', ticket_id,'&id=',ticket_id].join('');
+                console.log(qString);
+                main_view.getEncryptData(qString, (d) => {
+                    window.open([main_view.base_url, '/prescription-report/', d].join(''), '_blank');
+                });
+            });
             let columns = [
                 {
                     "name": "item_id",

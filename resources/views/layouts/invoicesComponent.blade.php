@@ -217,7 +217,7 @@
     <div class="modal-dialog modal-lg" role="dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title​ trans-text" data-langprop="titles.New Payment" id="_ivc_dlgPayment_title"></h5>
+                <h5 class="modal-title" id="_ivc_dlgPayment_title"></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -255,7 +255,7 @@
                         </div>
                     </div>
                     <div class="form-group col-lg-12">
-                        <span class="simple-label trans-text" data-langprop="payment.notes">Notes</span>
+                        <span class="simple-label trans-text" data-langprop="payment.Notes">Notes</span>
                         <div>
                             <input type="text" data-field="notes" data-ffield="Notes" class="form-control data-input">
                         </div>

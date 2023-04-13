@@ -38,6 +38,7 @@
                 @include('reports.labo_test_center')
                 @break
             @case('services')
+                @include('reports.receipt_service')
                 @break
             @default:
                 @break

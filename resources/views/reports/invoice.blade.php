@@ -19,7 +19,6 @@
             @media print{
                 @page{
                     margin: 0;
-                    size: A4 portrait;
                 }
 
                 body{

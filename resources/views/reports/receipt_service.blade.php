@@ -1,53 +1,38 @@
-<html>
-    <head>
-        <?php StyleManager::render('report-styles'); ?>
-        <?php ScriptManager::render('report-scripts'); ?>
-        <style>
-            @media print{
-                html,
-                body{
-                    margin:0;
-                }
-            }
-
-            @page{
-                margin:0;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="w-100 p-3">
-            <div class="d-flex justify-content-center w-100">
-                <h4>Service Tracking Report</h4>
-            </div>
-            <div>
-                <table class="table table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Customer Name</th>
-                            <th>Service</th>
-                            <th>Done By</th>
-                            <th>Price</th>
-                            <th>Commission</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                            for($i = 0; $i < 30; $i++){
-                                echo "<tr>
-                                    <td>20-11-2021</td>
-                                    <td>Stephen</td>
-                                    <td>Test Blood</td>
-                                    <td>Doctor A</td>
-                                    <td>30 $</td>
-                                    <td>5 $</td>
-                                </tr>";
-                            }
-                        ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </body>
-</html>
+<div class="d-block w-100 p-3">
+    <div class="d-flex flex-column align-items-center">
+        <h2>
+            <?php echo isset($staff_name) ? $title." ".$staff_name : $title; ?>
+        </h2>
+        <p>
+            <?php echo "ចាប់ពី ".$date->start_date." ដល់ ".$date->end_date; ?>
+        </p>
+    </div>
+    <div>
+        <table class="table table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Customer Name</th>
+                    <th>Service</th>
+                    <th>Done By</th>
+                    <th>Price</th>
+                    <th>Commission</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                    foreach($service_list as $slist){
+                        echo "<tr>
+                            <td>".$slist->date."</td>
+                            <td>".$slist->customer_name."</td>
+                            <td>".$slist->service."</td>
+                            <td>".$slist->done_by."</td>
+                            <td>".$slist->price."</td>
+                            <td>".$slist->commission."</td>
+                        </tr>";
+                    }
+                ?>
+            </tbody>
+        </table>
+    </div>
+</div>

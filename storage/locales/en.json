@@ -94,6 +94,7 @@
 	"vendors": {},
 	"dashboard": {},
 	"invoice": {},
+	"payment": {},
 	"buttons": {
 		"Cancel": "Cancel",
 		"Add": "Add",

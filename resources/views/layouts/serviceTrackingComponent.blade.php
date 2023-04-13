@@ -4,9 +4,6 @@
             <button class="btn btn-primary" type="button" id="st_btnNew">
                 <span class="trans-text" data-langprop="service.Add Service Tracking"></span>
             </button>
-            <button class="btn btn-warning" type="button" id="st_btnRunReport">
-                <span class="trans-text" data-langprop="buttons.Run Report"></span>
-            </button>
         </div>
         <div class="table-responsive rounded-3 border border-success mt-3 p-3">
             <table class="table table-hover table-th" id="_tbl_service_tracking"></table>
@@ -76,42 +73,6 @@
                 </button>
                 <button class="btn btn-primary" type="button" id="st_dlg_Service_Tracking_btnSave">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="st_dlgFilter_RunReport" class="modal fade" tabindex="-1" aria-labelledby="st_dlgFilter_RunReport_title" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5>Run Report</h5>
-            </div>
-            <div class="modal-body">
-                <div class="row py-2">
-                    <div class="col-lg-12">
-                        <label class="form-label trans-text" data-langprop="titles.Staff Name"></label>
-                        <select class="form-select modal-select2"></select>
-                    </div>
-                </div>
-                <div class="row py-2">
-                    <div class="col-lg-6">
-                        <label class="form-label trans-text" data-langprop="titles.Start Date"></label>
-                        <input data-select="datepicker" class="form-control"/>
-                    </div>
-                    <div class="col-lg-6">
-                        <label class="form-label trans-text" data-langprop="titles.End Date"></label>
-                        <input data-select="datepicker" class="form-control"/>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">
-                    <span class="trans-text" data-langprop="buttons.Cancel"></span>
-                </button>
-                <button class="btn btn-primary" type="buttton" id="st_btn_RunReport_done">
-                    <span class="trans-text" data-langprop="buttons.Run Report"></span>
                 </button>
             </div>
         </div>
