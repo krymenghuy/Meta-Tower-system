@@ -43,25 +43,15 @@ class WebReportController extends Controller
 
   public function receipt($query_string)
   {
-    // if (!Session::get('login_name',null)) return redirect('/');
     $branch_id = Session::get('branch_id', 0);
-    // if (!$branch_id) return redirect('/');
 
     $p = processQueryString($query_string);
     $pmt_id = $p->id;
     $ss = (object)['branch_id' => $branch_id];
     $payment = new \App\Models\Invoice\Payment($pmt_id, $ss);
-    $data['receipt'] = $payment->getDetails();;
+    $data['receipt'] = $payment->getDetails();
+    // echo dd($data);
     return view('reports.receipt', $data);
-  }
-
-  public function receipt_service($query_string)
-  {
-    $branch_id = Session::get('branch_id', 0);
-    $p = processQueryString($query_string);
-    $ss = (object)['branch_id' => $branch_id];
-    $data = [];
-    return view('reports.receipt_service', $data);
   }
 
   //generalReport()| genral report
@@ -208,7 +198,7 @@ class WebReportController extends Controller
           $data['title'] = "Revenue List";
           $data['customer_name'] = "Customer";
           if(isset($p->customer_id)){
-            $customer_name = "Customer"; //get Department Name from Modal with $department_id
+            $customer_name = "Customer"; //get Department Name from Modal with $customer_id
             $data['customer_name'] = "of ".$customer_name;
           }
           $data['revenue_by_client'] = (object)[];
@@ -246,6 +236,13 @@ class WebReportController extends Controller
           break;
         }
       case 'services': {
+          $data['title'] = "Service List";
+          $data['staff_name'] = "";
+          if(isset($p->emp_id)){
+            $staff_name = "";
+            $data['staff_name'] = "of ".$staff_name;
+          }
+          $data['service_list'] = (object)[];
           break;
         }
       default: {
@@ -254,5 +251,22 @@ class WebReportController extends Controller
     }
     // echo dd($data);
     return view('reports.gen_report_center', $data);
+  }
+
+  public function prescription($query_string = null){
+    if (!Session::get('login_name', null)) return redirect('/');
+    $branch_id = Session::get('branch_id', 0);
+    if (!$branch_id) return redirect('/');
+    $data['branch'] = $this->reportModel->getBranchInfo($branch_id);
+    $p = processQueryString($query_string);
+
+    if (!$p) {
+      return view('errors.500');
+    }
+    
+    $data['patient_info'] = (object)[];
+    $data['prescription_list'] = (object)[];
+
+    return view('reports.prescription_form',$data);
   }
 }

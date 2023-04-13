@@ -214,6 +214,7 @@
         <div class="modal-content rounded-3">
             <div class="modal-header">
                 <h5 class="modal-title trans-text" data-langprop="consult.Prescription"></h5>
+                <button class="btn btn-primary btn-sm" type="button" id="_consult__pre__report">Prescription Report</button>
             </div>
             <div class="modal-body">
                 <div id="_qul_dlgPrescription_body"></div>

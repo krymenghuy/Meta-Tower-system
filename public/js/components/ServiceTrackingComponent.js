@@ -5,7 +5,6 @@ let ServiceTrackingComponent = new function(){
     this.self = $('#_main_serviceTrackingComponent');
     this.tblServiceTracking = $('#_tbl_service_tracking');
     this.btnNew = $('#st_btnNew');
-    this.btnRunReport = $('#st_btnRunReport');
 
     this.init = () => {
         mThis.btnNew.on('click',(e) => {
@@ -25,11 +24,6 @@ let ServiceTrackingComponent = new function(){
                 'id': $(this).data('id')
             };
             ServiceTrackingDialog.show(op);
-        });
-
-        mThis.btnRunReport.on('click',(e)=>{
-            e.preventDefault();
-            ServiceTrackingFilterDialog.show(null);
         });
     }
 
@@ -112,7 +106,7 @@ let ServiceTrackingComponent = new function(){
 
     this.show = (options) => {
         if(!options) options = {};
-        mThis.displayServiceTracking(()=>{
+        mThis.displayServiceTracking(() => {
             main_view.setTitle(mThis.title_prop);
             mThis.self.show().siblings().hide();
         });
@@ -184,27 +178,6 @@ let ServiceTrackingDialog = new function(){
                 backdrop: 'static'
             });
         }
-    }
-}
-
-let ServiceTrackingFilterDialog = new function(){
-    let mThis = this;
-    this.self = $('#st_dlgFilter_RunReport');
-    this.btnRunReportDone = $('#st_btn_RunReport_done');
-
-    mThis.btnRunReportDone.on('click',(e)=>{
-        e.preventDefault();
-        let qString = null;
-        main_view.getEncryptData(qString, (d) => {
-            window.open([main_view.base_url, '/receipt_service/', d].join(''), '_blank');
-        });
-    });
-
-    this.show = (options) => {
-        if(!options) options = {};
-        mThis.self.modal({
-            backdrop: 'static'
-        });
     }
 }
 
