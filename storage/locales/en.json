@@ -22,6 +22,7 @@
 		"Log Out": "Log Out"
 	},
 	"employee": {},
+	"payment":{},
 	"labotest": {
 		"Test Name": "Test Name",
 		"Description": "Description",

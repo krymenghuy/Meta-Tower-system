@@ -98,7 +98,7 @@ class ItemController extends Controller
       if($ss->status_code !=200) return JDV::emptyResult($ss->status_code,null); //user not authenticated
       $branch_id = $ss->branch_id;
       $id = $req->id;     
-      $rows = DB::table('inv_items as i')->join('inv_item_groups as g','g.id','=','i.group_id')->join('inv_categories as c','c.id','=','g.category_id')->where('i.id',$id)->where('i.branch_id',$branch_id)->selectRaw("i.id,'Product' AS item_type,i.code,g.code as group_code,i.name,i.description,g.name as group_name,g.id as group_id,g.description as group_description, g.category_id, i.manufacturer_id, i.unit_id,g.unit_id as group_unit_id,i.sku,g.sku as group_sku,c.name AS category,g.detail_type_id,getItemDetailType(g.detail_type_id) as detail_type,i.create_user,formatDate(i.created_at) as created_at")->take(1)->get();
+      $rows = DB::table('inv_items as i')->join('inv_item_groups as g','g.id','=','i.group_id')->join('inv_categories as c','c.id','=','g.category_id')->where('i.id',$id)->where('i.branch_id',$branch_id)->selectRaw("i.id,'Product' AS item_type,i.code,g.manufacturer_id,g.code as group_code,i.brand_id,i.name,i.description,g.name as group_name,g.id as group_id,g.description as group_description, g.category_id, i.manufacturer_id, i.unit_id,g.unit_id as group_unit_id,i.sku,g.sku as group_sku,c.name AS category,g.detail_type_id,getItemDetailType(g.detail_type_id) as detail_type,i.selling_price,i.ws_selling_price,i.cost_account_id, i.revenue_account_id, i.tax_account_id, i.inventory_account_id, i.sales_tax_rate, i.purchase_tax_rate,i.cost, i.create_user,formatDate(i.created_at) as created_at")->take(1)->get();
       return JDV::result(isset($rows[0])?$rows[0]:null);  
     }
 
@@ -115,10 +115,20 @@ class ItemController extends Controller
           "description"=>"0|string",
           "brand_id"=>"0|exists=inv_brands.id",
           "manufacturer_id"=>"0|exists=inv_manufacturers.id",
+          "brand_id"=>"0|number|exists=inv_brands.id",
           "cost"=>"0|number|default=0",
+          "sales_tax_rate"=>"0|number",
+          "purchase_tax_rate"=>"0|number",
           "made_in_country_id"=>"0|exists=inv_countries",
           "unit_id"=>"0|exists=inv_units.id|text=SKU is required",
           "category_id"=>"1|number|exists=inv_categories.id",
+          "selling_price"=>"0|number",
+          "ws_selling_price"=>"0|number",
+          "cost"=>"0|number",
+          "cost_account_id"=>"0|number",
+          "revenue_account_id"=>"0|number",
+          "tax_account_id"=>"0|number",
+          "inventory_account_id"=>"0|number",
           "detail_type_id"=>"0|number|exists=inv_detailed_types.id",
           "group_id"=>"1|positive|exists=inv_item_groups.id"
         ];

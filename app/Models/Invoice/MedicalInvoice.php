@@ -486,7 +486,7 @@ class MedicalInvoice //extends Invoice //extends Model
   
   static function getInvoiceItems($ss,$id){
     $branch_id = $ss->branch_id;
-    $cols = ['invoice_item_class','i.id','i.item_id','i.item_code','i.description as item_name','i.description','i.qty','i.price','i.cost','i.sku','i.discount_percent','i.discount_amount','tax_rate','i.net_amount as line_total'];
+    $cols = ['invoice_item_class','i.id','i.item_id','i.item_code',DB::raw("CASE (i.item_name IS NULL) WHEN 1 THEN i.description ELSE i.item_name END AS item_name"),'i.description','i.qty','i.price','i.cost','i.sku','i.discount_percent','i.discount_amount','tax_rate','i.net_amount as line_total'];
     $rows = DB::table('invoice_items as i')->where('i.invoice_id',$id)->where('i.branch_id',$branch_id)->select($cols)->orderBy('invoice_item_class','ASC')->orderBy('i.id','DESC')->get();
     $products =[];
     $services = [];
@@ -534,7 +534,7 @@ class MedicalInvoice //extends Invoice //extends Model
     $years = $interval->y;
     $months = $interval->m;
     $days = $interval->d;
-    return "$years $months $days";
+    return "$years y $months m $days d";
   }
   function getDetails($id=null,$ss=null){
        $id = $id?$id:$this->getId();

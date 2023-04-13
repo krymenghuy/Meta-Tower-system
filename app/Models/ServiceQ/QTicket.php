@@ -368,7 +368,11 @@ class QTicket //extends Model
     }
 
     static function vitalSigns($branch_id,$ticket_id=0){
-      return DB::table('patient_vital_signs as pvt')->where('pvt.branch_id',$branch_id)->where('pvt.ticket_id',$ticket_id)->selectRaw("pvt.id,vital_sign_id,vital_sign_value,pvt.description")->take(5)->get();
+      $rows = DB::table('patient_vital_signs as pvt')->where('pvt.branch_id',$branch_id)->where('pvt.ticket_id',$ticket_id)->selectRaw("pvt.id,vital_sign_id,vital_sign_value,pvt.description")->take(5)->get();
+      if(!isset($rows[0])){
+        return DB::table('vital_signs')->where('branch_id',$branch_id)->selectRaw("'' AS id,id as vital_sign_id,display_name as description,'' AS vital_sign_value")->take(5)->get();
+      }
+      return $rows;
     }
      
     static function laboTests($branch_id,$ticket_id=0){
