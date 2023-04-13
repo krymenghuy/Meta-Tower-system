@@ -24,18 +24,19 @@
                 zoom: 97%;
                 font-size: 16px;
                 padding: 10px;
-                border: 1px solid green;
                 margin: 10px;
-                border-radius: 15px;
             }
         </style>
     </head>
     <body>
         <div class="d-flex align-items-center w-100">
-            <div class="d-block">
-                <h4>
-                    <?php echo isset($branch->name) ? $branch->name : null ?>
-                </h4>
+            <div class="d-block w-100">
+               <div class="d-flex justify-content-center w-100">
+                <h3 class="text-center fw-bold">
+                    <?php echo "sdfdsgdfg"; ?>
+                </h3>
+               </div>
+
                 <div class="py-2">
                     <span class="pe-2 fw-semibold">អាសយដ្ឋាន: </span>
                     <span>

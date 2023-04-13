@@ -109,19 +109,21 @@ let ReportCenterComponent = new function(){
 
             } else if (f.type === 'select') {
                 mThis.initSelect2(el, null, null);
-                vsapi.call(f.api_fetch, f.api_params, null, false).then(res => {
-                    if (res.status_code === 200) {
-                        let items = res.data;
-                        VSUtil.setComboItems(el,items,f.value_field,f.text_field,false,'(All)',null);
-                        if(!f.def_value) f.def_value = items[0]?items[0][f.value_field]:0; 
-                        if(f.def_value) el.val(f.def_value).trigger('change');
-                        else{
-                            if(items[0] && !items[1]){
-                                el.val(items[0][f.value_field]).trigger('change');    
+                if(f.api_fetch){
+                    vsapi.call(f.api_fetch, f.api_params, null, false).then(res => {
+                        if (res.status_code === 200) {
+                            let items = res.data;
+                            VSUtil.setComboItems(el,items,f.value_field,f.text_field,false,'(All)',null);
+                            if(!f.def_value) f.def_value = items[0]?items[0][f.value_field]:0; 
+                            if(f.def_value) el.val(f.def_value).trigger('change');
+                            else{
+                                if(items[0] && !items[1]){
+                                    el.val(items[0][f.value_field]).trigger('change');    
+                                }
                             }
                         }
-                    }
-                 });
+                     });
+                } 
              }
              cnt++;
         });
@@ -166,22 +168,22 @@ let ReportCenterComponent = new function(){
         
         this.btnExportPackages.on('click',(e)=>{
             e.preventDefault();
-            let p = mThis.getReportFilterData();
-            if (!p.start_date || !p.end_date){
-                cv_interact.error('Start date and end date are required');
-                return;
-            }
-            vsapi.call(`${mThis.base_url}/api/export/packages`,p).then(res=>{
-               if (res.status_code===200){
-                 let rows = res.data;
-                 let file_name ='dms-packages';
-                 let titles = null;
-                 JsonToExcel.exportToCSV(rows,file_name,titles,true,[]);
-               }
-               else {
-                cv_interact.error(res.error_message);
-               }
-            });
+            // let p = mThis.getReportFilterData();
+            // if (!p.start_date || !p.end_date){
+            //     cv_interact.error('Start date and end date are required');
+            //     return;
+            // }
+            // vsapi.call(`${mThis.base_url}/api/export/packages`,p).then(res=>{
+            //    if (res.status_code===200){
+            //      let rows = res.data;
+            //      let file_name ='dms-packages';
+            //      let titles = null;
+            //      JsonToExcel.exportToCSV(rows,file_name,titles,true,[]);
+            //    }
+            //    else {
+            //     cv_interact.error(res.error_message);
+            //    }
+            // });
         });
 
         mThis.btnRunReport.on('click',(e)=>{

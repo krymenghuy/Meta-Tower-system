@@ -20,7 +20,7 @@ let ItemGroupsComponent = new function(){
     };
 
     this.trans_title = (title_prop='undefined')=>{
-        return (mThis.col_titles[title_prop] || 'undefined');
+        return (mThis.col_titles[title_prop]?mThis.col_titles[title_prop]:title_prop);
     }
     
     this.setLanguage = ()=>{
@@ -72,21 +72,21 @@ let ItemGroupsComponent = new function(){
         });
 
         mThis.elSearchItem.on('keyup',(e)=>{
-            if(e.keyCode === 13) mThis.displayProductsGroup();
+            if(e.key ==='Enter') mThis.displayProductsGroup();
         });
 
-        this.cfg = new ExpandableRowConfig('_pdg_tblProductGroup', {
-            'dontExpandByClickingOn': ['btn_item_modify', 'btn_item_delete', 'btn_item_action'],
-            //'content':`<div class="alert alert-info">Loading details</div>`,
-            'onOpen': (container, detail_tr, parent_tr) => {
-                //alert(detail_tr.find('ul').html());
-                let q_tr = $(parent_tr);
-                //It is IMPORTANT to access patient_id using jquery object here because the "createdRow" event passes data-id atttribue using jquery method
-                let group_id = q_tr.data('id');  
-                //Show Expandable Details of each rate
-                mThis.displayProductsGroupDetails($(detail_tr),group_id);
-            }
-        });
+        // this.cfg = new ExpandableRowConfig('_pdg_tblProductGroup', {
+        //     'dontExpandByClickingOn': ['btn_item_modify', 'btn_item_delete', 'btn_item_action'],
+        //     //'content':`<div class="alert alert-info">Loading details</div>`,
+        //     'onOpen': (container, detail_tr, parent_tr) => {
+        //         //alert(detail_tr.find('ul').html());
+        //         let q_tr = $(parent_tr);
+        //         //It is IMPORTANT to access patient_id using jquery object here because the "createdRow" event passes data-id atttribue using jquery method
+        //         let group_id = q_tr.data('id');  
+        //         //Show Expandable Details of each rate
+        //         mThis.displayProductsGroupDetails($(detail_tr),group_id);
+        //     }
+        // });
     }
 
     this.displayProductsGroupDetails = (detail_tr, group_id=0)=>{

@@ -12,7 +12,7 @@
 <!DOCTYPE html>
 <html lang="<?php echo Session::get('lang','en'); ?>">
     <head>
-        <?php ScriptManager::render('priority-one',1);?>
+        <?php ScriptManager::render('priority-one',0);?>
         <base href="../">
         <meta charset="utf-8" />
         <title>Clinic Management System</title>

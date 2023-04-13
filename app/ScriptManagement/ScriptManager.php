@@ -394,8 +394,8 @@ class ScriptManager{
             $single_file = $b?$b['single_file']:1;
             if ($single_file ===1){
                 $output_file = isset($b['output_file'])?$b['output_file']:null;
-                $sts = explode('?',$output_file);
-                $output_file = $sts[0];
+                //$sts = explode('?',$output_file);
+                $output_file = $output_file; //$sts[0];
                 $is_external_link = true;
                 if (substr($output_file,0,1) ==='/' || substr($output_file,0,1) ==='\\') $is_external_link  = false;
                 $url_path =$output_file;
@@ -407,8 +407,8 @@ class ScriptManager{
                 $files = [];
                 $bFiles = $b?$b['files']:[];
                 foreach($bFiles as $file){
-                    $sts = explode('?',$file);
-                    $path = $sts[0];
+                    //$sts = explode('?',$file);
+                    $path = $file; //$sts[0];
                     $file_name = basename($path);
                     $fPath = $base_url.$public_dir."/dist/js/".$file_name;
                     $files[] = $fPath;  
