@@ -19,3 +19,33 @@ alter table patient_vital_signs change vital_sign_value vital_sign_value varchar
 
 insert into inv_brands (id,name,branch_id) values(1,'General Brand',1);
 select * from inv_brands
+
+
+alter table patients add `name` varchar(150);
+update patients set `name` = (select concat(last_name,' ',first_name) from persons where id = person_id LIMIT 1);
+select name from patients;
+
+
+--===================
+
+DELIMITER ;;
+create function getPatientName(cid INT)
+returns varchar(150)
+BEGIN
+ declare cname varchar(150);
+ set cname = (select `name`from patients where id = cid LIMIT 1);
+ return cname;  
+end
+;;
+DELIMITER ;
+
+DELIMITER ;;
+create function getCustomerName(cid INT)
+returns varchar(150)
+BEGIN
+ declare cname varchar(150);
+ set cname = (select `name`from customers where id = cid LIMIT 1);
+ return cname;  
+end
+;;
+DELIMITER ;

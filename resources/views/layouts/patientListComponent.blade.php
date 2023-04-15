@@ -13,7 +13,7 @@
     }
 </style>
 
-<div id="_main_patientListComponent" class="mobile-padding" style="display:none">
+<div id="_main_patientListComponent" class="mobile-padding" style="display:none;">
     <section class="content">
         <div class="container-fluid">
             <div class="d-flex justify-content-between" style="padding:10px">
@@ -29,6 +29,11 @@
                     </a>
                 </div>
             </div>
+           
+            <div class="full-screen-height-scroll row p-3" id="_ptl_list">
+
+            </div>
+
             <div class="flat-box" style="margin:17px; padding:15px; overflow:auto; min-height:350px">
                 <table class="table header-light-blue header-uppercase" id="_pal_tblPatients" style="margin-top:-25px !important"></table>
             </div>

@@ -25,7 +25,7 @@
                 </button>
             </div>
         </div>
-        <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;min-height:350px;">
+        <div class="flat-box full-screen-height-scroll" style="margin:17px;padding:15px">
              <table class="table header-light-blue header-uppercase" id="_itm_tblItems"></table>
         </div>
     </div>

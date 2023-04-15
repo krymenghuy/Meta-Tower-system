@@ -7,6 +7,7 @@ let PatientListComponent = new function () {
     this.tblPatients = $('#_pal_tblPatients');
     this.elSearch = $('#_pal_search');
     this.options = {};
+    this.div_patient_list = document.querySelector('#_ptl_list');
 
     this.icon_url = () => {
         return `${[VSUtil.asset_url()].join('')}/images/icons`;
@@ -37,9 +38,9 @@ let PatientListComponent = new function () {
     }
 
     this.init = () => {
-        LocaleManager.setLanguageChangeHandler((lang) => {
-            mThis.displayPatients();
-        });
+        // LocaleManager.setLanguageChangeHandler((lang) => {
+        //     mThis.displayPatients();
+        // });
 
         mThis.elSearch.on('keyup', (e) => {
             e.preventDefault();
@@ -97,6 +98,19 @@ let PatientListComponent = new function () {
         //     }
         // });
 
+        mThis.div_patient_list.addEventListener('click',e=>{
+          let el = e.target;
+          if(el.parentNode.classList.contains('ptl-btn-choose-photo') || el.classList.contains('ptl-btn-choose-photo')){
+              let id = el.dataset.id?el.dataset.id : el.parentNode.dataset.id;
+              let img = mThis.div_patient_list.querySelector(`img#profile_photo_${id}`);
+              FileChooser.chooseFile(null,d=>{
+                 if(d){
+                    if(img) img.setAttribute('src',d.dataUrl); 
+                 }
+              });
+          }
+        });
+
         mThis.tblPatients.on('click', 'a.btn_pat_delete', function (e) {
             e.preventDefault();
             let lnk = $(this);
@@ -114,10 +128,10 @@ let PatientListComponent = new function () {
     }
 
     this.trans_title = (title_prop = 'undefined') => {
-        return (mThis.col_titles[title_prop]);
+        return (mThis.col_titles[title_prop]?mThis.col_titles[title_prop]:title_prop );
     }
 
-    this.createDropdownMenuHtml_loan = (items = [], data = null, data_props = []) => {
+    this.createDropdownMenuHtml_patient = (items = [], data = null, data_props = []) => {
         if (!data_props) data_props = [];
         let str_props = "";
         data_props.map((prop_name) => {
@@ -126,107 +140,99 @@ let PatientListComponent = new function () {
         });
 
         let html = ['<div class="dropdown-menu action-menus">',
-            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_edit" href="javascript:void(0)"><i class="fa fa-edit" style="color:blue;font-size:1.1em;margin-top:2px;"></i> <span>Review Application</span</a>',
-            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_disburse" href="javascript:void(0)"><i class="fa fa-list-alt" style="color:orange"></i> Disburse Loan</a>',
+            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_edit" href="javascript:void(0)"><i class="fa fa-edit" style="color:blue;font-size:1.1em;margin-top:2px;"></i> <span>Add To Queue</span</a>',
+            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_disburse" href="javascript:void(0)"><i class="fa fa-list-alt" style="color:orange"></i> Consultation History</a>',
             '<div class="dropdown-divider"></div>',
-            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_delete" href="#"><i class="fa fa-times" style="color:red"></i> Delete Loan Application</a>',
-            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_person_profile" href="javascript:void(0)"><i class="fa fa-list" style="color:green"></i> Personal Profile</a>',
+            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_delete" href="#"><i class="fa fa-times" style="color:red"></i> Medication History</a>',
+            '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_person_profile" href="javascript:void(0)"><i class="fa fa-list" style="color:green"></i> Print Profile</a>',
             '</div>'].join('');
         return html;
     }
 
+    this.addPatientRow = (d={},prepend=1)=>{
+        let ps = d.summary?d.summary:{};
+        let cur_symbol = d.currency_code ==='USD'?'$':'៛';
+        d.patient_type = d.patient_type?d.patient_type:'OPD'; // OPD, IPD
+        d.email =d.email?d.email:'NA';
+        d.date_of_birth =d.date_of_birth?d.date_of_birth:'(No available)';
+        d.has_membership_card = d.has_membership_card?d.has_membership_card:'No';
+        d.address = d.address?d.address:'(Not available)';
+        d.phone_number =d.phone_number?d.phone_number:'(Not available)';
+        ps.consultation_count =ps.consultation_count?ps.consultation_count:0;
+        ps.total_open_amount = ps.total_open_amount?ps.total_open_amount:0;
+        ps.invoice_count = ps.invoice_count?ps.invoice_count:0;   
+
+        let html_patient_row =`
+        <div class="card" style="margin-top:5px">
+        <div class="card-body d-flex">
+         <div class="d-flex align-items-center flex-column justify-content-center">
+                 <div class="rounded-circle overflow-hidden mx-3" style="width: 120px; height: 120px;">
+                     <img id="profile_photo_${d.id}" src="${d.profile_url?d.profile_url:''}" alt="Image" class="profile-photo w-100 h-100">
+                 </div>
+                 <div class="d-flex flex-column justify-content-center m-1">
+                     <a data-id="${d.id}" data-code="${d.code}" href="javascript:void(0)" class="border border-3 border-secondary border-rounded-4 p-2 align-self-start ptl-btn-choose-photo"><i class="fa fa-pencil text-secondary"></i></a>
+                 </div>
+             </div>
+        
+          <div class="flex-grow-1">
+            <div class="row mb-3">
+              <div class="col-sm-6">
+                <p class="card-text"><span class="fw-bold" style="width: 140px; display: inline-block;">Patient Type:</span> ${d.patient_type}</p>
+                <p class="card-text"><span class="fw-bold" style="width: 140px; display: inline-block;">Patient ID:</span> ${d.code}</p>
+                <p class="card-text"><span class="fw-bold" style="width: 140px; display: inline-block;">Patient Name:</span> ${d.name}</p>
+                <p class="card-text"><span class="fw-bold" style="width: 140px; display: inline-block;">Sex:</span> ${d.sex}</p>
+                <p class="card-text"><span class="fw-bold" style="width: 140px; display: inline-block;">Date of Birth:</span> ${d.date_of_birth}</p>
+              </div>
+              <div class="col-sm-6">
+                <p class="card-text"><span class="fw-bold" style="width: 140px; display: inline-block;">Phone Number:</span> ${d.phone_number}</p>
+                <p class="card-text"><span class="fw-bold" style="width: 140px; display: inline-block;">Email:</span> ${d.email}</p>
+                <p class="card-text"><span class="fw-bold" style="width: 140px; display: inline-block;">Address:</span> ${d.address}</p>
+                <p class="card-text"><span class="fw-bold" style="width: 140px; display: inline-block;">Membership Card:</span> ${d.has_membership_card}</p>
+              </div>
+            </div>
+            <hr class="my-3 border border-3 border-primary">
+            <div class="row">
+              <div class="col-sm-4">
+                <p class="card-text"><span class="fw-bold" style="width: 180px; display: inline-block;">Previous Consultations:</span> ${ps.consultation_count}</p>
+              </div>
+              <div class="col-sm-4">
+                <p class="card-text"><span class="fw-bold" style="width: 140px; display: inline-block;">Total Invoices:</span> ${ps.invoice_count}</p>
+              </div>
+              <div class="col-sm-4">
+                <p class="card-text"><span class="fw-bold" style="width: 180px; display: inline-block;">Total Invoice Amount:</span> ${cur_symbol}${ps.total_open_amount}</p>
+              </div>
+            </div>
+          </div>
+          <div class="my-auto mx-3">
+             <button data-id="${d.id}" class="btn btn-secondary rounded-4"><i class="fa fa-pencil" style="font-size:0.8em"></i></button>
+             <button data-id="${d.id}" class="btn btn-primary rounded-4"><i class="fa fa-print" style="font-size:0.8em"></i></button>
+             <button data-id="${d.id}" class="btn btn-danger rounded-4"><i class="fa fa-trash" style="font-size:0.8em"></i></button>
+          </div>       
+      </div>
+     </div>
+     `;
+       if (prepend===1) mThis.div_patient_list.insertAdjacentHTML('afterbegin', html_patient_row);
+       else mThis.div_patient_list.insertAdjacentHTML('beforeend', html_patient_row);
+    }
+
     this.displayPatients = (onFinish = null) => {
-        mThis.setLanguage();
+ 
         let p = { 'search_value': mThis.elSearch.val() };
-        window.vsapi.call(`${mThis.base_url}/api/patient/list`, p, 'POST', null).then((result) => {
-            let data = [];
-            if (result.status_code === 200) data = result.data;
-            if (mThis.table) {
-                mThis.tblPatients.DataTable().clear().destroy();
-                mThis.tblPatients.empty();
-                mThis.table = null;
-            }
-            data = StringSanitizer.sanitizeObject(data, null, ['cur_symbol']);
-
-            let my_columns = [
-                {
-                    title: mThis.trans_title('ID'),
-                    data: function (data, a, b) {
-                        return [`<img class="dt-icon" src="${mThis.icon_url()}/patient.png">&nbsp;`, data.code
-                        ].join('');
-                    }
-                },
-                {
-                    title: mThis.trans_title('Name'),
-                    data: (data, a, b) => {
-                        return data.name;
-                    },
-                },
-                {
-                    title: mThis.trans_title('Gender'),
-                    data: 'sex'
-
-                },
-                {
-                    title: mThis.trans_title('Phone Number'),
-                    data: (data, a, b) => {
-                       return [`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telephone" viewBox="0 0 16 16">
-                       <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
-                     </svg><span class="ml-1">`,data.phone_number,`</span>`].join('');
-                    }
-                },
-                {
-                    title: mThis.trans_title('Email'),
-                    data: (data, a, b) => {
-                        return data.email;
-                    }
-                },
-                {
-                    title: mThis.trans_title('Action'),
-                    data: function (data, a, b) {
-                        return [`<div class="form-inline">`,
-                            //`<a href="javascript:void(0)" class="btn_pat_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
-                            `<a href="javascript:void(0)" class="btn_pat_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
-                            `<a href="javascript:void(0)" data-id="${data.id}" class="btn_pat_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
-                            //`&nbsp;<a href="javascript:void(0)" data-id="${data.id}" class="btn_pat_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
-                            `</div>`
-                        ].join('');
-                    }
-                }
-            ];
-
-            if (!mThis.table)
-                mThis.table = mThis.tblPatients.DataTable({
-                    searching: false,
-                    destroy: true,
-                    paging: true,
-                    ordering: false,
-                    retrieve: true,
-                    info: true,
-                    pageLength: 10,
-                    bLengthChange: false,
-                    saveState: true,
-                    'processing': true,
-                    'language': {
-                        'loadingRecords': '&nbsp;',
-                        'processing': 'Loading...',
-                        "emptyTable": LocaleManager.trans('No data to display', 'datatable')
-                    },
-                    'data': data,
-                    'columns': my_columns,
-                    "createdRow": function (row, data, dataIndex) {
-                        let tr = $(row);
-                        tr.data('id', data.id);
-                        tr.data('tid', data.id);
-                        tr.data('statusid', data.status_id);
-                        tr.data('clientid', data.client_id);
-                        tr.data('personid', data.person_id);
-                    }
-
-                });
-            if (typeof onFinish === 'function') onFinish();
+        window.vsapi.call(`${mThis.base_url}/api/patient/list`, p, 'POST', null).then((res) => {
+           if(res.status_code===200){
+              let rows = res.data;
+              let i=0,d=null;
+              do{
+                d = rows[i];
+                if(!d) break;
+                 mThis.addPatientRow(d,0);
+                i++;
+              }while(d); 
+           }
+           
+           if(typeof onFinish ==='function') onFinish();
         });
-
+   
     };
 
     this.show = (option = null) => {
@@ -235,6 +241,7 @@ let PatientListComponent = new function () {
             mThis.options = option;
             mThis.self.show().siblings().hide();
             main_view.setTitle(mThis.title_prop);
+            //mThis.self.parent().css('overflow-y','hidden');
         });
     }
 }

@@ -47,8 +47,8 @@ class BuildMaster extends Command
         if($res->status =='OK'){
             $this->info(" Output file $res->file was created successfully!");
             foreach($res->error_files as $error_file){
-                $output->writeln("<info>=================================================</info>");
-                $output->writeln("<info>$error_file</info>");
+                $this->info("=================================================");
+                $this->error(" ".$error_file);
             }
         }else $this->error($res->error_message);
          
