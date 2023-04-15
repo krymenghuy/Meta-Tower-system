@@ -308,7 +308,10 @@ class StyleManager{
             if (substr($output_file,0,1) ==='/' || substr($output_file,0,1) ==='\\') $is_external_link  = false;
             $url_path =$output_file;
             if (!$is_external_link) $url_path = $base_url.$public_dir.$output_file;
-            if ($url_path) echo self::createTags([$url_path],$attr,$version);
+            if ($url_path) {
+                $ref = self::createTags([$url_path],$attr,$version);
+                echo str_replace(['\n', '\r'], '', $ref);
+            }
         }
 
        

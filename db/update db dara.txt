@@ -1,11 +1,21 @@
-INSERT INTO `reports` VALUES ('1', '100', 'revenues', 'Revenues', 'Finance', 'start_date|end_date', '1', '0');
-INSERT INTO `reports` VALUES ('1', '100', 'rev_by_category', 'Revenue by section', 'Finance', 'start_date|end_date', '2', '0');
-INSERT INTO `reports` VALUES ('1', '100', 'rev_by_client', 'Revenue by client', 'Finance', 'start_date|end_date', '2', '0');
-INSERT INTO `reports` VALUES ('1', '100', 'invoice_list', 'Invoice List', 'Finance', 'start_date|end_date', '2', '0');
-INSERT INTO `reports` VALUES ('1', '100', 'profit_and_losss', 'Profit and Loss', 'Finance', 'start_date|end_date', '2', '0');
-INSERT INTO `reports` VALUES ('2', '100', 'staff_list', 'Staff List', 'HRM', 'department_id', '3', '0');
-INSERT INTO `reports` VALUES ('3', '100', 'client_list', 'Client List', 'Sales', '', '5', '0');
-INSERT INTO `reports` VALUES ('4', '100', 'product_list', 'Product List', 'Inventory', '', '2', '0');
-INSERT INTO `reports` VALUES ('5', '100', 'on_hand_stocks', 'On-hand Stocks', 'Inventory', 'warehouse_id|start_date|end_date', '5', '0');
-INSERT INTO `reports` VALUES ('5', '100', 'labo_tests', 'Labo Tests', 'Operation', 'start_date|end_date', '5', '0');
-INSERT INTO `reports` VALUES ('5', '100', 'services', 'Services', 'Operation', 'emp_id|start_date|end_date', '5', '0'); 
+#alter table inv_item_groups add cost_account_id INT default NULL;
+#alter table inv_item_groups add revenue_account_id INT default NULL;
+#alter table inv_item_groups add tax_account_id INT default NULL;
+#alter table inv_item_groups add inventory_account_id INT default NULL;
+
+#alter table inv_items add cost_account_id INT default NULL;
+#alter table inv_items add revenue_account_id INT default NULL;
+#alter table inv_items add tax_account_id INT default NULL;
+#alter table inv_items add inventory_account_id INT default NULL;
+#alter table inv_items add purchase_tax_rate decimal(10,2) default 0;
+#alter table inv_item_groups add purchase_tax_rate decimal(10,2) default 0;
+
+alter table patient_vital_signs change vital_sign_value vital_sign_value varchar(50)
+
+insert into inv_brands (id,name,branch_id) values(1,'General Brand',1);
+select * from inv_brands
+
+alter table patient_vital_signs change vital_sign_value vital_sign_value varchar(50)
+
+insert into inv_brands (id,name,branch_id) values(1,'General Brand',1);
+select * from inv_brands

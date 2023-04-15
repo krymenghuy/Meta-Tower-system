@@ -118,6 +118,7 @@ class Consultation //extends Model
        return isset($rows[0])?$rows[0]:null;
     }
 
+    //todo: check $ticket_id is unexepceeted wrong value
     function saveVitalSigns($vital_sign_items =[],$ticket_id=null,$ss=null){
         $ticket_id = $ticket_id? $ticket_id:$this->getTicketId();
         $ss = $ss? $ss: $this->getUserInfo();
@@ -125,14 +126,62 @@ class Consultation //extends Model
         $patient_id = self::getPatientId($branch_id,$ticket_id);
         foreach($vital_sign_items as $a_item){
             $item = (object)$a_item;
-            $row = getDataRow('vital_signs',['id'=>$item->id],"id,display_name as description");
+            $vs_id = $item->vital_sign_id;
+            $row = getDataRow('vital_signs',['id'=>$vs_id],"id,display_name as description");
             if($row){
                 $description = $row->description;
-                DB::table('patient_vital_signs')->where('ticket_id',$ticket_id)->where('vital_sign_id',$item->id)->delete();
-                saveData($ss,'patient_vital_signs',['id'=>null],['ticket_id'=>$ticket_id,'patient_id'=>$patient_id,'vital_sign_id'=>$item->id,'vital_sign_value'=>$item->observed_value,'description'=>$description],[],1);
+                $existing = $item->id > 0;
+                $existing_updated = false;
+                if($existing){
+                    $existing_updated = DB::table('patient_vital_signs')->where('ticket_id',$item->ticket_id)->where('vital_sign_id',$vs_id)->update([
+                        'vital_sign_value'=>$item->observed_value,
+                        'description'=>$description,
+                        'update_user'=>$ss->full_name,
+                        'update_uid'=>$ss->user_id,
+                        'updated_at'=> getNowTime()
+                    ]);
+                }
+                if(!$existing_updated){
+                    saveData($ss,'patient_vital_signs',['id'=>null],['ticket_id'=>$item->ticket_id,'vital_sign_id'=>$item->vital_sign_id,'patient_id'=>$patient_id,'vital_sign_value'=>$item->observed_value,'description'=>$description],[],1);
+                } 
+                
             }  
         }
-        return DV::success();
+        return DV::success(['vital_signs'=>$this->getVitalSigns($ticket_id,$ss)]);
+    }
+
+    //todo: check $ticket_id is unexepceeted wrong value
+    //Used ob ConsultDialog to save one vital sign at a time as doctor's change value of patient's vital sign
+    function saveVitalSignOne($vital_sign_item=[],$ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id? $ticket_id:$this->getTicketId();
+        $ss = $ss? $ss: $this->getUserInfo();
+        $branch_id = $ss->branch_id;
+        $patient_id = self::getPatientId($branch_id,$ticket_id);
+
+            $item = (object)$vital_sign_item;
+            $vs_id = $item->vital_sign_id;
+            $row = getDataRow('vital_signs',['id'=>$vs_id],"id,display_name as description");
+            if($row){
+                $description = $row->description;
+                $existing = $item->id > 0;
+                $existing_updated = false;
+                $id = $item->id;
+                if($existing){
+                    $existing_updated = DB::table('patient_vital_signs')->where('ticket_id',$item->ticket_id)->where('vital_sign_id',$vs_id)->update([
+                        'vital_sign_value'=>$item->observed_value,
+                        'description'=>$description,
+                        'update_user'=>$ss->full_name,
+                        'update_uid'=>$ss->user_id,
+                        'updated_at'=> getNowTime()
+                    ]);
+                }
+                if(!$existing_updated){
+                    $id = saveData($ss,'patient_vital_signs',['id'=>null],['ticket_id'=>$item->ticket_id,'vital_sign_id'=>$item->vital_sign_id,'patient_id'=>$patient_id,'vital_sign_value'=>$item->observed_value,'description'=>$description],[],1); 
+                } 
+                return DV::depends($id,['id'=>$id],"Failed to save patient vital sign");
+            }
+            return DV::error("Failed to save patient vital sign because of unidentifiable vital sign ID");
+       
     }
 
     //saveChiefComplaint() saves one chief complaint at a time. It returns NULL if no error, and returns error message if error
@@ -558,11 +607,20 @@ class Consultation //extends Model
       return DV::error("Something went wrong during saving prescription");
     }
   
+    static function getStoreValue_vt($values,$vs_id){
+        foreach($values as $vs) if($vs->vital_sign_id ===$vs_id) return $vs->vital_sign_value;
+        return null;
+    }
     function getVitalSigns($id=null,$ss=null){
         $branch_id = $ss->branch_id;
-        return DB::table('patient_vital_signs as pvt')->where('pvt.branch_id',$branch_id)->where('pvt.ticket_id',$id)->selectRaw("pvt.id,vital_sign_id,vital_sign_value,pvt.description")->take(5)->get();
+        $rows = DB::table('vital_signs as v')->where('branch_id',$branch_id)->selectRaw("'' AS id,v.id AS vital_sign_id,'' AS vital_sign_value, v.display_name as description")->take(5)->get();
+        $values =  DB::table('patient_vital_signs as pvt')->where('pvt.branch_id',$branch_id)->where('pvt.ticket_id',$id)->selectRaw("pvt.id,vital_sign_id,vital_sign_value,pvt.description")->get();
+        foreach($rows as $row){
+           $row->vital_sign_value = self::getStoreValue_vt($values,$row->vital_sign_id);
+        }    
+        return $rows;
     }
-
+  
     function getDetails($id=null,$ss=null){
       $id = $id?$id:$this->getId();
       $ss = $ss?$ss:$this->getUserInfo();

@@ -386,7 +386,8 @@ class ScriptManager{
         $attr = $b?$b['attr']:"";
         if ($degbugMode === 1){
             $files = $b?$b['files']:[];
-            echo self::createTags($files,$attr,$version);
+            $ref = self::createTags($files,$attr,$version);
+            echo str_replace(['\n', '\r'], '', $ref);
         }else {
             $base_url = url('/');
             $public_dir= self::getPublicDirectory();
@@ -400,7 +401,10 @@ class ScriptManager{
                 if (substr($output_file,0,1) ==='/' || substr($output_file,0,1) ==='\\') $is_external_link  = false;
                 $url_path =$output_file;
                 if (!$is_external_link) $url_path = $base_url.$public_dir.$output_file;
-                if ($url_path) echo self::createTags([$url_path],$attr,$version);
+                if ($url_path) {
+                    $ref =self::createTags([$url_path],$attr,$version);
+                    echo str_replace(['\n', '\r'], '', $ref);
+                }
             }else{
 
                 //create script tag for EACH minified file
@@ -414,7 +418,8 @@ class ScriptManager{
                     $files[] = $fPath;  
                 }
 
-                echo self::createTags($files,$attr,$version);
+                $ref = self::createTags($files,$attr,$version);
+                echo str_replace(['\n', '\r'], '', $ref);
                      
             }
            
