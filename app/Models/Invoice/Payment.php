@@ -46,14 +46,14 @@ class Payment //extends Model
 
     function details($id=null){
       $id = $id? $id: $this->getPmtId();
-      $cols = ['d.id','d.ref_number','invoice_id','d.payer_name','v.customer_phone',DB::raw("DATE_FORMAT(d.payment_date,'%d %b %Y') AS payment_date"),'d.amount','d.tax_amount','d.currency_code','d.create_user',DB::raw("DATE_FORMAT(d.created_at,'%d %b %Y %r') AS created_at"),'d.notes'];
+      $cols = ['d.id','d.ref_number','invoice_id',DB::raw("CASE d.payer_name IS NULL WHEN 1 THEN getPatientName(v.customer_id) ELSE d.payer_name END as payer_name"),'v.customer_phone',DB::raw("DATE_FORMAT(d.payment_date,'%d %b %Y') AS payment_date"),'d.amount','d.tax_amount','d.currency_code','d.create_user',DB::raw("DATE_FORMAT(d.created_at,'%d %b %Y %r') AS created_at"),'d.notes'];
       $rows = DB::table('invoice_payments as d')->join('invoices as v','v.id','=','d.invoice_id')->where('d.id',$id)->select($cols)->take(1)->get();
       return isset($rows[0])? $rows[0]: DV::error("Payment information was not found!");
     }
     
     function getDetails($id=null){
         $id = $id? $id: $this->getPmtId();
-        $cols = ['d.id','d.ref_number','invoice_id','d.payer_name','v.customer_phone',DB::raw("DATE_FORMAT(d.payment_date,'%d %b %Y') AS payment_date"),'d.amount','d.tax_amount','d.currency_code','d.create_user',DB::raw("DATE_FORMAT(d.created_at,'%d %b %Y %r') AS created_at"),'d.notes'];
+        $cols = ['d.id','d.ref_number','invoice_id',DB::raw("CASE d.payer_name IS NULL WHEN 1 THEN getPatientName(v.customer_id) ELSE d.payer_name END as payer_name"),'v.customer_phone',DB::raw("DATE_FORMAT(d.payment_date,'%d %b %Y') AS payment_date"),'d.amount','d.tax_amount','d.currency_code','d.create_user',DB::raw("DATE_FORMAT(d.created_at,'%d %b %Y %r') AS created_at"),'d.notes'];
         $rows = DB::table('invoice_payments as d')->join('invoices as v','v.id','=','d.invoice_id')->where('d.id',$id)->select($cols)->take(1)->get();
         return isset($rows[0])? $rows[0]: DV::error("Payment information was not found!");
     }

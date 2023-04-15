@@ -846,3 +846,8 @@ tr{
   inherits: true;
   initial-value: 0turn;
 }
+ 
+.full-screen-height-scroll{
+  height: calc(100vh - 106px);
+  overflow-y: auto;
+}
