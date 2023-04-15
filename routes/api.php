@@ -112,9 +112,11 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
     Route::post('consultation/medical-history', [ConsultationController::class, 'getMedicalHistory']);
     Route::post('consultation/save-chief-complaint', [ConsultationController::class, 'saveChiefComplaint']);
+    Route::post('consultation/vital-signs', [ConsultationController::class, 'getPatientVitalSigns']);
     Route::post('consultation/remove-chief-complaint', [ConsultationController::class, 'deleteChiefComplaint']);
     Route::post('consultation/save-medical-history', [ConsultationController::class, 'saveMedicalHistory']);
     Route::post('consultation/save-vital-signs', [ConsultationController::class, 'saveVitalSigns']);
+    Route::post('consultation/save-vital-sign-one', [ConsultationController::class, 'saveVitalSignOne']);
     Route::post('consultation/save-pe', [ConsultationController::class, 'savePE']);
     Route::post('consultation/pe', [ConsultationController::class, 'getPE']);
     Route::post('consultation/save-diagnosis', [ConsultationController::class, 'saveDiagnosis']);
@@ -145,7 +147,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('ticket/details', [QTicketController::class, 'getTicketDetails']);
     Route::post('ticket/add-chief-complaint', [QTicketController::class, 'addChiefComplaint']);
     Route::post('ticket/remove-chief-complaint', [QTicketController::class, 'deleteChiefComplaint']);
-    Route::post('ticket/patient-vital-signs', [QTicketController::class, 'getPatientVitalSigns']);
+    //Route::post('ticket/patient-vital-signs', [QTicketController::class, 'getPatientVitalSigns']);
+    Route::post('ticket/patient-vital-signs', [ConsultationController::class, 'getPatientVitalSigns']);
     Route::post('ticket/chief-complaints', [QTicketController::class, 'getChiefComplaints']);
 
     //getPatientPhysicalExamination()

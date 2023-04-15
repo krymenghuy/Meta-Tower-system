@@ -34,6 +34,16 @@ class ConsultationController extends Controller
         return JDV::result($data);
     }
 
+    function getPatientVitalSigns(Request $req){
+        $ss = UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $c = new Consultation(null,$ss);
+        $data = $c->getVitalSigns($req->ticket_id,$ss);
+        return JDV::result($data);
+    }
+
+  
+
     function deleteChiefComplaint(Request $req){
         $ss = UM::getUserInfoBytoken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
@@ -157,12 +167,22 @@ class ConsultationController extends Controller
     //     $res= $c->saveChiefComplaints($req->all());
     // }
 
+    //Not yet used.
     function saveVitalSigns(Request $req){
         $ss = UM::getUserInfoBytoken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
-        $c = new Consultation();
-        $res= $c->saveVitalSigns($req->all(),$req->ticket_id,$ss);
-        return JDV::success();
+        $c = new Consultation($req->ticket_id,$ss);
+        $res= $c->saveVitalSigns($req->all());
+        return JDV::result(['vital_signs'=>$res->vital_signs]);
+    }
+
+    //Used by ConsultDialog to save patient's vital sign one by one as Doctor changes value of Vital sign
+    function saveVitalSignOne(Request $req){
+        $ss = UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $c = new Consultation($req->ticket_id,$ss);
+        $res= $c->saveVitalSignOne($req->all());
+        return JDV::raw($res);
     }
 
     function saveMedicalHistory(Request $req){

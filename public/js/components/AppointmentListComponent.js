@@ -890,6 +890,7 @@ let PatientDialog = new function () {
         mThis.appt_id = option.appt_id;
 
         mThis.prepareOptions(() => {
+            VSUtil.hideDialogError(mThis.self.attr('id'));
             if (option.id > 0 || option.identity_value > 0) {
                 mThis.elTitle.text(LocaleManager.trans('Modify Patient', 'titles'));
             }
@@ -987,11 +988,11 @@ let ServiceQueueDialog = new function () {
      
       //NOTE: search_Value can be client's phone or ID
       let p = {'search_value':phone_or_id?phone_or_id:-1};
-   
       vsapi.call(`${main_view.base_url}/api/ticket/find-client`,p,null,false).then(res=>{
+        console.error(res);
          if(res.status_code ==200){
-             let rows = StringSanitizer.sanitizeObject(res.data);
-             let d = rows?rows[0]:{};
+             let d = StringSanitizer.sanitizeObject(res.data);
+             //let d = rows?rows[0]:{};
              d =d?d:{};
              mThis.elPhoneOrId.val(d.phone_number).prop('readOnly',false);
              mThis.elName.val(d.name).prop('readOnly',false);

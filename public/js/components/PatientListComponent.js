@@ -79,22 +79,23 @@ let PatientListComponent = new function () {
             });
         });
 
-        this.cfg = new ExpandableRowConfig('_pal_tblPatients', {
-            'dontExpandByClickingOn': ['btn_pat_print', 'btn_pat_modify', 'btn_pat_action', 'btn_pat_delete'],
-            'onOpen': (container, detail_tr, parent_tr) => {
-                let q_tr = $(parent_tr);
-                let ticket_id = q_tr.data('id');
+        // this.cfg = new ExpandableRowConfig('_pal_tblPatients', {
+        //     'dontExpandByClickingOn': ['btn_pat_print', 'btn_pat_modify', 'btn_pat_action', 'btn_pat_delete'],
+        //     'onOpen': (container, detail_tr, parent_tr) => {
+        //         let q_tr = $(parent_tr);
+        //         let ticket_id = q_tr.data('id');
 
-                if (ticket_id > 0){
-                    TicketDetails.show($(detail_tr), {
-                        'ticket_id': ticket_id,
-                        'client_id': q_tr.data('clientid'),
-                        'person_id': q_tr.data('personid'),
-                        'status_id': q_tr.data('statusid')
-                    },QueueComponent.options.default_tab_view);
-                }
-            }
-        });
+        //         if (ticket_id > 0){
+        //             PatientDetails.show($(detail_tr), {
+        //                 'ticket_id': ticket_id,
+        //                 'client_id': q_tr.data('clientid'),
+        //                 'patient_id': q_tr.data('clientid'),
+        //                 'person_id': q_tr.data('personid'),
+        //                 'status_id': q_tr.data('statusid')
+        //             },QueueComponent.options.default_tab_view);
+        //         }
+        //     }
+        // });
 
         mThis.tblPatients.on('click', 'a.btn_pat_delete', function (e) {
             e.preventDefault();
@@ -184,10 +185,10 @@ let PatientListComponent = new function () {
                     title: mThis.trans_title('Action'),
                     data: function (data, a, b) {
                         return [`<div class="form-inline">`,
-                            `<a href="javascript:void(0)" class="btn_pat_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
+                            //`<a href="javascript:void(0)" class="btn_pat_print" data-id="${data.id}"><i class="fa fa-print"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" class="btn_pat_modify" data-id="${data.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
                             `<a href="javascript:void(0)" data-id="${data.id}" class="btn_pat_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
-                            `&nbsp;<a href="javascript:void(0)" data-id="${data.id}" class="btn_pat_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
+                            //`&nbsp;<a href="javascript:void(0)" data-id="${data.id}" class="btn_pat_action"><i class="fa-solid fa-grip-vertical"></i></a>`,
                             `</div>`
                         ].join('');
                     }

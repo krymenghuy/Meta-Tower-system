@@ -10,7 +10,6 @@ let TicketDetails = new function () {
 
     this.init = (tblTickets_id) => {
         mThis.tblTickets = $(`#${tblTickets_id}`);
-
         if (mThis.tblTickets.length === 0) console.error(`Error: failed create object element ${tblTickets_id}`);
         mThis.tblTickets.on('click', '.btn-ticket-tab', function (e) {
             $(this).addClass('btn-ticket-tab--active').siblings().removeClass('btn-ticket-tab--active');
@@ -441,7 +440,7 @@ let TicketDetails = new function () {
             html = [html,
                 `<div class="detail-item">
                     <p class="detail-item-label text-nowrap col-6 py-0">${v.description}</p>
-                    <p class="detail-item-value text-nowrap col-6 py-0" data-id="${v.id}" data-code="${v.code}" data-field="${v.description}">${v.vital_sign_value}</p>
+                    <p class="detail-item-value text-nowrap col-6 py-0" data-id="${v.id}" data-vsid="${v.vital_sign_id}" data-code="${v.code?v.code:v.vital_sign_code}" data-field="${v.description}">${v.vital_sign_value}</p>
                 </div>`].join('');
         });
         return html ? html : '<span class="detail-item-empty">No vital signs</span>';
@@ -635,7 +634,7 @@ let PrescriptionDialog = new function(){
         "showColumnHeaders": true,
         "showAddLineButton": true,
         "addLineButtonText": "Add Medication",
-        "maxRows":"3",
+        //"maxRows":"3",
         onItemChange: (row_id,item, col_name, td,tr) => {
             mThis.setItemInfo(col_name, tr);
         },
@@ -1117,17 +1116,18 @@ let ConsultTabView = new function () {
         return p;
     }
 
-    this.getDataInput_VitalSignsAutoSave = () => {
-        let div = $('#_consult_vt_wrapper');
-        let ps = [];
-        div.find('.consult-vt-input').each(function(){
-            let el = $(this);
-            let id = el.data('id');
-            let ticket_id = el.data('tid');
-            ps.push({'ticket_id':ticket_id,'id':id,'observed_value':el.val()});
-        });
-        return ps;
-    }
+    // this.getDataInput_VitalSignsAutoSave = () => {
+    //     let div = $('#_consult_vt_wrapper');
+    //     let ps = [];
+    //     div.find('.consult-vt-input').each(function(){
+    //         let el = $(this);
+    //         let id = el.data('id'); //=> (vs_id,ticket_id)
+    //         let ticket_id = el.data('tid');
+    //         let vs_id = el.data('vsid'); //vital sign id
+    //         ps.push({'ticket_id':ticket_id,'id':id,'vital_sign_id':vs_id,'observed_value':el.val()});
+    //     });
+    //     return ps;
+    // }
 
     this.getDataInput_MedicalHistoryAutoSave = () => {
         let div = $('#_consult_medical_history_warpper');
@@ -1431,7 +1431,7 @@ let ConsultTabView = new function () {
         mThis.loadVitalSigns_patient(ticket_id, items => {
             let html_vs_items = null;
             items.map(t => {
-                html_vs_items = [html_vs_items, `<tr data-id="${t.id}" data-tid="${ticket_id}"><td>`, t.description, `</td><td><input data-id="${t.id}" data-tid="${ticket_id}" class="consult-vt-input data-input form-control w-50" type="text" value ="`, t.vital_sign_value,`"></td></tr>`].join('');
+                html_vs_items = [html_vs_items, `<tr data-id="${t.id}" data-vsid="${t.vital_sign_id}" data-tid="${ticket_id}"><td>`, t.description, `</td><td><input data-id="${t.id}" data-vsid="${t.vital_sign_id}" data-tid="${ticket_id}" class="consult-vt-input data-input form-control w-50" type="text" value ="`, t.vital_sign_value,`"></td></tr>`].join('');
             });
 
             if (!el || el.length === 0) {
@@ -1453,10 +1453,18 @@ let ConsultTabView = new function () {
                 el = div.find(`#${wrapper_id}`);
                 el.show().siblings().hide();
          
-                el.on('change','input.consult-vt-input',(e)=>{
-                    let d = mThis.getDataInput_VitalSignsAutoSave();
-                    vsapi.call(`${main_view.base_url}/api/consultation/save-vital-signs`,d,null,false).then(res => {
-                        if(res.status_code === 200){}
+                el.on('change','input.consult-vt-input',e=>{
+                    let el = $(e.currentTarget);
+                    //let d = mThis.getDataInput_VitalSignsAutoSave();
+                    let d = {'ticket_id':ticket_id,'id':el.data('id'),'vital_sign_id':el.data('vsid'),'observed_value':el.val()};
+                    console.error(JSON.stringify(d));
+                    vsapi.call(`${main_view.base_url}/api/consultation/save-vital-sign-one`,d,null,false).then(res => {
+                        if(res.status_code === 200){
+                            el.data('id',(res.data?res.data:{}).id);
+                        }else{
+                           //todo: show immediate error of failed saving, due to internet disconnection or other issue
+                           return;  
+                        } 
                     });
                 });
             }
