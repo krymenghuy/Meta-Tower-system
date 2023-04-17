@@ -847,24 +847,6 @@ let QueueComponent = new function () {
         return (mThis.col_titles[title_prop]?mThis.col_titles[title_prop]:title_prop);
     }
 
-    // this.createDropdownMenuHtml_loan = (items = [], data = null, data_props = []) => {
-    //     if (!data_props) data_props = [];
-    //     let str_props = "";
-    //     data_props.map((prop_name) => {
-    //         prop_name = (prop_name ? prop_name : '').replace(/_/g, '');
-    //         if (prop_name) str_props = [str_props, str_props ? " " : "", prop_name, `="${data[prop_name]}"`].join('');
-    //     });
-
-    //     let html = ['<div class="dropdown-menu action-menus">',
-    //         '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_edit" href="javascript:void(0)"><i class="fa fa-edit" style="color:blue;font-size:1.1em;margin-top:2px;"></i> <span>Review Application</span</a>',
-    //         '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_disburse" href="javascript:void(0)"><i class="fa fa-list-alt" style="color:orange"></i> Disburse Loan</a>',
-    //         '<div class="dropdown-divider"></div>',
-    //         '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_delete" href="javascript:void(0)"><i class="fa fa-times" style="color:red"></i> Delete Loan Application</a>',
-    //         '<a data-id="', loan_app_id, '" data-personid="', person_id, '" class="dropdown-item _apl_loanapp_person_profile" href="javascript:void(0)"><i class="fa fa-list" style="color:green"></i> Personal Profile</a>',
-    //         '</div>'].join('');
-    //     return html;
-    // }
-
     this.getTicketStatusClass = (status_id) => {
         if (status_id == 0) return 'border-secondary';
         else if (status_id == 1) return 'border-warning';
@@ -1483,6 +1465,7 @@ let ConsultTabView = new function () {
 
     this.showConsultPE = (div, view_name) => {
         let ticket_id = div.data('tid');
+        let patient_id = div.data('patientid');
         let wrapper_id = '_consult_pe_wrapper';
         let el = div.find(`#${wrapper_id}`);
 
@@ -1501,9 +1484,8 @@ let ConsultTabView = new function () {
             html = [`<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">`,
             `<div class="d-flex gap-2">`,
                 `<span class="trans-text consult-title" data-langprop="consult.Physical Examination">${title}</span>`,
-                `<a href="javascript:void(0)" class="history-toggle-button" data-tid="${ticket_id}" data-viewname="${view_name}"></a>`,
+                `<button class="history-toggle-button" data-patientid="${patient_id}" data-tid="${ticket_id}" data-viewname="${view_name}"></button>`,
                 `<div class="history-popover" style="display:none;"></div>`,
-                //`<div class="d-flex justify-content-end w-100"><button class="btn btn-primary btn-sm" type="button" id="_consult_print_pe"><i class="fa fa-print"></i> Print</button></div>`,
             `</div>`,
                     `<div class="mt-5">`,
                         `<textarea data-category="${pe ? pe.category:''}" class="_consult_pe_input form-control data-input" cols="10" rows="5">${pe_content}</textarea>`,
@@ -1552,7 +1534,7 @@ let ConsultTabView = new function () {
             let html = `<div id="${wrapper_id}" class="consult-content-panel w-100" viewname="${view_name}">
             <div class="d-flex gap-2">
                 <span class="trans-text consult-title" data-langprop="consult.Prescription">${title}</span>
-                <a href="javascript:void(0)" class="history-toggle-button" data-tid="${ticket_id}" data-viewname="${view_name}"></a>
+                <button class="history-toggle-button" data-tid="${ticket_id}" data-viewname="${view_name}"></button>
                 <div class="history-popover" style="display:none;"></div>
                 <div class="d-flex justify-content-end w-100"><button class="btn btn-primary btn-sm" type="button" id="_consult_pres_report"><i class="fa fa-print"></i> Print</button></div>
             </div>
@@ -1679,7 +1661,7 @@ let ConsultTabView = new function () {
             let html = `<div id="${wrapper_id}" class="consult-content-panel" viewname="${view_name}">
             <div class="d-flex gap-2">
                 <span class="trans-text consult-title" data-langprop="consult.Services">${title}</span>
-                <a href="javascript:void(0)" class="history-toggle-button" data-tid="${ticket_id}" data-viewname="${view_name}"></a>
+                <button class="history-toggle-button" data-tid="${ticket_id}" data-viewname="${view_name}"></button>
                 <div class="history-popover" style="display:none;"></div>
                 <div class="d-flex justify-content-end w-100"><button class="btn btn-primary btn-sm" type="button" id="_consult_print_services"><i class="fa fa-print"></i> Print</button></div>
             </div>
@@ -1813,9 +1795,8 @@ let ConsultTabView = new function () {
             let html =[`<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">`,
             `<div class="d-flex gap-2">`,
                `<span class="trans-text consult-title" data-langprop="consult.Medical History">Medical History</span>`,
-                `<a href="javascript:void(0)" class="history-toggle-button" data-tid="${ticket_id}" data-viewname="${view_name}"></a>`,
+                `<button class="history-toggle-button" data-tid="${ticket_id}" data-viewname="${view_name}"></button>`,
                 `<div class="history-popover" style="display:none;"></div>`,
-                //`<div class="d-flex justify-content-end w-100"><button class="btn btn-primary btn-sm" type="button" id="_consult_print_med_history"><i class="fa fa-print"></i> Print</button></div>`,
            `</div>`,
             `<div class="d-flex flex-column">`].join('');
 
@@ -1872,9 +1853,8 @@ let ConsultTabView = new function () {
         let html =[`<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">`,
          `<div class="d-flex gap-2">`,
             `<span class="trans-text consult-title" data-langprop="consult.Labo Tests">Labo Tests</span>`,
-            `<a href="javascript:void(0)" class="history-toggle-button" data-tid="${ticket_id}" data-viewname="${view_name}"></a>`,
+            `<button class="history-toggle-button" data-tid="${ticket_id}" data-viewname="${view_name}"></button>`,
             `<div class="history-popover" style="display:none;"></div>`,
-            //`<div class="d-flex justify-content-end w-100"><button class="btn btn-primary btn-sm" type="button" id="_consult_print_labo_tests"><i class="fa fa-print"></i> Print</button></div>`,
         `</div>`,
                 `<div class="d-flex mt-5">`,
                     `<div class="border border-1 border-success rounded-3 p-3 shadow-sm w-100" id="${div_labotest_panel_id}" class="table-responsive overflow-y-auto" style="max-height:500px">`,  
@@ -1989,22 +1969,57 @@ let ConsultTabView = new function () {
             el = div.find(`#${wrapper_id}`);
         
             LocaleManager.translateZone(wrapper_id);
-            el.show().siblings().hide(); 
+            el.show().siblings().hide();
         }
         
         mThis.loadFollowups(ticket_id,d=>{
             //todo: display followup data here
-            if(el.length>0){
-                el.html(
-                    `
+            if(el.length > 0){
+                el.html([`
                     <h3 class="trans-text" data-langprop="consult.Appointments">Appointments</h3>
                     <div class="d-flex flex-column mt-3">
                       <h4>${d.followup_remarks}</h4>
                     </div>
-                    `
-                );
-            }    
+                    <div class="table-responsive border border-success rounded-3">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="font-weight:bolder">Date</th>
+                                    <th style="font-weight:bolder">Time</th>
+                                    <th style="font-weight:bolder">Doctor Name</th>
+                                    <th style="font-weight:bolder">Remark</th>
+                                </tr>
+                            </thead>
+                            <tbody>`,mThis.createRows(),`</tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-end mt-2">
+                        <div class="d-flex">
+                            <button class="tb-pagination"><</button>
+                            <button class="tb-pagination">></button>
+                        </div>
+                    </div>
+                `].join(''));
+            }
         });
+    }
+
+    this.createRows = () => {
+        let html = null;
+        vsapi.call(`${mThis.base_url}/api/`).then(res => {
+            if(res.status_code === 200){
+                let data = StringSanitizer.sanitizeObject(res.data);
+                for(let i=0; i<data.length; i++){
+                    html = [html,`<tr>
+                        <td>20-11-2021</td>
+                        <td>10:30 AM</td>
+                        <td>Doctor A</td>
+                        <td>Sick</td>
+                    </tr>`].join('');
+                }
+            }
+        });
+        return html;
     }
 
     this.showConsultDiagnosis = (div, view_name) => {
@@ -2020,9 +2035,8 @@ let ConsultTabView = new function () {
             let html = [`<div id ="${wrapper_id}" class="consult-content-panel" viewname="${view_name}" style="display:none">`,
             `<div class="d-flex gap-2">`,
                 `<span class="trans-text consult-title" data-langprop="consult.Diagnosis">Diagnosis</span>`,
-                `<a href="javascript:void(0)" class="history-toggle-button" data-tid="${ticket_id}" data-viewname="${view_name}"></a>`,
+                `<button class="history-toggle-button" data-tid="${ticket_id}" data-viewname="${view_name}"></button>`,
                 `<div class="history-popover" style="display:none;"></div>`,
-                //`<div class="d-flex justify-content-end w-100"><button class="btn btn-primary btn-sm" type="button" id="_consult_print_dianosis"><i class="fa fa-print"></i> Print</button></div>`,
            `</div>`,
                 `<div class="d-flex flex-column mt-3">`,
                 `<label class="control-label fw-semibold">Diagnosis details</label>`,
@@ -2155,262 +2169,6 @@ let ConsultTabView = new function () {
         div.html(html);
     }
 
-    // this.showHistoryPhysicalExamination = (div) => {
-    //     let wrapper_id = '_history_pe_wapper';
-    //     let patient_id = div.data('patientid');
-    //     let ticket_id = div.data('tid');
-    //     let el = $(`#${wrapper_id}`);
-
-    //     if (!el || el.length === 0) {
-    //         let html =
-    //             `<div id="${wrapper_id}">
-    //         <h3 class="trans-text" data-langprop="consult.Physical Examination">Physical Examination</h3>
-    //         <div class="d-block">
-    //             <div class="table-responsive">
-    //                 <table class="table table-bordered">
-    //                     <thead>
-    //                         <tr>
-    //                             <th class="fw-bold">27-08-2021</th>
-    //                             <th class="fw-bold">h:m:ss</th>
-    //                         </tr>
-    //                     </thead>
-    //                     <tbody>
-    //                         <tr>
-    //                             <td>
-    //                                 <p>
-    //                                     During a physical examination, a health care provider studies your body to determine if you do or do not have a physical problem. A physical examination usually includes: Inspection (looking at the body) Palpation (feeling the body with fingers or hands) Auscultation (listening to sounds)
-    //                                 </p>
-    //                             </td>
-    //                             <td></td>
-    //                         </tr>
-    //                     </tbody>
-    
-    //                     <thead>
-    //                         <tr>
-    //                             <th class="fw-bold">27-08-2021</th>
-    //                             <th class="fw-bold">h:m:ss</th>
-    //                         </tr>
-    //                     </thead>
-    //                     <tbody>
-    //                         <tr>
-    //                             <td>
-    //                                 <p>
-    //                                     During a physical examination, a health care provider studies your body to determine if you do or do not have a physical problem. A physical examination usually includes: Inspection (looking at the body) Palpation (feeling the body with fingers or hands) Auscultation (listening to sounds)
-    //                                 </p>
-    //                             </td>
-    //                             <td></td>
-    //                         </tr>
-    //                     </tbody>
-    //                 </table>
-    //             </div>
-    //         </div>`;
-    //         div.html(html);
-    //         el = $(`#${wrapper_id}`);
-    //     }
-
-    //     el.show().siblings().hide();
-    //     LocaleManager.translateZone(wrapper_id);
-    // }
-
-    // this.showHistoryLaboratoryTests = (div) => {
-
-    //     let wrapper_id = '_history_labo_wapper';
-    //     let patient_id = div.data('patientid');
-    //     let ticket_id = div.data('tid');
-    //     let el = $(`#${wrapper_id}`);
-
-    //     if (!el || el.length === 0) {
-    //         let html = `<h3>Laboratory Tests</h3>
-    //         <div class="d-block">
-    //             <div class="table-responsive">
-    //                 <table class="table table-bordered">
-    //                     <thead>
-    //                         <tr>
-    //                             <th class="fw-bold text-nowrap">Test Name</th>
-    //                             <th class="fw-bold">Laboratory</th>
-    //                             <th class="fw-bold">Date</th>
-    //                             <th class="fw-bold">Result</th>
-    //                             <th class="fw-bold">Docs</th>
-    //                             <th class="fw-bold">Comment</th>
-    //                         </tr>
-    //                     </thead>
-    //                     <tbody>
-    //                         <tr>
-    //                             <td></td>
-    //                             <td></td>
-    //                             <td></td>
-    //                             <td></td>
-    //                             <td></td>
-    //                             <td></td>
-    //                         </tr>
-    //                     </tbody>
-    //                 </table>
-    //             </div>
-    //         </div>`;
-    //         div.html(html);
-    //         el = $(`#${wrapper_id}`);
-    //     }
-
-    //     el.show().siblings().hide();
-    //     LocaleManager.translateZone(wrapper_id);
-    // }
-
-    // this.loadHistory_diagnosis = (patient_id, onFinish) => {
-    //     let items = [
-    //         {
-    //             "ticket_id": 1,
-    //             "date": "12 Dec 2022",
-    //             "ticket_number": "D0001",
-    //             "description": "This is diagnosis one",
-    //             "consultant_name": "Mr. Doctor A"
-    //         },
-    //         {
-    //             "ticket_id": 2,
-    //             "date": "13 Dec 2022",
-    //             "ticket_number": "D0001",
-    //             "description": "An irregular heartbeat is an arrhythmia (also called dysrhythmia). Heart rates can also be irregular. A normal heart rate is 50 to 100 beats per minute. Arrhythmias and abnormal heart rates don’t necessarily occur together. Arrhythmias can occur with a normal heart rate, or with heart rates that are slow (called bradyarrhythmias — less than 50 beats per minute). Arrhythmias can also occur with rapid heart rates (called tachyarrhythmias — faster than 100 beats per minute).",
-    //             "consultant_name": "Mr. Doctor One"
-    //         },
-    //         {
-    //             "ticket_id": 3,
-    //             "date": "20 Dec 2022",
-    //             "ticket_number": "D0001",
-    //             "description": "This is diagnosis three",
-    //             "consultant_name": "Mr. Doctor BBBB"
-    //         }
-    //     ];
-    //     onFinish(items);
-    // }
-
-    // this.showHistoryDiagnosis = (div) => {
-    //     let patient_id = div.data('patientid');
-    //     let wrapper_id = '_history_hs_wrapper';
-    //     let el = div.find(`#${wrapper_id}`);
-
-    //     if (!el || el.length === 0) {
-
-    //         mThis.tblHistoryDiagnosis_body_id = `tblHis_tbody_${patient_id}`;
-
-    //         let html = `<h3>Diagnosis</h3>
-    //             <div class="d-block">
-    //                 <div class="table-responsive">
-    //                     <table class="table table-bordered">
-    //                         <thead>
-    //                             <tr>
-    //                                 <th class="fw-bold">Date</th>
-    //                                 <th class="fw-bold">Description</th>
-    //                                 <th class="fw-bold text-nowrap">Doctor Name</th>
-    //                             </tr>
-    //                         </thead>
-    //                         <tbody id ="${mThis.tblHistoryDiagnosis_body_id}">
-    //                         </tbody>
-    //                     </table>
-    //                 </div>
-    //             </div>`;
-    //         div.html(html);
-    //         el = $(`#${wrapper_id}`);
-    //     }
-
-    //     mThis.loadHistory_diagnosis(patient_id, items => {
-    //         let tbody = document.querySelector(`#${mThis.tblHistoryDiagnosis_body_id}`);
-    //         if (tbody) {
-    //             let row_html = '';
-    //             let i = 0;
-
-    //             tbody.innerHTML = '';
-    //             items.map(item => {
-    //                 row_html = [row_html, `<tr>
-    //                         <td>
-    //                             <span class="d-block p-1" style="min-width:110px">${item.date}</span>
-    //                             <span class="d-inline-block text-secondary p-1">${item.ticket_number}</span>
-    //                             </td>
-    //                             <td class="vs-contain-custom">
-    //                                 <p>
-    //                                     ${item.description}
-    //                                 <p>
-    //                                 <span data-tid="${item.ticket_id}" class="span lnk-show-more"></span>
-    //                             </td>
-    //                         <td>${item.consultant_name}</td>
-    //                     </tr>`].join('');
-    //                 i++;
-    //             });
-
-    //             tbody.innerHTML = row_html;
-
-    //             (tbody.querySelectorAll('.lnk-show-more') || {}).forEach(d => {
-    //                 d.addEventListener('click', e => {
-    //                     let td = VSDOM.getClosestParentByType(e.target, 'TD');
-    //                     let ticket_id = e.target.dataset.tid;
-    //                     if (td) td.classList.toggle('active');
-    //                 });
-    //             });
-    //         }
-    //     });
-    //     el.show().siblings().hide();
-    // }
-
-    // this.showHistoryPrescription = (div) => {
-    //     let patient_id = div.data('patientid');
-
-    //     let wrapper_id = '_history_prescriptions';
-    //     let el = $(`#${wrapper_id}`);
-
-    //     if (!el || el.length === 0) {
-    //         let html =
-    //             `<div id="${wrapper_id}">
-    //             <h3 class="trans-text" data-langprop="history.Historical Prescriptions">Historical Prescriptions</h3>
-    //             <div>
-    //               Please display a list of prescription by date and doctor's name here!
-    //             </div>
-    //          </div>
-    //         `;
-    //         div.html(html);
-    //         el = $(`#${wrapper_id}`);
-    //     }
-
-    //     LocaleManager.translateZone(wrapper_id);
-    //     el.show().siblings().hide();
-    // }
-
-    // this.showHistoryRecommendations = (div) => {
-    //     let patient_id = div.data('patientid');
-    //     let wrapper_id = '_history_advice';
-    //     let el = $(`#${wrapper_id}`);
-
-    //     if (!el || el.length === 0) {
-    //         let html =
-    //             `<div id="${wrapper_id}">
-    //             <h3 class="trans-text" data-langprop="history.Historical Recommendations">Historical Recommedations</h3>
-    //             <div>
-    //               Doctor advice is to be displayed here!
-    //             </div>
-    //          </div>
-    //         `;
-    //         div.html(html);
-    //         el = $(`#${wrapper_id}`);
-    //     }
-
-    //     LocaleManager.translateZone(wrapper_id);
-    //     el.show().siblings().hide();
-    // }
-
-    // this.loadHistory_medical_report = (patient_id = 0, onFinish) => {
-    //     let d = {};
-    //     d.patient_id = 101;
-    //     d.patient_code = '1011';
-    //     d.patient_name = 'Sovano';
-    //     d.patient_sex = 'M';
-
-    //     let items = [
-    //         { "ticket_id": 1, "ticket_number": "D0001", "date": "11 Dec 2022", "consultant_name": "Dr. A" }
-    //         , { "ticket_id": 2, "ticket_number": "D0003", "date": "15 Dec 2022", "consultant_name": "Dr. A" }
-    //         , { "ticket_id": 3, "ticket_number": "D0002", "date": "25 Dec 2022", "consultant_name": "Dr. B" }
-    //         , { "ticket_id": 4, "ticket_number": "D0001", "date": "31 Dec 2022", "consultant_name": "Dr. A" }
-    //     ];
-    //     d.items = items;
-    //     onFinish(d);
-    // }
-
     this.showHistoryMedicalReports = (div) => {
         let patient_id = div.data('patientid');
         let wrapper_id = '_history_med_report_wrapper';
@@ -2521,7 +2279,6 @@ let ConsultDialog = new function () {
             case 'medical_history':{
                 vsapi.call(`${main_view.base_url}/api/consult/history/medical-history`,{'ticket_id':ticket_id},null,false).then(res=>{
                   if(res.status_code===200){
-                    //{date:'23 Apr 2023','item':{'vacination':'Yes','Family History':'No'}}
                     let cols = ['Personal History','Family History','Traveling','Vacination','Alergy','Surgey'];
                     let item = res.data;
                     let html_cols='';
@@ -2544,31 +2301,102 @@ let ConsultDialog = new function () {
                
                 break;
             }
-            case 'pe':{
-                return `<h5>ticket ${ticket_id} for ${view_name}</h5>`;
+            case 'physical-examination':{
+                vsapi.call(`${mThis.base_url}/api/consult/history/physical-examination`,{'ticked_id':ticket_id},null,false).then(res => {
+                    if(res.status_code === 200){
+                        html = [html,`<div class="d-block">
+                            <h4>Physical Examination</h4>
+                            <div class="d-flex border-bottom mt-4">
+                                <p class="py-0 m-0 pe-2">Date</p>
+                                <p class="py-0 m-0 pe-2">${res.data.date}</p>
+                            </div>
+                            <div class="ms-5">${res.data.description}</div>
+                        </div>`].join('');
+                    }
+                });
+                onFinish(html);
+                break;
             }
-            case 'labo-test':{
-                return `<h5>ticket ${ticket_id} for ${view_name}</h5>`;
+            case 'pe':{
+                break;
+            }
+            case 'labo-tests':{
+                html = [`<div class="d-block">
+                    <h4>Labo History</h4>
+                    <div class="table-responsive mt-4">
+                        <table class="table table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="font-weight:bold">Date</th>
+                                    <th style="font-weight:bold">Test Name</th>
+                                    <th style="font-weight:bold">Labor</th>
+                                    <th style="font-weight:bold">Doctor</th>
+                                    <th style="font-weight:bold">Comment</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>`].join('');
+                onFinish(html);
+                break;
             }
             case 'diagnosis':{
                 return `<h5>ticket ${ticket_id} for ${view_name}</h5>`;
             }
             case 'prescription':{
+                html = [`<div class="d-block">
+                    <h4>Prescription</h4>
+                    <div class="table-responsive mt-4">
+                        <table class="table table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="font-weight:bold">Date</th>
+                                    <th style="font-weight:bold">Medical</th>
+                                    <th style="font-weight:bold">Dosage</th>
+                                    <th style="font-weight:bold">Duration</th>
+                                    <th style="font-weight:bold">Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>`].join('');
+                onFinish(html);
+                break;
+            }
+            case 'service':{
+                html = [`<div class="d-block">
+                    <h4>Services</h4>
+                    <div class="table-responsive mt-4">
+                        <table class="table table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="font-weight:bold">Date</th>
+                                    <th style="font-weight:bold">Section</th>
+                                    <th style="font-weight:bold">Service Name</th>
+                                    <th style="font-weight:bold">Qty</th>
+                                    <th style="font-weight:bold">Doctor</th>
+                                    <th style="font-weight:bold">Nurse</th>
+                                    <th style="font-weight:bold">Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>`].join('');
+                onFinish(html);
+                break;
+            }
+            case'followup':{
                 return `<h5>ticket ${ticket_id} for ${view_name}</h5>`;
             }
-          
-           case 'services':{
-            return `<h5>ticket ${ticket_id} for ${view_name}</h5>`;
-           }
-           case'followup':{
-            return `<h5>ticket ${ticket_id} for ${view_name}</h5>`;
-           }
-           case'advice':{
-            return `<h5>ticket ${ticket_id} for ${view_name}</h5>`;
-           }
-           default:{
-            return `<h5>Default: History Details for ticket ${ticket_id} view = ${view_name}</h5>`;
-           }  
+            case'advice':{
+                return `<h5>ticket ${ticket_id} for ${view_name}</h5>`;
+            }
+            default:{
+                return `<h5>Default: History Details for ticket ${ticket_id} view = ${view_name}</h5>`;
+            }  
         }
     }
 
@@ -2578,8 +2406,10 @@ let ConsultDialog = new function () {
             popover.style.display = "none";
             return;
           }
-
-          popover.innerHTML=mThis.createHistoryContent_html(ticket_id,view_name);
+ 
+          mThis.createHistoryContent_html(ticket_id,view_name,html => {
+            popover.innerHTML = html;
+          });
 
           popover.style.display = "block";
           popover.style.width ='100%';
@@ -2601,41 +2431,10 @@ let ConsultDialog = new function () {
             popover.style.opacity = 1;
           });  
     }
-       
-    // this.toggleHistoryPopover =(button)=>{
-    //     // Get the position of the button
-    //     let rect = button.getBoundingClientRect();
-    //     let x = rect.left + rect.width / 2;
-    //     let y = rect.top + rect.height + 10;
-
-    //     // Get the popover element
-    //     let popover = button.querySelector('.history-popover');
-
-    //     // Toggle the display of the popover element
-    //     if (popover.style.display === 'block') {
-    //         popover.style.display = 'none';
-    //     } else {
-    //         popover.style.display = 'block';
-
-    //         // Position the popover element
-    //         popover.style.left = x - popover.offsetWidth / 2 + 'px';
-    //         popover.style.top = y + 'px';
-
-    //         // Animate the slide-down effect
-    //         popover.style.opacity = 0;
-    //         popover.style.transform = 'translateY(-10px)';
-    //         popover.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
-    //         requestAnimationFrame(()=>{
-    //             popover.style.opacity = 1;
-    //             popover.style.transform = 'translateY(0)';
-    //         });
-    //     }
-    // }
 
     // Hide the popover when user clicks outside it
     document.addEventListener('click', e=> {
         let popover = e.target.closest(".history-popover");
-        //let button = document.querySelector(".history-toggle-button");
         if (!popover && !e.target.closest('.history-toggle-button')) {
             document.querySelectorAll('.history-popover').forEach(div =>{
                 div.style.display = 'none';
@@ -2649,8 +2448,7 @@ let ConsultDialog = new function () {
        let button = e.target.closest('.history-toggle-button');
        let view_name = button.dataset.viewname;
        let ticket_id = button.dataset.tid;
-    //  const toggleButton = document.querySelector('.history-toggle-button');
-        //const popover = button.closest('.consult-content-panel').querySelector('.history-popover');
+       let patient_id = button.dataset.patientid;
         const popover = button.nextElementSibling;
         mThis.toggleHistoryPopover(button,popover,ticket_id,view_name);
     });
@@ -2658,11 +2456,6 @@ let ConsultDialog = new function () {
     //NOTE: consultation data is saved automatically when user Close dialog
     this.btnSaveConsult.on('click', (e) =>{
         e.preventDefault();
-        // let p = ConsultTabView.getConsultData();
-        // vsapi.call(`${main_view.base_url}/api/consultation/save`, p).then(res => {
-        //     if (res.status_code === 200) {
-        //     }
-        // });
     
         if (ConsultDialog.invoice_item_changed){
             ConsultDialog.updateInvoice(mThis.ticket_id);
