@@ -644,7 +644,6 @@ let PrescriptionDialog = new function(){
         "showColumnHeaders": true,
         "showAddLineButton": true,
         "addLineButtonText": "Add Medication",
-        //"maxRows":"3",
         onItemChange: (row_id,item, col_name, td,tr) => {
             mThis.setItemInfo(col_name, tr);
         },
@@ -781,7 +780,6 @@ let QueueComponent = new function () {
                     vsapi.call(`${main_view.base_url}/api/ticket/create`, p).then((res) => {
                         if (res.status_code === 200) {
                             let d = (res.data || {});
-                            //let status_info = StringSanitizer.sanitizeObject(d.status_info);
                             mThis.displayTicketList();
                             cv_interact.info(['Queue Ticket: ', d.ticket_number].join(''));
                         } else cv_interact.warning(res.error_message);
@@ -1126,19 +1124,6 @@ let ConsultTabView = new function () {
         return p;
     }
 
-    // this.getDataInput_VitalSignsAutoSave = () => {
-    //     let div = $('#_consult_vt_wrapper');
-    //     let ps = [];
-    //     div.find('.consult-vt-input').each(function(){
-    //         let el = $(this);
-    //         let id = el.data('id'); //=> (vs_id,ticket_id)
-    //         let ticket_id = el.data('tid');
-    //         let vs_id = el.data('vsid'); //vital sign id
-    //         ps.push({'ticket_id':ticket_id,'id':id,'vital_sign_id':vs_id,'observed_value':el.val()});
-    //     });
-    //     return ps;
-    // }
-
     this.getDataInput_MedicalHistoryAutoSave = () => {
         let div = $('#_consult_medical_history_warpper');
         let pm = [];
@@ -1465,9 +1450,7 @@ let ConsultTabView = new function () {
          
                 el.on('change','input.consult-vt-input',e=>{
                     let el = $(e.currentTarget);
-                    //let d = mThis.getDataInput_VitalSignsAutoSave();
                     let d = {'ticket_id':ticket_id,'id':el.data('id'),'vital_sign_id':el.data('vsid'),'observed_value':el.val()};
-                    console.error(JSON.stringify(d));
                     vsapi.call(`${main_view.base_url}/api/consultation/save-vital-sign-one`,d,null,false).then(res => {
                         if(res.status_code === 200){
                             el.data('id',(res.data?res.data:{}).id);
