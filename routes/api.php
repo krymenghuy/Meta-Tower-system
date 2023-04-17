@@ -31,6 +31,7 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\QTicketController;
 use App\Http\Controllers\MedicalServiceController;
 use App\Http\Controllers\ServicePlanController;
+use App\Http\Controllers\ServiceTrackController;
 
 use App\Http\Controllers\Inventory\CategoryController;
 use App\Http\Controllers\Inventory\MIStockController;
@@ -102,6 +103,17 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('ticket/find-client', [AppointmentController::class, 'findClient']);
     //end::AppointmentController
 
+    //begin::consult-history
+     Route::post('consult/history/medical-history', [ConsultationController::class, 'getHistory_medicalHistory']);
+     Route::post('consult/history/prescription', [ConsultationController::class, 'getHistory_presciption']);
+     Route::post('consult/history/labo-tests', [ConsultationController::class, 'getHistory_labo_tests']);
+     Route::post('consult/history/services', [ConsultationController::class, 'getHistory_services']);
+     Route::post('consult/history/pe', [ConsultationController::class, 'getHistory_pe']);
+     Route::post('consult/history/diagnosis', [ConsultationController::class, 'getHistory_diagnosis']);
+     Route::post('consult/history/advice', [ConsultationController::class, 'getHistory_advice']);
+     Route::post('consult/history/followup', [ConsultationController::class, 'getHistory_followup']);
+    //end::consult-history
+
     //begin::ConsultationController 
     Route::post('consultation/save', [ConsultationController::class, 'saveConsultationData']);
     Route::post('consultation/delete', [ConsultationController::class, 'deleteConsultationData']);
@@ -121,6 +133,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('consultation/pe', [ConsultationController::class, 'getPE']);
     Route::post('consultation/save-diagnosis', [ConsultationController::class, 'saveDiagnosis']);
     Route::post('consultation/diagnosis', [ConsultationController::class, 'getDiagnosis']);
+    Route::post('consultation/followups', [ConsultationController::class, 'getFollowups']);
     Route::post('consultation/prescription', [ConsultationController::class, 'getPrescription']);
     Route::post('consultation/save-prescription-item', [ConsultationController::class, 'savePrescriptionItem']);
     Route::post('consultation/remove-prescription-item', [ConsultationController::class, 'removePrescriptionItem']);
@@ -183,6 +196,15 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('service-plan/save', [ServicePlanController::class, 'saveServicePlan']);
     Route::post('service-plan/info', [ServicePlanController::class, 'getServicePlanDetails']);
     //End::ServicePlanController
+
+    //begin::ServiceTrackController
+       Route::post('service-track/details', [ServiceTrackController::class, 'getTrackDetails']);
+       Route::post('service-track/list', [ServiceTrackController::class, 'getServiceTracks']);
+       Route::post('service-track/delete', [ServiceTrackController::class, 'deleteTrack']);
+       Route::post('service-track/create', [ServiceTrackController::class, 'createTrack']);
+       Route::post('service-track/update', [ServiceTrackController::class, 'updateTrack']);
+       Route::post('service-track/info', [ServiceTrackController::class, 'getTrackDetails']);
+    //End::ServiceTrackController
 
     //begin::ItemController
     Route::post('inventory/item-info', [ItemController::class, 'getItemInfo']);

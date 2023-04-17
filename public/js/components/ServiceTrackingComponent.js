@@ -29,7 +29,7 @@ let ServiceTrackingComponent = new function(){
 
     this.displayServiceTracking = () => {
         let data = [];
-        vsapi.call(`${main_view.base_url}/api/service-tracking`,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/service-track/list`,null).then(res => {
             if(res.status_code === 200){
                 data = StringSanitizer.sanitizeObject(res.data);
             }
@@ -40,7 +40,7 @@ let ServiceTrackingComponent = new function(){
             data: "date",
         },
         {
-            title: "Customer Name",
+            title: "Client Name",
             data: "customer_name"
         },
         {
@@ -48,8 +48,12 @@ let ServiceTrackingComponent = new function(){
             data: "service"
         },
         {
-            title: "Done By",
-            data: "done_by"
+            title: "Doctor",
+            data: "doctor_name"
+        },
+        {
+            title: "Nurse",
+            data: "first_nurse"
         },
         {
             title: "Price",

@@ -165,6 +165,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .consult-icon{
   margin-right:-9px;
 }
+.consult-title{
+  font-size:1.1em;
+  font-weight:bold;
+}
 
 .consult-menu-selected{
   padding:5px 0;
@@ -851,3 +855,59 @@ tr{
   height: calc(100vh - 106px);
   overflow-y: auto;
 }
+
+	/* Style for the popover panel */
+  .history-popover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+    z-index: 999;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+    max-height:500px;
+    animation: slidedown 0.5s ease-in-out;
+  }
+
+  .history-popover::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #fff transparent;
+  }
+
+  .history-toggle-button {
+    display: block;
+    justify-content: center;
+    align-items: center;
+    background-color: #007bff;
+    color: #fff;
+    padding: 2px 2px;
+    border-radius: 45%;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 0 0 0 4px #007bff, 0 0 0 3px #fff;
+    cursor: pointer;
+  }
+  
+  .history-toggle-button::before {
+    content: "H";
+    font-size: 0.8em;
+    color: #fff;
+  }
+  
+  
+  @keyframes slidedown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  } 
+ 
