@@ -195,14 +195,19 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('service-plan/delete', [ServicePlanController::class, 'deleteServicePlan']);
     Route::post('service-plan/save', [ServicePlanController::class, 'saveServicePlan']);
     Route::post('service-plan/info', [ServicePlanController::class, 'getServicePlanDetails']);
+    Route::post('service-plan/subscriber/list', [ServicePlanController::class, 'getSubscribers']);
+    Route::post('service-plan/subscriber/count', [ServicePlanController::class, 'getSubscriberCount']);
+    Route::post('service-plan/subscriber/add', [ServicePlanController::class, 'addSubscriber']);
+    Route::post('service-plan/subscriber/remove', [ServicePlanController::class, 'removeSubscriber']);
     //End::ServicePlanController
 
     //begin::ServiceTrackController
+    
+       Route::post('serive-track/form-options', [ServiceTrackController::class, 'getFormOptions']);
        Route::post('service-track/details', [ServiceTrackController::class, 'getTrackDetails']);
        Route::post('service-track/list', [ServiceTrackController::class, 'getServiceTracks']);
        Route::post('service-track/delete', [ServiceTrackController::class, 'deleteTrack']);
-       Route::post('service-track/create', [ServiceTrackController::class, 'createTrack']);
-       Route::post('service-track/update', [ServiceTrackController::class, 'updateTrack']);
+       Route::post('service-track/save', [ServiceTrackController::class, 'createTrack']);
        Route::post('service-track/info', [ServiceTrackController::class, 'getTrackDetails']);
     //End::ServiceTrackController
 

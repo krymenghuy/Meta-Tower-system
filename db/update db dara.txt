@@ -1,51 +1,17 @@
-#alter table inv_item_groups add cost_account_id INT default NULL;
-#alter table inv_item_groups add revenue_account_id INT default NULL;
-#alter table inv_item_groups add tax_account_id INT default NULL;
-#alter table inv_item_groups add inventory_account_id INT default NULL;
 
-#alter table inv_items add cost_account_id INT default NULL;
-#alter table inv_items add revenue_account_id INT default NULL;
-#alter table inv_items add tax_account_id INT default NULL;
-#alter table inv_items add inventory_account_id INT default NULL;
-#alter table inv_items add purchase_tax_rate decimal(10,2) default 0;
-#alter table inv_item_groups add purchase_tax_rate decimal(10,2) default 0;
+#online => create table services_performed
 
-alter table patient_vital_signs change vital_sign_value vital_sign_value varchar(50)
-
-insert into inv_brands (id,name,branch_id) values(1,'General Brand',1);
-select * from inv_brands
-
-alter table patient_vital_signs change vital_sign_value vital_sign_value varchar(50)
-
-insert into inv_brands (id,name,branch_id) values(1,'General Brand',1);
-select * from inv_brands
-
-
-alter table patients add `name` varchar(150);
-update patients set `name` = (select concat(last_name,' ',first_name) from persons where id = person_id LIMIT 1);
-select name from patients;
-
-
---===================
-
-DELIMITER ;;
-create function getPatientName(cid INT)
-returns varchar(150)
+create function getEmpName(empid int)
+returns varchar(100)
 BEGIN
- declare cname varchar(150);
- set cname = (select `name`from patients where id = cid LIMIT 1);
- return cname;  
-end
-;;
-DELIMITER ;
+ declare ename varchar(100);
+ SET ename = (select concat(p.last_name,' ',p.first_name) from employees as e inner join persons as p ON p.id = e.person_id WHERE e.id = empid LIMIT 1);
+ return ename; 
+END;
 
-DELIMITER ;;
-create function getCustomerName(cid INT)
-returns varchar(150)
-BEGIN
- declare cname varchar(150);
- set cname = (select `name`from customers where id = cid LIMIT 1);
- return cname;  
-end
-;;
-DELIMITER ;
+alter table services_performed add doctor_commission decimal(10,2) default 0;
+alter table services_performed add first_nurse_commission decimal(10,2) default 0;
+alter table services_performed add service_date date default null;
+
+alter table plan_subscriptions add start_date date default NULL;
+alter table plan_subscriptions add end_date date default NULL;
