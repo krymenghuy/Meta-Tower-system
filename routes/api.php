@@ -207,7 +207,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
        Route::post('service-track/details', [ServiceTrackController::class, 'getTrackDetails']);
        Route::post('service-track/list', [ServiceTrackController::class, 'getServiceTracks']);
        Route::post('service-track/delete', [ServiceTrackController::class, 'deleteTrack']);
-       Route::post('service-track/save', [ServiceTrackController::class, 'createTrack']);
+       Route::post('service-track/save', [ServiceTrackController::class, 'saveTrack']);
        Route::post('service-track/info', [ServiceTrackController::class, 'getTrackDetails']);
     //End::ServiceTrackController
 

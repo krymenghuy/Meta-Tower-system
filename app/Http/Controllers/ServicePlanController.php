@@ -39,15 +39,17 @@ class ServicePlanController extends Controller
    function removeSubscriber(Request $req){
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !==200) return JDV::raw($ss);
-    $sp = new ServicePlan($req->id,$ss);
-    return JDV::result($sp->removeSubscriber($req->client_id));
+    $id = $req->service_plan_id? $req->service_plan_id : $req->id;
+    $sp = new ServicePlan($id,$ss);
+    return JDV::raw($sp->removeSubscriber($req->client_id));
    }
    
    function addSubscriber(Request $req){
-    $ss = UM::getUserInfoByToken($req,-1);
-    if($ss->status_code !==200) return JDV::raw($ss);
-    $sp = new ServicePlan($req->id,$ss);
-    return JDV::result($sp->addSubscriber($req->client_id));
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      $id = $req->service_plan_id? $req->service_plan_id : $req->id;
+      $sp = new ServicePlan($id,$ss);
+      return JDV::raw($sp->addSubscriber($req->client_id));
    }
 
    function getSubscribers(Request $req){

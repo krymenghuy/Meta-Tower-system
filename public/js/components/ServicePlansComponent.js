@@ -27,6 +27,21 @@ let ServicePlansComponent = new function () {
             ServicePlanDialog.show(op);
         });
 
+        mThis.div_container.on('click','.btn-add-member',e=>{
+
+        });
+
+        mThis.div_container.on('click','.btn-members',e=>{
+          e.preventDefault();
+          let lnk = e.target.closest('.btn-members');
+          let id = lnk.dataset.id;
+          let op = {'id':id,'onClose':(e)=>{
+
+          }};
+
+          MembersDialog.show(op);
+        });
+
         mThis.div_container.on('click','.btn-delete-plan',function(e){
           e.preventDefault();
           let x = $(this);
@@ -112,7 +127,7 @@ let ServicePlansComponent = new function () {
                 <div class="col-3 p-1">
                   <h5>Members</h5>
                   <span class="d-block p-2 fw-bold">25</span>
-                  <span class="d-block"><a href="javascript:void(0)" data-id="${c.id}"><i class="fa fa-plus-circle"></i></a>&nbsp;<a href="javascript:void(0)" data-id="${c.id}"><i class="fa fa-list-alt"></i></a></span>
+                  <span class="d-block"><a href="javascript:void(0)" class="btn-add-member" data-id="${c.id}"><i class="fa fa-plus-circle"></i></a>&nbsp;<a href="javascript:void(0)" class="btn-members" data-id="${c.id}"><i class="fa fa-list-alt"></i></a></span>
                 </div>
                 <div class="col-3 p-1">
                   <h5>Price</h5>
@@ -175,6 +190,110 @@ let ServicePlanDialog = new function () {
         mThis.prepareFormOptions(options.department_id, () => {
             mThis.formUntil.show(options);
         })
+    }
+}
+
+let MembersDialog = new function(){
+    let mThis = this;
+    this.self = $('#st_dlgSubsribers');
+    this.elTitle = $('#st_dlgSubsribers_title');
+
+    this.tblMembers = $('#sp_tblMembers_body');
+    this.tblMembers_tbody = $('#sp_tblMembers_body');
+    this.btnAddMember = $(`#sp_btnAddMember`);
+    this.elPhone = $('#st_add_member_phone');
+    this.elName = $('#st_add_member_name');
+
+    this.btnNewMember = $('#sp_btnNewMember');
+    this.btnCancelNewMember = $('#sp_btnCancelNewMember');
+    this.btnClose = $(`#st_dlgSubsribers_btnClose`);
+    this.div_add_member = $('#st_div_add_member');
+
+    this.btnNewMember.on('click',(e)=>{
+       mThis.div_add_member.addClass('active');
+    });
+
+    this.btnCancelNewMember.on('click',(e)=>{
+        mThis.div_add_member.removeClass('active');
+    });
+    
+    this.elPhone.on('blur',(e)=>{
+        mThis.findClient();
+    });
+
+    this.elPhone.on('keyup',(e)=>{
+       e.preventDefault();
+       if(e.key==='Enter'){
+        mThis.findClient();
+       }
+    });
+
+    this.btnAddMember.off('click').on('click',(e)=>{
+        e.preventDefault();
+        vsapi.call(`${main_view.base_url}/api/service-plan/subscriber/add`,{'client_id':this.client_id,'service_plan_id':mThis.service_plan_id},null,false).then(res=>{
+            if(res.status_code===200){
+              let d = res.data;  
+              mThis.displayMembers(d.members);
+            }else cv_interact.error(res.error_message);
+        });
+    })
+
+    this.tblMembers_tbody.on('click','a.sp-btn-remove-member',function(e){
+        e.preventDefault();
+        let client_id = $(this).data('clientid');
+        let p = {'service_plan_id':mThis.service_plan_id,'client_id':client_id};
+        cv_interact.confirm('Remove this subscriber?',{title:'Remove Subscriber','context':'delete'},(e)=>{
+            if(e){
+                vsapi.call(`${main_view.base_url}/api/service-plan/subscriber/remove`,p,null,false).then(res=>{
+                    if(res.status_code===200){
+                        mThis.displayMembers(res.data.members);
+                    }else cv_interact.error(res.error_message);
+                });
+            }
+        });      
+    });
+
+    this.findClient = ()=>{
+        vsapi.call(`${main_view.base_url}/api/appointment/find-client`,{'search_value':this.elPhone.val()},null,false).then(res=>{
+            if(res.status_code===200){
+               let d = res.data?res.data:{};
+               mThis.elName.val(d.name);
+               mThis.client_id = d.id;  
+            }
+        });
+    }
+ 
+    this.displayMembers = (members=[])=>{
+        mThis.tblMembers_tbody.empty();
+        let i =0,c=null;
+            do{
+               c = members[i];
+               if(!c) break;
+               let html = [`<tr><td>${(i+1)}</td><td>`,c.code,`</td><td>`,c.name,`</td><td>`,c.sex,`</td><td>`,c.phone_number,`</td><td>`,c.email,`</td><td><a href="javascript:void(0)" class="sp-btn-remove-member" data-id="${c.id}" data-clientid="${c.client_id}"><i class="fa fa-times" style="color:red"></i></a></td></tr>`].join('');
+               mThis.tblMembers_tbody.append(html);
+               i++;
+            }while(c);        
+    }
+
+    this.refreshMembers = ()=>{
+        vsapi.call(`${main_view.base_url}/api/service-plan/subscriber/list`,{'id':mThis.service_plan_id},null,false).then(res=>{
+            if(res.status_code===200){
+              let rows = res.data;
+              mThis.displayMembers(rows);
+            }
+        });
+    }
+
+    this.show = (options)=>{
+       options = options?options:{};
+       mThis.service_plan_id = options.id;
+       mThis.div_add_member.removeClass('active');
+
+       mThis.elTitle.text('Subscribers');
+       mThis.refreshMembers(); 
+       mThis.self.modal({
+        backdrop:true
+       });
     }
 }
 

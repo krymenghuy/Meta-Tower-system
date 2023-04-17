@@ -32,7 +32,7 @@
                         <label class="form-label trans-text" data-langprop="titles.Customer"></label>
                     </div>
                     <div class="col-lg-8">
-                        <select id="st_dlgService_client" class="form-select modal-select2 data-input" data-field="customer"></select>
+                        <select id="st_dlgService_client" class="form-select modal-select2 data-input" data-field="client_id"></select>
                     </div>
                 </div>
                
@@ -50,7 +50,7 @@
                         <label class="form-label trans-text" data-langprop="titles.Service"></label>
                     </div>
                     <div class="col-lg-8">
-                        <select id ="st_dlgService_service" class="modal-select2 data-input" data-field="service"></select>
+                        <select id ="st_dlgService_service" class="modal-select2 data-input" data-field="service_id"></select>
                     </div>
                 </div>
            
@@ -119,3 +119,4 @@
         </div>
     </div>
 </div>
+

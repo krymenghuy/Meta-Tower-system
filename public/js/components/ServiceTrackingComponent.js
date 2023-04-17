@@ -42,15 +42,15 @@ let ServiceTrackingComponent = new function(){
         
         let columns = [{
             title: "Date",
-            data: "date",
+            data: "service_date",
         },
         {
             title: "Client Name",
-            data: "customer_name"
+            data: "client_name"
         },
         {
             title: "Service",
-            data: "service"
+            data: "service_name"
         },
         {
             title: "Doctor",
@@ -58,15 +58,20 @@ let ServiceTrackingComponent = new function(){
         },
         {
             title: "Nurse",
-            data: "first_nurse"
+            data: "first_nurse_name"
         },
+        // {
+        //     title: "Price",
+        //     data: "price"
+        // },
+
+        // {
+        //     title: "Commission",
+        //     data: "doctor_commission"
+        // },
         {
-            title: "Price",
-            data: "price"
-        },
-        {
-            title: "Commission",
-            data: "commission"
+          title:"Updated By",
+          data:"create_user"
         },
         {
             title: "Action",
@@ -188,9 +193,9 @@ let ServiceTrackingDialog = new function(){
         //if options.id is supplied, then d.data is available with details of service_track
         mThis.loadFormOptions(options.id,(d)=>{
             VSUtil.setComboItems(mThis.elService,d.options_service,'id','service_name',null,null,null);
-            VSUtil.setComboItems(mThis.elServicePlan,d.options_service_plan,'id','service_plan_name',null,null,null);
-            VSUtil.setComboItems(mThis.elDoctor,d.options_doctor,'id','name',null,null,null);
-            VSUtil.setComboItems(mThis.elFirstNurse,d.options_nurse,'id','name',null,null,null);
+            VSUtil.setComboItems(mThis.elServicePlan,d.options_service_plan,'id','service_plan_name',true,"(None)",null);
+            VSUtil.setComboItems(mThis.elDoctor,d.options_doctor,'id','name',true,"(None)",null);
+            VSUtil.setComboItems(mThis.elFirstNurse,d.options_nurse,'id','name',true,"(None)",null);
             VSUtil.setComboItems(mThis.elClient,d.options_client,'id','client_name',null,null,null);
 
             if(d.service_track){
@@ -205,7 +210,7 @@ let ServiceTrackingDialog = new function(){
         });
     }
 }
-
+ 
 window.addEventListener('DOMContentLoaded',() => {
     ServiceTrackingComponent.init();
 });
