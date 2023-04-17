@@ -174,6 +174,14 @@
                                             </span>
                                             <a href="javascript:void(0)" data-viewname="service" class="nav-link trans-text" data-langprop="consult.Service"></a>
                                         </li>
+
+                                        <li class="nav-item consult-style-custom d-flex align-items-center">
+                                            <span class="consult-icon">
+                                                <img class="size_of_icons_consult" src="{{ asset('assets/images/icons/service.svg') }}"/>
+                                            </span>
+                                            <a href="javascript:void(0)" data-viewname="followup" class="nav-link trans-text" data-langprop="consult.Followup"></a>
+                                        </li>
+
                                         <li class="nav-item consult-style-custom d-flex align-items-center">
                                             <span class="consult-icon">
                                                 <img class="size_of_icons_consult" src="{{ asset('assets/images/icons/recommendations.svg') }}"/>

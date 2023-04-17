@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\UM;
 use App\Models\JDV;
 use App\Models\Consultation;
+use App\Models\PatientHistory;
 
 class ConsultationController extends Controller
 {
@@ -227,6 +228,14 @@ class ConsultationController extends Controller
         return JDV::result($c->getDiagnosis());
     }
 
+    function getFollowups(Request $req){
+        $ss = UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $id = $req->ticket_id?$req->ticket_id:$req->id;
+        $c = new Consultation($id,$ss);
+        return JDV::result($c->getFollowups());
+    }
+
     function saveDiagnosis(Request $req){
         $ss = UM::getUserInfoBytoken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
@@ -264,10 +273,71 @@ class ConsultationController extends Controller
     function getLaboTestData(Request $req){
         $ss = UM::getUserInfoBytoken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
-        $section_name = $req->section_name;
+        //$section_name = $req->section_name;
         $c = new Consultation($req->ticket_id,$ss);
         $data = $c->getLaboTestData();
         return JDV::result($data);
     }
 
+    function getHistory_medicalHistory(Request $req){
+        $ss = UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $p = new PatientHistory($req->patient_id,$ss);
+        $data = $p->medicalHistory();
+        return JDV::result($data);
+    }
+
+    function getHistory_pe(Request $req){
+        $ss = UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $p = new PatientHistory($req->patient_id,$ss);
+        $data = $p->pe();
+        return JDV::result($data);
+    }
+
+    function getHistory_labo(Request $req){
+        $ss = UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $p = new PatientHistory($req->patient_id,$ss);
+        $data = $p->labo_tests();
+        return JDV::result($data);
+    }
+
+    function getHistory_diagnosis(Request $req){
+        $ss = UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $p = new PatientHistory($req->patient_id,$ss);
+        $data = $p->diagnosis();
+        return JDV::result($data);
+    }
+
+    function getHistory_prescription(Request $req){
+        $ss = UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $p = new PatientHistory($req->patient_id,$ss);
+        $data = $p->prescription();
+        return JDV::result($data);
+    }
+
+    function getHistory_services(Request $req){
+        $ss = UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $p = new PatientHistory($req->patient_id,$ss);
+        $data = $p->services();
+        return JDV::result($data);
+    }
+    function getHistory_advice(Request $req){
+        $ss = UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $p = new PatientHistory($req->patient_id,$ss);
+        $data = $p->advice();
+        return JDV::result($data);
+    }
+    function getHistory_followup(Request $req){
+        $ss = UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $p = new PatientHistory($req->patient_id,$ss);
+        $data = $p->followups();
+        return JDV::result($data);
+    }
 }

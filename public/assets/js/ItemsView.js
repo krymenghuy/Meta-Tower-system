@@ -180,7 +180,7 @@ class ItemsView{
           this.table.style.display = 'block';
           this.table.style.width = '100%';
           this.table.style.tableLayout = 'fixed';
-          this.table.style.height = `${tbodyHeight + thead.offsetHeight}px`;
+          this.table.style.height = `${tbodyHeight +  (thead? thead.offsetHeight:0)}px`;
           this.table.style.overflowY = 'hidden';
           tbody.style.display = 'block';
           //tbody.style.width = '100%';
