@@ -932,3 +932,20 @@ tr {
     transform: translateY(0);
   }
 }
+
+/** div with class "div-show" is hidden by default, then "active" class is added, div will be displayed  **/
+.div-show {
+  overflow: hidden;
+  height: 0;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s linear 0.3s, opacity 0.3s linear, height 0.3s ease-in-out;
+}
+
+.div-show.active {
+  visibility: visible;
+  opacity: 1;
+  height: auto;
+  transition-delay: 0s, 0s, 0.3s;
+}
+

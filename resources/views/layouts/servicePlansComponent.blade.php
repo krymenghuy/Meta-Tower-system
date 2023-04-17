@@ -62,3 +62,57 @@
         </div>
     </div>
 </div>
+
+<div id="st_dlgSubsribers" class="modal fade" tabindex="-1" aria-labelledby="st_dlgSubsribers_title" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fs-5"><span class="trans-text" data-langprop="titles.Subscribers" id="st_dlgSubsribers_title">Members</span> &nbsp;<a href="javascript:void(0);" id="sp_btnNewMember"><i class="fa fa-plus-circle"></i></a></h5>
+            </div>
+            <div class="modal-body">
+                <div class="div-show" id="st_div_add_member">
+                   <div class="border border-rounded-3 border-secondary p-2" style="border-radius:5px">
+                        <div class="row">
+                                <div class="form-group col-6">
+                                        <span class="simple-label">Client Phone</span>
+                                        <div><input id="st_add_member_phone" type="text" class="form-control"></div>
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <span class="simple-label">Client Name</span>
+                                        <div><input id="st_add_member_name" type="text" class="form-control"></div>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <div class="form-inline">
+                                        <button id="sp_btnCancelNewMember" class="btn-sm btn-outline-danger">Cancel</button>&nbsp;
+                                        <button id="sp_btnAddMember" class="btn-sm btn-outline-primary">Add Member</button>
+                                        </div>
+                                    </div>
+                        </div>
+                   </div> 
+                </div>
+               <div>
+                  <table id="sp_tblMembers" class="table">
+                     <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Client ID</th>
+                            <th>Name</th>
+                            <th>Sex</th>
+                            <th>Phone Number</th>
+                            <th>Email</th>
+                            <th>Action</th>
+                        </tr>
+                     </thead>
+                     <tbody id="sp_tblMembers_body">
+                     </tbody>
+                  </table>
+               </div> 
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                    <span class="trans-text" data-langprop="buttons.Close"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

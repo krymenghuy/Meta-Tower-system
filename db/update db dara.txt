@@ -1,13 +1,17 @@
 
-#online => create table services_performed
+#--online => create table services_performed
 
+DROP FUNCTION IF EXISTS `getEmpName`
+DELIMITER ;;
 create function getEmpName(empid int)
-returns varchar(100)
+returns varchar(100) deterministic
 BEGIN
  declare ename varchar(100);
  SET ename = (select concat(p.last_name,' ',p.first_name) from employees as e inner join persons as p ON p.id = e.person_id WHERE e.id = empid LIMIT 1);
  return ename; 
-END;
+END
+;;
+DELIMITER ;
 
 alter table services_performed add doctor_commission decimal(10,2) default 0;
 alter table services_performed add first_nurse_commission decimal(10,2) default 0;
@@ -15,3 +19,5 @@ alter table services_performed add service_date date default null;
 
 alter table plan_subscriptions add start_date date default NULL;
 alter table plan_subscriptions add end_date date default NULL;
+alter table services_performed add client_id INT default NULL;
+alter table services_performed add invoice_number varchar(35);

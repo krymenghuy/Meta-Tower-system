@@ -5,6 +5,7 @@ namespace App\Models;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
 use App\Models\DV;
+use App\Models\Invoice\InvoiceSettings;
 //use App\Models\PublicStorage;
 use DB;
 
@@ -128,18 +129,20 @@ class ServicePlan //extends Model
         $service_plan_id =$id?$id:$this->getId();
         $ss =$ss?$ss:$this->getUserInfo();
         $branch_id = $ss->branch_id;
+        if(!$client_id) return Dv::error("Invalid client ID");
         $remarks ="";
         $rows = DB::table('plan_subscriptions')->where('branch_id',$branch_id)->where('client_id',$client_id)->where('service_plan_id',$service_plan_id)->select('id')->take(1)->get();
         $id =null;
         if(!isset($rows[0])){
-            $id = saveData($ss,'plan_subscriptions',[
+            $id = saveData($ss,'plan_subscriptions',['id'=>null],[
                 'client_id'=>$client_id,
                 'service_plan_id'=>$service_plan_id,
                 'remarks'=>$remarks
             ],[],1);
+            self::refreshMemberCount($branch_id,$service_plan_id);
         }else $id = $rows[0]->id;
-
-        return DV::depends($id,['id'=>$id],"Something went wrong saving Service Plan Subscription");
+       
+        return DV::depends($id,['id'=>$id,'members'=>$this->getSubscribers($service_plan_id,$ss)],"Something went wrong saving Service Plan Subscription");
     }
 
     function removeSubscriber($client_id,$id=null,$ss=null){
@@ -147,13 +150,18 @@ class ServicePlan //extends Model
         $ss =$ss?$ss:$this->getUserInfo();
         $branch_id = $ss->branch_id;
         $x = DB::table('plan_subscriptions')->where('branch_id',$branch_id)->where('client_id',$client_id)->where('service_plan_id',$service_plan_id)->delete();
-        return DV::success();
+        self::refreshMemberCount($branch_id,$service_plan_id);
+        return DV::depends(1,['members'=>$this->getSubscribers($id,$ss)]);
     }
+   static function refreshMemberCount($branch_id,$id){
+      DB::statement(DB::raw("update service_plans set member_count = (select COUNT(p.id) FROM plan_subscriptions as p where p.service_plan_id =$id AND p.branch_id =$branch_id) where id =$id and $branch_id =$branch_id"));
+   }
 
    function getSubscribers($id=null,$ss=null){
      $service_plan_id =$id?$id:$this->getId();
      $ss =$ss?$ss:$this->getUserInfo();
-     return [];
+     $customer_table = InvoiceSettings::$customer_table;
+     return DB::table("plan_subscriptions as l")->join($customer_table." as c","c.id",'=',"l.client_id")->join('persons as p','p.id','=','c.person_id')->where('l.service_plan_id',$service_plan_id)->selectRaw("l.id,c.id as client_id,c.code,concat(p.last_name,' ',p.first_name) as name,p.sex,p.email,p.phone_number, p.address,p.created_at,p.create_user")->orderBy('name','ASC')->get();
    }
    function getSubscriberCount($id=null,$ss=null){
     $service_plan_id =$id?$id:$this->getId();

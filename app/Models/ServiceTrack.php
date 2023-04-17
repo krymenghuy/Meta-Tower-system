@@ -56,12 +56,13 @@ class ServiceTrack //extends Model
       return self::details($id,$ss);
     }
     
-    function save($arr=[],$ss){
-       $branch_id = $ss->branch_id;
+    function save($arr=[],$ss=null){
+        $ss = $ss?$ss:$this->getUserInfo();
+        $branch_id = $ss->branch_id;
        $customer_table = InvoiceSettings::$customer_table; 
        $v_rule = [
         'id'=>'0|number|identity=1',
-        'date'=>'0|date',
+        'service_date'=>'0|date',
         'client_id'=>"1|number|exists=$customer_table.id",
         'service_id'=>"1|number|exists=medical_services.id",
         "doctor_id"=>"0|number|exists=employees.id|text=Doctor ID is not valid",
@@ -69,7 +70,7 @@ class ServiceTrack //extends Model
         "doctor_commission"=>"0|number",
         "first_nurse_commission"=>"0|number",
         "service_plan_id"=>"0|number|exists=medical_services.id|Service Plan ID is not valid",
-        "invoice_number"=>"0|number|exists=invoices.ref_number|text=Invoice number not valid or does not exist"
+        "invoice_number"=>"0|number"
        ];
 
        $res = validateObject($arr,$v_rule,true,[],$ss->lang,false,null);
@@ -81,7 +82,7 @@ class ServiceTrack //extends Model
        $inputs['service_date'] =getNowTime();
        $serviceInfo = self::serviceInfo($inputs['service_id']);
        if(!$serviceInfo) return DV::error("Service ID id not valid or does not exist");
-       $inputs['price'] = $serviceInfo->selling_price;
+       $inputs['price'] = $serviceInfo->selling_price?$serviceInfo->selling_price:0;
 
        $client_id = $inputs['client_id'];
        $invoice_number = $inputs['invoice_number'];
@@ -91,17 +92,21 @@ class ServiceTrack //extends Model
             if(!self::client_has_plan($branch_id,$client_id,$service_plan_id)){
                 return DV::error("This client does not seem to have subscribed to the provided Service Plan");
             }
+            //If there is valid Service Plan provided, that means there is no need of invoice
+            $inputs['invoice_id']=null;
         }else{
             $invoice = self::getInvoiceInfo($branch_id,$invoice_number,$client_id);
             if(!$invoice) return DV::error('Invoice Number is not valid or does not belong this customer');
+            //If there is valid invoice number provided, that means there is no subscribed service plan
+            $inputs['service_plan_id']=null;
         }
        
-       $id = saveData($ss,"services_performed",$inputs,[],1);
+       $id = saveData($ss,"services_performed",['id'=>null],$inputs,[],1);
        return DV::depends($id,['id'=>$id],"Something went wrong when saving Service Track");
     }
 
     static function getInvoiceInfo($branch_id,$invoice_number,$client_id){
-        $rows = DB::table('invoices as v')->where('branch_id',$branch_id)->where('ref_number',$invoice_number)->where('v.customer_id',$client_id)->selectRaw("id")->take(1)->get();
+        $rows = DB::table('invoices as v')->where('v.branch_id',$branch_id)->where('ref_number',$invoice_number)->where('v.customer_id',$client_id)->selectRaw("id")->take(1)->get();
         return isset($rows[0])? $rows[0]:null; 
     }
 
@@ -121,8 +126,9 @@ class ServiceTrack //extends Model
         $str_dates ="1=1";
         $str_search="1=1";
         $branch_id = $ss->branch_id;
-        $cols ="s.id,s.doctor_id,s.first_nurse_id,s.second_nurse_id,s.patient_id,s.service_id,s.service_plan_id,s.created_at,s.create_user,s.create_uid,s.updated_at,s.update_user";
-        return  DB::table('services_performed as s')->whereRaw($str_dates)->whereRaw($str_search)->where('branch_id',$branch_id)->selectRaw($cols)->get();
+        $customer_table = InvoiceSettings::$customer_table;
+        $cols ="s.id,s.doctor_id,DATE_FORMAT(s.service_date,'%d %b %Y') AS service_date,s.first_nurse_id,getEmpName(doctor_id) AS doctor_name, getEmpName(first_nurse_id) as first_nurse_name,s.second_nurse_id, CONCAT(p.last_name,' ',p.first_name) as client_name,ms.name as service_name,s.patient_id,s.service_id,s.service_plan_id,s.created_at,s.create_user,s.create_uid,s.updated_at,s.update_user";
+        return  DB::table('services_performed as s')->join('medical_services as ms','ms.id','=','s.service_id')->join($customer_table." as c","c.id","=","s.client_id")->join('persons as p','p.id','=','c.person_id')->whereRaw($str_dates)->whereRaw($str_search)->where('s.branch_id',$branch_id)->selectRaw($cols)->get();
     }
 
     function getList($filter=[],$ss=null){
