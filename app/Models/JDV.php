@@ -134,5 +134,4 @@ class JDV
    static function raw($data){
     return response()->json($data);
    }
-
 }
