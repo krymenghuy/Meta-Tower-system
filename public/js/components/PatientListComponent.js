@@ -154,6 +154,8 @@ let PatientListComponent = new function () {
         let cur_symbol = d.currency_code ==='USD'?'$':'៛';
         d.patient_type = d.patient_type?d.patient_type:'OPD'; // OPD, IPD
         d.email =d.email?d.email:'NA';
+        d.profile_url = d.profile_url?d.profile_url:[main_view.asset_url,'/images/icons/care.jpg'].join('');
+
         d.date_of_birth =d.date_of_birth?d.date_of_birth:'(No available)';
         d.has_membership_card = d.has_membership_card?d.has_membership_card:'No';
         d.address = d.address?d.address:'(Not available)';
@@ -161,13 +163,13 @@ let PatientListComponent = new function () {
         ps.consultation_count =ps.consultation_count?ps.consultation_count:0;
         ps.total_open_amount = ps.total_open_amount?ps.total_open_amount:0;
         ps.invoice_count = ps.invoice_count?ps.invoice_count:0;   
-
+      
         let html_patient_row =`
         <div class="card" style="margin-top:5px">
         <div class="card-body d-flex">
          <div class="d-flex align-items-center flex-column justify-content-center">
                  <div class="rounded-circle overflow-hidden mx-3" style="width: 120px; height: 120px;">
-                     <img id="profile_photo_${d.id}" src="${d.profile_url?d.profile_url:''}" alt="Image" class="profile-photo w-100 h-100">
+                     <img id="profile_photo_${d.id}" src="${d.profile_url}" alt="Image" class="profile-photo w-100 h-100">
                  </div>
                  <div class="d-flex flex-column justify-content-center m-1">
                      <a data-id="${d.id}" data-code="${d.code}" href="javascript:void(0)" class="border border-3 border-secondary border-rounded-4 p-2 align-self-start ptl-btn-choose-photo"><i class="fa fa-pencil text-secondary"></i></a>

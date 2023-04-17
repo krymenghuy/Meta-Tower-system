@@ -449,6 +449,19 @@ class Consultation //extends Model
         $ss = $ss? $ss : $this->getUserInfo();  
        return [getDataRow('patient_diagnosis',['ticket_id'=>$ticket_id,'category'=>'General'],"category,content")];
     }
+
+    function getFollowups($ticket_id=null,$ss=null){
+        $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
+        $ss = $ss? $ss : $this->getUserInfo();  
+       return (object)[
+        'followup_status_id'=>1,
+        'followup_remarks'=>'Some remarks about this followup', /** for doctor himself or other doctor who would meet this patient this case to see **/
+        'consultant_id'=>null,
+        //Each appointment = {arrival_date,arrival_time,consultant_id,remarks,appt_type='followup'}
+        'appointments'=>[]
+       ];
+    }
+    
     
     function saveAdvice($items,$ticket_id=null,$ss=null){
         $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
