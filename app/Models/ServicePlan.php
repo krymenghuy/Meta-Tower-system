@@ -123,5 +123,41 @@ class ServicePlan //extends Model
         return Db::table('service_plan_items as t')->join('medical_services as s','s.id','=','t.service_id')->where('t.service_plan_id',$id)->selectRaw($cols)->orderBy('s.id','DESC')->get();
  
     }
+   
+    function addSubscriber($client_id,$id=null,$ss=null){
+        $service_plan_id =$id?$id:$this->getId();
+        $ss =$ss?$ss:$this->getUserInfo();
+        $branch_id = $ss->branch_id;
+        $remarks ="";
+        $rows = DB::table('plan_subscriptions')->where('branch_id',$branch_id)->where('client_id',$client_id)->where('service_plan_id',$service_plan_id)->select('id')->take(1)->get();
+        $id =null;
+        if(!isset($rows[0])){
+            $id = saveData($ss,'plan_subscriptions',[
+                'client_id'=>$client_id,
+                'service_plan_id'=>$service_plan_id,
+                'remarks'=>$remarks
+            ],[],1);
+        }else $id = $rows[0]->id;
 
+        return DV::depends($id,['id'=>$id],"Something went wrong saving Service Plan Subscription");
+    }
+
+    function removeSubscriber($client_id,$id=null,$ss=null){
+        $service_plan_id =$id?$id:$this->getId();
+        $ss =$ss?$ss:$this->getUserInfo();
+        $branch_id = $ss->branch_id;
+        $x = DB::table('plan_subscriptions')->where('branch_id',$branch_id)->where('client_id',$client_id)->where('service_plan_id',$service_plan_id)->delete();
+        return DV::success();
+    }
+
+   function getSubscribers($id=null,$ss=null){
+     $service_plan_id =$id?$id:$this->getId();
+     $ss =$ss?$ss:$this->getUserInfo();
+     return [];
+   }
+   function getSubscriberCount($id=null,$ss=null){
+    $service_plan_id =$id?$id:$this->getId();
+    $ss =$ss?$ss:$this->getUserInfo();
+    return 1;
+  }
 }

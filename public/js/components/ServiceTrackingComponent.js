@@ -12,7 +12,7 @@ let ServiceTrackingComponent = new function(){
             let op = {
                 'id': 0,
                 'onClose': (e) => {
-                    if(e) mThis.displayServiceTracking();
+                    if(e) mThis.displayServiceTracks();
                 }
             };
             ServiceTrackingDialog.show(op);
@@ -27,14 +27,19 @@ let ServiceTrackingComponent = new function(){
         });
     }
 
-    this.displayServiceTracking = () => {
-        let data = [];
+    this.loadServiceTracks = (onFinish)=>{
         vsapi.call(`${main_view.base_url}/api/service-track/list`,null).then(res => {
             if(res.status_code === 200){
-                data = StringSanitizer.sanitizeObject(res.data);
+                let data = StringSanitizer.sanitizeObject(res.data);
+                mThis.displayServiceTracks(data);
+                if(typeof onFinish==='function') onFinish(data);
             }
         });
+    }
 
+    
+    this.displayServiceTracks = (data) => {
+        
         let columns = [{
             title: "Date",
             data: "date",
@@ -110,7 +115,7 @@ let ServiceTrackingComponent = new function(){
 
     this.show = (options) => {
         if(!options) options = {};
-        mThis.displayServiceTracking(() => {
+        mThis.loadServiceTracks(() => {
             main_view.setTitle(mThis.title_prop);
             mThis.self.show().siblings().hide();
         });
@@ -119,18 +124,23 @@ let ServiceTrackingComponent = new function(){
 
 let ServiceTrackingDialog = new function(){
     let mThis = this;
-    this.self = $('#st_dlg_Service_Tracking');
-    this.btnSave = $('#st_dlg_Service_Tracking_btnSave');
-    this.dlgTitle = $('#st_dlg_Service_Tracking_title');
+    this.self = $('#st_dlgService_Tracking');
+    this.btnSave = $('#st_dlgService_Tracking_btnSave');
+    this.dlgTitle = $('#st_dlgService_Tracking_title');
+    this.elService = $('#st_dlgService_service');
+    this.elServicePlan = $('#st_dlgService_service_plan');
+    this.elDoctor = $('#st_dlgService_doctor');
+    this.elFirstNurse = $('#st_dlgService_first_nurse');
+    this.elClient = $('#st_dlgService_client');
 
     mThis.btnSave.on('click',(e) => {
         e.preventDefault();
         let p = mThis.getDataForm();
-        vsapi.call(`${main_view.base_url}/api/service-tracking-save`,p).then(res => {
+        vsapi.call(`${main_view.base_url}/api/service-track/save`,p,null,false).then(res => {
             if(res.status_code === 200){
-                cv_interact.success("Service Saved Success!");
+                cv_interact.success("Service track saved!");
                 mThis.self.modal('hide');
-                ServiceTrackingComponent.displayServiceTracking();
+                ServiceTrackingComponent.loadServiceTracks();
             }
             else
                 cv_interact.error(res.error_message);
@@ -138,12 +148,13 @@ let ServiceTrackingDialog = new function(){
     });
 
     this.getDataForm = () => {
-        let p = [];
+        let p = {};
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
             p[f] = el.val();
         });
+        p.id = mThis.service_track_id;
         return p;
     }
 
@@ -158,30 +169,40 @@ let ServiceTrackingDialog = new function(){
         });
     }
     
+    this.loadFormOptions =(id,onFinish)=>{
+       vsapi.call(`${main_view.base_url}/api/serive-track/form-options`,{'id':id},null,false).then(res=>{
+            if(res.status_code===200){
+                //data ={'service_track','option_service','option_service_plan'}
+                //data.service_track is the service_track details in case of "Edit" mode
+                let data = res.data;
+                onFinish(data);
+            }
+       });
+    }
+
     this.show = (options) => {
         if(!options) options = {};
-        if(options.id > 0){
-            let data = [];
-            mThis.dlgTitle.text("Modify Service Tracking");
-            vsapi.call(`${main_view.base_url}/api/service-tracking-details`,options.id,null,false).then(res => {
-                if(res.status_code === 200){
-                    data = StringSanitizer.sanitizeObject(res.data);
-                }
-                else
-                    cv_interact.error(res.error_message);
-            });
-            mThis.setDataForm(data);
+        //This "id" is used in case of Update
+        mThis.service_track_id = options.id;
+
+        //if options.id is supplied, then d.data is available with details of service_track
+        mThis.loadFormOptions(options.id,(d)=>{
+            VSUtil.setComboItems(mThis.elService,d.options_service,'id','service_name',null,null,null);
+            VSUtil.setComboItems(mThis.elServicePlan,d.options_service_plan,'id','service_plan_name',null,null,null);
+            VSUtil.setComboItems(mThis.elDoctor,d.options_doctor,'id','name',null,null,null);
+            VSUtil.setComboItems(mThis.elFirstNurse,d.options_nurse,'id','name',null,null,null);
+            VSUtil.setComboItems(mThis.elClient,d.options_client,'id','client_name',null,null,null);
+
+            if(d.service_track){
+                mThis.dlgTitle.text("Modify Service Track");
+            }else{
+                mThis.dlgTitle.text("New Service Track");
+            }
+            mThis.setDataForm(d.data);
             mThis.self.modal({
                 backdrop: 'static'
             });
-        }
-        else{
-            mThis.dlgTitle.text("New Service Tracking");
-            mThis.setDataForm(null);
-            mThis.self.modal({
-                backdrop: 'static'
-            });
-        }
+        });
     }
 }
 

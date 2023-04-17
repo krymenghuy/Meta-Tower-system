@@ -13,9 +13,8 @@
                 </select>
             </div>
         </div>
-        <div style="margin:17px;padding:15px;overflow:auto;min-height:350px;">
+        <div style="margin:17px;min-height:350px;" class="full-screen-height-scroll">
            <div id="service_plan_container" class="d-flex flex-column" style="overflow-y:auto;">
- 
            </div>  
         </div>
     </div>
