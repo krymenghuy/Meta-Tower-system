@@ -276,12 +276,14 @@ const LaboTestList = new function(){
           if(res.status_code===200){
                 let items = res.data;
                 mThis.displayTestList(labo_id,container,items);
-                LaboPartnersComponent.tblPartners.find('.card-height:first-child').each(function(){
+                let height = 0;
+                LaboPartnersComponent.tblPartners.find('.card-height').each(function(){
+                    height = $(this).height() > height ? $(this).height() : height;
                     $(this).siblings('button').css({
                         height: $(this).height()/3,
                         width: $(this).height()/3
                     }).addClass('rounded-circle').children().addClass('fs-5');
-                });
+                }).children().css('height',height);
           }else{
             div_test_list.html(`<span class="text-center text-warning">${res.error_message}</span>`);
           }
@@ -303,7 +305,7 @@ const LaboTestList = new function(){
                     <div class="py-3">
                         <span class="d-block text-center fw-bold">${price}</span>
                     </div>
-                    <div class="position-relative">
+                    <div class="position-absolute bottom-0">
                         <a data-id="${i.id}" data-testid="${i.test_id}" data-laboid="${i.labo_id}" class="btn-remove-parnter-test" href="javascript:void(0)">
                             <i class="fa fa-times vs-text-danger"></i>
                         </a>
