@@ -1,5 +1,33 @@
-var DateHelper = new function () {
-    var mThis = this;
+let DateHelper = new function () {
+    let mThis = this;
+
+    //dateDiff("01 Jan 2023", "30 Apr 2023") returns negative number of days if start_date > end_date, otherwise return positive if start_date < end_date.
+    //dateDiff() returns 0 if start_date = end_date.
+    //NOTE: end_date is default to today's date.
+    //NOTE: input date format is,example "23 Apr 2023"
+    this.dateDiff = (start_date = new Date().toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' }), end_date = new Date().toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' })) => {
+        // Convert the start and end date strings to Date objects
+        const startDate = new Date(start_date);
+        const endDate = new Date(end_date);
+      
+        // Calculate the difference between the start and end dates in days
+        const diffTime = endDate - startDate;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+        // Compare the start and end dates
+        if (endDate < startDate) {
+          //console.log(`The end date is before the start date by ${-diffDays} days`);
+          return -diffDays;
+        } else if (endDate.getTime() === startDate.getTime()) {
+          //console.log(`The start date and end date are the same`);
+          return 0;
+        } else {
+          //console.log(`The end date is ${diffDays} days after the start date`);
+          return diffDays;
+        }
+      }
+      
+
     //Allowed date formats are dd-mm-yyyy or dd-MMM-yyyy or dd/mm/yyyy or dd.mm.yyyy
     this.isDate = function (text) {
         var dd, mm, yy;
@@ -195,6 +223,7 @@ var DateHelper = new function () {
   };
 
   
+    //returns today's date in format of "23-Apr-2023"
     this.getTodayDate = function () {
         //*** The following code get TodayDate on client machine
         var today = new Date();

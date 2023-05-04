@@ -14,13 +14,17 @@ let InvoicesComponent = new function () {
     this.title_prop = 'Invoices';
     this.self = $('#_main_invoicesComponent');
     this.tblInvoice = $('#_inv_tblInvoice');
-    this.invoiceTable = document.querySelector(`#_inv_tblInvoice`);
+    this.invoiceTable = null;
     this.elSearchInvoice = $('#_inv_search_invoice');
+    this.invoiceListView =null;
 
     this.base_url = $('#__base_url').val();
     this.form_data = {};
 
-    this.btnNewReceipt = $('#_invs_btnNewInvoice');
+    this.btnNewInvoice = $('#_invs_btnNewInvoice');
+
+     
+    //col_titles for caching language transaltion
     this.col_titles = {
         "No": "No",
         "Ref Number": "Invoice Number",
@@ -38,22 +42,110 @@ let InvoicesComponent = new function () {
         return [cur_symbol, amount].join('');
     }
 
-    this.setLanguage = () => {
-        if (LocaleManager.lang !== mThis.lang) {
-            for (let prop in mThis.col_titles) {
-                mThis.col_titles[prop] = LocaleManager.trans(prop, 'invoice', LocaleManager.lang);
-            }
-            mThis.lang = LocaleManager.lang;
-        }
-    }
+    // this.setLanguage = () => {
+    //     if (LocaleManager.lang !== mThis.lang) {
+    //         for (let prop in mThis.col_titles) {
+    //             mThis.col_titles[prop] = LocaleManager.trans(prop, 'invoice', LocaleManager.lang);
+    //         }
+    //         mThis.lang = LocaleManager.lang;
+    //     }
+    // }
 
     this.trans_title = (title_prop = 'undefined') => {
         return (mThis.col_titles[title_prop] || 'Undefined');
     }
 
+     this.invoice_columns = [
+            {
+            title:'Invoice Number',
+            data:(data, index, tr) => {
+                return `<a href="javascript:void(0)" class="text-nowrap btn_print_invoice fw-bold" data-id="${data.id}" data-refnumber="${data.ref_number}"><i class="fa fa-print"></i>&nbsp;${data.ref_number}</a>`;
+            }
+            },
+            {
+            title:'Customer',
+            data:(data, index, tr) => {
+                return [`<span class="d-block fw-bold customer-name">`, data.customer_name, `</span>`,
+                    `<i class="fa fa-solid fa-square-phone p-1"></i><span class="small text-left p-1">`, data.customer_phone, `</span>`].join('');
+            } 
+            },
+            {
+            title:'Issue Date',
+            data:'issue_date' 
+            },
+            {
+            title:'Due Date',
+            data:'due_date' 
+            },
+            {
+            title:'Amount',
+            data:(data, index, tr) => {
+                return this.formatInvoiceAmount(data.currency_code, data.amount_due);
+            }
+            },
+            {
+            className: 'col-amount-paid',
+            title: "Paid",
+            data: (data, index, tr) => {
+                return this.formatInvoiceAmount(data.currency_code, data.amount_paid);
+            }
+            },
+            {
+            className: "col-pmt-status",
+            title: mThis.trans_title("Pmt Status"),
+            data: (data, a, b) => {
+                return mThis.generatePmtStatus(data);
+            }
+        },
+        {
+            title: mThis.trans_title("Action"),
+            data: (data, index, tr) => {
+                let html = [`<div class="d-flex align-items-center gap-2">
+                <a href="javascript:void(0)" class="btn-ivc-receivepmt" data-id="${data.id}">
+                <i class="fa fa-credit-card text-success"></i>
+                </a>
+                <a href="javascript:void(0)" class="btn-ivc-modify" data-id="${data.id}">
+                    <i class="fa-regular fa-pen-to-square text-secondary"></i>
+                </a>
+                <a href="javascript:void(0)" class="btn-ivc-delete" data-id="${data.id}">
+                    <i class="fa-solid fa-trash-can"></i>
+                </a>
+            </div>`].join();
+                return html;
+            }
+        }
+        ];
+        
+
     this.init = () => {
         InvoiceSettings.init();
 
+        mThis.invoiceListView = new ListView('_ivc_list_container',{
+            'fetchApi':`${main_view.base_url}/api/invoice/list-paginate`,
+            'columns': this.invoice_columns,
+            'perPage':10, 
+            'tableClass':'table header-light-blue header-uppercase',
+            'rowCreated':(data,index,tr)=>{
+                tr.setAttribute('id', `ivc_${data.id}`);
+                tr.dataset.id = data.id;
+             }
+          });
+
+       
+        //vannila javascript table object. NOTE that "this.invoiceTable" is also used somewhere in this InvoiceComponent.js
+        this.invoiceTable = mThis.invoiceListView.getTable();
+        //for jquery operations such as mThis.tblInvoice.on('click',()=>{ .... })
+        this.tblInvoice = $(mThis.invoiceListView.getTable());
+        this.cfg = new ExpandableRowConfig(this.invoiceTable.getAttribute('id'), {
+            'dontExpandByClickingOn': ['btn_print_invoice', 'btn-ivc-receivepmt', 'btn-ivc-modify', 'btn-ivc-delete'],
+            'wrapperClass': 'invoice-pmt-wrapper',
+            'onOpen': (container, detail_tr, parent_tr) => {
+                let qtr = $(parent_tr);
+                let invoice_id = qtr.data('id');
+                mThis.displayInvoicePayments(detail_tr, invoice_id);
+            }
+        });
+ 
         this.tblInvoice.on('click', 'a.btn-ivc-delete', function (e) {
             e.preventDefault();
             let invoice_id = $(this).data('id');
@@ -64,7 +156,7 @@ let InvoicesComponent = new function () {
                     vsapi.call(`${main_view.base_url}/api/invoice/delete`, p, null, null).then(res => {
                         if (res.status_code === 200) {
                             mThis.refreshInvoiceInfo(tr.prev(), res.data);
-                            mThis.displayInvoices();
+                            mThis.invoiceListView.showPage({'search_value':mThis.elSearchInvoice.val()});
                         } else cv_interact.error(res.error_message);
                     });
                 }
@@ -109,12 +201,12 @@ let InvoicesComponent = new function () {
             });
         });
 
-        this.btnNewReceipt.on('click', (e) => {
+        this.btnNewInvoice.on('click', (e) => {
             e.preventDefault();
             let op = {
                 onClose: (data) => {
                     if (data) {
-                        mThis.displayInvoices();
+                        mThis.invoiceListView.showPage(null);
                     }
                 }
             };
@@ -124,19 +216,9 @@ let InvoicesComponent = new function () {
         this.elSearchInvoice.on('keyup', function (e) {
             e.preventDefault();
             let d = mThis.elSearchInvoice.val();
-            if ((d + '').length >= 3 || !d) mThis.displayInvoices();
+            if ((d + '').length >= 3 || !d)  mThis.invoiceListView.showPage({'search_value':mThis.elSearchInvoice.val()});
         });
-
-        this.cfg = new ExpandableRowConfig('_inv_tblInvoice', {
-            'dontExpandByClickingOn': ['btn_print_invoice', 'btn-ivc-receivepmt', 'btn-ivc-modify', 'btn-ivc-delete'],
-            'wrapperClass': 'invoice-pmt-wrapper',
-            'onOpen': (container, detail_tr, parent_tr) => {
-                let qtr = $(parent_tr);
-                let invoice_id = qtr.data('id');
-                mThis.displayInvoicePayments(detail_tr, invoice_id);
-            }
-        });
-
+ 
         mThis.tblInvoice.on('click', 'a.ivc-pmt-edit', e => {
             let x = $(e.currentTarget);
             let pmt_id = x.data('id');
@@ -217,6 +299,7 @@ let InvoicesComponent = new function () {
                                             <th>Payment Date</th>
                                             <th>Amount</th>
                                             <th>Tax Amount</th>
+                                            <th>Method</th>
                                             <th>Received By</th>
                                             <th></th>
                                         </tr>
@@ -245,9 +328,9 @@ let InvoicesComponent = new function () {
         let cur_symbol = ExchangeManager.currencies[currency_code].symbol;
         let cnt = 0;
         rows.map(c => {
-            html = [html, `<tr><td><a href="javascript:void(0)" class="btn_print_pmt fw-bold" data-id="${c.id}">${c.ref_number}</a></td><td>${c.payment_date}</td><td>${cur_symbol}${c.amount}</td><td>${cur_symbol}${c.tax_amount}</td><td><span class="d-block">${c.create_user}</span><span class="d-block text-secondary text-sm-left p-2">${c.notes ? c.notes : ''}</span></td>
+            html = [html, `<tr><td><a href="javascript:void(0)" class="btn_print_pmt fw-bold" data-id="${c.id}">${c.ref_number}</a></td><td>${c.payment_date}</td><td>${cur_symbol}${c.amount}</td><td>${cur_symbol}${c.tax_amount}</td><td>${c.pmt_method}</td><td><span class="d-block">${c.create_user}</span><span class="d-block text-secondary text-sm-left p-2">${c.notes ? c.notes : ''}</span></td>
          <td class="col-action">
-         <a href="javascript:void(0)" class="ivc-pmt-edit" data-id="${c.id}" data-invoiceid="${c.invoice_id}"><i class="fa fa-solid fa-edit"></i></a>
+         <a href="javascript:void(0)" class="ivc-pmt-edit" data-id="${c.id}" data-invoiceid="${c.invoice_id}"><i class="fa fa-solid fa-edit text-secondary"></i></a>
          <a href="javascript:void(0)" class="ivc-pmt-delete" data-id="${c.id}" data-invoiceid="${c.invoice_id}"><i class="fa fa-solid fa-trash"></i></a>
          <a href="javascript:void(0)" class="ivc-pmt-print" data-id="${c.id}" data-invoiceid="${c.invoice_id}"><i class="fa fa-solid fa-print"></i></a>
          </td></tr>`].join('');
@@ -260,106 +343,106 @@ let InvoicesComponent = new function () {
         return html;
     }
 
-    this.displayInvoices = (onFinish = null) => {
-        let p = { 'search_value': mThis.elSearchInvoice.val() };
-        window.vsapi.call(`${mThis.base_url}/api/invoice/list`, p).then(res => {
-            let data = [];
-            if (res.status_code === 200) data = StringSanitizer.sanitizeObject(res.data, null, ['ref_number']);
+    // this.displayInvoices = (onFinish = null) => {
+    //     let p = { 'search_value': mThis.elSearchInvoice.val() };
+    //     window.vsapi.call(`${mThis.base_url}/api/invoice/list`, p).then(res => {
+    //         let data = [];
+    //         if (res.status_code === 200) data = StringSanitizer.sanitizeObject(res.data, null, ['ref_number']);
 
-            if (mThis.table) {
-                mThis.tblInvoice.DataTable().clear().destroy();
-                mThis.tblInvoice.empty();
-                mThis.table = null;
-            }
+    //         if (mThis.table) {
+    //             mThis.tblInvoice.DataTable().clear().destroy();
+    //             mThis.tblInvoice.empty();
+    //             mThis.table = null;
+    //         }
 
-            let columns = [
-                {
-                    title: mThis.trans_title("Ref Number"),
-                    data: (data, a, b) => {
-                        return `<a href="javascript:void(0)" class="text-nowrap btn_print_invoice fw-bold" data-id="${data.id}" data-refnumber="${data.ref_number}"><i class="fa fa-print"></i>&nbsp;${data.ref_number}</a>`;
-                    }
-                }, {
-                    title: mThis.trans_title("Customer"),
-                    data: (data, a, b) => {
-                        return [`<span class="d-block fw-bold customer-name">`, data.customer_name, `</span>`,
-                            `<i class="fa fa-solid fa-square-phone p-1"></i><span class="small text-left p-1">`, data.customer_phone, `</span>`].join('');
-                    }
-                },
-                {
-                    title: mThis.trans_title("Issue Date"),
-                    data: "issue_date"
-                },
-                {
-                    title: mThis.trans_title("Due Date"),
-                    data: "due_date"
-                },
-                {
-                    title: mThis.trans_title("Amount Due"),
-                    data: (data, a, b) => {
-                        return this.formatInvoiceAmount(data.currency_code, data.amount_due);
-                    }
-                },
-                {
-                    className: 'col-amount-paid',
-                    title: mThis.trans_title("Paid"),
-                    data: (data, a, b) => {
-                        return this.formatInvoiceAmount(data.currency_code, data.amount_paid);
-                    }
-                },
-                {
-                    className: "col-pmt-status",
-                    title: mThis.trans_title("Pmt Status"),
-                    data: (data, a, b) => {
-                        return mThis.generatePmtStatus(data);
-                    }
-                },
-                {
-                    title: mThis.trans_title("Action"),
-                    data: (data, a, b) => {
-                        let html = [`<div class="d-flex align-items-center gap-2">
-                        <a href="javascript:void(0)" class="btn-ivc-receivepmt" data-id="${data.id}">
-                        <i class="fa fa-credit-card text-success"></i>
-                        </a>
-                        <a href="javascript:void(0)" class="btn-ivc-modify" data-id="${data.id}">
-                            <i class="fa-regular fa-pen-to-square text-warning"></i>
-                        </a>
-                        <a href="javascript:void(0)" class="btn-ivc-delete" data-id="${data.id}">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </a>
-                    </div>`].join();
-                        return html;
-                    }
-                }];
+    //         let columns = [
+    //             {
+    //                 title: mThis.trans_title("Ref Number"),
+    //                 data: (data, a, b) => {
+    //                     return `<a href="javascript:void(0)" class="text-nowrap btn_print_invoice fw-bold" data-id="${data.id}" data-refnumber="${data.ref_number}"><i class="fa fa-print"></i>&nbsp;${data.ref_number}</a>`;
+    //                 }
+    //             }, {
+    //                 title: mThis.trans_title("Customer"),
+    //                 data: (data, a, b) => {
+    //                     return [`<span class="d-block fw-bold customer-name">`, data.customer_name, `</span>`,
+    //                         `<i class="fa fa-solid fa-square-phone p-1"></i><span class="small text-left p-1">`, data.customer_phone, `</span>`].join('');
+    //                 }
+    //             },
+    //             {
+    //                 title: mThis.trans_title("Issue Date"),
+    //                 data: "issue_date"
+    //             },
+    //             {
+    //                 title: mThis.trans_title("Due Date"),
+    //                 data: "due_date"
+    //             },
+    //             {
+    //                 title: mThis.trans_title("Amount Due"),
+    //                 data: (data, a, b) => {
+    //                     return this.formatInvoiceAmount(data.currency_code, data.amount_due);
+    //                 }
+    //             },
+    //             {
+    //                 className: 'col-amount-paid',
+    //                 title: mThis.trans_title("Paid"),
+    //                 data: (data, a, b) => {
+    //                     return this.formatInvoiceAmount(data.currency_code, data.amount_paid);
+    //                 }
+    //             },
+    //             {
+    //                 className: "col-pmt-status",
+    //                 title: mThis.trans_title("Pmt Status"),
+    //                 data: (data, a, b) => {
+    //                     return mThis.generatePmtStatus(data);
+    //                 }
+    //             },
+    //             {
+    //                 title: mThis.trans_title("Action"),
+    //                 data: (data, a, b) => {
+    //                     let html = [`<div class="d-flex align-items-center gap-2">
+    //                     <a href="javascript:void(0)" class="btn-ivc-receivepmt" data-id="${data.id}">
+    //                     <i class="fa fa-credit-card text-success"></i>
+    //                     </a>
+    //                     <a href="javascript:void(0)" class="btn-ivc-modify" data-id="${data.id}">
+    //                         <i class="fa-regular fa-pen-to-square text-secondary"></i>
+    //                     </a>
+    //                     <a href="javascript:void(0)" class="btn-ivc-delete" data-id="${data.id}">
+    //                         <i class="fa-solid fa-trash-can"></i>
+    //                     </a>
+    //                 </div>`].join();
+    //                     return html;
+    //                 }
+    //             }];
 
-            if (!mThis.table) {
-                mThis.table = mThis.tblInvoice.DataTable({
-                    searching: false,
-                    destroy: true,
-                    paging: true,
-                    ordering: false,
-                    retrieve: true,
-                    info: true,
-                    pageLength: 10,
-                    bLengthChange: false,
-                    saveState: true,
-                    'processing': true,
-                    'language': {
-                        'loadingRecords': '&nbsp;',
-                        'processing': 'Loading...',
-                        "emptyTable": LocaleManager.trans('No data to display', 'datatable')
-                    },
-                    'data': data,
-                    'columns': columns,
-                    "createdRow": function (row, data, dataIndex) {
-                        let tr = $(row);
-                        tr.attr('id', `ivc_${data.id}`);
-                        tr.data('id', data.id);
-                    }
-                });
-            }
-            if (typeof onFinish === 'function') onFinish();
-        });
-    }
+    //         if (!mThis.table) {
+    //             mThis.table = mThis.tblInvoice.DataTable({
+    //                 searching: false,
+    //                 destroy: true,
+    //                 paging: true,
+    //                 ordering: false,
+    //                 retrieve: true,
+    //                 info: true,
+    //                 pageLength: 10,
+    //                 bLengthChange: false,
+    //                 saveState: true,
+    //                 'processing': true,
+    //                 'language': {
+    //                     'loadingRecords': '&nbsp;',
+    //                     'processing': 'Loading...',
+    //                     "emptyTable": LocaleManager.trans('No data to display', 'datatable')
+    //                 },
+    //                 'data': data,
+    //                 'columns': columns,
+    //                 "createdRow": function (row, data, dataIndex) {
+    //                     let tr = $(row);
+    //                     tr.attr('id', `ivc_${data.id}`);
+    //                     tr.data('id', data.id);
+    //                 }
+    //             });
+    //         }
+    //         if (typeof onFinish === 'function') onFinish();
+    //     });
+    // }
 
     this.generatePmtStatus = (d) => {
         let amount_paid = Number(d.amount_paid);
@@ -400,7 +483,7 @@ let InvoicesComponent = new function () {
 
     this.show = (option = null) => {
         if (!option) option = {};
-        mThis.displayInvoices(() => {
+        mThis.invoiceListView.showPage(null,null,()=>{
             mThis.self.show().siblings().hide();
             main_view.setTitle(mThis.title_prop);
         });
@@ -754,7 +837,7 @@ let InvoiceDialog = new function () {
     this.btnSave.on('click', (e) => {
         e.preventDefault();
         let p = mThis.getDataForm();
-        console.log(p);
+ 
         let api_endpoint = `${mThis.base_url}/api/invoice/create`;
         if (p.id > 0) api_endpoint = `${mThis.base_url}/api/invoice/update`;
         vsapi.call(api_endpoint, p, 'POST', null).then(res => {
@@ -884,6 +967,8 @@ let PaymentDialog = new function () {
     this.btnSave = $('#_ivc_dlgPayment_btnSave');
     this.invoiceInfoPanel = $('#_ivc_dlgPayment_invoice_info');
     this.elTitle = $('#_ivc_dlgPayment_title');
+    this.elPaymentMethod = $('#_pmt_pmt_method');
+
     this.options = null;
 
     this.btnSave.on('click', (e) => {
@@ -904,9 +989,14 @@ let PaymentDialog = new function () {
         });
     });
 
-    this.prepareFormOptions = (invoice_id, onFinish) => {
+    this.prepareFormOptions = (invoice_id=null, onFinish=null) => {
         let d = {};
-        onFinish(d);
+        vsapi.call(`${main_view.base_url}/api/invoice/payment-form-options`,null,null,false).then(res=>{
+            if(res.status_code===200){
+                //if(typeof onFinish==='function')
+                onFinish(res.data);
+            }
+        });  
     }
 
     this.getFormData = () => {
@@ -955,6 +1045,8 @@ let PaymentDialog = new function () {
         }
 
         mThis.prepareFormOptions(options.invoice_id, (d) => {
+            VSUtil.setComboItems(mThis.elPaymentMethod,d.pmt_methods,'id','pmt_method',null,null,'Cash');
+
             if (options.id > 0) {
                 let p = { 'id': options.id, 'invoice_id': options.invoice_id };
                 vsapi.call(`${main_view.base_url}/api/invoice-payment/details-with-summary`, p).then(res => {

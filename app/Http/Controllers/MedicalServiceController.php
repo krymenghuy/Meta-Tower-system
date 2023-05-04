@@ -3,15 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\JDV;
 use App\Models\UM;
-use Session;
-use Localization;
+//use Session;
+//use Localization;
 
 use DB;
-use SQLDB;
-use Carbon\Carbon;
-use Sanitizer;
+//use SQLDB;
+//use Carbon\Carbon;
+//use Sanitizer;
 
 class MedicalServiceController extends Controller
 {
@@ -30,6 +31,31 @@ class MedicalServiceController extends Controller
       
         $rows = DB::table('medical_services as ms')->join('departments as d','d.id','=','ms.department_id')->where('d.id',$department_id)->where('ms.branch_id',$branch_id)->whereRaw($str_search)->selectRaw("ms.id,ms.name,ms.description,ms.price,displayMoney(price,currency_code) as display_price,ms.cost,displayMoney(cost,currency_code) as display_cost,ms.department_id,d.name as department_name,treatment_method,service_type")->orderBy('ms.id','DESC')->get();
         return JDV::result($rows);
+    }
+
+    function getMedicalServices_paginate(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $branch_id = $ss->branch_id;
+        $department_id = $req->department_id;
+        $search_value = $req->search_value;
+        $current_page = $req->current_page>0? $req->current_page:1;
+        $per_page = $req->per_page>0? $req->per_page:10;
+        $skip_rows = ($current_page -1) * $per_page;
+        
+        $str_search = "1=1";
+        if($search_value) {
+            $skip_rows =0; 
+            $search_value = escape_like_str($search_value);
+            $str_search = "d.name LIKE '%$search_value%' OR ms.name LIKE '%$search_value%'";
+        }
+      
+        $query = DB::table('medical_services as ms')->join('departments as d','d.id','=','ms.department_id')->where('d.id',$department_id)->where('ms.branch_id',$branch_id)->whereRaw($str_search)->selectRaw("ms.id,ms.name,ms.description,ms.price,displayMoney(price,currency_code) as display_price,ms.cost,displayMoney(cost,currency_code) as display_cost,ms.department_id,d.name as department_name,treatment_method,service_type")->orderBy('ms.id','DESC');
+        $count_query = clone $query;
+        $count = $count_query->count('ms.id');
+        $rows =  $query->skip($skip_rows)->take($per_page)->get();
+        $paginate = new LengthAwarePaginator($rows,$count,$per_page,$current_page);
+        return JDV::result($paginate);
     }
 
     //serviceTracking

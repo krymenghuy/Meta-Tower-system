@@ -2,7 +2,7 @@
 
 namespace App\Models\Invoice;
 
-use App\Models\Consultation;
+//use App\Models\Consultation;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
 use DB;
@@ -11,6 +11,7 @@ use App\Models\Invoice\Customer;
 use App\Models\DV;
 use App\Models\Invoice\InvoiceSettings;
 use App\Models\ServiceQ\QTicket;
+//use Illuminate\Pagination\LengthAwarePaginator;
 use DateTime;
 
 class MedicalInvoice //extends Invoice //extends Model
@@ -111,7 +112,8 @@ class MedicalInvoice //extends Invoice //extends Model
     }
 
     static function ticketWithInvoice($ticket_id){
-       $rows = DB::table('tickets as t')->join('invoices as v','v.id','=','t.invoice_id')->select('v.id')->take(1)->get();
+       $ticket_id =$ticket_id?$ticket_id:0;
+       $rows = DB::table('tickets as t')->join('invoices as v','v.id','=','t.invoice_id')->where('t.id',$ticket_id)->select('v.id')->take(1)->get();
        return isset($rows[0]);
     }
 
@@ -120,7 +122,7 @@ class MedicalInvoice //extends Invoice //extends Model
       if(!$ss) $ss = $this->getUserInfo();
       $branch_id = $ss->branch_id;
 
-      //Check if the ticket Id already has an invoice
+      //Check if the ticket id already has an invoice
       if(self::ticketWithInvoice($ticket_id)){
          return self::updateMedicalInvoice($ticket_id,$ss);
       }
@@ -206,7 +208,7 @@ class MedicalInvoice //extends Invoice //extends Model
    static function updateMedicalInvoice($ticket_id,$ss){
       $branch_id = $ss->branch_id;
       $rows = DB::table('invoices as v')->join('tickets as t','v.id','=','t.invoice_id')->where('t.id',$ticket_id)->where('v.branch_id',$branch_id)->select(['v.id','v.ref_number','v.discount_type','v.discount_amount','v.discount_percent'])->take(1)->get();
-      if(!isset($rows[0])) return DV::error('Ticket ID or invoice ID does not valid or maybe because the given invoice does not belong to the ticket');
+      if(!isset($rows[0])) return DV::error('Ticket ID or invoice ID is not valid or maybe because the given invoice does not belong to the ticket');
       $invoice = $rows[0];
       $invoice_id = $invoice->id;
       $discount=0;

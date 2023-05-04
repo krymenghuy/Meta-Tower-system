@@ -1,3 +1,10 @@
+<style>
+    .sp-member-table thead th{
+       font-weight:bold;
+       font-size:0.9em;
+       text-transform: uppercase; 
+    }
+</style>
 <div id="_main_servicePlansComponent" class="mobile-padding" style="display:none;padding-top:15px">
     <div class="vs-contianer-custom">
         <div class="d-flex align-items-center gap-2 ms-3">
@@ -40,11 +47,22 @@
                         <label for="name" class="form-label trans-text" data-langprop="service.Currency"></label>
                         <input class="form-control" data-field="currency_code" data-required="0" data-ffield="Currency" value="USD" readOnly/>
                     </div>
+
+                    <div class="form-group col-6">
+                        <label for="description" class="form-label trans-text" data-langprop="service.Service"></label>
+                        <select id="_spl_service" class="modal-select2 data-input" data-field="service_id" data-ffield="Service"></select>
+                    </div>
+
+                    <div class="form-group col-6">
+                        <label for="name" class="form-label trans-text" data-langprop="service.Maximum Repeats"></label>
+                        <input class="form-control data-input" type="number" data-field="max_sku" data-required="0" data-ffield="Maximum repeats"/>
+                    </div>
+
                     <div class="form-group col-12">
                         <label for="description" class="form-label trans-text" data-langprop="service.Description"></label>
                         <input class="form-control data-input" data-field="description" data-ffield="Description"/>
                     </div>
-                    
+                     
                     <div class="col-12">
                        <div class="dialog-error" id="_spl_dlgServicePlan_error">
                        </div>
@@ -64,7 +82,7 @@
 </div>
 
 <div id="st_dlgSubsribers" class="modal fade" tabindex="-1" aria-labelledby="st_dlgSubsribers_title" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl vs-modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title fs-5"><span class="trans-text" data-langprop="titles.Subscribers" id="st_dlgSubsribers_title">Members</span> &nbsp;<a href="javascript:void(0);" id="sp_btnNewMember"><i class="fa fa-plus-circle"></i></a></h5>
@@ -73,25 +91,49 @@
                 <div class="div-show" id="st_div_add_member">
                    <div class="border border-rounded-3 border-secondary p-2" style="border-radius:5px">
                         <div class="row">
-                                <div class="form-group col-6">
+                                   <div class="form-group col-3">
                                         <span class="simple-label">Client Phone</span>
-                                        <div><input id="st_add_member_phone" type="text" class="form-control"></div>
+                                        <div><input id="st_add_member_phone" type="text" class="form-control data-input"></div>
                                     </div>
-                                    <div class="form-group col-6">
+                                    <div class="form-group col-3">
                                         <span class="simple-label">Client Name</span>
-                                        <div><input id="st_add_member_name" type="text" class="form-control"></div>
+                                        <div><input id="st_add_member_name" type="text" class="form-control data-input"></div>
                                     </div>
+                                    <div class="form-group col-3">
+                                        <span class="simple-label">Start Date</span>
+                                        <div><input id="st_start_date" data-field="st_start_date" class="form-control data-input" data-select="datepicker" readOnly></div>
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <span class="simple-label">Expiration Date</span>
+                                        <div><input id="st_expiration_date" data-field="expiration_date" type="text" class="form-control data-input" data-select="datepicker"></div>
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <span class="simple-label">Sales Agent</span>
+                                        <div><select id="st_sales_agent" data-field="sales_agent_id" class="modal-select2 data-input"></select></div>
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <span class="simple-label">Commission($)</span>
+                                        <div><input id="st_agent_commission" data-field="agent_commission" type="number" class="form-control data-input"></div>
+                                    </div>
+            
+                                   
+
+                                    <div style="display:none" class="form-group col-3">
+                                        <span class="simple-label">Commission Type</span>
+                                        <div><input id="st_expiration_date" data-field="commission_type" type="text" class="form-control data-input" value="amount"></div>
+                                    </div>
+
                                     <div class="form-group col-12">
-                                        <div class="form-inline">
-                                        <button id="sp_btnCancelNewMember" class="btn-sm btn-outline-danger">Cancel</button>&nbsp;
-                                        <button id="sp_btnAddMember" class="btn-sm btn-outline-primary">Add Member</button>
+                                        <div class="form-inline" style="float:right">
+                                         <button id="sp_btnCancelNewMember" class="btn btn-sm btn-outline-danger">Cancel</button>&nbsp;
+                                         <button id="sp_btnAddMember" class="btn btn-sm btn-outline-primary">Add Member</button>
                                         </div>
                                     </div>
                         </div>
                    </div> 
                 </div>
-               <div>
-                  <table id="sp_tblMembers" class="table">
+               <div class="sp-table-container">
+                  <table id="sp_tblMembers" class="table sp-member-table">
                      <thead>
                         <tr>
                             <th>No</th>
@@ -99,7 +141,8 @@
                             <th>Name</th>
                             <th>Sex</th>
                             <th>Phone Number</th>
-                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Sold By</th>
                             <th>Action</th>
                         </tr>
                      </thead>
@@ -116,3 +159,4 @@
         </div>
     </div>
 </div>
+ 

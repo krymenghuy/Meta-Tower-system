@@ -1,15 +1,16 @@
 <?php
 
 namespace App\Models;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
-use Session;
+//use Illuminate\Database\Eloquent\Factories\HasFactory;
+//use Illuminate\Database\Eloquent\Model;
+//use Carbon\Carbon;
+//use Session;
 use DB;
+use Illuminate\Support\Facades\Cache;
 
-class GeneralSettings extends Model
+class GeneralSettings //extends Model
 {
-    use HasFactory;
+    //use HasFactory;
     function position_exists($branch_id, $name){
         $rows = DB::table('positions')->where('branch_id',$branch_id)->where('name',$name)->selectRaw("id")->limit(1)->get();
         foreach($rows as $row) return true;
@@ -64,56 +65,56 @@ class GeneralSettings extends Model
         return false;
     }
 
-    function createOrganization($d){
-        $ss = getSessionInfo($d);
-        if(!$ss) return '#350'; //user not authenticated
-        if (!prn_allowed(-1)) return '@'; //need permission to do this task
-        $branch_id = sanitize($ss->branch_id);
-        $name = isset($d->name)?$d->name:null;
-        $id = isset($d->id)?$d->id:null;
+    // function createOrganization($d){
+    //     $ss = getSessionInfo($d);
+    //     if(!$ss) return '#350'; //user not authenticated
+    //     if (!prn_allowed(-1)) return '@'; //need permission to do this task
+    //     $branch_id = sanitize($ss->branch_id);
+    //     $name = isset($d->name)?$d->name:null;
+    //     $id = isset($d->id)?$d->id:null;
 
-        $org_type_id = isset($d->org_type_id)?$d->org_type_id:null;
-        $industry_id = isset($d->industry_id)?$d->industry_id:null;
-        if ($this->org_exists($name,$id)) return DV::error('The provided organization name already exists!');  
-        DB::table('organizations')->insert([
-            'branch_id'=>$branch_id,
-            'name'=>$name,
-            'org_type_id'=>$org_type_id,
-            'industry_id'=>$industry_id,
-            'create_user'=>$ss->login_name,
-            'create_date'=>getNowTime()
-        ]);
-        $new_id = DB::getPdo()->lastInsertId();
-        return DV::success(['org_id'=>$new_id]);
-    }
+    //     $org_type_id = isset($d->org_type_id)?$d->org_type_id:null;
+    //     $industry_id = isset($d->industry_id)?$d->industry_id:null;
+    //     if ($this->org_exists($name,$id)) return DV::error('The provided organization name already exists!');  
+    //     DB::table('organizations')->insert([
+    //         'branch_id'=>$branch_id,
+    //         'name'=>$name,
+    //         'org_type_id'=>$org_type_id,
+    //         'industry_id'=>$industry_id,
+    //         'create_user'=>$ss->login_name,
+    //         'create_date'=>getNowTime()
+    //     ]);
+    //     $new_id = DB::getPdo()->lastInsertId();
+    //     return DV::success(['org_id'=>$new_id]);
+    // }
 
 
-    function createIndustry($d){
-        $ss = getSessionInfo($d);
-        if(!$ss) return '#350'; //user not authenticated
-        if (!prn_allowed(-1)) return '@'; //need permission to do this task
-        $branch_id = sanitize($ss->branch_id);
-        $name = $d->name;
+    // function createIndustry($d){
+    //     $ss = getSessionInfo($d);
+    //     if(!$ss) return '#350'; //user not authenticated
+    //     if (!prn_allowed(-1)) return '@'; //need permission to do this task
+    //     $branch_id = sanitize($ss->branch_id);
+    //     $name = $d->name;
         
-        DB::table('industries')->insert([
-            'branch_id'=>$branch_id,
-            'name'=>$name,
-            'create_user'=>$ss->login_name,
-            'create_date'=>getNowTime()
-        ]);
-        return DV::success();
-    }
+    //     DB::table('industries')->insert([
+    //         'branch_id'=>$branch_id,
+    //         'name'=>$name,
+    //         'create_user'=>$ss->login_name,
+    //         'create_date'=>getNowTime()
+    //     ]);
+    //     return DV::success();
+    // }
  
-    function deleteIndustry($d){
-        $ss = getSessionInfo($d);
-        if(!$ss) return '#350'; //user not authenticated
-        if (!prn_allowed(-1)) return '@'; //need permission to do this task
-        $branch_id = sanitize($ss->branch_id);
-        $id = $d->id;
+    // function deleteIndustry($d){
+    //     $ss = getSessionInfo($d);
+    //     if(!$ss) return '#350'; //user not authenticated
+    //     if (!prn_allowed(-1)) return '@'; //need permission to do this task
+    //     $branch_id = sanitize($ss->branch_id);
+    //     $id = $d->id;
         
-        DB::table('industries')->where('id',$id)->delete(); 
-        return DV::success();
-    }
+    //     DB::table('industries')->where('id',$id)->delete(); 
+    //     return DV::success();
+    // }
 
     static function employee_form_options($ss){
      return (object)[
@@ -126,13 +127,18 @@ class GeneralSettings extends Model
      ];
     }
 
+    static function options_pmt_method($ss){
+      $branch_id = $ss->branch_id;  
+      return DB::table('payment_methods as m')->where('m.branch_id',$branch_id)->selectRaw("m.id,m.name,m.method_type")->get(); 
+    }
+    
     function getComboItems_industry(){
         $id =isset($d->id)?sanitize($d->id):0;
         return  DB::table('industries as i')->whereRaw('IFNULL(inactive,0) =0')->selectRaw("i.id,i.name as industry")->get();
     }
     
-    function getComboItems_position(){
-        $branch_id = Session::get('branch_id',0);
+    function getComboItems_position($ss){
+        $branch_id = $ss->branch_id;
         return  DB::table('positions as l')->whereRaw('IFNULL(l.inactive,0) =0')->where('l.branch_id',$branch_id)->selectRaw("l.id,l.name as position_title")->get();
     }
     static function options_position($ss){
@@ -155,11 +161,11 @@ class GeneralSettings extends Model
             (object)['employment_type'=>'Freelance']
         ];
     }
-    function getComboItems_org(){
+    function getComboItems_org($ss){
         //$ss = getSessionInfo($d);
         //if(!$ss) return '#350'; //user not authenticated
         //if (!prn_allowed(-1)) return '@'; //need permission to do this task
-        $branch_id = Session::get('branch_id',0);
+        $branch_id = $ss->branch_id;
         $id =isset($d->id)?sanitize($d->id):0;
         return  DB::table('organizations as org')->whereRaw('IFNULL(org.inactive,0) =0')->where('org.branch_id',$branch_id)->selectRaw("org.id,org.name as org_name")->get();
     }
@@ -178,9 +184,44 @@ class GeneralSettings extends Model
         return  DB::table('medical_services AS s')->whereIn('s.service_type',['labo','labo test'])->where('s.branch_id',$branch_id)->selectRaw("s.id,s.name,s.description,s.price")->orderBy('s.name','ASC')->get();
     }
 
+    static function options_sales_agent($ss){
+        $branch_id = $ss->branch_id;
+        return DB::table('employees AS e')->join('persons as p','p.id','=','e.person_id')->where('e.branch_id',$branch_id)->selectRaw("e.id, CONCAT(p.last_name,' ',p.first_name) as sales_agent_name")->orderBy('sales_agent_name','ASC')->get();
+    }
+
     //given one test_id, it returns a list of labos who provide the test
     static function getLaboTestProviders($testId,$ss){
        $branch_id = $ss->branch_id; 
        return DB::table('test_labos as l')->join('medical_services as s','s.id','=','l.test_id')->where('s.branch_id',$branch_id)->selectRaw("s.id,l.price,s.price as default_price,l.description")->get();  
+    }
+
+    static function options_country($ss){
+        //$branch_id = $ss->branch_id; 
+        $countries = Cache::remember('countries', 60, function () {
+            return DB::table('loc_countries as c')->select('id','name as country')->orderBy('c.name','ASC')->get();
+        });
+        return $countries;    
+    }
+
+    static function options_city($country_id=null, $ss){
+     //$branch_id = $ss->branch_id;
+       //return Cache::remember('cities',60,function() use($country_id){
+          $str_country ="1=1";
+          if($country_id) $str_country ="c.country_id =$country_id"; 
+          return DB::table('loc_cities as c')->whereRaw($str_country)->select('id','name as city')->orderBy('c.name','ASC')->get();
+       //}); 
+    }
+    static function options_district($city_id=null, $ss){
+        //$branch_id = $ss->branch_id;
+        $str_city ="1=1";
+        if($city_id) $str_city ="c.city_id =$city_id"; 
+        return DB::table('loc_districts as c')->whereRaw($str_city)->select('id','name as district')->orderBy('c.name','ASC')->get();
+    }
+
+    static function options_commune($district_id=null, $ss){
+        //$branch_id = $ss->branch_id;
+        $str_where ="1=1";
+        if($district_id) $str_where ="c.district_id =$district_id"; 
+        return DB::table('loc_communes as c')->whereRaw($str_where)->select('id','name as commune')->orderBy('c.name','ASC')->get();
     }
 }

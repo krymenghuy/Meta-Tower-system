@@ -55,6 +55,13 @@ class ServiceTrack //extends Model
       $ss = $ss?$ss:$this->getUserInfo();  
       return self::details($id,$ss);
     }
+
+    function delete($id=null,$ss=null){
+        $id = $id?$id:$this->getId();
+        $ss = $ss?$ss:$this->getUserInfo();
+        DB::table('services_performed')->where('id',$id)->delete();
+        return DV::success();
+    }
     
     function save($arr=[],$ss=null){
         $ss = $ss?$ss:$this->getUserInfo();

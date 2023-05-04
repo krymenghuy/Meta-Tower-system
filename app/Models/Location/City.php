@@ -7,12 +7,12 @@ namespace App\Models\Location;
 use DB;
 use App\Models\DV;
 use App\Models\Location\District;
-
+use Illuminate\Support\Facades\Cache;
 class City //extends Model
 { 
     protected $id = null;
     protected $userInfo = null;
-    function __construct($id=null,$ss=null){
+    function __construct($id=null,$userInfo=null){
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
@@ -23,6 +23,28 @@ class City //extends Model
         return $this->id;
     }
     
+    static function cache($minutes=3){
+        $countries = DB::table('loc_cities AS c')->select('c.id','c.name')->orderBy('c.name','ASC')->get();
+        Cache::put('cities',$countries,$minutes);
+    }
+
+    static function getById($id){
+        $cities = Cache::get('cities');
+        if(!$cities){
+             self::cache(3);
+             $cities = Cache::get('cities');
+        } 
+       $i=0;
+       $c=null;
+       do{
+        if (!isset($cities[$i])) break;
+        $c = $cities[$i];
+         if($c->id == $id) return $c; 
+        $i++;
+       }while($c); 
+       return (object)['id'=>null,'name'=>''];
+    }
+
     static function delete($city_id,$ss){
         if(!$city_id) $city_id =-1;
         District::deleteByParent($city_id); 

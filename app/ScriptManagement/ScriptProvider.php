@@ -79,7 +79,6 @@ class ScriptProvider
                 '/assets/js/init.toastr.js',
                 '/assets/js/demo1/scripts.bundle.js',
                 '/assets/js/datatables.bundle.min.js',
-                '/assets/js/datatables.bundle.min.js',
                 '/assets/js/browsercontrol.js'
             ], 'no-minify' => [
                 '/assets/js/crypto-js.js',
@@ -95,6 +94,7 @@ class ScriptProvider
                 '/js/layout/main.js?v=1',
                 '/js/components/PDFReport.js',
                 '/js/components/FileChooser.js',
+                '/js/components/ListView.js',
                 '/js/components/SimpleItemEditor.js',
                 '/js/components/DashboardComponent.js',
                 '/js/components/PersonDialog.js',

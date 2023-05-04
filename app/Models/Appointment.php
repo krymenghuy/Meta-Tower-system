@@ -9,7 +9,8 @@ namespace App\Models;
 use DB;
 use App\Models\DV;
 use App\Models\ServiceQ\QTicket;
-use Carbon\Carbon;
+use App\Models\Invoice\InvoiceSettings;
+//use Carbon\Carbon;
 class Appointment //extends Model
 {
     //use HasFactory;
@@ -45,7 +46,7 @@ class Appointment //extends Model
             'client_phone_number'=>'0|phone',
             'client_email'=>'0|email',
             'arrival_date'=>'0|date|text=Arrival date is not correct',
-            'arrival_time'=>'0|time|text=',
+            'arrival_time'=>'0|time|',
             'consultant_id'=>'0|number|default=0',
             'channel_id'=>'1|positive|text=Contact channel is not valid',
             'priority'=>'0|choice|Urgent,Normal',
@@ -59,11 +60,12 @@ class Appointment //extends Model
  
        $inputs = $res->values;
        $chief_complaint_items =[];
+ 
        if (isset($inputs['chief_complaint_items'])) $chief_complaint_items = $inputs['chief_complaint_items'];
        unset($inputs['chief_complaint_items']);
-
+           
        
-       $client_name = $inputs['client_name'];
+       //$client_name = $inputs['client_name'];
        $client_phone = $inputs['client_phone_number'];
  
        $patient_code="";
@@ -83,6 +85,7 @@ class Appointment //extends Model
                         "name"=>$lead_res->inputs['client_name'],
                         "sex"=>$lead_res->inputs['client_sex'],
                         "phone_number"=>$client_phone,
+                        "email"=>$inputs['client_email'],
                         "status_id"=>2 // This is Lead's status, not  appointment's status. status_id = {1=Lead,2=prospect}
                        ],[],1);
                       
@@ -103,8 +106,11 @@ class Appointment //extends Model
        $inputs['client_code'] = $patient_code;
        
        $arrival_time = $inputs['arrival_time'];
-       if(!$arrival_time) $inputs['arrival_time'] = getNowTime();
-       else  $inputs['arrival_time'] = getNowTime(); 
+       if(!isValidTime($arrival_time)) $arrival_time = date('H:i:s'); 
+       //return DV::error("time ".createTimestamp($arrival_time,null));  
+       //$inputs['arrival_time'] =   date('H:i:s');
+       $inputs['arrival_time'] = createTimestamp($arrival_time,null);
+     
        $arrival_date = $inputs['arrival_date'];
        if(!(bool)strtotime($arrival_date)) $inputs['arrival_date'] = date('Y-m-d');
 
@@ -112,12 +118,13 @@ class Appointment //extends Model
        $create_case = 0; 
        $appt_id = isset($res->id)?$res->id:0;
        if(!$appt_id) $create_case = 1;
-       $inputs['arrival_date'] = convertDate( $arrival_date? $arrival_date :date('Y-m-d') );
+       $inputs['arrival_date'] = convertDate( $arrival_date? $arrival_date :date('Y-m-d'));
+       if($create_case && $arrival_date && convertDate($arrival_date) < date('Y-m-d')) return DV::error("Arrival date cannot be earlier than today");
        $appt_id = saveData($ss,'appointments',['id'=>$appt_id],$inputs,1); 
        if($appt_id > 0)
         {
             $this->saveChiefComplaints($ss,$appt_id,$chief_complaint_items);
-            if($create_case ===1)  Notifier::notify_admin('AppointmentAdded',["user_id"=>$ss->user_id,"login_name"=>$ss->login_name,"appt_id"=>$appt_id,"client_name"=>$inputs['client_name'],"client_phone_number"=>$inputs['client_phone_number']]);
+            if($create_case ===1) Notifier::notify_admin('AppointmentAdded',["user_id"=>$ss->user_id,"login_name"=>$ss->login_name,"appt_id"=>$appt_id,"client_name"=>$inputs['client_name'],"client_phone_number"=>$inputs['client_phone_number']]);
             return DV::success(['id'=>$appt_id]);
         }
        else return DV::error("Something went wrong in saving appointment!");
@@ -161,9 +168,9 @@ class Appointment //extends Model
         if($filter_status_id >0 || $filter_status_id ==-1){
           $str_where .= ($str_where? ' AND ':'')."appt.status_id =$filter_status_id";  
         }
-        $str_order="arrival_time1 desc";
+        $str_order="appt.arrival_date ASC,appt.arrival_time ASC";
         if ($order_by_id ) $str_order ="id DESC"; 
-        $cols ="appt.id,appt.consultant_id,formatTime(arrival_time) AS arrival_time,formatDate(arrival_date) as arrival_date,appt.client_id,appt.create_user,formatDate(appt.created_at) AS created_at,client_name, client_sex,client_phone_number,client_email,appt.schedule_type,appt.priority,appt.channel_id,cc.name as contact_channel, appt.notes, appt.status_id, getApptStatus(appt.branch_id,appt.status_id) As status, getPatientCode(appt.branch_id,appt.client_id) AS patient_code, appt.arrival_time AS arrival_time1";
+        $cols ="appt.id,appt.consultant_id, DATE_FORMAT(appt.q_date,'%d %b %y') as q_date,DATE_FORMAT(arrival_time,'%H:%i') AS arrival_time,DATE_FORMAT(arrival_date,'%d %b %y') as arrival_date,appt.client_id,appt.create_user,formatDate(appt.created_at) AS created_at, DATEDIFF(appt.arrival_date,now()) AS remaining_days, client_name, client_sex,client_phone_number,client_email,appt.schedule_type,appt.priority,appt.channel_id,cc.name as contact_channel, appt.notes, appt.status_id, getApptStatus(appt.branch_id,appt.status_id) As status, getPatientCode(appt.branch_id,appt.client_id) AS patient_code,getReceivable(appt.branch_id,appt.client_id) AS unpaid_amount,appt.arrival_time AS arrival_time1";
         return DB::table("appointments as appt")->join('contact_channels as cc','cc.id','=','appt.channel_id')->where('appt.branch_id',$branch_id)->whereRaw($str_where)->selectRaw($cols)->orderByRaw($str_order)->get();  
          
     }
@@ -188,7 +195,7 @@ class Appointment //extends Model
         return $ticket->create($inputs);
     }
 
-    static function details($id,$branch_id){
+    static function details($branch_id,$id){
         $cols ="appt.id,appt.client_id,appt.consultant_id,getConsultanName(appt.consultant_id) as consultant_name, DATE_FORMAT(arrival_time,'%r') AS arrival_time,DATE_FORMAT(arrival_date,'%d %b %Y') as arrival_date,appt.lead_id,appt.client_id,appt.create_user,DATE_FORMAT(appt.created_at,'%d %b %Y') AS created_at,
         client_name,
         client_sex,
@@ -200,15 +207,24 @@ class Appointment //extends Model
         $rows = DB::table("appointments as appt")->join('contact_channels as cc','cc.id','=','appt.channel_id')->where('appt.branch_id',$branch_id)->where('appt.id',$id)->selectRaw($cols)->get();  
         foreach($rows as $row){
             $row->chief_complaints = DB::table("appt_chief_complaints as apc")->join('chief_complaints as cc','cc.id','=','apc.chief_complaint_id')->where('apc.appt_id',$row->id)->selectRaw("cc.id,cc.name")->get();
+            $row->image_url = self::getProfilePicture($branch_id,$row->client_id);
             return $row;
         }
         return null;
+    }
+    
+    static function getProfilePicture($branch_id,$client_id){
+       $customer_table = InvoiceSettings::$customer_table;
+       $rows = DB::table($customer_table." as c")->where('c.id',$client_id)->where('c.branch_id',$branch_id)->selectRaw("c.photo_file_name")->take(1)->get();
+       $url =null;
+       foreach($rows as $row) $url = PublicStorage::getUrl($branch_id,"patient","image").$row->photo_file_name;
+       return $url;
     }
 
     function getDetails($id=null,$ss=null){
         if (!$id) $id = $this->getId();
         if(!$ss) $ss = $this->getUserInfo();
-        return self::details($id,$ss->branch_id);
+        return self::details($ss->branch_id,$id);
     }
 
     //$d = ['cc_id']

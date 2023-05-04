@@ -1,24 +1,21 @@
 <?php
 
 use Illuminate\Http\Request;
-use App\Models\SMS;
-use App\Models\Notifier;
-use App\Models\UM;
-use App\Models\JDV;
-
+//use App\Models\SMS;
+//use App\Models\Notifier;
+ 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CompanyController;
-use App\Http\Controllers\LocationController;
+//use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\UMController;
 use App\Http\Controllers\Login\LoginController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\CompanyProfileController;
+//use App\Http\Controllers\CompanyProfileController;
 
 //use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\MobileAppSettingsController;
+//use App\Http\Controllers\MobileAppSettingsController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\GeneralSettingsController;
 use App\Http\Controllers\SystemSettingController;
@@ -32,32 +29,28 @@ use App\Http\Controllers\QTicketController;
 use App\Http\Controllers\MedicalServiceController;
 use App\Http\Controllers\ServicePlanController;
 use App\Http\Controllers\ServiceTrackController;
-
-use App\Http\Controllers\Inventory\CategoryController;
-use App\Http\Controllers\Inventory\MIStockController;
-use App\Http\Controllers\Inventory\ItemGroupController;
-use App\Http\Controllers\Inventory\ItemController;
-use App\Http\Controllers\Inventory\FGStockController;
-use App\Http\Controllers\Inventory\RMStockController;
-use App\Http\Controllers\Inventory\InventorySettingsController;
+ 
+//use App\Http\Controllers\Inventory\MIStockController;
+//use App\Http\Controllers\Inventory\ItemGroupController;
+//use App\Http\Controllers\Inventory\ItemController;
+ 
+//use App\Http\Controllers\Inventory\InventorySettingsController;
 
 use App\Http\Controllers\Invoice\MedicalInvoiceController;
-
-use App\Http\Controllers\Invoice\BillController;
 use App\Http\Controllers\Invoice\InvoiceController;
-use App\Http\Controllers\Invoice\CustomerController;
 use App\Http\Controllers\Bill\VendorController;
 
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ExchangeRateController;
 use App\Http\Controllers\PatientController;
-
+use App\Http\Controllers\PatientHistoryController;
+ 
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PartnerController;
 //use App\Models\PublicStorage;
 //use App\Models\SystemSetting;
-use App\Models\Patient;
-use App\Models\Inventory\Brand;
+// use App\Models\Patient;
+// use App\Models\Inventory\Brand;
 
 /*
 /*
@@ -183,6 +176,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //begin::MedicalServiceController
     Route::post('service/details', [MedicalServiceController::class, 'getMedicalServiceDetails']);
     Route::post('service/items', [MedicalServiceController::class, 'getMedicalServices']);
+    Route::post('service/list-paginate', [MedicalServiceController::class, 'getMedicalServices_paginate']);
     Route::post('service/list', [MedicalServiceController::class, 'getMedicalServices']);
     Route::post('service/delete', [MedicalServiceController::class, 'deleteMedicalService']);
     Route::post('service/save', [MedicalServiceController::class, 'saveMedicalService']);
@@ -190,8 +184,10 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //End::MedicalServiceController
 
     //begin::ServicePlanController
+    Route::post('service-plan/form-options', [ServicePlanController::class, 'getFormOptions']);
     Route::post('service-plan/details', [ServicePlanController::class, 'getServicePlanDetails']);
     Route::post('service-plan/list', [ServicePlanController::class, 'getServicePlans']);
+    Route::post('service-plan/list-paginate', [ServicePlanController::class, 'getServicePlans_paginate']);
     Route::post('service-plan/delete', [ServicePlanController::class, 'deleteServicePlan']);
     Route::post('service-plan/save', [ServicePlanController::class, 'saveServicePlan']);
     Route::post('service-plan/info', [ServicePlanController::class, 'getServicePlanDetails']);
@@ -210,37 +206,28 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
        Route::post('service-track/save', [ServiceTrackController::class, 'saveTrack']);
        Route::post('service-track/info', [ServiceTrackController::class, 'getTrackDetails']);
     //End::ServiceTrackController
+ 
+    // //begin::MIStockController
+    // //stock/groups  
+    // Route::post('inventory/stock/group-list', [MIStockController::class, 'getGroupList']);
+    // Route::post('inventory/stock/group-items', [MIStockController::class, 'getItemsByGroup']);
+    // Route::post('inventory/stock/classes', [MIStockController::class, 'getStockClasses']);
+    // Route::post('inventory/stock/receive-items', [MIStockController::class, 'receiveVPO']);
+    // Route::post('inventory/stock/receive-vpo', [MIStockController::class, 'receiveVPO']);
+    // Route::post('inventory/stock/adjust', [MIStockController::class, 'adjustGroupQty']);
+    // Route::post('inventory/stock/receive-returns', [MIStockController::class, 'receiveReturns']);
+    // Route::post('inventory/stock/return-to-vendor', [MIStockController::class, 'returnToVendor']);
 
-    //begin::ItemController
-    Route::post('inventory/item-info', [ItemController::class, 'getItemInfo']);
-    Route::post('inventory/item/info', [ItemController::class, 'getItemInfo']);
-    Route::post('inventory/item-details', [ItemController::class, 'getItemDetails']);
-    Route::post('inventory/items', [ItemController::class, 'getItemList']);
-    Route::post('inventory/delete-item', [ItemController::class, 'deleteItem']);
-    Route::post('inventory/save-item', [ItemController::class, 'saveItem']);
-    //End::ItemController
+    // Route::post('inventory/stock/transfer', [MIStockController::class, 'transfer']);
+    // //Transfer stock items Qty from one class to another class
+    // Route::post('inventory/stock/transfer-class', [MIStockController::class, 'transferClass']);
 
-    //begin::MIStockController
-    //stock/groups  
-    Route::post('inventory/stock/group-list', [MIStockController::class, 'getGroupList']);
-    Route::post('inventory/stock/group-items', [MIStockController::class, 'getItemsByGroup']);
-    Route::post('inventory/stock/classes', [MIStockController::class, 'getStockClasses']);
-    Route::post('inventory/stock/receive-items', [MIStockController::class, 'receiveVPO']);
-    Route::post('inventory/stock/receive-vpo', [MIStockController::class, 'receiveVPO']);
-    Route::post('inventory/stock/adjust', [MIStockController::class, 'adjustGroupQty']);
-    Route::post('inventory/stock/receive-returns', [MIStockController::class, 'receiveReturns']);
-    Route::post('inventory/stock/return-to-vendor', [MIStockController::class, 'returnToVendor']);
-
-    Route::post('inventory/stock/transfer', [MIStockController::class, 'transfer']);
-    //Transfer stock items Qty from one class to another class
-    Route::post('inventory/stock/transfer-class', [MIStockController::class, 'transferClass']);
-
-    //update selling prices, and cost
-    Route::post('inventory/item/update-prices', [MIStockController::class, 'updateItemPrices']);
-    //update item's sku and do the sku conversion for item avaliable in stock
-    Route::post('inventory/item/change-sku', [MIStockController::class, 'updateItemSKU']);
-    //Update item's name, code, category
-    Route::post('inventory/item/update-info', [MIStockController::class, 'updateItemInfo']);
+    // //update selling prices, and cost
+    // Route::post('inventory/item/update-prices', [MIStockController::class, 'updateItemPrices']);
+    // //update item's sku and do the sku conversion for item avaliable in stock
+    // Route::post('inventory/item/change-sku', [MIStockController::class, 'updateItemSKU']);
+    // //Update item's name, code, category
+    // Route::post('inventory/item/update-info', [MIStockController::class, 'updateItemInfo']);
     //End::MIStockController
 
     //  //begin::FGStockController
@@ -260,27 +247,28 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
     // //End::FGStockController
 
-    //begin::ItemGroupController
-    Route::post('inventory/group/details', [ItemGroupController::class, 'getItemGroupDetails']);
-    Route::post('inventory/group/info', [ItemGroupController::class, 'getGroupInfo']);
-    //Route::post('inventory/group/info', [ItemGroupController::class, 'getGroupInfo']);
-    Route::post('inventory/group/list', [ItemGroupController::class, 'getItemGroups']);
-    //Route::post('inventory/group-list', [ItemGroupController::class, 'getItemGroups']);
-    Route::post('inventory/group/delete', [ItemGroupController::class, 'deleteItemGroup']);
-    Route::post('inventory/group/save', [ItemGroupController::class, 'saveItemGroup']);
-    Route::post('inventory/group/rename', [ItemGroupController::class, 'renameGroup']);
-    Route::post('inventory/group/form-options', [ItemGroupController::class, 'getFormOptions']);
-    Route::post('group/form-options', [ItemGroupController::class, 'getFormOptions']);
+    // //begin::ItemGroupController
+    // Route::post('inventory/group/details', [ItemGroupController::class, 'getItemGroupDetails']);
+    // Route::post('inventory/group/info', [ItemGroupController::class, 'getGroupInfo']);
+    // //Route::post('inventory/group/info', [ItemGroupController::class, 'getGroupInfo']);
+    // Route::post('inventory/group/list', [ItemGroupController::class, 'getItemGroups']);
+    // Route::post('inventory/group/list-paginate', [ItemGroupController::class, 'getItemGroups_paginate']);
+    // //Route::post('inventory/group-list', [ItemGroupController::class, 'getItemGroups']);
+    // Route::post('inventory/group/delete', [ItemGroupController::class, 'deleteItemGroup']);
+    // Route::post('inventory/group/save', [ItemGroupController::class, 'saveItemGroup']);
+    // Route::post('inventory/group/rename', [ItemGroupController::class, 'renameGroup']);
+    // Route::post('inventory/group/form-options', [ItemGroupController::class, 'getFormOptions']);
+    // Route::post('group/form-options', [ItemGroupController::class, 'getFormOptions']);
 
-    Route::post('inventory/group-details', [ItemGroupController::class, 'getItemGroupDetails']);
-    Route::post('inventory/group-info', [ItemGroupController::class, 'getGroupInfo']);
-    Route::post('inventory/group/info', [ItemGroupController::class, 'getGroupInfo']);
-    Route::post('inventory/groups', [ItemGroupController::class, 'getItemGroups']);
-    Route::post('inventory/group-list', [ItemGroupController::class, 'getItemGroups']);
-    Route::post('inventory/delete-group', [ItemGroupController::class, 'deleteItemGroup']);
-    Route::post('inventory/save-group', [ItemGroupController::class, 'saveItemGroup']);
-    //    Route::post('group/form-options', [ItemGroupController::class, 'getFormOptions']);
-    //End::ItemGroupController
+    // Route::post('inventory/group-details', [ItemGroupController::class, 'getItemGroupDetails']);
+    // Route::post('inventory/group-info', [ItemGroupController::class, 'getGroupInfo']);
+    // Route::post('inventory/group/info', [ItemGroupController::class, 'getGroupInfo']);
+    // Route::post('inventory/groups', [ItemGroupController::class, 'getItemGroups']);
+    // Route::post('inventory/group-list', [ItemGroupController::class, 'getItemGroups']);
+    // Route::post('inventory/delete-group', [ItemGroupController::class, 'deleteItemGroup']);
+    // Route::post('inventory/save-group', [ItemGroupController::class, 'saveItemGroup']);
+    // //    Route::post('group/form-options', [ItemGroupController::class, 'getFormOptions']);
+    // //End::ItemGroupController
 
     //begin::VendorController
     Route::post('vendor/save', [VendorController::class, 'saveVendor']);
@@ -298,6 +286,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //end::MedicalInvoiceController
 
     //begin::InvoiceController
+    Route::post('invoice/payment-form-options', [InvoiceController::class, 'getPaymentFormOptions']);
     Route::post('invoice/form-options', [InvoiceController::class, 'invoice_form_options']);
     Route::post('invoice/customer-info', [InvoiceController::class, 'getCustomerInfo']);
     Route::post('invoice/create', [InvoiceController::class, 'createInvoice']);
@@ -306,6 +295,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('invoice/details', [InvoiceController::class, 'getInvoiceDetails']);
     Route::post('invoice/basic-info', [InvoiceController::class, 'getBasicInfo']);
     Route::post('invoice/list', [InvoiceController::class, 'getInvoiceList']);
+    Route::post('invoice/list-paginate', [InvoiceController::class, 'getInvoiceList_paginate']);
     Route::post('invoice-payment/receive', [InvoiceController::class, 'receivePayment']);
     Route::post('invoice/receive-payment', [InvoiceController::class, 'receivePayment']);
     Route::post('invoice/receive-payments', [InvoiceController::class, 'receivePayments']);
@@ -319,14 +309,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('invoice-payment/delete', [InvoiceController::class, 'deletePayment']);
 
     //end::InvoiceController
-
-    //begin::CategoryController
-    Route::post('category/details', [CategoryController::class, 'getCategoryDetails']);
-    Route::post('category/list', [CategoryController::class, 'getCategories']);
-    Route::post('category/delete', [CategoryController::class, 'deleteCategory']);
-    Route::post('category/save', [CategoryController::class, 'saveCategory']);
-    //End::CategoryController
-
+ 
     //begin::EmployeeController
     Route::post('employee/details', [EmployeeController::class, 'getEmployeeDetails']);
     Route::post('employee/list', [EmployeeController::class, 'getEmployeeList']);
@@ -340,52 +323,53 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
     Route::post('Bill/settings/save-vendor-type', [VendorController::class, 'saveVendorType']);
     Route::post('Bill/settings/delete-vendor-type', [VendorController::class, 'saveVendorType']);
-    //begin::InventorySettingsController =>  Inventory Settings.
-    Route::post('inventory/settings/options-group', [InventorySettingsController::class, 'getComboItems_group']);
-    Route::post('inventory/settings/item-form-options', [InventorySettingsController::class, 'getItemFormOptions']);
-    Route::post('inventory/settings/stock-tracking-options', [InventorySettingsController::class, 'getStockTrackingFormOptions']);
-    Route::post('inventory/settings/vpo-form-options', [InventorySettingsController::class, 'getReceiveVPOOptions']);
-    Route::post('inventory/settings/options-detail-type', [InventorySettingsController::class, 'getComboItems_detailtype']);
-    Route::post('inventory/settings/options-category', [InventorySettingsController::class, 'getComboItems_category']);
-    Route::post('inventory/settings/options-unit', [InventorySettingsController::class, 'getComboItems_unit']);
-    Route::post('inventory/settings/options-sku', [InventorySettingsController::class, 'getComboItems_unit']);
-    Route::post('inventory/settings/options-manufacturer', [InventorySettingsController::class, 'getComboItems_manufacturer']);
-    Route::post('inventory/settings/save-unit', [InventorySettingsController::class, 'saveUnit']);
-    Route::post('inventory/settings/save-sku', [InventorySettingsController::class, 'saveUnit']);
-    Route::post('inventory/settings/save-manufacturer', [InventorySettingsController::class, 'saveManufacturer']);
-    Route::post('inventory/settings/save-brand', [InventorySettingsController::class, 'saveBrand']);
-    Route::post('inventory/settings/options-stock-class', [InventorySettingsController::class, 'getComboItems_stockclass']);
-    Route::post('inventory/settings/receive-stock-options', [InventorySettingsController::class, 'getReceiveStockFormOptions']);
-    Route::post('inventory/settings/options-warehouse', [InventorySettingsController::class, 'getComboItems_warehouse']);
+    
+    // //begin::InventorySettingsController =>  Inventory Settings.
+    // Route::post('inventory/settings/options-group', [InventorySettingsController::class, 'getComboItems_group']);
+    // Route::post('inventory/settings/item-form-options', [InventorySettingsController::class, 'getItemFormOptions']);
+    // Route::post('inventory/settings/stock-tracking-options', [InventorySettingsController::class, 'getStockTrackingFormOptions']);
+    // Route::post('inventory/settings/vpo-form-options', [InventorySettingsController::class, 'getReceiveVPOOptions']);
+    // Route::post('inventory/settings/options-detail-type', [InventorySettingsController::class, 'getComboItems_detailtype']);
+    // Route::post('inventory/settings/options-category', [InventorySettingsController::class, 'getComboItems_category']);
+    // Route::post('inventory/settings/options-unit', [InventorySettingsController::class, 'getComboItems_unit']);
+    // Route::post('inventory/settings/options-sku', [InventorySettingsController::class, 'getComboItems_unit']);
+    // Route::post('inventory/settings/options-manufacturer', [InventorySettingsController::class, 'getComboItems_manufacturer']);
+    // Route::post('inventory/settings/save-unit', [InventorySettingsController::class, 'saveUnit']);
+    // Route::post('inventory/settings/save-sku', [InventorySettingsController::class, 'saveUnit']);
+    // Route::post('inventory/settings/save-manufacturer', [InventorySettingsController::class, 'saveManufacturer']);
+    // Route::post('inventory/settings/save-brand', [InventorySettingsController::class, 'saveBrand']);
+    // Route::post('inventory/settings/options-stock-class', [InventorySettingsController::class, 'getComboItems_stockclass']);
+    // Route::post('inventory/settings/receive-stock-options', [InventorySettingsController::class, 'getReceiveStockFormOptions']);
+    // Route::post('inventory/settings/options-warehouse', [InventorySettingsController::class, 'getComboItems_warehouse']);
 
-    Route::post('inventory/settings/unit/delete', [InventorySettingsController::class, 'deleteUnit']);
-    Route::post('inventory/settings/unit/list', [InventorySettingsController::class, 'getUnitList']);
-    Route::post('inventory/settings/unit/save', [InventorySettingsController::class, 'saveUnit']);
-    //Route::post('inventory/settings/delete-sku', [InventorySettingsController::class, 'deleteUnit']);
+    // Route::post('inventory/settings/unit/delete', [InventorySettingsController::class, 'deleteUnit']);
+    // Route::post('inventory/settings/unit/list', [InventorySettingsController::class, 'getUnitList']);
+    // Route::post('inventory/settings/unit/save', [InventorySettingsController::class, 'saveUnit']);
+    // //Route::post('inventory/settings/delete-sku', [InventorySettingsController::class, 'deleteUnit']);
 
-    Route::post('inventory/settings/manufacturer/delete', [InventorySettingsController::class, 'deleteManufacturer']);
-    Route::post('inventory/settings/manufacturer/list', [InventorySettingsController::class, 'getManufacturerList']);
-    Route::post('inventory/settings/manufacturer/save', [InventorySettingsController::class, 'saveManufacturer']);
+    // Route::post('inventory/settings/manufacturer/delete', [InventorySettingsController::class, 'deleteManufacturer']);
+    // Route::post('inventory/settings/manufacturer/list', [InventorySettingsController::class, 'getManufacturerList']);
+    // Route::post('inventory/settings/manufacturer/save', [InventorySettingsController::class, 'saveManufacturer']);
 
-    // Route::post('inventory/settings/brand/delete', [InventorySettingsController::class, 'deleteBrand']);
-    // Route::post('inventory/settings/brand/list', [InventorySettingsController::class, 'getBrandList']);
-    // Route::post('inventory/settings/brand/save', [InventorySettingsController::class, 'saveBrand']);
+    // // Route::post('inventory/settings/brand/delete', [InventorySettingsController::class, 'deleteBrand']);
+    // // Route::post('inventory/settings/brand/list', [InventorySettingsController::class, 'getBrandList']);
+    // // Route::post('inventory/settings/brand/save', [InventorySettingsController::class, 'saveBrand']);
 
-    // *** inventory/group/save 
-    Route::post('inventory/settings/brand/save', function (Request $req) {
-        $res = Brand::createOrUpdate($req);
-        return response()->json($res);
-    });
+    // // *** inventory/group/save 
+    // Route::post('inventory/settings/brand/save', function (Request $req) {
+    //     $res = Brand::createOrUpdate($req);
+    //     return response()->json($res);
+    // });
 
-    Route::post('inventory/settings/brand/delete', function (Request $req) {
-        $res = Brand::deletePermanently($req);
-        return response()->json($res);
-    });
-    Route::post('inventory/settings/brand/list', function (Request $req) {
-        $res = Brand::list($req);
-        return response()->json($res);
-    });
-    //end::InventorySettingsController =>  Inventory Settings.
+    // Route::post('inventory/settings/brand/delete', function (Request $req) {
+    //     $res = Brand::deletePermanently($req);
+    //     return response()->json($res);
+    // });
+    // Route::post('inventory/settings/brand/list', function (Request $req) {
+    //     $res = Brand::list($req);
+    //     return response()->json($res);
+    // });
+    // //end::InventorySettingsController =>  Inventory Settings.
 
     //begin::PartnerController
     Route::post('partner/list', [PartnerController::class, 'getPartnerList']);
@@ -429,9 +413,23 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('patient/history', [PatientController::class, 'getPatientHistory']);
     Route::post('patient/details', [PatientController::class, 'getPatientDetails']);
     Route::post('patient/info', [PatientController::class, 'getPatientDetails']);
+    Route::post('patient/quick-summary', [PatientController::class, 'getQuickSummary']);
+    
+    Route::post('patient/history/medical-history', [PatientHistoryController::class, 'getMedicalHistory']);
+    Route::post('patient/history/pe', [PatientHistoryController::class, 'getHistoricalPE']);
+    Route::post('patient/history/labo-tests', [PatientHistoryController::class, 'getHistoricalLaboTests']);
+    Route::post('patient/history/medication', [PatientHistoryController::class, 'getHistoricalMedication']);
+    Route::post('patient/history/diagnosis', [PatientHistoryController::class, 'getHistoricalDiagnosis']);
+    Route::post('patient/history/services', [PatientHistoryController::class, 'getHistoricalServices']);
+    Route::post('patient/history/followups', [PatientHistoryController::class, 'getHistoricalFollowups']);
+    Route::post('patient/history/advice', [PatientHistoryController::class, 'getHistoricalAdvice']);
+
+    //saveProfilePhoto() for patient or client
+    Route::post('patient/save-profile-picture', [PatientController::class, 'saveProfilePicture']);
 
     Route::post('patient/find', [PatientController::class, 'findPatients']);
     Route::post('patient/list', [PatientController::class, 'getPatientList']);
+    Route::post('patient/list-paginate', [PatientController::class, 'getPatientList_paginate']);
     Route::post('patient/delete', [PatientController::class, 'deletePatient']);
     Route::post('patient/register', [PatientController::class, 'registerPatient']);
     Route::post('patient/photos', [PatientController::class, 'getPatientPhotos']);
@@ -477,38 +475,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
     //end::PatientController
 
-    //begin::LocationController
-    Route::post('location/countries', [LocationController::class, 'getCountryList']);
-    Route::post('location/cities', [LocationController::class, 'getCityList']);
-    Route::post('location/districts', [LocationController::class, 'getDistrictList']);
-    Route::post('location/communes', [LocationController::class, 'getCommuneList']);
-
-    Route::post('location/options-country', [LocationController::class, 'getComboItems_country']);
-
-    Route::post('location/options-city', [LocationController::class, 'getComboItems_city']);
-
-    Route::post('location/options-district', [LocationController::class, 'getComboItems_district']);
-
-    Route::post('location/options-commune', [LocationController::class, 'getComboItems_commune']);
-
-    Route::post('location/country/save', [LocationController::class, 'saveCountry']);
-
-    Route::post('location/country/delete', [LocationController::class, 'deleteCountry']);
-
-    Route::post('location/city/save', [LocationController::class, 'saveCity']);
-
-    Route::post('location/city/delete', [LocationController::class, 'deleteCity']);
-
-    Route::post('location/district/save', [LocationController::class, 'saveDistrict']);
-
-    Route::post('location/district/delete', [LocationController::class, 'deleteDistrict']);
-
-    Route::post('location/commune/save', [LocationController::class, 'saveCommune']);
-
-    Route::post('location/commune/delete', [LocationController::class, 'deleteCommune']);
-    //end::LocationController
-
-
+     
     //begin:: PromotionController 
     Route::post('getPromotionList', [PromotionController::class, 'getPromotionList']);
     Route::post('savePromotion', [PromotionController::class, 'savePromotion']);
@@ -584,27 +551,22 @@ Route::post('getComboItems_price_list', [SystemSettingController::class, 'getCom
 
 //end::SystemSettingController
 
-//begin::CompanyProfileController
-Route::post('saveCompanyLogo', [CompanyProfileController::class, 'saveCompanyLogo']);
-Route::post('getCompanyLogo', [CompanyProfileController::class, 'getCompanyLogo']);
-Route::post('deleteCompanyLogo', [CompanyProfileController::class, 'deleteCompanyLogo']);
-Route::post('saveCompanyInfo', [CompanyProfileController::class, 'saveCompanyInfo']);
-Route::post('getCompanyInfo', [CompanyProfileController::class, 'getCompanyInfo']);
-Route::post('getBrandImages_driver', [CompanyProfileController::class, 'getBrandImages_driver']);
-Route::post('getBrandImages_sender', [CompanyProfileController::class, 'getBrandImages_sender']);
-//end::CompanyProfileController
+// //begin::CompanyProfileController
+// Route::post('saveCompanyLogo', [CompanyProfileController::class, 'saveCompanyLogo']);
+// Route::post('getCompanyLogo', [CompanyProfileController::class, 'getCompanyLogo']);
+// Route::post('deleteCompanyLogo', [CompanyProfileController::class, 'deleteCompanyLogo']);
+// Route::post('saveCompanyInfo', [CompanyProfileController::class, 'saveCompanyInfo']);
+// Route::post('getCompanyInfo', [CompanyProfileController::class, 'getCompanyInfo']);
+// Route::post('getBrandImages_driver', [CompanyProfileController::class, 'getBrandImages_driver']);
+// Route::post('getBrandImages_sender', [CompanyProfileController::class, 'getBrandImages_sender']);
+// //end::CompanyProfileController
+ 
 
-//begin::ReportController
-Route::prefix('rpt')->group(function () {
-    Route::post('rpt_getSummaryData', [ReportController::class, 'getSummaryData']);
-});
-//end::ReportController
-
-//begin::ReportController
-Route::post('getMobileBrandImages', [MobileAppSettingsController::class, 'getMobileBrandImages']);
-Route::post('saveBrandImage', [MobileAppSettingsController::class, 'saveBrandImage']);
-Route::post('deleteBrandImage', [MobileAppSettingsController::class, 'deleteBrandImage']);
-//end::ReportController
+// //begin::MobileAppSettingsController
+// Route::post('getMobileBrandImages', [MobileAppSettingsController::class, 'getMobileBrandImages']);
+// Route::post('saveBrandImage', [MobileAppSettingsController::class, 'saveBrandImage']);
+// Route::post('deleteBrandImage', [MobileAppSettingsController::class, 'deleteBrandImage']);
+// //end::MobileAppSettingsController
 
 
 /***### ROUTES FOR EXTERNAL API (V1) ##****/
@@ -637,6 +599,7 @@ Route::post('settings/save-department', [GeneralSettingsController::class, 'save
 Route::post('settings/delete-department', [GeneralSettingsController::class, 'deleteDepartment']);
 Route::post('settings/department-info', [GeneralSettingsController::class, 'getDepartmentDetails']);
 
+Route::post('settings/options-pmt-method', [GeneralSettingsController::class, 'getComboItems_pmt_method']);
 Route::post('settings/save-position', [GeneralSettingsController::class, 'savePosition']);
 Route::post('settings/options-department', [GeneralSettingsController::class, 'getComboItems_department']);
 Route::post('settings/options-position', [GeneralSettingsController::class, 'getComboItems_position']);
@@ -656,6 +619,7 @@ Route::post('settings/options-consultant', [GeneralSettingsController::class, 'g
 Route::post('settings/options-chief-complaint', [GeneralSettingsController::class, 'getComboItems_chief_complaint']);
 Route::post('settings/save-chief-complaint', [GeneralSettingsController::class, 'saveChiefComplaint']);
 Route::post('settings/options-labo-test', [GeneralSettingsController::class, 'getComboItems_laboTest']);
+Route::post('settings/options-sales-agent', [GeneralSettingsController::class, 'getComboItems_sales_agent']);
 
 Route::post('settings/options-service', [GeneralSettingsController::class, 'getComboItems_service']);
 
@@ -668,8 +632,5 @@ Route::post('settings/report-filter-options', [GeneralSettingsController::class,
 // Route::post('settings/program-details', [GeneralSettingsController::class, 'getProgramDetails']);
 // Route::post('settings/program-options', [GeneralSettingsController::class, 'getProgramOptions']);
 // Route::post('settings/occupations', [GeneralSettingsController::class, 'getOccupations']);
-
-Route::post('location/cities', [LocationController::class, 'getCityList']);
-Route::post('location/districts', [LocationController::class, 'getDistrictList']);
-Route::post('location/communes', [LocationController::class, 'getCommuneList']);
+ 
 //end::API routes for external calls

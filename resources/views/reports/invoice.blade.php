@@ -169,7 +169,7 @@
                                     <th class="w-15">QTY</th>
                                     <th class="w-15">PRICE</th>
                                     <th class="w-15">DISCOUNT</th>
-                                    <th class="w-15">VAT</th>
+                                    <!-- <th class="w-15">VAT</th> -->
                                     <th class="w-15">TOTAL</th>
                                 </tr>
                             </thead>
@@ -187,9 +187,9 @@
                                             <td style=\"width:25%\">".$item->item_name."</td>
                                             <td $style_def_width>".number_format((float)$item->qty,0)." ".$item->sku."</td>
                                             <td $style_def_width>".$cur_symbol." ".$item->price."</td>
-                                            <td $style_def_width>".$item->discount_percent." %</td>
-                                            <td $style_def_width>".$item->tax_rate." %</td>
-                                            <td $style_def_width>".$cur_symbol." ".$item->line_total."</td>
+                                            <td $style_def_width>".$item->discount_percent." %</td>".
+                                            //"<td $style_def_width>".$item->tax_rate." %</td>".
+                                            "<td $style_def_width>".$cur_symbol." ".$item->line_total."</td>
                                         </tr>";
                                         $total_product += $item->line_total;
                                         $total_discount_percent += $item->discount_percent;
@@ -208,7 +208,7 @@
                                     <th style="width:15%">QTY</th>
                                     <th style="width:15%">PRICE</th>
                                     <th style="width:15%">DISCOUNT</th>
-                                    <th style="width:15%">VAT</th>
+                                    <!-- <th style="width:15%">VAT</th> -->
                                     <th style="width:15%">TOTAL</th>
                                 </tr>
                             </thead>
@@ -229,9 +229,9 @@
                                             <td style=\"width:25%\">".$item->item_name."</td>
                                             <td $style_def_width>".$qty."</td>
                                             <td  $style_def_width>".$price."</td>
-                                            <td $style_def_width>".$item->discount_percent." %</td>
-                                            <td $style_def_width>".$item->tax_rate." %</td>
-                                            <td $style_def_width>".$line_total."</td>
+                                            <td $style_def_width>".$item->discount_percent." %</td>".
+                                            //"<td $style_def_width>".$item->tax_rate." %</td>".
+                                            "<td $style_def_width>".$line_total."</td>
                                         </tr>";
                                         $total_service += $item->line_total;
                                         $total_discount_percent += $item->discount_percent;
@@ -242,19 +242,19 @@
                                 ?>
                                 <tr>
                                     <td colspan="5" rowspan="3" style="border:none">
-                                      <div class="d-block p-1">
-                                            <p class="fw-bold">PAYMENT TO</p>
-                                                <span class="d-block">
-                                                    <?php echo "Bank Name: ".$invoice->pmt_bank_name; ?>
-                                                </span>
-                                                <span class="d-block">
-                                                    <?php echo "Account number: ".$invoice->pmt_account_number; ?>
-                                                </span>
-                                                <span class="d-block">
-                                                    <?php echo "Holder name: ".$invoice->pmt_account_name; ?>
-                                                </span>
+                                      <!--<div class="d-block p-1">-->
+                                      <!--      <p class="fw-bold">PAYMENT TO</p>-->
+                                      <!--          <span class="d-block">-->
+                                      <!--              <?php echo "Bank Name: ".$invoice->pmt_bank_name; ?>-->
+                                      <!--          </span>-->
+                                      <!--          <span class="d-block">-->
+                                      <!--              <?php echo "Account number: ".$invoice->pmt_account_number; ?>-->
+                                      <!--          </span>-->
+                                      <!--          <span class="d-block">-->
+                                      <!--              <?php echo "Holder name: ".$invoice->pmt_account_name; ?>-->
+                                      <!--          </span>-->
                                                
-                                        </div>
+                                      <!--  </div>-->
                                     </td>
                                     <td class="fw-semibold">Subtotal</td>
                                     <td><?php echo $cur_symbol." ".$total_product + $total_service ?></td>
@@ -268,10 +268,10 @@
                                 </tr>
                                 <tr>
                                     <!-- <td colspan="5" style="border:none"></td> -->
-                                    <td class="fw-semibold">VAT</td>
+                                    <!-- <td class="fw-semibold">VAT</td>
                                     <td>
-                                        <?php echo $cur_symbol." ".$total_tax_rate; ?>
-                                    </td>
+                                        <?php //echo $cur_symbol." ".$total_tax_rate; ?>
+                                    </td> -->
                                 </tr>
                                 <tr class="border-bottom border border-0">
                                     <td colspan="5" style="border:none"></td>

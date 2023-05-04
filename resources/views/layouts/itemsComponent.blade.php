@@ -25,14 +25,15 @@
                 </button>
             </div>
         </div>
-        <div class="flat-box full-screen-height-scroll" style="margin:17px;padding:15px">
+        <div style="margin-top:10px;" class="flat-box" id="_itm_list_container"></div>
+        <!-- <div class="flat-box full-screen-height-scroll" style="margin:17px;padding:15px">
              <table class="table header-light-blue header-uppercase" id="_itm_tblItems"></table>
-        </div>
+        </div> -->
     </div>
 </div>
 
 <div id="_itm_dlgProduct" class="modal fade" tabindex="-1" aria-labelledby="_itm_dlgProduct_title" aria-hidden="true">
-    <div class="modal-dialog vs-modal-dialog modal-lg">
+    <div class="modal-dialog vs-modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="_itm_dlgProduct_title"></h4>
@@ -73,16 +74,19 @@
                                 </div>                             
                                 <div class="forn-group col-lg-6">
                                     <span class="simple-label trans-text" data-langprop="item.Brand Name">Brand Name</span>
-                                    <select id="_itm_brand_name" class="modal-select2 data-input" data-field="brand_id" data-ffield="Brand name">
-                                        <option value="1">General Brand</option>
+                                    <select id="_itm_item_brand" class="modal-select2 data-input" data-field="brand_id" data-ffield="Brand name">
+                                       
                                     </select>
                                 </div>
-
+ 
                                 <div class="forn-group col-lg-6">
                                     <span class="simple-label"><span class="trans-text" data-langprop="item.SKU"></span>&nbsp; <a href="javascript:void(0)" id="_itm_lnkAddUnit"><i class="fa fa-plus-circle" style="color:green"></i></a></span>
                                     <select id="_itm_item_unit" data-required="1" class="modal-select2 form-select data-input" data-field="unit_id" data-ffield="SKU"></select>
                                 </div>
   
+                                <div style="width:100%">
+                                    <span class="d-inline-block fw-bold p-2" style="width:50%;font-size:1.2em;border-bottom:1px solid #E8EBEC">Sales Information</span>
+                                 </div>
                                 <div class="forn-group col-lg-12" id="_itm_detail_type_panel" style="display:none">
                                     <span class="simple-label"><span class="trans-text" data-langprop="item.Detail Type"></span>&nbsp; <a href="javascript:void(0)" id="_itm_lnkAddDetailType"><i class="fa fa-plus-circle" style="color:green"></i></a></span>
                                     <select id="_itm_item_detail_type" data-required="1" class="modal-select2 form-select data-input" data-field="detail_type_id" data-ffield="Detail type"></select>
@@ -103,7 +107,7 @@
                                    <div> <input type="number" class="form-control data-input" data-field="sales_tax_rate" data-ffield="Sales tax" value="0"></div> 
                                 </div>
 
-                                <div class="forn-group col-lg-6">
+                                <div class="forn-group col-lg-6" style="display:none">
                                     <span class="simple-label"><span class="trans-text" data-langprop="item.Purchase Tax(%)"></span> 
                                     <input type="number" class="form-control data-input" data-field="purchase_tax_rate" data-ffield="Purchase Tax" value="0"> 
                                 </div>
@@ -113,13 +117,28 @@
                                     <input type="number" class="form-control data-input" data-field="cost" data-ffield="Cost" value="0"> 
                                 </div>
 
+                                
+                                 <div style="width:100%">
+                                    <span class="d-inline-block fw-bold p-2" style="width:50%;font-size:1.2em;border-bottom:1px solid #E8EBEC">Account Information</span>
+                                 </div>
+                                <div class="forn-group col-lg-6">
+                                    <span class="simple-label"><span class="trans-text" data-langprop="item.Inventory Account"></span> 
+                                    <div>  <select class="modal-select2 data-input" data-field="inventory_account_id" data-ffield="Inventory Account"></select> </div>
+                                </div>
+
                                 <div class="forn-group col-lg-6">
                                     <span class="simple-label"><span class="trans-text" data-langprop="item.Cost Account"></span> 
-                                  <div>  <select class="modal-select2 data-input" data-field="cost_account_id" data-ffield="Cost account"></select> </div>
+                                    <div>  <select class="modal-select2 data-input" data-field="cost_account_id" data-ffield="Cost account"></select> </div>
                                 </div>
+
                                 <div class="forn-group col-lg-6">
                                     <span class="simple-label"><span class="trans-text" data-langprop="item.Revenue Account"></span> 
                                   <div>  <select class="modal-select2 data-input" data-field="revenue_account_id" data-ffield="Revenue account"></select> </div>
+                                </div>
+
+                                <div class="forn-group col-lg-6">
+                                    <span class="simple-label"><span class="trans-text" data-langprop="item.Tax Account"></span> 
+                                    <div>  <select class="modal-select2 data-input" data-field="tax_account_id" data-ffield="Tax account"></select> </div>
                                 </div>
   
                                 <div class="forn-group col-lg-12">

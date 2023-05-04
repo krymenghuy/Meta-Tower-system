@@ -41,6 +41,8 @@ class ServiceTrackController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
         $id = $req->id;
-        return JDV::raw(ServiceTrack::deleteTrack($id,$ss));
+        $st = new ServiceTrack($id,$ss);
+        return JDV::raw($st->delete());
     }
+       
 }

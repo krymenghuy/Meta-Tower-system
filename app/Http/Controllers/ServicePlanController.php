@@ -8,6 +8,12 @@ use App\Models\JDV;
 
 class ServicePlanController extends Controller
 {
+    function getFormOptions(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      return JDV::result(ServicePlan::form_options($ss));
+    }
+
     function saveServicePlan(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !==200) return JDV::raw($ss);
@@ -26,7 +32,7 @@ class ServicePlanController extends Controller
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !==200) return JDV::raw($ss);
     $sp = new ServicePlan($req->id,$ss);
-    return JDV::result($sp->getList());
+    return JDV::result($sp->getList($req->all()));
    }
 
    function getServicePlanDetails(Request $req){
@@ -49,7 +55,7 @@ class ServicePlanController extends Controller
       if($ss->status_code !==200) return JDV::raw($ss);
       $id = $req->service_plan_id? $req->service_plan_id : $req->id;
       $sp = new ServicePlan($id,$ss);
-      return JDV::raw($sp->addSubscriber($req->client_id));
+      return JDV::raw($sp->addSubscriber($req->all()));
    }
 
    function getSubscribers(Request $req){

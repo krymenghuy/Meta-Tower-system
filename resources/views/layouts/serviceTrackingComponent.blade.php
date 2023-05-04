@@ -12,7 +12,7 @@
 </div>
 
 <div id="st_dlgService_Tracking" class="modal fade" tabindex="-1" aria-labelledby="st_dlgService_Tracking_title" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog vs-modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title fs-5" id="st_dlgService_Tracking_title"></h5>

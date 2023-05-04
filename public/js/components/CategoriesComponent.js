@@ -60,7 +60,7 @@ let CategoriesComponent = new function () {
             cv_interact.confirm(`Delete this category?`, { title: "Delete Category", context: "delete" }, (yes) => {
                 if (yes) {
                     let p = { "id": item_id };
-                    vsapi.call(`${main_view.base_url}/api/category/delete`, p).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/inventory/category/delete`, p).then(res => {
                         if (res.status_code === 200) {
                             mThis.displayCategories();
                         } else cv_interact.error(res.error_message);
@@ -87,7 +87,7 @@ let CategoriesComponent = new function () {
         let div_wrapper = detail_tr.find('div.expandable-row-containter');
         div_wrapper.html('<div class="animation-line" style="height:2px;margin:0"></div>');
         let p = { 'id': group_id };
-        window.vsapi.call(`${main_view.base_url}/api/category/details`, p, 'POST', false).then((res) => {
+        window.vsapi.call(`${main_view.base_url}/api/inventory/category/details`, p, 'POST', false).then((res) => {
             let html = null;
             if (res.status_code === 200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
@@ -103,7 +103,7 @@ let CategoriesComponent = new function () {
     this.displayCategories = (onFinish = null) => {
         mThis.setLanguage();
         let p = { 'search_value': mThis.elSearchItem.val() };
-        window.vsapi.call(`${mThis.base_url}/api/category/list`, p, 'POST', null).then((result) => {
+        window.vsapi.call(`${mThis.base_url}/api/inventory/category/list`, p, 'POST', null).then((result) => {
             let data = [];
             if (result.status_code === 200) data = result.data;
             if (mThis.table) {
@@ -195,8 +195,8 @@ let CategoryDialog = new function () {
         "formId": '_cat_dlgCategory',
         "titleId": "_cat_dlgCategory_title",
         "instance": this,
-        "apiSave": `${main_view.base_url}/api/category/save`,
-        "apiGet": `${main_view.base_url}/api/category/details`,
+        "apiSave": `${main_view.base_url}/api/inventory/category/save`,
+        "apiGet": `${main_view.base_url}/api/inventory/category/details`,
         "modifyTitle": "Modify Category",
         "createTitle": "New Category",
         "identityProps": ['id'],

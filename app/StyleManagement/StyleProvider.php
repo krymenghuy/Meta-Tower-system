@@ -30,6 +30,7 @@ class StyleProvider
                 'assets/css/jquery.datepicker2.css',
                 'assets/css/app.css',
                 'assets/css/vsstyle.css',
+                'assets/css/vs-pagination.css',
                 'assets/css/sweetalert2.min.css',
                 'assets/plugins/chart.js/Chart.css',
             ]

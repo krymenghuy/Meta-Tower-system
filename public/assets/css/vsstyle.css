@@ -949,3 +949,10 @@ tr {
   transition-delay: 0s, 0s, 0.3s;
 }
 
+/** class "long-text-wrap-250" is used for full address that is long string, making it max width of 250px and remining text become second line or following lines **/
+.long-text-wrap-250{
+  display: inline-block; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: normal; word-wrap: break-word;
+}
+.long-text-250{
+  display: inline-block; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: normal; word-wrap: break-word;
+}

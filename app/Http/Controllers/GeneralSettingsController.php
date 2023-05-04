@@ -52,6 +52,12 @@ class GeneralSettingsController extends Controller
       ]; 
       return JDV::result($data);
     }
+    
+    function getComboItems_pmt_method(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !=200) return JDV::emptyResult($ss); //user not authenticated
+      return JDV::result(\App\Models\GeneralSettings::options_pmt_method($ss));
+    }
 
     function getComboItems_consultant(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
@@ -69,21 +75,18 @@ class GeneralSettingsController extends Controller
       return JDV::result($rows);
     }
 
-    function getReportFilter_options(Request $request) {
-      $r = $this->settingModel->getReportFilter_options($request); 
-      if($r =='#350') 
-      return makeJsonResponse($r,350); // user not authenticated
-      else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-      return makeJsonResponse($r);
+    function getReportFilter_options(Request $req) {
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !=200) return JDV::raw($ss); //User not authenticated
+      return JDV::raw(Settings::getReportFilter_options($ss)); 
     }
      
      function saveChiefComplaint(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
-      if($ss->status_code !=200) return $ss; //User not authenticated
+      if($ss->status_code !=200) return JDV::raw($ss); //User not authenticated
       $branch_id = $ss->branch_id;
-      $d = Sanitizer::sanitizeObject($req->all(),[]);
-      $id = getValue($d,'id');
-      $name = getValue($d,'name');
+      $id = $req->id;
+      $name = $req->name;
       $parts = explode(':',$name);
       $code = null;
       if (isset($parts[1])){
@@ -197,6 +200,11 @@ class GeneralSettingsController extends Controller
       return JDV::result(isset($rows[0])?$rows[0]:null);   
    }
 
+  function getPaymentFormOptions(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return $ss; //user not authenticated
+    return JDV::result(\App\Models\Invoice\InvoiceSettings::payment_form_options($ss)); 
+  }
 
    function deleteDepartment(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
@@ -224,6 +232,12 @@ class GeneralSettingsController extends Controller
       return JDV::error("Something wrong in saving department data");    
    }
 
+   function getComboItems_sales_agent(Request $req){
+     $ss = UM::getUserInfoByToken($req,-1);
+     if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+     return JDV::result(\App\Models\GeneralSettings::options_sales_agent($ss));
+   }
+
    function getComboItems_department(Request $req){
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
@@ -241,7 +255,8 @@ class GeneralSettingsController extends Controller
   }
 
   static function getComboItems_consultant_internal($branch_id,$department_id=0){
-    $str_where ="ep.position_id IN(2,3) and ep.status ='Active'";
+    $str_where ="ep.status ='Active'";
+    return DB::table("employees as e")->join('persons as p','p.id','=','e.person_id')->where('e.branch_id',$branch_id)->selectRaw("e.id,concat(p.last_name,' ',p.first_name) AS consultant_name,e.code")->get();
     return DB::table("employees as e")->join('persons as p','p.id','=','e.person_id')->join('employee_positions as ep','ep.emp_id','=','e.id')->where('e.branch_id',$branch_id)->whereRaw($str_where)->selectRaw("e.id,concat(p.last_name,' ',p.first_name) AS consultant_name,e.code")->get();
   }
 

@@ -12,28 +12,24 @@ use DB;
 class Settings extends Model
 {
     use HasFactory;
+    protected static $item_class ='MI';
 
     static function options_group($ss){
         $branch_id = $ss->branch_id;
-        return DB::table('inv_item_groups as g')->where('g.branch_id',$branch_id)->selectRaw("g.id,g.name as group_name,g.description")->orderByRaw('g.name ASC')->get();
+        return DB::table('inv_item_groups as g')->where('g.branch_id',$branch_id)->where('g.item_class',self::$item_class)->selectRaw("g.id,g.name as group_name,g.description")->orderByRaw('g.name ASC')->get();
     }
     static function options_brand($ss){
         $branch_id = $ss->branch_id;
-        return DB::table('inv_brands as b')->where('b.branch_id',$branch_id)->selectRaw("b.id,b.name as brand_name")->orderByRaw('b.name ASC')->get();
+        return DB::table('inv_brands as b')->where('b.branch_id',$branch_id)->where('b.item_class',self::$item_class)->selectRaw("b.id,b.name as brand_name")->orderByRaw('b.name ASC')->get();
     }
     static function options_category($ss){
         $branch_id = $ss->branch_id;
-        return DB::table('inv_categories')->where('branch_id',$branch_id)->selectRaw("id,name as category")->orderByRaw('name ASC')->get();
+        return DB::table('inv_categories')->where('branch_id',$branch_id)->where('item_class',self::$item_class)->selectRaw("id,name as category")->orderByRaw('name ASC')->get();
     }
-   
-    static function options_product($ss){
-        $branch_id = $ss->branch_id;
-        return DB::table('inv_items as i')->where('i.branch_id',$branch_id)->selectRaw("i.id,i.code,i.name")->orderByRaw('i.name ASC')->get();
-    }
-
+    
     static function options_stockclass($ss){
         $branch_id = $ss->branch_id;
-        return DB::table('inv_stock_classes as c')->where('c.branch_id',$branch_id)->selectRaw("c.id,c.code,c.name as stock_class")->orderByRaw('c.name ASC')->get();
+        return DB::table('inv_stock_classes as c')->where('c.branch_id',$branch_id)->where('c.item_class',self::$item_class)->selectRaw("c.id,c.code,c.name as stock_class")->orderByRaw('c.name ASC')->get();
     }
 
     static function options_warehouse($ss){
@@ -48,7 +44,9 @@ class Settings extends Model
 
     static function options_customer($ss){
         $branch_id = $ss->branch_id;
-        return DB::table('customers as c')->where('c.branch_id',$branch_id)->select("c.id","c.name as customer_name")->orderBy('c.name','ASC')->get();
+        return DB::table('customers as c')->where('c.branch_id',$branch_id)->join('partners as pn','pn.id','=','c.id')->selectRaw("c.id,pn.name as customer_name")->orderBy('pn.name','ASC')->get();
+        //for mClinic
+        //return DB::table('customers as c')->where('c.branch_id',$branch_id)->select("c.id","c.name as customer_name")->orderBy('c.name','ASC')->get();
     }
 
     static function options_pmt_terms($ss){
@@ -61,23 +59,25 @@ class Settings extends Model
 
     static function options_manufacturer($ss){
         $branch_id = $ss->branch_id;
-        return DB::table('inv_manufacturers as m')->where('m.branch_id',$branch_id)->selectRaw("m.id,m.name")->orderByRaw('m.name ASC')->get();
+        return DB::table('inv_manufacturers as m')->where('m.branch_id',$branch_id)->where('item_class',self::$item_class)->selectRaw("m.id,m.name")->orderByRaw('m.name ASC')->get();
     }
 
     static function options_detail_type($ss,$category_id){
         $branch_id = $ss->branch_id;
-        return DB::table('inv_detailed_types AS d')->where('d.category_id',$category_id)->where('d.branch_id',$branch_id)->selectRaw("d.id,d.name as detail_type")->orderByRaw('d.name ASC')->get();
+        return DB::table('inv_detailed_types AS d')->where('d.category_id',$category_id)->where('item_class',self::$item_class)->where('d.branch_id',$branch_id)->selectRaw("d.id,d.name as detail_type")->orderByRaw('d.name ASC')->get();
     }
  
     static function item_form_options($ss){
         $branch_id = $ss->branch_id;
-        $groups =  DB::table('inv_item_groups as g')->where('g.branch_id',$branch_id)->selectRaw("g.id,g.name as group_name,g.description")->orderByRaw('g.name ASC')->get();
+        $groups =  DB::table('inv_item_groups as g')->where('g.branch_id',$branch_id)->where('item_class',self::$item_class)->selectRaw("g.id,g.name as group_name,g.description")->orderByRaw('g.name ASC')->get();
         $units =  DB::table('inv_units as u')->where('u.branch_id',$branch_id)->selectRaw("u.id,u.name as unit_name,u.description")->orderByRaw('u.name ASC')->get();
-        $categories =  DB::table('inv_categories')->where('branch_id',$branch_id)->selectRaw("id,name as category")->orderByRaw('name ASC')->get(); 
-        $manufacturers = DB::table('inv_manufacturers as m')->where('m.branch_id',$branch_id)->selectRaw("m.id,m.name as manufacturer")->orderByRaw('m.name ASC')->get();
+        $categories =  DB::table('inv_categories')->where('branch_id',$branch_id)->where('item_class',self::$item_class)->selectRaw("id,name as category")->orderByRaw('name ASC')->get(); 
+        $manufacturers = DB::table('inv_manufacturers as m')->where('m.branch_id',$branch_id)->where('item_class',self::$item_class)->selectRaw("m.id,m.name as manufacturer")->orderByRaw('m.name ASC')->get();
+        $brands = DB::table("inv_brands as b")->where('b.branch_id',$branch_id)->where('item_class',self::$item_class)->selectRaw("b.id,b.name as brand_name")->orderBy('b.name','ASC')->get();
         return (object)[
             'groups'=>$groups,
             'units'=>$units,
+            'brands'=>$brands,
             'categories'=>$categories,
             'manufacturers'=>$manufacturers
         ];
@@ -88,7 +88,7 @@ class Settings extends Model
     }
     static function options_item($ss){
         $branch_id = $ss->branch_id;
-        return DB::table('inv_items AS i')->where('i.branch_id',$branch_id)->selectRaw("i.id as `value`,i.name as text")->orderByRaw('i.name ASC')->get();
+        return DB::table('inv_items AS i')->where('i.branch_id',$branch_id)->where('item_class',self::$item_class)->selectRaw("i.id as `value`,i.name as text")->orderByRaw('i.name ASC')->get();
     }
 
     static function receive_stock_form_options($ss){
@@ -114,13 +114,13 @@ class Settings extends Model
         ];
      }
 
-    //  static function invoice_form_options($ss){
-    //     return (object)[
-    //       "customers"=>self::options_customer($ss),
-    //       "pmt_terms"=>self::options_pmt_terms($ss),
-    //       "items"=>self::options_item($ss)
-    //     ];
-    //  }
+     static function invoice_form_options($ss){
+        return (object)[
+          "customers"=>self::options_customer($ss),
+          "pmt_terms"=>self::options_pmt_terms($ss),
+          "items"=>self::options_item($ss)
+        ];
+     }
 
     //saveSKU()| CreateUnit()
     static function saveUnit($ss,$d){
@@ -138,13 +138,13 @@ class Settings extends Model
         if($res->error) return DV::error($res->error);
         $id = $res->id;
         $inputs = $res->values;
-        $id = saveData($ss,'inv_units',['id'=>$id],['name'=>$inputs['name'], 'parent_unit_id'=>null,'qty'=>1],[],1);
+        $id = saveData($ss,'inv_units',['id'=>$id],['item_class'=>self::$item_class,'name'=>$inputs['name'], 'parent_unit_id'=>null,'qty'=>1],[],1);
         if($id >0){
               $sub_unit_name = $inputs['sub_unit_name'];
               if($sub_unit_name){
                 $row = getDataRow('inv_units',['branch_id'=>$branch_id,'name'=>$sub_unit_name],'id');
                 $id1 = isset($row)?$row->id:0;
-                $id1 = saveData($ss,'inv_units',['id'=>$id1],['name'=>$sub_unit_name, 'parent_unit_id'=>$id,'qty'=>$inputs['sub_unit_qty']],[],1);
+                $id1 = saveData($ss,'inv_units',['id'=>$id1],['item_class'=>self::$item_class,'name'=>$sub_unit_name, 'parent_unit_id'=>$id,'qty'=>$inputs['sub_unit_qty']],[],1);
               } 
               
         }
@@ -164,6 +164,7 @@ class Settings extends Model
         if($res->error) return DV::error($res->error);
         $id = $res->id;
         $inputs = $res->values;
+        $inputs['item_class'] = self::$item_class;
         $id = saveData($ss,'inv_manufacturers',['id'=>$id],$inputs,[],1);
         if($id >0 ) return DV::success(['id'=>$id]);
         else return DV::error("Failed to save manufacturer"); 
@@ -183,6 +184,7 @@ class Settings extends Model
         if($res->error) return DV::error($res->error);
         $id = $res->id;
         $inputs = $res->values;
+        $inputs['item_class'] = self::$item_class;
         $id = saveData($ss,'inv_brands',['id'=>$id],$inputs,[],1);
         if($id >0 ) return DV::success(['id'=>$id]);
         else return DV::error("Failed to save brand name"); 

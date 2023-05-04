@@ -233,7 +233,7 @@ class Consultation //extends Model
     function saveServiceItem($item=[],$ticket_id=null,$ss=null){
         $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
         $ss = $ss? $ss: $this->getUserInfo();
-        $res = validateObject($item,['id'=>'0|number|identity=1','service_id'=>'1|number|exists=medical_services.id','qty'=>'0|number|default=1','sku'=>'0|string|default=none','remarks'=>'0|string|0-150','emp_id'=>'0|number|exists=employees.id'],true,[],$ss->lang,false,null);
+        $res = validateObject($item,['id'=>'0|number|identity=1','service_id'=>'1|number|exists=medical_services.id','qty'=>'0|number|default=1','sku'=>'0|string|default=none','remarks'=>'0|string|0-150','doctor_id'=>'0|number|exists=employees.id','first_nurse_id'=>'0|number|exists=employees.id'],true,[],$ss->lang,false,null);
         if($res->error) return DV::error($res->error);
         $id = $res->id;
         $inputs = $res->values;
@@ -260,7 +260,7 @@ class Consultation //extends Model
     function getServiceDetails($ticket_id=null,$ss=null){
         $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
         $ss = $ss? $ss: $this->getUserInfo();
-        $cols = ['ps.id','ps.patient_id','ps.service_id','ps.qty','ps.sku','ps.remarks','ps.emp_id','ps.created_at','ps.create_user'];
+        $cols = ['ps.id','ps.patient_id','ps.service_id','ps.qty','ps.sku','ps.remarks','ps.doctor_id','ps.first_nurse_id','second_nurse_id','ps.created_at','ps.create_user'];
         
         //Get service options for Dropdown list
         $options= $this->getComoItems_service($ss);
@@ -279,6 +279,7 @@ class Consultation //extends Model
         return (object)[
             'options_service'=>$options_service,
             'options_emp'=>$options_emp,
+            'options_nurse'=>$options_emp,
             'items'=>DB::table('patient_services as ps')->where('ps.ticket_id',$ticket_id)->select($cols)->get(),
             //'headerInfo'=>null
          ];
@@ -302,6 +303,7 @@ class Consultation //extends Model
     function savePrescriptionItem($item=[],$ticket_id=null,$ss=null){
         $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
         $ss = $ss? $ss: $this->getUserInfo();
+        $patient_id = self::getPatientId($ss->branch_id,$ticket_id);
         $res = validateObject($item,['id'=>'0|number|identity=1','item_id'=>'1|number|exists=inv_items.id','qty'=>'1|number','sku'=>'1|string','usage'=>'0|string|0-150','duration_days'=>'0|number','reason'=>'0|string|0-200'],true,[],$ss->lang,false,null);
         if($res->error) return DV::error($res->error);
         $id = $res->id;
@@ -312,6 +314,7 @@ class Consultation //extends Model
         $itemInfo = self::itemInfo($item_id,"selling_price,ws_selling_price");
         if(!$itemInfo) return DV::error("Item $item_id is not valid!"); 
         $inputs['price'] = $itemInfo->selling_price;
+        $inputs['patient_id'] = $patient_id;
         $id = saveData($ss,'patient_prescription_items',['id'=>$id],$inputs,[],1);
         if($id>0) return DV::success(['id'=>$id]);
         return DV::error("Something went wrong saving prescription item");
@@ -362,7 +365,7 @@ class Consultation //extends Model
       $rows = DB::table('patient_medical_history as h')->where('h.ticket_id',$ticket_id)->select('h.id','h.category','h.content')->get();
       $data =[];
       foreach($rows as $row){
-          $data[$row->category] = $row->content; 
+        $data[$row->category] = $row->content; 
       }
       return (object)$data;
     }
@@ -390,11 +393,13 @@ class Consultation //extends Model
     function savePE($items,$ticket_id=null,$ss=null){
         $ticket_id = $ticket_id?$ticket_id:$this->getTicketId();
         $ss = $ss?$ss:$this->getUserInfo();
+        $patient_id = self::getPatientId($ss->branch_id,$ticket_id);
         foreach($items as $item){
             $category = $item['category'];
             $content = $item['content'];
             if($content){
                 $inputs= [
+                    'patient_id'=>$patient_id,
                     'ticket_id'=>$ticket_id,
                     'content'=>$content,
                     'category'=>$category,

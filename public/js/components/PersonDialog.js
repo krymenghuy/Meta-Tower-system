@@ -6,7 +6,7 @@ let PersonDialog = new function(){
     let html = `
             <div class="modal fade" id="_per_dlgPerson" tabindex="-1" role="dialog" aria-labelledby="_per_dlgPerson_title"
             aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="dialog">
+            <div class="modal-dialog modal-lg vs-modal-dialog" role="dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title​ trans-text" data-langprop="titles.Choose Service Department"
@@ -88,7 +88,7 @@ let PersonDialog = new function(){
         "instance":this,
         "apiSave":`${main_view.base_url}/api/person/save`,
         "apiGet":`${main_view.base_url}/api/person/info`,
-        "identityProps":["appt_id","id"],
+        "identityProps":["id","appt_id","patient_id","emp_id"],
         "modifyTitle":"Modify Person",
         "sanitize_excepts":['email'],
         'use_alert_error':true,

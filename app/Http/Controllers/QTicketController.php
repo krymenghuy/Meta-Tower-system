@@ -58,7 +58,7 @@ class QTicketController extends Controller
     function savePatientPhoto(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
-        $branch_id = $ss->branch_id;
+        //$branch_id = $ss->branch_id;
         $ticket_id = $req->ticket_id? $req->ticket_id:$req->id;
         $ticket = new QTicket($ticket_id,$ss);
         $res = $ticket->savePatientPhoto($req->all());

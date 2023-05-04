@@ -4,11 +4,12 @@ namespace App\Models\Invoice;
 
 use DB;
 use App\Models\DV;
-use App\Models\Inventory\Item;
+//use App\Models\Inventory\Item;
 use App\Models\Invoice\InvoiceSettings;
 use App\Models\Invoice\Customer;
 use App\Models\Invoice\Payment;
-use App\Models\Patient;
+//use App\Models\Patient;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class Invoice
 {
@@ -499,16 +500,44 @@ class Invoice
     /** customers or patients table **/
     $branch_id = $ss->branch_id;
     $search_value = isset($d['search_value']) ? $d['search_value'] : null;
+     
     $str_search = "1=1";
     if ($search_value) {
       $search_value = escape_like_str($search_value);
       $str_search = "(v.ref_number ='$search_value' OR p.phone_number ='$search_value' || CONCAT(p.last_name,' ',p.first_name) LIKE '%$search_value%' )";
     }
     $cols = ['v.id', DB::raw('formatDate(v.issue_date) as issue_date'), DB::raw('formatDate(v.due_date) as due_date'), 'v.ref_number', 'v.description', 'v.customer_id', DB::raw("CONCAT(p.last_name,' ',p.first_name) as customer_name"), 'p.phone_number as customer_phone', 'p.email as customer_email', 'c.billing_address', 'v.currency_code', 'v.amount', 'v.discount_amount', 'v.discount_percent', 'v.amount_due', 'v.amount_paid'];
-    $rows = DB::table("invoices AS v")->join($customer_table . " as c", 'c.id', '=', 'v.customer_id')->join('persons as p', 'p.id', '=', 'c.person_id')->where('v.branch_id', $branch_id)->whereRaw($str_search)->select($cols)->orderBy("v.id", "DESC")->get();
+    return DB::table("invoices AS v")->join($customer_table . " as c", 'c.id', '=', 'v.customer_id')->join('persons as p', 'p.id', '=', 'c.person_id')->where('v.branch_id', $branch_id)->whereRaw($str_search)->select($cols)->orderBy("v.id", "DESC")->get();
+    
     //$rows = DB::table("invoices AS v")->join('customers as c','c.id','=','v.customer_id')->where('v.branch_id',$branch_id)->select($cols)->orderBy("v.id", "DESC")->get(); 
-    return $rows;
   }
+
+  static function list_perginate($d, $ss)
+  {
+    //NOTE: self::$customer_table = "patients" for mClinic system, "customers" for accounting system
+    $customer_table = InvoiceSettings::$customer_table;
+    /** customers or patients table **/
+    $branch_id = $ss->branch_id;
+    $search_value = isset($d['search_value']) ? $d['search_value'] : null;
+    $current_page = isset($d['current_page']) ? $d['current_page'] :1;
+    $per_page = isset($d['per_page']) ? $d['per_page'] : 15;
+    $skip_rows =($current_page - 1) * $per_page;
+
+    $str_search = "1=1";
+    if ($search_value) {
+      $skip_rows=0;
+      $search_value = escape_like_str($search_value);
+      $str_search = "(v.ref_number ='$search_value' OR p.phone_number ='$search_value' || CONCAT(p.last_name,' ',p.first_name) LIKE '%$search_value%' )";
+    }
+    $cols = ['v.id', DB::raw('formatDate(v.issue_date) as issue_date'), DB::raw('formatDate(v.due_date) as due_date'), 'v.ref_number', 'v.description', 'v.customer_id', DB::raw("CONCAT(p.last_name,' ',p.first_name) as customer_name"), 'p.phone_number as customer_phone', 'p.email as customer_email', 'c.billing_address', 'v.currency_code', 'v.amount', 'v.discount_amount', 'v.discount_percent', 'v.amount_due', 'v.amount_paid'];
+    $query = DB::table("invoices AS v")->join($customer_table . " as c", 'c.id', '=', 'v.customer_id')->join('persons as p', 'p.id', '=', 'c.person_id')->where('v.branch_id', $branch_id)->whereRaw($str_search)->select($cols)->orderBy("v.id", "DESC");
+    $count = $query->count('v.id');
+    
+    $rows = $query->skip($skip_rows)->take($per_page)->get();
+    //$rows = DB::table("invoices AS v")->join('customers as c','c.id','=','v.customer_id')->where('v.branch_id',$branch_id)->select($cols)->orderBy("v.id", "DESC")->get(); 
+    return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+  }
+
   public function getInvoiceList($d, $ss = null)
   {
     if (!$ss) $ss = $this->getUserInfo();
@@ -556,6 +585,7 @@ class Invoice
       "payment_date" => "1|date",
       "payer_name" => "0|string|0-50",
       "amount" => "1|positive",
+      'pmt_method_id'=>'1|number|exists=payment_methods.id',
       "currency_code" => "0|string|0-10",
       "tax_amount" => "0|number|default=0",
       "notes" => "0|string"

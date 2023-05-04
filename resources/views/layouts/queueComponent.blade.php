@@ -91,9 +91,9 @@
         <div class="modal-content">
             <div class="row modal-header">
                   <div class="col-3"> <h4>Consultation Window</h4></div>
-                  <div class="col-3">Patient: SOPHAN</div>
-                  <div class="col-3">13 Apr 2023</div>
-                  <div class="col-3"><button class="btn btn-success">P10007</button></div>
+                  <div class="col-3">Patient: <span class="patient-info" data-field="patient_name"></span></div>
+                  <div class="col-3"><span class="patient-info" data-field="ticket_date"></span></div>
+                  <div class="col-3"><button class="btn btn-success"><span class="patient-info" data-field="patient_code"></span></button></div>
      
             </div>
             <div class="modal-body">

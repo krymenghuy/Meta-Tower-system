@@ -263,7 +263,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group col-lg-12" style="display:none">
+                    <div class="form-group col-lg-12">
                         <span class="simple-label trans-text" data-langprop="appointment.Remarks">Remarks</span>
                         <div>
                             <input type="text" data-field="notes" data-ffield="Remarks" class="form-control data-input" id="_appt_notes"/>
@@ -383,7 +383,7 @@
                         <div class="row">
                             <div class="col-lg-12 d-flex justify-content-center">
                                 <div class="d-block">
-                                    <img id="_img_preView_patient" class="img-thumbnail frame-photo"/>
+                                    <img id="_img_preView_patient" class="img-thumbnail frame-photo data-input-reg"/>
                                     <div style="width:210px">
                                         <button class="btn btn-outline-success" type="button" id="_img_patient">
                                             <span class="trans-text" data-langprop="buttons.Choose"></span>

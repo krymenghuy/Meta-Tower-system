@@ -12,37 +12,31 @@ class CategoryController extends Controller
 {
     function getCategories(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-        $d = $req->all();
-        //$search_value =$req->search_value;
-        $rows = Category::list($ss,$d);
-        return JDV::result($rows);
+        if($ss->status_code !=200) return $ss; //user not authenticate
+        return JDV::result( Category::list($req->all(),$ss));
     }   
 
     function saveCategory(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
-        $d = $req->all(); 
-        $res = Category::commitSave($ss,$d);
-        if ($res->status_code === 200)
-            return JDV::success(['id'=>$res->id]);
-        else return JDV::error($res->error_message);
+        $id = $req->id?$req->id:$req->category_id;
+        $cat = new Category($id,$ss);
+        return JDV::raw($cat->save($req->all()));
     }
 
     function deleteCategory(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
-        $id = $req->id;
-        $res = Category::commitDelete($ss,$id);
-        return JDV::raw($res);
+        $id = $req->id?$req->id:$req->category_id;
+        $cat = new Category($id,$ss);
+        return JDV::raw($cat->delete());
     }
 
     function getCategoryDetails(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
-        $id = $req->id;
-        $row = Category::details($ss,$id);
-        return JDV::result($row);
+        $id = $req->id?$req->id:$req->category_id;
+        return JDV::result(Category::details($id,$ss));
     }
 
 }

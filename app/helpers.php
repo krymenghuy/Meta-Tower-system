@@ -1,5 +1,5 @@
 <?php
- use Illuminate\support\Facades\Auth;
+ //use Illuminate\support\Facades\Auth;
  use Illuminate\Support\Facades\DB;
  use App\Models\UM;
  use Carbon\Carbon;
@@ -108,54 +108,54 @@ function newOTP($length=6)
 }
 
 
-function getAuthCode($d){
+// function getAuthCode($d){
     
-    //Todo: Catch error if $d is not an object for unexpected case
-    if (!isset($d->decrypted)) $d->decrypted = 0;
-    //if(!isset($d->is_cookie)) $d->is_cookie = 0; /** NOTE: if is_cookie = 1 => the decrypted value is split by vertial bar | for equal sign (= ) or key = value pair **/
-    /**instead of property "access_token", we use prop name as "acc_tk_dms" **/
-  //if (!empty($d->bearerToken())) $d->acc_tk_dms = $d->bearerToken();  
-  if(!isset($d->acc_tk_dms)) return null; //$d->access_token ='nI082mwubtCp0Tc92MRX9107tnvQfjiGd56pj8';
-  //else if($d->bearerToken() ==null) return null;
+//     //Todo: Catch error if $d is not an object for unexpected case
+//     if (!isset($d->decrypted)) $d->decrypted = 0;
+//     //if(!isset($d->is_cookie)) $d->is_cookie = 0; /** NOTE: if is_cookie = 1 => the decrypted value is split by vertial bar | for equal sign (= ) or key = value pair **/
+//     /**instead of property "access_token", we use prop name as "acc_tk_dms" **/
+//   //if (!empty($d->bearerToken())) $d->acc_tk_dms = $d->bearerToken();  
+//   if(!isset($d->acc_tk_dms)) return null; //$d->access_token ='nI082mwubtCp0Tc92MRX9107tnvQfjiGd56pj8';
+//   //else if($d->bearerToken() ==null) return null;
 
-  $decrypted_token = null;
-  if ($d->decrypted != 1) {
-            // get the encrypter service
-            $encrypter = app(\Illuminate\Contracts\Encryption\Encrypter::class);
-            // decrypt
-            $decrypted_token = $encrypter->decrypt($d->acc_tk_dms,false); //FALSE => to avoid serialization issue in decryption
-            /*** IMPORTANT NOTE: 
-             $result of decryption is => e3aab7a9bb6892c7ee1a1495300d667fe8823428|o1MZKGPJIHm3S6kqiG415LWEidURA75QAI2GGE => therefore, we need to split this key|value by vertical bar character | 
-            ***/
-            if (strpos($decrypted_token,'|')>0) {
-                $parts = explode('|',$decrypted_token);
-                if(isset($parts[1])) 
-                   $decrypted_token = $parts[1];
-                else return null;
-            }  
-  } else $decrypted_token = $d->acc_tk_dms;  /** In case external API called from mobile app => the $d->acc_tk_dms is decrypted already by, for example, by $senderModel->getSenderInfoByToken($request) **/
+//   $decrypted_token = null;
+//   if ($d->decrypted != 1) {
+//             // get the encrypter service
+//             $encrypter = app(\Illuminate\Contracts\Encryption\Encrypter::class);
+//             // decrypt
+//             $decrypted_token = $encrypter->decrypt($d->acc_tk_dms,false); //FALSE => to avoid serialization issue in decryption
+//             /*** IMPORTANT NOTE: 
+//              $result of decryption is => e3aab7a9bb6892c7ee1a1495300d667fe8823428|o1MZKGPJIHm3S6kqiG415LWEidURA75QAI2GGE => therefore, we need to split this key|value by vertical bar character | 
+//             ***/
+//             if (strpos($decrypted_token,'|')>0) {
+//                 $parts = explode('|',$decrypted_token);
+//                 if(isset($parts[1])) 
+//                    $decrypted_token = $parts[1];
+//                 else return null;
+//             }  
+//   } else $decrypted_token = $d->acc_tk_dms;  /** In case external API called from mobile app => the $d->acc_tk_dms is decrypted already by, for example, by $senderModel->getSenderInfoByToken($request) **/
     
-   if(session()->has('access_token')) {
-          if (session('access_token') === $decrypted_token){
-               $data =(object)[];
-               $data->branch_id = session('branch_id',0);
-               $data->user_id = session('user_id',0);
-               //official_id is person_id in this context, and is necessary only for Borrower's login
-               $data->official_id = session('official_id',0); 
-               $data->login_name = session('login_name',0);
-               //$data->full_name = session('full_name',0);
-               $data->last_active_time = Carbon::now();
-               return $data;
-          }
-      }
+//    if(session()->has('access_token')) {
+//           if (session('access_token') === $decrypted_token){
+//                $data =(object)[];
+//                $data->branch_id = session('branch_id',0);
+//                $data->user_id = session('user_id',0);
+//                //official_id is person_id in this context, and is necessary only for Borrower's login
+//                $data->official_id = session('official_id',0); 
+//                $data->login_name = session('login_name',0);
+//                //$data->full_name = session('full_name',0);
+//                $data->last_active_time = Carbon::now();
+//                return $data;
+//           }
+//       }
 
-  $rows = DB::table('um_sessions AS u')->join('um_user_roles AS ur','ur.user_id','=','u.user_id')->where('u.access_token',$decrypted_token)->selectRaw('ur.role_id,u.branch_id,u.user_id, u.login_name,u.last_active_time,u.login_name')->limit(1)->get();
-  foreach($rows as $row) {
-      //TODO: check for last active_time compared to now() for session expiration
-      return $row;
-  } 
-  return null;
-}
+//   $rows = DB::table('um_sessions AS u')->join('um_user_roles AS ur','ur.user_id','=','u.user_id')->where('u.access_token',$decrypted_token)->selectRaw('ur.role_id,u.branch_id,u.user_id, u.login_name,u.last_active_time,u.login_name')->limit(1)->get();
+//   foreach($rows as $row) {
+//       //TODO: check for last active_time compared to now() for session expiration
+//       return $row;
+//   } 
+//   return null;
+// }
 
 function setOfficialCode($branch_id,$code_control_table,$target_table,$key_field=[],$def_prefix="",$len=5,Closure $onSuccess = null){
     if (!$key_field) return null;
@@ -429,6 +429,27 @@ function readFileContent($fileName=null)
        return Carbon::now()->format("Y-m-d H:i:s");
    }
    
+   function isValidTime($time_string) {
+     $date_time = DateTime::createFromFormat('H:i', $time_string);
+     return $date_time && $date_time->format('H:i') == $time_string;
+   }
+
+   function createTimestamp($time_string,$today_date=null) {
+    // Get today's date in the desired format
+    if(!$today_date) $today_date = date("Y-m-d");
+
+    // Combine today's date and the input time string
+    $datetime_string = $today_date . " " . $time_string;
+
+    // Convert the datetime string to a timestamp
+    $timestamp = strtotime($datetime_string);
+
+    // Format the timestamp in the desired format
+    $formatted_timestamp = date("Y-m-d H:i:s", $timestamp);
+
+    return $formatted_timestamp;
+ }
+
    //change date format to yyyy-mm-dd
    function convertDate($date)
    {
@@ -1457,6 +1478,27 @@ function readFileContent($fileName=null)
 	// 	return strtolower(trim($string, '-'));
 	// }
   
+    function getUrlDirectory($url) {
+        $url_parts = parse_url($url); // Parse the URL into its components
+    
+        // Rebuild the URL without the filename
+        $url_directory = $url_parts['scheme'] . '://' . $url_parts['host'] . $url_parts['path'];
+        $url_directory = rtrim($url_directory, '/'); // Remove trailing slash if it exists
+    
+        // Get the last directory name from the URL
+        $directory_parts = explode('/', $url_directory);
+        $last_directory = end($directory_parts);
+    
+        // Check if the last directory is a filename
+        $filename_parts = explode('.', $last_directory);
+        if (count($filename_parts) > 1) {
+            array_pop($directory_parts); // Remove the last directory (which is the filename)
+            $url_directory = implode('/', $directory_parts);
+        }
+    
+        return $url_directory;
+    }
+    
     function getStoragePath($private=false){
         if($private)
           {

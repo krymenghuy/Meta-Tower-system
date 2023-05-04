@@ -33,9 +33,13 @@
                  </div>
 
                  <div class="tab-panel border-style1" id="_sttn_tabpanel_districts" style="height:40vw;padding:10px" data-viewname="districts">
-                    <div class="form-inline">
-                         <select class="select2" style="width:300px; min-width:300px" id="_sttn_loc_filter_city"></select> &nbsp;&nbsp;
-                         <a id="_sttn_loc_lnkNewDistrict" class="btn btn-outline-success btn-hover" href="#">Add district</a>                       
+                    <div class="row">
+                        <div class="col-8">
+                          <select class="select2" style="width:300px; min-width:300px" id="_sttn_loc_filter_city"></select>
+                        </div>
+                        <div class="col-4">
+                           <a id="_sttn_loc_lnkNewDistrict" class="btn btn-outline-success btn-hover" href="#"><span class="text-no-wrap">Add district</span></a>
+                        </div>                        
                       </div>
                       <table id="_sttn_loc_tblDistricts" class="table fixed-body-table">
                         <thead>

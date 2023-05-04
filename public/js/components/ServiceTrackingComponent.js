@@ -18,10 +18,28 @@ let ServiceTrackingComponent = new function(){
             ServiceTrackingDialog.show(op);
         });
 
+        mThis.tblServiceTracking.on('click','a.st-btn-delete',function(e){
+          let id = $(this).data('id');
+          let p = {'id':id};
+          cv_interact.confirm('Delete this Service Track?',{'context':'delete','title':'Delete Service Track'},(e)=>{
+            if(e){
+                vsapi.call(`${main_view.base_url}/api/service-track/delete`,p,null,false).then(res=>{
+                    if(res.status_code===200){
+                       mThis.displayServiceTracks();
+                    }
+                });
+            }
+          });
+
+        });
+
         mThis.tblServiceTracking.on('click','a.st-btn-modify',(e) => {
             e.preventDefault();
             let op = {
-                'id': $(this).data('id')
+                'id': $(this).data('id'),
+                'onClose':(d)=>{
+
+                }
             };
             ServiceTrackingDialog.show(op);
         });
@@ -79,6 +97,9 @@ let ServiceTrackingComponent = new function(){
                 let html = `<div class="d-flex align-items-center gap-2">
                     <a href="javascript:void(0)" class="st-btn-modify" data-id="${data.id}">
                         <i class="fa-regular fa-pen-to-square"></i>
+                    </a>
+                    &nbsp;<a href="javascript:void(0)" class="st-btn-delete" data-id="${data.id}">
+                      <i class="fa-regular fa-trash"></i>
                     </a>
                 </div>`;
                 return html;

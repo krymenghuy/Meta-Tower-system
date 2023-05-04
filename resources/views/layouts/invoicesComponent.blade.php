@@ -13,6 +13,12 @@
     .btn-pmt-status{
        width:120px;
     }
+    .invoice-list-container{
+        padding:15px;
+        margin:5px;
+        border:1px solid #ffef;
+        border-radius:5px;
+    }
 </style>
 
 <div id="_main_invoicesComponent" class="mobile-padding" style="display:none;padding-top:15px">
@@ -38,9 +44,7 @@
             </div>
         </div>
     </div>
-    <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;min-height:350px;">
-        <table class="table header-light-blue header-uppercase" id="_inv_tblInvoice"></table>
-    </div>
+    <div id="_ivc_list_container" class="invoice-list-container"></div>
 </div>
 
 <div id="_invs_dlgNewInvoice" class="modal fade" tabindex="-1" aria-labelledby="_invs_dlgInvoice_title" aria-hidden="true">
@@ -254,7 +258,15 @@
                             <input type="number" data-field="amount" data-ffield="Amount" class="form-control data-input"/>
                         </div>
                     </div>
-                    <div class="form-group col-lg-12">
+
+                    <div class="form-group col-lg-6">
+                        <span class="simple-label trans-text" data-langprop="payment.Payment Method"></span>
+                        <div>
+                            <select id="_pmt_pmt_method" data-field="pmt_method_id" data-ffield="Payment method" class="modal-select2 data-input"></select>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-lg-6">
                         <span class="simple-label trans-text" data-langprop="payment.Notes">Notes</span>
                         <div>
                             <input type="text" data-field="notes" data-ffield="Notes" class="form-control data-input">

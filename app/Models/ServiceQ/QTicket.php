@@ -92,10 +92,11 @@ class QTicket //extends Model
         if ($appt_id > 0){
               //Get appoinment's info "schedule_type","priority"
               if(!isset( $inputs['schedule_type'])){
-                $rows = DB::table('appointments')->where('id',$appt_id)->selectRaw("schedule_type,priority")->take(1)->get();
+                $rows = DB::table('appointments')->where('id',$appt_id)->selectRaw("notes as remarks,schedule_type,priority")->take(1)->get();
                 foreach($rows as $row){
                     $inputs['priority'] = $row->priority;
                     $inputs['schedule_type'] = $row->schedule_type;
+                    $inputs['remarks'] = $row->remarks;
                 }
             }
         }
@@ -107,7 +108,7 @@ class QTicket //extends Model
             $status_id_queued =3;
 
             if($appt_id > 0){
-                DB::table('appointments')->where('id',$appt_id)->where('branch_id',$branch_id)->update(['status_id'=>$status_id_queued]);
+                DB::table('appointments')->where('id',$appt_id)->where('branch_id',$branch_id)->update(['status_id'=>$status_id_queued,'q_date'=>date('Y-m-d')]);
                 DB::table('appt_chief_complaints')->where('appt_id',$appt_id)->update(['ticket_id'=>$ticket_id]);
                 DB::table('patient_vital_signs')->where('appt_id',$appt_id)->where('branch_id',$branch_id)->update(['ticket_id'=>$ticket_id]);  
             }
@@ -237,34 +238,52 @@ class QTicket //extends Model
         return DV::success(['id'=>$id]);
     }
 
+    static function getClientPhoto($branch_id,$client_id=0){
+
+        $rows = DB::table("patients as c")->where('id',$client_id)->selectRaw("photo_file_name")->take(1)->get();
+        foreach($rows as $row) return PublicStorage::getUrl($branch_id,"patient","image").$row->photo_file_name;
+        return null;
+    }
+
     //@param $d = {'branch_id','id'}
-    static function info($id,$ss,$include_cc=true,$include_vs=true,$include_mc=true){
+    static function info($id,$ss,$include_cc=true,$include_vs=true,$include_mc=true,$include_invoice = true){
         //$ticket_id = $id? $id: $this->getId();
         //$ss = $ss?$ss:$this->getUserInfo();
         $branch_id = $ss->branch_id;
-        $cols ="s.branch_id,s.id,s.appt_id,s.person_id,getPatientCode(s.branch_id,s.client_id) as client_code,s.client_id,CONCAT(p.last_name,' ',p.first_name) as client_name,p.sex as client_sex,p.phone_number as client_phone_number,p.email as client_email,s.ticket_number,s.status_id, getConsultanName(s.consultant_id) as consultant_name,'None' AS membership_card";
+        $cols ="s.branch_id,s.id,s.invoice_id,s.appt_id,s.person_id,getPatientCode(s.branch_id,s.client_id) as client_code,s.client_id,CONCAT(p.last_name,' ',p.first_name) as client_name,p.sex as client_sex,p.phone_number as client_phone_number,p.email as client_email,s.ticket_number,s.status_id, getConsultanName(s.consultant_id) as consultant_name,'None' AS membership_card";
         $rows = DB::table('tickets as s')->join('ticket_statuses as sts','sts.id','=','s.status_id')->join('persons as p','p.id','=','s.person_id')->where('s.id',$id)->where('s.branch_id',$branch_id)->selectRaw($cols)->take(1)->get();
         foreach($rows as $row){
             if ($include_cc) $row->chief_complaints = self::chiefComplaints($row->branch_id,$row->id);
             if ($include_vs) $row->vital_signs = self::vitalSigns($row->branch_id,$row->id);
             if($include_mc) $row->mc_items = self::medicalConditions($row->branch_id,$row->id);
+            if($include_invoice){
+                $invoice = self::getInvoice($id);
+                $row->invoice_id = $invoice?$invoice->id:'';
+                $row->invoice = $invoice;
+            }
+            $row->image_url = self::getClientPhoto($branch_id,$row->client_id);
             return $row;
         }
         return null;
     }
 
+    //return invoice that really belongs to the ticket give by $ticket_id. Invoice contains info such as Amount_due, amount_paid, issue_date
+    static function getInvoice($ticket_id){
+        $rows = DB::table("tickets as t")->join('invoices as v','v.id','=','t.invoice_id')->where("t.id",$ticket_id)->selectRaw("v.id,v.issue_date,v.amount_due,v.amount_paid")->take(1)->get();
+        return isset($rows[0])?$rows[0]:null;
+    }
     static function countPatientPhotos($patient_id){
         $rows = DB::table("patient_photos")->where('patient_id',$patient_id)->selectRaw("COUNT(id) AS cnt")->get();
         foreach($rows as $row) return $row->cnt;
         return -1;
     }
 
-    function savePatientPhoto($d =[],$ss=[]){
-        $id = $this->getId();
+    function savePatientPhoto($d =[],$id=null,$ss=[]){
+        $ticket_id = $id?$id:$this->getId();
         $ss = $ss?$ss:$this->getUserInfo();
         $branch_id = $ss->branch_id;
         $patient_id = isset($d['patient_id'])?$d['patient_id']:null;
-        $ticket_id = isset($d['ticket_id'])? $d['ticket_id']:null;
+        if(!$ticket_id) $ticket_id = isset($d['ticket_id'])? $d['ticket_id']:null;
         if (!$ticket_id) return DV::error("Ticket ID is not valid");
         if (!$patient_id){
             $ticket = $this->getProps($ticket_id,["client_id AS patient_id"]);
@@ -276,7 +295,8 @@ class QTicket //extends Model
         //Patient photo category is for example, "Before","After"
         $category = isset($d['category'])?$d['category']:'general';
         $file_ext = isset($d['file_type'])?$d['file_type']:$d['file_ext'];
-        $res = PublicStorage::saveImage($branch_id,'patient',$file_ext,$d['photoData']);
+        $photo =$d['photo']; 
+        $res = PublicStorage::saveImage($branch_id,'patient',$file_ext,$photo);
         if($res->status==='OK'){
             $inputs = ['patient_id'=>$patient_id,'ticket_id'=>$ticket_id,'file_name'=>$res->file_name,'file_type'=>$file_ext,'category'=>$category];
             $new_photo_id = saveData($ss,'patient_photos',['id'=>null],$inputs,[],1);
