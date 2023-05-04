@@ -17,10 +17,15 @@ use Exception;
 class PublicStorage //extends Model
 {
     //use HasFactory;
-    protected static $allowed_image_extensions = ['jpg','png','jpeg','gif','svg','heif','bmp'];
+    protected static $allowed_image_extensions = ['jpg','png','jpeg','gif','svg','heif','bmp','svg'];
 
     //map from $user_class to upload directory name
     protected static $upload_dirs =[
+      "item"=>"item",
+      "product"=>"item",
+      "rm"=>"rm",  
+      "partner"=>"partner",  
+      "patient"=>"patient",
       "driver"=>"driver",
       "merchant"=>"merchant",
       "sender"=>"merchant",
@@ -291,10 +296,31 @@ class PublicStorage //extends Model
        return $res;
       
     }
+ 
+    static function saveFileName_db($branch_id,$user_class,$file_name,$storeInfo=null){
+        if(!$storeInfo) return;
+        $store = isset($storeInfo['store'])?$storeInfo['store']:null;
+        $sts = explode('.',$store);
+        $table = $sts[0];
+        $col = $sts[1];
+        $id = isset($storeInfo['id'])?$storeInfo['id']:null;
+        if($id && $table && $col){
+             $rows = DB::table($table)->where('id',$id)->select([$col])->take(1)->get();
+             foreach($rows as $row)
+             {
+                 $prev_file_name = $row->{$col}; 
+                 $path = self::getDiskPath($branch_id,$user_class,'image').$prev_file_name;
+                 //delete previous picture file
+                 self::deleteFile($path);
+                 $x = DB::table($table)->where('id',$id)->update([$col=>$file_name]);
+
+             }
+        }
+    }
 
     //NOTE: saveImage() will create image file based on the given base64 string
     //savePhoto() | saveFile()
-    static function saveImage($branch_id, $user_class,$ext,$image_or_base64,$maxSize=500000){
+    static function saveImage($branch_id, $user_class,$ext,$image_or_base64,$maxSize=500000,$store=[]){
         if(!$ext) $ext ="png";
         if(self::isImage($ext)){
             $p = self::createFullPath($branch_id,$user_class,'image',$ext);
@@ -302,6 +328,7 @@ class PublicStorage //extends Model
                 try{
                     //Through this senario, it means the $file_content is instance of Intervention/Image class and has been compressed to, by default, 500 KB
                     $image_or_base64->save($p->path);
+                    self::saveFileName_db($branch_id,$user_class,$p->file_name,$store);
                     return (object)['status'=>'OK','file_name'=>$p->file_name,'file_type'=>$p->extension,'ext'=>$p->extension,'extension'=>$p->extension,'image_url'=>self::getUrl($branch_id,$user_class,'image').$p->file_name];
                 }catch(\Exception $e){
                     return (object)['error_message'=>$e->getMessage(),'status'=>'Error'];
@@ -311,9 +338,10 @@ class PublicStorage //extends Model
             //$full_path = self::getDiskPath($branch_id,$user_class,'image').$file_name;
             try {
                 //compress image size to, by default 500 KB
-                $mx =  resizeImage_base64($image_or_base64,$maxSize);
+                $mx = resizeImage_base64($image_or_base64,$maxSize);
                 if($mx->error) return (object)['error_message'=>$mx->error,'status'=>'Error'];
                 $mx->image->save($p->path);
+                self::saveFileName_db($branch_id,$user_class,$p->file_name,$store);
                 return (object)['status'=>'OK','file_name'=>$p->file_name,'file_type'=>$p->extension,'ext'=>$p->extension,'extension'=>$p->extension,'image_url'=>self::getUrl($branch_id,$user_class,'image').$p->file_name];
                 //Image::make($file_content)->save($full_path);
                 // Do something with the image

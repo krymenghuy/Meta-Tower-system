@@ -150,7 +150,7 @@ class WebReportController extends Controller
         }
       case 'employee_profile': {
           $data["title"] = "Employee Profile";
-          $data["employee"] = \App\Models\CompanyProfile::details($branch_id);
+          $data["employee"] = (new \App\Models\Employee($id,$ss))->getDetails($id);
           break;
         }
       default: {

@@ -7,11 +7,13 @@ let ItemGroupsComponent = new function(){
     this.btnNew = $('#_pdg_btnNew');
     this.elSearchItem = $('#_pdg_search');
     // this.elFilter_department = $('#_msl_filter_service');
-    this.tblItems = $('#_pdg_tblProductGroup');
+    this.tblItems = null;
+    this.groupListView = null;
+
     this.form_data = {};
 
     this.col_titles = {
-        "No.":"No.",
+        "No":"No",
         "Code":"Code",
         "Name":"Name",
         "Description":"Description",
@@ -32,12 +34,68 @@ let ItemGroupsComponent = new function(){
         }
     }
 
+     this.group_columns = [
+        // {
+        //     title: mThis.trans_title("No"),
+        //     data: (data,index,tr) => {
+        //         return (index+1);
+        //     }
+        // },
+        {
+            title: mThis.trans_title("Code"),
+            data: (data,a,b) => {
+                return data.code?data.code:"N.A.";
+            }
+        },
+        {
+            data:(item,a,b) =>{
+                return [`<div>${item.name}</div>`].join('');
+            },
+            title: mThis.trans_title('Name')
+        },
+        {
+            title: mThis.trans_title('Description'),
+            data:(data,a,b)=>{
+                return data.description?data.description:"(No Description)";
+            }
+        },
+        {
+            title: mThis.trans_title('Created By'),
+            data: "create_user"
+        },
+        {
+            title:mThis.trans_title('Action'),
+            data: function(item,a,b){
+                return [`<div class="form-inline">`,
+                `<a href="javascript:void(0)" class="btn_item_modify" data-id="${item.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
+                `<a href="javascript:void(0);" data-id="${item.id}" class="btn_item_delete"><i class="fa fa-trash" style="color:red"></i></a>`,
+                `</div>`
+                ].join('');
+            }
+        }
+    ];
+
     this.init = () => {
+
+        mThis.groupListView = new ListView('_pdg_list_container',{
+         'fetchApi':`${main_view.base_url}/api/inventory/group/list-paginate`,
+         'columns':this.group_columns,
+         'tableClass':'table header-light-blue header-uppercase',
+         'rowCreated':(data,index,tr)=>{
+            tr.dataset.id = data.id;
+         },
+         'beforeRender':()=>{
+            mThis.setLanguage();
+         }
+        });
+
+        mThis.tblItems = $(mThis.groupListView.getTable());
+
         mThis.btnNew.on('click',(e)=>{
             let op = {
                 onClose:(e)=>{
                      if(e){
-                        mThis.displayProductsGroup();
+                        mThis.groupListView.showPage(null);
                      }
                 }
             };
@@ -50,7 +108,7 @@ let ItemGroupsComponent = new function(){
                 id:item_id,
                 onClose:(e)=>{
                      if(e){
-                         mThis.displayProductsGroup();
+                        mThis.groupListView.showPage({'search_value':mThis.elSearchItem.val()});
                      }
                 }
             };
@@ -64,7 +122,7 @@ let ItemGroupsComponent = new function(){
                     let p = {"id":item_id};
                     vsapi.call(`${main_view.base_url}/api/inventory/group/delete`,p).then(res=>{
                        if(res.status_code === 200){
-                          mThis.displayProductsGroup();
+                          mThis.groupListView.showPage({'search_value':mThis.elSearchItem.val()});
                        }else cv_interact.error(res.error_message);
                     });
                 }
@@ -72,7 +130,7 @@ let ItemGroupsComponent = new function(){
         });
 
         mThis.elSearchItem.on('keyup',(e)=>{
-            if(e.key ==='Enter') mThis.displayProductsGroup();
+            mThis.groupListView.showPage({'search_value':mThis.elSearchItem.val()});
         });
 
         // this.cfg = new ExpandableRowConfig('_pdg_tblProductGroup', {
@@ -226,108 +284,11 @@ let ItemGroupsComponent = new function(){
         });
     }
 
-    this.displayProductsGroup =(onFinish=null)=>
-    { 
-        //Initialize language for DataTable columns headers
-        //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-        //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
-        mThis.setLanguage();
-        let p = {'search_value':mThis.elSearchItem.val()};
-        window.vsapi.call(`${mThis.base_url}/api/inventory/group/list`,p,'POST',null).then((result)=>{
-            let data = [];
-            if(result.status_code === 200) data = result.data;
-            if (mThis.table){
-                mThis.tblItems.DataTable().clear().destroy();
-                //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
-                mThis.tblItems.empty();
-                mThis.table = null;
-            }
-
-            data = StringSanitizer.sanitizeObject(data,null);
-            let cnt = 1;
-            //begin::Set up columns
-            let my_columns = [
-                {
-                    title: mThis.trans_title("No."),
-                    data: (data,a,b) => {
-                        return cnt;
-                    }
-                },
-                {
-                    title: mThis.trans_title("Code"),
-                    data: (data,a,b) => {
-                        return data.code?data.code:"N.A.";
-                    }
-                },
-                {
-                    data:(item,a,b) =>{
-                        return [`<div>${item.name}</div>`].join('');
-                    },
-                    title: mThis.trans_title('Name')
-                },
-                {
-                    title: mThis.trans_title('Description'),
-                    data:(data,a,b)=>{
-                        return data.description?data.description:"(No Description)";
-                    }
-                },
-                {
-                    title: mThis.trans_title('Created By'),
-                    data: "create_user"
-                },
-                {
-                    title:mThis.trans_title('Action'),
-                    data: function(item,a,b){
-                        return [`<div class="form-inline">`,
-                        `<a href="javascript:void(0)" class="btn_item_modify" data-id="${item.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
-                        `<a href="javascript:void(0);" data-id="${item.id}" class="btn_item_delete"><i class="fa fa-trash" style="color:red"></i></a>`,
-                        `</div>`
-                        ].join('');
-                    }
-                }
-            ];
-            //END Define colum
-
-            //translate column names
-            //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
-            
-            if (!mThis.table)
-            mThis.table = mThis.tblItems.DataTable({
-                searching:false,
-                destroy:true,
-                paging:true,
-                ordering:false,
-                //dom: 'Bfrtip',
-                retrieve: true,
-                //scrollY:390,
-                //scrollX:500,
-                //pagingType:'numbers',
-                info:true,
-                pageLength: 10,
-                bLengthChange:false,
-                saveState:true,
-                'processing': true,
-                'language': {
-                    'loadingRecords': '&nbsp;',
-                    'processing': 'Loading...',
-                    "emptyTable": LocaleManager.trans('No data to display','datatable')
-                    },
-                'data':data,
-                'columns':my_columns,
-                "createdRow": function(row, data, dataIndex){
-                    cnt++;
-                    let tr = $(row);
-                    tr.data('id',data.id);
-                }						
-            });
-            if(typeof onFinish ==='function') onFinish();                
-        });     
-    };
-
+     
     this.show = (options=null) => {
         if(!options) options={};
         mThis.options = options;
-        mThis.displayProductsGroup(() => {
+        mThis.groupListView.showPage(null,null,() => {
             main_view.setTitle(mThis.title_prop);
             mThis.self.show().siblings().hide();
         });
@@ -344,7 +305,7 @@ let ItemGroupDialog = new function(){
 
     this.prepareFormOptions = (onFinish)=>{
        
-        vsapi.call(`${main_view.base_url}/api/group/form-options`,null).then(res=>{
+        vsapi.call(`${main_view.base_url}/api/inventory/group/form-options`,null).then(res=>{
             if(res.status_code===200){
                 let d = StringSanitizer.sanitizeObject(res.data);
                  onFinish(d);

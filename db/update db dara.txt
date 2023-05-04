@@ -1,23 +1,71 @@
+alter table service_plans add member_count INT default 0;
+alter table services_performed drop column commission;
+alter table service_plans add create_uid INT;
+alter table loc_countries add nationality_kh varchar(100);
 
-#--online => create table services_performed
+alter table plan_subscriptions add sales_agent_id INT;
+alter table plan_subscriptions add sales_agent_type varchar(35) default 'Freelancer';
+alter table plan_subscriptions add price DECIMAL(10,2) default 0;
+alter table plan_subscriptions add agent_commission decimal(10,2) default 0;
+alter table plan_subscriptions add expiration_date date DEFAULT null;
+alter table plan_subscriptions add price decimal(10,2) default 0;
 
-DROP FUNCTION IF EXISTS `getEmpName`
+alter table appointments add q_date date default NULL;
+alter table invoice_payments add pmt_method_id INT;
+
+DROP TABLE IF EXISTS `payment_methods`;
+CREATE TABLE `payment_methods` (
+  `id` int(10) NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `method_type` varchar(50) DEFAULT NULL,
+  `branch_id` int(11) DEFAULT 1,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of payment_methods
+-- ----------------------------
+INSERT INTO `payment_methods` VALUES ('1', 'Cash', 'Cash', '1');
+INSERT INTO `payment_methods` VALUES ('2', 'ACLEDA', 'Bank', '1');
+INSERT INTO `payment_methods` VALUES ('3', 'ABA', 'Bank', '1');
+INSERT INTO `payment_methods` VALUES ('4', 'WING', 'Bank', '1');
+INSERT INTO `payment_methods` VALUES ('5', 'True Money', 'Agent', '1');
+
+alter table  patient_prescription_items add patient_id INT;
+alter table patient_services add doctor_id INT;
+alter table patient_services add first_nurse_id INT;
+alter table patient_services add second_nurse_id INT;
+
+DROP FUNCTION IF EXISTS `getReceivable`;
 DELIMITER ;;
-create function getEmpName(empid int)
-returns varchar(100) deterministic
+CREATE FUNCTION `getReceivable`(branchid INT, clientid INT) RETURNS decimal(10,2) DETERMINISTIC
 BEGIN
- declare ename varchar(100);
- SET ename = (select concat(p.last_name,' ',p.first_name) from employees as e inner join persons as p ON p.id = e.person_id WHERE e.id = empid LIMIT 1);
- return ename; 
+  DECLARE mYear int;
+  declare amount decimal(10,2);
+  SET mYear = YEAR(NOW()) -3; 
+  SET amount = (SELECT SUM(amount_due - amount_paid) FROM invoices WHERE branch_id =branchid AND customer_id = clientid AND IFNULL(inactive,0) =0 AND YEAR(invoices.issue_date) >=mYear);
+  RETURN amount;
 END
 ;;
 DELIMITER ;
+ 
+alter table service_plan_items add updated_at timestamp default CURRENT_TIMESTAMP();
+alter table service_plan_items add update_user varchar(50);
+alter table service_plan_items add update_uid INT;
+alter table service_plan_items add created_at timestamp default CURRENT_TIMESTAMP();
+alter table service_plan_items add create_user varchar(50);
+alter table service_plan_items add create_uid INT;
+alter table service_plan_items add branch_id INT;
 
-alter table services_performed add doctor_commission decimal(10,2) default 0;
-alter table services_performed add first_nurse_commission decimal(10,2) default 0;
-alter table services_performed add service_date date default null;
+alter table inv_item_groups add item_class varchar(10) default 'MI';
+alter table inv_manufacturers add item_class varchar(10) default 'MI';
+alter table inv_brands add item_class varchar(10) default 'MI';
+alter table inv_stock_classes add item_class varchar(10) default 'MI';
 
-alter table plan_subscriptions add start_date date default NULL;
-alter table plan_subscriptions add end_date date default NULL;
-alter table services_performed add client_id INT default NULL;
-alter table services_performed add invoice_number varchar(35);
+========= update online db
+ BE CAREFUL about primary AUTO NUMBER
+create table accounts select * from rmi_db.accounts;
+create table inv_item_files select * from rmi_db.inv_item_files limit 0;
+
+
+

@@ -42,7 +42,7 @@ class Employee //extends Person
         $ss = $ss?$ss:$this->getUserInfo();
         $id =$id?$id:$this->getId();
         $branch_id = $ss->branch_id;
-        $cols ="e.id,e.code,CONCAT(p.last_name,' ',p.first_name) as name,p.first_name,p.last_name,p.nationality_id,p.sex,p.phone_number,p.email,p.address,DATE_FORMAT(p.date_of_birth,'%d %b %Y') AS date_of_birth, p.cp_name,p.cp_phone_number,e.employment_type,e.photo_file_type,e.photo_file_name,e.created_at,e.create_user";
+        $cols ="e.id,e.code,CONCAT(p.last_name,' ',p.first_name) as name,p.first_name,p.last_name,p.nationality_id,(SELECT k.nationality FROM loc_countries as k WHERE k.id = p.nationality_id LIMIT 1) AS nationality,p.sex,p.phone_number,p.email,p.address,DATE_FORMAT(p.date_of_birth,'%d %b %Y') AS date_of_birth, p.cp_name,p.cp_phone_number,e.employment_type,(SELECT `name` FROM positions WHERE id = e.position_id LIMIT 1) as position_title,(SELECT `name` FROM departments WHERE id = e.department_id LIMIT 1) as department,e.photo_file_name,e.created_at,e.create_user";
         $rows = DB::table('persons as p')->join('employees as e','e.person_id','=','p.id')->where('e.id',$id)->where('e.branch_id',$branch_id)->selectRaw($cols)->take(1)->get();
         foreach($rows as $row){
             $url = PublicStorage::getUrl($branch_id,'staff','image').$row->photo_file_name;
@@ -53,44 +53,67 @@ class Employee //extends Person
         return null;
     }
 
-    function save($d=[],$ss=null){
-        $ss = $ss?$ss:$this->getUserInfo();
+    function save($d=[],$id=null,$ss=null){
+        $empId = $id?$id:$this->id;
+        $ss = $ss?$ss:$this->userInfo;
         $branch_id = $ss->branch_id;
-        $id = isset($d['id'])?$d['id']:null;
+        //$id = isset($d['id'])?$d['id']:null;
         $photo= null;
         if(isset($d['photo'])){
             $photo = isset($d['photo'])?$d['photo']:null;
             unset($d['photo']);
         }
-        $res = (new \App\Models\Person())->save($d,$ss);
+       
+        $person_id = self::personId($empId);
+        $res = (new \App\Models\Person())->save($d,$person_id,$ss);
+        if($res->status ==='Error') return DV::error($res->error_message);
+       
         if($res->status ==='OK'){
+            $person_id = $res->person['id'];
             $inputs = [
                 'code'=>isset($d['code'])?$d['code']:null,
-                'person_id'=>$res->person['id'],
+                'person_id'=>$person_id,
                 'branch_id'=>$branch_id,
                 'salary'=>0,
                 'currency_code'=>'USD',
                 'employment_type'=>'full time'
             ];
          
-           $new_code = $inputs['code']; 
+           //if(!isset($inputs['person_id'])) unset($inputs['person_id']);
+           //$new_code = $inputs['code']; 
            $emp_created = false; 
-           if (!$id) $emp_created = true; 
-            $id = saveData($ss,'employees',['id'=>$id],$inputs,[],1);
-            if($id>0){
-               if($emp_created) $new_code = setOfficialCode($branch_id,'employee_code_control','employees',['id'=>$id],self::$def_prefix,self::$def_code_length);
-               if($photo){
-                $file = PublicStorage::saveProfilePicture($branch_id,'staff','png',$photo,100,['store'=>"employees.photo_file_name","id"=>$id]);
+           if (!$empId) $emp_created = true; 
+            $empId = saveData($ss,'employees',['id'=>$empId],$inputs,[],1);
+            if($empId>0){
+               if($emp_created) $new_code = setOfficialCode($branch_id,'employee_code_control','employees',['id'=>$empId],self::$def_prefix,self::$def_code_length);
+               if(isImage($photo)){
+                $file = PublicStorage::saveImage($branch_id,"staff",null,$photo,100,['store'=>"employees.photo_file_name","id"=>$empId]);
                 // if($file->status ==='OK'){
                 //     self::updateProps($id,["photo_file_type"=>$file->extension,"photo_file_name"=>$file->file_name]);
                 // }
               } 
             }
-            return DV::success(['id'=>$id]);
+            return DV::success(['id'=>$empId]);
         }
         return DV::error($res->error_message);
     }
  
+    static function listAll($branch_id){
+       $cols = "e.id,e.person_id,CONCAT(p.last_name,' ',p.first_name) as name,p.sex,p.phone_number,p.email"; 
+       return DB::table("employees as e")->join('persons as p','p.id','=','e.person_id')->where('e.branch_id',$branch_id)->selectRaw($cols)->get();
+    }
+
+    static function getById($id,$emps){
+       $i =0;$c=null;
+       do{
+         if(!isset($emps[$i])) break;
+         $c = $emps[$i];
+          if($c->id ==$id) return $c; 
+         $i++;
+       }while($c);
+
+       return (object)['id'=>null,'name'=>null];
+    }
     // static function personId($id){
     //     $row = getDataRow('employees',['id'=>$id],"person_id");
     //     if($row) return $row->person_id;

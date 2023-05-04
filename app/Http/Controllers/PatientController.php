@@ -80,6 +80,13 @@ class PatientController extends Controller
       if($ss->status_code !==200) return JDV::raw($ss);
       return JDV::result(Patient::list($req->all(),$ss)); 
     }
+
+    function getPatientList_paginate(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      return JDV::result(Patient::list_paginate($req->all(),$ss)); 
+    }
+
     function findPatients(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !==200) return JDV::raw($ss);
@@ -91,6 +98,34 @@ class PatientController extends Controller
       $id = $req->patient_id?$req->patient_id:$req->id;
       $patient = new Patient($id,$ss);
       return JDV::raw($patient->delete());  
+    }
+
+    function getProfilePhoto(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      $id = $req->patient_id?$req->patient_id:$req->id;
+      return JDV::result(Patient::profilePhoto($id,$ss));  
+    }
+
+    /**
+     * return quick Summary about consultation and Financial (Invoices and payment) for a litle dashboard etc...
+     */
+    function getQuickSummary(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      $id = $req->id?$req->id:$req->patient_id;
+      $patient = new Patient($id,$ss);
+      return JDV::result($patient->getQuickSummary());
+    }
+
+    function saveProfilePicture(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      $id = $req->patient_id?$req->patient_id:$req->id;
+      $patient = new Patient($id,$ss);
+      $res = $patient->saveProfilePicture($req->all());
+      if($res->status ==='OK') return JDV::result($res->image_url);
+      return JDV::error($res->error_message);      
     }
 
     // function savePatient_DEL(Request $req){

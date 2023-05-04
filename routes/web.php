@@ -3,13 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WebReportController;
 use App\Http\Controllers\Login\LoginController;
-use Illuminate\Http\Request;
-
+ 
 use App\Models\Notifier;
 use App\Http\Controllers\MailController;
-use App\Http\Controllers\PdfController;
-use App\Models\PrivateStorage;
-use Illuminate\Contracts\Session\Session;
+//use App\Http\Controllers\PdfController;
+//use App\Models\PrivateStorage;
+//use Illuminate\Contracts\Session\Session;
 
 //use App\Models\UM;
 /*
@@ -95,25 +94,21 @@ Route::get('logout', function () {
 Route::get('logout-borrower', function () {
     return view('borrower.login');
 });
+ 
+// Route::get('test', function () {
+//     $paths = [
+//         'public_path' => public_path(), // Path of public/
+//         'base_path' => base_path(), // Path of application root
+//         'storage_path' => storage_path(), // Path of storage/
+//         'app_path' => app_path(), // Path of app/
+//         'cwd' => getCwd()
+//     ];
+//     $file_path = base_path() . '/storage/locales/en.json';
+//     $data = readFileContent($file_path);
+//     echo $data;
+// });
 
-Route::get('private-storage', function () {
-    echo PrivateStorage::path(1, 'loan', 'document');
-});
-
-Route::get('test', function () {
-    $paths = [
-        'public_path' => public_path(), // Path of public/
-        'base_path' => base_path(), // Path of application root
-        'storage_path' => storage_path(), // Path of storage/
-        'app_path' => app_path(), // Path of app/
-        'cwd' => getCwd()
-    ];
-    $file_path = base_path() . '/storage/locales/en.json';
-    $data = readFileContent($file_path);
-    echo $data;
-});
-
-Route::get('package_barcode/{id}', [WebReportController::class, 'package_barcode']);
+//Route::get('package_barcode/{id}', [WebReportController::class, 'package_barcode']);
 Route::get('genreport/{q}', [WebReportController::class, 'general_report']);
 Route::get('geninvoice/{q}', [WebReportController::class, 'general_invoice']);
 Route::get('person-profile/{q}', [WebReportController::class, 'person_profile']);
@@ -138,9 +133,7 @@ Route::get('mclinic', function () {
 });
 
 Route::get('email/send', [MailController::class, 'html_email']);
-
-Route::get('download-doc/{doc_type}/{loan_app_id}/{file_id}', [LoanAppController::class, 'downloadFile']);
-
+ 
 //Clear Cache facade value:
 Route::get('/clear-cache', function () {
     $exitCode = Artisan::call('cache:clear');

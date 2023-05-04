@@ -20,6 +20,12 @@ class InvoiceController extends Controller
       return JDV::result(Invoice::list($req->all(),$ss));
     }
 
+    function getInvoiceList_paginate(Request $req){
+        $ss= UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        return JDV::result(Invoice::list_perginate($req->all(),$ss));
+    }
+
     function deleteInvoice(Request $req){
         $ss= UM::getUserInfoBytoken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
@@ -171,6 +177,12 @@ class InvoiceController extends Controller
         //getDetailsWithSummary() return object = {'invoice'=>{},'payment'=>{}}. Where Invoice = {'ref_number','amount_due','amount_paid'}
         $row = Payment::get($pmt_id,$ss)->getDetailsWithSummary();
         return JDV::result($row);
+    }
+
+    function getPaymentFormOptions(Request $req){
+        $ss= UM::getUserInfoBytoken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        return JDV::result(InvoiceSettings::payment_form_options($ss));
     }
 
     function getBasicInfo(Request $req){

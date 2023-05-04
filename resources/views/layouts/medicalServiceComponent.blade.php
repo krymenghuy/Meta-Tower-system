@@ -10,9 +10,10 @@
                 <select id="_msl_filter_service" class="form-select modal-select2"></select>
             </div>
         </div>
-        <div class="flat-box full-screen-height-scroll" style="margin:17px;min-height:350px;">
+         <div id="_msl_service_container" class="flat-box" style="margin-top:10px"></div>
+        <!-- <div class="flat-box full-screen-height-scroll" style="margin:17px;min-height:350px;">
             <table class="table header-light-blue header-uppercase table-hover" id="_msl_tblItems"></table>
-        </div>
+        </div> -->
     </div>
 </div>
 

@@ -5,6 +5,7 @@ namespace App\Models;
 //use Illuminate\Database\Eloquent\Model;
 use DB;
 use App\Models\DV;
+use App\Models\Invoice\InvoiceSettings;
 use Intervention\Image\Facades\Image;
 
 class Person //extends Model
@@ -103,6 +104,7 @@ class Person //extends Model
     //@param $retrieveByFields =['id'=>10,'phone_number'=>'01245656','national_id'=>'02345656'] 
     static function detailsBy($retrieveByFields,$cols=null){
         $more_where =null;
+        $customer_table = InvoiceSettings::$customer_table;
         foreach($retrieveByFields as $field_name=>$value){
             if($value){
                 $str = "$field_name ='$value'";
@@ -111,9 +113,9 @@ class Person //extends Model
         }
         if(!$more_where) return null;
         $more_where = $more_where?$more_where:"1=2";
-
+         
         if (!$cols) $cols ="p.id,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
-        $rows = DB::table('persons AS p')->whereRaw($more_where)->selectRaw($cols)->take(1)->get();
+        $rows = DB::table('persons AS p')->join($customer_table." AS pt",'pt.person_id','=','p.id')->whereRaw($more_where)->selectRaw($cols)->take(1)->get();
         return isset($rows[0])? $rows[0]:null;
     }
     
@@ -127,14 +129,19 @@ class Person //extends Model
         return self::detailsBy(['id'=>$id,'branch_id'=>$ss->branch_id]);
     }
 
-    function save($d,$ss=null){
+    //NOTE $d['id'] is not used, but we use second parameter ($id = $person_id)
+    function save($d,$id=null,$ss=null){
         $ss = $ss?$ss:$this->getUserInfo();
+        $person_id = $id?$id:$this->getId();
+
         $branch_id = $ss->branch_id;
-        $sanitize_options = ['email'=>['@'],'address'=>['#','.']];
+        $sanitize_options = ['email'=>['@','.','-','_'],'address'=>['#','.','-']];
         $checkUnique =null;//["$branch_id|persons|name,phone_number,email|id=id"];
         $res = validateObject($d,self::$validate_rule,true,$sanitize_options,$ss->lang,false,$checkUnique);
         if($res->error) return DV::error($res->error);
-        $person_id =isset($res->id)? $res->id:0;
+        
+        //If $person_id is not supplied, try using $res->id as person_id
+        $person_id =$person_id?$person_id: (isset($res->id)? $res->id:0);
 
         $inputs = $res->values;
         //divide $name into first_name and last_name using function Helper/getNameParts()
@@ -152,7 +159,7 @@ class Person //extends Model
         $person_id = saveData($ss,'persons',['id'=>$person_id],$inputs,[],1);
         $inputs['id'] = $person_id;
         if($person_id>0){
-            if($photo) PublicStorage::saveProfilePicture($branch_id,'person','png',$photo,null,['store'=>"persons.photo_file_name","id"=>$person_id]); 
+            if(isImage($photo)) PublicStorage::saveProfilePicture($branch_id,'person','png',$photo,null,['store'=>"persons.photo_file_name","id"=>$person_id]); 
             return DV::success(['person'=>$inputs]);
         }
         return JDV::error('Something when wrong in saving person profile');
@@ -161,7 +168,7 @@ class Person //extends Model
     //forceSave() will create a new person profile if the given @person_id is not supplied or zero 
     static function forceSave($d,$ss){
         //$ss = $ss?$ss:$this->getUserInfo(); 
-        $sanitize_options = ['email'=>['@'],'address'=>['#','.']];
+        $sanitize_options = ['email'=>['@','.','-','_'],'address'=>['#','.']];
         $res = validateObject($d,self::$validate_rule,true,$sanitize_options,$ss->lang,false,null);
         if($res->error) return DV::error($res->error);
         $person_id =$res->id;

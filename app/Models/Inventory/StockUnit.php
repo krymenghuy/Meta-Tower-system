@@ -1,36 +1,43 @@
 <?php
 
 namespace App\Models\Inventory;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+//use Illuminate\Database\Eloquent\Factories\HasFactory;
+//use Illuminate\Database\Eloquent\Model;
 use DB;
 
-class StockUnit extends Model
+class StockUnit //extends Model
 {
-    use HasFactory;
-    protected $unit_name =null;
+    //use HasFactory;
+    protected static $unit_name =null;
     protected $item_code =null;
-
-    //given a $unit_name, and $item_code returns this model (StockUnit model).
-    //NOTE: each unit must be associated with one item determined by item_code or item_id
-    static function getByItemCode($item_code,$unit_name=null){
-        self::$unit_name =$unit_name;
-        self::$item_id = self::getItemId($item_code);
-        //if(!self::exists($unit_name) return null;   
-        return self; 
+    protected $id = null;
+    protected $userInfo = null;
+     
+    function __construct($id=null,$userInfo=null){
+         $this->id = $id;
+         $this->userInfo = $userInfo;
+    }
+  
+    function getUserInfo(){
+        return $this->userInfo;
     }
 
-    static function getByItemId($item_id,$unit_name=null){
-        self::$unit_name =$unit_name;
-        self::$item_id = $item_id;
-        //if(!self::exists($unit_name) return null;   
-        return self; 
+    function getId(){
+        return $this->id;
     }
 
-    static function getItemId($item_code){
-        return getDataRow("inv_items",["item_code"=>$item_code,"id"]);
+    function getByName($unit_name,$ss=null){
+       $ss = $ss? $ss:$this->getUserInfo(); 
+       $rows = DB::table('inv_units AS u')->where('u.name',$unit_name)->select('u.id')->take(1)->get();
+       foreach($rows as $row){
+        return new StockUnit($row->id,$ss);
+       }
+      return null;
     }
+     
+    // static function getItemId($item_code){
+    //     return getDataRow("inv_items",["item_code"=>$item_code,"id"]);
+    // }
 
     //NOTE:  $id_or_name is unit_name or unit_id
     static function existsByItemCode($item_code,$id_or_name=null){

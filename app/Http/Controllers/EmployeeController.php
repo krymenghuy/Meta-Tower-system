@@ -37,7 +37,8 @@ class EmployeeController extends Controller
     function saveEmployee(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
-      $emp = new Employee(null,$ss);
+      $id = $req->id?$req->id:$req->emp_id;
+      $emp = new Employee($id,$ss);
       $res = $emp->save($req->all());
       if($res->status ==='OK') return JDV::success(['id'=>$res->id]);
       return JDV::error($res->error_message);

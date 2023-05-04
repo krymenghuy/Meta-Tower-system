@@ -16,7 +16,7 @@
 <div id="_main_patientListComponent" class="mobile-padding" style="display:none;">
     <section class="content">
         <div class="container-fluid">
-            <div class="d-flex justify-content-between" style="padding:10px">
+            <div class="d-flex justify-content-between" style="margin-top:15px">
                 <div class="d-flex col-md-6">
                     <button class="vs-btn-md vs-btn-md-primary" id="_pal_btnNewPatient">
                         <img class="btn-icon" src="{{ asset('assets/images/icons/appointment.png') }}" alt=""/>
@@ -29,20 +29,23 @@
                     </a>
                 </div>
             </div>
-           
-            <div class="full-screen-height-scroll row p-3" id="_ptl_list">
-
+            <div style="margin-top:10px" id="_ptl_list_container"></div>
+            
+            <div style="margin-top:10px" class="row p-3" id="_ptl_list"></div>
+            <div class="dataTables_paginate paging_simple_numbers">
+                <ul id="client_list_pagination" class="pagination">  
+                </ul>
             </div>
-
-            <div class="flat-box" style="margin:17px; padding:15px; overflow:auto; min-height:350px">
+             
+            <!-- <div class="flat-box" style="margin:17px; padding:15px; overflow:auto; min-height:350px">
                 <table class="table header-light-blue header-uppercase" id="_pal_tblPatients" style="margin-top:-25px !important"></table>
-            </div>
+            </div> -->
         </div>
     </section>
 </div>
 
 <div class="modal fade" id="_pal_dlPatient" tabindex="-1" role="dialog" aria-labelledby="_pal_dlPatient" aria-hidden="true">
-    <div class="modal-dialog" role="dialog">
+    <div class="modal-dialog vs-modal-dialog" role="dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title​ trans-text" data-langprop="titles.New Appointment" id="_pal_dlPatient_title">New Patient</h5>

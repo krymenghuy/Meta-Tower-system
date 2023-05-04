@@ -247,7 +247,7 @@
             ScriptManager::render('components',1);
         ?>
     </head>
-    <body style="overflow:hidden" class="kt-quick-panel--right kt-demo-panel--right kt-offcanvas-panel--right kt-header--fixed kt-header-mobile--fixed kt-subheader--enabled kt-subheader--fixed kt-subheader--solid kt-aside--enabled kt-aside--fixed kt-page--loading">
+    <body class="kt-quick-panel--right kt-demo-panel--right kt-offcanvas-panel--right kt-header--fixed kt-header-mobile--fixed kt-subheader--enabled kt-subheader--fixed kt-subheader--solid kt-aside--enabled kt-aside--fixed kt-page--loading">
         <div id="_main_hidden_fields">
             <input type="hidden" id="__base_url" value="{{ url('/') }}">
             <input type="hidden" id="__xsp_name" value="_csrf_115578" />

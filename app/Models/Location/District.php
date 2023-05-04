@@ -5,14 +5,13 @@ namespace App\Models\Location;
 //use Illuminate\Database\Eloquent\Model;
 use App\Models\DV;
 use DB;
-use App\Models\Location\Commune;
-
+ 
 class District //extends Model
 {
     //use HasFactory;
     protected $id = null;
     protected $userInfo = null;
-    function __construct($id=null,$ss=null){
+    function __construct($id=null,$userInfo=null){
         $this->id = $id;
         $this->userInfo = $userInfo;
     }

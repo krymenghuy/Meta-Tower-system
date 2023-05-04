@@ -92,17 +92,18 @@ let AppointmentListComponent = new function () {
         window.vsapi.call(`${main_view.base_url}/api/appointment/details`, p, 'POST', false).then((res) => {
             let html = null;
             if (res.status_code === 200) {
-                let d = StringSanitizer.sanitizeObject(res.data);
+                let d = StringSanitizer.sanitizeObject(res.data,null,['image_url']);
                 d.patient_code = d.patient_code ? d.patient_code : 'N.A.';
                 d.consultant_name = d.consultant_name ? d.consultant_name : 'Any';
 
                 let tr = detail_tr.prev();
                 tr.find('.client-name').text(d.client_name);
                 tr.find('.client-code').text(d.patient_code);
+                d.image_url = d.image_url? d.image_url: `${mThis.icon_url()}/user.png`;
 
                 html = `<div data-apptid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="appt-info-wrapper shadow-lg d-flex" style="width:100%;">
                         <div class="thumbnail-wrapper">
-                        <img src="${mThis.icon_url()}/client-girl.png" class="profile-thumbnail img-thumbnail">
+                        <img src="${d.image_url}" class="profile-thumbnail img-thumbnail">
                         </div>
 
                         <div class="d-flex" style="width:100%">
@@ -266,6 +267,7 @@ let AppointmentListComponent = new function () {
                 "onClose": (res) => {
                     if (res) {
                         let d = res.status_info;
+                        if(d.status_id ==3) d.status = 'Queued';
                         mThis.setAppointmentStatus(tr, { 'status': d.status, 'status_id': d.status_id });
                         mThis.displayAppointmentDetails(tr, appt_id);
                     }
@@ -299,12 +301,12 @@ let AppointmentListComponent = new function () {
             });
         });
 
-        mThis.tblAppointments.on('click', '.btn-appt-status', function (e) {
-            e.preventDefault();
-            let btn = $(this);
-            let status_id = btn.data('statusid');
-            alert('Change status from ' + status_id);
-        });
+        // mThis.tblAppointments.on('click', '.btn-appt-status', function (e) {
+        //     e.preventDefault();
+        //     let btn = $(this);
+        //     let status_id = btn.data('statusid');
+        //     //alert('Change status from ' + status_id);
+        // });
 
         mThis.tblAppointments.on('click', 'a.btn_appt_modify', function (e) {
             e.preventDefault();
@@ -321,7 +323,9 @@ let AppointmentListComponent = new function () {
             let status_id = tr.data('statusid');
 
             if(status_id > 2) {
+                //by specifiying op.appt_id => we meant to update person's info via the given appointment_id
                 op.appt_id = appt_id;
+                //op.id is person_id // If op.id > 0 => we meant to update person's info via the given person_id
                 PersonDialog.show(op);
             }
             else if (status_id <= 2) {
@@ -401,7 +405,9 @@ let AppointmentListComponent = new function () {
             let my_columns = [
                 {
                     data: function (data, a, b) {
-                        return ['<span style="display:block;padding:3px;">', data.arrival_date, '</span>',
+                        data.created_at = data.created_at.replace(/ /g, ".");
+                        const book_date =`<span class="d-block text-secondary p-1" style="font-size:0.6em">${data.created_at}</span>`;
+                        return [book_date,'<span style="display:block;padding:3px;">', data.arrival_date, '</span>',
                         ].join('');
                     },
                     title: mThis.trans_title('Arrival Date')
@@ -409,7 +415,12 @@ let AppointmentListComponent = new function () {
                 {
                     title: mThis.trans_title('Arrival Time'),
                     data:(data,a,b)=>{
-                        return [`<span class="d-block text-success">`,data.arrival_time,`</span>`].join('');
+                        let rem_days = '';
+                        if(data.remaining_days> 0) rem_days = `<span class="text-primary p-1">${data.remaining_days}d</span>`;
+                        else if (data.remaining_days ==0) rem_days =`<span class="text-center text-danger p-2" style="font-size:0.8em">Today</span>`;
+                        else rem_days = `<span class="text-secondary p-1">past ${Math.abs(data.remaining_days)}d</span>`;
+
+                        return [`<span style="display:block;border:1px solid green;color:green; border-radius:20px;" class="text-center">`,data.arrival_time,`</span>`,rem_days].join('');
                     }
                 },
                 {
@@ -421,25 +432,41 @@ let AppointmentListComponent = new function () {
                 {
                     title: mThis.trans_title('Client Phone'),
                     data: (data, a, b) => {
-                        return data.client_phone_number;
+                        const cur ='$';
+                        const str_unpaid =data.unpaid_amount > 0? [ `<span style="display:block;color:red;font-size:0.8em" class="text-center">unpaid: `,cur,data.unpaid_amount,`</span>`].join('') : '';
+                        return [`<span class="d-block">`,data.client_phone_number,`</span>`,
+                        str_unpaid
+                    ].join('');
                     }
                 },
                 {
                     title: mThis.trans_title('Schedule Type'),
                     data: (data, a, b) => {
-                        return data.schedule_type;
+                        let str_urgent = null;
+                        if((data.priority+'').toLowerCase() ==='urgent') str_urgent =  `<span class="d-block text-right p-1 text-danger">${data.priority}</span>`;
+                        return [`<span class="d-block p-1">`,data.schedule_type,`</span>`,str_urgent].join('');
                     }
                 },
                 {
-                    title: mThis.trans_title('Priority'),
+                    title: mThis.trans_title('Remarks'),
                     data: (data, a, b) => {
-                        return data.priority;
+                       return [`<div class="long-text-wrap-250">`,data.notes?data.notes:'NA',`</div>`].join('');
                     }
                 },
+                // {
+                //     title: mThis.trans_title('Priority'),
+                //     data: (data, a, b) => {
+                //         return data.priority;
+                //     }
+                // },
                 {
                     title: mThis.trans_title('Status'),
                     data: (data, a, b) => {
-                        return [`<a href="javascript:void(0)" style="display:block;text-align:center;min-width:75px;padding:5px;" data-statusid="${data.status_id}" class="btn-appt-status border rounded-pill ${mThis.getApptStatusClass(data.status_id)}">`, data.status, `</a>`].join('');
+                        let ticket_date_class ='text-primary';
+                        if(DateHelper.dateDiff(data.q_date,DateHelper.getTodayDate())) ticket_date_class ='text-danger';
+                        return [`<a href="javascript:void(0)" style="display:block;text-align:center;min-width:75px;padding:5px;" data-statusid="${data.status_id}" class="btn-appt-status border rounded-pill ${mThis.getApptStatusClass(data.status_id)}">`, data.status, `</a>`,
+                        data.status_id<3? ``:`<span class="d-block text-center p-1 ${ticket_date_class}">${data.q_date?data.q_date:'past date'}</span>`
+                    ].join('');
                     }
                 },
                 {
@@ -716,6 +743,15 @@ let PatientDialog = new function () {
         FileChooser.chooseFile(null,(d)=>{
             if(d){
                 mThis.imgPhoto.attr('src',d.dataUrl);
+                if(mThis.patient_id>0){
+                  let p = {'id':mThis.patient_id,'photo':d.dataUrl};  
+                  vsapi.call(`${main_view.base_url}/api/patient/save-profile-picture`,p,null,false).then(res=>{
+                     if(res.status_code===200){
+                        cv_interact.success('New profile Picture saved!'); 
+                     }else cv_interact.warning(res.error_message);
+                  });
+                }
+               
             }
         });
     });
@@ -820,6 +856,7 @@ let PatientDialog = new function () {
               p[f] = el.prop('src');
             else p[f] = el.val();
         });
+        p.photo = mThis.imgPhoto.prop('src');
         p.department_id = mThis.elDepartment.val();
         p.consultant_id = mThis.elConsultant.val();
         p.vital_signs = mThis.getVitalSignInputs();
@@ -869,6 +906,8 @@ let PatientDialog = new function () {
         mThis.lead_id = d.lead_id;
         mThis.elAgeUnit.text(null);
         mThis.elError.val(null);
+        //patient profile picture
+        mThis.imgPhoto.prop('src',null);
 
         mThis.self.find('.data-input-reg').each(function () {
             let el = $(this);
@@ -888,7 +927,7 @@ let PatientDialog = new function () {
         mThis.option = option;
         mThis.onClose = option.onClose;
         mThis.appt_id = option.appt_id;
-
+     
         mThis.prepareOptions(() => {
             VSUtil.hideDialogError(mThis.self.attr('id'));
             if (option.id > 0 || option.identity_value > 0) {
@@ -989,7 +1028,6 @@ let ServiceQueueDialog = new function () {
       //NOTE: search_Value can be client's phone or ID
       let p = {'search_value':phone_or_id?phone_or_id:-1};
       vsapi.call(`${main_view.base_url}/api/ticket/find-client`,p,null,false).then(res=>{
-        console.error(res);
          if(res.status_code ==200){
              let d = StringSanitizer.sanitizeObject(res.data);
              //let d = rows?rows[0]:{};

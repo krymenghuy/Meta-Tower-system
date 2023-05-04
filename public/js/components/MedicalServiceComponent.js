@@ -7,7 +7,10 @@ let MedicalServiceComponent = new function () {
     this.btnNew = $('#_msl_btnNew');
     this.elSearchItem = $('#_msl_search');
     this.elFilter_department = $('#_msl_filter_service');
-    this.tblItems = $('#_msl_tblItems');
+    
+    this.serviceListView = null;
+    this.tblItems =null;
+
     this.form_data = {};
 
     this.col_titles = {
@@ -32,10 +35,58 @@ let MedicalServiceComponent = new function () {
         }
     }
 
+    this.service_columns = [
+        {
+            title: mThis.trans_title('Description'),
+            data:(data,index,tr)=>{
+                return [`<h4 class="d-block">`,data.name,`</h4>`,`<p class="">`,data.description?data.description:'<span class="text-muted">No description</span>',`</p>`].join('');
+            }
+        },
+        {
+            title: mThis.trans_title('Treatment Method'),
+            data: "treatment_method"
+        },
+        {
+            title: mThis.trans_title('Price'),
+            data: 'display_price'
+        },
+        {
+            title: mThis.trans_title('Department'),
+            data: 'department_name'
+        },
+        {
+            title: mThis.trans_title('Action'),
+            data: function (item, index, tr) {
+                return [`<div class="form-inline">`,
+                    `<a href="javascript:void(0)" class="btn_item_modify" data-id="${item.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
+                    `<a href="javascript:void(0);" data-id="${item.id}" class="btn_item_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
+                    `</div>`
+                ].join('');
+            }
+        }
+    ];
+ 
     this.init = () => {
+        mThis.serviceListView = new ListView('_msl_service_container',{
+           'fetchApi':`${main_view.base_url}/api/service/list-paginate`,
+           'apiParams':{'department_id':mThis.elFilter_department.val(),'search_value':mThis.elSearchItem.val()},
+           'perPage':10,
+           'columns': this.service_columns,
+           'tableClass':'table header-light-blue header-uppercase',
+           'rowCreated':(data,index,tr)=>{
+               //tr.setAttribute('id', `ivc_${data.id}`);
+               tr.dataset.id = data.id;
+            },
+            'beforeRender':()=>{
+                mThis.setLanguage();
+            }
+        });
+
+        mThis.tblItems = $(mThis.serviceListView.getTable());
 
         mThis.elSearchItem.on('keyup', (e) => {
-            if (e.keyCode === 13) mThis.displayMedicalServices();
+            //if (e.key === 'Enter') 
+            mThis.serviceListView.showPage({'search_value':mThis.elSearchItem.val(),'department_id':mThis.elFilter_department.val()});
         });
 
         mThis.btnNew.on('click', (e) => {
@@ -43,7 +94,8 @@ let MedicalServiceComponent = new function () {
                 department_id: mThis.elFilter_department.val(),
                 onClose: (e) => {
                     if (e) {
-                        mThis.displayMedicalServices();
+                        mThis.elSearchItem.val(null);
+                        mThis.serviceListView.showPage(null);
                     }
                 }
             };
@@ -56,7 +108,7 @@ let MedicalServiceComponent = new function () {
                 id: item_id,
                 onClose: (e) => {
                     if (e) {
-                        mThis.displayMedicalServices();
+                        mThis.serviceListView.showPage({'search_value':mThis.elSearchItem.val()});
                     }
                 }
             };
@@ -70,7 +122,7 @@ let MedicalServiceComponent = new function () {
                     let p = { "id": item_id };
                     vsapi.call(`${main_view.base_url}/api/service/delete`, p).then(res => {
                         if (res.status_code === 200) {
-                            mThis.displayMedicalServices();
+                            mThis.serviceListView.showPage(mThis.elSearchItem.val());
                         } else cv_interact.error(res.error_message);
                     });
                 }
@@ -78,84 +130,84 @@ let MedicalServiceComponent = new function () {
         });
 
         mThis.elFilter_department.on('change', (e) => {
-            mThis.displayMedicalServices();
+            mThis.serviceListView.showPage({'search_value':mThis.elSearchItem.val(),'department_id':mThis.elFilter_department.val()},null);
         });
     }
 
-    this.displayMedicalServices = (onFinish = null) => {
-        mThis.setLanguage();
-        let p = { 'search_value': mThis.elSearchItem.val(), "department_id": mThis.elFilter_department.val() };
-        vsapi.call(`${mThis.base_url}/api/service/items`, p, 'POST', null).then((result) => {
-            let data = [];
-            if (result.status_code === 200) data = result.data;
-            if (mThis.table) {
-                mThis.tblItems.DataTable().clear().destroy();
-                mThis.tblItems.empty();
-                mThis.table = null;
-            }
+    // this.displayMedicalServices = (onFinish = null) => {
+    //     mThis.setLanguage();
+    //     let p = { 'search_value': mThis.elSearchItem.val(), "department_id": mThis.elFilter_department.val() };
+    //     vsapi.call(`${mThis.base_url}/api/service/items`, p, 'POST', null).then((result) => {
+    //         let data = [];
+    //         if (result.status_code === 200) data = result.data;
+    //         if (mThis.table) {
+    //             mThis.tblItems.DataTable().clear().destroy();
+    //             mThis.tblItems.empty();
+    //             mThis.table = null;
+    //         }
 
-            data = StringSanitizer.sanitizeObject(data, null, ['display_price']);
-            let cnt = 1;
-            let my_columns = [
-                {
-                    title: mThis.trans_title('Description'),
-                    data:(data,a,b)=>{
-                        return [`<h4 class="d-block">`,data.name,`</h4>`,`<p class="">`,data.description?data.description:'<span class="text-muted">No description</span>',`</p>`].join('');
-                    }
-                },
-                {
-                    title: mThis.trans_title('Treatment Method'),
-                    data: "treatment_method"
-                },
-                {
-                    title: mThis.trans_title('Price'),
-                    data: 'display_price'
-                },
-                {
-                    title: mThis.trans_title('Department'),
-                    data: 'department_name'
-                },
-                {
-                    title: mThis.trans_title('Action'),
-                    data: function (item, a, b) {
-                        return [`<div class="form-inline">`,
-                            `<a href="javascript:void(0)" class="btn_item_modify" data-id="${item.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
-                            `<a href="javascript:void(0);" data-id="${item.id}" class="btn_item_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
-                            `</div>`
-                        ].join('');
-                    }
-                }
-            ];
+    //         data = StringSanitizer.sanitizeObject(data, null, ['display_price']);
+    //         let cnt = 1;
+    //         let my_columns = [
+    //             {
+    //                 title: mThis.trans_title('Description'),
+    //                 data:(data,a,b)=>{
+    //                     return [`<h4 class="d-block">`,data.name,`</h4>`,`<p class="">`,data.description?data.description:'<span class="text-muted">No description</span>',`</p>`].join('');
+    //                 }
+    //             },
+    //             {
+    //                 title: mThis.trans_title('Treatment Method'),
+    //                 data: "treatment_method"
+    //             },
+    //             {
+    //                 title: mThis.trans_title('Price'),
+    //                 data: 'display_price'
+    //             },
+    //             {
+    //                 title: mThis.trans_title('Department'),
+    //                 data: 'department_name'
+    //             },
+    //             {
+    //                 title: mThis.trans_title('Action'),
+    //                 data: function (item, a, b) {
+    //                     return [`<div class="form-inline">`,
+    //                         `<a href="javascript:void(0)" class="btn_item_modify" data-id="${item.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
+    //                         `<a href="javascript:void(0);" data-id="${item.id}" class="btn_item_delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
+    //                         `</div>`
+    //                     ].join('');
+    //                 }
+    //             }
+    //         ];
 
-            if (!mThis.table)
-                mThis.table = mThis.tblItems.DataTable({
-                    searching: false,
-                    destroy: true,
-                    paging: true,
-                    ordering: false,
-                    retrieve: true,
-                    info: true,
-                    pageLength: 10,
-                    bLengthChange: false,
-                    saveState: true,
-                    processing: true,
-                    language: {
-                        'loadingRecords': '&nbsp;',
-                        'processing': 'Loading...',
-                        "emptyTable": LocaleManager.trans('No data to display', 'datatable')
-                    },
-                    data: data,
-                    columns: my_columns,
-                    createdRow: function (row, data, dataIndex) {
-                        cnt++;
+    //         if (!mThis.table)
+    //             mThis.table = mThis.tblItems.DataTable({
+    //                 searching: false,
+    //                 destroy: true,
+    //                 paging: true,
+    //                 ordering: false,
+    //                 retrieve: true,
+    //                 info: true,
+    //                 pageLength: 10,
+    //                 bLengthChange: false,
+    //                 saveState: true,
+    //                 processing: true,
+    //                 language: {
+    //                     'loadingRecords': '&nbsp;',
+    //                     'processing': 'Loading...',
+    //                     "emptyTable": LocaleManager.trans('No data to display', 'datatable')
+    //                 },
+    //                 data: data,
+    //                 columns: my_columns,
+    //                 createdRow: function (row, data, dataIndex) {
+    //                     cnt++;
 
-                        let tr = $(row);
-                        tr.data('id', data.id);
-                    }
-                });
-            if (typeof onFinish === 'function') onFinish();
-        });
-    };
+    //                     let tr = $(row);
+    //                     tr.data('id', data.id);
+    //                 }
+    //             });
+    //         if (typeof onFinish === 'function') onFinish();
+    //     });
+    // };
 
     this.loadFilterOptions = (onFinish) => {
         if (mThis.form_data.departments) {

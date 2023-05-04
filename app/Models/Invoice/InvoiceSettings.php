@@ -34,6 +34,17 @@ class InvoiceSettings //extends Model
       ];
    }
 
+   static function payment_form_options($ss){
+    return (object)[
+      "pmt_methods"=>self::options_pmt_method($ss)
+    ];
+ }
+
+ static function options_pmt_method($ss){
+   $branch_id = $ss->branch_id;
+   return DB::table("payment_methods as m")->where('branch_id',$branch_id)->selectRaw("m.id,m.name as pmt_method,m.method_type")->get();
+ }
+
    static function options_item($ss){
     $branch_id = $ss->branch_id;
     return DB::table('inv_items AS i')->where('i.branch_id',$branch_id)->selectRaw("i.id as `value`,i.name as text")->orderByRaw('i.name ASC')->get();

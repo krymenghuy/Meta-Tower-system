@@ -45,61 +45,61 @@
                     <div class="d-block">
                         <div class="d-flex py-0 my-0">
                             <p class="text-muted pe-3">Employee ID</p>
-                            <p class="text-muted">12112</p>
+                            <p class="text-muted"><?php echo $employee->code; ?></p>
                         </div>
                         <div class="d-flex py-0 my-0">
-                            <p class="fw-bold fs-5">Joe Root</p>
+                            <p class="fw-bold fs-5"><?php echo $employee->name; ?></p>
                         </div>
                         <div class="d-flex align-items-center text-muted py-0 my-0">
-                            <p class="pe-3">M</p>
+                            <p class="pe-3"><?php echo $employee->sex; ?></p>
                             <div class="vr" style="height:20px; opacity:1"></div>
-                            <p class="ps-3">25</p>
+                            <p class="ps-3"><?php echo $employee->date_of_birth; ?></p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="d-block mt-5">
-                <h5 class="pb-2 fw-bold">Personal Info</h5>
+                <h5 class="pb-2 fw-bold">Personal Information</h5>
                 <div class="d-flex align-items-center">
                     <p class="width-paragraph">Date of Birth</p>
-                    <p>20/04/1993</p>
+                    <p><?php echo $employee->date_of_birth; ?></p>
                 </div>
                 <div class="d-flex align-items-center">
                     <p class="width-paragraph">Mobile No</p>
-                    <p>9485698555</p>
+                    <p><?php echo $employee->phone_number;?></p>
                 </div>
                 <div class="d-flex align-items-center">
                     <p class="width-paragraph">Email ID</p>
-                    <p>joeroot@gmail.com</p>
+                    <p><?php echo $employee->email; ?></p>
                 </div>
                 <div class="d-flex align-items-center">
-                    <p class="width-paragraph">Height</p>
-                    <p>170cm</p>
+                    <p class="width-paragraph">Position</p>
+                    <p><?php echo $employee->position_title; ?></p>
                 </div>
                 <div class="d-flex align-items-center">
-                    <p class="width-paragraph">Weight</p>
-                    <p>65kg</p>
+                    <p class="width-paragraph">Department</p>
+                    <p><?php echo $employee->department; ?></p>
                 </div>
                 <div class="d-flex align-items-center">
                     <p class="width-paragraph">Address</p>
-                    <p>Bandra House Bombay</p>
+                    <p><?php echo ($employee->address?$employee->address:'Not Available'); ?></p>
                 </div>
                 <div class="d-flex align-items-center">
                     <p class="width-paragraph">Nationality</p>
-                    <p>Indian</p>
+                    <p><?php echo $employee->nationality; ?></p>
                 </div>
             </div>
-            <div class="d-block mt-3">
-                <h5 class="pb-2 fw-bold">Medication Details</h5>
+            <!-- <div class="d-block mt-3">
+                <h5 class="pb-2 fw-bold">Experiences</h5>
                 <div class="d-flex align-items-center">
-                    <p class="width-paragraph">Doctor</p>
-                    <p>Dr.Madhav Baug</p>
+                    <p class="width-paragraph">Experience Title</p>
+                    <p>AAA</p>
                 </div>
                 <div class="d-flex align-items-center">
                     <p class="width-paragraph">Assistant</p>
-                    <p>Dr.Smitha Thorat</p>
+                    <p>AAA</p>
                 </div>
-            </div>
+            </div> -->
         </div>
     </body>
 </html>

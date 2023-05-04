@@ -9,59 +9,195 @@ let ItemsComponent = new function(){
     this.elFilter_category = $('#_itm_filter_category');
 
     // this.elFilter_department = $('#_msl_filter_service');
-    this.tblItems = $('#_itm_tblItems');
+    this.itemView = null;
+    this.tblItems = null;
     // this.form_data = {};
     this.icon_url = [VSUtil.asset_url(),'/images/icons'].join('');
 
     this.col_titles = {
-        "No.":"No.",
+        "No":"No",
         "Code":"Code",
         "Name":"Name",
         "Category":"Category",
         "General Name":"General Name",
         "Action":"Action"
     };
-
-    this.displayProductsDetails = (detail_tr, appt_id=0)=>{
+ 
+    this.displayProductsDetails = (detail_tr, item_id=0)=>{
         let div_wrapper = detail_tr.find('div.expandable-row-container');
         div_wrapper.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
-        let p = {'id':appt_id};
-        window.vsapi.call(`${main_view.base_url}/api/inventory/item-details`,p,'POST',false).then((res) => {
+        let p = {'id':item_id};
+        window.vsapi.call(`${main_view.base_url}/api/inventory/item-details`,p,null,false).then((res) => {
           let html=null;
           if (res.status_code === 200){
-             let d = StringSanitizer.sanitizeObject(res.data); 
+            let d =res.data; 
              //d.chief_complaints = d.chief_complaints?d.chief_complaints:[];
-             d.patient_code = d.patient_code?d.patient_code:'N.A.';
-             d.consultant_name=d.consultant_name?d.consultant_name:'Any';
-             
+             let img= d.images? d.images[0] : null;
+             if (!img) img = {'id':'','image_url':`${mThis.icon_url}/client-girl.png`};
+             // make sure, we get images array before sanitizing object to avoid url sanitization errror
+             d.images = null;
+             d = StringSanitizer.sanitizeObject(d); 
+             d.sku = d.sku? d.sku:'មិនទាន់កំណត់'; 
              //begin:: refresh display of Client name and client code
-               let tr = detail_tr.prev();
-               tr.find('.client-name').text(d.client_name);
-               tr.find('.client-code').text(d.patient_code);
+               //let tr = detail_tr.prev();
+               //tr.find('.client-name').text(d.client_name);
+               //tr.find('.client-code').text(d.patient_code);
              //end::refresh display of Client name and client code
-          
-             html = `<div data-apptid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="appt-info-wrapper shadow-lg d-flex" style="width:100%;">
-                    <div class="thumbnail-wrapper">
-                    <img src="${mThis.icon_url}/client-girl.png" class="profile-thumbnail">
+             let cur ='$';
+             html =`
+             <div class="container border rounded p-3 shadow" style="border-color:#F2F5F5">
+             <div class="row">
+               <div class="col-md-4 d-flex justify-content-center align-items-center flex-column">
+                 <div class="d-flex flex-row product-photos">
+                    <div class="rounded-circle bg-secondary overflow-hidden mb-3" style="width: 200px; height: 200px;">
+                      <img src="${img.image_url}" data-photoid="${img.id}" alt="Product Photo Description" class="product-img img-fluid">
                     </div>
+                    <a href="javascript:void(0)" class="btn-choose-product-photo" data-photoid="${img.id}" data-itemid="${d.id}"><i class="fa fa-edit"></i></a>
+                 </div>
+                 <h5 class="text-center mb-2">${d.name}</h5>
+                 <h5 class="text-center text-muted mb-4">${cur}${d.selling_price}</h5>
+               </div>
+               <div class="col-md-4">
+                 <h5 class="mb-3 font-weight-bold">Product Information</h5>
+                 <hr class="mb-4" style="margin-top:-10px;border-top: 2px solid #73ADCC;">
+                 <div class="row mb-3">
+                   <div class="col-5">
+                     <p class="font-weight-bold mb-0">Product Group:</p>
+                   </div>
+                   <div class="col-7">
+                     <p class="mb-0">${d.group_name}</p>
+                   </div>
+                 </div>
+                 <div class="row mb-3">
+                   <div class="col-5">
+                     <p class="font-weight-bold mb-0">Category:</p>
+                   </div>
+                   <div class="col-7">
+                     <p class="mb-0">${d.category}</p>
+                   </div>
+                 </div>
+                 <div class="row mb-3">
+                   <div class="col-5">
+                     <p class="font-weight-bold mb-0">SKU:</p>
+                   </div>
+                   <div class="col-7">
+                     <p class="mb-0">${d.sku}</p>
+                   </div>
+                 </div>
 
-                    <div class="d-flex" style="width:100%">
-                            <div style="width:50%">
-                                    
-                            </div>
+                <div class="row mb-3">
+                 <div class="col-5">
+                   <p class="font-weight-bold mb-0">Unit Cost:</p>
+                 </div>
+                 <div class="col-7">
+                   <p class="mb-0">${cur}${d.cost}</p>
+                 </div>
+               </div>
 
-                            <div style="width:50%">
-                        
-                            </div>
-                    </div> 
+               <div class="row mb-3">
+                 <div class="col-5">
+                   <p class="font-weight-bold mb-0">VAT:</p>
+                 </div>
+                 <div class="col-7">
+                   <p class="mb-0">${d.sales_tax_rate}%</p>
+                 </div>
+               </div>
+ 
+               </div>
+               <div class="col-md-4">
+                 <h5 class="mb-3 font-weight-bold">Account Information</h5>
+                 <hr class="mb-4" style="border-top: 2px solid #73ADCC;margin-top:-10px">
+                 <div class="row mb-3">
+                   <div class="col-5">
+                     <p class="font-weight-bold mb-0">Cost account:</p>
+                   </div>
+                   <div class="col-7">
+                     <p class="mb-0">${d.cost_account_name}</p>
+                   </div>
+                 </div>
+                 <div class="row mb-3">
+                   <div class="col-5">
+                     <p class="font-weight-bold mb-0">Income Account:</p>
+                   </div>
+                   <div class="col-7">
+                     <p class="mb-0">${d.revenue_account_name}</p>
+                   </div>
+                 </div>
+                 
+                 <div class="row mb-3">
+                    <div class="col-5">
+                    <p class="font-weight-bold mb-0">Inventory account:</p>
+                    </div>
+                    <div class="col-7">
+                    <p class="mb-0">${d.inventory_account_name}</p>
+                    </div>
+                 </div>
+ 
+                 <div class="row mb-3">
+                    <div class="col-5">
+                    <p class="font-weight-bold mb-0">Tax account:</p>
+                    </div>
+                    <div class="col-7">
+                    <p class="mb-0">${d.tax_account_name}</p>
+                    </div>
+                 </div>
+
+               </div>
+             </div>
+            </div>  
+               `;
+            //  html = [`<div data-apptid="${d.id}" data-leadid="${d.lead_id}" data-statusid="${d.status_id}" class="appt-info-wrapper shadow-lg d-flex p-2" style="width:100%;">`,
+                    
+            //         //  `<div class="thumbnail-wrapper">
+            //         //   <img src="" class="profile-thumbnail">
+            //         //  </div>`,
+            //          `<div class="rounded-circle bg-secondary d-flex justify-content-center align-items-center" style="width: 200px; height: 200px;">
+            //             <img src="${mThis.icon_url}/client-girl.png" alt="Product Photo" style="max-width: 100%; max-height: 100%;">
+            //          </div>`,
+
+            //         `<div class="d-flex" style="width:100%">
+            //                 <div style="width:50%" class="p-2">
+            //                     <h2>Product Name</h2>
+            //                     <ul class="list-group list-group-flush">
+            //                         <li class="list-group-item"><strong>Product Group:</strong> Electronics</li>
+            //                         <li class="list-group-item"><strong>Category:</strong> Computers & Accessories</li>
+            //                         <li class="list-group-item"><strong>SKU:</strong> PROD123</li>
+            //                         <li class="list-group-item"><strong>Selling Price:</strong> $999.99</li>
+            //                         <li class="list-group-item"><strong>Description:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+            //                     </ul>
+            //                 </div>
+
+            //                 <div style="width:50%" class="p-2">
+            //                      <h3>sdfdsfdf</h3>
+            //                 </div>
+            //         </div> 
                 
-                </div>`;
+            //     </div>`].join('');
           
           }else{
             html =`<div class="expanded-row-error">${error_message}</div>`;
           }
 
           div_wrapper.html(html);
+
+          div_wrapper.off('click').on('click','.btn-choose-product-photo',function(e){
+            e.preventDefault();
+            let lnk = $(this);
+            //get product ID or Item ID
+            const item_id = lnk.data('itemid');
+            FileChooser.chooseFile(null,(x)=>{
+                let p = {'id':item_id,'photo_id':lnk.data('photoid'),'photo':x.dataUrl};
+                vsapi.call(`${main_view.base_url}/api/inventory/item/save-photo`,p,null,false).then(res=>{
+                    if(res.status_code ===200){
+                        lnk.closest('.product-photos').find('img.product-img').prop('src',x.dataUrl);
+                        cv_interact.success('Product image has been saved!'); 
+                    }else cv_interact.error(res.error_message);
+                });
+                
+            });
+ 
+          });
+
           //div_wrapper.slideDown(500);
         });
     }
@@ -79,12 +215,87 @@ let ItemsComponent = new function(){
         }
     }
 
+    this.item_columns = [
+        // {
+        //     title: mThis.trans_title("No"),
+        //     data: (data,index,tr) => {
+        //         return (index+1);
+        //     }
+        // },
+        {
+            title: mThis.trans_title("Code"),
+            data:(data,a,b)=>{
+                return [
+                    `<span class="fw-bold d-block">`,data.code,`</span>`
+                ].join('');
+            }
+        },
+        {
+            title: mThis.trans_title('Name'),
+            data:(data,a,b)=>{
+                return [
+                    `<span class="d-block fw-bold">`,data.name,`</span>`
+                ].join('');
+            }
+        },
+        {
+            title: mThis.trans_title('General Name'),
+            data:(data,a,b)=>{
+                return [
+                    `<span class="d-block fw-bold">`,data.group_name,`</span>`,
+                    `<span class="text-secondary">(`,data.group_code,`)</span>`
+                ].join('');
+            }
+        },
+        {
+            title: mThis.trans_title('Category'),
+            data:"category"
+        },
+        {
+            title:mThis.trans_title('Action'),
+            data: function(item,a,b){
+                return [`<div class="form-inline">`,
+                `<a href="javascript:void(0)" class="btn-item-modify" data-id="${item.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
+                `<a href="javascript:void(0);" data-id="${item.id}" class="btn-item-delete"><i class="fa fa-trash" style="color:red"></i></a>`,
+                `</div>`
+                ].join('');
+            }
+        }
+    ];
+
     this.init = () => {
+        mThis.itemView = new ListView('_itm_list_container',{
+            'fetchApi':`${main_view.base_url}/api/inventory/items-paginate`,
+            'columns':this.item_columns,
+            'tableClass':"table header-light-blue header-uppercase",
+            'rowCreated':(data,index,tr)=>{
+                tr.dataset.id = data.id;
+            },
+            'beforeRender':()=>{
+               mThis.setLanguage();
+            }
+        });
+
+        //obtain and convert mThis.itemView's table into jquery object that references to that table for jquery operation such as "mThis.tblItems.on('click','.btn-modify',()=>{ .... })
+        mThis.tblItems = $(mThis.itemView.getTable());
+
+        const tbl_id = mThis.tblItems.attr('id');
+        this.cfg = new ExpandableRowConfig(tbl_id,{
+            'dontExpandByClickingOn':['btn-item-modify','btn-item-delete','btn-item-action'],
+            //'content':`<div class="alert alert-info">Loading details</div>`,
+            'onOpen':(container,detail_tr,parent_tr)=>{
+                //alert(detail_tr.find('ul').html());
+                let qtr = $(parent_tr);
+                let appt_id = qtr.data('id');
+                mThis.displayProductsDetails($(detail_tr),appt_id);
+             }
+        });
+
         mThis.btnNew.on('click',(e)=>{
             let op = {
                 onClose:(e)=>{
                     if(e){
-                        mThis.displayItems();
+                        mThis.itemView.showPage({'search_value':mThis.elSearchItem.val(),'category_id':mThis.elFilter_category.val()});
                     }
                 }
             };
@@ -98,7 +309,7 @@ let ItemsComponent = new function(){
                 onClose:(e)=>{
                     //do something on dialog closed
                     if(e){
-                        mThis.displayItems();
+                        mThis.itemView.showPage({'search_value':mThis.elSearchItem.val(),'category_id':mThis.elFilter_category.val()});
                     }
                 }
             };
@@ -112,140 +323,24 @@ let ItemsComponent = new function(){
                     let p = {"id":item_id};
                     vsapi.call(`${main_view.base_url}/api/inventory/delete-item`,p).then(res=>{
                        if(res.status_code === 200){
-                          mThis.displayItems();
+                        mThis.itemView.showPage({'search_value':mThis.elSearchItem.val(),'category_id':mThis.elFilter_category.val()});
                        }else cv_interact.error(res.error_message);
                     });
                 }
             });
         });
-
-        this.cfg = new ExpandableRowConfig('_itm_tblItems',{
-            'dontExpandByClickingOn':['btn-item-modify','btn-item-delete','btn-item-action'],
-            //'content':`<div class="alert alert-info">Loading details</div>`,
-            'onOpen':(container,detail_tr,parent_tr)=>{
-                //alert(detail_tr.find('ul').html());
-                let qtr = $(parent_tr);
-                let appt_id = qtr.data('id');
-                mThis.displayProductsDetails($(detail_tr),appt_id);
-             }
-        });
-
+ 
         mThis.elSearchItem.on('keyup',(e)=>{
-            if(e.keyCode === 13) mThis.displayItems();
+            mThis.itemView.showPage({'search_value':mThis.elSearchItem.val(),'category_id':mThis.elFilter_category.val()});
         });
 
         mThis.elFilter_category.on('change',(e)=>{
             e.preventDefault();
             //let cat_id = mThis.elFilter_category.val();
-            mThis.displayItems();
+            mThis.itemView.showPage({'search_value':mThis.elSearchItem.val(),'category_id':mThis.elFilter_category.val()});
         });
     }
-     
-    this.displayItems =(onFinish=null)=>
-    { 
-        //Initialize language for DataTable columns headers
-        //setLanguage() will set correct current language in JSON object "mThis.col_titles" that is used to by function mThis.trans_title() to translate column title
-        //Wise thing about "setLanguage()" is that, after its first call, it will always check if there is change in the current langauge set in  "LocaleManager.lang". Only if current language has changed => it will do translation again 
-        mThis.setLanguage();
-        let p = {'search_value':mThis.elSearchItem.val(),'category_id':mThis.elFilter_category.val()};
-        window.vsapi.call(`${main_view.base_url}/api/inventory/items`,p,'POST',null).then((result)=>{
-            let data = [];
-            if(result.status_code === 200) data = result.data;
-            if (mThis.table){
-                mThis.tblItems.DataTable().clear().destroy();
-                //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
-                mThis.tblItems.empty();
-                mThis.table = null;
-            }
-
-            data = StringSanitizer.sanitizeObject(data,null);
-            let cnt = 1;
-            //begin::Set up columns
-            let my_columns = [
-                {
-                    title: mThis.trans_title("No."),
-                    data: () => {
-                        return cnt;
-                    }
-                },
-                {
-                    title: mThis.trans_title("Code"),
-                    data:(data,a,b)=>{
-                        return [
-                            `<span class="fw-bold d-block">`,data.code,`</span>`
-                        ].join('');
-                    }
-                },
-                {
-                    title: mThis.trans_title('Name'),
-                    data:(data,a,b)=>{
-                        return [
-                            `<span class="d-block fw-bold">`,data.name,`</span>`
-                        ].join('');
-                    }
-                },
-                {
-                    title: mThis.trans_title('General Name'),
-                    data:(data,a,b)=>{
-                        return [
-                            `<span class="d-block fw-bold">`,data.group_name,`</span>`,
-                            `<span class="text-secondary">(`,data.group_code,`)</span>`
-                        ].join('');
-                    }
-                },
-                {
-                    title: mThis.trans_title('Category'),
-                    data:"category"
-                },
-                {
-                    title:mThis.trans_title('Action'),
-                    data: function(item,a,b){
-                        return [`<div class="form-inline">`,
-                        `<a href="javascript:void(0)" class="btn-item-modify" data-id="${item.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
-                        `<a href="javascript:void(0);" data-id="${item.id}" class="btn-item-delete"><i class="fa fa-trash" style="color:red"></i></a>`,
-                        `</div>`
-                        ].join('');
-                    }
-                }
-            ];
-            //END Define colum
-
-            //translate column names
-            //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
-            
-            if (!mThis.table)
-            mThis.table = mThis.tblItems.DataTable({
-                searching:false,
-                destroy:true,
-                paging:true,
-                ordering:false,
-                //dom: 'Bfrtip',
-                retrieve: true,
-                //scrollY:390,
-                //scrollX:500,
-                //pagingType:'numbers',
-                info:true,
-                pageLength: 10,
-                bLengthChange:false,
-                saveState:true,
-                'processing': true,
-                'language': {
-                    'loadingRecords': '&nbsp;',
-                    'processing': 'Loading...',
-                    "emptyTable": LocaleManager.trans('No data to display','datatable')
-                    },
-                'data':data,
-                'columns':my_columns,
-                "createdRow": function(row, data, dataIndex){
-                    cnt++;
-                    let tr = $(row);
-                    tr.data('id',data.id);
-                }						
-            });
-            if(typeof onFinish ==='function') onFinish();                
-        });     
-    };
-
+      
      //prepareOptions()| prepareFormOptions() for StockTrackingComponent.show()
      this.prepareOptions = (onFinish)=>{
         vsapi.call(`${main_view.base_url}/api/inventory/settings/options-category`,null).then(res=>{
@@ -267,7 +362,7 @@ let ItemsComponent = new function(){
             let cats = d.categories;
             VSUtil.setComboItems(mThis.elFilter_category,cats,'id','category',true,'(All categories)',0);
             //VSUtil.setComboItems(mThis.elFilter_category,d.stock_classes,'id','stock_class',true,'(All Classes)',0);
-            mThis.displayItems(() => {
+            mThis.itemView.showPage(null,null,()=>{
                 main_view.setTitle(mThis.title_prop);
                 mThis.self.show().siblings().hide();
             });
@@ -283,6 +378,7 @@ let ItemDialog = new function(){
     this.elItemCode = $('#_itm_item_code');
     this.elItemGroup = $('#_itm_item_group');
     this.elCategory = $(`#_itm_item_category`);
+    this.elBrand = $(`#_itm_item_brand`);
     this.elManufacturer = $(`#_itm_item_manufacturer`);
     this.elDetailType = $(`#_itm_item_detail_type`);
     this.elUnit = $('#_itm_item_unit');
@@ -308,6 +404,7 @@ let ItemDialog = new function(){
              //VSUtil.setComboItems(mThis.elItemGroup,items,'id','name',false,null,def.group_id);
              mThis.form_data.groups = d.groups;
              mThis.form_data.units = d.units;
+             mThis.form_data.brands = d.brands;
              mThis.form_data.categories = d.categories;
              mThis.form_data.manufacturers = d.manufacturers;
              onFinish(mThis.form_data);
@@ -628,6 +725,7 @@ let ItemDialog = new function(){
             //mThis.elItemCode.prop('readOnly', (options.id > 0));
             VSUtil.setComboItems(mThis.elItemGroup,d.groups,'id','group_name',false,null,options.default_input.group_id);
             VSUtil.setComboItems(mThis.elCategory,d.categories,'id','category',false,null,options.default_input.category_id);
+            VSUtil.setComboItems(mThis.elBrand,d.brands,'id','brand_name',false,null,options.default_input.brand_id);
             VSUtil.setComboItems(mThis.elUnit,d.units,'id','unit_name',false,null,options.default_input.unit_id);
             VSUtil.setComboItems(mThis.elManufacturer,d.manufacturers,'id','manufacturer',false,null,options.default_input.manufacturer_id);
             mThis.formUntil.show(options);
@@ -636,6 +734,6 @@ let ItemDialog = new function(){
 }
 //end::ItemDialog
 
-$(document).ready(function() {
+window.addEventListener('DOMContentLoaded',e=>{
     ItemsComponent.init();
 });

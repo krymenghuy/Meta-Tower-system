@@ -4,14 +4,17 @@ namespace App\Models;
 
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use Session;
 use DB;
 use App\Models\DV;
 use App\Models\Person;
-use App\Models\Lead;
+//use App\Models\Lead;
 use App\Models\ServiceQ\QTicket;
 use App\Models\PublicStorage;
-
+//Use InvoiceSettings for $customer_table => {'customers','patients'}
+use App\Models\Invoice\InvoiceSettings;
+use Illuminate\Pagination\LengthAwarePaginator;
+//use Illuminate\Support\Facades\Cache;
+ 
 class Patient //extends Model
 {
     //use HasFactory;
@@ -47,8 +50,7 @@ class Patient //extends Model
        $rows = DB::table('patients')->whereRaw($str_where)->selectRaw($select_cols)->take(1)->get();
       return isset($rows[0])? $rows[0] : null;
     }
-
-     
+      
    function delete($id=null,$ss=null){
       $ss = $ss?$ss:$this->getUserInfo();
       $id = $id?$id:$this->getId();
@@ -127,17 +129,18 @@ class Patient //extends Model
         $com_branch_id=1;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'addToQueue'=>'1|choice|0,1',
+            'addToQueue'=>'1|choice|0,1|default=1',
             'appt_id'=>'0|number',
             'lead_id'=>'0|number',
             'person_id'=>'0|number',
             'national_id'=>'0|string|0-50',
+            'date_of_birth'=>'0|date',
             'phone_number'=>'1|phone|0-100',
             'photo'=>'0|image',
             'email'=>'0|email',
             'address'=>'0|string|0-250',
         ];
-        $res = validateObject($d,$v_rule,true,['photo'=>[',','/',"\\",";"]],$ss->lang,false,null);
+        $res = validateObject($d,$v_rule,true,['photo'=>[':','+',',','/',"\\",";"],'email'=>['@','.','-','_']],$ss->lang,false,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values; 
         $addToQueue = $inputs['addToQueue'];
@@ -160,7 +163,7 @@ class Patient //extends Model
        //end:: In case of AddingToQueue =1
 
         //NOTE: $person_id is always Overwritten here because method Person::quickInfo() will always find out person identity using phone number, nationality, or email
-        $person = Person::detailsBy(['national_id'=>$national_id,'phone_number'=>$phone_number],"id,CONCAT(last_name,' ',first_name) as name,phone_number,email");
+        $person = Person::detailsBy(['national_id'=>$national_id,'phone_number'=>$phone_number],"p.id,CONCAT(p.last_name,' ',p.first_name) as name,p.phone_number,p.email");
         if(!$person){
             $d['date_of_birth'] = convertDate($d['date_of_birth']);
             $x = Person::forceSave($d,$ss);
@@ -192,7 +195,8 @@ class Patient //extends Model
                     'client_name'=>$d['name'],
                     'client_sex'=>$d['sex'],
                     'client_phone_number'=>$d['phone_number'],
-                    'status_id'=>($addToQueue? 3:2)
+                    'status_id'=>($addToQueue==1? 3:2)
+                    ,'q_date'=>$addToQueue==1?date('Y-m-d'):null
                 ]);
             }
 
@@ -210,7 +214,7 @@ class Patient //extends Model
             //Save medical conditions such as Alergic, and other condition
             self::saveMedicalConditions($ss,$patient_id,$medicalConditions);
 
-            $statusInfo = (object)['status'=>'Registered','status_id'=>2];  /** status_id => 0=Canceled, 1= Pending , 2 = Registered, 3=Queued, 4 = Served **/
+            $statusInfo = (object)['status'=>'Registered','status_id'=> ($addToQueue==1? 3:2)];  /** status_id => 0=Canceled, 1= Pending , 2 = Registered, 3=Queued, 4 = Served **/
             //register patient to Servicing department such as Cardiology, or Dermatology, or Heart Center
             $ticket = null;
             if ($addToQueue == 1){
@@ -224,7 +228,12 @@ class Patient //extends Model
             }
 
             //Save patient profile photo
-            if($photo) $mx = PublicStorage::saveProfilePicture($ss,null,$photo,['id'=>$patient_id,'store'=>"patients.photo_file_name"]);
+            //if($photo) $mx = PublicStorage::saveImage($ss,null,$photo,['id'=>$patient_id,'store'=>"patients.photo_file_name"]);
+            if(isImage($photo)){
+                $customer_table = InvoiceSettings::$customer_table;
+                //NOTE: store patient's profile photo inside directory "/patient"
+                $mx = PublicStorage::saveImage($branch_id,'patient',null,$photo,null,['id'=>$patient_id,'store'=>"$customer_table.photo_file_name"]);
+            } 
             return DV::success(['person_id'=>$person_id,'patient_id'=>$patient_id,'patient_code'=>$ff? $ff->code:null,'status_info'=>$statusInfo]);
         }else return DV::error('Something went wrong during saving patient data');
     }
@@ -262,17 +271,31 @@ class Patient //extends Model
         return 0;
     }
 
-    function getProfilePhoto($id=null,$ss=null){
+    //getProfilePhoto()
+    function getProfilePicture($id=null,$ss=null){
         $id =$id?$id:$this->getId();
         //$ss = $ss?$ss:$this->getUserInfo();
         return self::profilePhoto($id);
     }
 
+    function saveProfilePicture($arr=[],$id=null,$ss=null){
+        $id =$id?$id:$this->getId();
+        $ss = $ss?$ss:$this->getUserInfo();
+        $photo = isset($arr['photo'])?$arr['photo']:null;
+        if(!$id) return DV::error('Patient Identity is not valid');
+        if(isImage($photo)){
+           $customer_table = InvoiceSettings::$customer_table; 
+          // return PublicStorage::saveProfilePicture($ss,null,$photo,null,['id'=>$id,'store'=>"$customer_table.photo_file_name"]);
+           return PublicStorage::saveImage($ss->branch_id,"patient",null,$photo,null,['id'=>$id,'store'=>"$customer_table.photo_file_name"]); 
+        }
+        return DV::error("It seems the given photo data is not valid"); 
+    }
+
     static function profileInfo($patient_id,$include_medical_history=false,$include_medication_details=false){
          $person_id = self::personId($patient_id);
-         $cols="id as person_id,'NA' AS code,concat(last_name,' ',first_name) as name, first_name,last_name,sex,date_of_birth,phone_number,address,p.email,'Cambodian' AS nationality,0 AS height, 0 as weight, 0 AS age";
+         $cols="p.id as person_id,pt.code,pt.patient_type,concat(p.last_name,' ',p.first_name) as name, first_name,last_name,sex,DATE_FORMAT(p.date_of_birth,'%d %b %Y') AS date_of_birth,phone_number,address,p.email,(SELECT k.nationality FROM loc_countries as k where k.id =p.nationality_id LIMIT 1) AS nationality,TIMESTAMPDIFF(YEAR,date_of_birth,now()) AS age, 0 AS height, 0 AS weight";
          $data = (object)[];
-         $data->basic_info = Person::detailsBy(['id'=>$person_id],$cols);
+         $data->basic_info = Person::detailsBy(['p.id'=>$person_id],$cols);
          $data->basic_info->image_url = Patient::profilePhoto($patient_id);
          if($include_medical_history) $data->medical_history = self::medicalHistory($patient_id,null);
          if($include_medication_details) $data->include_medication_details = self::medicationDetails($patient_id,null);
@@ -391,12 +414,12 @@ class Patient //extends Model
         $id = $id?$id:$this->getId();
         $ss = $ss?$ss:$this->getUserInfo();
         $branch_id = $ss->branch_id;
-        $cols ="p.id,pt.photo_file_name,concat(p.last_name,' ',p.first_name) as name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
+        $cols ="p.id,pt.photo_file_name,concat(p.last_name,' ',p.first_name) as name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,DATE_FORMAT(date_of_Birth,'%d %b %Y') as date_of_birth,cp_name,cp_phone_number,cp_email";
         $rows =  DB::table('persons as p')->join('patients as pt','pt.person_id','=','p.id')->where('pt.id',$id)->selectRaw($cols)->take(1)->get();
         foreach($rows as $row){
             $cols1 ="pmc.id,pmc.mc_value,pmc.description";
             //$row->image_url = PublicStorage::getProfilePhoto_url($ss->user_id);
-            $row->image_url = PublicStorage::getUrl($branch_id,'patient','image').$row->photo_file_name;
+            $row->image_url =PublicStorage::getUrl($branch_id,'patient','image').$row->photo_file_name;
             $row->mc_items = DB::table("patient_medical_conditions as pmc")->where('patient_id',$id)->selectRaw($cols1)->take(1)->get();
             return $row;
         }
@@ -407,7 +430,7 @@ class Patient //extends Model
     static function info($id,$ss){
         $more_where =null;
         $branch_id = $ss->branch_id;
-        $cols ="p.id,,concat(p.last_name,' ',pt.photo_file_name,p.first_name) as name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
+        $cols ="p.id,,concat(p.last_name,' ',pt.photo_file_name,p.first_name) as name,p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,DATE_FORMAT(p.date_of_Birth,'%d %b %Y') as date_of_birth,cp_name,cp_phone_number,cp_email";
         $rows =  DB::table('persons as p')->join('patients as pt','pt.person_id','=','p.id')->where('pt.id',$id)->selectRaw($cols)->take(1)->get();
         foreach($rows as $row){
             $cols1 ="pmc.id,pmc.mc_value,pmc.description";
@@ -422,7 +445,7 @@ class Patient //extends Model
     //returns details of one patient's personal details. and does not include medical conditions
     static function quickInfo($id){
         //$more_where =null;
-        $cols ="p.id,pt.code,concat(p.last_name,' ',p.first_name) as name, p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,formatDate(date_of_Birth) as date_of_birth,cp_name,cp_phone_number,cp_email";
+        $cols ="p.id,pt.code,concat(p.last_name,' ',p.first_name) as name, p.first_name,p.last_name,p.sex,p.phone_number,p.email,p.address,p.nationality_id,DATE_FORMAT(p.date_of_Birth,'%d %b %Y') as date_of_birth,cp_name,cp_phone_number,cp_email";
         $rows =  DB::table('persons as p')->join('patients as pt','pt.person_id','=','p.id')->where('pt.id',$id)->selectRaw($cols)->take(1)->get();
         return isset($rows[0])?$rows[0]:null;
     }
@@ -430,15 +453,106 @@ class Patient //extends Model
     static function list($arr,$ss){
         $branch_id = $ss->branch_id;
         $search_value = isset($arr['search_value'])?$arr['search_value']:null;
-        $str_search ="1=1";
+        $patient_type = isset($arr['patient_type'])?$arr['patient_type']:'OPD';
+        $str_search ="patient_type ='$patient_type'";
         if ($search_value){
-          $str_search ="(pt.code ='$search_value' OR )";
+            $search_value = escape_like_str($search_value);
+          $str_search ="(p.phone_number ='$search_value' OR pt.code ='$search_value' OR concat(p.last_name,' ',p.first_name) LIKE '%$search_value%')";
         }
-        $cols ="pt.id,pt.code,p.id as person_id,concat(p.last_name,' ',p.first_name) as name,p.sex, formatDate(pt.created_at) AS created_at,p.phone_number,p.email,p.address,pt.remarks,pt.create_user";
-       return DB::table("patients AS pt")->join('persons as p','p.id','=','pt.person_id')->where('pt.branch_id',$branch_id)->selectRaw($cols)->orderByRaw("pt.created_at desc")->get();  
-     
+        $cols ="pt.photo_file_name,pt.id,pt.code,p.id as person_id,concat(p.last_name,' ',p.first_name) as name,p.sex, formatDate(pt.created_at) AS created_at,p.phone_number,p.email,p.address,pt.remarks,pt.create_user";
+        $rows = DB::table("patients AS pt")->join('persons as p','p.id','=','pt.person_id')->whereRaw($str_search)->where('pt.branch_id',$branch_id)->selectRaw($cols)->orderByRaw("pt.id desc")->get();  
+        $i=0;$c=null;
+        do{
+           if(!isset($rows[$i])) break; 
+             $c = $rows[$i];
+             //NOTE that patient's profile photos are stored inside directory /1_data/..patient/images/
+             if($c->photo_file_name) $c->image_url = PublicStorage::getUrl($branch_id,'patient','image').$c->photo_file_name;
+           $i++;
+        }while($c);
+        return $rows;
     }
   
+    static function list_paginate($arr,$ss){
+        $branch_id = $ss->branch_id;
+        $search_value = isset($arr['search_value'])?$arr['search_value']:null;
+        $patient_type = isset($arr['patient_type'])?$arr['patient_type']:'OPD';
+        $page_number = isset($arr['current_page'])?$arr['current_page']:1;
+        $rows_per_page = isset($arr['per_page'])?$arr['per_page']:4;
+        $skip_rows =($page_number - 1) * $rows_per_page;
+         
+        $str_search ="patient_type ='$patient_type'";
+        if ($search_value){
+            $skip_rows =0;
+            $search_value = escape_like_str($search_value);
+          $str_search ="(p.phone_number ='$search_value' OR pt.code ='$search_value' OR concat(p.last_name,' ',p.first_name) LIKE '%$search_value%')";
+        }
+        $cols ="pt.photo_file_name,pt.id,pt.code,p.id as person_id,CONCAT(p.last_name,' ',p.first_name) as name,p.sex,DATE_FORMAT(p.date_of_birth,'%d %b %Y') AS date_of_birth,p.address, DATE_FORMAT(pt.created_at,'%d %b %Y') AS created_at,p.phone_number,p.email,p.address,pt.remarks,pt.create_user";
+        $query = DB::table("patients AS pt")->join('persons as p','p.id','=','pt.person_id')->whereRaw($str_search)->where('pt.branch_id',$branch_id)->selectRaw($cols)->orderByRaw("pt.id desc");
+        //We need to COUNT all records first, before run query with LIMIT and OFFSET
+        //$rows = $query->skip($skip_rows)->take($rows_per_page)->get();
+        $count_query = clone $query;
+        $count = $count_query->count("pt.id");
+        $rows = $query->skip($skip_rows)->take($rows_per_page)->get();
+
+        $i=0;$c=null;  
+        do{
+           if(!isset($rows[$i])) break; 
+             $c = $rows[$i];
+             //NOTE that patient's profile photos are stored inside directory /1_data/..patient/images/
+             if($c->photo_file_name) $c->image_url = PublicStorage::getUrl($branch_id,'patient','image').$c->photo_file_name;
+           $i++;
+        }while($c);
+
+        $paginator = new LengthAwarePaginator($rows, $count, $rows_per_page, $page_number);
+
+        return $paginator;
+    }
+
+    static function consultationInfo($branch_id,$client_id){
+      $cols ="COUNT(t.id) as cnt";  
+      $str_ticket_status="t.status_id =3";
+      $rows = DB::table("tickets as t")->where('t.client_id',$client_id)->whereRaw($str_ticket_status)->selectRaw($cols)->get();
+      $cnt =0;
+      foreach($rows as $row) $cnt =$row->cnt;
+      return (object)[
+        'count'=>$cnt
+      ];
+    }
+
+    static function financialSummary($branch_id,$client_id){
+       //$customer_table = InvoiceSettings::$customer_table;
+       $cols ="v.id as invoice_id, v.ref_number,v.amount_due,v.discount_amount,v.tax_amount,v.currency_code, v.issue_date,v.due_date,v.amount_paid, (v.amount_due - v.amount_paid) AS unpaid_amount";
+       $rows = DB::table("invoices as v")->where("v.customer_id",$client_id)->where("v.branch_id",$branch_id)->selectRaw($cols)->get();
+       $total_paid=0;
+       $total_unpaid=0;
+       $cnt =0;
+       $total =0;
+       foreach($rows as $row){
+          $total_paid += $row->amount_paid;
+          $total_unpaid += $row->unpaid_amount;
+          $total += $row->amount_due;
+          $cnt++;
+       }
+       return (object)[
+         'invoice_count'=>$cnt,
+         'total_receivable'=>"$".$total_unpaid,
+         'total_unpaid'=>"$".$total_unpaid,
+         'total_paid'=>'$'.$total_paid,
+         'total'=>'$'.$total
+       ];
+    }
+
+    //return quick Summary about consultation and Financial (Invoices and payment) for a litle dashboard etc...
+    function getQuickSummary($id=null,$ss=null){
+       $id = $id?$id:$this->getId();
+       $ss = $ss?$ss:$this->getUserInfo();
+       $branch_id = $ss->branch_id; 
+       $consult = self::consultationInfo($branch_id,$id);
+       $info = self::financialSummary($branch_id,$id);
+       $info->consultation_count = $consult->count;
+       return $info;
+    }
+
      //Before and After photos
      //::photos() returns array of image_urls (last three photos or photos taken during the last consulting session) 
      static function photos($patient_id,$ss){

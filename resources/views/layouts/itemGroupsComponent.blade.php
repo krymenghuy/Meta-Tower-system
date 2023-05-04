@@ -14,9 +14,8 @@
                 </div>
             </button>
         </div>
-        <div class="flat-box" style="margin:17px;padding:15px;overflow:auto;min-height:350px;">
-            <table class="table header-light-blue header-uppercase" id="_pdg_tblProductGroup"></table>
-        </div>
+        <div class="item-group-container flat-box" id="_pdg_list_container"></div>
+        
     </div>
 </div>
 
