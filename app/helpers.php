@@ -44,6 +44,36 @@ function getUniqueString($length)
     return $random;
 }
 
+/**
+ * filter or search through $rows or $array based on a given value and return array of matched items
+ * filterItems() returns empty array if no matches found
+ * **/
+ function filterItems($data, $property, $value) {
+    if ($data instanceof Illuminate\Support\Collection || (is_object($data) && $data instanceof \Traversable)) {
+        $matchedElements = $data->filter(function ($element) use ($property, $value) {
+            $val = isset($element->{$property})?$element->{$property}:null;
+            return  $val === $value;
+        })->values()->all();
+
+        if (empty($matchedElements)) {
+            return [];
+        }
+        return $matchedElements;
+    } elseif (is_array($data)) {
+        $matchedElements = array_filter($data, function ($element) use ($property, $value) {
+            return isset($element[$property]) && $element[$property] == $value;
+        });
+
+        if (empty($matchedElements)) {
+            return [];
+        }
+
+        return array_values($matchedElements);
+    }
+
+    return [];
+  }
+
 //returns $result object {'error_message'=>'some error message here','status'=>'Error'} if one of the given @fields[] is empty. @fields = ['name','phone_number',...]
 //$d is an object $d = {'name','phone_number','email','address',...}
 function nonEmptyFields($d,$fields){
@@ -662,10 +692,13 @@ function readFileContent($fileName=null)
     return $new_id;  
  }
  
- //Unlike createForcibly(), the method saveData() checks the given $key_value. If it is given valid then UPDATE, else CREATE new record. 
- //Unlike method createForcibly(), saveData() will commit UPDATE when the given key_value is positive even this key_value does not exists in target table 
- //$pk_field_array is $key_fields. example ['id'=>120] or ["id"=>":student_id"]. In ":student_id", the "student_id" is the prop or array key, for example, $input['student_id']
- function saveData($ss,$table_name,$pk_field_array = [],$inputs=[],$extended_cols=[],$use_branch_id = 0){
+ /**
+  * saveData() will update existing row based on the provided PRIMARY KEY FIELD specifying in @pk_field_array. If the primary key value is provided as postive number then => if "the primary key Value is not found" AND "@ensure_exists is TRUE" => a new record is created and the new primary key is returned.
+  * if @ensure_exists (that is default to False) is not specified => saveData() will update record when pk value is positive, otherwise create new record and returned pk_key  
+  * $pk_field_array is $key_fields. example ['id'=>120] or ["id"=>":student_id"]. In ":student_id", the "student_id" is the prop or array key, for example, $input['student_id']
+  ***/
+  
+  function saveData($ss,$table_name,$pk_field_array = [],$inputs=[],$extended_cols=[],$use_branch_id = 0,$ensure_exists = false){
     $key_field =null;
     $key_value = null;
     foreach($pk_field_array as $field=>$value){
@@ -679,25 +712,37 @@ function readFileContent($fileName=null)
 
     $new_id = null;
     if(is_array($extended_cols)) foreach($extended_cols as $prop=>$value) $inputs[$prop] = $value;
+    //row_affected => there is some value has been changed
+   
+    $must_create = false;
     if ($key_value>0){
         $str_branch ="1=1";
         if ($use_branch_id) $str_branch = "branch_id =".$ss->branch_id?$ss->branch_id:0;
-        $inputs['update_uid'] = $ss->user_id;
-        $inputs['update_user'] = $ss->full_name;
-        $inputs['updated_at'] = getNowTime();
-        DB::table($table_name)->where($key_field,$key_value)->whereRaw($str_branch)->update($inputs);
-        $new_id = $key_value;
-    }else{
+        $query = DB::table($table_name)->where($key_field,$key_value)->whereRaw($str_branch);
+        $row_exists = $query->take(1)->selectRaw($key_field)->exists();
+        if($row_exists){
+            $inputs['update_uid'] = $ss->user_id;
+            $inputs['update_user'] = $ss->full_name;
+            $inputs['updated_at'] = getNowTime();
+            $query->update($inputs);
+            //DB::table($table_name)->where($key_field,$key_value)->whereRaw($str_branch)->update($inputs);
+            $new_id = $key_value;
+            return $new_id;
+        }
+        else $must_create =true;      
+    }
+
+    if(!$key_value || ($ensure_exists && $must_create)){
         if ($use_branch_id) $inputs['branch_id'] = $ss->branch_id; 
         $inputs['create_uid'] = $ss->user_id;
         $inputs['create_user'] = $ss->full_name;
         $inputs['created_at'] = getNowTime();
         DB::table($table_name)->insert($inputs);
         $new_id = DB::getPdo()->lastInsertId();
-    }
-    return $new_id;  
+        return $new_id;
+    }else return null;
  }
-       
+   
  //setIdentityFields() | setCommonCols() | setCommonInputs()
  function setCommonFields($d,$ss,$action = 'create',$include_branch_id=1){
         if ($action === 'create'){
@@ -761,7 +806,6 @@ function readFileContent($fileName=null)
         //$image->save('path/to/saved-image.jpg');
         return (object)['error'=>null,'image'=>$image];
     }
-
     // //returns compressed image as base64 format in png. By default, compression to 500 KB
     // function getCompressedImage($base64_str, $size_kb = 500,$default_ext ="png"){
     //     // // Base64 encoded string of an image

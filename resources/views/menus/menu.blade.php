@@ -366,7 +366,7 @@
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Employee List">Employee List</span>
                             </a>
                         </li>
-                         <li class="kt-menu__item" aria-haspopup="true">
+                         <li style="display:none" class="kt-menu__item" aria-haspopup="true">
                             <a href="javascript:void(0)" id="_main_lnkWorkSchedules" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{ asset('assets/images/icons/position.svg') }}"/>

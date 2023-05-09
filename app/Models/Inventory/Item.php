@@ -6,7 +6,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
 //use Illuminate\Database\Eloquent\Model;
 use App\Models\DV;
 use App\Models\PublicStorage;
-use DB;
+use App\Models\Accounting\Account;
+use DB; 
+//use Illuminate\Support\Collection;
  
 class Item //extends Model
 {
@@ -23,14 +25,112 @@ class Item //extends Model
      
     protected $id = null;
     protected $userInfo =null;
+    protected static $default_price_currency ="USD";
+    protected static $default_cost_currency ="USD";
+    protected static $price_table =[
+      'retail'=>'retail_prices',
+      'wholesale'=>'wholesale_prices'
+    ];
 
     function __construct($id=null,$userInfo){
        $this->id = $id;
        $this->userInfo = $userInfo;
      }
 
+     static function getPriceTable($type){
+       return isset(self::$price_table[$type])?self::$price_table[$type]:"retail_prices";
+     }
+
+     //sales_type ="retail" | "wholesale"
+    static function getDefaultSalesUOM($sales_type,$item_id){
+       $rows = DB::Table("inv_default_unit")->where('item_id',$item_id)->where("usage",$sales_type)->selectRaw("id,uom")->take(1)->get();
+       return isset($rows[0])?$rows[0]:null;
+      //  $col ="used_for_wholesale";
+      //  if($type ==='retail') $col ="used_for_retail";
+      //  $rows = DB::table("inv_unit")->where('item_id',$item_id)->where($col,1)->take(1)->selectRaw("id,uom,parent_uint_id")->get();     
+      //  return isset($rows[0])?$rows[0]:null;
+    }
+
+    static function getDefaultPurchaseUOM($item_id){
+      $rows = DB::Table("inv_default_unit")->where('item_id',$item_id)->where("usage","purchase")->take(1)->selectRaw("id,uom");
+      return isset($rows[0])?$rows[0]:null;
+      // $col ="used_for_purchase";
+      // $rows = DB::table("inv_units")->where('item_id',$item_id)->where($col,1)->take(1)->selectRaw("id,uom,parent_uint_id")->get();     
+      // return isset($rows[0])?$rows[0]:null;
+    }
+
+    static function saveDefaultUnit($usage,$uom,$item_id,$ss){
+       $unit_id = DB::table("inv_units")->where("item_id",$item_id)->where('uom',$uom)->value("id");
+       if(!$unit_id){
+          $inputs= ["item_id"=>$item_id,"uom"=>$uom,"parent_unit_id"=>null];
+          $unit_id = saveData($ss,"inv_units",["id"=>null],$inputs,[],1,false);
+       }
+       //if(!$unit_id) return DV::error("The provided UOM $uom does not exists for the item $item_id");
+       $x_id = DB::table("inv_default_unit")->where("item_id",$item_id)->where("usage",$usage)->value('id');
+       $inputs = ['item_id'=>$item_id,"unit_id"=>$unit_id,"uom"=>$uom,"usage"=>$usage];
+       $x_id = saveData($ss,"inv_default_unit",['id'=>$x_id],$inputs,[],1,false);
+       return DV::depends($x_id,["unit"=>$inputs],"Failed to save default unit");
+   }
+
+    function setDefaultUnit($usage,$uom,$item_id=null,$ss=null){
+      $item_id = $item_id?$item_id:$this->id;
+      $ss = $ss?$ss:$this->userInfo;
+      return self::saveDefaultUnit($usage,$uom,$item_id,$ss);
+    }
+    /**
+    *getPrice() return selling price based on sepcfied $sales_type = retail|wholesale
+    * @params $type = retail|wholesale
+    **/
+    static function getPrice($type,$uom,$item_id){
+      $table = self::getPriceTable($type);
+      if(!$uom) $uom = self::getDefaultSalesUOM($type,$item_id);
+      $price = DB::table($table)->where('uom',$uom)->where('item_id',$item_id)->where('price_type',$type)->take(1)->value('price');
+      return $price?$price:0; 
+   }
+
+   static function priceInfo_serialized($item_id){
+      //$str_where="sales_type IN('retail','wholesale')";
+      $rows = DB::table("inv_item_prices")->where('item_id',$item_id)->selectRaw("id,price,uom,unit_id,sales_type")->get();
+      $data = (object)[];
+      foreach($rows as $row){
+         $sales_type =strtolower($row->sales_type); 
+         if($sales_type==='retail') 
+         {
+            $data->retail_price = $row->price;
+            $data->retail_uom = $row->uom;
+            $data->retail_unit_id = $row->unit_id;
+         }else if ($sales_type ==='wholesale'){
+            $data->wholesale_price = $row->price;
+            $data->wholesale_uom = $row->uom;
+            $data->wholesale_unit_id = $row->unit_id;
+         }
+      } 
+      return $data;
+   }
+
+   static function priceInfo($item_id){
+      //$str_where="sales_type IN('retail','wholesale')";
+      $rows = DB::table("inv_item_prices")->where('item_id',$item_id)->selectRaw("id,price,uom,unit_id,currency_code,sales_type")->orderBy("sales_type","ASC")->get();
+      return (object)[
+         "retail"=> self::getArrayElements($rows,'sales_type','retail'), 
+         "wholesale"=> self::getArrayElements($rows,'sales_type','wholesale')
+      ];
+   }
+
+   static function costInfo($id){
+     return DB::table("inv_item_costs")->where("item_id",$id)->selectRaw("id,cost,uom,currency_code,unit_id")->get();
+   }
+
+   /**
+    *similar to getPriceInfo(), {'retail_uom','retail_price','retail_unit_id','wholesale_uom','wholesale_price','wholesale_unit_id'} 
+    * @params $type = retail|wholesale
+    **/
+    function getPriceInfo($item_id){   
+      return self::priceInfo($item_id);
+   }
+
     static function info($id,$byCode=false){
-       $cols = "i.id,i.code,i.name,i.description,i.sku,i.unit_id,i.group_id,g.name AS group_name,g.category_id,i.cost,i.ws_selling_price,i.selling_price,i.sales_tax_rate"; 
+       $cols = "i.id,i.code,i.name,i.description,i.group_id,g.name AS group_name,g.category_id,i.sales_tax_rate"; 
        $rows = [];
        if($byCode){
          //if search item by code, user must supply $branch_id
@@ -38,7 +138,117 @@ class Item //extends Model
        }
        else
          $rows = DB::table("inv_items as i")->join('inv_item_groups AS g','g.id','=','i.group_id')->where("i.id",$id)->selectRaw($cols)->take(1)->get();
-       return isset($rows[0])?$rows[0]:null;    
+       foreach($rows as $row){
+         $row->accountInfo = self::accountInfo($id);
+         $row->priceInfo = self::priceInfo($id);
+         $row->costInfo = self::costInfo($id);  
+         return $row;
+       }    
+    }
+   
+ static function getArrayElements($data, $property, $value) {
+    if ($data instanceof Illuminate\Support\Collection || (is_object($data) && $data instanceof \Traversable)) {
+        $matchedElements = $data->filter(function ($element) use ($property, $value) {
+            $val = isset($element->{$property})?$element->{$property}:null;
+            return  $val === $value;
+        })->values()->all();
+
+        if (empty($matchedElements)) {
+            return [];
+        }
+        return $matchedElements;
+    } elseif (is_array($data)) {
+        $matchedElements = array_filter($data, function ($element) use ($property, $value) {
+            return isset($element[$property]) && $element[$property] == $value;
+        });
+
+        if (empty($matchedElements)) {
+            return [];
+        }
+
+        return array_values($matchedElements);
+    }
+
+    return [];
+}
+  
+  
+   /**
+    * @params $arr = [
+    *  'revenue_account_id'=>2,
+    *  'cogs_account_id'=>3,
+    *  'receivable_account_id'=>5,
+    *  'tax_account_id'=>6,
+    *  'freight_account_id'=>7,
+    *  'payable_account_id'=>8,
+    *  'inventory_account_id'=>9,
+    *  'purchase_account_id'=>10
+    *]
+    * **/
+   function saveAccountInfo($arr =[],$item_id = null,$ss = null){
+      $item_id = $item_id?$item_id:$this->id;
+      $ss = $ss?$ss:$this->userInfo;
+      $inputs = ['item_id'=>$item_id];
+      $arr = $arr? (array)$arr:[];
+      foreach($arr as $key=>$acc_id){
+         $verified_acc_id = DB::table("accounts")->where("id",$acc_id)->take(1)->value('id');
+         $inputs[$key] = $verified_acc_id?$verified_acc_id:null; 
+      }
+      $a_id = DB::table("inv_item_accounts as a")->where('a.item_id',$item_id)->take(1)->value('item_id');
+      $a_id = saveData($ss,"inv_item_accounts",['item_id'=>$a_id],$inputs,[],1,false);
+      return DV::depends($a_id,["accounts"=>$inputs],"Failed to save account information"); 
+   }
+
+   function getAccountInfo($item_id=null){
+       $item_id = $item_id?$item_id:$this->id;
+       //$ss = $ss?$ss:$this->userInfo;
+       return self::accountInfo($item_id);
+   }
+   /**
+    * Returns list of accounts required for Sales/Puchase transaction
+    * **/
+    static function accountInfo($item_id){
+      //Make sure all columns returned by the following query are account_id, so that the next line of code is toe query account_name for each account_id in a loop
+      $rows = DB::table("inv_item_accounts as a")->where("item_id",$item_id)->selectRaw("a.branch_id,a.revenue_account_id,a.cogs_account_id,inventory_account_id,receivable_account_id,tax_account_id,freight_expense_account_id,puchase_account_id,payable_account_id")->get();
+     
+      foreach($rows as $row){
+         $ss = (object)['branch_id'=>$row->branch_id];
+         $accounts = Account::list(null,$ss);
+         unset($row->branch_id);
+         foreach($row as $col=>$value){
+            $name_prop = str_replace("_id","_name",$col);
+            $cs = self::getArrayElements($accounts,"id",$value);
+            if(isset($cs[0])){
+               $account = $cs[0];
+               $row->{$name_prop} =$account->name; 
+            }else $row->{$name_prop} ='មិនទាន់កំណត់'; 
+         }
+         return $row;
+      }
+      return null;
+    }
+    
+    /**
+     * addAccountInfo() will add additional props to $item, for example, $item->receiable_account_name, ...
+     * **/
+    static function addAccountInfo($item){
+      $item_id = $item->id;
+      $rows = DB::table("inv_item_accounts as a")->where("item_id",$item_id)->selectRaw("a.branch_id,a.revenue_account_id,a.cogs_account_id,inventory_account_id,receivable_account_id,tax_account_id,freight_expense_account_id,puchase_account_id,payable_account_id")->get();
+     
+      foreach($rows as $row){
+         $ss = (object)['branch_id'=>$row->branch_id];
+         $accounts = Account::list($ss);
+         unset($row->branch_id);
+         foreach($row as $col=>$value){
+            $cs = self::getArrayElements($accounts,"id",$value);
+            if(isset($cs[0])){
+               $account = $cs[0];
+               $name_prop = str_replace("_id","_name",$col);
+               $item->{$name_prop} =$account->name; 
+            }
+         }  
+      }
+      return $item;
     }
 
     static function getAttachments($item_id,$file_type="image"){
@@ -54,26 +264,29 @@ class Item //extends Model
          $str_where .= ($str_where? ' AND ':'').$key."='$value'";
       }
       $str_where ="($str_where)";
-      $cols = "i.branch_id,i.id,i.code,i.name,i.description,i.sku,i.unit_id,i.group_id,g.name AS group_name,g.category_id,i.cost,i.ws_selling_price,i.selling_price,i.sales_tax_rate"; 
+      $cols = "i.branch_id,i.id,i.code,i.name,i.description,i.group_id,g.name AS group_name,g.category_id,i.sales_tax_rate"; 
       $rows = DB::table("inv_items as i")->join('inv_item_groups AS g','g.id','=','i.group_id')->whereRaw($str_where)->selectRaw($cols)->take(1)->get();
-      if($include_photo){
          foreach($rows as $row){
             $branch_id = $row->branch_id;
-            $files = self::getAttachments($row->id,'image');
-            $row->image_url = PublicStorage::getUrl($branch_id,'item','image').$files->first()->file_name; 
-            $i=0;$c=null;
-            $urls =[];
-            do{
-               $c = isset($files[$i])?$files[$i]:null;
-               if($c) break;
-               $urls[] = PublicStorage::getUrl($branch_id,"item","image").$c->file_name; 
-               $i++;
-            }while($c);
-
-            $row->images = $urls;
+            if($include_photo){
+               $files = self::getAttachments($row->id,'image');
+               $row->image_url = PublicStorage::getUrl($branch_id,'item','image').$files->first()->file_name; 
+               $i=0;$c=null;
+               $urls =[];
+               do{
+                  $c = isset($files[$i])?$files[$i]:null;
+                  if($c) break;
+                  $urls[] = PublicStorage::getUrl($branch_id,"item","image").$c->file_name; 
+                  $i++;
+               }while($c);
+   
+               $row->images = $urls;
+            }
+            $row->accountInfo = self::accountInfo($row->id);
+            $row->priceInfo = self::priceInfo($row->id);
+            $row->costInfo = self::costInfo($row->id);
             return $row;
          }
-      } 
       return isset($rows[0])?$rows[0]:null;
    }
 
@@ -106,20 +319,18 @@ class Item //extends Model
         "brand_id"=>"0|exists=inv_brands.id",
         "manufacturer_id"=>"0|exists=inv_manufacturers.id",
         "brand_id"=>"0|number|exists=inv_brands.id",
-        "cost"=>"0|number|default=0",
+        "costInfo"=>"0|array",
+        "priceInfo"=>"0|array",
         "sales_tax_rate"=>"0|number|default=0",
         "purchase_tax_rate"=>"0|number|default=0",
         "made_in_country_id"=>"0|exists=inv_countries",
-        "unit_id"=>"0|exists=inv_units.id|text=SKU is required",
+        "retail_uom"=>"1|string|1-15",
+        "wholesale_uom"=>"1|string|1-15",
+        "purchase_uom"=>"1|string|1-15",
         "category_id"=>"1|number|exists=inv_categories.id",
         "group_id"=>"1|positive|exists=inv_item_groups.id",
-        "selling_price"=>"0|number",
-        "ws_selling_price"=>"0|number",
-        "cost"=>"0|number",
-        "cost_account_id"=>"0|number",
-        "revenue_account_id"=>"0|number",
-        "tax_account_id"=>"0|number",
-        "inventory_account_id"=>"0|number",
+        //AccountInfo is an object => {'payable_account_id':1,'revenue_account_id':2,....}
+        "accountInfo"=>"0|object",
         "detail_type_id"=>"0|number|exists=inv_detailed_types.id"
       ];
       $check_unique = ["$branch_id|inv_items|name|id=id|text=item name already exists"];
@@ -128,6 +339,7 @@ class Item //extends Model
       if($res->error) return DV::error($res->error);
       $inputs =$res->values;
       $id = $res->id;
+      
        $created = (!$id || $id==0);
       //$unit_id = $inputs['unit_id'];
       //$unit = StockUnit::info($unit_id);
@@ -137,25 +349,132 @@ class Item //extends Model
       $group_id = $inputs['group_id'];
       $category_id = $inputs['category_id'];
       $detail_type_id = $inputs['detail_type_id'];
-      $ws_selling_price = $inputs['ws_selling_price'];
-      if($ws_selling_price ==0) $inputs['ws_selling_price'] = $inputs['selling_price'];
+      //$priceInfo is expected to array => [{'sales_type':'retail','uom':'tube','price':25,'currency_code':'USD'}, ...]
+      $priceInfo = $inputs['priceInfo'];
+      $costInfo = $inputs['costInfo'];
+      $accountInfo = $inputs['accountInfo'];
+      $retail_uom = $inputs['retail_uom'];
+      $wholesale_uom = $inputs['wholesale_uom'];
+      $purchase_uom = $inputs['purchase_uom'];
+
+      //$retail_price = $inputs['retail_price'];
+      //$wholesale_price = $inputs['wholesale_price'];
+      //if($wholesale_price ==0) $wholesale_price= $retail_price;
 
       unset($inputs['category_id']);
       unset($inputs['detail_type_id']);
+      unset($inputs['retail_uom']);
+      unset($inputs['wholesale_uom']);
+      unset($inputs['purchase_uom']);
+      unset($inputs['priceInfo']);
+      unset($inputs['costInfo']);
+      unset($inputs['accountInfo']);
+
       $id = saveData($ss,'inv_items',['id'=>$id],$inputs,[],1);
       if($id > 0){
         $new_code = null;
         if($created) $new_code = setOfficialCode($branch_id,'inv_item_code_control','inv_items',['id'=>$id],$def_prefix,$def_code_length);
         if($category_id>0) saveData($ss,'inv_item_groups',['id'=>$group_id],['category_id'=>$category_id],[],1);
         if($detail_type_id>0) saveData($ss,'inv_item_groups',['id'=>$group_id],['detail_type_id'=>$detail_type_id],[],1);
-
+           
         //save Brand Name, maufacturer name in "inv_item_groups" table
         saveData($ss,'inv_item_groups',['id'=>$group_id],['manufacturer_id'=>$inputs['manufacturer_id'],'brand_id'=>$inputs['brand_id']],[],1);
-        
+        if($retail_uom) self::saveDefaultUnit('retail',$retail_uom,$id,$ss);
+        if($wholesale_uom) self::saveDefaultUnit('wholesale',$wholesale_uom,$id,$ss);
+        if($purchase_uom) self::saveDefaultUnit('purchase',$purchase_uom,$id,$ss);
+        foreach($priceInfo as $p){
+           $uom = isset($p['uom'])?$p['uom']:null;
+           $price_currency_code = isset($p['currency_code'])?$p['currency_code']:self::$default_price_currency;
+           self::savePrices($p['sales_type'],$uom,$p['price'],$price_currency_code,$id,$ss);
+        } 
+        foreach($costInfo as $c){
+           $uom = isset($c['uom'])?$c['uom']:null;
+           $cost_currency_code = isset($c['currency_code'])?$c['currency_code']:self::$default_cost_currency;
+           self::saveCost($uom,$c['cost'],$cost_currency_code,$id,$ss);
+        } 
+        $this->saveAccountInfo($accountInfo,$id,$ss); 
+        //$this->setPrice(['uom'=>$sales_uom,'type'=>"retail","price"=>$retail_price,"currency_code"=>self::$default_price_currency],$id,$ss);
+        //$this->setPrice(['uom'=>$sales_uom,'type'=>"wholesale","price"=>$retail_price,"currency_code"=>self::$default_price_currency],$id,$ss);
       }
       return DV::depends($id,['id'=>$id],"Something went wrong during saving inventory item");
     }
 
+    /**
+     * save detaul item's unit for retail, wholesale, purchase as specified by parameter $usage
+     * @params $usage = {retail|wholesale|purchase}. The UOM is used when Sales to customer or when Purchase Inventory
+     * **/
+   function saveUnit($uom,$usage='retail',$parent_uom=null,$item_id=null,$ss=null){
+      $item_id =$item_id?$item_id:$this->id;
+      $ss = $ss?$ss:$this->userInfo;
+      $unit_id = DB::table('inv_units')->where('uom',$uom)->where('item_id',$item_id)->value('id');
+      if(!$unit_id){
+          $parent_uint_id =null;
+          if($parent_uom) $parent_uint_id = DB::table("inv_units")->where("item_id",$item_id)->where("uom",$parent_uom)->value("id"); 
+          saveData($ss,"inv_units",['id'=>null],[
+            "uom"=>$uom,
+            "item_id"=>$item_id,
+            "parent_unit_id"=>$parent_uint_id
+          ],[],1,true);
+      }
+
+      $u_id = DB::table('inv_default_unit')->where("item_id",$item_id)->where("uom",$uom)->where('usage',$usage)->value("id");
+      $inputs = [ 
+         "item_id"=>$item_id,
+         "uom"=>$uom,
+         "usage"=>$usage,
+         "unit_id"=>$unit_id];
+         $new_id = saveData($ss,"inv_default_unit",['id'=>$u_id],$inputs,[],1,false);
+      return DV::depends($u_id,["unit"=>$inputs],"Failed to save unit for item $item_id"); 
+   }
+   
+   /**
+    * delete item's unit, including its detault units for borth retail, wholesale, and puchase
+    * **/
+   function deleteUOM($oum,$id=null,$ss=null){
+      $id =$id?$id:$this->id;
+      $ss = $ss?$ss:$this->userInfo;
+      DB::table('inv_default_unit')->where("item_id",$id)->where("uom",$oum)->delete();
+      DB::table('inv_units')->where("item_id",$id)->where("uom",$oum)->delete();
+      return DV::success();
+   }
+   
+   
+   // /**
+   //  * setPrice() will set retail price of wholesale price based on the given $type = retail|wholesale.
+   //  * $arr is array. Exampe: ["uom","type"=>"retail","price"=>25,"currency_code"=>"USD"] or  ["type"=>"wholesale","price"=>25,"currency_code"=>"USD"]
+   //  * $uom is Unit of Measurement, example : box, bottle, can, tube, ampule, and so on.
+   //  * **/ 
+   // function setPrice($arr, $id=null,$ss=null) {
+   //    $item_id =$id?$id:$this->id;
+   //    $ss = $ss?$ss:$this->userInfo;
+   //    $price =isset($arr['price'])?$arr['price']:0;
+   //    $uom =isset($arr['uom'])?$arr['uom']:0;
+   //    $unit_id = DB::table('inv_units')->where('item_id',$item_id)->where('uom',$uom)->value('id');
+   //    if(!$unit_id) return DV::error("Invalid UOM or unit name"); 
+   //    $currency_code =isset($arr['currency_code'])?$arr['currency_code']:self::$default_price_currency; 
+   //    $price_type = isset($arr['type'])?$arr['type']:(isset($arr['price_type'])?$arr['price_type']:"retail");
+   //    $table = self::getPriceTable($price_type);
+   //    $id = DB::table($table)->where("item_id",$item_id)->where('price_type',$price_type)->where('unit_id',$unit_id)->value('id');
+   //    $new_id = null;
+   //    // if(self::price_is_used($id,$price_type)){
+   //    //    $new_id = saveData($ss,$table,['id'=>null],['price',$price,'currency_code'=>$currency_code,'unit_id'=>$unit_id,"used"=>1],[],1,true);
+   //    // }else
+   //    $new_id = saveData($ss,$table,['id'=>$id],['price',$price,'currency_code'=>$currency_code,'unit_id'=>$unit_id],[],1,true);
+   //    return DV::depends($new_id,true,"Failed to update $price_type price");
+   // }
+
+   function setRetailPrice($price,$uom,$currency_code ='USD',$id=null,$ss=null){
+      $item_id =$id?$id:$this->id;
+      $ss = $ss?$ss:$this->userInfo;
+      return self::savePrices('retail',$uom,$price,$currency_code,$id,$ss);
+   }
+     
+   function setWholesalePrice($price,$uom,$currency_code ='USD',$id=null,$ss=null){
+      $item_id =$id?$id:$this->id;
+      $ss = $ss?$ss:$this->userInfo;
+      return self::savePrices('wholesale',$uom,$price,$currency_code,$id,$ss);
+   }
+    
     //Given one account_id, returns account name from accounting charts of account
     protected static function getAccountName($account_id){
       $account_name = DB::table('accounts')->where('id',$account_id)->value('name');
@@ -163,27 +482,30 @@ class Item //extends Model
     }
     
     protected static function getBrandName($id){
-      return null;
+      //tod; Cache brand list for performance
+      return DB::table("inv_brands")->where('id',$id)->value("name");
     }
 
     //getManufacturer()
     protected static function getProducerName($id){
-      return null;
+      return DB::table("inv_manufacturers")->where('id',$id)->value("name");
     }
     //similar to ::info() but it gives more detailed info about an item
     static function details($id,$include_photo=false){
-        $cols = "i.branch_id,i.id,i.name,i.description,i.sku,i.unit_id,g.unit_id as group_unit_id,g.id AS group_id,g.sku as group_sku, g.name as group_name,g.brand_id, g.manufacturer_id,g.category_id,(SELECT `name` FROM inv_categories WHERE id = g.category_id LIMIT 1) AS category,i.selling_price,i.ws_selling_price,i.cost, i.sales_tax_rate,i.purchase_tax_rate,i.revenue_account_id, i.tax_account_id, i.inventory_account_id,i.cost_account_id"; 
+        $cols = "i.branch_id,i.id,i.name,i.description,g.id AS group_id, g.name as group_name,g.brand_id, g.manufacturer_id,g.category_id,(SELECT `name` FROM inv_categories WHERE id = g.category_id LIMIT 1) AS category,i.sales_tax_rate,i.purchase_tax_rate"; 
         $rows = DB::table("inv_items as i")->join('inv_item_groups as g','g.id','=','i.group_id')->where("i.id",$id)->selectRaw($cols)->take(1)->get();
         if(isset($rows[0])){
            $row = $rows[0];
            $ss = (object)['branch_id'=>$row->branch_id];
-           $row->tax_account_name =self::getAccountName($row->tax_account_id);
-           $row->revenue_account_name =self::getAccountName($row->revenue_account_id);
-           $row->cost_account_name =self::getAccountName($row->cost_account_id);
-           $row->inventory_account_name =self::getAccountName($row->inventory_account_id);
-           $row->manufacturer = self::getProducerName($row->manufacturer_id);
-           $row->brand_name = self::getBrandName($row->brand_id);
-           if($include_photo) $row->images = self::photos($id,$ss);  
+           $row->accountInfo = self::accountInfo($id);
+           //$row = self::addAccountInfo($row);
+            //   $row->tax_account_name =self::getAccountName($row->tax_account_id);
+            //   $row->revenue_account_name =self::getAccountName($row->revenue_account_id);
+            //   $row->cost_account_name =self::getAccountName($row->cost_account_id);
+            //   $row->inventory_account_name =self::getAccountName($row->inventory_account_id);
+            $row->manufacturer = self::getProducerName($row->manufacturer_id);
+            $row->brand_name = self::getBrandName($row->brand_id);
+            if($include_photo) $row->images = self::photos($id,$ss);  
           return $row;
         } 
         return null;  
@@ -325,7 +647,47 @@ class Item //extends Model
     static function getAttachmentExists($file_id){
       return DB::table("inv_item_files")->where('id',$file_id)->select('id')->exists();
     }
+
+    /**
+     * 
+     * **/
+    function savePrices($sales_type,$uom=null,$price=0,$currency_code=null,$item_id=null,$ss=null){
+       $item_id = $item_id?$item_id:$this->id;
+       $ss=$ss?$ss:$this->userInfo;
+       $currency_code = $currency_code?$currency_code:self::$default_price_currency;
+       $types = ['retail','wholesale'];
+       if(!self::validCurrency($currency_code)) throw new \Exception("Error at savePrices() => Currency code $currency_code is not valid");
+       if(!in_array($sales_type,$types)) return DV::error("Sales type is not correct");
+       if(!$uom) $uom = self::getDefaultSalesUOM($sales_type,$item_id);
+       $unit_id = DB::table("inv_units")->where("item_id",$item_id)->where("uom",$uom)->take(1)->value("id");
+       if(!$unit_id) return DV::error("UOM is does not exists for item $item_id");
+       $price_id = DB::table("inv_item_prices")->where("item_id",$item_id)->where("sales_type",$sales_type)->take(1)->value('id');
+       $inputs = ["item_id"=>$item_id,"uom"=>$uom,"unit_id"=>$unit_id,"price"=>$price,"sales_type"=>$sales_type,'currency_code'=>$currency_code];
+       $new_id = saveData($ss,"inv_item_prices",["id"=>$price_id],$inputs,[],1,false);
+       $inputs['id']=$new_id;
+       return DV::depends($new_id,['price_info'=>$inputs],"Failed to save price");  
+    }
   
+    static function validCurrency($c){
+      return in_array($c,['USD','KHR']);
+    }
+    /**
+     * saveCost() saves cost per $uom. It is is purchase cost
+     * **/
+    function saveCost($uom=null,$cost=0,$currency_code = null,$item_id=null,$ss=null){
+      $item_id = $item_id?$item_id:$this->id;
+      $ss=$ss?$ss:$this->userInfo;
+      if(!self::validCurrency($currency_code)) throw new \Exception("Error at saveCode() => Currency code $currency_code is not valid");
+      if(!$uom) $uom = self::getDefaultPurchaseUOM($item_id);
+      $unit_id = DB::table("inv_units")->where("item_id",$item_id)->where("uom",$uom)->take(1)->value("id");
+      if(!$unit_id) return DV::error("UOM is does not exists for item $item_id");
+      $cost_id = DB::table("inv_item_costs")->where("item_id",$item_id)->where("uom",$uom)->take(1)->value('id');
+      $currency_code =$currency_code?$currency_code:self::$default_cost_currency;
+      $inputs = ["item_id"=>$item_id,"uom"=>$uom,"unit_id"=>$unit_id,"cost"=>$cost,'currency_code'=>$currency_code];
+      $new_id = saveData($ss,"inv_item_costs",["id"=>$cost_id],$inputs,[],1,false);
+      $inputs['id']=$new_id;
+      return DV::depends($new_id,['cost_info'=>$inputs],"Failed to save item cost information");  
+   }
     /**
      * add item's photo, if it does not exist, otherwise update the existing photo based on the gievn $photo_id
      * $arr[] => ['photo_id'=>integer,'photo'=>null] 
@@ -442,8 +804,8 @@ class Item //extends Model
                "customer_return_qty"=>isset($item->customer_return_qty)?$item->customer_return_qty:0,
                "vendor_return_qty"=>isset($item->vendor_return_qty)?$item->vendor_return_qty:0,
                "adjust_qty"=>isset($item->adjust_qty)?$item->adjust_qty:0,
-               "sku"=>$item->sku,
-               "unit_id"=>$item->id,
+               "uom"=>$item->uom,
+               //"unit_id"=>$item->unit_id,
                "created_at"=>getNowTime(),
                "create_user"=>$ss->login_name,
                "create_uid"=>$ss->user_id,
@@ -477,7 +839,7 @@ class Item //extends Model
       if($country_id > 0)  $str_moreWhere .= " AND i.made_in_country_id =$country_id";
       //if ($brand_id >0) $str_brand ="g.id =$brand_id";
       //order by group_name or group_code
-      return DB::table('inv_items as i')->join('inv_item_groups as g','g.id','=','i.group_id')->join('inv_categories as c','c.id','=','g.category_id')->where('i.branch_id',$branch_id)->whereRaw($str_moreWhere)->whereRaw($str_search)->selectRaw("i.id,'Product' AS item_type,i.code,g.code as group_code,i.name,i.description,i.unit_id, i.sku,g.unit_id AS group_unit_id,g.sku AS group_sku,g.name as group_name,g.id as group_id,g.description as group_description, g.category_id, i.manufacturer_id, c.name AS category,g.detail_type_id,getItemDetailType(g.detail_type_id) as detail_type,i.create_user,formatDate(i.created_at) as created_at")->orderByRaw("g.name ASC,i.code ASC")->get();
+      return DB::table('inv_items as i')->join('inv_item_groups as g','g.id','=','i.group_id')->join('inv_categories as c','c.id','=','g.category_id')->where('i.branch_id',$branch_id)->whereRaw($str_moreWhere)->whereRaw($str_search)->selectRaw("i.id,'Product' AS item_type,i.code,g.code as group_code,i.name,i.description,g.name as group_name,g.id as group_id,g.description as group_description, g.category_id, i.manufacturer_id, c.name AS category,g.detail_type_id,getItemDetailType(g.detail_type_id) as detail_type,i.create_user,formatDate(i.created_at) as created_at")->orderByRaw("g.name ASC,i.code ASC")->get();
       
     }
 
@@ -505,7 +867,7 @@ class Item //extends Model
       if($country_id > 0)  $str_moreWhere .= " AND i.made_in_country_id =$country_id";
       //if ($brand_id >0) $str_brand ="g.id =$brand_id";
       //order by group_name or group_code
-      $query = DB::table('inv_items as i')->join('inv_item_groups as g','g.id','=','i.group_id')->join('inv_categories as c','c.id','=','g.category_id')->where('i.branch_id',$branch_id)->whereRaw($str_moreWhere)->whereRaw($str_search)->selectRaw("i.id,'Product' AS item_type,i.code,g.code as group_code,i.name,i.description,i.unit_id, i.sku,g.unit_id AS group_unit_id,g.sku AS group_sku,g.name as group_name,g.id as group_id,g.description as group_description, g.category_id, i.manufacturer_id, c.name AS category,g.detail_type_id,getItemDetailType(g.detail_type_id) as detail_type,i.create_user,formatDate(i.created_at) as created_at")->orderByRaw("g.name ASC,i.code ASC");
+      $query = DB::table('inv_items as i')->join('inv_item_groups as g','g.id','=','i.group_id')->join('inv_categories as c','c.id','=','g.category_id')->where('i.branch_id',$branch_id)->whereRaw($str_moreWhere)->whereRaw($str_search)->selectRaw("i.id,'Product' AS item_type,i.code,g.code as group_code,i.name,i.description,g.name as group_name,g.id as group_id,g.description as group_description, g.category_id, i.manufacturer_id, c.name AS category,g.detail_type_id,getItemDetailType(g.detail_type_id) as detail_type,i.create_user,formatDate(i.created_at) as created_at")->orderByRaw("g.name ASC,i.code ASC");
       $count_query = clone $query;
       $count = $count_query->count('g.id');
       $rows = $query->skip($skip_rows)->take($per_page)->get();

@@ -49,6 +49,7 @@ class MIStockManager {
         $i =0;
         $success_items = [];
         $success_count=0;
+        $error = [];
         do{
             if(!isset($items[$i])) break;
                 $item = $items[$i];
@@ -70,9 +71,9 @@ class MIStockManager {
                   }else{
                      $itemInfo = Item::info(isset($item->item_code)?$item->item_code:"",true,$branch_id);
                   }
-
-                      if($itemInfo){
-                            $item_id = $itemInfo->id;  
+                      if(!$unitInfo) $errors[] ="UOM for item ID $itemInfo->id is not valid or not found!";
+                      if($itemInfo & $unitInfo){
+                            $item_id = $itemInfo->id;
                             //$stock_item = $this->getStockRecord($branch_id,$warehouse_id,$stockclass_code,$item_id,$trx_date);
                             $input_item = ['id'=>$itemInfo->id,'code'=>$itemInfo->code,'sku'=>$item->sku,'unit_id'=>$unitInfo->id,'purchase_qty'=>$item->qty];
                             $stock_item = Item::prepareDailyStockRecord($ss,$warehouse_id,$stockclass_code,$input_item,$trx_date);

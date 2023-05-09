@@ -47,7 +47,7 @@ class CompanyProfileController extends Controller
     $ss= UM::getUserInfoByToken($req,-1);
     if($ss->status_code !==200) return JDV::raw($ss);
      $c = new CompanyProfile($ss);
-    return JDV::result($c->getLogoUrl());
+    return JDV::result($c->getLogo());
   }
   
   function deleteCompanyLogo(Request $req)

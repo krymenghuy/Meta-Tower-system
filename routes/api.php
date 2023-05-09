@@ -10,7 +10,7 @@ use App\Http\Controllers\PersonController;
 use App\Http\Controllers\UMController;
 use App\Http\Controllers\Login\LoginController;
 use App\Http\Controllers\NotificationController;
-//use App\Http\Controllers\CompanyProfileController;
+use App\Http\Controllers\CompanyProfileController;
 
 //use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\MailController;
@@ -551,15 +551,16 @@ Route::post('getComboItems_price_list', [SystemSettingController::class, 'getCom
 
 //end::SystemSettingController
 
-// //begin::CompanyProfileController
-// Route::post('saveCompanyLogo', [CompanyProfileController::class, 'saveCompanyLogo']);
-// Route::post('getCompanyLogo', [CompanyProfileController::class, 'getCompanyLogo']);
-// Route::post('deleteCompanyLogo', [CompanyProfileController::class, 'deleteCompanyLogo']);
-// Route::post('saveCompanyInfo', [CompanyProfileController::class, 'saveCompanyInfo']);
-// Route::post('getCompanyInfo', [CompanyProfileController::class, 'getCompanyInfo']);
-// Route::post('getBrandImages_driver', [CompanyProfileController::class, 'getBrandImages_driver']);
-// Route::post('getBrandImages_sender', [CompanyProfileController::class, 'getBrandImages_sender']);
-// //end::CompanyProfileController
+//begin::CompanyProfileController
+    Route::post('company/save-logo', [CompanyProfileController::class, 'saveCompanyLogo']);
+    Route::post('company/logo', [CompanyProfileController::class, 'getCompanyLogo']);
+    Route::post('company/delete-logo', [CompanyProfileController::class, 'deleteCompanyLogo']);
+    Route::post('company/save-profile', [CompanyProfileController::class, 'saveCompanyInfo']);
+    Route::post('company/profile', [CompanyProfileController::class, 'getCompanyInfo']);
+    Route::post('company/info', [CompanyProfileController::class, 'getCompanyInfo']);
+    // Route::post('getBrandImages_driver', [CompanyProfileController::class, 'getBrandImages_driver']);
+    // Route::post('getBrandImages_sender', [CompanyProfileController::class, 'getBrandImages_sender']);
+//end::CompanyProfileController
  
 
 // //begin::MobileAppSettingsController

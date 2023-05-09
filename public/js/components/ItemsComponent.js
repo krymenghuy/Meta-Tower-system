@@ -370,8 +370,48 @@ let ItemsComponent = new function(){
     }
 }
 
-//begin::ItemDialog
 let ItemDialog = new function(){
+    let mThis = this;
+    this.form_data = {};
+    this.self = $(`#_itm_dlgProduct`);
+    this.elItemCode = $('#_itm_item_code');
+    this.elItemGroup = $('#_itm_item_group');
+    this.elCategory = $(`#_itm_item_category`);
+    this.elBrand = $(`#_itm_item_brand`);
+    this.elManufacturer = $(`#_itm_item_manufacturer`);
+    this.elDetailType = $(`#_itm_item_detail_type`);
+    this.elUnit = $('#_itm_item_unit');
+    this.detail_type_panel = $('#_itm_detail_type_panel');
+    this.lnkAddGroup = $(`#_itm_lnkAddGroup`);
+    this.lnkAddCategory = $(`#_itm_lnkAddCategory`);
+    this.lnkAddUnit = $(`#_itm_lnkAddUnit`);
+    this.lnkAddManufacturer = $(`#_itm_lnkAddManufacturer`);
+    this.div_account = document.querySelector('#_itm_account_info');
+
+    this.renderAccountInfo=(d=[])=>{
+        this.div_account.innerHTML ='';
+        let html = '';
+        d.map(a=>{
+          html = [html,].join('');
+        });
+        ` <div class="forn-group col-lg-3">
+        <span class="simple-label"><span class="trans-text" data-langprop="item.Inventory Account"></span> 
+        <div>  <select class="modal-select2 data-input" data-field="inventory_account_id" data-ffield="Inventory Account"></select> </div>
+       </div>`;
+
+    }
+    this.show = (options=null)=>{
+      options = options?options:{};
+      mThis.onClose = options.onClose;
+
+      this.self.modal({
+        'backdrop':"static"
+      });
+    }
+}
+
+//begin::ItemDialog
+let ItemDialog_DEL = new function(){
     let mThis = this;
     this.form_data = {};
     this.self = $(`#_itm_dlgProduct`);

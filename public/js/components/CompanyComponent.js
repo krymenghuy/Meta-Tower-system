@@ -14,7 +14,7 @@ var CompanyComponent = new function () {
 	this.btnSave.on('click', function (e) {
 		let p = mThis.getData();
 
-		vsapi.call([mThis.base_url, '/api/saveCompanyInfo'].join(''), p).then(res => {
+		vsapi.call(`${main_view.base_url}/api/company/save-profile`, p).then(res => {
 			if(res.status_code === 200) {
 				cv_interact.info('Company information updated!');
 			}
@@ -23,7 +23,7 @@ var CompanyComponent = new function () {
 	});
 
 	this.displayCompanyInfo = () => {
-		vsapi.call([mThis.base_url, '/api/getCompanyInfo'].join(''), null).then(res => {
+		vsapi.call(`${main_view.base_url}/api/company/profile`, null).then(res => {
 			if (res.status_code === 200) {
 				let d = StringSanitizer.sanitizeObject(res.data, ['email']);
 				mThis.setData(d);
@@ -40,7 +40,7 @@ var CompanyComponent = new function () {
 			e.preventDefault();
 			cv_interact.confirm('Delete this logo?', { title: 'Delete Logo', context: 'delete' }, function (e) {
 				if (e) {
-					vsapi.call([mThis.base_url, '/api/deleteCompanyLogo'].join(''), null).then(res => {
+					vsapi.call(`${main_view.base_url}/api/company/delete-logo`, null).then(res => {
 						if (res.status_code === 200) {
 							mThis.imgLogo.prop('src', null);
 							cv_interact.info('Logo deleted!');
@@ -56,10 +56,10 @@ var CompanyComponent = new function () {
 			FileChooser.chooseFile({accept:`image/.*`}, data=>{
 				if(data){
 					mThis.imgLogo.prop('src',data.dataUrl);
-					let p ={'fileType':data.ext,'photoData':data.photoData};
-					vsapi.call([mThis.base_url, '/api/saveCompanyLogo'].join(''), p).then(res => {
+					let p ={'fileType':data.ext,'photo':data.dataUrl};
+					vsapi.call(`${main_view.base_url}/api/company/save-logo`, p).then(res => {
 						if (res.status_code === 200) {
-							mThis.imgLogo.prop('src', photoData);
+							mThis.imgLogo.prop('src', data.dataUrl);
 							cv_interact.info('Logo uploaded');
 						}
 						else cv_interact.error(res.error_message);
@@ -93,7 +93,7 @@ var CompanyComponent = new function () {
 	};
 
 	this.displayLogo = function () {
-		vsapi.call([mThis.base_url, '/api/getCompanyLogo'].join(''), null).then(res => {
+		vsapi.call(`${main_view.base_url}/api/company/logo`, null).then(res => {
 			let d = res.data;
 			mThis.imgLogo.prop('src', d);
 		});
