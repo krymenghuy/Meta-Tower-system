@@ -2012,7 +2012,9 @@ let ConsultTabView = new function () {
             //todo: display followup data here
             if(el.length > 0){
                 el.html([`
-                    <h3 class="trans-text" data-langprop="consult.Appointments">Appointments</h3>
+                    <div class="d-flex">
+                        <h3 class="trans-text" data-langprop="consult.Appointments">Appointments</h3>
+                    </div>
                     <div class="d-flex flex-column mt-3">
                       <h4>${d.followup_remarks}</h4>
                     </div>
