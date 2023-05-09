@@ -3,7 +3,8 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Database; 
+use Illuminate\Database;
+use League\Flysystem\Exception;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -54,6 +55,7 @@ class Handler extends ExceptionHandler
                  return parent::render($request, $exception);
             }  
     }
+ 
     // public function render($request, Exception $exception)
     // {
         

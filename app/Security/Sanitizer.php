@@ -195,8 +195,9 @@ namespace App\Security;
 	// 	//return htmlentities($value,ENT_QUOTES, 'UTF-8');
 	//     //return sanitize($value); 
 	// }
-	
-
+    public function manageError(){
+        throw new \Exception("Your application has encountered error:1208");
+    }
  }
 
 ?>

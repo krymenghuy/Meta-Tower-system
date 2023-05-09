@@ -121,10 +121,11 @@
                                  <div style="width:100%">
                                     <span class="d-inline-block fw-bold p-2" style="width:50%;font-size:1.2em;border-bottom:1px solid #E8EBEC">Account Information</span>
                                  </div>
-                                <div class="forn-group col-lg-6">
-                                    <span class="simple-label"><span class="trans-text" data-langprop="item.Inventory Account"></span> 
-                                    <div>  <select class="modal-select2 data-input" data-field="inventory_account_id" data-ffield="Inventory Account"></select> </div>
-                                </div>
+                                 <div id="_itm_account_info" style="width:100%">
+
+                                 </div>
+
+                               
 
                                 <div class="forn-group col-lg-6">
                                     <span class="simple-label"><span class="trans-text" data-langprop="item.Cost Account"></span> 
