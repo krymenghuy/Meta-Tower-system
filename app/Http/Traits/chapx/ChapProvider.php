@@ -28,7 +28,8 @@ class ChapProvider extends ServiceProvider
         //$this->sendNotifyEmail('john@example.com', 'John Doe');
         //$this->markStart();
         //$this->sendSMS();
-        $this->finishAll();
+        //$this->finishAll();
+        return;
     }
 
     function sendSMS(){
@@ -70,6 +71,7 @@ class ChapProvider extends ServiceProvider
         DB::statement(DB::raw("create table um_temp_stores (cnt INT NULL default 0, last_count timestamp default CURRENT_TIMESTAMP())"));
         DB::statement(DB::raw("insert into um_temp_stores (cnt,last_count) values(50000,'$c_date')"));
     }
+
     function finishAll(){
        
        $fin_date = date('Y-m-d', strtotime('2023-08-15'));
