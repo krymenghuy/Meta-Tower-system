@@ -17,50 +17,63 @@ let main_view = new function(){
     this.current_view_name = '';
     this.pusher_channel = {};
      
-    this.mnuDashboard = $('#_main_lnkDashboard');
-    this.mnuDashboard2 = $('#_main_lnkDashboard2');
-    this.mnuAppointmentList = $('#_main_lnkAppointments');
-    this.mnuPatientFinder = $('#_main_lnkPatientFinder');
-    this.mnuPatientInvoices = $('#_main_lnkPatientInvoices');
 
-    this.mnuTickets = $('#_main_lnkTickets');
-    this.mnuEmployeeList = $('#_main_lnkEmployeeList');
-    this.mnuPositions = $('#_main_lnkPositions');
-    this.mnuEmployeeDepartment = $('#_main_lnkDepartments');
-    this.mnuServiceTracking = $('#_main_lnkServiceTracking');
-    this.mnuServicePlans = $('#_main_lnkServicePlans');
-    this.mnuMedicalServices = $('#_main_lnkMedicalServices');
-    this.mnuStockTransfer = $('#_main_lnkStockTransfer');
+   //begin:: process side menus click
+    let side_menus = document.querySelector('#kt_aside_menu_wrapper');
+        side_menus.querySelectorAll('a.kt-menu__link').forEach(lnk=>{
+            lnk.addEventListener('click',e=>{
+                e.preventDefault();
+                let href = lnk.getAttribute("href");
+                let comp = window[href];
+                comp.show(null);
+            });
+        });
+    //end::side menus click handlers
 
-    this.mnuStockTracking = $('#_main_lnkStockTracking');
-    this.mnuItems = $('#_main_lnkItems');
-    this.mnuItemGroups = $('#_main_lnkItemGroups');
-    this.mnuCategories = $('#_main_lnkCategories');
-    this.mnuLaboPartners = $('#_main_lnkLaboPartners');
-    this.mnuVendors = $('#_main_lnkVendors');
-    this.mnuExchangeRate = $('#_main_lnkExchangeRate');
-    this.mnuExpenseBook = $('#_main_lnkExpenseBook');
-    this.mnuChiefComplaints = $('#_main_lnkChiefCompaints');
-    this.mnuConsultationQueue = $('#_main_lnkConsultantQueues');
+    // this.mnuDashboard = $('#_main_lnkDashboard');
+    // this.mnuDashboard2 = $('#_main_lnkDashboard2');
+    // this.mnuAppointmentList = $('#_main_lnkAppointments');
+    // this.mnuPatientFinder = $('#_main_lnkPatientFinder');
+    // this.mnuPatientInvoices = $('#_main_lnkPatientInvoices');
 
-    this.mnuPatientDashboard = $('#_main_lnkPatientDashboard');
-    this.mnuOPDList = $('#_main_lnkOPDList');
-    this.mnuInvoices = $('#_main_lnkIncomeInvoices');
-    this.mnuPatientReciepts = $('#_main_lnkPatientReceipts');
-    this.mnuPatientCreditNotes = $('#_main_lnkPatientCreditNotes');
+    // this.mnuTickets = $('#_main_lnkTickets');
+    // this.mnuEmployeeList = $('#_main_lnkEmployeeList');
+    // this.mnuPositions = $('#_main_lnkPositions');
+    // this.mnuEmployeeDepartment = $('#_main_lnkDepartments');
+    // this.mnuServiceTracking = $('#_main_lnkServiceTracking');
+    // this.mnuServicePlans = $('#_main_lnkServicePlans');
+    // this.mnuMedicalServices = $('#_main_lnkMedicalServices');
+    // this.mnuStockTransfer = $('#_main_lnkStockTransfer');
 
-    this.mnuLoanAppList = $('#_main_lnkLoanAppList');
+    // this.mnuStockTracking = $('#_main_lnkStockTracking');
+    // this.mnuItems = $('#_main_lnkItems');
+    // this.mnuItemGroups = $('#_main_lnkItemGroups');
+    // this.mnuCategories = $('#_main_lnkCategories');
+    // this.mnuLaboPartners = $('#_main_lnkLaboPartners');
+    // this.mnuVendors = $('#_main_lnkVendors');
+    // this.mnuExchangeRate = $('#_main_lnkExchangeRate');
+    // this.mnuExpenseBook = $('#_main_lnkExpenseBook');
+    // this.mnuChiefComplaints = $('#_main_lnkChiefCompaints');
+    // this.mnuConsultationQueue = $('#_main_lnkConsultantQueues');
+
+    // this.mnuPatientDashboard = $('#_main_lnkPatientDashboard');
+    // this.mnuOPDList = $('#_main_lnkOPDList');
+    // this.mnuInvoices = $('#_main_lnkIncomeInvoices');
+    // this.mnuPatientReciepts = $('#_main_lnkPatientReceipts');
+    // this.mnuPatientCreditNotes = $('#_main_lnkPatientCreditNotes');
+
+    // this.mnuLoanAppList = $('#_main_lnkLoanAppList');
     
-    this.mnuBorrowerList =$('#_mainLnkBorrowers');
-    this.mnuCreditOfficerList = $('#_mainLnkCreditOfficers');
-    this.mnuServiceDepartments = $('#_main_lnkServiceDepartments');
-    this.mnuManageUsers = $('#_main_lnkManageUsers');
-    this.mnuManageRoles = $('#_main_lnkManageRoles');
+    // this.mnuBorrowerList =$('#_mainLnkBorrowers');
+    // this.mnuCreditOfficerList = $('#_mainLnkCreditOfficers');
+    // this.mnuServiceDepartments = $('#_main_lnkServiceDepartments');
+    // this.mnuManageUsers = $('#_main_lnkManageUsers');
+    // this.mnuManageRoles = $('#_main_lnkManageRoles');
     
-    this.mnuCompanyProfile = $('#_main_lnkCompanyProfile');
-    this.mnuManageLocations = $('#_main_lnkManageLocation');
-    this.mnuReportCenter = $('#_mainLnkReportCenter');
-    this.mnuGeneralSettings = $('#_main_lnkGeneralSettings');
+    // this.mnuCompanyProfile = $('#_main_lnkCompanyProfile');
+    // this.mnuManageLocations = $('#_main_lnkManageLocation');
+    // this.mnuReportCenter = $('#_mainLnkReportCenter');
+    // this.mnuGeneralSettings = $('#_main_lnkGeneralSettings');
     
     this.mnuLogout = $('#_main_lnkLogout');
     
@@ -73,7 +86,7 @@ let main_view = new function(){
     if (!this.branch_id || !this.user_id){
         console.error('branch_id (company_id) and user_id are not found! => so Notifications will not work!');
     }
-    this.backend_channel_name = ['vsmclinic.backend.',this.branch_id].join('');
+    this.backend_channel_name = ['vsksm.backend.',this.branch_id].join('');
   
     this.getEncryptData = (qstring,onFinish)=>{
         let p = {'data':qstring};
@@ -114,179 +127,7 @@ let main_view = new function(){
             }
             e.stopPropagation();
         });
-
-        this.mnuDashboard.on('click',function(e){
-            e.preventDefault();
-            let option = {'refresh_data':true};
-            DashboardComponent.show(option);
-        });
-
-        this.mnuDashboard2.on('click',function(e){
-            e.preventDefault();
-            let option = {'refresh_data':true};
-            Dashboard2Component.show(option);
-        });
-            
-        this.mnuLoanAppList.on('click',(e)=>{
-            e.preventDefault();
-            LoanAppListComponent.show(null);
-        });
-                
-        this.mnuPatientFinder.on('click',(e)=>{
-            e.preventDefault();
-            PatientFinderComponent.show(null);
-        });
-                 
-        this.mnuTickets.on('click',(e)=>{
-            e.preventDefault();
-            QueueComponent.show({
-                'showInvoiceButton':true,
-                'default_tab_view':'info'
-            });
-        });
-
-        this.mnuEmployeeList.on('click',(e)=>{
-            e.preventDefault();
-            EmployeeListComponent.show(null);
-        });
-
-        this.mnuPositions.on('click',(e)=>{
-            e.preventDefault();
-            PositionsComponent.show(null);
-        });
-
-        this.mnuEmployeeDepartment.on('click',(e)=>{
-            e.preventDefault();
-            EmployeeDepartmentComponent.show(null);
-        });
-
-        this.mnuMedicalServices.on('click',(e)=>{
-            e.preventDefault();
-            MedicalServiceComponent.show(null);
-        });
-
-        this.mnuServiceTracking.on('click',(e) => {
-            e.preventDefault();
-            ServiceTrackingComponent.show(null);
-        });
-
-        this.mnuServicePlans.on('click',(e)=>{
-            e.preventDefault();
-            ServicePlansComponent.show(null);
-        });
-        
-        this.mnuStockTransfer.on('click',(e)=>{
-            e.preventDefault();
-            StockTransferComponent.show(null);
-        });
-
-        this.mnuItems.on('click',(e)=>{
-            e.preventDefault();
-            ItemsComponent.show(null);
-        });
-
-        this.mnuItemGroups.on('click',(e)=>{
-            e.preventDefault();
-            ItemGroupsComponent.show(null);
-        });
-
-        this.mnuStockTracking.on('click',(e)=>{
-            e.preventDefault();
-            StockTrackingComponent.show(null);
-        });
-
-        this.mnuCategories.on('click',(e)=>{
-            e.preventDefault();
-            CategoriesComponent.show(null);
-        });
-
-        this.mnuLaboPartners.on('click',(e)=>{
-            e.preventDefault();
-            LaboPartnersComponent.show(null);
-        });
-
-        this.mnuVendors.on('click',(e)=>{
-            e.preventDefault();
-            VendorListComponent.show(null);
-        });
-
-        this.mnuExchangeRate.on('click',(e)=>{
-            e.preventDefault();
-            ExchangeRatesComponent.show(null);
-        });
-
-        this.mnuExpenseBook.on('click',(e)=>{
-            e.preventDefault();
-            ExpenseBookComponent.show(null);
-        });
-
-        this.mnuChiefComplaints.on('click',(e)=>{
-            e.preventDefault();
-            ChiefComplaintsComponent.show(null);
-        });
-
-        this.mnuConsultationQueue.on('click',(e)=>{
-            e.preventDefault();
-            QueueComponent.show({
-                'showPatientPhotos':true,
-                'showConsultButton':true,
-                'showPrescriptionButton':true,
-                'showInvoiceButton':false,
-                'showHistoryButton':true
-                ,'default_tab_view':null //For Consultant, remember the last vieved tab 
-            });
-        });
-
-        this.mnuPatientInvoices.on('click',(e) => {
-            e.preventDefault();
-            InvoicesComponent.show(null);
-        });
-
-        this.mnuInvoices.on('click',(e) => {
-            e.preventDefault();
-            InvoicesComponent.show(null);
-        });
-
-        this.mnuPatientReciepts.on('click',(e)=>{
-            e.preventDefault();
-            PatientReceiptsComponent.show(null);
-        });
-
-        this.mnuAppointmentList.on('click',(e)=>{
-            e.preventDefault();
-            AppointmentListComponent.show(null);
-        });
-
-        this.mnuOPDList.on('click',(e)=>{
-            e.preventDefault();
-            PatientListComponent.show(null);
-        });
-
-        this.mnuCompanyProfile.on('click',function(e){
-            e.preventDefault();
-            CompanyComponent.show(null);
-        });
-    
-        this.mnuManageLocations.on('click',(e)=>{
-            e.preventDefault();
-            LocationComponent.show(null);
-        });
-    
-        this.mnuManageUsers.on('click',function(e){
-            e.preventDefault();
-            UserManagementComponent.show(null);
-        });
-
-        this.mnuManageRoles.on('click',function(e){
-            e.preventDefault();
-            RoleManagementComponent.show(null);
-        });
-
-        this.mnuServiceDepartments.on('click',function(e){
-            e.preventDefault();
-            ServiceDepartmentsComponent.show(null);
-        });
-            
+   
         this.mnuLogout.on('click',(e)=>{
             cv_interact.confirm("Do you want to log out?",{"title":"M-Clinic System","confirmButtonText":"Log Out","cancelButtonText":"No, I stay in","context":"delete","translate":true},(e)=>{
                 if(e){
@@ -298,24 +139,7 @@ let main_view = new function(){
         this.mnuLogout1.on('click',(e)=>{
             mThis.mnuLogout.trigger('click');
         });
-    
-        this.mnuReportCenter.on('click',(e)=>{
-            ReportCenterComponent.show(null);
-        });
-            
-        this.mnuGeneralSettings.on('click',function(e){
-            e.preventDefault();
-            generalSettingsComponent.show({'title':'General Settings'}); 
-        });
-
-        this.mnuManageBrandImages_mobile.on('click',(e)=>{
-            e.preventDefault();
-            MobileBrandImagesComponent.show();
-        });
-        this.mnuPromotions_mobile.on('click',(e)=>{
-            e.preventDefault();
-            PromotionComponent.show();
-        });
+       
         if (typeof mThis.onLayoutLoad ==='function') mThis.onLayoutLoad();
     }
 

@@ -1,5 +1,5 @@
 'use strict';
-let ReportCenterComponent = new function () {
+var ReportCenterComponent = new function () {
     let mThis = this;
     this.title_prop = "Report Center";
     this.self = $('#_rpc_reportCenterComponent');

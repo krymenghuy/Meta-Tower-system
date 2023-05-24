@@ -340,7 +340,7 @@
                                                     <span class="user-menu-item">
                                                         <a id="_main_mnu_about" class="dropdown-item" href="javascript:void(0)">
                                                             <i class="fas fa-cog"></i>
-                                                            About MClinic
+                                                            About KSM
                                                         </a>
                                                     </span>
                                                     <span class="user-menu-item">

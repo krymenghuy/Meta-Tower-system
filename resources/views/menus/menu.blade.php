@@ -60,7 +60,7 @@
         </div>
         <ul class="kt-menu__nav" id="_dms_aside_menus" style="display:none">
             <li class="kt-menu__item" aria-haspopup="true">
-                <a href="javascript:void(0)" id="_main_lnkDashboard" class="menu-item kt-menu__link">
+                <a href="DashboardComponent" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <i>
                             <img class="icons" src="{{ asset('assets/images/icons/dashboard.svg') }}" style="height:25px">
@@ -69,18 +69,7 @@
                     <span class="kt-menu__link-text trans-text" data-langprop="menus.Dashboard">Dashboard</span>
                 </a>
             </li>
-
-            <li style="display:none" class="kt-menu__item" aria-haspopup="true">
-                <a href="javascript:void(0)" id="_main_lnkDashboard2" class="menu-item kt-menu__link">
-                    <span class="kt-menu__link-icon">
-                        <i>
-                            <img class="icons" src="{{ asset('assets/images/icons/dashboard.svg') }}" style="height:25px;">
-                        </i>
-                    </span>
-                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Dashboard 2">Dashboard 2</span>
-                </a>
-            </li>
-
+ 
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
@@ -509,7 +498,7 @@
             </li>
 
             <li class="kt-menu__item" aria-haspopup="true">
-                <a href="javascript:void(0)" id="_mainLnkReportCenter" class="menu-item kt-menu__link">
+                <a href="ReportCenterComponent" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons" src="{{ asset('assets/images/icons/general_report.png')}}" style="height:25px"/>
                     </span>
@@ -522,7 +511,7 @@
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
             <li class="kt-menu__item" aria-haspopup="true">
-                <a href="javascript:void(0)" id="_main_lnkCompanyProfile" class="menu-item kt-menu__link">
+                <a href="CompanyComponent" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons" src="{{asset('assets/images/icons/company_profile.svg')}}"/>
                     </span>
@@ -593,7 +582,7 @@
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkManageLocation" class="menu-item kt-menu__link">
+                            <a href="LocationComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/location.svg')}}"/>
                                 </span>
@@ -602,7 +591,7 @@
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkExchangeRate" class="menu-item kt-menu__link">
+                            <a href="ExchangeRateComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/exchange_rate.svg')}}"/>
                                 </span>
@@ -625,7 +614,7 @@
                 <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkManageRoles" class="menu-item kt-menu__link">
+                            <a href="RoleManagementComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{ asset('assets/images/icons/manage_role.svg') }}"/>
                                 </span>
@@ -634,7 +623,7 @@
                         </li>
 
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkManageUsers" class="menu-item kt-menu__link ">
+                            <a href="UserManagementComponent" class="menu-item kt-menu__link ">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/manage_users.svg')}}"/>
                                 </span>

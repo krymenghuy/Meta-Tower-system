@@ -1,5 +1,5 @@
 "use strict";
-let DashboardComponent = new function () {
+var DashboardComponent = new function () {
   let mThis = this;
   this.title_prop = "Dashboard";
   this.base_url = $('#__base_url').val();

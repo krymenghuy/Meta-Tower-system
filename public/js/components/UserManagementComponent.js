@@ -1,6 +1,6 @@
 'use strict';
 //begin::UserManagementComponent
-let UserManagementComponent = new function () {
+var UserManagementComponent = new function () {
     let mThis = this;
     this.title_prop = "User Management";
     mThis.base_url = $('#__base_url').val();

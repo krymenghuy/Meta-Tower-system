@@ -1,5 +1,5 @@
 'use strict';
-let LocationComponent = new function(){
+var LocationComponent = new function(){
     let mThis = this;
     this.title_prop = 'Location Management';
     this.elScreenTitle = $('#screen_title');
