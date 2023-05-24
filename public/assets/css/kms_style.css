@@ -1,0 +1,105 @@
+*{
+    padding:0;
+    margin:0;
+    box-sizing: border-box;
+}
+
+html,
+body{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    background-color:#F5F5F5;
+    color:#000;
+    font-size:1rem;
+    font-weight:normal;
+}
+
+.kt-header-menu-wrapper{
+    width:100%;
+}
+
+.mainview-top-right{
+    width:100%;
+    display:flex;
+    justify-content:end;
+}
+
+.main--campus{
+    background-color:#fff;
+    padding:10px;
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    cursor:pointer;
+}
+
+.btn-dropdown{
+    margin-right:10px;
+    padding:0px;
+    border:none;
+    background:none;
+}
+
+.choose--language{
+    background-color:#fff;
+    padding:10px;
+    border-radius:20px;
+    margin-left:15px;
+}
+
+.nav--notification{
+    background-color:#fff;
+    padding:10px;
+    border-radius:50%;
+    margin-left:15px;
+}
+
+.number--notification{
+    color:#f00;
+    position:absolute;
+    top:5px;
+}
+
+.user--info{
+    background-color:#fff;
+    padding:10px;
+    border-radius:20px;
+}
+
+.line--loader{
+    position:absolute;
+    margin-top:60px;
+}
+
+.mr-1{
+    border-radius:50%;
+}
+
+.menu-item-icon{
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    margin-right:10px;
+}
+
+.dropdown-menu{
+    background-color:transparent;
+    z-index:10;
+    box-shadow: none;
+    top:26px;
+    min-width:9rem;
+    padding:10px 0;
+}
+
+.lang-menu-item{
+    background-color:#fff;
+    border-radius:20px;
+}
+
+.lang-menu-item .dropdown-item{
+    background-color:#fff;
+    border-radius:20px;
+    margin:10px 0;
+    box-shadow: 0px 4px 4px #00000040;
+}
