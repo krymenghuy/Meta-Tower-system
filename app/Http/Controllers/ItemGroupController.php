@@ -30,18 +30,18 @@ class ItemGroupController extends Controller
     function saveItemGroup(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
-        $d = $req->all(); 
-        $res = ItemGroup::commitSave($ss,$d);
-        if ($res->status_code === 200)
-            return JDV::success(['id'=>$res->id]);
-        else return JDV::error($res->error_message);
+        $id = $req->id;
+        $g = new ItemGroup($id,$ss);
+        $res = $g->save($req->all());
+        return JDV::raw($res);
     }
 
     function deleteItemGroup(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
         $id = $req->id;
-        $res = ItemGroup::commitDelete($ss,$id);
+        $g = new ItemGroup($id,$ss);
+        $res = $g->delete($id);
         return JDV::raw($res);
     }
 

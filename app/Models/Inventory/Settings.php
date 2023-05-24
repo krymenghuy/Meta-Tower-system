@@ -39,7 +39,11 @@ class Settings extends Model
 
     static function options_unit($ss){
         $branch_id = $ss->branch_id;
-        return DB::table('inv_units')->where('branch_id',$branch_id)->selectRaw("id,name as unit_name")->orderByRaw('name ASC')->get();
+        return DB::table('inv_uom')->where('branch_id',$branch_id)->selectRaw("uom")->orderByRaw('uom ASC')->distinct()->get();
+    }
+    static function options_uom($ss){
+        $branch_id = $ss->branch_id;
+        return DB::table('inv_uom')->where('branch_id',$branch_id)->selectRaw("uom")->orderByRaw('uom ASC')->get();
     }
 
     static function options_customer($ss){
@@ -59,10 +63,10 @@ class Settings extends Model
 
     static function options_manufacturer($ss){
         $branch_id = $ss->branch_id;
-        return DB::table('inv_manufacturers as m')->where('m.branch_id',$branch_id)->where('item_class',self::$item_class)->selectRaw("m.id,m.name")->orderByRaw('m.name ASC')->get();
+        return DB::table('inv_manufacturers as m')->where('m.branch_id',$branch_id)->where('item_class',self::$item_class)->selectRaw("m.id,m.name as manufacturer")->orderByRaw('m.name ASC')->get();
     }
 
-    static function options_detail_type($ss,$category_id){
+    static function options_detail_type($category_id,$ss){
         $branch_id = $ss->branch_id;
         return DB::table('inv_detailed_types AS d')->where('d.category_id',$category_id)->where('item_class',self::$item_class)->where('d.branch_id',$branch_id)->selectRaw("d.id,d.name as detail_type")->orderByRaw('d.name ASC')->get();
     }
@@ -122,39 +126,55 @@ class Settings extends Model
         ];
      }
 
-    //saveSKU()| CreateUnit()
-    static function saveUnit($ss,$d){
-        if($ss->status_code !=200) return $ss; //user not authenticated
+    //CreateUnit()
+    static function saveUOM($d,$ss){
         $branch_id = $ss->branch_id;
         $validate_rule = [
           'id'=>'0|identity=1',
-          'name'=>'1|string|1-25',
-          'sub_unit_name'=>'0|string|1-25',
-          'sub_unit_qty'=>'0|number|default=1'
+          'uom'=>'1|string|1-25',
+          'item_class'=>'1|choice|MI,RM,FG'
         ];
         
-        $check_unique = ["$branch_id|inv_units|name|id=id|text=unit name already exists"];
+        $check_unique = ["$branch_id|inv_uom|uom;item_class|id=id|text=UOM name already exists"];
         $res = validateObject($d,$validate_rule,true,[],$ss->lang,false,$check_unique);
         if($res->error) return DV::error($res->error);
         $id = $res->id;
         $inputs = $res->values;
-        $id = saveData($ss,'inv_units',['id'=>$id],['item_class'=>self::$item_class,'name'=>$inputs['name'], 'parent_unit_id'=>null,'qty'=>1],[],1);
-        if($id >0){
-              $sub_unit_name = $inputs['sub_unit_name'];
-              if($sub_unit_name){
-                $row = getDataRow('inv_units',['branch_id'=>$branch_id,'name'=>$sub_unit_name],'id');
-                $id1 = isset($row)?$row->id:0;
-                $id1 = saveData($ss,'inv_units',['id'=>$id1],['item_class'=>self::$item_class,'name'=>$sub_unit_name, 'parent_unit_id'=>$id,'qty'=>$inputs['sub_unit_qty']],[],1);
-              } 
-              
-        }
-        return DV::success(['id'=>$id]);
+        $uom = $inputs["uom"];
+        $id = saveData($ss,'inv_uom',['id'=>$id],['item_class'=>self::$item_class,'uom'=>$inputs['uom']],[],1);
+        return DV::depends($id,['uom'=>$uom,"units"=>self::options_uom($ss)],"Failed to save UOM");
     }
 
-    static function saveManufacturer($ss,$d){
-        if($ss->status_code !=200) return $ss; //user not authenticated
+    // static function saveUOM($ss,$d){
+    //     if($ss->status_code !=200) return $ss; //user not authenticated
+    //     $branch_id = $ss->branch_id;
+    //     $validate_rule = [
+    //       'id'=>'0|identity=1',
+    //       'name'=>'1|string|1-25',
+    //       'sub_uom'=>'0|string|1-25',
+    //       'sub_uom_qty'=>'0|number|default=1'
+    //     ];
+        
+    //     $check_unique = ["$branch_id|inv_uom|name|id=id|text=UOM name already exists"];
+    //     $res = validateObject($d,$validate_rule,true,[],$ss->lang,false,$check_unique);
+    //     if($res->error) return DV::error($res->error);
+    //     $id = $res->id;
+    //     $inputs = $res->values;
+    //     $id = saveData($ss,'inv_uom',['id'=>$id],['item_class'=>self::$item_class,'uom'=>$inputs['uom'], 'parent_unit_id'=>null,'qty'=>1],[],1);
+    //     if($id >0){
+    //           $sub_unit_name = $inputs['sub_unit_name'];
+    //           if($sub_unit_name){
+    //             $row = getDataRow('inv_units',['branch_id'=>$branch_id,'name'=>$sub_unit_name],'id');
+    //             $id1 = isset($row)?$row->id:0;
+    //             $id1 = saveData($ss,'inv_units',['id'=>$id1],['item_class'=>self::$item_class,'name'=>$sub_unit_name, 'parent_unit_id'=>$id,'qty'=>$inputs['sub_unit_qty']],[],1);
+    //           } 
+              
+    //     }
+    //     return DV::success(['id'=>$id]);
+    // }
+ 
+    static function saveManufacturer($d,$ss){
         $branch_id = $ss->branch_id;
-
         $validate_rule = [
           'id'=>'0|number|identity=1',
           'name'=>'1|string|1-100'
@@ -166,17 +186,16 @@ class Settings extends Model
         $inputs = $res->values;
         $inputs['item_class'] = self::$item_class;
         $id = saveData($ss,'inv_manufacturers',['id'=>$id],$inputs,[],1);
-        if($id >0 ) return DV::success(['id'=>$id]);
-        else return DV::error("Failed to save manufacturer"); 
+        return DV::depends($id,['manufacturers'=>self::options_manufacturer($ss),"id"=>$id],"Failed to save manufacturer");
     }
 
-    static function saveBrand($ss,$d){
+    static function saveBrand($d,$ss){
         if($ss->status_code !=200) return $ss; //user not authenticated
         $branch_id = $ss->branch_id;
 
         $validate_rule = [
           'id'=>'0|identity=1',
-          'name'=>'1|string|1-150'
+          'brand_name'=>'1|string|1-150'
         ];
         
         $check_unique = ["$branch_id|inv_brands|name|id=id|text =Brand name already exists"];
@@ -184,29 +203,41 @@ class Settings extends Model
         if($res->error) return DV::error($res->error);
         $id = $res->id;
         $inputs = $res->values;
+        $inputs['name'] = $inputs['brand_name'];
+        unset($inputs['brand_name']);
         $inputs['item_class'] = self::$item_class;
         $id = saveData($ss,'inv_brands',['id'=>$id],$inputs,[],1);
-        if($id >0 ) return DV::success(['id'=>$id]);
-        else return DV::error("Failed to save brand name"); 
+        return DV::depends($id,['brands'=>self::options_brand($ss),"id"=>$id],"Failed to save brand name");
+    }
+ 
+    static function deleteBrand($id,$ss){
+        if(self::brandInUse($id)) return DV::error("Brand is already in use");
+           $x = DB::table("inv_brands")->where("id",$id)->delete();
+        return DV::depends(1,['brands'=>self::options_brand($ss)]);
     }
 
-    static function unitInUse($id){
-      return DB::table('inv_items')->where('unit_id',$id)->select("id")->take(1)->exists();
+    static function unitInUse($uom){
+      return DB::table('inv_item_groups')->where('uom',$uom)->select("id")->take(1)->exists();
     }
 
+    static function brandInUse($id){
+        return DB::table('inv_item_groups AS g')->where('brand_id',$id)->select("id")->take(1)->exists();
+    }
+  
     static function manufacturerInUse($id){
         return DB::table('inv_items')->where('manufacturer_id',$id)->select("id")->take(1)->exists();
     }
 
-    static function deleteUnit($ss,$id){
-      if(self::unitInUse($id)) return DV::error("Cannot delete brand that is already in use");  
-      $x = DB::table('inv_units')->where('id',$id)->where('branch_id',$branch_id)->delete();
-      return DV::success();  
+    static function deleteUOM($uom,$ss){
+      $branch_id = $ss->branch_id;  
+      if(self::unitInUse($uom)) return DV::error("Cannot delete UOM that is already in use");  
+      $x = DB::table('inv_uom')->where('uom',$uom)->where('branch_id',$branch_id)->delete();
+      return DV::depends(1,["units"=>self::options_uom($ss)]);
     }
   
-    static function deleteManufacturer($ss,$id){
+    static function deleteManufacturer($id,$ss){
         if(self::manufacturerInUse($id)) return DV::error("Cannot delete manufacturer that is already in use");  
-        $x = DB::table('inv_manufacturers')->where('id',$id)->where('branch_id',$branch_id)->delete();
-        return DV::success();  
+        $x = DB::table('inv_manufacturers')->where('id',$id)->where('branch_id',$ss->branch_id)->delete();
+        return DV::depends(1,["manufacturers"=>self::options_manufacturer($ss)]);
     }
 }

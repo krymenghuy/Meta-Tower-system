@@ -24,7 +24,14 @@ class PatientController extends Controller
       $patient = new Patient($id,$ss);
      return JDV::result($patient->getDetails());
     }
-    
+     
+    function getSubscribedServicePlans(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      $id = $req->id?$req->id:$req->patient_id;
+      $patient = new Patient($id,$ss);
+      return JDV::result($patient->getSubscribedServicePlans()); 
+    }
 
     function getPatientHistory(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);

@@ -48,7 +48,7 @@ let UserListPanel = new function () {
 
 
     //Load user classes from server
-    vsapi.call(`${this.base_url}/api/getComboItems_userclass`, null).then(res => {
+    vsapi.call(`${this.base_url}/api/user/options-user-class`, null).then(res => {
         if (res.status_code === 200) {
             let items = StringSanitizer.sanitizeObject(res.data);
             items.unshift({ 'user_class': null, 'user_class_name': '(All Classes)' });
@@ -245,7 +245,7 @@ let UserListPanel = new function () {
         }
         cv_interact.confirm(msg, 'User Lockout', function (e) {
             if (e) {
-                vsapi.call([mThis.base_url, '/api/setLockStatus'].join(''), p).then(res => {
+                vsapi.call([mThis.base_url, '/api/user/set-lock-status'].join(''), p).then(res => {
                     if (res.status_code === 200) {
                         mThis.displayUserList(mThis.elSearch.val());
                     } else cv_interact.error(re.error_message);
@@ -283,7 +283,7 @@ let UserListPanel = new function () {
                     p.login_name = login_name;
                     p.new_login_name = d;
                     //if(!p.user_id) p.user_id =0;
-                    vsapi.call([mThis.base_url, '/api/changeLoginName'].join(''), p).then(res => {
+                    vsapi.call([mThis.base_url, '/api/user/security/change-login'].join(''), p).then(res => {
                         if (res.status_code === 200) {
                             mThis.displayUserList();
                             if (tr) tr.data('loginname', login_name);
@@ -301,7 +301,7 @@ let UserListPanel = new function () {
         let p = {};
         p.search_value = search_value ? search_value : mThis.elSearch.val();
         p.user_class = mThis.elFilter_userclass.val();
-        vsapi.call([mThis.base_url, '/api/getUserList'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/api/user/list'].join(''), p).then(res => {
 
             if (res.status_code === 200) {
 
@@ -474,7 +474,7 @@ let UserListPanel = new function () {
 
     this.deleteUser = function (user_id = 0) {
         let p = { 'user_id': user_id };
-        vsapi.call([mThis.base_url, '/api/deleteUser'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/api/user/delete'].join(''), p).then(res => {
             if (res.status_code === 200) {
                 mThis.displayUserList();
             } else cv_interact.error(res.error_message);
@@ -517,7 +517,7 @@ let AddUserPanel = new function () {
 
     this.div_extended_detail = $('#_um_extended_details_panel');
 
-    vsapi.call(`${this.base_url}/api/getComboItems_userclass`, null).then(res => {
+    vsapi.call(`${this.base_url}/api/user/options-user-class`, null).then(res => {
         if (res.status_code === 200) {
             let items = StringSanitizer.sanitizeObject(res.data);
             items.unshift({ 'user_class': null, 'user_class_name': '(Choose user class)' });
@@ -592,7 +592,7 @@ let AddUserPanel = new function () {
 
     mThis.elUserClass.on('change', () => {
         let p = { "user_class": mThis.elUserClass.val() };
-        vsapi.call([mThis.base_url, '/api/getComboItems_role'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/api/role/options-role'].join(''), p).then(res => {
             let rows = StringSanitizer.sanitizeObject(res.data);
             VSUtil.setComboItems(mThis.elRole, rows, 'id', 'name', true, '(Select Role)', 0);
             if (rows[0] && !rows[1]) mThis.elRole.val(rows[0].id);
@@ -639,7 +639,7 @@ let AddUserPanel = new function () {
         //     }
         // }
 
-        vsapi.call([mThis.base_url, '/api/saveUser'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/api/user/save'].join(''), p).then(res => {
             if (res.status_code === 200) {
                 mThis.lnkBackToUserList.trigger('click');
             } else cv_interact.error(res.error_message); //mThis.elError.text(res.error_message);
@@ -691,7 +691,7 @@ let AddUserPanel = new function () {
     }
 
     this.loadRoleList = function (role_id, onFinish) {
-        vsapi.call([mThis.base_url, '/api/getComboItems_role'].join(''), null).then(res => {
+        vsapi.call([mThis.base_url, '/api/role/options-role'].join(''), null).then(res => {
             if (res.status_code === 200) {
                 let rows = StringSanitizer.sanitizeObject(res.data);
                 VSUtil.setComboItems(mThis.elRole, rows, 'id', 'name', true, '(Select User Role)', role_id);
@@ -702,7 +702,7 @@ let AddUserPanel = new function () {
     }
 
     this.loadWorkLocationList = function (loc_id, onFinish) {
-        vsapi.call([mThis.base_url, '/api/getComboItems_workloc'].join(''), null).then(res => {
+        vsapi.call([mThis.base_url, '/api/user/options-work-location'].join(''), null).then(res => {
             if (res.status_code === 200) {
                 let rows = res.data;
                 VSUtil.setComboItems(mThis.elWorkLoc, rows, 'id', 'name', true, '(Select Work Location)', loc_id);
@@ -751,7 +751,7 @@ let AddUserPanel = new function () {
         let p = {};
         p.user_id = mThis.user_id;
         p.id = mThis.user_id;
-        vsapi.call([mThis.base_url, '/api/getUserDetails'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/api/user/details'].join(''), p).then(res => {
             if (res.status_code === 200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
 
@@ -795,12 +795,11 @@ let SetPasswordDialog = new function () {
         //p.user_id = mThis.user_id;
         p.newPwd = mThis.elPwd.val();
         if (p.newPwd != mThis.elConfirmPwd.val()) {
-            cv_interact.error('New password and Confirm password do not match');
+            cv_interact.error('New password and confirm password do not match');
             return;
         }
 
-        vsapi.call([mThis.base_url, '/api/setPassword'].join(''), p).then(res => {
-
+        vsapi.call([mThis.base_url, '/api/user/security/set-pwd'].join(''), p).then(res => {
             if (res.status_code === 200)
                 mThis.self.modal('hide');
             else {

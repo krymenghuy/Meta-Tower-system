@@ -18,7 +18,7 @@
         //do not allow space in date field
         $(this).on('keydown', function (event, ui) {
             //var value = $(this).val();
-            if (event.which == 32)
+            if (event.keyCode == 32)
                 return false;
         });
 

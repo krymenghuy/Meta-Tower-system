@@ -34,10 +34,10 @@ class PurchaseEventHandler
         $data = $event->data;
         $ss = $data['user'];
         $warehouse_id = $data['warehouse_id'];
-        $stockclass_code = $data['stockclass_code'];
-        if(!$stockclass_code) $stockclass_code = $data['stockclass'];
+        //$stock_class = $data['stock_class'];
+        //if(!$stock_class) $stock_class = $data['stockclass_code'];
         $items = $data['items'];
         //$target_qty = $data['target_qty'];
-        Item::updateQty_many($ss,$warehouse_id,$stockclass_code,$items); 
+        $x = Item::updateQty_many($ss,$warehouse_id,$items); 
     }
 }

@@ -278,7 +278,7 @@ class ServicePlan //extends Model
      $customer_table = InvoiceSettings::$customer_table;
      $rows= DB::table("plan_subscriptions as l")->join($customer_table." as c","c.id",'=',"l.client_id")->join('persons as p','p.id','=','c.person_id')->where('l.service_plan_id',$service_plan_id)->selectRaw("l.id,c.id as client_id,c.code,concat(p.last_name,' ',p.first_name) as name,p.sex,p.email,p.phone_number, l.price, l.sales_agent_id, getEmpName(l.sales_agent_id) AS sales_agent_name, l.sales_agent_type,p.address,p.created_at,p.create_user,l.expiration_date")->orderBy('name','ASC')->get();
      foreach($rows as $row){
-        $row->subscription_status = convertDate($row->expiration_date) > date('Y-m-d')? 'Expired':'Active';
+        $row->subscription_status = convertDate($row->expiration_date) < date('Y-m-d')? 'Expired':'Active';
      }
      return $rows;
    }

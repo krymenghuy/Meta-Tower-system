@@ -3,22 +3,23 @@ namespace App\Models;
 
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use App\Models;
+//use App\Models;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-use App\Models\SMS;
+use App\Communication\SMS;
 use Session;
 use DB;
-use Carbon\Carbon;
+//use Carbon\Carbon;
 use Exception;
-use Localization;
+//use Localization;
 use Sanitizer;
 use Config;
 
-class UM //extends Model
+class UM
 {
     //use HasFactory;
+    
     protected static $app_id = null; /** app_id for Admin Back Office **/
     protected static $user_classes = [];
     
@@ -31,7 +32,7 @@ class UM //extends Model
     //### The variables below for JWT merchanism
         protected static $use_jwt = 1; //Tell UM class to use JWT mechanism to verify user'stoken
         protected static $jwt_encode ='HS256';
-        protected static $jwt_lifespan =43800; //180*60; // one month = 43800 minutes //default lifespan of JWT token (Time to expire)
+        protected static $jwt_lifespan =180*60; //default lifespan of JWT token (Time to expire)
         protected static $jwt_key ="This is JWT key";
         protected static $jwt_payload = [
           "iis"=>"",
@@ -41,19 +42,17 @@ class UM //extends Model
         ];
        
     //### The vaiables above for JWT merchanism
-    
-    /** Login via phone number or email or name **/
-    protected static $login_kind = [
-      'staff'=>'name',
-      'admin'=>'name',
-      'super_admin'=>'name',  
-      'admin_support'=>'name' /* Backend user's login can be email, phone, or any name */
-    ];
-  
-    //Used when creating new login, whether or not required official ID to link to official profile
-    protected static $required_official_profile = [
-      'staff'=>1,
+ 
+    protected static $use_phone_number_login = [
       'admin'=>0,
+      'super_admin'=>0,
+      'staff'=>0,   
+      'admin_support'=>0 /* Backend user's login can be email, phone, or any name */
+    ];
+
+    protected static $required_official_profile = [
+      'admin'=>0,
+      'staff'=>1,
       'super_admin'=>0,  
       'admin_support'=>0
     ];
@@ -65,9 +64,11 @@ class UM //extends Model
       'admin_support'=>1 /* Backend user's login can be email, phone, or any name */
     ];
 
-    public function __construct(array $attributes = [])
+    protected $userInfo=null;
+    public function __construct($userInfo=null)
     {
-       //NOTE: Config::get('app.app_id') returns Backend system's app_id stored as APP_ID in env file
+        $this->userInfo = $userInfo;
+        //NOTE: Config::get('app.app_id') returns Backend system's app_id stored as APP_ID in env file
         self::$app_id = Config::get('app.app_id');
         $app_url = ENV('APP_URL'); // Config::get('app.app_url'); //todo: /config/app.php
         self::$jwt_payload=[
@@ -76,41 +77,31 @@ class UM //extends Model
         ];
  
         self::$user_classes = [
-          'admin'=>['used'=>1,'name'=>'Admin','app_id'=>Config::get('app.app_id')],
-          'admin_support'=>['used'=>0,'name'=>'Admin Support','app_id'=>Config::get('app.app_id')],
-          'superadmin'=>['used'=>0,'name'=>'Super Admin','app_id'=>Config::get('app.app_id')],
-          'super_admin'=>['used'=>0,'name'=>'Super Admin','app_id'=>Config::get('app.app_id')]
-          //'driver'=>['used'=>1,'name'=>'Driver','app_id'=>Config::get('app.driver_app_id')],
-          //'merchant'=>['used'=>1,'name'=>'Merchant','app_id'=>Config::get('app.merchant_app_id')],
-          //'sender'=>['used'=>0,'name'=>'Merchant','app_id'=>Config::get('app.merchant_app_id')]
+          'admin'=>['used'=>1,'name'=>'Admin','app_id'=>getAdminAppId()],
+          'staff'=>['used'=>1,'name'=>'Staff','app_id'=>getAdminAppId()]
+          //'client'=>['used'=>1,'name'=>'Client','app_id'=>getClientAppId()],
+          //'superadmin'=>['used'=>1,'name'=>'Super Admin','app_id'=>getAdminAppId()],
+          //'admin_support'=>['used'=>0,'name'=>'Admin Support','app_id'=>getAdminAppId()],
+          //'super_admin'=>['used'=>0,'name'=>'Super Admin','app_id'=>getAdminAppId()]
         ];
         //parent::__construct($attributes);
        
     }
- 
+
+    // //Temporary function, getting auth code
+    // function getUserInfoByToken1($req,$user_class=null){
+    //    $ss = self::getUserInfoByToken($req,-1);
+    //    if($ss->status_code !=200)
+    //       return '#350';
+    //    else{
+    //       $ss->id = $ss->official_id;
+    //       $ss->code = $ss->official_code;
+    //       return $ss;
+    //    } 
+    // }
+
     static function getUserClasses(){
       return self::$user_classes;
-    }
-
-    //change phone number for a user, and if the user's class also use phone_number as login_name, it also changes lohin_name too
-    static function updatePhoneNumber($phone_number,$id){
-      $user = self::getUserProps($id,"user_class");
-      if(!$user) return null;
-      $loginVia = isset(self::$login_kind[$user->user_class])? self::$login_kind[$user->user_class]:null;
-      if ($loginVia ==='phone'){
-         DB::table('um_users')->where('id',$id)->update(['phone_number'=>$phone_number,'login_name'=>$phone_number]);
-      }else DB::table('um_users')->where('id',$id)->update(['phone_number'=>$phone_number]);
-      return null;
-    }
-
-    static function updateEmail($email,$id){
-      $user = self::getUserProps($id,"user_class");
-      if(!$user) return null;
-      $loginVia = isset(self::$login_kind[$user->user_class])? self::$login_kind[$user->user_class]:null;
-      if ($loginVia ==='email'){
-         DB::table('um_users')->where('id',$id)->update(['email'=>$email,'login_name'=>$email]);
-      }else DB::table('um_users')->where('id',$id)->update(['email'=>$email]);
-      return null;
     }
 
      //UM::setUserSession() is a static function and is the same as UM->createSession() 
@@ -219,13 +210,15 @@ class UM //extends Model
      
 /*##### begin::InApp UserModel ##### */
 
-    static function getAppIdByUserClass($user_class){
-       return Config::get('app.app_id');
+    function getAppIdByUserClass($user_class){
+       return self::$user_classes[$user_class]['app_id'];
     }
 
-    function getModuleList($user_id =0){
-        $rows = DB::table('um_app_modules AS m')->selectRaw("m.module_name, m.module_name_native, m.icon_image, m.target_url,m.display_order,m.disabled")->orderBy('display_order ASC')->get();
-        return $rows;
+    function getModuleList($app_id=null,$ss=null){
+       $ss = $ss?$ss:$this->userInfo;
+       $str_app ="1=1";
+       if($app_id) $str_app ="app_id ='$app_id'"; 
+        return  DB::table('um_app_modules AS m')->selectRaw("m.module_name as name, m.icon_image, m.target_url,m.display_order,m.disabled")->whereRaw($str_app)->orderBy('display_order ASC')->get();
     }
       
     function newOTP($length=6)
@@ -237,14 +230,9 @@ class UM //extends Model
      //sendSMS_otp()  $d = {user_id,[phone_number],[purpose]}
      //@purpose = {'change_password'}
       function sendSMS_otp($d){
-          $need_authentication = isset($d->need_authentication)? $d->need_authentication:1;
-          $ss = (object)['branch_id'=>1];
-          
-          if($need_authentication ===1){
-            $ss = self::getUserInfoByToken($d,-1);
-            if($ss->status_code !=200) return $ss; //user not authenticated
-          } 
-          
+          $ss = self::getUserInfoByToken($d,-1);
+          if($ss->status_code !=200) return $ss; //user not authenticated
+
           $branch_id = Sanitizer::sanitize($ss->branch_id);
           $user_id = isset($d->user_id)?$d->user_id:null;
           $login_name =isset($d->login_name)?$d->login_name:null;
@@ -261,11 +249,10 @@ class UM //extends Model
           if (empty($phone_number)) return DV::error("Phone number not found");
 
           //$text = get_settings_value($ss,'OTP_SMS_TEMPLATE','string');
-         
+          $text = SMS::getMessageTemplate($purpose);
           $new_otp_code = $this->newOTP();
-          $text = SMS::getMessageTemplate($purpose,$new_otp_code);
-          //$text = str_replace('otp_code',$new_otp_code,$text);
-          DB::table('um_users')->where('login_name',$login_name)->update(['otp_code'=>$new_otp_code]);
+          $text = str_replace('otp_code',$new_otp_code,$text);
+          DB::table('um_users')->where('login_name',$login_name)->update(array('otp_code'=>$new_otp_code));
           $m = SMS::send($phone_number,$text,null);
           if($m->status =='Error'){
             $e = (object)["sms_error"=>$m->error_message];
@@ -273,32 +260,6 @@ class UM //extends Model
             return $e;
           }
           return DV::success(["otp_code"=>$new_otp_code]);
-      }
-
-      static function resetPassword_forget($login_name,$user_class,$otp_code,$password){
-        if(self::matchOTP($login_name,$otp_code,$user_class)){
-            //begin set new password | reset password
-            //$branch_id = sanitize($ss->branch_id);
-            $login_name = htmlspecialchars($login_name);
-            if(empty($password)) return DV::error("New password is required");
-            $app_id =self::getAppIdByUserClass($user_class);
-            if(!$app_id) return DV::error('User class is not valid');
-            if(!self::existsBy('login_name',$login_name,$app_id)) return "Login name does not exist";//here
-            $str_user_class ="1=1";
-            if($user_class) $str_user_class ="user_class='$user_class'";
-           $hpwd = PASSWORD_HASH($password,PASSWORD_DEFAULT);
-           $x = DB::table('um_users')->where('login_name',$login_name)->whereRaw($str_user_class)->update(['hpwd'=>$hpwd]);
-           if($x){
-                 return DV::success();  
-           }else return DV::error("Something went wrong! The password was not reset"); //can be problem with user_class
-        }else return DV::error("OTP code is not correct");   
-     }
- 
-      //verifyOTP()
-      static function matchOTP($login_name,$otp_code,$user_class=null){
-        $str_user_class ="1=1";
-        if($user_class) $str_user_class ="u.user_class ='$user_class'";
-        return DB::table('um_users AS u')->where('u.login_name',$login_name)->whereRaw($str_user_class)->where('otp_code',$otp_code)->take(1)->exists();
       }
    
       //verify if otp_code provided by user is correct. If correct then the otp_code is cleared out from table "um_users.otp_code"
@@ -328,13 +289,15 @@ class UM //extends Model
          SMS::send($phone_number,$text,$sender_name);  
       }
 
-      function saveRole($d){
-        $ss = self::getUserInfoByToken($d,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-        $branch_id = $ss->branch_id;
-
+      function saveRole($arr=[],$ss=null){
+        $ss = $ss?$ss:$this->userInfo;
+        $branch_id = $ss?$ss->branch_id:null;
+        $d = (object)$arr;
+        //$str_branch_id = $ss? "branch_id =$branch_id":"1=1";
+        if(!$branch_id) return DV::error("Branch ID is not valid");
         $user_class = isset($d->user_class)?$d->user_class:null;
-        $result = (object)array('status'=>'Error','error_message'=>null,'role_id'=>null);
+        //$result = (object)['status'=>'Error','error_message'=>null,'role_id'=>null];
+        
         if (!isset($d->name) || empty($d->name)) return DV::error("Role name cannot be empty",$ss->lang,); 
         if(!isset($d->id)) $d->id = 0;
         if (empty(self::$app_id)) return DV::error("app id is not valid");
@@ -343,7 +306,7 @@ class UM //extends Model
         if ($d->id > 0) { 
             if($this->role_exists($ss,$d->name,$d->id)) return DV::error("Role name already exists",$ss->lang);  
             DB::table('um_roles')->where('id',$d->id)->update(['name'=>$d->name,'User_class'=>$user_class]);
-            $result->role_id = $d->id;
+            //$result->role_id = $d->id;
         } else {
 
             if($this->role_exists($ss,$d->name,null)) return DV::error("Role name already in use",$ss->lang);  
@@ -356,11 +319,12 @@ class UM //extends Model
                 'create_user'=>$ss->login_name,
                 'create_date'=>getNowTime()
             ]);
-            $result->role_id = DB::getPdo()->lastInsertId();
+            //$result->role_id = DB::getPdo()->lastInsertId();
         }
         return DV::success();
     }  
-       function role_exists($uss,$name,$id){
+  
+    function role_exists($uss,$name,$id){
           $rows ;
           $branch_id = $uss->branch_id;
          if($id > 0){
@@ -374,22 +338,41 @@ class UM //extends Model
          else return false;
       } 
 
-        function deleteRole($d) {
-          $ss = self::getUserInfoByToken($d,103);
-          if($ss->status_code !=200) return $ss; //user not authenticated
-          $branch_id = $ss->branch_id;
-          $lang = $ss->lang;
-          $id = $d->role_id;
-          if(!$id || $id<=0) return DV::error("Role identifier is not valid",$lang);
-          DB::table('um_roles')->where('id',$id)->where('app_id',self::$app_id)->delete();
-          DB::table('um_user_roles')->where('role_id',$id)->where('app_id',self::$app_id)->delete();
-          return DV::success();
+      /***
+       * Check if a user has other role other then the given $role_id;
+       * This is useful to prevent Current user from deleting his or her own role on Role Management screen, causing her to not able to login after that because she or he has no role anymore
+      */
+      static function hasOtherRole($role_id,$user_id){
+        $this_app_id = self::$app_id;
+        return DB::table('um_user_roles')->whereRaw("role_id <> $role_id")->where("user_id",$user_id)->where('app_id',$this_app_id)->select('user_id')->take(1)->exists();    
+     }
+
+     static function getDeleteRoleError($role_id, $ss=null){
+       if(!$role_id) return "No role ID provided";
+       if($ss){
+          if(!UM::hasOtherRole($role_id,$ss->user_id)) return "Cannot delete this role because this is the only role of the current user";
+       }
+       return null;
+     }
+
+     function deleteRole($role_id,$ss=null) {
+         //$ss = self::getUserInfoByToken($d,103);
+         $ss = $ss?$ss:$this->userInfo;
+         //if($ss->status_code !=200) return $ss; //user not authenticated
+         //$branch_id = $ss->branch_id;
+         //$lang = $ss->lang;
+         //$id = $d->role_id;
+         $err = self::getDeleteRoleError($role_id,$ss);
+         if($err) return DV::error($err);
+         //if(!$id || $id<=0) return DV::error("Role identifier is not valid",$lang);
+         DB::table('um_roles')->where('id',$role_id)->delete();
+         DB::table('um_user_roles')->where('role_id',$role_id)->delete();
+         return DV::success();
       }
 
-        function addRoleMember($d){
-          $ss = self::getUserInfoByToken($d,107);
-          if($ss->status_code !=200) return $ss; //user not authenticated
-          return $this->addRoleMember_internal($ss,$d->role_id,$d->user_id);
+      function addRoleMember($user_id,$role_id,$ss=null){
+          $ss =$ss?$ss:$this->userInfo; 
+          return $this->addRoleMember_internal($ss,$role_id,$user_id);
       }
 
       protected function addRoleMember_internal($uss,$role_id,$user_id){
@@ -413,29 +396,19 @@ class UM //extends Model
         return DV::success(['user_count'=>$user_count]);
     }
 
-        function removeAccessibleModule($d) {
-          $ss = self::getUserInfoByToken($d,110);
-          if($ss->status_code !=200) return $ss; //user not authenticated
-         
-          $branch_id = $ss->branch_id;
-
-          $role_id = $d->role_id;
-          $module_id = $d->module_id;
-          DB::table('um_role_modules')->where('role_id',$role_id)->where('branch_id',$branch_id)->where('module_id',$module_id)->delete();
-          DB::select(DB::raw("DELETE FROM um_role_permissions WHERE permission_id IN (SELECT id FROM um_permissions WHERE module_id ='".$module_id."') AND role_id ='".$role_id."' ")); 
-          return null; 
+        function removeAccessibleModule($module_id,$role_id,$ss=null) {
+          //$branch_id = $ss? $ss->branch_id:null;
+          DB::table('um_role_modules')->where('role_id',$role_id)->where('module_id',$module_id)->delete();
+          DB::select(DB::raw("DELETE FROM um_role_permissions WHERE permission_id IN (SELECT id FROM um_permissions WHERE module_id ='$module_id') AND role_id ='$role_id'")); 
+          return DV::success();
       }
 
-        function removeRoleMember($d){
-          $ss = self::getUserInfoByToken($d,108);
-          if($ss->status_code !=200) return $ss; //user not authenticated
-         
-          $branch_id = $ss->branch_id;
-
-          $role_id = $d->role_id;
-          $user_id = $d->user_id;
+        function removeRoleMember($user_id,$role_id,$ss=null){
+          $ss =$ss?$ss:$this->userInfo;
+          //$branch_id = $dss? $ss->branch_id:null;
+        
           $result = (object)array('status'=>'Error');
-          DB::table('um_user_roles')->where('branch_id',$branch_id)->where('app_id',self::$app_id)->where('role_id',$role_id)->where('user_id',$user_id)->delete();
+          DB::table('um_user_roles')->where('app_id',self::$app_id)->where('role_id',$role_id)->where('user_id',$user_id)->delete();
           $rows = DB::table('um_user_roles')->where('app_id',self::$app_id)->where('role_id',$role_id)->selectRaw("COUNT(user_id) AS user_count")->get();
           $result->user_count = 0;
           foreach($rows as $row)  $result->user_count = $row->user_count; 
@@ -444,60 +417,44 @@ class UM //extends Model
             $result->error_message =null;
            return $result;
       }
-        function getUserRoles($d){
-          $ss = self::getUserInfoByToken($d,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-          $branch_id = $ss->branch_id;
-          $user_id = $d->user_id;
-          $rows = DB::table('um_user_roles AS u')->where('u.branch_id',$branch_id)->where('u.app_id',self::$app_id)->where('u.user_id',$user_id)->selectRaw("u.id,u.name")->get();
-          return $rows;
-      }
-
-        function getRoleList($d){
-          $ss = self::getUserInfoByToken($d,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-          $branch_id = Sanitizer::sanitize($ss->branch_id);
-          $rows = DB::table('um_roles AS r')->selectRaw("r.id, r.`name`,r.user_class, (SELECT COUNT(ur.user_id) FROM um_user_roles AS ur INNER JOIN um_users as u ON u.id = ur.user_id WHERE ur.branch_id = u.branch_id AND ur.role_id = r.id) AS user_count")->where('r.branch_id',$branch_id)->get();
-          return $rows; 
+        function getUserRoles($user_id){
+         return DB::table('um_user_roles AS u')->where('u.app_id',self::$app_id)->where('u.user_id',$user_id)->selectRaw("u.id,u.name")->get();
+        }
+ 
+        function getRoleList($ss=null){
+          $ss = $ss?$ss:$this->userInfo;
+          $branch_id = $ss? $ss->branch_id : null;
+          $str_branch ="1=1";
+          //if($branch_id > 0) $str_branch ="u.branch_id =$branch_id";
+          return DB::table('um_roles AS r')->selectRaw("r.id, r.`name`,r.user_class, (SELECT COUNT(ur.user_id) FROM um_user_roles AS ur INNER JOIN um_users as u ON u.id = ur.user_id WHERE ur.branch_id = u.branch_id AND ur.role_id = r.id) AS user_count")->whereRaw($str_branch)->get(); 
         }
 
-        function getRoleMembers($d){
-          $ss = self::getUserInfoByToken($d,-1);
-          if($ss->status_code !=200) return $ss; //user not authenticated
-          $branch_id = $ss->branch_id; 
-          $role_id = $d->role_id;
+        function getRoleMembers($arr=[],$role_id){
           $role_name = self::getRoleName($role_id);
-          $rows = DB::table('um_user_roles AS ur')->join('um_users AS u','u.id','=','ur.user_id')->selectRaw("'$role_name' as role_name,u.id,u.login_name,u.full_name,u.official_code,u.phone_number, u.email,u.otp_code,u.user_class")->where('u.branch_id',$branch_id)->where('ur.role_id',$role_id)->get();
-          return $rows; 
+         return  DB::table('um_user_roles AS ur')->join('um_users AS u','u.id','=','ur.user_id')->selectRaw("'$role_name' as role_name,u.id,u.login_name,u.full_name,u.official_code,u.phone_number, u.email,u.otp_code,u.user_class")->where('ur.role_id',$role_id)->get();
        }
 
-        function getRoleById($d) {
-          $ss = self::getUserInfoByToken($d,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-          $branch_id = $ss->branch_id; 
-          $id = $d->role_id; 
-          $rows= DB::table('um_roles')->where('branch_id',$branch_id)->where('id',$id)->selectRaw('id,name,user_class')->limit(1)->get(); 
-          foreach($rows as $row) return $row;
-          return null; 
-      }
+        function getRoleById($role_id) {
+          return DB::table('um_roles')->where('id',$role_id)->selectRaw('id,name,user_class')->take(1)->get()->first();
+       }
 
-        function getUserList($d){
-          $ss = self::getUserInfoByToken($d,-1);
-          if($ss->status_code !=200) return $ss; //user not authenticated
-          $branch_id = $ss->branch_id;
+        function getUserList($arr=[], $ss){
+          $ss =$ss? $ss: $this->userInfo;
+          $branch_id = $ss?$ss->branch_id:null;
           $str_user_class ="1=1";
-          $user_class = isset($d->user_class)?$d->user_class:null;
+          $user_class = isset($arr['user_class'])? $arr['user_class']:null;
+          $search_value = isset($arr['search_value'])? $arr['search_value']:null;
           if($user_class) $str_user_class="u.user_class ='$user_class'";
 
           $str_search ='';
-          if(isset($d->search_value)) {
-              if(!empty($d->search_value)) {
-                  $str_search =" AND u.login_name LIKE '%". escape_like_str($d->search_value)."%' OR u.full_name LIKE '%".escape_like_str($d->search_value)."%' " ;
+          if(isset($search_value)) {
+              $search_value = escape_like_str($search_value); 
+              if($search_value) {
+                  $str_search =" AND u.login_name LIKE '%". $search_value."%' OR u.full_name LIKE '%".$search_value."%' " ;
               }
           }
           $more_where = "1=1".$str_search;
-          $rows = DB::table('um_users as u')->whereRaw($str_user_class)->whereRaw($more_where)->selectRaw("u.id,u.official_id,u.official_code, u.full_name, u.login_name, u.user_class, u.previlege_type, u.last_login_date, is_locked, `status`")->where('branch_id',$branch_id)->get(); 
-          return $rows;
+          return DB::table('um_users as u')->whereRaw($str_user_class)->whereRaw($more_where)->selectRaw("u.id,u.official_id,u.official_code, u.full_name, u.login_name, u.user_class, u.previlege_type, u.last_login_date, is_locked, `status`")->where('branch_id',$branch_id)->get(); 
         }
  
       static function getUserProp($user_id,$prop){
@@ -511,39 +468,36 @@ class UM //extends Model
  
       //$cols = "id,full_name"
       static function getUserProps($user_id,$cols){
-         $rows = DB::table('um_users AS u')->where('id',$user_id)->selectRaw($cols)->take(1)->get(); 
+         $rows = DB::table('um_users AS u')->where('id',$user_id)->selectRaw($cols)->limit(1)->get(); 
+        
         foreach($rows as $row) return $row;
         return null;
       }
-      static function updateUserProps($user_id,$inputs=[]){
-        return DB::table('um_users')->where('id',$user_id)->update($inputs); 
-      }
-      static function updateUserByOfficialId($official_id,$inputs=[]){
-        return DB::table('um_users')->where('official_id',$official_id)->update($inputs); 
-      }
-
+      
       /** getProfileInfo()| getUserProfile()| getOfficialProfile() **/
       //return official profile information of a user including "official_id, official_code, name, sex, phone_number,email, address" 
       static function officialProfileInfo($branch_id,$official_code,$user_class,$cols=null){
+         $profile_classes = ['staff','consultant','doctor'];
+         $tables = [
+            "staff"=>"employees",
+            "consultant"=>"employees",
+            "doctor"=>"employees"
+         ];
+
          $rows = [];
          //NOTE: column_name can be also prefixed with alias "s."
-         if(!$cols) $cols = "s.id as official_id, s.code as official_code,s.name,s.email,s.phone_number";
-         if($user_class === 'merchant' || $user_class === 'sender'){
-            $rows = DB::table("sender as s")->where('s.code',$official_code)->where('s.branch_id',$branch_id)->selectRaw($cols)->get();
-            return isset($rows[0])?$rows[0]:null;   
-         }else if($user_class === 'driver'){
-            $rows = DB::table("driver as s")->where('s.code',$official_code)->where('s.branch_id',$branch_id)->selectRaw($cols)->get();
-            return isset($rows[0])?$rows[0]:null;   
-          }else if ($user_class === 'admin'){
-            //todo: Later, we can return admin profile as a person info such as full_name, NID, phone, email, address
-            return null;
+         if(!$cols) $cols = "p.id as person_id,t.id as official_id, t.code as official_code,p.name,p.email,p.phone_number";
+         if(in_array($user_class,$profile_classes)){
+            $tblname = $tables[$user_class];
+            if($tblname) $rows = DB::table("persons as p")->join("$tblname as t",'t.person_id','=','p.id')->where('t.code',$official_code)->where('t.branch_id',$branch_id)->selectRaw($cols)->get();
+            return isset($rows[0])?$rows[0]:null;
          }else if ($user_class ==='superadmin' || $user_class ==='super_admin'){
            //todo: Later, we can return admin profile as a person info such as full_name, NID, phone, email, address
            return null;
          }else{
             //todo: Later, we can return admin profile as a person info such as full_name, NID, phone, email, address
             return null; 
-         } 
+         }
       }
   
     //Check if current user is super admin (with user_id =1)
@@ -566,10 +520,9 @@ class UM //extends Model
        
      //Create or UpdateUser() depending on $d->user_id;
      //@params $d = {login_name,password,email,full_name,phone_number,user_class,role_id,official_id}
-     function saveUser($d){
-          $ss = self::getUserInfoByToken($d,100);
-          if($ss->status_code !=200) return $ss; //user not authenticated
-          $branch_id = $ss->branch_id;
+     function saveUser($arr=[],$ss=null){
+          $ss = $ss?$ss:$this->userInfo;
+          $branch_id = $ss?$ss->branch_id:null;
 
           $validate_rule =[
              'user_id'=>"0|identity=1",
@@ -589,7 +542,7 @@ class UM //extends Model
           ];
 
           $check_unique = ["$branch_id|um_users|login_name|id|text=login name is already in use"]; 
-          $res = validateObject($d,$validate_rule,true,['email'=>['.','@','-']],$ss->lang,false,$check_unique);
+          $res = validateObject($arr,$validate_rule,true,['email'=>['.','@','-']],$ss->lang,false,$check_unique);
           if($res->error) return DV::error($res->error);
           $inputs = $res->values; 
           $user_id = $res->user_id;
@@ -597,7 +550,7 @@ class UM //extends Model
 
           if (!self::correctUserClass($user_class)) return DV::error("User Type or User Class is not correct",$ss->lang);
           //Get app_id based on a given @user_class;
-          $app_id = self::getAppIdByUserClass($user_class);
+          $app_id = $this->getAppIdByUserClass($user_class);
           ////$app_id = self::$app_id;
            
           //if official profile info is required
@@ -619,8 +572,7 @@ class UM //extends Model
 
           //$single_role_name =null;// $first_role->name;
           //$first_role =self::firstRole($d->role_id);
-          $loginVia = isset(self::$login_kind[$user_class])?self::$login_kind[$user_class]:null;
-          if ($loginVia==='phone'){
+          if (self::$use_phone_number_login[$user_class]==1){
               if(!isset($inputs['phone_number'])) $inputs['phone_number'] = $inputs['login_name']; 
           }
            
@@ -647,7 +599,7 @@ class UM //extends Model
          $user_id = saveData($ss,"um_users",["id"=>$user_id],$inputs,[],0);
          if($user_id >0){
               //Renew user's role by deleteing and inserting it again
-              DB::table('um_user_roles')->where('user_id',$d->user_id)->where('role_id',$role_id)->delete();
+              DB::table('um_user_roles')->where('user_id',$user_id)->where('role_id',$role_id)->delete();
               $this->addRoleMember_internal($ss,$role_id,$user_id);
               return DV::success(['id'=>$user_id]);
          }else{
@@ -781,13 +733,11 @@ class UM //extends Model
             //#begin:: Get special active fields "is_locked,status,lang". These fields need to be updated in the decoded JWT token on every api call
                 $decoded->status="active";
                 $row = self::getUserProps($decoded->user_id,"is_locked,status,lang");
-                if ($row)
-                {
+                if ($row){
                   $decoded->lang = $row->lang;
                   $decoded->is_locked = $row->is_locked;
                   $decoded->status = $row->status;
                 }
-
                 if (strtolower($decoded->status)==='disabled' || $decoded->is_locked === 1) return DV::error('User status is disabled or locked out',$def_lang,400);
             //#end::Get special active fields "is_locked,status,lang". These fields need to be updated in the decoded JWT token on every api call
             $ret =(object)['status_code'=>200,'status'=>'OK'];
@@ -795,7 +745,7 @@ class UM //extends Model
             return $ret;
          }catch(\Exception $e){
               $err = $e->getMessage(); 
-              if($err==="Expired token")  return DV::error($err,$def_lang,401); 
+              if($err==="Expired token")  return DV::error($err,$def_lang,402); 
                
                 \Log::error($err, [
                   'file' => $e->getFile(),
@@ -829,17 +779,13 @@ class UM //extends Model
                 ,'full_name'=>$row->full_name
              ];
           }
-          
           return DV::error('User authentication failed',null,401);
       }
    }
 
       //getUserInfo() returns "id, previlege_type, user_class,is_locked,status"
-        function getUserInfo($d){
-          $ss = self::getUserInfoByToken($d,-1);
-          if($ss->status_code !=200) return $ss; //user not authenticated
-          $branch_id = $ss->branch_id;
-          $id_or_name = $d->id_or_name;
+        function getUserInfo($user_id){
+          $id_or_name = $d->user_id;
           return $this->getUserInfo1($id_or_name); 
       }
 
@@ -850,78 +796,83 @@ class UM //extends Model
           $rows = DB::table('um_users AS u')->where('id',$id_or_name)->selectRaw("u.id, u.previlege_type, u.user_class, u.is_locked,u.status")->limit(1)->get();
         else
          $rows = DB::table('um_users AS u')->where('u.login_name',$id_or_name)->selectRaw("u.id, u.previlege_type, u.user_class, u.is_locked,u.status")->limit(1)->get();  
-       foreach($rows as $row) return $row;
-       return null;   
+       return $rows->first();
     }
-
-        function deleteUser($d){
-          $ss = self::getUserInfoByToken($d,101);
-          if($ss->status_code !=200) return $ss; //user not authenticated
-        
-          $branch_id = $ss->branch_id;
-          $user_id = $d->user_id;
-          $user = $this->getUserInfo1($user_id);
+    
+    function deleteUser($user_id,$ss=null){
+           $ss = $ss?$ss:$this->userInfo;
+           $branch_id = $ss?$ss->branch_id:null;
+           $user = $this->getUserInfo1($user_id);
+           $str_branch ="1=1";
+           if($branch_id>0) $str_branch ="branch_id =$branch_id";
           //For one Application or one system, => There is one in-app Admin user denoted by his "previlege_type =Admin "
           //This Admin user cannot be delete, and he can create other in-app users if needed (Depending on permissions as well)
           if(strToLower($user->previlege_type) ==='admin') {
               return DV::error("Cannot delete Admin user");
           }
-          DB::table('um_users')->where('branch_id',$branch_id)->where('id',$user_id)->delete();  
+          DB::table('um_users')->whereRaw($str_branch)->where('id',$user_id)->delete();  
           return DV::success();
       }
 
-        function setUserStatus($d){
-          $ss = self::getUserInfoByToken($d,106);
-          if($ss->status_code !=200) return $ss; //user not authenticated
-          $branch_id = $ss->branch_id;
-
-          if(strtoLower($status) !='active' && strtolower($status) !='inactive') {
+        /**
+         * statuc_code = {active,inactive}
+         * **/
+        function setUserStatus($status_code,$user_id,$ss=null){
+          $ss =$ss? $ss:$this->userInfo;
+          $branch_id = $ss?$ss->branch_id:null;
+          $str_branch ="1=1";
+          if($branch_id>0) $str_branch="branch_id=$branch_id";
+          $valid_statuses =['active','inactive'];
+          if(!in_array(strtoLower($status_code),$valid_statuses)) {
               return "Status is not correct";
           }
-          $user_id = $d->user_id;
-          $status = $d->status;
-          DB::table('um_users')->where('branch_id',$branch_id)->where('id',$user_id)->update(array('status'=>$status));
-          return null;
+          DB::table('um_users')->whereRaw($str_branch)->where('id',$user_id)->update(['status'=>$status_code]);
+          return DV::success();
       } 
       
-        function unlockUser($d){
-          $ss = self::getUserInfoByToken($d,-1);
-          if($ss->status_code !=200) return $ss; //user not authenticated
-          $branch_id = Sanitizer::sanitize($ss->branch_id);
-          $user_id = Sanitizer::sanitize($d->user_id);
-         DB::update(DB::raw("UPDATE um_users SET is_locked = 0 WHERE id ='".$user_id."' AND branch_id ='".$branch_id."' "));
-         return null;
-      } 
-        function setLockStatus($d){
-          $ss = self::getUserInfoByToken($d,-1);
-          if($ss->status_code !=200) return $ss; //user not authenticated
-          $branch_id = Sanitizer::sanitize($ss->branch_id);
-          $user_id = Sanitizer::sanitize($d->user_id);
-          $action = strtolower($d->action);
+        function unlockUser($user_id,$ss=null){
+          $ss =$ss? $ss:$this->userInfo;
+          $branch_id = $ss?$ss->branch_id:null;
+          $str_branch ="1=1";
+          if($branch_id>0) $str_branch="branch_id=$branch_id";
+          if(!$user_id) $user_id=-1;
+         DB::update(DB::raw("UPDATE um_users SET is_locked = 0 WHERE id =$user_id AND $str_branch"));
+         return DV::success();
+       }
 
-          if($action =='lock') {
-             DB::update(DB::raw("UPDATE um_users set is_locked =1 WHERE branch_id ='".$branch_id."' AND id ='".$user_id."' "));
+       /**
+        * $action = lock|unlock
+        * **/
+        function setLockStatus($action,$user_id,$ss=null){
+          $action = strtolower($action);
+          $ss =$ss?$ss:$this->userInfo;
+          $branch_id = $ss?$ss->branch_id:null;
+          $str_branch ="1=1";
+          if($branch_id>0) $str_branch ="branch_id =$branch_id";
+          if($action ==='lock') {
+             DB::update(DB::raw("UPDATE um_users set is_locked =1 WHERE $str_branch AND id =$user_id"));
           } else {
-            DB::update(DB::raw("UPDATE um_users set is_locked =0 WHERE branch_id ='".$branch_id."' AND id ='".$user_id."' "));
+             DB::update(DB::raw("UPDATE um_users set is_locked =0 WHERE $str_branch AND id ='$user_id"));
           }
-          return null;
+          return DV::success();
       }
+
        function official_id_exists($official_id,$app_id) {
          if(empty($official_id) || empty($app_id)) return false;
          return DB::table('um_users')->where('official_id',$official_id)->where('app_id',$app_id)->limit(1)->exists();
        }
+
         function user_exists($name,$user_id){
           //$branch_id = $uss->branch_id;
-          $q ;
+          $rows =[];
           $name =$name;
           $user_id = Sanitizer::sanitize($user_id);
           if($user_id > 0) //in case of UPDATE
           {
-             $q = DB::select(DB::raw("SELECT u.id FROM um_users AS u WHERE u.login_name ='".$name."' AND u.id <> ".$user_id." LIMIT 1"));
+             $rows = DB::select(DB::raw("SELECT u.id FROM um_users AS u WHERE u.login_name ='".$name."' AND u.id <> ".$user_id." LIMIT 1"));
           } else //In case of ADD NEW
-             $q = DB::select(DB::raw("SELECT u.id FROM um_users AS u WHERE u.login_name ='".$name."' LIMIT 1"));
-          if(count($q) > 0) return true; 
-          else return false;     
+             $rows = DB::select(DB::raw("SELECT u.id FROM um_users AS u WHERE u.login_name ='".$name."' LIMIT 1"));
+          return isset($rows[0]);  
       }
 
       static function verifyUserToken($token=null){
@@ -1036,94 +987,71 @@ class UM //extends Model
 
 
        //In case: user changes their own password
-        function changePassword($d){
-          $ss = self::getUserInfoByToken($d,-1);
-          if($ss->status_code !=200) return $ss; //user not authenticated
-          $branch_id = Sanitizer::sanitize($ss->branch_id);
-          $lang = $ss->lang;
-
-          $login_name = Sanitizer::sanitize($d->login_name);
-          //if login_name is not provided then try to change if current user tries to change his own password
-          if(!$login_name) $login_name = $ss->login_name;
-
-          $oldPwd =$d->oldPwd;
-          $newPwd = $d->newPwd;
+       //user_id can user ID or Login Name
+        function changePassword($oldPwd,$newPwd,$login_name,$ss=null){
+          $ss = $ss?$ss:$this->userInfo;
+          $str_branch_id = "1=1";
+          $branch_id = $ss?$ss->branch_id:null;
+          if($branch_id>0) $str_branch = "branch_id = $branch_id";
+          
+          //$login_name =$user_id;
+          //if($user_id > 0) $login_name = DB::table("um_users")->where("id",$user_id)->take(1)->value("login_name");
         $new_password_hash = PASSWORD_HASH($newPwd,PASSWORD_DEFAULT);
-        $rows = DB::table('um_users as u')->where('u.login_name',$login_name)->selectRaw('u.id,u.hpwd')->limit(1)->get();
+        $rows = DB::table('um_users as u')->where('u.login_name',$login_name)->selectRaw('u.id,u.hpwd')->take(1)->get();
         $hpwd = '$%^&**FffgW@$Mx9f5';
-        if (!isset($rows[0])) return DV::error("Failed to change password because user identity is not correct!",$lang);
+        if (!isset($rows[0])) return DV::error("Failed to change password because user identity is not correct!");
         foreach($rows as $row) $hpwd = $row->hpwd;
-
-        // if (strtolower(session('user_name')) != strtolower($login_name)) {
-        //       return "Failed to change password because there was problem identifying your identity"; 
-        // }
-
+ 
         if (password_verify($oldPwd,$hpwd)){ 
-           DB::table('um_users')->where('login_name',$login_name)->update(array('hpwd'=>$new_password_hash));
+           DB::table('um_users')->where('login_name',$login_name)->update(['hpwd'=>$new_password_hash]);
            return DV::success();
-        } else return DV::error($lang,"Old password is not correct!");
+        } else return DV::error("Old password is not correct!");
       }
 
       function sendOTPCode_email($d){
         return null;
       }
 
-      //sendOTP() | sendPhoneOTP()
-      function sendOTPCode_phone($ss,$arr){
-          //$ss = self::getUserInfoByToken($d,-1);
-          //if($ss->status_code !=200) return $ss; //user not authenticated
-          //$branch_id = Sanitizer::sanitize($ss->branch_id);
-          $d = (object)$arr;
-          $phone_number = $d->phone_number;
-          $new_otp_code = $this->newOTP();
-          $message = SMS::getMessageTemplate('forget_password',$new_otp_code);
-          $res  = SMS::send($phone_number,$message);
-          if($res->status ==='OK'){
-            $x = DB::table('um_users')->where('login_name',$phone_number)->update(['otp_code'=>$new_otp_code]);
-            if(!$x) return DV::error("Login name $phone_number does not exist");
-            return DV::success(['otp_code'=>$new_otp_code]);
-          }
-          return DV::error("Failed to send OTP code");
-      }
-      
-      //For Admin user to reset password for other user, or user themselve to just save password after otp_code code has been verified correctly
-      //$d = {login_name, password} OR $d = {login_name,newPwd}
-      function setPassword($d){
+      function sendOTPCode_phone($d){
         $ss = self::getUserInfoByToken($d,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
-          $lang = $ss->lang;
           $branch_id = Sanitizer::sanitize($ss->branch_id);
-          //$login_name = $d->login_name;
-          //todo: later sanitize login_name first
-          $login_name = $d->login_name; //Sanitizer::sanitize($d->login_name,'email');
-          $newPwd = isset($d->newPwd)?$d->newPwd:null;
-          if(empty($newPwd)) $newPwd = isset($d->password)?$d->password:null;
+          $phone_number = Sanitizer::sanitize($d->phone_number);
+      }
+       
+      /**
+       *  //For Admin user to reset password for other user, or user themselve to just save password after otp_code code has been verified correctly
+      * @param $user_id can be login name or user_id
+       * **/
+      function setPassword($newPwd,$login_name,$ss=null){
+          $ss = $ss?$ss:$this->userInfo;
+          $branch_id = $ss?Sanitizer::sanitize($ss->branch_id):null;
+          //$login_name = $user_id;
+          //if($user_id >0) $login_name = DB::table("um_users")->where("id",$user_id)->take("login_name");
+
         //TODO:Check if the current user has right to set other users' password or not
         //if(empty($login_name)) return "Login name is unexpectedly empty!";
-        if(!$this->user_exists($login_name,null)) return DV::error($login_name? "Login name $login_name does not exist":"Login name is unexpectedly missing or empty",$lang);
-        if(empty($newPwd)) return DV::error("password cannot be empty",$lang);
+        if(!$this->user_exists($login_name,null)) return DV::error($login_name? "Login name $login_name does not exist":"Login name is unexpectedly missing or empty");
+        if(empty($newPwd)) return DV::error("password cannot be empty");
 
         $hpwd = PASSWORD_HASH($newPwd,PASSWORD_DEFAULT);
-        DB::table('um_users')->where('login_name',$login_name)->update(array('hpwd'=>$hpwd));
+        DB::table('um_users')->where('login_name',$login_name)->update(['hpwd'=>$hpwd]);
         return DV::success();
     }
 
-      function changeLoginName($d){
-        $ss = self::getUserInfoByToken($d,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-         $lang = $ss->lang;
-         $branch_id = Sanitizer::sanitize($ss->branch_id);
-         $login_name = Sanitizer::sanitize($d->login_name);
-         $new_login_name = Sanitizer::sanitize($d->new_login_name);
+      function changeLoginName($login_name,$new_login_name,$ss=null){
+         $ss =$ss?$ss:$this->userInfo; 
+         //$branch_id = Sanitizer::sanitize($ss->branch_id);
+         $login_name = Sanitizer::sanitize($login_name);
+         $new_login_name = Sanitizer::sanitize($new_login_name);
 
-         $rows =DB::table('um_users')->where('login_name',$login_name)->selectRaw('id')->limit(1)->get();
-         $user_id = null;
-         foreach($rows as $row) $user_id = $row->id;
-         if (empty($user_id)) return DV::error("The provided login name does not exists",$lang);   
-         if(empty($new_login_name)) return DV::error("New login name cannot be blank",$lang);
+         $user_id = DB::table('um_users')->where('login_name',$login_name)->selectRaw('id')->take(1)->value("id");
+       
+         if (empty($user_id)) return DV::error("The provided login name does not exists");   
+         if(empty($new_login_name)) return DV::error("New login name cannot be blank");
 
          if ($this->user_exists($new_login_name,$user_id)) {
-             return DV::error("Login named `$new_login_name` already in use",$lang);
+             return DV::error("Login named `$new_login_name` already in use");
          } 
          if (strtolower($login_name) === strtolower($new_login_name)) return null;// "New login name cannot be the same as the old login name";
          DB::update(DB::raw("UPDATE um_users SET login_name ='$new_login_name' WHERE login_name ='$login_name'"));
@@ -1133,7 +1061,7 @@ class UM //extends Model
 
       function createLoginSession($user_id = null){
         $last_month_date =date('Y-m-d');
-        $app_id = self::$app_id; 
+        $app_id = $this->getAppIdByUserClass($user_class);
         DB::delete(DB::raw("DELETE FROM um_sessions WHERE DATE(start_time) <= '$last_month_date' AND app_id ='".self::$app_id."'"));
          $session_id = $this->getGUID();
          $rv_code  = $this->getGUID();
@@ -1143,128 +1071,121 @@ class UM //extends Model
          else return null;  
    }
 
-     function getComboItems_user($d){
-      $ss = self::getUserInfoByToken($d,-1);
-      if($ss->status_code !=200) return $ss; //user not authenticated
-       $branch_id = Sanitizer::sanitize($ss->branch_id);
-       $role_id = Sanitizer::sanitize($d->role_id);
-     $rows =[];
-     if($role_id > 0) {
-        $rows = DB::select(DB::raw("SELECT u.id, u.login_name FROM um_users AS u INNER JOIN um_user_roles as ur ON ur.user_id = u.id WHERE u.branch_id ='$branch_id' AND ur.role_id ='$role_id' ORDER BY u.`login_name` ASC "));
-     } else 
-        $rows = DB::select(DB::raw("SELECT u.id, u.login_name FROM um_users AS u WHERE u.branch_id ='$branch_id' ORDER BY u.`login_name` ASC "));   
-    
-     return $rows;
+     function getComboItems_user($role_id=null,$ss=null){
+      // $ss = self::getUserInfoByToken($d,-1);
+      // if($ss->status_code !=200) return $ss; //user not authenticated
+      //  $branch_id = Sanitizer::sanitize($ss->branch_id);
+        $role_id = Sanitizer::sanitize($role_id);
+        $rows =[];
+        if($role_id > 0) {
+            $rows = DB::select(DB::raw("SELECT u.id, u.login_name FROM um_users AS u INNER JOIN um_user_roles as ur ON ur.user_id = u.id WHERE ur.role_id =$role_id ORDER BY u.`login_name` ASC "));
+        } else 
+            $rows = DB::select(DB::raw("SELECT u.id, u.login_name FROM um_users AS u ORDER BY u.`login_name` ASC "));   
+        
+        return $rows;
    }
   
-   function getComboItems_role($d){
-       $ss = self::getUserInfoByToken($d,-1);
-       if($ss->status_code !=200) return $ss; //user not authenticated
-       $branch_id = Sanitizer::sanitize($ss->branch_id);
-       $user_class = isset($d->user_class)?$d->user_class:null;
-       $str_user_class =null;
-       if(!empty($d->user_class)) $str_user_class =" AND r.user_class ='$user_class'";
-       return DB::select(DB::raw("SELECT r.name, r.id FROM um_roles AS r WHERE r.branch_id ='$branch_id' $str_user_class ORDER BY `name` ASC "));
+   function getComboItems_role($user_class=null,$ss=null){
+      //  $ss = self::getUserInfoByToken($d,-1);
+      //  if($ss->status_code !=200) return $ss; //user not authenticated
+      //  $branch_id = Sanitizer::sanitize($ss->branch_id);
+       //$user_class = isset($d->user_class)?$d->user_class:null;
+       $str_user_class ="1=1";
+       //if($user_class) $str_user_class ="u.user_class='$user_class'";
+       //if(!empty($d->user_class)) $str_user_class =" AND r.user_class ='$user_class'";
+       return DB::select(DB::raw("SELECT r.name, r.id FROM um_roles AS r WHERE $str_user_class ORDER BY `name` ASC "));
     }
 
-      function getComboItems_workloc($d){
-        $ss = self::getUserInfoByToken($d,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-         //$lang = $ss->lang;
-         $branch_id = Sanitizer::sanitize($ss->branch_id);
-         return DB::select(DB::raw("SELECT c.name, c.name_native, c.id FROM um_worklocations AS c WHERE c.branch_id ='$branch_id' ORDER BY `name` ASC "));
+      function getComboItems_workloc($ss=null){ 
+         //$branch_id = Sanitizer::sanitize($ss->branch_id);
+         $str_branch ="1=1";
+         return DB::select(DB::raw("SELECT c.name, c.name_native, c.id FROM um_worklocations AS c WHERE $str_branch ORDER BY `name` ASC "));
      }
 
-       function getComboItems_module($d){
-        $ss = self::getUserInfoByToken($d,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-        $branch_id = Sanitizer::sanitize($ss->branch_id);
-        return DB::select(DB::raw("SELECT m.id,m.module_name as `name` FROM um_app_modules AS m WHERE IFNULL(m.hidden,0) =0 AND m.branch_id ='$branch_id' AND m.app_id ='".self::$app_id."' ORDER BY `name` ASC "));
+       function getComboItems_module($ss=null){
+         $ss =$ss?$ss:$this->userInfo;
+        //$branch_id = Sanitizer::sanitize($ss->branch_id);
+        $str_branch ="1=1";
+        return DB::select(DB::raw("SELECT m.id,m.module_name as `name` FROM um_app_modules AS m WHERE IFNULL(m.hidden,0) =0 AND $str_branch AND m.app_id ='".self::$app_id."' ORDER BY `name` ASC "));
      }
 
        //getAccessibleModules_current_user
-       function getAccessibleModules_cu($d){
-        $ss = self::getUserInfoByToken($d,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-
-         $branch_id = Sanitizer::sanitize($ss->branch_id);
-         $user_id = Sanitizer::sanitize($ss->user_id);
+       function getAccessibleModules_cu($ss=null){
+          $ss =$ss?$ss:$this->userInfo;
+          $branch_id = $ss?$ss->branch_id:null;
+         $branch_id = Sanitizer::sanitize($branch_id);
+         $user_id = $ss? Sanitizer::sanitize($ss->user_id):-1;
+         $str_branch = "1=1";
+         if($branch_id>0) $str_branch ="m.branch_id =$branch_id";
          $rows = DB::select(DB::raw("SELECT DISTINCT m.display_order, m.id,m.disabled,m.hidden, m.module_name AS `name` 
          FROM um_app_modules AS m INNER JOIN um_role_modules AS rm ON m.id = rm.module_id 
          INNER JOIN um_user_roles AS ur ON ur.role_id = rm.role_id 
-         WHERE IFNULL(m.hidden,0) =0 AND ur.user_id ='$user_id' ORDER BY m.disabled ASC, m.display_order ASC"));
+         WHERE $str_branch IFNULL(m.hidden,0) =0 AND ur.user_id ='$user_id' ORDER BY m.disabled ASC, m.display_order ASC"));
          return $rows; 
     } 
 
-      function getAccessibleModules($d){
-        $ss = self::getUserInfoByToken($d,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-        $branch_id = Sanitizer::sanitize($ss->branch_id);
-        $role_id = Sanitizer::sanitize($d->role_id);
-        $rows = DB::select(DB::raw("SELECT m.id, m.disabled, m.module_name AS `name`, m.module_name_native as name_native, m.icon_image, m.target_url FROM um_app_modules AS m INNER JOIN um_role_modules AS rm ON m.id = rm.module_id WHERE IFNULL(m.hidden,0) =0 AND m.branch_id ='$branch_id' AND m.app_id ='".self::$app_id."' AND rm.role_id ='$role_id' ORDER BY m.disabled, m.module_name ASC"));
-        return $rows;
+      function getAccessibleModules($role_id,$ss=null){
+        $ss =$ss?$ss:$this->userInfo;
+        $branch_id = $ss?$ss->branch_id:null;
+        $branch_id = Sanitizer::sanitize($branch_id);
+        $cols ="m.id, m.disabled, m.module_name AS `name`, m.icon_image, m.target_url";
+        return DB::table("um_role_modules as rm")->join("um_app_modules as m","m.id","=","rm.module_id")->where("rm.role_id",$role_id)->selectRaw($cols)->orderBy("m.module_name","ASC")->get();
     } 
-      function addAccessibleModule($d){
-        $ss = self::getUserInfoByToken($d,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-        $lang = $ss->lang;
-        $branch_id = Sanitizer::sanitize($ss->branch_id);
-        $role_id = Sanitizer::sanitize($d->role_id);
-        $module_id = Sanitizer::sanitize($d->module_id);
+      function addAccessibleModule($module_id,$role_id,$ss=null){
+        $ss =$ss?$ss:$this->userInfo;
+        $branch_id = $ss?$ss->branch_id:null;
+  
+        $branch_id = Sanitizer::sanitize($branch_id);
+        $role_id = Sanitizer::sanitize($role_id);
+        $module_id = Sanitizer::sanitize($module_id);
+        if(!$module_id) return DV::error("Module ID is empty");
         $rows = DB::select(DB::raw("SELECT ref_code FROM um_app_modules WHERE id ='$module_id' LIMIT 1"));
-        if(count($rows) <=0) return DV::error("Module indentity is not valid",$lang);
-        if($role_id<=0 || empty($role_id)) return DV::error("role ID is not valid",$lang);
+        if(count($rows) <=0) return DV::error("Module indentity is not valid");
+        if($role_id<=0 || empty($role_id)) return DV::error("Role ID is not valid");
 
         $module_code = null;
         foreach($rows as $row) $module_code = $row->ref_code;
         DB::delete(DB::raw("DELETE FROM um_role_modules WHERE role_id ='$role_id' AND module_id ='$module_id' "));
         DB::table('um_role_modules')->insert([
-            'branch_id'=>$branch_id,
             'module_id'=>$module_id,
-            'role_id'=>$role_id,
-            'module_code'=>$module_code
+            'role_id'=>$role_id
         ]);
-        return DV::sccess();
+        return DV::success();
     }
 
-      //$d = {role_id, [show_all]}
-      function getPermissionsByRole($d) {
-        $ss = self::getUserInfoByToken($d,-1);
-        if($ss->status_code !=200) return DV::emptyResult($ss,[],$ss->lang); //user not authenticated
-
-        $branch_id = Sanitizer::sanitize($ss->branch_id);
+      //$d = {role_id, [show_all],[search_value]}
+      function getPermissionsByRole($arr=[],$ss=null) {
+        //$branch_id = Sanitizer::sanitize($ss->branch_id);
+        $d = (object)$arr;
         $role_id = Sanitizer::sanitize($d->role_id);
-        $search_value = isset($d->search_value)?$d->search_value:null;
         $show_all = isset($d->show_all)?$d->show_all:0;
         $rows = [];
-
+        $search_value = isset($d->search_value)?$d->search_value:null;
         $str_search = "1=1";
         if($search_value) {
           $search_value = escape_like_str($search_value);
           $str_search = " (p.id = '$search_value' OR p.name LIKE '%$search_value%' OR m.module_name LIKE '%$search_value%')";
         }
 
+        if(!$role_id) $role_id =-1;
         if($show_all==0)
-          $rows = DB::select(DB::raw("SELECT rp.role_id, p.id,p.name, m.module_name AS module_name, 1 as has_prn FROM um_permissions AS p INNER JOIN um_role_permissions as rp ON p.id = rp.permission_id INNER JOIN um_app_modules AS m ON m.id = p.module_id WHERE p.app_id ='".self::$app_id."' AND rp.role_id ='$role_id' AND $str_search"));
+          $rows = DB::select(DB::raw("SELECT rp.role_id, p.id,p.name, m.module_name AS module_name, 1 as has_prn FROM um_permissions AS p INNER JOIN um_role_permissions as rp ON p.id = rp.permission_id INNER JOIN um_app_modules AS m ON m.id = p.module_id WHERE p.app_id AND rp.role_id =$role_id AND $str_search"));
         else
-          $rows = DB::table('um_permissions as p')->join('um_app_modules as m','m.id','=','p.module_id')->where('p.app_id',self::$app_id)->whereRaw($str_search)->selectRaw("p.id,p.name,m.module_name AS module_name, has_prn($role_id,p.id) as has_prn")->orderByRaw('has_prn DESC,module_id')->get();
+          $rows = DB::table('um_permissions as p')->join('um_app_modules as m','m.id','=','p.module_id')->whereRaw($str_search)->selectRaw("p.id,p.name,m.module_name AS module_name, has_prn($role_id,p.id) as has_prn")->orderByRaw('has_prn DESC,module_id')->get();
 
          return $rows;
     }
 
-      function findPermissions($d){
-        $ss = self::getUserInfoByToken($d,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-        $branch_id = Sanitizer::sanitize($ss->branch_id);
-        if(!isset($d->search_value)) $d->search_value =0;
+      function findPermissions($search_value=null,$ss=null){
+        $ss = $ss?$ss:$this->userInfo;
+        //$branch_id = Sanitizer::sanitize($ss->branch_id);
         $search_value = escape_like_str($d->search_value);
-        $rows = DB::select(DB::raw("SELECT p.id,p.name FROM um_permissions AS p WHERE p.app_id ='".self::$app_id."' AND (p.id ='$search_value' OR p.name LIKE'%".$search_value."%')"));
-        return $rows;
+        return DB::select(DB::raw("SELECT p.id,p.name FROM um_permissions AS p WHERE p.app_id ='".self::$app_id."' AND (p.id ='$search_value' OR p.name LIKE'%".$search_value."%')"));
     }
     
       //Test whether a given @role can access to use a specified Application Module
       function role_access_module($role_id,$module_id){
-        $x = DB::table('um_role_modules')->where('role_id',$role_id)->where('module_id',$module_id)->limit(1)->exists();
+        $x = DB::table('um_role_modules')->where('role_id',$role_id)->where('module_id',$module_id)->take(1)->exists();
         return $x;  //false/true
       }
       
@@ -1274,52 +1195,45 @@ class UM //extends Model
         return $m; 
       }
        
-      function addPermissionToRole($d) {
-            $ss = self::getUserInfoByToken($d,105);
-            if($ss->status_code != 200) return $ss; //user not authenticated
-            $lang = $ss->lang;
-
-            $branch_id = Sanitizer::sanitize($ss->branch_id);
-            $role_id =Sanitizer::sanitize($d->role_id);
-            $id = Sanitizer::sanitize($d->id);
-            if(empty($role_id)) return DV::error("role ID is not valid",$lang);
+      function addPermissionToRole($prn_id,$role_id,$ss=null) {
+            $ss =$ss?$ss:$this->userInfo; 
+            $branch_id = $ss?$ss->branch_id:null;
+            $branch_id = Sanitizer::sanitize($branch_id);
+            $role_id =Sanitizer::sanitize($role_id);
+            //$str_branch =$branch_id>0? "m.branch_id =$branch_id" :"1=1";
+            if(empty($role_id)) return DV::error("role ID is not valid");
           
             $module_id =null;
             $module_name = null;
-            $rows = DB::table('um_permissions as p')->join('um_app_modules as m','m.id','=','p.module_id')->where('p.id',$id)->selectRaw('p.module_id,p.app_id,m.module_name')->limit(1)->get();
+            $rows = DB::table('um_permissions as p')->join('um_app_modules as m','m.id','=','p.module_id')->where('p.id',$prn_id)->selectRaw('p.module_id,p.app_id,m.module_name')->take(1)->get();
             foreach($rows as $row){
               $module_id = $row->module_id;
               $module_name = $row->module_name;
             } 
-            if(!$module_id) return DV::error("It seems that the permission $id is not valid. Module information is not found!",$lang);
+            if(!$module_id) return DV::error("It seems that the permission $prn_id is not valid. Module information is not found!");
             
             if ($this->role_access_module($role_id,$module_id)) {
-              DB::delete(DB::raw("DELETE FROM um_role_permissions WHERE branch_id ='".$branch_id."' AND role_id ='".$role_id."' AND permission_id ='".$id."' "));
-              DB::table('um_role_permissions')->insert(array(
+              DB::delete(DB::raw("DELETE FROM um_role_permissions WHERE role_id ='".$role_id."' AND permission_id ='".$prn_id."' "));
+              DB::table('um_role_permissions')->insert([
                   'branch_id'=>$branch_id,
                   'role_id'=>$role_id,
-                  'permission_id'=>$id
-              ));
-              return DV::success(['role_id'=>$role_id,'prn_id'=>$id,'module_id'=>$module_id]);
+                  'permission_id'=>$prn_id
+              ]);
+              return DV::success(['role_id'=>$role_id,'prn_id'=>$prn_id,'module_id'=>$module_id]);
           } else {
-            return DV::error("Failed to add permission $id because it belongs to inaccessible module \"$module_name\" ",$lang);
+              return DV::error("Failed to add permission $prn_id because it belongs to inaccessible module $module_name");
           }
           
     }
  
-    // $d = {role_id,id|ids}
-      function removePermissionFromRole($d){
-        $ss = self::getUserInfoByToken($d,106);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-        $lang = $ss->lang;
-
-        $branch_id = Sanitizer::sanitize($ss->branch_id);
-        $role_id = Sanitizer::sanitize($d->role_id);
+    // $d = {role_id,id|ids}. $ids separated by '|'
+      function removePermissionFromRole($ids,$role_id,$ss=null){
+        //$branch_id = Sanitizer::sanitize($ss->branch_id);
+        $role_id = Sanitizer::sanitize($role_id);
         /** $ids is a list of permission Ids separated by | **/
-        $ids = isset($d->id)? Sanitizer::sanitize($d->id):null; 
-        if(!$ids) $ids = isset($d->ids)? Sanitizer::sanitize($d->ids):null;
+        $ids = isset($ids)? Sanitizer::sanitize($ids):null;
 
-        if(empty($role_id)) return DV::error("role ID is not valid",$lang);
+        if(empty($role_id)) return DV::error("role ID is not valid");
         $ms = explode('|',$ids);
         foreach($ms as $m) {
             if ($m > 0) {
@@ -1408,14 +1322,10 @@ class UM //extends Model
         return (object)['prns'=>$prns,'modules'=>$mods,'is_super_admin'=>self::isSuperAdmin_cu()];
    }
 
-   function getPermissionsByRoleId($d){
-      $ss = self::getUserInfoByToken($d,-1);
-      if($ss->status_code !=200) return $ss; //user not authenticated
-        $branch_id = Sanitizer::sanitize($ss->branch_id);
-
-        $role_id = Sanitizer::sanitize($d->role_id);
-       return DB::select(DB::raw("SELECT DISTINCT rp.permission_id FROM um_user_roles AS ur INNER JOIN um_role_permissions AS rp ON ur.role_id = rp.role_id WHERE ur.role_id ='$role_id' AND ur.app_id ='".self::$app_id."' ORDER BY rp.permission_id ASC"));
-        
+   function getPermissionsByRoleId($role_id,$ss=null){ 
+        //$branch_id = Sanitizer::sanitize($ss->branch_id);
+        $role_id = Sanitizer::sanitize($role_id);
+        return DB::select(DB::raw("SELECT DISTINCT rp.permission_id FROM um_user_roles AS ur INNER JOIN um_role_permissions AS rp ON ur.role_id = rp.role_id WHERE ur.role_id ='$role_id' ORDER BY rp.permission_id ASC"));  
     }
     
     function localizePermissions($d){
@@ -1501,7 +1411,7 @@ class UM //extends Model
     static function hasRole($role_name_or_id =null,$user_id=null){
        if(!$role_name_or_id) return false;
         $role_id = 0;
-        $app_id = self::$app_id;
+        //$user_class = self::getUserProp($user_id,"user_class");
         if (!($role_name_or_id > 0)) {
            $rows = DB::table('um_roles as r')->where('r.name',$$role_name_or_id)->selectRaw('r.id')->take(1)->get();
            foreach($rows as $r) $role_id = $r->id;
@@ -1511,7 +1421,7 @@ class UM //extends Model
          $cu = self::currentUser();
          if ($cu) $user_id = $cu->id; else return false;
        }
-       $rows = DB::table('um_user_roles as r')->where('user_id',$user_id)->where('role_id',$role_id)->where('r.app_id',$app_id)->selectRaw('user_id')->limit(1)->get();
+       $rows = DB::table('um_user_roles as r')->where('user_id',$user_id)->where('role_id',$role_id)->selectRaw('user_id')->limit(1)->get();
        return count($rows)>0; 
     } 
 
@@ -1541,8 +1451,9 @@ class UM //extends Model
 
     static function correctUserClass($user_class){
       foreach(self::$user_classes as $key=>$c){
-           if($key == $user_class) return true;
+           if($key === $user_class) return true;
       }
       return false;
     }
+
 }

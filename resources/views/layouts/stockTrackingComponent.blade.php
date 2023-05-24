@@ -139,10 +139,10 @@
                         <label for="warehouse" class="form-label trans-text" data-langprop="inventory.Warehouse"></label>
                         <select class="modal-select2 data-input" data-field="warehouse" data-required="1" data-ffield="Warehouse" placeholder="Warehouse" id="_stk_select_warehouse"></select>
                     </div>
-                    <div class="col-lg-6">
+                    <!-- <div class="col-lg-6">
                         <label for="class_stock" class="form-label trans-text" data-langprop="inventory.Stock Class"></label>
                         <select class="modal-select2 data-input" data-field="class_stock" data-required="1" data-ffield="Class of Stock" placeholder="class of stock" id="_stk_select_class_stock"></select>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="row gy-2 py-2">
                     <div class="col-lg-6">
@@ -151,7 +151,7 @@
                     </div>
                     <div class="col-lg-6">
                         <label for="description" class="form-label trans-text" data-langprop="inventory.Description"></label>
-                        <textarea class="form-control data-input" data-field="description" data-required="1" data-ffield="Description"></textarea>
+                        <textarea class="form-control data-input" data-field="description" data-ffield="Description"></textarea>
                     </div>
                 </div>
                 <div class="py-2" id="_stk_div_items_panel"></div>

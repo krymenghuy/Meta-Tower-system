@@ -1341,7 +1341,8 @@ function readFileContent($fileName=null)
                 if($pk_field_name){
                         $pk_input_prop = isset($parts1[1])?$parts1[1]:null;
                         if (!$pk_input_prop) $pk_input_prop = $identity_field;
-                        $pk_value= isset($d[$pk_input_prop])?$d[$pk_input_prop]:null;
+                        if(is_numeric($pk_input_prop)) $pk_value = $pk_input_prop;
+                        else $pk_value= isset($d[$pk_input_prop])?$d[$pk_input_prop]:null;
                 }
 
                 if ($u_spec) $unique_error = checkUnique($d,$pk_field_name,$pk_value,$u_spec,$lang,$langSection);  
@@ -1412,7 +1413,8 @@ function readFileContent($fileName=null)
                         /** For example, input from frontend is d['person_id'], so "person_id" is pk_input_prop **/
                         $pk_input_prop = isset($parts1[1])?$parts1[1]:null;
                         if (!$pk_input_prop) $pk_input_prop = $identity_field;
-                        $pk_value= isset($d[$pk_input_prop])?$d[$pk_input_prop]:null;
+                        if(is_numeric($pk_input_prop)) $pk_value = $pk_input_prop;
+                        else $pk_value= isset($d[$pk_input_prop])?$d[$pk_input_prop]:null;
                 }
                
                 //NOTE: $pk_field is associateive array. Example: ['person_id'=>101] . This is needed for avoid check duplicate in case of UPDATE exiting item " where person_id <> 101"
@@ -1453,7 +1455,7 @@ function readFileContent($fileName=null)
         $table = $parts[1];
         $field_list = explode(',',$parts[2]);
         $m_where ="";
-        $select_cols =$pk_field_name; //presume a default. That all tables have a "id" column
+        $select_cols =$pk_field_name?$pk_field_name:"id"; //presume a default. That all tables have a "id" column
         //$checking_field_cnt = 0;
         foreach($field_list as $fields){
              $sts = explode('!',$fields);
@@ -1461,7 +1463,7 @@ function readFileContent($fileName=null)
              $where_con="";
              $has_or=0;
              foreach($sts as $f){
-                //NOTE: For example, you want to check dulicate Phone_number. If phone_number is NULL or empty => do not check duplicate
+                //NOTE: For example, you want to check duplicate Phone_number. If phone_number is NULL or empty => do not check duplicate
                 if ($f && isset($d[$f])){
                     if (!$has_or || $has_or ===0) $has_or = $where_con?1:0;
                     //if (!isset($d[$f])) return "Error in checking uniqueness because field $f is empty or it is not supplied";
@@ -1480,7 +1482,7 @@ function readFileContent($fileName=null)
 
         if($pk_value > 0) $str_pk = " AND $table.$pk_field_name <> $pk_value";
         else if($pk_value) $str_pk =" AND $table.$pk_field_name <> '$pk_value'";
-        $text = getPropValue('text',$parts[3]);
+         $text = getPropValue('text',$parts[3]);
         if (!$text) $text = getPropValue('text',isset($parts[4])?$parts[4]:'');
          
         $str_branch = "1=1 ";
@@ -1588,5 +1590,18 @@ function readFileContent($fileName=null)
         $cols1 = (array)$cols;
         foreach($cols1 as $key=>$value) $d->{$key} = $value;
         return $d;
+    }
+    /**
+     * checkFileUrl() checks if a url points to existing file. If the file does not exists, it return false.
+     * This is useful when api response many images files to browsers, so to avoid many errors of 404
+     * **/
+    function checkFileUrl($url) {
+        $localFilePath = $_SERVER['DOCUMENT_ROOT'] . parse_url($url, PHP_URL_PATH);
+        return file_exists($localFilePath) && getimagesize($localFilePath);
+    }
+    function validateUrl($url,$otherWise="") {
+        $localFilePath = $_SERVER['DOCUMENT_ROOT'] . parse_url($url, PHP_URL_PATH);
+        $exists = file_exists($localFilePath) && getimagesize($localFilePath);
+        return $exists?$url:$otherWise; 
     }
 ?>

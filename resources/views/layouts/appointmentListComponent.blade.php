@@ -232,7 +232,7 @@
                     <div class="form-group col-lg-3">
                         <span class="simple-label trans-text" data-langprop="appointment.Time">Time</span>
                         <div>
-                            <input type="text" data-field="arrival_time" data-ffield="Arrival Time" class="form-control data-input" id="_appt_arrival_time" data-select="timepicker"/>
+                            <input type="time" data-field="arrival_time" data-ffield="Arrival Time" class="form-control data-input" id="_appt_arrival_time" data-select="timepicker"/>
                         </div>
                     </div>
 

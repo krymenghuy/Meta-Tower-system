@@ -44,6 +44,17 @@ class ItemGroupController extends Controller
         // else return JDV::error($res->error_message);
     }
 
+    function renameGroup(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $id = $req->id?$req->id:$req->group_id;
+        $group = new ItemGroup($id,$ss); 
+        return JDV::raw($group->rename($req->name));
+        // if ($res->status_code === 200)
+        //     return JDV::success(['id'=>$res->id]);
+        // else return JDV::error($res->error_message);
+    }
+
     function deleteItemGroup(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
@@ -61,7 +72,8 @@ class ItemGroupController extends Controller
     function getFormOptions(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
-        return JDV::result(ItemGroup::form_options($ss)); 
+        $id = $req->id?$req->id:$req->group_id;
+        return JDV::result(ItemGroup::form_options($id,$ss)); 
     }
 
     //getItemGroupInfo()

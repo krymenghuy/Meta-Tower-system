@@ -57,7 +57,6 @@ let ServiceTrackingComponent = new function(){
 
     
     this.displayServiceTracks = (data) => {
-        
         let columns = [{
             title: "Date",
             data: "service_date",
@@ -158,6 +157,17 @@ let ServiceTrackingDialog = new function(){
     this.elDoctor = $('#st_dlgService_doctor');
     this.elFirstNurse = $('#st_dlgService_first_nurse');
     this.elClient = $('#st_dlgService_client');
+
+    this.elClient.on('change',(e)=>{
+       e.preventDefault();
+       let p = {"id":mThis.elClient.val()};
+       vsapi.call(`${main_view.base_url}/api/patient/subscribed-plans`,p,null,false).then(res=>{
+          if (res.status_code ===200){
+             let items = res.data;
+             VSUtil.setComboItems(mThis.elServicePlan,items,"id","service_plan",nullmnull,null);
+          }
+       })
+    });
 
     mThis.btnSave.on('click',(e) => {
         e.preventDefault();

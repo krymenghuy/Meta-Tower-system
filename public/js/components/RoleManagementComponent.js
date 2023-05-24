@@ -98,7 +98,7 @@ var RoleListPanel = new function () {
         e.preventDefault();
 
         let role_id = $(this).parent().data('roleid');
-        cv_interact.confirm('Delete this role?', { title: 'Delete Role', context: 'context' }, function (e) {
+        cv_interact.confirm('Delete this role?', { title: 'Delete Role', context: 'delete','confirmButtonText':"Delete" }, function (e) {
             if (e) {
                 mThis.deleteRole(role_id);
             }
@@ -228,7 +228,8 @@ var RoleListPanel = new function () {
         let role_id = role.id;
         let p = {};
         p.role_id = 0; //Choose users from all role (p.role_id =0)
-        vsapi.call([mThis.base_url, '/api/getComboItems_user'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/api/user/options-user'].join(''), p,null,false).then(res => {
+            //console.error(JSON.stringify(res));
             if (res.status_code === 200) {
                 let rows = res.data;
                 let option = {};
@@ -239,14 +240,14 @@ var RoleListPanel = new function () {
                 option.textMember = "login_name";
                 option.dataLabel = "Select User";
                 option.blankErrorMessage = "Choose a user login";
-
+           
                 InputBox2.show(option, function (d) {
                     if (d) {
                         //add user to the selected role here
                         let p = {};
                         p.role_id = role_id;
                         p.user_id = d.value;
-                        vsapi.call([mThis.base_url, '/api/addRoleMember'].join(''), p).then(res => {
+                        vsapi.call([mThis.base_url, '/api/role/members/add'].join(''), p).then(res => {
                             if (res.status_code === 200) {
                                 let d = res.data;
                                 onFinish(d.user_count);
@@ -259,7 +260,7 @@ var RoleListPanel = new function () {
     }
 
     this.addAccessibleModule = function (role_id, onFinish) {
-        vsapi.call([mThis.base_url, '/api/getComboItems_module'].join(''), null).then(res => {
+        vsapi.call([mThis.base_url, '/api/module/options-module'].join(''), null).then(res => {
 
             if (res.status_code === 200) {
                 let rows = StringSanitizer.sanitizeObject(res.data);
@@ -278,7 +279,7 @@ var RoleListPanel = new function () {
                         let p = {};
                         p.role_id = role_id;
                         p.module_id = d.value;
-                        vsapi.call([mThis.base_url, '/api/addAccessibleModule'].join(''), p).then(res => {
+                        vsapi.call([mThis.base_url, '/api/role/access-module/add'].join(''), p).then(res => {
                             if (res.status_code === 200) {
                                 onFinish(true);
                             } else cv_interact.error(res.error_message);
@@ -313,7 +314,7 @@ var RoleListPanel = new function () {
     this.displayRoleList = function () {
         //let div = mThis.tblRoles.parent(); //div.table_wrapper
         //if (!div.hasClass('effect-slide-down')) div.removeClass('effect-slide-down');
-        vsapi.call([mThis.base_url, '/api/getRoleList'].join(''), null).then(res => {
+        vsapi.call([mThis.base_url, '/api/role/list'].join(''), null).then(res => {
             if (res.status_code === 200) {
                 let rows = StringSanitizer.sanitizeObject(res.data);
                 mThis.tblRoles_body.empty();
@@ -351,7 +352,7 @@ var RoleListPanel = new function () {
     this.deleteRole = function (id) {
         let p = {};
         p.role_id = id ? id : 0;
-        vsapi.call([mThis.base_url, '/api/deleteRole'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/api/role/delete'].join(''), p).then(res => {
             if (res.status_code === 200) {
                 mThis.displayRoleList();
             } else cv_interact.error(re.error_message);
@@ -399,7 +400,7 @@ let EditRolePanel = new function () {
             mThis.elError.html('Role Name cannot be empty');
             return;
         }
-        vsapi.call([mThis.base_url, '/api/saveRole'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/api/role/save'].join(''), p).then(res => {
             if (res.status_code === 200) {
                 mThis.lnkBackToRoleList.trigger('click');
             } else mThis.elError.text(res.error_message);
@@ -413,7 +414,7 @@ let EditRolePanel = new function () {
             if (typeof onFinish == 'function') onFinish();
             return;
         }
-        vsapi.call([mThis.base_url, '/api/getComboItems_userclass'].join(''), null).then(res => {
+        vsapi.call([mThis.base_url, '/api/user/options-user-class'].join(''), null).then(res => {
             if (res.status_code === 200) {
                 let rows = StringSanitizer.sanitizeObject(res.data);
                 VSUtil.setComboItems(mThis.elUserClass, rows, 'user_class', 'user_class', true, '(Select User Class)', def.user_class);
@@ -446,7 +447,7 @@ let EditRolePanel = new function () {
         let p = {};
         p.role_id = mThis.role_id;
         //p.id = mThis.role_id;
-        vsapi.call([mThis.base_url, '/api/getRoleById'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/api/role/details'].join(''), p).then(res => {
             if (res.status_code === 200) {
                 let d = res.data;
                 let name = StringSanitizer.sanitizeOut(d.name);
@@ -614,9 +615,9 @@ var RoleTabView = new function () {
             cv_interact.error('No role selected!');
             return;
         }
-
+  
         let role = { "id": mThis.role_id, "name": RoleListPanel.selected_role_name };
-        RoleListPanel.addRoleMember(role, function (new_user_count) {
+        RoleListPanel.addRoleMember(role,  (new_user_count) =>{
             if (new_user_count) {
                 RoleListPanel.updateSelectRole('col_user_count', new_user_count);
                 mThis.displayRoleMembers(mThis.role_id);
@@ -632,7 +633,7 @@ var RoleTabView = new function () {
         p.role_id = mThis.role_id;
         cv_interact.confirm('Remove this Accessible Module', { title: 'Remove Access Module', context: 'delete' }, function (e) {
             if (e) {
-                vsapi.call([mThis.base_url, '/api/removeAccessibleModule'].join(''), p).then(res => {
+                vsapi.call([mThis.base_url, '/api/role/access-module/remove'].join(''), p).then(res => {
                     if (res.status_code === 200) {
                         mThis.displayAccessibleModules(mThis.role_id);
                     } else cv_interact.error(res.error_message);
@@ -655,7 +656,7 @@ var RoleTabView = new function () {
         cv_interact.confirm('Remove this permission?', { title: 'Remove Permission', context: 'delete' }, function (e) {
             if (e) {
                 let p = { 'role_id': mThis.role_id, 'ids': ids };
-                vsapi.call([mThis.base_url, '/api/removePermissionFromRole'].join(''), p).then(res => {
+                vsapi.call([mThis.base_url, '/api/role/remove-permission'].join(''), p).then(res => {
                     if (res.status_code === 200) {
                         mThis.displayRolePermissions(mThis.role_id);
                     } else cv_interact.error(res.error_message);
@@ -672,7 +673,7 @@ var RoleTabView = new function () {
         p.role_id = mThis.role_id;
         cv_interact.confirm('Remove this user from the selected role?', { title: 'Unenroll User', context: 'update' }, function (e) {
             if (e) {
-                vsapi.call([mThis.base_url, '/api/removeRoleMember'].join(''), p).then(res => {
+                vsapi.call([mThis.base_url, '/api/role/remove-member'].join(''), p).then(res => {
                     if (res.status_code === 200) {
                         let d = res.data;
                         mThis.displayRoleMembers(mThis.role_id);
@@ -714,7 +715,7 @@ var RoleTabView = new function () {
                     p.login_name = login_name;
                     p.new_login_name = d;
                     //if(!p.user_id) p.user_id =0;
-                    vsapi.call([mThis.base_url, '/api/changeLoginName'].join(''), p).then(res => {
+                    vsapi.call([mThis.base_url, '/api/user/change-login'].join(''), p).then(res => {
                         if (res.status_code === 200) {
                             mThis.displayRoleMembers(role_id);
                         } else cv_interact.error(res.error_message);
@@ -735,7 +736,7 @@ var RoleTabView = new function () {
         cv_interact.confirm(`Remove this user from ${role_name} role?`, { title: 'Unenroll User', confirmButtonText: 'Remove', cancelButtonText: 'Close' }, function (e) {
             if (e) {
                 let p = { "user_id": id, 'role_id': role_id };
-                vsapi.call([mThis.base_url, '/api/removeRoleMember'].join(''), p).then(res => {
+                vsapi.call([mThis.base_url, '/api/role/remove-member'].join(''), p).then(res => {
                     if (res.status_code === 200)
                         mThis.displayRoleMembers(role_id);
                     else cv_interact.error(res.error_message);
@@ -745,16 +746,17 @@ var RoleTabView = new function () {
 
     });
 
-    this.tblRoleMembers.on('click', '.btn-role-user-delete', (e) => {
+    this.tblRoleMembers.on('click', '.btn-role-user-delete', e => {
         let id = e.currentTarget.dataset.id;
-        let role_name = e.currentTarget.dataset.rolename;
+         const el = e.currentTarget.closest('a');
+        let role_name = el.dataset.rolename;
         let role_id = RoleListPanel.selected_role_id;
 
-        cv_interact.confirm('Delete this user permanently?', { title: 'Delete User', context: 'delete' }, function (e) {
+        cv_interact.confirm(`You are about to delete this user permanently ${role_name}?`, { title: 'Delete User', context: 'delete','confirmButtonText':'Delete' }, function (e) {
             if (e) {
-                let p = { "user_id": id };
-                vsapi.call([mThis.base_url, '/api/deleteUser'].join(''), p).then(res => {
-                    if (res.error_message) cv_interact.error(error_message);
+                let p = { "user_id": id};
+                vsapi.call([mThis.base_url, '/api/user/delete'].join(''), p,null,false).then(res => {
+                    if (res.error_message) cv_interact.error(res.error_message);
                     else mThis.displayRoleMembers(role_id);
                 });
             }
@@ -772,7 +774,7 @@ var RoleTabView = new function () {
         if (!role_name) role_name = "This role";
         $('#_um_roletab_module_text').text([role_name, ' can use these modules'].join(''));
 
-        vsapi.call([mThis.base_url, '/api/getAccessibleModules'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/api/role/access-module/list'].join(''), p).then(res => {
             if (res.status_code === 200) {
                 let rows = StringSanitizer.sanitizeObject(res.data);
                 let i = 0, c;
@@ -797,7 +799,7 @@ var RoleTabView = new function () {
         let p = {};
         p.role_id = role_id;
         $('#_um_roletab_users_text').text(['Members of ', RoleListPanel.selected_role_name, ' role'].join(''));
-        vsapi.call([mThis.base_url, '/api/getRoleMembers'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/api/role/members'].join(''), p).then(res => {
             if (res.status_code === 200) {
                 let rows = res.data;
 
@@ -896,7 +898,7 @@ var RoleTabView = new function () {
 
     this.addPermissionsToRole = (prn_ids, role_id, onFinish) => {
         let p = { 'role_id': role_id, 'ids': prn_ids };
-        vsapi.call([mThis.base_url, '/api/addPermissionToRole'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/api/role/add-permission'].join(''), p).then(res => {
             let d = {};
             if (res.status_code === 200) d = res.data ? res.data : {};
             if (d.success_count > d.fail_count) {
@@ -929,7 +931,7 @@ var RoleTabView = new function () {
 
     this.displayRolePermissions = function (role_id) {
         let p = { 'role_id': role_id };
-        vsapi.call([mThis.base_url, '/api/getPermissionsByRole'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/api/role/permissions'].join(''), p).then(res => {
             if (res.status_code === 200) {
                 let rows = StringSanitizer.sanitizeObject(res.data);
                 let i = 0, c;
@@ -981,7 +983,7 @@ var PermissionList = new function () {
     //refresh Permission List (This menu is useful only if you update permissions of yourself being logged in right now)
     this.lnkRefreshPrns.on('click', function (e) {
         e.preventDefault();
-        vsapi.call([mThis.base_url, '/api/localizePermissions'].join(''), null).then(res => {
+        vsapi.call([mThis.base_url, '/api/role/cache-list'].join(''), null).then(res => {
 
         });
     });
@@ -1004,7 +1006,7 @@ var PermissionList = new function () {
         p.role_id = mThis.role_id;
         p.ids = $(this).data('prnid');
 
-        vsapi.call([mThis.base_url, '/api/removePermissionFromRole'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/api/role/remove-permission'].join(''), p).then(res => {
             if (res.status_code === 200) {
                 mThis.displayPermissionList(mThis.role_id);
             } else cv_interact.error(res.error_message);
@@ -1032,7 +1034,7 @@ var PermissionList = new function () {
         p.role_id = role_id;
         mThis.tblPrns_body.empty();
 
-        vsapi.call([mThis.base_url, '/api/getPermissionsByRole'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/api/role/permissions'].join(''), p).then(res => {
             if (res.status_code === 200) {
                 let rows = StringSanitizer.sanitizeObject(res.data);
                 //alert(JSON.stringify(rows));
@@ -1087,7 +1089,7 @@ var AddPermissionDialog = new function () {
         p.show_all = 1;
         mThis.tblPrns_body.empty();
         //findPermissions
-        vsapi.call([mThis.base_url, '/api/getPermissionsByRole'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/api/role/permissions'].join(''), p).then(res => {
             let rows = StringSanitizer.sanitizeObject(res.data);
             mThis.displayPermissions(rows);
         });
@@ -1116,9 +1118,9 @@ var AddPermissionDialog = new function () {
 
     this.addRemovePermission = (tr, role_id, prn_id, action) => {
         let p = { 'role_id': role_id, 'id': prn_id };
-        let m = 'addPermissionToRole';
+        let m = 'role/add-permission';
 
-        if (action == 'remove') m = 'removePermissionFromRole';
+        if (action == 'remove') m = 'role/remove-permission';
         vsapi.call(`${mThis.base_url}/api/${m}`, p).then(res => {
             if (res.status_code === 200) {
                 if (action == 'add') {
@@ -1189,7 +1191,7 @@ var AddPermissionDialog = new function () {
 
     this.loadPermissions = (onFinish) => {
         let p = { 'role_id': mThis.role_id, 'search_value': mThis.elSearchPrn.val(), 'show_all': 1 };
-        vsapi.call([mThis.base_url, '/api/getPermissionsByRole'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/api/role/permissions'].join(''), p).then(res => {
             if (res.status_code === 200) {
                 let rows = StringSanitizer.sanitizeObject(res.data);
                 onFinish(rows);
@@ -1252,7 +1254,7 @@ var CreatePermissionDialog = new function () {
             mThis.elError.text('Please select a module');
             return;
         }
-        vsapi.call([mThis.base_url, '/api/createPermission'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/api/permission/create'].join(''), p).then(res => {
             if (res.status_code === 200) {
                 if (typeof mThis.onClose === 'function') mThis.onClose(true);
                 mThis.self.modal('hide');

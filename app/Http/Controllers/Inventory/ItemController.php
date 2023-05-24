@@ -23,17 +23,24 @@ class ItemController extends Controller
       return uniqid($branch_id);
     }
 
-    function getForm_options(Request $req) { 
+    function getFormOptions(Request $req) { 
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
-        $branch_id = $ss->branch_id;
-
+        //$branch_id = $ss->branch_id;
+        $item_id = $req->item_id?$req->item_id:$req->id;
+        $item = null;
+        if($req->item_id > 0){
+          $item = Item::details($item_id,$ss);
+        } 
+       $units = Settings::options_uom($ss);  
        $data =[
         'groups'=>Settings::options_group($ss),
         'brands'=>Settings::options_brand($ss),
-        'units'=>Settings::options_unit($ss),
+        'units'=>$units,
+        'uoms'=>$units,
         'categories'=>Settings::options_category($ss),
-        'manufacturer'=>Settings::options_manufacturer($ss)
+        'manufacturers'=>Settings::options_manufacturer($ss),
+        'item'=>$item
        ];
        return JDV::result($data);
     }
@@ -58,7 +65,6 @@ class ItemController extends Controller
       return JDV::raw($item->delete());
     }
      
-    //return quick info of an item for itemsView on receipt/invoice/Receive Stock Form 
     function getItemInfo(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
@@ -66,6 +72,16 @@ class ItemController extends Controller
       $id = $req->id;
       if(!$id) $id = $req->item_id;     
       return JDV::result(Item::info($id,false));
+    }
+
+     //return quick info of an item for itemsView on receipt/invoice/Receive Stock Form 
+     function getBasicInfo(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+      //$branch_id = $ss->branch_id;
+      $id = $req->id;
+      if(!$id) $id = $req->item_id;     
+      return JDV::result(Item::basicInfo($id,false));
     }
 
     function getItemGroupInfo(Request $req){

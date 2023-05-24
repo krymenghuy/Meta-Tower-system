@@ -15,15 +15,20 @@ use App\Http\Controllers\Inventory\CategoryController;
 
 
 //begin::ItemController
+  Route::post('inventory/item/save', [ItemController::class, 'saveItem']);
+  Route::post('inventory/item/form-options', [ItemController::class, 'getFormOptions']);
   Route::post('inventory/item/photos', [ItemController::class, 'getItemPhotos']);
   Route::post('inventory/item/photo-first', [ItemController::class, 'getFirstItemPhoto']);
   Route::post('inventory/item/save-photo', [ItemController::class, 'saveItemPhoto']);
   Route::post('inventory/item/add-photo', [ItemController::class, 'addItemPhoto']);
-
+  
+  Route::post('inventory/basic-info', [ItemController::class, 'getBasicInfo']);
   Route::post('inventory/item-info', [ItemController::class, 'getItemInfo']);
   Route::post('inventory/item/info', [ItemController::class, 'getItemInfo']);
   Route::post('inventory/item-details', [ItemController::class, 'getItemDetails']);
+  Route::post('inventory/item/details', [ItemController::class, 'getItemDetails']);
   Route::post('inventory/items', [ItemController::class, 'getItemList']);
+  Route::post('inventory/item/list', [ItemController::class, 'getItemList']);
   Route::post('inventory/items-paginate', [ItemController::class, 'getItemList_paginate']);
   Route::post('inventory/delete-item', [ItemController::class, 'deleteItem']);
   Route::post('inventory/save-item', [ItemController::class, 'saveItem']);
@@ -74,20 +79,29 @@ use App\Http\Controllers\Inventory\CategoryController;
   Route::post('inventory/settings/options-detail-type',[InventorySettingsController::class, 'getComboItems_detailtype']);
   Route::post('inventory/settings/options-category',[InventorySettingsController::class, 'getComboItems_category']);
   Route::post('inventory/settings/options-unit',[InventorySettingsController::class, 'getComboItems_unit']);
-  Route::post('inventory/settings/options-sku',[InventorySettingsController::class, 'getComboItems_unit']);
+  Route::post('inventory/settings/options-uom',[InventorySettingsController::class, 'getComboItems_uom']);
+  //Route::post('inventory/settings/options-sku',[InventorySettingsController::class, 'getComboItems_sku']);
   Route::post('inventory/settings/options-manufacturer',[InventorySettingsController::class, 'getComboItems_manufacturer']);
+ 
+  Route::post('inventory/settings/save-uom', [InventorySettingsController::class, 'saveUOM']);
+  Route::post('inventory/settings/delete-uom', [InventorySettingsController::class, 'deleteUOM']);
+  Route::post('inventory/settings/save-brand', [InventorySettingsController::class, 'saveBrand']);
+  Route::post('inventory/settings/delete-brand', [InventorySettingsController::class, 'deleteBrand']);
+  
   Route::post('inventory/settings/save-unit', [InventorySettingsController::class, 'saveUnit']);
   Route::post('inventory/settings/save-sku', [InventorySettingsController::class, 'saveUnit']);
   Route::post('inventory/settings/save-manufacturer', [InventorySettingsController::class, 'saveManufacturer']);
-  Route::post('inventory/settings/save-brand', [InventorySettingsController::class, 'saveBrand']);
+  Route::post('inventory/settings/delete-manufacturer', [InventorySettingsController::class, 'deleteManufacturer']);
+ 
   Route::post('inventory/settings/options-stock-class', [InventorySettingsController::class, 'getComboItems_stockclass']);
   Route::post('inventory/settings/receive-stock-options', [InventorySettingsController::class, 'getReceiveStockFormOptions']);
   Route::post('inventory/settings/options-warehouse', [InventorySettingsController::class, 'getComboItems_warehouse']);
   
   //begin:: Inventory Settings
-      Route::post('inventory/settings/unit/delete', [InventorySettingsController::class, 'deleteUnit']);
-      Route::post('inventory/settings/unit/list', [InventorySettingsController::class, 'getUnitList']);
-      Route::post('inventory/settings/unit/save', [InventorySettingsController::class, 'saveUnit']);
+      Route::post('inventory/settings/uom/delete', [InventorySettingsController::class, 'deleteUOM']);
+      //List all UOMs, regarless of which item it belongs to
+      Route::post('inventory/settings/uom/list', [InventorySettingsController::class, 'getUOMList']);
+      Route::post('inventory/settings/uom/save', [InventorySettingsController::class, 'saveUOM']);
       //Route::post('inventory/settings/delete-sku', [InventorySettingsController::class, 'deleteUnit']);
 
       Route::post('inventory/settings/manufacturer/delete', [InventorySettingsController::class, 'deleteManufacturer']);

@@ -25,7 +25,7 @@ window.vsapi = new function(){
 			}
 
 			 //begin:: read cookie value
-			 let cookie_name = 'vsmclinic997891zb';
+			 let cookie_name = 'vsksm997878za';
 			 let access_token = null;
 			 let c_match = document.cookie.match(new RegExp('(^| )' + cookie_name + '=([^;]+)'));
 			 if (c_match) access_token = c_match[2]; 

@@ -9,6 +9,7 @@ alter table plan_subscriptions add price DECIMAL(10,2) default 0;
 alter table plan_subscriptions add agent_commission decimal(10,2) default 0;
 alter table plan_subscriptions add expiration_date date DEFAULT null;
 alter table plan_subscriptions add price decimal(10,2) default 0;
+alter table inv_detailed_types add item_class varchar(10) Default 'MI';
 
 alter table appointments add q_date date default NULL;
 alter table invoice_payments add pmt_method_id INT;
@@ -67,5 +68,29 @@ alter table inv_stock_classes add item_class varchar(10) default 'MI';
 create table accounts select * from rmi_db.accounts;
 create table inv_item_files select * from rmi_db.inv_item_files limit 0;
 
+
+--##-----------------------------------------------------
+DROP FUNCTION IF EXISTS `has_prn`;
+DELIMITER ;;
+CREATE FUNCTION `has_prn`(roleid INT, prnid INT) RETURNS tinyint(4)
+BEGIN
+  IF EXISTS(SELECT rp.permission_id FROM um_role_permissions as rp WHERE rp.role_id =roleid and rp.permission_id = prnid limit 1) THEN 
+      return 1;
+  ELSE return 0;
+  end if;  
+END
+;;
+DELIMITER ;
+
+
+##--------------
+
+insert into um_app_modules (id,parent_mod_id,app_id,ref_code,module_name)values(200,0,'DIM20FKAEFC711EH2E7C9771M7BMD717',null,'Dashboard');
+insert into um_app_modules (id,parent_mod_id,app_id,ref_code,module_name)values(201,0,'DIM20FKAEFC711EH2E7C9771M7BMD717',null,'Home Page');
+insert into um_app_modules (id,parent_mod_id,app_id,ref_code,module_name)values(202,0,'DIM20FKAEFC711EH2E7C9771M7BMD717',null,'About Us');
+insert into um_app_modules (id,parent_mod_id,app_id,ref_code,module_name)values(203,0,'DIM20FKAEFC711EH2E7C9771M7BMD717',null,'Blogs');
+insert into um_app_modules (id,parent_mod_id,app_id,ref_code,module_name)values(204,0,'DIM20FKAEFC711EH2E7C9771M7BMD717',null,'Partners');
+insert into um_app_modules (id,parent_mod_id,app_id,ref_code,module_name)values(205,0,'DIM20FKAEFC711EH2E7C9771M7BMD717',null,'Company Profile');
+update um_app_modules set app_id = 'DIM20FKAEFC711EH2E7C9771M7BMD717';
 
 

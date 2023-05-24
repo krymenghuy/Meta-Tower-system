@@ -472,6 +472,22 @@ class Patient //extends Model
         return $rows;
     }
   
+    function getSubscribedServicePlans($id=null,$ss=null){
+        $id =$id?$id:$this->id;
+        $ss = $ss?$ss:$this->userInfo;
+        $branch_id = $ss->branch_id;
+        $row= DB::table("plan_subscriptions as sub")->join("service_plans as sp",'sp.id','=','sub.service_plan_id')->join("medical_services as ms","ms.id","=","sp.id")->where("sub.branch_id",$branch_id)->where("sub.client_id",$id)->selectRaw("sub.id,sp.id as service_plan_id,sp.price,ms.name,ms.description")->get()->first();
+        if($row){
+           $row->services = self::getServiceItems($id);
+        }
+        return $row;
+    }
+
+    static function getServiceItems($id){
+       return [];
+        //return DB::table("service_plan_items as si")->where("service_plan_id",$id)->join("medical_services AS ms","ms.id","=","si.id")->selectRaw("si.id,ms.");
+    }
+
     static function list_paginate($arr,$ss){
         $branch_id = $ss->branch_id;
         $search_value = isset($arr['search_value'])?$arr['search_value']:null;

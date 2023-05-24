@@ -292,9 +292,9 @@ class ItemsView{
                     if(!col.dataType) col.dataType ='string';
                     if (col.dataType ==='date'){
                        //So far, use default HTML input type="date"
-                       html = `<input style="width:100%" type="date" class="${def_class} ${col.cssClass} td-input" value="${text}" data-select="datepicker" ${is_read_only}/>`;
+                       html = `<input style="width:100%" class="${def_class} ${col.cssClass} td-input ivc-date" value="${text}" ${is_read_only}/>`;
                     }else if (col.dataType ==='time'){
-                      html = `<input style="width:100%" type="date" class="${def_class} ${col.cssClass} td-input" value="${text}" data-select="datepicker" ${is_read_only}/>`;
+                       html = `<input style="width:100%" class="${def_class} ${col.cssClass} td-input ivc-time" value="${text}" ${is_read_only}/>`;
                     }else{
                       let dType = (col.dataType ==='string')? 'text':'number';
 
@@ -302,7 +302,11 @@ class ItemsView{
                       if(dType==='number' && !text) text="0"; 
                       html = `<input style="width:100%" type="${dType}" class="${def_class} ${col.cssClass} td-input" value="${text}" ${is_read_only}/>`;
                     }
-                    td.innerHTML= html;   
+                    td.innerHTML= html;  
+                    if(col.dataType ==='date'){
+                       let el = td.querySelector('input.td-input');
+                       if(el) DateTimePicker.init($(el));
+                    } 
                 }
                 //If the displayType is SELECT,and we use select2 with "modal-select2" class => so we need to init select2 script to transform standard SELECT to SELECT2
                 

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 //use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\PersonController;
-use App\Http\Controllers\UMController;
+
 use App\Http\Controllers\Login\LoginController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\CompanyProfileController;
@@ -21,7 +21,6 @@ use App\Http\Controllers\GeneralSettingsController;
 use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\WebReportController;
 //use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\PusherController;
 
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\AppointmentController;
@@ -67,9 +66,7 @@ use App\Http\Controllers\PartnerController;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-
-Route::post('broadcast/auth', [PusherController::class, 'pusherAuth']); //->middleware('auth');
-Route::post('auth/auth-data', [UMController::class, 'getAuthData']);
+ 
 Route::post('auth/login', [LoginController::class, 'apiLogin']);
 
 // Route::get('env/20230120AZ99/vars',function(){
@@ -408,7 +405,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //begin::Exchange Rate APIs
 
     //begin::PatientController. Not using Controller
-
+    Route::post('patient/subscribed-plans', [PatientController::class, 'getSubscribedServicePlans']);
     Route::post('patient/quick-info', [PatientController::class, 'getPatientQuickInfo']);
     Route::post('patient/history', [PatientController::class, 'getPatientHistory']);
     Route::post('patient/details', [PatientController::class, 'getPatientDetails']);
@@ -493,59 +490,7 @@ Route::post('test/test-api', function () {
     $data = "This is result of api";
     return response()->json($data);
 });
-
-//##um::controller
-Route::post('createApplication', [UMController::class, 'createApplication']);
-Route::post('encryptData', [UMController::class, 'encryptData']);
-Route::post('createPermission', [UMController::class, 'createPermission']);
-Route::post('getModuleList', [UMController::class, 'getModuleList']);
-Route::post('saveRole', [UMController::class, 'saveRole']);
-Route::post('role_exists', [UMController::class, 'role_exists']);
-Route::post('deleteRole', [UMController::class, 'deleteRole']);
-Route::post('addRoleMember', [UMController::class, 'addRoleMember']);
-Route::post('removeRoleMember', [UMController::class, 'removeRoleMember']);
-Route::post('getUserRoles', [UMController::class, 'getUserRoles']);
-Route::post('getRoleList', [UMController::class, 'getRoleList']);
-Route::post('getRoleMembers', [UMController::class, 'getRoleMembers']);
-Route::post('getRoleById', [UMController::class, 'getRoleById']);
-Route::post('user/deactivate-me', [UMController::class, 'deactivateMySelf']);
-Route::post('getUserList', [UMController::class, 'getUserList']);
-Route::post('getUserExtendedDetails', [UMController::class, 'getUserExtendedDetails']);
-Route::post('saveUser', [UMController::class, 'saveUser']);
-Route::post('getUserInfo', [UMController::class, 'getUserInfo']);
-Route::post('getUserDetails', [UMController::class, 'getUserDetails']);
-Route::post('deleteUser', [UMController::class, 'deleteUser']);
-Route::post('setUserStatus', [UMController::class, 'setUserStatus']);
-Route::post('unlockUser', [UMController::class, 'unlockUser']);
-Route::post('setLockStatus', [UMController::class, 'setLockStatus']);
-Route::post('user_exists', [UMController::class, 'user_exists']);
-Route::post('verifyUser', [UMController::class, 'verifyUser']);
-Route::post('changePassword', [UMController::class, 'changePassword']);
-Route::post('setPassword', [UMController::class, 'setPassword']);
-Route::post('changeLoginName', [UMController::class, 'changeLoginName']);
-Route::post('createLoginSession', [UMController::class, 'createLoginSession']);
-Route::post('getComboItems_user', [UMController::class, 'getComboItems_user']);
-Route::post('getComboItems_role', [UMController::class, 'getComboItems_role']);
-Route::post('getComboItems_workloc', [UMController::class, 'getComboItems_workloc']);
-Route::post('getAccessibleModules_current_user', [UMController::class, 'getAccessibleModules_current_user']);
-Route::post('getAccessibleModules', [UMController::class, 'getAccessibleModules']);
-Route::post('addAccessibleModule', [UMController::class, 'addAccessibleModule']);
-Route::post('getPermissionsByRole', [UMController::class, 'getPermissionsByRole']);
-Route::post('findPermissions', [UMController::class, 'findPermissions']);
-Route::post('addPermissionToRole', [UMController::class, 'addPermissionToRole']);
-Route::post('removePermissionFromRole', [UMController::class, 'removePermissionFromRole']);
-Route::post('getPermissionsByLoginName', [UMController::class, 'getPermissionsByLoginName']);
-Route::post('getPermissionsByUserId', [UMController::class, 'getPermissionsByUserId']);
-Route::post('getPermissionsByRoleId', [UMController::class, 'getPermissionsByRoleId']);
-Route::post('localizePermissions', [UMController::class, 'localizePermissions']);
-Route::post('allowed', [UMController::class, 'allowed']);
-Route::post('accessibleModule', [UMController::class, 'accessibleModule']);
-Route::post('getComboItems_module', [UMController::class, 'getComboItems_module']);
-Route::post('removeAccessibleModule', [UMController::class, 'removeAccessibleModule']);
-Route::post('getComboItems_userclass', [UMController::class, 'getComboItems_userclass']);
-Route::post('logout', [UMController::class, 'logout']);
-//##end::controller
-
+ 
 //begin::SystemSettingController
 Route::post('getComboItems_price_list', [SystemSettingController::class, 'getComboItems_price_list']);
 
@@ -593,8 +538,8 @@ Route::post('dashboard/table-one', [DashboardController::class, 'getDashboardDat
 
 Route::post('settings/test-sql', [GeneralSettingsController::class, 'testSQL']);
 //return langauge as json object format based on give parameter @lang = {'en','km',...}. It is used to return langauge to client side
-Route::post('settings/lang', [UMController::class, 'getLang']);
-Route::post('settings/save-lang', [UMController::class, 'saveLang']);
+// Route::post('settings/lang', [UMController::class, 'getLang']);
+// Route::post('settings/save-lang', [UMController::class, 'saveLang']);
 Route::post('settings/departments', [GeneralSettingsController::class, 'getDepartmentList']);
 Route::post('settings/save-department', [GeneralSettingsController::class, 'saveDepartment']);
 Route::post('settings/delete-department', [GeneralSettingsController::class, 'deleteDepartment']);

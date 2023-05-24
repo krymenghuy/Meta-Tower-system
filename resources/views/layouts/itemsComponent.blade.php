@@ -74,16 +74,14 @@
                                 </div>                             
                                 <div class="forn-group col-lg-6">
                                     <span class="simple-label trans-text" data-langprop="item.Brand Name">Brand Name</span>
-                                    <select id="_itm_item_brand" class="modal-select2 data-input" data-field="brand_id" data-ffield="Brand name">
-                                       
+                                    <select id="_itm_item_brand" class="modal-select2 data-input" data-field="brand_id" data-ffield="Brand name">  
                                     </select>
                                 </div>
- 
                                 <div class="forn-group col-lg-6">
-                                    <span class="simple-label"><span class="trans-text" data-langprop="item.SKU"></span>&nbsp; <a href="javascript:void(0)" id="_itm_lnkAddUnit"><i class="fa fa-plus-circle" style="color:green"></i></a></span>
-                                    <select id="_itm_item_unit" data-required="1" class="modal-select2 form-select data-input" data-field="unit_id" data-ffield="SKU"></select>
+                                    <span class="simple-label text-no-wrap"><span class="trans-text" data-langprop="item.Sales tax(%)"></span> 
+                                   <div> <input type="number" class="form-control data-input" data-field="sales_tax_rate" data-ffield="Sales tax" value="0"></div> 
                                 </div>
-  
+
                                 <div style="width:100%">
                                     <span class="d-inline-block fw-bold p-2" style="width:50%;font-size:1.2em;border-bottom:1px solid #E8EBEC">Sales Information</span>
                                  </div>
@@ -92,42 +90,48 @@
                                     <select id="_itm_item_detail_type" data-required="1" class="modal-select2 form-select data-input" data-field="detail_type_id" data-ffield="Detail type"></select>
                                 </div>
 
-                                <div class="forn-group col-lg-6">
-                                    <span class="simple-label"><span class="trans-text" data-langprop="item.Retail Price"></span> 
-                                    <input type="number" class="form-control data-input" data-field="selling_price" data-ffield="Retail price" value="0"> 
+                                <div class="forn-group col-lg-3">
+                                    <span class="simple-label"><span class="trans-text" data-langprop="item.Retail Price"></span>
+                                    <input type="number" data-category="retail_price_info" class="form-control data-input" data-field="price" data-ffield="Retail Price" value="0"> 
+                                </div>
+                                <div class="forn-group col-lg-3">
+                                    <span class="simple-label"><span class="trans-text" data-langprop="item.Retail Unit"></span>&nbsp; <a href="javascript:void(0)" id="_itm_lnkAddUnit"><i class="fa fa-plus-circle" style="color:green"></i></a></span>
+                                    <select id="_itm_retail_uom" class="modal-select2 data-input" data-category="retail_price_info" data-field="uom" data-ffield="Retail Unit"></select> 
+                                </div>
+ 
+                                <div class="forn-group col-lg-3">
+                                    <span class="simple-label"><span class="trans-text" data-langprop="item.Wholesale Price"></span>
+                                    <input type="number" class="form-control data-input" data-category="wholesale_price_info" data-field="price" data-ffield="Wholesale Price" value="0"> 
+                                </div>
+                                <div class="forn-group col-lg-3">
+                                    <span class="simple-label"><span class="trans-text" data-langprop="item.Wholesale Unit"></span>
+                                    <select id="_itm_wholesale_uom" class="modal-select2 data-input" data-category="wholesale_price_info" data-field="uom" data-ffield="Wholesale Unit"></select> 
+                                </div>
+   
+                                <div style="width:100%">
+                                    <span class="d-inline-block fw-bold p-2" style="width:50%;font-size:1.2em;border-bottom:1px solid #E8EBEC">Purchase Information</span>
+                                 </div>
+
+                                <div class="forn-group col-lg-3">
+                                    <span class="simple-label text-nowrap"><span class="trans-text" data-langprop="item.Cost"></span>
+                                    <input type="number" class="form-control data-input" data-category="costInfo" data-field="cost" data-ffield="cost" value="0">  
                                 </div>
 
-                                <div class="forn-group col-lg-6">
-                                    <span class="simple-label text-nowrap"><span class="trans-text" data-langprop="item.Wholesale Price"></span> 
-                                    <div>  <input type="number" class="form-control data-input" data-field="ws_selling_price" data-ffield="Wholesale price" value="0"></div> 
+                                <div class="forn-group col-lg-3">
+                                    <span class="simple-label"><span class="trans-text" data-langprop="item.Purchase Unit"></span>
+                                    <select id="_itm_purchase_uom" class="modal-select2 data-input" data-category="costInfo" data-field="uom" data-ffield="Purchase Unit"></select> 
                                 </div>
-
-                                <div class="forn-group col-lg-6">
-                                    <span class="simple-label text-no-wrap"><span class="trans-text" data-langprop="item.Sales tax(%)"></span> 
-                                   <div> <input type="number" class="form-control data-input" data-field="sales_tax_rate" data-ffield="Sales tax" value="0"></div> 
-                                </div>
-
+ 
                                 <div class="forn-group col-lg-6" style="display:none">
                                     <span class="simple-label"><span class="trans-text" data-langprop="item.Purchase Tax(%)"></span> 
                                     <input type="number" class="form-control data-input" data-field="purchase_tax_rate" data-ffield="Purchase Tax" value="0"> 
                                 </div>
-
-                                <div class="forn-group col-lg-6">
-                                    <span class="simple-label"><span class="trans-text" data-langprop="item.Cost"></span> 
-                                    <input type="number" class="form-control data-input" data-field="cost" data-ffield="Cost" value="0"> 
-                                </div>
-
-                                
-                                 <div style="width:100%">
+ 
+                                 <!-- <div style="width:100%">
                                     <span class="d-inline-block fw-bold p-2" style="width:50%;font-size:1.2em;border-bottom:1px solid #E8EBEC">Account Information</span>
-                                 </div>
-                                 <div id="_itm_account_info" style="width:100%">
-
-                                 </div>
-
-                               
-
-                                <div class="forn-group col-lg-6">
+                                 </div> -->
+                                  
+                                <!-- <div class="forn-group col-lg-6">
                                     <span class="simple-label"><span class="trans-text" data-langprop="item.Cost Account"></span> 
                                     <div>  <select class="modal-select2 data-input" data-field="cost_account_id" data-ffield="Cost account"></select> </div>
                                 </div>
@@ -140,12 +144,7 @@
                                 <div class="forn-group col-lg-6">
                                     <span class="simple-label"><span class="trans-text" data-langprop="item.Tax Account"></span> 
                                     <div>  <select class="modal-select2 data-input" data-field="tax_account_id" data-ffield="Tax account"></select> </div>
-                                </div>
-  
-                                <div class="forn-group col-lg-12">
-                                    <div class="dialog-error" id="_itm_dlgProduct_error">
-                                    </div>
-                                </div>   
+                                </div> -->
               </div>
 
             </div>

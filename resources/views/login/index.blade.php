@@ -1,6 +1,6 @@
 <?php  
-  unset($_COOKIE['vectorasoft_mclinic_session']);
-  unset($_COOKIE['vsmclinic997891zb']);
+  unset($_COOKIE['vectorasoft_vsksm_session']);
+  unset($_COOKIE['vsksm997878za']);
 ?>
 
 <!DOCTYPE html>

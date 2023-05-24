@@ -61,9 +61,9 @@
       <div class="col-lg-8">
         <div class="tab-view" id="_um_roleTabView"> 
           <div class="tab-header">
-            <a href="javascript:void(0)" class="tab-button" data-viewname="users" id="_um_roletab_button_users" data-target="tab_panel_users">USERS</a>
-            <a href="javascript:void(0)" class="tab-button" data-viewname="modules" id="_um_roletab_button_modules" data-target="tab_panel_modules">MODULES</a>
-            <a href="javascript:void(0)" class="tab-button" data-viewname="permissions" id="_um_roletab_button_prns" data-target="tab_panel_prns">PERMISSIONS</a>
+            <a style="color:#000;" href="javascript:void(0)" class="tab-button dark-text" data-viewname="users" id="_um_roletab_button_users" data-target="tab_panel_users">USERS</a>
+            <a style="color:#000;" href="javascript:void(0)" class="tab-button dark-text" data-viewname="modules" id="_um_roletab_button_modules" data-target="tab_panel_modules">MODULES</a>
+            <a style="color:#000;" href="javascript:void(0)" class="tab-button dark-text" data-viewname="permissions" id="_um_roletab_button_prns" data-target="tab_panel_prns">PERMISSIONS</a>
           </div>
           <div class="tab-body">
             <div class="tab-panel border-style1" data-viewname="users" id="_um_tab_panel_users" style="height:40vw;padding:15px">
@@ -90,12 +90,12 @@
                 </table>
             </div>
             <div class="tab-panel border-style1" data-viewname="permissions" id="_um_tab_panel_prns" style="height:40vw;padding:15px">
-              <a href="javascript:void(0)" id="_um_roleprn_lnk_add">
+              <a href="javascript:void(0)" style="color:green" id="_um_roleprn_lnk_add">
                 <i class="fa fa-plus" style="color:green"></i>
                 Manage
               </a>
               &nbsp;&nbsp;
-              <a href="javascript:void(0)" id="_um_roleprn_lnkLargeView">
+              <a style="display:none" href="javascript:void(0)" style="color:orange" id="_um_roleprn_lnkLargeView">
                 <i class="fa fa-list-alt" style="color:orange"></i>
                 Advanced
               </a>    

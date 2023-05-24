@@ -12,10 +12,9 @@
 <!DOCTYPE html>
 <html lang="<?php echo Session::get('lang','en'); ?>">
     <head>
-        <?php ScriptManager::render('priority-one',0);?>
         <base href="../">
         <meta charset="utf-8" />
-        <title>Clinic Management System</title>
+        <title>KSM System</title>
         <link type="images/png" rel="icon" href="{{ asset('assets/images/logo/logo.png') }}"/>
         <meta name="description" content="Updates and statistics">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
@@ -26,7 +25,8 @@
         <meta name="asset_url" content="{{ asset('assets/') }}" />
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <?php StyleManager::render('vsmclinic-style',1); ?> 
+        <?php ScriptManager::render('priority-one',0);?>
+        <?php StyleManager::render('vsksm-style',1); ?> 
         <style type="text/css">
             @media (min-width:1025px){
                 .kt-header--fixed.kt-subheader--fixed.kt-subheader--enabled .kt-wrapper {

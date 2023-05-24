@@ -12,7 +12,7 @@ class EncryptCookies extends Middleware
      * @var array
      */
     protected $except = [
-        'vsmclinic997891zb',
-        'mclinicrefresh'
+        'vsksm997878za',
+        'vsksmrefresh'
     ];
 }

@@ -60,6 +60,10 @@ let ItemGroupsComponent = new function(){
             }
         },
         {
+            title: mThis.trans_title('UOM'),
+            data: "uom"
+        },
+        {
             title: mThis.trans_title('Created By'),
             data: "create_user"
         },
@@ -295,60 +299,138 @@ let ItemGroupsComponent = new function(){
     }
 }
 
-//begin::MedicalServiceDialog
+//begin::ItemGroupDialog
 let ItemGroupDialog = new function(){
     let mThis = this;
     this.self = $(`#_pdg_dlgProductGroup`);
+    this.elTitle = $('#_pdg_dlgProductGroup_title');
      this.elCat = $(`#_pdg_dlgProductGroup_cat`);
      //elUnit
-     this.elSKU = $(`#_pdg_dlgProductGroup_unit`);
+     this.elUOM = $(`#_pdg_dlgProductGroup_unit`);
+     this.elBrand = $(`#_pdg_brand`);
+     this.elManufacturer = $(`#_pdg_manufacturer`);
+     this.btnSave = $('#_pdg_dlgProductGroup_btnSave');
+     
+     this.uom_label = new OptionEditor('_pdg_label_uom',{
+         "selectElement":mThis.elUOM,
+         'label':"UOM",
+         "buttons":['add','delete'],
+         "value_field":"uom",
+         "text_field":"uom",
+         "dataprop":"units",
+         "langprop":"item_group",
+         "apiSave":{
+            "endpoint":`${main_view.base_url}/api/inventory/settings/save-uom`
+            ,"params":(oldValue,newValue)=>{
+                return {'uom':newValue,"item_class":"MI"};
+            }
+         },
+         "apiDelete":{
+            "endpoint":`${main_view.base_url}/api/inventory/settings/delete-uom`
+         }
+     });
 
-    this.prepareFormOptions = (onFinish)=>{
-       
-        vsapi.call(`${main_view.base_url}/api/inventory/group/form-options`,null).then(res=>{
+     this.band_label = new OptionEditor('_pdg_label_brand',{
+        "selectElement":mThis.elBrand,
+        'label':"Brand",
+        "text_field":"brand_name",
+        "dataprop":"brands",
+        "langprop":"item_group",
+        "apiSave":{
+            "endpoint":`${main_view.base_url}/api/inventory/settings/save-brand`
+        },
+        "apiDelete":{
+            "endpoint":`${main_view.base_url}/api/inventory/settings/delete-brand`
+        }
+    });
+
+    this.uom_label = new OptionEditor('_pdg_label_manufacturer',{
+        "selectElement":mThis.elManufacturer,
+        'label':"Manufacturer",
+        //"buttons":['add','edit','delete'],
+        "langprop":"item_group",
+        "text_field":"manufacturer",
+        "dataprop":"manufacturers",
+        "apiSave":{
+            "endpoint":`${main_view.base_url}/api/inventory/settings/save-manufacturer`,
+        },
+        "apiDelete":{
+            "endpoint":`${main_view.base_url}/api/inventory/settings/delete-manufacturer`
+        }
+    });
+     
+     this.btnSave.on('click',e=>{
+        let p = mThis.getFormData();
+        vsapi.call(`${main_view.base_url}/api/inventory/group/save`,p,null,false).then(res=>{
+           if(res.status_code ===200){
+              if (typeof mThis.onClose ==='function') mThis.onClose(true);
+              mThis.self.modal('hide');
+           }else cv_interact.warning(res.error_message); 
+        });
+     });
+
+     this.setFormData =(d)=>{
+        d = d?d:{};
+        mThis.id = d.id;
+        mThis.self.find('.data-input').each(function(){
+            let el = $(this);
+            let f = el.data('field');
+            if(el.is('img')) p[f] = el.prop('src',d[f]);
+            else if(el.is('select')) el.val(d[f]).trigger('change');
+            else el.val(d[f]);
+        });
+     }
+
+     this.getFormData = ()=>{
+        let p ={};
+        mThis.self.find('.data-input').each(function(){
+            let el = $(this);
+            let f = el.data('field');
+            if(el.is('img')) p[f] = el.prop('src');
+            else p[f] = el.val();
+        });
+        p.id = mThis.id;
+        return p;
+     }
+
+     this.prepareFormOptions = (id,onFinish)=>{
+        vsapi.call(`${main_view.base_url}/api/inventory/group/form-options`,{'id':id}).then(res=>{
             if(res.status_code===200){
+                const group = res.data.group;
+                res.data.group = null;
                 let d = StringSanitizer.sanitizeObject(res.data);
-                 onFinish(d);
+                d.group = group;
+                VSUtil.setComboItems(mThis.elCat,d.categories,'id','category',true,'(Category)',null);
+                VSUtil.setComboItems(mThis.elUOM,d.units,'uom','uom',true,'(UOM)',null);
+                VSUtil.setComboItems(mThis.elBrand,d.brands,'id','brand_name',true,'(Brand name)',null);
+                VSUtil.setComboItems(mThis.elManufacturer,d.manufacturers,'id','manufacturer',true,'(Manufacturer)',null);
+                //if (id>0) d.group is available
+                onFinish(d);
             }
         });
     }
 
-    this.formUntil = new FormUntil({
-        "itemName":"Item Group",
-        "formId":'_pdg_dlgProductGroup',
-        "titleId":"_pdg_dlgProductGroup_title",
-        //"errorId":"_msl_dlgService_error",
-        //"saveButtonId":"_pdg_dlgProductGroup_btnSave",
-        "instance":this,
-        "apiSave":`${main_view.base_url}/api/inventory/group/save`,
-        "apiGet":`${main_view.base_url}/api/inventory/group/details`,
-        //"identityProp":"id",
-        "modifyTitle":"Modify Product Group",
-        "createTitle":"New Product Group",
-        "identityProps":['id'],
-        //Set additional data props for getFormData() to collect on gathering data inputs from this form,
-        "form_data_props":['id'],
-        //"sub_prop":"chief_complaint_items",
-        //"sub_prop_function":mThis.getChiefComplaints,
-        "sanitize_excepts":[],
-        'use_alert_error':true,
-        //'beforeShow': () => {}
-        // "init": ()=>{
-        //  }
-    });
-     
     this.show = (options)=>{
-        mThis.prepareFormOptions(d=>{
-            let cats = d.categories;
-            let units = d.units;
-            VSUtil.setComboItems(mThis.elCat,cats,'id','category',true,'(select category)',null);
-            VSUtil.setComboItems(mThis.elSKU,units,'id','unit_name',true,'(select sku)',null);
-            mThis.formUntil.show(options);
-        });
-        
+        options = options?options:{};
+        mThis.onClose = options.onClose;
+        mThis.prepareFormOptions(options.id,(d)=>{
+         let title = "New Product Group";  
+         if(d.group){
+             title = "Modify Product Group";  
+             mThis.setFormData(d.group);
+         }else{
+            mThis.setFormData(null);
+         }
+
+         mThis.elTitle.text(LocaleManager.trans(title,"titles"));   
+         mThis.self.modal({
+            'backdrop':'static'
+         });
+       });
     }
 }
-
+//end::ItemgroupDialog
+ 
 window.addEventListener('DOMContentLoaded',e=>{
     ItemGroupsComponent.init();
 });

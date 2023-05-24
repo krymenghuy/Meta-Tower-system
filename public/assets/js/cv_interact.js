@@ -121,12 +121,13 @@
 			//set default OK color. For every confirm. But different types of confirm => delete (red), confirm (resore)(green) etc ... 
 			let ok_button_color = '#079229';
 			let cancel_button_color ='#5B92EC';
+			 
 			if(ok_text === 'Remove' || ok_text === 'Delete' || context==='delete' || context==='remove' || context==='cancel')
 			{
 				            ok_button_color ='#ee2a0b';
 							cancel_button_color ='#5B92EC';
-							if(!ok_text) ok_text ='Remove';
-							if(!cancel_text) cancel_text = 'Dont Remove';
+							if(!ok_text) ok_text ='Remove'; else if (ok_text.toLowerCase() =='ok') ok_text = context==='remove'? 'Remove':'Delete';
+							if(!cancel_text) cancel_text = 'Cancel';
 							if (option.translate === true) if(ok_text) ok_text = LocaleManager.trans(ok_text,langSection);  
 							 
 			}else{
@@ -135,7 +136,7 @@
 				if(!ok_text) ok_text ='OK';
 				if(!cancel_text) cancel_text='Cancel';
 			}
-
+           
 			if (option.translate===true){
 				message = LocaleManager.trans(message,langSection);
 				if(cancel_text) cancel_text = LocaleManager.trans(cancel_text,langSection);  

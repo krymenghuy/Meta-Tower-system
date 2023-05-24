@@ -23,7 +23,7 @@ let StockTrackingComponent = new function () {
         "Name": "Name",
         "Group": "Group",
         "Category": "Category",
-        "SKU": "SKU",
+        "UOM": "UOM",
         "Qty": "Quantity",
         "Quantity": "Quantity",
         "Action": "Action"
@@ -184,14 +184,12 @@ let StockTrackingComponent = new function () {
     this.createExpandedPanelContent = (detail_tr, options) => {
         let group_id = options.group_id;
         let div_wrapper = detail_tr.find('div.expandable-row-container');
-        div_wrapper.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
-        let p = { 'group_id': group_id };
-        window.vsapi.call(`${main_view.base_url}/api/inventory/stock/group-items`, p, 'POST', false).then((res) => {
+        //div_wrapper.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
+        let p = {'group_id': group_id,'stock_class':mThis.elFilter_stock_class.val()};
+        window.vsapi.call(`${main_view.base_url}/api/inventory/stock/group-items`, p, null, false).then((res) => {
             let html = null;
             if (res.status_code === 200) {
-
                 let items = StringSanitizer.sanitizeObject(res.data);
-
                 html = [
                     `<div class="stock-items-panel">`,
                     `<table class="w-100 inner-item-table header-uppercase">`,
@@ -218,9 +216,9 @@ let StockTrackingComponent = new function () {
     this.createRowItems = (items) => {
         let html = "";
         (items || []).map(t => {
-            let sku = t.sku;
-            if (t.qty > 1 && sku) sku = [sku, 's'].join('');
-            let qty = [t.qty ? t.qty : 0, ` `, sku].join('');
+            let uom = t.uom;
+            if (t.qty > 1 && uom) uom = [uom, 's'].join('');
+            let qty = [t.qty ? t.qty : 0, ` `, uom].join('');
             let inner_html = `<td>${t.code}</td><td>${t.name}</td> <td>${t.description ? t.description : "NA"}</td> <td>${qty}</td><td>${t.last_updated ? t.last_updated : "NA"}</td>`;
             html = [html, `<tr data-itemid="`, t.id, `">`, inner_html, `</tr>`].join('');
         });
@@ -230,7 +228,7 @@ let StockTrackingComponent = new function () {
     this.displayItemGroups = (options, onFinish = null) => {
         if (!options) options = {};
         mThis.setLanguage();
-        let p = { 'search_value': mThis.elSearchItem.val(), 'category_id': mThis.elFilter_category.val(), 'stock_class_code': mThis.elFilter_stock_class.val(), 'warehouse_id': options.warehouse_id, 'block_id': options.block, 'group_id': options.group_id };
+        let p = { 'search_value': mThis.elSearchItem.val(), 'category_id': mThis.elFilter_category.val(), 'stock_class': mThis.elFilter_stock_class.val(), 'warehouse_id': options.warehouse_id, 'block_id': options.block, 'group_id': options.group_id };
         window.vsapi.call(`${mThis.base_url}/api/inventory/stock/group-list`, p, 'POST', null).then((result) => {
             let data = [];
             if (result.status_code === 200) data = result.data;
@@ -269,9 +267,9 @@ let StockTrackingComponent = new function () {
                 {
                     title: mThis.trans_title('Quantity'),
                     data: (data, a, b) => {
-                        let sku = data.sku;
-                        if (data.qty > 1 && sku) sku = [sku, 's'].join('');
-                        return [data.qty ? Number(data.qty) : 0, ' ', sku].join('');
+                        let uom = data.uom;
+                        if (data.qty > 1 && uom) uom = [uom, 's'].join('');
+                        return [data.qty ? Number(data.qty) : 0, ' ', uom].join('');
                     }
                 },
                 {
@@ -372,7 +370,7 @@ let ReceiveStokeDialog = new function () {
     this.self = $('#_stk_dlgReceiveStock');
     this.elVendor = $('#_stk_select_vendors');
     this.elWarehouse = $('#_stk_select_warehouse');
-    this.elStockClass = $('#_stk_select_class_stock');
+    //this.elStockClass = $('#_stk_select_class_stock');
     this.btnSave = $('#_stk_dlgReceiveStock_btnSave');
 
     this.loadItems = (onFinish) => {
@@ -400,11 +398,19 @@ let ReceiveStokeDialog = new function () {
             "displayType": "input",
         },
         {
-            "name": "sku",
-            "title": "SKU",
+            "name": "default_uom",
+            "title": "UOM",
+            "width":"80px",
             "dataType": "string",
             "displayType": "input",
             "readOnly": true,
+        },
+        {
+            "name":"expiration_date",
+            "title":"Exp Date",
+            "width":"180px",
+            "dataType":"date",
+            "displayType":"input"
         },
         {
             "name":"stock_class",
@@ -415,13 +421,14 @@ let ReceiveStokeDialog = new function () {
         {
             "name": "price",
             "title": "Price",
+            "width":"100px",
             "dataType": "number",
             "displayType": "input",
             "currencySymbol": "$"
         },
         {
             "name": "discount",
-            "title": "Discount(%)",
+            "title": "Dis(%)",
             "dataType": "number",
             "displayType": "input",
             "cssClass": ""
@@ -456,15 +463,20 @@ let ReceiveStokeDialog = new function () {
 
     this.setTotal = (col_name, tr) => {
         let d = mThis.cfg.getDataRow(tr);
+        //cause_cols is array that contains names of columns, when these column's value change, the method setTotal() is executed
         let cause_cols = { 'item_id': 1, 'qty': 1, 'price': 1, 'discount': 1 };
         let p = { "id": d.item_id };
 
-        vsapi.call(`${main_view.base_url}/api/inventory/item-info`,p).then(res => {
+        vsapi.call(`${main_view.base_url}/api/inventory/basic-info`,p).then(res => {
             if (res.status_code === 200) {
+                const costInfo = res.data.costInfo;
+                if(!res.data) return;
+                res.data.costInfo = null;
                 let item = StringSanitizer.sanitizeObject(res.data);
+               
                 if(item){
-                    mThis.cfg.setCellValue(tr, 'sku', item.sku);
-                    d.price = d.price > 0 ? d.price : parseFloat(item.cost);
+                    mThis.cfg.setCellValue(tr, 'default_uom', item.default_uom);
+                    d.price = costInfo.cost;
                     mThis.cfg.setCellValue(tr, 'price', d.price);
                 }
 
@@ -484,7 +496,7 @@ let ReceiveStokeDialog = new function () {
         e.preventDefault();
         let p = mThis.getFormData();
         p['allow_create_po'] = 1;
-        p['type'] = "FG";
+        p['type'] = "MI";
         vsapi.call(`${mThis.base_url}/api/inventory/stock/receive-vpo`,p).then(res => {
             if(res.status_code === 200){
                 cv_interact.success([`Recieve Stock Success`,res.success_count].join(''));
@@ -506,9 +518,11 @@ let ReceiveStokeDialog = new function () {
             });
             mThis.cfg.setSelectOptions("stock_class", items);
             mThis.cfg.setSelectOptions("item_id", d.items);
-            VSUtil.setComboItems(mThis.elVendor, d.vendors, 'id', 'vendor_name', true, '(select vendor)', null);
-            VSUtil.setComboItems(mThis.elWarehouse, d.warehouses, 'id', 'warehouse_name', true, '(select warehouse)', null);
-            VSUtil.setComboItems(mThis.elStockClass, d.stockclasses, 'code','stock_class', true, '(select stock class)', null);
+            VSUtil.setComboItems(mThis.elVendor, d.vendors, 'id', 'vendor_name', true, '(Vendor)', null);
+            VSUtil.setComboItems(mThis.elWarehouse, d.warehouses, 'id', 'warehouse_name', true, '(Warehouse)',null);
+            if(d.warehouses[0] && !d.warehouses[1]) mThis.elWarehouse.val(d.warehouses[0].id).trigger('change');
+            if(d.vendors[0] && !d.vendors[1]) mThis.elVendor.val(d.vendors[0].id).trigger('change');  
+            //VSUtil.setComboItems(mThis.elStockClass, d.stockclasses, 'code','stock_class', true, '(select stock class)', null);
             mThis.self.modal({
                 backdrop: 'static',
             });

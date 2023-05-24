@@ -13,7 +13,7 @@ class ScriptProvider
         'priority-one' => [
             'attr' => 'async',
             'single_file' => 1,
-            'output_file' => '/dist/js/clinic.priority-one.min.js',
+            'output_file' => '/dist/js/ksm.priority-one.min.js',
             'files' => [
                 '/assets/js/vsapi.js',
                 '/assets/js/LocaleManager.js',
@@ -23,7 +23,7 @@ class ScriptProvider
         'primary' => [
             'attr' => null,
             'single_file' => 1,
-            'output_file' => '/dist/js/clinic.primary.js?v=1',
+            'output_file' => '/dist/js/ksm.primary.js?v=1',
             'files' => [
                 '/assets/material-js/jquery.min.js',
                 '/assets/plugins/chart.js/Chart.js'
@@ -32,7 +32,7 @@ class ScriptProvider
         'primary-async' => [
             'attr' => 'async',
             'single_file' => 1,
-            'output_file' => '/dist/js/clinic.primary-async.js',
+            'output_file' => '/dist/js/ksm.primary-async.js',
             'files' => [
                 '/js/components/AuthManager.js'
             ]
@@ -50,7 +50,7 @@ class ScriptProvider
         'primary-defer' => [
             'attr' => 'defer',
             'single_file' => 1,
-            'output_file' => '/dist/js/clinic.primary-defer.js',
+            'output_file' => '/dist/js/ksm.primary-defer.js',
             'files' => [
                 '/assets/js/string_san.js',
                 '/assets/js/vsutil.js',
@@ -88,7 +88,7 @@ class ScriptProvider
         'components' => [
             'attr' => 'defer',
             'single_file' => 1,
-            'output_file' => '/dist/js/clinic.components.js',
+            'output_file' => '/dist/js/ksm.components.js',
             'files' => [
                 '/assets/js/formUtils.js',
                 '/js/layout/main.js?v=1',
@@ -96,6 +96,7 @@ class ScriptProvider
                 '/js/components/FileChooser.js',
                 '/js/components/ListView.js',
                 '/js/components/SimpleItemEditor.js',
+                '/js/components/OptionEditor.js',
                 '/js/components/DashboardComponent.js',
                 '/js/components/PersonDialog.js',
                 '/js/components/AppointmentListComponent.js?v=5',

@@ -122,7 +122,7 @@ Route::post('processLogin', [LoginController::class, 'processLogin']);
 //route 'dms' or Delivery Management System(DMS) routing to default Home View on firt log in
 Route::get('login', [LoginController::class, 'login']);
 
-Route::get('mclinic', function () {
+Route::get('ksm', function () {
     if (!Session('login_name')) {
         // return redirect('/')
         $base_url = url('/');

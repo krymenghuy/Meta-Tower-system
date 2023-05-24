@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Inventory;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Inventory\Settings;
+use App\Models\Inventory\Item;
 use App\Models\UM;
 use App\Models\JDV;
 
@@ -45,13 +46,21 @@ class InventorySettingsController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
         $category_id = $req->category_id;
-        return JDV::result(Settings::options_detail_type($ss,$category_id)); 
+        return JDV::result(Settings::options_detail_type($category_id,$ss)); 
     }
-    
+   
+    function getComboItems_sku(request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $item_id = $req->id?$req->id:$req->item_id;
+        $item = new Item($item_id,$ss);
+        return JDV::result($item->getSKUList()); 
+    }
+     
     function getComboItems_stockclass(request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
-        $category_id = $req->category_id;
+        //$category_id = $req->category_id;
         return JDV::result(Settings::options_stockclass($ss)); 
     }
     
@@ -67,60 +76,60 @@ class InventorySettingsController extends Controller
         return JDV::result(Settings::options_category($ss)); 
     }
 
-    function getComboItems_unit(request $req){
+    // function getComboItems_unit(request $req){
+    //     $ss = UM::getUserInfoByToken($req,-1);
+    //     if($ss->status_code !=200) return $ss; //user not authenticated
+    //     return JDV::result(Settings::options_unit($ss)); 
+    // }
+
+    function getComboItems_uom(request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
-        return JDV::result(Settings::options_unit($ss)); 
+        return JDV::result(Settings::options_uom($ss)); 
     }
 
     //saveSKU()|CreateUnit()
-    function saveUnit(request $req){
+    function saveUOM(request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
-        $res = Settings::saveUnit($ss,$req->all());
-        if($res->status ==='OK') return JDV::success(['id'=>$res->id]);
-        else return JDV::error($res->error_message); 
+        $res = Settings::saveUOM($req->all(),$ss);
+        return JDV::raw($res);
+    }
+
+    function deleteUOM(request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss; //user not authenticated
+        $res = Settings::deleteUOM($req->uom,$ss);
+        return JDV::raw($res);
     }
 
     function saveManufacturer(request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
-        $res = Settings::saveManufacturer($ss,$req->all());
-        if($res->status ==='OK') return JDV::success(['id'=>$res->id]);
-        else return JDV::error($res->error_message); 
+        $res = Settings::saveManufacturer($req->all(),$ss);
+        return JDV::raw($res);
     }
-
-    function deleteUnit(request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-        $res = Settings::deleteUnit($ss,$req->id);
-        if($res->status ==='OK') return JDV::success();
-        else return JDV::error($res->error_message); 
-    }
-     
+ 
     function deleteManufacturer(request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
-        $res = Settings::deleteManufacturer($ss,$req->id);
-        if($res->status ==='OK') return JDV::success();
-        else return JDV::error($res->error_message); 
+        $res = Settings::deleteManufacturer($req->id,$ss);
+        return JDV::raw($res);
     }
 
      //saveBrandName() |createBrandName()
     function saveBrand(request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
-        $res = Settings::saveBrand($ss,$req->all());
-        if($res->status ==='OK') return JDV::success(['id'=>$res->id]);
-        else return JDV::error($res->error_message); 
+        $res = Settings::saveBrand($req->all(),$ss);
+        return JDV::raw($res);
     }
      
     function deleteBrand(request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
-        $res = Settings::deleteBrand($ss,$req->id);
-        if($res->status ==='OK') return JDV::success();
-        else return JDV::error($res->error_message); 
+        $res = Settings::deleteBrand($req->id,$ss);
+        return JDV::raw($res);
     }
 
     function getStockTrackingFormOptions(Request $req){

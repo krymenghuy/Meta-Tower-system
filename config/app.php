@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Vectorasoft MClinic'),
+    'name' => env('APP_NAME', 'Vectorasoft KSM'),
 
     /*
     |--------------------------------------------------------------------------
@@ -125,7 +125,7 @@ return [
     /* App Id used by Vectorasoft Dev Team */
     'app_id' => env('APP_ID','DXM20FKAEFC711EH2E7C9801A7BZD311'),
     'customer_app_id'=> env('CUSTOMER_APP_ID','DXM20FKAEFC711EH2E7C9801A7BZD311'),
-    'pusher_channel_prefix'=>env('PUSHER_CHANNEL_PREFIX','vsmclinic.'),
+    'pusher_channel_prefix'=>env('PUSHER_CHANNEL_PREFIX','vsksm.'),
     'storage_dir'=>env('STORAGE_DIR','/uploads/companies/'),
     'cookie_name'=>env('COOKIE_NAME'),
 
