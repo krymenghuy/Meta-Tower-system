@@ -8,7 +8,7 @@ let InvoiceSettings = new function () {
     }
 }
 
-let InvoicesComponent = new function () {
+var InvoicesComponent = new function () {
     this.retail_sales = 1;
     let mThis = this;
     this.title_prop = 'Invoices';

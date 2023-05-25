@@ -8,7 +8,7 @@ class StyleProvider
         'vsksm-style' => [
             'output_file' => '/dist/css/vsksm-style.css',
             'files' => [
-                'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css',
+                'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css',
                 '/assets/vendors/custom/datatables/datatables.bundle.css',
                 '/assets/vendors/general/perfect-scrollbar/css/perfect-scrollbar.css',
                 '/assets/vendors/general/tether/dist/css/tether.css',

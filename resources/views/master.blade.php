@@ -66,30 +66,42 @@
                         <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper" style="padding:10px">
                             <div class="d-flex">
                                 <div class="form-inline">
-                                    <div class="screen-info">
-                                        <div>
-                                            <h5 class="screen-title trans-text" data-langprop="titles.dashboard" style="text-transform:uppercase" id="screen_title"></h5>
+                                    <div class="div--search">
+                                        <div class="div--search-icon">
+                                            <i class="fa-solid fa-magnifying-glass"></i>
                                         </div>
+                                        <input type="search" class="form--control-search" placeholder="Search..."/>
                                     </div>
                                 </div>
                                 <div id="_main_top_right_menus" class="mainview-top-right">
                                     <div class="form-inline">
-                                        <div class="main--campus">
-                                            <i class="fa-solid fa-house fs-4"></i>
-                                            <p class="px-3 mb-0">Main campus</p>
-                                            <i class="fa-solid fa-caret-down fs-5"></i>
+                                        <div class="dropdown main--campus">
+                                            <button class="btn-dropdown">
+                                                <i class="fa-solid fa-house fs-4"></i>
+                                                <p class="px-3 mb-0">Main campus</p>
+                                                <i class="fa-solid fa-caret-down fs-5"></i>
+                                            </button>
+                                            <div class="br-dropdown dropdown-menu">
+                                                <div class="branch--chooser">
+                                                    <a href="javascript:void(0)">
+                                                        <i class="fa-solid fa-house"></i>
+                                                        <span class="br--label">Branch 721</span>
+                                                    </a>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="dropdown choose--language">
-                                            <button id="_main_btn_lang" class="btn-dropdown" data-menu="lang">
-                                                <img class="mr-1" src="{{ asset('assets/images/icons/khmer.png') }}" style="height:25px" />
+                                            <button id="_main_btn_lang" class="btn-dropdown align--language" data-menu="lang">
+                                                <img class="mr-1" src="{{ asset('assets/images/icons/khmer.png') }}" style="height:25px"/>
                                                 <span id="_main_lang_name">
                                                     <?php
                                                         echo Session::get('lang_name','Khmer');
                                                     ?>
                                                 </span>
+                                                <i class="fa-solid fa-caret-down ps-2 fs-5"></i>
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-right">
-                                                <!-- <span class="lang-menu-header"></span> -->
+                                                <span class="lang-menu-header"></span>
                                                 <div class="main-lang-menus">
                                                     <span class="lang-menu-item">
                                                         <a class="dropdown-item lnk-lang" data-lang="km" data-name="ខ្មែរ" href="javascript:void(0)">
@@ -111,8 +123,10 @@
                                                 <i class="fa-regular fa-bell fs-4"></i>
                                                 <span class="number--notification" id="_main_notif_count">0</span>
                                             </button>
-                                            <div class="dropdown-menu dropdown-menu-right">
-                                                <span class="notif-header">Notification</span>
+                                            <div class="dropdown-menu dropdown-menu-right notification-dropdown">
+                                                <div class="con--header">
+                                                    <span class="notif-header">Notification</span>
+                                                </div>
                                                 <div class="main-notif-panel"></div>
                                             </div>
                                         </div>
@@ -125,7 +139,7 @@
                                                     ?>
                                                 </span>
                                             </button>
-                                            <div class="dropdown-menu dropdown-menu-right">
+                                            <div class="dropdown-menu dropdown-menu-right user--login">
                                                 <span class="user-menu-header"></span>
                                                 <div class="main-user-menus">
                                                     <span class="user-menu-item">
@@ -136,7 +150,7 @@
                                                     </span>
                                                     <span class="user-menu-item">
                                                         <a id="_main_mnu_logout" class="dropdown-item" href="javascript:void(0)">
-                                                            <i class="fas fa-sign-out-alt" style="font-size:0.8em"></i>
+                                                            <i class="fas fa-sign-out-alt"></i>
                                                             Log out
                                                         </a>
                                                     </span>
@@ -146,14 +160,20 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="show--title">
+                                <div class="screen-info">
+                                    <h5 class="screen-title mb-0 trans-text" data-langprop="titles.dashboard" style="text-transform:uppercase" id="screen_title">Dashboard</h5>
+                                </div>
+                            </div>
                         </div>
                         <div class="animation-line line--loader" id="vs_loader"></div>
                     </div>
                     <div id="_p2" class="kt-content kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" id="kt_content">
                         <div id="_p1" class="row">
-                            <div class="col-lg-12 shadow-box" id="_app_content" style="background-color:#fff;">
+                            <div class="col-lg-12 shadow-box mt-3" id="_app_content">
                                 @include('layouts.inputBoxes')
                                 @include('layouts.dashboardComponent')
+                                @include('layouts.registrationComponent')
                                 @include('layouts.invoicesComponent')
                                 @include('layouts.reportCenterComponent')
                                 @include('layouts.companyComponent')

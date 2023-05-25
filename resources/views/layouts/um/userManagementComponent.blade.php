@@ -19,8 +19,8 @@
   }
 </style>
 
-<div id="_um_userManagementComponent" class="mobile-padding" style="width:auto;display:none">
-  <div id="_um_userListPanel" style="display:none;padding:15px 15px 15px">
+<div id="_um_userManagementComponent" class="mobile-padding" style="display:none">
+  <div id="_um_userListPanel" style="display:none">
     <div class="row">
       <div class="col-lg-12">
         <div class="form-inline">

@@ -104,6 +104,7 @@ class ScriptProvider
                 '/js/components/InputBoxes.js',
                 '/js/components/CompanyComponent.js?v=1',
                 '/js/components/LocationComponent.js',
+                '/js/components/RegistrationComponent.js',
                 '/js/components/UserManagementComponent.js',
                 '/js/components/RoleManagementComponent.js',
                 'assets/js/pusher/pusher.min.js',

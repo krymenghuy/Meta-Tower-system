@@ -1,4 +1,4 @@
-<div id="_sttn_locationsComponent" style="width:auto;display:none;margin:15px 15px 15px">
+<div id="_sttn_locationsComponent" style="display:none">
   <div class="row">
       <div class="col-lg-6">
         <div id="_sttn_loc_countryListpanel" class="border-style1" style="margin-top:40px;background-color:#F6FAFA;padding:10px;height:40vw;">
@@ -20,7 +20,6 @@
                <a href="#" class="tab-button" data-viewname="districts" data-target="_sttn_tabpanel_districts">DISTRICTS (KHAN)</a>
                <a href="#" class="tab-button" data-viewname="communes" data-target="_sttn_tabpanel_communes">COMMUNES(SANGKAT)</a>
              </div>
-             <!--begin::tab-body-->
              <div class="tab-body">
                  <div class="tab-panel border-style1" id="_sttn_tabpanel_cities" style="height:40vw;padding:10px" data-viewname="cities">
                      <a id="_sttn_loc_lnkNewCity" href="javascript:void(0)" class="btn btn-outline-success btn-hover">Add City</a>

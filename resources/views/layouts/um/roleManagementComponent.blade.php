@@ -41,8 +41,8 @@
   }
 </style>
 
-<div id="_um_roleManagementComponent" class="mobile-padding" style="width:auto;display:none;margin:15px 15px 15px">
-  <div id="_um_roleListPanel" style="width:auto;display:none">
+<div id="_um_roleManagementComponent" class="mobile-padding" style="display:none">
+  <div id="_um_roleListPanel" style="display:none">
     <div class="row">
       <div class="col-lg-4">           
         <div>

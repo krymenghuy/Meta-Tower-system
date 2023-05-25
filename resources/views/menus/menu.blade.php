@@ -12,10 +12,8 @@
     }
 
     .menu-selected {
-        background-color: #ff7b03;
-        border-top: 1.2px dotted orange;
-        border-radius: 0px 20px 20px 0px;
-        color: #fff !important;
+        background-color:  #CAE1F7;
+        color: #0E75D9 !important;
     }
 
     .kt-menu__link-icon img {
@@ -63,10 +61,21 @@
                 <a href="DashboardComponent" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <i>
-                            <img class="icons" src="{{ asset('assets/images/icons/dashboard.svg') }}" style="height:25px">
+                            <img class="icons" src="{{ asset('assets/images/icons/dashboard.png') }}" style="height:25px">
                         </i>
                     </span>
                     <span class="kt-menu__link-text trans-text" data-langprop="menus.Dashboard">Dashboard</span>
+                </a>
+            </li>
+
+            <li class="kt-menu__item" aria-haspopup="true">
+                <a href="RegistrationComponent" class="menu-item kt-menu__link">
+                    <span class="kt-menu__link-icon">
+                        <i>
+                            <img class="icons" src="{{ asset('assets/images/icons/registration.png') }}" style="height:25px">
+                        </i>
+                    </span>
+                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Registration">Registration</span>
                 </a>
             </li>
  
@@ -106,7 +115,7 @@
                     <span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkIncomeInvoices" class="menu-item kt-menu__link">
+                            <a href="InvoicesComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{ asset('assets/images/icons/invoice.svg') }}"/>
                                 </span>
