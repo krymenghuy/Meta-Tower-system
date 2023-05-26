@@ -27,105 +27,7 @@
             </button>
             <input type="search" class="form-control width--search" placeholder="Search by Name or ID..."/>
         </div>
-        <div class="mt-3 div-registrated">
-            <div class="d-flex p-3 bg-white h-info-student">
-                <div class="div-img">
-                    <img src="{{ asset('assets/images/slides/student.png') }}" alt=""/>
-                </div>
-                <div class="d-block ms-3 w-100">
-                    <div class="row row-cols-3 mb-0">
-                        <div class="col">
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Student ID"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap">ST0001</p>
-                            </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Name"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap">Kea Kanhchana</p>
-                            </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Female"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap">Female</p>
-                            </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Date of Birth"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap">10-10-2010</p>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Parent Name"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap">Koko</p>
-                            </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Parent Phone"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap">086000000</p>
-                            </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Parent Email"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap">parentname@gmail.com</p>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="d-flex align-items-start justify-content-end gap-2">
-                                <button class="btn btn-sm btn-primary rounded-3" type="button">
-                                    <span class="text-nowrap trans-text" data-langprop="buttons.Ganerate Card"></span>
-                                </button>
-                                <button class="btn btn-sm btn-danger rounded-3" type="button">
-                                    <span class="text-nowrap trans-text" data-langprop="buttons.Options"></span>
-                                    <i class="fa-solid fa-caret-down ps-2"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <hr class="bg-dark m-1 p-0"/>
-                    <div class="row row-cols-5 mt-2">
-                        <div class="col">
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Academic Year"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap">2023 - 2024</p>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Campus"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap">Main Campus</p>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Class"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap">Pre-Nersery</p>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Section"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap">Half Day</p>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Student Type"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap">New</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div id="_rgs_list" class="mt-3 div-registrated"></div>
     </div>
     <div class="st-register--input" style="display:none">
         <div class="bg-primary rounded-top-3">
@@ -256,11 +158,31 @@
                         <input type="text" class="form-control data-input" data-field="mother_phone"/>
                     </div>
                     <div class="d-flex justify-content-center">
-                        <button class="btn btn-primary" type="button">
+                        <button class="btn btn-primary btn--save" type="button">
                             <span class="trans-text" data-langprop="buttons.Add Student"></span>
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="dlg__rgs" class="modal fade" tabindex="-1" aria-labelledby="dlg__rgs_title" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button class="btn-close" type="button" aria-label="Close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                    <span class="trans-text" data-langprop="buttons.Cancel"></span>
+                </button>
+                <button class="btn btn-primary btn--print" type="button">
+                    <span class="trans-text" data-langprop="buttons.Print Now"></span>
+                </button>
             </div>
         </div>
     </div>

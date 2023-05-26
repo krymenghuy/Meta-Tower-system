@@ -174,6 +174,8 @@
                                 @include('layouts.inputBoxes')
                                 @include('layouts.dashboardComponent')
                                 @include('layouts.registrationComponent')
+                                @include('layouts.tuitionFeeComponent')
+                                @include('layouts.policyDiscountComponent')
                                 @include('layouts.invoicesComponent')
                                 @include('layouts.reportCenterComponent')
                                 @include('layouts.companyComponent')

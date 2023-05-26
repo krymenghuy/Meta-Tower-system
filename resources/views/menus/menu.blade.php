@@ -82,21 +82,39 @@
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
-                        <img class="icons" src="{{ asset('assets/images/icons/hospital_reception.svg') }}" style="height: 25px;"/>
+                        <img class="icons" src="{{ asset('assets/images/icons/fee_management.png') }}" style="height: 25px"/>
                     </span>
-                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Reception">Reception</span>
+                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Fee Management">Fee Management</span>
                     <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
                 <div class="kt-menu__submenu ">
                     <span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
-                        <li style="display:none" class="kt-menu__item" aria-haspopup="true">
-                            <a href="javascript:void(0)" id="_main_lnkPatientFinder" class="menu-item kt-menu__link">
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="TuitionFeeComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/patient_finder.svg')}}"/>
+                                    <img class="icons" src="{{asset('assets/images/icons/tuition_fee.png')}}"/>
                                 </span>
                                 &nbsp;
-                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Patient Finder">Patient Finder</span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Tuition Fee">Tuition Fee</span>
+                            </a>
+                        </li>
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="PolicyDiscountComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{asset('assets/images/icons/policy_discount.png')}}"/>
+                                </span>
+                                &nbsp;
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Policy Discount">Policy Discount</span>
+                            </a>
+                        </li>
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="NonTuitionFeeComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{asset('assets/images/icons/non-tuition-fee.png')}}"/>
+                                </span>
+                                &nbsp;
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Non-tuition Fee">Non-tuition Fee</span>
                             </a>
                         </li>
                     </ul>
