@@ -111,7 +111,7 @@
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="NonTuitionFeeComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/non-tuition-fee.png')}}"/>
+                                    <img class="icons" src="{{ asset('assets/images/icons/non-tuition-fee.png') }}"/>
                                 </span>
                                 &nbsp;
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Non-tuition Fee">Non-tuition Fee</span>
@@ -124,21 +124,30 @@
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
-                        <img class="icons" src="{{asset('assets/images/icons/money_bag.svg')}}"/>
+                        <img class="icons" src="{{ asset('assets/images/icons/payment_processing.png') }}"/>
                     </span>
-                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Incomes">Incomes</span>
+                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Payment Processing">Payment Processing</span>
                     <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
                 <div class="kt-menu__submenu ">
                     <span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="InvoicesComponent" class="menu-item kt-menu__link">
+                            <a href="DepositFeeComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{ asset('assets/images/icons/invoice.svg') }}"/>
+                                    <img class="icons" src="{{ asset('assets/images/icons/deposit_fee.png') }}"/>
                                 </span>
                                 &nbsp;
-                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Invoices">Invoices</span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Deposit Fee">Deposit Fee</span>
+                            </a>
+                        </li>
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="FindStudentComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/find_student.png') }}"/>
+                                </span>
+                                &nbsp;
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Find Student">Find Student</span>
                             </a>
                         </li>
                     </ul>
@@ -238,6 +247,7 @@
 
 <script>
     let __dx = $('#_dms_aside_menus');
+
     if(LocaleManager) LocaleManager.translateZone('_dms_aside_menus');
     __dx.show();
     __dx.css('height', [(window.innerHeight) - 65, 'px'].join(''));
