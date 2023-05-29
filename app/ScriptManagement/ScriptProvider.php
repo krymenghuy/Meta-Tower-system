@@ -110,6 +110,8 @@ class ScriptProvider
                 '/js/components/NonTuitionFeeComponent.js',
                 '/js/components/DepositFeeComponent.js',
                 '/js/components/FindStudentComponent.js',
+                '/js/components/StudentInformationComponent.js',
+                '/js/components/ActivitiesComponent.js',
                 '/js/components/UserManagementComponent.js',
                 '/js/components/RoleManagementComponent.js',
                 'assets/js/pusher/pusher.min.js',

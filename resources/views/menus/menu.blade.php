@@ -150,6 +150,49 @@
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Find Student">Find Student</span>
                             </a>
                         </li>
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="InvoicesComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/invoices.png') }}"/>
+                                </span>
+                                &nbsp;
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Invoices">Invoices</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+                <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons" src="{{ asset('assets/images/icons/student_management.png') }}"/>
+                    </span>
+                    &nbsp;
+                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Student Management">Student Management</span>
+                    <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                </a>
+                <div class="kt-menu__submenu ">
+                    <span class="kt-menu__arrow"></span>
+                    <ul class="kt-menu__subnav">
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="StudentInformationComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/student_information.png') }}"/>
+                                </span>
+                                &nbsp;
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Student Information">Student Information</span>
+                            </a>
+                        </li>
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="ActivitiesComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/activities.png') }}"/>
+                                </span>
+                                &nbsp;
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Activities">Activities</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </li>

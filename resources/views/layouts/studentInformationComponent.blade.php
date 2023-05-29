@@ -1,4 +1,4 @@
-<div id="_main_invoicesComponent" class="mobile-padding p-3" style="display:none">
+<div id="_main_studentInformationComponent" class="mobile-padding p-3" style="display:none">
     <div class="d-flex gap-2">
         <button class="btn btn-sm btn-primary" type="button">
             <span></span>
@@ -11,6 +11,6 @@
         </button>
     </div>
     <div class="table-responsive mt-3 p-3">
-        <table class="table tbl--inv"></table>
+        <table class="table tbl--sin"></table>
     </div>
 </div>

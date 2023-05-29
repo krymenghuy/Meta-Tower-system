@@ -170,7 +170,7 @@
                     </div>
                     <div id="_p2" class="kt-content kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" id="kt_content">
                         <div id="_p1" class="row">
-                            <div class="col-lg-12 shadow-box mt-3" id="_app_content">
+                            <div class="col-lg-12 shadow-box mt-3 ps-4" id="_app_content">
                                 @include('layouts.inputBoxes')
                                 @include('layouts.dashboardComponent')
                                 @include('layouts.registrationComponent')
@@ -180,6 +180,8 @@
                                 @include('layouts.depositFeeComponent')
                                 @include('layouts.findStudentComponent')
                                 @include('layouts.invoicesComponent')
+                                @include('layouts.studentInformationComponent')
+                                @include('layouts.activitiesComponent')
                                 @include('layouts.reportCenterComponent')
                                 @include('layouts.companyComponent')
                                 @include('layouts.locationComponent')

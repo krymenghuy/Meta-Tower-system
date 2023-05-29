@@ -22,7 +22,42 @@
     </div>
     <div class="div--fsd" style="display:none">
         <div class="d-flex gap-2">
-            <button class="btn--select"></button>
+            <button class="btn btn-primary btn-sm btn--select" type="button">
+                <span></span>
+                <i class="fa-solid fa-caret-down ps-2"></i>
+            </button>
+            <input type="search" class="form-control width--search-inner" placeholder="Search by Name or ID..."/>
+            <button class="btn btn-primary btn-sm" type="button">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span class="trans-text" data-langprop="buttons.Find"></span>
+            </button>
+        </div>
+        <div id="_fns_list" class="overflow-auto p-3 mt-3 panel-student-list"></div>
+    </div>
+</div>
+
+<div id="dlg__fns" class="modal fade" tabindex="-1" aria-labelledby="dlg__fns_title" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="d-block">
+                    <h4 class="modal-title"></h4>
+                    <small class="modal-title--sm"></small>
+                </div>
+                <button class="btn-close" type="button" aria-label="Close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" type="button" data-dismiss="modal">
+                    <span class="trans-text" data-langprop="buttons.Cancel"></span>
+                </button>
+                <button class="btn btn-primary btn-sm" type="button">
+                    <span class="trans-text" data-langprop="buttons.Generate"></span>
+                </button>
+                <button class="btn btn-primary btn-sm" type="button">
+                    <span class="trans-text" data-langprop="buttons.Generate and Receive"></span>
+                </button>
+            </div>
         </div>
     </div>
 </div>
