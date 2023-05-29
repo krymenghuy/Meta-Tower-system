@@ -3261,11 +3261,8 @@ input[type="button"].btn-block {
 .dropdown-menu {
   position: absolute;
   top: 100%;
-  left: 0;
   z-index: 95;
   display: none;
-  float: left;
-  min-width: 10rem;
   padding: 0.5rem 0;
   margin: 0.125rem 0 0;
   font-size: 1rem;
@@ -14362,12 +14359,6 @@ code {
   box-shadow: 0px 0px 50px 0px rgba(82, 63, 105, 0.15);
   padding: 1rem 0;
   border-radius: 4px;
-  left: 0
-    /*rtl:ignore*/
-  ;
-  /*rtl:raw:
-    right: auto;
-    */
 }
 
 .dropdown-menu.dropdown-menu-fit {
@@ -14502,9 +14493,7 @@ code {
   line-height: 0;
   vertical-align: middle;
   position: relative;
-  margin-left: 0.5rem
-    /*rtl:ignore*/
-  ;
+  margin-left: 0.5rem;
   opacity: 0.7;
   font-family: Flaticon2;
   font-style: normal;

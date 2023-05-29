@@ -1,0 +1,189 @@
+<div id="_main_registrationComponent" class="mobile-padding p-3" style="display:none">
+    <div class="st-register--list">
+        <div class="bg-white p-4 rounded-4">
+            <div class="row row-cols-lg-4 gy-2">
+                <div class="col">
+                    <label for="academic_year" class="form-label trans-text" data-langprop="titles.Academic Year"></label>
+                    <select class="modal-select2"></select>
+                </div>
+                <div class="col">
+                    <label for="campus" class="form-label trans-text" data-langprop="titles.Campus"></label>
+                    <select class="modal-select2"></select>
+                </div>
+                <div class="col">
+                    <label for="class" class="form-label trans-text" data-langprop="titles.Class"></label>
+                    <select class="modal-select2"></select>
+                </div>
+                <div class="col">
+                    <label for="section" class="form-label trans-text" data-langprop="titles.Section"></label>
+                    <select class="modal-select2"></select>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-2 mt-3">
+            <button id="_rgs_btnRegister" class="btn btn-primary" type="button">
+                <i class="fa-solid fa-plus"></i>
+                <span class="trans-text" data-langprop="buttons.Register"></span>
+            </button>
+            <input type="search" class="form-control width--search" placeholder="Search by Name or ID..."/>
+        </div>
+        <div id="_rgs_list" class="mt-3 div-registrated"></div>
+    </div>
+    <div class="st-register--input" style="display:none">
+        <div class="bg-primary rounded-top-3">
+            <div class="py-2 px-3">
+                <i class="fa-solid fa-arrow-left-long fs-3 text-white back--rgs" role="button"></i>
+            </div>
+        </div>
+        <div class="bg-white px-3 py-2 rounded-bottom-3 h-register-input">
+            <label for="student_information" class="form-label trans-text fs-5 text-primary" data-langprop="titles.Student Information"></label>
+            <div class="row row-cols-lg-3 mt-2">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="student_name_kh" class="form-label trans-text" data-langprop="titles.Student Name (Khmer)"></label>
+                        <input type="text" class="form-control data-input" data-field="student_name_kh"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="student_name_lt" class="form-label trans-text" data-langprop="titles.Student Name (Latin)"></label>
+                        <input type="text" class="form-control data-input" data-field="student_name_lt"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="gender" class="form-label trans-text" data-langprop="titles.Gender"></label>
+                        <select class="modal-select2 form-control data-input" data-field="gender"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="date_of_birth" class="form-label trans-text" data-langprop="titles.Date of Birth"></label>
+                        <input data-select="datepicker" class="form-control data-input" data-field="date_of_birth"/>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="place_of_birth" class="form-label trans-text" data-langprop="titles.Place of Birth"></label>
+                        <input type="text" class="form-control data-input" data-field="place_of_birth"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="form-label trans-text" data-langprop="titles.Email"></label>
+                        <input type="email" class="form-control data-input" data-field="email"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone_number" class="form-label trans-text" data-langprop="titles.Phone Number"></label>
+                        <input type="text" class="form-control data-input" data-field="phone_number"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="home_address_son" class="form-label trans-text" data-langprop="titles.Home Address"></label>
+                        <input type="text" class="form-control data-input" data-field="home_address_son"/>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="photo" class="form-label trans-text" data-langprop="titles.Photo"></label>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="border-outside-img">
+                                <div class="contain-img"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <label for="academic_information" class="form-label trans-text fs-5 text-primary" data-langprop="titles.Academic Information"></label>
+            <div class="row row-cols-lg-3">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="student_code" class="form-label trans-text" data-langprop="titles.Student Code"></label>
+                        <input type="text" class="form-control data-input" data-field="student_code"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="campus" class="form-label trans-text" data-langprop="titles.Campus"></label>
+                        <select class="modal-select2 form-control data-input" data-field="campus"></select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="class" class="form-label trans-text" data-langprop="titles.Class"></label>
+                        <input type="text" class="form-control data-input" data-field="class"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="section" class="form-label trans-text" data-langprop="titles.Section"></label>
+                        <select class="modal-select2 form-control data-input" data-field="section"></select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="previous_school" class="form-label trans-text" data-langprop="titles.Previous School"></label>
+                        <input type="text" class="form-control data-input" data-field="previous_school"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="admission_date" class="form-label trans-text" data-langprop="titles.Admission Date"></label>
+                        <input data-select="datepicker" class="form-control data-input" data-field="admission_date"/>
+                    </div>
+                </div>
+            </div>
+            <label for="parent_information" class="form-label trans-text fs-5 text-primary" data-langprop="titles.Parent Information"></label>
+            <div class="row row-cols-lg-3">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="father_name" class="form-label trans-text" data-langprop="titles.Father Name"></label>
+                        <input type="text" class="form-control data-input" data-field="father_name"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="father_id_card" class="form-label trans-text" data-langprop="titles.Father ID Card"></label>
+                        <input type="text" class="form-control data-input" data-field="father_id_card"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="Religion" class="form-label trans-text" data-langprop="titles.Religion"></label>
+                        <input type="text" class="form-control data-input" data-field="religion"/>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="father_email" class="form-label trans-text" data-langprop="titles.Father Email"></label>
+                        <input type="text" class="form-control data-input" data-field="father_email"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="father_phone" class="form-label trans-text" data-langprop="titles.Father Phone"></label>
+                        <input type="text" class="form-control data-input" data-field="father_phone"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="home_address_pr" class="form-label trans-text" data-langprop="titles.Home Address"></label>
+                        <input type="text" class="form-control data-input" data-field="home_address_pr"/>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="mother_name" class="form-label trans-text" data-langprop="titles.Mother Name"></label>
+                        <input type="text" class="form-control data-input" data-field="mother_name"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="mother_phone" class="form-label trans-text" data-langprop="titles.Mother Phone"></label>
+                        <input type="text" class="form-control data-input" data-field="mother_phone"/>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button class="btn btn-primary btn--save" type="button">
+                            <span class="trans-text" data-langprop="buttons.Add Student"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="dlg__rgs" class="modal fade" tabindex="-1" aria-labelledby="dlg__rgs_title" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button class="btn-close" type="button" aria-label="Close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                    <span class="trans-text" data-langprop="buttons.Cancel"></span>
+                </button>
+                <button class="btn btn-primary btn--print" type="button">
+                    <span class="trans-text" data-langprop="buttons.Print Now"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

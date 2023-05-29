@@ -4936,7 +4936,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `hasPosition`;
 DELIMITER ;;
-CREATE  FUNCTION `hasPosition`(empid INT,posid INT) RETURNS int(11)
+CREATE  FUNCTION `hasPosition`(empid INT,posid INT) RETURNS int(11) DETERMINISTIC
     DETERMINISTIC
 BEGIN
   SET @d= (EXISTS(select id from employee_positions as e WHERE e.emp_id = empid AND e.position_id = posid LIMIT 1));
@@ -4950,7 +4950,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `hasPositions`;
 DELIMITER ;;
-CREATE  FUNCTION `hasPositions`(empid INT,posid INT) RETURNS int(11)
+CREATE  FUNCTION `hasPositions`(empid INT,posid INT) RETURNS int(11) DETERMINISTIC
     DETERMINISTIC
 BEGIN
   SET @d= (EXISTS(select id from employee_positions as e WHERE e.emp_id = empid AND e.position_id = posid LIMIT 1));
@@ -4964,7 +4964,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `has_child`;
 DELIMITER ;;
-CREATE  FUNCTION `has_child`(groupid INT) RETURNS tinyint(4)
+CREATE  FUNCTION `has_child`(groupid INT) RETURNS tinyint(4) DETERMINISTIC
 BEGIN
   DECLARE child_id INT;
   SET child_id = (select id from inv_items as i where i.group_id = groupid LIMIT 1);
@@ -4980,7 +4980,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `has_prn`;
 DELIMITER ;;
-CREATE  FUNCTION `has_prn`(roleid INT, prnid INT) RETURNS tinyint(4)
+CREATE  FUNCTION `has_prn`(roleid INT, prnid INT) RETURNS tinyint(4) DETERMINISTIC
 BEGIN
   IF EXISTS(SELECT rp.permission_id FROM um_role_permissions as rp WHERE rp.role_id =roleid and rp.permission_id = prnid limit 1) THEN 
       return 1;
@@ -4996,7 +4996,7 @@ DELIMITER ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `has_variane`;
 DELIMITER ;;
-CREATE  FUNCTION `has_variane`(groupid INT) RETURNS tinyint(4)
+CREATE  FUNCTION `has_variane`(groupid INT) RETURNS tinyint(4) DETERMINISTIC
 BEGIN
   DECLARE child_id INT;
   SET child_id = (select id from inv_items as i where i.group_id = groupid LIMIT 1);

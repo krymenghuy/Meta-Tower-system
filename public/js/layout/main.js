@@ -20,7 +20,7 @@ let main_view = new function(){
 
    //begin:: process side menus click
     let side_menus = document.querySelector('#kt_aside_menu_wrapper');
-        side_menus.querySelectorAll('a.kt-menu__link').forEach(lnk=>{
+        side_menus.querySelectorAll('a.menu-item').forEach(lnk=>{
             lnk.addEventListener('click',e=>{
                 e.preventDefault();
                 let href = lnk.getAttribute("href");
@@ -29,51 +29,6 @@ let main_view = new function(){
             });
         });
     //end::side menus click handlers
-
-    // this.mnuDashboard = $('#_main_lnkDashboard');
-    // this.mnuDashboard2 = $('#_main_lnkDashboard2');
-    // this.mnuAppointmentList = $('#_main_lnkAppointments');
-    // this.mnuPatientFinder = $('#_main_lnkPatientFinder');
-    // this.mnuPatientInvoices = $('#_main_lnkPatientInvoices');
-
-    // this.mnuTickets = $('#_main_lnkTickets');
-    // this.mnuEmployeeList = $('#_main_lnkEmployeeList');
-    // this.mnuPositions = $('#_main_lnkPositions');
-    // this.mnuEmployeeDepartment = $('#_main_lnkDepartments');
-    // this.mnuServiceTracking = $('#_main_lnkServiceTracking');
-    // this.mnuServicePlans = $('#_main_lnkServicePlans');
-    // this.mnuMedicalServices = $('#_main_lnkMedicalServices');
-    // this.mnuStockTransfer = $('#_main_lnkStockTransfer');
-
-    // this.mnuStockTracking = $('#_main_lnkStockTracking');
-    // this.mnuItems = $('#_main_lnkItems');
-    // this.mnuItemGroups = $('#_main_lnkItemGroups');
-    // this.mnuCategories = $('#_main_lnkCategories');
-    // this.mnuLaboPartners = $('#_main_lnkLaboPartners');
-    // this.mnuVendors = $('#_main_lnkVendors');
-    // this.mnuExchangeRate = $('#_main_lnkExchangeRate');
-    // this.mnuExpenseBook = $('#_main_lnkExpenseBook');
-    // this.mnuChiefComplaints = $('#_main_lnkChiefCompaints');
-    // this.mnuConsultationQueue = $('#_main_lnkConsultantQueues');
-
-    // this.mnuPatientDashboard = $('#_main_lnkPatientDashboard');
-    // this.mnuOPDList = $('#_main_lnkOPDList');
-    // this.mnuInvoices = $('#_main_lnkIncomeInvoices');
-    // this.mnuPatientReciepts = $('#_main_lnkPatientReceipts');
-    // this.mnuPatientCreditNotes = $('#_main_lnkPatientCreditNotes');
-
-    // this.mnuLoanAppList = $('#_main_lnkLoanAppList');
-    
-    // this.mnuBorrowerList =$('#_mainLnkBorrowers');
-    // this.mnuCreditOfficerList = $('#_mainLnkCreditOfficers');
-    // this.mnuServiceDepartments = $('#_main_lnkServiceDepartments');
-    // this.mnuManageUsers = $('#_main_lnkManageUsers');
-    // this.mnuManageRoles = $('#_main_lnkManageRoles');
-    
-    // this.mnuCompanyProfile = $('#_main_lnkCompanyProfile');
-    // this.mnuManageLocations = $('#_main_lnkManageLocation');
-    // this.mnuReportCenter = $('#_mainLnkReportCenter');
-    // this.mnuGeneralSettings = $('#_main_lnkGeneralSettings');
     
     this.mnuLogout = $('#_main_lnkLogout');
     
