@@ -197,6 +197,142 @@
                 </div>
             </li>
 
+            <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+                <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons" src="{{ asset('assets/images/icons/approval.png') }}"/>
+                    </span>
+                    &nbsp;
+                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Approval">Approval</span>
+                    <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                </a>
+                <div class="kt-menu__submenu ">
+                    <span class="kt-menu__arrow"></span>
+                    <ul class="kt-menu__subnav">
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="DiscountComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/discount.png') }}"/>
+                                </span>
+                                &nbsp;
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Discount">Discount</span>
+                            </a>
+                        </li>
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="AactivitiesComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/a-activities.png') }}"/>
+                                </span>
+                                &nbsp;
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Activities"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+                <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons" src="{{ asset('assets/images/icons/parents_account.png') }}"/>
+                    </span>
+                    &nbsp;
+                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Parent Account">Parent Account</span>
+                    <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                </a>
+                <div class="kt-menu__submenu ">
+                    <span class="kt-menu__arrow"></span>
+                    <ul class="kt-menu__subnav">
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="ManageAccountComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/manage_account.png') }}"/>
+                                </span>
+                                &nbsp;
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Manage Account">Manage Account</span>
+                            </a>
+                        </li>
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="AccountRequestsComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/account_request.png') }}"/>
+                                </span>
+                                &nbsp;
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Account Requests">Account Requests</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+                <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons" src="{{ asset('assets/images/icons/id_card_printing.png') }}"/>
+                    </span>
+                    &nbsp;
+                    <span class="kt-menu__link-text trans-text" data-langprop="menus.ID Card Printing">ID Card Printing</span>
+                    <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                </a>
+                <div class="kt-menu__submenu ">
+                    <span class="kt-menu__arrow"></span>
+                    <ul class="kt-menu__subnav">
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="PrintStudentCardsComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/print_student_card.png') }}"/>
+                                </span>
+                                &nbsp;
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Print Student Cards">Print Student Cards</span>
+                            </a>
+                        </li>
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="IdCardSettingsComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/id_card_setting.png') }}"/>
+                                </span>
+                                &nbsp;
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.ID Card Settings">ID Card Settings</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+                <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons" src="{{ asset('assets/images/icons/student_attendance.png') }}"/>
+                    </span>
+                    &nbsp;
+                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Student Attendance">Student Attendance</span>
+                    <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                </a>
+                <div class="kt-menu__submenu ">
+                    <span class="kt-menu__arrow"></span>
+                    <ul class="kt-menu__subnav">
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="StudentAttendanceComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/student_attendance.png') }}"/>
+                                </span>
+                                &nbsp;
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Student Attendance">Student Attendance</span>
+                            </a>
+                        </li>
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="StudentAttendanceReportComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/student_attendance_report.png') }}"/>
+                                </span>
+                                &nbsp;
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Student Attendance Report">Student Attendance Report</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
             <li class="kt-menu__item" aria-haspopup="true">
                 <a href="ReportCenterComponent" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
@@ -214,7 +350,7 @@
             <li class="kt-menu__item" aria-haspopup="true">
                 <a href="CompanyComponent" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
-                        <img class="icons" src="{{asset('assets/images/icons/company_profile.svg')}}"/>
+                        <img class="icons" src="{{asset('assets/images/icons/company_profile.png')}}"/>
                     </span>
                     <span class="kt-menu__link-text trans-text" data-langprop="menus.Company Profile">Company Profile</span>
                 </a>
@@ -248,7 +384,7 @@
             <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
-                        <img class="icons" src="{{ asset('assets/images/icons/user_management.svg') }}"/>
+                        <img class="icons" src="{{ asset('assets/images/icons/user_management.png') }}"/>
                     </span>
                     <span class="kt-menu__link-text trans-text" data-langprop="menus.User Management">User Management</span>
                     <i class="kt-menu__ver-arrow la la-angle-right"></i>
@@ -279,7 +415,7 @@
             <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a id="_main_lnkLogout" href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
-                        <img class="icons" src="{{asset('assets/images/icons/log_out.svg')}}"/>
+                        <img class="icons" src="{{asset('assets/images/icons/log_out.png')}}"/>
                     </span>
                     <span class="kt-menu__link-text trans-text" data-langprop="menus.Log Out">Log Out</span>
                 </a>
