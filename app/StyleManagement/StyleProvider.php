@@ -41,8 +41,9 @@ class StyleProvider
         'login-styles' => [
             'output_file' => '/dist/css/login-styles.css',
             'files' => [
-                '/assets/css/login/login-style.css',
-                '/assets/css/font-awesome/6.2.0/css/all.min.css'
+                '/assets/css/login-style.css',
+                '/assets/css/font-awesome/6.2.0/css/all.min.css',
+                'assets/css/bootstrap.min.css'
             ]
         ]
     ];
