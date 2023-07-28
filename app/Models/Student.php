@@ -18,7 +18,10 @@ class Student //extends Model
             'email' => '0|email',
             'address' => '1|string',
             'photo' => '0|image',
-            'academic_info'=> '1|array', // level_id,session_id,campus_id
+            'level_id' => '1|number|exists=program_levels.id',
+            'session_id'=> '1|number|exists=sessions.id',
+            'campus_id'=> '1|number|exists=campuses.id',
+            'prev_school' => '0|string|1,100',
         ];
         $branch_id = $ss->branch_id;
         $email_char = ['@','.'];
@@ -27,34 +30,44 @@ class Student //extends Model
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $image = $inputs['photo'];
+        $prev_school = $inputs['prev_school'];
         unset($inputs['photo']);
-        $academic_info = $inputs['academic_info'];
-        unset($inputs['academic_info']);
+        $level_id = $inputs['level_id'];
+        $session_id = $inputs['session_id'];
+        $campus_id = $inputs['campus_id'];
 
-        // $newID = saveData($ss,'students',['id' => $id],$inputs,[],1);
-        // if($newID){
-        //     PublicStorage::saveImage($branch_id,'students',null,$image,null,['id' => $newID, 'store'=>'students.file_name']);
-        //     self::setStudentCode($ss,$newID);
-        // }
-        // return DV::depends($newID,['actiion'=>$id?'Updated':'Registered']);
-        return self::saveEnrollmentStudent(1,$academic_info);
+        $created = (!$id || $id==0);
+
+        unset($inputs['level_id'],$inputs['session_id'],$inputs['campus_id'],$inputs['prev_school']);
+        // $save_prev_school = saveData($ss,'school',['id' => ]);
+        $newID = saveData($ss,'students',['id' => $id],$inputs,[],1,1);
+        $get_prev_school = DB::table('enrollments')->where('student_id',$id)->selectRaw('school_id')->first();
+        if($newID){
+            PublicStorage::saveImage($branch_id,'students',null,$image,null,['id' => $newID, 'store'=>'students.file_name']);
+            self::setStudentCode($ss,$newID);
+            $save_prev_school = saveData($ss,'school',['id' => $get_prev_school?$get_prev_school->id:null],['name' => $prev_school],[],1);
+            self::saveEnrollmentStudent($newID,$level_id,$session_id,$campus_id,$ss);
+        }
+        return DV::depends($newID,['action'=>'Saved']);
     }
 
 
-    static function saveEnrollmentStudent($st_id,$academic_info){
-
-        // saveData($ss,'enrollments',['student_id'=>$st_id],$inputs);
-        $obj = (object)$academic_info;
-        return $obj->level_id;
+    static function saveEnrollmentStudent($st_id,$level_id,$session_id,$campus_id,$ss){
+        $inputs = [
+            'student_id' => $st_id,
+            'level_id' => $level_id,
+            'session_id' => $session_id,
+            'campus_id' => $campus_id,
+        ];
+        saveData($ss,'enrollments',['student_id'=>null],$inputs,[],1);
     }
 
     static function setStudentCode($ss,$newID){
         $branch_id = $ss->branch_id;
         $prefix = 'ST';
-        $last_id = DB::table('students')->selectRaw('id')->orderBy('id','desc')->take(1)->first();
-        $next_id = $newID;
-        $new_code = $prefix.$branch_id.formatNumber($next_id,4);
-        DB::table('students')->where('id',$newID)->update(['code',$new_code]);
+        // $last_id = DB::table('students')->selectRaw('id')->orderBy('id','desc')->take(1)->first();
+        $new_code = $prefix.$branch_id.formatNumber($newID,4);
+        DB::table('students')->where('id',$newID)->update(['code' => $new_code]);
         // return $new_code;
     }
 }
