@@ -121,6 +121,7 @@ class ScriptProvider
                 '/js/components/StudentAttendanceReportComponent.js',
                 '/js/components/UserManagementComponent.js',
                 '/js/components/RoleManagementComponent.js',
+                '/js/components/ProgramComponent.js',
                 'assets/js/pusher/pusher.min.js',
                 '/js/components/pusher_connect.js'
             ]

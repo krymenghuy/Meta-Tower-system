@@ -85,50 +85,37 @@ Route::post('auth/login', [LoginController::class, 'apiLogin']);
 Route::group(['middleware' => 'throttle:200,1'], function () {
 
     //begin::StudentController
-    Route::prefix('student')->group(function(){
-        Route::post('/registration',[StudentController::class,'studentRegistration']);
+    Route::prefix('student')->group(function () {
+        Route::post('/registration', [StudentController::class, 'studentRegistration']);
     });
     //end::StudentController
 
     //begin::CampusController
-    Route::prefix('campus')->group(function(){
-        Route::post('/save',[CampusController::class,'save']);
-        Route::post('/list',[CampusController::class,'getList']);
-        Route::post('/details',[CampusController::class,'getDetails']);
-        Route::post('/delete',[CampusController::class,'delete']);
+    Route::prefix('campus')->group(function () {
+        Route::post('/save', [CampusController::class, 'save']);
+        Route::post('/list', [CampusController::class, 'getList']);
+        Route::post('/details', [CampusController::class, 'getDetails']);
+        Route::post('/delete', [CampusController::class, 'delete']);
     });
     //end::CampusController
 
     //begin::ProgramController
-    Route::prefix('program')->group(function(){
-        Route::post('/save',[ProgramController::class,'save']);
-        Route::post('/list',[ProgramController::class,'getList']);
-        Route::post('/details',[ProgramController::class,'getDetails']);
-        Route::post('/delete',[ProgramController::class,'delete']);
+    Route::prefix('program')->group(function () {
+        Route::post('/save', [ProgramController::class, 'save']);
+        Route::post('/list', [ProgramController::class, 'getList']);
+        Route::post('/details', [ProgramController::class, 'getDetails']);
+        Route::post('/delete', [ProgramController::class, 'delete']);
     });
     //end::ProgramController
-
 
     //begin::ProgramLevelController
-    Route::prefix('program-level')->group(function(){
-        Route::post('/save',[ProgramLevelController::class,'save']);
-        Route::post('/list',[ProgramLevelController::class,'getList']);
-        Route::post('/details',[ProgramLevelController::class,'getDetails']);
-        Route::post('/delete',[ProgramLevelController::class,'delete']);
+    Route::prefix('program-level')->group(function () {
+        Route::post('/save', [ProgramLevelController::class, 'save']);
+        Route::post('/list', [ProgramLevelController::class, 'getList']);
+        Route::post('/details', [ProgramLevelController::class, 'getDetails']);
+        Route::post('/delete', [ProgramLevelController::class, 'delete']);
     });
     //end::ProgramController
-
-
-
-
-
-
-
-
-
-
-
-
 
     //begin:: AppointmentController
 
@@ -145,14 +132,14 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //end::AppointmentController
 
     //begin::consult-history
-     Route::post('consult/history/medical-history', [ConsultationController::class, 'getHistory_medicalHistory']);
-     Route::post('consult/history/prescription', [ConsultationController::class, 'getHistory_presciption']);
-     Route::post('consult/history/labo-tests', [ConsultationController::class, 'getHistory_labo_tests']);
-     Route::post('consult/history/services', [ConsultationController::class, 'getHistory_services']);
-     Route::post('consult/history/pe', [ConsultationController::class, 'getHistory_pe']);
-     Route::post('consult/history/diagnosis', [ConsultationController::class, 'getHistory_diagnosis']);
-     Route::post('consult/history/advice', [ConsultationController::class, 'getHistory_advice']);
-     Route::post('consult/history/followup', [ConsultationController::class, 'getHistory_followup']);
+    Route::post('consult/history/medical-history', [ConsultationController::class, 'getHistory_medicalHistory']);
+    Route::post('consult/history/prescription', [ConsultationController::class, 'getHistory_presciption']);
+    Route::post('consult/history/labo-tests', [ConsultationController::class, 'getHistory_labo_tests']);
+    Route::post('consult/history/services', [ConsultationController::class, 'getHistory_services']);
+    Route::post('consult/history/pe', [ConsultationController::class, 'getHistory_pe']);
+    Route::post('consult/history/diagnosis', [ConsultationController::class, 'getHistory_diagnosis']);
+    Route::post('consult/history/advice', [ConsultationController::class, 'getHistory_advice']);
+    Route::post('consult/history/followup', [ConsultationController::class, 'getHistory_followup']);
     //end::consult-history
 
     //begin::ConsultationController
@@ -247,12 +234,12 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
     //begin::ServiceTrackController
 
-       Route::post('serive-track/form-options', [ServiceTrackController::class, 'getFormOptions']);
-       Route::post('service-track/details', [ServiceTrackController::class, 'getTrackDetails']);
-       Route::post('service-track/list', [ServiceTrackController::class, 'getServiceTracks']);
-       Route::post('service-track/delete', [ServiceTrackController::class, 'deleteTrack']);
-       Route::post('service-track/save', [ServiceTrackController::class, 'saveTrack']);
-       Route::post('service-track/info', [ServiceTrackController::class, 'getTrackDetails']);
+    Route::post('serive-track/form-options', [ServiceTrackController::class, 'getFormOptions']);
+    Route::post('service-track/details', [ServiceTrackController::class, 'getTrackDetails']);
+    Route::post('service-track/list', [ServiceTrackController::class, 'getServiceTracks']);
+    Route::post('service-track/delete', [ServiceTrackController::class, 'deleteTrack']);
+    Route::post('service-track/save', [ServiceTrackController::class, 'saveTrack']);
+    Route::post('service-track/info', [ServiceTrackController::class, 'getTrackDetails']);
     //End::ServiceTrackController
 
     // //begin::MIStockController
@@ -548,14 +535,14 @@ Route::post('getComboItems_price_list', [SystemSettingController::class, 'getCom
 //end::SystemSettingController
 
 //begin::CompanyProfileController
-    Route::post('company/save-logo', [CompanyProfileController::class, 'saveCompanyLogo']);
-    Route::post('company/logo', [CompanyProfileController::class, 'getCompanyLogo']);
-    Route::post('company/delete-logo', [CompanyProfileController::class, 'deleteCompanyLogo']);
-    Route::post('company/save-profile', [CompanyProfileController::class, 'saveCompanyInfo']);
-    Route::post('company/profile', [CompanyProfileController::class, 'getCompanyInfo']);
-    Route::post('company/info', [CompanyProfileController::class, 'getCompanyInfo']);
-    // Route::post('getBrandImages_driver', [CompanyProfileController::class, 'getBrandImages_driver']);
-    // Route::post('getBrandImages_sender', [CompanyProfileController::class, 'getBrandImages_sender']);
+Route::post('company/save-logo', [CompanyProfileController::class, 'saveCompanyLogo']);
+Route::post('company/logo', [CompanyProfileController::class, 'getCompanyLogo']);
+Route::post('company/delete-logo', [CompanyProfileController::class, 'deleteCompanyLogo']);
+Route::post('company/save-profile', [CompanyProfileController::class, 'saveCompanyInfo']);
+Route::post('company/profile', [CompanyProfileController::class, 'getCompanyInfo']);
+Route::post('company/info', [CompanyProfileController::class, 'getCompanyInfo']);
+// Route::post('getBrandImages_driver', [CompanyProfileController::class, 'getBrandImages_driver']);
+// Route::post('getBrandImages_sender', [CompanyProfileController::class, 'getBrandImages_sender']);
 //end::CompanyProfileController
 
 
