@@ -194,6 +194,7 @@
                                 @include('layouts.locationComponent')
                                 @include('layouts.um.userManagementComponent')
                                 @include('layouts.um.roleManagementComponent')
+                                @include('layouts.programComponent')
                             </div>
                         </div>
                     </div>
