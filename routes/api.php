@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\CampusController;
 use App\Http\Controllers\ProgramController;
+use App\Http\Controllers\ProgramLevelController;
+use App\Http\Controllers\StudentController;
 use Illuminate\Http\Request;
 //use App\Models\SMS;
 //use App\Models\Notifier;
@@ -81,13 +84,39 @@ Route::post('auth/login', [LoginController::class, 'apiLogin']);
 // Rate Limiting for a whole group of routes= > allow 200 requests per 1 minute
 Route::group(['middleware' => 'throttle:200,1'], function () {
 
+    //begin::StudentController
+    Route::prefix('student')->group(function(){
+        Route::post('/registration',[StudentController::class,'studentRegistration']);
+    });
+    //end::StudentController
 
+    //begin::CampusController
+    Route::prefix('campus')->group(function(){
+        Route::post('/save',[CampusController::class,'save']);
+        Route::post('/list',[CampusController::class,'getList']);
+        Route::post('/details',[CampusController::class,'getDetails']);
+        Route::post('/delete',[CampusController::class,'delete']);
+    });
+    //end::CampusController
+
+    //begin::ProgramController
     Route::prefix('program')->group(function(){
         Route::post('/save',[ProgramController::class,'save']);
-        Route::post('/details',[ProgramController::class,'getDetails']);
         Route::post('/list',[ProgramController::class,'getList']);
+        Route::post('/details',[ProgramController::class,'getDetails']);
         Route::post('/delete',[ProgramController::class,'delete']);
     });
+    //end::ProgramController
+
+
+    //begin::ProgramLevelController
+    Route::prefix('program-level')->group(function(){
+        Route::post('/save',[ProgramLevelController::class,'save']);
+        Route::post('/list',[ProgramLevelController::class,'getList']);
+        Route::post('/details',[ProgramLevelController::class,'getDetails']);
+        Route::post('/delete',[ProgramLevelController::class,'delete']);
+    });
+    //end::ProgramController
 
 
 
