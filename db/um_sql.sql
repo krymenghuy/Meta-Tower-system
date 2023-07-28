@@ -1,18 +1,28 @@
 SET @app_id = 'DXM20FKAEFC711EH2E7C9801A7BZD311';
-SET @app_name ='MCLINIC';
-SET @app_name_kh ='MCLINIC';
+SET @app_name ='DMS';
+SET @app_name_kh ='DMS';
 
-SET @first_subscriber_name ='ESTHEDERM CLINIC';
-SET @subscriber_contact_person_name ='solida';
+SET @mobile1_app_id ='ZAM20FKAEFC722EH2E7M9801B7BZD899';
+SET @mobile1_app_name ='Parent App';
+SET @mobile1_app_name_kh ='Parent App';
+
+SET @mobile2_app_id ='584C7FF2122D11EC89909801A8B0D7XKD';
+SET @mobile2_app_name ='Student App';
+SET @mobile2_app_name_kh ='Student App';
+
+SET @first_subscriber_name ='KSM';
+SET @subscriber_contact_person_name ='leng';
 
 DROP TABLE IF EXISTS `um_applications`;
 CREATE TABLE `um_applications` (
   `app_id` varchar(50) NOT NULL,
-  `name` varchar(150) NOT NULL,
-  `name_native` varchar(150) NOT NULL
+  `name` varchar(150) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `um_applications` VALUES (@app_id, @app_name, @app_name_kh);
+INSERT INTO `um_applications` VALUES (@app_id, @app_name);
+
+INSERT INTO `um_applications` VALUES (@mobile1_app_id, @mobile1_app_name);
+INSERT INTO `um_applications` VALUES (@mobile2_app_id, @mobile2_app_name);
 
 ## Create um_branches 
 DROP TABLE IF EXISTS `um_branches`;
@@ -75,7 +85,7 @@ INSERT INTO `um_users` VALUES ('1', 'admin@gmail.com', '01257890', null, '$2y$10
 DROP TABLE IF EXISTS `um_app_modules`;
 CREATE TABLE `um_app_modules` (
   `id` int(10) NOT NULL,
-  `parent_mod_id` INT(10) NOT NULL default 0,
+  `parent_mod_id` INT(10) NULL,
   `app_id` varchar(50) DEFAULT NULL,
   `ref_code` varchar(20) DEFAULT '',
   `module_name` varchar(150) NOT NULL,
@@ -126,10 +136,16 @@ CREATE TABLE `um_permissions` (
 
 INSERT INTO `um_permissions` VALUES ('100', 'Create user', '100', @app_id);
 INSERT INTO `um_permissions` VALUES ('101', 'Delete user', '100', @app_id);
-INSERT INTO `um_permissions` VALUES ('102', 'Create role', '100', @app_id);
-INSERT INTO `um_permissions` VALUES ('103', 'Delete role', '100', @app_id);
-INSERT INTO `um_permissions` VALUES ('104', 'Modify role name', '100', @app_id);
- 
+INSERT INTO `um_permissions` VALUES ('102', 'Create role', '101', @app_id);
+INSERT INTO `um_permissions` VALUES ('103', 'Delete role', '101', @app_id);
+INSERT INTO `um_permissions` VALUES ('104', 'Modify role name', '101', @app_id);
+insert into  `um_permissions`  VALUES(105,'Add or remove user permissions',101,@app_id);
+insert into  `um_permissions`  VALUES(106,'Set User Status as Active or Inactive',100,@app_id);
+insert into  `um_permissions`  VALUES(107,'Add role members',101,@app_id);
+insert into  `um_permissions`  VALUES(108,'Delete role members',101,@app_id);
+insert into  `um_permissions`  VALUES(109,'Reset user password',100,@app_id);
+insert into  `um_permissions`  VALUES(110,'Change Login name',100,@app_id);
+
 #create um_role_permissions
 DROP TABLE IF EXISTS `um_role_permissions`;
 CREATE TABLE `um_role_permissions` (
@@ -206,8 +222,3 @@ CREATE TABLE `um_sessions` (
   `lang` varchar(50) DEFAULT 'en'
 ) ENGINE=InnoDB AUTO_INCREMENT=1342 DEFAULT CHARSET=utf8;
 
-alter table um_branches add created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
-alter table um_users add created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
-alter table um_sessions add created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
-alter table um_roles add created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
-alter table um_user_roles add created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;

@@ -7,7 +7,7 @@ var StudentAttendanceReportComponent = new function(){
     this.tblStudentAttendanceReport = mThis.self.find('.tbl--sar');
 
     this.init = () => {}
-
+    
     this.displayStudentAttendanceReport = (onFinish = null) => {
         window.vsapi.call(`${main_view.base_url}/api/`,null,null).then(res => {
             let data = [];

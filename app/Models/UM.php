@@ -542,7 +542,7 @@ class UM
           ];
 
           $check_unique = ["$branch_id|um_users|login_name|id|text=login name is already in use"]; 
-          $res = validateObject($arr,$validate_rule,true,['email'=>['.','@','-']],$ss->lang,false,$check_unique);
+          $res = validateObject($arr,$validate_rule,true,['email'=>['.','@','-'],'login_name'=>['.','@','-']],$ss->lang,false,$check_unique);
           if($res->error) return DV::error($res->error);
           $inputs = $res->values; 
           $user_id = $res->user_id;
@@ -1042,8 +1042,8 @@ class UM
       function changeLoginName($login_name,$new_login_name,$ss=null){
          $ss =$ss?$ss:$this->userInfo; 
          //$branch_id = Sanitizer::sanitize($ss->branch_id);
-         $login_name = Sanitizer::sanitize($login_name);
-         $new_login_name = Sanitizer::sanitize($new_login_name);
+         $login_name = Sanitizer::sanitize($d->login_name,['@','-','.']);
+         $new_login_name = Sanitizer::sanitize($d->new_login_name,['@','-','.']);
 
          $user_id = DB::table('um_users')->where('login_name',$login_name)->selectRaw('id')->take(1)->value("id");
        

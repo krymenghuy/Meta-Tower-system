@@ -9,8 +9,7 @@ use Config;
 use Session;
 use Cookie;
 use Auth;
-
-use App\Security\PHPCrypto;
+//use App\Security\PHPCrypto;
 
 class LoginController extends Controller
 {
@@ -18,16 +17,19 @@ class LoginController extends Controller
     public function __construct(){
         $this->UMModel = new UM();
     }
+  
+    function apiLogin(Request $request)
+    {
 
-    function apiLogin(Request $request){
         $app_id = Config::get('app.app_id');
         $login_name = $request->login_name;
         $pwd = $request->password;
 
-        $result = $this->UMModel->verifyUser($app_id,$login_name,$pwd);
-        if($result->status ==='OK'){
-            $result->user->image_url = \App\Models\PublicStorage::getProfilePhoto($result->user->branch_id, $result->user->user_class, $result->user->official_id);
-         }
+        $result = $this->UMModel->verifyUser($app_id, $login_name, $pwd);
+        if ($result->status === 'OK') {
+            $result->user->image_url = \App\Models\PublicStorage::getProfilePhoto_url($result->user->branch_id, $result->user->user_class, $result->user->official_id);
+        }
+
         return $result;
     }
 
