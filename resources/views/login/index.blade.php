@@ -20,7 +20,7 @@
                     <div class="form-size">
                         <div class="vs-logo">
                             <div class="logo-img">
-                                <img src="{{ asset('assets/images/vectorasoft.png') }}" />
+                                <img src="{{ asset('assets/images/logo/logo.jpg') }}" />
                             </div>
                         </div>
                         <div class="form-inside">

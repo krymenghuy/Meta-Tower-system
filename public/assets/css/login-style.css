@@ -26,13 +26,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    font-family: Poppins;
 }
 
 .sub-vs-contain-imgFront-form {
-    border-radius: var(--bs-border-radius-2xl);
-    background-color: #ffffffa9;
+    border-radius: var(--bs-border-radius-lg);
+    background-color: #ffffffd3;
     padding:1rem;
     color:#000;
+    width:100%;
+    max-width: 600px;
+    box-shadow: 0 0.5rem 1rem #00000026;
 }
 
 .form-size {
@@ -52,7 +56,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
 }
 
 .form-inside {
@@ -61,23 +64,28 @@
 
 .form-inside form {
     width: 100%;
+    display:flex;
+    align-items: center;
+    flex-direction: column;
+    row-gap: 2rem;
 }
 
 .vs-form-group .vs-form-label {
-    font-size: 2vh;
+    font-size: calc(1.175rem + 0.1vw);
 }
 
 .vs-form-group .vs-form-control {
-    padding: 1.5vh 1.5vw;
-    border: none;
+    padding: 1rem;
+    border: 1px solid #fb1ef7;
     outline: none;
-    border-radius: 1vh;
-    margin: 2vh 0;
-    font-size: 1.5vh;
+    border-radius: var(--bs-border-radius-xl);
+    background-color: transparent;
 }
 
-::placeholder {
-    padding: 0 0.1vw;
+input::placeholder {
+    padding: 0 0.5rem;
+    background-color: transparent;
+    font-size:1.15rem;
 }
 
 .vs-form-control {
@@ -85,36 +93,28 @@
 }
 
 .vs-btn-group .vs-btn {
-    width: 95%;
-    padding: 0.5vh 0;
-    border-radius: 3vh;
+    width: 80%;
+    border-radius: var(--bs-border-radius-2xl);
     outline: none;
     background-color: transparent;
-    border: 0.3vh solid #fff;
-    font-size: 2.3vh;
-    color: #fff;
-    cursor: pointer;
+    border: 1.5px solid #1a9efc;
+    font-size: calc(1.275rem + 0.3vw);
+    color: #1a63f5;
 }
 
 .vs-logo {
     display: flex;
     justify-content: center;
     width: 100%;
-    height: 30%;
-    align-items: end;
 }
 
 .logo-img {
     position: relative;
-    width: 30vw;
-    display: flex;
-    justify-content: center;
 }
 
 .logo-img img {
-    background-image: cover;
-    background-repeat: no-repeat;
-    height: 15vh;
+    width: 200px;
+    border-radius: 50%;
 }
 
 
