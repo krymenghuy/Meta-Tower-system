@@ -1,9 +1,10 @@
 <?php
 
+use App\Http\Controllers\ProgramController;
 use Illuminate\Http\Request;
 //use App\Models\SMS;
 //use App\Models\Notifier;
- 
+
 use Illuminate\Support\Facades\Route;
 //use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\PersonController;
@@ -28,11 +29,11 @@ use App\Http\Controllers\QTicketController;
 use App\Http\Controllers\MedicalServiceController;
 use App\Http\Controllers\ServicePlanController;
 use App\Http\Controllers\ServiceTrackController;
- 
+
 //use App\Http\Controllers\Inventory\MIStockController;
 //use App\Http\Controllers\Inventory\ItemGroupController;
 //use App\Http\Controllers\Inventory\ItemController;
- 
+
 //use App\Http\Controllers\Inventory\InventorySettingsController;
 
 use App\Http\Controllers\Invoice\MedicalInvoiceController;
@@ -43,7 +44,7 @@ use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ExchangeRateController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientHistoryController;
- 
+
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PartnerController;
 //use App\Models\PublicStorage;
@@ -66,7 +67,7 @@ use App\Http\Controllers\PartnerController;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
- 
+
 Route::post('auth/login', [LoginController::class, 'apiLogin']);
 
 // Route::get('env/20230120AZ99/vars',function(){
@@ -74,12 +75,33 @@ Route::post('auth/login', [LoginController::class, 'apiLogin']);
 //        "pusher_app_key"=>Illuminate\Support\Facades\Config::get('app.pusher_app_key'),
 //        "cookie_name"=>Illuminate\Support\Facades\Config::get('app.cookie_name'),
 //     ];
-//     return response()->json($vars);   
+//     return response()->json($vars);
 // }); //->middleware('auth');
 
 // Rate Limiting for a whole group of routes= > allow 200 requests per 1 minute
 Route::group(['middleware' => 'throttle:200,1'], function () {
-    //begin:: AppointmentController 
+
+
+    Route::prefix('program')->group(function(){
+        Route::post('/save',[ProgramController::class,'save']);
+        Route::post('/details',[ProgramController::class,'getDetails']);
+        Route::post('/list',[ProgramController::class,'getList']);
+        Route::post('/delete',[ProgramController::class,'delete']);
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //begin:: AppointmentController
 
     Route::post('test', [AppointmentController::class, 'getTest']);
 
@@ -104,7 +126,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
      Route::post('consult/history/followup', [ConsultationController::class, 'getHistory_followup']);
     //end::consult-history
 
-    //begin::ConsultationController 
+    //begin::ConsultationController
     Route::post('consultation/save', [ConsultationController::class, 'saveConsultationData']);
     Route::post('consultation/delete', [ConsultationController::class, 'deleteConsultationData']);
     Route::post('consultation/details', [ConsultationController::class, 'getConsultationData']);
@@ -195,7 +217,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //End::ServicePlanController
 
     //begin::ServiceTrackController
-    
+
        Route::post('serive-track/form-options', [ServiceTrackController::class, 'getFormOptions']);
        Route::post('service-track/details', [ServiceTrackController::class, 'getTrackDetails']);
        Route::post('service-track/list', [ServiceTrackController::class, 'getServiceTracks']);
@@ -203,9 +225,9 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
        Route::post('service-track/save', [ServiceTrackController::class, 'saveTrack']);
        Route::post('service-track/info', [ServiceTrackController::class, 'getTrackDetails']);
     //End::ServiceTrackController
- 
+
     // //begin::MIStockController
-    // //stock/groups  
+    // //stock/groups
     // Route::post('inventory/stock/group-list', [MIStockController::class, 'getGroupList']);
     // Route::post('inventory/stock/group-items', [MIStockController::class, 'getItemsByGroup']);
     // Route::post('inventory/stock/classes', [MIStockController::class, 'getStockClasses']);
@@ -228,19 +250,19 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //End::MIStockController
 
     //  //begin::FGStockController
-    //     //stock/groups  
+    //     //stock/groups
     //     Route::post('inventory/stock/group-list', [FGStockController::class, 'getGroupList']);
     //     Route::post('inventory/stock/group-items', [FGStockController::class, 'getItemsByGroup']);
-    //     Route::post('inventory/stock/classes', [FGStockController::class, 'getStockClasses']); 
+    //     Route::post('inventory/stock/classes', [FGStockController::class, 'getStockClasses']);
 
     //     Route::post('inventory/stock/receive-items', [FGStockController::class, 'receiveItems']);
     //     Route::post('inventory/stock/adjust', [FGStockController::class, 'getStockClasses']);
-    //     Route::post('inventory/stock/receive-returns', [FGStockController::class, 'receiveReturns']); 
+    //     Route::post('inventory/stock/receive-returns', [FGStockController::class, 'receiveReturns']);
     //     Route::post('inventory/stock/return-to-vendor', [FGStockController::class, 'returnToVendor']);
 
     //     Route::post('inventory/stock/transfer', [FGStockController::class, 'transfer']);
     //     //Transfer stock items Qty from one class to another class
-    //     Route::post('inventory/stock/transfer-class', [FGStockController::class, 'transferClass']);  
+    //     Route::post('inventory/stock/transfer-class', [FGStockController::class, 'transferClass']);
 
     // //End::FGStockController
 
@@ -306,7 +328,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('invoice-payment/delete', [InvoiceController::class, 'deletePayment']);
 
     //end::InvoiceController
- 
+
     //begin::EmployeeController
     Route::post('employee/details', [EmployeeController::class, 'getEmployeeDetails']);
     Route::post('employee/list', [EmployeeController::class, 'getEmployeeList']);
@@ -320,7 +342,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
     Route::post('Bill/settings/save-vendor-type', [VendorController::class, 'saveVendorType']);
     Route::post('Bill/settings/delete-vendor-type', [VendorController::class, 'saveVendorType']);
-    
+
     // //begin::InventorySettingsController =>  Inventory Settings.
     // Route::post('inventory/settings/options-group', [InventorySettingsController::class, 'getComboItems_group']);
     // Route::post('inventory/settings/item-form-options', [InventorySettingsController::class, 'getItemFormOptions']);
@@ -352,7 +374,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     // // Route::post('inventory/settings/brand/list', [InventorySettingsController::class, 'getBrandList']);
     // // Route::post('inventory/settings/brand/save', [InventorySettingsController::class, 'saveBrand']);
 
-    // // *** inventory/group/save 
+    // // *** inventory/group/save
     // Route::post('inventory/settings/brand/save', function (Request $req) {
     //     $res = Brand::createOrUpdate($req);
     //     return response()->json($res);
@@ -411,7 +433,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('patient/details', [PatientController::class, 'getPatientDetails']);
     Route::post('patient/info', [PatientController::class, 'getPatientDetails']);
     Route::post('patient/quick-summary', [PatientController::class, 'getQuickSummary']);
-    
+
     Route::post('patient/history/medical-history', [PatientHistoryController::class, 'getMedicalHistory']);
     Route::post('patient/history/pe', [PatientHistoryController::class, 'getHistoricalPE']);
     Route::post('patient/history/labo-tests', [PatientHistoryController::class, 'getHistoricalLaboTests']);
@@ -472,8 +494,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
     //end::PatientController
 
-     
-    //begin:: PromotionController 
+
+    //begin:: PromotionController
     Route::post('getPromotionList', [PromotionController::class, 'getPromotionList']);
     Route::post('savePromotion', [PromotionController::class, 'savePromotion']);
     Route::post('getPromotionInfo', [PromotionController::class, 'getPromotionInfo']);
@@ -490,7 +512,7 @@ Route::post('test/test-api', function () {
     $data = "This is result of api";
     return response()->json($data);
 });
- 
+
 //begin::SystemSettingController
 Route::post('getComboItems_price_list', [SystemSettingController::class, 'getComboItems_price_list']);
 
@@ -506,7 +528,7 @@ Route::post('getComboItems_price_list', [SystemSettingController::class, 'getCom
     // Route::post('getBrandImages_driver', [CompanyProfileController::class, 'getBrandImages_driver']);
     // Route::post('getBrandImages_sender', [CompanyProfileController::class, 'getBrandImages_sender']);
 //end::CompanyProfileController
- 
+
 
 // //begin::MobileAppSettingsController
 // Route::post('getMobileBrandImages', [MobileAppSettingsController::class, 'getMobileBrandImages']);
@@ -578,5 +600,5 @@ Route::post('settings/report-filter-options', [GeneralSettingsController::class,
 // Route::post('settings/program-details', [GeneralSettingsController::class, 'getProgramDetails']);
 // Route::post('settings/program-options', [GeneralSettingsController::class, 'getProgramOptions']);
 // Route::post('settings/occupations', [GeneralSettingsController::class, 'getOccupations']);
- 
+
 //end::API routes for external calls
