@@ -25,7 +25,6 @@ class Program // extends Model
         $res = validateObject($arr,$v_rule,false,[],$ss->lang,[],null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
-        $id = $res->id;
 
         $newID = saveData($ss,'programs',['id'=>$id],$inputs,[],1);
         return DV::depends($newID,$id?'Updated':'Saved');
