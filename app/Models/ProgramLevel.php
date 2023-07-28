@@ -5,7 +5,7 @@ namespace App\Models;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use DB;
-class Program // extends Model
+class ProgramLevel //extends Model
 {
     // use HasFactory;
     protected $id=null,$user_info=null;
@@ -18,16 +18,15 @@ class Program // extends Model
         $ss = $ss?$ss:$this->user_info;
         $id = $id?$id:$this->id;
         $v_rule = [
-            'department_id' => '1|number|default=1',
+            'program_id' => '1|number|exists=programs.id',
             'name' => '0|string|1-50',
         ];
 
         $res = validateObject($arr,$v_rule,false,[],$ss->lang,[],null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
-        $id = $res->id;
 
-        $newID = saveData($ss,'programs',['id'=>$id],$inputs,[],1);
+        $newID = saveData($ss,'program_levels',['id'=>$id],$inputs,[],1);
         return DV::depends($newID,$id?'Updated':'Saved');
     }
 
@@ -35,9 +34,9 @@ class Program // extends Model
         $ss = $ss?$ss:$this->user_info;
         $branch_id = $ss->branch_id;
 
-        $selectRow = "p.id,p.department_id,d.name as department,p.name,p.created_at,p.create_user";
+        $selectRow = "pl.id,pl.program_id,p.name as program,pl.name,pl.created_at,pl.create_user";
 
-        $rows = DB::table('programs as p')->join('departments as d','p.department_id','=','d.id')->selectRaw($selectRow)->where('p.branch_id',$branch_id)->get();
+        $rows = DB::table('program_levels as pl')->join('programs as p','pl.program_id','=','p.id')->selectRaw($selectRow)->where('p.branch_id',$branch_id)->get();
 
         foreach($rows as $row){
             $row->date = explode(' ',$row->created_at)[0];
@@ -51,9 +50,10 @@ class Program // extends Model
         $ss = $ss?$ss:$this->user_info;
         $id = $id?$id:$this->id;
         $branch_id = $ss->branch_id;
-        $row = DB::table('programs as p')->selectRaw('p.id,p.department_id,p.name')
-                ->where('p.branch_id',$branch_id)
-                ->where('p.id',$id)->get()->first();
+        $row = DB::table('program_levels as pl')
+                ->selectRaw('pl.id,pl.program_id,pl.name')
+                ->where('pl.branch_id',$branch_id)
+                ->where('pl.id',$id)->get()->first();
         return DV::result($row);
     }
 
@@ -62,7 +62,7 @@ class Program // extends Model
         $id = $id?$id:$this->id;
         $branch_id = $ss->branch_id;
 
-        $row = DB::table('programs')->where('id',$id)->where('branch_id',$branch_id)->delete();
+        $row = DB::table('program_levels')->where('id',$id)->where('branch_id',$branch_id)->delete();
         return DV::depends($row,'Program Deleted');
     }
 }
