@@ -1,9 +1,14 @@
 <?php
 
+use App\Http\Controllers\CampusController;
+use App\Http\Controllers\ProgramController;
+use App\Http\Controllers\ProgramLevelController;
+use App\Http\Controllers\StudentController;
+use App\Http\Controllers\TermController;
 use Illuminate\Http\Request;
 //use App\Models\SMS;
 //use App\Models\Notifier;
- 
+
 use Illuminate\Support\Facades\Route;
 //use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\PersonController;
@@ -21,6 +26,7 @@ use App\Http\Controllers\GeneralSettingsController;
 use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\WebReportController;
 //use App\Http\Controllers\NotificationController;
+
 
 use App\Http\Controllers\PriceListController;
 use App\Http\Controllers\PolicyDiscountController;
@@ -51,7 +57,7 @@ use App\Http\Controllers\EmployeeController;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
- 
+
 Route::post('auth/login', [LoginController::class, 'apiLogin']);
 
 // Route::get('env/20230120AZ99/vars',function(){
@@ -59,12 +65,56 @@ Route::post('auth/login', [LoginController::class, 'apiLogin']);
 //        "pusher_app_key"=>Illuminate\Support\Facades\Config::get('app.pusher_app_key'),
 //        "cookie_name"=>Illuminate\Support\Facades\Config::get('app.cookie_name'),
 //     ];
-//     return response()->json($vars);   
+//     return response()->json($vars);
 // }); //->middleware('auth');
 
 // Rate Limiting for a whole group of routes= > allow 200 requests per 1 minute
 Route::group(['middleware' => 'throttle:200,1'], function () {
-    //begin:: AppointmentController 
+
+    //begin::StudentController
+    Route::prefix('student')->group(function () {
+        Route::post('/registration', [StudentController::class, 'studentRegistration']);
+    });
+    //end::StudentController
+
+    //begin::CampusController
+    Route::prefix('campus')->group(function () {
+        Route::post('/save', [CampusController::class, 'save']);
+        Route::post('/list', [CampusController::class, 'getList']);
+        Route::post('/details', [CampusController::class, 'getDetails']);
+        Route::post('/delete', [CampusController::class, 'delete']);
+    });
+    //end::CampusController
+
+    //begin::TermController
+    Route::prefix('term')->group(function () {
+        Route::post('/save', [TermController::class, 'save']);
+        Route::post('/list', [TermController::class, 'getList']);
+        Route::post('/details', [TermController::class, 'getDetails']);
+        Route::post('/delete', [TermController::class, 'delete']);
+    });
+    //end::TermController
+
+    //begin::ProgramController
+    Route::prefix('program')->group(function(){
+        Route::post('/save',[ProgramController::class,'save']);
+        Route::post('/list',[ProgramController::class,'getList']);
+        Route::post('/details',[ProgramController::class,'getDetails']);
+        Route::post('/delete',[ProgramController::class,'delete']);
+        Route::post('/levels',[ProgramController::class,'get_levels_by_program']);
+    });
+    //end::ProgramController
+
+    //begin::ProgramLevelController
+    Route::prefix('program-level')->group(function () {
+        Route::post('/save', [ProgramLevelController::class, 'save']);
+        Route::post('/list', [ProgramLevelController::class, 'getList']);
+        Route::post('/details', [ProgramLevelController::class, 'getDetails']);
+        Route::post('/delete', [ProgramLevelController::class, 'delete']);
+    });
+    //end::ProgramController
+
+    //begin:: AppointmentController
 
     Route::post('test', [AppointmentController::class, 'getTest']);
 
@@ -79,17 +129,17 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //end::AppointmentController
 
     //begin::consult-history
-     Route::post('consult/history/medical-history', [ConsultationController::class, 'getHistory_medicalHistory']);
-     Route::post('consult/history/prescription', [ConsultationController::class, 'getHistory_presciption']);
-     Route::post('consult/history/labo-tests', [ConsultationController::class, 'getHistory_labo_tests']);
-     Route::post('consult/history/services', [ConsultationController::class, 'getHistory_services']);
-     Route::post('consult/history/pe', [ConsultationController::class, 'getHistory_pe']);
-     Route::post('consult/history/diagnosis', [ConsultationController::class, 'getHistory_diagnosis']);
-     Route::post('consult/history/advice', [ConsultationController::class, 'getHistory_advice']);
-     Route::post('consult/history/followup', [ConsultationController::class, 'getHistory_followup']);
+    Route::post('consult/history/medical-history', [ConsultationController::class, 'getHistory_medicalHistory']);
+    Route::post('consult/history/prescription', [ConsultationController::class, 'getHistory_presciption']);
+    Route::post('consult/history/labo-tests', [ConsultationController::class, 'getHistory_labo_tests']);
+    Route::post('consult/history/services', [ConsultationController::class, 'getHistory_services']);
+    Route::post('consult/history/pe', [ConsultationController::class, 'getHistory_pe']);
+    Route::post('consult/history/diagnosis', [ConsultationController::class, 'getHistory_diagnosis']);
+    Route::post('consult/history/advice', [ConsultationController::class, 'getHistory_advice']);
+    Route::post('consult/history/followup', [ConsultationController::class, 'getHistory_followup']);
     //end::consult-history
 
-    //begin::ConsultationController 
+    //begin::ConsultationController
     Route::post('consultation/save', [ConsultationController::class, 'saveConsultationData']);
     Route::post('consultation/delete', [ConsultationController::class, 'deleteConsultationData']);
     Route::post('consultation/details', [ConsultationController::class, 'getConsultationData']);
@@ -180,15 +230,14 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //End::ServicePlanController
 
     //begin::ServiceTrackController
-    
-       Route::post('serive-track/form-options', [ServiceTrackController::class, 'getFormOptions']);
-       Route::post('service-track/details', [ServiceTrackController::class, 'getTrackDetails']);
-       Route::post('service-track/list', [ServiceTrackController::class, 'getServiceTracks']);
-       Route::post('service-track/delete', [ServiceTrackController::class, 'deleteTrack']);
-       Route::post('service-track/save', [ServiceTrackController::class, 'saveTrack']);
-       Route::post('service-track/info', [ServiceTrackController::class, 'getTrackDetails']);
+
+    Route::post('serive-track/form-options', [ServiceTrackController::class, 'getFormOptions']);
+    Route::post('service-track/details', [ServiceTrackController::class, 'getTrackDetails']);
+    Route::post('service-track/list', [ServiceTrackController::class, 'getServiceTracks']);
+    Route::post('service-track/delete', [ServiceTrackController::class, 'deleteTrack']);
+    Route::post('service-track/save', [ServiceTrackController::class, 'saveTrack']);
+    Route::post('service-track/info', [ServiceTrackController::class, 'getTrackDetails']);
     //End::ServiceTrackController
- 
 
     //begin::VendorController
     Route::post('vendor/save', [VendorController::class, 'saveVendor']);
@@ -229,7 +278,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('invoice-payment/delete', [InvoiceController::class, 'deletePayment']);
 
     //end::InvoiceController
- 
+
     //begin::EmployeeController
     Route::post('employee/details', [EmployeeController::class, 'getEmployeeDetails']);
     Route::post('employee/list', [EmployeeController::class, 'getEmployeeList']);
@@ -243,7 +292,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
     Route::post('Bill/settings/save-vendor-type', [VendorController::class, 'saveVendorType']);
     Route::post('Bill/settings/delete-vendor-type', [VendorController::class, 'saveVendorType']);
-    
+
     // //begin::InventorySettingsController =>  Inventory Settings.
     // Route::post('inventory/settings/options-group', [InventorySettingsController::class, 'getComboItems_group']);
     // Route::post('inventory/settings/item-form-options', [InventorySettingsController::class, 'getItemFormOptions']);
@@ -275,7 +324,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     // // Route::post('inventory/settings/brand/list', [InventorySettingsController::class, 'getBrandList']);
     // // Route::post('inventory/settings/brand/save', [InventorySettingsController::class, 'saveBrand']);
 
-    // // *** inventory/group/save 
+    // // *** inventory/group/save
     // Route::post('inventory/settings/brand/save', function (Request $req) {
     //     $res = Brand::createOrUpdate($req);
     //     return response()->json($res);
@@ -339,9 +388,6 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     });
     //begin::Exchange Rate APIs
 
-    
-     
-    //begin:: PromotionController 
     Route::post('getPromotionList', [PromotionController::class, 'getPromotionList']);
     Route::post('savePromotion', [PromotionController::class, 'savePromotion']);
     Route::post('getPromotionInfo', [PromotionController::class, 'getPromotionInfo']);
@@ -358,23 +404,23 @@ Route::post('test/test-api', function () {
     $data = "This is result of api";
     return response()->json($data);
 });
- 
+
 //begin::SystemSettingController
 Route::post('getComboItems_price_list', [SystemSettingController::class, 'getComboItems_price_list']);
 
 //end::SystemSettingController
 
 //begin::CompanyProfileController
-    Route::post('company/save-logo', [CompanyProfileController::class, 'saveCompanyLogo']);
-    Route::post('company/logo', [CompanyProfileController::class, 'getCompanyLogo']);
-    Route::post('company/delete-logo', [CompanyProfileController::class, 'deleteCompanyLogo']);
-    Route::post('company/save-profile', [CompanyProfileController::class, 'saveCompanyInfo']);
-    Route::post('company/profile', [CompanyProfileController::class, 'getCompanyInfo']);
-    Route::post('company/info', [CompanyProfileController::class, 'getCompanyInfo']);
-    // Route::post('getBrandImages_driver', [CompanyProfileController::class, 'getBrandImages_driver']);
-    // Route::post('getBrandImages_sender', [CompanyProfileController::class, 'getBrandImages_sender']);
+Route::post('company/save-logo', [CompanyProfileController::class, 'saveCompanyLogo']);
+Route::post('company/logo', [CompanyProfileController::class, 'getCompanyLogo']);
+Route::post('company/delete-logo', [CompanyProfileController::class, 'deleteCompanyLogo']);
+Route::post('company/save-profile', [CompanyProfileController::class, 'saveCompanyInfo']);
+Route::post('company/profile', [CompanyProfileController::class, 'getCompanyInfo']);
+Route::post('company/info', [CompanyProfileController::class, 'getCompanyInfo']);
+// Route::post('getBrandImages_driver', [CompanyProfileController::class, 'getBrandImages_driver']);
+// Route::post('getBrandImages_sender', [CompanyProfileController::class, 'getBrandImages_sender']);
 //end::CompanyProfileController
- 
+
 
 // //begin::MobileAppSettingsController
 // Route::post('getMobileBrandImages', [MobileAppSettingsController::class, 'getMobileBrandImages']);
@@ -422,7 +468,7 @@ Route::post('settings/create-org', [GeneralSettingsController::class, 'createOrg
 Route::post('settings/delete-org', [GeneralSettingsController::class, 'deleteOrganization']);
 Route::post('settings/create-industry', [GeneralSettingsController::class, 'createIndustry']);
 Route::post('settings/delete-industry', [GeneralSettingsController::class, 'deleteIndustry']);
- 
+
 
 Route::post('settings/options-contact-channel', [GeneralSettingsController::class, 'getComboItems_channel']);
 Route::post('settings/options-appt-status', [GeneralSettingsController::class, 'getComboItems_appt_status']);
@@ -439,5 +485,5 @@ Route::post('settings/report-filter-options', [GeneralSettingsController::class,
 // Route::post('settings/program-details', [GeneralSettingsController::class, 'getProgramDetails']);
 // Route::post('settings/program-options', [GeneralSettingsController::class, 'getProgramOptions']);
 // Route::post('settings/occupations', [GeneralSettingsController::class, 'getOccupations']);
- 
+
 //end::API routes for external calls

@@ -14,12 +14,13 @@ use Auth;
 class LoginController extends Controller
 {
     protected $UMModel;
-    public function __construct(){  
+    public function __construct(){
         $this->UMModel = new UM();
     }
   
     function apiLogin(Request $request)
     {
+
         $app_id = Config::get('app.app_id');
         $login_name = $request->login_name;
         $pwd = $request->password;
@@ -28,12 +29,13 @@ class LoginController extends Controller
         if ($result->status === 'OK') {
             $result->user->image_url = \App\Models\PublicStorage::getProfilePhoto_url($result->user->branch_id, $result->user->user_class, $result->user->official_id);
         }
+
         return $result;
     }
 
     function processLogin(Request $request){
          /** $THIS_APP_ID is used for we login. BUT for Mobile app authentication, must be come app_id and users login_name or access_token **/
-         $THIS_APP_ID = Config::get('app.app_id'); 
+         $THIS_APP_ID = Config::get('app.app_id');
         //$user = (object)(["id"=>1,"branch_id"=>1,"full_name"=>null,"login_name"=>$request->login_name]);
         //$this->UMModel->setSessionUser($user);
         //$this->UMModel->createSession($request->login_name);
@@ -44,7 +46,7 @@ class LoginController extends Controller
                 //$prns = $this->UMModel->getPermissionsByUserId_internal($user->id);
                 //$mods = $this->UMModel->getAccessibleModulesByUserId_internal($user->id);
                 Session(
-                    ['login_name' => $request->login_name, 
+                    ['login_name' => $request->login_name,
                     'full_name'=>$user->full_name,
                     'access_token'=>$result->user->access_token,
                     'user_class'=>$user->user_class,
@@ -65,13 +67,13 @@ class LoginController extends Controller
              //$cookie = Cookie::queue($cookie_name, $user->access_token, 60);
              //$first_role = UM::getFirstRole($user->id);
              $encrypted_token ="";
-             ////Encrypt access token ans store in cookie 
+             ////Encrypt access token ans store in cookie
              //$res = (object)['value'=>'','key'=>'','iv'=>''];
              //$res = PHPCrypto::encrypt($result->user->access_token,null,null);
              //$encrypted_token =$res->value;
-             //$encrypted_token = $result->user->access_token; 
+             //$encrypted_token = $result->user->access_token;
              if ($user->user_class==='admin' || $user->user_class==='super admin')
-             { 
+             {
                 //session::put('secret',$res);
                 $cookie_value = $result->user->access_token;
                 $refreshToken= $result->refresh_token;
@@ -84,20 +86,20 @@ class LoginController extends Controller
              else {
                 session::put('login_error',"User class $user->user_class is not valid");
                 return redirect('');
-             }    
+             }
              //public function make($name, $value, $minutes = 0, $path = null, $domain = null, $secure = false, $httpOnly = true)
-             //return redirect('dms')->withCookie(cookie()->forever($cookie_name,$user->access_token,0,'/',null,false,false));  /** reponse with cookie that lasts for ever **/ 
+             //return redirect('dms')->withCookie(cookie()->forever($cookie_name,$user->access_token,0,'/',null,false,false));  /** reponse with cookie that lasts for ever **/
         } else{
-            //$request->session()->flash('login_error',$result->error_message); 
+            //$request->session()->flash('login_error',$result->error_message);
             session::put('login_error',$result->error_message);
             return redirect('');
         }
-        
+
     }
     public function login(Request $request){
         return view('login.index');
     }
- 
+
     public function logout(){
         Session::flush();
         Auth::logout();
