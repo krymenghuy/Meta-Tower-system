@@ -88,11 +88,12 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //end::CampusController
 
     //begin::ProgramController
-    Route::prefix('program')->group(function () {
-        Route::post('/save', [ProgramController::class, 'save']);
-        Route::post('/list', [ProgramController::class, 'getList']);
-        Route::post('/details', [ProgramController::class, 'getDetails']);
-        Route::post('/delete', [ProgramController::class, 'delete']);
+    Route::prefix('program')->group(function(){
+        Route::post('/save',[ProgramController::class,'save']);
+        Route::post('/list',[ProgramController::class,'getList']);
+        Route::post('/details',[ProgramController::class,'getDetails']);
+        Route::post('/delete',[ProgramController::class,'delete']);
+        Route::post('/levels',[ProgramController::class,'get_levels_by_program']);
     });
     //end::ProgramController
 
@@ -229,7 +230,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('service-track/save', [ServiceTrackController::class, 'saveTrack']);
     Route::post('service-track/info', [ServiceTrackController::class, 'getTrackDetails']);
     //End::ServiceTrackController
- 
+
     //begin::VendorController
     Route::post('vendor/save', [VendorController::class, 'saveVendor']);
     Route::post('vendor/delete', [VendorController::class, 'deleteVendor']);
@@ -367,7 +368,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('apply-rate', [ExchangeRateController::class, 'applyExchangeRate']);
     });
     //begin::Exchange Rate APIs
-   
+
     Route::post('getPromotionList', [PromotionController::class, 'getPromotionList']);
     Route::post('savePromotion', [PromotionController::class, 'savePromotion']);
     Route::post('getPromotionInfo', [PromotionController::class, 'getPromotionInfo']);
@@ -448,7 +449,7 @@ Route::post('settings/create-org', [GeneralSettingsController::class, 'createOrg
 Route::post('settings/delete-org', [GeneralSettingsController::class, 'deleteOrganization']);
 Route::post('settings/create-industry', [GeneralSettingsController::class, 'createIndustry']);
 Route::post('settings/delete-industry', [GeneralSettingsController::class, 'deleteIndustry']);
- 
+
 
 Route::post('settings/options-contact-channel', [GeneralSettingsController::class, 'getComboItems_channel']);
 Route::post('settings/options-appt-status', [GeneralSettingsController::class, 'getComboItems_appt_status']);

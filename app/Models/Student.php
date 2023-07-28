@@ -53,6 +53,7 @@ class Student //extends Model
 
 
     static function saveEnrollmentStudent($st_id,$level_id,$session_id,$campus_id,$ss){
+        $program_id = DB::table('programs as p')->join('program_levels as pl','p.id','=','pl.program_id');
         $inputs = [
             'student_id' => $st_id,
             'level_id' => $level_id,

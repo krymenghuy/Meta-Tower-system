@@ -28,6 +28,13 @@ class ProgramController extends Controller
         return JDV::raw($list);
     }
 
+    function get_levels_by_program(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $rows = Program::getLevelByProgram($req->id,$ss);
+        return JDV::raw($rows);
+    }
+
     function getDetails(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
