@@ -30,17 +30,6 @@ var ReportCenterComponent = new function () {
             'visible': false,
             'type': 'select',
             'width': 'full',
-            'label': 'Warehouse',
-            'api_fetch': `${main_view.base_url}/api/inventory/settings/options-warehouse`,
-            'api_params': {},
-            'name': 'wid', //filter name or var name to be passed as parameter to report's fetch api
-            'value_field': 'id',
-            'text_field': 'warehouse_name'
-        },
-        {
-            'visible': false,
-            'type': 'select',
-            'width': 'full',
             'label': 'Department',
             'api_fetch': '',
             'api_params': {},
@@ -48,17 +37,7 @@ var ReportCenterComponent = new function () {
             'value_field': 'id',
             'text_field': 'department_name'
         },
-        {
-            'visible': false,
-            'type': 'select',
-            'width': 'full',
-            'label': 'Customer Name',
-            'api_fetch': '',
-            'api_params': {},
-            'name': 'customer_id',
-            'value_field': 'id',
-            'text_field': 'customer_name'
-        },
+        
         {
             'visible': false,
             'type': 'select',

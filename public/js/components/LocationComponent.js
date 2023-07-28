@@ -33,89 +33,132 @@ var LocationComponent = new function(){
     let mThis = this;
     this.base_url = $('#__base_url').val();
     this.self = $('#_sttn_loc_countryListpanel');
-    this.tblCountries = $('#_sttn_loc_tblCountries');
-    this.tblCountries_body = $('#_sttn_loc_tblCountries_body');
+    this.tblCountries = document.querySelector('#_sttn_loc_tblCountries');
+    this.tblCountries_body = this.tblCountries.querySelector('#_sttn_loc_tblCountries_body');
     this.lnkNewCountry = $('#_sttn_loc_lnkNewCountry');
 
     mThis.lnkNewCountry.on('click',function(e){
       e.preventDefault();
-      let option = {title:'New Country','dataLabel':'Enter country name','btnOKText':'Add Country','defaultValue':null,'blankErrorMessage':'Country name cannot be empty'};
-      InputBox1.show(option,function(d){
-         if(d) {
-             let p = {'name':d,'name_native':d};
-             window.vsapi.call([mThis.base_url,'/api/location/country/save'].join(''),p).then((res)=>{
-               if(res.status_code ===200) {
-                  mThis.displayCountries();
-               } else cv_interact.error(res.error_message);
-             }); 
-          }
-      }); 
-    });
+      let op= {
+         "id":"",
+         "onClose":(countries)=>{
+            mThis.renderCountries(countries);
+         }
+      };
 
-    mThis.tblCountries_body.on('click','a._sttn_loc_delete_country',function(e){
-      e.preventDefault();
-      
-      let p = {'id':$(this).data('countryid')};
-      if(!p.id) p.id=0;
-          cv_interact.confirm('Delete this country?',{title:'Delete Country','context':'delete'},function(e){
-                if(e)
-                {
-                    window.vsapi.call([mThis.base_url,'/api/location/country/delete'].join(''),p).then((res)=>{
-                      if(res.status_code===200){
-                        mThis.displayCountries();
-                      } else cv_interact.error(res.error_message);
-                    });
-                }
-          });
-    });
+      CountryDialog.show(op);
+      return ;
 
-    mThis.tblCountries_body.on('mouseover','tr',function(e){
-      // let td_action = $(this).find('td.col_action');
-      // td_action.find('a.').css('display','block');
-      $(this).find('td.col_action>a._sttn_loc_delete_country').show();
-    }).on('mouseleave','tr',function(e){
-      // let td_action = $(this).find('td.col_action');
-      // td_action.find('a').css('display','none');
-      $(this).find('td.col_action>a._sttn_loc_delete_country').hide();
+      // let option = {title:'New Country','dataLabel':'Enter country name','btnOKText':'Add Country','defaultValue':null,'blankErrorMessage':'Country name cannot be empty'};
+      // InputBox1.show(option,function(d){
+      //    if(d) {
+      //        let p = {'name':d,'name_native':d};
+      //        window.vsapi.call([mThis.base_url,'/api/location/country/save'].join(''),p).then((res)=>{
+      //          if(res.status_code ===200) {
+      //             mThis.displayCountries();
+      //          } else cv_interact.error(res.error_message);
+      //        }); 
+      //     }
+      // }); 
     });
-
  
+    mThis.tblCountries_body.addEventListener ('click',function(e){
+      e.preventDefault();
+      let c = e.target.closest('.btn-delete-country');
+      if(c){
+            const id = c.dataset.countryid;
+            let p = {'id':id};
+            if(!p.id) p.id=0;
+                cv_interact.confirm('Delete this country?',{title:'Delete Country','context':'delete'},function(e){
+                      if(e)
+                      {
+                          window.vsapi.call([mThis.base_url,'/api/location/country/delete'].join(''),p).then((res)=>{
+                            if(res.status_code===200){
+                              mThis.displayCountries();
+                            } else cv_interact.error(res.error_message);
+                          });
+                      }
+                });
+         }else{
+           c = e.target.closest('.btn-edit-country');
+           if(c){
+              const id = c.dataset.countryid;
+              let op = {
+                 'id':id,
+                 'onClose':(countries)=>{
+                   mThis.renderCountries(countries);
+                 }
+              };
+              CountryDialog.show(op); 
+           }
+         }
+          
+    
+    });
 
-    mThis.tblCountries.on('click','tr',function(e){
+    // mThis.tblCountries_body.on('mouseover','tr',function(e){
+    //   // let td_action = $(this).find('td.col_action');
+    //   // td_action.find('a.').css('display','block');
+    //   $(this).find('td.col_action>a._sttn_loc_delete_country').show();
+    // }).on('mouseleave','tr',function(e){
+    //   // let td_action = $(this).find('td.col_action');
+    //   // td_action.find('a').css('display','none');
+    //   $(this).find('td.col_action>a._sttn_loc_delete_country').hide();
+    // });
+ 
+    $(mThis.tblCountries).on('click','tbody>tr',function(e){
       if(mThis.prev_selected_row ) mThis.prev_selected_row.removeClass('selected-animate');
-      $(this).toggleClass('row-selected');
-      if ($(this).hasClass('row-selected')){
-        mThis.selected_country_id = $(this).data('countryid');
-        mThis.selected_country_name = $(this).data('countryname');
+      $(this).toggleClass('country-selected').siblings().removeClass('country-selected');
+      if ($(this).hasClass('country-selected')){
+        mThis.selected_country_id = $(this).data('countryid'); //e.target.dataset.countryid;
+        mThis.selected_country_name = $(this).data('countryname'); //e.target.dataset.countryname;
+    
         mThis.prev_selected_row = $(this);
       }
       ZoneTabView.show(mThis.selected_country_id,null,false);
       ZoneTabView.loadComboItems_zone(mThis.selected_country_id,'city',null);
     });
 
+    this.renderCountries = (cs=null)=>{
+        mThis.selected_country_id = null;
+        mThis.selected_country_name = null;
+
+        mThis.tblCountries_body.innerHTML = null;
+        (cs || []).map(c=>{
+          let tr = document.createElement('tr');
+          tr.dataset.countryname = c.name;
+          tr.dataset.countryid =c.id;
+          let action_html =['<div class="d-flex flex-row"><a data-countryid="',c.id,'" href="javascript:void(0)" class="btn-edit-country"><i class="fa fa-edit text-secondary"></i></a> &nbsp; <a href="javascript:void(0)" data-countryid="',c.id,'" class="btn-delete-country"><i class="fa fa-trash text-secondary"></i></a></div>'].join('');
+          c.nationality = c.nationality?c.nationality:c.name;
+          tr.innerHTML =['<td class="flag"><img class="country-flag" src="',c.flag,'" alt="Flag"></td><td class="col_country_name country">',c.name,'</td><td class="nationality">',c.nationality,'</td><td class="action">',action_html,'</td>'].join(''); 
+          mThis.tblCountries_body.appendChild(tr);
+        });
+    }
+
     this.displayCountries = function(){
-      mThis.selected_country_name = null;
       mThis.selected_country_id = null;
+      mThis.selected_country_name = null;
 
       //let div = mThis.tblCountries.parent();
       //div.removeClass('animate-slide-up');
-      mThis.tblCountries_body.empty();
+      mThis.tblCountries_body.innerHTML = null;
       window.vsapi.call([mThis.base_url,'/api/location/countries'].join(''),null).then((res)=>{
          if(res.status_code===200){
-            let rows = StringSanitizer.sanitizeObject(res.data);
-            let i=0,c;
-            do{
-                c = rows[i];
-                if(!c) break;
-                let html = ['<tr data-countryname="',c.name,'" data-countryid="',c.id,'">',
-                 '<td class="col_country_name">',c.name,'</td>',
-                 '<td class="col_action"><a data-countryid="',c.id,'" data-countryname="',c.name,'" href="#" class="_sttn_loc_delete_country" style="display:none"><i class="fa fa-times" style="color:red;"></i></a></td>',
-                ,'</tr>'].join('');
-                mThis.tblCountries_body.append(html);
-                i++;
-            }while(c);
-            //mThis.tblCountries_body.find('a._sttn_loc_delete_country').css('display','none');
-            //div.addClass('animate-slide-up');
+            let countries = StringSanitizer.sanitizeObject(res.data,null,['flag','image','image_url']);
+             mThis.renderCountries(countries);
+            // let i=0,c;
+            // do{
+            //     c = rows[i];
+            //     if(!c) break;
+            //     let html = ['<tr data-countryname="',c.name,'" data-countryid="',c.id,'">',
+            //      '<td class="col_country_name">',c.name,'</td>',
+            //      '<td class="col_action"><a data-countryid="',c.id,'" data-countryname="',c.name,'" href="#" class="_sttn_loc_delete_country" style="display:none"><i class="fa fa-times" style="color:red;"></i></a></td>',
+            //     ,'</tr>'].join('');
+            //     mThis.tblCountries_body.append(html);
+            //     i++;
+            // }while(c);
+            // //mThis.tblCountries_body.find('a._sttn_loc_delete_country').css('display','none');
+            // //div.addClass('animate-slide-up');
          }
       });   
     }
@@ -415,7 +458,6 @@ var ZoneTabView = new function(){
          this.displayCities = function(country_id) {
           //let div = mThis.tblCities.parent();
           //div.removeClass('animate-slide-left');
-           
                  let p = {};
                  p.country_id = country_id;
                  mThis.tblCities_body.empty();
@@ -438,6 +480,9 @@ var ZoneTabView = new function(){
                                   mThis.tblCities_body.append(html);
                               i++;
                           }while(c); 
+                          if(i===0){
+                            mThis.tblCities_body.html('<tr><td colspan="100%"><div>No cities or provinces to display</div></td></tr>');
+                          }
                           //div.addClass('animate-slide-left');
                      }
 
@@ -560,9 +605,112 @@ var ZoneTabView = new function(){
   //end::THIS CODE BLOCK IS NOT PART OF GENERAL SRCRIPT FOR TAB_VIEW OBJECT
 }
 //end::ZoneTabview
-
  
+//begin::CountryDialog
+let CountryDialog = new function(){
+  let mThis = this;
+  this.self = $('#_loc_dlgCountry');
+  this.elTitle = this.self.find('.modal-title');
+  this.btnSave = this.self.find('.btn-save-country');
+  this.imgFlag = this.self.find('img.country-flag');
+  this.options = {};
 
-$(document).ready(function(){
+  this.imgBox = new ImageBox('_loc_img_flag',{
+     altText: "Image",
+  });
+
+  this.btnSave.on('click',(e)=>{
+      let p = mThis.getFormData();
+      console.log(p); 
+      vsapi.call([main_view.base_url,'/api/location/country/save'].join(''),p,null,false).then(res=>{
+         if(res.status_code === 200){
+            let countries = res.data.countries;
+            if(typeof mThis.onClose ==='function') mThis.onClose(countries);
+            mThis.self.modal('hide');
+         }else cv_interact.warning(res.error_message);
+      });
+  });
+
+  this.get_src_type = (src) => {
+    // Check if the src starts with "data:image"
+    if (src.startsWith("data:image")) {
+        return "base64";
+    }
+
+    // Check if the src starts with "http://" or "https://"
+    if (src.startsWith("http://") || src.startsWith("https://")) {
+        return "url";
+    }
+
+    // If none of the above conditions match, assume it's an invalid source
+    return "Invalid Source";
+}
+
+  this.setFormData = (d=null)=>{
+    if(!d){
+      mThis.imgBox.setImage(null);
+      d = {};
+    }
+
+     mThis.self.find('.data-input').each(function(){
+       let el = $(this);
+       let f = el.data('field');
+       el.val(d[f]);
+      //  if(el.is('img')){
+      //    el.prop('src',d[f]);
+      //  }else el.val(d[f]);
+     });
+     mThis.imgBox.setImage(d.flag);
+  };
+
+  this.getFormData = ()=>{
+    let p = {};
+    mThis.self.find('.data-input').each(function(){
+       let el = $(this);
+       let f = el.data('field');
+       if(el.is('img')){
+         const src = el.prop('src');
+         if(mThis.get_src_type(src) === 'base64'){
+           //if(!f) f='flag';
+           //p[f]= src;
+           p.flag = src;
+         }
+       }
+       else p[f] = el.val();
+    });
+    p.id = mThis.options.id;
+    return p;
+  }
+
+  this.show = (options)=>{
+    if(!options) options= {};
+    mThis.options = options;
+    mThis.onClose = options.onClose;
+    if(options.id>0){
+        let p = {'id':options.id};
+        vsapi.call([main_view.base_url,'/api/location/country/details'].join(''),p,null,false).then(res=>{
+          mThis.elTitle.text('Edit Country');
+           if(res.status_code ===200){
+              let d = res.data;
+              mThis.setFormData(d);
+              mThis.self.modal({
+                backdrop:'static'
+              });
+           }
+        });
+    }else{
+       mThis.elTitle.text('New Country');
+      mThis.setFormData(null);
+      mThis.self.modal({
+        backdrop:'static'
+      });
+    }
+   
+  }
+
+}
+//end::CountryDialog
+
+window.addEventListener('DOMContentLoaded',function(){
  LocationComponent.init(); 
 });

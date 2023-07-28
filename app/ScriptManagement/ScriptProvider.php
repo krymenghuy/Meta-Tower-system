@@ -94,6 +94,7 @@ class ScriptProvider
                 '/js/layout/main.js?v=1',
                 '/js/components/PDFReport.js',
                 '/js/components/FileChooser.js',
+                '/js/components/ImageHelper.js',
                 '/js/components/ListView.js',
                 '/js/components/SimpleItemEditor.js',
                 '/js/components/OptionEditor.js',
