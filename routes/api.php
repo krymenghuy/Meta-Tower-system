@@ -23,14 +23,13 @@ use App\Http\Controllers\WebReportController;
 //use App\Http\Controllers\NotificationController;
 
 use App\Http\Controllers\PriceListController;
+use App\Http\Controllers\PolicyDiscountController;
 use App\Http\Controllers\Invoice\InvoiceController;
 use App\Http\Controllers\Bill\VendorController;
 
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ExchangeRateController;
-use App\Http\Controllers\PatientController;
-use App\Http\Controllers\PatientHistoryController;
- 
+  
 use App\Http\Controllers\EmployeeController;
 //use App\Models\PublicStorage;
 //use App\Models\SystemSetting;
@@ -302,6 +301,17 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('price-list/delete-item', [PriceListController::class, 'deleteItem']);
 
     //End::PriceListController
+
+   //begin::PolicyDiscountController
+        Route::post('pol-discount/list-paginate', [PolicyDiscountController::class, 'getPriceList_paginate']);
+        Route::post('pol-discount/delete', [PolicyDiscountController::class, 'deletePriceList']);
+        Route::post('pol-discount/save', [PolicyDiscountController::class, 'savePriceList']);
+        Route::post('pol-discount/details', [PolicyDiscountController::class, 'getPriceListDetails']);
+        Route::post('pol-discount/items', [PolicyDiscountController::class, 'getPriceListItems']);
+        Route::post('pol-discount/save-item', [PolicyDiscountController::class, 'saveItem']);
+        Route::post('pol-discount/delete-item', [PolicyDiscountController::class, 'deleteItem']);
+    
+    //End::PolicyDiscountController
 
     //begin::Currency APIs
     Route::prefix('currency')->group(function () {
