@@ -347,7 +347,7 @@ class PublicStorage extends Model
    }
 
     static function getProfilePhoto($branch_id,$person_id){
-        $rows = DB::table('persons')->where('branch_id',$branch_id)->where('id',$sender_id)->selectRaw('photo_file_name,photo_file_type')->limit(1)->get();
+        $rows = DB::table('persons')->where('branch_id',$branch_id)->where('id',$person_id)->selectRaw('photo_file_name,photo_file_type')->limit(1)->get();
         foreach($rows as $row)
         {
             $full_path = self::getDiskPath($branch_id,'person','image').$row->photo_file_name;

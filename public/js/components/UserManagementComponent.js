@@ -295,27 +295,21 @@ let UserListPanel = new function () {
 
     }
 
-    this.displayUserList = function (search_value = null) {
-        //let div = mThis.tblUsers.parent();
-        //div.removeClass('effect-zoomin');
+    this.displayUserList = function(search_value=null){
         let p = {};
-        p.search_value = search_value ? search_value : mThis.elSearch.val();
+        p.search_value = search_value? search_value: mThis.elSearch.val();
         p.user_class = mThis.elFilter_userclass.val();
-        vsapi.call([mThis.base_url, '/api/user/list'].join(''), p).then(res => {
-
-            if (res.status_code === 200) {
-
-                if (mThis.table) {
+        vsapi.call([mThis.base_url,'/api/getUserList'].join(''),p).then(res=>{
+            if(res.status_code === 200){
+                if (mThis.table){
                     mThis.tblUsers.DataTable().clear().destroy();
-                    //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
                     mThis.tblUsers.empty();
                     mThis.table = null;
                 }
 
                 let data = [];
-                if (res.status_code === 200) data = StringSanitizer.sanitizeObject(res.data, null, ['login_name', 'email']);
+                if(res.status_code===200) data = StringSanitizer.sanitizeObject(res.data,null,['login_name','email']);
                 let cnt = 1;
-                //begin::Set up columns
                 let my_columns = [
                     {
                         title: "No",
@@ -324,100 +318,92 @@ let UserListPanel = new function () {
                         }
                     },
                     {
-                        className: "login_name login_name-text",
-                        data: (user, a, b) => {
-                            return user.login_name;
+                        className:"login_name login_name-text",
+                        data:(user,a,b) =>{
+                            return ['<span class="fw-semibold text-dark">',user.login_name,'</span>'].join('');
                         },
                         title: 'Login Name'
                     },
                     {
-                        title: 'User Class',
-                        data: (user, a, b) => {
-                            return ['<span style="fw-bold text-secondary">', user.user_class, `</span>`].join('');
+                        title:'User Class',
+                        data:(user,a,b)=>{
+                            return ['<span style="fw-bold text-secondary">',user.user_class,`</span>`].join('');
                         }
                     },
                     {
-                        title: 'Full Name',
-                        data: (user, a, b) => {
-                            return user.full_name ? user.full_name : 'Unspecified';
+                        title:'Full Name',
+                        data:(user,a,b)=>{
+                            return user.full_name?user.full_name:'Unspecified';
                         }
                     },
                     {
                         title: "Official ID",
-                        data: (user, a, b) => {
-                            return user.official_code ? user.official_code : 'None';
+                        data: (user,a,b)=>{
+                            return ['<span class="dark-text fw-semibold p-1">',user.official_code?user.official_code:'None','</span>'].join('');
                         }
                     },
+                    // {
+                    //     title:"Phone Number",
+                    //     data:(user,a,b)=>{
+                    //         return user.phone_number?user.phone_number:"Unavailable";
+                    //     }
+                    // },
+                    // {
+                    //     title:"Email",
+                    //     data:(user,a,b)=>{
+                    //         return user.email?user.email:"Unavailable";
+                    //     }
+                    // },
                     {
-                        title: "Phone Number",
-                        data: (user, a, b) => {
-                            return user.phone_number ? user.phone_number : "Unavailable";
-                        }
-                    },
-                    {
-                        title: "Email",
-                        data: (user, a, b) => {
-                            return user.email ? user.email : "Unavailable";
-                        }
-                    },
-                    {
-                        className: "status",
-                        title: "Status",
-                        data: (user, a, b) => {
+                        className:"status",
+                        title:"Status",
+                        data:(user,a,b)=>{
                             return user.status;
                         }
                     },
                     {
-                        title: "Action",
-                        className: "col_action",
-                        data: function (user, a, b) {
+                        title:"Action",
+                        className:"col_action",
+                        data: function(user,a,b){
                             return [`<div class="form-inline">`,
-                                `<a href="javascript:void(0)" class="btn-user-modify" data-id="${user.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
-                                `<a href="javascript:void(0);" data-id="${user.id}" class="btn-user-setpwd"><i class="fa fa-user-lock" style="color:orange"></i></a> &nbsp;`,
-                                `<a href="javascript:void(0);" data-id="${user.id}" class="btn-user-delete"><i class="fa-solid fa-trash-can text-danger"></i></a> &nbsp;`,
-                                `<a style="display:none" href="javascript:void(0);" data-id="${user.id}" class="btn-user-action"><i class="fa fa-list-alt"></i></a>`,
-                                `</div>`
+                            `<a href="javascript:void(0)" class="btn-user-modify" data-id="${user.id}"><i class="fa fa-edit"></i></a> &nbsp;`,
+                            `<a href="javascript:void(0);" data-id="${user.id}" class="btn-user-setpwd"><i class="fa fa-user-lock" style="color:orange"></i></a> &nbsp;`,
+                            `<a href="javascript:void(0);" data-id="${user.id}" class="btn-user-delete"><i class="fa fa-trash" style="color:red"></i></a> &nbsp;`,
+                            `<a style="display:none" href="javascript:void(0);" data-id="${user.id}" class="btn-user-action"><i class="fa fa-list-alt"></i></a>`,
+                            `</div>`
                             ].join('');
                         }
                     }
                 ];
-                //END Define colum
 
-                //translate column names
-                //let trans_cols = LocaleManager.trans_object_array(my_columns,['title'],'dt_columns');
-                if (!mThis.table)
+                if (!mThis.table){
                     mThis.table = mThis.tblUsers.DataTable({
-                        searching: false,
-                        destroy: true,
-                        paging: true,
-                        ordering: false,
-                        //dom: 'Bfrtip',
+                        searching:false,
+                        destroy:true,
+                        paging:true,
+                        ordering:false,
                         retrieve: true,
-                        //scrollY:390,
-                        //scrollX:500,
-                        //pagingType:'numbers',
-                        info: true,
+                        info:true,
                         pageLength: 10,
-                        bLengthChange: false,
-                        saveState: true,
+                        bLengthChange:false,
+                        saveState:true,
                         'processing': true,
                         'language': {
                             'loadingRecords': '&nbsp;',
                             'processing': 'Loading...',
                             "emptyTable": 'No data to display'
-                        },
-                        'data': data,
-                        'columns': my_columns,
-                        "createdRow": function (row, data, dataIndex) {
+                            },
+                        'data':data,
+                        'columns':my_columns,
+                        "createdRow": function(row, data, dataIndex){
                             cnt++;
                             let tr = $(row);
-                            tr.data('id', data.id);
-                            tr.data('loginname', data.login_name);
-                        }
+                            tr.data('id',data.id);
+                            tr.data('loginname',data.login_name);
+                        }						
                     });
-
+                }
             }
-
         });
     }
 

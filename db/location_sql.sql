@@ -129,6 +129,11 @@ CREATE TABLE `loc_countries` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 
+alter table loc_countries add flag_file_name varchar(150);
+alter table loc_countries add lang_code varchar(10);
+alter table loc_countries add currency_code varchar(10);
+alter table loc_countries add region varchar(150);
+
 -- ----------------------------
 -- Records of loc_countries
 -- ----------------------------
@@ -363,6 +368,7 @@ CREATE TABLE `loc_cities` (
   `country_id` bigint(20) unsigned NOT NULL,
   `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name_kh` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_capital` TinyInt Default 0,
   `create_user` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT '',
   `create_date` timestamp NULL DEFAULT NULL,
   `update_user` varchar(35) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -371,9 +377,11 @@ CREATE TABLE `loc_cities` (
   PRIMARY KEY (`id`),
   KEY `loc_cities_country_id_foreign` (`country_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+ 
 
 -- ----------------------------
 -- Records of loc_cities
 -- ----------------------------
-INSERT INTO `loc_cities` VALUES ('13', '14', 'ក្រុងភ្នំពេញ', 'ក្រុងភ្នំពេញ', 'Puthea', '2021-11-22 06:45:27', null, '1', null);
-INSERT INTO `loc_cities` VALUES ('14', '15', 'Bangkok', 'Bangkok', 'admin@gmail.com', '2022-04-20 09:41:06', null, '1', null);
+INSERT INTO `loc_cities` VALUES ('13', '14', 'ក្រុងភ្នំពេញ', 'ក្រុងភ្នំពេញ',1, 'Puthea', '2021-11-22 06:45:27', null, '1', null);
+INSERT INTO `loc_cities` VALUES ('14', '15', 'Bangkok', 'Bangkok', 1,'admin@gmail.com', '2022-04-20 09:41:06', null, '1', null);
+   

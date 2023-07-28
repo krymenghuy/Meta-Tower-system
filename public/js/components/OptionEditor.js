@@ -25,10 +25,12 @@ class OptionEditor{
     constructor(div_id,options){
        
         this.div = document.querySelector(`#${div_id}`);
-        if(!this.div) throw "Error at OptionEditor: the provided div_id is not valid";
+        if(!this.div) throw `Error at OptionEditor: the provided div_id ${div_id} is not valid`;
         options =options?options:{};
+        if(!options.selectElement) throw `Error at OptionEditor: in DIV id "${div_id}". No Select element provided`;
         this.options = options;
-
+          
+        ////if(typeof this.options.buttonClick !=='function') this.options.buttonClick = ()=>{ return null;};
         //default dataprop is "options". this dataprop is used for refreshing options after delete or create or update option text 
         this.options.dataprop = this.options.dataprop?this.options.dataprop:this.options.dataProp;
         if(!this.options.dataprop) this.options.dataprop = "options";
@@ -39,8 +41,16 @@ class OptionEditor{
         this.options.buttons = (this.options.buttons)? this.options.buttons: ['add','edit','delete'];
         if(!this.options.langprop) this.options.langprop = this.options.langProp;
         const langprop = [this.options.langprop,'.',this.options.label].join('');
-        this.elSelect = $(this.options.selectElement);
+        if (!this.options.selectElement) 
+          throw (['OptionEditor error: in DIV element with ID "',div_id,'", it seems the Select element for ',this.options.label,' is not provided or it is invalid'].join(''));
+        // else if (this.options.selectElement instanceof jQuery) {
+        //    this.elSelect = this.options.selectElement;
+        // } 
+        else {
+           this.elSelect = $(this.options.selectElement);
+        }
 
+        //if (!this.elSelect.attr('id')) alert(this.options.selectElement.getAttribute('id'));
         const add_button = this.options.buttons.indexOf('add')>=0? ` &nbsp;<a href="javascript:void(0)" data-action="add" class="oe-action oe_lnk_add">
         <i class="fas fa-plus-circle text-success" style="font-size: 14px;"></i>
         </a> `:null;
@@ -56,13 +66,19 @@ class OptionEditor{
         let html =[`
           <span class="form-label trans-text" data-langprop="${langprop}">${this.options.label}</span>`,add_button,edit_button,delete_button
         ].join('');
-
+    
         this.div.innerHTML = html;
-
+        // if(div_id ==='_pdg_group_label_brand'){
+        //   console.error(this.div.innerHTML);
+        // }
         const that = this;
-
         this.buttonClickHandlers ={
             "add":()=>{
+                if (typeof that.options.buttonClick ==='function'){
+                    that.options.buttonClick('add');
+                    return;
+                }
+
                 let def_value = ""; //that.elSelect.find('option:selected').text(); 
                 cv_interact.inputBox(`Add  ${that.options.label}`,that.options.label,'text',def_value,null).then(res=>{
                        if(res.isConfirmed){
@@ -90,10 +106,16 @@ class OptionEditor{
                 });
             },
             "edit":()=>{
-                if(!that.elSelect.val()){
+                  if(!that.elSelect.val()){
                     cv_interact.warning('No item selected');
                     return;
                   }
+
+                  if (typeof that.options.buttonClick ==='function'){
+                    that.options.buttonClick('edit');
+                    return;
+                 }
+
                    let def_value = that.elSelect.find('option:selected').text(); 
                    cv_interact.inputBox(`Modify ${that.options.label}`,that.options.label,'text',def_value,null).then(res=>{
                           if(res.isConfirmed){
@@ -119,10 +141,16 @@ class OptionEditor{
                    });
             },
             "delete":()=>{
-                if(!that.elSelect.val()){
+                  if(!that.elSelect.val()){
                      cv_interact.warning('No item selected');
                      return;
                   }
+
+                if (typeof that.options.buttonClick ==='function'){
+                    that.options.buttonClick('delete');
+                    return;
+                }
+
                   let item_name = that.elSelect.find('option:selected').text();
                   cv_interact.confirm(`Delete ${item_name?item_name:'this item'}?`,{title:'Delete Item',context:'delete'},e=>{
                      if(e){
