@@ -4,6 +4,7 @@ use App\Http\Controllers\CampusController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\ProgramLevelController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\TermController;
 use Illuminate\Http\Request;
 //use App\Models\SMS;
 //use App\Models\Notifier;
@@ -86,6 +87,15 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/delete', [CampusController::class, 'delete']);
     });
     //end::CampusController
+
+    //begin::TermController
+    Route::prefix('term')->group(function () {
+        Route::post('/save', [TermController::class, 'save']);
+        Route::post('/list', [TermController::class, 'getList']);
+        Route::post('/details', [TermController::class, 'getDetails']);
+        Route::post('/delete', [TermController::class, 'delete']);
+    });
+    //end::TermController
 
     //begin::ProgramController
     Route::prefix('program')->group(function(){
