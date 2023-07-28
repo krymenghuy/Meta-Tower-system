@@ -5,34 +5,35 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\UM;
 use App\Models\JDV;
-use App\Models\PolicyDiscount;
-class PolicyDiscountController extends Controller
+use App\Models\OtherFee;
+class OtherFeeController extends Controller
 {
     
-    function getDiscountList_paginate(Request $req){
+    function getList(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
-        $p = new PolicyDiscount(null,$ss);
-        return JDV::raw($p->list_paginate($req->all()));
+        $p = new OtherFee(null,$ss);
+        return JDV::raw($p->getList());
     } 
 
-    function saveDiscount(Request $req){
+    function saveOtherFee(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
-        $p = new PolicyDiscount(null,$ss);
+        $p = new OtherFee(null,$ss);
         return JDV::raw($p->save($req->all()));
     } 
 
-    function deleteDiscount(Request $req){
+    function deleteOtherFee(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
-        $p = new PolicyDiscount($req->id,$ss);
+        $p = new OtherFee($req->id,$ss);
         return JDV::raw($p->delete());
     } 
 
     function getDetails(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
-        return JDV::result(PolicyDiscount::details($req->id));
+        $p = new OtherFee($req->id,$ss);
+        return JDV::result($p->getDetails());
     } 
 }

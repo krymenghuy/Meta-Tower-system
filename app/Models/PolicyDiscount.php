@@ -23,14 +23,22 @@ class PolicyDiscount //extends Model
         $id = $id?$id:$this->id;
         $v_rule = [
             //'pol_discount_id'=>'0|number|identity=1',
-            'price_list_id'=>'1|number|exists=price_list.id',
-            'pmt_option_id'=>'1|choice|1,2',
+            'price_list_id'=>'1|number',
+            'pmt_option_id'=>'1|choice|1,2,3',
             'discount'=>'1|number',
+            'session_id'=>'1|number|choice|1,2',
             'discount_type'=>'1|choice|percentage,amount'
         ];
+      
         $res = validateObject($arr,$v_rule,true,[],$ss->lang,false,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
+        $price_list_id = $inputs['price_list_id'];
+        $priceInfo = DB::table('price_list')->where('id',$price_list_id)->selectRaw('id,start_date,end_date')->get()->first();
+        if(!$priceInfo) return Dv::error('Price List ID is not valid');
+        $inputs['start_date'] = $priceInfo->start_date;
+        $inputs['end_date'] = $priceInfo->end_date;
+
         $pol_discount_id = $id;
         $pol_discount_id = saveData($ss,'policy_discounts',['id'=>$pol_discount_id],$inputs,[],1,true);
         return DV::depends($pol_discount_id,['id'=>$pol_discount_id],'Failed to save policy discount');
@@ -41,6 +49,15 @@ class PolicyDiscount //extends Model
         $id = $id?$id:$this->id;
         $x = DB::table('policy_discounts')->where('id',$id)->delete();
         return DV::depends($x,null,'Failed to delete policy discount');
+    }
+
+    static function details($id){
+        $cols = 'd.id,d.discount,d.discount_type,d.pmt_option_id,op.name as pmt_option,s.`name` as `session`, l.id as price_list_id,l.name as price_list_name,l.academic_year,formatDate(l.start_date) AS start_date, formatDate(l.end_date) AS end_date,d.create_user,formatDate(d.created_at) as created_at,d.auth_user,d.auth_date';
+        return DB::table('policy_discounts as d')->join('price_list as l','l.id','=','d.price_list_id')->join('pmt_options as op','op.id','=','d.pmt_option_id')->join('sessions as s','s.id','=','d.session_id')->where('d.id',$id)->selectRaw($cols)->get()->first();
+    }
+    function getDetails($id=null){
+        $id = $id?$id:$this->id;
+        return self::details(($id));
     }
 
     function list_paginate($arr=[],$ss=null){
@@ -62,8 +79,8 @@ class PolicyDiscount //extends Model
         if ($academic_year >0) $str_search = ($str_search? ' AND ':'').' d.academic_year =\''.$academic_year.'\'';
         if ($search_value >0) $str_search = ($str_search? ' AND ':'').' (d.discount ='.$search_value.')';
 
-        $cols = 'd.id,d.discount,d.discount_type,d.pmt_option_id,op.name as pmt_option, l.id as price_list_id,l.name as price_list_name,l.academic_year,formatDate(l.start_date) AS start_date, formatDate(l.end_date) AS end_date,d.create_user,formatDate(d.created_at) as created_at,l.auth_user,l.auth_date';
-        $query = DB::table('policy_discounts as d')->join('price_list as l','l.id','=','d.price_list_id')->join('pmt_options as op','op.id','=','d.pmt_option_id')->where('d.branch_id',$branch_id)->whereRaw($str_search)->selectRaw($cols);
+        $cols = 'd.id,d.discount,d.discount_type,d.pmt_option_id,op.name as pmt_option,s.`name` as `session`, l.id as price_list_id,l.name as price_list_name,l.academic_year,formatDate(l.start_date) AS start_date, formatDate(l.end_date) AS end_date,d.create_user,formatDate(d.created_at) as created_at,d.auth_user,d.auth_date';
+        $query = DB::table('policy_discounts as d')->join('price_list as l','l.id','=','d.price_list_id')->join('pmt_options as op','op.id','=','d.pmt_option_id')->join('sessions as s','s.id','=','d.session_id')->where('d.branch_id',$branch_id)->whereRaw($str_search)->selectRaw($cols);
 
         $count_query = clone $query;
         $count = $count_query->count('l.id');

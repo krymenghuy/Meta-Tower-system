@@ -13,10 +13,8 @@ class ProgramLevelController extends Controller
     function save(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
-
-        $row = new ProgramLevel($req->id,$ss);
-        $save = $row->save($req->all());
-        return JDV::raw($save);
+        $row = new programLevel($req->id,$ss);
+        return JDV::raw($row->save($req->all()));
     }
 
     function getList(Request $req){
@@ -24,7 +22,7 @@ class ProgramLevelController extends Controller
         if($ss->status_code !=200) return $ss;
 
         $row = new ProgramLevel();
-        $list = $row->list($ss);
+        $list = $row->list($req->program_id,$ss);
         return JDV::raw($list);
     }
 
@@ -34,15 +32,13 @@ class ProgramLevelController extends Controller
 
         $row = new ProgramLevel($req->id,$ss);
         $details = $row->details();
-        return JDV::raw($details);
+        return JDV::result($details);
     }
 
     function delete(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
-
         $row = new ProgramLevel($req->id,$ss);
-        $delete = $row->delete();
-        return JDV::raw($delete);
+        return JDV::raw($row->delete($req->id,$req->program_id));
     }
 }

@@ -76,8 +76,8 @@ var ProgramComponent = new function(){
             }
 
             html = [`<div class="rounded-3 p-3 bg-white">
-                <button class="btn-add-level btn btn-outline-primary btn-sm" type="button">
-                    <span class="trans-text" data-langprop="buttons.Add Level"></span>
+                <button data-programid="${id}" class="btn-add-level btn btn-sm btn-outline-primary btn-sm" type="button">
+                    <span class="trans-text">${LocaleManager.trans('Add Level','buttons')}</span>
                 </button>
             </div>
             <div class="table-responsive p-2">
@@ -92,85 +92,77 @@ var ProgramComponent = new function(){
 
             html = [html,`</table></div>`].join('');
             div_wrapper.html(html);
-            mThis.renderProgramLevels(div_wrapper.find('table.tbl_pgm_level'), data);
+
+            let tbody = div_wrapper.find('table.tbl_pgm_level>tbody');
+
+            //Set Click handler for "Add Level" button
+                div_wrapper.find('.btn-add-level').on('click',function(e){
+                    e.preventDefault();
+                    let prog_id = $(this).data('programid');
+                    let op = {
+                        'id': null,
+                        'program_id':prog_id,
+                        'onClose': (levels) => {
+                            mThis.renderProgramLevels(tbody,levels);
+                        }
+                    };
+                    ProgramLevelDialog.show(op);
+                });
+
+            mThis.renderProgramLevels(tbody, data);
         });
     }
 
-    this.controlProgramLevel = (tbody) => {
-        tbody.on('click','.btn-pgm-detail-modify',function(){
+    //Set Click Action handlers
+    this.setActionHandlers = (tbody) => {
+        tbody.on('click','.btn-pgm-detail-modify',function(e){
             e.preventDefault();
+            let prog_id = $(this).data('programid');
             let op = {
                 'id': $(this).data('id'),
-                'onClose': () => {
-                    callback && callback();
+                'program_id':prog_id,
+                'onClose': (levels) => {
+                     mThis.renderProgramLevels(tbody,levels);
                 }
             };
             ProgramLevelDialog.show(op);
         });
 
-        tbody.on('click','.btn-pgm-detail-delete',function(){
-            e.preventDefault();
-            let op = {
-                'id': $(this).data('id')
-            };
-            cv_interact.confirm('Delete this program level?',{title: 'Delete Program Level', context: 'delete'},(e) => {
-                if(e){
-                    window.vsapi.call(`${main_view.base_url}/`,op,null).then(res => {
-                        if(res.status_code === 200){
-                            callback && callback();
-                        }
-                        else{
-                            cv_interact.error(res.error_message);
-                        }
-                    });
-                }
-            });
-        });
-
-        tbody.find('.btn-add-level').off('click').on('click',function(e){
-            e.preventDefault();
-            let op = {
-                'id': 0,
-                'onClose': (data) => {
-                    mThis.renderProgramLevels(tbody.closest('table',data));
-                }
-            };
-            ProgramLevelDialog.show(op);
-        });
-
+        // tbody.on('click','.btn-pgm-detail-delete',function(e){
+        //     e.preventDefault();
+     
+        // });
+ 
         tbody.on('click','a.btn-pgm-detail-delete',function(e){
             e.preventDefault();
-            let op = {
-                'id': $(this).data('id')
-            };
-            cv_interact.confirm('Delete this program level?',{title: 'Delete Program Level', context: 'delete'},(e) => {
+            let x = $(this);
+            let prog_id = x.data('programid');
+            let p = {'program_id':prog_id,'id':x.data('id')};
+            cv_interact.confirm('Delete this level?',{title: 'Delete Level', context: 'delete'},e => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/`,op,null).then(res => {
+                    window.vsapi.call(`${main_view.base_url}/api/program-level/delete`,p,null,false).then(res => {
                         if(res.status_code === 200){
-                            mThis.renderProgramLevels(tbody.closest('table',res.data.levels));
+                            mThis.renderProgramLevels(tbody,res.data.levels)
                         }
-                        else{
-                            cv_interact.error(res.error_message);
-                        }
+                        else cv_interact.error(res.error_message); 
                     });
                 }
             });
         });
     }
 
-    this.renderProgramLevels = (tbl, data) => {
-        let tbody = tbl.find('tbody');
+    this.renderProgramLevels = (tbody, data) => {
         let html = null;
-
+        if(!data) data = [];
         data.map(level => {
             html = [html,`<tr>
                 <td>${level.name}</td>
                 <td>
                     <div class="d-flex gap-2">
-                        <a href="javascript:void(0)" class="btn-pgm-detail-modify" data-id="${level.id}">
+                        <a href="javascript:void(0)" class="btn-pgm-detail-modify" data-programid ="${level.program_id}" data-id="${level.id}">
                             <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
                         </a>
-                        <a href="javascript:void(0)" class="btn-pgm-detail-delete" data-id="${level.id}">
+                        <a href="javascript:void(0)" class="btn-pgm-detail-delete" data-programid ="${level.program_id}" data-id="${level.id}">
                             <i class="fa-regular fa-trash-can text-danger fs-5"></i>
                         </a>
                     </div>
@@ -178,8 +170,7 @@ var ProgramComponent = new function(){
             </tr>`].join('');
         });
         tbody.html(html);
-        mThis.controlProgramLevel(tbody);
-        //LocaleManager.translateZone(`${tr_id}`);
+        mThis.setActionHandlers(tbody);
     }
 
     this.displayProgram = (onFinish = null) => {
@@ -277,7 +268,7 @@ let ProgramDialog = new function(){
         window.vsapi.call(`${main_view.base_url}/api/program/save`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
-                if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
+                if(typeof mThis.options.onClose === 'function') mThis.options.onClose(res.data.levels);
             }
             else{
                 cv_interact.error(res.error_message);
@@ -287,7 +278,9 @@ let ProgramDialog = new function(){
 
     this.getDataForm = () => {
         let p = {
-            'id': mThis.options.id
+            'id': mThis.options.id,
+            //program_id is used to query "levels" as a response back
+            'program_id':mThis.options.program_id
         };
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
@@ -338,14 +331,30 @@ let ProgramDialog = new function(){
 let ProgramLevelDialog = new function(){
     let mThis = this;
     this.self = $('#dlg_detail_pgm_');
+    this.btnSave = this.self.find('#dlg_pgm_detail_btn_save');
+    //this.elLevel = this.self.find('#_level_name');
+
     this.options = {};
 
     this.elTitle = mThis.self.find('.modal-title');
+    
+    this.btnSave.on('click',function(){
+       let p =mThis.getDataForm();
+
+       vsapi.call(`${main_view.base_url}/api/program-level/save`,p,null,false).then(res=>{
+          if(res.status_code===200){
+             mThis.onClose(res.data.levels);
+             mThis.self.modal('hide');
+          }else cv_interact.error(res.error_message);
+       });
+    });
 
     this.getDataForm = () => {
         let p = {
-            'id': mThis.options.id
+            'id': mThis.options.id,
+            'program_id':mThis.options.program_id
         };
+
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -366,6 +375,7 @@ let ProgramLevelDialog = new function(){
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;
+        mThis.onClose = options.onClose;
 
         if(options.id > 0){
             mThis.elTitle.text(LocaleManager.trans('Modify','titles'));

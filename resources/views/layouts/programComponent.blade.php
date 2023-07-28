@@ -44,7 +44,7 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label for="name" class="form-label trans-text" data-langprop="titles.Name"></label>
-                    <input type="text" class="form-control data-input" data-field="name"/>
+                    <input type="text" class="form-control data-input" id="_level_name" data-field="name"/>
                 </div>
             </div>
             <div class="modal-footer">
