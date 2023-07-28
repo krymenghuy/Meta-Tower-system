@@ -457,3 +457,8 @@ li.kt-menu__section {
     font-size:1rem;
     color:#0E75D9 !important;
 }
+
+.expandable-row-container{
+    border:1px solid #0e74d96d;
+    border-radius: var(--bs-border-radius-lg);
+}
