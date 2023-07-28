@@ -56,6 +56,11 @@ class Program // extends Model
         return DV::result($row);
     }
 
+    static function getLevelByProgram($id,$ss){
+        $rows = DB::table('program_levels')->where('program_id',$id)->selectRaw('name,program_id')->get();
+        return DV::result($rows);
+    }
+
     function delete($id=null,$ss=null){
         $ss = $ss?$ss:$this->user_info;
         $id = $id?$id:$this->id;
