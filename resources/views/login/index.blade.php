@@ -14,7 +14,6 @@
     </head>
     <body>
         <div class="vs-container">
-            <img class="img-background" src="{{ asset('assets/images/logo/background.png') }}" />
             <div class="vs-contain-imgFront-form">
                 <div class="sub-vs-contain-imgFront-form">
                     <div class="form-size">
@@ -28,7 +27,10 @@
                                 method="POST">
                                 {{ @csrf_field() }}
                                 <span style="color:red;font-size:1em">
-                                    <?php if(session()->has('login_error')) echo session('login_error');?>
+                                    <?php
+                                        if(session()->has('login_error'))
+                                            echo session('login_error');
+                                    ?>
                                 </span>
                                 <div class="vs-form-group">
                                     <label for="username" class="vs-form-label">User name</label>
@@ -45,6 +47,9 @@
                             </form>
                         </div>
                     </div>
+                </div>
+                <div class="sub-vs-contain-imgBack-from">
+                    <img class="img-background" src="{{ asset('assets/images/logo/background.png') }}" />
                 </div>
             </div>
         </div>
