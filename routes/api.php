@@ -1,9 +1,13 @@
 <?php
 
+use App\Http\Controllers\CampusController;
+use App\Http\Controllers\ProgramController;
+use App\Http\Controllers\ProgramLevelController;
+use App\Http\Controllers\StudentController;
 use Illuminate\Http\Request;
 //use App\Models\SMS;
 //use App\Models\Notifier;
- 
+
 use Illuminate\Support\Facades\Route;
 //use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\PersonController;
@@ -22,7 +26,9 @@ use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\WebReportController;
 //use App\Http\Controllers\NotificationController;
 
+
 use App\Http\Controllers\PriceListController;
+
 use App\Http\Controllers\Invoice\InvoiceController;
 use App\Http\Controllers\Bill\VendorController;
 
@@ -30,7 +36,7 @@ use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ExchangeRateController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientHistoryController;
- 
+
 use App\Http\Controllers\EmployeeController;
 //use App\Models\PublicStorage;
 //use App\Models\SystemSetting;
@@ -52,7 +58,7 @@ use App\Http\Controllers\EmployeeController;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
- 
+
 Route::post('auth/login', [LoginController::class, 'apiLogin']);
 
 // Route::get('env/20230120AZ99/vars',function(){
@@ -60,12 +66,59 @@ Route::post('auth/login', [LoginController::class, 'apiLogin']);
 //        "pusher_app_key"=>Illuminate\Support\Facades\Config::get('app.pusher_app_key'),
 //        "cookie_name"=>Illuminate\Support\Facades\Config::get('app.cookie_name'),
 //     ];
-//     return response()->json($vars);   
+//     return response()->json($vars);
 // }); //->middleware('auth');
 
 // Rate Limiting for a whole group of routes= > allow 200 requests per 1 minute
 Route::group(['middleware' => 'throttle:200,1'], function () {
-    //begin:: AppointmentController 
+
+    //begin::StudentController
+    Route::prefix('student')->group(function(){
+        Route::post('/registration',[StudentController::class,'studentRegistration']);
+    });
+    //end::StudentController
+
+    //begin::CampusController
+    Route::prefix('campus')->group(function(){
+        Route::post('/save',[CampusController::class,'save']);
+        Route::post('/list',[CampusController::class,'getList']);
+        Route::post('/details',[CampusController::class,'getDetails']);
+        Route::post('/delete',[CampusController::class,'delete']);
+    });
+    //end::CampusController
+
+    //begin::ProgramController
+    Route::prefix('program')->group(function(){
+        Route::post('/save',[ProgramController::class,'save']);
+        Route::post('/list',[ProgramController::class,'getList']);
+        Route::post('/details',[ProgramController::class,'getDetails']);
+        Route::post('/delete',[ProgramController::class,'delete']);
+    });
+    //end::ProgramController
+
+
+    //begin::ProgramLevelController
+    Route::prefix('program-level')->group(function(){
+        Route::post('/save',[ProgramLevelController::class,'save']);
+        Route::post('/list',[ProgramLevelController::class,'getList']);
+        Route::post('/details',[ProgramLevelController::class,'getDetails']);
+        Route::post('/delete',[ProgramLevelController::class,'delete']);
+    });
+    //end::ProgramController
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //begin:: AppointmentController
 
     Route::post('test', [AppointmentController::class, 'getTest']);
 
@@ -90,7 +143,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
      Route::post('consult/history/followup', [ConsultationController::class, 'getHistory_followup']);
     //end::consult-history
 
-    //begin::ConsultationController 
+    //begin::ConsultationController
     Route::post('consultation/save', [ConsultationController::class, 'saveConsultationData']);
     Route::post('consultation/delete', [ConsultationController::class, 'deleteConsultationData']);
     Route::post('consultation/details', [ConsultationController::class, 'getConsultationData']);
@@ -181,7 +234,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //End::ServicePlanController
 
     //begin::ServiceTrackController
-    
+
        Route::post('serive-track/form-options', [ServiceTrackController::class, 'getFormOptions']);
        Route::post('service-track/details', [ServiceTrackController::class, 'getTrackDetails']);
        Route::post('service-track/list', [ServiceTrackController::class, 'getServiceTracks']);
@@ -190,7 +243,6 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
        Route::post('service-track/info', [ServiceTrackController::class, 'getTrackDetails']);
     //End::ServiceTrackController
  
-
     //begin::VendorController
     Route::post('vendor/save', [VendorController::class, 'saveVendor']);
     Route::post('vendor/delete', [VendorController::class, 'deleteVendor']);
@@ -230,7 +282,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('invoice-payment/delete', [InvoiceController::class, 'deletePayment']);
 
     //end::InvoiceController
- 
+
     //begin::EmployeeController
     Route::post('employee/details', [EmployeeController::class, 'getEmployeeDetails']);
     Route::post('employee/list', [EmployeeController::class, 'getEmployeeList']);
@@ -244,7 +296,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
     Route::post('Bill/settings/save-vendor-type', [VendorController::class, 'saveVendorType']);
     Route::post('Bill/settings/delete-vendor-type', [VendorController::class, 'saveVendorType']);
-    
+
     // //begin::InventorySettingsController =>  Inventory Settings.
     // Route::post('inventory/settings/options-group', [InventorySettingsController::class, 'getComboItems_group']);
     // Route::post('inventory/settings/item-form-options', [InventorySettingsController::class, 'getItemFormOptions']);
@@ -276,7 +328,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     // // Route::post('inventory/settings/brand/list', [InventorySettingsController::class, 'getBrandList']);
     // // Route::post('inventory/settings/brand/save', [InventorySettingsController::class, 'saveBrand']);
 
-    // // *** inventory/group/save 
+    // // *** inventory/group/save
     // Route::post('inventory/settings/brand/save', function (Request $req) {
     //     $res = Brand::createOrUpdate($req);
     //     return response()->json($res);
@@ -328,10 +380,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('apply-rate', [ExchangeRateController::class, 'applyExchangeRate']);
     });
     //begin::Exchange Rate APIs
-
-    
-     
-    //begin:: PromotionController 
+   
     Route::post('getPromotionList', [PromotionController::class, 'getPromotionList']);
     Route::post('savePromotion', [PromotionController::class, 'savePromotion']);
     Route::post('getPromotionInfo', [PromotionController::class, 'getPromotionInfo']);
@@ -348,7 +397,7 @@ Route::post('test/test-api', function () {
     $data = "This is result of api";
     return response()->json($data);
 });
- 
+
 //begin::SystemSettingController
 Route::post('getComboItems_price_list', [SystemSettingController::class, 'getComboItems_price_list']);
 
@@ -364,7 +413,7 @@ Route::post('getComboItems_price_list', [SystemSettingController::class, 'getCom
     // Route::post('getBrandImages_driver', [CompanyProfileController::class, 'getBrandImages_driver']);
     // Route::post('getBrandImages_sender', [CompanyProfileController::class, 'getBrandImages_sender']);
 //end::CompanyProfileController
- 
+
 
 // //begin::MobileAppSettingsController
 // Route::post('getMobileBrandImages', [MobileAppSettingsController::class, 'getMobileBrandImages']);
@@ -429,5 +478,5 @@ Route::post('settings/report-filter-options', [GeneralSettingsController::class,
 // Route::post('settings/program-details', [GeneralSettingsController::class, 'getProgramDetails']);
 // Route::post('settings/program-options', [GeneralSettingsController::class, 'getProgramOptions']);
 // Route::post('settings/occupations', [GeneralSettingsController::class, 'getOccupations']);
- 
+
 //end::API routes for external calls
