@@ -41,19 +41,18 @@ var PolicyDiscountComponent = new function(){
     },
     {
         title: "Created By",
-        data: "create_user"
-    },
-    {
-        title: "Create Date",
-        data: "created_at"
+        data: (data, a, b) => {
+            return [`<p class="pb-0 mb-0">${data.create_user}</p>
+            <p class="pb-0 mb-0">${data.created_at}</p>`].join('');
+        }
     },
     {
         title: "Authorized By",
-        data: "auth_user"
-    },
-    {
-        title: "Authorize Date",
-        data: "auth_date"
+        data: (data, a, b) => {
+            let user = data.auth_user ? data.auth_user : '';
+            return [`<p class="pb-0 mb-0">${user}</p>
+            <p class="pb-0 mb-0">${data.auth_date}</p>`].join('');
+        }
     },
     {
         title: "Action",
@@ -84,10 +83,8 @@ var PolicyDiscountComponent = new function(){
             e.preventDefault();
             let op = {
                 'id': 0,
-                'onClose': (e) => {
-                    if(e){
-                        mThis.itemView.showPage({'search_value': mThis.elSearch.val()});
-                    }
+                'onClose': () => {
+                    mThis.itemView.showPage({'search_value': mThis.elSearch.val()});
                 }
             };
             PolicyDiscountOutsideDialog.show(op);
@@ -99,10 +96,8 @@ var PolicyDiscountComponent = new function(){
             e.preventDefault();
             let op = {
                 'id': $(this).data('id'),
-                'onClose': (e) => {
-                    if(e){
-                        mThis.itemView.showPage({'search_value': mThis.elSearch.val()});
-                    }
+                'onClose': () => {
+                    mThis.itemView.showPage({'search_value': mThis.elSearch.val()});
                 }
             };
             PolicyDiscountOutsideDialog.show(op);
@@ -115,7 +110,7 @@ var PolicyDiscountComponent = new function(){
             };
             cv_interact.confirm('Delete this policy?',{title: 'Delete Policy', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/`,op,null).then(res => {
+                    window.vsapi.call(`${main_view.base_url}/api/pol-discount/delete`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.itemView.showPage({'search_value': mThis.elSearch.val()});
                         }
@@ -149,7 +144,10 @@ let PolicyDiscountOutsideDialog = new function(){
     this.options = {};
 
     this.elTitle = mThis.self.find('.modal-title');
-    this.btnSave = mThis.self.find('.btn--save');
+    this.btnSave = mThis.self.find('#dlg_pld_btn_save');
+    this.elPriceList = mThis.self.find('#dlg_pld_price_list');
+    this.elPmtOption = mThis.self.find('#dlg_pld_pmt_option');
+    this.elSession = mThis.self.find('#dlg_pld_session');
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
@@ -166,8 +164,9 @@ let PolicyDiscountOutsideDialog = new function(){
     });
 
     this.getDataForm = () => {
-        let id = mThis.options.id ? mThis.options.id : 0;
-        let p = {'id': id};
+        let p = {
+            'id': mThis.options.id
+        };
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -181,18 +180,33 @@ let PolicyDiscountOutsideDialog = new function(){
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
-            el.val(d[f]);
+            if(el.is('select'))
+                el.val(d[f]).trigger('change');
+            else
+                el.val(d[f]);
         });
     }
 
-    this.loadDataEdit = (id, onFinish) => {
-        let op = {'id': id};
-        window.vsapi.call(`${main_view.base_url}/api/`,op,null).then(res => {
+    this.loadDataEdit = (options) => {
+        window.vsapi.call(`${main_view.base_url}/api/pol-discount/details`,{'id': options.id},null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = StringSanitizer.sanitizeObject(res.data);
             }
-            onFinish && onFinish(data);
+            mThis.setDataForm(data);
+        });
+    }
+
+    this.prepareFormOptions = (onFinish = null) => {
+        window.vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
+            let d = {};
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            VSUtil.setComboItems(mThis.elPriceList,d.price_list,'id','name',null,null,null);
+            VSUtil.setComboItems(mThis.elPmtOption,d.pmt_options,'id','name',null,null,null);
+            VSUtil.setComboItems(mThis.elSession,d.sessions,'id','name',null,null,null);
+            if(typeof onFinish === 'function') onFinish();
         });
     }
     
@@ -200,21 +214,21 @@ let PolicyDiscountOutsideDialog = new function(){
         if(!options) options = {};
         mThis.options = options;
 
-        if(options.id > 0){
-            mThis.elTitle.text(LocaleManager.trans('Edit Discount Policy','titles'));
-            mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please check discount type before editing','titles'));
-            mThis.loadDataEdit(options.id, (data) => {
-                mThis.setDataForm(data);
+        mThis.prepareFormOptions(() => {
+            if(options.id > 0){
+                mThis.elTitle.text(LocaleManager.trans('Edit Discount Policy','titles'));
+                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please check discount type before editing','titles'));
+                mThis.loadDataEdit(options);
+            }
+            else{
+                mThis.elTitle.text(LocaleManager.trans('Add Discount Policy','titles'));
+                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input discount type details','titles'));
+                mThis.setDataForm(null);
+            }
+    
+            mThis.self.modal({
+                backdrop: 'static'
             });
-        }
-        else{
-            mThis.elTitle.text(LocaleManager.trans('Add Discount Policy','titles'));
-            mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input discount type details','titles'));
-            mThis.setDataForm(null);
-        }
-
-        mThis.self.modal({
-            backdrop: 'static'
         });
     }
 }

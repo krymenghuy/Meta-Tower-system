@@ -10,9 +10,7 @@
             <i class="fa-solid fa-caret-down ps-2"></i>
         </button>
     </div>
-    <div class="table-responsive mt-3 p-3">
-        <table class="table tbl-ttf"></table>
-    </div>
+    <div id="_ttf_tbl" class="table-responsive mt-3 p-3 bg-white border rounded-3"></div>
 </div>
 
 <div id="dlg__ttf" class="modal fade" tabindex="-1" aria-labelledby="dlg__ttf_title" aria-hidden="true">
@@ -27,8 +25,16 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="name" class="form-label trans-text" data-langprop="titles.Name"></label>
-                    <input type="text" class="form-control data-input" data-field="name"/>
+                    <label for="program_id" class="form-label trans-text" data-langprop="titles.Program"></label>
+                    <div class="width-select-dialog">
+                        <select id="dlg_ttf_program" class="modal-select2 data-input" data-field="program_id"></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="price_list_id" class="form-label trans-text" data-langprop="titles.Name"></label>
+                    <div class="width-select-dialog">
+                        <select id="dlg_ttf_price_list" class="modal-select2 data-input" data-field="list_id"></select>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="start_date" class="form-label trans-text" data-langprop="titles.Start Date"></label>
@@ -42,12 +48,16 @@
                     <label for="academic_year" class="form-label trans-text" data-langprop="titles.Academic Year"></label>
                     <input type="text" class="form-control data-input" data-field="academic_year"/>
                 </div>
+                <div class="form-group">
+                    <label for="description" class="form-label trans-text" data-langprop="titles.Description"></label>
+                    <textarea class="form-control data-input" data-field="description"></textarea>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-sm btn-secondary" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button class="btn btn-sm btn-primary btn--save" type="button">
+                <button id="dlg_ttf_btn_save" class="btn btn-sm btn-primary" type="button">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>
