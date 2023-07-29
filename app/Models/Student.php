@@ -33,6 +33,7 @@ class Student //extends Model
             'discount' => '0|number|default=0',
             'tuition_paid' => '0|number|default=0',
             'parent_info' => '0|array',
+            'pmt_option_id' => '0|number|exists=pmt_options.id|default=2'
         ];
         $branch_id = $ss->branch_id;
         $email_char = ['@','.'];
@@ -118,6 +119,11 @@ class Student //extends Model
         return DV::depends($newID,['action'=>'Saved','test'=>$p_info]);
     }
 
+
+    static function updateStudent(){
+
+    }
+
     static function checkExistsLoginName($info){
         foreach ($info as $parentInfo) {
             // Check if the record with the unique identifier exists in the database
@@ -130,7 +136,6 @@ class Student //extends Model
     }
 
     static function saveStudentParent($parent_info,$child_id,$ss){
-
         // $student_code = DB::table('students')->where('id',$child_id)->pluck('id');
         $um = new UM();
         $um_ = null;
@@ -186,7 +191,6 @@ class Student //extends Model
             }
         }
         return $um_;
-
     }
 
     static function setStudentCode($ss,$newID){
