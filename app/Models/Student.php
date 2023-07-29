@@ -26,15 +26,15 @@ class Student //extends Model
             'shift_id' => '0|number|exists=shifts.id',
             'term_id' => '0|number|exists=terms.id',
             'pmt_mode' => '0|number|default=1',
-            'academic_year' => '0|string|1,50',
-            'tuition_start_date'=> '1|string|default=2/2/2',
-            'tuition_end_date'=> '1|string|default=2/2/2',
+            'academic_year_id' => '1|number|exists=academic_years.id',
+            'status_id' => '1|number|exists=status.id',
             'tuition' => '0|number|default=0',
             'tuition_due' => '0|number|default=0',
             'discount' => '0|number|default=0',
             'tuition_paid' => '0|number|default=0',
             'parent_info' => '0|array',
-            'pmt_option_id' => '0|number|exists=pmt_options.id|default=2'
+            'pmt_option_id' => '0|number|exists=pmt_options.id|default=2',
+            'pmt_status' => '0|string|default=unpaid'
         ];
         $branch_id = $ss->branch_id;
         $email_char = ['@','.'];
@@ -56,21 +56,28 @@ class Student //extends Model
         $shift_id = $inputs['shift_id'];
         $term_id = $inputs['term_id'];
         $pmt_mode = $inputs['pmt_mode'];
-        $tuition_start_date = $inputs['tuition_start_date'];
-        $tuition_end_date = $inputs['tuition_end_date'];
+        $term_id = $inputs['term_id'];
+        $pmt_option_id = $inputs['pmt_option_id'];
+        $pmt_status = $inputs['pmt_status'];
+        // $tuition_start_date = $inputs['tuition_start_date'];
+        $tuition_end_date = getNowTime();
         $tuition = $inputs['tuition'];
         $tuition_due = $inputs['tuition_due'];
         $discount = $inputs['discount'];
         $tuition_paid = $inputs['tuition_paid'];
-        $academic_year = $inputs['academic_year'];
+        $academic_year = $inputs['academic_year_id'];
+        $statusID = $inputs['status_id'];
 
+        unset($inputs['status_id']);
         unset($inputs['tuition_start_date']);
         unset($inputs['tuition_end_date']);
         unset($inputs['tuition']);
         unset($inputs['tuition_due']);
         unset($inputs['discount']);
         unset($inputs['tuition_paid']);
-        unset($inputs['academic_year']);
+        unset($inputs['academic_year_id']);
+        unset($inputs['pmt_option_id']);
+        unset($inputs['pmt_status']);
 
         $is_create = (!$id || $id==0);
 
@@ -93,19 +100,28 @@ class Student //extends Model
                 'session_id' => $session_id,
                 'campus_id' => $campus_id,
                 'shift_id' => $shift_id,
-                'term_id' => $term_id,
                 'pmt_mode' => $pmt_mode,
-                'tuition_start_date' => $tuition_start_date,
-                'tuition_end_date' => $tuition_end_date,
-                'tuition' => $tuition,
-                'tuition_due' => $tuition_due,
-                'discount'=> $discount,
-                'tuition_paid' => $tuition_paid,
-                'academic_year' => $academic_year,
+                'tuition_end_date' => self::getFutureTime(7),
+                'academic_year_id' => $academic_year,
+                'status_id' => $statusID
+                  // 'tuition' => $tuition,
+                // 'tuition_due' => $tuition_due,
+                // 'discount'=> $discount,
+                // 'tuition_paid' => $tuition_paid,
+                // term_id => $term_id
             ];
             $existsEnrollment = DB::table('enrollments')->where('student_id',$id)->selectRaw('school_id')->first();
-
             saveData($ss,'enrollments',['student_id'=>$existsEnrollment?$newID:null],$en_student,[],1);
+
+            $en_payment = [
+                'tuition' => $tuition,
+                'tuition_due' => $tuition_due,
+                'pmt_status'=> $pmt_status,
+                'tuition_paid' => $tuition_paid,
+                'term_id' => $term_id
+            ];
+
+            $saveEnrPayment = saveData($ss,'enrollment_payments',[],$en_payment,[],1);
 
             if($prev_school){
                 $save_prev_school = saveData($ss,'school',['id' =>$existsEnrollment?$existsEnrollment->school_id:null],['name' => $prev_school],[],1);
@@ -117,7 +133,7 @@ class Student //extends Model
             }
             $p_info = self::saveStudentParent($parent_info,$newID,$ss);
         }
-        return DV::depends($newID,['action'=>'Saved','test'=>$p_info]);
+        return DV::depends($newID,['action'=>'Saved','en_payment'=>$saveEnrPayment]);
     }
 
 
@@ -247,5 +263,18 @@ class Student //extends Model
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
+
+    static function getFutureTime($daysToAdd) {
+        // Get the current timestamp (UNIX timestamp)
+        $currentTimestamp = time();
+
+        // Calculate the future timestamp by adding the specified number of days
+        $futureTimestamp = $currentTimestamp + ($daysToAdd * 24 * 60 * 60); // Convert days to seconds
+
+        // Format the future timestamp as a human-readable date
+        $futureDate = date('Y-m-d H:i:s', $futureTimestamp);
+
+        return $futureDate;
     }
 }
