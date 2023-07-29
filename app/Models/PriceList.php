@@ -124,7 +124,7 @@ class PriceList //extends Model
         $str_moreWhere ="1=1";
         $str_search="1=1";
 
-        $cols = 'l.id, l.name, l.version,l.description,l.create_user,formatDate(l.created_at) as created_at';
+        $cols = 'l.id, l.name,l.academic_year, formatDate(l.start_date) as start_date,formatDate(l.end_date) as end_date,l.description,l.create_user,formatDate(l.created_at) as created_at, NULL AS auth_user, NULL AS auth_date';
         $query = DB::table('price_list as l')->where('l.branch_id',$branch_id)->whereRaw($str_moreWhere)->whereRaw($str_search)->selectRaw($cols);
 
         $count_query = clone $query;

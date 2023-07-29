@@ -462,3 +462,14 @@ li.kt-menu__section {
     border:1px solid #0e74d96d;
     border-radius: var(--bs-border-radius-lg);
 }
+
+.width-select-dialog{
+    width:100%;
+}
+
+.width-select-dialog .select2{
+    width:100%;
+    height: calc(1.5em + 1.3rem + 2px);
+    font-size:1.1rem;
+    font-weight: semibold;
+}

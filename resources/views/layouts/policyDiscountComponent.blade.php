@@ -10,7 +10,7 @@
             <i class="fa-solid fa-caret-down ps-2"></i>
         </button>
     </div>
-    <div id="tbl_pld" class="table-responsive mt-3 p-3 border rounded-3"></div>
+    <div id="tbl_pld" class="table-responsive mt-3 p-3 border rounded-3 bg-white"></div>
 </div>
 
 <div id="dlg__pld" class="modal fade" tabindex="-1" aria-labelledby="dlg__pld_title" aria-hidden="true">
@@ -25,31 +25,37 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="name" class="form-label trans-text" data-langprop="titles.Name"></label>
-                    <input type="text" class="form-control data-input" data-field="name"/>
+                    <label for="price_list_id" class="form-label trans-text" data-langprop="titles.Name"></label>
+                    <div class="width-select-dialog">
+                        <select id="dlg_pld_price_list" class="modal-select2 data-input" data-field="price_list_id"></select>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="academic_period" class="form-label trans-text" data-langprop="titles.Academic Period"></label>
-                    <input type="text" class="form-control data-input" data-field="academic_period"/>
+                    <label for="pmt_option_id" class="form-label trans-text" data-langprop="titles.Payment Option"></label>
+                    <div class="width-select-dialog">
+                        <select id="dlg_pld_pmt_option" class="modal-select2 data-input" data-field="pmt_option_id"></select>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="start_date" class="form-label trans-text" data-langprop="titles.Start Date"></label>
-                    <input data-select="datepicker" class="form-control data-input" data-field="start_date"/>
+                    <label for="session_id" class="form-label trans-text" data-langprop="titles.Session"></label>
+                    <div class="width-select-dialog">
+                        <select id="dlg_pld_session" class="modal-select2 data-input" data-field="session_id"></select>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="end_date" class="form-label trans-text" data-langprop="titles.End Date"></label>
-                    <input data-select="datepicker" class="form-control data-input" data-field="end_date"/>
+                    <label for="discount" class="form-label trans-text" data-langprop="titles.Discount"></label>
+                    <input type="number" class="form-control data-input" data-field="discount"/>
                 </div>
                 <div class="form-group">
-                    <label for="academic_year" class="form-label trans-text" data-langprop="titles.Academic Year"></label>
-                    <input type="text" class="form-control data-input" data-field="academic_year"/>
+                    <label for="discount_type" class="form-label trans-text" data-langprop="titles.Discount Type"></label>
+                    <input type="text" class="form-control data-input" data-field="discount_type"/>
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-sm btn-secondary" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button class="btn btn-sm btn-primary btn--save" type="button">
+                <button id="dlg_pld_btn_save" class="btn btn-sm btn-primary" type="button">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>
