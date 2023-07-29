@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\CampusController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\ProgramLevelController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentGroupController;
 use App\Http\Controllers\TermController;
 use App\Http\Controllers\PriceListController;
 use App\Http\Controllers\PolicyDiscountController;
@@ -39,7 +41,7 @@ use App\Http\Controllers\Bill\VendorController;
 
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ExchangeRateController;
-  
+
 use App\Http\Controllers\EmployeeController;
 //use App\Models\PublicStorage;
 //use App\Models\SystemSetting;
@@ -75,6 +77,8 @@ Route::post('auth/login', [LoginController::class, 'apiLogin']);
 // Rate Limiting for a whole group of routes= > allow 200 requests per 1 minute
 Route::group(['middleware' => 'throttle:200,1'], function () {
 
+    Route::post('/form-option',[PolicyDiscountController::class,'select_options']);
+
     //begin::StudentController
     Route::prefix('student')->group(function () {
         Route::post('/registration', [StudentController::class, 'studentRegistration']);
@@ -89,6 +93,24 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/delete', [CampusController::class, 'delete']);
     });
     //end::CampusController
+
+    //begin::AcademicYearController
+    Route::prefix('academic-year')->group(function () {
+        Route::post('/save', [AcademicYearController::class, 'save']);
+        Route::post('/list', [AcademicYearController::class, 'getList']);
+        Route::post('/details', [AcademicYearController::class, 'getDetails']);
+        Route::post('/delete', [AcademicYearController::class, 'delete']);
+    });
+    //end::AcademicYearController
+
+    //begin::StudentGroupController
+    Route::prefix('student-group')->group(function () {
+        Route::post('/save', [StudentGroupController::class, 'save']);
+        Route::post('/list', [StudentGroupController::class, 'getList']);
+        Route::post('/details', [StudentGroupController::class, 'getDetails']);
+        Route::post('/delete', [StudentGroupController::class, 'delete']);
+    });
+    //end::StudentGroupController
 
     //begin::TermController
     Route::prefix('term')->group(function () {
@@ -363,7 +385,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
        // Route::post('pol-discount/items', [PolicyDiscountController::class, 'getDiscountItems']);
         // Route::post('pol-discount/save-item', [PolicyDiscountController::class, 'saveItem']);
         // Route::post('pol-discount/delete-item', [PolicyDiscountController::class, 'deleteItem']);
-    
+
     //End::PolicyDiscountController
 
       //begin::OtherFeeController
@@ -374,7 +396,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
       // Route::post('other-fee/items', [PolicyDiscountController::class, 'getDiscountItems']);
       // Route::post('other-fee/save-item', [PolicyDiscountController::class, 'saveItem']);
       // Route::post('other-fee/delete-item', [PolicyDiscountController::class, 'deleteItem']);
-  
+
   //End::OtherFeeController
 
     //begin::Currency APIs

@@ -29,7 +29,7 @@ class PolicyDiscount //extends Model
             'session_id'=>'1|number|choice|1,2',
             'discount_type'=>'1|choice|percentage,amount'
         ];
-      
+
         $res = validateObject($arr,$v_rule,true,[],$ss->lang,false,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
@@ -58,6 +58,16 @@ class PolicyDiscount //extends Model
     function getDetails($id=null){
         $id = $id?$id:$this->id;
         return self::details(($id));
+    }
+
+    static function select_options($ss){
+        $res = [
+            'price_list'=>Setting::price_list_options($ss),
+            'sessions' => Setting::session_options($ss),
+            'pmt_options' => Setting::pmt_options($ss)
+        ];
+        return $res;
+
     }
 
     function list_paginate($arr=[],$ss=null){
