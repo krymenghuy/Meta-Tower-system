@@ -27,7 +27,7 @@ class Program // extends Model
         $inputs = $res->values;
 
         $newID = saveData($ss,'programs',['id'=>$id],$inputs,[],1);
-        return DV::depends($newID,$id?'Updated':'Saved');
+        return DV::depends($newID,['action'=>$id?'Updated':'Saved','programs'=>self::list($ss)]);
     }
 
     function list($ss=null){
@@ -43,7 +43,7 @@ class Program // extends Model
             unset($row->created_at);
             unset($row->photo_file_name);
         }
-        return DV::result($rows);
+        return $rows;
     }
 
     function details($id=null,$ss=null){
@@ -53,13 +53,13 @@ class Program // extends Model
         $row = DB::table('programs as p')->selectRaw('p.id,p.department_id,p.name')
                 ->where('p.branch_id',$branch_id)
                 ->where('p.id',$id)->get()->first();
-        return DV::result($row);
+        return $row;
     }
 
     static function getLevelByProgram($d,$ss){
         $id = $d->id?$d->id:$d->program_id;
         $rows = DB::table('program_levels')->where('program_id',$id)->selectRaw('id,name,program_id')->get();
-        return DV::result($rows);
+        return $rows;
     }
 
     function delete($id=null,$ss=null){
@@ -68,6 +68,6 @@ class Program // extends Model
         $branch_id = $ss->branch_id;
 
         $row = DB::table('programs')->where('id',$id)->where('branch_id',$branch_id)->delete();
-        return DV::depends($row,'Program Deleted');
+        return DV::depends($row,['action'=>'Program Deleted','programs' => self::list($ss)]);
     }
 }
