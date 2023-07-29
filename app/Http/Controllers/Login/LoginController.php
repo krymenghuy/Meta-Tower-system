@@ -17,7 +17,7 @@ class LoginController extends Controller
     public function __construct(){
         $this->UMModel = new UM();
     }
-  
+
     function apiLogin(Request $request)
     {
 

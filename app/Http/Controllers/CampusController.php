@@ -23,7 +23,7 @@ class CampusController extends Controller
         if($ss->status_code !=200) return $ss;
 
         $list = Campus::list($ss);
-        return JDV::raw($list);
+        return JDV::result($list);
     }
 
     function getDetails(Request $req){
@@ -31,7 +31,7 @@ class CampusController extends Controller
         if($ss->status_code !=200) return $ss;
 
         $details = Campus::details($req->id,$ss);
-        return JDV::raw($details);
+        return JDV::result($details);
     }
 
     function delete(Request $req){

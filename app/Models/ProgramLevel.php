@@ -27,6 +27,7 @@ class ProgramLevel //extends Model
         $inputs = $res->values;
         $program_id = $inputs['program_id'];
         $newID = saveData($ss,'program_levels',['id'=>$id],$inputs,[],1);
+
         return DV::depends($newID,['action'=>$id?'Updated':'Saved','levels'=>$this->list($program_id,$ss)]);
     }
 
@@ -54,7 +55,7 @@ class ProgramLevel //extends Model
                 ->selectRaw('pl.id,pl.program_id,pl.name')
                 ->where('pl.branch_id',$branch_id)
                 ->where('pl.id',$id)->get()->first();
-        return DV::result($row);
+        return $row;
     }
 
     function delete($id=null,$program_id=null,$ss=null){
@@ -62,6 +63,8 @@ class ProgramLevel //extends Model
         $id = $id?$id:$this->id;
         $branch_id = $ss->branch_id;
         $row = DB::table('program_levels')->where('id',$id)->where('branch_id',$branch_id)->delete();
+
         return DV::depends($row,['levels'=>$this->list($program_id,$ss)]);
+
     }
 }

@@ -5,7 +5,7 @@
  use Carbon\Carbon;
  use App\Models\DV;
 
-  
+
 
  $mimeTypes = [
     'pdf'=>"application/pdf",
@@ -42,7 +42,7 @@ function getUniqueString($length)
 }
 
 function nonEmptyFields($d,$fields){
-   $aa =$d; 
+   $aa =$d;
    $result = (object)['error_message'=>null,'status'=>'OK'];
    foreach($fields as $f){
        $val = isset($d->{$f})?$d->{$f}:null;
@@ -50,20 +50,20 @@ function nonEmptyFields($d,$fields){
             $result->error_message = "Field `$f` is required";
             $result->status ='Error';
             return $result;
-        } 
+        }
    }
-   return $result; 
+   return $result;
 }
 
 
-      
 
 
 
-         
- 
 
-  
+
+
+
+
 function newOTP($length=6)
 {
     return join('', array_map(function($value) { return $value == 1 ? mt_rand(1, 9) : mt_rand(0, 9); }, range(1, $length)));
@@ -71,7 +71,7 @@ function newOTP($length=6)
 
 
 function getAuthCode($d){
-    
+
     if (!isset($d->decrypted)) $d->decrypted = 0;
   if(!isset($d->acc_tk_dms)) return null; //$d->access_token ='nI082mwubtCp0Tc92MRX9107tnvQfjiGd56pj8';
 
@@ -81,18 +81,18 @@ function getAuthCode($d){
             $decrypted_token = $encrypter->decrypt($d->acc_tk_dms,false); //FALSE => to avoid serialization issue in decryption
             if (strpos($decrypted_token,'|')>0) {
                 $parts = explode('|',$decrypted_token);
-                if(isset($parts[1])) 
+                if(isset($parts[1]))
                    $decrypted_token = $parts[1];
                 else return null;
-            }  
+            }
   } else $decrypted_token = $d->acc_tk_dms;  /** In case external API called from mobile app => the $d->acc_tk_dms is decrypted already by, for example, by $senderModel->getSenderInfoByToken($request) **/
-    
+
    if(session()->has('access_token')) {
           if (session('access_token') === $decrypted_token){
                $data =(object)[];
                $data->branch_id = session('branch_id',0);
                $data->user_id = session('user_id',0);
-               $data->official_id = session('official_id',0); 
+               $data->official_id = session('official_id',0);
                $data->login_name = session('login_name',0);
                $data->last_active_time = Carbon::now();
                return $data;
@@ -102,7 +102,7 @@ function getAuthCode($d){
   $rows = DB::table('um_sessions AS u')->join('um_user_roles AS ur','ur.user_id','=','u.user_id')->where('u.access_token',$decrypted_token)->selectRaw('ur.role_id,u.branch_id,u.user_id, u.login_name,u.last_active_time,u.login_name')->limit(1)->get();
   foreach($rows as $row) {
       return $row;
-  } 
+  }
   return null;
 }
 
@@ -116,18 +116,18 @@ function getSessionInfo($d){
             $decrypted_token = $encrypter->decrypt($d->acc_tk_dms,false); //FALSE => to avoid serialization issue in decryption
             if (strpos($decrypted_token,'|')>0) {
                 $parts = explode('|',$decrypted_token);
-                if(isset($parts[1])) 
+                if(isset($parts[1]))
                    $decrypted_token = $parts[1];
                 else return null;
-            }  
+            }
   } else $decrypted_token = $d->acc_tk_dms;  /** In case external API called from mobile app => the $d->acc_tk_dms is decrypted already by, for example, by $senderModel->getSenderInfoByToken($request) **/
-    
+
    if(session()->has('access_token')) {
           if (session('access_token') === $decrypted_token){
                $data =(object)[];
                $data->branch_id = session('branch_id',0);
                $data->user_id = session('user_id',0);
-               $data->official_id = session('official_id',0); 
+               $data->official_id = session('official_id',0);
                $data->login_name = session('login_name',0);
                $data->last_active_time = Carbon::now();
                return $data;
@@ -137,7 +137,7 @@ function getSessionInfo($d){
   $rows = DB::table('um_sessions AS u')->join('um_user_roles AS ur','ur.user_id','=','u.user_id')->where('u.access_token',$decrypted_token)->selectRaw('ur.role_id,u.branch_id,u.user_id, u.login_name,u.last_active_time,u.login_name')->limit(1)->get();
   foreach($rows as $row) {
       return $row;
-  } 
+  }
   return null;
 }
 
@@ -150,10 +150,10 @@ function makeJsonResponse($data) {
         else return response()->json((object)['status'=>'Error','status_code'=>null,'error_message'=>'unexpected or invalid result']);
     } else return response()->json((object)['status'=>'OK','status_code'=>200,'data'=>$data]);
 }
- 
+
 function prn_allowed($prn_id,$module_id){
-   return UM::allowed($prn_id,$module_id); 
-} 
+   return UM::allowed($prn_id,$module_id);
+}
 
  function getLastDayOfMonth($mDate)
  {
@@ -163,10 +163,10 @@ function prn_allowed($prn_id,$module_id){
      $last_date =  $date->format('Y-m-d');
      return $last_date;
  }
- 
+
  function dateAdd($interval,$num=0, $date=null,$return_format ='Y-m-d'){
     $st = $num>= 0? "+$num days":"-$num days";
-    if($interval ==='day') 
+    if($interval ==='day')
       $st = $num>= 0? "+$num days":"-$num days";
     else if ($interval==='week')
       $st = $num>= 0? "+$num weeks":"-$num weeks";
@@ -195,35 +195,35 @@ function prn_allowed($prn_id,$module_id){
     $query_string = $encrypter->decrypt($query_string,false); //FALSE => to avoid serialization issue in decryption
     parse_str($query_string, $cs);
     foreach($cs as $name => $value) {
-        if ($sanitize === true || $sanitize === 1) 
+        if ($sanitize === true || $sanitize === 1)
           $cs[$name] = (is_string($value))? Sanitizer::sanitize($value,$allow_chars) : $value;
         else
-           $cs[$name] = $value;    
-     } 
-       
+           $cs[$name] = $value;
+     }
+
      $obj = (object)($cs); //Convert first layer props to object (NOT recursive casting, so if the array is nested, please process specific prop manually for better performance)
      return  $obj;
  }
 
 function createFile($file_type,$fileName, $fileContent){
     $file_type = trim(strtolower($file_type));
-     $result = (object)array('error'=>null,'filename'=>null); 
+     $result = (object)array('error'=>null,'filename'=>null);
       $dir = dirname($fileName);
       if (!file_exists($dir)) {
          mkdir($dir, 0755, true); //permission
       }
-     $img_types = ['jpg','png','jpeg','svg','pdf'];       
-         
-         
-    
+     $img_types = ['jpg','png','jpeg','svg','pdf'];
+
+
+
     # Decode the Base64 string, making sure that it contains only valid characters
      $bin = base64_decode($fileContent, true);
      $test = base64_encode($bin);
      if ($test != $fileContent) {
          $result->error= "File content is not valid. Base64 data is expected";
          return $result;
-     }			
-       
+     }
+
      # Perform a basic validation to make sure that the result is a valid PDF file
      # Be aware! The magic number (file signature) is not 100% reliable solution to validate PDF files
      # Moreover, if you get Base64 from an untrusted source, you must sanitize the PDF contents
@@ -234,7 +234,7 @@ function createFile($file_type,$fileName, $fileContent){
      } else if (strpos($file_type,'msword') !==false)
      {
          $ext= '.doc';
-     }			
+     }
      else if (strpos($file_type,'vnd.openxmlformats-officedocument.spreadsheetml') !== false)//Excel
      {
          $ext= '.xlsx';
@@ -242,36 +242,36 @@ function createFile($file_type,$fileName, $fileContent){
      else if ($file_type =='pdf') //PDF
      {
          $ext= '.pdf';
-         if (strpos($bin, '%PDF')  != 0 ) 
+         if (strpos($bin, '%PDF')  != 0 )
          {
              $result->error = "This pdf file does not have PDF file signature";
              return $result;
          }
-          
-           
+
+
      } else if (in_array($file_type,$img_types)) //image files
      {
          $ext= ".".$file_type; // in this case: use $file_type as extension directly
      } else  {
-          
+
          $result->error= "This file file type is not allowed";
          return $result;
      }
-      
+
      if(empty($ext)) {
          $result->error= "Invalid file type";
          return $result;
      }
-       
+
      $success = file_put_contents($fileName.$ext, $bin);
      if(!$success){
-       return DV::error("Failed to save file in the destination folder!"); 
-     } 
-     
+       return DV::error("Failed to save file in the destination folder!");
+     }
 
-     $result->filename = $fileName.$ext; 
-     $result->file_name = $fileName.$ext; 
-    
+
+     $result->filename = $fileName.$ext;
+     $result->file_name = $fileName.$ext;
+
      $result->extension= $ext;
      return (object)$result;
  }
@@ -281,13 +281,13 @@ function deleteFile($fileName)
   if (file_exists($fileName)) {
      unlink($fileName);
      return null;
-  } else return "File not found for deleting"; 
- 
+  } else return "File not found for deleting";
+
 }
 
 function readFileContent($fileName=null)
-{    
- if (empty($fileName)) return null;   
+{
+ if (empty($fileName)) return null;
  if (!file_exists($fileName)) return null;
  $fileSize = filesize($fileName);
  if ($fileSize<=0) return null;
@@ -295,31 +295,31 @@ function readFileContent($fileName=null)
  $contents = fread($handle, $fileSize);
  fclose($handle);
  return $contents;
-}	
+}
 
 
 
     function getFileExtension($file_name=null) {
     return pathinfo($file_name, PATHINFO_EXTENSION);
     }
-	
+
     function getMIMEType($fileName =null)
     {
         if (!$fileName) return null;
-       $ext = getFileExtension($file_name); 
+       $ext = getFileExtension($file_name);
        $ext= strtolower($ext?$ext:'');
-       return $mimeTypes[$ext];	 
-    }	 
-     
+       return $mimeTypes[$ext];
+    }
+
    function getNowTime()
    {
        return Carbon::now()->format("Y-m-d H:i:s");
    }
-   
+
    function convertDate($date)
    {
        if(!(bool)strtotime($date)) return null;
-       
+
        return date('Y-m-d', strtotime($date));
    }
 
@@ -328,7 +328,7 @@ function readFileContent($fileName=null)
         if ($len<=0) $len =5;
         return str_pad($num, $len, '0', STR_PAD_LEFT);
     }
-    
+
 
     function sess_company_id(){
         return Session('branch_id',null);
@@ -337,44 +337,44 @@ function readFileContent($fileName=null)
     function sess_user_id(){
         return Session('user_id',null);
     }
-    
+
     function base_url($uri=null){
-      $public_folder = env('ASSET_URL'); 
+      $public_folder = env('ASSET_URL');
       $public_folder =  $public_folder? $public_folder."/":null;
       return url('/')."/".$public_folder.$uri;
     }
 
  function get_settings_value($user_session,$key,$valueType)
  {
-     $branch_id = $user_session->branch_id;  
+     $branch_id = $user_session->branch_id;
 	 $setting_table= null;
 	 if ($valueType =='number')
 	   $setting_table = 'settings_number';
 	  else
 	  $setting_table = 'settings_string'; /* this case can be String or Date value */
-    
+
       $rows =null;
-     if (is_numeric($key)) 
+     if (is_numeric($key))
 	   $rows= DB::table($setting_table)->where('branch_id',$branch_id)->where('id',$key)->selectRaw('value')->limit(1)->get();
      else
-     $rows= DB::table($setting_table)->where('branch_id',$branch_id)->where('key',$key)->selectRaw('value')->limit(1)->get(); 	 
+     $rows= DB::table($setting_table)->where('branch_id',$branch_id)->where('key',$key)->selectRaw('value')->limit(1)->get();
 	 foreach($rows as $row)  return $row->value;
 	 return NULL;
  }
-  
+
  function save_setting($user_session,$type,$key,$value,$description =null)
  {
-	$branch_id = $user_session->branch_id; 
+	$branch_id = $user_session->branch_id;
 	$tbl ="settings_string";
     if (strtolower($type) =='number') $tbl ="settings_number";
     $rows = [];
-    $f = " `key` ='".$key."' "; 
-    $rows = DB::table($tbl)->where('branch_id',$branch_id)->whereRaw($f)->selectRaw('branch_id')->limit(1)->get(); 
+    $f = " `key` ='".$key."' ";
+    $rows = DB::table($tbl)->where('branch_id',$branch_id)->whereRaw($f)->selectRaw('branch_id')->limit(1)->get();
        foreach($rows as $row) {
             DB::table($tbl)->where('branch_id',$branch_id)->where('key',$key)->update(array(
                 'value'=>$value
             ));
-        return null;  
+        return null;
       }
 
      DB::table($tbl)->insert(array(
@@ -386,7 +386,7 @@ function readFileContent($fileName=null)
      return null;
  }
 
- 
+
  function getDefaultCurrency($user_session)
  {
      $branch_id = $user_session->branch_id;
@@ -397,15 +397,15 @@ function readFileContent($fileName=null)
      return (object)array('code'=>'USD','symbol'=>'$');
 
   }
-  
+
  function getMonthName_full($num)
  {
 	 if ($num < 1) $num =1;
 	 $months = array(0=>'January',1=>'February',2=>'March',3=>'April',4=>'May',5=>'June',6=>'July',7=>'August',8=>'September',9=>'October',10=>'November',11=>'December');
-	 
+
 	 return $months[($num-1)];
  }
- 
+
  function getDataRow($table_name,$key_fields=[], $cols=null){
     if(!$cols) $cols ="id";
     $m_where ="";
@@ -443,16 +443,16 @@ function readFileContent($fileName=null)
         DB::table($table_name)->where($key_field,$key_value)->whereRaw($str_branch)->update($inputs);
         $new_id = $key_value;
     }else{
-        $inputs['branch_id'] = $ss->branch_id; 
+        $inputs['branch_id'] = $ss->branch_id;
         $inputs['create_uid'] = $ss->user_id;
         $inputs['create_user'] = $ss->full_name;
         $inputs['create_date'] = getNowTime();
         DB::table($table_name)->insert($inputs);
         $new_id = DB::getPdo()->lastInsertId();
     }
-    return $new_id;  
+    return $new_id;
  }
-       
+
  function setCommonFields($d,$ss,$action = 'create',$include_branch_id=1){
         if ($action === 'create'){
             if ($include_branch_id===1) $d['branch_id'] = $ss->branch_id;
@@ -466,24 +466,24 @@ function readFileContent($fileName=null)
         }
        return $d;
   }
-     
-    
+
+
     function replace_marks($str,$arr)
     {
-        $out=""; 
+        $out="";
         $x=0;
         $dd = explode("?",$str);
-        foreach ($dd as $part) 
+        foreach ($dd as $part)
         {
             $out.=$part;
             if (isset($dd[$x+1])) $out.=isset($arr[$x])?$arr[$x]:'';
             $x++;
-             
+
         }
         return $out;
     }
 
-     function getBase64ImageSize($base64Image=null){ 
+     function getBase64ImageSize($base64Image=null){
         try{
             $size_in_kb = $size_in_bytes / 1024;
             return $size_in_kb;
@@ -501,9 +501,9 @@ function readFileContent($fileName=null)
          return $b;
     }
 
- 
 
- 
+
+
      function getInterval($part3=null){
          if (!$part3) return (object)['min'=>-1,'max'=>-1]; /** No interval specificed and No number specified **/
 
@@ -511,18 +511,18 @@ function readFileContent($fileName=null)
          $min = isset($sts[0])?$sts[0]:null;
          $max = isset($sts[1])?$sts[1]:null;
 
-         if (is_numeric($min) && is_numeric($max)) /** min and max are well specified example "5-50" **/  
+         if (is_numeric($min) && is_numeric($max)) /** min and max are well specified example "5-50" **/
             return (object)['min'=>$min,'max'=>$max];
          else if (is_numeric($min)) /** min specified but no max. Or there is ONLY one numbder specified **/
          {
             if ($min <=0) return (object)['min'=>$min,'max'=>null];
-            else if ($min > 0) return (object)['min'=>0,'max'=>$min];    
+            else if ($min > 0) return (object)['min'=>0,'max'=>$min];
          }
          else
             return (object)['min'=>-1,'max'=>-1]; /** No interval specificed and No number specified **/
-           
+
      }
-     
+
      function getPropValue($prop_name=null,$part3=null,$part4=null){
         if (!$prop_name) return null;
         if ($part3){
@@ -537,19 +537,19 @@ function readFileContent($fileName=null)
         } else return null;
      }
 
-      
+
     function processInput($field_name=null,$val=null, $spec='',$lang =null){
-    
+
     $lang = Session('lang','en'); //default langauge to English
-    $field_name = $field_name?str_replace('_',' ',$field_name):'Some field name'; //$field_name is used to show which technical field_name has validation error      
+    $field_name = $field_name?str_replace('_',' ',$field_name):'Some field name'; //$field_name is used to show which technical field_name has validation error
     $parts = explode('|',$spec);
     $part1 = isset($parts[0])?$parts[0]:null; /* {0,1} */
     $part2 = isset($parts[1])?$parts[1]:''; //{'string','date','timestamp','phone','email'} OR "default=50" or "default=sdfsddsfd"
     $part3 = isset($parts[2])?$parts[2]:''; // range: 1-50 length of text, or min and max of number
     $part4 = isset($parts[3])?$parts[3]:''; //this can be text_prop or default value for 'string' data type
     $part5 = isset($parts[4])?$parts[4]:''; //This is $text_prop
-    $tmp = isset($parts[4])?$parts[4]:null; 
-     
+    $tmp = isset($parts[4])?$parts[4]:null;
+
     $my_text_prop = getPropValue('text',$part3,$part4);
 
     $def_val = getPropValue('default',$part4,$part3);
@@ -559,26 +559,26 @@ function readFileContent($fileName=null)
 
     if ($is_identity==1)
         return (object)['error'=>null,'is_identity'=>1,'default_value'=>$val];
-    else if ($part1==0 || $part1===false) 
+    else if ($part1==0 || $part1===false)
         return (object)['error'=>null,'default_value'=>$val]; //value is not required
     else if ($part1==1 || $part1===true){
 
                 if ($part2 === 'string' || !$part2){
-            
-                    if (!$val) return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name cannot be empty"),'default_value'=>$def_val];  
+
+                    if (!$val) return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name cannot be empty"),'default_value'=>$def_val];
                     $interval = getInterval($part3);
                     if ($interval->min ===-1 && $interval->max ===-1){
-                        if (!$val) return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name cannot be empty"),'default_value'=>$def_val];  
+                        if (!$val) return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name cannot be empty"),'default_value'=>$def_val];
                     }else{
                         $len = strlen($val?$val:'');
-                        if ($len >= $interval->min && $len <= $interval->max) 
+                        if ($len >= $interval->min && $len <= $interval->max)
                            return (object)['error'=>null,'default_value'=>$val];
                         else
                             return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name length must be between $interval->min and $interval->max",[$interval->min,$interval->max]),
                             'default_value'=>$val
-                            ];     
+                            ];
                     }
-                      
+
                 } else if ($part2 === 'positive'){
                      $interval = getInterval($part3);
                      if ($val <0 || !is_numeric($val)) $val = $def_val;
@@ -586,22 +586,22 @@ function readFileContent($fileName=null)
 
                      if ($interval->min ===-1 && $interval->max ===-1)
                      {
-                        if($val> 0) 
+                        if($val> 0)
                             return (object)['error'=>null,'default_value'=>$val];
-                        else return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name must be a positive number")]; 
+                        else return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name must be a positive number")];
                      }else{
-                        if($val < $interval->min || $val > $interval->max) 
-                           return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name must be between $interval->min and $interval->max",[$interval->min,$interval->max])];    
-                        else return (object)['error'=>null,'default_value'=>$val];   
+                        if($val < $interval->min || $val > $interval->max)
+                           return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name must be between $interval->min and $interval->max",[$interval->min,$interval->max])];
+                        else return (object)['error'=>null,'default_value'=>$val];
                      }
-                               
+
                 }else if ($part2 === 'date') {
-                       
-                       
+
+
                         $format = getPropValue('format',$part3);
                         if (!$format){
                             $format = getPropValue('format',$part3);
-                            if (!$my_text_prop) $my_text_prop = getPropValue('text',$part3); 
+                            if (!$my_text_prop) $my_text_prop = getPropValue('text',$part3);
                         }
 
                         if (!$format){
@@ -610,20 +610,20 @@ function readFileContent($fileName=null)
                             $m_date = validateDate($val,$format);
                             if($m_date){
                                 return (object)['error'=>null,'default_value'=>$m_date->format('Y-m-d')];
-                            } 
+                            }
                             else return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name is not correct. Date format $format is expected",[$format])];
                         }
 
                  }else if ($part2 ==='timestamp') {
-                    if((bool)strtotime($val)) 
+                    if((bool)strtotime($val))
                     return (object)['error'=>null,'default_value'=>$val];
                     else return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name is not correct. Timestamp expected")];
                 }else if ($part2==='email') {
-                    if(isEmail($val)) 
+                    if(isEmail($val))
                         return (object)['error'=>null,'default_value'=>$val];
                     else return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name is not correct. Email is expected")];
                 }else if ($part2==='phone'){
-                    if(isPhoneNumber($val)) 
+                    if(isPhoneNumber($val))
                     return (object)['error'=>null,'default_value'=>$val];
                     else return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name is not correct")];
                 }
@@ -637,23 +637,23 @@ function readFileContent($fileName=null)
                     {
                          if (is_numeric($val))
                             return (object)['error'=>null,'default_value'=>$val];
-                         else 
+                         else
                             return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name must be a number")];
 
                     }else{
-                       if($val < $interval->min || $val > $interval->max) 
-                          return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name must be between $interval->min and $interval->max",[$interval->min,$interval->max])];    
-                       else return (object)['error'=>null,'default_value'=>$val]; 
+                       if($val < $interval->min || $val > $interval->max)
+                          return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name must be between $interval->min and $interval->max",[$interval->min,$interval->max])];
+                       else return (object)['error'=>null,'default_value'=>$val];
                     }
- 
+
                 }else if ($part2 === 'object' || $part2 === 'array'){
-                        
+
                         if (!$val) return (object)['error'=>null,'default_value'=>null];
 
                           $obj = json_decode($val);
                         if ($obj)
                            return (object)['error'=>null,'default_value'=>$obj];
-                        else 
+                        else
                            return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name is not a invalid JSON format")];
                 } else if ($part2 ==='image' || $part2==='file' || $part2==='base64'){
 
@@ -667,25 +667,25 @@ function readFileContent($fileName=null)
                             $b = processImage($val);
                             if ($b) return (object)['error'=>null,'default_value'=>$b];
                         }else{
-                            if ($size < $interval->min || $size > $interval->max) 
+                            if ($size < $interval->min || $size > $interval->max)
                             return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name file size should be between ? and ?"),[$interval->min, $interval->max]];
                             else{
                                 $b = processImage($val);
                                 if ($b) return (object)['error'=>null,'default_value'=>$b];
                             }
                         }
-                        
+
 
                 }
                 else {
                     $def_val = getPropValue('default',$part2,null);
 
                     if ($def_val || $def_val==0){
-                        return (object)['error'=>null,'default_value'=>$def_val]; 
+                        return (object)['error'=>null,'default_value'=>$def_val];
                     }else {
-                       if($part1===1) 
+                       if($part1===1)
                           return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name cannot be empty"),'default_value'=>null];
-                       else 
+                       else
                           return (object)['error'=>null,'default_value'=>null]; /** NULL value is OK and no error **/
                     }
 
@@ -740,9 +740,9 @@ function readFileContent($fileName=null)
                         }
                     }
                     return (object)['error'=>null,'default_value'=>$val];
-                   
+
                 }
-               
+
             }
             return (object)['error'=>null,'default_value'=>$val];
     }
@@ -771,14 +771,14 @@ function readFileContent($fileName=null)
                 if ($is_identity ===1)
                 {
                     $identity_field = $field;
-                    $identity_value = $val; 
-                } 
-                else 
-                  $outputs[$field] = $res->default_value;   
+                    $identity_value = $val;
+                }
+                else
+                  $outputs[$field] = $res->default_value;
         }
 
         if ($include_all_fields)  foreach($d as $col=>$value) if (!isset($outputs[$col])) $outputs[$col] = $value;
-         
+
         $unique_error =null;
         if (is_array($unique_specs)){
             $pk_field =[];
@@ -790,26 +790,26 @@ function readFileContent($fileName=null)
                 $part4= $parts[3]; //example  "id=person_id" where "id" is the table PK field name and "person_id" is the data's prop that contains id value
                 $parts1 = explode('=',$part4); //"id=person_id"
                 $pk_field_name = isset($parts1[0])?$parts1[0]:null;
-                $pk_value =null; 
+                $pk_value =null;
                 if($pk_field_name){
                         $pk_input_prop = isset($parts1[1])?$parts1[1]:null;
                         if (!$pk_input_prop) $pk_input_prop = $identity_field;
                         $pk_value= isset($d[$pk_input_prop])?$d[$pk_input_prop]:null;
                 }
-                 if ($u_spec) $unique_error = checkUnique($d,$pk_field_name,$pk_value,$u_spec,$lang,$langSection);  
+                 if ($u_spec) $unique_error = checkUnique($d,$pk_field_name,$pk_value,$u_spec,$lang,$langSection);
                 if ($unique_error){
                    $trans_err = Localization::translate($lang,$unique_error,null,$lang,$langSection,);
                    return (object)['error'=>$trans_err,'values'=>null];
                 }
             }
         }
-       
+
         $result = (object)['error'=>null,'values'=>$outputs];
         if ($identity_field) $result->{$identity_field} = $identity_value;
         return $result;
 
      }
-   
+
 
 
      function getValuesBySection($d, $fields = [],$sanitize=1,$sanitize_options =[],$lang='en',$include_all_fields=1,$unique_specs=null){
@@ -823,7 +823,7 @@ function readFileContent($fileName=null)
               $op = null;
               if (is_array($sanitize_options)) $op = isset($sanitize_options[$field])?$sanitize_options[$field]:null;
               if(isset($d[$field])) $val = ($sanitize)? Sanitizer::sanitize($d[$field],$op):$d[$field];
-             
+
                 $res = processInput($field,$val,$spec,$lang);
                 if($res->error) return (object)['error'=>$res->error,'values'=>null];
 
@@ -831,15 +831,15 @@ function readFileContent($fileName=null)
                 if ($is_identity ===1)
                 {
                     $identity_field = $field;
-                    $identity_value = $val; 
-                } 
-                else 
-                  $outputs[$field] = $res->default_value;   
-             
+                    $identity_value = $val;
+                }
+                else
+                  $outputs[$field] = $res->default_value;
+
         }
 
         if ($include_all_fields)  foreach($d as $col=>$value) if (!isset($outputs[$col])) $outputs[$col] = $value;
-         
+
         $unique_error =null;
         if (is_array($unique_specs)){
             foreach($unique_specs as $u_spec){
@@ -847,19 +847,19 @@ function readFileContent($fileName=null)
                 $part4= $parts[3]; //example  "id=person_id" where "id" is the table PK field name and "person_id" is the data's prop that contains id value
                 $parts1 = explode('=',$part4); //"id=person_id"
                 $pk_field_name = isset($parts1[0])?$parts1[0]:null;
-                $pk_value =null; 
+                $pk_value =null;
                 if($pk_field_name){
                         $pk_input_prop = isset($parts1[1])?$parts1[1]:null;
                         if (!$pk_input_prop) $pk_input_prop = $identity_field;
                         $pk_value= isset($d[$pk_input_prop])?$d[$pk_input_prop]:null;
                 }
-                if ($u_spec) $unique_error = checkUnique($d,$pk_field_name,$pk_value,$u_spec,$lang,$langSection);  
+                if ($u_spec) $unique_error = checkUnique($d,$pk_field_name,$pk_value,$u_spec,$lang,$langSection);
                 if ($unique_error){
                 $trans_err = Localization::translate($lang,$unique_error,null,$lang,$langSection,);
                 return (object)['error'=>$trans_err,'values'=>null];
-                } 
+                }
             }
-             
+
         }
 
         $result = (object)['error'=>null,'values'=>$outputs];
@@ -878,7 +878,7 @@ function readFileContent($fileName=null)
         $branch_id = $parts[0];
         $table = $parts[1];
         $field_list = explode(',',$parts[2]);
-       
+
         $m_where ="";
         $select_cols =$pk_field_name; //presume a default. That all tables have a "id" column
         foreach($field_list as $fields){
@@ -895,7 +895,7 @@ function readFileContent($fileName=null)
                 }
              }
              if ($has_or) $where_con = "($where_con)";
-             $m_where .= ($m_where? ' AND ':'').$where_con; 
+             $m_where .= ($m_where? ' AND ':'').$where_con;
         }
 
 
@@ -905,18 +905,18 @@ function readFileContent($fileName=null)
         if($pk_value > 0) $str_pk = " AND $table.$pk_field_name <> $pk_value";
         else if($pk_value) $str_pk =" AND $table.$pk_field_name <> '$pk_value'";
         $text = getPropValue('text',$parts[3]);
-        if (!$text)  
+        if (!$text)
         {
               $text = getPropValue('text',$parts[4]);
         }
-        
+
         $str_branch = "1=1 ";
         if ($branch_id > 0) $str_branch ="branch_id =$branch_id ";
         $m_where =  $str_branch." AND ".$m_where.$str_pk;
         $rows = DB::table($table)->whereRaw($m_where)->selectRaw($select_cols)->limit(1)->get();
-        if (count($rows)>0) 
+        if (count($rows)>0)
           return $text?$text:"$table already exists";
-        else return null; 
+        else return null;
     }
 
     function validateDate($date,$format){
@@ -925,18 +925,18 @@ function readFileContent($fileName=null)
         if ($d && $d->format($format) === $date) return $d;
         else return null;
      }
-     
+
     function isPhoneNumber($phone_number=null,$nullable=0){
       if (empty($phone_number)) if ($nullable===1) return true;
-      return true; 
+      return true;
     }
 
     function isEmail($email=null,$nullable=0){
         if (empty($email)) if ($nullable===1) return true;
-        return true; 
+        return true;
     }
-    
-  
+
+
     function getStoragePath($private=false){
         if($private)
           {
@@ -949,15 +949,20 @@ function readFileContent($fileName=null)
 
     function getStorageUrl(){
       return url('')."/uploads/companies/";
-    } 
+    }
 
     function getAdminAppId(){
         return "DXM20FKAEFC711EH2E9M9801A7CMD801";
     }
-    
+
+    // function getGuardianAppId(){
+    //     return 'ZAM20FKAEFC722EH2E7M9801B7BZD899';
+    // }
+
+
     function thisAppId()
     {
-      return '7E33ZA1E2D7811EB92C09801A7B0D2FC'; 
+      return '7E33ZA1E2D7811EB92C09801A7B0D2FC';
     }
 
     function getAppId(){

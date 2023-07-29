@@ -14,7 +14,7 @@ class SessionController extends Controller
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->UMModel = new UM();   
+        $this->UMModel = new UM();
     }
 
 }

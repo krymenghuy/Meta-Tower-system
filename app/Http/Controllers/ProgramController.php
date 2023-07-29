@@ -25,14 +25,14 @@ class ProgramController extends Controller
 
         $row = new Program();
         $list = $row->list($ss);
-        return JDV::raw($list);
+        return JDV::result($list);
     }
 
     function get_levels_by_program(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
         $rows = Program::getLevelByProgram($req,$ss);
-        return JDV::raw($rows);
+        return JDV::result($rows);
     }
 
     function getDetails(Request $req){
@@ -41,7 +41,7 @@ class ProgramController extends Controller
 
         $row = new Program($req->id,$ss);
         $details = $row->details();
-        return JDV::raw($details);
+        return JDV::result($details);
     }
 
     function delete(Request $req){
