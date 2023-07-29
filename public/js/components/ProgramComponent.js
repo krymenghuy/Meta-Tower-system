@@ -93,27 +93,25 @@ var ProgramComponent = new function(){
             html = [html,`</table></div>`].join('');
             div_wrapper.html(html);
 
-            let tbody = div_wrapper.find('table.tbl_pgm_level>tbody');
+            let tbody = div_wrapper.find('table.tbl_pgm_level > tbody');
 
-            //Set Click handler for "Add Level" button
-                div_wrapper.find('.btn-add-level').on('click',function(e){
-                    e.preventDefault();
-                    let prog_id = $(this).data('programid');
-                    let op = {
-                        'id': null,
-                        'program_id':prog_id,
-                        'onClose': (levels) => {
-                            mThis.renderProgramLevels(tbody,levels);
-                        }
-                    };
-                    ProgramLevelDialog.show(op);
-                });
+            div_wrapper.find('.btn-add-level').on('click',function(e){
+                e.preventDefault();
+                let prog_id = $(this).data('programid');
+                let op = {
+                    'id': null,
+                    'program_id':prog_id,
+                    'onClose': (levels) => {
+                        mThis.renderProgramLevels(tbody,levels);
+                    }
+                };
+                ProgramLevelDialog.show(op);
+            });
 
             mThis.renderProgramLevels(tbody, data);
         });
     }
 
-    //Set Click Action handlers
     this.setActionHandlers = (tbody) => {
         tbody.on('click','.btn-pgm-detail-modify',function(e){
             e.preventDefault();
@@ -122,29 +120,27 @@ var ProgramComponent = new function(){
                 'id': $(this).data('id'),
                 'program_id':prog_id,
                 'onClose': (levels) => {
-                     mThis.renderProgramLevels(tbody,levels);
+                    mThis.renderProgramLevels(tbody,levels);
                 }
             };
             ProgramLevelDialog.show(op);
         });
-
-        // tbody.on('click','.btn-pgm-detail-delete',function(e){
-        //     e.preventDefault();
-     
-        // });
  
         tbody.on('click','a.btn-pgm-detail-delete',function(e){
             e.preventDefault();
             let x = $(this);
             let prog_id = x.data('programid');
-            let p = {'program_id':prog_id,'id':x.data('id')};
+            let p = {
+                'program_id':prog_id,
+                'id':x.data('id')
+            };
             cv_interact.confirm('Delete this level?',{title: 'Delete Level', context: 'delete'},e => {
                 if(e){
                     window.vsapi.call(`${main_view.base_url}/api/program-level/delete`,p,null,false).then(res => {
                         if(res.status_code === 200){
                             mThis.renderProgramLevels(tbody,res.data.levels)
                         }
-                        else cv_interact.error(res.error_message); 
+                        else cv_interact.error(res.error_message);
                     });
                 }
             });
@@ -279,7 +275,6 @@ let ProgramDialog = new function(){
     this.getDataForm = () => {
         let p = {
             'id': mThis.options.id,
-            //program_id is used to query "levels" as a response back
             'program_id':mThis.options.program_id
         };
         mThis.self.find('.data-input').each(function(){
@@ -332,21 +327,21 @@ let ProgramLevelDialog = new function(){
     let mThis = this;
     this.self = $('#dlg_detail_pgm_');
     this.btnSave = this.self.find('#dlg_pgm_detail_btn_save');
-    //this.elLevel = this.self.find('#_level_name');
-
     this.options = {};
 
     this.elTitle = mThis.self.find('.modal-title');
     
     this.btnSave.on('click',function(){
-       let p =mThis.getDataForm();
+        let p =mThis.getDataForm();
 
-       vsapi.call(`${main_view.base_url}/api/program-level/save`,p,null,false).then(res=>{
-          if(res.status_code===200){
-             mThis.onClose(res.data.levels);
-             mThis.self.modal('hide');
-          }else cv_interact.error(res.error_message);
-       });
+        window.vsapi.call(`${main_view.base_url}/api/program-level/save`,p,null,false).then(res=>{
+            if(res.status_code === 200){
+                mThis.onClose(res.data.levels);
+                mThis.self.modal('hide');
+            }
+            else
+                cv_interact.error(res.error_message);
+        });
     });
 
     this.getDataForm = () => {
@@ -372,6 +367,16 @@ let ProgramLevelDialog = new function(){
         });
     }
 
+    this.loadFormDetails = (options) => {
+        window.vsapi.call(`${main_view.base_url}/api/program-level/details`,{'id': options.id},null).then(res => {
+            let data = {};
+            if(res.status_code === 200){
+                data = res.data;
+            }
+            mThis.setDataForm(data);
+        });
+    }
+
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;
@@ -379,7 +384,7 @@ let ProgramLevelDialog = new function(){
 
         if(options.id > 0){
             mThis.elTitle.text(LocaleManager.trans('Modify','titles'));
-            // mThis.loadFormDetails(options);
+            mThis.loadFormDetails(options);
         }
         else{
             mThis.elTitle.text(LocaleManager.trans('New','titles'));

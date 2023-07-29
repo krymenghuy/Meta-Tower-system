@@ -4,27 +4,96 @@ var PolicyDiscountComponent = new function(){
     this.title_prop = "Policy Discount";
     this.self = $('#_main_policyDiscountComponent');
 
-    this.tblPolicyDiscount = mThis.self.find('.tbl_pld');
-    this.btnAdd = mThis.self.find('.btn--add');
+    this.btnAdd = mThis.self.find('#pld_btn_add');
+    this.elSearch = mThis.self.find('#_pdl_search');
+
+    this.cols = [{
+        title: "Name",
+        data: "price_list_name"
+    },
+    {
+        title: "Payment Option",
+        data: "pmt_option"
+    },
+    {
+        title: "Start Date",
+        data: "start_date"
+    },
+    {
+        title: "End Date",
+        data: "end_date"
+    },
+    {
+        title: "Academic Year",
+        data: "academic_year"
+    },
+    {
+        title: "Session",
+        data: "session"
+    },
+    {
+        title: "Discount",
+        data: "discount"
+    },
+    {
+        title: "Discount Type",
+        data: "discount_type"
+    },
+    {
+        title: "Created By",
+        data: "create_user"
+    },
+    {
+        title: "Create Date",
+        data: "created_at"
+    },
+    {
+        title: "Authorized By",
+        data: "auth_user"
+    },
+    {
+        title: "Authorize Date",
+        data: "auth_date"
+    },
+    {
+        title: "Action",
+        data: (data, a, b) => {
+            return [`<div class="d-flex gap-2">
+                <a href="javascript:void(0)" class="btn-pld-modify" data-id="${data.id}">
+                    <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
+                </a>
+                <a href="javascript:void(0)" class="btn-pld-delete" data-id="${data.id}">
+                    <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                </a>
+            </div>`].join('');
+        }
+    }];
 
     this.init = () => {
+        mThis.itemView = new ListView('tbl_pld',{
+            'fetchApi':`${main_view.base_url}/api/pol-discount/list-paginate`,
+            'columns':mThis.cols,
+            'tableClass':"table header-light-blue header-uppercase",
+            'rowCreated':(data, index, tr) => {
+                tr.dataset.id = data.id;
+            },
+            'beforeRender':()=>{}
+        });
+
         mThis.btnAdd.on('click',function(e){
             e.preventDefault();
             let op = {
                 'id': 0,
                 'onClose': (e) => {
                     if(e){
-                        mThis.displayPolicyDiscount();
+                        mThis.itemView.showPage({'search_value': mThis.elSearch.val()});
                     }
                 }
             };
             PolicyDiscountOutsideDialog.show(op);
         });
 
-        mThis.tblPolicyDiscount.on('click','a.btn-pld-duplicate',function(e){
-            e.preventDefault();
-            console.log("Clicked Duplicate");
-        });
+        mThis.tblPolicyDiscount = $(mThis.itemView.getTable());
 
         mThis.tblPolicyDiscount.on('click','a.btn-pld-modify',function(e){
             e.preventDefault();
@@ -32,7 +101,7 @@ var PolicyDiscountComponent = new function(){
                 'id': $(this).data('id'),
                 'onClose': (e) => {
                     if(e){
-                        mThis.displayPolicyDiscount();
+                        mThis.itemView.showPage({'search_value': mThis.elSearch.val()});
                     }
                 }
             };
@@ -48,7 +117,7 @@ var PolicyDiscountComponent = new function(){
                 if(e){
                     window.vsapi.call(`${main_view.base_url}/api/`,op,null).then(res => {
                         if(res.status_code === 200){
-                            mThis.displayPolicyDiscount();
+                            mThis.itemView.showPage({'search_value': mThis.elSearch.val()});
                         }
                         else{
                             cv_interact.error(res.error_message);
@@ -57,103 +126,17 @@ var PolicyDiscountComponent = new function(){
                 }
             });
         });
-    }
 
-    this.displayPolicyDiscount = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/`,null,null).then(res => {
-            let data = [];
-            if(res.status_code === 200){
-                data = StringSanitizer.sanitizeObject(res.data);
-            }
-
-            let cols = [{
-                title: "Name",
-                data: "name"
-            },
-            {
-                title: "Payment Option",
-                data: "term"
-            },
-            {
-                title: "Start Date",
-                data: "start_date"
-            },
-            {
-                title: "End Date",
-                data: "end_date"
-            },
-            {
-                title: "Academic Year",
-                data: "academic_year"
-            },
-            {
-                title: "Created By",
-                data: "created_by"
-            },
-            {
-                title: "Authorized By",
-                data: "authorized_by"
-            },
-            {
-                title: "Status",
-                data: "status"
-            },
-            {
-                title: "Action",
-                data: (data, a, b) => {
-                    return [`<div class="d-flex gap-2">
-                        <a href="javascript:void(0)" class="btn-pld-duplicate" data-id="${data.id}">
-                            <i class="fa-solid fa-clone text-primary fs-5"></i>
-                        </a>
-                        <a href="javascript:void(0)" class="btn-pld-modify" data-id="${data.id}">
-                            <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
-                        </a>
-                        <a href="javascript:void(0)" class="btn-pld-delete" data-id="${data.id}">
-                            <i class="fa-regular fa-trash-can text-danger fs-5"></i>
-                        </a>
-                    </div>`].join('');
-                }
-            }];
-
-            if(mThis.table){
-                mThis.tblPolicyDiscount.DataTable().clear().destroy();
-                mThis.tblPolicyDiscount.empty();
-                mThis.table = null;
-            }
-
-            if(!mThis.table){
-                mThis.tblPolicyDiscount.DataTable({
-                    searching: false,
-                    destroy: true,
-                    paging: true,
-                    ordering: false,
-                    retrieve: true,
-                    info: true,
-                    pageLength: 10,
-                    bLengthChange: false,
-                    saveState: true,
-                    processing: true,
-                    language: {
-                        'loadingRecords': '&nbsp;',
-                        'processing': 'Loading...',
-                        "emptyTable": LocaleManager.trans('No data to display', 'datatable')
-                    },
-                    data: data,
-                    columns: cols,
-                    createdRow: function (row, data, dataIndex) {
-                        let tr = $(row);
-                        tr.data('id', data.id);
-                    }
-                });
-            }
-
-            if(typeof onFinish === 'function') onFinish();
+        mThis.elSearch.on('keyup',function(e){
+            e.preventDefault();
+            if(e.keyCode === 13)
+                mThis.itemView.showPage({'search_value': $(this).val()});
         });
     }
 
     this.show = (options) => {
         if(!options) options = {};
-        mThis.displayPolicyDiscount(() => {
+        mThis.itemView.showPage(null,null,() => {
             main_view.setTitle(mThis.title_prop);
             mThis.self.show().siblings().hide();
         });
@@ -171,7 +154,7 @@ let PolicyDiscountOutsideDialog = new function(){
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
         let p = mThis.getDataForm();
-        window.vsapi.call(`${main_view.base_url}/api/`,p,null).then(res => {
+        window.vsapi.call(`${main_view.base_url}/api/pol-discount/save`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
                 if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
@@ -238,4 +221,4 @@ let PolicyDiscountOutsideDialog = new function(){
 
 window.addEventListener('DOMContentLoaded',() => {
     PolicyDiscountComponent.init();
-})
+});
