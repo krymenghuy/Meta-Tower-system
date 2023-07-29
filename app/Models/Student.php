@@ -9,7 +9,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class Student //extends Model
 {
     // use HasFactory;
-    static function saveStudent($arr,$id=null,$ss){
+
+    static function saveStudent($arr,$id=null,$ss){ //** register only //without payment yet */
         $v_rule = [
             'name' => '1|string|1,30',
             'name_kh' => '1|string|1,30',
@@ -90,10 +91,13 @@ class Student //extends Model
 
         if($newID>0){
             PublicStorage::saveImage($branch_id,"students",null,$image,null, ['id' => $newID, 'store' => 'students.file_name']);
+            //** give register student by generate code and update */
             self::setStudentCode($ss,$newID);
 
             $program_id = DB::table('programs as p')->join('program_levels as pl','p.id','=','pl.program_id')->selectRaw('p.id')->where('pl.id',$level_id)->first();
-            $en_student = [
+
+            //** save into enrollments table
+            $en_student_data = [
                 'student_id' => $newID,
                 'level_id' => $level_id,
                 'program_id' => $program_id->id,
@@ -101,36 +105,50 @@ class Student //extends Model
                 'campus_id' => $campus_id,
                 'shift_id' => $shift_id,
                 'pmt_mode' => $pmt_mode,
-                'tuition_end_date' => self::getFutureTime(7),
                 'academic_year_id' => $academic_year,
                 'status_id' => $statusID
-                  // 'tuition' => $tuition,
-                // 'tuition_due' => $tuition_due,
-                // 'discount'=> $discount,
-                // 'tuition_paid' => $tuition_paid,
-                // term_id => $term_id
             ];
-            $existsEnrollment = DB::table('enrollments')->where('student_id',$id)->selectRaw('school_id')->first();
-            saveData($ss,'enrollments',['student_id'=>$existsEnrollment?$newID:null],$en_student,[],1);
+            $enrollment_id = saveData($ss,'enrollments',['student_id'=>null],$en_student_data,[],1);
 
-            $en_payment = [
-                'tuition' => $tuition,
-                'tuition_due' => $tuition_due,
-                'pmt_status'=> $pmt_status,
-                'tuition_paid' => $tuition_paid,
-                'term_id' => $term_id
+            //** save to enrollmen_payment table
+            if($enrollment_id){
+                $en_payment_data = [
+                    'tuition' => $tuition,
+                    'tuition_due' => $tuition_due,
+                    'pmt_status'=> $pmt_status,
+                    'tuition_paid' => $tuition_paid,
+                    'term_id' => $term_id,
+                    'enrollment_id' => $enrollment_id
+                ];
+                $saveEnrPayment = saveData($ss,'enrollment_payments',[],$en_payment_data,[],1);
+            }
+
+            //** save into pmt_parameters */
+            $pmt_params_data = [
+                'expected_date' => self::getFutureTime(7),
+                'pmt_option_id' => $pmt_option_id
             ];
+            $save_pmt_params = saveData($ss,'pmt_parameters',[],$pmt_params_data,[],1);
 
-            $saveEnrPayment = saveData($ss,'enrollment_payments',[],$en_payment,[],1);
+            if($save_pmt_params){
+                DB::table('enrollment_payments')->where('enrollment_id',$enrollment_id)->update([
+                    'parameter_id' => $save_pmt_params
+                ]);
+            }
+
 
             if($prev_school){
-                $save_prev_school = saveData($ss,'school',['id' =>$existsEnrollment?$existsEnrollment->school_id:null],['name' => $prev_school],[],1);
+                $save_prev_school = saveData($ss,'school',['id' =>null],['name' => $prev_school],[],1);
                 if($save_prev_school){
                     DB::table('enrollments')->where('student_id',$newID)->update([
                         'school_id' => $save_prev_school
                     ]);
                 }
             }
+
+            //** save into guardian table and generate login information for female type or if one take that one
+            //** link parent(s) to child
+            //** using guardian's phone number for login name and password default = 123456 */
             $p_info = self::saveStudentParent($parent_info,$newID,$ss);
         }
         return DV::depends($newID,['action'=>'Saved','en_payment'=>$saveEnrPayment]);
@@ -198,8 +216,6 @@ class Student //extends Model
                         'full_name' => $female_guardian->name,
                     ];
                   $um_ = $um->saveUser($arr,$ss);
-
-
                 }
                 // link parent with child
                 $link = saveData($ss,'student_guardians',[],['guardian_id'=>$newID,'student_id'=>$child_id,'guardian_role'=>$pf['roll']],[],1);
@@ -213,10 +229,8 @@ class Student //extends Model
     static function setStudentCode($ss,$newID){
         $branch_id = $ss->branch_id;
         $prefix = 'ST';
-        // $last_id = DB::table('students')->selectRaw('id')->orderBy('id','desc')->take(1)->first();
         $new_code = $prefix.$branch_id.formatNumber($newID,4);
         DB::table('students')->where('id',$newID)->update(['code' => $new_code]);
-        // return $new_code;
     }
 
 
@@ -224,42 +238,30 @@ class Student //extends Model
         $branch_id = $ss->branch_id;
         $search_value =isset($filter['search_value'])?$filter['search_value']:null;
         $current_page =isset($filter['current_page'])?$filter['current_page']:1;
-        $owner_id = isset($filter['owner_id'])?$filter['owner_id']:null;
+        $owner_id = isset($filter['pmt_status'])?$filter['pmt_status']:null;
         $per_page =isset($filter['per_page'])?$filter['per_page']:10;
         if(!is_numeric($current_page)) $current_page=1;
         $skip_rows = ($current_page -1) * $per_page;
 
-        $group_id = isset($filter['group_id'])? $filter['group_id']:null;
-        $country_id = isset($filter['country_id'])? $filter['country_id']:null;
-        $category_id = isset($filter['category_id'])? $filter['category_id']:null;
-
         $str_search ="1=1";
         $str_moreWhere="1=1";
         if($search_value){
-           $skip_rows =0;
-          $search_value = escape_like_str($search_value);
-          $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+            $skip_rows =0;
+            $search_value = escape_like_str($search_value);
+            $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
         }
-        //if ($brand_id >0) $str_brand ="g.id =$brand_id";
-        //order by group_name or group_code
-        $query = DB::table('inv_items as i')
-          ->join('inv_item_groups as g','g.id','=','i.group_id')
-          ->join('inv_categories as c','c.id','=','g.category_id')
-          ->join('inv_brands as b','b.id','=','g.brand_id')
-          ->join('inv_item_prices as p','p.item_id','=','i.id')
-          ->where('p.sales_type','retail')
-          ->where('i.owner_id',$owner_id)
-          ->where('i.branch_id',$branch_id)->whereRaw($str_moreWhere)->whereRaw($str_search)
-          // ->selectRaw("t.id as detail_type_id,t.name as detailed_type,b.name as brand_name,b.id as brand_id,i.id,'Product' AS item_type,i.code,g.code as group_code,i.name,i.description,g.name as group_name,g.id as group_id,g.description as group_description, g.category_id, i.manufacturer_id, c.name AS category,getItemDetailType(g.detail_type_id) as detail_type,i.create_user,formatDate(i.created_at) as created_at")
-          ->selectRaw("b.name as brand_name,b.id as brand_id,i.id,'Product' AS item_type,i.code,g.code as group_code,i.name,i.description,g.name as group_name,g.id as group_id,g.description as group_description, g.category_id, i.manufacturer_id, c.name AS category,i.create_user,formatDate(i.created_at) as created_at")
-          ->orderByRaw("g.name ASC,i.code ASC");
-      //   ->join('inv_item_groups as g','g.id','=','i.group_id')
-      //   ->join('inv_categories as c','c.id','=','g.category_id')
-      //   ->where("i.item_class",self::$item_class)->where('i.branch_id',$branch_id)
-      //   ->whereRaw($str_moreWhere)->whereRaw($str_search)
-      //   ->selectRaw("i.id,'Product' AS item_type,i.code,g.code as group_code,i.name,i.description,g.name as group_name,g.id as group_id,g.description as group_description, g.category_id, i.manufacturer_id, c.name AS category,g.detail_type_id,getItemDetailType(g.detail_type_id) as detail_type,i.create_user,formatDate(i.created_at) as created_at")->orderByRaw("g.name ASC,i.code ASC");
+
+        $selectState = 'ss.name as session,ep.tuition,ep.tuition_due,ep.tuition_paid,ep.pmt_status,s.name,s.id';
+        $query = DB::table('enrollment_payments as ep')
+                ->join('enrollments as e','e.id','=','ep.enrollment_id')
+                ->join('students as s','s.id','=','e.student_id')
+                ->join('sessions as ss','ss.id','=','e.session_id')
+                ->where('ep.pmt_status','unpaid')
+                ->selectRaw($selectState)
+                ->where('ep.branch_id',$branch_id);
+                // ->whereRaw($str_moreWhere)->whereRaw($str_search);
         $count_query = clone $query;
-        $count = $count_query->count('g.id');
+        $count = $count_query->count('ep.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);

@@ -22,4 +22,9 @@ class Setting //extends Model
         return DB::table('sessions')->where('branch_id',$branch_id)->selectRaw('name,id')->get();
     }
 
+    static function programs_options($ss=null){
+        $branch_id = $ss->branch_id;
+        return DB::table('programs')->where('branch_id',$branch_id)->selectRaw('name as program_name,id')->get();
+    }
+
 }

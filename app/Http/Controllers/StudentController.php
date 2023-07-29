@@ -17,4 +17,12 @@ class StudentController extends Controller
         $register = Student::saveStudent($req->all(),$req->id,$ss);
         return JDV::raw($register);
     }
+
+    function student_payment_pending(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $rows = Student::student_payment_pending($req->all(),$ss);
+        return JDV::result($rows);
+    }
 }
