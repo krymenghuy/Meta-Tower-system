@@ -19,24 +19,25 @@ class ProgramLevel //extends Model
         $id = $id?$id:$this->id;
         $v_rule = [
             'program_id' => '1|number|exists=programs.id',
-            'name' => '0|string|1-50',
+            'name' => '0|string|1-100',
         ];
-
+      
         $res = validateObject($arr,$v_rule,false,[],$ss->lang,[],null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
-
+        $program_id = $inputs['program_id'];
         $newID = saveData($ss,'program_levels',['id'=>$id],$inputs,[],1);
-        return DV::depends($newID,['action'=>$id?'Updated':'Saved','levels'=>self::list($ss)]);
+
+        return DV::depends($newID,['action'=>$id?'Updated':'Saved','levels'=>$this->list($program_id,$ss)]);
     }
 
-    function list($ss=null){
+    function list($program_id,$ss=null){
         $ss = $ss?$ss:$this->user_info;
         $branch_id = $ss->branch_id;
 
         $selectRow = "pl.id,pl.program_id,p.name as program,pl.name,pl.created_at,pl.create_user";
 
-        $rows = DB::table('program_levels as pl')->join('programs as p','pl.program_id','=','p.id')->selectRaw($selectRow)->where('p.branch_id',$branch_id)->get();
+        $rows = DB::table('program_levels as pl')->join('programs as p','pl.program_id','=','p.id')->where('p.id',$program_id)->selectRaw($selectRow)->where('p.branch_id',$branch_id)->get();
 
         foreach($rows as $row){
             $row->date = explode(' ',$row->created_at)[0];
@@ -57,12 +58,13 @@ class ProgramLevel //extends Model
         return $row;
     }
 
-    function delete($id=null,$ss=null){
+    function delete($id=null,$program_id=null,$ss=null){
         $ss = $ss?$ss:$this->user_info;
         $id = $id?$id:$this->id;
         $branch_id = $ss->branch_id;
-
         $row = DB::table('program_levels')->where('id',$id)->where('branch_id',$branch_id)->delete();
-        return DV::depends($row,['action'=>'Program Deleted','levels'=> self::list($ss)]);
+
+        return DV::depends($row,['levels'=>$this->list($program_id,$ss)]);
+
     }
 }

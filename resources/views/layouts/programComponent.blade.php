@@ -33,3 +33,28 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="dlg_detail_pgm_" tabindex="-1" aria-labelledby="dlg_detail_pgm_title" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="name" class="form-label trans-text" data-langprop="titles.Name"></label>
+                    <input type="text" class="form-control data-input" id="_level_name" data-field="name"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <span class="trans-text" data-langprop="buttons.Cancel"></span>
+                </button>
+                <button id="dlg_pgm_detail_btn_save" type="button" class="btn btn-primary">
+                    <span class="trans-text" data-langprop="buttons.Save"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
