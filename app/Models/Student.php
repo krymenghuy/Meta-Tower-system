@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use DB;
+use Illuminate\Pagination\LengthAwarePaginator;
 class Student //extends Model
 {
     // use HasFactory;
@@ -200,5 +201,51 @@ class Student //extends Model
         $new_code = $prefix.$branch_id.formatNumber($newID,4);
         DB::table('students')->where('id',$newID)->update(['code' => $new_code]);
         // return $new_code;
+    }
+
+
+    static function student_payment_pending($filter=[],$ss){
+        $branch_id = $ss->branch_id;
+        $search_value =isset($filter['search_value'])?$filter['search_value']:null;
+        $current_page =isset($filter['current_page'])?$filter['current_page']:1;
+        $owner_id = isset($filter['owner_id'])?$filter['owner_id']:null;
+        $per_page =isset($filter['per_page'])?$filter['per_page']:10;
+        if(!is_numeric($current_page)) $current_page=1;
+        $skip_rows = ($current_page -1) * $per_page;
+
+        $group_id = isset($filter['group_id'])? $filter['group_id']:null;
+        $country_id = isset($filter['country_id'])? $filter['country_id']:null;
+        $category_id = isset($filter['category_id'])? $filter['category_id']:null;
+
+        $str_search ="1=1";
+        $str_moreWhere="1=1";
+        if($search_value){
+           $skip_rows =0;
+          $search_value = escape_like_str($search_value);
+          $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+        }
+        //if ($brand_id >0) $str_brand ="g.id =$brand_id";
+        //order by group_name or group_code
+        $query = DB::table('inv_items as i')
+          ->join('inv_item_groups as g','g.id','=','i.group_id')
+          ->join('inv_categories as c','c.id','=','g.category_id')
+          ->join('inv_brands as b','b.id','=','g.brand_id')
+          ->join('inv_item_prices as p','p.item_id','=','i.id')
+          ->where('p.sales_type','retail')
+          ->where('i.owner_id',$owner_id)
+          ->where('i.branch_id',$branch_id)->whereRaw($str_moreWhere)->whereRaw($str_search)
+          // ->selectRaw("t.id as detail_type_id,t.name as detailed_type,b.name as brand_name,b.id as brand_id,i.id,'Product' AS item_type,i.code,g.code as group_code,i.name,i.description,g.name as group_name,g.id as group_id,g.description as group_description, g.category_id, i.manufacturer_id, c.name AS category,getItemDetailType(g.detail_type_id) as detail_type,i.create_user,formatDate(i.created_at) as created_at")
+          ->selectRaw("b.name as brand_name,b.id as brand_id,i.id,'Product' AS item_type,i.code,g.code as group_code,i.name,i.description,g.name as group_name,g.id as group_id,g.description as group_description, g.category_id, i.manufacturer_id, c.name AS category,i.create_user,formatDate(i.created_at) as created_at")
+          ->orderByRaw("g.name ASC,i.code ASC");
+      //   ->join('inv_item_groups as g','g.id','=','i.group_id')
+      //   ->join('inv_categories as c','c.id','=','g.category_id')
+      //   ->where("i.item_class",self::$item_class)->where('i.branch_id',$branch_id)
+      //   ->whereRaw($str_moreWhere)->whereRaw($str_search)
+      //   ->selectRaw("i.id,'Product' AS item_type,i.code,g.code as group_code,i.name,i.description,g.name as group_name,g.id as group_id,g.description as group_description, g.category_id, i.manufacturer_id, c.name AS category,g.detail_type_id,getItemDetailType(g.detail_type_id) as detail_type,i.create_user,formatDate(i.created_at) as created_at")->orderByRaw("g.name ASC,i.code ASC");
+        $count_query = clone $query;
+        $count = $count_query->count('g.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 }

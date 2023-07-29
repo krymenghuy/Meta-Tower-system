@@ -41,7 +41,7 @@ class PriceList //extends Model
        ];
 
        $created = false;
-       if (!$id) $created = true; 
+       if (!$id) $created = true;
        $res = validateObject($arr,$v_rule,true,['academic_year'=>['-']],$ss->lang,false,null);
        if($res->error) return DV::error($res->error);
        $inputs = $res->values;
@@ -58,7 +58,7 @@ class PriceList //extends Model
        if($err){
           return DV::error($err);
        }
-       $id = saveData($ss,'price_list',['id'=>$id],$inputs,[],1,false); 
+       $id = saveData($ss,'price_list',['id'=>$id],$inputs,[],1,false);
        return DV::depends($id,null,'Failed to save price list');
     }
 
@@ -85,7 +85,7 @@ class PriceList //extends Model
     }
     /**
      *add item to a price list
-     * $arr = ['class_name','session','price','currency_code'] 
+     * $arr = ['class_name','session','price','currency_code']
     */
     function saveItem($arr=[],$id=null,$ss=null){
         $id = $id?$id:$this->user_info;
@@ -112,7 +112,7 @@ class PriceList //extends Model
         return DV::depends($x,null,'Failed to delete price list item');
     }
 
-   
+
     function list_paginate($arr=[],$ss=null){
         $ss =$ss?$ss:$this->user_info;
         $branch_id =$ss->branch_id;
@@ -123,7 +123,7 @@ class PriceList //extends Model
         $skip_rows = ($current_page -1) * $per_page;
         $str_moreWhere ="1=1";
         $str_search="1=1";
- 
+
         $cols = 'l.id, l.name, l.version,l.description,l.create_user,formatDate(l.created_at) as created_at';
         $query = DB::table('price_list as l')->where('l.branch_id',$branch_id)->whereRaw($str_moreWhere)->whereRaw($str_search)->selectRaw($cols);
 
@@ -132,5 +132,5 @@ class PriceList //extends Model
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
- 
+
 }
