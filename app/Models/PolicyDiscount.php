@@ -64,10 +64,10 @@ class PolicyDiscount //extends Model
         $res = [
             'price_list'=>Setting::price_list_options($ss),
             'sessions' => Setting::session_options($ss),
-            'pmt_options' => Setting::pmt_options($ss)
+            'pmt_options' => Setting::pmt_options($ss),
+            'programs' => Setting::programs_options($ss),
         ];
         return $res;
-
     }
 
     function list_paginate($arr=[],$ss=null){
