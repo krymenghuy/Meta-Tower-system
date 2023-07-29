@@ -12,7 +12,7 @@ class ContactChannel extends Model
     protected $table = 'contact_channels';
     protected $guarded = ['id'];
     protected $fillable = [];
-     
+
     protected $primaryKey = 'id';
     public $incrementing = true;
     //protected $keyType = 'string';
