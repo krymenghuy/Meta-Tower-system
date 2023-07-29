@@ -21,12 +21,12 @@ class Campus //extends Model
         $inputs = $res->values;
 
         $newID = saveData($ss,'campuses',['id' => $id],$inputs,[],1);
-        return DV::depends($newID,'Saved');
+        return DV::depends($newID,['action' => 'saved','campuses' => self::list($ss)]);
     }
 
     static function list($ss){
         $branch_id = $ss->branch_id;
-        $rows = DB::table('campuses as c')->selectRaw('c.name')->where('c.branch_id',$branch_id)->get();
+        $rows = DB::table('campuses as c')->selectRaw('c.name,id')->where('c.branch_id',$branch_id)->get();
         return $rows;
     }
 
@@ -39,6 +39,6 @@ class Campus //extends Model
     static function delete($id,$ss){
         $branch_id = $ss->branch_id;
         $row = DB::table('campuses')->where('id',$id)->where('branch_id',$branch_id)->delete();
-        return DV::depends($row,'Deleted');
+        return DV::depends($row,['action' => 'Deleted','campuses' => self::list($ss)]);
     }
 }

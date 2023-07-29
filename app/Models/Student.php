@@ -73,8 +73,11 @@ class Student //extends Model
         $is_create = (!$id || $id==0);
 
         unset($inputs['level_id'],$inputs['session_id'],$inputs['campus_id'],$inputs['prev_school'],$inputs['shift_id'],$inputs['term_id'],$inputs['pmt_mode']);
+
+        if(self::checkExistsLoginName($parent_info)) return DV::error('Login name is already taken');
         // $save_prev_school = saveData($ss,'school',['id' => ]);
-        $newID = saveData($ss,'students',['id' => $id],$inputs,[],1,1);
+        // $newID = saveData($ss,'students',['id' => $id],$inputs,[],1,1);
+        $newID = saveData($ss,'students',['id' => null],$inputs,[],1,1);
 
         if($newID>0){
             PublicStorage::saveImage($branch_id,"students",null,$image,null, ['id' => $newID, 'store' => 'students.file_name']);
@@ -112,15 +115,25 @@ class Student //extends Model
             }
             $p_info = self::saveStudentParent($parent_info,$newID,$ss);
         }
-        return $p_info;
-        // return DV::depends($newID,['action'=>'Saved','test'=>$p_info]);
+        return DV::depends($newID,['action'=>'Saved','test'=>$p_info]);
     }
 
+    static function checkExistsLoginName($info){
+        foreach ($info as $parentInfo) {
+            // Check if the record with the unique identifier exists in the database
+            $uniqueIdentifier = $parentInfo['father_phone'] ?? $parentInfo['mother_phone'];
+            $existingRecord = DB::table('um_users')->where('login_name', $uniqueIdentifier)
+                                        ->first();
+            // If the record exists, update it; otherwise, insert a new record
+        }
+        return $existingRecord?true:false;
+    }
 
     static function saveStudentParent($parent_info,$child_id,$ss){
 
         // $student_code = DB::table('students')->where('id',$child_id)->pluck('id');
         $um = new UM();
+        $um_ = null;
         foreach($parent_info as $pf){
             $inputs = [
                 'name' => $pf['father_name'] ?? $pf['mother_name']?? '',
@@ -136,7 +149,7 @@ class Student //extends Model
             if($newID>0){
                 if(count($parent_info)==1){
                     $arr= [
-                        'login_name' => $inputs['name'],
+                        'login_name' => $inputs['phone_number'],
                         'user_class' => 'guardian',
                         'role_id' => '16',
                         'official_id' => $newID,
@@ -145,7 +158,7 @@ class Student //extends Model
                         'password' => "123456",
                         'full_name' => $inputs['name']
                     ];
-                   $um->saveUser($arr,$ss);
+                   $um_ = $um->saveUser($arr,$ss);
 
                 }
 
@@ -153,7 +166,7 @@ class Student //extends Model
                 if($female_guardian){
                     // return $female_guardian;
                     $arr= [
-                        'login_name' => $female_guardian->name,
+                        'login_name' => $female_guardian->phone_number,
                         'user_class' => 'guardian',
                         'role_id' => '16',
                         'official_id' => $newID,
@@ -162,7 +175,8 @@ class Student //extends Model
                         'password' => "123456",
                         'full_name' => $female_guardian->name,
                     ];
-                  $um->saveUser($arr,$ss);
+                  $um_ = $um->saveUser($arr,$ss);
+
 
                 }
                 // link parent with child
@@ -171,7 +185,7 @@ class Student //extends Model
 
             }
         }
-        return $parent_info;
+        return $um_;
 
     }
 
