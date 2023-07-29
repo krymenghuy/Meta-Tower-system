@@ -1,18 +1,16 @@
 <div id="_main_policyDiscountComponent" class="mobile-padding p-3" style="display:none">
     <div class="d-flex gap-2">
-        <button class="btn btn-sm btn-primary btn--add" type="button">
+        <button id="pld_btn_add" class="btn btn-sm btn-primary" type="button">
             <i class="fa-solid fa-plus"></i>
             <span class="trans-text" data-langprop="buttons.Add Policy"></span>
         </button>
-        <input type="search" class="form-control width--search-inner" placeholder="Search..."/>
+        <input id="_pdl_search" type="search" class="form-control width--search-inner" placeholder="Search..."/>
         <button class="btn btn-sm btn-primary" type="button">
             <span class="trans-text" data-langprop="buttons.Filter By Year"></span>
             <i class="fa-solid fa-caret-down ps-2"></i>
         </button>
     </div>
-    <div class="table-responsive mt-3 p-3">
-        <table class="table tbl_pld"></table>
-    </div>
+    <div id="tbl_pld" class="table-responsive mt-3 p-3 border rounded-3"></div>
 </div>
 
 <div id="dlg__pld" class="modal fade" tabindex="-1" aria-labelledby="dlg__pld_title" aria-hidden="true">
