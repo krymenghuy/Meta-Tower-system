@@ -1,5 +1,5 @@
 <div id="_main_registrationComponent" class="mobile-padding p-3" style="display:none">
-    <div class="st-register--list">
+    <div id="st-register--list" class="st-register--list">
         <div class="bg-white p-4 rounded-4">
             <div class="row row-cols-lg-4 gy-2">
                 <div class="col">
@@ -27,9 +27,9 @@
             </button>
             <input type="search" class="form-control width--search" placeholder="Search by Name or ID..."/>
         </div>
-        <div id="_rgs_list" class="mt-3 div-registrated"></div>
+        <div id="_rgs_list" class="mt-3"></div>
     </div>
-    <div class="st-register--input" style="display:none">
+    <div id="st-register--input" class="st-register--input" style="display:none">
         <div class="bg-primary rounded-top-3">
             <div class="py-2 px-3">
                 <i class="fa-solid fa-arrow-left-long fs-3 text-white back--rgs" role="button"></i>

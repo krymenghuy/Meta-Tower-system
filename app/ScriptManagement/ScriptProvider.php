@@ -123,6 +123,7 @@ class ScriptProvider
                 '/js/components/UserManagementComponent.js',
                 '/js/components/RoleManagementComponent.js',
                 '/js/components/ProgramComponent.js',
+                '/js/components/StudentGroupComponent.js',
                 'assets/js/pusher/pusher.min.js',
                 '/js/components/pusher_connect.js'
             ]

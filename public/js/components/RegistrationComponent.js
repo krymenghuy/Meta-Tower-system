@@ -3,13 +3,12 @@ var RegistrationComponent = new function(){
     let mThis = this;
     this.title_prop = "Registration";
     this.self = $('#_main_registrationComponent');
-    this.btnRegister = $('#_rgs_btnRegister');
-
-    this.div_input = mThis.self.find('.st-register--input');
-    this.div_list = mThis.self.find('.st-register--list');
-    this.div_register_list = mThis.self.find('.div-registrated');
-
     this.options = {};
+    
+    this.btnRegister = $('#_rgs_btnRegister');
+    this.div_input = mThis.self.find('#st-register--input');
+    this.div_list = mThis.self.find('#st-register--list');
+    this.div_register_list = mThis.self.find('#_rgs_list');
 
     this.init = () => {
         mThis.btnRegister.on('click',function(e){
