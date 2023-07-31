@@ -4,7 +4,8 @@ var TuitionFeeComponent = new function(){
     this.title_prop = "Tuition Fee";
     this.self = $('#_main_tuitionFeeComponent');
     
-    this.btnAdd = mThis.self.find('.btn--add');
+    this.btnAdd = mThis.self.find('#ttf_btn_add');
+    this.elSearch = mThis.self.find('#ttf_search');
 
     this.cols = [{
         title: "Name",
@@ -25,8 +26,9 @@ var TuitionFeeComponent = new function(){
     {
         title: "Created By",
         data: (data, a, b) => {
-            return [`<p class="pb-0 mb-0">${data.create_user}</p>
-            <p class="pb-0 mb-0">${data.created_at}</p>`].join('');
+            let user = data.create_user ? data.create_user : '', date = data.created_at ? data.created_at : '';
+            return [`<p class="pb-0 mb-0">${user}</p>
+            <p class="pb-0 mb-0">${date}</p>`].join('');
         }
     },
     {
@@ -73,7 +75,7 @@ var TuitionFeeComponent = new function(){
             let op = {
                 'id': 0,
                 'onClose': () => {
-                    mThis.itemView.showPage(null);
+                    mThis.itemView.showPage({'search_value': $(this).val()});
                 }
             };
             TuitionFeeOutsideDialog.show(op);
@@ -84,7 +86,7 @@ var TuitionFeeComponent = new function(){
             let op = {
                 'id': $(this).data('id'),
                 'onClose': () => {
-                    mThis.itemView.showPage(null);
+                    mThis.itemView.showPage({'search_value': $(this).val()});
                 }
             };
             TuitionFeeOutsideDialog.show(op);
@@ -99,7 +101,7 @@ var TuitionFeeComponent = new function(){
                 if(e){
                     window.vsapi.call(`${main_view.base_url}/api/price-list/delete`,op,null).then(res => {
                         if(res.status_code === 200){
-                            mThis.itemView.showPage(null);
+                            mThis.itemView.showPage({'search_value': $(this).val()});
                         }
                         else{
                             cv_interact.error(res.error_message);
@@ -117,6 +119,12 @@ var TuitionFeeComponent = new function(){
                 if(id > 0)
                     mThis.displayPriceListItem(detail_tr, id);
             }
+        });
+
+        mThis.elSearch.on('keyup',function(e){
+            e.preventDefault();
+            if(e.keyCode === 13)
+                mThis.itemView.showPage({'search_value': $(this).val()});
         });
     }
 
@@ -216,9 +224,10 @@ var TuitionFeeComponent = new function(){
             };
             cv_interact.confirm('Delete this price?',{title: 'Delete Price', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/`,op,null).then(res => {
+                    window.vsapi.call(`${main_view.base_url}/api/price-list/delete-item`,op,null).then(res => {
                         if(res.status_code === 200){
-                            mThis.renderExpandable(tbody,res.data, id);
+                            let d = res.data;
+                            mThis.renderExpandable(tbody,d.price_list_items, id);
                         }
                     });
                 }
@@ -249,7 +258,8 @@ let TuitionFeeOutsideDialog = new function(){
         window.vsapi.call(`${main_view.base_url}/api/price-list/save`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
-                if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
+                if(typeof mThis.options.onClose === 'function')
+                    mThis.options.onClose();
             }
             else{
                 cv_interact.error(res.error_message);
@@ -325,7 +335,9 @@ let PriceItemDialog = new function(){
         window.vsapi.call(`${main_view.base_url}/api/price-list/save-item`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
-                if(typeof mThis.options.onClose === 'function') mThis.options.onClose(res.data);
+                let d = res.data;
+                if(typeof mThis.options.onClose === 'function')
+                    mThis.options.onClose(d.price_list_items);
             }
             else{
                 cv_interact.error(res.error_message);
@@ -358,16 +370,6 @@ let PriceItemDialog = new function(){
         });
     }
 
-    this.loadDataEdit = (options) => {
-        window.vsapi.call(`${main_view.base_url}/api/`,{'id': options.id},null).then(res => {
-            let data = {};
-            if(res.status_code === 200){
-                data = StringSanitizer.sanitizeObject(res.data);
-            }
-            mThis.setDataForm(data);
-        });
-    }
-
     this.prepareFormOption = (onFinish = null) => {
         window.vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
             let d = {};
@@ -381,7 +383,7 @@ let PriceItemDialog = new function(){
     }
 
     this.loadDataEdit = (options) => {
-        window.vsapi.call(`${main_view.base_url}/api/`,{'id': options.id},null).then(res => {
+        window.vsapi.call(`${main_view.base_url}/api/price-list/item-details`,{'id': options.id},null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = StringSanitizer.sanitizeObject(res.data);
@@ -405,7 +407,7 @@ let PriceItemDialog = new function(){
                 mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input item details','titles'));
                 mThis.setDataForm(null);
             }
-    
+
             mThis.self.modal({
                 backdrop: 'static'
             });
