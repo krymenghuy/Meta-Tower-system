@@ -25,16 +25,8 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="program_id" class="form-label trans-text" data-langprop="titles.Program"></label>
-                    <div class="width-select-dialog">
-                        <select id="dlg_ttf_program" class="modal-select2 data-input" data-field="program_id"></select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="price_list_id" class="form-label trans-text" data-langprop="titles.Name"></label>
-                    <div class="width-select-dialog">
-                        <select id="dlg_ttf_price_list" class="modal-select2 data-input" data-field="list_id"></select>
-                    </div>
+                    <label for="name" class="form-label trans-text" data-langprop="titles.Name"></label>
+                    <input type="text" class="form-control data-input" data-field="name"/>
                 </div>
                 <div class="form-group">
                     <label for="start_date" class="form-label trans-text" data-langprop="titles.Start Date"></label>

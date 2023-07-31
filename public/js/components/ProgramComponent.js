@@ -49,7 +49,7 @@ var ProgramComponent = new function(){
             });
         });
 
-        this.cfg = new ExpandableRowConfig('_pgm_tbl', {
+        mThis.cfg = new ExpandableRowConfig('_pgm_tbl', {
             'dontExpandByClickingOn': ['btn-pgm-modify', 'btn-pgm-delete'],
             'onOpen': (container, detail_tr, parent_tr) => {
                 let qtr = $(parent_tr);
