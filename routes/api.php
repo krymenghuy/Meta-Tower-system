@@ -377,6 +377,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('price-list/items', [PriceListController::class, 'getPriceListItems']);
     Route::post('price-list/save-item', [PriceListController::class, 'saveItem']);
     Route::post('price-list/delete-item', [PriceListController::class, 'deleteItem']);
+    Route::post('price-list/item-details', [PriceListController::class, 'getPriceListItemDetails']);
+
 
     //End::PriceListController
 

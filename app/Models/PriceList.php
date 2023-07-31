@@ -121,14 +121,25 @@ class PriceList //extends Model
         return DV::depends($item_id,['action'=>'Saved','price_list_items'=>$this->listPriceListItem()],'Failed to save Item');
     }
 
-    function deleteItem($item_id,$id=null){
-        $x = DB::table('price_list_items')->where('id',$item_id)->delete();
-        return DV::depends($x,null,'Failed to delete price list item');
+    static function itemDetails($id){
+        return DB::table('price_list_items')->where('id',$id)->selectRaw('list_id,program_id,price,currency_code,session_id')->first();
+    }
+
+    function deleteItem($d){
+        $id = isset($d->id)?$d->id:$d->item_id;
+        $x = DB::table('price_list_items')->where('id',$id)->delete();
+        return DV::depends($x,['action'=>'Deleted','price_list_items'=>$this->listPriceListItem()],'Failed to delete price list item');
     }
 
     function listPriceListItem(){
-        return DB::table('price_list_items')->selectRaw('list_id,program_id,session_id,price,session_id')->get();
+        return DB::table('price_list_items as i')
+                ->join('programs as p','p.id','=','i.program_id')
+                ->join('sessions as s','s.id','=','i.session_id')
+                ->selectRaw('i.id,i.list_id,p.name as program_name,i.currency_code,s.name as session,i.price')->get();
     }
+
+
+
 
 
     function list_paginate($arr=[],$ss=null){
@@ -171,7 +182,7 @@ class PriceList //extends Model
                 ->selectRaw('l.id as price_list_id,i.price')
                 ->first();
         if(!$row){
-            return null;
+            return (object)['price' => 0,'dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0,'tuition'=>0,'tuition_due'=>0];
         }
         if($pmt_option_id>0){
             $discount_info = $this->getPolicyDiscount($row->price,$pmt_option_id,$row->price_list_id);
@@ -197,7 +208,7 @@ class PriceList //extends Model
         $discount_percent = 0;
 
         if($row->discount_type == 'percentage'){
-            $discount_amt = $price*row->discount/100;
+            $discount_amt = $price* $row->discount/100;
             $discount_percent = $row->discount;
         }else{
             $discount_amt = $row->discount;
