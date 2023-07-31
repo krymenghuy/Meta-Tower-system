@@ -159,18 +159,18 @@ var TuitionFeeComponent = new function(){
                     'id': 0,
                     'list_id': id,
                     'onClose': (d) => {
-                        mThis.renderExpandable($(tr).find('tbody'),d);
+                        mThis.renderExpandable($(tr).find('tbody'),d, id);
                     }
                 };
                 PriceItemDialog.show(op);
             });
 
-            mThis.renderExpandable($(tr).find('tbody'),data);
+            mThis.renderExpandable($(tr).find('tbody'),data, id);
             LocaleManager.translateZone(`${wrapper_id}`);
         });
     }
 
-    this.renderExpandable = (tbody, data) => {
+    this.renderExpandable = (tbody, data, id) => {
         let html = null;
         data = data ? data : [];
         
@@ -192,16 +192,17 @@ var TuitionFeeComponent = new function(){
             </tr>`].join('');
         });
         tbody.html(html);
-        mThis.controlPriceListItem(tbody);
+        mThis.controlPriceListItem(tbody, id);
     }
 
-    this.controlPriceListItem = (tbody) => {
+    this.controlPriceListItem = (tbody, id) => {
         tbody.on('click','a.btn-ttf-item-modify',function(e){
             e.preventDefault();
             let op = {
                 'id': $(this).data('id'),
+                'list_id': id,
                 'onClose': (d) => {
-                    mThis.renderExpandable(tbody, d);
+                    mThis.renderExpandable(tbody, d, id);
                 }
             };
             PriceItemDialog.show(op);
@@ -210,13 +211,14 @@ var TuitionFeeComponent = new function(){
         tbody.on('click','a.btn-ttf-item-delete',function(e){
             e.preventDefault();
             let op = {
-                'id': $(this).data('id')
+                'id': $(this).data('id'),
+                'list_id': id
             };
             cv_interact.confirm('Delete this price?',{title: 'Delete Price', context: 'delete'},(e) => {
                 if(e){
                     window.vsapi.call(`${main_view.base_url}/api/`,op,null).then(res => {
                         if(res.status_code === 200){
-                            mThis.renderExpandable(tbody,res.data);
+                            mThis.renderExpandable(tbody,res.data, id);
                         }
                     });
                 }
@@ -349,7 +351,10 @@ let PriceItemDialog = new function(){
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
-            el.val(d[f]);
+            if(el.is('select'))
+                el.val(d[f]).trigger('change');
+            else
+                el.val(d[f]);
         });
     }
 
@@ -372,6 +377,16 @@ let PriceItemDialog = new function(){
             VSUtil.setComboItems(mThis.elProgram,d.programs,'id','program_name',null,null,null);
             VSUtil.setComboItems(mThis.elSession,d.sessions,'id','name',null,null,null);
             if(typeof onFinish === 'function') onFinish();
+        });
+    }
+
+    this.loadDataEdit = (options) => {
+        window.vsapi.call(`${main_view.base_url}/api/`,{'id': options.id},null).then(res => {
+            let data = {};
+            if(res.status_code === 200){
+                data = StringSanitizer.sanitizeObject(res.data);
+            }
+            mThis.setDataForm(data);
         });
     }
 
