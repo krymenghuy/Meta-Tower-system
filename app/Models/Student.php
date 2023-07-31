@@ -28,7 +28,7 @@ class Student //extends Model
             'shift_id' => '0|number|exists=shifts.id',
             'term_id' => '0|number|exists=terms.id',
             'pmt_mode' => '0|number|default=1',
-            'academic_year_id' => '1|number|exists=academic_years.id',
+            'academic_year' => '1|string|1,25',
             'status_id' => '1|number|exists=status.id',
             'tuition' => '0|number|default=0',
             'tuition_due' => '0|number|default=0',
@@ -67,7 +67,7 @@ class Student //extends Model
         $tuition_due = $inputs['tuition_due'];
         $discount = $inputs['discount'];
         $tuition_paid = $inputs['tuition_paid'];
-        $academic_year = $inputs['academic_year_id'];
+        $academic_year = $inputs['academic_year'];
         $statusID = $inputs['status_id'];
 
         unset($inputs['status_id']);
@@ -77,7 +77,7 @@ class Student //extends Model
         unset($inputs['tuition_due']);
         unset($inputs['discount']);
         unset($inputs['tuition_paid']);
-        unset($inputs['academic_year_id']);
+        unset($inputs['academic_year']);
         unset($inputs['pmt_option_id']);
         unset($inputs['pmt_status']);
 
@@ -106,7 +106,7 @@ class Student //extends Model
                 'campus_id' => $campus_id,
                 'shift_id' => $shift_id,
                 'pmt_mode' => $pmt_mode,
-                'academic_year_id' => $academic_year,
+                'academic_year' => $academic_year,
                 'status_id' => $statusID
             ];
             $enrollment_id = saveData($ss,'enrollments',['student_id'=>null],$en_student_data,[],1);
@@ -122,10 +122,16 @@ class Student //extends Model
                     'term_id' => $term_id,
                     'enrollment_id' => $enrollment_id
                 ];
-                $saveEnrPayment = saveData($ss,'enrollment_payments',[],$en_payment_data,[],1);
-
-                //** set default tuition to entrollment student */
-                $default_tuition = self::set_default_tuition($getEnrollment->session_id,$enrollment_id);
+                $saveEnrPaymentID = saveData($ss,'enrollment_payments',[],$en_payment_data,[],1);
+                if($saveEnrPaymentID){
+                    $pl = new PriceList(null,$ss);
+                    $tuition_info = $pl->getTuitionDue([
+                        'start_date' => getNowTime(),
+                        'academic_year' => $academic_year,
+                        'program_id' => $program_id,
+                        'session_id' => $session_id
+                    ]);
+                }
             }
 
             //** save into pmt_parameters */
@@ -156,7 +162,7 @@ class Student //extends Model
             //** using guardian's phone number for login name and password default = 123456 */
             $p_info = self::saveStudentParent($parent_info,$newID,$ss);
         }
-        return DV::depends($newID,['action'=>'Saved','en_payment'=>$saveEnrPayment,'default_tuition'=>$default_tuition]);
+        return DV::depends($newID,['action'=>'Saved','tuition'=>$tuition_info]);
     }
 
 
@@ -289,40 +295,23 @@ class Student //extends Model
         $session_id = isset($arr['session_id']) ? $arr['session_id'] : null;
     }
 
-    static function payment_section($arr,$id,$ss){
-        $v_rule = [
-            // 'tuition' => '1|number',
-        ];
+    // static function payment_section($arr,$id,$ss){
+    //     $v_rule = [
+    //         // 'tuition' => '1|number',
+    //     ];
 
-        $res = validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
-        if($res->error) return DV::error($res->error);
+    //     $res = validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
+    //     if($res->error) return DV::error($res->error);
 
-        $inputs = $res->values;
+    //     $inputs = $res->values;
 
-        return $inputs;
-    }
-
-
+    //     return $inputs;
+    // }
 
 
-    static function set_default_tuition($session_id,$enrollment_id){
-        if($session_id == 1){
-            $price_list = DB::table('price_list')
-                        ->where('start_date', '<=', getNowTime())
-                        ->where('end_date', '>=', getNowTime())
-                        ->selectRaw('start_date,end_date')
-                        ->get()->first();
-            $startDate = $price_list->start_date;
-            $endDate = $price_list->end_date;
-            $isBetween = DB::table('your_table')
-                        ->whereRaw('created_at BETWEEN ? AND ?', [$startDate, $endDate])
-                        ->exists();
-            DB::table('enrollment_payments')->where('enrollment_id',$enrollment_id)->update([
-                'tuition' => '400'
-            ]);
-        }
 
-        return "sxgfas;";
 
-    }
+    /**
+     * $arr ['start_date','acadmic_year','program_id','session_id']
+    */
 }
