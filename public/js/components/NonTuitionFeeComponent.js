@@ -4,18 +4,16 @@ var NonTuitionFeeComponent = new function(){
     this.title_prop = "Non-tuition Fee";
     this.self = $('#_main_nonTuitionFeeComponent');
 
-    this.tblNonTuitionFee = mThis.self.find('.tbl_ntf');
-    this.btnAdd = mThis.self.find('.btn--add');
+    this.tblNonTuitionFee = mThis.self.find('#tbl_ntf');
+    this.btnAdd = mThis.self.find('#ntf_btn_add');
 
     this.init = () => {
         mThis.btnAdd.on('click',function(e){
             e.preventDefault();
             let op = {
                 'id': 0,
-                'onClose': (e) => {
-                    if(e){
-                        mThis.displayNonTuitionFee();
-                    }
+                'onClose': () => {
+                    mThis.displayNonTuitionFee();
                 }
             };
             NonTuitionFeeOutsideDialog.show(op);
@@ -30,10 +28,8 @@ var NonTuitionFeeComponent = new function(){
             e.preventDefault();
             let op = {
                 'id': $(this).data('id'),
-                'onClose': (e) => {
-                    if(e){
-                        mThis.displayNonTuitionFee();
-                    }
+                'onClose': () => {
+                    mThis.displayNonTuitionFee();
                 }
             };
             NonTuitionFeeOutsideDialog.show(op);
@@ -60,7 +56,7 @@ var NonTuitionFeeComponent = new function(){
     }
 
     this.displayNonTuitionFee = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/`,null,null).then(res => {
+        window.vsapi.call(`${main_view.base_url}/api/other-fee/list`,null,null).then(res => {
             let data = [];
             if(res.status_code === 200){
                 data = StringSanitizer.sanitizeObject(res.data);
@@ -68,15 +64,18 @@ var NonTuitionFeeComponent = new function(){
 
             let cols = [{
                 title: "Fee Type",
-                data: "fee_type"
+                data: "name"
             },
             {
-                title: "Start Date",
-                data: "start_date"
+                title: "Program",
+                data: "program_name"
             },
             {
-                title: "End Date",
-                data: "end_date"
+                title: "Amount",
+                data: (data, a, b) => {
+                    let amount = data.amount ? data.amount : '', currency = data.currency_code ? data.currency_code : '';
+                    return [amount,currency].join(' ');
+                }
             },
             {
                 title: "Academic Year",
@@ -84,28 +83,35 @@ var NonTuitionFeeComponent = new function(){
             },
             {
                 title: "Created By",
-                data: "created_by"
+                data: (data, a, b) => {
+                    let user = data.create_user ? data.create_user : '', date = data.created_at ? data.created_at : '';
+                    
+                    return [`<p class="pb-0 mb-0">${user}</p>
+                    <p class="pb-0 mb-0">${date}</p>`].join('');
+                }
             },
             {
                 title: "Authorized By",
-                data: "authorized_by"
+                data: (data, a, b) => {
+                    let user = data.auth_user ? data.auth_user : '', date = data.auth_date ? data.auth_date : '';
+
+                    return [`<p class="pb-0 mb-0">${user}</p>
+                    <p class="pb-0 mb-0">${date}</p>`].join('');
+                }
             },
             {
-                title: "Status",
-                data: "status"
+                title: "Description",
+                data: "description"
             },
             {
                 title: "Action",
                 data: (data, a, b) => {
                     return [`<div class="d-flex gap-2">
-                        <a href="javascript:void(0)" class="btn-ntf-duplicate" data-id="${data.id}">
-                            <i class="fa-solid fa-clone text-primary"></i>
-                        </a>
                         <a href="javascript:void(0)" class="btn-ntf-modify" data-id="${data.id}">
-                            <i class="fa-regular fa-pen-to-square text-warning"></i>
+                            <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
                         </a>
                         <a href="javascript:void(0)" class="btn-ntf-delete" data-id="${data.id}">
-                            <i class="fa-regular fa-trash-can text-danger"></i>
+                            <i class="fa-regular fa-trash-can text-danger fs-5"></i>
                         </a>
                     </div>`].join('');
                 }

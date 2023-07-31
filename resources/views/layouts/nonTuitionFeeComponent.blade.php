@@ -1,6 +1,6 @@
 <div id="_main_nonTuitionFeeComponent" class="mobile-padding p-3" style="display:none">
     <div class="d-flex gap-2">
-        <button class="btn btn-sm btn-primary btn--add" type="button">
+        <button id="ntf_btn_add" class="btn btn-sm btn-primary" type="button">
             <i class="fa-solid fa-plus"></i>
             <span class="trans-text" data-langprop="buttons.Add List"></span>
         </button>
@@ -10,8 +10,8 @@
             <i class="fa-solid fa-caret-down ps-2"></i>
         </button>
     </div>
-    <div class="table-responsive mt-3 p-3">
-        <table class="table tbl_ntf"></table>
+    <div class="table-responsive mt-3 p-3 border rounded-3 bg-white">
+        <table id="tbl_ntf" class="table"></table>
     </div>
 </div>
 
