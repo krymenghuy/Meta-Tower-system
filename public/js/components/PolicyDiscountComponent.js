@@ -33,11 +33,11 @@ var PolicyDiscountComponent = new function(){
     },
     {
         title: "Discount",
-        data: "discount"
-    },
-    {
-        title: "Discount Type",
-        data: "discount_type"
+        data: (data, a, b) => {
+            let discount = data.discount ? data.discount : '';
+            let discount_type = data.discount_type == 'percentage' ? '%' : '$';
+            return [discount,discount_type].join(' ');
+        }
     },
     {
         title: "Created By",

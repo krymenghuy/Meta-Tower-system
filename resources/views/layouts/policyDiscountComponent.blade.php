@@ -48,7 +48,11 @@
                 </div>
                 <div class="form-group">
                     <label for="discount_type" class="form-label trans-text" data-langprop="titles.Discount Type"></label>
-                    <input type="text" class="form-control data-input" data-field="discount_type"/>
+                    <div class="width-select-dialog">
+                        <select class="modal-select2 data-input" data-field="discount_type">
+                            <option value="percentage">Percentage (%)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
