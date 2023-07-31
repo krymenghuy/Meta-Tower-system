@@ -13,7 +13,7 @@
     <div id="_ttf_tbl" class="table-responsive mt-3 p-3 bg-white border rounded-3"></div>
 </div>
 
-<div id="dlg__ttf" class="modal fade" tabindex="-1" aria-labelledby="dlg__ttf_title" aria-hidden="true">
+<div id="dlg_ttf" class="modal fade" tabindex="-1" aria-labelledby="dlg_ttf_title" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -50,6 +50,46 @@
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
                 <button id="dlg_ttf_btn_save" class="btn btn-sm btn-primary" type="button">
+                    <span class="trans-text" data-langprop="buttons.Save"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="dlg_ttf_item" class="modal fade" tabindex="-1" aria-labelledby="dlg__ttf_item_title" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="d-block">
+                    <h5 class="modal-title"></h5>
+                    <small class="modal-title--sm"></small>
+                </div>
+                <button class="btn-close" type="button" aria-label="Close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="program_id" class="form-label trans-text" data-langprop="titles.Program"></label>
+                    <div class="width-select-dialog">
+                        <select id="dlg_ttf_item_program" class="modal-select2 data-input" data-field="program_id"></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="session_id" class="form-label trans-text" data-langprop="titles.Session"></label>
+                    <div class="width-select-dialog">
+                        <select id="dlg_ttf_item_session" class="modal-select2 data-input" data-field="session_id"></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="price" class="form-label trans-text" data-langprop="titles.Price"></label>
+                    <input type="number" class="form-control data-input" data-field="price"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-sm btn-secondary" type="button" data-dismiss="modal">
+                    <span class="trans-text" data-langprop="buttons.Cancel"></span>
+                </button>
+                <button id="dlg_ttf_item_btn_save" class="btn btn-sm btn-primary" type="button">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>

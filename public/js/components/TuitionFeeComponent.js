@@ -127,6 +127,7 @@ var TuitionFeeComponent = new function(){
 
         div_wrapper.empty();
         let html = null;
+        let btn_id = [wrapper_id,'btn',id].join('_');
 
         window.vsapi.call(`${main_view.base_url}/api/price-list/items`,{'id': id},null).then(res => {
             let data = [];
@@ -135,7 +136,7 @@ var TuitionFeeComponent = new function(){
             }
 
             html = [`<div class="p-3 rounded-3 bg-white">
-                    <button class="btn btn-outline-primary btn-sm" type="button">
+                    <button id="${btn_id}" class="btn btn-outline-primary btn-sm" type="button">
                         <span class="trans-text text-nowrap" data-langprop="buttons.Add Price Item"></span>
                     </button>
             </div>
@@ -152,6 +153,18 @@ var TuitionFeeComponent = new function(){
             </div>`].join('');
 
             div_wrapper.html(html);
+            div_wrapper.find(`#${btn_id}`).on('click',function(e){
+                e.preventDefault();
+                let op = {
+                    'id': 0,
+                    'list_id': id,
+                    'onClose': (d) => {
+                        mThis.renderExpandable($(tr).find('tbody'),d);
+                    }
+                };
+                PriceItemDialog.show(op);
+            });
+
             mThis.renderExpandable($(tr).find('tbody'),data);
             LocaleManager.translateZone(`${wrapper_id}`);
         });
@@ -159,6 +172,7 @@ var TuitionFeeComponent = new function(){
 
     this.renderExpandable = (tbody, data) => {
         let html = null;
+        data = data ? data : [];
         
         data.map(item => {
             html = [html, `<tr>
@@ -178,9 +192,37 @@ var TuitionFeeComponent = new function(){
             </tr>`].join('');
         });
         tbody.html(html);
+        mThis.controlPriceListItem(tbody);
     }
 
-    this.controlPriceListItem = () => {}
+    this.controlPriceListItem = (tbody) => {
+        tbody.on('click','a.btn-ttf-item-modify',function(e){
+            e.preventDefault();
+            let op = {
+                'id': $(this).data('id'),
+                'onClose': (d) => {
+                    mThis.renderExpandable(tbody, d);
+                }
+            };
+            PriceItemDialog.show(op);
+        });
+
+        tbody.on('click','a.btn-ttf-item-delete',function(e){
+            e.preventDefault();
+            let op = {
+                'id': $(this).data('id')
+            };
+            cv_interact.confirm('Delete this price?',{title: 'Delete Price', context: 'delete'},(e) => {
+                if(e){
+                    window.vsapi.call(`${main_view.base_url}/api/`,op,null).then(res => {
+                        if(res.status_code === 200){
+                            mThis.renderExpandable(tbody,res.data);
+                        }
+                    });
+                }
+            });
+        });
+    }
 
     this.show = (options) => {
         if(!options) options = {};
@@ -193,7 +235,7 @@ var TuitionFeeComponent = new function(){
 
 let TuitionFeeOutsideDialog = new function(){
     let mThis = this;
-    this.self = $('#dlg__ttf');
+    this.self = $('#dlg_ttf');
     this.options = {};
 
     this.elTitle = mThis.self.find('.modal-title');
@@ -261,6 +303,97 @@ let TuitionFeeOutsideDialog = new function(){
 
         mThis.self.modal({
             backdrop: 'static'
+        });
+    }
+}
+
+let PriceItemDialog = new function(){
+    let mThis = this;
+    this.self = $('#dlg_ttf_item');
+    this.options = {};
+
+    this.elTitle = mThis.self.find('.modal-title');
+    this.btnSave = mThis.self.find('#dlg_ttf_item_btn_save');
+    this.elProgram = mThis.self.find('#dlg_ttf_item_program');
+    this.elSession = mThis.self.find('#dlg_ttf_item_session');
+
+    mThis.btnSave.on('click',function(e){
+        e.preventDefault();
+        let p = mThis.getDataForm();
+        window.vsapi.call(`${main_view.base_url}/api/price-list/save-item`,p,null).then(res => {
+            if(res.status_code === 200){
+                mThis.self.modal('hide');
+                if(typeof mThis.options.onClose === 'function') mThis.options.onClose(res.data);
+            }
+            else{
+                cv_interact.error(res.error_message);
+            }
+        });
+    });
+
+    this.getDataForm = () => {
+        let p = {
+            'id': mThis.options.id,
+            'list_id': mThis.options.list_id
+        };
+        mThis.self.find('.data-input').each(function(){
+            let el = $(this);
+            let f = el.data('field');
+            p[f] = el.val();
+        });
+        return p;
+    }
+
+    this.setDataForm = (d) => {
+        d = d ? d : {};
+        mThis.self.find('.data-input').each(function(){
+            let el = $(this);
+            let f = el.data('field');
+            el.val(d[f]);
+        });
+    }
+
+    this.loadDataEdit = (options) => {
+        window.vsapi.call(`${main_view.base_url}/api/`,{'id': options.id},null).then(res => {
+            let data = {};
+            if(res.status_code === 200){
+                data = StringSanitizer.sanitizeObject(res.data);
+            }
+            mThis.setDataForm(data);
+        });
+    }
+
+    this.prepareFormOption = (onFinish = null) => {
+        window.vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
+            let d = {};
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            VSUtil.setComboItems(mThis.elProgram,d.programs,'id','program_name',null,null,null);
+            VSUtil.setComboItems(mThis.elSession,d.sessions,'id','name',null,null,null);
+            if(typeof onFinish === 'function') onFinish();
+        });
+    }
+
+    this.show = (options) => {
+        if(!options) options = {};
+        mThis.options = options;
+
+        mThis.prepareFormOption(() => {
+            if(options.id > 0){
+                mThis.elTitle.text(LocaleManager.trans('Edit Price List','titles'));
+                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please check item details before editing','titles'));
+                mThis.loadDataEdit(options);
+            }
+            else{
+                mThis.elTitle.text(LocaleManager.trans('Add New Price','titles'));
+                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input item details','titles'));
+                mThis.setDataForm(null);
+            }
+    
+            mThis.self.modal({
+                backdrop: 'static'
+            });
         });
     }
 }
