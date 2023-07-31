@@ -19,11 +19,6 @@ var NonTuitionFeeComponent = new function(){
             NonTuitionFeeOutsideDialog.show(op);
         });
 
-        mThis.tblNonTuitionFee.on('click','a.btn-ntf-duplicate',function(e){
-            e.preventDefault();
-            console.log("Clicked Duplicate!");
-        });
-
         mThis.tblNonTuitionFee.on('click','a.btn-ntf-modify',function(e){
             e.preventDefault();
             let op = {
@@ -85,7 +80,7 @@ var NonTuitionFeeComponent = new function(){
                 title: "Created By",
                 data: (data, a, b) => {
                     let user = data.create_user ? data.create_user : '', date = data.created_at ? data.created_at : '';
-                    
+
                     return [`<p class="pb-0 mb-0">${user}</p>
                     <p class="pb-0 mb-0">${date}</p>`].join('');
                 }
@@ -136,9 +131,9 @@ var NonTuitionFeeComponent = new function(){
                     saveState: true,
                     processing: true,
                     language: {
-                        'loadingRecords': '&nbsp;',
-                        'processing': 'Loading...',
-                        "emptyTable": LocaleManager.trans('No data to display', 'datatable')
+                        loadingRecords: '&nbsp;',
+                        processing: 'Loading...',
+                        emptyTable: LocaleManager.trans('No data to display', 'datatable')
                     },
                     data: data,
                     columns: cols,
@@ -164,19 +159,21 @@ var NonTuitionFeeComponent = new function(){
 
 let NonTuitionFeeOutsideDialog = new function(){
     let mThis = this;
-    this.self = $('#dlg__ntf');
+    this.self = $('#dlg_ntf');
     this.options = {};
 
     this.elTitle = mThis.self.find('.modal-title');
-    this.btnSave = mThis.self.find('.btn--save');
+    this.btnSave = mThis.self.find('#dlg_ntf_btn_save');
+    this.elProgram = mThis.self.find('#dlg_ntf_program');
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
         let p = mThis.getDataForm();
-        window.vsapi.call(`${main_view.base_url}/api/`,p,null).then(res => {
+        window.vsapi.call(`${main_view.base_url}/api/other-fee/save`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
-                if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
+                if(typeof mThis.options.onClose === 'function')
+                    mThis.options.onClose();
             }
             else{
                 cv_interact.error(res.error_message);
@@ -185,8 +182,9 @@ let NonTuitionFeeOutsideDialog = new function(){
     });
 
     this.getDataForm = () => {
-        let id = mThis.options.id ? mThis.options.id : 0;
-        let p = {'id': id};
+        let p = {
+            'id': mThis.options.id
+        };
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -200,18 +198,31 @@ let NonTuitionFeeOutsideDialog = new function(){
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
-            el.val(d[f]);
+            if(el.is('select'))
+                el.val(d[f]).trigger('change');
+            else
+                el.val(d[f]);
         });
     }
 
-    this.loadDataEdit = (id, onFinish) => {
-        let op = {'id': id};
-        window.vsapi.call(`${main_view.base_url}/api/`,op,null).then(res => {
+    this.loadDataEdit = (options) => {
+        window.vsapi.call(`${main_view.base_url}/api/`,{'id': options.id},null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = StringSanitizer.sanitizeObject(res.data);
             }
-            onFinish && onFinish(data);
+            mThis.setDataForm(data);
+        });
+    }
+
+    this.prepareFormOption = (onFinish = null) => {
+        window.vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
+            let d = {};
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            VSUtil.setComboItems(mThis.elProgram,d.programs,'id','program_name',null,null,null);
+            if(typeof onFinish === 'function') onFinish();
         });
     }
 
@@ -219,21 +230,21 @@ let NonTuitionFeeOutsideDialog = new function(){
         if(!options) options = {};
         mThis.options = options;
 
-        if(options.id > 0){
-            mThis.elTitle.text(LocaleManager.trans('Modify Fee Type List','titles'));
-            mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please check fee type details before editing','titles'));
-            mThis.loadDataEdit(options.id, (data) => {
-                mThis.setDataForm(data);
+        mThis.prepareFormOption(() => {
+            if(options.id > 0){
+                mThis.elTitle.text(LocaleManager.trans('Modify Fee Type List','titles'));
+                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please check fee type details before editing','titles'));
+                mThis.loadDataEdit(options);
+            }
+            else{
+                mThis.elTitle.text(LocaleManager.trans('Add Fee Type List','titles'));
+                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input fee type details','titles'));
+                mThis.setDataForm(null);
+            }
+    
+            mThis.self.modal({
+                backdrop: 'static'
             });
-        }
-        else{
-            mThis.elTitle.text(LocaleManager.trans('Add Fee Type List','titles'));
-            mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input fee type details','titles'));
-            mThis.setDataForm(null);
-        }
-
-        mThis.self.modal({
-            backdrop: 'static'
         });
     }
 }
