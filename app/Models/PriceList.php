@@ -52,7 +52,7 @@ class PriceList //extends Model
        if($err) return DV::error($err);
 
        $inputs['end_date'] = convertDate($end_date);
-       $inputs['start_date'] = convertDate($end_date);
+       $inputs['start_date'] = convertDate($start_date);
 
         $err = self::checkDateOverlap($start_date,$end_date,$id);
        if($err){
@@ -81,6 +81,10 @@ class PriceList //extends Model
     function list_price_list(){
         return DB::table('price_list')->selectRaw('start_date,end_date,description,academic_year')->get();
     }
+
+    // function price_list_item_details($id = null){
+
+    // }
 
     static function items($id=null){
         return DB::table('price_list_items as i')
@@ -142,5 +146,64 @@ class PriceList //extends Model
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
+    /**
+     * $arr ['start_date','acadmic_year','program_id','session_id'] // pmt_option_id (optional)
+    */
+    function getTuitionDue($arr){
+        $d = (object)$arr;
+        $session_id = $d->session_id;
+        $program_id = $d->program_id;
+        $academic_year = $d->academic_year;
+        $pmt_option_id = isset($d->pmt_option_id) ? $d->pmt_option_id : null;
+        $start_date = convertDate($d->start_date);
+        $str_date = 'Date(l.start_date)<=\''.$start_date.'\' AND Date(l.end_date)>=\''.$start_date.'\'';
+        $row = DB::table('price_list as l')
+                ->whereRaw($str_date)
+                ->where('i.program_id',$program_id)
+                ->where('l.academic_year',$academic_year)
+                ->where('i.session_id',$session_id)
+                ->join('price_list_items as i','i.list_id','=','l.id')
+                ->selectRaw('l.id as price_list_id,i.price')
+                ->first();
+        if(!$row){
+            return null;
+        }
+        if($pmt_option_id>0){
+            $discount_info = $this->getPolicyDiscount($row->price,$pmt_option_id,$row->price_list_id);
+        }
+
+        $tuition_due = $row->price - $discount_info->discount_amount;
+        $discount_info->tuition = $row->price;
+        $discount_info->tuition_due = $tuition_due;
+        return $discount_info;
+    }
+
+
+    function getPolicyDiscount($price,$pmt_option_id,$id=null) {
+        $id = $id?$id:$this->id;
+        $row = DB::table('policy_discounts')
+                ->where('pmt_option_id',$pmt_option_id)
+                ->where('price_list_id',$id)
+                ->selectRaw('discount,discount_type')
+                ->get()->first();
+        if(!$row)  return (object)['price' => 0,'dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0];
+
+        $discount_amt = 0;
+        $discount_percent = 0;
+
+        if($row->discount_type == 'percentage'){
+            $discount_amt = $price*row->discount/100;
+            $discount_percent = $row->discount;
+        }else{
+            $discount_amt = $row->discount;
+            $discount_percent = ($row->discount * 100)/$price;
+        }
+
+        return (object)['price' => $price,'dicount_percent' => $discount_percent,'discount_amount' => $discount_amt,'discount_type'=>$row->discount_type,'discount'=>$row->discount];
+
+    }
+
+
 
 }
