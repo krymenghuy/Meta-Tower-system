@@ -6,6 +6,7 @@ namespace App\Models;
 // use Illuminate\Database\Eloquent\Model;
 use DB;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Carbon\Carbon;
 class Student //extends Model
 {
     // use HasFactory;
@@ -112,6 +113,7 @@ class Student //extends Model
 
             //** save to enrollmen_payment table
             if($enrollment_id){
+                $getEnrollment = DB::table('enrollments')->where('id',$enrollment_id)->selectRaw('session_id')->first();
                 $en_payment_data = [
                     'tuition' => $tuition,
                     'tuition_due' => $tuition_due,
@@ -121,6 +123,9 @@ class Student //extends Model
                     'enrollment_id' => $enrollment_id
                 ];
                 $saveEnrPayment = saveData($ss,'enrollment_payments',[],$en_payment_data,[],1);
+
+                //** set default tuition to entrollment student */
+                $default_tuition = self::set_default_tuition($getEnrollment->session_id,$enrollment_id);
             }
 
             //** save into pmt_parameters */
@@ -151,7 +156,7 @@ class Student //extends Model
             //** using guardian's phone number for login name and password default = 123456 */
             $p_info = self::saveStudentParent($parent_info,$newID,$ss);
         }
-        return DV::depends($newID,['action'=>'Saved','en_payment'=>$saveEnrPayment]);
+        return DV::depends($newID,['action'=>'Saved','en_payment'=>$saveEnrPayment,'default_tuition'=>$default_tuition]);
     }
 
 
@@ -251,13 +256,15 @@ class Student //extends Model
             $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
         }
 
-        $selectState = 'ss.name as session,ep.tuition,ep.tuition_due,ep.tuition_paid,ep.pmt_status,s.name,s.id';
+        $selectCols = 'pmt.expected_date,ss.name as session,ep.tuition,ep.tuition_due,ep.tuition_paid,s.name,s.id,st.name as status';
         $query = DB::table('enrollment_payments as ep')
                 ->join('enrollments as e','e.id','=','ep.enrollment_id')
                 ->join('students as s','s.id','=','e.student_id')
                 ->join('sessions as ss','ss.id','=','e.session_id')
-                ->where('ep.pmt_status','unpaid')
-                ->selectRaw($selectState)
+                ->join('status as st','st.id','=','e.status_id')
+                ->join('pmt_parameters as pmt','pmt.id','=','ep.parameter_id')
+                ->where('st.name','pending')
+                ->selectRaw($selectCols)
                 ->where('ep.branch_id',$branch_id);
                 // ->whereRaw($str_moreWhere)->whereRaw($str_search);
         $count_query = clone $query;
@@ -268,15 +275,54 @@ class Student //extends Model
     }
 
     static function getFutureTime($daysToAdd) {
-        // Get the current timestamp (UNIX timestamp)
         $currentTimestamp = time();
 
-        // Calculate the future timestamp by adding the specified number of days
-        $futureTimestamp = $currentTimestamp + ($daysToAdd * 24 * 60 * 60); // Convert days to seconds
+        $futureTimestamp = $currentTimestamp + ($daysToAdd * 24 * 60 * 60);
 
-        // Format the future timestamp as a human-readable date
         $futureDate = date('Y-m-d H:i:s', $futureTimestamp);
 
         return $futureDate;
+    }
+
+    static function verify_pending_payment($arr=[]){
+        $pmt_option = isset($arr['pmt_option']) ? $arr['pmt_option'] :null;
+        $session_id = isset($arr['session_id']) ? $arr['session_id'] : null;
+    }
+
+    static function payment_section($arr,$id,$ss){
+        $v_rule = [
+            // 'tuition' => '1|number',
+        ];
+
+        $res = validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
+        if($res->error) return DV::error($res->error);
+
+        $inputs = $res->values;
+
+        return $inputs;
+    }
+
+
+
+
+    static function set_default_tuition($session_id,$enrollment_id){
+        if($session_id == 1){
+            $price_list = DB::table('price_list')
+                        ->where('start_date', '<=', getNowTime())
+                        ->where('end_date', '>=', getNowTime())
+                        ->selectRaw('start_date,end_date')
+                        ->get()->first();
+            $startDate = $price_list->start_date;
+            $endDate = $price_list->end_date;
+            $isBetween = DB::table('your_table')
+                        ->whereRaw('created_at BETWEEN ? AND ?', [$startDate, $endDate])
+                        ->exists();
+            DB::table('enrollment_payments')->where('enrollment_id',$enrollment_id)->update([
+                'tuition' => '400'
+            ]);
+        }
+
+        return "sxgfas;";
+
     }
 }

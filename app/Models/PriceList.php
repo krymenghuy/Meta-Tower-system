@@ -59,7 +59,7 @@ class PriceList //extends Model
           return DV::error($err);
        }
        $id = saveData($ss,'price_list',['id'=>$id],$inputs,[],1,false);
-       return DV::depends($id,null,'Failed to save price list');
+       return DV::depends($id,['action'=>'Saved','price_list'=>$this->list_price_list()],'Failed to save price list');
     }
 
     function delete($id=null){
@@ -70,14 +70,24 @@ class PriceList //extends Model
     }
 
     static function details($id = null){
-       $row = DB::table('price_list as l')->where('id',$id)->selectRaw('l.id,l.name,l.description,l.create_user,formatDate(l.created_at) As created_at')->get()->first();
+       $row = DB::table('price_list as l')->where('id',$id)
+       ->selectRaw('l.id,l.name,l.description,l.start_date,l.end_date,l.academic_year,l.create_user,formatDate(l.created_at) As created_at')
+       ->get()->first();
        if(!$row) return null;
        $row->items = self::items($id);
        return $row;
     }
 
+    function list_price_list(){
+        return DB::table('price_list')->selectRaw('start_date,end_date,description,academic_year')->get();
+    }
+
     static function items($id=null){
-      return DB::table('price_list_items as i')->join('programs as p','p.id','=','i.program_id')->join('sessions as s','s.id','=','i.session_id')->where('list_id',$id)->selectRaw('i.id,i.price,i.currency_code,i.program_id,i.session_id,p.name as program_name, s.name as session')->get();
+        return DB::table('price_list_items as i')
+                ->join('programs as p','p.id','=','i.program_id')
+                ->join('sessions as s','s.id','=','i.session_id')
+                ->where('list_id',$id)
+                ->selectRaw('i.id,i.price,i.currency_code,i.program_id,i.session_id,p.name as program_name, s.name as session')->get();
     }
     function getItems($id=null){
         $id = $id?$id:$this->id;
