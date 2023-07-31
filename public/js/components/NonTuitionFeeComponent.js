@@ -37,7 +37,7 @@ var NonTuitionFeeComponent = new function(){
             };
             cv_interact.confirm('Delete this Fee Type',{title: 'Delete Fee Type', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/`,op,null).then(res => {
+                    window.vsapi.call(`${main_view.base_url}/api/other-fee/delete`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.displayNonTuitionFee();
                         }
@@ -206,7 +206,7 @@ let NonTuitionFeeOutsideDialog = new function(){
     }
 
     this.loadDataEdit = (options) => {
-        window.vsapi.call(`${main_view.base_url}/api/`,{'id': options.id},null).then(res => {
+        window.vsapi.call(`${main_view.base_url}/api/other-fee/details`,{'id': options.id},null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = StringSanitizer.sanitizeObject(res.data);
