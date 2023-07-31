@@ -1,10 +1,10 @@
 <div id="_main_tuitionFeeComponent" class="mobile-padding p-3" style="display:none">
     <div class="d-flex gap-2">
-        <button class="btn btn-sm btn-primary btn--add" type="button">
+        <button id="ttf_btn_add" class="btn btn-sm btn-primary" type="button">
             <i class="fa-solid fa-plus"></i>
             <span class="trans-text" data-langprop="buttons.Add Price List"></span>
         </button>
-        <input type="search" class="form-control width--search-inner" placeholder="Search..."/>
+        <input id="ttf_search" type="search" class="form-control width--search-inner" placeholder="Search..."/>
         <button class="btn btn-sm btn-primary" type="button">
             <span class="trans-text" data-langprop="buttons.Filter By Year"></span>
             <i class="fa-solid fa-caret-down ps-2"></i>
