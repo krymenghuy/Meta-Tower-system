@@ -97,7 +97,7 @@ var TuitionFeeComponent = new function(){
             };
             cv_interact.confirm('Delete this tuition fee?',{title: 'Delete Tuition Fee', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/`,op,null).then(res => {
+                    window.vsapi.call(`${main_view.base_url}/api/price-list/delete`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.itemView.showPage(null);
                         }
@@ -108,7 +108,79 @@ var TuitionFeeComponent = new function(){
                 }
             });
         });
+
+        this.cfg = new ExpandableRowConfig('_ttf_tbl_table',{
+            'dontExpandByClickingOn': ['btn-ttf-modify', 'btn-ttf-delete'],
+            'onOpen': (container, detail_tr, parent_tr) => {
+                let qtr = $(parent_tr);
+                let id = qtr.data('id');
+                if(id > 0)
+                    mThis.displayPriceListItem(detail_tr, id);
+            }
+        });
     }
+
+    this.displayPriceListItem = (tr, id) => {
+        let wrapper_id = ['tbl_ttf_item',id].join('_');
+        let div_wrapper = $(tr).find('.expandable-row-container');
+        div_wrapper.attr('id',wrapper_id);
+
+        div_wrapper.empty();
+        let html = null;
+
+        window.vsapi.call(`${main_view.base_url}/api/price-list/items`,{'id': id},null).then(res => {
+            let data = [];
+            if(res.status_code === 200){
+                data = res.data;
+            }
+
+            html = [`<div class="p-3 rounded-3 bg-white">
+                    <button class="btn btn-outline-primary btn-sm" type="button">
+                        <span class="trans-text text-nowrap" data-langprop="buttons.Add Price Item"></span>
+                    </button>
+            </div>
+            <div class="table-responsive p-2">
+                <table class="tbl_tff_item table">
+                    <thead>
+                        <th>Program</th>
+                        <th>Session</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>`].join('');
+
+            div_wrapper.html(html);
+            mThis.renderExpandable($(tr).find('tbody'),data);
+            LocaleManager.translateZone(`${wrapper_id}`);
+        });
+    }
+
+    this.renderExpandable = (tbody, data) => {
+        let html = null;
+        
+        data.map(item => {
+            html = [html, `<tr>
+                <td>${item.program_name}</td>
+                <td>${item.session}</td>
+                <td>${item.price} ${item.currency_code}</td>
+                <td>
+                    <div class="d-flex gap-2">
+                        <a href="javascript:void(0)" class="btn-ttf-item-modify" data-id="${item.id}">
+                            <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
+                        </a>
+                        <a href="javascript:void(0)" class="btn-ttf-item-delete" data-id="${item.id}">
+                            <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>`].join('');
+        });
+        tbody.html(html);
+    }
+
+    this.controlPriceListItem = () => {}
 
     this.show = (options) => {
         if(!options) options = {};
@@ -126,13 +198,11 @@ let TuitionFeeOutsideDialog = new function(){
 
     this.elTitle = mThis.self.find('.modal-title');
     this.btnSave = mThis.self.find('#dlg_ttf_btn_save');
-    this.elProgram = mThis.self.find('#dlg_ttf_program');
-    this.elPriceList = mThis.self.find('#dlg_ttf_price_list');
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
         let p = mThis.getDataForm();
-        window.vsapi.call(`${main_view.base_url}/api/price-list/save-item`,p,null).then(res => {
+        window.vsapi.call(`${main_view.base_url}/api/price-list/save`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
                 if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
@@ -144,8 +214,9 @@ let TuitionFeeOutsideDialog = new function(){
     });
 
     this.getDataForm = () => {
-        let id = mThis.options.id ? mThis.options.id : 0;
-        let p = {'id': id};
+        let p = {
+            'id': mThis.options.id
+        };
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -164,7 +235,7 @@ let TuitionFeeOutsideDialog = new function(){
     }
 
     this.loadDataEdit = (options) => {
-        window.vsapi.call(`${main_view.base_url}/api/`,{'id': options.id},null).then(res => {
+        window.vsapi.call(`${main_view.base_url}/api/price-list/details`,{'id': options.id},null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = StringSanitizer.sanitizeObject(res.data);
@@ -173,37 +244,23 @@ let TuitionFeeOutsideDialog = new function(){
         });
     }
 
-    this.prepareFormOptions = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
-            let d = {};
-            if(res.status_code === 200){
-                d = res.data;
-            }
-            VSUtil.setComboItems(mThis.elProgram,d.programs,'id','program_name',null,null,null);
-            VSUtil.setComboItems(mThis.elPriceList,d.price_list,'id','name',null,null,null);
-            if(typeof onFinish === 'function') onFinish();
-        });
-    }
-
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;
 
-        mThis.prepareFormOptions(() => {
-            if(options.id > 0){
-                mThis.elTitle.text(LocaleManager.trans('Edit Price List','titles'));
-                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please check item details before editing','titles'));
-                mThis.loadDataEdit(options);
-            }
-            else{
-                mThis.elTitle.text(LocaleManager.trans('Add Price List','titles'));
-                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input tuition fee details','titles'));
-                mThis.setDataForm(null);
-            }
-    
-            mThis.self.modal({
-                backdrop: 'static'
-            });
+        if(options.id > 0){
+            mThis.elTitle.text(LocaleManager.trans('Edit Price List','titles'));
+            mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please check item details before editing','titles'));
+            mThis.loadDataEdit(options);
+        }
+        else{
+            mThis.elTitle.text(LocaleManager.trans('Add Price List','titles'));
+            mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input tuition fee details','titles'));
+            mThis.setDataForm(null);
+        }
+
+        mThis.self.modal({
+            backdrop: 'static'
         });
     }
 }
