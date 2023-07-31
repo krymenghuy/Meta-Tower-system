@@ -102,10 +102,10 @@ class PriceList //extends Model
      * $arr = ['class_name','session','price','currency_code']
     */
     function saveItem($arr=[],$id=null,$ss=null){
-        $id = $id?$id:$this->user_info;
+        $id = $id?$id:$this->id;
         $ss =$ss?$ss:$this->user_info;
         $v_rule = [
-            'item_id'=>'0|number|identity=1',
+            'id'=>'0|number|identity=1',
             'program_id'=>'1|number|exists=programs.id',
             'list_id'=>'1|number|exists=price_list.id',
             'session_id'=>'1|choice|1,2',
@@ -116,9 +116,9 @@ class PriceList //extends Model
         $res = validateObject($arr,$v_rule,true,[],$ss->lang,false,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
-        $item_id =$res->item_id;
+        $item_id =$res->id;
         $item_id = saveData($ss,'price_list_items',['id'=>$item_id],$inputs,[],1,false);
-        return DV::depends($item_id,['action'=>'Saved','price_list_items'=>$this->listPriceListItem()],'Failed to save Item');
+        return DV::depends($item_id,['action'=>'Saved','price_list_items'=>$this->listPriceListItem($inputs['list_id'])],'Failed to save Item');
     }
 
     static function itemDetails($id){
@@ -127,14 +127,17 @@ class PriceList //extends Model
 
     function deleteItem($d){
         $id = isset($d->id)?$d->id:$d->item_id;
+        $list_id = $d->list_id;
         $x = DB::table('price_list_items')->where('id',$id)->delete();
-        return DV::depends($x,['action'=>'Deleted','price_list_items'=>$this->listPriceListItem()],'Failed to delete price list item');
+        return DV::depends($x,['action'=>'Deleted','price_list_items'=>$this->listPriceListItem($list_id)],'Failed to delete price list item');
     }
 
-    function listPriceListItem(){
+    function listPriceListItem($list_id){
         return DB::table('price_list_items as i')
                 ->join('programs as p','p.id','=','i.program_id')
                 ->join('sessions as s','s.id','=','i.session_id')
+                ->join('price_list as l','l.id','=','i.list_Id')
+                ->where('l.id',$list_id)
                 ->selectRaw('i.id,i.list_id,p.name as program_name,i.currency_code,s.name as session,i.price')->get();
     }
 
@@ -184,14 +187,15 @@ class PriceList //extends Model
         if(!$row){
             return (object)['price' => 0,'dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0,'tuition'=>0,'tuition_due'=>0];
         }
-        if($pmt_option_id>0){
-            $discount_info = $this->getPolicyDiscount($row->price,$pmt_option_id,$row->price_list_id);
-        }
+        // if($pmt_option_id>0){
+        //     $discount_info = $this->getPolicyDiscount($row->price,$pmt_option_id,$row->price_list_id);
+        // }
 
-        $tuition_due = $row->price - $discount_info->discount_amount;
-        $discount_info->tuition = $row->price;
-        $discount_info->tuition_due = $tuition_due;
-        return $discount_info;
+        // $tuition_due = $row->price - $discount_info->discount_amount;
+        // $discount_info->tuition = $row->price;
+        // $discount_info->tuition_due = $tuition_due;
+        // return $discount_info;
+        return (object)['price' => 0,'dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0,'tuition'=>0,'tuition_due'=>0];
     }
 
 
