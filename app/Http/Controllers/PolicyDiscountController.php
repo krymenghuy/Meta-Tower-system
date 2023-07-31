@@ -19,7 +19,7 @@ class PolicyDiscountController extends Controller
     function saveDiscount(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
-        $p = new PolicyDiscount(null,$ss);
+        $p = new PolicyDiscount($req->id,$ss);
         return JDV::raw($p->save($req->all()));
     }
 
@@ -42,5 +42,5 @@ class PolicyDiscountController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
         return JDV::result(PolicyDiscount::details($req->id));
-    } 
+    }
 }

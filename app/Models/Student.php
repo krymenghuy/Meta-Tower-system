@@ -231,7 +231,6 @@ class Student //extends Model
                 // link parent with child
                 $link = saveData($ss,'student_guardians',[],['guardian_id'=>$newID,'student_id'=>$child_id,'guardian_role'=>$pf['roll']],[],1);
 
-
             }
         }
         return $um_;
