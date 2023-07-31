@@ -16,7 +16,7 @@ class PriceListController extends Controller
        $data = $p->list_paginate($req->all);
        return JDV::result($data);
     }
-   
+
     function savePriceList(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
@@ -43,6 +43,12 @@ class PriceListController extends Controller
         return JDV::result(PriceList::items($req->id));
     }
 
+    function getPriceListItemDetails(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        return JDV::result(PriceList::itemDetails($req->id));
+    }
+
     function saveItem(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
@@ -54,6 +60,6 @@ class PriceListController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
         $p = new PriceList($req->id,$ss);
-        return JDV::raw($p->deleteItem($req->item_id));
+        return JDV::raw($p->deleteItem($req));
     }
 }
