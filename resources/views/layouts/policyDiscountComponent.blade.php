@@ -51,6 +51,7 @@
                     <div class="width-select-dialog">
                         <select class="modal-select2 data-input" data-field="discount_type">
                             <option value="percentage">Percentage (%)</option>
+                            <option value="amount">Amount ($)</option>
                         </select>
                     </div>
                 </div>
