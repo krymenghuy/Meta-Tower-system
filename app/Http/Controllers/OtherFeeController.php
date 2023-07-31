@@ -13,8 +13,9 @@ class OtherFeeController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
         $p = new OtherFee(null,$ss);
-        return JDV::raw($p->getList());
-    }
+
+        return JDV::result($p->getList());
+    } 
 
     function saveOtherFee(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
