@@ -118,12 +118,16 @@ class PriceList //extends Model
         $inputs = $res->values;
         $item_id =$res->item_id;
         $item_id = saveData($ss,'price_list_items',['id'=>$item_id],$inputs,[],1,false);
-        return DV::depends($item_id,null,'Failed to save Item');
+        return DV::depends($item_id,['action'=>'Saved','price_list_items'=>$this->listPriceListItem()],'Failed to save Item');
     }
 
     function deleteItem($item_id,$id=null){
         $x = DB::table('price_list_items')->where('id',$item_id)->delete();
         return DV::depends($x,null,'Failed to delete price list item');
+    }
+
+    function listPriceListItem(){
+        return DB::table('price_list_items')->selectRaw('list_id,program_id,session_id,price,session_id')->get();
     }
 
 
