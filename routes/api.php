@@ -83,6 +83,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::prefix('student')->group(function () {
         Route::post('/registration', [StudentController::class, 'studentRegistration']);
         Route::post('/payment/pending',[StudentController::class,'student_payment_pending']);
+
+        Route::post('/payment-section',[StudentController::class, 'student_payment']);
     });
     //end::StudentController
 
