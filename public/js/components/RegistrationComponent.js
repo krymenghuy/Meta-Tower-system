@@ -17,24 +17,25 @@ var RegistrationComponent = new function(){
             mThis.div_input.show().siblings().hide();
         });
 
-        mThis.div_input.on('click','i.back--rgs',function(e){
+        mThis.div_input.on('click','i#back--rgs',function(e){
             e.preventDefault();
             mThis.div_list.show().siblings().hide();
         });
 
-        mThis.div_input.on('click','button.btn--save',function(e){
+        mThis.div_input.on('click','button#btn--save',function(e){
             e.preventDefault();
-            let p = mThis.getDataForm();
-            window.vsapi.call(`${main_view.base_url}/api/`,p,null).then(res => {
-                if(res.status_code === 200){
-                    mThis.displayStudentList(() => {
-                        mThis.div_list.show().siblings().hide();
-                    });
-                }
-                else{
-                    cv_interact.error(res.error_message);
-                }
-            });
+            let p = mThis.getDataForm(mThis.div_input, 'data-input');
+            console.log(p);
+            // window.vsapi.call(`${main_view.base_url}/api/`,p,null).then(res => {
+            //     if(res.status_code === 200){
+            //         mThis.displayStudentList(() => {
+            //             mThis.div_list.show().siblings().hide();
+            //         });
+            //     }
+            //     else{
+            //         cv_interact.error(res.error_message);
+            //     }
+            // });
         });
     }
 
@@ -164,12 +165,14 @@ var RegistrationComponent = new function(){
                 </div>`].join('');
             });
 
-            html = [html,`<div class="d-flex bg-white p-3 rounded-3 align-items-center gap-2">
-                <div class="d-flex gap-1">
-                    ${mThis.createPagination(d, op.current_page)}
-                </div>
-                <span class="text-nowrap">${d.data && d.data.length} of ${d.total} students</span>
-            </div>`].join('');
+            if(d.data.length > 0){
+                html = [html,`<div class="d-flex bg-white p-3 rounded-3 align-items-center gap-2">
+                    <div class="d-flex gap-1">
+                        ${mThis.createPagination(d, op.current_page)}
+                    </div>
+                    <span class="text-nowrap">${d.data && d.data.length} of ${d.total} students</span>
+                </div>`].join('');
+            }
 
             mThis.div_register_list.html(html);
             mThis.controlOption(mThis.div_register_list,op);
