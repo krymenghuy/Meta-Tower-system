@@ -60,17 +60,6 @@ class PolicyDiscount //extends Model
         return self::details(($id));
     }
 
-    static function select_options($ss){
-        $res = [
-            'price_list'=>Setting::price_list_options($ss),
-            'sessions' => Setting::session_options($ss),
-            'pmt_options' => Setting::pmt_options($ss),
-            'programs' => Setting::programs_options($ss),
-            'levels' => Setting::level_options($ss)
-        ];
-        return $res;
-    }
-
     function list_paginate($arr=[],$ss=null){
         $ss =$ss?$ss:$this->user_info;
         $branch_id =$ss->branch_id;

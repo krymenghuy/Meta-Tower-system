@@ -16,6 +16,7 @@ class HomePage //extends Model
                 ->join('guardians as g','sg.guardian_id','=','g.id')
                 ->join('students as s','s.id','=','sg.student_id')
                 ->selectRaw($selectCols)
+                ->where('g.id',$ss->official_id)
                 ->get();
         foreach($rows as $row){
             $row->image_url = PublicStorage::getUrl($ss->branch_id,'students','image').$row->file_name;

@@ -38,8 +38,7 @@ class StudentGroup //extends Model
     static function details($id,$ss){
         $branch_id = $ss->branch_id;
         $row = DB::table('student_groups as g')
-                ->join('sessions as s','g.session_id' ,'=' ,'s.id')
-                ->selectRaw('g.name,g.total_students,g.program_type,s.name as session')
+                ->selectRaw('g.level_id,g.session_id,g.name,g.total_students,g.program_type')
                 ->where('g.branch_id',$branch_id)
                 ->where('g.branch_id',$branch_id)->first();
         return $row;
