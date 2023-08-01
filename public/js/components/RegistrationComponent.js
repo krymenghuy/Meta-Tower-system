@@ -38,8 +38,12 @@ var RegistrationComponent = new function(){
         });
     }
 
-    this.displayStudentList = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/student/list-paginate`,null,null).then(res => {
+    this.displayStudentList = (op, onFinish = null) => {
+        op = op ? op : {
+            'current_page':'1',
+            'per_page':'2'
+        }
+        window.vsapi.call(`${main_view.base_url}/api/student/list-paginate`,op,null).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
@@ -97,7 +101,7 @@ var RegistrationComponent = new function(){
                                     <button class="btn btn-sm btn-primary rounded-3 btn--gnCard" type="button" data-id="${item.id}">
                                         <span class="text-nowrap trans-text" data-langprop="buttons.Ganerate Card"></span>
                                     </button>
-                                    <button class="btn btn-sm btn-danger rounded-3 btn--Options position-relative" type="button">
+                                    <button class="btn btn-sm btn-danger rounded-3 btn--Options position-relative text-nowrap" type="button">
                                         <span class="text-nowrap trans-text" data-langprop="buttons.Options"></span>
                                         <i class="fa-solid fa-caret-down ps-2"></i>
                                         <div class="w-options gap-2 shadow p-3 rounded-3" style="display:none">
@@ -138,14 +142,14 @@ var RegistrationComponent = new function(){
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Class"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.class}</p>
+                                    <p class="text-nowrap">${item.level}</p>
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Section"></p>
+                                    <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Session"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.section}</p>
+                                    <p class="text-nowrap">${item.session}</p>
                                 </div>
                             </div>
                             <div class="col">
@@ -160,15 +164,50 @@ var RegistrationComponent = new function(){
                 </div>`].join('');
             });
 
+            html = [html,`<div class="d-flex bg-white p-3 rounded-3 align-items-center gap-2">
+                <div class="d-flex gap-1">
+                    ${mThis.createPagination(d, op.current_page)}
+                </div>
+                <span class="text-nowrap">${d.data && d.data.length} of ${d.total} students</span>
+            </div>`].join('');
+
             mThis.div_register_list.html(html);
-            mThis.controlOption();
+            mThis.controlOption(mThis.div_register_list,op);
             LocaleManager.translateZone('_rgs_list');
             if(typeof onFinish === 'function') onFinish();
         });
     }
 
-    this.controlOption = () => {
-        let div = mThis.div_register_list.find('.w-options');
+    this.createPagination = (d, current_page) => {
+        d = d ? d : {};
+        let html = null,
+        end_page = Math.ceil((d && d.total)/(d && d.per_page)),
+        start_page = 1;
+
+        if(current_page == end_page){
+            html = [html,`<button class="btn btn-sm border btn-pagination">${current_page-1}</button>
+            <button class="btn btn-primary btn-sm btn-pagination">${current_page}</button>`].join('');
+        }
+        else if(current_page == start_page){
+            html = [html,`<button class="btn btn-primary btn-sm btn-pagination">${current_page}</button>
+            <button class="btn btn-sm border btn-pagination">${parseInt(current_page)+1}</button>`].join('');
+        }
+        else{
+            html = [html,`<button class="btn btn-sm border btn-pagination">${current_page-1}</button>
+            <button class="btn btn-primary btn-sm btn-pagination">${current_page}</button>
+            <button class="btn btn-sm border btn-pagination">${parseInt(current_page)+1}</button>`].join('');
+        }
+        return html;
+    }
+
+    this.controlOption = (container, op) => {
+        let div = container.find('.w-options');
+
+        container.find('button.btn-pagination').on('click',function(e){
+            e.preventDefault();
+            op.current_page = $(this).text();
+            mThis.displayStudentList(op);
+        });
 
         mThis.div_register_list.off('click').on('click','button.btn--Options',function(e){
             e.preventDefault();
@@ -248,14 +287,14 @@ var RegistrationComponent = new function(){
             if(res.status_code === 200){
                 data = StringSanitizer.sanitizeObject(res.data);
             }
-            onFinish && onFinish(data);
+            if(typeof onFinish === 'function') onFinish(data);
         });
     }
 
-    this.getDataForm = () => {
+    this.getDataForm = (div, class_name) => {
         let id = mThis.options.id ? mThis.options.id : 0;
         let p = {'id': id};
-        mThis.div_input.find('.data-input').each(function(){
+        div.find(`.${class_name}`).each(function(){
             let el = $(this);
             let f = el.data('field');
             p[f] = el.val();
@@ -272,9 +311,37 @@ var RegistrationComponent = new function(){
         });
     }
 
+    this.prepareFormOption = (div, class_name, onFinish = null) => {
+        window.vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
+            let d = {};
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            div.find(`.${class_name}`).each(function(){
+                let el = $(this);
+                let f = el.data('field');
+                switch(f){
+                    case 'level_id':
+                        VSUtil.setComboItems(el,d.levels,'id','level',null,null,null);
+                        break;
+                    case 'session_id':
+                        VSUtil.setComboItems(el,d.sessions,'id','name',null,null,null);
+                        break;
+                    case 'campus_id':
+                        VSUtil.setComboItems(el,d.campuses,'id','campus',null,null,null);
+                        break;
+                    default:
+                        break;
+                }
+            });
+            mThis.displayStudentList();
+            if(typeof onFinish === 'function') onFinish();
+        });
+    }
+
     this.show = (options) => {
         if(!options) options = {};
-        mThis.displayStudentList(() => {
+        mThis.prepareFormOption(mThis.div_list,'data-select',() => {
             main_view.setTitle(mThis.title_prop);
             mThis.self.show().siblings().hide();
         });
