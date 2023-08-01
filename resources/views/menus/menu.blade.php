@@ -302,12 +302,10 @@
                     <span class="kt-menu__link-text trans-text" data-langprop="menus.Reports"></span>
                 </a>
             </li>
-
             <li class="kt-menu__section ">
-                <h4 class="kt-menu__section-text"></h4>
+                <h4 class="kt-menu__section-text trans-text" data-langprop="menus.Settings"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
-
             <li class="kt-menu__item" aria-haspopup="true">
                 <a href="CompanyComponent" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
@@ -316,7 +314,14 @@
                     <span class="kt-menu__link-text trans-text" data-langprop="menus.Company Profile"></span>
                 </a>
             </li>
-
+            <li class="kt-menu__item" aria-haspopup="true">
+                <a href="CampusComponent" class="menu-item kt-menu__link">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons" src="{{asset('assets/images/icons/company_profile.png')}}"/>
+                    </span>
+                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Campus"></span>
+                </a>
+            </li>
             <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
@@ -347,7 +352,6 @@
                     </ul>
                 </div>
             </li>
-
             <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
@@ -366,7 +370,6 @@
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Manage Roles"></span>
                             </a>
                         </li>
-
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="UserManagementComponent" class="menu-item kt-menu__link ">
                                 <span class="kt-menu__link-icon">
@@ -378,7 +381,6 @@
                     </ul>
                 </div>
             </li>
-
             <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a id="_main_lnkLogout" href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">

@@ -196,6 +196,7 @@
                                 @include('layouts.um.roleManagementComponent')
                                 @include('layouts.programComponent')
                                 @include('layouts.studentGroupComponent')
+                                @include('layouts.campusComponent')
                             </div>
                         </div>
                     </div>
