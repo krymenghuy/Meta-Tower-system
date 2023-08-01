@@ -27,7 +27,7 @@
             </button>
             <input type="search" class="form-control width--search" placeholder="Search by Name or ID..."/>
         </div>
-        <div id="_rgs_list" class="mt-3"></div>
+        <div id="_rgs_list" class="d-flex gap-2 flex-column mt-3"></div>
     </div>
     <div id="st-register--input" class="st-register--input" style="display:none">
         <div class="bg-primary rounded-top-3">

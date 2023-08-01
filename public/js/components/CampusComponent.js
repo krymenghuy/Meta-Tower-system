@@ -37,7 +37,7 @@ var CampusComponent = new function(){
             };
             cv_interact.confirm('Delete this campus?',{title: 'Delete Campus', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/`,op,null).then(res => {
+                    window.vsapi.call(`${main_view.base_url}/api/campus/delete`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.displayCampus();
                         }
