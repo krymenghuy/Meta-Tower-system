@@ -36,16 +36,20 @@ class Student //extends Model
             'tuition_paid' => '0|number|default=0',
             'parent_info' => '0|array',
             'pmt_option_id' => '0|number|exists=pmt_options.id|default=2',
-            'pmt_status' => '0|string|default=unpaid'
+            'pmt_status' => '0|string|default=unpaid',
+            'student_code' => '0|string'
         ];
         $branch_id = $ss->branch_id;
         $email_char = ['@','.'];
+        $academic_year_char = ['-',','];
         $address_char = ['@','.','#'];
         $image_char = ['+',':',',',';','=','/','\\','?'];
-        $res = validateObject($arr,$v_rule,1,['email'=>$email_char,'address'=>$address_char,'photo'=>$image_char],$ss->lang,0,null);
+        $res = validateObject($arr,$v_rule,1,['email'=>$email_char,'address'=>$address_char,'photo'=>$image_char,'academic_year'=>$academic_year_char],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
 
+        $code = $inputs['student_code'];
+        $inputs['code'] = $code;
         //
         $image = $inputs['photo'];
         $parent_info = $inputs['parent_info'];
@@ -93,15 +97,15 @@ class Student //extends Model
         if($newID>0){
             PublicStorage::saveImage($branch_id,"students",null,$image,null, ['id' => $newID, 'store' => 'students.file_name']);
             //** give register student by generate code and update */
-            self::setStudentCode($ss,$newID);
+            if(!$code) self::setStudentCode($ss,$newID);
 
-            $program_id = DB::table('programs as p')->join('program_levels as pl','p.id','=','pl.program_id')->selectRaw('p.id')->where('pl.id',$level_id)->first();
+            $program = DB::table('programs as p')->join('program_levels as pl','p.id','=','pl.program_id')->selectRaw('p.id')->where('pl.id',$level_id)->first();
 
             //** save into enrollments table
             $en_student_data = [
                 'student_id' => $newID,
                 'level_id' => $level_id,
-                'program_id' => $program_id->id,
+                'program_id' => $program->id,
                 'session_id' => $session_id,
                 'campus_id' => $campus_id,
                 'shift_id' => $shift_id,
@@ -110,6 +114,13 @@ class Student //extends Model
                 'status_id' => $statusID
             ];
             $enrollment_id = saveData($ss,'enrollments',['student_id'=>null],$en_student_data,[],1);
+
+            //** save into pmt_parameters */
+            $pmt_params_data = [
+                'expected_date' => self::getFutureTime(7),
+                'pmt_option_id' => $pmt_option_id
+            ];
+            $save_pmt_paramsID = saveData($ss,'pmt_parameters',[],$pmt_params_data,[],1);
 
             //** save to enrollmen_payment table
             if($enrollment_id){
@@ -128,22 +139,18 @@ class Student //extends Model
                     $tuition_info = $pl->getTuitionDue([
                         'start_date' => getNowTime(),
                         'academic_year' => $academic_year,
-                        'program_id' => $program_id,
-                        'session_id' => $session_id
+                        'program_id' => $program->id,
+                        'session_id' => $session_id,
+                        'pmt_option_id' => $pmt_option_id
                     ]);
                 }
             }
 
-            //** save into pmt_parameters */
-            $pmt_params_data = [
-                'expected_date' => self::getFutureTime(7),
-                'pmt_option_id' => $pmt_option_id
-            ];
-            $save_pmt_params = saveData($ss,'pmt_parameters',[],$pmt_params_data,[],1);
 
-            if($save_pmt_params){
+
+            if($save_pmt_paramsID){
                 DB::table('enrollment_payments')->where('enrollment_id',$enrollment_id)->update([
-                    'parameter_id' => $save_pmt_params
+                    'parameter_id' => $save_pmt_paramsID
                 ]);
             }
 
@@ -161,8 +168,62 @@ class Student //extends Model
             //** link parent(s) to child
             //** using guardian's phone number for login name and password default = 123456 */
             $p_info = self::saveStudentParent($parent_info,$newID,$ss);
+
+            // **delete Images in Folder if not exists in DB;
+            $folderPath = public_path('/uploads/public/'.$ss->branch_id.'_data/students/images');
+            $filesInDatabase = DB::table('students')->pluck('file_name');
+            $filesInFolder = glob($folderPath . '/*');
+
+            foreach ($filesInFolder as $filePath) {
+                $fileName = basename($filePath);
+                if (!in_array($fileName, $filesInDatabase->toArray())) {
+                    unlink($filePath);
+                }
+            }
         }
-        return DV::depends($newID,['action'=>'Saved','tuition'=>$tuition_info]);
+        return DV::depends($newID,['action'=>'Saved','tuition'=>$tuition_info,'academic'=>$pmt_option_id]);
+    }
+
+    static function studentListPaginate($filter=[],$ss){
+        $branch_id = $ss->branch_id;
+        $search_value =isset($filter['search_value'])?$filter['search_value']:null;
+        $current_page =isset($filter['current_page'])?$filter['current_page']:1;
+        $per_page =isset($filter['per_page'])?$filter['per_page']:10;
+        if(!is_numeric($current_page)) $current_page=1;
+        $skip_rows = ($current_page -1) * $per_page;
+
+        $str_search ="1=1";
+        $str_moreWhere="1=1";
+        if($search_value){
+            $skip_rows =0;
+            $search_value = escape_like_str($search_value);
+            // $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+        }
+
+        $selectCols = 'st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name';
+        $query = DB::table('students as st')
+                ->selectRaw($selectCols)
+                ->where('st.branch_id',$branch_id)
+                ->whereRaw($str_moreWhere)->whereRaw($str_search);
+        $count_query = clone $query;
+        $count = $count_query->count('st.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+        foreach($rows as $row) {
+            $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
+            $row->parent_info = self::getChildParent($row->id);
+            unset($row->file_name);
+        }
+
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
+
+    static function getChildParent($id){
+        return DB::table('student_guardians as sg')
+                ->join('students as s','s.id','=','sg.student_id')
+                ->join('guardians as g','g.id','=','sg.guardian_id')
+                ->where('s.id',$id)
+                ->selectRaw('g.name as parent_name,g.phone_number,g.email')
+                ->get()->first();
     }
 
 
@@ -248,7 +309,7 @@ class Student //extends Model
         $branch_id = $ss->branch_id;
         $search_value =isset($filter['search_value'])?$filter['search_value']:null;
         $current_page =isset($filter['current_page'])?$filter['current_page']:1;
-        $owner_id = isset($filter['pmt_status'])?$filter['pmt_status']:null;
+        $pmt_status = isset($filter['pmt_status'])?$filter['pmt_status']:null;
         $per_page =isset($filter['per_page'])?$filter['per_page']:10;
         if(!is_numeric($current_page)) $current_page=1;
         $skip_rows = ($current_page -1) * $per_page;

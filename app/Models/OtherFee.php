@@ -24,15 +24,16 @@ class OtherFee //extends Model
             'program_id'=>'0|number|exists=programs.id',
             'name'=>'1|string|1-200',
             'description'=>'0|string|250',
-            'will_expire'=>'0|number|choice|0,1',
-            'start_date'=>'0|date',
-            'end_date'=>'0|date',
+            // 'will_expire'=>'0|number|choice|0,1',
+            // 'start_date'=>'0|date',
+            // 'end_date'=>'0|date',
+            'academic_year'=>'0|string|1,25',
             'amount'=>'0|number|default=0',
             'currency_code' => '0|string|default='.$this->currency_code
         ];
         $branch_id = $ss->branch_id;
-        $umique = [$branch_id.'|other_fees|name|id=id'];
-       $res = validateObject($arr,$v_rule,true,[],$ss->lang,false,$umique);
+        $unique = null;//[$branch_id.'|other_fees|name|id=id'];
+       $res = validateObject($arr,$v_rule,true,[],$ss->lang,false,$unique);
        if($res->error) return Dv::error($res->error);
        $inputs =$res->values;
        $newID = saveData($ss,'other_fees',['id'=>$id],$inputs,[],1,false);
@@ -48,16 +49,24 @@ class OtherFee //extends Model
 
     function getList($ss=null){
         $ss =$ss?$ss:$this->user_info;
-       $cols ='f.id,f.program_id,f.amount,f.currency_code,f.name,f.description,f.create_user,f.created_at';
-       return DB::table('other_fees as f')->where('branch_id',$ss->branch_id)->selectRaw($cols)->get();
-
+       $cols ='f.id,f.academic_year,f.amount,f.currency_code,f.name,f.description,f.create_user,f.created_at,f.program_id';
+       $rows = DB::table('other_fees as f')->where('branch_id',$ss->branch_id)
+                ->selectRaw($cols)->get();
+        foreach($rows as $row){
+            $program = new Program(null,$ss);
+            $details = $program->details($row->program_id);
+            $row->program_name = $details->name;
+        }
+        return $rows;
     }
+
+
 
     function getDetails($id=null,$ss=null){
         $ss =$ss?$ss:$this->user_info;
         $id =$id?$id:$this->id;
-       $cols ='f.id,f.amount,f.program_id,f.currency_code,f.name,f.description,f.create_user,f.created_at';
-       return DB::table('other_fees as f')->where('branch_id',$ss->branch_id)->where('f.id',$id)->selectRaw($cols)->get()->first();
-
+       $cols ='f.id,f.amount,f.academic_year,f.program_id,f.currency_code,f.name,f.description,f.create_user,f.created_at';
+       return DB::table('other_fees as f')->where('branch_id',$ss->branch_id)->where('f.id',$id)
+            ->selectRaw($cols)->get()->first();
     }
 }
