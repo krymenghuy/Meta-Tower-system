@@ -5,6 +5,7 @@ use App\Http\Controllers\CampusController;
 use App\Http\Controllers\Mobile\HomePageController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\ProgramLevelController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentGroupController;
 use App\Http\Controllers\TermController;
@@ -89,7 +90,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
 
 
-    Route::post('/form-option',[PolicyDiscountController::class,'select_options']);
+    Route::post('/form-option',[SettingController::class,'select_options']);
 
     //begin::StudentController
     Route::prefix('student')->group(function () {

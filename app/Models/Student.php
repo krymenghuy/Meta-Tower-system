@@ -7,6 +7,7 @@ namespace App\Models;
 use DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Carbon\Carbon;
+use Session;
 class Student //extends Model
 {
     // use HasFactory;
@@ -140,10 +141,18 @@ class Student //extends Model
                     $tuition_info = $pl->getTuitionDue([
                         'start_date' => getNowTime(),
                         'academic_year' => $academic_year,
-                        'program_id' => $program->id,
+                        'level_id' => $level_id,
                         'session_id' => $session_id,
-                        'pmt_option_id' => $pmt_option_id
+                        'pmt_option_id' => 2,//$pmt_option_id,
+                        'semester_number'=>2,
+                        'next_level_id' => 2
                     ]);
+                    if($tuition_info->error_message==''){
+                        DB::table('enrollment_payments')->where('id',$saveEnrPaymentID)->update([
+                            'tuition' => $tuition_info->tuition,
+                            'tuition_due' => $tuition_info->tuition_due,
+                        ]);
+                    }
                 }
             }
 
@@ -182,10 +191,12 @@ class Student //extends Model
                 }
             }
         }
-        return DV::depends($newID,['action'=>'Saved','tuition'=>$tuition_info,'academic'=>$pmt_option_id]);
+        return DV::depends($newID,['action'=>'Saved','tuition'=>$tuition_info]);
     }
 
     static function studentListPaginate($filter=[],$ss){
+        $campus = new Campus();
+        $level = new ProgramLevel(null,$ss);
         $branch_id = $ss->branch_id;
         $search_value =isset($filter['search_value'])?$filter['search_value']:null;
         $current_page =isset($filter['current_page'])?$filter['current_page']:1;
@@ -201,8 +212,10 @@ class Student //extends Model
             // $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 'st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name';
+        $selectCols = 's.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name';
         $query = DB::table('students as st')
+                ->join('enrollments as e','e.student_id','=','st.id')
+                ->join('sessions as s','s.id','=','e.session_id')
                 ->selectRaw($selectCols)
                 ->where('st.branch_id',$branch_id)
                 ->whereRaw($str_moreWhere)->whereRaw($str_search);
@@ -210,9 +223,13 @@ class Student //extends Model
         $count = $count_query->count('st.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row) {
+            $status = rand(0,1)?'New':'Old';
             $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
             $row->parent_info = self::getChildParent($row->id);
             unset($row->file_name);
+            $row->campus = $campus->details($row->campus_id,$ss)->name;
+            $row->level = $level->details($row->level_id,$ss)->name;
+            $row->student_type = $status;
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);

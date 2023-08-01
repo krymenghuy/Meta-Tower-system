@@ -30,14 +30,6 @@ class PolicyDiscountController extends Controller
         return JDV::raw($p->delete());
     }
 
-    function select_options(Request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !==200) return JDV::raw($ss);
-
-        $options = PolicyDiscount::select_options($ss);
-        return JDV::result($options);
-    }
-
     function getDetails(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);

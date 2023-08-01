@@ -141,10 +141,6 @@ class PriceList //extends Model
                 ->selectRaw('i.id,i.list_id,p.name as program_name,i.currency_code,s.name as session,i.price')->get();
     }
 
-
-
-
-
     function list_paginate($arr=[],$ss=null){
         $ss =$ss?$ss:$this->user_info;
         $branch_id =$ss->branch_id;
@@ -166,37 +162,61 @@ class PriceList //extends Model
     }
 
     /**
-     * $arr ['start_date','acadmic_year','program_id','session_id'] // pmt_option_id (optional)
+     * $arr [,'start_date','acadmic_year','level_id','session_id','semester_number'] // pmt_option_id (optional)
     */
     function getTuitionDue($arr){
         $d = (object)$arr;
         $discount_info = null;
         $session_id = $d->session_id;
-        $program_id = $d->program_id;
+        $semester_number = $d->semester_number;
+        $level_id = $d->level_id;
         $academic_year = $d->academic_year;
-        $pmt_option_id = isset($d->pmt_option_id) ? $d->pmt_option_id : null;
+        $pmt_option_id = isset($d->pmt_option_id) ? $d->pmt_option_id : 2;
+        $level_info = DB::table('program_levels as l')->where('id',$level_id)->selectRaw('program_id,id,next_level_id')->first();
         $start_date = convertDate($d->start_date);
+        $next_level_id = $level_info->next_level_id;
         $str_date = 'Date(l.start_date)<=\''.$start_date.'\' AND Date(l.end_date)>=\''.$start_date.'\'';
         $row = DB::table('price_list as l')
                 ->join('price_list_items as i','i.list_id','=','l.id')
                 ->whereRaw($str_date)
-                ->where('i.program_id',$program_id)
+                ->where('i.program_id',$level_info->program_id)
                 ->where('l.academic_year',$academic_year)
                 ->where('i.session_id',$session_id)
                 ->selectRaw('l.id as price_list_id,i.price,i.program_id')
                 ->first();
         if(!$row){
-            return (object)['price' => 0,'dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0,'tuition'=>0,'tuition_due'=>0];
+            return (object)['error_message'=>'Price List not defined','dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0,'tuition'=>0,'tuition_due'=>0];
         }
+        $nl_price = 0;
         if($pmt_option_id>0){
+            if($pmt_option_id == 3 && $semester_number == 2){
+                if($next_level_id != $level_id && $next_level_id > 0){
+                    $next_pmt_info = $this->getTuitionDue(['level_id' => $next_level_id,'pmt_option_id' => 2,'start_date'=>$start_date,'academic_year'=>$academic_year,'semester_number'=>1]);
+                    if($next_pmt_info->error_message){
+                        return (object)['error_message'=>'Price list for next level not defined','dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0,'tuition'=>0,'tuition_due'=>0];
+                    }else{
+                        $nl_price = $next_pmt_info->price;
+                        //$nl_discount_percent = $next_pmt_info->dicount_percent;
+                        //$nl_tuition_due = $next_pmt_info->tuition_due;
+                    }
+                }
+            }
             $discount_info = $this->getPolicyDiscount($row->price,$pmt_option_id,$row->price_list_id);
+        }
+
+        if($nl_price>0){
+            $row->price = ($row->price/2) + $nl_price;
+            $dis_amt = ($row->price * $discount_info->discount_percent)/100;
+            $net_price = $row->price - $dis_amt;
+            return (object)['error_message'=>'','dicount_percent' => $discount_info->discount_percent,'discount_amount' => $dis_amt,'discount_type'=>'percentage','discount'=>$discount_info->discount_percent,'tuition'=>$row->price,'tuition_due'=>$net_price];
         }
 
         $tuition_due = $row->price - $discount_info->discount_amount;
         $discount_info->tuition = $row->price;
         $discount_info->tuition_due = $tuition_due;
+        $discount_info->error_message = '';
         return $discount_info;
-        // return (object)['price' => 0,'dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0,'tuition'=>0,'tuition_due'=>0];
+        // return (object)[dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0,'tuition'=>0,'tuition_due'=>0];
     }
 
 
@@ -207,7 +227,7 @@ class PriceList //extends Model
                 ->where('price_list_id',$id)
                 ->selectRaw('discount,discount_type')
                 ->get()->first();
-        if(!$row)  return (object)['price' => 0,'dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0];
+        if(!$row)  return (object)['dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0];
 
         $discount_amt = 0;
         $discount_percent = 0;
@@ -220,10 +240,21 @@ class PriceList //extends Model
             $discount_percent = ($row->discount * 100)/$price;
         }
 
-        return (object)['price' => $price,'dicount_percent' => $discount_percent,'discount_amount' => $discount_amt,'discount_type'=>$row->discount_type,'discount'=>$row->discount];
+        return (object)['dicount_percent' => $discount_percent,'discount_amount' => $discount_amt,'discount_type'=>$row->discount_type,'discount'=>$row->discount];
 
     }
 
 
+    /**
+        $arr []=
+    */
+
+    function getWeeklyTuitionDue($arr=[]){
+        $d = (object)$arr;
+        $session_id = $d->session_id;
+        $semester_number = $d->semester_number;
+        $level_id = $d->level_id;
+        $academic_year = $d->academic_year;
+    }
 
 }

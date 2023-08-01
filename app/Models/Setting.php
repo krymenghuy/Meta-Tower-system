@@ -7,6 +7,19 @@ namespace App\Models;
 use DB;
 class Setting //extends Model
 {
+
+
+    static function select_options($ss){
+        $res = [
+            'price_list'=>self::price_list_options($ss),
+            'sessions' => self::session_options($ss),
+            'pmt_options' => self::pmt_options($ss),
+            'programs' => self::programs_options($ss),
+            'levels' => self::level_options($ss),
+            'campuses' => self::campus_options($ss)
+        ];
+        return $res;
+    }
     // use HasFactory;
     static function pmt_options($ss){
         return DB::table('pmt_options')->selectRaw('name,id')->get();
@@ -32,4 +45,8 @@ class Setting //extends Model
         return DB::table('program_levels')->where('branch_id',$branch_id)->selectRaw('name as level,id')->get();
     }
 
+    static function campus_options($ss){
+        $branch_id = $ss->branch_id;
+        return DB::table('campuses')->where('branch_id',$branch_id)->selectRaw('name as campus,id')->get();
+    }
 }
