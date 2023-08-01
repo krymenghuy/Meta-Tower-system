@@ -282,16 +282,19 @@ li.kt-menu__section {
 
 .h-info-student {
     min-height: 180px;
-    border-radius: 16px;
+    border:none;
+    border-radius: var(--bs-border-radius-xl);
 }
 
 .h-info-student .div-img {
-    border-radius: 20px;
+    border:none;
 }
 
 .h-info-student .div-img img {
-    height: 15vh;
-    min-height: 180px;
+    height: 180px;
+    width: 180px;
+    border: 0.5px solid #00000067;
+    border-radius: var(--bs-border-radius-xl);
 }
 
 .width-p {

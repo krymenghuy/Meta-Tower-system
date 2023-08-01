@@ -39,14 +39,14 @@ var RegistrationComponent = new function(){
     }
 
     this.displayStudentList = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/`,null,null).then(res => {
-            let data = [];
+        window.vsapi.call(`${main_view.base_url}/api/student/list-paginate`,null,null).then(res => {
+            let d = {};
             if(res.status_code === 200){
-                data = StringSanitizer.sanitizeObject(res.data);
+                d = res.data;
             }
 
             let html = null;
-            data.map(item => {
+            d && d.data.map(item => {
                 html = [html,`<div class="d-flex p-3 bg-white h-info-student">
                     <div class="div-img">
                         <img src="${item.image_url}" alt=""/>
@@ -57,17 +57,17 @@ var RegistrationComponent = new function(){
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Student ID"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.student_id}</p>
+                                    <p class="text-nowrap">${item.student_code}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Name"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.student_name}</p>
+                                    <p class="text-nowrap">${item.name}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Female"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.gender}</p>
+                                    <p class="text-nowrap">${item.sex}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Date of Birth"></p>
@@ -79,17 +79,17 @@ var RegistrationComponent = new function(){
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Parent Name"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.parent_name}</p>
+                                    <p class="text-nowrap">${item.parent_info && item.parent_info.parent_name}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Parent Phone"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.parent_phone}</p>
+                                    <p class="text-nowrap">${item.parent_info && item.parent_info.phone_number}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Parent Email"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.parent_email}</p>
+                                    <p class="text-nowrap">${item.parent_info && item.parent_info.email}</p>
                                 </div>
                             </div>
                             <div class="col">
@@ -161,11 +161,8 @@ var RegistrationComponent = new function(){
             });
 
             mThis.div_register_list.html(html);
-
             mThis.controlOption();
-
             LocaleManager.translateZone('_rgs_list');
-
             if(typeof onFinish === 'function') onFinish();
         });
     }
@@ -173,7 +170,7 @@ var RegistrationComponent = new function(){
     this.controlOption = () => {
         let div = mThis.div_register_list.find('.w-options');
 
-        mThis.div_register_list.on('click','button.btn--Options',function(e){
+        mThis.div_register_list.off('click').on('click','button.btn--Options',function(e){
             e.preventDefault();
             $(this).find('.w-options').toggle('slow');
         });
@@ -189,9 +186,9 @@ var RegistrationComponent = new function(){
         });
 
         if(div.length != 0){
-            $(document).on('mouseup',function(e){
+            $(document).off('click').on('mouseup',function(e){
                 e.preventDefault();
-                if(!div.is(e.target) && div.has(e.target).length === 0){
+                if((!div.is(e.target) && div.has(e.target).length === 0)){
                     div.hide('slow');
                 }
             });
