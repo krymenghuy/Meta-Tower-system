@@ -170,6 +170,7 @@ class PriceList //extends Model
     */
     function getTuitionDue($arr){
         $d = (object)$arr;
+        $discount_info = null;
         $session_id = $d->session_id;
         $program_id = $d->program_id;
         $academic_year = $d->academic_year;
@@ -177,26 +178,25 @@ class PriceList //extends Model
         $start_date = convertDate($d->start_date);
         $str_date = 'Date(l.start_date)<=\''.$start_date.'\' AND Date(l.end_date)>=\''.$start_date.'\'';
         $row = DB::table('price_list as l')
-                // ->whereRaw($str_date)
+                ->join('price_list_items as i','i.list_id','=','l.id')
+                ->whereRaw($str_date)
                 ->where('i.program_id',$program_id)
                 ->where('l.academic_year',$academic_year)
                 ->where('i.session_id',$session_id)
-                ->join('price_list_items as i','i.list_id','=','l.id')
-                ->selectRaw('l.id as price_list_id,i.price')
+                ->selectRaw('l.id as price_list_id,i.price,i.program_id')
                 ->first();
-        // if(!$row){
-        //     return (object)['price' => 0,'dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0,'tuition'=>0,'tuition_due'=>0];
-        // }
-        // if($pmt_option_id>0){
-        //     $discount_info = $this->getPolicyDiscount($row->price,$pmt_option_id,$row->price_list_id);
-        // }
+        if(!$row){
+            return (object)['price' => 0,'dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0,'tuition'=>0,'tuition_due'=>0];
+        }
+        if($pmt_option_id>0){
+            $discount_info = $this->getPolicyDiscount($row->price,$pmt_option_id,$row->price_list_id);
+        }
 
-        // $tuition_due = $row->price - $discount_info->discount_amount;
-        // $discount_info->tuition = $row->price;
-        // $discount_info->tuition_due = $tuition_due;
-        // return $discount_info;
+        $tuition_due = $row->price - $discount_info->discount_amount;
+        $discount_info->tuition = $row->price;
+        $discount_info->tuition_due = $tuition_due;
+        return $discount_info;
         // return (object)['price' => 0,'dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0,'tuition'=>0,'tuition_due'=>0];
-        return $row;
     }
 
 
