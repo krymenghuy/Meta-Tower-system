@@ -62,4 +62,13 @@ class PriceListController extends Controller
         $p = new PriceList($req->id,$ss);
         return JDV::raw($p->deleteItem($req));
     }
+
+    function weeklyFee(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+
+        $row = new PriceList(null,$ss);
+        $fee = $row->getWeeklyTuitionDue();
+        return JDV::raw($fee);
+    }
 }

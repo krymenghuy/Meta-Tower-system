@@ -90,6 +90,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
 
 
+
     Route::post('/form-option',[SettingController::class,'select_options']);
 
     //begin::StudentController
@@ -393,6 +394,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('price-list/item-details', [PriceListController::class, 'getPriceListItemDetails']);
 
 
+    Route::post('price-list/weekly', [PriceListController::class, 'weeklyFee']);
     //End::PriceListController
 
    //begin::PolicyDiscountController
