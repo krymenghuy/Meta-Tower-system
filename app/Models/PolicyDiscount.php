@@ -66,6 +66,7 @@ class PolicyDiscount //extends Model
             'sessions' => Setting::session_options($ss),
             'pmt_options' => Setting::pmt_options($ss),
             'programs' => Setting::programs_options($ss),
+            'levels' => Setting::level_options($ss)
         ];
         return $res;
     }

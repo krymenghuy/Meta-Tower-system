@@ -30,7 +30,7 @@ class StudentGroup //extends Model
         $rows = DB::table('student_groups as g')
                 ->join('sessions as s','g.session_id' ,'=' ,'s.id')
                 ->join('program_levels as pl','pl.id','=','g.level_id')
-                ->selectRaw('g.name,g.total_students,g.program_type,s.name as session,pl.name as level')
+                ->selectRaw('g.id,g.name,g.total_students,g.program_type,s.name as session,pl.name as level')
                 ->where('g.branch_id',$branch_id)->get();
         return $rows;
     }

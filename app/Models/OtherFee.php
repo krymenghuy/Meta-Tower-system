@@ -24,7 +24,7 @@ class OtherFee //extends Model
             'program_id'=>'0|number|exists=programs.id',
             'name'=>'1|string|1-200',
             'description'=>'0|string|250',
-            // 'will_expire'=>'0|number|choice|0,1',
+            'will_expire'=>'0|number|choice|0,1',
             // 'start_date'=>'0|date',
             // 'end_date'=>'0|date',
             'academic_year'=>'0|string|1,25',
@@ -33,11 +33,12 @@ class OtherFee //extends Model
         ];
         $branch_id = $ss->branch_id;
         $unique = null;//[$branch_id.'|other_fees|name|id=id'];
-       $res = validateObject($arr,$v_rule,true,[],$ss->lang,false,$unique);
-       if($res->error) return Dv::error($res->error);
-       $inputs =$res->values;
-       $newID = saveData($ss,'other_fees',['id'=>$id],$inputs,[],1,false);
-       return DV::depends($newID,['action'=>['id'=>$newID,'Saved'],'non_tuition_list'=>$this->getList()],'Failed to save Other Fee option');
+        $res = validateObject($arr,$v_rule,true,[],$ss->lang,false,$unique);
+        if($res->error) return Dv::error($res->error);
+        $inputs =$res->values;
+        $inputs['will_expire'] = isset($inputs['will_expire']) ? $inputs['will_expire'] : 0;
+        $newID = saveData($ss,'other_fees',['id'=>$id],$inputs,[],1,false);
+        return DV::depends($newID,['action'=>['id'=>$newID,'Saved'],'non_tuition_list'=>$this->getList()],'Failed to save Other Fee option');
     }
 
     function delete($id=null,$ss=null){

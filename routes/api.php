@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\CampusController;
+use App\Http\Controllers\Mobile\HomePageController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\ProgramLevelController;
 use App\Http\Controllers\StudentController;
@@ -76,6 +77,17 @@ Route::post('auth/login', [LoginController::class, 'apiLogin']);
 
 // Rate Limiting for a whole group of routes= > allow 200 requests per 1 minute
 Route::group(['middleware' => 'throttle:200,1'], function () {
+
+    //mobile api
+
+    Route::prefix('mobile')->group(function(){
+        Route::post('/connected-student',[HomePageController::class,'connectedStudent']);
+    });
+
+    //end mobile api
+
+
+
 
     Route::post('/form-option',[PolicyDiscountController::class,'select_options']);
 

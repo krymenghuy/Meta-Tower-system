@@ -27,4 +27,9 @@ class Setting //extends Model
         return DB::table('programs')->where('branch_id',$branch_id)->selectRaw('name as program_name,id')->get();
     }
 
+    static function level_options($ss=null){
+        $branch_id = $ss->branch_id;
+        return DB::table('program_levels')->where('branch_id',$branch_id)->selectRaw('name as level,id')->get();
+    }
+
 }

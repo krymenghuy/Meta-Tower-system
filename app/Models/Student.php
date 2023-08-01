@@ -75,6 +75,7 @@ class Student //extends Model
         $statusID = $inputs['status_id'];
 
         unset($inputs['status_id']);
+        unset($inputs['student_code']);
         unset($inputs['tuition_start_date']);
         unset($inputs['tuition_end_date']);
         unset($inputs['tuition']);
@@ -274,14 +275,14 @@ class Student //extends Model
 
                 }
 
-                $female_guardian = DB::table('guardians')->selectRaw('name,phone_number,email')->where('id',$newID)->where('sex','F')->first();
+                $female_guardian = DB::table('guardians')->selectRaw('id,name,phone_number,email')->where('id',$newID)->where('sex','F')->first();
                 if($female_guardian){
                     // return $female_guardian;
                     $arr= [
                         'login_name' => $female_guardian->phone_number,
                         'user_class' => 'guardian',
                         'role_id' => '16',
-                        'official_id' => $newID,
+                        'official_id' => $female_guardian->id,
                         // 'official_code' =>$student_code,
                         'email' => $female_guardian->email,
                         'password' => "123456",
