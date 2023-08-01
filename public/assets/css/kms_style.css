@@ -13,6 +13,7 @@ body {
     color: #000;
     font-size: 0.9rem;
     font-weight: normal;
+    overflow: hidden;
 }
 
 li.kt-menu__section {
@@ -281,20 +282,25 @@ li.kt-menu__section {
 }
 
 .h-info-student {
-    min-height: 180px;
+    min-height: 200px;
     border:none;
     border-radius: var(--bs-border-radius-xl);
+    padding:1rem;
 }
 
 .h-info-student .div-img {
     border:none;
+    width:180px;
+    position: relative;
 }
 
 .h-info-student .div-img img {
-    height: 180px;
-    width: 180px;
+    height: 100%;
+    width: 100%;
     border: 0.5px solid #00000067;
     border-radius: var(--bs-border-radius-xl);
+    object-fit: contain;
+    cursor: pointer;
 }
 
 .width-p {
@@ -475,4 +481,13 @@ li.kt-menu__section {
     height: calc(1.5em + 1.3rem + 2px);
     font-size:1.1rem;
     font-weight: semibold;
+}
+
+._rgs_list{
+    display:flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top:1rem;
+    overflow-y: auto;
+    max-height:60vh;
 }

@@ -337,5 +337,4 @@ class ListView {
 			if (!found) if (currentPageButton) currentPageButton.classList.add(this.card_options.pagingActiveClass);
 		});
 	}
-
 }
