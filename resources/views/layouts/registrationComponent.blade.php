@@ -38,7 +38,7 @@
     <div id="st-register--input" class="st-register--input" style="display:none">
         <div class="bg-primary rounded-top-3">
             <div class="py-2 px-3">
-                <i class="fa-solid fa-arrow-left-long fs-3 text-white back--rgs" role="button"></i>
+                <i id="back--rgs" class="fa-solid fa-arrow-left-long fs-3 text-white" role="button"></i>
             </div>
         </div>
         <div class="bg-white px-3 py-2 rounded-bottom-3 h-register-input">
@@ -46,16 +46,18 @@
             <div class="row row-cols-lg-3 mt-2">
                 <div class="col">
                     <div class="form-group">
-                        <label for="student_name_kh" class="form-label trans-text" data-langprop="titles.Student Name (Khmer)"></label>
-                        <input type="text" class="form-control data-input" data-field="student_name_kh"/>
+                        <label for="name" class="form-label trans-text" data-langprop="titles.Student Name (Khmer)"></label>
+                        <input type="text" class="form-control data-input" data-field="name"/>
                     </div>
                     <div class="form-group">
-                        <label for="student_name_lt" class="form-label trans-text" data-langprop="titles.Student Name (Latin)"></label>
-                        <input type="text" class="form-control data-input" data-field="student_name_lt"/>
+                        <label for="name_kh" class="form-label trans-text" data-langprop="titles.Student Name (Latin)"></label>
+                        <input type="text" class="form-control data-input" data-field="name_kh"/>
                     </div>
                     <div class="form-group">
-                        <label for="gender" class="form-label trans-text" data-langprop="titles.Gender"></label>
-                        <select class="modal-select2 form-control data-input" data-field="gender"></select>
+                        <label for="sex" class="form-label trans-text" data-langprop="titles.Gender"></label>
+                        <div class="width-select-dialog">
+                            <select class="modal-select2 form-control data-input" data-field="sex"></select>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="date_of_birth" class="form-label trans-text" data-langprop="titles.Date of Birth"></label>
@@ -76,8 +78,8 @@
                         <input type="text" class="form-control data-input" data-field="phone_number"/>
                     </div>
                     <div class="form-group">
-                        <label for="home_address_son" class="form-label trans-text" data-langprop="titles.Home Address"></label>
-                        <input type="text" class="form-control data-input" data-field="home_address_son"/>
+                        <label for="address" class="form-label trans-text" data-langprop="titles.Home Address"></label>
+                        <input type="text" class="form-control data-input" data-field="address"/>
                     </div>
                 </div>
                 <div class="col">
@@ -96,21 +98,25 @@
                 <div class="col">
                     <div class="form-group">
                         <label for="student_code" class="form-label trans-text" data-langprop="titles.Student Code"></label>
-                        <input type="text" class="form-control data-input" data-field="student_code"/>
+                        <input type="text" class="form-control data-input" data-field="student_code" readonly/>
                     </div>
                     <div class="form-group">
-                        <label for="campus" class="form-label trans-text" data-langprop="titles.Campus"></label>
-                        <select class="modal-select2 form-control data-input" data-field="campus"></select>
+                        <label for="campus_id" class="form-label trans-text" data-langprop="titles.Campus"></label>
+                        <div class="width-select-dialog">
+                            <select class="modal-select2 form-control data-input" data-field="campus_id"></select>
+                        </div>
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-group">
-                        <label for="class" class="form-label trans-text" data-langprop="titles.Class"></label>
-                        <input type="text" class="form-control data-input" data-field="class"/>
+                        <label for="level_id" class="form-label trans-text" data-langprop="titles.Class"></label>
+                        <input type="text" class="form-control data-input" data-field="level_id"/>
                     </div>
                     <div class="form-group">
-                        <label for="section" class="form-label trans-text" data-langprop="titles.Section"></label>
-                        <select class="modal-select2 form-control data-input" data-field="section"></select>
+                        <label for="session_id" class="form-label trans-text" data-langprop="titles.Session"></label>
+                        <div class="width-select-dialog">
+                            <select class="modal-select2 form-control data-input" data-field="session_id"></select>
+                        </div>
                     </div>
                 </div>
                 <div class="col">
@@ -150,8 +156,8 @@
                         <input type="text" class="form-control data-input" data-field="father_phone"/>
                     </div>
                     <div class="form-group">
-                        <label for="home_address_pr" class="form-label trans-text" data-langprop="titles.Home Address"></label>
-                        <input type="text" class="form-control data-input" data-field="home_address_pr"/>
+                        <label for="address" class="form-label trans-text" data-langprop="titles.Home Address"></label>
+                        <input type="text" class="form-control data-input" data-field="address"/>
                     </div>
                 </div>
                 <div class="col">
@@ -164,7 +170,7 @@
                         <input type="text" class="form-control data-input" data-field="mother_phone"/>
                     </div>
                     <div class="d-flex justify-content-center">
-                        <button class="btn btn-primary btn--save" type="button">
+                        <button id="btn--save" class="btn btn-primary" type="button">
                             <span class="trans-text" data-langprop="buttons.Add Student"></span>
                         </button>
                     </div>
