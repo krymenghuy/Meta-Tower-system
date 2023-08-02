@@ -69,8 +69,8 @@ class PriceListController extends Controller
 
         $row = new PriceList(null,$ss);
         // $fee = $row->getWeeklyTuitionDue();
-        $fee = $row->getWeeklyTuitionDue($req->all());
-        return JDV::raw($fee);
+        $fee = $row->payment_processing($req->all(),$req->pmt_option_id);
+        return JDV::result($fee);
     }
 
     function monthlyFee(Request $req){
@@ -80,6 +80,6 @@ class PriceListController extends Controller
         $row = new PriceList(null,$ss);
         // $fee = $row->getWeeklyTuitionDue();
         $fee = $row->getMonthlyTuition($req->all());
-        return JDV::raw($fee);
+        return JDV::result($fee);
     }
 }
