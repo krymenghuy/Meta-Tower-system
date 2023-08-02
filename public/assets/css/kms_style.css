@@ -323,14 +323,49 @@ li.kt-menu__section {
     justify-content: center;
 }
 
+.border-outside-img:hover .contain-img .btn-options{
+    display: block;
+}
+
 .contain-img {
     border-radius: 50%;
     border: 1px solid #808080;
-    width: 60%;
-    height: 60%;
+    width: 180px;
+    height: 180px;
     min-height: 180px;
     min-width: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.contain-img .img-show{
+    width:100%;
+    height:100%;
+    border-radius:50%;
+}
+
+.contain-img .btn-options{
+    position:absolute;
+    right:-19%;
+    top:50%;
+    transform: translateY(-50%);
+    display: none;
+}
+
+.contain-img .btn-options i{
+    padding:10px;
+    background-color:#b8b8b8b7;
+    border-radius: 0 50% 50% 0;
     cursor: pointer;
+}
+
+.contain-img #clickable_img{
+    cursor:pointer;
+    width:100%;
+    height:100%;
+    border-radius: 50%;
 }
 
 .h-register-input {

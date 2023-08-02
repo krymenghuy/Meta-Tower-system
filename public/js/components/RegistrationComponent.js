@@ -11,10 +11,22 @@ var RegistrationComponent = new function(){
     this.div_register_list = mThis.self.find('#_rgs_list');
 
     this.init = () => {
+        mThis.div_input.find('#clickable_img').on('click',function(e){
+            e.preventDefault();
+            FileChooser.chooseFile(null,(d) => {
+                if(d){
+                    mThis.options.photo = d.dataUrl;
+                    mThis.renderImage($(this).parent(), d.dataUrl);
+                }
+            });
+        });
+
         mThis.btnRegister.on('click',function(e){
             e.preventDefault();
-            mThis.setDataForm(null);
-            mThis.div_input.show().siblings().hide();
+            mThis.prepareFormOption(mThis.div_input,'data-input',() => {
+                mThis.setDataForm(null);
+                mThis.div_input.show().siblings().hide();
+            });
         });
 
         mThis.div_input.on('click','i#back--rgs',function(e){
@@ -25,18 +37,79 @@ var RegistrationComponent = new function(){
         mThis.div_input.on('click','button#btn--save',function(e){
             e.preventDefault();
             let p = mThis.getDataForm(mThis.div_input, 'data-input');
+            p = mThis.prepareData(p);
             console.log(p);
-            // window.vsapi.call(`${main_view.base_url}/api/`,p,null).then(res => {
-            //     if(res.status_code === 200){
-            //         mThis.displayStudentList(() => {
-            //             mThis.div_list.show().siblings().hide();
-            //         });
-            //     }
-            //     else{
-            //         cv_interact.error(res.error_message);
-            //     }
-            // });
+            window.vsapi.call(`${main_view.base_url}/api/student/registration`,p,null).then(res => {
+                if(res.status_code === 200){
+                    mThis.displayStudentList(() => {
+                        mThis.div_list.show().siblings().hide();
+                    });
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                }
+            });
         });
+    }
+
+    this.renderImage = (div, image) => {
+        let html = null;
+
+        if(image){
+            html=[`<img class="img-show data-input" src="${image}" data-field="photo"/>
+            <div class="btn-options">
+                <i class="fa-regular fa-trash-can text-danger fs-5 btn-delete"></i>
+            </div>`].join('');
+        }
+        else{
+            html = [`<div id="clickable_img"></div>`].join('');
+        }
+        div.html(html);
+
+        div.find('.btn-delete').on('click',function(e){
+            e.preventDefault();
+            div.html([`<div id="clickable_img"></div>`].join(''));
+            div.find('#clickable_img').on('click',function(e){
+                e.preventDefault();
+                FileChooser.chooseFile(null,(d) => {
+                    if(d){
+                        mThis.options.photo = d.dataUrl;
+                        mThis.renderImage(div, d.dataUrl);
+                    }
+                });
+            });
+        });
+    }
+
+    this.prepareData = (d) => {
+        d = d ? d : {};
+
+        d.parent_info = [
+            {
+                'father_name': d.father_name,
+                'father_email': d.father_email,
+                'father_phone': d.father_phone,
+                'address': d.father_address,
+                'father_id_card': d.father_id_card,
+                'role': 'father',
+                'religion': d.father_religion
+            },
+            {
+                'mother_name': d.mother_name,
+                'mother_email': d.mother_email,
+                'mother_phone': d.mother_phone,
+                'address': d.mother_address,
+                'mother_id_card': d.mother_id_card,
+                'role': 'mother',
+                'religion': d.mother_religion
+            }
+        ];
+
+        ['father_name','father_email','father_phone','father_address','father_id_card','father_religion','mother_name','mother_email','mother_phone','mother_address','mother_id_card','mother_religion'].map(ob => {
+            delete d[ob];
+        });
+        d.photo = mThis.options.photo;
+        return d;
     }
 
     this.displayStudentList = (op, onFinish = null) => {
