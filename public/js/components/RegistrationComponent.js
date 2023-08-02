@@ -41,7 +41,7 @@ var RegistrationComponent = new function(){
             console.log(p);
             window.vsapi.call(`${main_view.base_url}/api/student/registration`,p,null).then(res => {
                 if(res.status_code === 200){
-                    mThis.displayStudentList(() => {
+                    mThis.displayStudentList(null,() => {
                         mThis.div_list.show().siblings().hide();
                     });
                 }
@@ -109,13 +109,14 @@ var RegistrationComponent = new function(){
             delete d[ob];
         });
         d.photo = mThis.options.photo;
+
         return d;
     }
 
     this.displayStudentList = (op=null, onFinish = null) => {
         op = op ? op : {
             'current_page':'1',
-            'per_page':'2'
+            'per_page':'8'
         }
         window.vsapi.call(`${main_view.base_url}/api/student/list-paginate`,op,null).then(res => {
             let d = {};
@@ -333,9 +334,9 @@ var RegistrationComponent = new function(){
 
                 cv_interact.confirm('Delete this information?',{title: 'Delete Information', context: 'delete'},(e) => {
                     if(e){
-                        window.vsapi.call(`${main_view.base_url}/api/`,op,null).then(res => {
+                        window.vsapi.call(`${main_view.base_url}/api/student/delete-student`,op,null).then(res => {
                             if(res.status_code === 200){
-                                mThis.displayStudentList();
+                                mThis.displayStudentList(null);
                             }
                             else{
                                 cv_interact.error(res.error_message);
