@@ -26,7 +26,7 @@ class Student //extends Model
             'level_id' => '1|number|exists=program_levels.id',
             'session_id'=> '1|number|exists=sessions.id',
             'campus_id'=> '1|number|exists=campuses.id',
-            'prev_school' => '0|string|1,100',
+            'previous_school' => '0|string|1,100',
             'shift_id' => '0|number|exists=shifts.id',
             'term_id' => '0|number|exists=terms.id',
             'pmt_mode' => '0|number|default=1',
@@ -56,7 +56,7 @@ class Student //extends Model
         $image = $inputs['photo'];
         $parent_info = $inputs['parent_info'];
         unset($inputs['parent_info']);
-        $prev_school = $inputs['prev_school'];
+        $prev_school = $inputs['previous_school'];
         unset($inputs['photo']);
         $level_id = $inputs['level_id'];
         $session_id = $inputs['session_id'];
@@ -91,7 +91,7 @@ class Student //extends Model
 
         $is_create = (!$id || $id==0);
 
-        unset($inputs['level_id'],$inputs['session_id'],$inputs['campus_id'],$inputs['prev_school'],$inputs['shift_id'],$inputs['term_id'],$inputs['pmt_mode']);
+        unset($inputs['level_id'],$inputs['session_id'],$inputs['campus_id'],$inputs['previous_school'],$inputs['shift_id'],$inputs['term_id'],$inputs['pmt_mode']);
 
         if(!$id && self::checkExistsLoginName($parent_info)) return DV::error('Login name is already taken');
         // $save_prev_school = saveData($ss,'school',['id' => ]);
@@ -133,10 +133,10 @@ class Student //extends Model
                     ]);
                 }
            }
-
+           $getEnrollment = DB::table('enrollments')->where('id',$enrollment_id)->selectRaw('session_id,school_id')->first();
             //** save or update enrollmen_payment table
             if($enrollment_id){
-                $getEnrollment = DB::table('enrollments')->where('id',$enrollment_id)->selectRaw('session_id')->first();
+
                 $en_payment_data = [
                     'tuition' => $tuition,
                     'tuition_due' => $tuition_due,
@@ -155,7 +155,7 @@ class Student //extends Model
 
 
             if($prev_school){
-                $save_prev_school = saveData($ss,'school',['id' =>null],['name' => $prev_school],[],1);
+                $save_prev_school = saveData($ss,'school',['id' =>$getEnrollment?$getEnrollment->school_id:null],['name' => $prev_school],[],1);
                 if($save_prev_school){
                     DB::table('enrollments')->where('student_id',$newID)->update([
                         'school_id' => $save_prev_school
@@ -371,17 +371,22 @@ class Student //extends Model
     }
 
     static function getStudentDetails($id,$ss){
-        $selectCols = 'e.campus_id,e.level_id,session_id,s.id,e.academic_year,s.sex,s.name,s.sex,s.date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth';
+        $selectCols = 'e.school_id,e.campus_id,e.level_id,session_id,s.id,e.academic_year,s.sex,s.name,s.sex,s.date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth';
         $row = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->where('s.id',$id)
                 ->selectRaw($selectCols)
                 ->first();
         $row->parent_info = self::getGuardians($row->id);
+        $row->previous_school = self::getPrevSchool($row->school_id)->name;
         $row->image_url = PublicStorage::getUrl($ss->branch_id,'students','image').$row->file_name;
         unset($row->file_name);
 
         return $row;
+    }
+
+    static function getPrevSchool($id){
+        return DB::table('school')->where('id',$id)->selectRaw('name')->first();
     }
 
     static function getGuardians($student_id){
