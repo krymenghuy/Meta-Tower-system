@@ -93,7 +93,7 @@ class Student //extends Model
 
         unset($inputs['level_id'],$inputs['session_id'],$inputs['campus_id'],$inputs['prev_school'],$inputs['shift_id'],$inputs['term_id'],$inputs['pmt_mode']);
 
-        if(self::checkExistsLoginName($parent_info)) return DV::error('Login name is already taken');
+        if(!$id && self::checkExistsLoginName($parent_info)) return DV::error('Login name is already taken');
         // $save_prev_school = saveData($ss,'school',['id' => ]);
         // $newID = saveData($ss,'students',['id' => $id],$inputs,[],1,1);
         $newID = saveData($ss,'students',['id' => $id],$inputs,[],1,1);
@@ -106,7 +106,7 @@ class Student //extends Model
 
             $program = DB::table('programs as p')->join('program_levels as pl','p.id','=','pl.program_id')->selectRaw('p.id')->where('pl.id',$level_id)->first();
 
-            //** save into enrollments table
+            //** save or update enrollments table
             $en_student_data = [
                 'student_id' => $newID,
                 'level_id' => $level_id,
@@ -118,16 +118,23 @@ class Student //extends Model
                 'academic_year' => $academic_year,
                 'status_id' => $statusID
             ];
-            $enrollment_id = saveData($ss,'enrollments',['student_id'=>null],$en_student_data,[],1);
+            $enrollment_id = saveData($ss,'enrollments',['student_id'=>$id],$en_student_data,[],1);
 
-            //** save into pmt_parameters */
-            $pmt_params_data = [
-                'expected_date' => self::getFutureTime(7),
-                'pmt_option_id' => $pmt_option_id
-            ];
-            $save_pmt_paramsID = saveData($ss,'pmt_parameters',[],$pmt_params_data,[],1);
+           if(!$id){
+                //** save into pmt_parameters */
+                $pmt_params_data = [
+                    'expected_date' => self::getFutureTime(7),
+                    'pmt_option_id' => $pmt_option_id
+                ];
+                $save_pmt_paramsID = saveData($ss,'pmt_parameters',[],$pmt_params_data,[],1);
+                if($save_pmt_paramsID){
+                    DB::table('enrollment_payments')->where('enrollment_id',$enrollment_id)->update([
+                        'parameter_id' => $save_pmt_paramsID
+                    ]);
+                }
+           }
 
-            //** save to enrollmen_payment table
+            //** save or update enrollmen_payment table
             if($enrollment_id){
                 $getEnrollment = DB::table('enrollments')->where('id',$enrollment_id)->selectRaw('session_id')->first();
                 $en_payment_data = [
@@ -138,17 +145,13 @@ class Student //extends Model
                     'term_id' => $term_id,
                     'enrollment_id' => $enrollment_id
                 ];
-                $saveEnrPaymentID = saveData($ss,'enrollment_payments',[],$en_payment_data,[],1);
+                $saveEnrPaymentID = saveData($ss,'enrollment_payments',['enrollment_id',$id?$enrollment_id:null],$en_payment_data,[],1);
 
             }
 
 
 
-            if($save_pmt_paramsID){
-                DB::table('enrollment_payments')->where('enrollment_id',$enrollment_id)->update([
-                    'parameter_id' => $save_pmt_paramsID
-                ]);
-            }
+
 
 
             if($prev_school){
@@ -264,7 +267,8 @@ class Student //extends Model
                 'n_id' => $pf['father_nid'] ?? $pf['mother_nid'] ?? ''
             ];
 
-            $newID = saveData($ss,'guardians',[],$inputs,[],1);
+            $exist = DB::table('guardians')->where('n_id',$pf['father_nid']?? $pf['mother_nid'])->selectRaw('id')->first();
+            $newID = saveData($ss,'guardians',['id' =>$exist?$exist->id:null],$inputs,[],1);
 
             if($newID>0){
                 if(count($parent_info)==1){
@@ -298,7 +302,9 @@ class Student //extends Model
                   $um_ = $um->saveUser($arr,$ss);
                 }
                 // link parent with child
-                $link = saveData($ss,'student_guardians',[],['guardian_id'=>$newID,'student_id'=>$child_id,'guardian_role'=>$pf['role']],[],1);
+                if(!$exist){
+                    saveData($ss,'student_guardians',[],['guardian_id'=>$newID,'student_id'=>$child_id,'guardian_role'=>$pf['role']],[],1);
+                }
 
             }
             $i++;
@@ -364,6 +370,51 @@ class Student //extends Model
         $session_id = isset($arr['session_id']) ? $arr['session_id'] : null;
     }
 
+    static function getStudentDetails($id,$ss){
+        $selectCols = 'e.campus_id,e.level_id,session_id,s.id,e.academic_year,e.id as enrollment_id,s.sex,s.name,s.sex,s.date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth';
+        $row = DB::table('students as s')
+                ->join('enrollments as e','e.student_id','=','s.id')
+                ->where('s.id',$id)
+                ->selectRaw($selectCols)
+                ->first();
+        $row->parent_info = self::getGuardians($row->id);
+        return $row;
+    }
+
+    static function getGuardians($student_id){
+        $rows = DB::table('student_guardians as sg')
+                ->where('sg.student_id',$student_id)
+                ->join('guardians as g','sg.guardian_id' ,'=', 'g.id')
+                ->join('students as s','s.id','=','sg.student_id')
+
+                ->selectRaw('g.name,g.role,g.phone_number,g.email,g.address,g.religion,g.n_id')
+                ->get();
+        foreach($rows as $row){
+            if($row->role == 'father'){
+                $row->father_name =$row->name;
+                $row->father_phone =$row->phone_number;
+                $row->father_email =$row->email;
+                $row->father_nid = $row->n_id;
+                unset($row->name);
+                unset($row->email);
+                unset($row->n_id);
+                unset($row->phone_number);
+            }
+            if($row->role == 'mother'){
+                $row->mother_name =$row->name;
+                $row->mother_phone =$row->phone_number;
+                $row->mother_email =$row->email;
+                $row->mother_nid = $row->n_id;
+                unset($row->name);
+                unset($row->email);
+                unset($row->n_id);
+                unset($row->phone_number);
+            }
+        }
+        return $rows;
+    }
+
+
     static function deleteStudent($id,$ss){
         $file_name = DB::table('students')->where('id',$id)->take(1)->value('file_name');
         if($file_name) PublicStorage::delete($ss->branch_id,'students','image',$file_name);
@@ -371,23 +422,4 @@ class Student //extends Model
         return DV::depends($delete,['action' => 'Deleted']);
     }
 
-    // static function payment_section($arr,$id,$ss){
-    //     $v_rule = [
-    //         // 'tuition' => '1|number',
-    //     ];
-
-    //     $res = validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
-    //     if($res->error) return DV::error($res->error);
-
-    //     $inputs = $res->values;
-
-    //     return $inputs;
-    // }
-
-
-
-
-    /**
-     * $arr ['start_date','acadmic_year','program_id','session_id']
-    */
 }
