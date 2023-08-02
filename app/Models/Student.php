@@ -20,6 +20,7 @@ class Student //extends Model
             'date_of_birth' => '1|string',
             'phone_number' => '0|string',
             'email' => '0|email',
+            'place_of_birth' => '0|string',
             'address' => '1|string',
             'photo' => '0|image',
             'level_id' => '1|number|exists=program_levels.id',
@@ -95,7 +96,7 @@ class Student //extends Model
         if(self::checkExistsLoginName($parent_info)) return DV::error('Login name is already taken');
         // $save_prev_school = saveData($ss,'school',['id' => ]);
         // $newID = saveData($ss,'students',['id' => $id],$inputs,[],1,1);
-        $newID = saveData($ss,'students',['id' => null],$inputs,[],1,1);
+        $newID = saveData($ss,'students',['id' => $id],$inputs,[],1,1);
 
 
         if($newID>0){
@@ -203,7 +204,8 @@ class Student //extends Model
                 ->join('sessions as s','s.id','=','e.session_id')
                 ->selectRaw($selectCols)
                 ->where('st.branch_id',$branch_id)
-                ->whereRaw($str_moreWhere)->whereRaw($str_search);
+                ->whereRaw($str_moreWhere)->whereRaw($str_search)
+                ->orderBy('id','desc');
         $count_query = clone $query;
         $count = $count_query->count('st.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -258,6 +260,8 @@ class Student //extends Model
                 'address' => $pf['father_address'] ?? $pf['mother_address']?? '',
                 'sex' => isset($pf['father_name']) ?'M': 'F',
                 'role' => $pf['role'],
+                'religion' => $pf['religion'],
+                'n_id' => $pf['father_nid'] ?? $pf['mother_nid'] ?? ''
             ];
 
             $newID = saveData($ss,'guardians',[],$inputs,[],1);
@@ -358,6 +362,13 @@ class Student //extends Model
     static function verify_pending_payment($arr=[]){
         $pmt_option = isset($arr['pmt_option']) ? $arr['pmt_option'] :null;
         $session_id = isset($arr['session_id']) ? $arr['session_id'] : null;
+    }
+
+    static function deleteStudent($id,$ss){
+        $file_name = DB::table('students')->where('id',$id)->take(1)->value('file_name');
+        if($file_name) PublicStorage::delete($ss->branch_id,'students','image',$file_name);
+        $delete = DB::table('students')->where('id',$id)->delete();
+        return DV::depends($delete,['action' => 'Deleted']);
     }
 
     // static function payment_section($arr,$id,$ss){

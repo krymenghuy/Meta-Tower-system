@@ -99,6 +99,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/payment/pending',[StudentController::class,'student_payment_pending']);
         Route::post('/list-paginate',[StudentController::class,'student_paginate']);
         Route::post('/payment-section',[StudentController::class, 'student_payment']);
+        Route::post('/delete-student',[StudentController::class,'deleteStudent']);
     });
     //end::StudentController
 
