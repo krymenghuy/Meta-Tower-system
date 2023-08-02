@@ -56,7 +56,11 @@
                     <div class="form-group">
                         <label for="sex" class="form-label trans-text" data-langprop="titles.Gender"></label>
                         <div class="width-select-dialog">
-                            <select class="modal-select2 form-control data-input" data-field="sex"></select>
+                            <select class="modal-select2 form-control data-input" data-field="sex">
+                                <option value="M">Male</option>
+                                <option value="F">Female</option>
+                                <option selected></option>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group">
@@ -87,14 +91,16 @@
                         <label for="photo" class="form-label trans-text" data-langprop="titles.Photo"></label>
                         <div class="d-flex align-items-center justify-content-center">
                             <div class="border-outside-img">
-                                <div class="contain-img"></div>
+                                <div class="contain-img">
+                                    <div id="clickable_img"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <label for="academic_information" class="form-label trans-text fs-5 text-primary" data-langprop="titles.Academic Information"></label>
-            <div class="row row-cols-lg-3">
+            <div class="row row-cols-lg-4">
                 <div class="col">
                     <div class="form-group">
                         <label for="student_code" class="form-label trans-text" data-langprop="titles.Student Code"></label>
@@ -110,7 +116,9 @@
                 <div class="col">
                     <div class="form-group">
                         <label for="level_id" class="form-label trans-text" data-langprop="titles.Class"></label>
-                        <input type="text" class="form-control data-input" data-field="level_id"/>
+                        <div class="width-select-dialog">
+                            <select class="modal-select2 data-input" data-field="level_id"></select>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="session_id" class="form-label trans-text" data-langprop="titles.Session"></label>
@@ -129,9 +137,15 @@
                         <input data-select="datepicker" class="form-control data-input" data-field="admission_date"/>
                     </div>
                 </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="academic_year" class="form-label trans-text" data-langprop="titles.Academic Year"></label>
+                        <input type="text" class="form-control data-input" data-field="academic_year"/>
+                    </div>
+                </div>
             </div>
             <label for="parent_information" class="form-label trans-text fs-5 text-primary" data-langprop="titles.Parent Information"></label>
-            <div class="row row-cols-lg-3">
+            <div class="row row-cols-lg-4">
                 <div class="col">
                     <div class="form-group">
                         <label for="father_name" class="form-label trans-text" data-langprop="titles.Father Name"></label>
@@ -142,8 +156,8 @@
                         <input type="text" class="form-control data-input" data-field="father_id_card"/>
                     </div>
                     <div class="form-group">
-                        <label for="Religion" class="form-label trans-text" data-langprop="titles.Religion"></label>
-                        <input type="text" class="form-control data-input" data-field="religion"/>
+                        <label for="Religion" class="form-label trans-text" data-langprop="titles.Father Religion"></label>
+                        <input type="text" class="form-control data-input" data-field="father_religion"/>
                     </div>
                 </div>
                 <div class="col">
@@ -157,7 +171,7 @@
                     </div>
                     <div class="form-group">
                         <label for="address" class="form-label trans-text" data-langprop="titles.Home Address"></label>
-                        <input type="text" class="form-control data-input" data-field="address"/>
+                        <input type="text" class="form-control data-input" data-field="father_address"/>
                     </div>
                 </div>
                 <div class="col">
@@ -166,8 +180,26 @@
                         <input type="text" class="form-control data-input" data-field="mother_name"/>
                     </div>
                     <div class="form-group">
+                        <label for="mother_id_card" class="form-label trans-text" data-langprop="titles.Mother ID Card"></label>
+                        <input type="email" class="form-control data-input" data-field="mother_id_card"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="religion" class="form-label trans-text" data-langprop="titles.Mother Religion"></label>
+                        <input type="text" class="form-control data-input" data-field="mother_religion"/>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="mother_email" class="form-label trans-text" data-langprop="titles.Mother Email"></label>
+                        <input type="email" class="form-control data-input" data-field="mother_email"/>
+                    </div>
+                    <div class="form-group">
                         <label for="mother_phone" class="form-label trans-text" data-langprop="titles.Mother Phone"></label>
                         <input type="text" class="form-control data-input" data-field="mother_phone"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="address" class="form-label trans-text" data-langprop="titles.Home Address"></label>
+                        <input type="text" class="form-control data-input" data-field="mother_address"/>
                     </div>
                     <div class="d-flex justify-content-center">
                         <button id="btn--save" class="btn btn-primary" type="button">
