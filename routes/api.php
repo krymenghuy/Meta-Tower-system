@@ -395,6 +395,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
 
     Route::post('price-list/weekly', [PriceListController::class, 'weeklyFee']);
+
+    Route::post('price-list/monthly', [PriceListController::class, 'monthlyFee']);
     //End::PriceListController
 
    //begin::PolicyDiscountController

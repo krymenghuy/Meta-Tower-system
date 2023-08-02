@@ -201,7 +201,7 @@ class PriceList //extends Model
                     }
                 }
             }
-            $discount_info = $this->getPolicyDiscount($row->price,$pmt_option_id,$row->price_list_id);
+            $discount_info = $this->getPolicyDiscount($pmt_option_id,$row->price_list_id);
         }
 
         if($nl_price>0){
@@ -218,7 +218,6 @@ class PriceList //extends Model
         return $discount_info;
         // return (object)[dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0,'tuition'=>0,'tuition_due'=>0];
     }
-
 
     function getPolicyDiscount($pmt_option_id,$id=null) {
         $id = $id?$id:$this->id;
@@ -248,21 +247,33 @@ class PriceList //extends Model
         * $arr [start_date','end_date','level_id','session_id'] // pmt_option_id (optional)
     */
     function getDailyTuition($arr=[]){
-        $arr = [
-            "end_date" => '2023-08-12',
-            'start_date' => '2023-08-1',
-            'level_id' => '1',
-            'session_id' => '1',
-        ];
+        // $arr = [
+        //     "end_date" => '',
+        //     'start_date' => getNowTime(),
+        //     'level_id' => '18',
+        //     'session_id' => '1',
+        //     'days' => '',
+        //     "next_level_id"=>"0",
+        //     "academic_year" => "2023-2024",
+        // ];
         $d = (object)$arr;
-        $monthly_fee = self::getMonthlyFee($arr);
-        $month = date('m',$d->start_date);
-        $year = date('Y',$d->start_date);
+        $days = $d->days;
+        $end_date = isset($d->end_date) ? $d->end_date : null;
+        if(!(bool)strtotime($end_date)){
+            if(!$days) return DV::error('Invalid end date');
+            $end_date = dateAdd('day',$days,$d->start_date,'Y-m-d');
+        }
+        $monthly_fee_info = self::getMonthlyFee($arr);
+        $price = $monthly_fee_info->price;
+        $month = date('m',strtotime($d->start_date));
+        $year = date('Y',strtotime($d->start_date));
         $dayInMonth = days_in_month($month,$year);
-        $daily_fee = $monthly_fee / $dayInMonth;
-        $x = dateDiff_days($d->start_date,$d->end_date);
-        return $x * $daily_fee;
+        $daily_fee = $price / $dayInMonth;
+        $x = dateDiff_days($d->start_date,$end_date);
+        $total = number_format($x * $daily_fee,2);
+        $per_day = number_format($total/$x,2);
 
+        return (object)['total' => $total,'per_day' => $per_day,'days'=>$x];
     }
 
      /**
@@ -270,29 +281,48 @@ class PriceList //extends Model
     */
     function getMonthlyTuition($arr){
         $arr = [
-            'start_date' => '2023-08-1',
-            'level_id' => '1',
+            'start_date' => getNowTime(),
+            'level_id' => '18',
             'session_id' => '1',
-            'months' => 2
+            'months' => 2,
+            'next_level_id' => '0',
+            'academic_year'=> '2023-2024'
         ];
         $d = (object)$arr;
+
         $last_day_in_month = getLastDayOfMonth($d->start_date);
 
+        // return (object)['last_day'=>$last_day_in_month];
 
-        $monthly_fee_info = self::getMonthlyFee($arr);
+        $monthly_fee_info = $this->getMonthlyFee($arr);
         if($d->months<3){
-            $dateDiff_days = dateDiff_days($d->start_date,$last_day_in_month);
-            $days = $d->months * 4 * 7;
-            $end_date = dateAdd('day',$days,$d->start_date);
 
-            $total_daily_Fee = self::getDailyTuition([
-                            'start_date' => $d->start_date,
-                            'level_id' => $d->level_id,
-                            'session_id' => $d->session_id,
-                            'end_date' => $end_date
-                        ]);
-            $tuition_due = $total_daily_Fee;
-            return (object)['end_date'=>'','tuition_due'=>$tuition_due];
+            $current_day = date('d'); //date('d');
+            $pay_week =$current_day / 7;
+            $week = round($pay_week,2);
+
+            $weekly_tuition_due = null;
+
+            if($current_day != 1){
+                $total_daily_Fee = self::getWeeklyTuitionDue([
+                    'start_date' => $d->start_date,
+                    'level_id' => $d->level_id,
+                    'session_id' => $d->session_id,
+                    'week' => $week,
+                    'academic_year' => '2023-2024'
+                ]);
+                $weekly_tuition_due = $total_daily_Fee->tuition_due;
+            }
+
+            $monthly_fee = $monthly_fee_info->price;
+            $total_tuition_due = null;
+            if($weekly_tuition_due){
+                $total_tuition_due = $monthly_fee + $weekly_tuition_due;
+            }else{
+                $total_tuition_due = $monthly_fee * $d->months;
+            }
+
+            return (object)['first_month_end_date'=>$last_day_in_month,'tuition_due'=>$total_tuition_due];
         }else if($d->months < 6){
             $price_list_id = $monthly_fee_info->price_list_id;
             $price = $monthly_fee_info->price;
@@ -307,12 +337,12 @@ class PriceList //extends Model
         }else{
 
         }
-        $monthly_fee = self::getMonthlyFee($arr);
-        $weekly_fee = $monthly_fee/4;
-        $x = $weekly_fee * $d->week;
-        $days = $d->week * 7;
-        $end_date = dateAdd('day',$days,$d->start_date);
-        return (object)['end_date' => $end_date,'tuition_due'=> $x];
+        // $monthly_fee = $this->getMonthlyFee($arr);
+        // $weekly_fee = $monthly_fee/4;
+        // $x = $weekly_fee * $d->week;
+        // $days = $d->week * 7;
+        // $end_date = dateAdd('day',$days,$d->start_date);
+        // return (object)['end_date' => $end_date,'tuition_due'=> $x];
     }
 
     /**
@@ -320,15 +350,17 @@ class PriceList //extends Model
     */
     function getWeeklyTuitionDue($arr=[]){
         $arr = [
+            'academic_year' => '2023-2024',
             'start_date' => '2023-08-1',
-            'level_id' => '1',
+            'level_id' => '18',
             'session_id' => '1',
-            'week' => 2
+            'next_level_id' => '0',
+            'week' => 3
         ];
         $d = (object)$arr;
         // $session_id = $d->session_id;
-        $monthly_fee = $this->getMonthlyFee($arr);
-        $weekly_fee = $monthly_fee/4;
+        $monthly_fee_info = $this->getMonthlyFee($arr);
+        $weekly_fee = $monthly_fee_info->price/4;
         $x = $weekly_fee * $d->week;
         $days = $d->week * 7;
         $end_date = dateAdd('day',$days,$d->start_date);
@@ -339,10 +371,32 @@ class PriceList //extends Model
     /**
         * $arr ['acadmic_year','level_id','session_id'] // pmt_option_id (optional)
     */
-    function getMonthlyFee($arr=[]){
-        $row = DB::table('');
+    function getMonthlyFee($arr){
+        $d = (object)$arr;
+        $level_id = $d->level_id;
+        $start_date = isset($d->start_date)?$d->start_date:getNowTime();
+        $academic_year = $d->academic_year;
+        $session_id = $d->session_id;
+        $level_info = DB::table('program_levels as l')->where('id',$level_id)->selectRaw('program_id,id,next_level_id')->first();
+        $start_date = convertDate($start_date);
+        $next_level_id = $level_info->next_level_id;
+        $str_date = 'Date(l.start_date)<=\''.$start_date.'\' AND Date(l.end_date)>=\''.$start_date.'\'';
+        $row = DB::table('price_list as l')
+                ->join('price_list_items as i','i.list_id','=','l.id')
+                ->whereRaw($str_date)
+                ->where('i.program_id',$level_info->program_id)
+                ->where('l.academic_year',$academic_year)
+                ->where('i.session_id',$session_id)
+                ->selectRaw('l.id as price_list_id,i.price,i.program_id')
+                ->first();
 
-        return (object)[''];
+        return (object)['price' => $row->price,'price_list_id'=>$row->price_list_id];
+    }
+
+
+    function payment_processing($arr=[]){
+        // $
+        // if()
     }
 
 
@@ -355,18 +409,5 @@ class PriceList //extends Model
     //     return (object)['count'=>count($allDaysInCurrentMonth),'days'=>$allDaysInCurrentMonth];
     // }
 
-    // function getWeek($days,$last_day){
-    //     $x = $last_day - $days;
-
-    //     if($x <= 7){
-    //         return 1;
-    //     }else if($x > 7 && $x<= 14){
-    //         return 2;
-    //     }else if($x >14 && $x<=21){
-    //         return 3;
-    //     }else if($x>21){
-    //         return 4;
-    //     }
-    // }
 
 }
