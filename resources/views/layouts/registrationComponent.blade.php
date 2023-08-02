@@ -153,7 +153,7 @@
                     </div>
                     <div class="form-group">
                         <label for="father_id_card" class="form-label trans-text" data-langprop="titles.Father ID Card"></label>
-                        <input type="text" class="form-control data-input" data-field="father_id_card"/>
+                        <input type="text" class="form-control data-input" data-field="father_nid"/>
                     </div>
                     <div class="form-group">
                         <label for="Religion" class="form-label trans-text" data-langprop="titles.Father Religion"></label>
@@ -181,7 +181,7 @@
                     </div>
                     <div class="form-group">
                         <label for="mother_id_card" class="form-label trans-text" data-langprop="titles.Mother ID Card"></label>
-                        <input type="email" class="form-control data-input" data-field="mother_id_card"/>
+                        <input type="email" class="form-control data-input" data-field="mother_nid"/>
                     </div>
                     <div class="form-group">
                         <label for="religion" class="form-label trans-text" data-langprop="titles.Mother Religion"></label>

@@ -90,7 +90,7 @@ var RegistrationComponent = new function(){
                 'father_email': d.father_email,
                 'father_phone': d.father_phone,
                 'address': d.father_address,
-                'father_id_card': d.father_id_card,
+                'father_nid': d.father_nid,
                 'role': 'father',
                 'religion': d.father_religion
             },
@@ -99,7 +99,7 @@ var RegistrationComponent = new function(){
                 'mother_email': d.mother_email,
                 'mother_phone': d.mother_phone,
                 'address': d.mother_address,
-                'mother_id_card': d.mother_id_card,
+                'mother_nid': d.mother_nid,
                 'role': 'mother',
                 'religion': d.mother_religion
             }
@@ -112,7 +112,7 @@ var RegistrationComponent = new function(){
         return d;
     }
 
-    this.displayStudentList = (op, onFinish = null) => {
+    this.displayStudentList = (op=null, onFinish = null) => {
         op = op ? op : {
             'current_page':'1',
             'per_page':'2'
