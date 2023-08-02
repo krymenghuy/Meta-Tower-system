@@ -214,7 +214,7 @@
     </div>
 </div>
 
-<div id="dlg__rgs" class="modal fade" tabindex="-1" aria-labelledby="dlg__rgs_title" aria-hidden="true">
+<div id="dlg_rgs_card" class="modal fade" tabindex="-1" aria-labelledby="dlg_rgs_card_title" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -226,7 +226,27 @@
                 <button class="btn btn-sm btn-secondary" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button class="btn btn-sm btn-primary btn--print" type="button">
+                <button id="dlg_rgs_card_btn_print" class="btn btn-sm btn-primary" type="button">
+                    <span class="trans-text" data-langprop="buttons.Print Now"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="dlg_rgs_detail" class="modal fade" tabindex="-1" aria-labelledby="dlg_rgs_detail_title" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button class="btn-close" type="button" aria-label="Close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button class="btn btn-sm btn-secondary" type="button" data-dismiss="modal">
+                    <span class="trans-text" data-langprop="buttons.Cancel"></span>
+                </button>
+                <button id="dlg_rgs_detail_btn_print" class="btn btn-sm btn-primary" type="button">
                     <span class="trans-text" data-langprop="buttons.Print Now"></span>
                 </button>
             </div>

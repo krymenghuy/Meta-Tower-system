@@ -357,7 +357,12 @@ var RegistrationComponent = new function(){
 
             div.on('click','a.btn-rgs-details',function(e){
                 e.preventDefault();
-                console.log("Clicked Details!");
+                let op = {
+                    'id': $(this).data('id')
+                };
+                mThis.loadDataPrint(op,(data) => {
+                    StudentDetailDialog.show(data);
+                });
             });
 
             div.on('click','a.btn-rgs-edit',function(e){
@@ -491,9 +496,9 @@ var RegistrationComponent = new function(){
 
 let PrintCardDialog = new function(){
     let mThis = this;
-    this.self = $('#dlg__rgs');
+    this.self = $('#dlg_rgs_card');
     this.elTitle = mThis.self.find('.modal-title');
-    this.btnPrint = mThis.self.find('.btn--print');
+    this.btnPrint = mThis.self.find('#dlg_rgs_card_btn_print');
 
     mThis.btnPrint.on('click',function(e){
         e.preventDefault();
@@ -503,6 +508,26 @@ let PrintCardDialog = new function(){
     this.show = (options) => {
         if(!options) options = {};
         mThis.elTitle.text(LocaleManager.trans('Generated Card','titles'));
+        mThis.self.modal({
+            backdrop: 'static'
+        });
+    }
+}
+
+let StudentDetailDialog = new function(){
+    let mThis = this;
+    this.self = $('#dlg_rgs_detail');
+    this.elTitle = mThis.self.find('.modal-title');
+    this.btnPrint = mThis.self.find('#dlg_rgs_detail_btn_print');
+
+    mThis.btnPrint.on('click',function(e){
+        e.preventDefault();
+        console.log("Print Now!");
+    });
+
+    this.show = (options) => {
+        if(!options) options = {};
+        mThis.elTitle.text(LocaleManager.trans('Student Details','titles'));
         mThis.self.modal({
             backdrop: 'static'
         });
