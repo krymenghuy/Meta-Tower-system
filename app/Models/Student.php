@@ -30,7 +30,7 @@ class Student //extends Model
             'term_id' => '0|number|exists=terms.id',
             'pmt_mode' => '0|number|default=1',
             'academic_year' => '1|string|1,25',
-            'status_id' => '1|number|exists=status.id',
+            'status_id' => '0|number|exists=status.id',
             'tuition' => '0|number|default=0',
             'tuition_due' => '0|number|default=0',
             'discount' => '0|number|default=0',
@@ -74,6 +74,7 @@ class Student //extends Model
         $tuition_paid = $inputs['tuition_paid'];
         $academic_year = $inputs['academic_year'];
         $statusID = $inputs['status_id'];
+        $inputs['date_of_birth'] = date('Y-m-d',strtotime($inputs['date_of_birth']));
 
         unset($inputs['status_id']);
         unset($inputs['student_code']);
@@ -95,6 +96,7 @@ class Student //extends Model
         // $save_prev_school = saveData($ss,'school',['id' => ]);
         // $newID = saveData($ss,'students',['id' => $id],$inputs,[],1,1);
         $newID = saveData($ss,'students',['id' => null],$inputs,[],1,1);
+
 
         if($newID>0){
             PublicStorage::saveImage($branch_id,"students",null,$image,null, ['id' => $newID, 'store' => 'students.file_name']);
@@ -136,24 +138,7 @@ class Student //extends Model
                     'enrollment_id' => $enrollment_id
                 ];
                 $saveEnrPaymentID = saveData($ss,'enrollment_payments',[],$en_payment_data,[],1);
-                if($saveEnrPaymentID){
-                    $pl = new PriceList(null,$ss);
-                    $tuition_info = $pl->getTuitionDue([
-                        'start_date' => getNowTime(),
-                        'academic_year' => $academic_year,
-                        'level_id' => $level_id,
-                        'session_id' => $session_id,
-                        'pmt_option_id' => 2,//$pmt_option_id,
-                        'semester_number'=>2,
-                        'next_level_id' => 2
-                    ]);
-                    if($tuition_info->error_message==''){
-                        DB::table('enrollment_payments')->where('id',$saveEnrPaymentID)->update([
-                            'tuition' => $tuition_info->tuition,
-                            'tuition_due' => $tuition_info->tuition_due,
-                        ]);
-                    }
-                }
+
             }
 
 
@@ -191,7 +176,7 @@ class Student //extends Model
                 }
             }
         }
-        return DV::depends($newID,['action'=>'Saved','tuition'=>$tuition_info]);
+        return DV::depends($newID,['action'=>'Saved','parent_info' => $p_info]);
     }
 
     static function studentListPaginate($filter=[],$ss){
@@ -264,14 +249,15 @@ class Student //extends Model
         // $student_code = DB::table('students')->where('id',$child_id)->pluck('id');
         $um = new UM();
         $um_ = null;
+        $i = 0;
         foreach($parent_info as $pf){
             $inputs = [
                 'name' => $pf['father_name'] ?? $pf['mother_name']?? '',
                 'email' => $pf['father_email'] ?? $pf['mother_email']?? '',
                 'phone_number' => $pf['father_phone'] ?? $pf['mother_phone']?? '',
                 'address' => $pf['father_address'] ?? $pf['mother_address']?? '',
-                'sex' => $pf['sex'],
-                'roll' => $pf['roll'],
+                'sex' => isset($pf['father_name']) ?'M': 'F',
+                'role' => $pf['role'],
             ];
 
             $newID = saveData($ss,'guardians',[],$inputs,[],1);
@@ -308,9 +294,10 @@ class Student //extends Model
                   $um_ = $um->saveUser($arr,$ss);
                 }
                 // link parent with child
-                $link = saveData($ss,'student_guardians',[],['guardian_id'=>$newID,'student_id'=>$child_id,'guardian_role'=>$pf['roll']],[],1);
+                $link = saveData($ss,'student_guardians',[],['guardian_id'=>$newID,'student_id'=>$child_id,'guardian_role'=>$pf['role']],[],1);
 
             }
+            $i++;
         }
         return $um_;
     }

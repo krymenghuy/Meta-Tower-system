@@ -270,7 +270,8 @@ function prn_allowed($prn_id,$module_id){
 
  function getLastDayOfMonth($mDate)
  {
-     $mDate = $this->convertDate($mDate);
+    //  $mDate = $this->convertDate($mDate);
+    $mDate = convertDate($mDate);
      $date = new DateTime($mDate);
      $date->modify('last day of this month');
      $last_date =  $date->format('Y-m-d');
@@ -302,6 +303,7 @@ function prn_allowed($prn_id,$module_id){
     $diff = $date1->diff($date2);
     return $diff->days;
  }
+
 
  function processQueryString($query_string=null,$sanitize =true,$allow_chars=[]){
     $cs=[];
