@@ -281,8 +281,7 @@ li.kt-menu__section {
     overflow-y: auto;
 }
 
-.h-info-student {
-    min-height: 200px;
+.h-info-student{
     border:none;
     border-radius: var(--bs-border-radius-xl);
     padding:1rem;
