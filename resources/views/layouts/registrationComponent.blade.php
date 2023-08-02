@@ -91,8 +91,10 @@
                         <label for="photo" class="form-label trans-text" data-langprop="titles.Photo"></label>
                         <div class="d-flex align-items-center justify-content-center">
                             <div class="border-outside-img">
-                                <div class="contain-img">
-                                    <div id="clickable_img"></div>
+                                <div id="contain_img" class="contain-img">
+                                    <div id="clickable_img">
+                                        <i class="fa-regular fa-image text-muted fs-3"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -171,7 +173,7 @@
                     </div>
                     <div class="form-group">
                         <label for="address" class="form-label trans-text" data-langprop="titles.Home Address"></label>
-                        <input type="text" class="form-control data-input" data-field="father_address"/>
+                        <textarea class="form-control data-input" data-field="father_address"></textarea>
                     </div>
                 </div>
                 <div class="col">
@@ -199,7 +201,7 @@
                     </div>
                     <div class="form-group">
                         <label for="address" class="form-label trans-text" data-langprop="titles.Home Address"></label>
-                        <input type="text" class="form-control data-input" data-field="mother_address"/>
+                        <textarea class="form-control data-input" data-field="mother_address"></textarea>
                     </div>
                     <div class="d-flex justify-content-center">
                         <button id="btn--save" class="btn btn-primary" type="button">
@@ -221,10 +223,10 @@
             </div>
             <div class="modal-body"></div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                <button class="btn btn-sm btn-secondary" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button class="btn btn-primary btn--print" type="button">
+                <button class="btn btn-sm btn-primary btn--print" type="button">
                     <span class="trans-text" data-langprop="buttons.Print Now"></span>
                 </button>
             </div>

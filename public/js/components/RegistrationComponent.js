@@ -23,6 +23,7 @@ var RegistrationComponent = new function(){
 
         mThis.btnRegister.on('click',function(e){
             e.preventDefault();
+            mThis.options.id = null;
             mThis.prepareFormOption(mThis.div_input,'data-input',() => {
                 mThis.setDataForm(null);
                 mThis.div_input.show().siblings().hide();
@@ -31,6 +32,7 @@ var RegistrationComponent = new function(){
 
         mThis.div_input.on('click','i#back--rgs',function(e){
             e.preventDefault();
+            mThis.options.id = null;
             mThis.div_list.show().siblings().hide();
         });
 
@@ -55,20 +57,36 @@ var RegistrationComponent = new function(){
     this.renderImage = (div, image) => {
         let html = null;
 
-        if(image){
-            html=[`<img class="img-show data-input" src="${image}" data-field="photo"/>
+        if(image && image != 'undefined'){
+            html = [`<img class="img-show data-input" src="${image}" data-field="photo"/>
             <div class="btn-options">
                 <i class="fa-regular fa-trash-can text-danger fs-5 btn-delete"></i>
             </div>`].join('');
         }
         else{
-            html = [`<div id="clickable_img"></div>`].join('');
+            html = [`<div id="clickable_img">
+                <i class="fa-regular fa-image text-muted fs-3"></i>
+            </div>`].join('');
         }
         div.html(html);
 
+        div.find('#clickable_img').on('click',function(e){
+            e.preventDefault();
+            FileChooser.chooseFile(null,(d) => {
+                if(d){
+                    mThis.options.photo = d.dataUrl;
+                    mThis.renderImage(div, d.dataUrl);
+                }
+            });
+        });
+
         div.find('.btn-delete').on('click',function(e){
             e.preventDefault();
-            div.html([`<div id="clickable_img"></div>`].join(''));
+
+            div.html([`<div id="clickable_img">
+                <i class="fa-regular fa-image text-muted fs-3"></i>
+            </div>`].join(''));
+
             div.find('#clickable_img').on('click',function(e){
                 e.preventDefault();
                 FileChooser.chooseFile(null,(d) => {
@@ -111,6 +129,27 @@ var RegistrationComponent = new function(){
         d.photo = mThis.options.photo;
 
         return d;
+    }
+
+    this.convertUrlToBase64 = (imageUrl, callback) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = function(){
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            const dataURL = canvas.toDataURL();
+            callback && callback(dataURL);
+            canvas.remove();
+        };
+        img.src = imageUrl;
+    }
+
+    this.checkIsUrl = (imageUrl, callback) => {
+        const regex = /^(ftp|http|https):\/\/[^ "]+$/;
+        callback && callback(regex.test(imageUrl));
     }
 
     this.displayStudentList = (op=null, onFinish = null) => {
@@ -319,10 +358,13 @@ var RegistrationComponent = new function(){
                 let op = {
                     'id': $(this).data('id')
                 };
+                mThis.options.id = op.id;
 
                 mThis.loadDataEdit(op, (data) => {
-                    mThis.setDataForm(data);
-                    mThis.div_input.show().siblings().hide();
+                    mThis.prepareFormOption(mThis.div_input,'data-input',() => {
+                        mThis.setDataForm(data);
+                        mThis.div_input.show().siblings().hide();
+                    });
                 });
             });
 
@@ -349,18 +391,18 @@ var RegistrationComponent = new function(){
     }
 
     this.loadDataEdit = (op, onFinish) => {
-        window.vsapi.call(`${main_view.base_url}/api/`,op,null).then(res => {
-            let data = [];
+        window.vsapi.call(`${main_view.base_url}/api/student/details-student`,op,null).then(res => {
+            let data = {};
             if(res.status_code === 200){
                 data = StringSanitizer.sanitizeObject(res.data);
             }
-            onFinish && onFinish(data);
+            if(typeof onFinish === 'function') onFinish(data);
         });
     }
 
     this.loadDataPrint = (op, onFinish) => {
-        window.vsapi.call(`${main_view.base_url}/api/`,op,null).then(res => {
-            let data = [];
+        window.vsapi.call(`${main_view.base_url}/api/student/details-student`,op,null).then(res => {
+            let data = {};
             if(res.status_code === 200){
                 data = StringSanitizer.sanitizeObject(res.data);
             }
@@ -369,8 +411,9 @@ var RegistrationComponent = new function(){
     }
 
     this.getDataForm = (div, class_name) => {
-        let id = mThis.options.id ? mThis.options.id : 0;
-        let p = {'id': id};
+        let p = {
+            'id': mThis.options.id ? mThis.options.id : 0
+        };
         div.find(`.${class_name}`).each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -381,10 +424,24 @@ var RegistrationComponent = new function(){
 
     this.setDataForm = (d) => {
         d = d ? d : {};
+        let div = mThis.div_input.find('#contain_img');
+        mThis.renderImage(div,d.image_url);
+
         mThis.div_input.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
-            el.val(d[f]);
+            if(el.is('select'))
+                el.val(d[f]).trigger('change');
+            else if(f === 'father_religion')
+                el.val(d['parent_info'][0]['religion']);
+            else if(f === 'father_address')
+                el.val(d['parent_info'][0]['address']);
+            else if(f === 'mother_religion')
+                el.val(d['parent_info'][1]['religion']);
+            else if(f === 'mother_address')
+                el.val(d['parent_info'][1]['address']);
+            else
+                el.val(d[f] || d['parent_info'][0][f] || d['parent_info'][1][f]);
         });
     }
 
