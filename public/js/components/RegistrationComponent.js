@@ -261,7 +261,7 @@ var RegistrationComponent = new function(){
         start_page = 1;
 
         if(current_page == end_page){
-            html = [html,`<button class="btn btn-sm border btn-pagination">${current_page-1}</button>
+            html = [html,`<button class="btn btn-sm border btn-pagination ${(current_page-1) == 0 ? 'd-none':''}">${current_page-1}</button>
             <button class="btn btn-primary btn-sm btn-pagination">${current_page}</button>`].join('');
         }
         else if(current_page == start_page){
