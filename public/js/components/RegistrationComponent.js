@@ -190,9 +190,9 @@ var RegistrationComponent = new function(){
                                     <p class="text-nowrap">${item.name}</p>
                                 </div>
                                 <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Female"></p>
+                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Sex"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.sex}</p>
+                                    <p class="text-nowrap">${item.sex == 'M' ? 'Male':'Female'}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Date of Birth"></p>
@@ -440,15 +440,15 @@ var RegistrationComponent = new function(){
             if(el.is('select'))
                 el.val(d[f]).trigger('change');
             else if(f === 'father_religion')
-                el.val(d['parent_info'][0] && d['parent_info'][0]['religion']);
+                el.val(d['parent_info'] && d['parent_info'][0] && d['parent_info'][0]['religion']);
             else if(f === 'father_address')
-                el.val(d['parent_info'][0] && d['parent_info'][0]['address']);
+                el.val(d['parent_info'] && d['parent_info'][0] && d['parent_info'][0]['address']);
             else if(f === 'mother_religion')
-                el.val(d['parent_info'][1] && d['parent_info'][1]['religion']);
+                el.val(d['parent_info'] && d['parent_info'][1] && d['parent_info'][1]['religion']);
             else if(f === 'mother_address')
-                el.val(d['parent_info'][1] && d['parent_info'][1]['address']);
+                el.val(d['parent_info'] && d['parent_info'][1] && d['parent_info'][1]['address']);
             else
-                el.val(d[f] || (d['parent_info'][0] && d['parent_info'][0][f]) || (d['parent_info'][1] && d['parent_info'][1][f]));
+                el.val(d[f] || (d['parent_info'] && d['parent_info'][0] && d['parent_info'][0][f]) || (d['parent_info'] && d['parent_info'][1] && d['parent_info'][1][f]));
         });
     }
 
@@ -475,7 +475,7 @@ var RegistrationComponent = new function(){
                         break;
                 }
             });
-            mThis.displayStudentList();
+            mThis.displayStudentList(null);
             if(typeof onFinish === 'function') onFinish();
         });
     }
