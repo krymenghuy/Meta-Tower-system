@@ -176,7 +176,7 @@ class Student //extends Model
                 }
             }
         }
-        return DV::depends($newID,['action'=>'Saved']);
+        return DV::depends($newID,['action'=>'Saved','parent_info' => $p_info]);
     }
 
     static function studentListPaginate($filter=[],$ss){
@@ -249,13 +249,14 @@ class Student //extends Model
         // $student_code = DB::table('students')->where('id',$child_id)->pluck('id');
         $um = new UM();
         $um_ = null;
+        $i = 0;
         foreach($parent_info as $pf){
             $inputs = [
                 'name' => $pf['father_name'] ?? $pf['mother_name']?? '',
                 'email' => $pf['father_email'] ?? $pf['mother_email']?? '',
                 'phone_number' => $pf['father_phone'] ?? $pf['mother_phone']?? '',
                 'address' => $pf['father_address'] ?? $pf['mother_address']?? '',
-                'sex' => $parent_info[0]?'M': 'F',
+                'sex' => isset($pf['father_name']) ?'M': 'F',
                 'role' => $pf['role'],
             ];
 
@@ -296,6 +297,7 @@ class Student //extends Model
                 $link = saveData($ss,'student_guardians',[],['guardian_id'=>$newID,'student_id'=>$child_id,'guardian_role'=>$pf['role']],[],1);
 
             }
+            $i++;
         }
         return $um_;
     }
