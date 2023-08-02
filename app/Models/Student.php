@@ -371,13 +371,16 @@ class Student //extends Model
     }
 
     static function getStudentDetails($id,$ss){
-        $selectCols = 'e.campus_id,e.level_id,session_id,s.id,e.academic_year,e.id as enrollment_id,s.sex,s.name,s.sex,s.date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth';
+        $selectCols = 'e.campus_id,e.level_id,session_id,s.id,e.academic_year,s.sex,s.name,s.sex,s.date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth';
         $row = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->where('s.id',$id)
                 ->selectRaw($selectCols)
                 ->first();
         $row->parent_info = self::getGuardians($row->id);
+        $row->image_url = PublicStorage::getUrl($ss->branch_id,'students','image').$row->file_name;
+        unset($row->file_name);
+
         return $row;
     }
 
@@ -386,7 +389,6 @@ class Student //extends Model
                 ->where('sg.student_id',$student_id)
                 ->join('guardians as g','sg.guardian_id' ,'=', 'g.id')
                 ->join('students as s','s.id','=','sg.student_id')
-
                 ->selectRaw('g.name,g.role,g.phone_number,g.email,g.address,g.religion,g.n_id')
                 ->get();
         foreach($rows as $row){
@@ -395,6 +397,7 @@ class Student //extends Model
                 $row->father_phone =$row->phone_number;
                 $row->father_email =$row->email;
                 $row->father_nid = $row->n_id;
+                $row->father_profile = "";
                 unset($row->name);
                 unset($row->email);
                 unset($row->n_id);
@@ -405,6 +408,7 @@ class Student //extends Model
                 $row->mother_phone =$row->phone_number;
                 $row->mother_email =$row->email;
                 $row->mother_nid = $row->n_id;
+                $row->mother_profile = "";
                 unset($row->name);
                 unset($row->email);
                 unset($row->n_id);

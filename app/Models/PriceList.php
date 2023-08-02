@@ -349,16 +349,17 @@ class PriceList //extends Model
         * $arr ['start_date','weeks','acadmic_year','level_id','session_id'] // pmt_option_id (optional)
     */
     function getWeeklyTuitionDue($arr=[]){
-        $arr = [
-            'academic_year' => '2023-2024',
-            'start_date' => '2023-08-1',
-            'level_id' => '18',
-            'session_id' => '1',
-            'next_level_id' => '0',
-            'week' => 3
-        ];
+        // $arr = [
+        // //     'academic_year' => '2023-2024',
+        //     'start_date' => '2023-08-1',
+        // //     'level_id' => '18',
+        // //     'session_id' => '1',
+        // //     'next_level_id' => '0',
+        // //     'week' => 3
+        // ];
         $d = (object)$arr;
         // $session_id = $d->session_id;
+        $d->start_date = getNowTime();
         $monthly_fee_info = $this->getMonthlyFee($arr);
         $weekly_fee = $monthly_fee_info->price/4;
         $x = $weekly_fee * $d->week;
@@ -394,9 +395,13 @@ class PriceList //extends Model
     }
 
 
-    function payment_processing($arr=[]){
-        // $
-        // if()
+    function payment_processing($arr=[],$pmt_option_id){
+        if($pmt_option_id == 4){
+            return $this->getWeeklyTuitionDue($arr);
+        }
+        if($pmt_option_id == 5){
+
+        }
     }
 
 
