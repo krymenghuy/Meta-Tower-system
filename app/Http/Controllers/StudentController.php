@@ -41,4 +41,12 @@ class StudentController extends Controller
         $rows = Student::payment_section($req->all(),$req->id,$ss);
         return JDV::result($rows);
     }
+
+    function deleteStudent(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $delete = Student::deleteStudent($req->id,$ss);
+        return JDV::raw($delete);
+    }
 }
