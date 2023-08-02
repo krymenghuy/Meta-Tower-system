@@ -56,6 +56,13 @@ var RegistrationComponent = new function(){
 
     this.renderImage = (div, image) => {
         let html = null;
+        mThis.checkIsUrl(image,(d) => {
+            if(d){
+                mThis.convertUrlToBase64(image, (img) => {
+                    mThis.options.photo = img;
+                });
+            }
+        });
 
         if(image && image != 'undefined'){
             html = [`<img class="img-show data-input" src="${image}" data-field="photo"/>
@@ -394,7 +401,7 @@ var RegistrationComponent = new function(){
         window.vsapi.call(`${main_view.base_url}/api/student/details-student`,op,null).then(res => {
             let data = {};
             if(res.status_code === 200){
-                data = StringSanitizer.sanitizeObject(res.data);
+                data = StringSanitizer.sanitizeObject(res.data,null,['image_url']);
             }
             if(typeof onFinish === 'function') onFinish(data);
         });
