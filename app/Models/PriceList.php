@@ -276,18 +276,15 @@ class PriceList //extends Model
         return (object)['total' => $total,'per_day' => $per_day,'days'=>$x];
     }
 
+    function stardardTuitionDue($arr){
+
+    }
+
      /**
         * $arr ['start_date','month','acadmic_year','level_id','session_id'] // pmt_option_id (optional)
     */
     function getMonthlyTuition($arr){
-        // $arr = [
-        //     'start_date' => getNowTime(),
-        //     'level_id' => '18',
-        //     'session_id' => '1',
-        //     'months' => 2,
-        //     'next_level_id' => '0',
-        //     'academic_year'=> '2023-2024'
-        // ];
+
         $d = (object)$arr;
 
         $last_day_in_month = getLastDayOfMonth($d->start_date);
@@ -358,7 +355,6 @@ class PriceList //extends Model
         // //     'week' => 3
         // ];
         $d = (object)$arr;
-        // $session_id = $d->session_id;
         $monthly_fee_info = $this->getMonthlyFee($arr);
         $weekly_fee = $monthly_fee_info->price/4;
         $x = $weekly_fee * $d->week;
@@ -397,9 +393,10 @@ class PriceList //extends Model
     function payment_processing($arr=[],$pmt_option_id){
         if($pmt_option_id == 4){
             return $this->getWeeklyTuitionDue($arr);
-        }
-        if($pmt_option_id == 5){
+        }else if($pmt_option_id == 5){
             return $this->getMonthlyTuition($arr);
+        }else {
+
         }
     }
 
