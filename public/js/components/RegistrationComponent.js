@@ -440,15 +440,15 @@ var RegistrationComponent = new function(){
             if(el.is('select'))
                 el.val(d[f]).trigger('change');
             else if(f === 'father_religion')
-                el.val(d['parent_info'][0]['religion']);
+                el.val(d['parent_info'][0] && d['parent_info'][0]['religion']);
             else if(f === 'father_address')
-                el.val(d['parent_info'][0]['address']);
+                el.val(d['parent_info'][0] && d['parent_info'][0]['address']);
             else if(f === 'mother_religion')
-                el.val(d['parent_info'][1]['religion']);
+                el.val(d['parent_info'][1] && d['parent_info'][1]['religion']);
             else if(f === 'mother_address')
-                el.val(d['parent_info'][1]['address']);
+                el.val(d['parent_info'][1] && d['parent_info'][1]['address']);
             else
-                el.val(d[f] || d['parent_info'][0][f] || d['parent_info'][1][f]);
+                el.val(d[f] || (d['parent_info'][0] && d['parent_info'][0][f]) || (d['parent_info'][1] && d['parent_info'][1][f]));
         });
     }
 
