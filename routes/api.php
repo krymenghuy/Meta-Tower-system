@@ -100,6 +100,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/list-paginate',[StudentController::class,'student_paginate']);
         Route::post('/payment-section',[StudentController::class, 'student_payment']);
         Route::post('/delete-student',[StudentController::class,'deleteStudent']);
+        Route::post('/details-student',[StudentController::class,'studentDetials']);
     });
     //end::StudentController
 
