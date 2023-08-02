@@ -145,7 +145,7 @@ class Student //extends Model
                     'term_id' => $term_id,
                     'enrollment_id' => $enrollment_id
                 ];
-                $saveEnrPaymentID = saveData($ss,'enrollment_payments',['enrollment_id',$id?$enrollment_id:null],$en_payment_data,[],1);
+                $saveEnrPaymentID = saveData($ss,'enrollment_payments',['enrollment_id' => $id?$enrollment_id:null],$en_payment_data,[],1);
 
             }
 
@@ -260,7 +260,7 @@ class Student //extends Model
                 'name' => $pf['father_name'] ?? $pf['mother_name']?? '',
                 'email' => $pf['father_email'] ?? $pf['mother_email']?? '',
                 'phone_number' => $pf['father_phone'] ?? $pf['mother_phone']?? '',
-                'address' => $pf['father_address'] ?? $pf['mother_address']?? '',
+                'address' => $pf['address'],
                 'sex' => isset($pf['father_name']) ?'M': 'F',
                 'role' => $pf['role'],
                 'religion' => $pf['religion'],
@@ -392,7 +392,7 @@ class Student //extends Model
                 ->selectRaw('g.name,g.role,g.phone_number,g.email,g.address,g.religion,g.n_id')
                 ->get();
         foreach($rows as $row){
-            if($row->role == 'father'){
+            if(strtolower($row->role) == 'father'){
                 $row->father_name =$row->name;
                 $row->father_phone =$row->phone_number;
                 $row->father_email =$row->email;
@@ -409,10 +409,10 @@ class Student //extends Model
                 $row->mother_email =$row->email;
                 $row->mother_nid = $row->n_id;
                 $row->mother_profile = "";
-                unset($row->name);
-                unset($row->email);
-                unset($row->n_id);
-                unset($row->phone_number);
+                // unset($row->name);
+                // unset($row->email);
+                // unset($row->n_id);
+                // unset($row->phone_number);
             }
         }
         return $rows;
