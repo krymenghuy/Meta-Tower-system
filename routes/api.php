@@ -87,6 +87,12 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
     //end mobile api
 
+    //
+    Route::post('audio',function(Request $req){
+        $file = '';
+        return $file;
+    });
+    //
 
 
 
@@ -96,9 +102,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //begin::StudentController
     Route::prefix('student')->group(function () {
         Route::post('/registration', [StudentController::class, 'studentRegistration']);
-        Route::post('/payment/pending',[StudentController::class,'student_payment_pending']);
-        Route::post('/list-paginate',[StudentController::class,'student_paginate']);
-        Route::post('/payment-section',[StudentController::class, 'student_payment']);
+        Route::post('/pending/payment',[StudentController::class,'getPendingPayment']);
+        Route::post('/list-paginate',[StudentController::class,'studentPaginate']);
         Route::post('/delete-student',[StudentController::class,'deleteStudent']);
         Route::post('/details-student',[StudentController::class,'studentDetials']);
     });

@@ -8,9 +8,11 @@ use DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Carbon\Carbon;
 use Session;
+use Localization;
 class Student //extends Model
 {
     // use HasFactory;
+
 
     static function saveStudent($arr,$id=null,$ss){ //** register only //without payment yet */
         $v_rule = [
@@ -26,7 +28,7 @@ class Student //extends Model
             'level_id' => '1|number|exists=program_levels.id',
             'session_id'=> '1|number|exists=sessions.id',
             'campus_id'=> '1|number|exists=campuses.id',
-            'prev_school' => '0|string|1,100',
+            'previous_school' => '0|string|1,100',
             'shift_id' => '0|number|exists=shifts.id',
             'term_id' => '0|number|exists=terms.id',
             'pmt_mode' => '0|number|default=1',
@@ -56,7 +58,7 @@ class Student //extends Model
         $image = $inputs['photo'];
         $parent_info = $inputs['parent_info'];
         unset($inputs['parent_info']);
-        $prev_school = $inputs['prev_school'];
+        $prev_school = $inputs['previous_school'];
         unset($inputs['photo']);
         $level_id = $inputs['level_id'];
         $session_id = $inputs['session_id'];
@@ -74,6 +76,7 @@ class Student //extends Model
         $discount = $inputs['discount'];
         $tuition_paid = $inputs['tuition_paid'];
         $academic_year = $inputs['academic_year'];
+        $inputs['status_id'] = 1;
         $statusID = $inputs['status_id'];
         $inputs['date_of_birth'] = date('Y-m-d',strtotime($inputs['date_of_birth']));
 
@@ -91,7 +94,7 @@ class Student //extends Model
 
         $is_create = (!$id || $id==0);
 
-        unset($inputs['level_id'],$inputs['session_id'],$inputs['campus_id'],$inputs['prev_school'],$inputs['shift_id'],$inputs['term_id'],$inputs['pmt_mode']);
+        unset($inputs['level_id'],$inputs['session_id'],$inputs['campus_id'],$inputs['previous_school'],$inputs['shift_id'],$inputs['term_id'],$inputs['pmt_mode']);
 
         if(!$id && self::checkExistsLoginName($parent_info)) return DV::error('Login name is already taken');
         // $save_prev_school = saveData($ss,'school',['id' => ]);
@@ -116,11 +119,13 @@ class Student //extends Model
                 'shift_id' => $shift_id,
                 'pmt_mode' => $pmt_mode,
                 'academic_year' => $academic_year,
-                'status_id' => $statusID
             ];
+           if(!$id){
+                $en_student_data['status_id'] = $statusID;
+           }
             $enrollment_id = saveData($ss,'enrollments',['student_id'=>$id],$en_student_data,[],1);
 
-           if(!$id){
+           if(!$id || $id == 0){
                 //** save into pmt_parameters */
                 $pmt_params_data = [
                     'expected_date' => self::getFutureTime(7),
@@ -133,10 +138,9 @@ class Student //extends Model
                     ]);
                 }
            }
-
+           $getEnrollment = DB::table('enrollments')->where('id',$enrollment_id)->selectRaw('session_id,school_id')->first();
             //** save or update enrollmen_payment table
             if($enrollment_id){
-                $getEnrollment = DB::table('enrollments')->where('id',$enrollment_id)->selectRaw('session_id')->first();
                 $en_payment_data = [
                     'tuition' => $tuition,
                     'tuition_due' => $tuition_due,
@@ -155,7 +159,7 @@ class Student //extends Model
 
 
             if($prev_school){
-                $save_prev_school = saveData($ss,'school',['id' =>null],['name' => $prev_school],[],1);
+                $save_prev_school = saveData($ss,'school',['id' =>$getEnrollment?$getEnrollment->school_id:null],['name' => $prev_school],[],1);
                 if($save_prev_school){
                     DB::table('enrollments')->where('student_id',$newID)->update([
                         'school_id' => $save_prev_school
@@ -230,13 +234,9 @@ class Student //extends Model
                 ->join('students as s','s.id','=','sg.student_id')
                 ->join('guardians as g','g.id','=','sg.guardian_id')
                 ->where('s.id',$id)
+                ->where('g.role','mother')
                 ->selectRaw('g.name as parent_name,g.phone_number,g.email')
                 ->get()->first();
-    }
-
-
-    static function updateStudent(){
-
     }
 
     static function checkExistsLoginName($info){
@@ -320,7 +320,7 @@ class Student //extends Model
     }
 
 
-    static function student_payment_pending($filter=[],$ss){
+    static function pendingStudentPayment($filter=[],$ss){
         $branch_id = $ss->branch_id;
         $search_value =isset($filter['search_value'])?$filter['search_value']:null;
         $current_page =isset($filter['current_page'])?$filter['current_page']:1;
@@ -337,22 +337,24 @@ class Student //extends Model
             $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 'pmt.expected_date,ss.name as session,ep.tuition,ep.tuition_due,ep.tuition_paid,s.name,s.id,st.name as status';
+        $selectCols = 's.name,s.name_kh,ep.id,ep.tuition,ep.tuition_due,ep.tuition_paid';
         $query = DB::table('enrollment_payments as ep')
                 ->join('enrollments as e','e.id','=','ep.enrollment_id')
                 ->join('students as s','s.id','=','e.student_id')
-                ->join('sessions as ss','ss.id','=','e.session_id')
                 ->join('status as st','st.id','=','e.status_id')
-                ->join('pmt_parameters as pmt','pmt.id','=','ep.parameter_id')
-                ->where('st.name','pending')
                 ->selectRaw($selectCols)
+                ->where('e.status_id',1)
                 ->where('ep.branch_id',$branch_id);
                 // ->whereRaw($str_moreWhere)->whereRaw($str_search);
         $count_query = clone $query;
-        $count = $count_query->count('ep.id');
+        $count = $count_query->count('s.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
+
+    static function verifyStudentPendingPayment($arr=[]){
+
     }
 
     static function getFutureTime($daysToAdd) {
@@ -365,23 +367,23 @@ class Student //extends Model
         return $futureDate;
     }
 
-    static function verify_pending_payment($arr=[]){
-        $pmt_option = isset($arr['pmt_option']) ? $arr['pmt_option'] :null;
-        $session_id = isset($arr['session_id']) ? $arr['session_id'] : null;
-    }
-
     static function getStudentDetails($id,$ss){
-        $selectCols = 'e.campus_id,e.level_id,session_id,s.id,e.academic_year,s.sex,s.name,s.sex,s.date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth';
+        $selectCols = 'e.school_id,e.campus_id,e.level_id,session_id,s.id,e.academic_year,s.sex,s.name,s.sex,s.date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth';
         $row = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->where('s.id',$id)
                 ->selectRaw($selectCols)
                 ->first();
         $row->parent_info = self::getGuardians($row->id);
+        $row->previous_school = self::getPrevSchool($row->school_id)->name;
         $row->image_url = PublicStorage::getUrl($ss->branch_id,'students','image').$row->file_name;
         unset($row->file_name);
 
         return $row;
+    }
+
+    static function getPrevSchool($id){
+        return DB::table('school')->where('id',$id)->selectRaw('name')->first();
     }
 
     static function getGuardians($student_id){
@@ -409,10 +411,10 @@ class Student //extends Model
                 $row->mother_email =$row->email;
                 $row->mother_nid = $row->n_id;
                 $row->mother_profile = "";
-                // unset($row->name);
-                // unset($row->email);
-                // unset($row->n_id);
-                // unset($row->phone_number);
+                unset($row->name);
+                unset($row->email);
+                unset($row->n_id);
+                unset($row->phone_number);
             }
         }
         return $rows;
