@@ -20,7 +20,7 @@ class Audio //extends Model
             $base64Data = base64_encode(file_get_contents($file->path()));
 
             // Save the base64 data to a folder
-            $destinationPath = 'path/to/destination/folder/';
+            $destinationPath = '/public/audio/';
             file_put_contents($destinationPath . $fileName . '.txt', $base64Data);
 
             // Save the file path in the database or do any other necessary processing
