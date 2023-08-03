@@ -18,4 +18,21 @@ class SettingController extends Controller
         return JDV::result($options);
     }
 
+    function prevPrograms(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+
+        $options = Setting::prevProgramOptions($ss);
+        return JDV::result($options);
+    }
+
+    function prevProgramLevels(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+
+        $options = Setting::prevProgramLevelOptions($ss);
+        return JDV::result($options);
+    }
+
+
 }

@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\AcademicYearController;
+use App\Http\Controllers\AudioController;
 use App\Http\Controllers\CampusController;
+use App\Http\Controllers\DepositeController;
 use App\Http\Controllers\Mobile\HomePageController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\ProgramLevelController;
@@ -93,11 +95,17 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         return $file;
     });
     //
+     //
+     Route::post('audio/save',[AudioController::class,'saveAudio']);
+     Route::post('audio-base/save',[AudioController::class,'baseAudio']);
+    //
 
 
 
 
     Route::post('/form-option',[SettingController::class,'select_options']);
+    Route::post('option/prev-program',[SettingController::class,'prevPrograms']);
+    Route::post('option/prev-program-level',[SettingController::class,'prevProgramLevels']);
 
     //begin::StudentController
     Route::prefix('student')->group(function () {
@@ -108,6 +116,15 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/details-student',[StudentController::class,'studentDetials']);
     });
     //end::StudentController
+
+    //begin::DepositController
+    Route::prefix('deposite')->group(function () {
+        Route::post('/save',[DepositeController::class,'save']);
+        Route::post('/details',[DepositeController::class,'getDetails']);
+        Route::post('/list',[DepositeController::class,'getList']);
+        Route::post('/delete',[DepositeController::class,'delete']);
+    });
+    //end::DepositController
 
     //begin::CampusController
     Route::prefix('campus')->group(function () {

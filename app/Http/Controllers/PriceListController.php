@@ -79,7 +79,7 @@ class PriceListController extends Controller
 
         $row = new PriceList(null,$ss);
         // $fee = $row->getWeeklyTuitionDue();
-        $fee = $row->getMonthlyTuition($req->all());
+        $fee = $row->getMonthlyFee($req->all());
         return JDV::result($fee);
     }
 }

@@ -64,7 +64,7 @@ class ProgramLevel //extends Model
         $id = $id?$id:$this->id;
         $branch_id = $ss->branch_id;
 
-        $exist_in_student_group = DB::table('student_groups')->where('level_id',$id);
+        $exist_in_student_group = DB::table('student_groups')->where('level_id',$id)->exists();
         if($exist_in_student_group) return DV::error('Level is in use');
 
         $row = DB::table('program_levels')->where('id',$id)->where('branch_id',$branch_id)->delete();

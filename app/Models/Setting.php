@@ -49,4 +49,14 @@ class Setting //extends Model
         $branch_id = $ss->branch_id;
         return DB::table('campuses')->where('branch_id',$branch_id)->selectRaw('name as campus,id')->get();
     }
+
+    static function prevProgramOptions($ss=null){
+        $branch_id = $ss->branch_id;
+        return DB::table('programs')->where('branch_id',$branch_id)->selectRaw('name as program,id')->get();
+    }
+
+    static function prevProgramLevelOptions($ss=null){
+        $branch_id = $ss->branch_id;
+        return DB::table('program_levels')->where('branch_id',$branch_id)->selectRaw('name as level,id')->get();
+    }
 }
