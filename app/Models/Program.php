@@ -20,6 +20,7 @@ class Program // extends Model
         $v_rule = [
             'department_id' => '1|number|default=1',
             'name' => '0|string|1-50',
+            'prev_program_id' => '0|number|exists=programs.id'
         ];
 
         $res = validateObject($arr,$v_rule,false,[],$ss->lang,[],null);
@@ -66,6 +67,9 @@ class Program // extends Model
         $ss = $ss?$ss:$this->user_info;
         $id = $id?$id:$this->id;
         $branch_id = $ss->branch_id;
+
+        $exists_in_levels = DB::table('program_levels')->where('program_id',$id)->exists();
+        if($exists_in_levels) return DV::error('Program is in use');
 
         $row = DB::table('programs')->where('id',$id)->where('branch_id',$branch_id)->delete();
         return DV::depends($row,['action'=>'Program Deleted','programs' => self::list($ss)]);

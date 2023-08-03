@@ -87,6 +87,12 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
     //end mobile api
 
+    //
+    Route::post('audio',function(Request $req){
+        $file = '';
+        return $file;
+    });
+    //
 
 
 

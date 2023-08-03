@@ -8,9 +8,11 @@ use DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Carbon\Carbon;
 use Session;
+use Localization;
 class Student //extends Model
 {
     // use HasFactory;
+
 
     static function saveStudent($arr,$id=null,$ss){ //** register only //without payment yet */
         $v_rule = [
@@ -123,7 +125,7 @@ class Student //extends Model
            }
             $enrollment_id = saveData($ss,'enrollments',['student_id'=>$id],$en_student_data,[],1);
 
-           if(!$id){
+           if(!$id || $id == 0){
                 //** save into pmt_parameters */
                 $pmt_params_data = [
                     'expected_date' => self::getFutureTime(7),
@@ -182,7 +184,7 @@ class Student //extends Model
                 }
             }
         }
-        return DV::depends($newID,['action'=>'Saved','parent_info' => $save_pmt_paramsID]);
+        return DV::depends($newID,['action'=>'Saved','parent_info' => $p_info]);
     }
 
     static function studentListPaginate($filter=[],$ss){
@@ -232,6 +234,7 @@ class Student //extends Model
                 ->join('students as s','s.id','=','sg.student_id')
                 ->join('guardians as g','g.id','=','sg.guardian_id')
                 ->where('s.id',$id)
+                ->where('g.role','mother')
                 ->selectRaw('g.name as parent_name,g.phone_number,g.email')
                 ->get()->first();
     }

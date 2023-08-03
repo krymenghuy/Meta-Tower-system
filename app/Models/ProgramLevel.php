@@ -20,8 +20,9 @@ class ProgramLevel //extends Model
         $v_rule = [
             'program_id' => '1|number|exists=programs.id',
             'name' => '0|string|1-100',
+            'prev_level_id' => '0|number|exists=program_levels.id'
         ];
-      
+
         $res = validateObject($arr,$v_rule,false,[],$ss->lang,[],null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
@@ -62,6 +63,10 @@ class ProgramLevel //extends Model
         $ss = $ss?$ss:$this->user_info;
         $id = $id?$id:$this->id;
         $branch_id = $ss->branch_id;
+
+        $exist_in_student_group = DB::table('student_groups')->where('level_id',$id);
+        if($exist_in_student_group) return DV::error('Level is in use');
+
         $row = DB::table('program_levels')->where('id',$id)->where('branch_id',$branch_id)->delete();
 
         return DV::depends($row,['levels'=>$this->list($program_id,$ss)]);
