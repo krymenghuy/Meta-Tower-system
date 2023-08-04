@@ -401,8 +401,8 @@ class PriceList //extends Model
                     ]);
 
                     $semester_tuition = $price * $semester;
-                    return $total_daily_Fee;
 
+                    return $pay_month;
                 }
             }
             return (object)['end_date'=> $end_date ,'total_tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'weekly_tuition_due' => $weekly_tuition_due,'weeks' => $week,'monthly_tuition_due' => $monthly_tuition_due,'discount'=>$discount_info->discount,'after_discount' => $after_discount,'discount_amount' => $discount_amt];
@@ -436,7 +436,7 @@ class PriceList //extends Model
         $session_id = $d->session_id;
         $level_info = DB::table('program_levels as l')->where('id',$level_id)->selectRaw('program_id,id,prev_level_id')->first();
         $start_date = convertDate($start_date);
-        $prev_level_id = $level_info->prev_level_id;
+        // $prev_level_id = $level_info->prev_level_id;
         $str_date = 'Date(l.start_date)<=\''.$start_date.'\' AND Date(l.end_date)>=\''.$start_date.'\'';
         $row = DB::table('price_list as l')
                 ->join('price_list_items as i','i.list_id','=','l.id')
