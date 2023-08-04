@@ -265,8 +265,9 @@ class Student //extends Model
             ];
 
             $exist = DB::table('guardians')
-                ->where('id',$pf['id'])
+                ->where('id',isset($pf['id'])?$pf['id']:null)
                 ->exists();
+                $u_id = isset($pf['id'])?$pf['id']:null;
             $newID = saveData($ss,'guardians',['id' => $exist?$pf['id']:null],$inputs,[],1);
 
             if($newID>0){
