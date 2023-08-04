@@ -24,6 +24,8 @@ var RegistrationComponent = new function(){
         mThis.btnRegister.on('click',function(e){
             e.preventDefault();
             mThis.options.id = null;
+            mThis.options.father_id = null;
+            mThis.options.mother_id = null;
             mThis.prepareFormOption(mThis.div_input,'data-input',() => {
                 mThis.setDataForm(null);
                 mThis.div_input.show().siblings().hide();
@@ -33,6 +35,8 @@ var RegistrationComponent = new function(){
         mThis.div_input.on('click','i#back--rgs',function(e){
             e.preventDefault();
             mThis.options.id = null;
+            mThis.options.father_id = null;
+            mThis.options.mother_id = null;
             mThis.div_list.show().siblings().hide();
         });
 
@@ -111,6 +115,7 @@ var RegistrationComponent = new function(){
 
         d.parent_info = [
             {
+                'id': mThis.options.father_id,
                 'father_name': d.father_name,
                 'father_email': d.father_email,
                 'father_phone': d.father_phone,
@@ -120,6 +125,7 @@ var RegistrationComponent = new function(){
                 'religion': d.father_religion
             },
             {
+                'id': mThis.options.mother_id,
                 'mother_name': d.mother_name,
                 'mother_email': d.mother_email,
                 'mother_phone': d.mother_phone,
@@ -438,6 +444,9 @@ var RegistrationComponent = new function(){
         d = d ? d : {};
         let div = mThis.div_input.find('#contain_img');
         mThis.renderImage(div,d.image_url);
+
+        mThis.options.father_id = (d['parent_info'] && d['parent_info'][0] && d['parent_info'][0]['id']);
+        mThis.options.mother_id = (d['parent_info'] && d['parent_info'][1] && d['parent_info'][1]['id']);
 
         mThis.div_input.find('.data-input').each(function(){
             let el = $(this);
