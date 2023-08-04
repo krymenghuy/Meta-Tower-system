@@ -240,7 +240,7 @@
 </div>
 
 <div id="dlg_rgs_detail" class="modal fade" tabindex="-1" aria-labelledby="dlg_rgs_detail_title" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered custom-modal">
+    <div class="modal-dialog modal-lg modal-dialog-centered custom-modal">
         <div class="modal-content">
             <div class="modal-header">
                 <button class="btn-close" type="button" aria-label="Close" data-dismiss="modal"></button>
