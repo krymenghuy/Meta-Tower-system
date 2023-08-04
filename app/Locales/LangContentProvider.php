@@ -44,7 +44,6 @@ class LangContentProvider {
                 'number between'=>'number must be between ? and ?',
                 'text length must be between'=>'text length must be between ? and ?',
                 'Start date should be earlier than first payment date'=>'Start date should be earlier than first payment date',
-                'level id ID is not valid or does not exist' => 'sdfssdf'
               ]
            ];
     }

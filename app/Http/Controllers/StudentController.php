@@ -18,14 +18,6 @@ class StudentController extends Controller
         return JDV::raw($register);
     }
 
-    function getPendingPayment(Request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss;
-
-        $rows = Student::pendingStudentPayment($req->all(),$ss);
-        return JDV::result($rows);
-    }
-
     function studentPaginate(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;

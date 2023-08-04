@@ -16,6 +16,8 @@ class Deposite //extends Model
             'session_id' => '1|number|exists=sessions.id',
             'parent_phone' => '1|string|1,20',
             'deposite_amount' => '1|number',
+            'date_of_birth' => '1|string',
+            'expire_date' => '1|string',
             'note' => '0|string',
         ];
 
@@ -32,7 +34,7 @@ class Deposite //extends Model
         $branch_id = $ss->branch_id;
         $rows = DB::table('deposite as d')
                 ->join('program_levels as l','l.id','=','d.level_id')
-                ->selectRaw('d.status_id,d.student_name,d.id,l.name as level,d.parent_phone')
+                ->selectRaw('d.status_id,d.student_name,d.id,l.name as level,d.parent_phone,d.expire_date,d.date_of_birth')
                 ->where('d.branch_id',$branch_id)
                 ->get();
         foreach($rows as $row){

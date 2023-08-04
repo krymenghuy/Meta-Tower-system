@@ -68,20 +68,18 @@ class Student //extends Model
         $pmt_option_id = $inputs['pmt_option_id'];
         $pmt_status = $inputs['pmt_status'];
         // $tuition_start_date = $inputs['tuition_start_date'];
-        $tuition_end_date = getNowTime();
+
         $tuition = $inputs['tuition'];
         $tuition_due = $inputs['tuition_due'];
-        $discount = $inputs['discount'];
+
         $tuition_paid = $inputs['tuition_paid'];
         $academic_year = $inputs['academic_year'];
         $inputs['status_id'] = 1;
         $statusID = $inputs['status_id'];
         $inputs['date_of_birth'] = date('Y-m-d',strtotime($inputs['date_of_birth']));
-
+        $admission_date = isset($arr['admission_date']) ? $arr['admission_date'] :null;
         unset($inputs['status_id']);
         unset($inputs['student_code']);
-        unset($inputs['tuition_start_date']);
-        unset($inputs['tuition_end_date']);
         unset($inputs['tuition']);
         unset($inputs['tuition_due']);
         unset($inputs['discount']);
@@ -116,6 +114,7 @@ class Student //extends Model
                 'shift_id' => $shift_id,
                 'pmt_mode' => $pmt_mode,
                 'academic_year' => $academic_year,
+                'start_date' => date('Y-m-d',strtotime($admission_date)),
             ];
            if(!$id){
                 $en_student_data['status_id'] = $statusID;
@@ -317,44 +316,6 @@ class Student //extends Model
         DB::table('students')->where('id',$newID)->update(['code' => $new_code]);
     }
 
-
-    static function pendingStudentPayment($filter=[],$ss){
-        $branch_id = $ss->branch_id;
-        $search_value =isset($filter['search_value'])?$filter['search_value']:null;
-        $current_page =isset($filter['current_page'])?$filter['current_page']:1;
-        $pmt_status = isset($filter['pmt_status'])?$filter['pmt_status']:null;
-        $per_page =isset($filter['per_page'])?$filter['per_page']:10;
-        if(!is_numeric($current_page)) $current_page=1;
-        $skip_rows = ($current_page -1) * $per_page;
-
-        $str_search ="1=1";
-        $str_moreWhere="1=1";
-        if($search_value){
-            $skip_rows =0;
-            $search_value = escape_like_str($search_value);
-            $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
-        }
-
-        $selectCols = 's.name,s.name_kh,ep.id,ep.tuition,ep.tuition_due,ep.tuition_paid';
-        $query = DB::table('enrollment_payments as ep')
-                ->join('enrollments as e','e.id','=','ep.enrollment_id')
-                ->join('students as s','s.id','=','e.student_id')
-                ->join('status as st','st.id','=','e.status_id')
-                ->selectRaw($selectCols)
-                ->where('e.status_id',1)
-                ->where('ep.branch_id',$branch_id);
-                // ->whereRaw($str_moreWhere)->whereRaw($str_search);
-        $count_query = clone $query;
-        $count = $count_query->count('s.id');
-        $rows = $query->skip($skip_rows)->take($per_page)->get();
-
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-    }
-
-    static function verifyStudentPendingPayment($arr=[]){
-
-    }
-
     static function getFutureTime($daysToAdd) {
         $currentTimestamp = time();
 
@@ -366,7 +327,7 @@ class Student //extends Model
     }
 
     static function getStudentDetails($id,$ss){
-        $selectCols = 'ss.name as session,e.school_id,e.campus_id,e.level_id,e.session_id,s.id,e.academic_year,s.sex,s.name,s.sex,s.date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth';
+        $selectCols = 'ss.name as session,e.school_id,e.campus_id,e.level_id,e.session_id,s.id,e.academic_year,s.sex,s.name,s.sex,s.date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth,e.start_date as admission_date';
         $row = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->join('sessions as ss','ss.id','=','e.session_id')
