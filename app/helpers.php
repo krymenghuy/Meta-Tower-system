@@ -304,6 +304,32 @@ function prn_allowed($prn_id,$module_id){
     return $diff->days;
  }
 
+ function findFutureMonths($start_date,$months)
+{
+    // Get the current date
+    $currentDate = DateTime::createFromFormat('Y-m-d',$start_date);
+
+    // Create an array to store the future months
+    $futureMonths = [];
+
+    // Loop through the number of months to find the future months
+    for ($i = 1; $i <= $months; $i++) {
+        // Add one month to the current date
+        $currentDate->add(new DateInterval('P1M'));
+
+        // Get the future month in the format 'Y-m' (e.g., '2023-08')
+        $futureMonth = $currentDate->format('Y-m-d');
+
+        // Add the future month to the array
+        $futureMonths[] = $futureMonth;
+
+    }
+    $end_date = end($futureMonths);
+    $end_date = getLastDayOfMonth($end_date);
+
+    return (object)['future_months' => $futureMonths,'end_date' => $end_date];
+}
+
 
  function processQueryString($query_string=null,$sanitize =true,$allow_chars=[]){
     $cs=[];
