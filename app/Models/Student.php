@@ -368,20 +368,39 @@ class Student //extends Model
     }
 
     static function getStudentDetails($id,$ss){
-        $selectCols = 'e.school_id,e.campus_id,e.level_id,session_id,s.id,e.academic_year,s.sex,s.name,s.sex,s.date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth';
+        $selectCols = 'e.school_id,e.campus_id,e.level_id,e.session_id,s.id,e.academic_year,s.sex,s.name,s.sex,s.date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth';
         $row = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
+                ->join('sessions as ss','ss.id','=','e.session_id')
                 ->where('s.id',$id)
                 ->selectRaw($selectCols)
                 ->first();
-        $row->parent_info = self::getGuardians($row->id);
-        $row->previous_school = self::getPrevSchool($row->school_id)->name;
-        $row->image_url = PublicStorage::getUrl($ss->branch_id,'students','image').$row->file_name;
-        unset($row->file_name);
-
-        return $row;
+       if($row){
+            $row->level = self::getProgramLevel($row->level_id);
+            $row->campus = self::getCampus($row->campus_id);
+            $row->parent_info = self::getGuardians($row->id);
+            $row->previous_school = self::getPrevSchool($row->school_id)->name;
+            $row->image_url = PublicStorage::getUrl($ss->branch_id,'students','image').$row->file_name;
+            unset($row->file_name);
+            return $row;
+       }
     }
 
+    static function getCampus($id){
+        $row = DB::table('campuses')->where('id',$id)->selectRaw('name')->first();
+        if($row){
+            return $row = $row->name;
+        }
+        return null;
+    }
+
+    static function getProgramLevel($id){
+        $row = DB::table('program_levels')->where('id',$id)->selectRaw('name')->first();
+        if($row){
+            return $row = $row->name;
+        }
+        return null;
+    }
     static function getPrevSchool($id){
         return DB::table('school')->where('id',$id)->selectRaw('name')->first();
     }

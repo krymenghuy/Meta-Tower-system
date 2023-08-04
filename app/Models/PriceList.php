@@ -277,7 +277,6 @@ class PriceList //extends Model
             $pay_week = ($dayInMonth - round($current_day,0)) / 7; //* get week(s) of payment
             $week = round($pay_week,0); //** round up week of payment */
             $pmt_option = isset($d->pmt_option_id)?$d->pmt_option_id:null; //** payment option // ;
-
         //*
 
         $last_day_in_month = getLastDayOfMonth($d->start_date);
@@ -381,16 +380,33 @@ class PriceList //extends Model
                     $base_amount = $price * $term; //** base amount refer to term (3 months) */
                     $monthly_tuition_due = $monthly_fee_info->price * $pay_month;
 
-                    $discount_amt = ($base_amount + $monthly_tuition_due) * $discount_info->discount / 100;
+                    $discount_amt = (($base_amount + $monthly_tuition_due) * $discount_info->discount) / 100;
                     $after_discount = ($base_amount + $monthly_tuition_due) - $discount_amt;
                     $total_tuition_due = $after_discount + $weekly_tuition_due;
                     $end_date = findFutureMonths($d->start_date,5);//** */
                     $end_date =$end_date->end_date;
-
-
                 }
             }
-            return (object)['end_date'=> $end_date ,'total_tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'weekly_tuition_due' => $weekly_tuition_due,'weeks' => $week,'monthly_tuition_due' => $monthly_tuition_due,'discount'=>$discount_info->discount,'after_discount' => $after_discount];
+            if($current_day != 1 && $d->months >6){
+                if($d->months == 7){
+                    $semester = 6;
+                    $pay_month = $d->months - $semester;
+
+                    $total_daily_Fee = self::getWeeklyTuitionDue([
+                        'start_date' => $d->start_date,
+                        'level_id' => $d->level_id,
+                        'session_id' => $d->session_id,
+                        'week' => $week,
+                        'academic_year' => $d->academic_year,
+                    ]);
+
+                    $semester_tuition = $price * $semester;
+                    $pay_month = $price * $pay_month;
+
+                    return $pay_month;
+                }
+            }
+            return (object)['end_date'=> $end_date ,'total_tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'weekly_tuition_due' => $weekly_tuition_due,'weeks' => $week,'monthly_tuition_due' => $monthly_tuition_due,'discount'=>$discount_info->discount,'after_discount' => $after_discount,'discount_amount' => $discount_amt];
         }else{
 
         }
