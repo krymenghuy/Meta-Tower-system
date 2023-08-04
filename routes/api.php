@@ -110,7 +110,6 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //begin::StudentController
     Route::prefix('student')->group(function () {
         Route::post('/registration', [StudentController::class, 'studentRegistration']);
-        Route::post('/pending/payment',[StudentController::class,'getPendingPayment']);
         Route::post('/list-paginate',[StudentController::class,'studentPaginate']);
         Route::post('/delete-student',[StudentController::class,'deleteStudent']);
         Route::post('/details-student',[StudentController::class,'studentDetials']);
@@ -416,6 +415,9 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('price-list/save-item', [PriceListController::class, 'saveItem']);
     Route::post('price-list/delete-item', [PriceListController::class, 'deleteItem']);
     Route::post('price-list/item-details', [PriceListController::class, 'getPriceListItemDetails']);
+
+    Route::post('price-list/pending/payment',[PriceListController::class,'getPendingPayment']);
+    Route::post('price-list/preview/pending-payment',[PriceListController::class,'previewPendingPaymentDetails']);
 
 
     Route::post('price-list/weekly', [PriceListController::class, 'weeklyFee']);

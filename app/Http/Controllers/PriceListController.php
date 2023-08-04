@@ -82,4 +82,22 @@ class PriceListController extends Controller
         $fee = $row->getMonthlyFee($req->all());
         return JDV::result($fee);
     }
+
+    function getPendingPayment(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+
+        $pending = PriceList::pendingPayment($req->all,$ss);
+        return JDV::result($pending);
+    }
+
+    function previewPendingPaymentDetails(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+
+        $row = new PriceList($req->id,$ss);
+        $preview = $row->previewPendingPaymentDetails($req->id,$ss);
+        return JDV::result($preview);
+
+    }
 }
