@@ -38,7 +38,6 @@ class Student //extends Model
             'tuition_due' => '0|number|default=0',
             'discount' => '0|number|default=0',
             'tuition_paid' => '0|number|default=0',
-            'parent_info' => '0|array',
             'pmt_option_id' => '0|number|exists=pmt_options.id|default=2',
             'pmt_status' => '0|string|default=unpaid',
             'student_code' => '0|string'
@@ -51,13 +50,12 @@ class Student //extends Model
         $res = validateObject($arr,$v_rule,1,['email'=>$email_char,'address'=>$address_char,'photo'=>$image_char,'academic_year'=>$academic_year_char],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
+        $parent_info = isset($arr['parent_info']) ? $arr['parent_info'] :null;
 
         $code = $inputs['student_code'];
         $inputs['code'] = $code;
         //
         $image = $inputs['photo'];
-        $parent_info = $inputs['parent_info'];
-        unset($inputs['parent_info']);
         $prev_school = $inputs['previous_school'];
         unset($inputs['photo']);
         $level_id = $inputs['level_id'];
