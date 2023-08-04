@@ -548,3 +548,21 @@ li.kt-menu__section {
     background-color:#808080;
     padding:0;
 }
+
+.background-card{
+    height:100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    position: absolute;
+    transform: translate(-40%, 9%);
+    opacity: 0.5;
+}
+
+.student-image{
+    width:133.5px;
+    height:200px;
+}
+
+.fs-5-1{
+    font-size:1.1rem;
+}

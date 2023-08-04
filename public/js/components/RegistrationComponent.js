@@ -93,6 +93,7 @@ var RegistrationComponent = new function(){
 
         div.find('.btn-delete').on('click',function(e){
             e.preventDefault();
+            mThis.options.photo = null;
 
             div.html([`<div id="clickable_img">
                 <i class="fa-regular fa-image text-muted fs-3"></i>
@@ -516,9 +517,30 @@ let PrintCardDialog = new function(){
         console.log("Print Now!");
     });
 
+    this.setDataForm = (d) => {
+        d = d ? d : {};
+        d['sex'] = d['sex'] === 'M' ? 'Male':'Female';
+
+        mThis.self.find('.data-show').each(function(){
+            let el = $(this);
+            let f = el.data('field');
+            if(el.is('img')){
+                if(f === 'mother_profile')
+                    el.attr('src',(d['parent_info'] && d['parent_info'][1] && d['parent_info'][1][f]));
+                else if(f === 'father_profile')
+                    el.attr('src',(d['parent_info'] && d['parent_info'][0] && d['parent_info'][0][f]));
+                else
+                    el.attr('src',d[f]);
+            }
+            else
+                el.text(d[f]);
+        });
+    }
+
     this.show = (options) => {
         if(!options) options = {};
         mThis.elTitle.text(LocaleManager.trans('Generated Card','titles'));
+        mThis.setDataForm(options);
         mThis.self.modal({
             backdrop: 'static'
         });
