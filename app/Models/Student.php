@@ -368,7 +368,7 @@ class Student //extends Model
     }
 
     static function getStudentDetails($id,$ss){
-        $selectCols = 'e.school_id,e.campus_id,e.level_id,e.session_id,s.id,e.academic_year,s.sex,s.name,s.sex,s.date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth';
+        $selectCols = 'ss.name as session,e.school_id,e.campus_id,e.level_id,e.session_id,s.id,e.academic_year,s.sex,s.name,s.sex,s.date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth';
         $row = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->join('sessions as ss','ss.id','=','e.session_id')
