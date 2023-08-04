@@ -54,11 +54,17 @@ class OtherFee //extends Model
        $rows = DB::table('other_fees as f')->where('branch_id',$ss->branch_id)
                 ->selectRaw($cols)->get();
         foreach($rows as $row){
-            $program = new Program(null,$ss);
-            $details = $program->details($row->program_id);
-            $row->program_name = $details->name;
+            $row->program_name = $this->getProgram($row->program_id);
         }
         return $rows;
+    }
+
+    function getProgram($id){
+        $row = DB::table('programs')->where('id',$id)->selectRaw('name')->first();
+        if($row){
+            $row = $row->name;
+        }
+        return null;
     }
 
 
