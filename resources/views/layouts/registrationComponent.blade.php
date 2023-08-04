@@ -47,11 +47,11 @@
                 <div class="col">
                     <div class="form-group">
                         <label for="name" class="form-label trans-text" data-langprop="titles.Student Name (Khmer)"></label>
-                        <input type="text" class="form-control data-input" data-field="name"/>
+                        <input type="text" class="form-control data-input" data-field="name_kh"/>
                     </div>
                     <div class="form-group">
                         <label for="name_kh" class="form-label trans-text" data-langprop="titles.Student Name (Latin)"></label>
-                        <input type="text" class="form-control data-input" data-field="name_kh"/>
+                        <input type="text" class="form-control data-input" data-field="name"/>
                     </div>
                     <div class="form-group">
                         <label for="sex" class="form-label trans-text" data-langprop="titles.Gender"></label>
@@ -215,13 +215,15 @@
 </div>
 
 <div id="dlg_rgs_card" class="modal fade" tabindex="-1" aria-labelledby="dlg_rgs_card_title" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered custom-modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title"></h5>
                 <button class="btn-close" type="button" aria-label="Close" data-dismiss="modal"></button>
             </div>
-            <div class="modal-body"></div>
+            <div class="modal-body">
+                
+            </div>
             <div class="modal-footer">
                 <button class="btn btn-sm btn-secondary" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
@@ -235,13 +237,104 @@
 </div>
 
 <div id="dlg_rgs_detail" class="modal fade" tabindex="-1" aria-labelledby="dlg_rgs_detail_title" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered custom-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"></h5>
                 <button class="btn-close" type="button" aria-label="Close" data-dismiss="modal"></button>
             </div>
-            <div class="modal-body"></div>
+            <div class="modal-body">
+                <p class="fs-5 fw-bold text-primary trans-text" data-langprop="titles.Student Information"></p>
+                <div class="row gy-2">
+                    <div class="col-lg-8">
+                        <p class="mb-1">
+                            <span class="trans-text" data-langprop="titles.Student Name"></span>
+                            <span class="px-2">:</span>
+                            <strong>
+                                <span class="data-show" data-field="name"></span>
+                            </strong>
+                        </p>
+                        <p class="mb-1">
+                            <span class="trans-text" data-langprop="titles.Sex"></span>
+                            <span class="px-2">:</span>
+                            <strong>
+                                <span class="data-show" data-field="sex"></span>
+                            </strong>
+                        </p>
+                        <p class="mb-1">
+                            <span class="trans-text" data-langprop="titles.Date of Birth"></span>
+                            <span class="px-2">:</span>
+                            <strong>
+                                <span class="data-show" data-field="date_of_birth"></span>
+                            </strong>
+                        </p>
+                        <p class="mb-1">
+                            <span class="trans-text" data-langprop="titles.Phone Number"></span>
+                            <span class="px-2">:</span>
+                            <strong>
+                                <span class="data-show" data-field="phone_number"></span>
+                            </strong>
+                        </p>
+                        <p class="mb-1">
+                            <span class="trans-text" data-langprop="titles.Email"></span>
+                            <span class="px-2">:</span>
+                            <strong>
+                                <span class="data-show" data-field="email"></span>
+                            </strong>
+                        </p>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="container-image-student">
+                            <img class="data-show" alt="" data-field="image_url"/>
+                        </div>
+                    </div>
+                </div>
+                <p class="mb-1">
+                    <span class="trans-text" data-langprop="titles.Home Address"></span>
+                    <span class="px-2">:</span>
+                    <strong>
+                        <span class="data-show" data-field="address"></span>
+                    </strong>
+                </p>
+                <hr class="line-bottom"/>
+                <p class="fs-5 fw-bold text-primary trans-text" data-langprop="titles.Academic Information"></p>
+                <div class="d-block">
+                    <p class="mb-1">
+                        <span class="trans-text" data-langprop="titles.Student ID"></span>
+                        <span class="px-2">:</span>
+                        <strong>
+                            <span class="data-show" data-field="student_code"></span>
+                        </strong>
+                    </p>
+                    <p class="mb-1">
+                        <span class="trans-text" data-langprop="titles.Sex"></span>
+                        <span class="px-2">:</span>
+                        <strong>
+                            <span class="data-show" data-field="sex"></span>
+                        </strong>
+                    </p>
+                    <p class="mb-1">
+                        <span class="trans-text" data-langprop="titles.Previous School"></span>
+                        <span class="px-2">:</span>
+                        <strong>
+                            <span class="data-show" data-field="previous_school"></span>
+                        </strong>
+                    </p>
+                    <p class="mb-1">
+                        <span class="trans-text" data-langprop="titles.Phone Number"></span>
+                        <span class="px-2">:</span>
+                        <strong>
+                            <span class="data-show" data-field="phone_number"></span>
+                        </strong>
+                    </p>
+                    <p class="mb-1">
+                        <span class="trans-text" data-langprop="titles.Email"></span>
+                        <span class="px-2">:</span>
+                        <strong>
+                            <span class="data-show" data-field="email"></span>
+                        </strong>
+                    </p>
+                </div>
+            </div>
             <div class="modal-footer">
                 <button class="btn btn-sm btn-secondary" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>

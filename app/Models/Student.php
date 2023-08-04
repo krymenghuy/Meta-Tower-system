@@ -101,7 +101,6 @@ class Student //extends Model
         // $newID = saveData($ss,'students',['id' => $id],$inputs,[],1,1);
         $newID = saveData($ss,'students',['id' => $id],$inputs,[],1,1);
 
-
         if($newID>0){
             PublicStorage::saveImage($branch_id,"students",null,$image,null, ['id' => $newID, 'store' => 'students.file_name']);
             //** give register student by generate code and update */
@@ -383,7 +382,8 @@ class Student //extends Model
     }
 
     static function getPrevSchool($id){
-        return DB::table('school')->where('id',$id)->selectRaw('name')->first();
+        $row =  DB::table('school')->where('id',$id)->selectRaw('id,name')->first();
+        return $row? $row: (object)['name'=>'','id'=>null];
     }
 
     static function getGuardians($student_id){

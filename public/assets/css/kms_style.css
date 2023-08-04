@@ -401,13 +401,11 @@ li.kt-menu__section {
     min-width: 200px;
 }
 
-.width--select-inner {
-    width: 24vw;
-    min-width: 300px;
-}
-
 .width--select-inner .select2 {
-    height: 42px;
+    width:100%;
+    height: calc(1.5em + 1.3rem + 2px);
+    font-size:1.1rem;
+    font-weight: semibold;
 }
 
 @media screen and (max-width: 800px) {
@@ -523,4 +521,30 @@ li.kt-menu__section {
     margin-top:1rem;
     overflow-y: auto;
     max-height:60vh;
+}
+
+.custom-modal .modal-header{
+    border:none;
+}
+
+.custom-modal .modal-footer{
+    border:none;
+}
+
+.modal-body .container-image-student{
+    max-width: 200px;
+    max-height: 200px;
+}
+
+.modal-body .container-image-student img{
+    object-fit: contain;
+    width:100%;
+    height:100%;
+    border-radius: var(--bs-border-radius-lg);
+}
+
+.modal-body .line-bottom{
+    height:1px;
+    background-color:#808080;
+    padding:0;
 }

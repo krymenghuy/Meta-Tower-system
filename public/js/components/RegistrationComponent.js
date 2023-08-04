@@ -416,7 +416,7 @@ var RegistrationComponent = new function(){
         window.vsapi.call(`${main_view.base_url}/api/student/details-student`,op,null).then(res => {
             let data = {};
             if(res.status_code === 200){
-                data = StringSanitizer.sanitizeObject(res.data);
+                data = StringSanitizer.sanitizeObject(res.data,null,['image_url']);
             }
             if(typeof onFinish === 'function') onFinish(data);
         });
@@ -463,6 +463,7 @@ var RegistrationComponent = new function(){
             if(res.status_code === 200){
                 d = res.data;
             }
+
             div.find(`.${class_name}`).each(function(){
                 let el = $(this);
                 let f = el.data('field');
@@ -480,6 +481,7 @@ var RegistrationComponent = new function(){
                         break;
                 }
             });
+
             mThis.displayStudentList(null);
             if(typeof onFinish === 'function') onFinish();
         });
@@ -517,7 +519,6 @@ let PrintCardDialog = new function(){
 let StudentDetailDialog = new function(){
     let mThis = this;
     this.self = $('#dlg_rgs_detail');
-    this.elTitle = mThis.self.find('.modal-title');
     this.btnPrint = mThis.self.find('#dlg_rgs_detail_btn_print');
 
     mThis.btnPrint.on('click',function(e){
@@ -525,9 +526,22 @@ let StudentDetailDialog = new function(){
         console.log("Print Now!");
     });
 
+    this.setDataForm = (d) => {
+        d = d ? d : {};
+        d['sex'] = d['sex'] == 'M' ? 'Male':'Female';
+        mThis.self.find('.data-show').each(function(){
+            let el = $(this);
+            let f = el.data('field');
+            if(el.is('img'))
+                el.attr('src',d[f]);
+            else
+                el.text(d[f]);
+        });
+    }
+
     this.show = (options) => {
         if(!options) options = {};
-        mThis.elTitle.text(LocaleManager.trans('Student Details','titles'));
+        mThis.setDataForm(options);
         mThis.self.modal({
             backdrop: 'static'
         });

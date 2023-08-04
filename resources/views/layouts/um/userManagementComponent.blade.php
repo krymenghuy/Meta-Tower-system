@@ -19,24 +19,24 @@
   }
 </style>
 
-<div id="_um_userManagementComponent" class="mobile-padding" style="display:none">
+<div id="_um_userManagementComponent" class="mobile-padding bg-white p-3 rounded-3" style="display:none">
   <div id="_um_userListPanel" style="display:none">
     <div class="row">
       <div class="col-lg-12">
         <div class="form-inline">
-          <a href="javascript:void(0)" class="btn btn-outline-success" id="_um_lnkNewUser">
+          <a href="javascript:void(0)" class="btn btn-outline-success btn-sm" id="_um_lnkNewUser">
             <i class="fa fa-user-plus" style="color:green"></i>
             New User
-          </a>            
+          </a>
           <div class="input-group mb-3" style="margin-top:13px;margin-left:15px">
             <div class="input-group-prepend">
               <span class="input-group-text" id="_um_search_panel">
                 <i class="fa fa-search" style="color:orange"></i>
               </span>
             </div>
-            <input id="_um_userlist_search" class="form-control" placeholder="Search user" aria-describedby="_um_search_panel"/>
+            <input id="_um_userlist_search" class="form-control form-control-sm" placeholder="Search user" aria-describedby="_um_search_panel"/>
           </div>
-          <div class="form-group" style="margin-left:15px">
+          <div class="form-group width--search-inner" style="margin-left:15px">
             <select id="_um_filter_user_class" class="modal-select2 form-control"></select>
           </div>
         </div>
@@ -55,11 +55,13 @@
       <div class="col-lg-6">
         <div class="form-group">
           <label class="control-label">User Class</label>
-          <select type="text" class="form-select modal-select2" id="_um_adduser_userclass" data-placeholder="User Type">
-            <option value="merchant">Merchant</option>
-            <option value="driver">Driver</option>
-            <option value="admin">Admin Support</option>
-          </select>
+          <div class="width-select-dialog">
+            <select type="text" class="form-select modal-select2" id="_um_adduser_userclass" data-placeholder="User Type">
+              <option value="merchant">Merchant</option>
+              <option value="driver">Driver</option>
+              <option value="admin">Admin Support</option>
+            </select>
+          </div>
         </div>
         <div class="form-group">
           <label class="control-label">Login Name</label>
@@ -67,9 +69,7 @@
         </div>
         <div class="form-group">
           <label class="control-label">Official ID</label>
-          &nbsp;
           <span style="color:grey">ID of driver or merchant</span>
-          &nbsp;
           <a id="_um_adduser_linkFindPerson" class="btn btn-sm btn-outline-success" href="javascript:void(0)" style="color:green">
             <i class="fa fa-search"></i>
           </a>
@@ -93,11 +93,15 @@
       <div class="col-lg-6">
         <div class="form-group">
           <label class="control-label">Role</label>
-          <select type="text" class="form-select modal-select2" id="_um_adduser_role" data-placeholder="Role"></select>
+          <div class="width-select-dialog">
+            <select type="text" class="form-select modal-select2" id="_um_adduser_role" data-placeholder="Role"></select>
+          </div>
         </div>
         <div class="form-group" style="display:none">
           <label class="control-label">Work Location</label>
-          <select type="text" class="form-control" id="_um_adduser_workloc" data-placeholder="Work Location"></select>
+          <div class="width-select-dailog">
+            <select type="text" class="form-control" id="_um_adduser_workloc" data-placeholder="Work Location"></select>
+          </div>
         </div>
         <div id="_um_div_password">
           <div class="form-group">

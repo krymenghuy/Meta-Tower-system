@@ -6,8 +6,8 @@
     }
 </style>
 
-<div id="_main_companyComponent" class="mobile-padding" style="display:none">
-    <div class="flat-box" style="padding:20px;">
+<div id="_main_companyComponent" class="mobile-padding bg-white p-3 rounded-3" style="display:none">
+    <div class="flat-box">
         <div class="row">
             <div class="col-lg-3">
                 <label class="control-label">Company Name (Khmer)</label>
@@ -47,7 +47,6 @@
             </div>
         </div>
     </div>
-
     <div style="height:25px"></div>
     <div class="row">
         <div class="col-lg-6">
