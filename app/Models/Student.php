@@ -266,8 +266,10 @@ class Student //extends Model
                 'n_id' => $pf['father_nid'] ?? $pf['mother_nid'] ?? ''
             ];
 
-            $exist = DB::table('guardians')->where('role',$pf['role']?? $pf['role'])->selectRaw('id')->first();
-            $newID = saveData($ss,'guardians',['id' => $exist?$exist->id:null],$inputs,[],1);
+            $exist = DB::table('guardians')
+                ->where('n_id',$pf['father_nid'] ?? $pf['mother_nid'])
+                ->selectRaw('id')->first();
+            $newID = saveData($ss,'guardians',['id' => $exist?$pf['id']:null],$inputs,[],1);
 
             if($newID>0){
                 if(count($parent_info)==1){
@@ -410,7 +412,7 @@ class Student //extends Model
                 ->where('sg.student_id',$student_id)
                 ->join('guardians as g','sg.guardian_id' ,'=', 'g.id')
                 ->join('students as s','s.id','=','sg.student_id')
-                ->selectRaw('g.name,g.role,g.phone_number,g.email,g.address,g.religion,g.n_id')
+                ->selectRaw('g.id,g.name,g.role,g.phone_number,g.email,g.address,g.religion,g.n_id')
                 ->get();
         foreach($rows as $row){
             if(strtolower($row->role) == 'father'){

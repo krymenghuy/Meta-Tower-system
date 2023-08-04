@@ -402,7 +402,7 @@ class PriceList //extends Model
 
                     $semester_tuition = $price * $semester;
 
-                    return $pay_month;
+                    return $total_daily_Fee;
                 }
             }
             return (object)['end_date'=> $end_date ,'total_tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'weekly_tuition_due' => $weekly_tuition_due,'weeks' => $week,'monthly_tuition_due' => $monthly_tuition_due,'discount'=>$discount_info->discount,'after_discount' => $after_discount,'discount_amount' => $discount_amt];
@@ -421,7 +421,7 @@ class PriceList //extends Model
         $x = $weekly_fee * $d->week;
         $days = $d->week * 7;
         $end_date = dateAdd('day',$days,$d->start_date);
-        return (object)['end_date' => $end_date,'tuition_due'=> $x,'week'=>$weekly_fee];
+        return (object)['end_date' => $end_date,'tuition_due'=> $x==0?$weekly_fee:$x];
     }
 
 
