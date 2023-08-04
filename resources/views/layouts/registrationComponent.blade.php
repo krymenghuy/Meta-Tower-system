@@ -223,8 +223,78 @@
             </div>
             <div class="modal-body">
                 <div class="row row-cols-lg-2 gy-2">
-                    <div class="col"></div>
-                    <div class="col"></div>
+                    <div class="col">
+                        <div class="shadow-sm w-100 h-100 rounded-3 border position-relative overflow-hidden">
+                            <img class="background-card" src="{{ asset('assets/images/logo/background_card.png') }}" alt="">
+                            <div class="w-100 h-100 d-flex align-items-center flex-column position-relative z-3">
+                                <div class="w-100 d-flex align-items-center flex-column">
+                                    <img class="w-75" src="{{ asset('assets/images/logo/front_card.png') }}" alt=""/>
+                                </div>
+                                <p class="fs-5 fw-bold text-primary text-uppercase mb-1">Student ID Card</p>
+                                <div class="student-image">
+                                    <img class="data-show w-100 h-100 rounded-3" alt="" data-field="image_url"/>
+                                </div>
+                                <div class="w-75 fs-5-1 text-primary">
+                                    <p class="mb-1">
+                                        <span class="d-inline-block w-50">ID</span>
+                                        <span>:</span>
+                                        <span class="data-show" data-field="student_code"></span>
+                                    </p>
+                                    <p class="mb-1">
+                                        <span class="d-inline-block w-50">ឈ្មោះ</span>
+                                        <span>:</span>
+                                        <span class="data-show" data-field="name_kh"></span>
+                                    </p>
+                                    <p class="mb-1">
+                                        <span class="d-inline-block w-50">Name</span>
+                                        <span>:</span>
+                                        <span class="data-show" data-field="name"></span>
+                                    </p>
+                                    <p class="mb-1">
+                                        <span class="d-inline-block w-50">Sex</span>
+                                        <span>:</span>
+                                        <span class="data-show" data-field="sex"></span>
+                                    </p>
+                                    <p class="mb-1">
+                                        <span class="d-inline-block w-50">Starting Date</span>
+                                        <span>:</span>
+                                        <span class="data-show" data-field="admission_date"></span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="shadow-sm w-100 h-100 rounded-3 border position-relative p-2">
+                            <div class="w-75 d-flex gap-2">
+                                <div class="w-50">
+                                    <img class="data-show" alt="" data-field="mother_profile"/>
+                                </div>
+                                <div class="w-50">
+                                    <img class="data-show" alt="" data-field="father_profile"/>
+                                </div>
+                            </div>
+                            <p class="fs-5 fw-bold text-primary text-center">Terms and Usage Conditions</p>
+                            <ul>
+                                <li>
+                                    <p>This card belongs to Kids World International School</p>
+                                </li>
+                                <li>
+                                    <p>This card may only be used by the student who is in front photo</p>
+                                </li>
+                                <li>
+                                    <p>Please inform the school administrator in case of invalidity, stolen, lost or damaged</p>
+                                </li>
+                                <li>
+                                    <p>Please contact (855) 81 888 305 or (855) 78 888 307 for an urgent report</p>
+                                </li>
+                                <li>
+                                    <p>Loss of the student ID card shall be reported to school immediately and 5 USD will be charged for replacement of the card</p>
+                                </li>
+                            </ul>
+                            <p class="fs-5-1 fw-bold text-primary text-end">Kids World International School</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
