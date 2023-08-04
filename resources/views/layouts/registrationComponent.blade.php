@@ -222,7 +222,10 @@
                 <button class="btn-close" type="button" aria-label="Close" data-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                
+                <div class="row row-cols-lg-2 gy-2">
+                    <div class="col"></div>
+                    <div class="col"></div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-sm btn-secondary" type="button" data-dismiss="modal">
