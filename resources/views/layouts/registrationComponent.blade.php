@@ -226,7 +226,7 @@
                     <div class="col">
                         <div class="shadow-sm w-100 h-100 rounded-3 border position-relative overflow-hidden">
                             <img class="background-card" src="{{ asset('assets/images/logo/background_card.png') }}" alt="">
-                            <div class="w-100 h-100 d-flex align-items-center flex-column position-relative z-3">
+                            <div class="w-100 h-100 d-flex align-items-center flex-column position-relative z-3 p-2">
                                 <div class="w-100 d-flex align-items-center flex-column">
                                     <img class="w-75" src="{{ asset('assets/images/logo/front_card.png') }}" alt=""/>
                                 </div>
