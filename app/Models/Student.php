@@ -267,8 +267,8 @@ class Student //extends Model
             ];
 
             $exist = DB::table('guardians')
-                ->where('n_id',$pf['father_nid'] ?? $pf['mother_nid'])
-                ->selectRaw('id')->first();
+                ->where('id',$pf['id'])
+                ->exists();
             $newID = saveData($ss,'guardians',['id' => $exist?$pf['id']:null],$inputs,[],1);
 
             if($newID>0){
