@@ -534,8 +534,11 @@ let StudentDetailDialog = new function(){
             let f = el.data('field');
             if(el.is('img'))
                 el.attr('src',d[f]);
-            else
-                el.text(d[f]);
+            else{
+                let mother_address = (d['parent_info'] && d['parent_info'][1] && d['parent_info'][1]['address']) ? (d['parent_info'] && d['parent_info'][1] && d['parent_info'][1]['address']) : (d['parent_info'] && d['parent_info'][0] && d['parent_info'][0][f]);
+
+                el.text(d[f] || (d['parent_info'] && d['parent_info'][0] && d['parent_info'][0][f]) || (d['parent_info'] && d['parent_info'][1] && d['parent_info'][1][f]) || mother_address);
+            }
         });
     }
 
