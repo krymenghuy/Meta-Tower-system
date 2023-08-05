@@ -126,6 +126,8 @@ class ScriptProvider
                 '/js/components/StudentGroupComponent.js',
                 '/js/components/CampusComponent.js',
                 '/js/components/TermComponent.js',
+                '/js/components/AcademicYearComponent.js',
+                '/js/components/PaymentPendingComponent.js',
                 'assets/js/pusher/pusher.min.js',
                 '/js/components/pusher_connect.js'
             ]

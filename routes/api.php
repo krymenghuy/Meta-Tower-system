@@ -426,6 +426,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('price-list/weekly', [PriceListController::class, 'weeklyFee']);
 
     Route::post('price-list/monthly', [PriceListController::class, 'monthlyFee']);
+
     //End::PriceListController
 
    //begin::PolicyDiscountController
@@ -542,6 +543,7 @@ Route::post('settings/test-sql', [GeneralSettingsController::class, 'testSQL']);
 //return langauge as json object format based on give parameter @lang = {'en','km',...}. It is used to return langauge to client side
 // Route::post('settings/lang', [UMController::class, 'getLang']);
 // Route::post('settings/save-lang', [UMController::class, 'saveLang']);
+Route::post('settings/payment-options',[GeneralSettingsController::class, 'paymentOptions']);
 Route::post('settings/departments', [GeneralSettingsController::class, 'getDepartmentList']);
 Route::post('settings/save-department', [GeneralSettingsController::class, 'saveDepartment']);
 Route::post('settings/delete-department', [GeneralSettingsController::class, 'deleteDepartment']);

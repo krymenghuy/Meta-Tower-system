@@ -104,6 +104,14 @@
                     <span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
                         <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="PaymentPendingComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/deposit_fee.png') }}"/>
+                                </span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Payment Pending"></span>
+                            </a>
+                        </li>
+                        <li class="kt-menu__item" aria-haspopup="true">
                             <a href="DepositFeeComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{ asset('assets/images/icons/deposit_fee.png') }}"/>
@@ -355,6 +363,14 @@
                                     <img class="icons" src="{{ asset('assets/images/icons/location.svg') }}"/>
                                 </span>
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Term"></span>
+                            </a>
+                        </li>
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="AcademicYearComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/location.svg') }}"/>
+                                </span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Academic Year"></span>
                             </a>
                         </li>
                     </ul>

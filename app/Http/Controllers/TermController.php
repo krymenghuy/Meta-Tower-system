@@ -22,7 +22,6 @@ class TermController extends Controller
     function getList(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
-
         $term = new Term();
         $terms = $term->list($req->all(),$ss);
         return JDV::result($terms);

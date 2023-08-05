@@ -198,6 +198,8 @@
                                 @include('layouts.studentGroupComponent')
                                 @include('layouts.campusComponent')
                                 @include('layouts.termComponent')
+                                @include('layouts.academicYearComponent')
+                                @include('layouts.paymentPendingComponent')
                             </div>
                         </div>
                     </div>

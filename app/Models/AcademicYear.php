@@ -19,15 +19,15 @@ class AcademicYear //extends Model
         if($end_y < $sts[0] || $end_y >$sts[1]) return 'End date does not seem to be correct. Make ure the year is within a correct range';
         $row = DB::table('academic_years as y')->whereRaw('YEAR(end_date) >'.$sts[0])->selectRaw('academic_year')->take(1)->get()->first();
         if($row) return 'The ending year should not overlap the previous academic year\'s ending date';
-        return null; 
+        return null;
     }
     // use HasFactory;
     static function save($arr=[],$id,$ss){
         $v_rule = [
             'org_academic_year'=>'0|string|0-100',
             'academic_year' => '1|string|1-150',
-            'start_date' => '1|string',
-            'end_date' => '1|string',
+            'start_date' => '0|string',
+            'end_date' => '0|string',
         ];
         $branch_id = $ss->branch_id;
         $unique =[$branch_id.'|academic_years|academic_year|academic_year=academic_year|text=Academic year already exists'];
@@ -36,6 +36,7 @@ class AcademicYear //extends Model
         $inputs = $res->values;
         $org_academic_year = $inputs['org_academic_year'];
         unset($inputs['org_academic_year']);
+
 
         $start_date = convertDate($inputs['start_date']);
         $end_date = convertDate($inputs['end_date']);
@@ -54,7 +55,7 @@ class AcademicYear //extends Model
 
     static function list($ss){
         $branch_id = $ss->branch_id;
-        $rows = DB::table('academic_years')->selectRaw('academic_year,start_date,end_date')->where('branch_id',$branch_id)->get();
+        $rows = DB::table('academic_years')->selectRaw('academic_year,create_user,start_date,end_date,formatDate(created_at) as date')->where('branch_id',$branch_id)->get();
         return $rows;
     }
 
