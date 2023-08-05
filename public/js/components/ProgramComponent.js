@@ -99,7 +99,7 @@ var ProgramComponent = new function(){
                 e.preventDefault();
                 let prog_id = $(this).data('programid');
                 let op = {
-                    'id': null,
+                    'id': 0,
                     'program_id':prog_id,
                     'onClose': (levels) => {
                         mThis.renderProgramLevels(tbody,levels);
@@ -348,7 +348,7 @@ let ProgramLevelDialog = new function(){
     
     this.btnSave.on('click',function(){
         let p =mThis.getDataForm();
-
+        console.log(p);
         window.vsapi.call(`${main_view.base_url}/api/program-level/save`,p,null,false).then(res=>{
             if(res.status_code === 200){
                 mThis.self.modal('hide');

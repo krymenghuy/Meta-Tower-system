@@ -23,7 +23,7 @@ class TermController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
 
-        $row = new Term();
+        $row = new Term(null,$ss);
         $list = $row->list($ss);
         return JDV::result($list);
     }

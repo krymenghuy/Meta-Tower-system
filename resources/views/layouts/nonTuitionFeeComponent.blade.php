@@ -64,7 +64,9 @@
                     <div class="col">
                         <div class="form-group">
                             <label for="academic_year" class="form-label trans-text" data-langprop="titles.Academic Year"></label>
-                            <input type="text" class="form-control data-input" data-field="academic_year"/>
+                            <div class="width-select-dialog">
+                                <select id="dlg_ntf_academic" class="modal-select2 data-input" data-field="academic_year"></select>
+                            </div>
                         </div>
                     </div>
                     <div class="col">

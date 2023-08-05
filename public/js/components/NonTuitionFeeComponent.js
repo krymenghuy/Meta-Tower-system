@@ -165,6 +165,7 @@ let NonTuitionFeeOutsideDialog = new function(){
     this.elTitle = mThis.self.find('.modal-title');
     this.btnSave = mThis.self.find('#dlg_ntf_btn_save');
     this.elProgram = mThis.self.find('#dlg_ntf_program');
+    this.elAcademic = mThis.self.find('#dlg_ntf_academic');
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
@@ -209,7 +210,7 @@ let NonTuitionFeeOutsideDialog = new function(){
         window.vsapi.call(`${main_view.base_url}/api/other-fee/details`,{'id': options.id},null).then(res => {
             let data = {};
             if(res.status_code === 200){
-                data = StringSanitizer.sanitizeObject(res.data);
+                data = StringSanitizer.sanitizeObject(res.data,null,['academic_year']);
             }
             mThis.setDataForm(data);
         });
@@ -222,6 +223,7 @@ let NonTuitionFeeOutsideDialog = new function(){
                 d = res.data;
             }
             VSUtil.setComboItems(mThis.elProgram,d.programs,'id','program_name',null,null,null);
+            VSUtil.setComboItems(mThis.elAcademic,d.academic_year,'academic_year','academic_year',null,null,null);
             if(typeof onFinish === 'function') onFinish();
         });
     }
