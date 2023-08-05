@@ -257,6 +257,7 @@ let ProgramDialog = new function(){
 
     this.elTitle = mThis.self.find('.modal-title');
     this.btnSave = mThis.self.find('#dlg_pgm_btn_save');
+    this.elProgram = mThis.self.find('#dlg_pgm_program');
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
@@ -304,21 +305,34 @@ let ProgramDialog = new function(){
         });
     }
 
+    this.prepareFormOptions = (onFinish = null) => {
+        window.vsapi.call(`${main_view.base_url}/api/option/prev-program`,null,null).then(res => {
+            let d = {};
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            VSUtil.setComboItems(mThis.elProgram,d,'id','program',null,null,null);
+            if(typeof onFinish === 'function') onFinish();
+        });
+    }
+
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;
         
-        if(options.id > 0){
-            mThis.elTitle.text(LocaleManager.trans('Modify','titles'));
-            mThis.loadFormDetails(options);
-        }
-        else{
-            mThis.elTitle.text(LocaleManager.trans('New','titles'));
-            mThis.setDataForm(null);
-        }
-
-        mThis.self.modal({
-            backdrop:'static'
+        mThis.prepareFormOptions(() => {
+            if(options.id > 0){
+                mThis.elTitle.text(LocaleManager.trans('Modify','titles'));
+                mThis.loadFormDetails(options);
+            }
+            else{
+                mThis.elTitle.text(LocaleManager.trans('New','titles'));
+                mThis.setDataForm(null);
+            }
+    
+            mThis.self.modal({
+                backdrop:'static'
+            });
         });
     }
 }
@@ -326,18 +340,20 @@ let ProgramDialog = new function(){
 let ProgramLevelDialog = new function(){
     let mThis = this;
     this.self = $('#dlg_detail_pgm_');
-    this.btnSave = this.self.find('#dlg_pgm_detail_btn_save');
     this.options = {};
 
+    this.btnSave = this.self.find('#dlg_pgm_detail_btn_save');
     this.elTitle = mThis.self.find('.modal-title');
+    this.elLevel = mThis.self.find('#dlg_detail_pgm_level');
     
     this.btnSave.on('click',function(){
         let p =mThis.getDataForm();
 
         window.vsapi.call(`${main_view.base_url}/api/program-level/save`,p,null,false).then(res=>{
             if(res.status_code === 200){
-                mThis.onClose(res.data.levels);
                 mThis.self.modal('hide');
+                if(typeof mThis.options.onClose === 'function')
+                    mThis.options.onClose(res.data.levels);
             }
             else
                 cv_interact.error(res.error_message);
@@ -377,22 +393,34 @@ let ProgramLevelDialog = new function(){
         });
     }
 
+    this.prepareFormOptions = (onFinish = null) => {
+        window.vsapi.call(`${main_view.base_url}/api/option/prev-program-level`,null,null).then(res => {
+            let d = {};
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            VSUtil.setComboItems(mThis.elLevel,d,'id','level',null,null,null);
+            if(typeof onFinish === 'function') onFinish();
+        });
+    }
+
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;
-        mThis.onClose = options.onClose;
 
-        if(options.id > 0){
-            mThis.elTitle.text(LocaleManager.trans('Modify','titles'));
-            mThis.loadFormDetails(options);
-        }
-        else{
-            mThis.elTitle.text(LocaleManager.trans('New','titles'));
-            mThis.setDataForm(null);
-        }
-
-        mThis.self.modal({
-            backdrop: 'static'
+        mThis.prepareFormOptions(() => {
+            if(options.id > 0){
+                mThis.elTitle.text(LocaleManager.trans('Modify','titles'));
+                mThis.loadFormDetails(options);
+            }
+            else{
+                mThis.elTitle.text(LocaleManager.trans('New','titles'));
+                mThis.setDataForm(null);
+            }
+    
+            mThis.self.modal({
+                backdrop: 'static'
+            });
         });
     }
 }
