@@ -25,7 +25,7 @@ class TermController extends Controller
 
         $row = new Term();
         $list = $row->list($ss);
-        return JDV::raw($list);
+        return JDV::result($list);
     }
 
     function getDetails(Request $req){
@@ -34,7 +34,7 @@ class TermController extends Controller
 
         $row = new Term($req->id,$ss);
         $details = $row->details();
-        return JDV::raw($details);
+        return JDV::result($details);
     }
 
     function delete(Request $req){
