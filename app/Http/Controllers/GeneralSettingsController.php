@@ -13,12 +13,12 @@ use App\Models\UM;
 
 use Illuminate\Support\Facades\DB;
 use App\DB\SQLDB;
+use App\Models\GeneralSettings;
+
 //use DB;
 //use SQLDB;
 //use Carbon\Carbon;
-use App\Security\Sanitizer;
-
-
+  
 class GeneralSettingsController extends Controller
 {
     // protected $settingModel;
@@ -157,19 +157,21 @@ class GeneralSettingsController extends Controller
     return JDV::result($rows);
   }
 
-    function getPatientRegisterOptions(Request $req){
+    function GetComboItems_academic_year(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
-        $branch_id = $ss->branch_id;
-        $department_id =$req->department_id;
-
-        $vital_sign_fields = DB::table("vital_signs as vt")->where('vt.branch_id',$branch_id)->selectRaw("vt.id,vt.category,vt.display_name,vt.value_type,vt.display_order")->orderByRaw("vt.display_order ASC")->get();
-        $nationalities = DB::table("loc_countries as c")->selectRaw("c.id,c.name as nationality,c.name_kh as nationality_kh")->orderByRaw("c.name asc")->get();
-        $mc_items = DB::table("medical_conditions as i")->where('branch_id',$branch_id)->where('i.value_type','boolean')->selectRaw("i.id,i.name as display_name,i.value_type,i.range,i.display_order")->orderByRaw('i.display_order ASC')->get();
-        $departments = DB::table('departments as d')->where('branch_id',$branch_id)->selectRaw("id,name as department_name,description")->orderBy('id','ASC')->orderBy('name','ASC')->get();
-        $consultants = self::getComboItems_consultant_internal($branch_id,$department_id);
-        return JDV::result((object)['vital_sign_fields'=>$vital_sign_fields,'nationalities'=>$nationalities,'mc_items'=>$mc_items,"consultants"=>$consultants,"departments"=>$departments]); 
+        //$branch_id = $ss->branch_id;
+        $items = GeneralSettings::options_academic_year($ss);
+        return JDV::result($items);
     }
+
+    function GetComboItems_term(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !=200) return $ss; //user not authenticated
+      //$branch_id = $ss->branch_id;
+      $items = GeneralSettings::options_term($req->academic_year,$ss);
+      return JDV::result($items);
+   }
 
     function ChiefCompaintExists($branch_id,$name=null,$id=0){
         if($name) return false;

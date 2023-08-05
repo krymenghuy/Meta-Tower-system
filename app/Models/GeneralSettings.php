@@ -170,29 +170,30 @@ class GeneralSettings //extends Model
         return  DB::table('organizations as org')->whereRaw('IFNULL(org.inactive,0) =0')->where('org.branch_id',$branch_id)->selectRaw("org.id,org.name as org_name")->get();
     }
 
-    static function options_labo($ss){
+    static function options_program($ss){
         $branch_id = $ss->branch_id;
-        return  DB::table('partners AS l')->whereRaw('IFNULL(l.status_id,0) =1')->where('l.branch_id',$branch_id)->selectRaw("l.id,l.name as labo_name")->orderBy('l.name','ASC')->get();
+        return  DB::table('programs AS p')->where('p.branch_id',$branch_id)->selectRaw("p.id,p.name as program_name")->orderByRaw('p.name','ASC')->get();
     }
-    static function options_partner($ss){
-        $branch_id = $ss->branch_id;
-        return  DB::table('partners AS l')->whereRaw('IFNULL(l.status_id,0) =1')->where('l.branch_id',$branch_id)->selectRaw("l.id,l.name as labo_name")->orderBy('l.name','ASC')->get();
+    static function options_level($program_id=null,$ss){
+        //$branch_id = $ss->branch_id;
+        return  DB::table('program_levels AS p')->where('p.program_id',$program_id)->selectRaw('p.id,p.program_id,p.name as level_name,p.level_order,p.prev_level_id')->orderByRaw('p.level_order ASC')->get();
     }
-
-    static function options_labo_test($ss){
+ 
+    static function options_academic_year($ss){
         $branch_id = $ss->branch_id;
-        return  DB::table('medical_services AS s')->whereIn('s.service_type',['labo','labo test'])->where('s.branch_id',$branch_id)->selectRaw("s.id,s.name,s.description,s.price")->orderBy('s.name','ASC')->get();
+        return  DB::table('academic_years AS a')->where('a.branch_id',$branch_id)->selectRaw('a.academic_year,formatDate(a.start_date) AS start_date,formatDate(a.end_date) AS end_date')->orderByRaw('a.start_date ASC')->get();
     }
 
     static function options_sales_agent($ss){
         $branch_id = $ss->branch_id;
         return DB::table('employees AS e')->join('persons as p','p.id','=','e.person_id')->where('e.branch_id',$branch_id)->selectRaw("e.id, CONCAT(p.last_name,' ',p.first_name) as sales_agent_name")->orderBy('sales_agent_name','ASC')->get();
     }
-
-    //given one test_id, it returns a list of labos who provide the test
-    static function getLaboTestProviders($testId,$ss){
-       $branch_id = $ss->branch_id; 
-       return DB::table('test_labos as l')->join('medical_services as s','s.id','=','l.test_id')->where('s.branch_id',$branch_id)->selectRaw("s.id,l.price,s.price as default_price,l.description")->get();  
+ 
+    static function options_term($academic_year,$ss){
+       $branch_id = $ss->branch_id;
+       $str_year ='1=1';
+       if($academic_year>0) $str_year ='academic_year =\''.$academic_year.'\''; 
+       return DB::table('terms as t')->where('t.branch_id',$branch_id)->selectRaw('t.id,t.`name` as term_name')->orderByRaw('start_date DESC')->get();  
     }
 
     static function options_country($ss){

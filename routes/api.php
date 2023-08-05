@@ -140,6 +140,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/list', [AcademicYearController::class, 'getList']);
         Route::post('/details', [AcademicYearController::class, 'getDetails']);
         Route::post('/delete', [AcademicYearController::class, 'delete']);
+        Route::post('/form-options', [AcademicYearController::class, 'getFormOptions']);
     });
     //end::AcademicYearController
 
@@ -158,6 +159,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/list', [TermController::class, 'getList']);
         Route::post('/details', [TermController::class, 'getDetails']);
         Route::post('/delete', [TermController::class, 'delete']);
+        //term/form-options
+        Route::post('/form-options', [TermController::class, 'getFormOptions']);
     });
     //end::TermController
 
@@ -543,7 +546,9 @@ Route::post('settings/departments', [GeneralSettingsController::class, 'getDepar
 Route::post('settings/save-department', [GeneralSettingsController::class, 'saveDepartment']);
 Route::post('settings/delete-department', [GeneralSettingsController::class, 'deleteDepartment']);
 Route::post('settings/department-info', [GeneralSettingsController::class, 'getDepartmentDetails']);
-
+Route::post('settings/options-academic-year', [GeneralSettingsController::class, 'GetComboItems_academic_year']);
+Route::post('settings/options-term', [GeneralSettingsController::class, 'GetComboItems_term']);
+  
 Route::post('settings/options-pmt-method', [GeneralSettingsController::class, 'getComboItems_pmt_method']);
 Route::post('settings/save-position', [GeneralSettingsController::class, 'savePosition']);
 Route::post('settings/options-department', [GeneralSettingsController::class, 'getComboItems_department']);
