@@ -22,18 +22,21 @@ class AcademicYear //extends Model
         return null;
     }
     // use HasFactory;
-    static function save($arr=[],$id=null,$ss){
+    static function save($arr=[],$id,$ss){
         $v_rule = [
+            'org_academic_year'=>'0|string|0-100',
             'academic_year' => '1|string|1-150',
             'start_date' => '0|string',
             'end_date' => '0|string',
         ];
         $branch_id = $ss->branch_id;
-        $unique =[$branch_id.'|academic_years|academic_year|id=id'];
-        $res = validateObject($arr,$v_rule,1,['academic_year'=>['-']],$ss->lang,0,$unique);
-
+        $unique =[$branch_id.'|academic_years|academic_year|academic_year=academic_year|text=Academic year already exists'];
+        $res = validateObject($arr,$v_rule,0,['academic_year'=>['-']],$ss->lang,0,$unique);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
+        $org_academic_year = $inputs['org_academic_year'];
+        unset($inputs['org_academic_year']);
+
 
         $start_date = convertDate($inputs['start_date']);
         $end_date = convertDate($inputs['end_date']);
@@ -42,8 +45,12 @@ class AcademicYear //extends Model
         if ($end_date <= $start_date) return Dv::error('The start date must be earlier than the end date');
         $err = self::validateAcademicYear($inputs['academic_year'],$start_date,$end_date);
         if($err) return DV::error($err);
-        $newID = saveData($ss,'academic_years',['id' => $id],$inputs,[],1);
-        return DV::depends($newID,['action' => 'saved','academic_years' => self::list($ss)]);
+        
+        if(!$org_academic_year)
+            saveData($ss,'academic_years',['id' =>null],$inputs,[],1,false);
+        else     
+            saveData($ss,'academic_years',['academic_year' =>$org_academic_year],$inputs,[],1,false);
+        return DV::depends(1,['action' => 'saved','academic_years' => self::list($ss)]);
     }
 
     static function list($ss){
@@ -52,16 +59,26 @@ class AcademicYear //extends Model
         return $rows;
     }
 
-    static function details($id,$ss){
+    static function details($academic_year,$ss){
         $branch_id = $ss->branch_id;
-        $row = DB::table('academic_years')->selectRaw('academic_year,start_date,end_date,created_at as date,create_user')->where('id',$id)->where('branch_id',$branch_id)->first();
+        $row = DB::table('academic_years')->selectRaw('academic_year,start_date,end_date')->where('academic_year',$academic_year)->where('branch_id',$branch_id)->first();
         return $row;
     }
 
-    static function delete($id,$ss){
+    static function delete($academic_year,$ss){
         $branch_id = $ss->branch_id;
-        $row = DB::table('academic_years')->where('id',$id)->where('branch_id',$branch_id)->delete();
-        return DV::depends($row,['action' => 'Deleted','academic_years' => self::list($ss)]);
+        $x = DB::table('academic_years')->where('academic_year',$academic_year)->where('branch_id',$branch_id)->delete();
+        return DV::depends($x,['action' => 'Deleted','academic_years' => self::list($ss)],'Failed to delete academic year');
     }
 
+    /**
+     * getFormOptions(). We use Academic_year as primary key, NOT using id
+    */
+    static function form_options($academic_year=null,$ss){
+       $ac_year =null;
+       if($academic_year) $ac_year = DB::table('academic_years as y')->where('academic_year',$academic_year)->selectRaw('y.academic_year,formatDate(start_date) as start_date,formatDate(end_date) as end_date,formatTime(created_at) as created_at,create_user')->get()->first(); 
+       return (object)[
+         'academic_year'=>$ac_year
+       ];
+    }
 }

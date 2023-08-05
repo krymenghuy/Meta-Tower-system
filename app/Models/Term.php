@@ -5,7 +5,7 @@ namespace App\Models;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use DB;
-
+use App\Models\GeneralSettings;
 class Term //extends Model
 {
     protected $id=null,$user_info=null;
@@ -56,17 +56,18 @@ class Term //extends Model
         $academic_year = isset($d->academic_year)?$d->academic_year:null;
         $str_acad_year='1=1';
         if ($academic_year>0){
-            $str_acad_year = 'academic_year =\''.$academic_year.'\'';
+            $str_acad_year = 't.academic_year =\''.$academic_year.'\'';
         }
-        $selectCols = 'id,name,period_type,formatDate(start_date) AS start_date,formatDate(end_date) AS end_date,academic_year,formatTime(created_at) AS created_at,create_user';
-        return DB::table('terms')->selectRaw($selectCols)->where('branch_id',$branch_id)->whereRaw($str_acad_year)->orderByRaw('start_date DESC')->get();
+        $prev_term =  ',CASE t.prev_term_id > 0 WHEN 1 THEN (SELECT `name` FROM terms WHERE id = t.id LIMIT 1) ELSE \'NA\' END AS prev_term_name';
+        $selectCols = 'id,name,period_type,formatDate(t.start_date) AS start_date,formatDate(t.end_date) AS end_date,semester_number,academic_year,formatTime(t.created_at) AS created_at,t.create_user'.$prev_term;
+        return DB::table('terms AS t')->selectRaw($selectCols)->where('t.branch_id',$branch_id)->whereRaw($str_acad_year)->orderByRaw('t.start_date DESC')->get();
     }
 
     function details($id=null,$ss=null){
         $ss = $ss?$ss:$this->user_info;
         $id = $id?$id:$this->id;
         $branch_id = $ss->branch_id;
-        $selectRow = "id,name,period_type,start_date,end_date,academic_year,created_at,create_user";
+        $selectRow = "id,name,period_type,semester_number,formatDate(start_date) AS start_date,formatDate(end_date) AS end_date,academic_year,formatTime(created_at) AS created_at,create_user,prev_term_id,(Select `name` FROM terms WHERE id = prev_term_id LIMIT 1) AS prev_term_name";
         return DB::table('terms')->selectRaw($selectRow)
                 ->where('branch_id',$branch_id)
                 ->where('id',$id)->get()->first();
@@ -78,6 +79,18 @@ class Term //extends Model
         $branch_id = $ss->branch_id;
 
         $x = DB::table('terms')->where('id',$id)->where('branch_id',$branch_id)->delete();
-        return DV::depends($x,['action'=>'Deleted','terms'=>self::list(null,$ss)]);
+        return DV::depends($x,['action'=>'Deleted','terms'=>self::list(null,$ss)],'Failed to delete term');
+    }
+
+    function getFormOptions($id=null,$ss=null){
+        $ss = $ss?$ss:$this->user_info;
+        $id = $id?$id:$this->id;
+        $term =null;
+        if($id>0) $term = self::details($id,$ss);
+        return (object)[
+          'term'=>$term,  
+          'terms'=>GeneralSettings::options_term(null,$ss),
+          'academic_years'=>GeneralSettings::options_academic_year($ss)
+        ];
     }
 }

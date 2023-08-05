@@ -17,10 +17,14 @@ class ProgramLevel //extends Model
     function save($arr,$id=null,$ss=null){
         $ss = $ss?$ss:$this->user_info;
         $id = $id?$id:$this->id;
+        $action ='Created';
+        if($id) $action ='Updated';
+
         $v_rule = [
             'program_id' => '1|number|exists=programs.id',
             'name' => '0|string|1-100',
-            'prev_level_id' => '0|number|exists=program_levels.id'
+            'prev_level_id' => '0|number|exists=program_levels.id',
+            'level_order'=>'0|number|default=0'
         ];
 
         $res = validateObject($arr,$v_rule,false,[],$ss->lang,[],null);
@@ -29,34 +33,27 @@ class ProgramLevel //extends Model
         $program_id = $inputs['program_id'];
         $newID = saveData($ss,'program_levels',['id'=>$id],$inputs,[],1);
 
-        return DV::depends($newID,['action'=>$id?'Updated':'Saved','levels'=>$this->list($program_id,$ss)]);
+        return DV::depends($newID,['action'=>$action,'levels'=>$this->list($program_id,$ss)]);
     }
 
     function list($program_id,$ss=null){
         $ss = $ss?$ss:$this->user_info;
         $branch_id = $ss->branch_id;
 
-        $selectRow = "pl.id,pl.program_id,p.name as program,pl.name,pl.created_at,pl.create_user";
+        $cols = "pl.id,pl.program_id,p.name as program,pl.name,formatTime(pl.created_at) AS created_at,pl.create_user";
 
-        $rows = DB::table('program_levels as pl')->join('programs as p','pl.program_id','=','p.id')->where('p.id',$program_id)->selectRaw($selectRow)->where('p.branch_id',$branch_id)->get();
-
-        foreach($rows as $row){
-            $row->date = explode(' ',$row->created_at)[0];
-            unset($row->created_at);
-            unset($row->photo_file_name);
-        }
-        return $rows;
+       return DB::table('program_levels as pl')->join('programs as p','pl.program_id','=','p.id')->where('p.id',$program_id)->selectRaw($cols)->where('p.branch_id',$branch_id)->get();
+ 
     }
 
     function details($id=null,$ss=null){
         $ss = $ss?$ss:$this->user_info;
         $id = $id?$id:$this->id;
         $branch_id = $ss->branch_id;
-        $row = DB::table('program_levels as pl')
-                ->selectRaw('pl.id,pl.program_id,pl.name')
+        return DB::table('program_levels as pl')
+                ->selectRaw('pl.id,pl.program_id,pl.name,formatTime(pl.created_at) as created_at,pl.create_user')
                 ->where('pl.branch_id',$branch_id)
                 ->where('pl.id',$id)->get()->first();
-        return $row;
     }
 
     function delete($id=null,$program_id=null,$ss=null){

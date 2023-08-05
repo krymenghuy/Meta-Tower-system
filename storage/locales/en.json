@@ -21,6 +21,9 @@
 		"Mobile Settings": "Mobile Settings",
 		"Log Out": "Log Out"
 	},
+	"general":{
+			
+	},
 	"buttons": {
 		"Cancel": "Cancel",
 		"Add": "Add",

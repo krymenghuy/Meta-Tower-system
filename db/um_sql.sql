@@ -75,6 +75,7 @@ CREATE TABLE `um_users` (
   `official_code` varchar(50) DEFAULT NULL,
   `work_location_id` int(10) DEFAULT NULL,
   `otp_code` varchar(15) DEFAULT NULL,
+  `is_system_admin` TINYINT default 0,
   `lang` varchar(15) DEFAULT 'en',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

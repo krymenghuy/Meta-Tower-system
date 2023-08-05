@@ -24,7 +24,7 @@ class StyleProvider
                 'assets/vendors/custom/vendors/line-awesome/css/line-awesome.css',
                 'assets/css/font-awesome/6.2.0/css/all.min.css',
                 'assets/css/demo1/style.bundle.css',
-                'assets/css/loader.css',
+                //'assets/css/loader.css',
                 'assets/css/jquery.datepicker2.css',
                 'assets/css/vsstyle.css',
                 'assets/css/kms_style.css',
