@@ -19,22 +19,22 @@ class AcademicYear //extends Model
         if($end_y < $sts[0] || $end_y >$sts[1]) return 'End date does not seem to be correct. Make ure the year is within a correct range';
         $row = DB::table('academic_years as y')->whereRaw('YEAR(end_date) >'.$sts[0])->selectRaw('academic_year')->take(1)->get()->first();
         if($row) return 'The ending year should not overlap the previous academic year\'s ending date';
-        return null; 
+        return null;
     }
     // use HasFactory;
     static function save($arr=[],$id=null,$ss){
         $v_rule = [
             'academic_year' => '1|string|1-150',
-            'start_date' => '1|string',
-            'end_date' => '1|string',
+            'start_date' => '0|string',
+            'end_date' => '0|string',
         ];
         $branch_id = $ss->branch_id;
         $unique =[$branch_id.'|academic_years|academic_year|id=id'];
-        $res = validateObject($arr,$v_rule,0,['academic_year'=>['-']],$ss->lang,0,$unique);
+        $res = validateObject($arr,$v_rule,1,['academic_year'=>['-']],$ss->lang,0,$unique);
 
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
-      
+
         $start_date = convertDate($inputs['start_date']);
         $end_date = convertDate($inputs['end_date']);
         $inputs['start_date'] = $start_date;
@@ -48,13 +48,13 @@ class AcademicYear //extends Model
 
     static function list($ss){
         $branch_id = $ss->branch_id;
-        $rows = DB::table('academic_years')->selectRaw('academic_year,start_date,end_date')->where('branch_id',$branch_id)->get();
+        $rows = DB::table('academic_years')->selectRaw('academic_year,create_user,start_date,end_date,formatDate(created_at) as date')->where('branch_id',$branch_id)->get();
         return $rows;
     }
 
     static function details($id,$ss){
         $branch_id = $ss->branch_id;
-        $row = DB::table('academic_years')->selectRaw('academic_year,start_date,end_date')->where('id',$id)->where('branch_id',$branch_id)->first();
+        $row = DB::table('academic_years')->selectRaw('academic_year,start_date,end_date,created_at as date,create_user')->where('id',$id)->where('branch_id',$branch_id)->first();
         return $row;
     }
 
