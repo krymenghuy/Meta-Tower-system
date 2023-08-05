@@ -120,20 +120,21 @@ class Student //extends Model
                 $en_student_data['status_id'] = $statusID;
            }
             $enrollment_id = saveData($ss,'enrollments',['student_id'=>$id],$en_student_data,[],1);
-
-           if(!$id || $id == 0){
+           $save_pmt_paramsID=null;
+        //    if($id == 0 || $id == 'undefined'){
                 //** save into pmt_parameters */
                 $pmt_params_data = [
                     'expected_date' => self::getFutureTime(7),
                     'pmt_option_id' => $pmt_option_id
                 ];
-                $save_pmt_paramsID = saveData($ss,'pmt_parameters',[],$pmt_params_data,[],1);
-                if($save_pmt_paramsID){
+
+                $save_pmt_paramsID = saveData($ss,'pmt_parameters',['id' => null],$pmt_params_data,[],1);
+                if($save_pmt_paramsID>0){
                     DB::table('enrollment_payments')->where('enrollment_id',$enrollment_id)->update([
                         'parameter_id' => $save_pmt_paramsID
                     ]);
                 }
-           }
+        //    }
            $getEnrollment = DB::table('enrollments')->where('id',$enrollment_id)->selectRaw('session_id,school_id')->first();
             //** save or update enrollmen_payment table
             if($enrollment_id){
@@ -176,7 +177,7 @@ class Student //extends Model
                 }
             }
         }
-        return DV::depends($newID,['action'=>'Saved','parent_info' => $p_info]);
+        return DV::depends($newID,['action'=>'Saved','parent_info' => $p_info,'Parameter'=>$save_pmt_paramsID]);
     }
 
     static function studentListPaginate($filter=[],$ss){

@@ -282,21 +282,20 @@ class PriceList //extends Model
         $last_day_in_month = getLastDayOfMonth($d->start_date);
 
         $monthly_fee_info = $this->getMonthlyFee($arr);
+        $price = $monthly_fee_info->price;
         if($d->months<3){
-
-            $week = round($pay_week,2);
 
             $weekly_tuition_due = null;
 
             if($current_day != 1){
-                $total_daily_Fee = self::getWeeklyTuitionDue([
+                $total_weekly_Fee = self::getWeeklyTuitionDue([
                     'start_date' => $d->start_date,
                     'level_id' => $d->level_id,
                     'session_id' => $d->session_id,
                     'weeks' => $week,
                     'academic_year' => $d->academic_year
                 ]);
-                $weekly_tuition_due = $total_daily_Fee->tuition_due;
+                $weekly_tuition_due = $total_weekly_Fee->tuition_due;
             }
 
             $monthly_fee = $monthly_fee_info->price;
@@ -309,38 +308,37 @@ class PriceList //extends Model
 
             return (object)['first_month_end_date'=>$last_day_in_month,'tuition_due'=>$total_tuition_due];
         }else if($d->months < 6){
-            $week = round($pay_week,2);
+            $end_date = findFutureMonths($d->start_date,$d->months-1);//** */
+            $end_date =$end_date->end_date;
             $weekly_tuition_due = 0;
             $base_amount = 0;//** base amount equal to term (3months) */
             $price_list_id = $monthly_fee_info->price_list_id;
             $monthly_tuition_due = 0;
-            $price = $monthly_fee_info->price;
             if($current_day != 1 && $d->months == 3){
-                $total_daily_Fee = self::getWeeklyTuitionDue([
+                $total_weekly_Fee = self::getWeeklyTuitionDue([
                     'start_date' => $d->start_date,
                     'level_id' => $d->level_id,
                     'session_id' => $d->session_id,
                     'weeks' => $week,
                     'academic_year' => $d->academic_year,
                 ]);
-                $weekly_tuition_due = $total_daily_Fee->tuition_due;
+                $weekly_tuition_due = $total_weekly_Fee->tuition_due;
                 $base_amount = $price * ($d->months-1);
             }else{
                 $term = 3;
                 $pay_month = 0;
-                $week = round($pay_week,2);
                 // ** months > 3(term) totalMonth - term
                 //* find term
                 if($d->months > $term){
                     $pay_month = $d->months - $term;
-                    $total_daily_Fee = self::getWeeklyTuitionDue([
+                    $total_weekly_Fee = self::getWeeklyTuitionDue([
                         'start_date' => $d->start_date,
                         'level_id' => $d->level_id,
                         'session_id' => $d->session_id,
                         'weeks' => $week,
                         'academic_year' => $d->academic_year,
                     ]);
-                    $weekly_tuition_due = $total_daily_Fee->tuition_due;
+                    $weekly_tuition_due = $total_weekly_Fee->tuition_due;
                     $base_amount = $price * $term;
                     $monthly_tuition_due = $monthly_fee_info->price * $pay_month;
                 }
@@ -352,15 +350,13 @@ class PriceList //extends Model
             $term_tuition_due = $base_amount - $discount_amt;
             $total_tuition_due = $term_tuition_due + $weekly_tuition_due + $monthly_tuition_due;
 
-            return (object)['total_tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'discount'=>$discount_info,'tution_due'=>$term_tuition_due,'weekly_tuition'=>$weekly_tuition_due,'monthly_tuition'=>$monthly_tuition_due];
+            return (object)['end_date' => $end_date,'total_tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'discount'=>$discount_info,'tution_due'=>$term_tuition_due,'weekly_tuition'=>$weekly_tuition_due,'monthly_tuition'=>$monthly_tuition_due];
         }else if($d->months <12){
             $weekly_tuition_due = 0;
             $base_amount = 0;//** base amount equal to term (3months) */
             $price_list_id = $monthly_fee_info->price_list_id;
             $discount_info = $this->getPolicyDiscount($pmt_option,$price_list_id);
             $monthly_tuition_due = 0;
-            $price = $monthly_fee_info->price;
-            $week = round($pay_week,2);
             if($current_day != 1 && $d->months == 6){
                 $term = 3;
                 $pay_month = $d->months - 1;
@@ -370,32 +366,7 @@ class PriceList //extends Model
                 if($d->months > $term){
 
                     $pay_month = $pay_month - $term;
-                    $total_daily_Fee = self::getWeeklyTuitionDue([
-                        'start_date' => $d->start_date,
-                        'level_id' => $d->level_id,
-                        'session_id' => $d->session_id,
-                        'week' => $week,
-                        'academic_year' => $d->academic_year,
-                    ]);
-
-                    $weekly_tuition_due = $total_daily_Fee->tuition_due;
-                    $base_amount = $price * $term; //** base amount refer to term (3 months) */
-                    $monthly_tuition_due = $monthly_fee_info->price * $pay_month;
-
-                    $discount_amt = (($base_amount + $monthly_tuition_due) * $discount_info->discount) / 100;
-                    $after_discount = ($base_amount + $monthly_tuition_due) - $discount_amt;
-                    $total_tuition_due = $after_discount + $weekly_tuition_due;
-                    $end_date = findFutureMonths($d->start_date,5);//** */
-                    $end_date =$end_date->end_date;
-                }
-            }
-            if($current_day != 1 && $d->months >6){
-                $week = round($pay_week,2);
-                if($d->months == 7){
-                    $semester = 6;
-                    $pay_month = $d->months - $semester;
-
-                    $total_daily_Fee = self::getWeeklyTuitionDue([
+                    $total_weekly_Fee = self::getWeeklyTuitionDue([
                         'start_date' => $d->start_date,
                         'level_id' => $d->level_id,
                         'session_id' => $d->session_id,
@@ -403,14 +374,75 @@ class PriceList //extends Model
                         'academic_year' => $d->academic_year,
                     ]);
 
-                    $semester_tuition = $price * $semester;
+                    $weekly_tuition_due = $total_weekly_Fee->tuition_due;
+                    $base_amount = $price * $term; //** base amount refer to term (3 months) */
+                    $monthly_tuition_due = $monthly_fee_info->price * $pay_month;
 
-                    return $total_daily_Fee;
+                    $discount_amt = (($base_amount + $monthly_tuition_due) * $discount_info->discount) / 100;
+                    $after_discount = ($base_amount + $monthly_tuition_due) - $discount_amt;
+                    $total_tuition_due = $after_discount + $weekly_tuition_due;
+                    $end_date = findFutureMonths($d->start_date,$d->months-1);//** */
+                    $end_date =$end_date->end_date;
                 }
+            }else if($current_day != 1 && $d->months >6){
+
+                $semester = 6;
+                $pay_month = $d->months - $semester;
+
+                $total_weekly_Fee = self::getWeeklyTuitionDue([
+                    'start_date' => $d->start_date,
+                    'level_id' => $d->level_id,
+                    'session_id' => $d->session_id,
+                    'weeks' => $week,
+                    'academic_year' => $d->academic_year,
+                ]);
+
+                $semester_tuition = $price * $semester;
+
+                $weekly_tuition_due = $total_weekly_Fee->tuition_due;
+
+                $end_date = findFutureMonths($d->start_date,$d->months-1);//** */
+                $end_date =$end_date->end_date;
+                $discount_amt = (($semester_tuition + $pay_month) * $discount_info->discount) / 100;
+                $after_discount = ($semester_tuition + $pay_month) - $discount_amt;
+                $total_tuition_due = $after_discount + $weekly_tuition_due;
+
+            }else {
+                $week ="full month no week count";
+                $semester_tuition = $d->months * $price;
+                $discount_amt = ($semester_tuition  * $discount_info->discount) / 100;
+                $after_discount = $semester_tuition - $discount_amt;
+                $total_tuition_due = $after_discount;
+                $end_date = findFutureMonths($d->start_date,$d->months-1);//** */
+                $end_date =$end_date->end_date;
             }
+
             return (object)['end_date'=> $end_date ,'total_tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'weekly_tuition_due' => $weekly_tuition_due,'weeks' => $week,'monthly_tuition_due' => $monthly_tuition_due,'discount'=>$discount_info->discount,'after_discount' => $after_discount,'discount_amount' => $discount_amt];
         }else{
 
+            if($current_day != 1 && $d->months == 12){
+                $annual = 12-1; //* because the first month is not a full month
+                $price_list_id = $monthly_fee_info->price_list_id;
+                $discount_info = $this->getPolicyDiscount($pmt_option,$price_list_id);
+                $total_weekly_Fee = self::getWeeklyTuitionDue([
+                    'start_date' => $d->start_date,
+                    'level_id' => $d->level_id,
+                    'session_id' => $d->session_id,
+                    'weeks' => $week,
+                    'academic_year' => $d->academic_year,
+                ]);
+                $annual_tuition = $price * $annual;
+                $end_date = findFutureMonths($d->start_date,$d->months-1);//**  */
+                $end_date =$end_date->end_date;
+                return $discount_info;
+            }else{
+                $week ="full month no week count";
+                $end_date = findFutureMonths($d->start_date,$d->months-1);//** */
+                $end_date =$end_date->end_date;
+                return "heloo1";
+            }
+
+            // return (object)['end_date'=>$end_date];
         }
     }
 
@@ -426,7 +458,6 @@ class PriceList //extends Model
         $end_date = dateAdd('day',$days,$d->start_date);
         return (object)['end_date' => $end_date,'tuition_due'=> $x==0?$weekly_fee:$x];
     }
-
 
     /**
         * $arr ['acadmic_year','level_id','session_id'] // pmt_option_id (optional)
@@ -449,7 +480,6 @@ class PriceList //extends Model
                 ->where('i.session_id',$session_id)
                 ->selectRaw('l.id as price_list_id,i.price,i.program_id')
                 ->first();
-
         return (object)['price' => $row->price,'price_list_id'=>$row->price_list_id];
     }
 
@@ -507,6 +537,7 @@ class PriceList //extends Model
         $days = isset($d->days) ? $d->days :null;
         $months = isset($d->months) ? $d->months :null;
 
+
         $selectCols = 's.name,e.campus_id,e.program_id,e.level_id,e.session_id,e.academic_year,e.start_date';
 
         $row = DB::table('enrollments as e')
@@ -515,17 +546,20 @@ class PriceList //extends Model
                 ->where('s.id',$id)
                 ->selectRaw($selectCols)
                 ->get()->first();
+        $start_date = isset($d->start_date)?$d->start_date:$row->start_date;
+        unset($row->start_date);
         $session = isset($d->session_id) ? $d->session_id : $row->session_id;
+        $pmt_option_id = isset($d->pmt_option_id) ? $d->pmt_option_id: $row->pmt_option_id;
         $arr = [
             "level_id" => "24",
             "academic_year" => "2023-2024",
             "session_id" => $session,
             "prev_level_id" => "0",
-            "start_date" => "2023-08-10",
+            "start_date" => $start_date,
             "months" => $months,
             "weeks" => $weeks,
             "days" => $days,
-            "pmt_option_id"=> 1
+            "pmt_option_id"=>
         ];
         $row->payment_info = $this->payment_processing($arr);
         return $row;

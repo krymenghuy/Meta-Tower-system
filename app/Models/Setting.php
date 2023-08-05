@@ -16,7 +16,8 @@ class Setting //extends Model
             'pmt_options' => self::pmt_options($ss),
             'programs' => self::programs_options($ss),
             'levels' => self::level_options($ss),
-            'campuses' => self::campus_options($ss)
+            'campuses' => self::campus_options($ss),
+            'academic_year' => self::getAcademicYear($ss)
         ];
         return $res;
     }
@@ -58,5 +59,10 @@ class Setting //extends Model
     static function prevProgramLevelOptions($ss=null){
         $branch_id = $ss->branch_id;
         return DB::table('program_levels')->where('branch_id',$branch_id)->selectRaw('name as level,id')->get();
+    }
+
+    static function getAcademicYear($ss=null){
+        $branch_id = $ss->branch_id;
+        return DB::table('academic_years')->where('branch_id',$branch_id)->selectRaw('academic_year,id')->get();
     }
 }
