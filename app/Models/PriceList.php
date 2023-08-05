@@ -537,7 +537,6 @@ class PriceList //extends Model
         $days = isset($d->days) ? $d->days :null;
         $months = isset($d->months) ? $d->months :null;
 
-
         $selectCols = 's.name,e.campus_id,e.program_id,e.level_id,e.session_id,e.academic_year,e.start_date';
 
         $row = DB::table('enrollments as e')
