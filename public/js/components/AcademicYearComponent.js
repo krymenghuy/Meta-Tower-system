@@ -5,8 +5,31 @@ var AcademicYearComponent = new function(){
     this.self = $('#_main_academicYearComponent');
 
     this.tblAcademic = mThis.self.find('#_adm_tbl');
+    this.btnNew = mThis.self.find('#_adm_btn_new');
 
-    this.init = () => {}
+    this.init = () => {
+        mThis.btnNew.on('click',function(e){
+            e.preventDefault();
+            let op = {
+                'id': 0,
+                'onClose': () => {
+                    mThis.displayAcademic();
+                }
+            };
+            AcademicDialog.show(op);
+        });
+
+        mThis.tblAcademic.on('click','a.btn-adm-modify',function(e){
+            e.preventDefault();
+            let op = {
+                'id': $(this).data('id'),
+                'onClose': () => {
+                    mThis.displayAcademic();
+                }
+            };
+            AcademicDialog.show(op);
+        });
+    }
 
     this.displayAcademic = (onFinish = null) => {
         window.vsapi.call(`${main_view.base_url}/api/academic-year/list`,null,null).then(res => {
@@ -82,6 +105,65 @@ var AcademicYearComponent = new function(){
         mThis.displayAcademic(() => {
             main_view.setTitle(mThis.title_prop);
             mThis.self.show().siblings().hide();
+        });
+    }
+}
+
+let AcademicDialog = new function(){
+    let mThis = this;
+    this.self = $('#dlg_adm_');
+    this.options = {};
+
+    this.elTitle = mThis.self.find('.modal-title');
+    this.btnSave = mThis.self.find('#dlg_adm_btn_save');
+
+    this.getDataForm = () => {
+        let p = {
+            'id': mThis.options.id
+        };
+        mThis.self.find('.data-input').each(function(){
+            let el = $(this);
+            let f = el.data('field');
+            p[f] = el.val();
+        });
+        return p;
+    }
+
+    this.setDataForm = (d) => {
+        d = d ? d : {};
+        console.log(d);
+        mThis.self.find('.data-input').each(function(){
+            let el = $(this);
+            let f = el.data('field');
+            el.val(d[f]);
+        });
+    }
+
+    this.loadFormDetail = (options) => {
+        window.vsapi.call(`${main_view.base_url}/api/academic-year/details`,{'id': options.id},null).then(res => {
+            let data = {};
+            if(res.status_code === 200){
+                data = res.data;
+            }
+            mThis.setDataForm(data);
+        });
+    }
+
+    this.show = (options) => {
+        if(!options) options = {};
+        mThis.options = options;
+
+        if(options.id > 0){
+            mThis.elTitle.text(LocaleManager.trans('Modify Academic Year','titles'));
+            mThis.loadFormDetail(options);
+        }
+        else{
+            mThis.elTitle.text(LocaleManager.trans('New Academic Year','titles'));
+            mThis.setDataForm(null);
+        }
+
+        mThis.self.modal({
+            backdrop: "static"
         });
     }
 }
