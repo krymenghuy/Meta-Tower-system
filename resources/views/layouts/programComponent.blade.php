@@ -51,7 +51,7 @@
                 <div class="form-group">
                     <label for="program_id" class="form-label trans-text" data-langprop="titles.Previous Level"></label>
                     <div class="width-select-dialog">
-                        <select id="dlg_detail_pgm_level" class="modal-select2 data-input" data-field="program_id"></select>
+                        <select id="dlg_detail_pgm_level" class="modal-select2 data-input" data-field="prev_level_id"></select>
                     </div>
                 </div>
                 <div class="form-group">

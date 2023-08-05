@@ -38,7 +38,9 @@
                 </div>
                 <div class="form-group">
                     <label for="academic_year" class="form-label trans-text" data-langprop="titles.Academic Year"></label>
-                    <input type="text" class="form-control data-input" data-field="academic_year"/>
+                    <div class="width-select-dialog">
+                        <select id="dlg_tff_academic" class="modal-select2 data-input" data-field="academic_year"></select>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="description" class="form-label trans-text" data-langprop="titles.Description"></label>
