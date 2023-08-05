@@ -481,6 +481,9 @@ var RegistrationComponent = new function(){
                 let el = $(this);
                 let f = el.data('field');
                 switch(f){
+                    case 'academic_year':
+                        VSUtil.setComboItems(el,d.academic_year,'academic_year','academic_year',null,null,null);
+                        break;
                     case 'level_id':
                         VSUtil.setComboItems(el,d.levels,'id','level',null,null,null);
                         break;

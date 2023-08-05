@@ -4,7 +4,9 @@
             <div class="row row-cols-lg-4 gy-2">
                 <div class="col">
                     <label for="academic_year" class="form-label trans-text" data-langprop="titles.Academic Year"></label>
-                    <input class="form-control data-select" data-field="academic_year"/>
+                    <div class="width-select-dialog">
+                        <select class="modal-select2 data-select" data-field="academic_year"></select>
+                    </div>
                 </div>
                 <div class="col">
                     <label for="campus_id" class="form-label trans-text" data-langprop="titles.Campus"></label>
@@ -142,7 +144,9 @@
                 <div class="col">
                     <div class="form-group">
                         <label for="academic_year" class="form-label trans-text" data-langprop="titles.Academic Year"></label>
-                        <input type="text" class="form-control data-input" data-field="academic_year"/>
+                        <div class="width-select-dialog">
+                            <select class="modal-select2 data-input" data-field="academic_year"></select>
+                        </div>
                     </div>
                 </div>
             </div>

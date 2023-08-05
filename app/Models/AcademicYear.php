@@ -7,18 +7,41 @@ namespace App\Models;
 use DB;
 class AcademicYear //extends Model
 {
+    static function validateAcademicYear($academic_year,$start_date,$end_date){
+        if(!$academic_year) return 'There is no academic year provided';
+        $sts = explode('-',$academic_year);
+        if(!isset($sts[1]) || intVal($sts[1]) === false || intVal($sts[1]) <=0) return 'It looks like the ending year is not correct';
+        if(!(intVal($sts[0]) > 0)) return 'The starting year is not correct';
+        if ($sts[0] >= $sts[1]) return 'The ending year should be greater than start year';
+        $start_y = date('Y',strtotime($start_date));
+        if ($start_y  <intval($sts[0]) || $start_y > intval($sts[1])) return 'Start date does not seem to be correct. Check if the year is correct!';
+        $end_y = date('Y',strtotime($end_date));
+        if($end_y < $sts[0] || $end_y >$sts[1]) return 'End date does not seem to be correct. Make ure the year is within a correct range';
+        $row = DB::table('academic_years as y')->whereRaw('YEAR(end_date) >'.$sts[0])->selectRaw('academic_year')->take(1)->get()->first();
+        if($row) return 'The ending year should not overlap the previous academic year\'s ending date';
+        return null; 
+    }
     // use HasFactory;
     static function save($arr=[],$id=null,$ss){
         $v_rule = [
-            'academic_year' => '1|string',
+            'academic_year' => '1|string|1-150',
             'start_date' => '1|string',
             'end_date' => '1|string',
         ];
+        $branch_id = $ss->branch_id;
+        $unique =[$branch_id.'|academic_years|academic_year|id=id'];
+        $res = validateObject($arr,$v_rule,0,['academic_year'=>['-']],$ss->lang,0,$unique);
 
-        $res = validateObject($arr,$v_rule,1,['academic_year'=>['-']],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
-
+      
+        $start_date = convertDate($inputs['start_date']);
+        $end_date = convertDate($inputs['end_date']);
+        $inputs['start_date'] = $start_date;
+        $inputs['end_date'] =$end_date;
+        if ($end_date <= $start_date) return Dv::error('The start date must be earlier than the end date');
+        $err = self::validateAcademicYear($inputs['academic_year'],$start_date,$end_date);
+        if($err) return DV::error($err);
         $newID = saveData($ss,'academic_years',['id' => $id],$inputs,[],1);
         return DV::depends($newID,['action' => 'saved','academic_years' => self::list($ss)]);
     }

@@ -23,9 +23,9 @@ class TermController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
 
-        $row = new Term();
+        $row = new Term(null,$ss);
         $list = $row->list($ss);
-        return JDV::raw($list);
+        return JDV::result($list);
     }
 
     function getDetails(Request $req){
@@ -34,7 +34,7 @@ class TermController extends Controller
 
         $row = new Term($req->id,$ss);
         $details = $row->details();
-        return JDV::raw($details);
+        return JDV::result($details);
     }
 
     function delete(Request $req){

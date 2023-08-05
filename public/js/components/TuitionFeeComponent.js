@@ -251,6 +251,7 @@ let TuitionFeeOutsideDialog = new function(){
 
     this.elTitle = mThis.self.find('.modal-title');
     this.btnSave = mThis.self.find('#dlg_ttf_btn_save');
+    this.elPrice = mThis.self.find('#dlg_tff_academic');
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
@@ -298,23 +299,36 @@ let TuitionFeeOutsideDialog = new function(){
         });
     }
 
+    this.prepareFormOption = (onFinish = null) => {
+        window.vsapi.call(`${main_view.base_url}/api/academic-year/list`,null,null).then(res => {
+            let d = [];
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            VSUtil.setComboItems(mThis.elPrice,d,'academic_year','academic_year',null,null,null);
+            if(typeof onFinish === 'function') onFinish();
+        });
+    }
+
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;
 
-        if(options.id > 0){
-            mThis.elTitle.text(LocaleManager.trans('Edit Price List','titles'));
-            mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please check item details before editing','titles'));
-            mThis.loadDataEdit(options);
-        }
-        else{
-            mThis.elTitle.text(LocaleManager.trans('Add Price List','titles'));
-            mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input tuition fee details','titles'));
-            mThis.setDataForm(null);
-        }
-
-        mThis.self.modal({
-            backdrop: 'static'
+        mThis.prepareFormOption(() => {
+            if(options.id > 0){
+                mThis.elTitle.text(LocaleManager.trans('Edit Price List','titles'));
+                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please check item details before editing','titles'));
+                mThis.loadDataEdit(options);
+            }
+            else{
+                mThis.elTitle.text(LocaleManager.trans('Add Price List','titles'));
+                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input tuition fee details','titles'));
+                mThis.setDataForm(null);
+            }
+    
+            mThis.self.modal({
+                backdrop: 'static'
+            });
         });
     }
 }
