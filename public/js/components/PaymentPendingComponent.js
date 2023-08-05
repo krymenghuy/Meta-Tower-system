@@ -51,6 +51,19 @@ var PaymentPendingComponent = new function(){
             },
             'beforeRender':()=>{}
         });
+
+        mThis.tblPaymentPending = $(mThis.itemView.getTable());
+
+        mThis.tblPaymentPending.on('click','a.btn-ppd-modify',function(e){
+            e.preventDefault();
+            let op = {
+                'id': $(this).data('id'),
+                'onClose': () => {
+                    mThis.itemView.showPage(null);
+                }
+            };
+            PaymentPendingDialog.show(op);
+        });
     }
 
     this.show = (options) => {
@@ -58,6 +71,93 @@ var PaymentPendingComponent = new function(){
         mThis.itemView.showPage(null,null,() => {
             main_view.setTitle(mThis.title_prop);
             mThis.self.show().siblings().hide();
+        });
+    }
+}
+
+let PaymentPendingDialog = new function(){
+    let mThis = this;
+    this.self = $('#dlg_ppd_');
+    this.options = {};
+
+    this.btnSave = mThis.self.find('#dlg_ppd_btn_save');
+    this.elPayment = mThis.self.find('#dlg_ppd_pmt');
+    this.modalBody = mThis.self.find('.modal-body');
+
+    mThis.elPayment.on('change',function(e){
+        e.preventDefault();
+        let op = {
+            'id': $(this).val()
+        };
+        window.vsapi.call(`${main_view.base_url}/api/settings/payment-options`,op,null).then(res => {
+            if(res.status_code === 200){
+                let div = mThis.modalBody.children().last();
+                div.after([`<div class="form-group">
+                    <label for="${res.data.name}" class="form-label text-capitalize">${res.data.name}</label>
+                    <input type="number" class="form-control data-input" data-field="${res.data.name}"/>
+                </div>`].join(''));
+                if(div.length > 0)
+                    div.remove();
+            }
+        });
+    });
+
+    mThis.btnSave.on('click',function(e){
+        e.preventDefault();
+        let p = mThis.getDataForm();
+        window.vsapi.call(`${main_view.base_url}/api/price-list/preview/pending-payment`,p,null).then(res => {
+            if(res.status_code === 200){
+                mThis.self.modal('hide');
+                if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
+            }
+        });
+    });
+
+    this.getDataForm = () => {
+        let p = {
+            'id': mThis.options.id
+        };
+        mThis.self.find('.data-input').each(function(){
+            let el = $(this);
+            let f = el.data('field');
+            p[f] = el.val();
+        });
+        return p;
+    }
+
+    this.prepareFormOption = (onFinish = null) => {
+        window.vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
+            let d = {};
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            mThis.self.find('.data-input').each(function(){
+                let el = $(this);
+                let f = el.data('field');
+                switch(f){
+                    case 'pmt_option_id':
+                        VSUtil.setComboItems(el,d.pmt_options,'id','name',null,null,null);
+                        break;
+                    case 'session_id':
+                        VSUtil.setComboItems(el,d.sessions,'id','name',null,null,null);
+                        break;
+                    default:
+                        break;
+                }
+            });
+
+            if(typeof onFinish === 'function') onFinish();
+        });
+    }
+
+    this.show = (options) => {
+        if(!options) options = {};
+        mThis.options = options;
+
+        mThis.prepareFormOption(() => {
+            mThis.self.modal({
+                backdrop:'static'
+            });
         });
     }
 }
