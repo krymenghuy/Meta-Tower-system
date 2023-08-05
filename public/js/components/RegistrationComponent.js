@@ -49,6 +49,7 @@ var RegistrationComponent = new function(){
             console.log(p);
             window.vsapi.call(`${main_view.base_url}/api/student/registration`,p,null).then(res => {
                 if(res.status_code === 200){
+                    mThis.options.photo = null;
                     mThis.displayStudentList(null,() => {
                         mThis.div_list.show().siblings().hide();
                     });
