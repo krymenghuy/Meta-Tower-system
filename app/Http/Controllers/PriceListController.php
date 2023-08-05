@@ -96,7 +96,7 @@ class PriceListController extends Controller
         if($ss->status_code !==200) return JDV::raw($ss);
 
         $row = new PriceList($req->id,$ss);
-        $preview = $row->previewPendingPaymentDetails($req->id,$ss);
+        $preview = $row->previewPendingPaymentDetails($req->all(),$req->id,$ss);
         return JDV::result($preview);
 
     }

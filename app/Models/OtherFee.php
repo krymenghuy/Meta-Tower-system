@@ -44,8 +44,8 @@ class OtherFee //extends Model
     function delete($id=null,$ss=null){
         $ss =$ss?$ss:$this->user_info;
         $id = $id?$id:$this->id;
-       $x =  DB::table('other_fees')->where('id',$id)->delete();
-       return DV::depends($x,['action'=>'Deleted','non_tuition_list'=>$this->getList()],'failed to delete');
+        $x =  DB::table('other_fees')->where('id',$id)->delete();
+        return DV::depends($x,['action'=>'Deleted','non_tuition_list'=>$this->getList()],'failed to delete');
     }
 
     function getList($ss=null){
@@ -62,7 +62,7 @@ class OtherFee //extends Model
     function getProgram($id){
         $row = DB::table('programs')->where('id',$id)->selectRaw('name')->first();
         if($row){
-            $row = $row->name;
+            return $row = $row->name;
         }
         return null;
     }
