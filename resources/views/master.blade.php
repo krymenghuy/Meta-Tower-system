@@ -197,6 +197,7 @@
                                 @include('layouts.programComponent')
                                 @include('layouts.studentGroupComponent')
                                 @include('layouts.campusComponent')
+                                @include('layouts.termComponent')
                             </div>
                         </div>
                     </div>

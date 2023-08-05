@@ -26,6 +26,7 @@ var RegistrationComponent = new function(){
             mThis.options.id = null;
             mThis.options.father_id = null;
             mThis.options.mother_id = null;
+            mThis.options.photo = null;
             mThis.prepareFormOption(mThis.div_input,'data-input',() => {
                 mThis.setDataForm(null);
                 mThis.div_input.show().siblings().hide();
@@ -37,6 +38,7 @@ var RegistrationComponent = new function(){
             mThis.options.id = null;
             mThis.options.father_id = null;
             mThis.options.mother_id = null;
+            mThis.options.photo = null;
             mThis.div_list.show().siblings().hide();
         });
 

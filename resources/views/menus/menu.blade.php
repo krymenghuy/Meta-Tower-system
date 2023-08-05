@@ -349,6 +349,14 @@
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Program"></span>
                             </a>
                         </li>
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="TermComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/location.svg') }}"/>
+                                </span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Term"></span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </li>
