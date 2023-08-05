@@ -30,15 +30,12 @@ class ItemsView{
         options.tableClass = options.tableClass?options.tableClass:'table header-light-blue header-uppercase';
         //Use dt_columns as default langProp
         if(!options.langProp) options.langProp ="dt_columns";
-        
-        //set default maxRows, Maximum rows to 15 rows
-        this.maxRows = options.maxRows>0? options.maxRows:15;
-
         if(!options.addLineButtonClass) options.addLineButtonClass = 'btn btn-sm btn-primary';
         if(!options.addLineButtonText) options.addLineButtonText ='Add Line';
-        
+
         if(this.isUndefined(options.showAddLineButton)) options.showAddLineButton = true;  
         if(this.isUndefined(options.showColumnHeaders)) options.showColumnHeaders = true;
+        //if(this.isUndefined(options.validateBeforeAddNew)) options.validateBeforeAddNew = false;
  
         if(!options.columns) options.columns = this.getDefaultColumns(); 
         this.options = options;
@@ -59,13 +56,9 @@ class ItemsView{
         let addLineButton_html = `<button class="${this.options.addLineButtonClass} btn-item-addline trans-text" type="button" data-langprop="${this.options.langProp}.${this.options.addLineButtonText}">${addLineText}</button>`;
         if(this.options.showAddLineButton != true) addLineButton_html ='';
 
-        //NOTE: important to set "div.style.width =100%"" here for tprocessColumnWidths() to work correctly
-        //function processColumnWidths() will determines width of each column as percentage
-        this.processColumnWidths(this.options.columns);
-        //console.error(JSON.stringify(this.options.columns)); 
         this.self.innerHTML =[
-            `<div style="width:100%" id="${this.table_id}_wrapper"><table id="${this.table_id}" class="${options.tableClass}">`,
-                this.createColumnHeaders_html(this.options.columns),
+            `<div id="${this.table_id}_wrapper"><table id="${this.table_id}" class="${options.tableClass}">`,
+                this.createColumnHeaders_html(options.columns),
                 `<tbody id="${this.table_id}_body"></tbody>`,
             `</table></div>`,
             `<div id="${this.table_id}_footer" class="form-inline">${addLineButton_html}</div>`
@@ -78,7 +71,7 @@ class ItemsView{
         this.div_footer = document.querySelector(`#${this.table_id}_footer`);
  
         //Add initial empty Row
-        this.addRow(null,0,false);
+        this.addRow(null,0,false,false,[]);
         
         let that = this;
         this.table.addEventListener('change',(e)=>{
@@ -99,16 +92,23 @@ class ItemsView{
                 let el = VSDOM.getClosestParentByClass(e.target,'btn-item-delete');             
                 if (el){
                         let that = this;
-                        cv_interact.confirm("Delete this item?",{title:'Delete Item',OKButtonText:'Delete',context:'delete'},
-                            (e)=>{
-                              if(e){
-                                  that.options.onItemDeleted(tr.dataset.id,tr); 
-                                  tr.remove();
-                                  that.resetNumero();
-                                  that.displayEmptyMessage();
+
+                        if (typeof that.options.onDeleteItem ==='function'){
+                             that.options.onDeleteItem(tr.dataset.id,tr);
+                             that.resetNumero();
+                        }else{
+                            cv_interact.confirm("Delete this item?",{title:'Delete Item',OKButtonText:'Delete',context:'delete'},
+                                (e)=>{
+                                  if(e){
+                                      that.options.onItemDeleted(tr.dataset.id,tr); 
+                                      tr.remove();
+                                      that.resetNumero();
+                                      that.displayEmptyMessage();
+                                    }
                                 }
-                            }
-                         );
+                            );
+                        }
+                       
                      //return;  
                 }else{
                    //If user click within INPUT (input.td-input or SELECT boxes)
@@ -124,7 +124,7 @@ class ItemsView{
 
             } else {
                //Click outside row (tr)
-               if (this.prev_edit_row) this.changeRowState(this.prev_edit_row,'readonly');
+               if (this.prev_edit_row) this.changeRowState(prev_edit_row,'readonly');
             } 
         });
 
@@ -132,9 +132,9 @@ class ItemsView{
             e.preventDefault();
             let el = VSDOM.getClosestParentByClass(e.target,'btn-item-addline');        
             if (el){
-                //true = validate cell inputs base on the given prop "validateColumns"
+                //true = validate cell inputs based on the given prop "validateColumns"
                 //last param is "user_action_add" = true => it means when user click Add Line button
-                this.addRow(null,null,true,true);
+                this.addRow(null,null,true,true,null);
                 //alert(JSON.stringify(this.getItems()));
                 //this.resetNumero(); //addRow() will also resetNumero()
             } 
@@ -161,43 +161,6 @@ class ItemsView{
      isUndefined(d){
       if (d ==undefined || d ==null || d=='undefined') return true;
       return false;
-     }
-
-     //set maximun height of tbody in terms of Number of rows (tr)
-     setMaxHeightRows(row_count=5,current_row_count=0){
-        if(this.has_scroll) return; 
-        let tbody = this.table_body;
-        let thead = this.table.querySelector('thead');
-
-        let row_height = tbody.rows[0]?tbody.rows[0].offsetHeight:60;
-        if(row_height==0) row_height=60;
-        current_row_count =current_row_count>0?current_row_count: tbody.rows.length;
-        //console.error(`Current_rows = ${current_row_count} VS row_count =${row_count}`);
-        
-        if (current_row_count > row_count) {
-          let tbodyHeight = parseFloat(row_height) * parseFloat(row_count);
-          //console.error(`tbodyHeigt = ${tbodyHeight} rowHeight =${row_height} currentRowCount =${current_row_count}`);
-          this.table.style.display = 'block';
-          this.table.style.width = '100%';
-          this.table.style.tableLayout = 'fixed';
-          this.table.style.height = `${tbodyHeight +  (thead? thead.offsetHeight:0)}px`;
-          this.table.style.overflowY = 'hidden';
-          tbody.style.display = 'block';
-          //tbody.style.width = '100%';
-          tbody.style.height = `${tbodyHeight}px`;
-          tbody.style.overflowY = 'scroll';
-          //set this.has_scroll to true. "has_scroll" indicates whether the current Items table has scroll or not (for Fixed header style only) 
-          this.has_scroll = true;
-        }
-        return;
-     }
-        
-     //set maximun height of tbody in terms of Number of rows (tr)
-     setMaxHeightPixel(max_height=350){
-        let tbody = this.table_body;
-        tbody.style.height = max_height; // Change this to the desired fixed height
-        tbody.style.overflowY = 'scroll';
-        return;
      }
 
      displayEmptyMessage(){
@@ -268,7 +231,7 @@ class ItemsView{
                 }
                 if(!col) throw `Error ItemsView.getColumnPropsByName(@colName) failed to find column by name ${col_name}`;
                 col.cssClass =col.cssClass?col.cssClass:'';
-                let html = `<input style="width:100%" type="text" class="${def_class} ${col.cssClass} td-input" value="${text}" ${is_read_only}/>`;
+                let html = `<input type="text" class="${def_class} ${col.cssClass} td-input" value="${text}" ${is_read_only}/>`;
                 
                 //If there is col.selectOptions => then set displayType = 'select'
                 if (col.selectOptions) col.displayType ='select';
@@ -277,12 +240,11 @@ class ItemsView{
                     if(!col.selectOptions) col.selectOptions = col.selectItems;
                     col.selectOptions = col.selectOptions?col.selectOptions:[];
                     let el = document.createElement('select');
-                    el.style.width ='100%';
                     el.classList.add(select2_cssClass,`td-input`);
                     el.innerHTML = this.createSelectOptions(col_name,null);
                     td.innerHTML=null;
                     td.appendChild(el);
-                    this.initSelect2(el,td,{"value":value,"width":"100%",items:col.selectOptions});
+                    this.initSelect2(el,td,{"value":value,"width":col.width,items:col.selectOptions});
                     // html = [`<select class="${select2_cssClass} td-input" value="${value}" ${is_read_only}>`,
                     //         this.createSelectOptions(col_name,value),
                     //       `</select>`].join('');
@@ -292,21 +254,21 @@ class ItemsView{
                     if(!col.dataType) col.dataType ='string';
                     if (col.dataType ==='date'){
                        //So far, use default HTML input type="date"
-                       html = `<input style="width:100%" class="${def_class} ${col.cssClass} td-input ivc-date" value="${text}" ${is_read_only}/>`;
+                       html = `<input class="${def_class} ${col.cssClass} td-input" value="${text}" ${is_read_only}/>`;
                     }else if (col.dataType ==='time'){
-                       html = `<input style="width:100%" class="${def_class} ${col.cssClass} td-input ivc-time" value="${text}" ${is_read_only}/>`;
+                       html = `<input class="${def_class} ${col.cssClass} td-input" value="${text}" ${is_read_only}/>`;
                     }else{
                       let dType = (col.dataType ==='string')? 'text':'number';
 
                       //Set detault editor value to zero for Number field 
                       if(dType==='number' && !text) text="0"; 
-                      html = `<input style="width:100%" type="${dType}" class="${def_class} ${col.cssClass} td-input" value="${text}" ${is_read_only}/>`;
+                      html = `<input type="${dType}" class="${def_class} ${col.cssClass} td-input" value="${text}" ${is_read_only}/>`;
                     }
-                    td.innerHTML= html;  
-                    if(col.dataType ==='date'){
-                       let el = td.querySelector('input.td-input');
-                       if(el) DateTimePicker.init($(el));
-                    } 
+                    td.innerHTML= html;
+                    if(col.dataType==='date' || col.dataType ==='datetime'){
+                         let el = $(td.querySelector('input'))
+                         DateTimePicker.init(el);
+                    }   
                 }
                 //If the displayType is SELECT,and we use select2 with "modal-select2" class => so we need to init select2 script to transform standard SELECT to SELECT2
                 
@@ -316,7 +278,7 @@ class ItemsView{
                 // }
                 
             } 
-            ////this.adjustHeaderWidths();
+            
          });
          
          let that = this;
@@ -378,18 +340,28 @@ class ItemsView{
 
      initSelect2(el,td,op={}){
         if(!el) return;
-        //op.value=null,op.items =null
+        //op.value=null,op.items =null, op.multiple : true|false
         let select2_dropdowns = td.querySelectorAll('span.select2-container');
         select2_dropdowns.forEach(d =>{
                   if(d){
                     if(d.classList.style) d.classList.style.display='none';
                   }
         });
-
+ 
+        // let opt_html ="";
+        // //unknown error if the items is not type of array
+        // if(items){
+        //   items.map(item=>{
+        //     opt_html = [opt_html,`<option value="${item.value}">${item.text}</option>`].join(''); 
+        //   });
+        //   el.innerHTML = opt_html; 
+        // }
+            
+          //NOTE: el must be converted to $(el) because .select2() is jquery function
             let x = $(el);
             if(op.items) VSUtil.setComboItems(x,op.items,'value','text',null,null,null);
 
-            let init_op ={width:'100%'};
+            let init_op ={width:'100%','multiple':op.multiple?true:false};
             if(op.width) init_op.width =op.width; 
             x.select2(init_op);
 
@@ -423,6 +395,8 @@ class ItemsView{
               if (that.validateRow(tr,that.options.validateColumns,true)) that.options.onItemValidated(row_id,new_item,tr); 
               that.options.onItemChange(row_id,new_item,td.dataset.name,td,tr); 
             });
+ 
+            //if(value !== undefined) VSUtil.setSelect2_value(el,value);
      }
   
      //@items is array = [{value,text}, {value,text}, ...] 
@@ -438,7 +412,7 @@ class ItemsView{
             let td = this.prev_edit_row.querySelector(`td.ivc-${col_name}`);
             if(td){
               let cb = td.querySelector(`select.td-input`);
-              if(cb) this.initSelect2(cb,td,{value:selectedValue,items:col.selectOptions,width:"100%"});
+              if(cb) this.initSelect2(cb,td,{value:selectedValue,items:col.selectOptions,width:col.width});
               //cb.setAttribute('disabled',false);
             }
            
@@ -576,89 +550,19 @@ class ItemsView{
         }
         return '';
      }
- 
-    //compute coloumns' width based on scenario that some columns have specified Width value, some some column do not. Some columns have specified value in percentage, and some in "px"
-    //and the self.clientWidth is max table's width in px that is contraint in this method, based on which to determine column width 
-    processColumnWidths(columns){
-        // const columns = [
-        //   { name: "Name", width: "150px" },
-        //   { name: "Age", width: "10%" },
-        //   { name: "Address" },
-        //   { name: "Phone", width: "20%" },
-        // ];
-        const that = this;
-        let tableWidth = this.self.clientWidth; // total width of table in pixels
-        if(tableWidth==0) tableWidth = this.self.parentNode.clientWidth;
-        if(tableWidth==0) tableWidth = this.self.parentNode.parentNode.clientWidth;
-        //console.error(`Column width = ${tableWidth}`);
-        if(!(tableWidth > 0)) return;
-
-        let totalWidth = 0; // total width of all specified columns in pixels
-        //console.error('total witdh = '+tableWidth);
-        let unspecifiedColumnsCount = 0;
-        columns.forEach((column) => {
-          column.width = column.width+'';
-          if (column.width && column.width !=='undefined') {
-            //console.error('specified col = '+column.width);
-            if (column.width.endsWith("px")) {
-              totalWidth += parseInt(column.width);
-            } else //if (column.width.endsWith("%")) 
-            {
-               let w = parseInt(column.width);
-               if(w <100){
-                 totalWidth += tableWidth * w / 100;
-               }else{
-                   totalWidth += w;
-               }
-             
-            } 
-          } else {
-            unspecifiedColumnsCount++;
-          }
-        });
-        
-        const remainingWidth = tableWidth - totalWidth;
-        const unspecifiedWidth = (unspecifiedColumnsCount ==0)? 0 : remainingWidth / unspecifiedColumnsCount;
-
-        let user_col_index =0;
-        const columnWidths = columns.map((column) => {
-          column.width = column.width+'';
-          if (column.width && column.width !=='undefined') {
-            if (column.width.endsWith("px")) {
-               that.options.columns[user_col_index].width =`${parseInt(column.width)/ tableWidth * 100}%`;  
-               //return `${parseInt(column.width)/ window.innerWidth * 100}%`;
-            } else //if (column.width.endsWith("%"))
-            {
-              let w = parseInt(column.width);
-              if(w < 100)
-                 that.options.columns[user_col_index].width =`${w}%`;
-              else that.options.columns[user_col_index].width =`${w/ tableWidth * 100}%`;
-                 //return column.width;
-            } 
-          }else that.options.columns[user_col_index].width =`${unspecifiedWidth/tableWidth * 100}%`;  
-           user_col_index++;
-           //return `${unspecifiedWidth / window.innerWidth * 100}%`;
-        });
-        console.error("inside => " + JSON.stringify(that.options.columns));
-        //return console.log(columnWidths); // Output: ["18.75%", "10%", "25%", "46.25%"]
-    }
 
      createColumnHeaders_html(columns =[]){
         if(!this.options.showColumnHeaders) return '';
         let this_th = '';
         let that = this;
-        let i =0;
         columns.map(col=>{
-            ////col.width = col.width?col.width.match(/\d+/)[0]:def_width; //col.width>0? col.width : def_width;
-            ////that.options.columns[i].width = col.width;
             if(!col.langProp) col.langProp = that.options.langProp;
-            this_th = [this_th,`<th style="width:${col.width}" class="trans-text" data-langprop="${col.langProp}">`,col.title,`</th>`].join('');
-            i++;
+            this_th = [this_th,`<th class="trans-text" data-langprop="${col.langProp}">`,col.title,`</th>`].join('');
         });
 
         let numeroHeaderText =this.options.numeroHeaderText? this.options.numeroHeaderText:"";
-        let numero_header =`<th style="width:5%" class="" data-langprop="">${numeroHeaderText}</th>`;
-        return [`<thead><tr>`,numero_header,this_th,`<th style="width:5%" class="trans-text" data-langprop="dt_columns.Action"></th></tr></thead>`].join('');
+        let numero_header =`<th class="" data-langprop="">${numeroHeaderText}</th>`;
+        return [`<thead><tr>`,numero_header,this_th,`<th class="trans-text" data-langprop="dt_columns.Action"></th></tr></thead>`].join('');
      }
  
      getDefaultColumns(){
@@ -726,9 +630,11 @@ class ItemsView{
      getLastRow_tr(){
        return this.table_body.lastElementChild;
      }
-
-     //params @user_action_add = true (It means that user clicks Add Line button to add new row)
-     addRow(d=null,rowIndex = 0,validateItem=true,user_action_add = false){
+     
+     /**
+      * if @more_props = ['sku','something'] then set data attribute tr.dataset.sku = d.sku and tr.dataset.something = d.something 
+     */
+     addRow(d=null,rowIndex = 0,validateItem=true,user_action_add = false,more_props = []){
             let html_cols = "";
             d = d?d:{};
             rowIndex = rowIndex?rowIndex:0; 
@@ -798,45 +704,26 @@ class ItemsView{
                 //Add automatic Nunero column at beginning
                 let numero = rowIndex + 1;
                 if(typeof this.options.numeroFormatter ==='function') numero = this.options.numeroFormatter(numero,d);
-                let numero_col = `<td style="width:5%" class="item-numero" style="text-align:center">${numero}</td>`;
+                let numero_col = `<td class="item-numero" style="text-align:center">${numero}</td>`;
                 let tr = document.createElement('tr');
                 tr.dataset.rowIndex = rowIndex;
                 tr.dataset.id = item_id;
                 tr.dataset.editing =0;
+
+                if(more_props && more_props[0]){
+                  more_props.map(f=>{
+                    if(d[f]) tr.dataset[f] = d[f];
+                  });
+                }
+
                 if (this.options.rowClass) tr.classList.add(this.options.rowClass);
-                let action_col =[`<td style="width:5%"><div class="form-inline"><a href="javascript:void(0)" class="btn-item-delete"><i class="fa fa-trash" style="color:red"></i></a></div></td>`].join('');
+                let action_col =[`<td><div class="form-inline"><a href="javascript:void(0)" class="btn-item-delete"><i class="fa fa-trash" style="color:red"></i></a></div></td>`].join('');
                 tr.innerHTML = [numero_col,html_cols,action_col].join('');
                 this.table_body.appendChild(tr);
                 if (!d.id) this.changeRowState(tr,'edit');
                 this.setFieldFocus(tr,null); 
                 this.resetNumero();
-                
-                //If user clicks Add Line button in order to add a new row => then check Scroll
-                //NOTE: @has_scroll = true => means that the current Items table already has fixed body scroll
-                if(user_action_add){
-                   if (!this.has_scroll) this.setMaxHeightRows(this.maxRows);
-                   //Scroll to the bottom empty element (.g: empty tr)
-                   this.table_body.scrollTop = this.table_body.scrollHeight;
-                }
      }
-
-    //  //This function is to ensure that all header columns' width are equal to corresponding cell (td)
-    //   adjustHeaderWidths() {
-    //     const first_tr = this.table.querySelectorAll('tbody tr');
-    //     const cells = first_tr[0].querySelectorAll('td');
-    //     const headerCells = this.table.querySelectorAll('thead th');
-    //     let i = 0;
-    //     headerCells.forEach(h => {
-    //       const bodyCellWidth  = cells[i].getBoundingClientRect().width;
-    //       //const headerCellWidth = headerCells[i].getBoundingClientRect().width;
-    //        //if (bodyCellWidth > headerCellWidth) {
-    //           headerCells[i].style.width = `${bodyCellWidth}px`;
-    //         //}else {
-    //           //headerCells[i].style.width = '';
-    //         //}
-    //       i++; 
-    //     });
-    //  }
 
      setFieldFocus(tr,col_name =null){
        if(!tr || tr.length ===0) return null;
@@ -887,31 +774,36 @@ class ItemsView{
     }
 
      //Set data for display in ItemView
-     setData(rows = null){
+     setData(rows = null,more_props=[]){
        let rowIndex= 0;
-       let that = this;
        this.table_body.innerHTML = null;
        //let html = ""; 
        if(!rows || !rows[0]) {
-          this.addRow(null,0,false); 
+          this.addRow(null,0,false,false,[]); 
           return ;
        }
-
        (rows || []).map(d =>{
             //add row without validate item data
-            that.addRow(d,rowIndex,false); 
+            this.addRow(d,rowIndex,false,false,more_props); 
             rowIndex++;
-           //Check if the current rowCount is greater than the option.maxRows. If so, set auto scroll of tbody
-           that.setMaxHeightRows(that.maxRows,rowIndex);
-      });   
+      });
+          
      }
 
-     getDataRow(tr){
+     getDataRow(tr,props=[]){
        let items = this.getItems(tr);
-       return items[0];
+       const item = items[0];
+       item.id = tr.dataset.id;
+       if(props && props[0])  
+       {
+        props.map(f=>{
+           item[f]=tr.dataset[f];  
+        });
+       } 
+       return item;
      }
 
-     getItems(tr=null){
+     getItems(tr=null,data_props=[]){
        let trs =null;
        if(tr){
          trs = [tr];
@@ -929,6 +821,15 @@ class ItemsView{
               else value = td.dataset.value;
               if(f) item[f] = value; 
           });
+          //Add row_id to item for the sake of deciding => Update or Create
+          item.id = tr.dataset.id;
+
+          //Add additional data props
+          if(data_props && data_props[0]){
+             data_props.map(f=>{
+               item[f] = tr.dataset[f];
+             });
+          }
           ps.push(item);
        });
        return ps;
