@@ -31,6 +31,7 @@ class AcademicYear //extends Model
         $branch_id = $ss->branch_id;
         $unique =[$branch_id.'|academic_years|academic_year|id=id'];
         $res = validateObject($arr,$v_rule,0,['academic_year'=>['-']],$ss->lang,0,$unique);
+
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
       

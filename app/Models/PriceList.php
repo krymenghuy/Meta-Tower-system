@@ -434,7 +434,7 @@ class PriceList //extends Model
                 $annual_tuition = $price * $annual;
                 $end_date = findFutureMonths($d->start_date,$d->months-1);//**  */
                 $end_date =$end_date->end_date;
-                return $discount_info;
+                // return $discount_info;
             }else{
                 $week ="full month no week count";
                 $end_date = findFutureMonths($d->start_date,$d->months-1);//** */
@@ -442,7 +442,7 @@ class PriceList //extends Model
                 return "heloo1";
             }
 
-            // return (object)['end_date'=>$end_date];
+            return (object)['end_date'=>$end_date];
         }
     }
 
@@ -532,6 +532,7 @@ class PriceList //extends Model
     }
 
     function previewPendingPaymentDetails($arr=[],$id=null,$ss){
+
         $d = (object)$arr;
         $weeks = isset($d->weeks) ? $d->weeks :null;
         $days = isset($d->days) ? $d->days :null;
@@ -550,8 +551,9 @@ class PriceList //extends Model
         unset($row->start_date);
         $session = isset($d->session_id) ? $d->session_id : $row->session_id;
         $pmt_option_id = isset($d->pmt_option_id) ? $d->pmt_option_id: $row->pmt_option_id;
+        $level_id = isset($d->level_id) ? $d->level_id:$row->level_id;
         $arr = [
-            "level_id" => $row->level_id,
+            "level_id" => $level_id,
             "academic_year" => "2023-2024",
             "session_id" => $session,
             "prev_level_id" => "0",
@@ -564,8 +566,5 @@ class PriceList //extends Model
 
         $row->payment_info = $this->payment_processing($arr);
         return $row;
-
     }
-
-
 }

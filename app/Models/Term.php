@@ -42,6 +42,9 @@ class Term //extends Model
         }
         if ($start_date >= $end_date) return DV::error('Start date must be ealier than end date');
 
+        convertDate($inputs['start_date']);
+        convertDate($inputs['end_date']);
+
         $newID = saveData($ss,'terms',['id'=>$id],$inputs,[],1);
         return DV::depends($newID,['action'=>$action,'terms'=>self::list(null,$ss)]);
     }
