@@ -29,6 +29,9 @@ class Term //extends Model
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
 
+        convertDate($inputs['start_date']);
+        convertDate($inputs['end_date']);
+
         $newID = saveData($ss,'terms',['id'=>$id],$inputs,[],1);
         return DV::depends($newID,$id?'Updated':'Saved');
     }

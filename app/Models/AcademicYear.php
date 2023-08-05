@@ -15,7 +15,7 @@ class AcademicYear //extends Model
             'end_date' => '1|string',
         ];
 
-        $res = validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
+        $res = validateObject($arr,$v_rule,1,['academic_year'=>['-']],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
 
