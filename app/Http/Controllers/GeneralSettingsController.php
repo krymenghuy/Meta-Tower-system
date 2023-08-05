@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\GeneralSettings;
 use Illuminate\Http\Request;
 //use App\Models\GeneralSettings;
 //use App\Models\ContactChannel;
@@ -26,7 +27,7 @@ class GeneralSettingsController extends Controller
     // {
     //     $this->settingModel = new GeneralSettings();
     // }
-  
+
     function getComboItems_channel(Request $req){
         $rows = DB::table('contact_channels as cc')->where('cc.branch_id',0)->selectRaw("cc.id,cc.name as channel_name")->get();
         return JDV::result($rows);
@@ -36,7 +37,7 @@ class GeneralSettingsController extends Controller
       $rows = DB::table('medical_services as s')->selectRaw("s.id as value,s.name as text")->get();
       return JDV::result($rows);
   }
-    
+
     function getProductData(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !=200) return JDV::emptyResult($ss); //user not authenticated
@@ -49,10 +50,10 @@ class GeneralSettingsController extends Controller
         ['value'=>"1x3","text"=>"1x3"],
         ['value'=>"Apply","text"=>"Apply"],
         ['value'=>"Other instruction","text"=>"Other instruction"]
-      ]; 
+      ];
       return JDV::result($data);
     }
-    
+
     function getComboItems_pmt_method(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !=200) return JDV::emptyResult($ss); //user not authenticated
@@ -66,21 +67,21 @@ class GeneralSettingsController extends Controller
       $rows = self::getComboItems_consultant_internal($branch_id);
       return JDV::result($rows);
     }
-     
+
     function getComboItems_chief_complaint(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !=200) return JDV::emptyResult($ss); //user not authenticated
       $branch_id = $ss->branch_id;
-      $rows = DB::table("chief_complaints as cc")->where('cc.branch_id',$branch_id)->selectRaw("cc.id,cc.name,cc.code")->get(); 
+      $rows = DB::table("chief_complaints as cc")->where('cc.branch_id',$branch_id)->selectRaw("cc.id,cc.name,cc.code")->get();
       return JDV::result($rows);
     }
 
     function getReportFilter_options(Request $req) {
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !=200) return JDV::raw($ss); //User not authenticated
-      return JDV::raw(Settings::getReportFilter_options($ss)); 
+      return JDV::raw(Settings::getReportFilter_options($ss));
     }
-     
+
      function saveChiefComplaint(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !=200) return JDV::raw($ss); //User not authenticated
@@ -100,7 +101,7 @@ class GeneralSettingsController extends Controller
       $inputs = ['name'=>$name,'code'=>null];
       $new_id = saveData($ss,'chief_complaints',['id'=>$id],$inputs,[],1);
       if ($new_id>0){
-        $this->setChiefCompaintCode($new_id,$code); 
+        $this->setChiefCompaintCode($new_id,$code);
         return JDV::success(['id'=>$new_id]);
       }
       else return JDV::error("Something went wrong when trying to save Chief complaint data");
@@ -130,9 +131,9 @@ class GeneralSettingsController extends Controller
       if (!$this->department_exists($department_id)) return JDV::error("Department Id is not valid");
       $id = saveData($ss,'positions',['id'=>$id],['name'=>$name,'department_id'=>$department_id],null,1);
       if($id > 0) return JDV::success(['id'=>$id]);
-      return JDV::error("Failed to save position"); 
+      return JDV::error("Failed to save position");
     }
- 
+
     static function getComboItems_laboTest(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !=200) return $ss; //user not authenticated
@@ -168,7 +169,7 @@ class GeneralSettingsController extends Controller
         $mc_items = DB::table("medical_conditions as i")->where('branch_id',$branch_id)->where('i.value_type','boolean')->selectRaw("i.id,i.name as display_name,i.value_type,i.range,i.display_order")->orderByRaw('i.display_order ASC')->get();
         $departments = DB::table('departments as d')->where('branch_id',$branch_id)->selectRaw("id,name as department_name,description")->orderBy('id','ASC')->orderBy('name','ASC')->get();
         $consultants = self::getComboItems_consultant_internal($branch_id,$department_id);
-        return JDV::result((object)['vital_sign_fields'=>$vital_sign_fields,'nationalities'=>$nationalities,'mc_items'=>$mc_items,"consultants"=>$consultants,"departments"=>$departments]); 
+        return JDV::result((object)['vital_sign_fields'=>$vital_sign_fields,'nationalities'=>$nationalities,'mc_items'=>$mc_items,"consultants"=>$consultants,"departments"=>$departments]);
     }
 
     function ChiefCompaintExists($branch_id,$name=null,$id=0){
@@ -182,28 +183,28 @@ class GeneralSettingsController extends Controller
         if(!$code) $code = $id;
         DB::table('chief_complaints')->where('id',$id)->update(['code'=>$code]);
     }
- 
+
    function getDepartmentList(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
         $branch_id = $ss->branch_id;
         $rows = DB::table('departments as d')->where('d.branch_id',$branch_id)->selectRaw("d.id,d.name,d.description,d.create_user, d.created_at")->get();
         return JDV::result($rows);
-    } 
+    }
 
     function getDepartmentDetails(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !=200) return $ss; //user not authenticated
       $branch_id = $ss->branch_id;
       $id = $req->id;
-      $rows = DB::table('departments as d')->where('d.branch_id',$branch_id)->where('d.id',$id)->selectRaw("d.id,d.name,d.description,d.create_user,formatDate(d.created_at) as created_at")->take(1)->get(); 
-      return JDV::result(isset($rows[0])?$rows[0]:null);   
+      $rows = DB::table('departments as d')->where('d.branch_id',$branch_id)->where('d.id',$id)->selectRaw("d.id,d.name,d.description,d.create_user,formatDate(d.created_at) as created_at")->take(1)->get();
+      return JDV::result(isset($rows[0])?$rows[0]:null);
    }
 
   function getPaymentFormOptions(Request $req){
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !=200) return $ss; //user not authenticated
-    return JDV::result(\App\Models\Invoice\InvoiceSettings::payment_form_options($ss)); 
+    return JDV::result(\App\Models\Invoice\InvoiceSettings::payment_form_options($ss));
   }
 
    function deleteDepartment(Request $req){
@@ -212,7 +213,7 @@ class GeneralSettingsController extends Controller
       $branch_id = $ss->branch_id;
       $id = $req->id;
       DB::table('departments')->where('branch_id',$branch_id)->where('id',$id)->delete();
-      return JDV::success();   
+      return JDV::success();
    }
 
    function saveDepartment(Request $req){
@@ -228,8 +229,8 @@ class GeneralSettingsController extends Controller
       if(!isset($inputs['description'])) $inputs['description'] = $inputs['name'];
 
       $id = saveData($ss,"departments",["id"=>$id],$inputs,[],1);
-      if($id>0) return JDV::success(["id"=>$id]); 
-      return JDV::error("Something wrong in saving department data");    
+      if($id>0) return JDV::success(["id"=>$id]);
+      return JDV::error("Something wrong in saving department data");
    }
 
    function getComboItems_sales_agent(Request $req){
@@ -260,6 +261,14 @@ class GeneralSettingsController extends Controller
     return DB::table("employees as e")->join('persons as p','p.id','=','e.person_id')->join('employee_positions as ep','ep.emp_id','=','e.id')->where('e.branch_id',$branch_id)->whereRaw($str_where)->selectRaw("e.id,concat(p.last_name,' ',p.first_name) AS consultant_name,e.code")->get();
   }
 
+  function paymentOptions(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+
+    $options = GeneralSettings::payment_option($req->id);
+    return JDV::result($options);
+  }
+
   // static function getComboItems_department(Request $req){
   //    $ss = UM::getUserInfoByToken($req,-1);
   //    if($ss->status_code !=200) return $ss; //user not authenticated
@@ -267,7 +276,7 @@ class GeneralSettingsController extends Controller
   //    $rows = DB::table("departments as d")->selectRaw("d.id,d.name as department_name")->orderBy('d.id','ASC')->get();
   //    return JDV::result($rows);
   // }
-  
+
     //api/settings/test-sql
     function testSQL(Request $req){
         //$ss = UM::getUserInfoByToken($req,-1);
@@ -278,11 +287,11 @@ class GeneralSettingsController extends Controller
 
         $res = SQLDB::executeSP('test_getClassList',[
           ['name'=>'@course_code','value'=>'100'],
-          ['name'=>'@term_id','value'=>93]   
+          ['name'=>'@term_id','value'=>93]
         ],"@error");
 
         //if ($res->status==='Error')
-           return JDV::result($res);  
+           return JDV::result($res);
         //else return JDV::result($out_param);
     }
 }

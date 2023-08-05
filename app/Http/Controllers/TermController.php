@@ -24,7 +24,7 @@ class TermController extends Controller
         if($ss->status_code !=200) return $ss;
 
         $row = new Term(null,$ss);
-        $list = $row->list($ss);
+        $list = $row->list($req->all(),$ss);
         return JDV::result($list);
     }
 
