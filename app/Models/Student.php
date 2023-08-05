@@ -120,8 +120,8 @@ class Student //extends Model
                 $en_student_data['status_id'] = $statusID;
            }
             $enrollment_id = saveData($ss,'enrollments',['student_id'=>$id],$en_student_data,[],1);
-           $save_pmt_paramsID=null;
-        //    if($id == 0 || $id == 'undefined'){
+            $save_pmt_paramsID=null;
+           if($id == 0 || $id == 'undefined'){
                 //** save into pmt_parameters */
                 $pmt_params_data = [
                     'expected_date' => self::getFutureTime(7),
@@ -129,12 +129,8 @@ class Student //extends Model
                 ];
 
                 $save_pmt_paramsID = saveData($ss,'pmt_parameters',['id' => null],$pmt_params_data,[],1);
-                if($save_pmt_paramsID>0){
-                    DB::table('enrollment_payments')->where('enrollment_id',$enrollment_id)->update([
-                        'parameter_id' => $save_pmt_paramsID
-                    ]);
-                }
-        //    }
+
+           }
            $getEnrollment = DB::table('enrollments')->where('id',$enrollment_id)->selectRaw('session_id,school_id')->first();
             //** save or update enrollmen_payment table
             if($enrollment_id){
@@ -148,6 +144,11 @@ class Student //extends Model
                 ];
                 $saveEnrPaymentID = saveData($ss,'enrollment_payments',['enrollment_id' => $id?$enrollment_id:null],$en_payment_data,[],1);
 
+                if($save_pmt_paramsID>0){
+                    DB::table('enrollment_payments')->where('enrollment_id',$enrollment_id)->update([
+                        'parameter_id' => $save_pmt_paramsID
+                    ]);
+                }
             }
 
 
