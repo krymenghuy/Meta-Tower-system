@@ -18,6 +18,12 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
+                    <label for="prev_program_id" class="form-label trans-text" data-langprop="titles.Previous Program"></label>
+                    <div class="width-select-dialog">
+                        <select id="dlg_pgm_program" class="modal-select2 data-input" data-field="prev_program_id"></select>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label for="name" class="form-label trans-text" data-langprop="titles.Name"></label>
                     <input type="text" class="form-control data-input" data-field="name"/>
                 </div>
@@ -42,6 +48,12 @@
                 <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div class="form-group">
+                    <label for="program_id" class="form-label trans-text" data-langprop="titles.Previous Level"></label>
+                    <div class="width-select-dialog">
+                        <select id="dlg_detail_pgm_level" class="modal-select2 data-input" data-field="program_id"></select>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="name" class="form-label trans-text" data-langprop="titles.Name"></label>
                     <input type="text" class="form-control data-input" id="_level_name" data-field="name"/>
