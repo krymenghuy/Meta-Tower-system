@@ -32,13 +32,13 @@ class Term //extends Model
         $res = validateObject($arr,$v_rule,false,[],$ss->lang,[],null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
-        $end_date = convertDate($inputs['end_date']); 
+        $end_date = convertDate($inputs['end_date']);
         $start_date = convertDate($inputs['start_date']);
         $prev_term_id = $inputs['prev_term_id'];
         if($prev_term_id>0){
            $prev_term = DB::table('terms as t')->where('id',$prev_term_id)->selectRaw('t.id,t.name,start_date,end_date')->take(1)->get()->first();
            if(!$prev_term) return DV::error('Previous term is not valid');
-           if (convertDate($prev_term->end_date) >$start_date) return DV::error('Previous term\'s ending date must be earlier than the starting date of this term'); 
+           if (convertDate($prev_term->end_date) >$start_date) return DV::error('Previous term\'s ending date must be earlier than the starting date of this term');
         }
         if ($start_date >= $end_date) return DV::error('Start date must be ealier than end date');
 

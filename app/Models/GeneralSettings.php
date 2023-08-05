@@ -16,7 +16,7 @@ class GeneralSettings //extends Model
         foreach($rows as $row) return true;
         return false;
     }
- 
+
     // function sendMessage($d){
     //     $ss = getSessionInfo($d);
     //     if(!$ss) return '#350'; //user not authenticated
@@ -46,10 +46,10 @@ class GeneralSettings //extends Model
     //         curl_setopt($ch, CURLOPT_POST, TRUE);
     //         curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
     //         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            
+
     //         $response = curl_exec($ch);
     //         curl_close($ch);
-            
+
     //         return $response;
     // }
 
@@ -75,7 +75,7 @@ class GeneralSettings //extends Model
 
     //     $org_type_id = isset($d->org_type_id)?$d->org_type_id:null;
     //     $industry_id = isset($d->industry_id)?$d->industry_id:null;
-    //     if ($this->org_exists($name,$id)) return DV::error('The provided organization name already exists!');  
+    //     if ($this->org_exists($name,$id)) return DV::error('The provided organization name already exists!');
     //     DB::table('organizations')->insert([
     //         'branch_id'=>$branch_id,
     //         'name'=>$name,
@@ -95,7 +95,7 @@ class GeneralSettings //extends Model
     //     if (!prn_allowed(-1)) return '@'; //need permission to do this task
     //     $branch_id = sanitize($ss->branch_id);
     //     $name = $d->name;
-        
+
     //     DB::table('industries')->insert([
     //         'branch_id'=>$branch_id,
     //         'name'=>$name,
@@ -104,15 +104,15 @@ class GeneralSettings //extends Model
     //     ]);
     //     return DV::success();
     // }
- 
+
     // function deleteIndustry($d){
     //     $ss = getSessionInfo($d);
     //     if(!$ss) return '#350'; //user not authenticated
     //     if (!prn_allowed(-1)) return '@'; //need permission to do this task
     //     $branch_id = sanitize($ss->branch_id);
     //     $id = $d->id;
-        
-    //     DB::table('industries')->where('id',$id)->delete(); 
+
+    //     DB::table('industries')->where('id',$id)->delete();
     //     return DV::success();
     // }
 
@@ -128,15 +128,15 @@ class GeneralSettings //extends Model
     }
 
     static function options_pmt_method($ss){
-      $branch_id = $ss->branch_id;  
-      return DB::table('payment_methods as m')->where('m.branch_id',$branch_id)->selectRaw("m.id,m.name,m.method_type")->get(); 
+      $branch_id = $ss->branch_id;
+      return DB::table('payment_methods as m')->where('m.branch_id',$branch_id)->selectRaw("m.id,m.name,m.method_type")->get();
     }
-    
+
     function getComboItems_industry(){
         $id =isset($d->id)?sanitize($d->id):0;
         return  DB::table('industries as i')->whereRaw('IFNULL(inactive,0) =0')->selectRaw("i.id,i.name as industry")->get();
     }
-    
+
     function getComboItems_position($ss){
         $branch_id = $ss->branch_id;
         return  DB::table('positions as l')->whereRaw('IFNULL(l.inactive,0) =0')->where('l.branch_id',$branch_id)->selectRaw("l.id,l.name as position_title")->get();
@@ -191,37 +191,49 @@ class GeneralSettings //extends Model
 
     //given one test_id, it returns a list of labos who provide the test
     static function getLaboTestProviders($testId,$ss){
-       $branch_id = $ss->branch_id; 
-       return DB::table('test_labos as l')->join('medical_services as s','s.id','=','l.test_id')->where('s.branch_id',$branch_id)->selectRaw("s.id,l.price,s.price as default_price,l.description")->get();  
+       $branch_id = $ss->branch_id;
+       return DB::table('test_labos as l')->join('medical_services as s','s.id','=','l.test_id')->where('s.branch_id',$branch_id)->selectRaw("s.id,l.price,s.price as default_price,l.description")->get();
     }
 
     static function options_country($ss){
-        //$branch_id = $ss->branch_id; 
+        //$branch_id = $ss->branch_id;
         $countries = Cache::remember('countries', 60, function () {
             return DB::table('loc_countries as c')->select('id','name as country')->orderBy('c.name','ASC')->get();
         });
-        return $countries;    
+        return $countries;
     }
 
     static function options_city($country_id=null, $ss){
      //$branch_id = $ss->branch_id;
        //return Cache::remember('cities',60,function() use($country_id){
           $str_country ="1=1";
-          if($country_id) $str_country ="c.country_id =$country_id"; 
+          if($country_id) $str_country ="c.country_id =$country_id";
           return DB::table('loc_cities as c')->whereRaw($str_country)->select('id','name as city')->orderBy('c.name','ASC')->get();
-       //}); 
+       //});
     }
     static function options_district($city_id=null, $ss){
         //$branch_id = $ss->branch_id;
         $str_city ="1=1";
-        if($city_id) $str_city ="c.city_id =$city_id"; 
+        if($city_id) $str_city ="c.city_id =$city_id";
         return DB::table('loc_districts as c')->whereRaw($str_city)->select('id','name as district')->orderBy('c.name','ASC')->get();
     }
 
     static function options_commune($district_id=null, $ss){
         //$branch_id = $ss->branch_id;
         $str_where ="1=1";
-        if($district_id) $str_where ="c.district_id =$district_id"; 
+        if($district_id) $str_where ="c.district_id =$district_id";
         return DB::table('loc_communes as c')->whereRaw($str_where)->select('id','name as commune')->orderBy('c.name','ASC')->get();
+    }
+
+    static function payment_option($id){
+        if($id == 4){
+            return (object)['name' => 'weeks'];
+        }else if($id == 5){
+            return (object)['name' => 'days'];
+        }
+        else{
+            return (object)['name' => 'months'];
+        }
+
     }
 }
