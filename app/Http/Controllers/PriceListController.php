@@ -98,6 +98,13 @@ class PriceListController extends Controller
         $row = new PriceList($req->id,$ss);
         $preview = $row->previewPendingPaymentDetails($req->all(),$req->id,$ss);
         return JDV::result($preview);
+    }
 
+    function updatePendingPayment(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+
+        $row = PriceList::getNextProgram($ss);
+        return JDV::result($row);
     }
 }

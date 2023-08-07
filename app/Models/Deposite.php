@@ -60,7 +60,7 @@ class Deposite //extends Model
 
     static function delete($id,$ss){
         $branch_id = $ss->branch_id;
-        $delete = DB::table('deposite')->where('id',$id)->delete();
+        $delete = DB::table('deposite')->where('branch_id',$branch_id)->where('id',$id)->delete();
         return DV::depends($delete,'Deleted');
     }
 

@@ -14,12 +14,11 @@ use App\Models\UM;
 
 use Illuminate\Support\Facades\DB;
 use App\DB\SQLDB;
-use App\Models\GeneralSettings;
 
 //use DB;
 //use SQLDB;
 //use Carbon\Carbon;
-  
+
 class GeneralSettingsController extends Controller
 {
     // protected $settingModel;
@@ -259,7 +258,7 @@ class GeneralSettingsController extends Controller
 
   static function getComboItems_consultant_internal($branch_id,$department_id=0){
     $str_where ="ep.status ='Active'";
-    return DB::table("employees as e")->join('persons as p','p.id','=','e.person_id')->where('e.branch_id',$branch_id)->selectRaw("e.id,concat(p.last_name,' ',p.first_name) AS consultant_name,e.code")->get();
+    // return DB::table("employees as e")->join('persons as p','p.id','=','e.person_id')->where('e.branch_id',$branch_id)->selectRaw("e.id,concat(p.last_name,' ',p.first_name) AS consultant_name,e.code")->get();
     return DB::table("employees as e")->join('persons as p','p.id','=','e.person_id')->join('employee_positions as ep','ep.emp_id','=','e.id')->where('e.branch_id',$branch_id)->whereRaw($str_where)->selectRaw("e.id,concat(p.last_name,' ',p.first_name) AS consultant_name,e.code")->get();
   }
 
