@@ -34,7 +34,7 @@
                 </div>
             </div>
             <div class="modal-body">
-                <div class="dpf-new-student">
+                <div id="dpf-new-student" class="dpf-new-student">
                     <div class="row gy-2">
                         <div class="col-lg-6">
                             <div class="form-group">
@@ -72,6 +72,20 @@
                     <div class="row gy-2">
                         <div class="col-lg-6">
                             <div class="form-group">
+                                <label for="date_of_birth" class="form-label trans-text" data-langprop="titles.Date of Birth"></label>
+                                <input data-select="datepicker" class="form-control data-input" data-field="date_of_birth"/>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="expire_date" class="form-label trans-text" data-langprop="titles.Expire Date"></label>
+                                <input data-select="datepicker" class="form-control data-input" data-field="expire_date"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row gy-2">
+                        <div class="col-lg-6">
+                            <div class="form-group">
                                 <label for="parent_phone" class="form-label trans-text" data-langprop="titles.Parent Phone"></label>
                                 <input type="text" class="form-control data-input" data-field="parent_phone"/>
                             </div>
@@ -88,13 +102,13 @@
                         <textarea class="form-control data-input" data-field="note"></textarea>
                     </div>
                 </div>
-                <div class="dpf-old-student" style="display:none">
+                <div id="dpf-old-student" class="dpf-old-student" style="display:none">
                     <div class="row gy-2">
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="student_name" class="form-label trans-text" data-langprop="titles.Student Name"></label>
+                                <label for="student_id" class="form-label trans-text" data-langprop="titles.Student Name"></label>
                                 <div class="width-select-dialog">
-                                    <select class="modal-select2 data-input tr-select" data-field="student_name"></select>
+                                    <select class="modal-select2 data-input tr-select" data-field="student_id"></select>
                                 </div>
                             </div>
                         </div>
@@ -118,10 +132,24 @@
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="session" class="form-label trans-text" data-langprop="titles.Session"></label>
+                                <label for="session_id" class="form-label trans-text" data-langprop="titles.Session"></label>
                                 <div class="width-select-dialog">
-                                    <select class="modal-select2 data-input" data-field="session"></select>
+                                    <select class="modal-select2 data-input" data-field="session_id"></select>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row gy-2">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="date_of_birth" class="form-label trans-text" data-langprop="titles.Date of Birth"></label>
+                                <input data-select="datepicker" class="form-control data-input" data-field="date_of_birth"/>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="expire_date" class="form-label trans-text" data-langprop="titles.Expire Date"></label>
+                                <input data-select="datepicker" class="form-control data-input" data-field="expire_date"/>
                             </div>
                         </div>
                     </div>
