@@ -21,7 +21,7 @@
                             <div class="form-group col-lg-12">
                                 <div id="_term_acad_year_label"></div>
                                 <div class="width-select-dialog">
-                                    <select id="dlg_trm_academic" class="modal-select2 data-input" data-field="academic_year"></select>
+                                    <select id="dlg_trm_academic" class="modal-select2 data-input" data-field="ac_year_id"></select>
                                 </div>
                             </div>
 

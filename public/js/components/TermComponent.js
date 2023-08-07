@@ -160,7 +160,7 @@ let TermDialog = new function(){
         "buttons":["add","edit","delete"],
         'label':"Academic Year",
         "text_field":"academic_year",
-        "value_field":"academic_year",
+        "value_field":"id",
         "dataprop":"academic_years",
         "langprop":"general",
         //when user clicks on Add, Edit button => use ItemGroupDialog to add or edit Group because Group has many attributes such as code, name, UOM, and Category
@@ -168,11 +168,11 @@ let TermDialog = new function(){
              let op = null;
              if(action ==='add'){
                    op = {
-                    'org_academic_year':null,
+                    'id':null,
                     'previousDialog':mThis,
                     'previousDialog_options':mThis.options,
                     'onClose':(d)=>{
-                        mThis.refreshOptions('academic_year',d?d.academic_year:null);
+                        mThis.refreshOptions('academic_year',d.academic_years,d?d.id:null);
                     }
                    };
                    AcademicYearDoalog.show(op);
@@ -180,11 +180,11 @@ let TermDialog = new function(){
  
              }else if(action === 'edit'){
                 op = {
-                    'org_academic_year':mThis.elAcademic.val(),
+                    'id':mThis.elAcademic.val(),
                     'previousDialog':mThis,
                     'previousDialog_options':mThis.options, 
                     'onClose':(d)=>{
-                        mThis.refreshOptions('academic_year',d?d.id:null);
+                        mThis.refreshOptions('academic_year',d.academic_years,d.id,d?d.id:null);
                     }
                    };
                    AcademicYearDoalog.show(op);
@@ -193,26 +193,25 @@ let TermDialog = new function(){
             else if(action === 'delete'){
                 cv_interact.confirm('Delete this academic year?',{'context':'delete','title':'Delete Academic Year'},e=>{
                     if(e){
-                        vsapi.call(`${main_view.base_url}/api/academic-year/delete`,{'academic_year':mThis.elAcademic.val()},null,false).then(res=>{
-                            alert(JSON.stringify(res));
+                        vsapi.call(`${main_view.base_url}/api/academic-year/delete`,{'id':mThis.elAcademic.val()},null,false).then(res=>{
                             if(res.status_code ===200){
-                                mThis.refreshOptions('academic_year',null);
+                                mThis.refreshOptions('academic_year',res.data.academic_years,null);
                             }
                        });  
                     }
                 })
               
              }
-        },
-
-        // "apiSave":{
-        //     "endpoint":`${main_view.base_url}/api/inventory/settings/save-brand`
-        // },
-
-        //When user clicks on Delete button
-        "apiDelete":{
-            "endpoint":`${main_view.base_url}/api/academic-year/delete`
         }
+
+        //,"apiSave":{
+        //     "endpoint":`${main_view.base_url}/api/inventory/settings/save-brand`
+        // }
+
+        // //When user clicks on Delete button
+        //, "apiDelete":{
+        //     "endpoint":`${main_view.base_url}/api/academic-year/delete`
+        // }
     });
 
 
@@ -260,16 +259,21 @@ let TermDialog = new function(){
             if(res.status_code === 200){
                 d = res.data;
             }
-            VSUtil.setComboItems(mThis.elAcademic,d.academic_years,'academic_year','academic_year',null,null,null);
+            VSUtil.setComboItems(mThis.elAcademic,d.academic_years,'id','academic_year',null,null,null);
             VSUtil.setComboItems(mThis.elPrevTerm,d.terms,'id','term_name',null,null,null);
-            if(typeof onFinish === 'function') onFinish(d);
+            onFinish(d);
         });
     }
 
-    this.refreshOptions = (field_name,def_value=null,onFinish=null)=>{
+    /**
+     * items = [] it is select options
+     * if items are provided, the api for querying select options is not called again
+    */
+    this.refreshOptions = (field_name,items=null,def_value=null)=>{
         let method_name ='';
         let el = null;
         let text_field ='';
+        let value_field='id';
         //data_prop is property name of mThis.form_data such as mThis.form_data[data_prop] => example mThis.form_data.categories that is used to remmember categories options
         let data_prop ='';
       
@@ -278,6 +282,7 @@ let TermDialog = new function(){
                     {
                         el = mThis.elAcademic;
                         text_field ='academic_year';
+                        //value_field='id';
                         data_prop ='academic_years';
                         method_name = 'api/settings/options-academic-year';
                         break;
@@ -289,16 +294,21 @@ let TermDialog = new function(){
                 }
         }
 
+        if (items){
+            VSUtil.setComboItems(el,items,value_field,text_field,false,null,null);
+            if(def_value) el.val(def_value).trigger('change');        
+            return;
+        }
+
          vsapi.call(`${main_view.base_url}/${method_name}`,null,null,false).then(res=>{
             if(res.status_code===200){
-                let items = StringSanitizer.sanitizeObject(res.data,null,['academic_year']);
+                items = StringSanitizer.sanitizeObject(res.data,null,['academic_year']);
                 VSUtil.setComboItems(el,items,'academic_year','academic_year',false,null,null);
                 if(def_value) el.val(def_value).trigger('change');        
             }
          });
     } 
-
-
+ 
     // this.loadFormDetail = (options) => {
     //     window.vsapi.call(`${main_view.base_url}/api/term/details`,{'id': options.id},null).then(res => {
     //         let data = {};
@@ -309,6 +319,10 @@ let TermDialog = new function(){
     //         if(typeof onFinish === 'function') onFinish();
     //     });
     // }
+
+    this.close =()=>{
+        mThis.self.modal('hide');
+    }
 
     this.show = (options) => {
         if(!options) options = {};
@@ -343,11 +357,21 @@ let TermDialog = new function(){
       let p = mThis.getFormData();
       vsapi.call(`${main_view.base_url}/api/academic-year/save`,p,null,false).then(res=>{
           //alert(JSON.stringify(res));
-          if(res.status_code === 200){
-              if(typeof mThis.options.onClose === 'function') mThis.options.onClose({'academic_years':res.data.academic_years,'academic_year':p.academic_year});
+          if(res.status_code === 200){  
+              if(typeof mThis.options.onClose === 'function') mThis.options.onClose({'academic_years':res.data.academic_years,'id':res.data.id});
               mThis.self.modal('hide');
           }else cv_interact.error(res.error_message);
       });
+    });
+    
+    this.self.on('show.bs.modal',e=>{
+        if(mThis.options.previousDialog) mThis.options.previousDialog.close();
+    });
+
+    this.self.on('hide.bs.modal',e=>{
+        let op = mThis.options.previousDialog_options;
+        op.term = {'ac_year_id':mThis.options.id};
+        if(mThis.options.previousDialog) mThis.options.previousDialog.show(op);
     });
 
     this.setFormData = (d)=>{
@@ -368,15 +392,13 @@ let TermDialog = new function(){
              let f = el.data('field');
              p[f]= el.val();
         });
-        //Use academic_year primary for Update Academic year
-        p.org_academic_year = mThis.options.org_academic_year;
-        //p.id = mThis.options.id;
+        p.id = mThis.options.id;
         return p;
      }
 
 
-    this.prepareFormOption = (academic_year,onFinish=null)=>{
-       vsapi.call(`${main_view.base_url}/api/academic-year/form-options`,{'academic_year':academic_year},false,false).then(res=>{
+    this.prepareFormOption = (ac_year_id,onFinish=null)=>{
+       vsapi.call(`${main_view.base_url}/api/academic-year/form-options`,{'id':ac_year_id},false,false).then(res=>{
          if(res.status_code ===200){
               onFinish(res.data);
          }
@@ -386,19 +408,17 @@ let TermDialog = new function(){
     this.show = (options=null)=>{
        options = options?options:{};
        mThis.options = options;
-
-       mThis.prepareFormOption(options.org_academic_year,d=>{
-          if(d.academic_year){
+       mThis.prepareFormOption(options.id,d=>{
+          if(d.academicYearInfo){
              mThis.elTitle.text(LocaleManager.trans('Edit Acadmic Year'));
           }else{
             mThis.elTitle.text(LocaleManager.trans('New Year'));
           }
-          mThis.setFormData(d.academic_year);
+          mThis.setFormData(d.academicYearInfo);
           mThis.self.modal({
             backdrop:'static'
-          }).off('show.bs.modal').on('show.bs.modal',()=>{
-             if(mThis.options.previousDialog) mThis.options.previousDialog.self.modal('hide');
           });
+
        });
     }
  }
