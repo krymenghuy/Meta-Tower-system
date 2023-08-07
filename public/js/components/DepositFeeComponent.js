@@ -131,8 +131,8 @@ let DepositFeeDialog = new function(){
     this.btnTab = mThis.self.find('.btn-tab');
     this.btnSave = mThis.self.find('#dlg_dpf_btn_save');
 
-    this.div_newStudent = mThis.self.find('.dpf-new-student');
-    this.div_oldStudent = mThis.self.find('.dpf-old-student');
+    this.div_newStudent = mThis.self.find('#dpf-new-student');
+    this.div_oldStudent = mThis.self.find('#dpf-old-student');
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
@@ -144,8 +144,8 @@ let DepositFeeDialog = new function(){
         else if(mThis.options.dn === 'old'){
             p = mThis.getDataForm(mThis.div_oldStudent);
         }
-
-        window.vsapi.call(`${main_view.base_url}/api/`,p,null).then(res => {
+        console.log(p);
+        window.vsapi.call(`${main_view.base_url}/api/deposite/save`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
                 if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
@@ -211,20 +211,54 @@ let DepositFeeDialog = new function(){
         if(typeof onFinish === 'function') onFinish();
     }
 
+    this.setOptions = (div, d) => {
+        d = d ? d : {};
+        div.find('.data-input').each(function(){
+            let el = $(this);
+            let f = el.data('field');
+            switch(f){
+                case 'campus_id':
+                    VSUtil.setComboItems(el,d.campuses,'id','campus',null,null,null);
+                    break;
+                case 'level_id':
+                    VSUtil.setComboItems(el,d.levels,'id','level',null,null,null);
+                    break;
+                case 'session_id':
+                    VSUtil.setComboItems(el,d.sessions,'id','name',null,null,null);
+                    break;
+                default:
+                    break;
+            }
+        });
+    }
+
+    this.prepareFormOption = (onFinish = null) => {
+        window.vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
+            let d = {};
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            mThis.setOptions(mThis.div_newStudent,d);
+            if(typeof onFinish === 'function') onFinish();
+        });
+    }
+
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;
         mThis.options.dn = 'new';
 
-        if(options.id > 0){}
-        else{
-            mThis.elTitle.text(LocaleManager.trans('New Deposit','titles'));
-            mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input deposit details','titles'));
-        }
+        mThis.prepareFormOption(() => {
+            if(options.id > 0){}
+            else{
+                mThis.elTitle.text(LocaleManager.trans('New Deposit','titles'));
+                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input deposit details','titles'));
+            }
 
-        mThis.self.modal({
-            backdrop: 'static'
-        })
+            mThis.self.modal({
+                backdrop: 'static'
+            });
+        });
     }
 }
 

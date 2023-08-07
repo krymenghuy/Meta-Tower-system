@@ -89,7 +89,7 @@ let PaymentPendingDialog = new function(){
         let op = {
             'id': $(this).val()
         };
-        window.vsapi.call(`${main_view.base_url}/api/settings/payment-options`,op,null).then(res => {
+        window.vsapi.call(`${main_view.base_url}/api/settings/payment-options`,op,null,false).then(res => {
             if(res.status_code === 200){
                 let div = mThis.modalBody.children().last();
                 div.after([`<div class="form-group">
