@@ -53,7 +53,7 @@ class Deposite //extends Model
     static function getOldStudentInfo($id,$ss){
         $row = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
-                ->selectRaw('s.name as student_name,e.campus_id,e.level_id,e.session_id,s.date_of_birth')
+                ->selectRaw('s.id as student_id,s.name as student_name,e.campus_id,e.level_id,e.session_id,s.date_of_birth')
                 ->get()->first();
 
         $row->parent_phone = self::getParentPhone($id);
