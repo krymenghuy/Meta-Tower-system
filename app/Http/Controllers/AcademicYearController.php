@@ -13,24 +13,22 @@ class AcademicYearController extends Controller
     //
     function save(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss;
+        if($ss->status_code !=200) return JDV::raw($ss);
         //$academic_year = $req->academic_year?$req->academic_year:$req->org_academic_year;
-        $save = AcademicYear::save($req->all(),null,$ss);
-        return JDV::raw($save);
+        $res = AcademicYear::save($req->all(),$ss);
+        return JDV::raw($res);
     }
 
     function getFormOptions(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
-        $academic_year = $req->academic_year?$req->academic_year:$req->org_academic_year;
-        $data= AcademicYear::form_options($academic_year,$ss);
+        $data= AcademicYear::form_options($req->id,$ss);
         return JDV::result($data);
     }
 
     function getList(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss;
-
+        if($ss->status_code !=200) return JDV::raw($ss);
         $list = AcademicYear::list($ss);
         return JDV::result($list);
     }
@@ -38,16 +36,14 @@ class AcademicYearController extends Controller
     function getDetails(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
-        $academic_year = $req->academic_year?$req->academic_year:$req->org_academic_year;
-        $details = AcademicYear::details($academic_year,$ss);
+        $details = AcademicYear::details($req->id,$ss);
         return JDV::result($details);
     }
 
     function delete(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss;
-        $academic_year = $req->academic_year?$req->academic_year:$req->org_academic_year;
-        $x = AcademicYear::delete($academic_year,$ss);
+        if($ss->status_code !=200) return DV::raw($ss);
+        $x = AcademicYear::delete($req->id,$ss);
         return JDV::raw($x);
     }
 }

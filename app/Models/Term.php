@@ -13,7 +13,10 @@ class Term //extends Model
         $this->id = $id;
         $this->user_info = $user_info;
     }
-    // use HasFactory;
+    static function getAcademicYear($ac_year_id){
+      return DB::table('academic_years as y')->where('id',$ac_year_id)->take(1)->value('academic_year');
+    }
+
     function save($arr,$id=null,$ss=null){
         $ss = $ss?$ss:$this->user_info;
         $id = $id?$id:$this->id;
@@ -25,13 +28,15 @@ class Term //extends Model
             'name' => '1|string|1-150',
             'start_date' => '1|date',
             'end_date' => '1|date',
-            'academic_year' => '1|string|1-50',
+            'ac_year_id' => '1|number|exists=academic_years.id|text=The provided academic year does not exist yet',
             'prev_term_id'=>'0|number'
         ];
 
         $res = validateObject($arr,$v_rule,false,[],$ss->lang,[],null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
+        $ac_year_id = $inputs['ac_year_id'];
+        $inputs['academic_year'] = self::getAcademicYear($ac_year_id);
         $end_date = convertDate($inputs['end_date']);
         $start_date = convertDate($inputs['start_date']);
         $prev_term_id = $inputs['prev_term_id'];
@@ -41,14 +46,10 @@ class Term //extends Model
            if (convertDate($prev_term->end_date) >$start_date) return DV::error('Previous term\'s ending date must be earlier than the starting date of this term');
         }
         if ($start_date >= $end_date) return DV::error('Start date must be ealier than end date');
-
-        convertDate($inputs['start_date']);
-        convertDate($inputs['end_date']);
-
-        $newID = saveData($ss,'terms',['id'=>$id],$inputs,[],1);
-        return DV::depends($newID,['action'=>$action,'terms'=>self::list(null,$ss)]);
+        $newId = saveData($ss,'terms',['id'=>$id],$inputs,[],1,false);
+        return DV::depends($newId,['action'=>$action,'terms'=>self::list(null,$ss)]);
     }
-
+ 
     function list($arr=[],$ss=null){
         $ss = $ss?$ss:$this->user_info;
         $branch_id = $ss->branch_id;
@@ -59,7 +60,7 @@ class Term //extends Model
             $str_acad_year = 't.academic_year =\''.$academic_year.'\'';
         }
         $prev_term =  ',CASE t.prev_term_id > 0 WHEN 1 THEN (SELECT `name` FROM terms WHERE id = t.id LIMIT 1) ELSE \'NA\' END AS prev_term_name';
-        $selectCols = 'id,name,period_type,formatDate(t.start_date) AS start_date,formatDate(t.end_date) AS end_date,semester_number,academic_year,formatTime(t.created_at) AS created_at,t.create_user'.$prev_term;
+        $selectCols = 't.id,name,period_type,formatDate(t.start_date) AS start_date,formatDate(t.end_date) AS end_date,semester_number,ac_year_id,academic_year,formatTime(t.created_at) AS created_at,t.create_user'.$prev_term;
         return DB::table('terms AS t')->selectRaw($selectCols)->where('t.branch_id',$branch_id)->whereRaw($str_acad_year)->orderByRaw('t.start_date DESC')->get();
     }
 
@@ -67,7 +68,7 @@ class Term //extends Model
         $ss = $ss?$ss:$this->user_info;
         $id = $id?$id:$this->id;
         $branch_id = $ss->branch_id;
-        $selectRow = "id,name,period_type,semester_number,formatDate(start_date) AS start_date,formatDate(end_date) AS end_date,academic_year,formatTime(created_at) AS created_at,create_user,prev_term_id,(Select `name` FROM terms WHERE id = prev_term_id LIMIT 1) AS prev_term_name";
+        $selectRow = "id,name,ac_year_id,period_type,semester_number,formatDate(start_date) AS start_date,formatDate(end_date) AS end_date,academic_year,formatTime(created_at) AS created_at,create_user,prev_term_id,(Select `name` FROM terms WHERE id = prev_term_id LIMIT 1) AS prev_term_name";
         return DB::table('terms')->selectRaw($selectRow)
                 ->where('branch_id',$branch_id)
                 ->where('id',$id)->get()->first();
