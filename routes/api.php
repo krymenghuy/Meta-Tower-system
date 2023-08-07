@@ -426,7 +426,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('price-list/weekly', [PriceListController::class, 'weeklyFee']);
 
     Route::post('price-list/monthly', [PriceListController::class, 'monthlyFee']);
-
+    Route::post('price-list/pending-payment/update', [PriceListController::class, 'updatePendingPayment']);
     //End::PriceListController
 
    //begin::PolicyDiscountController
@@ -550,7 +550,7 @@ Route::post('settings/delete-department', [GeneralSettingsController::class, 'de
 Route::post('settings/department-info', [GeneralSettingsController::class, 'getDepartmentDetails']);
 Route::post('settings/options-academic-year', [GeneralSettingsController::class, 'GetComboItems_academic_year']);
 Route::post('settings/options-term', [GeneralSettingsController::class, 'GetComboItems_term']);
-  
+
 Route::post('settings/options-pmt-method', [GeneralSettingsController::class, 'getComboItems_pmt_method']);
 Route::post('settings/save-position', [GeneralSettingsController::class, 'savePosition']);
 Route::post('settings/options-department', [GeneralSettingsController::class, 'getComboItems_department']);

@@ -263,7 +263,6 @@ class PriceList //extends Model
         return (object)['tuition_due' => $total,'per_day' => $per_day,'days'=>$x];
     }
 
-
      /**
         * $arr ['start_date','months','acadmic_year','level_id','session_id'] // pmt_option_id (optional)
     */
@@ -508,7 +507,6 @@ class PriceList //extends Model
         return (object)['price' => $row->price,'price_list_id'=>$row->price_list_id];
     }
 
-
     function payment_processing($arr=[]){
         $d = (object)$arr;
         $pmt_option_id = $d->pmt_option_id;
@@ -520,8 +518,6 @@ class PriceList //extends Model
             return $this->getMonthlyTuition($arr);
         }
     }
-
-
 
     static function pendingPayment($filter=[],$ss){
         $branch_id = $ss->branch_id;
@@ -550,7 +546,7 @@ class PriceList //extends Model
                 ->where('ep.branch_id',$branch_id);
                 // ->whereRaw($str_moreWhere)->whereRaw($str_search);
         $count_query = clone $query;
-        $count = $count_query->count('s.id');
+        $count = $count_query->count('ep.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -592,4 +588,25 @@ class PriceList //extends Model
         $row->payment_info = $this->payment_processing($arr);
         return $row;
     }
+
+
+    // static function updatePendingStudent($arr,$ss){
+    //     $v_rule = [
+    //         'id' => '1|number|exists=enrollments.student_id',
+    //         'level_id' => '0|number|exists=program_levels.id',
+    //         'session_id' => '0|number|exists=sessions.id',
+    //         'start_date' => '0|date',
+    //     ];
+    //     $res = validateObject($arr,$v_rule,1,['start_date'=>['-']],$ss->lang,0,null);
+    //     if($res->error) return DV::error($res->error);
+    //     $inputs = $res->values;
+
+    //     return self::getNextProgram($ss);
+
+    // }
+
+    // static function getNextProgram($ss){
+    //     $row = DB::table('programs')->where('branch_id',$ss->branch_id)->select('name as program')->first();
+    //     return $row;
+    // }
 }

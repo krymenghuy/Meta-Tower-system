@@ -178,7 +178,7 @@ class GeneralSettings //extends Model
         //$branch_id = $ss->branch_id;
         return  DB::table('program_levels AS p')->where('p.program_id',$program_id)->selectRaw('p.id,p.program_id,p.name as level_name,p.level_order,p.prev_level_id')->orderByRaw('p.level_order ASC')->get();
     }
- 
+
     static function options_academic_year($ss){
         $branch_id = $ss->branch_id;
         return  DB::table('academic_years AS a')->where('a.branch_id',$branch_id)->selectRaw('a.id,a.academic_year,formatDate(a.start_date) AS start_date,formatDate(a.end_date) AS end_date')->orderByRaw('a.start_date ASC')->get();
@@ -187,12 +187,12 @@ class GeneralSettings //extends Model
     static function options_sales_agent($ss){
         $branch_id = $ss->branch_id;
         return DB::table('employees AS e')->join('persons as p','p.id','=','e.person_id')->where('e.branch_id',$branch_id)->selectRaw("e.id, CONCAT(p.last_name,' ',p.first_name) as sales_agent_name")->orderBy('sales_agent_name','ASC')->get();
-    } 
+    }
     static function options_term($academic_year,$ss){
        $branch_id = $ss->branch_id;
        $str_year ='1=1';
-       if($academic_year>0) $str_year ='academic_year =\''.$academic_year.'\''; 
-       return DB::table('terms as t')->where('t.branch_id',$branch_id)->selectRaw('t.id,t.`name` as term_name')->orderByRaw('start_date DESC')->get();  
+       if($academic_year>0) $str_year ='academic_year =\''.$academic_year.'\'';
+       return DB::table('terms as t')->where('t.branch_id',$branch_id)->selectRaw('t.id,t.`name` as term_name')->orderByRaw('start_date DESC')->get();
     }
 
     static function options_country($ss){

@@ -62,6 +62,6 @@ class Setting //extends Model
 
     static function getAcademicYear($ss=null){
         $branch_id = $ss->branch_id;
-        return DB::table('academic_years')->where('branch_id',$branch_id)->selectRaw('id,academic_year')->get();
+        return DB::table('academic_years')->where('branch_id',$branch_id)->selectRaw('academic_year')->get();
     }
 }
