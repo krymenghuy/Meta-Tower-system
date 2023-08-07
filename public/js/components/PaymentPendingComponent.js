@@ -105,7 +105,6 @@ let PaymentPendingDialog = new function(){
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
         let p = mThis.getDataForm();
-        console.log(p);
         window.vsapi.call(`${main_view.base_url}/api/price-list/preview/pending-payment`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
@@ -142,6 +141,9 @@ let PaymentPendingDialog = new function(){
                         break;
                     case 'session_id':
                         VSUtil.setComboItems(el,d.sessions,'id','name',null,null,null);
+                        break;
+                    case 'level_id':
+                        VSUtil.setComboItems(el,d.levels,'id','level',null,null,null);
                         break;
                     default:
                         break;

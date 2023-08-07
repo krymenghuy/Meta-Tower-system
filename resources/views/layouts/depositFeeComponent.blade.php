@@ -40,7 +40,7 @@
                             <div class="form-group">
                                 <label for="campus" class="form-label trans-text" data-langprop="titles.Campus"></label>
                                 <div class="width-select-dialog">
-                                    <select class="modal-select2 form-control data-input" data-field="campus"></select>
+                                    <select class="modal-select2 data-input" data-field="campus_id"></select>
                                 </div>
                             </div>
                         </div>
@@ -48,7 +48,7 @@
                             <div class="form-group">
                                 <label for="class" class="form-label trans-text" data-langprop="titles.Class"></label>
                                 <div class="width-select-dialog">
-                                    <select class="modal-select2 form-control data-input" data-field="class"></select>
+                                    <select class="modal-select2 data-input" data-field="level_id"></select>
                                 </div>
                             </div>
                         </div>
@@ -56,9 +56,9 @@
                     <div class="row gy-2">
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="section" class="form-label trans-text" data-langprop="titles.Section"></label>
+                                <label for="session" class="form-label trans-text" data-langprop="titles.Session"></label>
                                 <div class="width-select-dialog">
-                                    <select class="modal-select2 form-control data-input" data-field="section"></select>
+                                    <select class="modal-select2 data-input" data-field="session_id"></select>
                                 </div>
                             </div>
                         </div>
@@ -94,15 +94,15 @@
                             <div class="form-group">
                                 <label for="student_name" class="form-label trans-text" data-langprop="titles.Student Name"></label>
                                 <div class="width-select-dialog">
-                                    <select class="modal-select2 form-control data-input tr-select" data-field="student_name"></select>
+                                    <select class="modal-select2 data-input tr-select" data-field="student_name"></select>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="campus" class="form-label trans-text" data-langprop="titles.Campus"></label>
+                                <label for="campus_id" class="form-label trans-text" data-langprop="titles.Campus"></label>
                                 <div class="width-select-dialog">
-                                    <select class="modal-select2 form-control data-input" data-field="campus"></select>
+                                    <select class="modal-select2 data-input" data-field="campus_id"></select>
                                 </div>
                             </div>
                         </div>
@@ -112,15 +112,15 @@
                             <div class="form-group">
                                 <label for="class" class="form-label trans-text" data-langprop="titles.Class"></label>
                                 <div class="width-select-dialog">
-                                    <select class="modal-select2 form-control data-input" data-field="class"></select>
+                                    <select class="modal-select2 data-input" data-field="level_id"></select>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="section" class="form-label trans-text" data-langprop="titles.Section"></label>
+                                <label for="session" class="form-label trans-text" data-langprop="titles.Session"></label>
                                 <div class="width-select-dialog">
-                                    <select class="modal-select2 form-control data-input" data-field="section"></select>
+                                    <select class="modal-select2 data-input" data-field="session"></select>
                                 </div>
                             </div>
                         </div>
@@ -149,7 +149,7 @@
                 <button class="btn btn-secondary btn-sm" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button class="btn btn-sm btn-primary btn--save" type="button">
+                <button id="dlg_dpf_btn_save" class="btn btn-sm btn-primary" type="button">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>

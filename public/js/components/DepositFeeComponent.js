@@ -102,7 +102,7 @@ var DepositFeeComponent = new function(){
                     },
                     data: data,
                     columns: cols,
-                    createdRow: function (row, data, dataIndex) {
+                    createdRow: function (row, data, dataIndex){
                         let tr = $(row);
                         tr.data('id', data.id);
                     }
@@ -129,7 +129,7 @@ let DepositFeeDialog = new function(){
 
     this.elTitle = mThis.self.find('.modal-title');
     this.btnTab = mThis.self.find('.btn-tab');
-    this.btnSave = mThis.self.find('.btn--save');
+    this.btnSave = mThis.self.find('#dlg_dpf_btn_save');
 
     this.div_newStudent = mThis.self.find('.dpf-new-student');
     this.div_oldStudent = mThis.self.find('.dpf-old-student');
