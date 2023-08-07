@@ -15,7 +15,7 @@ class Deposite //extends Model
             'campus_id' => '1|number|exists=campuses.id',
             'session_id' => '1|number|exists=sessions.id',
             'parent_phone' => '1|string|1,20',
-            'deposite_amount' => '1|number',
+            'amount' => '1|number',
             'date_of_birth' => '1|string',
             'expire_date' => '1|string',
             'note' => '0|string',
@@ -24,6 +24,12 @@ class Deposite //extends Model
         $res = validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
+        $amount = $inputs['amount'];
+        unset($inputs['amount']);
+        $inputs['date_of_birth'] = date('Y-m-d',strtotime($inputs['date_of_birth']));
+        $inputs['expire_date'] = date('Y-m-d',strtotime($inputs['expire_date']));
+        $inputs['deposite_amount'] = $amount;
+        // $amount
 
         $inputs['status_id'] = 2; //** default 2 = authorized */
         $newID = saveData($ss,'deposite',['id' => $id],$inputs,[],1);
@@ -34,7 +40,7 @@ class Deposite //extends Model
         $branch_id = $ss->branch_id;
         $rows = DB::table('deposite as d')
                 ->join('program_levels as l','l.id','=','d.level_id')
-                ->selectRaw('d.status_id,d.student_name,d.id,l.name as level,d.parent_phone,d.expire_date,d.date_of_birth')
+                ->selectRaw('d.deposite_amount as amount,d.status_id,d.student_name,d.id,l.name as level,d.parent_phone,d.expire_date,d.date_of_birth')
                 ->where('d.branch_id',$branch_id)
                 ->get();
         foreach($rows as $row){
@@ -44,11 +50,18 @@ class Deposite //extends Model
         return $rows;
     }
 
+    static function getOldStudentInfo($id,$ss){
+        return DB::table('students as s')
+                ->join('enrollments as e','e.student_id','=','s.id')
+                ->selectRaw('s.name as student_name,e.campus_id,e.level_id,e.session_id')
+                ->get()->first();
+    }
+
     static function details($id=null,$ss){
         $branch_id = $ss->branch_id;
         $row = DB::table('deposite as d')
                 ->join('program_levels as l','l.id','=','d.level_id')
-                ->selectRaw('d.status_id,d.student_name,d.id,l.name as level,d.parent_phone')
+                ->selectRaw('d.deposite_amount as amount,d.status_id,d.student_name,d.id,l.name as level,d.parent_phone')
                 ->where('d.branch_id',$branch_id)
                 ->where('d.id',$id)
                 ->get()->first();

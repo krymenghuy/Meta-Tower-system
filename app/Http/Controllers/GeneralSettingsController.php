@@ -270,6 +270,23 @@ class GeneralSettingsController extends Controller
     return JDV::result($options);
   }
 
+  function paymentStatusOptions(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+
+    $options = GeneralSettings::paymentStatusOption();
+    return JDV::result($options);
+  }
+
+  function depositeFormOptions(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return JDV::raw($ss); //us
+
+    $options = GeneralSettings::depositeFormOption($ss);
+
+    return JDV::result($options);
+  }
+
   // static function getComboItems_department(Request $req){
   //    $ss = UM::getUserInfoByToken($req,-1);
   //    if($ss->status_code !=200) return $ss; //user not authenticated

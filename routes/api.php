@@ -122,6 +122,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/details',[DepositeController::class,'getDetails']);
         Route::post('/list',[DepositeController::class,'getList']);
         Route::post('/delete',[DepositeController::class,'delete']);
+        Route::post('/student-info',[DepositeController::class,'getOldStudentInfo']);
     });
     //end::DepositController
 
@@ -421,12 +422,13 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
     Route::post('price-list/pending/payment',[PriceListController::class,'getPendingPayment']);
     Route::post('price-list/preview/pending-payment',[PriceListController::class,'previewPendingPaymentDetails']);
+    Route::post('price-list/update/pending-payment',[PriceListController::class,'updatePendingPayment']);
+    Route::post('price-list/pending-payment/details',[PriceListController::class,'getStudentPendingPaymentDetails']);
 
 
     Route::post('price-list/weekly', [PriceListController::class, 'weeklyFee']);
 
     Route::post('price-list/monthly', [PriceListController::class, 'monthlyFee']);
-    Route::post('price-list/pending-payment/update', [PriceListController::class, 'updatePendingPayment']);
     //End::PriceListController
 
    //begin::PolicyDiscountController
@@ -544,6 +546,9 @@ Route::post('settings/test-sql', [GeneralSettingsController::class, 'testSQL']);
 // Route::post('settings/lang', [UMController::class, 'getLang']);
 // Route::post('settings/save-lang', [UMController::class, 'saveLang']);
 Route::post('settings/payment-options',[GeneralSettingsController::class, 'paymentOptions']);
+Route::post('settings/payment-options',[GeneralSettingsController::class, 'paymentStatusOptions']);
+Route::post('settings/deposite-options',[GeneralSettingsController::class, 'depositeFormOptions']);
+
 Route::post('settings/departments', [GeneralSettingsController::class, 'getDepartmentList']);
 Route::post('settings/save-department', [GeneralSettingsController::class, 'saveDepartment']);
 Route::post('settings/delete-department', [GeneralSettingsController::class, 'deleteDepartment']);
