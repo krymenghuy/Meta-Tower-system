@@ -132,7 +132,7 @@ class Student //extends Model
 
            }
            $getEnrollment = DB::table('enrollments')->where('id',$enrollment_id)->selectRaw('session_id,school_id')->first();
-            //** save or update enrollmen_payment table
+            //** save or update payment table
             if($enrollment_id){
                 $en_payment_data = [
                     'tuition' => $tuition,
@@ -140,15 +140,11 @@ class Student //extends Model
                     'pmt_status'=> $pmt_status,
                     'tuition_paid' => $tuition_paid,
                     'term_id' => $term_id,
+                    'pmt_option_id' => 2,//* defualt 2 = semester
                     'enrollment_id' => $enrollment_id
                 ];
-                $saveEnrPaymentID = saveData($ss,'enrollment_payments',['enrollment_id' => $id?$enrollment_id:null],$en_payment_data,[],1);
+                $saveEnrPaymentID = saveData($ss,'payments',['enrollment_id' => $id?$enrollment_id:null],$en_payment_data,[],1);
 
-                if($save_pmt_paramsID>0){
-                    DB::table('enrollment_payments')->where('enrollment_id',$enrollment_id)->update([
-                        'parameter_id' => $save_pmt_paramsID
-                    ]);
-                }
             }
 
 
