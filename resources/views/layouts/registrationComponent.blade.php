@@ -148,6 +148,12 @@
                             <select class="modal-select2 data-input" data-field="academic_year"></select>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label for="term_id" class="form-label trans-text" data-langprop="titles.Term"></label>
+                        <div class="width-select-dialog">
+                            <select class="modal-select2 data-input" data-field="term_id"></select>
+                        </div>
+                    </div>
                 </div>
             </div>
             <label for="parent_information" class="form-label trans-text fs-5 text-primary" data-langprop="titles.Parent Information"></label>

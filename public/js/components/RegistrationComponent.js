@@ -493,6 +493,9 @@ var RegistrationComponent = new function(){
                     case 'campus_id':
                         VSUtil.setComboItems(el,d.campuses,'id','campus',null,null,null);
                         break;
+                    case 'term_id':
+                        VSUtil.setComboItems(el,d.terms,'id','term',null,null,null);
+                        break;
                     default:
                         break;
                 }
