@@ -4,8 +4,8 @@ var DepositFeeComponent = new function(){
     this.title_prop = "Deposit Fee";
     this.self = $('#_main_depositFeeComponent');
 
-    this.tblDepositFee = mThis.self.find('.tbl_dpf');
-    this.btnNew = mThis.self.find('.btn--new');
+    this.tblDepositFee = mThis.self.find('#tbl_dpf_');
+    this.btnNew = mThis.self.find('#dpf_btn_new');
 
     this.init = () => {
         mThis.btnNew.on('click',function(e){
@@ -23,59 +23,44 @@ var DepositFeeComponent = new function(){
     }
 
     this.displayDepositFee = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/`,null,null).then(res => {
+        window.vsapi.call(`${main_view.base_url}/api/deposite/list`,null,null).then(res => {
             let data = [];
             if(res.status_code === 200){
                 data = StringSanitizer.sanitizeObject(res.data);
             }
 
-            let cnt = 1;
             let cols = [{
-                title: "No",
-                data: (data, a, b) => {
-                    return [`<span>${cnt++}</span>`].join('');
-                }
-            },
-            {
-                title: "Receipt Number",
-                data: "receipt_number"
-            },
-            {
-                title: "Invoice Number",
-                data: "invoice_number"
-            },
-            {
-                title: "Student Code",
-                data: "student_code"
-            },
-            {
                 title: "Student Name",
                 data: "student_name"
             },
             {
                 title: "Class",
-                data: "class"
+                data: "level"
             },
             {
                 title: "Parent Phone",
                 data: "parent_phone"
             },
             {
-                title: "Status",
-                data: "stutas"
+                title: "Date of Birth",
+                data: "date_of_birth"
             },
             {
-                title: "Remark",
-                data: "remark"
-            },
-            {
-                title: "Date",
-                data: "date"
+                title: "Expire Date",
+                data: "expire_date"
             },
             {
                 title: "Amount",
                 data: (data, a, b) => {
-                    return [`${data.cur_symbol} ${data.amount}`].join('');
+                    let cur_symbol = data.cur_symbol ? data.cur_symbol : '', amount = data.amount ? data.amount : '';
+                    return [`${cur_symbol} ${amount}`].join('');
+                }
+            },
+            {
+                title: "Status",
+                data: (data, a, b) => {
+                    let status = data.status ? data.status : '';
+                    return [`<span class="p-2 bg-success rounded-3 text-white text-capitalize">${status}</span>`].join('');
                 }
             },
             {
@@ -83,10 +68,10 @@ var DepositFeeComponent = new function(){
                 data: (data, a, b) => {
                     return [`<div class="d-flex gap-2">
                         <a href="javascript:void(0)" class="btn-dpf-modify" data-id="${data.id}">
-                            <i class="fa-regular fa-pen-to-square text-warning"></i>
+                            <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
                         </a>
                         <a href="javascript:void(0)" class="btn-dpf-delete" data-id="${data.id}" style="display: ${data.status == 'approval' ? `none`: `block`}">
-                            <i class="fa-regular fa-trash-can text-danger"></i>
+                            <i class="fa-regular fa-trash-can text-danger fs-5"></i>
                         </a>
                     </div>`].join('');
                 }
@@ -111,9 +96,9 @@ var DepositFeeComponent = new function(){
                     saveState: true,
                     processing: true,
                     language: {
-                        'loadingRecords': '&nbsp;',
-                        'processing': 'Loading...',
-                        "emptyTable": LocaleManager.trans('No data to display', 'datatable')
+                        loadingRecords: '&nbsp;',
+                        processing: 'Loading...',
+                        emptyTable: LocaleManager.trans('No data to display', 'datatable')
                     },
                     data: data,
                     columns: cols,
@@ -139,7 +124,7 @@ var DepositFeeComponent = new function(){
 
 let DepositFeeDialog = new function(){
     let mThis = this;
-    this.self = $('#dlg__dpf');
+    this.self = $('#dlg_dpf');
     this.options = {};
 
     this.elTitle = mThis.self.find('.modal-title');

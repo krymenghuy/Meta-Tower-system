@@ -27,7 +27,7 @@ var PaymentPendingComponent = new function(){
     {
         title: "Status",
         data: (data, a, b) => {
-            return [`<span class="p-2 bg-danger text-white rounded-3">${data.status}</span>`].join('');
+            return [`<span class="p-2 bg-danger text-white rounded-3 text-capitalize">${data.status}</span>`].join('');
         }
     },
     {
@@ -105,10 +105,12 @@ let PaymentPendingDialog = new function(){
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
         let p = mThis.getDataForm();
+        console.log(p);
         window.vsapi.call(`${main_view.base_url}/api/price-list/preview/pending-payment`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
-                if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
+                if(typeof mThis.options.onClose === 'function')
+                    mThis.options.onClose();
             }
         });
     });

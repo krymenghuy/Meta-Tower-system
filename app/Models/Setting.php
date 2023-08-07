@@ -7,8 +7,7 @@ namespace App\Models;
 use DB;
 class Setting //extends Model
 {
-
-
+ 
     static function select_options($ss){
         $res = [
             'price_list'=>self::price_list_options($ss),

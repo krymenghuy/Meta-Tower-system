@@ -106,7 +106,7 @@
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="PaymentPendingComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{ asset('assets/images/icons/deposit_fee.png') }}"/>
+                                    <img class="icons" src="{{ asset('assets/images/icons/payment_pending.png') }}"/>
                                 </span>
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Payment Pending"></span>
                             </a>
@@ -169,7 +169,7 @@
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="StudentGroupComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{ asset('assets/images/icons/activities.png') }}"/>
+                                    <img class="icons" src="{{ asset('assets/images/icons/student_group.png') }}"/>
                                 </span>
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Student Group"></span>
                             </a>
@@ -305,7 +305,7 @@
             <li class="kt-menu__item" aria-haspopup="true">
                 <a href="ReportCenterComponent" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
-                        <img class="icons" src="{{ asset('assets/images/icons/general_report.png')}}" style="height:25px"/>
+                        <img class="icons" src="{{ asset('assets/images/icons/report_center.png')}}" style="height:25px"/>
                     </span>
                     <span class="kt-menu__link-text trans-text" data-langprop="menus.Reports"></span>
                 </a>
@@ -325,7 +325,7 @@
             <li class="kt-menu__item" aria-haspopup="true">
                 <a href="CampusComponent" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
-                        <img class="icons" src="{{asset('assets/images/icons/company_profile.png')}}"/>
+                        <img class="icons" src="{{asset('assets/images/icons/campus.png')}}"/>
                     </span>
                     <span class="kt-menu__link-text trans-text" data-langprop="menus.Campus"></span>
                 </a>
@@ -333,7 +333,7 @@
             <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
-                        <img class="icons" src="{{asset('assets/images/icons/settings.svg')}}"/>
+                        <img class="icons" src="{{asset('assets/images/icons/setting.png')}}"/>
                     </span>
                     <span class="kt-menu__link-text trans-text" data-langprop="menus.Settings"></span>
                     <i class="kt-menu__ver-arrow la la-angle-right"></i>
@@ -344,7 +344,7 @@
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="LocationComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/location.svg')}}"/>
+                                    <img class="icons" src="{{asset('assets/images/icons/location.png')}}"/>
                                 </span>
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Locations"></span>
                             </a>
@@ -352,7 +352,7 @@
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="ProgramComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/location.svg')}}"/>
+                                    <img class="icons" src="{{asset('assets/images/icons/program.png')}}"/>
                                 </span>
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Program"></span>
                             </a>
@@ -360,7 +360,7 @@
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="TermComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{ asset('assets/images/icons/location.svg') }}"/>
+                                    <img class="icons" src="{{ asset('assets/images/icons/term.png') }}"/>
                                 </span>
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Term"></span>
                             </a>
@@ -368,7 +368,7 @@
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="AcademicYearComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{ asset('assets/images/icons/location.svg') }}"/>
+                                    <img class="icons" src="{{ asset('assets/images/icons/academic_year.png') }}"/>
                                 </span>
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Academic Year"></span>
                             </a>
@@ -389,7 +389,7 @@
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="RoleManagementComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{ asset('assets/images/icons/manage_role.svg') }}"/>
+                                    <img class="icons" src="{{ asset('assets/images/icons/manage_role.png') }}"/>
                                 </span>
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Manage Roles"></span>
                             </a>
@@ -397,7 +397,7 @@
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="UserManagementComponent" class="menu-item kt-menu__link ">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{asset('assets/images/icons/manage_users.svg')}}"/>
+                                    <img class="icons" src="{{asset('assets/images/icons/manage_user.png')}}"/>
                                 </span>
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Manage Users"></span>
                             </a>

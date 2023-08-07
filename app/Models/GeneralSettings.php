@@ -181,7 +181,7 @@ class GeneralSettings //extends Model
 
     static function options_academic_year($ss){
         $branch_id = $ss->branch_id;
-        return  DB::table('academic_years AS a')->where('a.branch_id',$branch_id)->selectRaw('a.academic_year,formatDate(a.start_date) AS start_date,formatDate(a.end_date) AS end_date')->orderByRaw('a.start_date ASC')->get();
+        return  DB::table('academic_years AS a')->where('a.branch_id',$branch_id)->selectRaw('a.id,a.academic_year,formatDate(a.start_date) AS start_date,formatDate(a.end_date) AS end_date')->orderByRaw('a.start_date ASC')->get();
     }
 
     static function options_sales_agent($ss){

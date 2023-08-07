@@ -1,18 +1,18 @@
 <div id="_main_depositFeeComponent" class="mobile-padding p-3" style="display:none">
-    <div class="d-flex gap-2">
-        <button class="btn btn-sm btn-primary btn--new" type="button">
+    <div class="d-flex gap-2 bg-white rounded-3 p-3">
+        <button id="dpf_btn_new" class="btn btn-sm btn-primary" type="button">
             <i class="fa-solid fa-plus"></i>
             <span class="trans-text" data-langprop="buttons.New Deposit"></span>
         </button>
         <input type="search" class="form-control width--search-inner" placeholder="Search by Name or ID..."/>
     </div>
-    <div class="table-responsive mt-3 p-3">
-        <table class="table tbl_dpf"></table>
+    <div class="table-responsive mt-3 p-3 bg-white rounded-3">
+        <table id="tbl_dpf_" class="table"></table>
     </div>
 </div>
 
-<div id="dlg__dpf" class="modal fade" tabindex="-1" aria-labelledby="dlg__dpf_title" aria-hidden="true">
-    <div class="modal-dialog">
+<div id="dlg_dpf" class="modal fade" tabindex="-1" aria-labelledby="dlg_dpf_title" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <div class="d-block">
@@ -35,29 +35,53 @@
             </div>
             <div class="modal-body">
                 <div class="dpf-new-student">
-                    <div class="form-group">
-                        <label for="campus" class="form-label trans-text" data-langprop="titles.Campus"></label>
-                        <select class="modal-select2 form-control data-input" data-field="campus"></select>
+                    <div class="row gy-2">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="campus" class="form-label trans-text" data-langprop="titles.Campus"></label>
+                                <div class="width-select-dialog">
+                                    <select class="modal-select2 form-control data-input" data-field="campus"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="class" class="form-label trans-text" data-langprop="titles.Class"></label>
+                                <div class="width-select-dialog">
+                                    <select class="modal-select2 form-control data-input" data-field="class"></select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="class" class="form-label trans-text" data-langprop="titles.Class"></label>
-                        <select class="modal-select2 form-control data-input" data-field="class"></select>
+                    <div class="row gy-2">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="section" class="form-label trans-text" data-langprop="titles.Section"></label>
+                                <div class="width-select-dialog">
+                                    <select class="modal-select2 form-control data-input" data-field="section"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="student_name" class="form-label trans-text" data-langprop="titles.Student Name"></label>
+                                <input type="text" class="form-control data-input" data-field="student_name"/>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="section" class="form-label trans-text" data-langprop="titles.Section"></label>
-                        <select class="modal-select2 form-control data-input" data-field="section"></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="student_name" class="form-label trans-text" data-langprop="titles.Student Name"></label>
-                        <input type="text" class="form-control data-input" data-field="student_name"/>
-                    </div>
-                    <div class="form-group">
-                        <label for="parent_phone" class="form-label trans-text" data-langprop="titles.Parent Phone"></label>
-                        <input type="text" class="form-control data-input" data-field="parent_phone"/>
-                    </div>
-                    <div class="form-group">
-                        <label for="amount" class="form-label trans-text" data-langprop="titles.Amount"></label>
-                        <input type="number" class="form-control data-input" data-field="amount"/>
+                    <div class="row gy-2">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="parent_phone" class="form-label trans-text" data-langprop="titles.Parent Phone"></label>
+                                <input type="text" class="form-control data-input" data-field="parent_phone"/>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="amount" class="form-label trans-text" data-langprop="titles.Amount"></label>
+                                <input type="number" class="form-control data-input" data-field="amount"/>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="note" class="form-label trans-text" data-langprop="titles.Note"></label>
@@ -65,29 +89,55 @@
                     </div>
                 </div>
                 <div class="dpf-old-student" style="display:none">
-                    <div class="form-group">
-                        <label for="student_name" class="form-label trans-text" data-langprop="titles.Student Name"></label>
-                        <select class="modal-select2 form-control data-input tr-select" data-field="student_name"></select>
+                    <div class="row gy-2">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="student_name" class="form-label trans-text" data-langprop="titles.Student Name"></label>
+                                <div class="width-select-dialog">
+                                    <select class="modal-select2 form-control data-input tr-select" data-field="student_name"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="campus" class="form-label trans-text" data-langprop="titles.Campus"></label>
+                                <div class="width-select-dialog">
+                                    <select class="modal-select2 form-control data-input" data-field="campus"></select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="campus" class="form-label trans-text" data-langprop="titles.Campus"></label>
-                        <select class="modal-select2 form-control data-input" data-field="campus"></select>
+                    <div class="row gy-2">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="class" class="form-label trans-text" data-langprop="titles.Class"></label>
+                                <div class="width-select-dialog">
+                                    <select class="modal-select2 form-control data-input" data-field="class"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="section" class="form-label trans-text" data-langprop="titles.Section"></label>
+                                <div class="width-select-dialog">
+                                    <select class="modal-select2 form-control data-input" data-field="section"></select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="class" class="form-label trans-text" data-langprop="titles.Class"></label>
-                        <select class="modal-select2 form-control data-input" data-field="class"></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="section" class="form-label trans-text" data-langprop="titles.Section"></label>
-                        <select class="modal-select2 form-control data-input" data-field="section"></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="parent_phone" class="form-label trans-text" data-langprop="titles.Parent Phone"></label>
-                        <input type="text" class="form-control data-input" data-field="parent_phone"/>
-                    </div>
-                    <div class="form-group">
-                        <label for="amount" class="form-label trans-text" data-langprop="titles.Amount"></label>
-                        <input type="number" class="form-control data-input" data-field="amount"/>
+                    <div class="row gy-2">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="parent_phone" class="form-label trans-text" data-langprop="titles.Parent Phone"></label>
+                                <input type="text" class="form-control data-input" data-field="parent_phone"/>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="amount" class="form-label trans-text" data-langprop="titles.Amount"></label>
+                                <input type="number" class="form-control data-input" data-field="amount"/>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="note" class="form-label trans-text" data-langprop="titles.Note"></label>
