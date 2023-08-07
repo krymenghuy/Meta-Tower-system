@@ -29,6 +29,22 @@ var AcademicYearComponent = new function(){
             };
             AcademicDialog.show(op);
         });
+
+        mThis.tblAcademic.on('click','a.btn-adm-delete',function(e){
+            e.preventDefault();
+            let op = {
+                'id': $(this).data('id')
+            };
+            cv_interact.confirm('Delete this academic year?',{ title: 'Delete Academic Year', context: 'delete'},(e) => {
+                if(e){
+                    window.vsapi.call(`${main_view.base_url}/api/academic-year/delete`,op,null).then(res => {
+                        if(res.status_code === 200){
+                            mThis.displayAcademic();
+                        }
+                    });
+                }
+            });
+        });
     }
 
     this.displayAcademic = (onFinish = null) => {
