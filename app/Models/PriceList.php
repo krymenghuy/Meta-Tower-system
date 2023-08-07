@@ -552,6 +552,18 @@ class PriceList //extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
+    function studentPendingPaymentDetails($id){
+        $row = DB::table('enrollments as e')
+                ->join('students as s','s.id','=','e.student_id')
+                ->join('enrollment_payments as ep','ep.enrollment_id','=','e.id')
+                ->join('pmt_parameters as p','p.id','=','ep.parameter_id')
+                ->where('s.id',$id)
+                ->selectRaw('e.level_id,e.session_id,e.campus_id,e.start_date,p.pmt_option_id')
+                ->first();
+        if(!$row) return $row = null;
+        return $row;
+    }
+
     function previewPendingPaymentDetails($arr=[],$id=null,$ss){
 
         $d = (object)$arr;
@@ -590,23 +602,25 @@ class PriceList //extends Model
     }
 
 
-    // static function updatePendingStudent($arr,$ss){
-    //     $v_rule = [
-    //         'id' => '1|number|exists=enrollments.student_id',
-    //         'level_id' => '0|number|exists=program_levels.id',
-    //         'session_id' => '0|number|exists=sessions.id',
-    //         'start_date' => '0|date',
-    //     ];
-    //     $res = validateObject($arr,$v_rule,1,['start_date'=>['-']],$ss->lang,0,null);
-    //     if($res->error) return DV::error($res->error);
-    //     $inputs = $res->values;
+    static function updatePendingStudent($arr,$ss){
+        $v_rule = [
+            'id' => '1|number|exists=students.id',
+            'level_id' => '0|number|exists=program_levels.id',
+            'session_id' => '0|number|exists=sessions.id',
+            'start_date' => '0|date',
+        ];
+        $res = validateObject($arr,$v_rule,1,['start_date'=>['-']],$ss->lang,0,null);
+        if($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+        convertDate($inputs['start_date']);
 
-    //     return self::getNextProgram($ss);
 
-    // }
+        return $inputs;
 
-    // static function getNextProgram($ss){
-    //     $row = DB::table('programs')->where('branch_id',$ss->branch_id)->select('name as program')->first();
-    //     return $row;
-    // }
+    }
+
+    static function getNextProgram($ss){
+        $row = DB::table('programs')->where('branch_id',$ss->branch_id)->select('name as program')->first();
+        return $row;
+    }
 }

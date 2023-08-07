@@ -234,6 +234,18 @@ class GeneralSettings //extends Model
         else{
             return (object)['name' => 'months'];
         }
+    }
 
+    static function paymentStatusOption(){
+        return DB::table('status')->selectRaw('name,id')->get();
+    }
+
+    static function depositeFormOption($ss){
+        return(object)[
+            'options_student' => DB::table('students')->selectRaw('name as student_name,id')->get(),
+            'options_campus' => DB::table('campuses')->selectRaw('name as campus_name,id')->get(),
+            'options_program_level' => DB::table('program_levels')->selectRaw('name as level,id')->get(),
+            'options_session' => DB::table('sessions')->selectRaw('name as session,id')->get(),
+        ];
     }
 }

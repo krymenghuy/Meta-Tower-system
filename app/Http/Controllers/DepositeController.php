@@ -40,4 +40,12 @@ class DepositeController extends Controller
         $delete = Deposite::delete($req->id,$ss);
         return JDV::result($delete);
     }
+
+    function getOldStudentInfo(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $info = Deposite::getOldStudentInfo($req->id,$ss);
+        return JDV::result($info);
+    }
 }

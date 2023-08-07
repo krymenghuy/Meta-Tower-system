@@ -26,6 +26,8 @@ class Deposite //extends Model
         $inputs = $res->values;
         $amount = $inputs['amount'];
         unset($inputs['amount']);
+        $inputs['date_of_birth'] = date('Y-m-d',strtotime($inputs['date_of_birth']));
+        $inputs['expire_date'] = date('Y-m-d',strtotime($inputs['expire_date']));
         $inputs['deposite_amount'] = $amount;
         // $amount
 
@@ -46,6 +48,13 @@ class Deposite //extends Model
             $row->status = $status;
         }
         return $rows;
+    }
+
+    static function getOldStudentInfo($id,$ss){
+        return DB::table('students as s')
+                ->join('enrollments as e','e.student_id','=','s.id')
+                ->selectRaw('s.name as student_name,e.campus_id,e.level_id,e.session_id')
+                ->get()->first();
     }
 
     static function details($id=null,$ss){
