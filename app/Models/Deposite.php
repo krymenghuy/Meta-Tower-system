@@ -51,11 +51,23 @@ class Deposite //extends Model
     }
 
     static function getOldStudentInfo($id,$ss){
-        return DB::table('students as s')
+        $row = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
-                ->selectRaw('s.name as student_name,e.campus_id,e.level_id,e.session_id')
+                ->selectRaw('s.name as student_name,e.campus_id,e.level_id,e.session_id,s.date_of_birth')
                 ->get()->first();
+
+        $row->parent_phone = self::getParentPhone($id);
+        return $row;
     }
+
+    static function getParentPhone($student_id){
+        $row = DB::table('student_guardians as sg')
+                ->join('guardians as g','g.id','=','sg.guardian_id')
+                ->selectRaw('phone_number')
+                ->get()->first();
+        return $row->phone_number;
+    }
+
 
     static function details($id=null,$ss){
         $branch_id = $ss->branch_id;
