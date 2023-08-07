@@ -402,7 +402,7 @@ li.kt-menu__section {
     min-width: 200px;
 }
 
-.width--select-inner .select2 {
+.width--search-inner .select2{
     width:100%;
     height: calc(1.5em + 1.3rem + 2px);
     font-size:1.1rem;
