@@ -108,7 +108,7 @@
                             <div class="form-group">
                                 <label for="student_id" class="form-label trans-text" data-langprop="titles.Student Name"></label>
                                 <div class="width-select-dialog">
-                                    <select class="modal-select2 data-input tr-select" data-field="student_id"></select>
+                                    <select id="dlg_dpf_student" class="modal-select2 data-input tr-select" data-field="student_id"></select>
                                 </div>
                             </div>
                         </div>
