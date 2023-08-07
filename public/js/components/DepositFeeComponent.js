@@ -12,13 +12,27 @@ var DepositFeeComponent = new function(){
             e.preventDefault();
             let op = {
                 'id': 0,
-                'onClose': (e) => {
-                    if(e){
-                        mThis.displayDepositFee();
-                    }
+                'onClose': () => {
+                    mThis.displayDepositFee();
                 }
             };
             DepositFeeDialog.show(op);
+        });
+
+        mThis.tblDepositFee.on('click','a.btn-dpf-delete',function(e){
+            e.preventDefault();
+            let op = {
+                'id': $(this).data('id')
+            };
+            cv_interact.confirm('Delete this deposit?',{title: 'Delete Deposit', context: 'delete'},(e) => {
+                if(e){
+                    window.vsapi.call(`${main_view.base_url}/api/deposite/delete`,op,null).then(res => {
+                        if(res.status_code === 200){
+                            mThis.displayDepositFee();
+                        }
+                    });
+                }
+            });
         });
     }
 
@@ -52,7 +66,7 @@ var DepositFeeComponent = new function(){
             {
                 title: "Amount",
                 data: (data, a, b) => {
-                    let cur_symbol = data.cur_symbol ? data.cur_symbol : '', amount = data.amount ? data.amount : '';
+                    let cur_symbol = data.cur_symbol ? data.cur_symbol : '$', amount = data.amount ? data.amount : '';
                     return [`${cur_symbol} ${amount}`].join('');
                 }
             },
@@ -133,6 +147,21 @@ let DepositFeeDialog = new function(){
 
     this.div_newStudent = mThis.self.find('#dpf-new-student');
     this.div_oldStudent = mThis.self.find('#dpf-old-student');
+    this.elStudent = mThis.div_oldStudent.find('#dlg_dpf_student');
+
+    mThis.elStudent.on('change',function(e){
+        e.preventDefault();
+        let id = $(this).val();
+        if(id > 0){
+            window.vsapi.call(`${main_view.base_url}/api/deposite/student-info`,{'id': id},null,false).then(res => {
+                let data = {};
+                if(res.status_code === 200){
+                    data = res.data;
+                }
+                mThis.setDataForm(data,mThis.div_oldStudent);
+            });
+        }
+    });
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
@@ -144,6 +173,7 @@ let DepositFeeDialog = new function(){
         else if(mThis.options.dn === 'old'){
             p = mThis.getDataForm(mThis.div_oldStudent);
         }
+        if(p.student_id) delete(p.id);
         console.log(p);
         window.vsapi.call(`${main_view.base_url}/api/deposite/save`,p,null).then(res => {
             if(res.status_code === 200){
@@ -172,8 +202,10 @@ let DepositFeeDialog = new function(){
                 break;
             }
             case 'old':{
-                mThis.setDataForm(null, mThis.div_oldStudent, () => {
-                    mThis.div_oldStudent.show('slow').siblings().hide('slow');
+                mThis.prepareFormOptionOld(() => {
+                    mThis.setDataForm(null, mThis.div_oldStudent, () => {
+                        mThis.div_oldStudent.show('slow').siblings().hide('slow');
+                    });
                 });
                 break;
             }
@@ -183,35 +215,75 @@ let DepositFeeDialog = new function(){
         }
     }
 
+    this.setOptionsOld = (div, d) => {
+        d = d ? d : {};
+        div.find('.data-input').each(function(){
+            let el = $(this);
+            let f = el.data('field');
+            switch(f){
+                case 'campus_id':
+                    VSUtil.setComboItems(el,d.options_campus,'id','campus_name',null,null,null);
+                    break;
+                case 'level_id':
+                    VSUtil.setComboItems(el,d.options_program_level,'id','level',null,null,null);
+                    break;
+                case 'session_id':
+                    VSUtil.setComboItems(el,d.options_session,'id','session',null,null,null);
+                    break;
+                case 'student_id':
+                    VSUtil.setComboItems(el,d.options_student,'id','student_name',null,null,null);
+                    break;
+                default:
+                    break;
+            }
+        });
+    }
+
+    this.prepareFormOptionOld = (onFinish = null) => {
+        window.vsapi.call(`${main_view.base_url}/api/settings/deposite-options`,null,null).then(res => {
+            let d = {};
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            mThis.setOptionsOld(mThis.div_oldStudent,d);
+            if(typeof onFinish === 'function') onFinish();
+        });
+    }
+
     this.getDataForm = (div) => {
-        let id = mThis.options.id ? mThis.options.id : 0;
-        let p = {'id': id};
+        let p = {
+            'id': mThis.options.id ? mThis.options.id : 0
+        };
 
         div.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
+            if(f === 'student_id')
+                p['student_name'] = el.find(':selected').text();
             p[f] = el.val();
         });
         return p;
     }
 
-    this.setDataForm = (d, div, onFinish) => {
+    this.setDataForm = (d=null, div, onFinish=null) => {
         d = d ? d : {};
         div.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
-            if(el.is('select')){
-                el.val(d[f]).trigger('change');
-            }
-            else{
-                el.val(d[f]);
+            if(f !== 'student_id'){
+                if(el.is('select')){
+                    el.val(d[f]).trigger('change');
+                }
+                else{
+                    el.val(d[f]);
+                }
             }
         });
 
         if(typeof onFinish === 'function') onFinish();
     }
 
-    this.setOptions = (div, d) => {
+    this.setOptionsNew = (div, d) => {
         d = d ? d : {};
         div.find('.data-input').each(function(){
             let el = $(this);
@@ -232,13 +304,13 @@ let DepositFeeDialog = new function(){
         });
     }
 
-    this.prepareFormOption = (onFinish = null) => {
+    this.prepareFormOptionNew = (onFinish = null) => {
         window.vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
             }
-            mThis.setOptions(mThis.div_newStudent,d);
+            mThis.setOptionsNew(mThis.div_newStudent,d);
             if(typeof onFinish === 'function') onFinish();
         });
     }
@@ -248,11 +320,12 @@ let DepositFeeDialog = new function(){
         mThis.options = options;
         mThis.options.dn = 'new';
 
-        mThis.prepareFormOption(() => {
+        mThis.prepareFormOptionNew(() => {
             if(options.id > 0){}
             else{
                 mThis.elTitle.text(LocaleManager.trans('New Deposit','titles'));
                 mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input deposit details','titles'));
+                mThis.setDataForm(null,mThis.div_newStudent);
             }
 
             mThis.self.modal({
