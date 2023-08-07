@@ -19,6 +19,17 @@ var DepositFeeComponent = new function(){
             DepositFeeDialog.show(op);
         });
 
+        mThis.tblDepositFee.on('click','a.btn-dpf-modify',function(e){
+            e.preventDefault();
+            let op = {
+                'id': $(this).data('id'),
+                'onClose': () => {
+                    mThis.displayDepositFee();
+                }
+            };
+            DepositFeeDialog.show(op);
+        });
+
         mThis.tblDepositFee.on('click','a.btn-dpf-delete',function(e){
             e.preventDefault();
             let op = {
@@ -321,11 +332,15 @@ let DepositFeeDialog = new function(){
         mThis.options.dn = 'new';
 
         mThis.prepareFormOptionNew(() => {
-            if(options.id > 0){}
+            if(options.id > 0){
+                mThis.elTitle.text(LocaleManager.trans('Modify Deposit','titles'));
+                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input deposit details','titles'));
+            }
             else{
                 mThis.elTitle.text(LocaleManager.trans('New Deposit','titles'));
                 mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input deposit details','titles'));
                 mThis.setDataForm(null,mThis.div_newStudent);
+                mThis.setDataForm(null,mThis.div_oldStudent);
             }
 
             mThis.self.modal({
