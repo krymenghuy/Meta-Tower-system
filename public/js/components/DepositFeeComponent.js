@@ -326,6 +326,18 @@ let DepositFeeDialog = new function(){
         });
     }
 
+    this.loadFormDetails = (options) => {
+        mThis.self.find('.div--tab').removeClass('d-flex').hide();
+        mThis.div_newStudent.show().siblings().hide();
+        window.vsapi.call(`${main_view.base_url}/api/deposite/details`,{'id': options.id},null).then(res => {
+            let data = {};
+            if(res.status_code === 200){
+                data = res.data;
+            }
+            mThis.setDataForm(data,mThis.div_newStudent);
+        });
+    }
+
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;
@@ -335,10 +347,12 @@ let DepositFeeDialog = new function(){
             if(options.id > 0){
                 mThis.elTitle.text(LocaleManager.trans('Modify Deposit','titles'));
                 mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input deposit details','titles'));
+                mThis.loadFormDetails(options);
             }
             else{
                 mThis.elTitle.text(LocaleManager.trans('New Deposit','titles'));
                 mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input deposit details','titles'));
+                mThis.self.find('.div--tab').addClass('d-flex').show();
                 mThis.setDataForm(null,mThis.div_newStudent);
                 mThis.setDataForm(null,mThis.div_oldStudent);
             }
