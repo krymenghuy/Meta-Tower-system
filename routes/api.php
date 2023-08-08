@@ -546,7 +546,7 @@ Route::post('settings/test-sql', [GeneralSettingsController::class, 'testSQL']);
 // Route::post('settings/lang', [UMController::class, 'getLang']);
 // Route::post('settings/save-lang', [UMController::class, 'saveLang']);
 Route::post('settings/payment-options',[GeneralSettingsController::class, 'paymentOptions']);
-Route::post('settings/payment-options',[GeneralSettingsController::class, 'paymentStatusOptions']);
+Route::post('settings/status-options',[GeneralSettingsController::class, 'paymentStatusOptions']);
 Route::post('settings/deposite-options',[GeneralSettingsController::class, 'depositeFormOptions']);
 
 Route::post('settings/departments', [GeneralSettingsController::class, 'getDepartmentList']);
