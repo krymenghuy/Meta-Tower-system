@@ -41,4 +41,13 @@ class StudentController extends Controller
         $delete = Student::deleteStudent($req->id,$ss);
         return JDV::raw($delete);
     }
+
+    function findStudent(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $find = Student::findStudent($req->all(),$ss);
+        return JDV::result($find);
+
+    }
 }

@@ -104,7 +104,7 @@ class PriceListController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
 
-        $row = PriceList::updatePendingStudent($req->all(),$ss);
+        $row = PriceList::verifiyPendingStudent($req->all(),$ss);
         return JDV::result($row);
     }
 
