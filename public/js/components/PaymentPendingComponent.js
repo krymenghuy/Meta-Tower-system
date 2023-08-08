@@ -77,7 +77,7 @@ var PaymentPendingComponent = new function(){
     }
 
     this.prepareOptions = () => {
-        window.vsapi.call(`${main_view.base_url}/api/settings/payment-options`,null,null).then(res => {
+        window.vsapi.call(`${main_view.base_url}/api/settings/status-options`,null,null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = res.data;
@@ -126,7 +126,7 @@ let PaymentPendingDialog = new function(){
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
         let p = mThis.getDataForm();
-        window.vsapi.call(`${main_view.base_url}/api/price-list/preview/pending-payment`,p,null).then(res => {
+        window.vsapi.call(`${main_view.base_url}/api/price-list/update/pending-payment`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
                 if(typeof mThis.options.onClose === 'function')
@@ -145,6 +145,18 @@ let PaymentPendingDialog = new function(){
             p[f] = el.val();
         });
         return p;
+    }
+
+    this.setDataForm = (d) => {
+        d = d ? d : {};
+        mThis.self.find('.data-input').each(function(){
+            let el = $(this);
+            let f = el.data('field');
+            if(el.is('select'))
+                el.val(d[f]).trigger('change');
+            else
+                el.val(d[f]);
+        });
     }
 
     this.prepareFormOption = (onFinish = null) => {
@@ -175,11 +187,23 @@ let PaymentPendingDialog = new function(){
         });
     }
 
+    this.loadFormDetails = (options) => {
+        window.vsapi.call(`${main_view.base_url}/api/price-list/pending-payment/details`,{'id': options.id},null).then(res => {
+            let data = {};
+            if(res.status_code === 200){
+                data = res.data;
+            }
+            mThis.setDataForm(data);
+        });
+    }
+
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;
 
         mThis.prepareFormOption(() => {
+            mThis.loadFormDetails(options);
+
             mThis.self.modal({
                 backdrop:'static'
             });
