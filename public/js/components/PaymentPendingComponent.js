@@ -29,7 +29,7 @@ var PaymentPendingComponent = new function(){
     {
         title: "Status",
         data: (data, a, b) => {
-            return [`<span class="p-2 bg-danger text-white rounded-3 text-capitalize">${data.status}</span>`].join('');
+            return [`<span class="p-2 ${data.status === 'pending' ? 'bg-danger' : `${data.status === 'verified' ? 'bg-info' : 'bg-success'}`} text-white rounded-3 text-capitalize">${data.status}</span>`].join('');
         }
     },
     {

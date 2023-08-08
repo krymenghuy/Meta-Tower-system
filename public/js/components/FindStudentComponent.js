@@ -159,7 +159,7 @@ var FindStudentComponent = new function(){
                             </div>
                             <div class="col">
                                 <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Section"></p>
+                                    <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Session"></p>
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${item.session}</p>
                                 </div>
