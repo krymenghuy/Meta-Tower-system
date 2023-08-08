@@ -42,6 +42,15 @@ class StudentController extends Controller
         return JDV::raw($delete);
     }
 
+    function studentInvoice(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $find = Student::studentInvoice($req->all(),$ss);
+        return JDV::result($find);
+
+    }
+
     function findStudent(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
