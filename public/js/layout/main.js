@@ -293,3 +293,12 @@ $(document).ready(()=>{
     DashboardComponent.show(null);
     main_view.setLangMenu(LocaleManager.currentLanguage.code);
 });
+
+window.oncontextmenu = function(){
+    return false;
+}
+
+document.onkeydown = function(e){
+    if(window.event.keyCode == 123 ||  e.button==2)    
+        return false;
+}
