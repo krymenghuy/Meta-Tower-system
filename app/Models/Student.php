@@ -30,7 +30,6 @@ class Student //extends Model
             'campus_id'=> '1|number|exists=campuses.id',
             'previous_school' => '0|string|1,100',
             'shift_id' => '0|number|exists=shifts.id',
-            'term_id' => '0|number|exists=terms.id',
             'pmt_mode' => '0|number|default=1',
             'academic_year' => '1|string|1,25',
             'status_id' => '0|number|exists=status.id',
@@ -40,7 +39,8 @@ class Student //extends Model
             'tuition_paid' => '0|number|default=0',
             'pmt_option_id' => '0|number|exists=pmt_options.id|default=2',
             'pmt_status' => '0|string|default=unpaid',
-            'student_code' => '0|string'
+            'student_code' => '0|string',
+            'term_id' => '1|number|exists=terms.id'
         ];
         $branch_id = $ss->branch_id;
         $email_char = ['@','.'];
@@ -92,9 +92,7 @@ class Student //extends Model
 
         unset($inputs['level_id'],$inputs['session_id'],$inputs['campus_id'],$inputs['previous_school'],$inputs['shift_id'],$inputs['term_id'],$inputs['pmt_mode']);
 
-        if(!$id && self::checkExistsLoginName($parent_info)) return DV::error('Login name is already taken');
-        // $save_prev_school = saveData($ss,'school',['id' => ]);
-        // $newID = saveData($ss,'students',['id' => $id],$inputs,[],1,1);
+        if(!$id && self::checkExistsLoginName($parent_info)) return DV::error('Login name is already taken');;
         $newID = saveData($ss,'students',['id' => $id],$inputs,[],1,1);
 
         if($newID>0){
@@ -114,24 +112,25 @@ class Student //extends Model
                 'shift_id' => $shift_id,
                 'pmt_mode' => $pmt_mode,
                 'academic_year' => $academic_year,
+                'term_id' => $term_id,
                 'start_date' => date('Y-m-d',strtotime($admission_date)),
             ];
-           if(!$id){
-                $en_student_data['status_id'] = $statusID;
-           }
+            if(!$id){
+                    $en_student_data['status_id'] = $statusID;
+            }
             $enrollment_id = saveData($ss,'enrollments',['student_id'=>$id],$en_student_data,[],1);
             $save_pmt_paramsID=null;
-           if($id == 0 || $id == 'undefined'){
-                //** save into pmt_parameters */
-                $pmt_params_data = [
-                    'expected_date' => self::getFutureTime(7),
-                    'pmt_option_id' => $pmt_option_id
-                ];
+            if($id == 0 || $id == 'undefined'){
+                    //** save into pmt_parameters */
+                    $pmt_params_data = [
+                        'expected_date' => self::getFutureTime(7),
+                        'pmt_option_id' => $pmt_option_id
+                    ];
 
-                $save_pmt_paramsID = saveData($ss,'pmt_parameters',['id' => null],$pmt_params_data,[],1);
+                    $save_pmt_paramsID = saveData($ss,'pmt_parameters',['id' => null],$pmt_params_data,[],1);
 
-           }
-           $getEnrollment = DB::table('enrollments')->where('id',$enrollment_id)->selectRaw('session_id,school_id')->first();
+            }
+            $getEnrollment = DB::table('enrollments')->where('id',$enrollment_id)->selectRaw('session_id,school_id')->first();
             //** save or update payment table
             if($enrollment_id){
                 $en_payment_data = [
@@ -143,10 +142,15 @@ class Student //extends Model
                     'pmt_option_id' => 2,//* defualt 2 = semester
                     'enrollment_id' => $enrollment_id
                 ];
-                $saveEnrPaymentID = saveData($ss,'payments',['enrollment_id' => $id?$enrollment_id:null],$en_payment_data,[],1);
+                $savePaymentID = saveData($ss,'payments',['enrollment_id' => $id?$enrollment_id:null],$en_payment_data,[],1);
 
+                if($savePaymentID && $id || $id == 0){
+                    DB::table('enrollment_payment')->insert([
+                        'enrollment_id' => $enrollment_id,
+                        'pmt_id' => $savePaymentID
+                    ]);
+                }
             }
-
 
             if($prev_school){
                 $save_prev_school = saveData($ss,'school',['id' =>$getEnrollment?$getEnrollment->school_id:null],['name' => $prev_school],[],1);
@@ -179,7 +183,6 @@ class Student //extends Model
 
     static function studentListPaginate($filter=[],$ss){
         $campus = new Campus();
-        $level = new ProgramLevel(null,$ss);
         $branch_id = $ss->branch_id;
         $search_value =isset($filter['search_value'])?$filter['search_value']:null;
         $current_page =isset($filter['current_page'])?$filter['current_page']:1;
@@ -325,7 +328,7 @@ class Student //extends Model
     }
 
     static function getStudentDetails($id,$ss){
-        $selectCols = 'ss.name as session,e.school_id,e.campus_id,e.level_id,e.session_id,s.id,e.academic_year,s.sex,s.name,s.sex,s.date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth,e.start_date as admission_date';
+        $selectCols = 'e.term_id,ss.name as session,e.school_id,e.campus_id,e.level_id,e.session_id,s.id,e.academic_year,s.sex,s.name,s.sex,s.date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth,e.start_date as admission_date';
         $row = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->join('sessions as ss','ss.id','=','e.session_id')

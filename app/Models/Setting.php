@@ -7,7 +7,7 @@ namespace App\Models;
 use DB;
 class Setting //extends Model
 {
- 
+
     static function select_options($ss){
         $res = [
             'price_list'=>self::price_list_options($ss),
@@ -16,7 +16,8 @@ class Setting //extends Model
             'programs' => self::programs_options($ss),
             'levels' => self::level_options($ss),
             'campuses' => self::campus_options($ss),
-            'academic_year' => self::getAcademicYear($ss)
+            'academic_year' => self::getAcademicYear($ss),
+            'terms' => self::getTermsOptions($ss)
         ];
         return $res;
     }
@@ -63,5 +64,10 @@ class Setting //extends Model
     static function getAcademicYear($ss=null){
         $branch_id = $ss->branch_id;
         return DB::table('academic_years')->where('branch_id',$branch_id)->selectRaw('academic_year')->get();
+    }
+
+    static function getTermsOptions($ss){
+        $branch_id = $ss->branch_id;
+        return DB::table('terms')->where('branch_id',$branch_id)->selectRaw('name as term,id')->get();
     }
 }

@@ -260,7 +260,7 @@ class PriceList //extends Model
         $total = number_format($x * $daily_fee,2);
         $per_day = number_format($total/$x,2);
 
-        return (object)['tuition_due' => $total,'per_day' => $per_day,'days'=>$x];
+        return (object)['tuition' => $total,'tuition_due' => $total,'per_day' => $per_day,'days'=>$x];
     }
 
      /**
@@ -282,8 +282,14 @@ class PriceList //extends Model
 
         $monthly_fee_info = $this->getMonthlyFee($arr);
         $price = $monthly_fee_info->price;
+        if($pmt_option == 1){
+            $d->months = $d->months ? $d->months:3;
+        }else if($pmt_option == 2){
+            $d->months = $d->months ? $d->months:6;
+        }else if($pmt_option == 3){
+            $d->months = $d->months ? $d->months:12;
+        }
         if($d->months<3){
-
             $weekly_tuition_due = null;
 
             if($current_day != 1){
@@ -305,7 +311,7 @@ class PriceList //extends Model
                 $total_tuition_due = $monthly_fee * $d->months;
             }
 
-            return (object)['first_month_end_date'=>$last_day_in_month,'tuition_due'=>$total_tuition_due];
+            return (object)['first_month_end_date'=>$last_day_in_month,'tuition' => $total_tuition_due,'tuition_due'=>$total_tuition_due];
         }else if($d->months < 6){
             $end_date = findFutureMonths($d->start_date,$d->months-1);//** */
             $end_date =$end_date->end_date;
@@ -348,17 +354,19 @@ class PriceList //extends Model
             $discount_amt = $base_amount * $discount_info->discount_percent / 100;
             $term_tuition_due = $base_amount - $discount_amt;
             $total_tuition_due = $term_tuition_due + $weekly_tuition_due + $monthly_tuition_due;
-
-            return (object)['end_date' => $end_date,'tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'discount'=>$discount_info,'weekly_tuition'=>$weekly_tuition_due,'monthly_tuition'=>$monthly_tuition_due];
+            $tuition = $monthly_tuition_due + $base_amount + $weekly_tuition_due;
+            return (object)['end_date' => $end_date,'tuition'=>$tuition,'tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'discount'=>$discount_info,'weekly_tuition'=>$weekly_tuition_due,'monthly_tuition'=>$monthly_tuition_due];
         }else if($d->months <12){
             $weekly_tuition_due = 0;
+            $months = isset($d->months) ? $d->months :$d->months=6;
             $base_amount = 0;//** base amount equal to term (3months) */
             $price_list_id = $monthly_fee_info->price_list_id;
             $discount_info = $this->getPolicyDiscount($pmt_option,$price_list_id);
             $monthly_tuition_due = 0;
+            $tuition = 0;
             if($current_day != 1 && $d->months == 6){
                 $term = 3;
-                $pay_month = $d->months - 1;
+                $pay_month = $months - 1;
 
                     $pay_month = $pay_month - $term;
                     $total_weekly_Fee = self::getWeeklyTuitionDue([
@@ -378,6 +386,7 @@ class PriceList //extends Model
                     $total_tuition_due = $after_discount + $weekly_tuition_due;
                     $end_date = findFutureMonths($d->start_date,$d->months-1);//** */
                     $end_date =$end_date->end_date;
+                    $tuition = $base_amount + $monthly_tuition_due + $after_discount + $weekly_tuition_due;
 
             }else if($current_day != 1 && $d->months > 6){
                 $semester = 6-1; //* minus one because of the first months is not start on first
@@ -398,9 +407,11 @@ class PriceList //extends Model
                 $end_date = findFutureMonths($d->start_date,$d->months-1);//** */
                 $end_date =$end_date->end_date;
                 $pay_month = $pay_month - 1;// ** minus first month
+                if($pay_month !=0 ) $pay_month = $pay_month * $price;
                 $discount_amt = (($semester_tuition + $pay_month) * $discount_info->discount) / 100;
                 $after_discount = ($semester_tuition + $pay_month) - $discount_amt;
                 $total_tuition_due = $after_discount + $weekly_tuition_due;
+                $tuition = $after_discount + $total_weekly_Fee->tuition_due + $pay_month;
 
             }else {
                 $week ="full month no week count";
@@ -410,9 +421,10 @@ class PriceList //extends Model
                 $total_tuition_due = $after_discount;
                 $end_date = findFutureMonths($d->start_date,$d->months-1);//** */
                 $end_date =$end_date->end_date;
+                $tuition = $semester_tuition;
             }
 
-            return (object)['end_date'=> $end_date ,'tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'weekly_tuition_due' => $weekly_tuition_due,'weeks' => $week,'monthly_tuition_due' => $monthly_tuition_due,'discount'=>$discount_info->discount,'after_discount' => $after_discount,'discount_amount' => $discount_amt];
+            return (object)['end_date'=> $end_date,'tuition'=>$tuition,'tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'weekly_tuition_due' => $weekly_tuition_due,'weeks' => $week,'monthly_tuition_due' => $monthly_tuition_due,'discount'=>$discount_info->discount,'after_discount' => $after_discount,'discount_amount' => $discount_amt];
         }else{
             $price_list_id = $monthly_fee_info->price_list_id;
             $discount_info = $this->getPolicyDiscount($pmt_option,$price_list_id);
@@ -480,7 +492,7 @@ class PriceList //extends Model
         $x = $weekly_fee * $d->weeks;
         $days = $d->weeks * 7;
         $end_date = dateAdd('day',$days,$d->start_date);
-        return (object)['end_date' => $end_date,'tuition_due'=> $x==0?$weekly_fee:$x];
+        return (object)['end_date' => $end_date,'tuition'=>$x,'tuition_due'=> $x==0?$weekly_fee:$x];
     }
 
     /**
@@ -537,7 +549,7 @@ class PriceList //extends Model
         }
 
         $selectCols = 'st.name as status,s.name,s.name_kh,ep.id,ep.tuition,ep.tuition_due,ep.tuition_paid';
-        $query = DB::table('enrollment_payments as ep')
+        $query = DB::table('payments as ep')
                 ->join('enrollments as e','e.id','=','ep.enrollment_id')
                 ->join('students as s','s.id','=','e.student_id')
                 ->join('status as st','st.id','=','e.status_id')
@@ -555,7 +567,7 @@ class PriceList //extends Model
     function studentPendingPaymentDetails($id){
         $row = DB::table('enrollments as e')
                 ->join('students as s','s.id','=','e.student_id')
-                ->join('enrollment_payments as ep','ep.enrollment_id','=','e.id')
+                ->join('payments as ep','ep.enrollment_id','=','e.id')
                 ->join('pmt_parameters as p','p.id','=','ep.parameter_id')
                 ->where('s.id',$id)
                 ->selectRaw('e.level_id,e.session_id,e.campus_id,e.start_date,p.pmt_option_id')
@@ -569,13 +581,13 @@ class PriceList //extends Model
         $d = (object)$arr;
         $weeks = isset($d->weeks) ? $d->weeks :null;
         $days = isset($d->days) ? $d->days :null;
-        $months = isset($d->months) ? $d->months :null;
 
-        $selectCols = 's.name,e.campus_id,e.program_id,e.level_id,e.session_id,e.academic_year,e.start_date';
+
+        $selectCols = 'ep.pmt_option_id,s.name,e.campus_id,e.program_id,e.level_id,e.session_id,e.academic_year,e.start_date';
 
         $row = DB::table('enrollments as e')
                 ->join('students as s','s.id','=','e.student_id')
-                ->join('enrollment_payments as ep','ep.enrollment_id','=','e.id')
+                ->join('payments as ep','ep.enrollment_id','=','e.id')
                 ->where('s.id',$id)
                 ->selectRaw($selectCols)
                 ->get()->first();
@@ -585,6 +597,14 @@ class PriceList //extends Model
         $session = isset($d->session_id) ? $d->session_id : $row->session_id;
         $pmt_option_id = isset($d->pmt_option_id) ? $d->pmt_option_id: $row->pmt_option_id;
         $level_id = isset($d->level_id) ? $d->level_id:$row->level_id;
+        $months = null;
+        if($pmt_option_id == 1){
+            $months = isset($d->months) ? $d->months:3;
+        }else if($pmt_option_id == 2){
+            $months = isset($d->months) ? $d->months:6;
+        }else if($pmt_option_id == 3){
+            $months = isset($d->months) ? $d->months:12;
+        }
         $arr = [
             "level_id" => $level_id,
             "academic_year" => "2023-2024",
@@ -603,24 +623,79 @@ class PriceList //extends Model
 
 
     static function updatePendingStudent($arr,$ss){
+        $d = (object)$arr;
+        $instance = new PriceList(null,$ss);
         $v_rule = [
-            'id' => '1|number|exists=students.id',
+            'id' => '0|number|exists=students.id',
             'level_id' => '0|number|exists=program_levels.id',
             'session_id' => '0|number|exists=sessions.id',
             'start_date' => '0|date',
+            'academic_year' => '0|string|exists=academic_years.academic_year',
+            'pmt_option_id' => '0|number|exists=pmt_options.id',
+            "weeks" => "0|string",
+            "days" => '0|string',
         ];
-        $res = validateObject($arr,$v_rule,1,['start_date'=>['-']],$ss->lang,0,null);
+        $res = validateObject($arr,$v_rule,1,['academic_year'=>['-'],'start_date'=>['-']],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
-        convertDate($inputs['start_date']);
+        $id = $inputs['id'];
+        $program = self::getProgramByLevel($ss);
+        $inputs['start_date'] = convertDate($inputs['start_date']);
+        $pmt_option_id = isset($inputs['pmt_option_id'])? $inputs['pmt_option_id']:null;
+        $weeks = $inputs['weeks'];
+        $days = $inputs['days'];
+        unset($inputs['pmt_option_id']);
+        if($pmt_option_id == 4 && !isset($weeks)) return DV::error('weeks must be input');
+        else if($pmt_option_id == 5 && !isset($days)) return DV::error('days must be input');
+        $arr = [
+            'level_id' => $inputs['level_id'],
+            'session_id' => $inputs['session_id'],
+            'start_date' => $inputs['start_date'],
+            'academic_year' => $inputs['academic_year'],
+            'status_id' => 2
+        ];
+        $id = saveData($ss,'enrollments',['student_id' => $id],$arr,[],1);
+        if($pmt_option_id){
+            $enr = DB::table('enrollments')->where('student_id',$id)->selectRaw('id')->first();
+            $arr = [
+                "level_id" => 24,
+                "academic_year" => "2023-2024",
+                "session_id" => 1,
+                "prev_level_id" => "0",
+                "start_date" => '2023-08-4',
+                "months" => '',
+                "weeks" => $weeks,
+                "days" => $days,
+                "pmt_option_id"=> $pmt_option_id
+            ];
+            $preview = $instance->previewPendingPaymentDetails($arr,$id,$ss);
+            $payment_info = $preview->payment_info;
+            $pmt_arr = [
+                'pmt_option_id'=>$pmt_option_id,
+                'tuition' => $payment_info->tuition,
+                'tuition_due' => $payment_info->tuition_due,
+            ];
+            $set_pmt_option = saveData($ss,'payments',['enrollment_id' => $enr->id],$pmt_arr,[],1);
+        }
 
-
-        return $inputs;
+        return DV::depends($id,'Verified');
 
     }
 
-    static function getNextProgram($ss){
-        $row = DB::table('programs')->where('branch_id',$ss->branch_id)->select('name as program')->first();
+    static function getProgramByLevel($ss){
+        return DB::table('programs as p')
+                ->join('program_levels as pl','pl.program_id','=','p.id')
+                ->selectRaw('p.name as program,p.id')
+                ->get()->first();
+    }
+
+    static function getCurrentProgram($id,$ss){
+        $row = DB::table('programs')->where('branch_id',$ss->branch_id)->where('id',$id)->selectRaw('name as program,id')->first();
+        return $row;
+    }
+    static function getNextProgram($id,$ss){
+        $prev = self::getCurrentProgram($id,$ss);
+        $row = DB::table('programs')->where('prev_program_id',$prev->id)->get()->first();
         return $row;
     }
 }
