@@ -409,6 +409,11 @@ li.kt-menu__section {
     font-weight: semibold;
 }
 
+.height-select2 .select2{
+    height: calc(1.5em + 1.3rem + 2px);
+    font-size:1.1rem;
+}
+
 @media screen and (max-width: 800px) {
     .div--ssp .d-bf {
         display: block !important;

@@ -22,12 +22,11 @@
     </div>
     <div id="div--fsd" class="div--fsd" style="display:none">
         <div class="d-flex gap-2">
-            <button class="btn btn-primary btn-sm btn--select" type="button">
-                <span></span>
-                <i class="fa-solid fa-caret-down ps-2"></i>
-            </button>
-            <input type="search" class="form-control width--search-inner" placeholder="Search by Name or ID..."/>
-            <button class="btn btn-primary btn-sm" type="button">
+            <div class="height-select2">
+                <select class="modal-select2 data-input" data-field="academic_year"></select>
+            </div>
+            <input type="search" class="form-control width--search-inner data-input" data-field="search_value" placeholder="Search by Name or ID..."/>
+            <button id="_fns_btn_filter" class="btn btn-primary btn-sm" type="button">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <span class="trans-text" data-langprop="buttons.Find"></span>
             </button>
