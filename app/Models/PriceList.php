@@ -706,8 +706,6 @@ class PriceList //extends Model
 
     }
 
-
-
     static function getProgramByLevel($id,$ss){
         return DB::table('programs as p')
                 ->join('program_levels as pl','pl.program_id','=','p.id')
@@ -841,6 +839,5 @@ class PriceList //extends Model
         $row->level = Student::getProgramLevel($row->level_id);
         $row->amount = $row->tuition;
         return $row;
-
     }
 }

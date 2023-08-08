@@ -42,5 +42,13 @@ class StudentController extends Controller
         return JDV::raw($delete);
     }
 
+    function deleteVerifiedStudent(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $delete = Student::deleteVerifiedStudent($req->id,$ss);
+        return JDV::raw($delete);
+    }
+
 
 }
