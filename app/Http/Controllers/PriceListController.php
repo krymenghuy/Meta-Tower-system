@@ -104,7 +104,7 @@ class PriceListController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
 
-        $row = PriceList::verifiyPendingStudent($req->all(),$ss);
+        $row = PriceList::verifyPendingStudent($req->all(),$ss);
         return JDV::result($row);
     }
 
@@ -113,6 +113,31 @@ class PriceListController extends Controller
         if($ss->status_code !==200) return JDV::raw($ss);
         $row = new PriceList(null,$ss);
         $details =$row->studentPendingPaymentDetails($req->id);
+        return JDV::result($details);
+    }
+
+    function studentInvoice(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $find = PriceList::studentInvoice($req->all(),$ss);
+        return JDV::result($find);
+
+    }
+
+    function findStudent(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $find = PriceList::findStudent($req->all(),$ss);
+        return JDV::result($find);
+    }
+
+    function generateInvoiceDetails(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $details = PriceList::generateInvoiceDetails($req->id,$ss);
         return JDV::result($details);
     }
 }

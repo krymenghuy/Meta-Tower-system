@@ -423,7 +423,7 @@ class PriceList //extends Model
                 $tuition = $semester_tuition;
             }
 
-            return (object)['price_list_id' => $monthly_fee_info->price_list_id,'end_date'=> $end_date,'tuition'=>$tuition,'tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'weekly_tuition_due' => $weekly_tuition_due,'weeks' => $week,'monthly_tuition_due' => $monthly_tuition_due,'discount'=>$discount_info->discount,'after_discount' => $after_discount,'discount_amount' => $discount_amt];
+            return (object)['price_list_id' => $monthly_fee_info->price_list_id,'end_date'=> $end_date,'tuition'=>$tuition,'tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'weekly_tuition_due' => $weekly_tuition_due,'weeks' => $week,'monthly_tuition_due' => $monthly_tuition_due,'discount'=>$discount_info,'after_discount' => $after_discount,'discount_amount' => $discount_amt];
         }else{
             $price_list_id = $monthly_fee_info->price_list_id;
             $discount_info = $this->getPolicyDiscount($pmt_option,$price_list_id);
@@ -628,7 +628,7 @@ class PriceList //extends Model
     }
 
 
-    static function verifiyPendingStudent($arr,$ss){
+    static function verifyPendingStudent($arr,$ss){
         $d = (object)$arr;
         $instance = new PriceList(null,$ss);
         $v_rule = [
@@ -679,6 +679,7 @@ class PriceList //extends Model
             $preview = $instance->previewPendingPaymentDetails($arr,$id,$ss);
             $payment_info = $preview->payment_info;
 
+
             $pmt_arr = [
                 'pmt_option_id'=>$pmt_option_id,
                 'tuition' => $payment_info->tuition,
@@ -714,5 +715,123 @@ class PriceList //extends Model
         $prev = self::getCurrentProgram($id,$ss);
         $row = DB::table('programs')->where('prev_program_id',$prev->id)->get()->first();
         return $row;
+    }
+
+
+    static function studentInvoice($filter=[],$ss){
+        $campus = new Campus();
+        $branch_id = $ss->branch_id;
+        $academic_year = isset($filter['academic_year']) ? $filter['academic_year']:null;
+        $search_value =isset($filter['search_value'])?$filter['search_value']:null;
+        $current_page =isset($filter['current_page'])?$filter['current_page']:1;
+        $per_page =isset($filter['per_page'])?$filter['per_page']:10;
+        if(!is_numeric($current_page)) $current_page=1;
+        $skip_rows = ($current_page -1) * $per_page;
+
+        $str_search ="1=1";
+        $str_moreWhere="1=1";
+        if($search_value){
+            $skip_rows =0;
+            $search_value = escape_like_str($search_value);
+            $str_search ="(st.code ='$search_value' OR st.name LIKE '%$search_value%')";
+        }
+
+        $selectCols = 'p.status_id as pstatus_id,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.school_id';
+        $query = DB::table('students as st')
+                ->join('enrollments as e','e.student_id','=','st.id')
+                ->join('payments as p','p.enrollment_id','=','e.id')
+                ->join('sessions as s','s.id','=','e.session_id')
+                ->selectRaw($selectCols)
+                ->where('st.branch_id',$branch_id)
+                ->whereRaw($str_moreWhere)->whereRaw($str_search)
+                ->where('p.status_id','!=','NULL')
+                ->orderBy('id','desc');
+                if($academic_year){
+                    $query->where('academic_year',$academic_year);
+                }
+        $count_query = clone $query;
+        $count = $count_query->count('st.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+        foreach($rows as $row) {
+            $status = rand(0,1)?'New':'Old';
+            $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
+            $row->parent_info = Student::getChildParent($row->id);
+            unset($row->file_name);
+            $row->campus = $campus->details($row->campus_id,$ss)->name;
+            $row->level = Student::getProgramLevel($row->level_id);
+            $row->student_type = $status;
+            $row->status = $row->pstatus_id == 1? 'unpaid' : 'paid';
+            $row->previous_school = Student::getPrevSchool($row->school_id)->name;
+            unset($row->pstatus_id);
+        }
+
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
+
+    static function findStudent($filter=[],$ss){
+        $campus = new Campus();
+        $branch_id = $ss->branch_id;
+        $academic_year = isset($filter['academic_year']) ? $filter['academic_year']:null;
+        $search_value =isset($filter['search_value'])?$filter['search_value']:null;
+        $current_page =isset($filter['current_page'])?$filter['current_page']:1;
+        $per_page =isset($filter['per_page'])?$filter['per_page']:10;
+        if(!is_numeric($current_page)) $current_page=1;
+        $skip_rows = ($current_page -1) * $per_page;
+
+        $str_search ="1=1";
+        $str_moreWhere="1=1";
+        if($search_value){
+            $skip_rows =0;
+            $search_value = escape_like_str($search_value);
+            $str_search ="(st.code ='$search_value' OR st.name LIKE '%$search_value%')";
+        }
+
+        $selectCols = 'p.status_id as pstatus_id,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.school_id';
+        $query = DB::table('students as st')
+                ->join('enrollments as e','e.student_id','=','st.id')
+                ->join('payments as p','p.enrollment_id','=','e.id')
+                ->join('sessions as s','s.id','=','e.session_id')
+                ->selectRaw($selectCols)
+                ->where('st.branch_id',$branch_id)
+                ->whereRaw($str_moreWhere)->whereRaw($str_search)
+                ->where('p.status_id','!=','NULL') //* for paid and unpaid
+                ->where('e.status_id','!=',1) //* for verified up to paid
+                ->orderBy('id','desc');
+                if($academic_year){
+                    $query->where('academic_year',$academic_year);
+                }
+        $count_query = clone $query;
+        $count = $count_query->count('st.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+        foreach($rows as $row) {
+            $status = rand(0,1)?'New':'Old';
+            $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
+            $row->parent_info = Student::getChildParent($row->id);
+            unset($row->file_name);
+            $row->campus = $campus->details($row->campus_id,$ss)->name;
+            $row->level = Student::getProgramLevel($row->level_id);
+            $row->student_type = $status;
+            $row->status = $row->pstatus_id == 1? 'unpaid' : 'paid';
+            $row->previous_school = Student::getPrevSchool($row->school_id)->name;
+            unset($row->pstatus_id);
+        }
+
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
+
+
+    static function generateInvoiceDetails($id,$ss){
+        $campus = new Campus();
+        $row = DB::table('students as s')->where('s.id',$id)
+                ->join('enrollments as e','e.student_id','=','s.id')
+                ->join('payments as p','p.enrollment_id','=','e.id')
+                ->selectRaw('p.tuition,s.code as student_code,s.name as student_name,e.campus_id,e.level_id')
+                ->get()->first();
+        if(!$row) return DV::error('Not Found');
+        $row->campus = $campus->details($row->campus_id,$ss)->name;
+        $row->level = Student::getProgramLevel($row->level_id);
+        $row->amount = $row->tuition;
+        return $row;
+
     }
 }

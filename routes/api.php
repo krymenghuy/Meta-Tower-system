@@ -113,8 +113,11 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/list-paginate',[StudentController::class,'studentPaginate']);
         Route::post('/delete-student',[StudentController::class,'deleteStudent']);
         Route::post('/details-student',[StudentController::class,'studentDetials']);
-        Route::post('/invoice',[StudentController::class,'studentInvoice']);
-        Route::post('/find',[StudentController::class,'findStudent']);
+
+        //** PriceListController */
+        Route::post('/invoice',[PriceListController::class,'studentInvoice']);
+        Route::post('/find',[PriceListController::class,'findStudent']);
+        Route::post('/generate-invoice/details',[PriceListController::class,'generateInvoiceDetails']);
     });
     //end::StudentController
 
