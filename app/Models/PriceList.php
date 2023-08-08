@@ -645,6 +645,7 @@ class PriceList //extends Model
         unset($inputs['pmt_option_id']);
         if($pmt_option_id == 4 && !isset($weeks)) return DV::error('weeks must be input');
         else if($pmt_option_id == 5 && !isset($days)) return DV::error('days must be input');
+
         $arr = [
             'level_id' => $inputs['level_id'],
             'session_id' => $inputs['session_id'],
@@ -652,6 +653,7 @@ class PriceList //extends Model
             'academic_year' => $inputs['academic_year'],
             'status_id' => 2
         ];
+
         $id = saveData($ss,'enrollments',['student_id' => $id],$arr,[],1);
         if($pmt_option_id){
             $enr = DB::table('enrollments')->where('student_id',$id)->selectRaw('id')->first();
