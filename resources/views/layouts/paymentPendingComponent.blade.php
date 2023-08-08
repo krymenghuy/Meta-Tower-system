@@ -1,7 +1,7 @@
 <div id="_main_paymentPendingComponent" class="mobile-padding p-3" style="display:none">
     <div class="p-3 rounded-3 bg-white">
         <div class="width--search-inner">
-            <select class="modal-select2"></select>
+            <select id="_ppd_search" class="modal-select2"></select>
         </div>
     </div>
     <div id="_ppd_tbl" class="table-responsive p-3 bg-white rounded-3 mt-3"></div>

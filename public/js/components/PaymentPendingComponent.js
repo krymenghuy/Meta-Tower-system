@@ -4,6 +4,8 @@ var PaymentPendingComponent = new function(){
     this.title_prop = 'Payment Pending';
     this.self = $('#_main_paymentPendingComponent');
 
+    this.elSearch = mThis.self.find('#_ppd_search');
+
     this.cols = [{
         title: "Name Khmer",
         data: "name_kh"
@@ -64,11 +66,30 @@ var PaymentPendingComponent = new function(){
             };
             PaymentPendingDialog.show(op);
         });
+
+        mThis.elSearch.on('change',function(e){
+            e.preventDefault();
+            let op = {
+                'status_id': $(this).val()
+            };
+            mThis.itemView.showPage(op);
+        })
+    }
+
+    this.prepareOptions = () => {
+        window.vsapi.call(`${main_view.base_url}/api/settings/payment-options`,null,null).then(res => {
+            let data = {};
+            if(res.status_code === 200){
+                data = res.data;
+            }
+            VSUtil.setComboItems(mThis.elSearch,data,'id','name',null,null,null);
+        });
     }
 
     this.show = (options) => {
         if(!options) options = {};
         mThis.itemView.showPage(null,null,() => {
+            mThis.prepareOptions();
             main_view.setTitle(mThis.title_prop);
             mThis.self.show().siblings().hide();
         });
