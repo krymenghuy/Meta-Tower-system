@@ -537,7 +537,7 @@ class PriceList //extends Model
         $pmt_status = isset($filter['pmt_status'])?$filter['pmt_status']:null;
         $per_page =isset($filter['per_page'])?$filter['per_page']:10;
         if(!is_numeric($current_page)) $current_page=1;
-        $status_id = isset($filter['status_id'])?$filter['status_id']:1;
+        $status_id = isset($filter['status_id'])?$filter['status_id']:null;
         $skip_rows = ($current_page -1) * $per_page;
 
 
@@ -548,15 +548,16 @@ class PriceList //extends Model
             $search_value = escape_like_str($search_value);
             $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
         }
-
         $selectCols = 'e.status_id,st.name as status,s.name,s.name_kh,ep.id,ep.tuition,ep.tuition_due,ep.tuition_paid';
         $query = DB::table('payments as ep')
                 ->join('enrollments as e','e.id','=','ep.enrollment_id')
                 ->join('students as s','s.id','=','e.student_id')
                 ->join('status as st','st.id','=','e.status_id')
                 ->selectRaw($selectCols)
-                ->where('e.status_id',$status_id)
                 ->where('ep.branch_id',$branch_id);
+                if ($status_id !== null) {
+                    $query->where('e.status_id',$status_id);
+                }
                 // ->whereRaw($str_moreWhere)->whereRaw($str_search);
         $count_query = clone $query;
         $count = $count_query->count('ep.id');
@@ -572,6 +573,13 @@ class PriceList //extends Model
                 ->where('s.id',$id)
                 ->selectRaw('e.level_id,e.session_id,e.campus_id,e.start_date,ep.pmt_option_id')
                 ->first();
+                if($row->pmt_option_id == 1){
+                    $row->months = 3;
+                }else if($row->pmt_option_id == 2){
+                    $row->months = 6;
+                }else if($row->pmt_option_id == 3){
+                    $row->months = 12;
+                }
         if(!$row) return $row = null;
         return $row;
     }
