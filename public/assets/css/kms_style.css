@@ -450,11 +450,9 @@ li.kt-menu__section {
 }
 
 .data-text {
-    height: 65vh !important;
     background-color: transparent;
     outline: none;
     border: none;
-    resize: none;
 }
 
 .div--att-empty {
