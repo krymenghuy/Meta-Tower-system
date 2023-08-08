@@ -31,7 +31,7 @@
                 <span class="trans-text" data-langprop="buttons.Find"></span>
             </button>
         </div>
-        <div id="_fns_list" class="overflow-auto p-3 mt-3 panel-student-list"></div>
+        <div id="_fns_list" class="d-flex gap-2 flex-column overflow-auto p-3 mt-3"></div>
     </div>
 </div>
 

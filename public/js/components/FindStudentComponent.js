@@ -22,7 +22,6 @@ var FindStudentComponent = new function(){
         mThis.btnFilter.on('click',function(e){
             e.preventDefault();
             let p = mThis.getDataForm(mThis.div_list);
-            console.log(p);
             mThis.displayStudentList(p);
         });
     }
@@ -62,9 +61,8 @@ var FindStudentComponent = new function(){
         window.vsapi.call(`${main_view.base_url}/api/student/find`,op,null).then(res => {
             let d = [];
             if(res.status_code === 200){
-                d = StringSanitizer.sanitizeObject(res.data);
+                d = res.data;
             }
-            console.log(d);
             d = d.data;
 
             let html = null;
@@ -79,17 +77,17 @@ var FindStudentComponent = new function(){
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Student ID"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.student_id}</p>
+                                    <p class="text-nowrap">${item.student_code}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Name"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.student_name}</p>
+                                    <p class="text-nowrap">${item.name}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Female"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.gender}</p>
+                                    <p class="text-nowrap">${item.sex === 'M' ? 'Male':'Female'}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Date of Birth"></p>
@@ -101,17 +99,17 @@ var FindStudentComponent = new function(){
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Parent Name"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.parent_name}</p>
+                                    <p class="text-nowrap">${item.parent_info && item.parent_info.parent_name}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Parent Phone"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.parent_phone}</p>
+                                    <p class="text-nowrap">${item.parent_info && item.parent_info.phone_number}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Parent Email"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.parent_email}</p>
+                                    <p class="text-nowrap">${item.parent_info && item.parent_info.email}</p>
                                 </div>
                             </div>
                             <div class="col">
@@ -126,10 +124,6 @@ var FindStudentComponent = new function(){
                                             <a href="javascript:void(0)" class="btn-fns-details border-bottom pb-2" data-id="${item.id}">
                                                 <i class="fa-solid fa-up-right-from-square fs-5"></i>
                                                 <span class="ps-2 trans-text" data-langprop="titles.Detials"></span>
-                                            </a>
-                                            <a href="javascript:void(0)" class="btn-fns-edit border-bottom py-2" data-id="${item.id}">
-                                                <i class="fa-regular fa-pen-to-square fs-5"></i>
-                                                <span class="ps-2 trans-text" data-langprop="titles.Edit"></span>
                                             </a>
                                             <a href="javascript:void(0)" class="btn-fns-delete pt-2" data-id="${item.id}">
                                                 <i class="fa-regular fa-trash-can fs-5"></i>
@@ -160,14 +154,14 @@ var FindStudentComponent = new function(){
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Class"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.class}</p>
+                                    <p class="text-nowrap">${item.level}</p>
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Section"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.section}</p>
+                                    <p class="text-nowrap">${item.session}</p>
                                 </div>
                             </div>
                             <div class="col">
@@ -195,7 +189,7 @@ var FindStudentComponent = new function(){
 
         mThis.panelStudentList.find('.btn--Options').on('click',function(e){
             e.preventDefault();
-            div.toggle('slow');
+            $(this).find('.w-options').toggle('slow');
         });
 
         mThis.panelStudentList.find('.btn--gnInvoice').on('click',function(e){
@@ -213,15 +207,12 @@ var FindStudentComponent = new function(){
 
             div.on('click','a.btn-fns-details',function(e){
                 e.preventDefault();
-                console.log("Clicked Details!");
-            });
-
-            div.on('click','a.btn-fns-edit',function(e){
-                e.preventDefault();
                 let op = {
                     'id': $(this).data('id')
                 };
-                console.log(op);
+                mThis.loadFormDetails(op,(data) => {
+                    StudentDetailDialog.show(data);
+                });
             });
 
             div.on('click','a.btn-fns-delete',function(e){
@@ -232,7 +223,7 @@ var FindStudentComponent = new function(){
 
                 cv_interact.confirm('Delete this information?',{title: 'Delete Information', context: 'delete'},(e) => {
                     if(e){
-                        window.vsapi.call(`${main_view.base_url}/api/`,op,null).then(res => {
+                        window.vsapi.call(`${main_view.base_url}/api/student/delete-verified`,op,null).then(res => {
                             if(res.status_code === 200){
                                 mThis.displayStudentList();
                             }
@@ -244,6 +235,16 @@ var FindStudentComponent = new function(){
                 });
             });
         }
+    }
+
+    this.loadFormDetails = (op, onFinish = null) => {
+        window.vsapi.call(`${main_view.base_url}/api/student/details-student`,op,null).then(res => {
+            let data = {};
+            if(res.status_code === 200){
+                data = res.data;
+            }
+            if(typeof onFinish === 'function') onFinish(data);
+        });
     }
 
     this.show = (options) => {
