@@ -73,7 +73,7 @@ class Deposite //extends Model
         $branch_id = $ss->branch_id;
         $row = DB::table('deposite as d')
                 ->join('program_levels as l','l.id','=','d.level_id')
-                ->selectRaw('d.deposite_amount as amount,d.status_id,d.student_name,d.id,l.name as level,d.parent_phone')
+                ->selectRaw('d.date_of_birth,d.expire_date,d.note,d.level_id,d.campus_id,d.session_id,d.deposite_amount as amount,d.status_id,d.student_name,d.id,l.name as level,d.parent_phone')
                 ->where('d.branch_id',$branch_id)
                 ->where('d.id',$id)
                 ->get()->first();

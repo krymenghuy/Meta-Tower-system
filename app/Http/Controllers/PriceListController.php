@@ -69,7 +69,7 @@ class PriceListController extends Controller
 
         $row = new PriceList(null,$ss);
         // $fee = $row->getWeeklyTuitionDue();
-        $fee = $row->payment_processing($req->all(),$req->pmt_option_id);
+        $fee = $row->payment_processing($req->all());
         return JDV::result($fee);
     }
 
@@ -113,7 +113,6 @@ class PriceListController extends Controller
         if($ss->status_code !==200) return JDV::raw($ss);
         $row = new PriceList(null,$ss);
         $details =$row->studentPendingPaymentDetails($req->id);
-
         return JDV::result($details);
     }
 }
