@@ -13,7 +13,6 @@ class Student //extends Model
 {
     // use HasFactory;
 
-
     static function saveStudent($arr,$id=null,$ss){ //** register only //without payment yet */
         $v_rule = [
             'name' => '1|string|1,30',
@@ -134,12 +133,12 @@ class Student //extends Model
             //** save or update payment table
             if($enrollment_id){
                 $en_payment_data = [
-                    'tuition' => $tuition,
-                    'tuition_due' => $tuition_due,
+                    // 'tuition' => $tuition,
+                    // 'tuition_due' => $tuition_due,
                     'pmt_status'=> $pmt_status,
-                    'tuition_paid' => $tuition_paid,
+                    // 'tuition_paid' => $tuition_paid,
                     'term_id' => $term_id,
-                    'pmt_option_id' => 2,//* defualt 2 = semester
+                    'pmt_option_id' => $id?null:2,//* defualt 2 = semester
                     'enrollment_id' => $enrollment_id
                 ];
                 $savePaymentID = saveData($ss,'payments',['enrollment_id' => $id?$enrollment_id:null],$en_payment_data,[],1);
