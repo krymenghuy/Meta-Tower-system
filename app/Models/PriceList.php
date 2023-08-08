@@ -260,7 +260,7 @@ class PriceList //extends Model
         $total = number_format($x * $daily_fee,2);
         $per_day = number_format($total/$x,2);
 
-        return (object)['tuition' => $total,'tuition_due' => $total,'per_day' => $per_day,'days'=>$x];
+        return (object)['price_list_id' => $monthly_fee_info->price_list_id,'tuition' => $total,'tuition_due' => $total,'per_day' => $per_day,'days'=>$x];
     }
 
      /**
@@ -311,7 +311,7 @@ class PriceList //extends Model
                 $total_tuition_due = $monthly_fee * $d->months;
             }
 
-            return (object)['first_month_end_date'=>$last_day_in_month,'tuition' => $total_tuition_due,'tuition_due'=>$total_tuition_due];
+            return (object)['price_list_id' => $monthly_fee_info->price_list_id,'first_month_end_date'=>$last_day_in_month,'tuition' => $total_tuition_due,'tuition_due'=>$total_tuition_due];
         }else if($d->months < 6){
             $end_date = findFutureMonths($d->start_date,$d->months-1);//** */
             $end_date =$end_date->end_date;
@@ -355,7 +355,7 @@ class PriceList //extends Model
             $term_tuition_due = $base_amount - $discount_amt;
             $total_tuition_due = $term_tuition_due + $weekly_tuition_due + $monthly_tuition_due;
             $tuition = $monthly_tuition_due + $base_amount + $weekly_tuition_due;
-            return (object)['end_date' => $end_date,'tuition'=>$tuition,'tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'discount'=>$discount_info,'weekly_tuition'=>$weekly_tuition_due,'monthly_tuition'=>$monthly_tuition_due];
+            return (object)['price_list_id' => $monthly_fee_info->price_list_id,'end_date' => $end_date,'tuition'=>$tuition,'tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'discount'=>$discount_info,'weekly_tuition'=>$weekly_tuition_due,'monthly_tuition'=>$monthly_tuition_due];
         }else if($d->months <12){
             $weekly_tuition_due = 0;
             $months = isset($d->months) ? $d->months :$d->months=6;
@@ -423,7 +423,7 @@ class PriceList //extends Model
                 $tuition = $semester_tuition;
             }
 
-            return (object)['end_date'=> $end_date,'tuition'=>$tuition,'tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'weekly_tuition_due' => $weekly_tuition_due,'weeks' => $week,'monthly_tuition_due' => $monthly_tuition_due,'discount'=>$discount_info->discount,'after_discount' => $after_discount,'discount_amount' => $discount_amt];
+            return (object)['price_list_id' => $monthly_fee_info->price_list_id,'end_date'=> $end_date,'tuition'=>$tuition,'tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'weekly_tuition_due' => $weekly_tuition_due,'weeks' => $week,'monthly_tuition_due' => $monthly_tuition_due,'discount'=>$discount_info->discount,'after_discount' => $after_discount,'discount_amount' => $discount_amt];
         }else{
             $price_list_id = $monthly_fee_info->price_list_id;
             $discount_info = $this->getPolicyDiscount($pmt_option,$price_list_id);
@@ -477,7 +477,7 @@ class PriceList //extends Model
                 $end_date =$end_date->end_date;
             }
 
-            return (object)['end_date'=>$end_date,'tuition_due' => $total_tuition_due,'discount_amount' => $discount_amt,'weekly_tuition'=>$total_weekly_Fee->tuition_due];
+            return (object)['price_list_id' => $monthly_fee_info->price_list_id,'end_date'=>$end_date,'tuition_due' => $total_tuition_due,'discount_amount' => $discount_amt,'weekly_tuition'=>$total_weekly_Fee->tuition_due];
         }
     }
 
@@ -491,7 +491,7 @@ class PriceList //extends Model
         $x = $weekly_fee * $d->weeks;
         $days = $d->weeks * 7;
         $end_date = dateAdd('day',$days,$d->start_date);
-        return (object)['end_date' => $end_date,'tuition'=>$x,'tuition_due'=> $x==0?$weekly_fee:$x];
+        return (object)['price_list_id'=>$monthly_fee_info->price_list_id,'end_date' => $end_date,'tuition'=>$x,'tuition_due'=> $x==0?$weekly_fee:$x];
     }
 
     /**
@@ -628,7 +628,7 @@ class PriceList //extends Model
     }
 
 
-    static function updatePendingStudent($arr,$ss){
+    static function verifiyPendingStudent($arr,$ss){
         $d = (object)$arr;
         $instance = new PriceList(null,$ss);
         $v_rule = [
@@ -645,7 +645,7 @@ class PriceList //extends Model
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $id = $inputs['id'];
-        $program = self::getProgramByLevel($ss);
+        $program = self::getProgramByLevel($inputs['level_id'],$ss);
         $inputs['start_date'] = convertDate($inputs['start_date']);
         $pmt_option_id = isset($inputs['pmt_option_id'])? $inputs['pmt_option_id']:null;
         $weeks = $inputs['weeks'];
@@ -678,22 +678,31 @@ class PriceList //extends Model
             ];
             $preview = $instance->previewPendingPaymentDetails($arr,$id,$ss);
             $payment_info = $preview->payment_info;
+
             $pmt_arr = [
                 'pmt_option_id'=>$pmt_option_id,
                 'tuition' => $payment_info->tuition,
                 'tuition_due' => $payment_info->tuition_due,
+                'status_id' => 1,
+                'program_id' => $program->program_id,
+                'level_id' => $inputs['level_id'],
+                'session_id' =>  $inputs['session_id'],
+                'price_list_id' => $payment_info->price_list_id,
             ];
             $set_pmt_option = saveData($ss,'payments',['enrollment_id' => $enr->id],$pmt_arr,[],1);
         }
 
-        return DV::depends($id,'Verified');
+        return DV::depends($id,$payment_info);
 
     }
 
-    static function getProgramByLevel($ss){
+
+
+    static function getProgramByLevel($id,$ss){
         return DB::table('programs as p')
                 ->join('program_levels as pl','pl.program_id','=','p.id')
-                ->selectRaw('p.name as program,p.id')
+                ->selectRaw('p.name as program,p.id as program_id')
+                ->where('pl.id',$id)
                 ->get()->first();
     }
 
