@@ -105,7 +105,7 @@ class PriceListController extends Controller
         if($ss->status_code !==200) return JDV::raw($ss);
 
         $row = PriceList::verifyPendingStudent($req->all(),$ss);
-        return JDV::result($row);
+        return JDV::raw($row);
     }
 
     function getStudentPendingPaymentDetails(Request $req){
