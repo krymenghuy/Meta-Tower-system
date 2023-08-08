@@ -407,5 +407,36 @@ class Student //extends Model
         return DV::depends($delete,['action' => 'Deleted']);
     }
 
+    static function deleteVerifiedStudent($id,$ss){
+        $branch_id = $ss->branch_id;
+        $arr = [
+            'status_id' => 1,
+        ];
+        $enr = DB::table('enrollments')->where('student_id',$id)->selectRaw('id')->get()->first();
+        $delete = saveData($ss,'enrollments',['student_id' => $id],$arr,[],1);
+        if($delete){
+            $change_fields = [
+                "tuition" => 0,
+                "tuition_due" => 0,
+                "tuition_paid" => 0,
+                "session_id" => 0,
+                "status_id" => 0,
+                "price_list_id" => 0,
+                "program_id" => 0,
+                "level_id" => 0,
+            ];
+            $updated = saveData($ss,'payments',['enrollment_id' => $enr->id],$change_fields,[],1);
+        }
+        return DV::depends($updated,'Delete verified student');
+    }
+
+    static function editVerifiedStudent($arr){
+        $d = (object)$arr;
+        $id = $d->id;
+
+        $update = saveData($ss,'');
+
+    }
+
 
 }
