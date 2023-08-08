@@ -4,18 +4,21 @@ var FindStudentComponent = new function(){
     this.title_prop = "Find Student";
     this.self = $('#_main_findStudentComponent');
 
-    this.div_filter = mThis.self.find('.div--ssp');
-    this.div_list = mThis.self.find('.div--fsd');
-    this.btnFind = mThis.self.find('.btn--find');
+    this.div_filter = mThis.self.find('#div--ssp');
+    this.div_list = mThis.self.find('#div--fsd');
+    this.btnFind = mThis.self.find('#btn--find');
 
-    this.panelStudentList = mThis.div_list.find('.panel-student-list');
+    this.panelStudentList = mThis.div_list.find('#_fns_list');
 
     this.init = () => {}
 
     mThis.btnFind.on('click',function(e){
         e.preventDefault();
         let p = mThis.getDataForm();
-        mThis.div_list.show().siblings().hide();
+        console.log(p);
+        mThis.displayStudentList(p,() => {
+            mThis.div_list.show().siblings().hide();
+        });
     });
 
     this.getDataForm = () => {
@@ -28,15 +31,37 @@ var FindStudentComponent = new function(){
         return p;
     }
 
-    this.displayStudentList = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/`,null,null).then(res => {
-            let data = [];
+    this.prepareOptions = () => {
+        window.vsapi.call(`${main_view.base_url}/api/academic-year/list`,null,null,false).then(res => {
+            let data = {};
             if(res.status_code === 200){
-                data = StringSanitizer.sanitizeObject(res.data);
+                data = res.data;
             }
+            mThis.div_filter.find('.data-input').each(function(){
+                let el = $(this);
+                let f = el.data('field');
+                switch(f){
+                    case 'academic_year':
+                        VSUtil.setComboItems(el,data,'academic_year','academic_year',null,null,null);
+                        break;
+                    default:
+                        break;
+                }
+            });
+        });
+    }
+
+    this.displayStudentList = (op=null, onFinish = null) => {
+        window.vsapi.call(`${main_view.base_url}/api/student/find`,op,null).then(res => {
+            let d = [];
+            if(res.status_code === 200){
+                d = StringSanitizer.sanitizeObject(res.data);
+            }
+            console.log(d);
+            d = d.data;
 
             let html = null;
-            data.map(item => {
+            d.map(item => {
                 html = [html,`<div class="d-flex p-3 bg-white h-info-student">
                     <div class="div-img">
                         <img src="${item.image_url}" alt=""/>
@@ -151,11 +176,9 @@ var FindStudentComponent = new function(){
             });
 
             mThis.panelStudentList.html(html);
-
             LocaleManager.translateZone('_fns_list');
-
             mThis.controlOption();
-
+            mThis.prepareOptions();
             if(typeof onFinish === 'function') onFinish();
         });
     }
@@ -218,7 +241,7 @@ var FindStudentComponent = new function(){
 
     this.show = (options) => {
         if(!options) options = {};
-        mThis.displayStudentList(() => {
+        mThis.displayStudentList(null,() => {
             main_view.setTitle(mThis.title_prop);
             mThis.self.show().siblings().hide();
         });

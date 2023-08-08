@@ -46,7 +46,6 @@ var RegistrationComponent = new function(){
             e.preventDefault();
             let p = mThis.getDataForm(mThis.div_input, 'data-input');
             p = mThis.prepareData(p);
-            console.log(p);
             window.vsapi.call(`${main_view.base_url}/api/student/registration`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.options.photo = null;
@@ -568,7 +567,7 @@ let StudentDetailDialog = new function(){
 
     this.setDataForm = (d) => {
         d = d ? d : {};
-        d['sex'] = d['sex'] == 'M' ? 'Male':'Female';
+        d['sex'] = d['sex'] === 'M' ? 'Male':'Female';
         mThis.self.find('.data-show').each(function(){
             let el = $(this);
             let f = el.data('field');
