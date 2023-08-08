@@ -412,7 +412,6 @@ class PriceList //extends Model
                 $after_discount = ($semester_tuition + $pay_month) - $discount_amt;
                 $total_tuition_due = $after_discount + $weekly_tuition_due;
                 $tuition = $after_discount + $total_weekly_Fee->tuition_due + $pay_month;
-
             }else {
                 $week ="full month no week count";
                 $semester_tuition = $d->months * $price;
@@ -538,7 +537,9 @@ class PriceList //extends Model
         $pmt_status = isset($filter['pmt_status'])?$filter['pmt_status']:null;
         $per_page =isset($filter['per_page'])?$filter['per_page']:10;
         if(!is_numeric($current_page)) $current_page=1;
+        $status_id = isset($filter['status_id'])?$filter['status_id']:1;
         $skip_rows = ($current_page -1) * $per_page;
+
 
         $str_search ="1=1";
         $str_moreWhere="1=1";
@@ -548,13 +549,13 @@ class PriceList //extends Model
             $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 'st.name as status,s.name,s.name_kh,ep.id,ep.tuition,ep.tuition_due,ep.tuition_paid';
+        $selectCols = 'e.status_id,st.name as status,s.name,s.name_kh,ep.id,ep.tuition,ep.tuition_due,ep.tuition_paid';
         $query = DB::table('payments as ep')
                 ->join('enrollments as e','e.id','=','ep.enrollment_id')
                 ->join('students as s','s.id','=','e.student_id')
                 ->join('status as st','st.id','=','e.status_id')
                 ->selectRaw($selectCols)
-                ->where('e.status_id',1)
+                ->where('e.status_id',$status_id)
                 ->where('ep.branch_id',$branch_id);
                 // ->whereRaw($str_moreWhere)->whereRaw($str_search);
         $count_query = clone $query;
@@ -568,20 +569,17 @@ class PriceList //extends Model
         $row = DB::table('enrollments as e')
                 ->join('students as s','s.id','=','e.student_id')
                 ->join('payments as ep','ep.enrollment_id','=','e.id')
-                ->join('pmt_parameters as p','p.id','=','ep.parameter_id')
                 ->where('s.id',$id)
-                ->selectRaw('e.level_id,e.session_id,e.campus_id,e.start_date,p.pmt_option_id')
+                ->selectRaw('e.level_id,e.session_id,e.campus_id,e.start_date,ep.pmt_option_id')
                 ->first();
         if(!$row) return $row = null;
         return $row;
     }
 
     function previewPendingPaymentDetails($arr=[],$id=null,$ss){
-
         $d = (object)$arr;
         $weeks = isset($d->weeks) ? $d->weeks :null;
         $days = isset($d->days) ? $d->days :null;
-
 
         $selectCols = 'ep.pmt_option_id,s.name,e.campus_id,e.program_id,e.level_id,e.session_id,e.academic_year,e.start_date';
 
