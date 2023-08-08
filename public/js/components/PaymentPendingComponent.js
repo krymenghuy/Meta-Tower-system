@@ -126,6 +126,7 @@ let PaymentPendingDialog = new function(){
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
         let p = mThis.getDataForm();
+        console.log(p);
         window.vsapi.call(`${main_view.base_url}/api/price-list/update/pending-payment`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
