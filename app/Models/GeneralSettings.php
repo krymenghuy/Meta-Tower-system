@@ -249,13 +249,20 @@ class GeneralSettings //extends Model
         ];
     }
 
-    static function otherFeeFormOption($ss){
-        return DB::table('other_fees')->where('branch_id',$ss->branch_id)->selectRaw('name,id')->get();
+    static function otherFeeFormOption($d,$ss){
+            $rows = DB::table('other_fees')
+                ->where('branch_id',$ss->branch_id);
+                if($d->academic_year){
+                    $rows->where('academic_year',$d->academic_year);
+                }
+            $list = $rows->selectRaw('name,id,academic_year')->get();
+            return $list;
+
     }
 
     static function getFeetypeInfo($d,$ss){
         $name = $d->name;
         $academic_year = $d->academic_year;
-        return DB::table('other_fees')->where('name',$name)->where('academic_year',$academic_year)->selectRaw('name,amount,academic_year')->get()->first();
+        return DB::table('other_fees')->where('name',$name)->where('academic_year',$academic_year)->selectRaw('name,name as fee_type,amount,academic_year,description,amount as total')->get()->first();
     }
 }

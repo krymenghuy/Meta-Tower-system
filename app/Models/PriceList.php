@@ -843,7 +843,7 @@ class PriceList //extends Model
         $row = DB::table('students as s')->where('s.id',$id)
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->join('payments as p','p.enrollment_id','=','e.id')
-                ->selectRaw('p.tuition_due,p.policy_discount,e.start_date,e.tuition_end_date,p.tuition,s.code as student_code,s.name as student_name,e.campus_id,e.level_id')
+                ->selectRaw('e.academic_year,p.tuition_due,p.policy_discount,e.start_date,e.tuition_end_date,p.tuition,s.code as student_code,s.name as student_name,e.campus_id,e.level_id')
                 ->get()->first();
         if(!$row) return DV::error('Not Found');
         $row->campus = $campus->details($row->campus_id,$ss)->name;
@@ -852,8 +852,10 @@ class PriceList //extends Model
         $row->level = Student::getProgramLevel($row->level_id);
         $row->amount = $row->tuition;
         $row->total = $row->tuition_due;
+        $row->fee_type = 'tuition_fee';
         unset($row->tuition);
         unset($row->tuition_due);
+        unset($row->policy_discount);
         return $row;
     }
 
@@ -871,13 +873,17 @@ class PriceList //extends Model
         $inputs = $res->values;
         $student_id = $inputs['student_id'];
         $student = DB::table('students')->where('branch_id',$ss->branch_id)->where('id',$student_id)->selectRaw('id')->first();
-        $enr_info = DB::table('enrollments')->where('student_id',$student->id)->selectRaw('start_date,tuition_end_date,academic_year')->first();
+        $enr_info = DB::table('enrollments as e')->where('student_id',$student->id)
+                    ->join('payments as p','p.enrollment_id','=','e.id')
+                    ->selectRaw('e.start_date,e.tuition_end_date,e.academic_year,p.policy_discount')
+                    ->first();
         $inputs['due_date'] = convertDate($inputs['due_date']);
         $qty = $inputs['qty'];
         unset($inputs['qty']);
         $fee_types = $inputs['fee_types'];
         unset($inputs['fee_types']);
         $keep_arr = [];
+        $amount = 0;
         $save_inv = saveData($ss,'invoices',["id" => null],$inputs,[],1);
         if($save_inv){
             DB::table('invoices')->where('id',$save_inv)->update([
@@ -894,12 +900,15 @@ class PriceList //extends Model
                     $fee['price'] = self::getTuitionDueByStudent($student->id);
                     $fee['date_range'] = $enr_info->start_date . ' to ' . $enr_info->tuition_end_date;
                     $fee['fee_type'] = 'tuition_fee';
+                    $fee['discount'] = $enr_info->policy_discount;
                 }
 
-                $data_rows = DB::table('other_fees')->where('academic_year',$enr_info->academic_year)->where('name',$fee['fee_type'])->get();
+                $data_rows = DB::table('other_fees')->where('academic_year',$enr_info->academic_year)->where('name',$fee['fee_type'])->selectRaw('amount,start_date,end_date,description')->get();
                 foreach($data_rows as $row){
                     $fee['price'] = $row->amount;
-                    $keep_arr[] = $row->name;
+                    $fee['date_range'] = isset($row->start_date)?$row->start_date . ' to ' . $row->end_date:null;
+                    $fee['description'] = $row->description;
+                    $keep_arr[] = $row->amount;
                 }
 
                 // $inv_items = [
@@ -912,9 +921,10 @@ class PriceList //extends Model
                 // ];
                 $invoice_item = saveData($ss,'invoice_item',["id"=>null],$fee,[],1);
             }
-
+            $amount = array_sum($keep_arr) + self::getTuitionDueByStudent($student->id) ;
+            DB::table('invoices')->where('id',$save_inv)->update(['amount'=>$amount]);
         }
-        return ;
+        return $keep_arr;
     }
 
     static function setInvoiceCode($ss,$newID){
