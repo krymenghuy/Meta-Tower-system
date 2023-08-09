@@ -73,7 +73,7 @@
                         <p class="pb-0 mb-1">
                             <span class="width-invoice-text">Invoice Date</span>
                             <span class="px-2">:</span>
-                            <span class="data-invoice"></span>
+                            <span class="data-invoice" data-field="inv_date"></span>
                         </p>
                         <p class="pb-0 mb-1">
                             <span class="width-invoice-text">Due Date</span>
@@ -92,9 +92,6 @@
                 </button>
                 <button class="btn btn-primary btn-sm" type="button">
                     <span class="trans-text" data-langprop="buttons.Generate"></span>
-                </button>
-                <button class="btn btn-primary btn-sm" type="button">
-                    <span class="trans-text" data-langprop="buttons.Generate and Receive"></span>
                 </button>
             </div>
         </div>

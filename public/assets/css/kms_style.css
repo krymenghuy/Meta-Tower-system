@@ -573,8 +573,10 @@ li.kt-menu__section {
     display: inline-flex;
 }
 
+.form-select-extend,
 .form-date:focus,
 .form-date{
     border:none;
     outline:none;
+    background-color: transparent;
 }
