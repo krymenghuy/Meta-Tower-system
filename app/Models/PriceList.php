@@ -955,7 +955,7 @@ class PriceList //extends Model
                 ->where('s.id',$d->id)
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->join('payments as p','p.enrollment_id','=','e.id')
-                ->selectRaw('e.start_date,e.term_id,e.program_id,e.level_id,e.session_id,e.campus_id,p.pmt_option_id,e.academic_year')
+                ->selectRaw('p.tuition_due,e.id as enr_id,e.start_date,e.term_id,e.program_id,e.level_id,e.session_id,e.campus_id,p.pmt_option_id,e.academic_year')
                 ->get()->first();
         $current_level = self::getCurrentLevel($row->level_id,$ss);
         $last_level = DB::table('program_levels')->where('program_id',$current_level->program_id)->selectRaw('id,name')->orderBy('id','desc')->first();
@@ -984,6 +984,14 @@ class PriceList //extends Model
                     'price_list_id' => $current_payment_info->price_list_id
                 ];
                 saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
+                saveData($ss,'payments',['enrollment_id' => $row->enr_id],[
+                    'pmt_status'=>'paid',
+                    'status_id' => 2,
+                    'tuition_paid' => $row->tuition_due
+                ],[],1);
+                saveData($ss,'enrollments',['id' => $row->enr_id],[
+                    'status_id' => 3,//* paid
+                ],[],1);
             }
             if(isset($current_payment_info->status) == 'Error') return DV::error($current_payment_info->error_message);
 
@@ -1017,6 +1025,7 @@ class PriceList //extends Model
                 'start_date' => $row->start_date,
 
             ]);
+
             if(isset($current_payment_info->status) == 'Error') return DV::error($current_payment_info->error_message);
             if($current_payment_info){
                 $pre_enr = [
@@ -1029,6 +1038,14 @@ class PriceList //extends Model
                     'price_list_id' => $current_payment_info->price_list_id
                 ];
                 saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
+                saveData($ss,'payments',['enrollment_id' => $row->enr_id],[
+                    'pmt_status'=>'paid',
+                    'status_id' => 2,
+                    'tuition_paid' => $row->tuition_due
+                ],[],1);
+                saveData($ss,'enrollments',['id' => $row->enr_id],[
+                    'status_id' => 3,//* paid
+                ],[],1);
             }
 
             if($next_level){
