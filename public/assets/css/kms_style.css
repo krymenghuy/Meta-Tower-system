@@ -373,7 +373,7 @@ li.kt-menu__section {
 }
 
 .h-register-input {
-    height: 80vh;
+    height: calc(80vh - 60px);
     overflow-y: auto;
     overflow-x: hidden;
 }

@@ -35,8 +35,8 @@
     </div>
 </div>
 
-<div id="dlg__fns" class="modal fade" tabindex="-1" aria-labelledby="dlg__fns_title" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+<div id="dlg_fns_" class="modal fade" tabindex="-1" aria-labelledby="dlg_fns_title" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <div class="d-block">

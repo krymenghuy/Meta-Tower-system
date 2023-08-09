@@ -186,10 +186,11 @@ var FindStudentComponent = new function(){
 
     this.controlOption = () => {
         let div = mThis.panelStudentList.find('.w-options');
+        let btn = mThis.panelStudentList.find('.btn--Options');
 
-        mThis.panelStudentList.find('.btn--Options').on('click',function(e){
+        btn.on('click',function(e){
             e.preventDefault();
-            $(this).find('.w-options').toggle('slow');
+            $(this).find('.w-options').toggle('fast');
         });
 
         mThis.panelStudentList.find('.btn--gnInvoice').on('click',function(e){
@@ -198,10 +199,17 @@ var FindStudentComponent = new function(){
         });
 
         if(div.length != 0){
+            let prev_div = null;
             $(document).on('mouseup',function(e){
                 e.preventDefault();
-                if(!div.is(e.target) && div.has(e.target).length === 0){
-                    div.hide('slow');
+                if((!div.is(e.target) && div.has(e.target).length === 0) && prev_div){
+                    prev_div.hide('fast');
+                }
+                else{
+                    if((!div.is(e.target) && div.has(e.target).length === 0) && (!btn.is(e.target) && btn.has(e.target).length === 0)){
+                        prev_div = div;
+                        div.hide('fast');
+                    }
                 }
             });
 
@@ -258,7 +266,7 @@ var FindStudentComponent = new function(){
 
 let GenerateInvoiceFSN = new function(){
     let mThis = this;
-    this.self = $('#dlg__fns');
+    this.self = $('#dlg_fns_');
     this.options = {};
 
     this.elTitle = mThis.self.find('.modal-title');
