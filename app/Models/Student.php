@@ -424,19 +424,11 @@ class Student //extends Model
                 "price_list_id" => 0,
                 "program_id" => 0,
                 "level_id" => 0,
+                'policy_discount' => 0,
             ];
             $updated = saveData($ss,'payments',['enrollment_id' => $enr->id],$change_fields,[],1);
         }
         return DV::depends($updated,'Delete verified student');
     }
-
-    static function editVerifiedStudent($arr){
-        $d = (object)$arr;
-        $id = $d->id;
-
-        $update = saveData($ss,'');
-
-    }
-
 
 }

@@ -133,11 +133,26 @@ class PriceListController extends Controller
         return JDV::result($find);
     }
 
+    function schoolFeePay(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $pay = PriceList::schoolFeePay($req->all(),$ss);
+        return JDV::result($pay);
+    }
+
     function generateInvoiceDetails(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
 
         $details = PriceList::generateInvoiceDetails($req->id,$ss);
+        return JDV::result($details);
+    }
+
+    function generateInvoice(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $details = PriceList::generateInvoice($req->all(),$ss);
         return JDV::result($details);
     }
 }
