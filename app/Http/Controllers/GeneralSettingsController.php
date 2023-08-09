@@ -291,7 +291,7 @@ class GeneralSettingsController extends Controller
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss);
 
-    $other_fees = GeneralSettings::otherFeeFormOption($ss);
+    $other_fees = GeneralSettings::otherFeeFormOption($req,$ss);
     return JDV::result($other_fees);
   }
 
