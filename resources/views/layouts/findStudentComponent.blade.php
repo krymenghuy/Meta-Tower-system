@@ -45,7 +45,47 @@
                 </div>
                 <button class="btn-close" type="button" aria-label="Close" data-dismiss="modal"></button>
             </div>
-            <div class="modal-body"></div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                    <div class="d-block">
+                        <p class="pb-0 mb-1">
+                            <span class="width-invoice-text">Student ID</span>
+                            <span class="px-2">:</span>
+                            <span class="data-invoice" data-field="student_code"></span>
+                        </p>
+                        <p class="pb-0 mb-1">
+                            <span class="width-invoice-text">Student Name</span>
+                            <span class="px-2">:</span>
+                            <span class="data-invoice" data-field="student_name"></span>
+                        </p>
+                        <p class="pb-0 mb-1">
+                            <span class="width-invoice-text">Class Name</span>
+                            <span class="px-2">:</span>
+                            <span class="data-invoice" data-field="level"></span>
+                        </p>
+                    </div>
+                    <div class="d-block">
+                        <p class="pb-0 mb-1">
+                            <span class="width-invoice-text">Invoice#</span>
+                            <span class="px-2">:</span>
+                            <span class="data-invoice"></span>
+                        </p>
+                        <p class="pb-0 mb-1">
+                            <span class="width-invoice-text">Invoice Date</span>
+                            <span class="px-2">:</span>
+                            <span class="data-invoice"></span>
+                        </p>
+                        <p class="pb-0 mb-1">
+                            <span class="width-invoice-text">Due Date</span>
+                            <span class="px-2">:</span>
+                            <span>
+                                <input data-select="datepicker" class="form-date data-input" data-field="due_date"/>
+                            </span>
+                        </p>
+                    </div>
+                </div>
+                <div id="dlg_fns_tbl" class="table-responsive p-3 mt-3 rounded-3 bg-light"></div>
+            </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary btn-sm" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>

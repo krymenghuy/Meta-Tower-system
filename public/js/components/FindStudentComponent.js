@@ -195,7 +195,10 @@ var FindStudentComponent = new function(){
 
         mThis.panelStudentList.find('.btn--gnInvoice').on('click',function(e){
             e.preventDefault();
-            GenerateInvoiceFSN.show(null);
+            let op = {
+                'id': $(this).data('id')
+            };
+            GenerateInvoiceFSN.show(op);
         });
 
         if(div.length != 0){
@@ -259,7 +262,14 @@ var FindStudentComponent = new function(){
         if(!options) options = {};
         mThis.prepareOptions(mThis.div_filter,() => {
             main_view.setTitle(mThis.title_prop);
-            mThis.self.show().siblings().hide();
+            let x = mThis.self.siblings(':visible');
+            if(x.length === 0){
+                mThis.self.hide().fadeIn(300);
+                return;
+            }
+            x.fadeOut('fast',function(){
+                mThis.self.hide().fadeIn(300);
+            });
         });
     }
 }
@@ -270,19 +280,74 @@ let GenerateInvoiceFSN = new function(){
     this.options = {};
 
     this.elTitle = mThis.self.find('.modal-title');
+    this.tblInvoice = mThis.self.find('#dlg_fns_tbl');
+
+    this.loadFormDetails = (div,options,onFinish = null) => {
+        window.vsapi.call(`${main_view.base_url}/api/student/generate-invoice/details`,{'id': options.id},null).then(res => {
+            let data = {};
+            if(res.status_code === 200){
+                data = res.data;
+            }
+
+            mThis.self.find('.data-invoice').each(function(){
+                let el = $(this);
+                let f = el.data('field');
+                el.text(data[f]);
+            });
+
+            mThis.prepareTable(div,data);
+            if(typeof onFinish === 'function') onFinish();
+        });
+    }
+
+    this.prepareTable = (div, d) => {
+        d = d ? d : [];
+
+        let html = [`<table class="table">
+            <thead>
+                <th>No</th>
+                <th>Fee Type</th>
+                <th>Description</th>
+                <th>Date Range</th>
+                <th>Amount</th>
+                <th>Discount</th>
+                <th>Special Discount</th>
+                <th>Child Policy</th>
+                <th>Total</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>${d.fee_type}</td>
+                    <td>${d.description}</td>
+                    <td>${d.date_range}</td>
+                    <td>${d.amount}</td>
+                    <td>${d.discount}</td>
+                    <td>${d.special_discount}</td>
+                    <td>${d.child_policy}</td>
+                    <td>${d.total}</td>
+                </tr>
+            </tbody>
+        </table>`].join('');
+        console.log(d);
+
+        div.html(html);
+    }
 
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;
 
-        if(options.id > 0){}
-        else{
-            mThis.elTitle.text(LocaleManager.trans('Generate Invoice','titles'));
-            mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please select item details','titles'));
-        }
+        mThis.loadFormDetails(mThis.tblInvoice,options,() => {
+            if(options.id > 0){}
+            else{
+                mThis.elTitle.text(LocaleManager.trans('Generate Invoice','titles'));
+                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please select item details','titles'));
+            }
 
-        mThis.self.modal({
-            backdrop: 'static'
+            mThis.self.modal({
+                backdrop: 'static'
+            });
         });
     }
 }
