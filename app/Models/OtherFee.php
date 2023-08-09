@@ -33,7 +33,7 @@ class OtherFee //extends Model
         ];
         $branch_id = $ss->branch_id;
         $unique = null;//[$branch_id.'|other_fees|name|id=id'];
-        $res = validateObject($arr,$v_rule,true,[],$ss->lang,false,$unique);
+        $res = validateObject($arr,$v_rule,true,['academic_year'=>['-']],$ss->lang,false,$unique);
         if($res->error) return Dv::error($res->error);
         $inputs =$res->values;
         $inputs['will_expire'] = isset($inputs['will_expire']) ? $inputs['will_expire'] : 0;

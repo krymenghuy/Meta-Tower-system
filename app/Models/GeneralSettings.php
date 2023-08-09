@@ -248,4 +248,14 @@ class GeneralSettings //extends Model
             'options_session' => DB::table('sessions')->selectRaw('name as session,id')->get(),
         ];
     }
+
+    static function otherFeeFormOption($ss){
+        return DB::table('other_fees')->where('branch_id',$ss->branch_id)->selectRaw('name,id')->get();
+    }
+
+    static function getFeetypeInfo($d,$ss){
+        $name = $d->name;
+        $academic_year = $d->academic_year;
+        return DB::table('other_fees')->where('name',$name)->where('academic_year',$academic_year)->selectRaw('name,amount,academic_year')->get()->first();
+    }
 }

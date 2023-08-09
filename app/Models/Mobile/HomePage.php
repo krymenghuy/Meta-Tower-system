@@ -9,7 +9,6 @@ use DB;
 class HomePage //extends Model
 {
     // use HasFactory;
-
     static function getConnectedStudent($ss){
         $selectCols='s.name as student_name,s.file_name';
         $rows = DB::table('student_guardians as sg')
@@ -18,10 +17,11 @@ class HomePage //extends Model
                 ->selectRaw($selectCols)
                 ->where('g.id',$ss->official_id)
                 ->get();
+
         foreach($rows as $row){
             $row->image_url = PublicStorage::getUrl($ss->branch_id,'students','image').$row->file_name;
             unset($row->file_name);
         }
-        return $row;
+        return $rows;
     }
 }

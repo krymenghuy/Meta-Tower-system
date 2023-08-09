@@ -106,6 +106,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('/form-option',[SettingController::class,'select_options']);
     Route::post('option/prev-program',[SettingController::class,'prevPrograms']);
     Route::post('option/prev-program-level',[SettingController::class,'prevProgramLevels']);
+    Route::post('/option/other-fee',[GeneralSettingsController::class,'otherFeeFormOptions']);
+    Route::post('/option/other-fee-info',[GeneralSettingsController::class,'getFeeTypeInfo']);
 
     //begin::StudentController
     Route::prefix('student')->group(function () {
