@@ -82,7 +82,7 @@ var PaymentPendingComponent = new function(){
             if(res.status_code === 200){
                 data = res.data;
             }
-            VSUtil.setComboItems(mThis.elSearch,data,'id','name',null,null,null);
+            VSUtil.setComboItems(mThis.elSearch,data,'id','name',null,null,'4');
         });
     }
 

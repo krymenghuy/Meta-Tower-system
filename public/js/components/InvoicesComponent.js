@@ -14,15 +14,8 @@ var InvoicesComponent = new function(){
             if(res.status_code === 200){
                 data = StringSanitizer.sanitizeObject(res.data);
             }
-
-            let cnt = 1;
+            
             let cols = [{
-                title: "No",
-                data: (data, a, b) => {
-                    return [`<span>${cnt++}</span>`].join('');
-                }
-            },
-            {
                 title: "Invoice Nº",
                 data: "invoice_number"
             },

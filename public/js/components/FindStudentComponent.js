@@ -281,6 +281,22 @@ let GenerateInvoiceFSN = new function(){
 
     this.elTitle = mThis.self.find('.modal-title');
     this.tblInvoice = mThis.self.find('#dlg_fns_tbl');
+    this.btnGenerate = mThis.self.find('#dlg_fns_btn_save');
+
+    mThis.btnGenerate.on('click',function(e){
+        e.preventDefault();
+        let p = mThis.getDataForm();
+        console.log(p);
+        window.vsapi.call(`${main_view.base_url}/api/student/generate-invoice`,p,null).then(res => {
+            if(res.status_code === 200){
+                mThis.self.modal('hide');
+                cv_interact.success('Invoice Created Successfully!');
+            }
+            else{
+                cv_interact.error(res.error_message);
+            }
+        });
+    });
 
     this.loadFormDetails = (div,options,onFinish = null) => {
         window.vsapi.call(`${main_view.base_url}/api/student/generate-invoice/details`,{'id': options.id},null).then(res => {
@@ -327,7 +343,7 @@ let GenerateInvoiceFSN = new function(){
             </thead>
             <tbody>
                 <tr>
-                    <td class="text-capitalize">${fee_type}</td>
+                    <td class="text-capitalize data-get" data-field="fee_type" data-value="${d.fee_type}">${fee_type}</td>
                     <td>${d.description ? d.description : 'N/A'}</td>
                     <td>${d.date_range ? d.date_range : 'N/A'}</td>
                     <td>${d.amount ? ['$',d.amount].join(' ') : 'N/A'}</td>
@@ -382,7 +398,7 @@ let GenerateInvoiceFSN = new function(){
                 if(res.status_code === 200){
                     d = res.data;
                 }
-                tr.html([`<td class="data-get" data-field="fee_type">${d.fee_type ? d.fee_type : 'N/A'}</td>
+                tr.html([`<td class="data-get" data-field="fee_type" data-value="${d.fee_type}">${d.fee_type ? d.fee_type : 'N/A'}</td>
                 <td>${d.description ? d.description : 'N/A'}</td>
                 <td>${d.date_range ? d.date_range : 'N/A'}</td>
                 <td>${d.amount ? ['$',d.amount].join(' ') : 'N/A'}</td>
@@ -392,6 +408,24 @@ let GenerateInvoiceFSN = new function(){
                 <td>${d.total ? ['$',d.total].join(' ') : 'N/A'}</td>`].join(''));
             });
         });
+    }
+
+    this.getDataForm = () => {
+        let d = {
+            'student_id': mThis.options.id,
+            'due_date': mThis.self.find('.data-input').val(),
+            'fee_types': []
+        };
+
+        mThis.self.find('.data-get').each(function(){
+            let p = {};
+            let el = $(this);
+            let f = el.data('field');
+            p[f] = el.data('value');
+            d.fee_types.push(p);
+        });
+        
+        return d;
     }
 
     this.show = (options) => {

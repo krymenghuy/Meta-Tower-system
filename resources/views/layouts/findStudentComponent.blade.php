@@ -90,7 +90,7 @@
                 <button class="btn btn-secondary btn-sm" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button class="btn btn-primary btn-sm" type="button">
+                <button id="dlg_fns_btn_save" class="btn btn-primary btn-sm" type="button">
                     <span class="trans-text" data-langprop="buttons.Generate"></span>
                 </button>
             </div>
