@@ -287,6 +287,22 @@ class GeneralSettingsController extends Controller
     return JDV::result($options);
   }
 
+  function otherFeeFormOptions(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return JDV::raw($ss);
+
+    $other_fees = GeneralSettings::otherFeeFormOption($ss);
+    return JDV::result($other_fees);
+  }
+
+  function getFeeTypeInfo(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return JDV::raw($ss);
+
+    $other_fee = GeneralSettings::getFeetypeInfo($req,$ss);
+    return JDV::result($other_fee);
+  }
+
   // static function getComboItems_department(Request $req){
   //    $ss = UM::getUserInfoByToken($req,-1);
   //    if($ss->status_code !=200) return $ss; //user not authenticated
