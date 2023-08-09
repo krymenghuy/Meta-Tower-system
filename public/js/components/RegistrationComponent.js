@@ -334,6 +334,7 @@ var RegistrationComponent = new function(){
 
     this.controlOption = (container, op) => {
         let div = container.find('.w-options');
+        let btn = mThis.div_register_list.find('button.btn--Options');
 
         container.find('button.btn-pagination').on('click',function(e){
             e.preventDefault();
@@ -341,9 +342,9 @@ var RegistrationComponent = new function(){
             mThis.displayStudentList(op);
         });
 
-        mThis.div_register_list.off('click').on('click','button.btn--Options',function(e){
+        btn.off('click').on('click',function(e){
             e.preventDefault();
-            $(this).find('.w-options').toggle('slow');
+            $(this).find('.w-options').toggle('fast');
         });
 
         mThis.div_register_list.on('click','button.btn--gnCard',function(e){
@@ -357,10 +358,17 @@ var RegistrationComponent = new function(){
         });
 
         if(div.length != 0){
+            let prev_div = null;
             $(document).off('click').on('mouseup',function(e){
                 e.preventDefault();
-                if((!div.is(e.target) && div.has(e.target).length === 0)){
-                    div.hide('slow');
+                if((!div.is(e.target) && div.has(e.target).length === 0) && prev_div){
+                    prev_div.hide('fast');
+                }
+                else{
+                    if((!div.is(e.target) && div.has(e.target).length === 0) && (!btn.is(e.target) && btn.has(e.target).length === 0)){
+                        prev_div = div;
+                        div.hide('fast');
+                    }
                 }
             });
 
