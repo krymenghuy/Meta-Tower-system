@@ -326,14 +326,14 @@ let GenerateInvoiceFSN = new function(){
             </thead>
             <tbody>
                 <tr>
-                    <td>${d.fee_type}</td>
-                    <td>${d.description}</td>
-                    <td>${d.date_range}</td>
-                    <td>$ ${d.amount}</td>
-                    <td>% ${d.discount}</td>
-                    <td>% ${d.special_discount}</td>
-                    <td>${d.child_policy}</td>
-                    <td>$ ${d.total}</td>
+                    <td>${d.fee_type ? d.fee_type : 'N/A'}</td>
+                    <td>${d.description ? d.description : 'N/A'}</td>
+                    <td>${d.date_range ? d.date_range : 'N/A'}</td>
+                    <td>${d.amount ? ['$',d.amount].join(' ') : 'N/A'}</td>
+                    <td>${d.discount ? ['%',d.discount].join(' ') : 'N/A'}</td>
+                    <td>${d.special_discount ? ['%',d.special_discount].join(' ') : 'N/A'}</td>
+                    <td>${d.child_policy ? d.child_policy : 'N/A'}</td>
+                    <td>${d.total ? ['$',d.total].join(' ') : 'N/A'}</td>
                 </tr>
             </tbody>
         </table>
@@ -381,14 +381,14 @@ let GenerateInvoiceFSN = new function(){
                 if(res.status_code === 200){
                     d = res.data;
                 }
-                tr.html([`<td class="data-get" data-field="fee_type">${d.fee_type}</td>
-                <td>${d.description}</td>
-                <td>${d.date_range}</td>
-                <td>$ ${d.amount}</td>
-                <td>% ${d.discount}</td>
-                <td>% ${d.special_discount}</td>
-                <td>${d.child_policy}</td>
-                <td>$ ${d.total}</td>`].join(''));
+                tr.html([`<td class="data-get" data-field="fee_type">${d.fee_type ? d.fee_type : 'N/A'}</td>
+                <td>${d.description ? d.description : 'N/A'}</td>
+                <td>${d.date_range ? d.date_range : 'N/A'}</td>
+                <td>${d.amount ? ['$',d.amount].join(' ') : 'N/A'}</td>
+                <td>${d.discount ? ['%',d.discount].join(' ') : 'N/A'}</td>
+                <td>${d.special_discount ? ['%',d.special_discount].join(' ') : 'N/A'}</td>
+                <td>${d.child_policy ? d.child_policy : 'N/A'}</td>
+                <td>${d.total ? ['$',d.total].join(' ') : 'N/A'}</td>`].join(''));
             });
         });
     }
