@@ -237,7 +237,9 @@ class GeneralSettings //extends Model
     }
 
     static function paymentStatusOption(){
-        return DB::table('status')->selectRaw('name,id')->get();
+        $rows = DB::table('status')->selectRaw('name,id')->get();
+        $rows[] =['id'=>4,'name' => 'All'];
+        return $rows;
     }
 
     static function depositeFormOption($ss){

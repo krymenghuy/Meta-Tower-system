@@ -153,6 +153,6 @@ class PriceListController extends Controller
         if($ss->status_code !=200) return $ss;
 
         $details = PriceList::generateInvoice($req->all(),$ss);
-        return JDV::result($details);
+        return JDV::raw($details);
     }
 }
