@@ -312,6 +312,7 @@ let GenerateInvoiceFSN = new function(){
     this.prepareTable = (div, d) => {
         d = d ? d : [];
         let btn = [d.fee_type,'btn'].join('_');
+        let fee_type = d.fee_type ? d.fee_type.replace('_',' ') : 'N/A';
 
         let html = [`<table class="table">
             <thead>
@@ -326,7 +327,7 @@ let GenerateInvoiceFSN = new function(){
             </thead>
             <tbody>
                 <tr>
-                    <td>${d.fee_type ? d.fee_type : 'N/A'}</td>
+                    <td class="text-capitalize">${fee_type}</td>
                     <td>${d.description ? d.description : 'N/A'}</td>
                     <td>${d.date_range ? d.date_range : 'N/A'}</td>
                     <td>${d.amount ? ['$',d.amount].join(' ') : 'N/A'}</td>
