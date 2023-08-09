@@ -288,11 +288,20 @@ let GenerateInvoiceFSN = new function(){
             if(res.status_code === 200){
                 data = res.data;
             }
+            const current = new Date();
+            const format = new Intl.DateTimeFormat('en-US',{
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            }).format(current);
 
             mThis.self.find('.data-invoice').each(function(){
                 let el = $(this);
                 let f = el.data('field');
-                el.text(data[f]);
+                if(f === 'inv_date')
+                    el.text(format);
+                else
+                    el.text(data[f]);
             });
 
             mThis.prepareTable(div,data);
@@ -302,10 +311,10 @@ let GenerateInvoiceFSN = new function(){
 
     this.prepareTable = (div, d) => {
         d = d ? d : [];
+        let btn = [d.fee_type,'btn'].join('_');
 
         let html = [`<table class="table">
             <thead>
-                <th>No</th>
                 <th>Fee Type</th>
                 <th>Description</th>
                 <th>Date Range</th>
@@ -317,21 +326,71 @@ let GenerateInvoiceFSN = new function(){
             </thead>
             <tbody>
                 <tr>
-                    <td>1</td>
                     <td>${d.fee_type}</td>
                     <td>${d.description}</td>
                     <td>${d.date_range}</td>
-                    <td>${d.amount}</td>
-                    <td>${d.discount}</td>
-                    <td>${d.special_discount}</td>
+                    <td>$ ${d.amount}</td>
+                    <td>% ${d.discount}</td>
+                    <td>% ${d.special_discount}</td>
                     <td>${d.child_policy}</td>
-                    <td>${d.total}</td>
+                    <td>$ ${d.total}</td>
                 </tr>
             </tbody>
-        </table>`].join('');
-        console.log(d);
+        </table>
+        <div class="mt-2">
+            <button id="${btn}" class="btn btn-outline-success btn-sm" type="button">Add Field</button>
+        </div>`].join('');
 
         div.html(html);
+        mThis.addRow(div.find('tbody'),d,btn);
+    }
+
+    this.addRow = (tbody,d, btn) => {
+        let html=null, option=null;
+        window.vsapi.call(`${main_view.base_url}/api/option/other-fee`,{'academic_year': d.academic_year}).then(res => {
+            let d = {};
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            let select=[btn,'select'].join('_');
+            
+            html = [`<tr>
+                <td colspan="8">
+                    <select id="${select}" class="form-select form-select-sm form-select-extend" style="max-width:200px">
+                        ${option,d && d.map(op => {
+                            option = [option,`<option value="${op.name}">${op.name}</option>`].join('');
+                        }),option=[option,'<option selected>Select A Option</option>'].join('')}
+                    </select>
+                </td>
+            </tr>`].join('');
+
+            tbody.closest('.table-responsive').find(`#${btn}`).off('click').on('click',function(e){
+                e.preventDefault();
+                tbody.append(html);
+                mThis.displayFeeAsRow(tbody, select);
+            });
+        });
+    }
+
+    this.displayFeeAsRow = (tbody, select) => {
+        tbody.find(`#${select}`).on('change',function(e){
+            e.preventDefault();
+            let tr = $(this).closest('tr');
+            window.vsapi.call(`${main_view.base_url}/api/option/other-fee-info`,{'name': $(this).val()},null,false).then(res => {
+                let d = {};
+                if(res.status_code === 200){
+                    d = res.data;
+                }
+                tr.html([`<td class="data-get" data-field="fee_type">${d.fee_type}</td>
+                <td>${d.description}</td>
+                <td>${d.date_range}</td>
+                <td>$ ${d.amount}</td>
+                <td>% ${d.discount}</td>
+                <td>% ${d.special_discount}</td>
+                <td>${d.child_policy}</td>
+                <td>$ ${d.total}</td>`].join(''));
+            });
+        });
     }
 
     this.show = (options) => {
@@ -339,11 +398,8 @@ let GenerateInvoiceFSN = new function(){
         mThis.options = options;
 
         mThis.loadFormDetails(mThis.tblInvoice,options,() => {
-            if(options.id > 0){}
-            else{
-                mThis.elTitle.text(LocaleManager.trans('Generate Invoice','titles'));
-                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please select item details','titles'));
-            }
+            mThis.elTitle.text(LocaleManager.trans('Generate Invoice','titles'));
+            mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please select item details','titles'));
 
             mThis.self.modal({
                 backdrop: 'static'

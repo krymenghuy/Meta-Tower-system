@@ -263,6 +263,11 @@ class GeneralSettings //extends Model
     static function getFeetypeInfo($d,$ss){
         $name = $d->name;
         $academic_year = $d->academic_year;
-        return DB::table('other_fees')->where('name',$name)->where('academic_year',$academic_year)->selectRaw('name,name as fee_type,amount,academic_year,description,amount as total')->get()->first();
+        $row = DB::table('other_fees')->where('name',$name)->selectRaw('name,name as fee_type,amount,academic_year,description,amount as total');
+        if($academic_year){
+            $row->where('academic_year',$academic_year);
+        }
+        $item = $row->get()->first();
+        return $item;
     }
 }
