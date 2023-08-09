@@ -567,3 +567,14 @@ li.kt-menu__section {
 .fs-5-1{
     font-size:1.1rem;
 }
+
+.width-invoice-text{
+    width:100px;
+    display: inline-flex;
+}
+
+.form-date:focus,
+.form-date{
+    border:none;
+    outline:none;
+}

@@ -9,7 +9,14 @@ var DashboardComponent = new function (){
   this.show = (options) => {
     if(!options) options = {};
     main_view.setTitle(mThis.title_prop);
-    mThis.self.show().siblings().hide();
+    let x = mThis.self.siblings(':visible');
+    if(x.length === 0){
+      mThis.self.hide().fadeIn(300);
+      return;
+    }
+    x.fadeOut('fast',function(){
+      mThis.self.hide().fadeIn(300);
+    });
   }
 }
 
