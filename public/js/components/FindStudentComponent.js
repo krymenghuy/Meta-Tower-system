@@ -316,8 +316,8 @@ let GenerateInvoiceFSN = new function(){
                     el.text(data[f]);
             });
 
-            mThis.prepareTable(div,data);
-            mThis.self.find('a.btn-tuition-fee').off('click').on('click',function(e){
+            let tab = mThis.self.find('a.btn-tuition-fee');
+            tab.off('click').on('click',function(e){
                 e.preventDefault();
                 let name = $(this).data('view');
                 switch(name){
@@ -334,8 +334,8 @@ let GenerateInvoiceFSN = new function(){
                         mThis.prepareTable(div,data);
                         break;
                 }
-
             });
+            tab.first().trigger('click');
             if(typeof onFinish === 'function') onFinish();
         });
     }
