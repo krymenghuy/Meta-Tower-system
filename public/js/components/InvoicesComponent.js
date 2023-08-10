@@ -37,11 +37,12 @@ var InvoicesComponent = new function(){
     {
         title: "Action",
         data: (data, a, b) => {
+            let cls = data.status === 'unpaid' ? 'd-block':'d-none'; 
             return [`<div class="d-flex gap-2">
-                <a href="javascript:void(0)" class="btn-inv-modify" data-id="${data.id}">
+                <a href="javascript:void(0)" class="btn-inv-modify ${cls}" data-id="${data.id}">
                     <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
                 </a>
-                <a href="javascript:void(0)" class="btn-inv-delete" data-id="${data.id}">
+                <a href="javascript:void(0)" class="btn-inv-delete ${cls}" data-id="${data.id}">
                     <i class="fa-regular fa-trash-can text-danger fs-5"></i>
                 </a>
             </div>`].join('');

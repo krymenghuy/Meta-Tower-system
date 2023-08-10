@@ -382,22 +382,29 @@ let GenerateInvoiceFSN = new function(){
                     <select id="${select}" class="form-select form-select-sm form-select-extend" style="max-width:200px">
                         ${option,d && d.map(op => {
                             option = [option,`<option value="${op.name}">${op.name}</option>`].join('');
-                        }),option=[option,'<option selected>Select A Option</option>'].join('')}
+                        }),option=[option,'<option value="" selected>Select A Option</option>'].join('')}
                     </select>
                 </td>
             </tr>`].join('');
 
             tbody.closest('.table-responsive').find(`#${btn}`).off('click').on('click',function(e){
                 e.preventDefault();
-                tbody.append(html);
-                mThis.displayFeeAsRow(tbody, select);
-                mThis.deleteFeeRow(tbody);
+                let value = tbody.find(`#${select}`).val();
+                if(value === undefined)
+                    tbody.append(html);
+
+                if(((value == null) || (value == '')) && (value !== undefined))
+                    cv_interact.warning('Select an option before add!');
+                else{
+                    mThis.displayFeeAsRow(tbody, select);
+                    mThis.deleteFeeRow(tbody);
+                }
             });
         });
     }
 
     this.displayFeeAsRow = (tbody, select) => {
-        tbody.find(`#${select}`).on('change',function(e){
+        tbody.find(`#${select}`).off('change').on('change',function(e){
             e.preventDefault();
             let tr = $(this).closest('tr');
             window.vsapi.call(`${main_view.base_url}/api/option/other-fee-info`,{'name': $(this).val()},null,false).then(res => {
