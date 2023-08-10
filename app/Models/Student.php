@@ -280,9 +280,7 @@ class Student //extends Model
                         'full_name' => $inputs['name']
                     ];
                    $um_ = $um->saveUser($arr,$ss);
-
                 }
-
                 $female_guardian = DB::table('guardians')->selectRaw('id,name,phone_number,email')->where('id',$newID)->where('sex','F')->first();
                 if($female_guardian){
                     // return $female_guardian;
@@ -302,7 +300,6 @@ class Student //extends Model
                 if(!$exist){
                     saveData($ss,'student_guardians',[],['guardian_id'=>$newID,'student_id'=>$child_id,'guardian_role'=>$pf['role']],[],1);
                 }
-
             }
             $i++;
         }
@@ -401,9 +398,9 @@ class Student //extends Model
 
 
     static function deleteStudent($id,$ss){
-        $file_name = DB::table('students')->where('id',$id)->take(1)->value('file_name');
-        if($file_name) PublicStorage::delete($ss->branch_id,'students','image',$file_name);
-        $delete = DB::table('students')->where('id',$id)->delete();
+        // $file_name = DB::table('students')->where('id',$id)->take(1)->value('file_name');
+        // if($file_name) PublicStorage::delete($ss->branch_id,'students','image',$file_name);
+        $delete = DB::table('enrollments')->where('student_id',$id)->delete();
         return DV::depends($delete,['action' => 'Deleted']);
     }
 

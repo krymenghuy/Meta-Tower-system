@@ -15,13 +15,10 @@ class Activity //extends Model
         $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
         if($res->error)return DV::error($res->error);
         $inputs = $res->values;
-        $exist = DB::table('')->where('id',$id)->where('name',$inputs['name'])->first();
-        if($exist){
-            return DV::error('Activity is already exist');
-        }
-        $newID = saveData($ss,'',['id' => $id],$inputs,[],1);
 
-        return DV::depends($newID,['action'=>'Save','activities'=>self::list($ss)]);
+        $newID = saveData($ss,'activities',['id' => $id],$inputs,[],1,1);
+
+        return DV::depends($newID,['action'=>$id?'Updated':'Created','activities'=>self::list($ss)]);
     }
 
     static function list($ss){

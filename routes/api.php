@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AcademicYearController;
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AudioController;
 use App\Http\Controllers\CampusController;
 use App\Http\Controllers\DepositeController;
@@ -144,6 +145,13 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/delete', [CampusController::class, 'delete']);
     });
     //end::CampusController
+
+    //begin::ActivityController
+    Route::post('activity/save',[ActivityController::class,'saveActivity']);
+    Route::post('activity/list',[ActivityController::class,'getActivitiesList']);
+    Route::post('activity/details',[ActivityController::class,'getAcitvityDetails']);
+    Route::post('activity/delete',[ActivityController::class,'deleteActivity']);
+    //end::ActivityController
 
     //begin::AcademicYearController
     Route::prefix('academic-year')->group(function () {
