@@ -518,10 +518,6 @@ var RegistrationComponent = new function(){
         mThis.prepareFormOption(mThis.div_list,'data-select',() => {
             main_view.setTitle(mThis.title_prop);
             let x = mThis.self.siblings(':visible');
-            if(x.length === 0){
-                mThis.self.hide().fadeIn(300);
-                return;
-            }
             x.fadeOut('fast',function(){
                 mThis.self.hide().fadeIn(300);
             });

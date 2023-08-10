@@ -240,10 +240,6 @@ var TuitionFeeComponent = new function(){
         mThis.itemView.showPage(null,null,() => {
             main_view.setTitle(mThis.title_prop);
             let x = mThis.self.siblings(':visible');
-            if(x.length === 0){
-                mThis.self.hide().fadeIn(300);
-                return;
-            }
             x.fadeOut('fast',function(){
                 mThis.self.hide().fadeIn(300);
             });

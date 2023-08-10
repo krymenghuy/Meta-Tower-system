@@ -326,7 +326,7 @@ class ListView{
 		this.pagination_container.insertAdjacentHTML('beforeend',`<span style="display:flex;justify-content:center;align-items:center;color:#000;padding:3px;font-weight:bold;">${data.per_page} of ${data.total}</span>`);
 		this.hilightLightButton(currentPage);
 	}
-  
+
 	hilightLightButton(currentPage =null){
 		let found =false;
 		const currentPageButton = this.pagination_container.querySelector('.current-page');
@@ -339,5 +339,4 @@ class ListView{
 			if(!found) if(currentPageButton) currentPageButton.classList.add(this.card_options.pagingActiveClass);
 		});    
 	}
-	
 }
