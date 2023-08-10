@@ -3,6 +3,8 @@
     margin: 0;
     box-sizing: border-box;
     user-select: none;
+    -webkit-user-drag: none;
+    user-drag: none;
 }
 
 html,
@@ -579,4 +581,29 @@ li.kt-menu__section {
     border:none;
     outline:none;
     background-color: transparent;
+}
+
+.btn-tuition-fee:hover,
+.btn-tuition-fee{
+    padding:0.5rem;
+    border-left: 0.5px solid #d6d6d6;
+    border-top: 0.5px solid #d6d6d6;
+    border-right: 0.5px solid #d6d6d6;
+    background-color: #eeeeeec4;
+}
+
+.ttn-fee:hover,
+.ttn-fee{
+    border-radius: var(--bs-border-radius-lg) 0 0 0;
+    border-bottom: 1.5px solid #cfd90e;
+    background-color:#6bcb62;
+    color:#fff;
+}
+
+.n-ttn-fee:hover,
+.n-ttn-fee{
+    border-radius: 0 var(--bs-border-radius-lg) 0 0;
+    border-bottom: 1.5px solid #cfd90e;
+    background-color:#6bcb62;
+    color:#fff;
 }

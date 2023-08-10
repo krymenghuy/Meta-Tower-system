@@ -84,7 +84,15 @@
                         </p>
                     </div>
                 </div>
-                <div id="dlg_fns_tbl" class="table-responsive p-3 mt-3 rounded-3 bg-light"></div>
+                <div class="d-flex mt-3 pe-3">
+                    <a href="javascript:void(0)" class="btn-tuition-fee ttn-fee" data-view="ttn-fee">
+                        <span class="trans-text" data-langprop="titles.Tuition Fee"></span>
+                    </a>
+                    <a href="javascript:void(0)" class="btn-tuition-fee" data-view="n-ttn-fee">
+                        <span class="trans-text" data-langprop="titles.Non Tuition Fee"></span>
+                    </a>
+                </div>
+                <div id="dlg_fns_tbl" class="table-responsive p-3 rounded-3 bg-light"></div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary btn-sm" type="button" data-dismiss="modal">

@@ -263,10 +263,6 @@ var FindStudentComponent = new function(){
         mThis.prepareOptions(mThis.div_filter,() => {
             main_view.setTitle(mThis.title_prop);
             let x = mThis.self.siblings(':visible');
-            if(x.length === 0){
-                mThis.self.hide().fadeIn(300);
-                return;
-            }
             x.fadeOut('fast',function(){
                 mThis.self.hide().fadeIn(300);
             });
@@ -321,11 +317,30 @@ let GenerateInvoiceFSN = new function(){
             });
 
             mThis.prepareTable(div,data);
+            mThis.self.find('a.btn-tuition-fee').off('click').on('click',function(e){
+                e.preventDefault();
+                let name = $(this).data('view');
+                switch(name){
+                    case 'ttn-fee':
+                        $(this).addClass('ttn-fee').siblings().removeClass('n-ttn-fee');
+                        mThis.prepareTable(div,data);
+                        break;
+                    case 'n-ttn-fee':
+                        $(this).addClass('n-ttn-fee').siblings().removeClass('ttn-fee');
+                        mThis.prepareTable(div,data,true);
+                        break;
+                    default:
+                        $(this).addClass('n-ttn-fee').siblings().removeClass('ttn-fee');
+                        mThis.prepareTable(div,data);
+                        break;
+                }
+
+            });
             if(typeof onFinish === 'function') onFinish();
         });
     }
 
-    this.prepareTable = (div, d) => {
+    this.prepareTable = (div, d, name=false) => {
         d = d ? d : [];
         let btn = [d.fee_type,'btn'].join('_');
         let fee_type = d.fee_type ? d.fee_type.replace('_',' ') : 'N/A';
@@ -342,7 +357,7 @@ let GenerateInvoiceFSN = new function(){
                 <th colspan="2">Total</th>
             </thead>
             <tbody>
-                <tr>
+                ${name ? '': `<tr>
                     <td class="text-capitalize data-get" data-field="fee_type" data-value="${d.fee_type}">${fee_type}</td>
                     <td>${d.description ? d.description : 'N/A'}</td>
                     <td>${d.date_range ? d.date_range : 'N/A'}</td>
@@ -356,7 +371,7 @@ let GenerateInvoiceFSN = new function(){
                             <i class="fa-regular fa-trash-can text-danger fs-5"></i>
                         </a>
                     </td>
-                </tr>
+                </tr>`}
             </tbody>
         </table>
         <div class="mt-2">

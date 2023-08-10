@@ -18,7 +18,10 @@ var InvoicesComponent = new function(){
     },
     {
         title: "School Level",
-        data: "program"
+        data: (data, a, b) => {
+            return [`<p class="pb-0 mb-1">${data.program}</p>
+            <small class="text-center">(${data.session})</small>`].join('');
+        }
     },
     {
         title: "Level",
@@ -39,8 +42,26 @@ var InvoicesComponent = new function(){
         }
     },
     {
+        title: "Paid",
+        data: (data, a, b) => {
+            let paid_amount = data.paid_amount ? ['$',data.paid_amount].join('') : 'N/A';
+            return paid_amount;
+        }
+    },
+    {
+        title: "Due Amount",
+        data: (data, a, b) => {
+            let due_amount = data.due_amount ? ['$',data.due_amount].join(' ') : 'N/A';
+            return due_amount;
+        }
+    },
+    {
         title: "Invoice Date",
         data: "invoice_date"
+    },
+    {
+        title: "Paid Date",
+        data: "paid_date"
     },
     {
         title: "Action",
@@ -73,7 +94,10 @@ var InvoicesComponent = new function(){
         if(!options) options = {};
         mThis.itemView.showPage(null,null,() => {
             main_view.setTitle(mThis.title_prop);
-            mThis.self.show().siblings().hide();
+            let x = mThis.self.siblings(':visible');
+            x.fadeOut('fast',function(){
+                mThis.self.hide().fadeIn(300);
+            });
         });
     }
 }
