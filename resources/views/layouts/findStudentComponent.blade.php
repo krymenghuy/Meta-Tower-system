@@ -8,7 +8,7 @@
                     <div class="width--search-inner">
                         <select class="modal-select2 form-control data-input" data-field="academic_year"></select>
                     </div>
-                    <button id="btn--find" class="btn btn-primary btn--find" type="button">
+                    <button id="btn--find" class="btn btn-primary btn--find text-nowrap" type="button">
                         <i class="fa-solid fa-magnifying-glass"></i>
                         <span class="trans-text" data-langprop="buttons.Find"></span>
                     </button>
@@ -26,7 +26,7 @@
                 <select class="modal-select2 data-input" data-field="academic_year"></select>
             </div>
             <input type="search" class="form-control width--search-inner data-input" data-field="search_value" placeholder="Search by Name or ID..."/>
-            <button id="_fns_btn_filter" class="btn btn-primary btn-sm" type="button">
+            <button id="_fns_btn_filter" class="btn btn-primary btn-sm text-nowrap" type="button">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <span class="trans-text" data-langprop="buttons.Find"></span>
             </button>
