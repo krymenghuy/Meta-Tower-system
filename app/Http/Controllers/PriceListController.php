@@ -155,4 +155,12 @@ class PriceListController extends Controller
         $details = PriceList::generateInvoice($req->all(),$ss);
         return JDV::raw($details);
     }
+
+    function deleteInvoice(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $delete = PriceList::deleteInvoice($req->id);
+        return JDV::raw($delete);
+    }
 }
