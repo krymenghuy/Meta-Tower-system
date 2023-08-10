@@ -68,7 +68,10 @@ var InvoicesComponent = new function(){
         data: (data, a, b) => {
             let cls = data.status === 'unpaid' ? 'd-block':'d-none'; 
             return [`<div class="d-flex gap-2">
-                <a href="javascript:void(0)" class="btn-inv-modify ${cls}" data-id="${data.id}">
+                <a href="javascript:void(0)" class="btn-inv-pay ${cls}" data-studentid="${data.student_id}" data-invoice="${data.invoice_number}">
+                    <i class="fa-solid fa-hand-holding-dollar text-success fs-5"></i>
+                </a>
+                <a href="javascript:void(0)" class="btn-inv-modify ${cls}" data-id="${data.id}" data-studentid="${data.student_id}" data-invoice="${data.invoice_number}">
                     <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
                 </a>
                 <a href="javascript:void(0)" class="btn-inv-delete ${cls}" data-id="${data.id}">
@@ -87,6 +90,42 @@ var InvoicesComponent = new function(){
                 tr.dataset.id = data.id;
             },
             'beforeRender':()=>{}
+        });
+
+        mThis.tblInvoice = $(mThis.itemView.getTable());
+        
+        mThis.tblInvoice.on('click','a.btn-inv-pay',function(e){
+            e.preventDefault();
+            let op = {
+                'student_id': $(this).data('studentid'),
+                'invoice_number': $(this).data('invoice')
+            };
+            console.log(op);
+            cv_interact.confirm('Do you want to pay now?',{title: 'Pay', context: 'OK'},(e) => {
+                if(e){
+                    window.vsapi.call(`${main_view.base_url}/api/student/school-fee/pay`,op,null).then(res => {
+                        if(res.status_code === 200){
+                            mThis.itemView.showPage(null);
+                        }
+                    });
+                }
+            });
+        });
+
+        mThis.tblInvoice.on('click','a.btn-inv-delete',function(e){
+            e.preventDefault();
+            let op = {
+                'id': $(this).data('id')
+            };
+            cv_interact.confirm('Delete this invoice?',{title: 'Delete Invoice', context: 'delete'},(e) => {
+                if(e){
+                    window.vsapi.call(`${main_view.base_url}/api/student/invoice-delete`,op,null).then(res => {
+                        if(res.status_code === 200){
+                            mThis.itemView.showPage(null);
+                        }
+                    });
+                }
+            });
         });
     }
 
