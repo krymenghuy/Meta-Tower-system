@@ -1,5 +1,5 @@
 <div id="_main_invoicesComponent" class="mobile-padding p-3" style="display:none">
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 bg-white rounded-3 p-3">
         <button class="btn btn-sm btn-primary" type="button">
             <span></span>
             <i class="fa-solid fa-caret-down"></i>
@@ -10,7 +10,5 @@
             <span class="trans-text" data-langprop="buttons.Find"></span>
         </button>
     </div>
-    <div class="table-responsive mt-3 p-3">
-        <table class="table tbl--inv"></table>
-    </div>
+    <div id="tbl_inv_"class="table-responsive mt-3 p-3 bg-white rounded-3"></div>
 </div>
