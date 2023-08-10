@@ -765,7 +765,7 @@ class PriceList //extends Model
             $str_search ="(st.code ='$search_value' OR st.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 'inv.due_amount,inv.paid_amount,inv.is_paid,inv.id,inv.updated_at as paid,e.session_id,s.code as student_code,inv.invoice_date,inv.due_date,e.program_id,e.level_id,s.name as student_name,p.status_id as pstatus_id,e.academic_year,e.start_date,e.tuition_end_date,inv.due_date,inv.invoice_number,inv.amount';
+        $selectCols = 's.id as student_id,inv.due_amount,inv.paid_amount,inv.is_paid,inv.id,inv.updated_at as paid,e.session_id,s.code as student_code,inv.invoice_date,inv.due_date,e.program_id,e.level_id,s.name as student_name,p.status_id as pstatus_id,e.academic_year,e.start_date,e.tuition_end_date,inv.due_date,inv.invoice_number,inv.amount';
         $query = DB::table('invoices as inv')
                 ->join('students as s','s.id','=','inv.student_id')
                 ->join('enrollments as e','e.student_id','=','s.id')
@@ -829,7 +829,8 @@ class PriceList //extends Model
         $count = $count_query->count('st.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row) {
-            $status = rand(0,1)?'New':'Old';
+            // $status = rand(0,1)?'New':'Old';
+            $status = 'New';
             $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
             $row->parent_info = Student::getChildParent($row->id);
             unset($row->file_name);
@@ -1003,10 +1004,11 @@ class PriceList //extends Model
     static function schoolFeePay($arr,$ss){
         $instance = new PriceList(null,$ss);
         $d = (object)$arr;
+        $student_id = isset($d->student_id) ? $d->student_id : $d->id;
         $invoice_number = $d->invoice_number;
-        $getInvoiceInfo = self::getRelatedInvoice($d->id,$invoice_number);
+        $getInvoiceInfo = self::getRelatedInvoice($student_id,$invoice_number);
         $row = DB::table('students as s')
-                ->where('s.id',$d->id)
+                ->where('s.id',$student_id)
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->join('payments as p','p.enrollment_id','=','e.id')
                 ->selectRaw('p.tuition_due,e.id as enr_id,e.start_date,e.term_id,e.program_id,e.level_id,e.session_id,e.campus_id,p.pmt_option_id,e.academic_year')
@@ -1030,7 +1032,7 @@ class PriceList //extends Model
             if($current_payment_info){
                 $pre_enr = [
                     'term_id' => $row->term_id,
-                    'student_id' => $d->id,
+                    'student_id' => $student_id,
                     'level_id' => $row->level_id,
                     'session_id' => $row->session_id,
                     'campus_id' => $row->campus_id,
@@ -1048,12 +1050,12 @@ class PriceList //extends Model
                         'status_id' => 2, //* 'paid'
                         'tuition_paid' => $getInvoiceInfo->due_amount
                     ],[],1);
-                    saveData($ss,'invoices',['student_id' => $d->id,'invoice_number'=>$invoice_number],[
+                    saveData($ss,'invoices',['student_id' => $student_id,'invoice_number'=>$invoice_number],[
                         'is_paid' => 1,//* paid
                         'paid_amount' => $getInvoiceInfo->due_amount
                     ],[],1);
                 }else{
-                    saveData($ss,'invoices',['student_id' => $d->id,'invoice_number'=>$invoice_number],[
+                    saveData($ss,'invoices',['student_id' => $student_id,'invoice_number'=>$invoice_number],[
                         'is_paid' => 1,//* paid
                         'paid_amount' => $getInvoiceInfo->due_amount
                     ],[],1);
@@ -1071,7 +1073,7 @@ class PriceList //extends Model
             if($next_payment_info){
                 $pre_enr = [
                     'term_id' => null,
-                    'student_id' => $d->id,
+                    'student_id' => $student_id,
                     'level_id' => $row->level_id,
                     'session_id' => $row->session_id,
                     'campus_id' => $row->campus_id,
@@ -1095,7 +1097,7 @@ class PriceList //extends Model
             if($current_payment_info){
                 $pre_enr = [
                     'term_id' => $row->term_id,
-                    'student_id' => $d->id,
+                    'student_id' => $student_id,
                     'level_id' => $row->level_id,
                     'session_id' => $row->session_id,
                     'campus_id' => $row->campus_id,
@@ -1113,12 +1115,12 @@ class PriceList //extends Model
                             'status_id' => 2, //* 'paid'
                             'tuition_paid' => $getInvoiceInfo->due_amount
                         ],[],1);
-                        saveData($ss,'invoices',['student_id' => $d->id,'invoice_number'=>$d->invoice_number],[
+                        saveData($ss,'invoices',['student_id' => $student_id,'invoice_number'=>$d->invoice_number],[
                             'is_paid' => 1,//* paid
                             'paid_amount' => $getInvoiceInfo->due_amount
                         ],[],1);
                     }else{
-                        saveData($ss,'invoices',['student_id' => $d->id,'invoice_number'=>$d->invoice_number],[
+                        saveData($ss,'invoices',['student_id' => $student_id,'invoice_number'=>$d->invoice_number],[
                             'is_paid' => 1,//* paid
                             'paid_amount' => $getInvoiceInfo->due_amount
                         ],[],1);
@@ -1137,7 +1139,7 @@ class PriceList //extends Model
                 if($next_payment_info){
                     $pre_enr = [
                         'term_id' => null,
-                        'student_id' => $d->id,
+                        'student_id' => $student_id,
                         'level_id' => $next_level->id,
                         'session_id' => $row->session_id,
                         'campus_id' => $row->campus_id,
