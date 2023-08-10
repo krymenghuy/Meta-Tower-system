@@ -9,6 +9,10 @@ var InvoicesComponent = new function(){
         data: "invoice_number"
     },
     {
+        title: "Student Code",
+        data: "student_code"
+    },
+    {
         title: "Student Name",
         data: "student_name"
     },
@@ -33,6 +37,10 @@ var InvoicesComponent = new function(){
             let amount = data.amount ? ['$',data.amount].join(' ') : 'N/A';
             return amount;
         }
+    },
+    {
+        title: "Invoice Date",
+        data: "invoice_date"
     },
     {
         title: "Action",
