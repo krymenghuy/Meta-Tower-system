@@ -339,7 +339,7 @@ let GenerateInvoiceFSN = new function(){
                 <th>Discount</th>
                 <th>Special Discount</th>
                 <th>Child Policy</th>
-                <th>Total</th>
+                <th colspan="2">Total</th>
             </thead>
             <tbody>
                 <tr>
@@ -351,6 +351,11 @@ let GenerateInvoiceFSN = new function(){
                     <td>${d.special_discount ? ['%',d.special_discount].join(' ') : 'N/A'}</td>
                     <td>${d.child_policy ? d.child_policy : 'N/A'}</td>
                     <td>${d.total ? ['$',d.total].join(' ') : 'N/A'}</td>
+                    <td>
+                        <a href="javascript:void(0)" class="btn-fee-type-delete">
+                            <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                        </a>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -360,6 +365,7 @@ let GenerateInvoiceFSN = new function(){
 
         div.html(html);
         mThis.addRow(div.find('tbody'),d,btn);
+        mThis.deleteFeeRow(div.find('tbody'));
     }
 
     this.addRow = (tbody,d, btn) => {
@@ -372,7 +378,7 @@ let GenerateInvoiceFSN = new function(){
             let select=[btn,'select'].join('_');
             
             html = [`<tr>
-                <td colspan="8">
+                <td colspan="9">
                     <select id="${select}" class="form-select form-select-sm form-select-extend" style="max-width:200px">
                         ${option,d && d.map(op => {
                             option = [option,`<option value="${op.name}">${op.name}</option>`].join('');
@@ -385,6 +391,7 @@ let GenerateInvoiceFSN = new function(){
                 e.preventDefault();
                 tbody.append(html);
                 mThis.displayFeeAsRow(tbody, select);
+                mThis.deleteFeeRow(tbody);
             });
         });
     }
@@ -405,7 +412,24 @@ let GenerateInvoiceFSN = new function(){
                 <td>${d.discount ? ['%',d.discount].join(' ') : 'N/A'}</td>
                 <td>${d.special_discount ? ['%',d.special_discount].join(' ') : 'N/A'}</td>
                 <td>${d.child_policy ? d.child_policy : 'N/A'}</td>
-                <td>${d.total ? ['$',d.total].join(' ') : 'N/A'}</td>`].join(''));
+                <td>${d.total ? ['$',d.total].join(' ') : 'N/A'}</td>
+                <td>
+                    <a href="javascript:void(0)" class="btn-fee-type-delete">
+                        <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                    </a>
+                </td>`].join(''));
+                mThis.deleteFeeRow(tbody);
+            });
+        });
+    }
+
+    this.deleteFeeRow = (tbody) => {
+        tbody.find('.btn-fee-type-delete').off('click').on('click',function(e){
+            e.preventDefault();
+            cv_interact.confirm('Do you want to delete this fee?',{title: 'Delete Fee', context: 'delete'},(e) => {
+                if(e){
+                    $(this).closest('tr').remove();
+                }
             });
         });
     }
