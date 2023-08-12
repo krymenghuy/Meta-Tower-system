@@ -300,6 +300,8 @@ let GenerateInvoiceFSN = new function(){
             if(res.status_code === 200){
                 data = res.data;
             }
+            console.log(options);
+
             const current = new Date();
             const format = new Intl.DateTimeFormat('en-US',{
                 day: 'numeric',
@@ -335,15 +337,25 @@ let GenerateInvoiceFSN = new function(){
                         break;
                 }
             });
-            tab.first().trigger('click');
+            if(options.action === 'modify'){
+                tab.first().hide();
+                tab.last().trigger('click');
+                mThis.prepareTable(div,data,true,true);
+            }
+            else{
+                tab.first().show();
+                tab.first().trigger('click');
+            }
             if(typeof onFinish === 'function') onFinish();
         });
     }
 
-    this.prepareTable = (div, d, name=false) => {
+    this.prepareTable = (div, d, name=false, modify=false) => {
         d = d ? d : [];
         let btn = [d.fee_type,'btn'].join('_');
         let fee_type = d.fee_type ? d.fee_type.replace('_',' ') : 'N/A';
+        let inner_html = null;
+        console.log(d);
 
         let html = [`<table class="table">
             <thead>
@@ -364,14 +376,31 @@ let GenerateInvoiceFSN = new function(){
                     <td>${d.amount ? ['$',d.amount].join(' ') : 'N/A'}</td>
                     <td>${d.discount ? ['%',d.discount].join(' ') : 'N/A'}</td>
                     <td>${d.special_discount ? ['%',d.special_discount].join(' ') : 'N/A'}</td>
-                    <td>${d.child_policy ? d.child_policy : 'N/A'}</td>
+                    <td>${d.second_child_discount ? d.second_child_discount : 'N/A'}</td>
                     <td>${d.total ? ['$',d.total].join(' ') : 'N/A'}</td>
                     <td>
-                        <a href="javascript:void(0)" class="btn-fee-type-delete">
+                        <a href="javascript:void(0)" class="btn-fee-type-delete d-none">
                             <i class="fa-regular fa-trash-can text-danger fs-5"></i>
                         </a>
                     </td>
                 </tr>`}
+                ${modify ? (inner_html,d && d.other_fees.map(fee => {
+                    inner_html = [inner_html,`<tr>
+                        <td class="data-get" data-field="fee_type" data-value="${fee.fee_type}">${fee.fee_type ? fee.fee_type : 'N/A'}</td>
+                        <td>${fee.description ? fee.description : 'N/A'}</td>
+                        <td>${fee.date_range ? fee.date_range : 'N/A'}</td>
+                        <td>${fee.amount ? ['$',fee.amount].join(' ') : 'N/A'}</td>
+                        <td>${fee.discount ? ['%',fee.discount].join(' ') : 'N/A'}</td>
+                        <td>${fee.special_discount ? ['%',fee.special_discount].join(' ') : 'N/A'}</td>
+                        <td>${fee.second_child_discount ? fee.second_child_discount : 'N/A'}</td>
+                        <td>${fee.total ? ['$',fee.total].join(' ') : 'N/A'}</td>
+                        <td>
+                            <a href="javascript:void(0)" class="btn-fee-type-delete">
+                                <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                            </a>
+                        </td>
+                    </tr>`].join('');
+                }),inner_html) : ''}
             </tbody>
         </table>
         <div class="mt-2">
@@ -433,7 +462,7 @@ let GenerateInvoiceFSN = new function(){
                 <td>${d.amount ? ['$',d.amount].join(' ') : 'N/A'}</td>
                 <td>${d.discount ? ['%',d.discount].join(' ') : 'N/A'}</td>
                 <td>${d.special_discount ? ['%',d.special_discount].join(' ') : 'N/A'}</td>
-                <td>${d.child_policy ? d.child_policy : 'N/A'}</td>
+                <td>${d.second_child_discount ? d.second_child_discount: 'N/A'}</td>
                 <td>${d.total ? ['$',d.total].join(' ') : 'N/A'}</td>
                 <td>
                     <a href="javascript:void(0)" class="btn-fee-type-delete">
