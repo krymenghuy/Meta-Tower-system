@@ -272,4 +272,14 @@ class GeneralSettings //extends Model
         $item = $row->get()->first();
         return $item;
     }
+
+    static function requestTypesOptions($ss=null){
+        $rows = DB::table('request_types')->selectRaw('name,id')->get();
+        return $rows;
+    }
+
+    static function requestDiscountOptions($ss=null){
+        $rows = DB::table('discount_types')->selectRaw('name,id')->get();
+        return $rows;
+    }
 }

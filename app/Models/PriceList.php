@@ -1126,7 +1126,6 @@ class PriceList //extends Model
                         ],[],1);
                     }
                 }
-
             }
 
             if($next_level){
@@ -1151,7 +1150,6 @@ class PriceList //extends Model
             }
         }
 
-
         return [
             'enrollment'=>$pre_enr,
             'current_payment_info' => $current_payment_info,
@@ -1160,15 +1158,33 @@ class PriceList //extends Model
         ];
     }
 
-    static function deleteInvoice($id){
 
-        $delete = DB::table('invoices')->where('id',$id)->delete();
-        if($delete){
-            $deleteInv_item = DB::table('invoice_item')->where('invoice_id',$id)->delete();
-        }
+    static function reviveInActiveInvoice($d,$ss){
+        $id = $d->id;
+        $purpose = $d->purpose;
 
-        return DV::depends($delete,['action'=>'Deleted']);
-
+        $revive = DB::table('invoices')->where('id',$id)
+                ->where('branch_id',$ss->branch_id)
+                ->where('in_active',1)
+                ->update([
+                    'in_active' => 0,
+                    'purpose' => $purpose,
+                ]);
+        if(!$revive) return DV::error('Could not find invoice to revive') ;
+        return DV::depends($revive,['action' => 'Invoices is active now']);
     }
 
+    static function deleteInvoice($d,$ss){
+        $id = $d->id;
+        $purpose = $d->purpose;
+        $delete = DB::table('invoices')->where('id',$id)->update([
+            'in_active' => 1,
+            'purpose' => $purpose
+        ]);
+        $in_active = DB::table('invoices')->where('id',$id)->where('branch_id',$ss->branch_id)->take(1)->value('in_active');
+        if($in_active == 1){
+            $delete = DB::table('invoices')->where('id',$id)->where('branch_id',$ss->branch_id)->delete();
+        }
+        return DV::depends($delete,['action'=>'Deleted','status'=>'Status change to in active']);
+    }
 }

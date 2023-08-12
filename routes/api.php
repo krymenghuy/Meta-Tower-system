@@ -101,6 +101,18 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
      Route::post('audio-base/save',[AudioController::class,'baseAudio']);
     //
 
+    //begin::ActivityController
+    Route::prefix('activity')->group(function(){
+        Route::post('/request-change',[ActivityController::class,'requestChange']);
+        Route::post('/list-paginate',[ActivityController::class,'activityListPaginateList']);
+        Route::post('/request-discount',[ActivityController::class,'requestDiscount']);
+    });
+    Route::post('/approve/general/list-paginate',[ActivityController::class,'approveGeneralListPaginateList']);
+
+    Route::prefix('approval')->group(function(){
+        Route::post('/discount-count',[ActivityController::class,'requestDiscountCount']);
+    });
+    //end::ActivityController
 
 
 
@@ -109,6 +121,9 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('option/prev-program-level',[SettingController::class,'prevProgramLevels']);
     Route::post('/option/other-fee',[GeneralSettingsController::class,'otherFeeFormOptions']);
     Route::post('/option/other-fee-info',[GeneralSettingsController::class,'getFeeTypeInfo']);
+    Route::post('/option/request-type',[GeneralSettingsController::class,'requestTypeOptions']);
+    Route::post('/option/discount-type',[GeneralSettingsController::class,'requestDiscountOptions']);
+
 
     //begin::StudentController
     Route::prefix('student')->group(function () {
@@ -125,6 +140,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/generate-invoice/details',[PriceListController::class,'generateInvoiceDetails']);
         Route::post('/school-fee/pay',[PriceListController::class,'schoolFeePay']);
         Route::post('/invoice-delete',[PriceListController::class,'deleteInvoice']);
+        Route::post('/invoice-to-active',[PriceListController::class,'turnInvoiceToActive']);
     });
     //end::StudentController
 
@@ -146,8 +162,6 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/delete', [CampusController::class, 'delete']);
     });
     //end::CampusController
-
-
 
     //begin::AcademicYearController
     Route::prefix('academic-year')->group(function () {

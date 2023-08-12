@@ -303,6 +303,23 @@ class GeneralSettingsController extends Controller
     return JDV::result($other_fee);
   }
 
+  function requestTypeOptions(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return JDV::raw($ss);
+
+    $options = GeneralSettings::requestTypesOptions($ss);
+    return JDV::result($options);
+
+  }
+  function requestDiscountOptions(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return JDV::raw($ss);
+
+    $options = GeneralSettings::requestDiscountOptions($ss);
+    return JDV::result($options);
+
+  }
+
   // static function getComboItems_department(Request $req){
   //    $ss = UM::getUserInfoByToken($req,-1);
   //    if($ss->status_code !=200) return $ss; //user not authenticated
