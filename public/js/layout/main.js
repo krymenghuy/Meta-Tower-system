@@ -280,7 +280,7 @@ let main_view = new function(){
 
     mThis.incrementTaskCount = ()=>{
         let d = mThis.btnTasks.data('count');
-        d = $.isNumeric(d)?d:0;
+        d = d>=0?d:0;
         d++;
         mThis.btnNotif.text(d).data('count',d);
     }  
@@ -294,11 +294,11 @@ window.addEventListener('DOMContentLoaded',(e)=>{
     main_view.setLangMenu(LocaleManager.currentLanguage.code);
 });
 
-window.oncontextmenu = function(){
-    return false;
-}
+// window.oncontextmenu = function(){
+//     return false;
+// }
 
-document.onkeydown = function(e){
-    if(window.event.keyCode == 123 ||  e.button==2)    
-        return false;
-}
+// document.onkeydown = function(e){
+//     if(window.event.keyCode == 123 ||  e.button==2)    
+//         return false;
+// }
