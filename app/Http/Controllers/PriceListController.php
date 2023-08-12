@@ -144,7 +144,7 @@ class PriceListController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
 
-        $details = PriceList::generateInvoiceDetails($req->id,$ss);
+        $details = PriceList::generateInvoiceDetails($req->all(),$ss);
         return JDV::result($details);
     }
 

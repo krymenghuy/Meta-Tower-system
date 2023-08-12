@@ -857,7 +857,9 @@ class PriceList //extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    static function generateInvoiceDetails($id,$ss){
+    static function generateInvoiceDetails($arr,$ss){
+        $d = (object)$arr;
+        $id = $d->id;
         $campus = new Campus();
         $row = DB::table('students as s')->where('s.id',$id)
                 ->join('enrollments as e','e.student_id','=','s.id')
@@ -865,6 +867,7 @@ class PriceList //extends Model
                 ->selectRaw('s.id as student_id,p.second_child_discount,p.special_discount,e.academic_year,p.tuition_due,p.policy_discount,e.start_date,e.tuition_end_date,p.tuition,s.code as student_code,s.name as student_name,e.campus_id,e.level_id')
                 ->get()->first();
         if(!$row) return DV::error('Not Found');
+        $invoice_number =isset( $d->invoice_number)?$d->invoice_number:null;
         $row->campus = $campus->details($row->campus_id,$ss)->name;
         $row->date_range = $row->start_date.' to '.$row->tuition_end_date;
         $row->discount = $row->policy_discount;
@@ -873,12 +876,13 @@ class PriceList //extends Model
         $row->total = $row->tuition_due;
         $row->fee_type = 'tuition_fee';
         $row->due_date = self::getInvoiceInfo($id)->due_date;
-        $row->due_date = self::getInvoiceInfo($id)->invoice_number;
-        $row->other_fees = self::getOtherFeeTypes($id,self::getInvoiceInfo($id)->invoice_number);
+        $row->invoice_number = self::getInvoiceInfo($id)->invoice_number;
+        $row->other_fees = self::getOtherFeeTypes($id,$invoice_number);
         unset($row->tuition);
         unset($row->tuition_due);
         unset($row->policy_discount);
         $row->deposite_amount = self::studentDeposite($id);
+
         return $row;
     }
 
