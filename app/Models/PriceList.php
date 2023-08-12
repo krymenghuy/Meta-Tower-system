@@ -808,10 +808,11 @@ class PriceList //extends Model
     static function findStudent($filter=[],$ss){
         $campus = new Campus();
         $branch_id = $ss->branch_id;
-        $academic_year = isset($filter['academic_year']) ? $filter['academic_year']:null;
-        $search_value =isset($filter['search_value'])?$filter['search_value']:null;
-        $current_page =isset($filter['current_page'])?$filter['current_page']:1;
-        $per_page =isset($filter['per_page'])?$filter['per_page']:10;
+        $d = (object)$filter;
+        $academic_year = isset($d->academic_year) ? $d->academic_year:null;
+        $search_value =isset($d->search_value)?$d->search_value:null;
+        $current_page =isset($d->current_page)?$d->current_page:1;
+        $per_page =isset($d->per_page)?$d->per_page:10;
         if(!is_numeric($current_page)) $current_page=1;
         $skip_rows = ($current_page -1) * $per_page;
 
@@ -1203,6 +1204,7 @@ class PriceList //extends Model
                 }
             }
         }
+
 
         return [
             'enrollment'=>$pre_enr,

@@ -30,7 +30,7 @@ let StringSanitizer = new function () {
 
     //SanitizeOut() = sanitize output for display. itemName = { 'json???','none','image','nodeTag','sessionType','classTime', 'classTimes','classDays','batchName','schoolSession', 'termName','notes'}
     //when itemName ='none' ==> not allowing any special chars
-    this.sanitizeOut = (text, itemName, allowedChars) =>{
+    this.sanitizeOut = (text, itemName, allowedChars,allowed_raw_chars=false) =>{
         //if (typeof text == 'number' || !text) return text; 
         if (!text) return text;
         if ($.isNumeric(text)) return text; //NOTE: $.isNumeric() requires jQuery
@@ -75,7 +75,8 @@ let StringSanitizer = new function () {
                 do {
                     c = allowedChars[i];
                     if (!c) break;
-                    encodes.push(this.getEncodedChar(c));
+                    //NOTE: if parameter @allowed_raw_chars is TRUE => the array $encodes stores unencoded special char. Example '-' instead of "&U01;"
+                    if(allowed_raw_chars) encodes.push(c); else encodes.push(this.getEncodedChar(c));
                     i++;
                 } while (c);
 
@@ -267,47 +268,29 @@ let StringSanitizer = new function () {
 
     //Sanitizes javascript object (or JSON object). NOTE: This method sanitize the first nesting level of object (Not recursively through all nested props), NOT an array of objects
     //sanitizeArray() recursively
-    this.sanitizeObject = function (obj,allowedChars,except_props=[]) { 
-		if (Array.isArray(obj)) // process Array object = [{pro1,prop2,...}]
-		{
-			let i=0, myObj;
-			do
-			{
-				myObj = obj[i];
-				if (!myObj) break;
-				for (let property in myObj) {
-				   if (myObj.hasOwnProperty(property)) 
-                    //{
-                        if (except_props.indexOf(property) ===-1) {
-                            if (Array.isArray(myObj[property]))  
-                               myObj[property] = this.sanitizeObject(myObj[property]);
-                            else myObj[property] = this.sanitizeOut(myObj[property], this.getItemName(property), allowedChars); //NOTE: this.Sanitize() = Sanitize output for display     
-                        }  
-                                                          
-				    //}
-              } //end::for loop 
-
-               i++;				
-			}while(myObj);
-		}
-		else //process the non-array object object = {'prop1','prop2',...}
-		{
-			for (let property in obj) {
-              if (obj.hasOwnProperty(property)) 
-              {      
-                if (except_props.indexOf(property) ===-1) {
-                    if (Array.isArray(obj[property])){
-                        obj[property] = this.sanitizeObject(obj[property]);
-                    }else obj[property] = this.sanitizeOut(obj[property], this.getItemName(property), allowedChars); //NOTE: this.Sanitize() = Sanitize output for display
-                }
+    this.sanitizeObject = (obj, allowedChars, exceptProps = [], allowedRawChars = false)=> {
+        if (!exceptProps) exceptProps = [];
+        if (!allowedChars) allowedChars = [];
+      
+        if (Array.isArray(obj)) {
+          const result = obj.map(item => this.sanitizeObject(item, allowedChars, exceptProps, allowedRawChars));
+          return result;
+        } else {
+          for (let property in obj) {
+            if (obj.hasOwnProperty(property) && exceptProps.indexOf(property) === -1) {
+              if (Array.isArray(obj[property])) {
+                obj[property] = this.sanitizeObject(obj[property], allowedChars, exceptProps, allowedRawChars);
+              } else {
+                obj[property] = this.sanitizeOut(obj[property], this.getItemName(property), allowedChars, allowedRawChars);
               }
             }
-			
-		}
-        
+          }
+        }
+      
         return obj;
     };
- 
+      
+      
     //return decoded character
     this.getDecodeChar =  (e)=> {
         // e is encoded char such as &U01;    
