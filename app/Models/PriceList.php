@@ -860,6 +860,7 @@ class PriceList //extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
+
     static function generateInvoiceDetails($arr,$ss){
         $d = (object)$arr;
         $id = $d->id;
@@ -910,16 +911,44 @@ class PriceList //extends Model
         if(!$exists_invoice) return DV::error('ID does not exist');
         $due_date = isset($d->due_date)?$d->due_date:null;
         $delete_info = isset($d->delete_info)?$d->delete_info:null;
+        $delete_amt = [];
+        $deduct_amt = 0;
+        $total_amt=0;
+        $new_amt = 0;
+        $total_amt = 0;
+        $exist_tuitionFee = DB::table('invoice_item')->where('invoice_id',$id)->where('fee_type','tuition_fee')->exists();
+
+        if($exist_tuitionFee) {
+            $invoice =  DB::table('invoices')->where('id',$id)->selectRaw('student_id,due_amount')->first();
+            // $enr_info = DB::table('enrollments as e')->where('student_id',$invoice->student_id)
+            //         ->join('payments as p','p.enrollment_id','=','e.id')
+            //         ->selectRaw('p.tuition_due,e.id as enr_id,p.tuition,e.start_date,e.tuition_end_date,e.academic_year,p.policy_discount')
+            //         ->first();
+            // $total_amt = $enr_info->tuition_due;
+            $total_amt = $invoice->due_amount;
+        }else{
+            $total_amt =  DB::table('invoice_item')->where('invoice_id',$id)->where('fee_type','!=','tuition_fee')->sum('price');
+        }
         if($delete_info){
             foreach($delete_info as $info){
+                $delete_amt[] = $info['amount'];
                 DB::table('invoice_item')->where('id',$info['invoice_item_id'])->where('fee_type','!=','tuition_fee')->where('branch_id',$branch_id)->delete();
             }
+            $deduct_amt = array_sum($delete_amt);
+            $new_amt = $total_amt - $deduct_amt;
+
         }
         $inputs = [
             'due_date' => $due_date
         ];
+
+        if($new_amt>0){
+            $inputs['due_amount'] = $new_amt;
+            // $inputs['']
+        }
         $id = saveData($ss,'invoices',['id' => $id],$inputs,[],1);
         return DV::depends($id,['action'=>'Updated']);
+        // return $new_amt;
 
     }
 
@@ -1272,13 +1301,13 @@ class PriceList //extends Model
                     'in_active' => 0,
                     'purpose' => $purpose,
                 ]);
-        if(!$revive) return DV::error('Could not find invoice to revive') ;
+        if(!$revive) return DV::error('Could not find invoice to revive');
         return DV::depends($revive,['action' => 'Invoices is active now']);
     }
 
     static function deleteInvoice($d,$ss){
         $id = $d->id;
-        $purpose = $d->purpose;
+        $purpose = isset($d->purpose)?$d->purpose:$d->remarks;
         $delete = DB::table('invoices')->where('id',$id)->update([
             'in_active' => 1,
             'purpose' => $purpose

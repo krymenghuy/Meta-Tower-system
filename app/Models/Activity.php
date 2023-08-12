@@ -154,7 +154,7 @@ class Activity //extends Model
             $search_value = escape_like_str($search_value);
             $str_search ="(s.name LIKE '%$search_value%' OR s.code = '$search_value')";
         }
-        $selectCols = 's.id as student_id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id,e.level_id';
+        $selectCols = 's.id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id,e.level_id';
         $query = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->selectRaw($selectCols)
@@ -281,41 +281,41 @@ class Activity //extends Model
             $inputs = $res->inputs;
 
             $studentInfo = $this->getStudentInfo($inputs['student_id'],$ss);
-            if($req_type_id == 1){ //* request level
+            // if($req_type_id == 1){ //* request level
 
-                $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
-                if($req_exists){
-                    $cross_values +=1;
-                     continue;
-                }
-                 $from_id = $studentInfo->level_id;
-                 $to_id = $to_level_id;
-             }
-             else if($req_type_id == 2){    //* request campus
+            //     $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
+            //     if($req_exists){
+            //         $cross_values +=1;
+            //          continue;
+            //     }
+            //      $from_id = $studentInfo->level_id;
+            //      $to_id = $to_level_id;
+            //  }
+            //  else if($req_type_id == 2){    //* request campus
 
-                 $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
-                 if($req_exists){
-                     $cross_values +=1;
-                     continue;
-                 }
-                 $from_id = $studentInfo->campus_id;
-                 $to_id = $to_campus_id;
-             }
-             else if($req_type_id == 3){     //* request session
+            //      $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
+            //      if($req_exists){
+            //          $cross_values +=1;
+            //          continue;
+            //      }
+            //      $from_id = $studentInfo->campus_id;
+            //      $to_id = $to_campus_id;
+            //  }
+            //  else if($req_type_id == 3){     //* request session
 
-                 $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
-                 if($req_exists){
-                     $cross_values +=1;
-                     continue;
-                 }
-                 $from_id = $studentInfo->session_id;
-                 $to_id = $to_session_id;
-             }
-             else if($req_type_id == 4){
-                 $from_id = $studentInfo->level_id;
-                 $to_id = $to_level_id;
-                 // return;
-             }
+            //      $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
+            //      if($req_exists){
+            //          $cross_values +=1;
+            //          continue;
+            //      }
+            //      $from_id = $studentInfo->session_id;
+            //      $to_id = $to_session_id;
+            //  }
+            //  else if($req_type_id == 4){
+            //      $from_id = $studentInfo->level_id;
+            //      $to_id = $to_level_id;
+            //      // return;
+            //  }
         }
 
         return DV::depends($success,['action'=>'Request sent success ('.$success.') with ('.$cross_values.') failed','message' => "Request send wait author to approve"],"Missing All ($cross_values) ");
