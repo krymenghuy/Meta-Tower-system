@@ -115,6 +115,7 @@ var InvoicesComponent = new function(){
             e.preventDefault();
             let op = {
                 'id': $(this).data('studentid'),
+                'invoice_id': $(this).data('id'),
                 'action':'modify'
             };
             GenerateInvoiceFSN.show(op);

@@ -283,15 +283,28 @@ let GenerateInvoiceFSN = new function(){
         e.preventDefault();
         let p = mThis.getDataForm();
         console.log(p);
-        window.vsapi.call(`${main_view.base_url}/api/student/generate-invoice`,p,null).then(res => {
-            if(res.status_code === 200){
-                mThis.self.modal('hide');
-                cv_interact.success('Invoice Created Successfully!');
-            }
-            else{
-                cv_interact.error(res.error_message);
-            }
-        });
+        // if(mThis.options.action === 'modify'){
+        //     window.vsapi.call(`${main_view.base_url}/api/student/invoice-update`,p,null).then(res => {
+        //         if(res.status_code === 200){
+        //             mThis.self.modal('hide');
+        //             cv_interact.success('Invoice Updated Successfully!');
+        //         }
+        //         else{
+        //             cv_interact.error(res.error_message);
+        //         }
+        //     });
+        // }
+        // else{
+        //     window.vsapi.call(`${main_view.base_url}/api/student/generate-invoice`,p,null).then(res => {
+        //         if(res.status_code === 200){
+        //             mThis.self.modal('hide');
+        //             cv_interact.success('Invoice Created Successfully!');
+        //         }
+        //         else{
+        //             cv_interact.error(res.error_message);
+        //         }
+        //     });
+        // }
     });
 
     this.loadFormDetails = (div,options,onFinish = null) => {
@@ -300,7 +313,6 @@ let GenerateInvoiceFSN = new function(){
             if(res.status_code === 200){
                 data = res.data;
             }
-            console.log(options);
 
             const current = new Date();
             const format = new Intl.DateTimeFormat('en-US',{
@@ -337,15 +349,17 @@ let GenerateInvoiceFSN = new function(){
                         break;
                 }
             });
+
             if(options.action === 'modify'){
                 tab.first().hide();
-                tab.last().trigger('click');
+                tab.last().trigger('click').off('click');
                 mThis.prepareTable(div,data,true,true);
             }
             else{
                 tab.first().show();
                 tab.first().trigger('click');
             }
+
             if(typeof onFinish === 'function') onFinish();
         });
     }
@@ -487,10 +501,15 @@ let GenerateInvoiceFSN = new function(){
 
     this.getDataForm = () => {
         let d = {
+            'id': mThis.options.invoice_id,
             'student_id': mThis.options.id,
             'due_date': mThis.self.find('.data-input').val(),
             'fee_types': []
         };
+        if(mThis.options.action === 'modify')
+            delete(d.student_id);
+        else
+            delete(d.id);
 
         mThis.self.find('.data-get').each(function(){
             let p = {};
