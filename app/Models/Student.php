@@ -180,6 +180,7 @@ class Student //extends Model
         return DV::depends($newID,['action'=>'Saved','parent_info' => $p_info,'Parameter'=>$save_pmt_paramsID]);
     }
 
+    //* for enrollments section
     static function studentListPaginate($filter=[],$ss){
         $campus = new Campus();
         $branch_id = $ss->branch_id;
@@ -280,9 +281,7 @@ class Student //extends Model
                         'full_name' => $inputs['name']
                     ];
                    $um_ = $um->saveUser($arr,$ss);
-
                 }
-
                 $female_guardian = DB::table('guardians')->selectRaw('id,name,phone_number,email')->where('id',$newID)->where('sex','F')->first();
                 if($female_guardian){
                     // return $female_guardian;
@@ -302,7 +301,6 @@ class Student //extends Model
                 if(!$exist){
                     saveData($ss,'student_guardians',[],['guardian_id'=>$newID,'student_id'=>$child_id,'guardian_role'=>$pf['role']],[],1);
                 }
-
             }
             $i++;
         }
@@ -401,9 +399,9 @@ class Student //extends Model
 
 
     static function deleteStudent($id,$ss){
-        $file_name = DB::table('students')->where('id',$id)->take(1)->value('file_name');
-        if($file_name) PublicStorage::delete($ss->branch_id,'students','image',$file_name);
-        $delete = DB::table('students')->where('id',$id)->delete();
+        // $file_name = DB::table('students')->where('id',$id)->take(1)->value('file_name');
+        // if($file_name) PublicStorage::delete($ss->branch_id,'students','image',$file_name);
+        $delete = DB::table('enrollments')->where('student_id',$id)->delete();
         return DV::depends($delete,['action' => 'Deleted']);
     }
 
@@ -429,6 +427,48 @@ class Student //extends Model
             $updated = saveData($ss,'payments',['enrollment_id' => $enr->id],$change_fields,[],1);
         }
         return DV::depends($updated,'Delete verified student');
+    }
+
+    static function studentPaginate($filter=[],$ss){
+        $branch_id = $ss->branch_id;
+        $search_value =isset($filter['search_value'])?$filter['search_value']:null;
+        $current_page =isset($filter['current_page'])?$filter['current_page']:1;
+        $per_page =isset($filter['per_page'])?$filter['per_page']:10;
+        if(!is_numeric($current_page)) $current_page=1;
+        $skip_rows = ($current_page -1) * $per_page;
+
+        $str_search ="1=1";
+        $str_moreWhere="1=1";
+        if($search_value){
+            $skip_rows =0;
+            $search_value = escape_like_str($search_value);
+            // $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+        }
+
+        $selectCols = 's.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.school_id';
+        $query = DB::table('students as st')
+                ->join('enrollments as e','e.student_id','=','st.id')
+                ->join('sessions as s','s.id','=','e.session_id')
+                ->selectRaw($selectCols)
+                ->where('st.branch_id',$branch_id)
+                ->whereRaw($str_moreWhere)->whereRaw($str_search)
+                ->orderBy('id','desc');
+        $count_query = clone $query;
+        $count = $count_query->count('st.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+        foreach($rows as $row) {
+            $status = rand(0,1)?'New':'Old';
+            $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
+            $row->parent_info = self::getChildParent($row->id);
+            unset($row->file_name);
+            // $row->campus = $campus->details($row->campus_id,$ss)->name;
+            $row->level = self::getProgramLevel($row->level_id);
+            $row->student_type = $status;
+
+            $row->previous_school = self::getPrevSchool($row->school_id)->name;
+        }
+
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
 }

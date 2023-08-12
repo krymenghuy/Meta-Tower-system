@@ -8,7 +8,7 @@
                     <div class="width--search-inner">
                         <select class="modal-select2 form-control data-input" data-field="academic_year"></select>
                     </div>
-                    <button id="btn--find" class="btn btn-primary btn--find" type="button">
+                    <button id="btn--find" class="btn btn-primary btn--find text-nowrap" type="button">
                         <i class="fa-solid fa-magnifying-glass"></i>
                         <span class="trans-text" data-langprop="buttons.Find"></span>
                     </button>
@@ -26,7 +26,7 @@
                 <select class="modal-select2 data-input" data-field="academic_year"></select>
             </div>
             <input type="search" class="form-control width--search-inner data-input" data-field="search_value" placeholder="Search by Name or ID..."/>
-            <button id="_fns_btn_filter" class="btn btn-primary btn-sm" type="button">
+            <button id="_fns_btn_filter" class="btn btn-primary btn-sm text-nowrap" type="button">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <span class="trans-text" data-langprop="buttons.Find"></span>
             </button>
@@ -68,7 +68,7 @@
                         <p class="pb-0 mb-1">
                             <span class="width-invoice-text">Invoice#</span>
                             <span class="px-2">:</span>
-                            <span class="data-invoice"></span>
+                            <span class="data-invoice" data-field="invoice_number"></span>
                         </p>
                         <p class="pb-0 mb-1">
                             <span class="width-invoice-text">Invoice Date</span>
@@ -79,12 +79,34 @@
                             <span class="width-invoice-text">Due Date</span>
                             <span class="px-2">:</span>
                             <span>
-                                <input data-select="datepicker" class="form-date data-input" data-field="due_date"/>
+                                <input data-select="datepicker" class="data-invoice form-date data-input" data-field="due_date"/>
                             </span>
                         </p>
                     </div>
                 </div>
-                <div id="dlg_fns_tbl" class="table-responsive p-3 mt-3 rounded-3 bg-light"></div>
+                <div class="d-flex mt-3 pe-3">
+                    <a href="javascript:void(0)" class="btn-tuition-fee ttn-fee" data-view="ttn-fee">
+                        <span class="trans-text" data-langprop="titles.Tuition Fee"></span>
+                    </a>
+                    <a href="javascript:void(0)" class="btn-tuition-fee" data-view="n-ttn-fee">
+                        <span class="trans-text" data-langprop="titles.Non Tuition Fee"></span>
+                    </a>
+                </div>
+                <div id="dlg_fns_tbl" class="table-responsive p-3 rounded-3 bg-light"></div>
+                <hr class="height-line"/>
+                <div class="d-flex justify-content-end">
+                    <p class="pb-0 mb-1 ps-0 p-5">
+                        <span class="width-invoice-text">Deduct Deposite</span>
+                        <span class="px-2">:</span>
+                        <span class="data-invoice" data-field="deposite_amount"></span>
+                    </p>
+                </div>
+                <div class="d-block">
+                    <p>Note:</p>
+                    <div class="px-3">
+                        <textarea class="data-invoice form-control data-input" data-field="note"></textarea>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary btn-sm" type="button" data-dismiss="modal">

@@ -144,7 +144,7 @@ class PriceListController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
 
-        $details = PriceList::generateInvoiceDetails($req->id,$ss);
+        $details = PriceList::generateInvoiceDetails($req->all(),$ss);
         return JDV::result($details);
     }
 
@@ -154,5 +154,29 @@ class PriceListController extends Controller
 
         $details = PriceList::generateInvoice($req->all(),$ss);
         return JDV::raw($details);
+    }
+
+    function deleteInvoice(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $delete = PriceList::deleteInvoice($req,$ss);
+        return JDV::raw($delete);
+    }
+
+    function turnInvoiceToActive(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $active = PriceList::reviveInActiveInvoice($req,$ss);
+        return JDV::raw($active);
+    }
+
+    function updateInvoice(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $update = PriceList::updateInvoice($req->all(),$ss);
+        return JDV::raw($update);
     }
 }

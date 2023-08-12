@@ -117,7 +117,7 @@ var FindStudentComponent = new function(){
                                     <button class="btn btn-sm btn-primary rounded-3 btn--gnInvoice" type="button" data-id="${item.id}">
                                         <span class="text-nowrap trans-text" data-langprop="buttons.Ganerate Invoice"></span>
                                     </button>
-                                    <button class="btn btn-sm btn-danger rounded-3 btn--Options position-relative" type="button">
+                                    <button class="btn btn-sm btn-danger rounded-3 btn--Options position-relative text-nowrap" type="button">
                                         <span class="text-nowrap trans-text" data-langprop="buttons.Options"></span>
                                         <i class="fa-solid fa-caret-down ps-2"></i>
                                         <div class="w-options gap-2 shadow p-3 rounded-3" style="display:none">
@@ -263,10 +263,6 @@ var FindStudentComponent = new function(){
         mThis.prepareOptions(mThis.div_filter,() => {
             main_view.setTitle(mThis.title_prop);
             let x = mThis.self.siblings(':visible');
-            if(x.length === 0){
-                mThis.self.hide().fadeIn(300);
-                return;
-            }
             x.fadeOut('fast',function(){
                 mThis.self.hide().fadeIn(300);
             });
@@ -285,25 +281,45 @@ let GenerateInvoiceFSN = new function(){
 
     mThis.btnGenerate.on('click',function(e){
         e.preventDefault();
-        let p = mThis.getDataForm();
-        console.log(p);
-        window.vsapi.call(`${main_view.base_url}/api/student/generate-invoice`,p,null).then(res => {
-            if(res.status_code === 200){
-                mThis.self.modal('hide');
-                cv_interact.success('Invoice Created Successfully!');
-            }
-            else{
-                cv_interact.error(res.error_message);
-            }
-        });
+        let p = {};
+        if(mThis.options.action === 'modify'){
+            p = mThis.getDataFormUpdate();
+            window.vsapi.call(`${main_view.base_url}/api/student/invoice-update`,p,null).then(res => {
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    cv_interact.success('Invoice Updated Successfully!');
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                }
+            });
+        }
+        else{
+            p = mThis.getDataForm();
+            window.vsapi.call(`${main_view.base_url}/api/student/generate-invoice`,p,null).then(res => {
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    cv_interact.success('Invoice Created Successfully!');
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                }
+            });
+        }
     });
 
     this.loadFormDetails = (div,options,onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/student/generate-invoice/details`,{'id': options.id},null).then(res => {
+        let op = {
+            'id': options.id
+        };
+        if(options.action === 'modify')
+            op.invoice_number = options.invoice_number;
+        window.vsapi.call(`${main_view.base_url}/api/student/generate-invoice/details`,op,null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = res.data;
             }
+
             const current = new Date();
             const format = new Intl.DateTimeFormat('en-US',{
                 day: 'numeric',
@@ -316,19 +332,51 @@ let GenerateInvoiceFSN = new function(){
                 let f = el.data('field');
                 if(f === 'inv_date')
                     el.text(format);
+                else if(f === 'due_date')
+                    el.val(data[f]);
                 else
                     el.text(data[f]);
             });
 
-            mThis.prepareTable(div,data);
+            let tab = mThis.self.find('a.btn-tuition-fee');
+            tab.off('click').on('click',function(e){
+                e.preventDefault();
+                let name = $(this).data('view');
+                switch(name){
+                    case 'ttn-fee':
+                        $(this).addClass('ttn-fee').siblings().removeClass('n-ttn-fee');
+                        mThis.prepareTable(div,data);
+                        break;
+                    case 'n-ttn-fee':
+                        $(this).addClass('n-ttn-fee').siblings().removeClass('ttn-fee');
+                        mThis.prepareTable(div,data,true);
+                        break;
+                    default:
+                        $(this).addClass('n-ttn-fee').siblings().removeClass('ttn-fee');
+                        mThis.prepareTable(div,data);
+                        break;
+                }
+            });
+
+            if(options.action === 'modify'){
+                tab.first().hide();
+                tab.last().trigger('click').off('click');
+                mThis.prepareTable(div,data,true,true);
+            }
+            else{
+                tab.first().show();
+                tab.first().trigger('click');
+            }
+
             if(typeof onFinish === 'function') onFinish();
         });
     }
 
-    this.prepareTable = (div, d) => {
+    this.prepareTable = (div, d, name=false, modify=false) => {
         d = d ? d : [];
         let btn = [d.fee_type,'btn'].join('_');
         let fee_type = d.fee_type ? d.fee_type.replace('_',' ') : 'N/A';
+        let inner_html = null;
 
         let html = [`<table class="table">
             <thead>
@@ -339,19 +387,41 @@ let GenerateInvoiceFSN = new function(){
                 <th>Discount</th>
                 <th>Special Discount</th>
                 <th>Child Policy</th>
-                <th>Total</th>
+                <th colspan="2">Total</th>
             </thead>
             <tbody>
-                <tr>
+                ${name ? '': `<tr>
                     <td class="text-capitalize data-get" data-field="fee_type" data-value="${d.fee_type}">${fee_type}</td>
                     <td>${d.description ? d.description : 'N/A'}</td>
                     <td>${d.date_range ? d.date_range : 'N/A'}</td>
                     <td>${d.amount ? ['$',d.amount].join(' ') : 'N/A'}</td>
                     <td>${d.discount ? ['%',d.discount].join(' ') : 'N/A'}</td>
                     <td>${d.special_discount ? ['%',d.special_discount].join(' ') : 'N/A'}</td>
-                    <td>${d.child_policy ? d.child_policy : 'N/A'}</td>
+                    <td>${d.second_child_discount ? d.second_child_discount : 'N/A'}</td>
                     <td>${d.total ? ['$',d.total].join(' ') : 'N/A'}</td>
-                </tr>
+                    <td>
+                        <a href="javascript:void(0)" class="btn-fee-type-delete d-none">
+                            <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                        </a>
+                    </td>
+                </tr>`}
+                ${modify ? (inner_html,d && d.other_fees.map(fee => {
+                    inner_html = [inner_html,`<tr>
+                        <td class="data-get" data-field="fee_type" data-value="${fee.fee_type}">${fee.fee_type ? fee.fee_type : 'N/A'}</td>
+                        <td>${fee.description ? fee.description : 'N/A'}</td>
+                        <td>${fee.date_range ? fee.date_range : 'N/A'}</td>
+                        <td>${fee.amount ? ['$',fee.amount].join(' ') : 'N/A'}</td>
+                        <td>${fee.discount ? ['%',fee.discount].join(' ') : 'N/A'}</td>
+                        <td>${fee.special_discount ? ['%',fee.special_discount].join(' ') : 'N/A'}</td>
+                        <td>${fee.second_child_discount ? fee.second_child_discount : 'N/A'}</td>
+                        <td>${fee.total ? ['$',fee.total].join(' ') : 'N/A'}</td>
+                        <td>
+                            <a href="javascript:void(0)" class="btn-fee-type-delete" data-id="${fee.invoice_item_id}" data-amount="${fee.amount}">
+                                <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                            </a>
+                        </td>
+                    </tr>`].join('');
+                }),inner_html) : ''}
             </tbody>
         </table>
         <div class="mt-2">
@@ -360,6 +430,7 @@ let GenerateInvoiceFSN = new function(){
 
         div.html(html);
         mThis.addRow(div.find('tbody'),d,btn);
+        mThis.deleteFeeRow(div.find('tbody'));
     }
 
     this.addRow = (tbody,d, btn) => {
@@ -372,25 +443,33 @@ let GenerateInvoiceFSN = new function(){
             let select=[btn,'select'].join('_');
             
             html = [`<tr>
-                <td colspan="8">
+                <td colspan="9">
                     <select id="${select}" class="form-select form-select-sm form-select-extend" style="max-width:200px">
                         ${option,d && d.map(op => {
                             option = [option,`<option value="${op.name}">${op.name}</option>`].join('');
-                        }),option=[option,'<option selected>Select A Option</option>'].join('')}
+                        }),option=[option,'<option value="" selected>Select A Option</option>'].join('')}
                     </select>
                 </td>
             </tr>`].join('');
 
             tbody.closest('.table-responsive').find(`#${btn}`).off('click').on('click',function(e){
                 e.preventDefault();
-                tbody.append(html);
-                mThis.displayFeeAsRow(tbody, select);
+                let value = tbody.find(`#${select}`).val();
+                if(value === undefined)
+                    tbody.append(html);
+
+                if(((value == null) || (value == '')) && (value !== undefined))
+                    cv_interact.warning('Select an option before add!');
+                else{
+                    mThis.displayFeeAsRow(tbody, select);
+                    mThis.deleteFeeRow(tbody);
+                }
             });
         });
     }
 
     this.displayFeeAsRow = (tbody, select) => {
-        tbody.find(`#${select}`).on('change',function(e){
+        tbody.find(`#${select}`).off('change').on('change',function(e){
             e.preventDefault();
             let tr = $(this).closest('tr');
             window.vsapi.call(`${main_view.base_url}/api/option/other-fee-info`,{'name': $(this).val()},null,false).then(res => {
@@ -404,8 +483,33 @@ let GenerateInvoiceFSN = new function(){
                 <td>${d.amount ? ['$',d.amount].join(' ') : 'N/A'}</td>
                 <td>${d.discount ? ['%',d.discount].join(' ') : 'N/A'}</td>
                 <td>${d.special_discount ? ['%',d.special_discount].join(' ') : 'N/A'}</td>
-                <td>${d.child_policy ? d.child_policy : 'N/A'}</td>
-                <td>${d.total ? ['$',d.total].join(' ') : 'N/A'}</td>`].join(''));
+                <td>${d.second_child_discount ? d.second_child_discount: 'N/A'}</td>
+                <td>${d.total ? ['$',d.total].join(' ') : 'N/A'}</td>
+                <td>
+                    <a href="javascript:void(0)" class="btn-fee-type-delete">
+                        <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                    </a>
+                </td>`].join(''));
+                mThis.deleteFeeRow(tbody);
+            });
+        });
+    }
+
+    this.deleteFeeRow = (tbody) => {
+        tbody.find('.btn-fee-type-delete').off('click').on('click',function(e){
+            e.preventDefault();
+            let op = {
+                'invoice_item_id': $(this).data('id'),
+                'amount': $(this).data('amount')
+            };
+            cv_interact.confirm('Do you want to delete this fee?',{title: 'Delete Fee', context: 'delete'},(e) => {
+                if(e){
+                    if(op.invoice_item_id > 0){
+                        mThis.options.fee_item = mThis.options.fee_item ? mThis.options.fee_item : [];
+                        mThis.options.fee_item.push(op);
+                    }
+                    $(this).closest('tr').remove();
+                }
             });
         });
     }
@@ -426,6 +530,15 @@ let GenerateInvoiceFSN = new function(){
         });
         
         return d;
+    }
+
+    this.getDataFormUpdate = () => {
+        let p = {
+            'id': mThis.options.invoice_id,
+            'due_date': mThis.self.find('.data-input').val(),
+            'delete_info': mThis.options.fee_item
+        };
+        return p;
     }
 
     this.show = (options) => {

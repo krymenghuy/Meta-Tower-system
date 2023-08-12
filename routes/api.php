@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\AcademicYearController;
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AudioController;
 use App\Http\Controllers\CampusController;
 use App\Http\Controllers\DepositeController;
+use App\Http\Controllers\Login\GuardianLoginController;
 use App\Http\Controllers\Mobile\HomePageController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\ProgramLevelController;
@@ -69,6 +71,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('auth/login', [LoginController::class, 'apiLogin']);
+Route::post('/auth/guardian/login',[GuardianLoginController::class,'guardianLogin']);
 
 // Route::get('env/20230120AZ99/vars',function(){
 //     $vars =[
@@ -100,6 +103,18 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
      Route::post('audio-base/save',[AudioController::class,'baseAudio']);
     //
 
+    //begin::ActivityController
+    Route::prefix('activity')->group(function(){
+        Route::post('/request-change',[ActivityController::class,'requestChange']);
+        Route::post('/list-paginate',[ActivityController::class,'activityListPaginateList']);
+        Route::post('/request-discount',[ActivityController::class,'requestDiscount']);
+    });
+    Route::post('/approve/general/list-paginate',[ActivityController::class,'approveGeneralListPaginateList']);
+
+    Route::prefix('approval')->group(function(){
+        Route::post('/discount-count',[ActivityController::class,'requestDiscountCount']);
+    });
+    //end::ActivityController
 
 
 
@@ -108,6 +123,9 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('option/prev-program-level',[SettingController::class,'prevProgramLevels']);
     Route::post('/option/other-fee',[GeneralSettingsController::class,'otherFeeFormOptions']);
     Route::post('/option/other-fee-info',[GeneralSettingsController::class,'getFeeTypeInfo']);
+    Route::post('/option/request-type',[GeneralSettingsController::class,'requestTypeOptions']);
+    Route::post('/option/discount-type',[GeneralSettingsController::class,'requestDiscountOptions']);
+
 
     //begin::StudentController
     Route::prefix('student')->group(function () {
@@ -123,6 +141,9 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/find',[PriceListController::class,'findStudent']);
         Route::post('/generate-invoice/details',[PriceListController::class,'generateInvoiceDetails']);
         Route::post('/school-fee/pay',[PriceListController::class,'schoolFeePay']);
+        Route::post('/invoice-delete',[PriceListController::class,'deleteInvoice']);
+        Route::post('/invoice-to-active',[PriceListController::class,'turnInvoiceToActive']);
+        Route::post('/invoice-update',[PriceListController::class,'updateInvoice']);
     });
     //end::StudentController
 
@@ -335,27 +356,27 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //end::MedicalInvoiceController
 
     //begin::InvoiceController
-    Route::post('invoice/payment-form-options', [InvoiceController::class, 'getPaymentFormOptions']);
-    Route::post('invoice/form-options', [InvoiceController::class, 'invoice_form_options']);
-    Route::post('invoice/customer-info', [InvoiceController::class, 'getCustomerInfo']);
-    Route::post('invoice/create', [InvoiceController::class, 'createInvoice']);
-    Route::post('invoice/update', [InvoiceController::class, 'updateInvoice']);
-    Route::post('invoice/delete', [InvoiceController::class, 'deleteInvoice']);
-    Route::post('invoice/details', [InvoiceController::class, 'getInvoiceDetails']);
-    Route::post('invoice/basic-info', [InvoiceController::class, 'getBasicInfo']);
-    Route::post('invoice/list', [InvoiceController::class, 'getInvoiceList']);
-    Route::post('invoice/list-paginate', [InvoiceController::class, 'getInvoiceList_paginate']);
-    Route::post('invoice-payment/receive', [InvoiceController::class, 'receivePayment']);
-    Route::post('invoice/receive-payment', [InvoiceController::class, 'receivePayment']);
-    Route::post('invoice/receive-payments', [InvoiceController::class, 'receivePayments']);
-    Route::post('invoice/payments', [InvoiceController::class, 'getInvoicePayments']);
-    Route::post('invoice/payments-with-summary', [InvoiceController::class, 'getInvoicePayments_with_summary']);
-    Route::post('invoice-payment/details', [InvoiceController::class, 'getInvoicePaymentDetails']);
+    // Route::post('invoice/payment-form-options', [InvoiceController::class, 'getPaymentFormOptions']);
+    // Route::post('invoice/form-options', [InvoiceController::class, 'invoice_form_options']);
+    // Route::post('invoice/customer-info', [InvoiceController::class, 'getCustomerInfo']);
+    // Route::post('invoice/create', [InvoiceController::class, 'createInvoice']);
+    // Route::post('invoice/update', [InvoiceController::class, 'updateInvoice']);
+    // Route::post('invoice/delete', [InvoiceController::class, 'deleteInvoice']);
+    // Route::post('invoice/details', [InvoiceController::class, 'getInvoiceDetails']);
+    // Route::post('invoice/basic-info', [InvoiceController::class, 'getBasicInfo']);
+    // Route::post('invoice/list', [InvoiceController::class, 'getInvoiceList']);
+    // Route::post('invoice/list-paginate', [InvoiceController::class, 'getInvoiceList_paginate']);
+    // Route::post('invoice-payment/receive', [InvoiceController::class, 'receivePayment']);
+    // Route::post('invoice/receive-payment', [InvoiceController::class, 'receivePayment']);
+    // Route::post('invoice/receive-payments', [InvoiceController::class, 'receivePayments']);
+    // Route::post('invoice/payments', [InvoiceController::class, 'getInvoicePayments']);
+    // Route::post('invoice/payments-with-summary', [InvoiceController::class, 'getInvoicePayments_with_summary']);
+    // Route::post('invoice-payment/details', [InvoiceController::class, 'getInvoicePaymentDetails']);
     //getPaymentDetailsWithSummary() => payment details + invoice info
-    Route::post('invoice-payment/details-with-summary', [InvoiceController::class, 'getInvoicePaymentWithSummary']);
+    // Route::post('invoice-payment/details-with-summary', [InvoiceController::class, 'getInvoicePaymentWithSummary']);
 
-    Route::post('invoice-payment/update', [InvoiceController::class, 'updatePayment']);
-    Route::post('invoice-payment/delete', [InvoiceController::class, 'deletePayment']);
+    // Route::post('invoice-payment/update', [InvoiceController::class, 'updatePayment']);
+    // Route::post('invoice-payment/delete', [InvoiceController::class, 'deletePayment']);
 
     //end::InvoiceController
 
