@@ -127,7 +127,8 @@ class ListView{
 		   let val = null;	
 		   if(typeof c.data ==='function') val = c.data(d,row_index,tr);
 		   else val = d[c.data];
-		   let col_class = (c.title+'').replace(/\s/g, "-");
+		   let col_class =c.className;
+		   if (!col_class) col_class = (c.title+'').replace(/\s/g, "-");
 		   html_row = [html_row,`<td class="${c.className?c.className:''} ${col_class}">`,val,`</td>`].join('');  
 		 });
          tr.innerHTML = html_row;
