@@ -405,6 +405,7 @@ li.kt-menu__section {
     min-width: 200px;
 }
 
+.width--filter-inner .select2,
 .width--search-inner .select2{
     width:100%;
     height: calc(1.5em + 1.3rem + 2px);
@@ -458,16 +459,7 @@ li.kt-menu__section {
     border: none;
 }
 
-.div--att-empty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 73vh;
-}
-
-.div-cardStudent-empty img,
-.div--att-empty img {
+.div-cardStudent-empty img{
     width: 100px;
 }
 
@@ -611,4 +603,10 @@ li.kt-menu__section {
 
 .height-line{
     background-color:#808080;
+}
+
+.image-student-tbl{
+    width: 50px;
+    height:50px;
+    border-radius: 50%;
 }

@@ -117,7 +117,10 @@ var InvoicesComponent = new function(){
                 'id': $(this).data('studentid'),
                 'invoice_id': $(this).data('id'),
                 'invoice_number': $(this).data('invoice'),
-                'action':'modify'
+                'action':'modify',
+                'onClose': () => {
+                    mThis.itemView.showPage(null);
+                }
             };
             GenerateInvoiceFSN.show(op);
         });

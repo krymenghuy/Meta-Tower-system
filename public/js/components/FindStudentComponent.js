@@ -196,7 +196,10 @@ var FindStudentComponent = new function(){
         mThis.panelStudentList.find('.btn--gnInvoice').on('click',function(e){
             e.preventDefault();
             let op = {
-                'id': $(this).data('id')
+                'id': $(this).data('id'),
+                'onClose': () => {
+                    mThis.displayStudentList();
+                }
             };
             GenerateInvoiceFSN.show(op);
         });
@@ -287,6 +290,7 @@ let GenerateInvoiceFSN = new function(){
             window.vsapi.call(`${main_view.base_url}/api/student/invoice-update`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
+                    if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
                     cv_interact.success('Invoice Updated Successfully!');
                 }
                 else{
@@ -299,6 +303,7 @@ let GenerateInvoiceFSN = new function(){
             window.vsapi.call(`${main_view.base_url}/api/student/generate-invoice`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
+                    if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
                     cv_interact.success('Invoice Created Successfully!');
                 }
                 else{
@@ -376,7 +381,7 @@ let GenerateInvoiceFSN = new function(){
         d = d ? d : [];
         let btn = [d.fee_type,'btn'].join('_');
         let fee_type = d.fee_type ? d.fee_type.replace('_',' ') : 'N/A';
-        let inner_html = null;
+        let inner_html = '';
 
         let html = [`<table class="table">
             <thead>
