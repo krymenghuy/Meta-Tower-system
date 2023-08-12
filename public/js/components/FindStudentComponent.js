@@ -517,9 +517,14 @@ let GenerateInvoiceFSN = new function(){
     this.getDataForm = () => {
         let d = {
             'student_id': mThis.options.id,
-            'due_date': mThis.self.find('.data-input').val(),
             'fee_types': []
         };
+
+        mThis.self.find('.data-input').each(function(){
+            let el = $(this);
+            let f = el.data('field');
+            d[f] = el.val();
+        });
 
         mThis.self.find('.data-get').each(function(){
             let p = {};
@@ -535,9 +540,15 @@ let GenerateInvoiceFSN = new function(){
     this.getDataFormUpdate = () => {
         let p = {
             'id': mThis.options.invoice_id,
-            'due_date': mThis.self.find('.data-input').val(),
             'delete_info': mThis.options.fee_item
         };
+
+        mThis.self.find('.data-input').each(function(){
+            let el = $(this);
+            let f = el.data('field');
+            p[f] = el.val();
+        });
+
         return p;
     }
 
