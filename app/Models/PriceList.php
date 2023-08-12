@@ -868,7 +868,7 @@ class PriceList //extends Model
                     $row->pmt_status = 'paid';
                 }else $row->pmt_status = 'expired';
             }
-            unset($row->pstatus_id);
+            // unset($row->pstatus_id);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -885,6 +885,14 @@ class PriceList //extends Model
                 ->selectRaw('s.id as student_id,p.second_child_discount,p.special_discount,e.academic_year,p.tuition_due,p.policy_discount,e.start_date,e.tuition_end_date,p.tuition,s.code as student_code,s.name as student_name,e.campus_id,e.level_id')
                 ->get()->first();
         if(!$row) return DV::error('Not Found');
+        $tuition_end_date = convertDate($row->tuition_end_date);
+        $row->pmt_status = 'Unpaid';
+        if($tuition_end_date){
+            if($tuition_end_date > date('Y-m-d')){
+                $row->pmt_status = 'paid';
+            }else $row->pmt_status = 'expired';
+        }
+
         $invoice_number =isset( $d->invoice_number)?$d->invoice_number:null;
         $row->campus = $campus->details($row->campus_id,$ss)->name;
         $row->date_range = $row->start_date.' to '.$row->tuition_end_date;
@@ -1059,6 +1067,9 @@ class PriceList //extends Model
                     ->join('payments as p','p.enrollment_id','=','e.id')
                     ->selectRaw('e.id as enr_id,p.tuition,e.start_date,e.tuition_end_date,e.academic_year,p.policy_discount')
                     ->first();
+        $tuition_end_date = convertDate($enr_info->tuition_end_date);
+        $enr_info->pmt_status = 'Unpaid';
+
         $inputs['due_date'] = convertDate($inputs['due_date']);
         $qty = $inputs['qty'];
         unset($inputs['qty']);
@@ -1075,9 +1086,6 @@ class PriceList //extends Model
         $invoice_type = 'non_tuition_fee';
         $save_inv = saveData($ss,'invoices',["id" => null],$inputs,[],1);
         if($save_inv){
-            // DB::table('invoices')->where('id',$save_inv)->update([
-            //     'invoice_number' => self::setInvoiceCode($ss,$save_inv),
-            // ]);
             self::setInvoiceNumber($ss->branch_id,$save_inv,'no-tax',$issue_date,5);
             foreach($fee_types as $fee){
                 // $not_nontutition = DB::table('other_fees')->where('academic_year',$enr_info->academic_year)->where('name',$fee['fee_type'])->exists();
@@ -1085,6 +1093,12 @@ class PriceList //extends Model
                 $fee['qty'] = $qty || 1;
 
                 if(strtolower($fee['fee_type']) == 'tuition_fee'){
+                    if($tuition_end_date){
+                        if($tuition_end_date > date('Y-m-d')){
+                            $enr_info->pmt_status = 'paid';
+                            return DV::error('Tuition Fee is paid');
+                        }else $enr_info->pmt_status = 'expired';
+                    }
                     $fee['price'] = $enr_info->tuition;
                     $fee['date_range'] = $enr_info->start_date . ' to ' . $enr_info->tuition_end_date;
                     $fee['fee_type'] = 'tuition_fee';
