@@ -416,7 +416,7 @@ let GenerateInvoiceFSN = new function(){
                         <td>${fee.second_child_discount ? fee.second_child_discount : 'N/A'}</td>
                         <td>${fee.total ? ['$',fee.total].join(' ') : 'N/A'}</td>
                         <td>
-                            <a href="javascript:void(0)" class="btn-fee-type-delete" data-id="${fee.invoice_item_id}">
+                            <a href="javascript:void(0)" class="btn-fee-type-delete" data-id="${fee.invoice_item_id}" data-amount="${fee.amount}">
                                 <i class="fa-regular fa-trash-can text-danger fs-5"></i>
                             </a>
                         </td>
@@ -499,7 +499,8 @@ let GenerateInvoiceFSN = new function(){
         tbody.find('.btn-fee-type-delete').off('click').on('click',function(e){
             e.preventDefault();
             let op = {
-                'invoice_item_id': $(this).data('id')
+                'invoice_item_id': $(this).data('id'),
+                'amount': $(this).data('amount')
             };
             cv_interact.confirm('Do you want to delete this fee?',{title: 'Delete Fee', context: 'delete'},(e) => {
                 if(e){

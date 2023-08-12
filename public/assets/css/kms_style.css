@@ -573,6 +573,7 @@ li.kt-menu__section {
 .width-invoice-text{
     width:100px;
     display: inline-flex;
+    white-space: nowrap;
 }
 
 .form-select-extend,
@@ -606,4 +607,8 @@ li.kt-menu__section {
     border-bottom: 1.5px solid #cfd90e;
     background-color:#6bcb62;
     color:#fff;
+}
+
+.height-line{
+    background-color:#808080;
 }

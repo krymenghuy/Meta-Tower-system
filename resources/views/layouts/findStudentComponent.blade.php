@@ -93,6 +93,20 @@
                     </a>
                 </div>
                 <div id="dlg_fns_tbl" class="table-responsive p-3 rounded-3 bg-light"></div>
+                <hr class="height-line"/>
+                <div class="d-flex justify-content-end">
+                    <p class="pb-0 mb-1 ps-0 p-5">
+                        <span class="width-invoice-text">Deduct Deposite</span>
+                        <span class="px-2">:</span>
+                        <span class="data-invoice" data-field="deposite_amount"></span>
+                    </p>
+                </div>
+                <div class="d-block">
+                    <p>Note:</p>
+                    <div class="px-3">
+                        <textarea class="data-invoice form-control data-input" data-field="note"></textarea>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary btn-sm" type="button" data-dismiss="modal">
