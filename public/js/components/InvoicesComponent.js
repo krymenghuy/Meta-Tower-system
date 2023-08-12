@@ -100,7 +100,6 @@ var InvoicesComponent = new function(){
                 'student_id': $(this).data('studentid'),
                 'invoice_number': $(this).data('invoice')
             };
-            console.log(op);
             cv_interact.confirm('Do you want to pay now?',{title: 'Pay', context: 'OK'},(e) => {
                 if(e){
                     window.vsapi.call(`${main_view.base_url}/api/student/school-fee/pay`,op,null).then(res => {
@@ -110,6 +109,15 @@ var InvoicesComponent = new function(){
                     });
                 }
             });
+        });
+
+        mThis.tblInvoice.on('click','a.btn-inv-modify',function(e){
+            e.preventDefault();
+            let op = {
+                'id': $(this).data('studentid'),
+                'action':'modify'
+            };
+            GenerateInvoiceFSN.show(op);
         });
 
         mThis.tblInvoice.on('click','a.btn-inv-delete',function(e){
