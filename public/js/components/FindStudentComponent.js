@@ -281,30 +281,31 @@ let GenerateInvoiceFSN = new function(){
 
     mThis.btnGenerate.on('click',function(e){
         e.preventDefault();
-        let p = mThis.getDataForm();
-        console.log(p);
-        // if(mThis.options.action === 'modify'){
-        //     window.vsapi.call(`${main_view.base_url}/api/student/invoice-update`,p,null).then(res => {
-        //         if(res.status_code === 200){
-        //             mThis.self.modal('hide');
-        //             cv_interact.success('Invoice Updated Successfully!');
-        //         }
-        //         else{
-        //             cv_interact.error(res.error_message);
-        //         }
-        //     });
-        // }
-        // else{
-        //     window.vsapi.call(`${main_view.base_url}/api/student/generate-invoice`,p,null).then(res => {
-        //         if(res.status_code === 200){
-        //             mThis.self.modal('hide');
-        //             cv_interact.success('Invoice Created Successfully!');
-        //         }
-        //         else{
-        //             cv_interact.error(res.error_message);
-        //         }
-        //     });
-        // }
+        let p = {};
+        if(mThis.options.action === 'modify'){
+            p = mThis.getDataFormUpdate();
+            window.vsapi.call(`${main_view.base_url}/api/student/invoice-update`,p,null).then(res => {
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    cv_interact.success('Invoice Updated Successfully!');
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                }
+            });
+        }
+        else{
+            p = mThis.getDataForm();
+            window.vsapi.call(`${main_view.base_url}/api/student/generate-invoice`,p,null).then(res => {
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    cv_interact.success('Invoice Created Successfully!');
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                }
+            });
+        }
     });
 
     this.loadFormDetails = (div,options,onFinish = null) => {
@@ -326,6 +327,8 @@ let GenerateInvoiceFSN = new function(){
                 let f = el.data('field');
                 if(f === 'inv_date')
                     el.text(format);
+                else if(f === 'due_date')
+                    el.val(data[f]);
                 else
                     el.text(data[f]);
             });
@@ -369,7 +372,6 @@ let GenerateInvoiceFSN = new function(){
         let btn = [d.fee_type,'btn'].join('_');
         let fee_type = d.fee_type ? d.fee_type.replace('_',' ') : 'N/A';
         let inner_html = null;
-        console.log(d);
 
         let html = [`<table class="table">
             <thead>
@@ -409,7 +411,7 @@ let GenerateInvoiceFSN = new function(){
                         <td>${fee.second_child_discount ? fee.second_child_discount : 'N/A'}</td>
                         <td>${fee.total ? ['$',fee.total].join(' ') : 'N/A'}</td>
                         <td>
-                            <a href="javascript:void(0)" class="btn-fee-type-delete">
+                            <a href="javascript:void(0)" class="btn-fee-type-delete" data-id="${fee.invoice_item_id}">
                                 <i class="fa-regular fa-trash-can text-danger fs-5"></i>
                             </a>
                         </td>
@@ -491,8 +493,15 @@ let GenerateInvoiceFSN = new function(){
     this.deleteFeeRow = (tbody) => {
         tbody.find('.btn-fee-type-delete').off('click').on('click',function(e){
             e.preventDefault();
+            let op = {
+                'invoice_item_id': $(this).data('id')
+            };
             cv_interact.confirm('Do you want to delete this fee?',{title: 'Delete Fee', context: 'delete'},(e) => {
                 if(e){
+                    if(op.invoice_item_id > 0){
+                        mThis.options.fee_item = mThis.options.fee_item ? mThis.options.fee_item : [];
+                        mThis.options.fee_item.push(op);
+                    }
                     $(this).closest('tr').remove();
                 }
             });
@@ -501,15 +510,10 @@ let GenerateInvoiceFSN = new function(){
 
     this.getDataForm = () => {
         let d = {
-            'id': mThis.options.invoice_id,
             'student_id': mThis.options.id,
             'due_date': mThis.self.find('.data-input').val(),
             'fee_types': []
         };
-        if(mThis.options.action === 'modify')
-            delete(d.student_id);
-        else
-            delete(d.id);
 
         mThis.self.find('.data-get').each(function(){
             let p = {};
@@ -520,6 +524,15 @@ let GenerateInvoiceFSN = new function(){
         });
         
         return d;
+    }
+
+    this.getDataFormUpdate = () => {
+        let p = {
+            'id': mThis.options.invoice_id,
+            'due_date': mThis.self.find('.data-input').val(),
+            'delete_info': mThis.options.fee_item
+        };
+        return p;
     }
 
     this.show = (options) => {
