@@ -270,7 +270,7 @@ function prn_allowed($prn_id,$module_id){
 
  function getLastDayOfMonth($mDate)
  {
-     $mDate = $this->convertDate($mDate);
+     $mDate = convertDate($mDate);
      $date = new DateTime($mDate);
      $date->modify('last day of this month');
      $last_date =  $date->format('Y-m-d');

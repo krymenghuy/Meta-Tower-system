@@ -15,7 +15,8 @@ var ActivitiesComponent = new function(){
         }
     },
     {
-        title: `<input type="checkbox" class="form-check-input"/>`,
+        title: 'Check',
+        className: 'check-input',
         data: () => {
             return [`<input type="checkbox" class="form-check-input"/>`].join('');
         }
@@ -29,7 +30,51 @@ var ActivitiesComponent = new function(){
     },
     {
         title: "School",
-        data: ""
+        data: "school_name"
+    },
+    {
+        title: "Student ID",
+        data: "student_code"
+    },
+    {
+        title: "Full Name",
+        data: "student_name"
+    },
+    {
+        title: "Full Name (KH)",
+        data: "name_kh"
+    },
+    {
+        title: "Sex",
+        data: "sex"
+    },
+    {
+        title: "Date of Birth",
+        data: "date_of_birth"
+    },
+    {
+        title: "Admission Date",
+        data: "admission_date"
+    },
+    {
+        title: "Session",
+        data: "session"
+    },
+    {
+        title: "Class",
+        data: "level"
+    },
+    {
+        title: "Father Name",
+        data: "father_name"
+    },
+    {
+        title: "Family ID",
+        data: "family_id"
+    },
+    {
+        title: "Father Phone",
+        data: "father_phone"
     }];
 
     this.init = () => {
