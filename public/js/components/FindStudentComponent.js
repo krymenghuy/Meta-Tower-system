@@ -58,6 +58,7 @@ var FindStudentComponent = new function(){
     }
 
     this.displayStudentList = (op, onFinish = null) => {
+        let cur_symbol = '$';
         window.vsapi.call(`${main_view.base_url}/api/student/find`,op,null).then(res => {
             let d = [];
             if(res.status_code === 200){
@@ -67,12 +68,13 @@ var FindStudentComponent = new function(){
 
             let html = null;
             d.map(item => {
+                let cls = item.pmt_status === 'paid' ? 'text-success' : item.pmt_status === 'unpaid' ? 'text-dark' : 'text-danger';
                 html = [html,`<div class="d-flex p-3 bg-white h-info-student">
                     <div class="div-img">
                         <img src="${item.image_url}" alt=""/>
                     </div>
                     <div class="d-block ms-3 w-100">
-                        <div class="row row-cols-3 mb-0">
+                        <div class="row row-cols-lg-4 mb-0">
                             <div class="col">
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Student ID"></p>
@@ -110,6 +112,28 @@ var FindStudentComponent = new function(){
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Parent Email"></p>
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${item.parent_info && item.parent_info.email}</p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Tuition Due"></p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${cur_symbol} ${item.tuition_due ? item.tuition_due : '0.00'}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Tuition Paid"></p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${cur_symbol} ${item.tuition_paid ? item.tuition_paid : '0.00'}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted trans-text" data-langprop="titles.Payment Status"></p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${item.pmt_status}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.End Date"></p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap ${cls}">${item.tuition_end_date}</p>
                                 </div>
                             </div>
                             <div class="col">
@@ -324,6 +348,7 @@ let GenerateInvoiceFSN = new function(){
             if(res.status_code === 200){
                 data = res.data;
             }
+            console.log(data);
 
             const current = new Date();
             const format = new Intl.DateTimeFormat('en-US',{
@@ -363,7 +388,7 @@ let GenerateInvoiceFSN = new function(){
                 }
             });
 
-            if(options.action === 'modify'){
+            if((options.action === 'modify') || (data.pmt_status === 'paid')){
                 tab.first().hide();
                 tab.last().trigger('click').off('click');
                 mThis.prepareTable(div,data,true,true);
@@ -395,7 +420,7 @@ let GenerateInvoiceFSN = new function(){
                 <th colspan="2">Total</th>
             </thead>
             <tbody>
-                ${name ? '': `<tr>
+                ${name || (d.pmt_status === 'paid') ? '': `<tr>
                     <td class="text-capitalize data-get" data-field="fee_type" data-value="${d.fee_type}">${fee_type}</td>
                     <td>${d.description ? d.description : 'N/A'}</td>
                     <td>${d.date_range ? d.date_range : 'N/A'}</td>
