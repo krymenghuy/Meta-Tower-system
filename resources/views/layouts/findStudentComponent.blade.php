@@ -79,7 +79,7 @@
                             <span class="width-invoice-text">Due Date</span>
                             <span class="px-2">:</span>
                             <span>
-                                <input data-select="datepicker" class="form-date data-input" data-field="due_date"/>
+                                <input data-select="datepicker" class="data-invoice form-date data-input" data-field="due_date"/>
                             </span>
                         </p>
                     </div>

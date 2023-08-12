@@ -886,7 +886,7 @@ class PriceList //extends Model
                 ->join('invoice_item as it','it.invoice_id','=','i.id')
                 ->selectRaw('i.due_date')
                 ->first();
-        if(!$row) return null;
+        if(!$row) return (object)['due_date'=>null];
         return $row;
     }
 
