@@ -309,7 +309,12 @@ let GenerateInvoiceFSN = new function(){
     });
 
     this.loadFormDetails = (div,options,onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/student/generate-invoice/details`,{'id': options.id},null).then(res => {
+        let op = {
+            'id': options.id
+        };
+        if(options.action === 'modify')
+            op.invoice_number = options.invoice_number;
+        window.vsapi.call(`${main_view.base_url}/api/student/generate-invoice/details`,op,null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = res.data;
