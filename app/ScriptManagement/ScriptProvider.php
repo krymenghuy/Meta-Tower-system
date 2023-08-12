@@ -10,6 +10,14 @@ class ScriptProvider
           /js/components 
      ***/
     protected static $bundles = [
+        'primary-loader' => [
+            'attr' => 'async',
+            'single_file' => 1,
+            'output_file' => '/dist/js/primary-loader.js',
+            'files' => [
+                '/js/components/loader.js'       
+            ]
+        ],
         'priority-one' => [
             'attr' => 'async',
             'single_file' => 1,
