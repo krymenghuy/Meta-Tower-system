@@ -88,7 +88,7 @@ class PriceList //extends Model
     function list_price_list(){
         return DB::table('price_list')->selectRaw('start_date,end_date,description,academic_year')->get();
     }
- 
+
     static function items($id=null){
         return DB::table('price_list_items as i')
                 ->join('programs as p','p.id','=','i.program_id')
@@ -178,7 +178,7 @@ class PriceList //extends Model
         $pmt_option_id = isset($d->pmt_option_id) ? $d->pmt_option_id : 2;
         $level_info = DB::table('program_levels as l')->where('id',$level_id)->selectRaw('program_id,id,prev_level_id')->first();
         if(!$level_info)   return (object)['error_message'=>'Level ID does not exist','dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0,'tuition'=>0,'tuition_due'=>0];
-        
+
         $start_date = convertDate($d->start_date);
         $prev_level_id = $level_info->prev_level_id;
         $str_date = 'Date(l.start_date)<=\''.$start_date.'\' AND Date(l.end_date)>=\''.$start_date.'\'';
@@ -192,7 +192,7 @@ class PriceList //extends Model
                 ->first();
 
         if(!$row) return (object)['error_message'=>'There is no matched Price List','dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0,'tuition'=>0,'tuition_due'=>0];
-         
+
         $nl_price = 0;
         if($pmt_option_id>0){
             if($pmt_option_id == 3 && $semester_number == 2){
@@ -976,11 +976,11 @@ class PriceList //extends Model
              $str_company_branch='1=1';
              if($com_branch_id > 0) $str_company_branch ='com_branch_id ='.$com_branch_id;
             if (!$invoice_id) return null;
-          
+
             //if ($def_prefix) $where_branch .=" AND prefix ='$def_prefix'";
             $year = date('Y', strtotime($issue_date));
             $row = DB::table($table_name . " as c")->where('branch_id', $branch_id)->where('c.issue_year', $year)->where('c.doc_class', $doc_class)->whereRaw($str_company_branch)->selectRaw("last_id,prefix")->take(1)->get()->first();
-             
+
             $next_num = 0;
             $prefix = null;
                 if ($row){

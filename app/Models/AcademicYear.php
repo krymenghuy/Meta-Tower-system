@@ -58,7 +58,7 @@ class AcademicYear //extends Model
 
     static function list($ss){
         $branch_id = $ss->branch_id;
-        $rows = DB::table('academic_years')->selectRaw('id,academic_year,create_user,start_date,end_date,formatTime(created_at) as date')->where('branch_id',$branch_id)->get();
+        $rows = DB::table('academic_years')->selectRaw('id,academic_year,create_user,start_date,end_date,formatDate(created_at) as date')->where('branch_id',$branch_id)->get();
         return $rows;
     }
 
