@@ -872,21 +872,22 @@ class PriceList //extends Model
         $row->amount = $row->tuition;
         $row->total = $row->tuition_due;
         $row->fee_type = 'tuition_fee';
-        $row->other_fees = self::getOtherFeeTypes($id);
         $row->due_date = self::getInvoiceInfo($id)->due_date;
+        $row->due_date = self::getInvoiceInfo($id)->invoice_number;
+        $row->other_fees = self::getOtherFeeTypes($id,self::getInvoiceInfo($id)->invoice_number);
         unset($row->tuition);
         unset($row->tuition_due);
         unset($row->policy_discount);
-        $row->disposite_amount = self::studentDeposite($id);
+        $row->deposite_amount = self::studentDeposite($id);
         return $row;
     }
 
     static function getInvoiceInfo($student_id){
         $row = DB::table('invoices as i')->where('i.student_id',$student_id)
                 ->join('invoice_item as it','it.invoice_id','=','i.id')
-                ->selectRaw('i.due_date')
+                ->selectRaw('i.due_date,i.invoice_number')
                 ->first();
-        if(!$row) return null;
+        if(!$row) return (object)['due_date'=>null, 'invoice_number'=>null];
         return $row;
     }
 
@@ -913,10 +914,11 @@ class PriceList //extends Model
 
     }
 
-    static function getOtherFeeTypes($id){
+    static function getOtherFeeTypes($id,$inv_number){
         $rows = DB::table('invoices as i')->where('student_id',$id)
                 ->join('invoice_item as it','i.id','=','it.invoice_id')
                 ->where('it.fee_type','!=','tuition_fee')
+                ->where('i.invoice_number',$inv_number)
                 ->selectRaw('it.id as invoice_item_id,it.fee_type,it.price as amount,it.description,price as total')->get();
         return $rows;
     }
