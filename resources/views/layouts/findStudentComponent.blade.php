@@ -68,7 +68,7 @@
                         <p class="pb-0 mb-1">
                             <span class="width-invoice-text">Invoice#</span>
                             <span class="px-2">:</span>
-                            <span class="data-invoice"></span>
+                            <span class="data-invoice" data-field="invoice_number"></span>
                         </p>
                         <p class="pb-0 mb-1">
                             <span class="width-invoice-text">Invoice Date</span>
