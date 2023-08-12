@@ -11,35 +11,57 @@ class ActivityController extends Controller
 {
     //
 
-    function saveActivity(Request $req){
+    function requestChange(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
 
-        $save = Activity::save($req->all(),$req->id,$ss);
-        return JDV::raw($save);
+        $instance = new Activity();
+        $send_request = $instance->requestChange($req->all(),$ss);
+        return JDV::raw($send_request);
+
     }
 
-    function getActivitiesList(Request $req){
+    function activityListPaginateList(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
 
-        $list = Activity::list($ss);
-        return JDV::raw($list);
+        $instance = new Activity(null,$ss);
+        $list = $instance->activityListPaginateList($req->all(),$ss);
+        return JDV::result($list);
+
     }
 
-    function getAcitvityDetails(Request $req){
+    function approveGeneralListPaginateList(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
 
-        $details = Activity::details($req->id,$ss);
-        return JDV::raw($details);
+        $instance = new Activity(null,$ss);
+        $list = $instance->approveGeneralListPaginateList($req->all(),$ss);
+        return JDV::result($list);
+
+    }
+
+    function requestDiscount(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $instance = new Activity(null,$ss);
+        $send_request = $instance->requestDiscount($req->all(),$ss);
+        return JDV::raw($send_request);
+
     }
 
     function deleteActivity(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
 
-        $delete = Activity::delete($req->id,$ss);
-        return JDV::raw($delete);
+    }
+
+    function requestDiscountCount(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $instance = new Activity(null,$ss);
+        $count = $instance->requestDiscountCount($ss);
+        return JDV::result($count);
     }
 }

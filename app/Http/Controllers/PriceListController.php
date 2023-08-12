@@ -160,7 +160,15 @@ class PriceListController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
 
-        $delete = PriceList::deleteInvoice($req->id);
+        $delete = PriceList::deleteInvoice($req,$ss);
         return JDV::raw($delete);
+    }
+
+    function turnInvoiceToActive(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $active = PriceList::reviveInActiveInvoice($req,$ss);
+        return JDV::raw($active);
     }
 }
