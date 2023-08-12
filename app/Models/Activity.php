@@ -265,20 +265,61 @@ class Activity //extends Model
 
     }
 
-    // function approveRequestChange($arr=[],$ss){
-    //     $approve_info = null;
-    //     if(!isset($arr['approve_info'])) return DV::error('Approve is required');
-    //     $approve_info = $arr['approve_info'];
-    //     $success = 0;
-    //     $cross_values = 0;
-    //     foreach($approve_info as $info){
-    //         $v_rule = [
-    //             ''
-    //         ];
-    //     }
+    function approveRequestChange($arr=[],$ss){
+        $approve_info = null;
+        if(!isset($arr['approve_info'])) return DV::error('Approve is required');
+        $approve_info = $arr['approve_info'];
+        $success = 0;
+        $cross_values = 0;
+        foreach($approve_info as $info){
+            $v_rule = [
+                'request_type_id' => '1|number|exists=request_types.id',
+                'student_id' => '1|number|exists=enrollments.student_id',
+                '' => '',
+            ];
+            $res = validateObject($info, $v_rule,1,[],$ss->lang,0,null);
+            $inputs = $res->inputs;
 
-    //     return DV::depends($success,['action'=>'Request sent success ('.$success.') with ('.$cross_values.') failed','message' => "Request send wait author to approve"],"Missing All ($cross_values) ");
-    // }
+            $studentInfo = $this->getStudentInfo($inputs['student_id'],$ss);
+            if($req_type_id == 1){ //* request level
+
+                $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
+                if($req_exists){
+                    $cross_values +=1;
+                     continue;
+                }
+                 $from_id = $studentInfo->level_id;
+                 $to_id = $to_level_id;
+             }
+             else if($req_type_id == 2){    //* request campus
+
+                 $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
+                 if($req_exists){
+                     $cross_values +=1;
+                     continue;
+                 }
+                 $from_id = $studentInfo->campus_id;
+                 $to_id = $to_campus_id;
+             }
+             else if($req_type_id == 3){     //* request session
+
+                 $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
+                 if($req_exists){
+                     $cross_values +=1;
+                     continue;
+                 }
+                 $from_id = $studentInfo->session_id;
+                 $to_id = $to_session_id;
+             }
+             else if($req_type_id == 4){
+                 $from_id = $studentInfo->level_id;
+                 $to_id = $to_level_id;
+                 // return;
+             }
+        }
+
+        return DV::depends($success,['action'=>'Request sent success ('.$success.') with ('.$cross_values.') failed','message' => "Request send wait author to approve"],"Missing All ($cross_values) ");
+    }
 
 
 }
