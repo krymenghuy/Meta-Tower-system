@@ -28,6 +28,10 @@ class PriceList //extends Model
       return null;
     }
 
+    static function getAcademicYearID($academic_year){
+      return DV::table('academic_years as y')->where('y.academic_year',$academic_year)->take(1)->value('id');
+    }
+
     function save($arr=[],$id=null,$ss=null){
        $id = $id? $id : $this->id;
        $ss =$ss? $ss: $this->user_info;
@@ -40,8 +44,8 @@ class PriceList //extends Model
          'description'=>'0|string|0-250'
        ];
 
-       $created = false;
-       if (!$id) $created = true;
+       $action = 'Updated';
+       if ($id) $action = 'Created';
        $res = validateObject($arr,$v_rule,true,['academic_year'=>['-']],$ss->lang,false,null);
        if($res->error) return DV::error($res->error);
        $inputs = $res->values;
@@ -58,8 +62,11 @@ class PriceList //extends Model
        if($err){
           return DV::error($err);
        }
+
+       $academic_year = $inputs['academic_year'];
+       $inputs['ac_year_int'] = self::getAcademicYearID($academic_year);
        $id = saveData($ss,'price_list',['id'=>$id],$inputs,[],1,false);
-       return DV::depends($id,['action'=>'Saved','price_list'=>$this->list_price_list()],'Failed to save price list');
+       return DV::depends($id,['action'=>$action,'price_list'=>$this->list_price_list()],'Failed to save price list');
     }
 
     function delete($id=null){
@@ -71,7 +78,7 @@ class PriceList //extends Model
 
     static function details($id = null){
        $row = DB::table('price_list as l')->where('id',$id)
-       ->selectRaw('l.id,l.name,l.description,l.start_date,l.end_date,l.academic_year,l.create_user,formatDate(l.created_at) As created_at')
+       ->selectRaw('l.id,l.name,l.description,l.start_date,l.end_date,l.academic_year,l.ac_year_id,l.update_user AS create_user,formatTime(l.updated_at) As created_at')
        ->get()->first();
        if(!$row) return null;
        $row->items = self::items($id);
@@ -81,11 +88,7 @@ class PriceList //extends Model
     function list_price_list(){
         return DB::table('price_list')->selectRaw('start_date,end_date,description,academic_year')->get();
     }
-
-    // function price_list_item_details($id = null){
-
-    // }
-
+ 
     static function items($id=null){
         return DB::table('price_list_items as i')
                 ->join('programs as p','p.id','=','i.program_id')
@@ -97,9 +100,10 @@ class PriceList //extends Model
         $id = $id?$id:$this->id;
         return self::items($id);
     }
+
     /**
      *add item to a price list
-     * $arr = ['class_name','session','price','currency_code']
+     * $arr = ['program_id','session_id','price','currency_code']
     */
     function saveItem($arr=[],$id=null,$ss=null){
         $id = $id?$id:$this->id;
@@ -136,7 +140,7 @@ class PriceList //extends Model
         return DB::table('price_list_items as i')
                 ->join('programs as p','p.id','=','i.program_id')
                 ->join('sessions as s','s.id','=','i.session_id')
-                ->join('price_list as l','l.id','=','i.list_Id')
+                ->join('price_list as l','l.id','=','i.list_id')
                 ->where('l.id',$list_id)
                 ->selectRaw('i.id,i.list_id,p.name as program_name,i.currency_code,s.name as session,i.price')->get();
     }
@@ -152,7 +156,7 @@ class PriceList //extends Model
         $str_moreWhere ="1=1";
         $str_search="1=1";
 
-        $cols = 'l.id, l.name,l.academic_year, formatDate(l.start_date) as start_date,formatDate(l.end_date) as end_date,l.description,l.create_user,formatDate(l.created_at) as created_at, NULL AS auth_user, NULL AS auth_date';
+        $cols = 'l.id, l.name,l.academic_year, formatDate(l.start_date) as start_date,formatDate(l.end_date) as end_date,l.description,l.update_user AS create_user,formatTime(l.updated_at) as created_at, l.auth_user, formatTime(l.auth_date) AS auth_date';
         $query = DB::table('price_list as l')->where('l.branch_id',$branch_id)->whereRaw($str_moreWhere)->whereRaw($str_search)->selectRaw($cols);
 
         $count_query = clone $query;
@@ -162,7 +166,7 @@ class PriceList //extends Model
     }
 
     /**
-     * $arr [,'start_date','acadmic_year','level_id','session_id','semester_number'] // pmt_option_id (optional)
+     * $arr ['start_date','acadmic_year','level_id','session_id','semester_number'] // pmt_option_id (optional)
     */
     function getTuitionDue($arr){
         $d = (object)$arr;
@@ -173,6 +177,8 @@ class PriceList //extends Model
         $academic_year = $d->academic_year;
         $pmt_option_id = isset($d->pmt_option_id) ? $d->pmt_option_id : 2;
         $level_info = DB::table('program_levels as l')->where('id',$level_id)->selectRaw('program_id,id,prev_level_id')->first();
+        if(!$level_info)   return (object)['error_message'=>'Level ID does not exist','dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0,'tuition'=>0,'tuition_due'=>0];
+        
         $start_date = convertDate($d->start_date);
         $prev_level_id = $level_info->prev_level_id;
         $str_date = 'Date(l.start_date)<=\''.$start_date.'\' AND Date(l.end_date)>=\''.$start_date.'\'';
@@ -185,17 +191,15 @@ class PriceList //extends Model
                 ->selectRaw('l.id as price_list_id,i.price,i.program_id')
                 ->first();
 
-        if(!$row){
-            return (object)['error_message'=>'Price List not defined','dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0,'tuition'=>0,'tuition_due'=>0];
-        }
-
+        if(!$row) return (object)['error_message'=>'There is no matched Price List','dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0,'tuition'=>0,'tuition_due'=>0];
+         
         $nl_price = 0;
         if($pmt_option_id>0){
             if($pmt_option_id == 3 && $semester_number == 2){
                 if($prev_level_id != $level_id && $prev_level_id > 0){
                     $next_pmt_info = $this->getTuitionDue(['level_id' => $prev_level_id,'pmt_option_id' => 2,'start_date'=>$start_date,'academic_year'=>$academic_year,'semester_number'=>1]);
                     if($next_pmt_info->error_message){
-                        return (object)['error_message'=>'Price list for next level not defined','dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0,'tuition'=>0,'tuition_due'=>0];
+                        return (object)['error_message'=>'There is no matched Price list for Next Level','dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0,'tuition'=>0,'tuition_due'=>0];
                     }else{
                         $nl_price = $next_pmt_info->price;
                         //$nl_discount_percent = $next_pmt_info->dicount_percent;
@@ -230,9 +234,7 @@ class PriceList //extends Model
                 ->selectRaw('discount,discount_type')
                 ->get()->first();
         if(!$row)  return (object)['dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0];
-
         $discount_percent = $row->discount;
-
         return (object)['discount_percent' => $discount_percent,'discount_type'=>$row->discount_type,'discount'=>$row->discount];
     }
 
@@ -260,7 +262,7 @@ class PriceList //extends Model
         $total = number_format($x * $daily_fee,2);
         $per_day = number_format($total/$x,2);
 
-        return (object)['end_date'=>$end_date,'price_list_id' => $monthly_fee_info->price_list_id,'tuition' => $total,'tuition_due' => $total,'per_day' => $per_day,'days'=>$x];
+        return (object)['error_message'=>null,'status'=>'OK','end_date'=>$end_date,'price_list_id' => $monthly_fee_info->price_list_id,'tuition' => $total,'tuition_due' => $total,'per_day' => $per_day,'days'=>$x];
     }
 
      /**
@@ -313,8 +315,8 @@ class PriceList //extends Model
 
             return (object)['price_list_id' => $monthly_fee_info->price_list_id,'first_month_end_date'=>$last_day_in_month,'tuition' => $total_tuition_due,'tuition_due'=>$total_tuition_due];
         }else if($d->months < 6){
-            $end_date = findFutureMonths($d->start_date,$d->months-1);//** */
-            $end_date =$end_date->end_date;
+            $endingInfo = findFutureMonths($d->start_date,$d->months-1); //** */
+            $end_date =$endingInfo->end_date;
             $weekly_tuition_due = 0;
             $base_amount = 0;//** base amount equal to term (3months) */
             $price_list_id = $monthly_fee_info->price_list_id;
@@ -384,8 +386,8 @@ class PriceList //extends Model
                     $discount_amt = (($base_amount + $monthly_tuition_due) * $discount_info->discount) / 100;
                     $after_discount = ($base_amount + $monthly_tuition_due) - $discount_amt;
                     $total_tuition_due = $after_discount + $weekly_tuition_due;
-                    $end_date = findFutureMonths($d->start_date,$d->months-1);//** */
-                    $end_date =$end_date->end_date;
+                    $endingInfo = findFutureMonths($d->start_date,$d->months-1);//** */
+                    $end_date =$endingInfo->end_date;
                     $tuition = $base_amount + $monthly_tuition_due + $weekly_tuition_due;
 
             }else if($current_day != 1 && $d->months > 6){
@@ -404,8 +406,8 @@ class PriceList //extends Model
 
                 $weekly_tuition_due = $total_weekly_Fee->tuition_due;
 
-                $end_date = findFutureMonths($d->start_date,$d->months-1);//** */
-                $end_date =$end_date->end_date;
+                $endinfInfo = findFutureMonths($d->start_date,$d->months-1);//** */
+                $end_date =$endinfInfo->end_date;
                 $pay_month = $pay_month - 1;// ** minus first month
                 if($pay_month !=0 ) $pay_month = $pay_month * $price;
                 $discount_amt = (($semester_tuition + $pay_month) * $discount_info->discount) / 100;
@@ -418,8 +420,8 @@ class PriceList //extends Model
                 $discount_amt = ($semester_tuition  * $discount_info->discount) / 100;
                 $after_discount = $semester_tuition - $discount_amt;
                 $total_tuition_due = $after_discount;
-                $end_date = findFutureMonths($d->start_date,$d->months-1);//** */
-                $end_date =$end_date->end_date;
+                $endinfInfo = findFutureMonths($d->start_date,$d->months-1);//** */
+                $end_date =$endinfInfo->end_date;
                 $tuition = $semester_tuition;
             }
 
@@ -440,8 +442,8 @@ class PriceList //extends Model
                     'academic_year' => $d->academic_year,
                 ]);
                 $annual_tuition = $price * $annual;
-                $end_date = findFutureMonths($d->start_date,$d->months-1);//**  */
-                $end_date =$end_date->end_date;
+                $endinfInfo = findFutureMonths($d->start_date,$d->months-1);//**  */
+                $end_date =$endinfInfo->end_date;
                 $discount_amt = $annual_tuition * $discount_info->discount / 100;
 
                 $total_tuition_due = ($annual_tuition - $discount_amt) + $total_weekly_Fee->tuition_due;
@@ -449,8 +451,8 @@ class PriceList //extends Model
             }else if($current_day != 1 && $d->months >12){
                 $annual = 12-1;
                 $pay_month = $d->months - $annual;
-                $end_date = findFutureMonths($d->start_date,$d->months-1);//**  */
-                $end_date =$end_date->end_date;
+                $endinfInfo = findFutureMonths($d->start_date,$d->months-1);//**  */
+                $end_date =$endinfInfo->end_date;
                 $price_list_id = $monthly_fee_info->price_list_id;
                 $discount_info = $this->getPolicyDiscount($pmt_option,$price_list_id);
 
@@ -473,8 +475,8 @@ class PriceList //extends Model
                 $annual_tuition = $annual_tuition - $discount_amt;
                 $total_tuition_due = $annual_tuition;
                 $week ="full month no week count";
-                $end_date = findFutureMonths($d->start_date,$d->months-1);//** */
-                $end_date =$end_date->end_date;
+                $endinfInfo = findFutureMonths($d->start_date,$d->months-1);//** */
+                $end_date =$endinfInfo->end_date;
             }
 
             return (object)['price_list_id' => $monthly_fee_info->price_list_id,'end_date'=>$end_date,'tuition_due' => $total_tuition_due,'discount_amount' => $discount_amt,'weekly_tuition'=>$total_weekly_Fee->tuition_due];
@@ -930,6 +932,48 @@ class PriceList //extends Model
         return $rows;
     }
 
+
+      /**
+       * $doc_class is invlice line. It is invoice line based on which to issue invoice for different Tax processing or tax treatment
+      */
+        static function setInvoiceNumber($branch_id, $invoice_id = 0, $doc_class = null, $issue_date = null, $len = 5, $onSuccess = null)
+        {
+            if (!$len) $len = 5;
+            $def_prefix = "V";
+            $table_name = "invoice_code_control";
+            $target_table = "invoices";
+            $target_column = "invoice_number";
+             $com_branch_id = null;
+             $str_company_branch='1=1';
+             if($com_branch_id > 0) $str_company_branch ='com_branch_id ='.$com_branch_id;
+            if (!$invoice_id) return null;
+          
+            //if ($def_prefix) $where_branch .=" AND prefix ='$def_prefix'";
+            $year = date('Y', strtotime($issue_date));
+            $row = DB::table($table_name . " as c")->where('branch_id', $branch_id)->where('c.issue_year', $year)->where('c.doc_class', $doc_class)->whereRaw($str_company_branch)->selectRaw("last_id,prefix")->take(1)->get()->first();
+             
+            $next_num = 0;
+            $prefix = null;
+                if ($row){
+                    $next_num = $row->last_id;
+                    $prefix = $row->prefix;
+                }
+                if (!$prefix) $prefix = $def_prefix;
+                if (!$prefix) $prefix = "I";
+                $next_num++;
+                //example invoice number => I12023-00003
+                $new_code = $prefix . $branch_id . $year . "-" . formatNumber($next_num, $len);
+
+                $x = DB::table($target_table)->where('id', $invoice_id)->update([$target_column => $new_code]);
+                if ($x || $x === 1) {
+                $updated = DB::table($table_name)->where('branch_id', $branch_id)->where('issue_year', $year)->where('doc_class', $doc_class)->whereRaw($str_company_branch)->update(['last_id' => $next_num]);
+                if (!$updated) DB::table($table_name)->insert(['branch_id' => $branch_id, 'com_branch_id' => $com_branch_id, 'doc_class' => $doc_class, 'issue_year' => $year, 'prefix' => $prefix, 'last_id' => $next_num]);
+                if ($onSuccess) $onSuccess();
+                return (object)['status_code' => 200, 'status' => 'OK', 'code' => $new_code];
+            }
+            return null;
+        }
+
     // static function
     static function generateInvoice($arr=[],$ss){
         $v_rule = [
@@ -939,7 +983,6 @@ class PriceList //extends Model
             'fee_types' => '0|array',
             'note' => '0|string|1,300',
         ];
-
         $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
@@ -953,21 +996,22 @@ class PriceList //extends Model
         $qty = $inputs['qty'];
         unset($inputs['qty']);
         $fee_types = $inputs['fee_types'];
+        $issue_date = date('Y-m-d');
+
         unset($inputs['fee_types']);
         $inputs['invoice_date'] = date('Y-m-d');
         $keep_amount = [];
         $amount = 0;
-        $last_id = DB::table('invoices')->selectRaw('id')->orderBy('id','desc')->first();
+        //$last_id = DB::table('invoices')->selectRaw('id')->orderBy('id','desc')->first();
         $is_tuition_fee = 0;
         $getTuitionFeeType = null;
         $invoice_type = 'non_tuition_fee';
         $save_inv = saveData($ss,'invoices',["id" => null],$inputs,[],1);
         if($save_inv){
-
-            DB::table('invoices')->where('id',$save_inv)->update([
-                'invoice_number' => self::setInvoiceCode($ss,$save_inv),
-            ]);
-
+            // DB::table('invoices')->where('id',$save_inv)->update([
+            //     'invoice_number' => self::setInvoiceCode($ss,$save_inv),
+            // ]);
+            self::setInvoiceNumber($ss->branch_id,$save_inv,'no-tax',$issue_date,5);
             foreach($fee_types as $fee){
                 // $not_nontutition = DB::table('other_fees')->where('academic_year',$enr_info->academic_year)->where('name',$fee['fee_type'])->exists();
                 $fee['invoice_id'] = $save_inv;
@@ -1055,7 +1099,9 @@ class PriceList //extends Model
     }
 
 
-    // * school fee pay by student and invoice number/
+    /**
+     *Given an existing invoice => pay by student and invoice number
+     **/
     static function schoolFeePay($arr,$ss){
         $instance = new PriceList(null,$ss);
         $d = (object)$arr;

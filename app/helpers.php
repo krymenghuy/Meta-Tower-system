@@ -26,7 +26,7 @@
 function escape_like_str($str) {
     return str_replace(['\\', '%', '_','\''], ['\\\\', '\%', '\_',''], $str);
 }
-
+ 
 //return UNIQUE random  string at a given length
 function getUniqueString($length)
 {
