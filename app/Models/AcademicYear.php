@@ -23,7 +23,7 @@ class AcademicYear //extends Model
         //if($row) return 'The ending year should not overlap the previous academic year\'s ending date';
         return null;
     }
-   
+
     static function save($arr=[],$ss){
         $v_rule = [
             'id'=>'0|number|identity=1',
@@ -37,9 +37,9 @@ class AcademicYear //extends Model
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $id = $res->id;
-        
+
         $action ='Created';
-        if($id>0) $action ='Updated';  
+        if($id>0) $action ='Updated';
         $start_date = convertDate($inputs['start_date']);
         $end_date = convertDate($inputs['end_date']);
         $inputs['start_date'] = $start_date;
@@ -58,7 +58,7 @@ class AcademicYear //extends Model
 
     static function list($ss){
         $branch_id = $ss->branch_id;
-        $rows = DB::table('academic_years')->selectRaw('id,academic_year,create_user,start_date,end_date,formatDate(created_at) as date')->where('branch_id',$branch_id)->get();
+        $rows = DB::table('academic_years')->selectRaw('id,academic_year,create_user,start_date,end_date,formatTime(created_at) as date')->where('branch_id',$branch_id)->get();
         return $rows;
     }
 
@@ -79,7 +79,7 @@ class AcademicYear //extends Model
     */
     static function form_options($id=null,$ss){
        $ac_year =null;
-       if($id) $ac_year = DB::table('academic_years as y')->where('id',$id)->selectRaw('y.id,y.academic_year,formatDate(start_date) as start_date,formatDate(end_date) as end_date,formatTime(created_at) as created_at,create_user')->get()->first(); 
+       if($id) $ac_year = DB::table('academic_years as y')->where('id',$id)->selectRaw('y.id,y.academic_year,formatDate(start_date) as start_date,formatDate(end_date) as end_date,formatTime(created_at) as created_at,create_user')->get()->first();
        return (object)[
          'academicYearInfo'=>$ac_year
        ];
