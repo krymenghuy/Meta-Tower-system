@@ -5,6 +5,7 @@ use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AudioController;
 use App\Http\Controllers\CampusController;
 use App\Http\Controllers\DepositeController;
+use App\Http\Controllers\Login\GuardianLoginController;
 use App\Http\Controllers\Mobile\HomePageController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\ProgramLevelController;
@@ -70,6 +71,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('auth/login', [LoginController::class, 'apiLogin']);
+Route::post('/auth/guardian/login',[GuardianLoginController::class,'guardianLogin']);
 
 // Route::get('env/20230120AZ99/vars',function(){
 //     $vars =[
@@ -141,6 +143,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/school-fee/pay',[PriceListController::class,'schoolFeePay']);
         Route::post('/invoice-delete',[PriceListController::class,'deleteInvoice']);
         Route::post('/invoice-to-active',[PriceListController::class,'turnInvoiceToActive']);
+        Route::post('/invoice-update',[PriceListController::class,'updateInvoice']);
     });
     //end::StudentController
 

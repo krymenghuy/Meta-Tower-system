@@ -780,6 +780,7 @@ class PriceList //extends Model
         $count_query = clone $query;
         $count = $count_query->count('inv.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
+
         foreach($rows as $row) {
             $row->level = Student::getProgramLevel($row->level_id);
             $row->status = $row->is_paid == 1? 'paid' : 'unpaid';
@@ -791,6 +792,17 @@ class PriceList //extends Model
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
+
+    static function studentDeposite($id){
+        $matchedStudents =DB::table('students as s')
+            ->join('deposite as d', 's.name', '=', 'd.student_name')
+            ->where('s.date_of_birth', '=', DB::raw('d.date_of_birth'))
+            ->where('s.id',$id)
+            ->selectRaw('s.name,d.deposite_amount') // Select columns from the students table
+            ->get()->first();
+        if(!$matchedStudents) return 0;
+        return $matchedStudents->deposite_amount;
     }
 
     static function findStudent($filter=[],$ss){
@@ -829,7 +841,7 @@ class PriceList //extends Model
         $count = $count_query->count('st.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row) {
-            // $status = rand(0,1)?'New':'Old';
+            $status = rand(0,1)?'New':'Old';
             $status = 'New';
             $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
             $row->parent_info = Student::getChildParent($row->id);
@@ -850,7 +862,7 @@ class PriceList //extends Model
         $row = DB::table('students as s')->where('s.id',$id)
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->join('payments as p','p.enrollment_id','=','e.id')
-                ->selectRaw('p.second_child_discount,p.special_discount,e.academic_year,p.tuition_due,p.policy_discount,e.start_date,e.tuition_end_date,p.tuition,s.code as student_code,s.name as student_name,e.campus_id,e.level_id')
+                ->selectRaw('s.id as student_id,p.second_child_discount,p.special_discount,e.academic_year,p.tuition_due,p.policy_discount,e.start_date,e.tuition_end_date,p.tuition,s.code as student_code,s.name as student_name,e.campus_id,e.level_id')
                 ->get()->first();
         if(!$row) return DV::error('Not Found');
         $row->campus = $campus->details($row->campus_id,$ss)->name;
@@ -861,17 +873,51 @@ class PriceList //extends Model
         $row->total = $row->tuition_due;
         $row->fee_type = 'tuition_fee';
         $row->other_fees = self::getOtherFeeTypes($id);
+        $row->due_date = self::getInvoiceInfo($id)->due_date;
         unset($row->tuition);
         unset($row->tuition_due);
         unset($row->policy_discount);
+        $row->disposite_amount = self::studentDeposite($id);
         return $row;
+    }
+
+    static function getInvoiceInfo($student_id){
+        $row = DB::table('invoices as i')->where('i.student_id',$student_id)
+                ->join('invoice_item as it','it.invoice_id','=','i.id')
+                ->selectRaw('i.due_date')
+                ->first();
+        if(!$row) return null;
+        return $row;
+    }
+
+    static function updateInvoice($arr,$ss){
+        $d = (object)$arr;
+        $branch_id = $ss->branch_id;
+        if(!isset($d->id)) return DV::error('ID is required');
+        $id = $d->id;
+        if(!is_numeric($id)) return DV::error('ID must be a number');
+        $exists_invoice = DB::table('invoices')->where('id',$id)->where('branch_id',$branch_id)->exists();
+        if(!$exists_invoice) return DV::error('ID does not exist');
+        $due_date = isset($d->due_date)?$d->due_date:null;
+        $delete_info = isset($d->delete_info)?$d->delete_info:null;
+        if($delete_info){
+            foreach($delete_info as $info){
+                DB::table('invoice_item')->where('id',$info['invoice_item_id'])->where('fee_type','!=','tuition_fee')->where('branch_id',$branch_id)->delete();
+            }
+        }
+        $inputs = [
+            'due_date' => $due_date
+        ];
+        $id = saveData($ss,'invoices',['id' => $id],$inputs,[],1);
+        return DV::depends($id,['action'=>'Updated']);
+
     }
 
     static function getOtherFeeTypes($id){
         $rows = DB::table('invoices as i')->where('student_id',$id)
                 ->join('invoice_item as it','i.id','=','it.invoice_id')
                 ->where('it.fee_type','!=','tuition_fee')
-                ->selectRaw('it.fee_type,it.price as amount,it.description')->get();
+                ->selectRaw('it.id as invoice_item_id,it.fee_type,it.price as amount,it.description,price as total')->get();
         return $rows;
     }
 
@@ -946,7 +992,7 @@ class PriceList //extends Model
             }
 
 
-            $matchedStudents =DB::table('students as s')
+            $matchedStudents = DB::table('students as s')
                     ->join('deposite as d', 's.name', '=', 'd.student_name')
                     ->where('s.date_of_birth', '=', DB::raw('d.date_of_birth'))
                     ->selectRaw('s.name,d.deposite_amount') // Select columns from the students table
