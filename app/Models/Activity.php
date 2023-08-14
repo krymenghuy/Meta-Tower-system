@@ -23,10 +23,10 @@ class Activity //extends Model
             'remarks' => '1|string|1,200',
             'from_level_id' => '0|number|exists=program_levels.id',
             'to_level_id' => '0|number|exists=program_levels.id',
-            'from_session_id' => '0|number|exists=program_levels.id',
-            'to_session_id' => '0|number|exists=program_levels.id',
-            'from_campus_id' => '0|number|exists=program_levels.id',
-            'to_campus_id' => '0|number|exists=program_levels.id',
+            'from_session_id' => '0|number|exists=sessions.id',
+            'to_session_id' => '0|number|exists=sessions.id',
+            'from_campus_id' => '0|number|exists=campuses.id',
+            'to_campus_id' => '0|number|exists=campuses.id',
         ];
         $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
@@ -43,23 +43,23 @@ class Activity //extends Model
         $to_id = null;
         $request_name = DB::table('request_types')->where('id',$req_type_id)->take(1)->value('name');
         if($req_type_id == 1){ //* request level
-            $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
-            if($req_exists){
-            }
+            // $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('authorized',0)->exists();
+            // if($req_exists){
+            // }
             $from_id = $inputs['from_level_id'];
             $to_id = $to_level_id;
         }
         else if($req_type_id == 2){    //* request campus
-            $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
-            if($req_exists){
-            }
+            // $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
+            // if($req_exists){
+            // }
             $from_id = $inputs['from_campus_id'];
             $to_id = $to_campus_id;
         }
         else if($req_type_id == 3){     //* request session
-            $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
-            if($req_exists){
-            }
+            // $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
+            // if($req_exists){
+            // }
             $from_id = $inputs['from_session_id'];
             $to_id = $to_session_id;
         }
@@ -117,7 +117,7 @@ class Activity //extends Model
     }
 
 
-    function activityListPaginateList($filter=[],$ss){
+    function requestChangeListPaginateList($filter=[],$ss){
         $campus = new Campus();
         $level = new ProgramLevel();
         $ss = $ss?$ss:$this->ss;
@@ -159,47 +159,47 @@ class Activity //extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    function approveGeneralListPaginateList($filter=[],$ss=null){
-        $campus = new Campus();
-        $ss = $ss?$ss:$this->ss;
-        $branch_id = $ss->branch_id;
-        $search_value =isset($filter['search_value'])?$filter['search_value']:null;
-        $current_page =isset($filter['current_page'])?$filter['current_page']:1;
-        $per_page =isset($filter['per_page'])?$filter['per_page']:10;
-        if(!is_numeric($current_page)) $current_page=1;
-        $is_approve = isset($filter['is_approve'])?$filter['is_approve']:0;
-        $skip_rows = ($current_page -1) * $per_page;
+    // function approveGeneralListPaginateList($filter=[],$ss=null){
+    //     $campus = new Campus();
+    //     $ss = $ss?$ss:$this->ss;
+    //     $branch_id = $ss->branch_id;
+    //     $search_value =isset($filter['search_value'])?$filter['search_value']:null;
+    //     $current_page =isset($filter['current_page'])?$filter['current_page']:1;
+    //     $per_page =isset($filter['per_page'])?$filter['per_page']:10;
+    //     if(!is_numeric($current_page)) $current_page=1;
+    //     $is_approve = isset($filter['is_approve'])?$filter['is_approve']:0;
+    //     $skip_rows = ($current_page -1) * $per_page;
 
-        $str_search ="1=1";
-        $str_moreWhere="1=1";
-        if($search_value){
-            $skip_rows =0;
-            $search_value = escape_like_str($search_value);
-            // $str_search ="(i.code = '$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
-            $str_search ="(s.name LIKE '%$search_value%' OR s.code = '%$search_value%')";
-        }
-        $selectCols = 'e.campus_id,s.id as student_id,r.is_approve,r.id as request_id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id';
-        $query = DB::table('requests as r')
-                ->join('students as s','s.id','=','r.student_id')
-                ->join('enrollments as e','e.student_id','=','s.id')
-                ->selectRaw($selectCols)
-                ->where('r.branch_id',$branch_id)
-                ->whereRaw($str_moreWhere)->whereRaw($str_search);
-                $query->where('r.is_approve',$is_approve);
-        $count_query = clone $query;
-        $count = $count_query->count('r.id');
-        $rows = $query->skip($skip_rows)->take($per_page)->get();
+    //     $str_search ="1=1";
+    //     $str_moreWhere="1=1";
+    //     if($search_value){
+    //         $skip_rows =0;
+    //         $search_value = escape_like_str($search_value);
+    //         // $str_search ="(i.code = '$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+    //         $str_search ="(s.name LIKE '%$search_value%' OR s.code = '%$search_value%')";
+    //     }
+    //     $selectCols = 'e.campus_id,s.id as student_id,r.is_approve,r.id as request_id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id';
+    //     $query = DB::table('requests as r')
+    //             ->join('students as s','s.id','=','r.student_id')
+    //             ->join('enrollments as e','e.student_id','=','s.id')
+    //             ->selectRaw($selectCols)
+    //             ->where('r.branch_id',$branch_id)
+    //             ->whereRaw($str_moreWhere)->whereRaw($str_search);
+    //             $query->where('r.is_approve',$is_approve);
+    //     $count_query = clone $query;
+    //     $count = $count_query->count('r.id');
+    //     $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-        foreach($rows as $row) {
-            $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
-            $row->request_change = $this->getRequestChanges($row->request_id,$ss);
-            $row->status = $is_approve == 0? 'pending' : 'approved';
-            $row->school = $campus->details($row->campus_id,$ss)->name;
-            unset($row->file_name);
-        }
+    //     foreach($rows as $row) {
+    //         $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
+    //         $row->request_change = $this->getRequestChanges($row->request_id,$ss);
+    //         $row->status = $is_approve == 0? 'pending' : 'approved';
+    //         $row->school = $campus->details($row->campus_id,$ss)->name;
+    //         unset($row->file_name);
+    //     }
 
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-    }
+    //     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    // }
 
     function getRequestChanges($id,$ss){
         $level = new ProgramLevel();
@@ -305,6 +305,7 @@ class Activity //extends Model
     }
 
 
+
     function createRequestDiscount($arr,$ss){
         $ss = $ss?$ss:$this->id;
         $v_rule = [
@@ -329,7 +330,7 @@ class Activity //extends Model
             'remarks' => $remarks,
             'status_id' => 1, // create request status id = 1;
         ];
-        $newID = saveData($ss,'discount_types',['id' => null],$dis_arr,[],1);
+        $newID = saveData($ss,'discount_request',['id' => null],$dis_arr,[],1);
 
         return DV::depends($newID,['action' => 'Request Created']);
     }
@@ -364,5 +365,46 @@ class Activity //extends Model
             $success ++;
         }
         return DV::depends($success,['action'=>'Request sent success('.$success.') and ('.$unsuccess.') failed','message' => "Request send wait author to approve"]);
+    }
+
+    function requestDiscountListPaginate($filter=[],$ss){
+        $campus = new Campus();
+        $ss = $ss?$ss:$this->ss;
+        $branch_id = $ss->branch_id;
+        $search_value =isset($filter['search_value'])?$filter['search_value']:null;
+        $current_page =isset($filter['current_page'])?$filter['current_page']:1;
+        $per_page =isset($filter['per_page'])?$filter['per_page']:10;
+        if(!is_numeric($current_page)) $current_page=1;
+        $authorized = isset($filter['authorized'])?$filter['authorized']:0;
+        $skip_rows = ($current_page -1) * $per_page;
+
+        $str_search ="1=1";
+        $str_moreWhere="1=1";
+        if($search_value){
+            $skip_rows =0;
+            $search_value = escape_like_str($search_value);
+            // $str_search ="(i.code = '$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+            $str_search ="(s.name LIKE '%$search_value%' OR s.code = '%$search_value%')";
+        }
+        $selectCols = 'dr.amount,dt.name as discount_type';
+        $query = DB::table('discount_request as dr')
+                ->join('discount_types as dt','dt.id','=','dr.discount_type_id')
+                ->join('students as s','s.id','=','dr.student_id')
+                ->where('r.branch_id',$branch_id)
+                ->whereRaw($str_moreWhere)->whereRaw($str_search);
+                $query->where('r.authorized',$authorized);
+        $count_query = clone $query;
+        $count = $count_query->count('r.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+
+        foreach($rows as $row) {
+            $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
+            $row->request_change = $this->getRequestChanges($row->request_id,$ss);
+            $row->status = $is_approve == 0? 'pending' : 'approved';
+            $row->school = $campus->details($row->campus_id,$ss)->name;
+            unset($row->file_name);
+        }
+
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 }
