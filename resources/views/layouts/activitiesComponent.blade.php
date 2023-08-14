@@ -48,7 +48,7 @@
                     <input type="search" class="form-control width--search-inner"/>
                 </div>
                 <div class="d-flex gap-2">
-                    <button class="btn btn-warning" type="button">
+                    <button id="att_send_request" class="btn btn-warning" type="button">
                         <span class="trans-text" data-langprop="buttons.Send Request"></span>
                     </button>
                 </div>
