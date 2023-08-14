@@ -312,7 +312,7 @@ class GeneralSettings //extends Model
 
     static function requestTypeDialog($ss=null){
         return (object)[
-            'student_list-options' => self::requestTypesOptions(),
+            'student_list-options' => DB::table('students')->selectRaw('name as student_name,id as student_id')->get(),
             'request_type_options' => self::requestTypesOptions(),
             'sessions_options' => Setting::session_options($ss),
             'level_options' => Setting::level_options($ss),

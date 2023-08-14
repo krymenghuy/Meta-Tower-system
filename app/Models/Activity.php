@@ -46,7 +46,6 @@ class Activity //extends Model
         if($req_type_id == 1){ //* request level
             $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
             if($req_exists){
-                    $cross_values +=1;
             }
             $from_id = $inputs['from_level_id'];
             $to_id = $to_level_id;
@@ -54,7 +53,6 @@ class Activity //extends Model
         else if($req_type_id == 2){    //* request campus
             $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
             if($req_exists){
-                $cross_values +=1;
             }
             $from_id = $inputs['from_campus_id'];
             $to_id = $to_campus_id;
@@ -62,7 +60,6 @@ class Activity //extends Model
         else if($req_type_id == 3){     //* request session
             $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
             if($req_exists){
-                $cross_values +=1;
             }
             $from_id = $inputs['from_session_id'];
             $to_id = $to_session_id;
@@ -110,7 +107,7 @@ class Activity //extends Model
                 'from_session_id' => '0|number|exists=program_levels.id',
                 'to_session_id' => '0|number|exists=program_levels.id',
                 'from_campus_id' => '0|number|exists=program_levels.id',
-                'to_campus_id' => '0|number|exists=program_levels.id',,
+                'to_campus_id' => '0|number|exists=program_levels.id',
             ];
             $res = validateObject($info,$v_rule,1,[],$ss->lang,0,null);
             if($res->error) return DV::error($res->error);
