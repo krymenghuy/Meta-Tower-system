@@ -463,21 +463,6 @@ li.kt-menu__section {
     width: 100px;
 }
 
-.div--att-hasList .att-dropdown {
-    width: 20vw;
-    min-width: 200px;
-    background-color: #fff;
-    padding: 15px 10px;
-    top: 48px;
-    left: 0;
-}
-
-.div--att-hasList .att-dropdown ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
-
 .div-cardStudent-empty {
     display: flex;
     align-items: center;
