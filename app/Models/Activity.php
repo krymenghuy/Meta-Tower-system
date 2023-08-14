@@ -94,29 +94,11 @@ class Activity //extends Model
         $cross_values = 0;
         foreach($request_info as $info){
              $v_rule = [
-                'request_type_id' => '1|number|exists=request_types.id',
-                'student_id' => '1|number|exists=students.id',
-                'remarks' => '1|string|1,200',
-                'from_level_id' => '0|number|exists=program_levels.id',
-                'to_level_id' => '0|number|exists=program_levels.id',
-                'from_session_id' => '0|number|exists=program_levels.id',
-                'to_session_id' => '0|number|exists=program_levels.id',
-                'from_campus_id' => '0|number|exists=program_levels.id',
-                'to_campus_id' => '0|number|exists=program_levels.id',
+                'request_id'=>'1|number|exists=requests.id'
             ];
             $res = validateObject($info,$v_rule,1,[],$ss->lang,0,null);
             if($res->error) return DV::error($res->error);
             $inputs = $res->values;
-            $req_type_id = $inputs['request_type_id'];
-            $to_level_id = $inputs['to_level_id'];
-            $to_session_id = $inputs['to_session_id'];
-            $to_campus_id = $inputs['to_campus_id'];
-            $remarks = $inputs['remarks'];
-            unset($inputs['level_id']);
-            unset($inputs['request_type_id']);
-            $studentInfo = $this->getStudentInfo($inputs['student_id'],$ss);
-            $from_id = null;
-            $to_id = null;
             $request_name = DB::table('request_types')->where('id',$req_type_id)->take(1)->value('name');
 
             if($req_type_id == 1){ //* request level
@@ -125,8 +107,6 @@ class Activity //extends Model
                 $cross_values +=1;
                     continue;
                }
-               $from_id = $inputs['from_level_id'];
-                $to_id = $to_level_id;
             }
             else if($req_type_id == 2){    //* request campus
                 $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
@@ -134,8 +114,6 @@ class Activity //extends Model
                     $cross_values +=1;
                     continue;
                 }
-                $from_id = $inputs['from_campus_id'];
-                $to_id = $to_campus_id;
             }
             else if($req_type_id == 3){     //* request session
                 $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
@@ -155,7 +133,6 @@ class Activity //extends Model
             $req_arr = [
                 'request_type_id' => $req_type_id,
                 'student_id' => $inputs['student_id'],
-                'term_id' => $studentInfo->term_id,
             ];
             $reqNewID = saveData($ss,'requests',[],$req_arr,[],1);
             if($reqNewID){
@@ -222,7 +199,7 @@ class Activity //extends Model
             $search_value = escape_like_str($search_value);
             $str_search ="(s.name LIKE '%$search_value%' OR s.code = '$search_value')";
         }
-        $selectCols = 'e.campus_id,s.id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id,e.level_id';
+        $selectCols = 'r.id as request_id,e.campus_id,s.id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id,e.level_id';
         $query = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->join('requests as r','r.student_id','=','s.id')
