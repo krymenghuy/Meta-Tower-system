@@ -8,7 +8,8 @@ var ActivitiesComponent = new function(){
     this.tblActivities = mThis.panelActivities.find('#div_att_list');
     this.containerFilter = mThis.self.find('#_att_elFilter');
     this.elRequest = mThis.panelActivities.find('#_att_elRequest');
-    this.btnNew = mThis.self.find('#_att_btn_new');
+    this.btnNew = mThis.panelActivities.find('#_att_btn_new');
+    this.btnSendRequest = mThis.panelActivities.find('#att_send_request');
 
     this.cols = [{
         title: 'Check',
@@ -72,9 +73,11 @@ var ActivitiesComponent = new function(){
             'tableClass':"table header-light-blue header-uppercase",
             'rowCreated':(data, index, tr) => {
                 tr.dataset.id = data.id;
+                tr.setAttribute('data-requestid',data.request_id);
             },
             'beforeRender':()=>{}
         });
+        mThis.tblActivities = $(mThis.itemView.getTable());
 
         mThis.btnNew.on('click',function(e){
             e.preventDefault();
@@ -85,6 +88,28 @@ var ActivitiesComponent = new function(){
                 }
             };
             RequestDialog.show(op);
+        });
+
+        mThis.btnSendRequest.on('click',function(e){
+            e.preventDefault();
+            mThis.getRequestID(mThis.tblActivities);
+        });
+    }
+
+    this.getRequestID = (tbl) => {
+        let p = {
+            'request_info': []
+        };
+        tbl.find('input[type="checkbox"]:checked').each(function(){
+            let tr = $(this).closest('tr');
+            let obj = {};
+            obj['request_id'] = tr.data('requestid');
+            p.request_info.push(obj);
+        });
+        window.vsapi.call(`${main_view.base_url}/api/activity/send-request-change`,p,null).then(res => {
+            if(res.status_code === 200){
+                mThis.itemView.showPage(null);
+            }
         });
     }
 
@@ -257,12 +282,25 @@ let RequestDialog = new function(){
         return p;
     }
 
+    this.setDataForm = (d) => {
+        d = d ? d : {};
+        mThis.self.find('.data-input').each(function(){
+            let el = $(this);
+            let f = el.data('field');
+            if(el.is('select'))
+                el.val(d[f]).trigger('change');
+            else
+                el.val(d[f]);
+        });
+    }
+
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;
 
         mThis.prepareFormOption(() => {
             mThis.elTitle.text(LocaleManager.trans('New Request','titles'));
+            mThis.setDataForm(null);
             mThis.self.modal({
                 backdrop: 'static'
             });
