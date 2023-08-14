@@ -292,13 +292,13 @@ class GeneralSettings //extends Model
             ];
         }else if($id == 2){
             return (object)[
-                'label' => 'Level',
+                'label' => 'Campus',
                 'to' => 'to_campus_id',
                 'from' => 'from_campus_id'
             ];
         }else if($id == 3){
             return (object)[
-                'label' => 'Level',
+                'label' => 'Session',
                 'to' => 'to_session_id',
                 'from' => 'to_session_id'
             ];

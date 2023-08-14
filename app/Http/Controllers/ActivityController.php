@@ -36,7 +36,6 @@ class ActivityController extends Controller
         $instance = new Activity(null,$ss);
         $list = $instance->activityListPaginateList($req->all(),$ss);
         return JDV::result($list);
-
     }
 
     function approveGeneralListPaginateList(Request $req){
@@ -46,7 +45,6 @@ class ActivityController extends Controller
         $instance = new Activity(null,$ss);
         $list = $instance->approveGeneralListPaginateList($req->all(),$ss);
         return JDV::result($list);
-
     }
 
     function approveRequestChange(Request $req){
@@ -59,13 +57,12 @@ class ActivityController extends Controller
 
     }
 
-    function requestDiscount(Request $req){
+    function sendRequestDiscount(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
         $instance = new Activity(null,$ss);
-        $send_request = $instance->requestDiscount($req->all(),$ss);
+        $send_request = $instance->sendRequestDiscount($req->all(),$ss);
         return JDV::raw($send_request);
-
     }
 
     function deleteActivity(Request $req){
@@ -81,5 +78,14 @@ class ActivityController extends Controller
         $instance = new Activity(null,$ss);
         $count = $instance->requestDiscountCount($ss);
         return JDV::result($count);
+    }
+
+    function createRequestDiscount(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $instance = new Activity(null,$ss);
+        $create = $instance->createRequestDiscount($req->all(),$ss);
+        return JDV::raw($create);
     }
 }
