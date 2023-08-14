@@ -84,14 +84,14 @@ class Activity //extends Model
         return DV::depends($reqNewID,['action' => 'Request Created']);
     }
 
-    function requestChange($arr,$ss=null){
+    function sendRequestChange($arr,$ss=null){
         $ss = $ss?$ss:$this->ss;
         // $level = new ProgramLevel();
         $request_info = null;
         if(!isset($arr['request_info'])) return DV::error('Request info is required');
         $request_info = $arr['request_info'];
         $success = 0;
-        $cross_values = 0;
+        $unsuccess =0;
         foreach($request_info as $info){
              $v_rule = [
                 'request_id'=>'1|number|exists=requests.id'
@@ -99,55 +99,21 @@ class Activity //extends Model
             $res = validateObject($info,$v_rule,1,[],$ss->lang,0,null);
             if($res->error) return DV::error($res->error);
             $inputs = $res->values;
-            $request_name = DB::table('request_types')->where('id',$req_type_id)->take(1)->value('name');
+            $inputs['status_id'] = 2; // * reuest sent; Status ID = 2;
 
-            if($req_type_id == 1){ //* request level
-               $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
-               if($req_exists){
-                $cross_values +=1;
-                    continue;
-               }
+            $id = $inputs['request_id'];
+            unset($inputs['request_id']);
+            $checkSent = DB::table('requests')->where('id',$id)->where('status_id',1)->exists();
+            if(!$checkSent){
+                $unsuccess += 1;
+                continue;
             }
-            else if($req_type_id == 2){    //* request campus
-                $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
-                if($req_exists){
-                    $cross_values +=1;
-                    continue;
-                }
-            }
-            else if($req_type_id == 3){     //* request session
-                $req_exists = DB::table('requests')->where('request_type_id',$req_type_id)->where('student_id',$inputs['student_id'])->where('term_id',$studentInfo->term_id)->where('is_approve',0)->exists();
-                if($req_exists){
-                    $cross_values +=1;
-                    continue;
-                }
-                $from_id = $inputs['from_session_id'];
-                $to_id = $to_session_id;
-            }
-            else if($req_type_id == 4){
-                $from_id = $studentInfo->level_id;
-                $to_id = $to_level_id;
-                // return;
-            }
+            // $request_name = DB::table('request_types')->where('id',$req_type_id)->take(1)->value('name');
 
-            $req_arr = [
-                'request_type_id' => $req_type_id,
-                'student_id' => $inputs['student_id'],
-            ];
-            $reqNewID = saveData($ss,'requests',[],$req_arr,[],1);
-            if($reqNewID){
-                $level_arr = [
-                    'from_id' => $from_id,
-                    'to_id' => $to_id,
-                    'remarks'=>$remarks,
-                    'request_id' => $reqNewID,
-                    'request_name' => $request_name
-                ];
-                saveData($ss,'request_change',[],$level_arr,[],1);
-            }
+            $reqNewID = saveData($ss,'requests',['id'=>$id],$inputs,[],1);
             $success ++;
         }
-        return DV::depends($success,['action'=>'Request sent success ('.$success.') with ('.$cross_values.') failed','message' => "Request send wait author to approve"],"Missing All ($cross_values) ");
+        return DV::depends($success,['action'=>'Request sent success('.$success.') and ('.$unsuccess.') failed','message' => "Request send wait author to approve"]);
     }
 
     function requestDiscount($arr,$ss){

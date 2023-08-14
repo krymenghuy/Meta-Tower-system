@@ -106,7 +106,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //begin::ActivityController
     Route::prefix('activity')->group(function(){
         Route::post('/create-request-change',[ActivityController::class,'createRequestChange']);
-        Route::post('/request-change',[ActivityController::class,'requestChange']);
+        Route::post('/send-request-change',[ActivityController::class,'sendRequestChange']);
         Route::post('/list-paginate',[ActivityController::class,'activityListPaginateList']);
         Route::post('/request-discount',[ActivityController::class,'requestDiscount']);
         Route::post('/approve-request-change',[ActivityController::class,'approveRequestChange']);
