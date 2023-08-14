@@ -35,7 +35,6 @@ class Activity //extends Model
         $to_level_id = $inputs['to_level_id'];
         $to_session_id = $inputs['to_session_id'];
         $to_campus_id = $inputs['to_campus_id'];
-        $inputs['status_id'] = 1; // create request Status ID = 1;
         $remarks = $inputs['remarks'];
         unset($inputs['level_id']);
         unset($inputs['request_type_id']);
@@ -64,16 +63,12 @@ class Activity //extends Model
             $from_id = $inputs['from_session_id'];
             $to_id = $to_session_id;
         }
-        // else if($req_type_id == 4){
-        //     $from_id = $studentInfo->level_id;
-        //     $to_id = $to_level_id;
-        //     // return;
-        // }
 
         $req_arr = [
             'request_type_id' => $req_type_id,
             'student_id' => $inputs['student_id'],
             'term_id' => $studentInfo->term_id,
+            'status_id' => 1 // create request Status ID = 1;
         ];
         $reqNewID = saveData($ss,'requests',[],$req_arr,[],1);
         if($reqNewID){
@@ -233,6 +228,7 @@ class Activity //extends Model
                 ->join('requests as r','r.student_id','=','s.id')
                 ->selectRaw($selectCols)
                 ->where('s.branch_id',$branch_id)
+                ->where('r.status_id',1)
                 ->whereRaw($str_moreWhere)->whereRaw($str_search);
         $count_query = clone $query;
         $count = $count_query->count('s.id');
