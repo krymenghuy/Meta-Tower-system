@@ -159,7 +159,10 @@ var ActivitiesComponent = new function(){
         mThis.prepareOptions(() => {
             mThis.itemView.showPage(null,null,() => {
                 main_view.setTitle(mThis.title_prop);
-                mThis.self.show().siblings().hide();
+                let x = mThis.self.siblings(':visible');
+                x.fadeOut('fast',function(){
+                    mThis.self.hide().fadeIn(300);
+                });
             });
         });
     }

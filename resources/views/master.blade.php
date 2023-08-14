@@ -203,6 +203,7 @@
                                 @include('layouts.termComponent')
                                 @include('layouts.academicYearComponent')
                                 @include('layouts.paymentPendingComponent')
+                                @include('layouts.requestDiscountComponent')
                             </div>
                         </div>
                     </div>
