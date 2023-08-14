@@ -20,6 +20,14 @@ class ActivityController extends Controller
         return JDV::raw($send_request);
 
     }
+    function createRequestChange(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $instance = new Activity();
+        $send_request = $instance->createRequest($req->all(),$ss);
+        return JDV::raw($send_request);
+    }
 
     function activityListPaginateList(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
@@ -38,6 +46,16 @@ class ActivityController extends Controller
         $instance = new Activity(null,$ss);
         $list = $instance->approveGeneralListPaginateList($req->all(),$ss);
         return JDV::result($list);
+
+    }
+
+    function approveRequestChange(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $instance = new Activity(null,$ss);
+        $approve = $instance->approveRequestChange($req->all(),$ss);
+        return JDV::result($approve);
 
     }
 
