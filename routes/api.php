@@ -109,13 +109,15 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/send-request-change',[ActivityController::class,'sendRequestChange']);
         Route::post('/request-change/list-paginate',[ActivityController::class,'requestChangeListPaginateList']);
         Route::post('/request-discount',[ActivityController::class,'requestDiscount']);
-        Route::post('/approve-request-change',[ActivityController::class,'approveRequestChange']);
         Route::post('/create-request-discount',[ActivityController::class,'createRequestDiscount']);
+        Route::post('/send-request-discount',[ActivityController::class,'sendRequestDiscount']);
+        Route::post('/request-discount/list-paginate',[ActivityController::class,'requestDiscountListPaginate']);
     });
     Route::post('/approve/general/list-paginate',[ActivityController::class,'approveGeneralListPaginateList']);
 
     Route::prefix('approval')->group(function(){
         Route::post('/discount-count',[ActivityController::class,'requestDiscountCount']);
+        Route::post('/request-change',[ActivityController::class,'approvalActivityListPaginateList']);
     });
     //end::ActivityController
 

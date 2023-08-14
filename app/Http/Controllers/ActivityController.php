@@ -38,14 +38,14 @@ class ActivityController extends Controller
         return JDV::result($list);
     }
 
-    // function approveGeneralListPaginateList(Request $req){
-    //     $ss = UM::getUserInfoByToken($req,-1);
-    //     if($ss->status_code !=200) return $ss;
+    function approvalActivityListPaginateList(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
 
-    //     $instance = new Activity(null,$ss);
-    //     $list = $instance->approveGeneralListPaginateList($req->all(),$ss);
-    //     return JDV::result($list);
-    // }
+        $instance = new Activity(null,$ss);
+        $list = $instance->approvalActivityListPaginateList($req->all(),$ss);
+        return JDV::result($list);
+    }
 
     function approveRequestChange(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
@@ -55,14 +55,6 @@ class ActivityController extends Controller
         $approve = $instance->approveRequestChange($req->all(),$ss);
         return JDV::result($approve);
 
-    }
-
-    function sendRequestDiscount(Request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss;
-        $instance = new Activity(null,$ss);
-        $send_request = $instance->sendRequestDiscount($req->all(),$ss);
-        return JDV::raw($send_request);
     }
 
     function deleteActivity(Request $req){
@@ -88,5 +80,21 @@ class ActivityController extends Controller
         $create = $instance->createRequestDiscount($req->all(),$ss);
         return JDV::raw($create);
         // requestDiscountListPaginate
+    }
+    function sendRequestDiscount(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $instance = new Activity(null,$ss);
+        $send_request = $instance->sendRequestDiscount($req->all(),$ss);
+        return JDV::raw($send_request);
+    }
+
+    function requestDiscountListPaginate(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $instance = new Activity(null,$ss);
+        $send_request = $instance->requestDiscountListPaginate($req->all(),$ss);
+
+        return JDV::result($send_request);
     }
 }

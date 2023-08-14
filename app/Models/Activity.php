@@ -159,47 +159,47 @@ class Activity //extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    // function approveGeneralListPaginateList($filter=[],$ss=null){
-    //     $campus = new Campus();
-    //     $ss = $ss?$ss:$this->ss;
-    //     $branch_id = $ss->branch_id;
-    //     $search_value =isset($filter['search_value'])?$filter['search_value']:null;
-    //     $current_page =isset($filter['current_page'])?$filter['current_page']:1;
-    //     $per_page =isset($filter['per_page'])?$filter['per_page']:10;
-    //     if(!is_numeric($current_page)) $current_page=1;
-    //     $is_approve = isset($filter['is_approve'])?$filter['is_approve']:0;
-    //     $skip_rows = ($current_page -1) * $per_page;
+    function approvalActivityListPaginateList($filter=[],$ss=null){
+        $campus = new Campus();
+        $ss = $ss?$ss:$this->ss;
+        $branch_id = $ss->branch_id;
+        $search_value =isset($filter['search_value'])?$filter['search_value']:null;
+        $current_page =isset($filter['current_page'])?$filter['current_page']:1;
+        $per_page =isset($filter['per_page'])?$filter['per_page']:10;
+        if(!is_numeric($current_page)) $current_page=1;
+        $authorized = isset($filter['authorized'])?$filter['authorized']:2;
+        $skip_rows = ($current_page -1) * $per_page;
 
-    //     $str_search ="1=1";
-    //     $str_moreWhere="1=1";
-    //     if($search_value){
-    //         $skip_rows =0;
-    //         $search_value = escape_like_str($search_value);
-    //         // $str_search ="(i.code = '$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
-    //         $str_search ="(s.name LIKE '%$search_value%' OR s.code = '%$search_value%')";
-    //     }
-    //     $selectCols = 'e.campus_id,s.id as student_id,r.is_approve,r.id as request_id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id';
-    //     $query = DB::table('requests as r')
-    //             ->join('students as s','s.id','=','r.student_id')
-    //             ->join('enrollments as e','e.student_id','=','s.id')
-    //             ->selectRaw($selectCols)
-    //             ->where('r.branch_id',$branch_id)
-    //             ->whereRaw($str_moreWhere)->whereRaw($str_search);
-    //             $query->where('r.is_approve',$is_approve);
-    //     $count_query = clone $query;
-    //     $count = $count_query->count('r.id');
-    //     $rows = $query->skip($skip_rows)->take($per_page)->get();
+        $str_search ="1=1";
+        $str_moreWhere="1=1";
+        if($search_value){
+            $skip_rows = 0;
+            $search_value = escape_like_str($search_value);
+            // $str_search ="(i.code = '$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+            $str_search ="(s.name LIKE '%$search_value%' OR s.code = '%$search_value%')";
+        }
+        $selectCols = 'e.campus_id,s.id as student_id,r.is_approve,r.id as request_id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id';
+        $query = DB::table('requests as r')
+                ->join('students as s','s.id','=','r.student_id')
+                ->join('enrollments as e','e.student_id','=','s.id')
+                ->selectRaw($selectCols)
+                ->where('r.branch_id',$branch_id)
+                ->whereRaw($str_moreWhere)->whereRaw($str_search);
+                $query->where('r.authorized',$authorized);
+        $count_query = clone $query;
+        $count = $count_query->count('r.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-    //     foreach($rows as $row) {
-    //         $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
-    //         $row->request_change = $this->getRequestChanges($row->request_id,$ss);
-    //         $row->status = $is_approve == 0? 'pending' : 'approved';
-    //         $row->school = $campus->details($row->campus_id,$ss)->name;
-    //         unset($row->file_name);
-    //     }
+        foreach($rows as $row) {
+            $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
+            $row->request_change = $this->getRequestChanges($row->request_id,$ss);
+            $row->status = $is_approve == 0? 'pending' : 'approved';
+            $row->school = $campus->details($row->campus_id,$ss)->name;
+            unset($row->file_name);
+        }
 
-    //     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-    // }
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
 
     function getRequestChanges($id,$ss){
         $level = new ProgramLevel();
@@ -328,6 +328,9 @@ class Activity //extends Model
             'discount_type_id' => $dis_type_id,
             'student_id' => $student_id,
             'remarks' => $remarks,
+            'amount' => $inputs['amount'],
+            'type' => $inputs['type'],
+            'authorized' => 1,
             'status_id' => 1, // create request status id = 1;
         ];
         $newID = saveData($ss,'discount_request',['id' => null],$dis_arr,[],1);
@@ -344,8 +347,8 @@ class Activity //extends Model
         $success = 0;
         $unsuccess =0;
         foreach($request_info as $info){
-             $v_rule = [
-                'discount_type_id'=>'1|number|exists=discount_request.id'
+            $v_rule = [
+                'discount_type_id' => '1|number|exists=discount_types.id'
             ];
             $res = validateObject($info,$v_rule,1,[],$ss->lang,0,null);
             if($res->error) return DV::error($res->error);
@@ -375,7 +378,7 @@ class Activity //extends Model
         $current_page =isset($filter['current_page'])?$filter['current_page']:1;
         $per_page =isset($filter['per_page'])?$filter['per_page']:10;
         if(!is_numeric($current_page)) $current_page=1;
-        $authorized = isset($filter['authorized'])?$filter['authorized']:0;
+        $authorized = isset($filter['authorized'])?$filter['authorized']:1;
         $skip_rows = ($current_page -1) * $per_page;
 
         $str_search ="1=1";
@@ -390,18 +393,18 @@ class Activity //extends Model
         $query = DB::table('discount_request as dr')
                 ->join('discount_types as dt','dt.id','=','dr.discount_type_id')
                 ->join('students as s','s.id','=','dr.student_id')
-                ->where('r.branch_id',$branch_id)
+                ->where('dr.branch_id',$branch_id)
                 ->whereRaw($str_moreWhere)->whereRaw($str_search);
-                $query->where('r.authorized',$authorized);
+                $query->where('dr.authorized',$authorized);
         $count_query = clone $query;
-        $count = $count_query->count('r.id');
+        $count = $count_query->count('dr.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach($rows as $row) {
             $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
-            $row->request_change = $this->getRequestChanges($row->request_id,$ss);
-            $row->status = $is_approve == 0? 'pending' : 'approved';
-            $row->school = $campus->details($row->campus_id,$ss)->name;
+            // $row->request_change = $this->getRequestChanges($row->request_id,$ss);
+            $row->status = $authorized == 0? 'pending' : 'approved';
+            // $row->school = $campus->details($row->campus_id,$ss)->name;
             unset($row->file_name);
         }
 
