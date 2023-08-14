@@ -287,20 +287,20 @@ class GeneralSettings //extends Model
         if($id == 1){
             return (object)[
                 'label' => 'Level',
-                'to_level_id' => 'to_level_id',
-                'from_level_id' => 'from_level_id'
+                'to' => 'to_level_id',
+                'from' => 'from_level_id'
             ];
         }else if($id == 2){
             return (object)[
                 'label' => 'Level',
-                'to_campus_id' => 'to_campus_id',
-                'from_campus_id' => 'from_campus_id'
+                'to' => 'to_campus_id',
+                'from' => 'from_campus_id'
             ];
         }else if($id == 3){
             return (object)[
                 'label' => 'Level',
-                'to_session_id' => 'to_session_id',
-                'from_sessioin_id' => 'to_session_id'
+                'to' => 'to_session_id',
+                'from' => 'to_session_id'
             ];
         }
     }

@@ -11,12 +11,12 @@ class ActivityController extends Controller
 {
     //
 
-    function requestChange(Request $req){
+    function sendRequestChange(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
 
         $instance = new Activity();
-        $send_request = $instance->requestChange($req->all(),$ss);
+        $send_request = $instance->sendRequestChange($req->all(),$ss);
         return JDV::raw($send_request);
 
     }
