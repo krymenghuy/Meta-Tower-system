@@ -27,7 +27,7 @@ var ActivitiesComponent = new function(){
     },
     {
         title: "School",
-        data: "school_name"
+        data: "school"
     },
     {
         title: "Student ID",
