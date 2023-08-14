@@ -67,7 +67,7 @@ var ActivitiesComponent = new function(){
 
     this.init = () => {
         mThis.itemView = new ListView('div_att_list',{
-            'fetchApi':`${main_view.base_url}/api/activity/list-paginate`,
+            'fetchApi':`${main_view.base_url}/api/activity/request-change/list-paginate`,
             'columns': mThis.cols,
             'tableClass':"table header-light-blue header-uppercase",
             'rowCreated':(data, index, tr) => {
