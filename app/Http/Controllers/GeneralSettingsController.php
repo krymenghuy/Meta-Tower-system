@@ -320,6 +320,22 @@ class GeneralSettingsController extends Controller
 
   }
 
+  function requestTypeTnput(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return JDV::raw($ss);
+
+    $options = GeneralSettings::requestTypeTnput($req->request_type_id);
+    return JDV::result($options);
+  }
+
+  function requestTypeDialog(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return JDV::raw($ss);
+
+    $options = GeneralSettings::requestTypeDialog($ss);
+    return JDV::result($options);
+  }
+
   // static function getComboItems_department(Request $req){
   //    $ss = UM::getUserInfoByToken($req,-1);
   //    if($ss->status_code !=200) return $ss; //user not authenticated

@@ -282,4 +282,41 @@ class GeneralSettings //extends Model
         $rows = DB::table('discount_types')->selectRaw('name,id')->get();
         return $rows;
     }
+
+    static function requestTypeTnput($id){
+        if($id == 1){
+            return (object)[
+                'label' => 'Level',
+                'to_level_id' => 'to_level_id',
+                'from_level_id' => 'from_level_id'
+            ];
+        }else if($id == 2){
+            return (object)[
+                'label' => 'Level',
+                'to_campus_id' => 'to_campus_id',
+                'from_campus_id' => 'from_campus_id'
+            ];
+        }else if($id == 3){
+            return (object)[
+                'label' => 'Level',
+                'to_session_id' => 'to_session_id',
+                'from_sessioin_id' => 'to_session_id'
+            ];
+        }
+    }
+
+    static function optionsStudentList($id){
+        $rows = DB::table('students')->selectRaw('name as student_name,id as student_id')->get();
+        return $rows;
+    }
+
+    static function requestTypeDialog($ss=null){
+        return (object)[
+            'student_list-options' => self::requestTypesOptions(),
+            'request_type_options' => self::requestTypesOptions(),
+            'sessions_options' => Setting::session_options($ss),
+            'level_options' => Setting::level_options($ss),
+            'campus_options' => Setting::campus_options($ss),
+        ];
+    }
 }
