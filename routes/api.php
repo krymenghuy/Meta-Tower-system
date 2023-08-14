@@ -110,6 +110,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/list-paginate',[ActivityController::class,'activityListPaginateList']);
         Route::post('/request-discount',[ActivityController::class,'requestDiscount']);
         Route::post('/approve-request-change',[ActivityController::class,'approveRequestChange']);
+        Route::post('/create-request-discount',[ActivityController::class,'createRequestDiscount']);
     });
     Route::post('/approve/general/list-paginate',[ActivityController::class,'approveGeneralListPaginateList']);
 

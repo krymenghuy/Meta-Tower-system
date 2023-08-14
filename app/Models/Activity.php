@@ -116,35 +116,6 @@ class Activity //extends Model
         return DV::depends($success,['action'=>'Request sent success('.$success.') and ('.$unsuccess.') failed','message' => "Request send wait author to approve"]);
     }
 
-    function requestDiscount($arr,$ss){
-        $ss = $ss?$ss:$this->ss;
-        $discount_info = null;
-        if(!isset($arr['discount_info'])) return DV::error('Array Activity info missing');
-        $discount_info = $arr['discount_info'];
-        $success = 0;
-        $cross_values = 0;
-        foreach($discount_info as $info){
-            $v_rule = [
-                'discount_type_id' => '1|number|exists=discount_types.id',
-                'student_id' => '1|number|exists=students.id',
-                'remarks' => '1|string|1,250',
-                'amount' => '1|number',
-                'type' => '1|string|choice|amount,percentage',
-            ];
-
-            $res = validateObject($info,$v_rule,1,[],$ss->lang,0,null);
-            if($res->error) return DV::error($res->error);
-            $inputs = $res->values;
-            $req_exists = DB::table('discount_request')->where('discount_type_id',$inputs['discount_type_id'])->where('student_id',$inputs['student_id'])->where('is_approve',0)->exists();
-            if($req_exists){
-                $cross_values ++;
-                continue;
-            }
-            $success ++;
-            $newID = saveData($ss,'discount_request',['id'=>null],$inputs,[],1);
-        }
-        return DV::depends($success,['action'=>'Request sent success ('.$success.') with ('.$cross_values.') failed','message' => "Request send wait author to approve"],"Missing All ($cross_values) ");
-    }
 
     function activityListPaginateList($filter=[],$ss){
         $campus = new Campus();
@@ -334,4 +305,64 @@ class Activity //extends Model
     }
 
 
+    function createRequestDiscount($arr,$ss){
+        $ss = $ss?$ss:$this->id;
+        $v_rule = [
+            'discount_type_id' => '1|number|exists=discount_types.id',
+            'student_id' => '1|number|exists=students.id',
+            'amount' => '1|number|0,10',
+            'type' => '1|string|choice|percentage,amount',
+            'remarks' => '1|string|1,250',
+        ];
+
+        $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
+        if($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+        $dis_type_id = $inputs['discount_type_id'];
+        $student_id = $inputs['student_id'];
+        $remarks = $inputs['remarks'];
+        unset($inputs['discount_type_id']);
+        unset($inputs['student_id']);
+        $dis_arr = [
+            'discount_type_id' => $dis_type_id,
+            'student_id' => $student_id,
+            'remarks' => $remarks,
+            'status_id' => 1, // create request status id = 1;
+        ];
+        $newID = saveData($ss,'discount_types',['id' => null],$dis_arr,[],1);
+
+        return DV::depends($newID,['action' => 'Request Created']);
+    }
+
+    function sendRequestDiscount($arr,$ss){
+        $ss = $ss?$ss:$this->ss;
+        // $level = new ProgramLevel();
+        $request_info = null;
+        if(!isset($arr['request_info'])) return DV::error('Request info is required');
+        $request_info = $arr['request_info'];
+        $success = 0;
+        $unsuccess =0;
+        foreach($request_info as $info){
+             $v_rule = [
+                'discount_type_id'=>'1|number|exists=discount_request.id'
+            ];
+            $res = validateObject($info,$v_rule,1,[],$ss->lang,0,null);
+            if($res->error) return DV::error($res->error);
+            $inputs = $res->values;
+            $inputs['status_id'] = 2; // * reuest sent; Status ID = 2;
+
+            $id = $inputs['discount_type_id'];
+            unset($inputs['discount_type_id']);
+            $checkSent = DB::table('discount_request')->where('id',$id)->where('status_id',1)->exists();
+            if(!$checkSent){
+                $unsuccess += 1;
+                continue;
+            }
+            // $request_name = DB::table('request_types')->where('id',$req_type_id)->take(1)->value('name');
+
+            $reqNewID = saveData($ss,'discount_request',['id'=>$id],$inputs,[],1);
+            $success ++;
+        }
+        return DV::depends($success,['action'=>'Request sent success('.$success.') and ('.$unsuccess.') failed','message' => "Request send wait author to approve"]);
+    }
 }
