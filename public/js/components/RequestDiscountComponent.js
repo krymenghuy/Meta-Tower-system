@@ -105,7 +105,7 @@ var RequestDiscountComponent = new function(){
         tbl.find('input[type=checkbox]:checked').each(function(){
             let tr = $(this).closest('tr');
             let obj = {
-                'discount_type_id': tr.data('discountid')
+                'discount_request_id': tr.data('id')
             };
             p.request_info.push(obj);
         });

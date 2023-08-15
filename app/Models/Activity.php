@@ -373,8 +373,8 @@ class Activity //extends Model
             $inputs = $res->values;
             $inputs['status_id'] = 2; // * reuest sent; Status ID = 2;
 
-            $id = $inputs['discount_type_id'];
-            unset($inputs['discount_type_id']);
+            $id = $inputs['discount_request_id'];
+            unset($inputs['discount_request_id']);
             $checkSent = DB::table('discount_request')->where('id',$id)->where('status_id',1)->exists();
             if(!$checkSent){
                 $unsuccess += 1;
