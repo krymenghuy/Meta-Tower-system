@@ -235,12 +235,14 @@ let RequestDialog = new function(){
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        let p = mThis.getDataForm();
-        window.vsapi.call(`${main_view.base_url}/api/activity/create-request-change`,p,null).then(res => {
-            if(res.status_code === 200){
-                mThis.self.modal('hide');
-                if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
-            }
+        mThis.validate.validator(() => {
+            let p = mThis.getDataForm();
+            window.vsapi.call(`${main_view.base_url}/api/activity/create-request-change`,p,null).then(res => {
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
+                }
+            });
         });
     });
 
@@ -344,6 +346,7 @@ let RequestDialog = new function(){
 
     this.setDataForm = (d) => {
         d = d ? d : {};
+        mThis.validate.resetForm();
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -353,6 +356,10 @@ let RequestDialog = new function(){
                 el.val(d[f]);
         });
     }
+
+    this.validate = new FormValidator(mThis.self,{
+        className: 'data-input'
+    });
 
     this.show = (options) => {
         if(!options) options = {};

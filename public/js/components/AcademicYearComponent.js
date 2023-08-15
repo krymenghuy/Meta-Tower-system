@@ -150,7 +150,7 @@ let AcademicDialog = new function(){
 
     this.setDataForm = (d) => {
         d = d ? d : {};
-        console.log(d);
+        mThis.validate.resetForm();
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -167,6 +167,10 @@ let AcademicDialog = new function(){
             mThis.setDataForm(data);
         });
     }
+
+    this.validate = new FormValidator(mThis.self,{
+        className: 'data-input'
+    });
 
     this.show = (options) => {
         if(!options) options = {};

@@ -154,15 +154,17 @@ let PolicyDiscountOutsideDialog = new function(){
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        let p = mThis.getDataForm();
-        window.vsapi.call(`${main_view.base_url}/api/pol-discount/save`,p,null).then(res => {
-            if(res.status_code === 200){
-                mThis.self.modal('hide');
-                if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
-            }
-            else{
-                cv_interact.error(res.error_message);
-            }
+        mThis.validate.validator(() => {
+            let p = mThis.getDataForm();
+            window.vsapi.call(`${main_view.base_url}/api/pol-discount/save`,p,null).then(res => {
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                }
+            });
         });
     });
 
@@ -180,6 +182,7 @@ let PolicyDiscountOutsideDialog = new function(){
 
     this.setDataForm = (d) => {
         d = d ? d : {};
+        mThis.validate.resetForm();
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -212,6 +215,10 @@ let PolicyDiscountOutsideDialog = new function(){
             if(typeof onFinish === 'function') onFinish();
         });
     }
+
+    this.validate = new FormValidator(mThis.self,{
+        className: 'data-input'
+    });
     
     this.show = (options) => {
         if(!options) options = {};

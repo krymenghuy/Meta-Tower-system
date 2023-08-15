@@ -176,7 +176,7 @@ var RequestDiscountComponent = new function(){
             if(res.status_code === 200){
                 d = res.data;
             }
-            console.log(d);
+            VSUtil.setComboItems(mThis.elDiscountType,d.discount_type,'id','name',null,null,null);
         });
     }
 
@@ -184,6 +184,7 @@ var RequestDiscountComponent = new function(){
         if(!options) options = {};
 
         mThis.itemView.showPage(null,null,() => {
+            mThis.prepareOption();
             main_view.setTitle(mThis.title_prop);
             let x = mThis.self.siblings(':visible');
             x.fadeOut('fast',function(){
@@ -203,15 +204,17 @@ let RequestDiscountDialog = new function(){
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        let p = mThis.getDataForm();
-        window.vsapi.call(`${main_view.base_url}/api/activity/create-request-discount`,p,null).then(res => {
-            if(res.status_code === 200){
-                mThis.self.modal('hide');
-                if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
-            }
-            else{
-                cv_interact.error(res.error_message);
-            }
+        mThis.validate.validator(() => {
+            let p = mThis.getDataForm();
+            window.vsapi.call(`${main_view.base_url}/api/activity/create-request-discount`,p,null).then(res => {
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                }
+            }); 
         });
     });
 
@@ -229,6 +232,7 @@ let RequestDiscountDialog = new function(){
 
     this.setDataForm = (d) => {
         d = d ? d : {};
+        mThis.validate.resetForm();
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -265,6 +269,10 @@ let RequestDiscountDialog = new function(){
             if(typeof onFinish === 'function') onFinish();
         });
     }
+
+    this.validate = new FormValidator(mThis.self,{
+        className: 'data-input'
+    });
 
     this.show = (options) => {
         if(!options) options = {};
