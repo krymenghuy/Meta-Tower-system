@@ -258,16 +258,18 @@ let TuitionFeeOutsideDialog = new function(){
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        let p = mThis.getDataForm();
-        window.vsapi.call(`${main_view.base_url}/api/price-list/save`,p,null).then(res => {
-            if(res.status_code === 200){
-                mThis.self.modal('hide');
-                if(typeof mThis.options.onClose === 'function')
-                    mThis.options.onClose();
-            }
-            else{
-                cv_interact.error(res.error_message);
-            }
+        mThis.validate.validator(() => {
+            let p = mThis.getDataForm();
+            window.vsapi.call(`${main_view.base_url}/api/price-list/save`,p,null).then(res => {
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    if(typeof mThis.options.onClose === 'function')
+                        mThis.options.onClose();
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                }
+            });
         });
     });
 
@@ -285,6 +287,7 @@ let TuitionFeeOutsideDialog = new function(){
 
     this.setDataForm = (d) => {
         d = d ? d : {};
+        mThis.validate.resetForm();
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -312,6 +315,10 @@ let TuitionFeeOutsideDialog = new function(){
             if(typeof onFinish === 'function') onFinish();
         });
     }
+
+    this.validate = new FormValidator(mThis.self,{
+        className: 'data-input'
+    });
 
     this.show = (options) => {
         if(!options) options = {};
@@ -348,17 +355,19 @@ let PriceItemDialog = new function(){
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        let p = mThis.getDataForm();
-        window.vsapi.call(`${main_view.base_url}/api/price-list/save-item`,p,null).then(res => {
-            if(res.status_code === 200){
-                mThis.self.modal('hide');
-                let d = res.data;
-                if(typeof mThis.options.onClose === 'function')
-                    mThis.options.onClose(d.price_list_items);
-            }
-            else{
-                cv_interact.error(res.error_message);
-            }
+        mThis.validate.validator(() => {
+            let p = mThis.getDataForm();
+            window.vsapi.call(`${main_view.base_url}/api/price-list/save-item`,p,null).then(res => {
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    let d = res.data;
+                    if(typeof mThis.options.onClose === 'function')
+                        mThis.options.onClose(d.price_list_items);
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                }
+            });
         });
     });
 
@@ -377,6 +386,7 @@ let PriceItemDialog = new function(){
 
     this.setDataForm = (d) => {
         d = d ? d : {};
+        mThis.validate.resetForm();
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -408,6 +418,10 @@ let PriceItemDialog = new function(){
             mThis.setDataForm(data);
         });
     }
+
+    this.validate = new FormValidator(mThis.self,{
+        className: 'data-input'
+    });
 
     this.show = (options) => {
         if(!options) options = {};

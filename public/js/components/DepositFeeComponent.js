@@ -179,24 +179,25 @@ let DepositFeeDialog = new function(){
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        let p = {};
+        mThis.validate.validator(() => {
+            let p = {};
 
-        if(mThis.options.dn === 'new'){
-            p = mThis.getDataForm(mThis.div_newStudent);
-        }
-        else if(mThis.options.dn === 'old'){
-            p = mThis.getDataForm(mThis.div_oldStudent);
-        }
-        if(p.student_id) delete(p.id);
-        console.log(p);
-        window.vsapi.call(`${main_view.base_url}/api/deposite/save`,p,null).then(res => {
-            if(res.status_code === 200){
-                mThis.self.modal('hide');
-                if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
+            if(mThis.options.dn === 'new'){
+                p = mThis.getDataForm(mThis.div_newStudent);
             }
-            else{
-                cv_interact.error(res.error_message);
+            else if(mThis.options.dn === 'old'){
+                p = mThis.getDataForm(mThis.div_oldStudent);
             }
+            if(p.student_id) delete(p.id);
+            window.vsapi.call(`${main_view.base_url}/api/deposite/save`,p,null).then(res => {
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                }
+            });
         });
     });
 
@@ -281,6 +282,7 @@ let DepositFeeDialog = new function(){
 
     this.setDataForm = (d=null, div, onFinish=null) => {
         d = d ? d : {};
+        mThis.validate.resetForm();
         div.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -340,6 +342,10 @@ let DepositFeeDialog = new function(){
             mThis.setDataForm(data,mThis.div_newStudent);
         });
     }
+
+    this.validate = new FormValidator(mThis.self,{
+        className: 'data-input'
+    });
 
     this.show = (options) => {
         if(!options) options = {};

@@ -264,15 +264,17 @@ let ProgramDialog = new function(){
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        let p = mThis.getDataForm();
-        window.vsapi.call(`${main_view.base_url}/api/program/save`,p,null).then(res => {
-            if(res.status_code === 200){
-                mThis.self.modal('hide');
-                if(typeof mThis.options.onClose === 'function') mThis.options.onClose(res.data.levels);
-            }
-            else{
-                cv_interact.error(res.error_message);
-            }
+        mThis.validate.validator(() => {
+            let p = mThis.getDataForm();
+            window.vsapi.call(`${main_view.base_url}/api/program/save`,p,null).then(res => {
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    if(typeof mThis.options.onClose === 'function') mThis.options.onClose(res.data.levels);
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                }
+            });
         });
     });
 
@@ -291,6 +293,7 @@ let ProgramDialog = new function(){
 
     this.setDataForm = (d) => {
         d = d ? d : {};
+        mThis.validate.resetForm();
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -318,6 +321,10 @@ let ProgramDialog = new function(){
             if(typeof onFinish === 'function') onFinish();
         });
     }
+
+    this.validate = new FormValidator(mThis.self,{
+        className: 'data-input'
+    });
 
     this.show = (options) => {
         if(!options) options = {};
@@ -350,16 +357,17 @@ let ProgramLevelDialog = new function(){
     this.elLevel = mThis.self.find('#dlg_detail_pgm_level');
     
     this.btnSave.on('click',function(){
-        let p =mThis.getDataForm();
-        console.log(p);
-        window.vsapi.call(`${main_view.base_url}/api/program-level/save`,p,null,false).then(res=>{
-            if(res.status_code === 200){
-                mThis.self.modal('hide');
-                if(typeof mThis.options.onClose === 'function')
-                    mThis.options.onClose(res.data.levels);
-            }
-            else
-                cv_interact.error(res.error_message);
+        mThis.validate.validator(() => {
+            let p =mThis.getDataForm();
+            window.vsapi.call(`${main_view.base_url}/api/program-level/save`,p,null,false).then(res=>{
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    if(typeof mThis.options.onClose === 'function')
+                        mThis.options.onClose(res.data.levels);
+                }
+                else
+                    cv_interact.error(res.error_message);
+            });
         });
     });
 
@@ -379,6 +387,7 @@ let ProgramLevelDialog = new function(){
 
     this.setDataForm = (d) => {
         d = d ? d : {};
+        mThis.validate.resetForm();
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -406,6 +415,10 @@ let ProgramLevelDialog = new function(){
             if(typeof onFinish === 'function') onFinish();
         });
     }
+
+    this.validate = new FormValidator(mThis.self,{
+        className: 'data-input'
+    });
 
     this.show = (options) => {
         if(!options) options = {};

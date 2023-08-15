@@ -88,7 +88,8 @@ class ScriptProvider
                 '/assets/js/demo1/scripts.bundle.js',
                 '/assets/js/datatables.bundle.min.js',
                 '/assets/js/browsercontrol.js'
-            ], 'no-minify' => [
+            ],
+            'no-minify' => [
                 '/assets/js/crypto-js.js',
                 '/assets/js/ckeditor.js',
             ]
@@ -98,6 +99,7 @@ class ScriptProvider
             'single_file' => 1,
             'output_file' => '/dist/js/ksm.components.js',
             'files' => [
+                '/js/components/FormValidator.js',
                 '/assets/js/formUtils.js',
                 '/js/layout/main.js?v=1',
                 '/js/components/PDFReport.js',
@@ -141,7 +143,6 @@ class ScriptProvider
                 '/js/components/pusher_connect.js'
             ]
         ],
-
         'report-scripts' => [
             'attr' => 'defer',
             'single_file' => 1,
