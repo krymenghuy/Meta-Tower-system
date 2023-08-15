@@ -1,12 +1,19 @@
 <div id="_main_requestDiscountComponent" class="mobile-padding p-3" style="display:none">
-    <div class="d-flex gap-2 p-3 bg-white rounded-3">
-        <button id="_rqdc_btn_new" class="btn btn-primary" type="button">
-            <span class="trans-text" data-langprop="buttons.New Request"></span>
-        </button>
-        <div class="height-select2">
-            <select class="modal-select2"></select>
+    <div class="d-flex justify-content-between p-3 bg-white rounded-3">
+        <div class="d-flex gap-2">
+            <button id="_rqdc_btn_new" class="btn btn-primary" type="button">
+                <span class="trans-text" data-langprop="buttons.New Request"></span>
+            </button>
+            <div class="height-select2">
+                <select class="modal-select2"></select>
+            </div>
+            <input type="search" class="form-control width--search-inner"/>
         </div>
-        <input type="search" class="form-control width--search-inner"/>
+        <div class="d-flex gap-2">
+            <button id="_rqdc_send_request" class="btn btn-warning" type="button">
+                <span class="trans-text" data-langprop="buttons.Send Request"></span>
+            </button>
+        </div>
     </div>
     <div id="_rqdc_tbl" class="table-responsive p-3 bg-white rounded-3 mt-3"></div>
 </div>
@@ -55,7 +62,7 @@
                 <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button type="button" class="btn btn-primary btn-sm">
+                <button id="dlg_rqdc_btn_save" type="button" class="btn btn-primary btn-sm">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>
