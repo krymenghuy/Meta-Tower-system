@@ -295,6 +295,7 @@ class Activity //extends Model
                 $from_id = $from_campus_id;
                 $to_id = $to_session_id;
             }
+
             $approve_arr = [
                 'request_type_id' => $req_type_id,
                 'auth_uid' => $ss->id,
@@ -302,6 +303,7 @@ class Activity //extends Model
                 'authorized' => 1, //  approved
                 'status_id' => 3 // approve request Status ID = 3 final processing;
             ];
+
             $approveRequestID =1;//saveData($ss,'requests',['id' => $id],$approve_arr,[],1);//DB::table('requests')->where('id',$id)->update($approve_arr);
             if($approveRequestID){
                 $req_change_arr = [
