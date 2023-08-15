@@ -109,6 +109,7 @@ var RequestDiscountComponent = new function(){
             };
             p.request_info.push(obj);
         });
+        console.log(p);
         window.vsapi.call(`${main_view.base_url}/api/activity/send-request-discount`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.itemView.showPage(null);
