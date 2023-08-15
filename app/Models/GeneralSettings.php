@@ -279,8 +279,12 @@ class GeneralSettings //extends Model
     }
 
     static function requestDiscountOptions($ss=null){
-        $rows = DB::table('discount_types')->selectRaw('name,id')->get();
-        return $rows;
+        $dicount_type = DB::table('discount_types')->selectRaw('name,id')->get();
+        $students = DB::table('students')->selectRaw('name as student_name,id as student_id,code as student_code')->get();
+        return (object)[
+            'discount_type' => $dicount_type,
+            'students' => $students
+        ];
     }
 
     static function requestTypeTnput($id){

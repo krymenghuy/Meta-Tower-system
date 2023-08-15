@@ -106,15 +106,43 @@ var RequestDiscountComponent = new function(){
 let RequestDiscountDialog = new function(){
     let mThis = this;
     this.self = $('#dlg_rqdc_');
-
     this.elTitle = mThis.self.find('.modal-title');
+
+    this.prepareFormOption = (onFinish=null) => {
+        let option = '';
+        window.vsapi.call(`${main_view.base_url}/api/option/discount-type`,null,null).then(res => {
+            let d = {};
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            mThis.self.find('.data-input').each(function(){
+                let el = $(this);
+                let f = el.data('field');
+                switch(f){
+                    case 'student_id':
+                        (option,d && d.students.map(op => {
+                            option = [option,`<option value="${op.student_id}">${op.student_name} (${op.student_code})</option>`].join('');
+                        },option=[option,'<option selected></option>'].join(''),console.log(option),el.html(option)));
+                        break;
+                    case 'discount_type_id':
+                        VSUtil.setComboItems(el,d.discount_type,'id','name',null,null,null);
+                        break;
+                    default:
+                        break;
+                }
+            });
+            if(typeof onFinish === 'function') onFinish();
+        });
+    }
 
     this.show = (options) => {
         if(!options) options = {};
 
-        mThis.elTitle.text(LocaleManager.trans('New Request','titles'));
-        mThis.self.modal({
-            backdrop: 'static'
+        mThis.prepareFormOption(() => {
+            mThis.elTitle.text(LocaleManager.trans('New Request','titles'));
+            mThis.self.modal({
+                backdrop: 'static'
+            });
         });
     }
 }
