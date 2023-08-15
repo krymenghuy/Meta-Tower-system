@@ -6,6 +6,7 @@ var RequestDiscountComponent = new function(){
 
     this.btnNew = mThis.self.find('#_rqdc_btn_new');
     this.btnRequest = mThis.self.find('#_rqdc_send_request');
+    this.elDiscountType = mThis.self.find('#_rqdc_discount_type');
 
     this.cols = [{
         title: "Check",
@@ -52,7 +53,7 @@ var RequestDiscountComponent = new function(){
     {
         title: "Status",
         data: (data, a, b) => {
-            return [`${data.status ? `<span class="p-2 bg-warning text-white rounded-3">${data.status}</span>`:''}`].join('');
+            return [`${data.status ? `<span class="text-capitalize p-2 bg-warning text-white rounded-3">${data.status}</span>`:''}`].join('');
         }
     },
     {
@@ -66,6 +67,19 @@ var RequestDiscountComponent = new function(){
     {
         title: "Remark",
         data: "remarks"
+    },
+    {
+        title: "Action",
+        data: (data, a, b) => {
+            return [`<div class="d-flex gap-2">
+                <a href="javascript:void(0)" class="btn-rqdc-send" data-id="${data.id}">
+                    <i class="fa-regular fa-paper-plane text-success fs-5"></i>
+                </a>
+                <a href="javascript:void(0)" class="btn-rqdc-delete" data-id="${data.id}">
+                    <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                </a>
+            </div>`].join('');
+        }
     }];
 
     this.init = () => {
@@ -92,6 +106,42 @@ var RequestDiscountComponent = new function(){
             RequestDiscountDialog.show(op);
         });
 
+        mThis.tblDiscount.on('click','a.btn-rqdc-send',function(e){
+            e.preventDefault();
+            let op = {
+                'request_info':[
+                    {
+                        'discount_request_id': $(this).data('id')
+                    }
+                ]
+            };
+            window.vsapi.call(`${main_view.base_url}/api/activity/send-request-discount`,op,null).then(res => {
+                if(res.status_code === 200){
+                    mThis.itemView.showPage(null);
+                    cv_interact.success('Request has been seen!');
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                }
+            });
+        });
+
+        mThis.tblDiscount.on('click','a.btn-rqdc-delete',function(e){
+            e.preventDefault();
+            let op = {
+                'discount_request_id': $(this).data('id')
+            };
+            cv_interact.confirm('Delete this request?',{title: 'Delete Request', context: 'delete'},(e) => {
+                if(e){
+                    window.vsapi.call(`${main_view.base_url}/api/activity/request-discount/delete`,op,null).then(res => {
+                        if(res.status_code === 200){
+                            mThis.itemView.showPage(null);
+                        }
+                    });
+                }
+            });
+        });
+
         mThis.btnRequest.on('click',function(e){
             e.preventDefault();
             mThis.getDiscountID(mThis.tblDiscount);
@@ -109,14 +159,24 @@ var RequestDiscountComponent = new function(){
             };
             p.request_info.push(obj);
         });
-        console.log(p);
         window.vsapi.call(`${main_view.base_url}/api/activity/send-request-discount`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.itemView.showPage(null);
+                cv_interact.success('Request has been seen!');
             }
             else{
                 cv_interact.error(res.error_message);
             }
+        });
+    }
+
+    this.prepareOption = () => {
+        window.vsapi.call(`${main_view.base_url}/api/option/discount-type`,null,null).then(res => {
+            let d = {};
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            console.log(d);
         });
     }
 
@@ -211,7 +271,7 @@ let RequestDiscountDialog = new function(){
         mThis.options = options;
 
         mThis.prepareFormOption(() => {
-            mThis.getDataForm(null);
+            mThis.setDataForm(null);
             mThis.elTitle.text(LocaleManager.trans('New Request','titles'));
             mThis.self.modal({
                 backdrop: 'static'

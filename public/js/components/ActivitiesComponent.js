@@ -64,6 +64,23 @@ var ActivitiesComponent = new function(){
     {
         title: "Family ID",
         data: "family_id"
+    },
+    {
+        title: "Status",
+        data: (data, a, b) => {}
+    },
+    {
+        title: "Action",
+        data: (data, a, b) => {
+            return [`<div class="d-flex gap-2 ${data.status === 'pending' ? '':'d-none'}">
+                <a href="javascript:void(0)" class="btn-att-send" data-requestid="${data.request_id}">
+                    <i class="fa-regular fa-paper-plane text-success fs-5"></i>
+                </a>
+                <a href="javascript:void(0)" class="btn-att-delete" data-requestid="${data.request_id}">
+                    <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                </a>
+            </div>`].join('');
+        }
     }];
 
     this.init = () => {
@@ -78,6 +95,42 @@ var ActivitiesComponent = new function(){
             'beforeRender':()=>{}
         });
         mThis.tblActivities = $(mThis.itemView.getTable());
+
+        mThis.tblActivities.on('click','a.btn-att-send',function(e){
+            e.preventDefault();
+            let op = {
+                'request_info': [
+                    {
+                        'request_id': $(this).data('requestid')
+                    }
+                ]
+            }
+            window.vsapi.call(`${main_view.base_url}/api/activity/send-request-change`,op,null).then(res => {
+                if(res.status_code === 200){
+                    mThis.itemView.showPage(null);
+                    cv_interact.success('Request has been seen!');
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                }
+            });
+        });
+
+        mThis.tblActivities.on('click','a.btn-att-delete',function(e){
+            e.preventDefault();
+            let op = {
+                'request_id': $(this).data('requestid')
+            };
+            cv_interact.confirm('Delete this request?',{title: 'Delete Request', context: 'delete'},(e) => {
+                if(e){
+                    window.vsapi.call(`${main_view.base_url}/api/activity/request-change/delete`,op,null).then(res => {
+                        if(res.status_code === 200){
+                            mThis.itemView.showPage(null);
+                        }
+                    });
+                }
+            });
+        });
 
         mThis.btnNew.on('click',function(e){
             e.preventDefault();
@@ -109,6 +162,10 @@ var ActivitiesComponent = new function(){
         window.vsapi.call(`${main_view.base_url}/api/activity/send-request-change`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.itemView.showPage(null);
+                cv_interact.success('Request has been seen!');
+            }
+            else{
+                cv_interact.error(res.error_message);
             }
         });
     }
