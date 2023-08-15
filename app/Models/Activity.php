@@ -408,11 +408,13 @@ class Activity //extends Model
             // $str_search ="(i.code = '$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
             $str_search ="(s.name LIKE '%$search_value%' OR s.code = '%$search_value%')";
         }
-        $selectCols = 'dr.id,dr.amount,dt.name as discount_type,s.file_name';
+
+        $selectCols = 'dr.id,dr.amount,dt.name as discount_type,s.file_name,s.code,s.name,s.name_kh,s.sex,s.date_of_birth,formatDate(dr.updated_at) as updated_at,s.update_user,dr.remarks';
         $query = DB::table('discount_request as dr')
                 ->join('discount_types as dt','dt.id','=','dr.discount_type_id')
                 ->join('students as s','s.id','=','dr.student_id')
                 ->where('dr.branch_id',$branch_id)
+                ->where('dr.status_id',1)
                 ->selectRaw($selectCols)
                 ->whereRaw($str_moreWhere)->whereRaw($str_search);
                 if($type){
