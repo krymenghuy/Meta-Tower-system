@@ -67,31 +67,8 @@
                     <div id="kt_header" class="kt-header kt-grid__item kt-header--fixed">
                         <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper" style="padding:10px">
                             <div class="d-flex">
-                                <div class="form-inline">
-                                    <div class="div--search">
-                                        <div class="div--search-icon">
-                                            <i class="fa-solid fa-magnifying-glass"></i>
-                                        </div>
-                                        <input type="search" class="form--control-search" placeholder="Search..."/>
-                                    </div>
-                                </div>
                                 <div id="_main_top_right_menus" class="mainview-top-right">
                                     <div class="form-inline">
-                                        <div class="dropdown main--campus">
-                                            <button class="btn-dropdown">
-                                                <i class="fa-solid fa-house fs-4"></i>
-                                                <p class="px-3 mb-0">Main campus</p>
-                                                <i class="fa-solid fa-caret-down fs-5"></i>
-                                            </button>
-                                            <div class="br-dropdown dropdown-menu">
-                                                <div class="branch--chooser">
-                                                    <a href="javascript:void(0)">
-                                                        <i class="fa-solid fa-house"></i>
-                                                        <span class="br--label">Branch 721</span>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
                                         <div class="dropdown choose--language">
                                             <button id="_main_btn_lang" class="btn-dropdown align--language" data-menu="lang">
                                                 <img class="mr-1" src="{{ asset('assets/images/icons/khmer.png') }}" style="height:25px"/>

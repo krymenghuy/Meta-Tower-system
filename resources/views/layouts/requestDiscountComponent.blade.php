@@ -5,7 +5,7 @@
                 <span class="trans-text" data-langprop="buttons.New Request"></span>
             </button>
             <div class="height-select2">
-                <select class="modal-select2"></select>
+                <select id="_rqdc_discount_type" class="modal-select2"></select>
             </div>
             <input type="search" class="form-control width--search-inner"/>
         </div>
@@ -40,9 +40,7 @@
                 </div>
                 <div class="form-group">
                     <label for="amount" class="form-label trans-text" data-langprop="titles.Amount"></label>
-                    <div class="width-select-dialog">
-                        <input type="number" class="form-control data-input" data-field="amount"/>
-                    </div>
+                    <input type="number" class="form-control data-input" data-field="amount"/>
                 </div>
                 <div class="form-group">
                     <label for="type" class="form-label trans-text" data-langprop="titles.Type"></label>
