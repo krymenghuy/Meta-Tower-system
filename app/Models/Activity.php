@@ -366,7 +366,7 @@ class Activity //extends Model
         $unsuccess =0;
         foreach($request_info as $info){
             $v_rule = [
-                'discount_request_id' => '1|number|exists=discount_types.id'
+                'discount_request_id' => '1|number|exists=discount_request.id'
             ];
             $res = validateObject($info,$v_rule,1,[],$ss->lang,0,null);
             if($res->error) return DV::error($res->error);
@@ -408,11 +408,12 @@ class Activity //extends Model
             // $str_search ="(i.code = '$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
             $str_search ="(s.name LIKE '%$search_value%' OR s.code = '%$search_value%')";
         }
-        $selectCols = 'dr.amount,dt.name as discount_type';
+        $selectCols = 'dr.id,dr.amount,dt.name as discount_type,s.file_name';
         $query = DB::table('discount_request as dr')
                 ->join('discount_types as dt','dt.id','=','dr.discount_type_id')
                 ->join('students as s','s.id','=','dr.student_id')
                 ->where('dr.branch_id',$branch_id)
+                ->selectRaw($selectCols)
                 ->whereRaw($str_moreWhere)->whereRaw($str_search);
                 if($type){
                     $query->where('r.request_type_id',$type);
