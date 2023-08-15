@@ -302,7 +302,7 @@ class Activity //extends Model
                 'authorized' => 1, //  approved
                 'status_id' => 3 // approve request Status ID = 3 final processing;
             ];
-            $approveRequestID = saveData($ss,'requests',['id' => $id],$approve_arr,[],1);//DB::table('requests')->where('id',$id)->update($approve_arr);
+            $approveRequestID =1;//saveData($ss,'requests',['id' => $id],$approve_arr,[],1);//DB::table('requests')->where('id',$id)->update($approve_arr);
             if($approveRequestID){
                 $req_change_arr = [
                     'from_id' => $from_id,
@@ -311,14 +311,15 @@ class Activity //extends Model
                     // 'request_id' => $reqNewID,
                     // 'request_name' => $request_name
                 ];
-                DB::table('request_types')->where('request_id',$approveRequestID);
+                // DB::table('request_types')->where('request_id',$approveRequestID)->update($req_change_arr);
             }
 
             $success ++;
 
         }
+        $test = PriceList::findPaidAmount(1,$ss);
 
-        return DV::depends($success,['action'=>'Request sent success ('.$success.') with ('.$cross_values.') failed','message' => "Request send wait author to approve",'data'=>$approve_arr],"Missing All ($cross_values)");
+        return DV::depends($success,['action'=>'Request sent success ('.$success.') with ('.$cross_values.') failed','message' => "Request send wait author to approve",'data'=>$test],"Missing All ($cross_values)");
     }
 
 
@@ -365,7 +366,7 @@ class Activity //extends Model
         $unsuccess =0;
         foreach($request_info as $info){
             $v_rule = [
-                'discount_type_id' => '1|number|exists=discount_types.id'
+                'discount_request_id' => '1|number|exists=discount_types.id'
             ];
             $res = validateObject($info,$v_rule,1,[],$ss->lang,0,null);
             if($res->error) return DV::error($res->error);

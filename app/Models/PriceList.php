@@ -1367,4 +1367,27 @@ class PriceList //extends Model
         }
         return DV::depends($delete,['action'=>'Deleted','status'=>'Status change to in active']);
     }
+
+    static function getPaymentInfo($enr_id,$ss){
+        return DB::table('payments')->where('enrollment_id',$enr_id)
+                ->where('branch_id',$ss->branch_id)
+                ->selectRaw('tuition,tuition_due,tuition_paid');
+    }
+    static function findStudiedDaysFee($arr,$ss){
+
+    }
+
+    static function findPaidAmount($arr=[],$ss){
+        $d = (object)$arr;
+        $row = DB::table('enrollments as e')
+        ->join('students as s','s.id','=','e.student_id')
+        ->where('s.id',$d->student_id)
+        ->selectRaw('e.id as enr_id')->first();
+        // $row->payment_info = self::getPaymentInfo($row->enr_id,$ss);
+        return $row;
+    }
+
+    static function findNewLevelPayFee($arr,$ss){
+
+    }
 }
