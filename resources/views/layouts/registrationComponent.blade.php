@@ -81,7 +81,7 @@
                     </div>
                     <div class="form-group">
                         <label for="phone_number" class="form-label trans-text" data-langprop="titles.Phone Number"></label>
-                        <input type="text" class="form-control data-input" data-field="phone_number"/>
+                        <input type="text" class="form-control data-input" data-field="phone_number" data-phone="true"/>
                     </div>
                     <div class="form-group">
                         <label for="address" class="form-label trans-text" data-langprop="titles.Home Address"></label>
@@ -108,7 +108,7 @@
                 <div class="col">
                     <div class="form-group">
                         <label for="student_code" class="form-label trans-text" data-langprop="titles.Student Code"></label>
-                        <input type="text" class="form-control data-input" data-field="student_code" readonly/>
+                        <input type="text" class="form-control data-input" data-field="student_code" data-required="false" readonly/>
                     </div>
                     <div class="form-group">
                         <label for="campus_id" class="form-label trans-text" data-langprop="titles.Campus"></label>
@@ -175,7 +175,7 @@
                 <div class="col">
                     <div class="form-group">
                         <label for="father_email" class="form-label trans-text" data-langprop="titles.Father Email"></label>
-                        <input type="text" class="form-control data-input" data-field="father_email"/>
+                        <input type="email" class="form-control data-input" data-field="father_email"/>
                     </div>
                     <div class="form-group">
                         <label for="father_phone" class="form-label trans-text" data-langprop="titles.Father Phone"></label>
@@ -193,7 +193,7 @@
                     </div>
                     <div class="form-group">
                         <label for="mother_id_card" class="form-label trans-text" data-langprop="titles.Mother ID Card"></label>
-                        <input type="email" class="form-control data-input" data-field="mother_nid"/>
+                        <input type="text" class="form-control data-input" data-field="mother_nid"/>
                     </div>
                     <div class="form-group">
                         <label for="religion" class="form-label trans-text" data-langprop="titles.Mother Religion"></label>

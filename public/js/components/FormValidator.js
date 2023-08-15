@@ -12,7 +12,10 @@ class FormValidator{
 
         div.find(`.${className}`).each(function(){
             let el = $(this);
-            if(el.is('select') && (el.val() === '')){
+            let phone = el.data('phone') ? el.data('phone') : false;
+            let field_required = el.data('required') == false ? el.data('required') : true;
+
+            if(el.is('select') && (el.val() === '') && field_required){
                 let parent = el.parent();
                 if(parent.next().length > 0){
                     parent.next().remove();
@@ -20,7 +23,7 @@ class FormValidator{
                 $(`<span class="text-danger pt-3">${parent.prev().text()} is required!</span>`).insertAfter(parent);
                 required = 'error';
             }
-            else if(el.is('input') && el.attr('type') === 'text'){
+            else if(el.is('input') && (el.attr('type') === 'text') && field_required){
                 if(el.next().length > 0){
                     el.next().remove();
                 }
@@ -29,7 +32,7 @@ class FormValidator{
                     required = 'error';
                 }
             }
-            else if(el.is('input') && el.attr('type') === 'number'){
+            else if(el.is('input') && (el.attr('type') === 'number') && field_required){
                 if(el.next().length > 0){
                     el.next().remove();
                 }
@@ -43,19 +46,37 @@ class FormValidator{
                     required = 'error';
                 }
             }
-            else if(el.is('textarea') && (el.val() === '')){
+            else if(el.is('textarea') && (el.val() === '') && field_required){
                 if(el.next().length > 0){
                     el.next().remove();
                 }
                 $(`<span class="text-danger pt-3">${el.prev().text()} is required!</span>`).insertAfter(el);
                 required = 'error';
             }
-            else if(el.is('input') && (el.attr('data-select') === 'datepicker')){
+            else if(el.is('input') && (el.attr('data-select') === 'datepicker') && field_required){
                 if(el.next().length > 0){
                     el.next().remove();
                 }
                 if(el.val() === ''){
                     $(`<span class="text-danger pt-3">${el.prev().text()} is required!</span>`).insertAfter(el);
+                    required = 'error';
+                }
+            }
+            else if(el.is('input') && (el.attr('type') === 'email') && field_required){
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if(el.next().length > 0){
+                    el.next().remove();
+                }
+
+                if((!emailRegex.test(el.val())) || (el.val() === '')){
+                    $(`<span class="text-danger pt-3">${el.prev().text()} is not correct!</span>`).insertAfter(el);
+                    required = 'error';
+                }
+            }
+            else if(el.is('input') && (el.attr('type') === 'text') && field_required && phone){
+                const phoneRegex = /^\d{12}$/;
+                if(!($.isNumeric(el.val())) || !(phoneRegex.test(el.val()))){
+                    $(`<span class="text-danger pt-3">${el.prev().text()} is not correct!</span>`).insertAfter(el);
                     required = 'error';
                 }
             }
@@ -96,6 +117,19 @@ class FormValidator{
                     el.next().length > 0 ? el.next().remove() : false;
                 }
             }
+            else if(el.is('input') && (el.attr('type') === 'email')){
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                
+                if(el.val() !== '' || emailRegex.test(el.val())){
+                    el.next().length > 0 ? el.next().remove() : false;
+                }
+            }
+            else if(el.is('input') && (el.attr('type') === 'text') && phone){
+                const phoneRegex = /^\d{12}$/;
+                if(($.isNumeric(el.val())) && (phoneRegex.test(el.val()))){
+                    el.next().length > 0 ? el.next().remove() : false;
+                }
+            }
         });
     }
 
@@ -120,6 +154,12 @@ class FormValidator{
                 el.next().length > 0 ? el.next().remove() : false;
             }
             else if(el.is('input') && (el.attr('data-select') === 'datepicker')){
+                el.next().length > 0 ? el.next().remove() : false;
+            }
+            else if(el.is('input') && (el.attr('type') === 'email')){
+                el.next().length > 0 ? el.next().remove() : false;
+            }
+            else if(el.is('input') && (el.attr('type') === 'text') && phone){
                 el.next().length > 0 ? el.next().remove() : false;
             }
         });

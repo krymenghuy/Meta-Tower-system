@@ -44,18 +44,20 @@ var RegistrationComponent = new function(){
 
         mThis.div_input.on('click','button#btn--save',function(e){
             e.preventDefault();
-            let p = mThis.getDataForm(mThis.div_input, 'data-input');
-            p = mThis.prepareData(p);
-            window.vsapi.call(`${main_view.base_url}/api/student/registration`,p,null).then(res => {
-                if(res.status_code === 200){
-                    mThis.options.photo = null;
-                    mThis.displayStudentList(null,() => {
-                        mThis.div_list.show().siblings().hide();
-                    });
-                }
-                else{
-                    cv_interact.error(res.error_message);
-                }
+            mThis.validate.validator(() => {
+                let p = mThis.getDataForm(mThis.div_input, 'data-input');
+                p = mThis.prepareData(p);
+                window.vsapi.call(`${main_view.base_url}/api/student/registration`,p,null).then(res => {
+                    if(res.status_code === 200){
+                        mThis.options.photo = null;
+                        mThis.displayStudentList(null,() => {
+                            mThis.div_list.show().siblings().hide();
+                        });
+                    }
+                    else{
+                        cv_interact.error(res.error_message);
+                    }
+                });
             });
         });
     }
@@ -71,7 +73,7 @@ var RegistrationComponent = new function(){
         });
 
         if(image && image != 'undefined'){
-            html = [`<img class="img-show data-input" src="${image}" data-field="photo"/>
+            html = [`<img class="img-show data-input" src="${image}" data-field="photo" data-required="false"/>
             <div class="btn-options">
                 <i class="fa-regular fa-trash-can text-danger fs-5 btn-delete"></i>
             </div>`].join('');
@@ -453,6 +455,7 @@ var RegistrationComponent = new function(){
 
     this.setDataForm = (d) => {
         d = d ? d : {};
+        mThis.validate.resetForm();
         let div = mThis.div_input.find('#contain_img');
         mThis.renderImage(div,d.image_url);
 
@@ -512,6 +515,10 @@ var RegistrationComponent = new function(){
             if(typeof onFinish === 'function') onFinish();
         });
     }
+
+    this.validate = new FormValidator(mThis.div_input,{
+        className: 'data-input'
+    });
 
     this.show = (options) => {
         if(!options) options = {};
