@@ -133,7 +133,6 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('/option/request-type-input',[GeneralSettingsController::class,'requestTypeTnput']);
     Route::post('/option/request-type-dialog',[GeneralSettingsController::class,'requestTypeDialog']);
 
-
     //begin::StudentController
     Route::prefix('student')->group(function () {
         Route::post('/registration', [StudentController::class, 'studentRegistration']);

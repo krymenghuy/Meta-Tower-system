@@ -40,7 +40,10 @@
                 <div class="form-group">
                     <label for="type" class="form-label trans-text" data-langprop="titles.Type"></label>
                     <div class="width-select-dialog">
-                        <select class="modal-select2 data-input" data-field="type"></select>
+                        <select class="modal-select2 data-input" data-field="type">
+                            <option value="percentage">Percentage (%)</option>
+                            <option value="amount">Amount (%)</option>
+                        </select>
                     </div>
                 </div>
                 <div class="form-group">
