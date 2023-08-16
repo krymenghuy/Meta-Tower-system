@@ -12,59 +12,43 @@ class FormValidator{
 
         div.find(`.${className}`).each(function(){
             let el = $(this);
+            let phone = el.data('phone') == true ? el.data('phone') : false;
             let field_required = el.data('required') == false ? el.data('required') : true;
 
             if(el.is('select') && (el.val() === '') && field_required){
                 let parent = el.parent();
-                if(parent.next().length > 0){
-                    parent.next().remove();
-                }
-                $(`<span class="text-danger pt-3">${parent.prev().text()} is required!</span>`).insertAfter(parent);
+                parent.next().remove();
+                parent.after(`<span class="text-danger pt-3">${parent.prev().text()} is required!</span>`);
                 required = 'error';
-                console.log(required);
             }
-            else if(el.is('input') && (el.attr('type') === 'text') && field_required){
-                if(el.next().length > 0){
-                    el.next().remove();
-                }
+            else if(el.is('input') && (el.attr('type') === 'text') && field_required && (!phone)){
+                el.next().remove();
                 if(el.val() === ''){
-                    $(`<span class="text-danger pt-3">${el.prev().text()} is required!</span>`).insertAfter(el);
+                    el.after(`<span class="text-danger pt-3">${el.prev().text()} is required!</span>`);
                     required = 'error';
-                    console.log(required);
                 }
             }
             else if(el.is('input') && (el.attr('type') === 'number') && field_required){
-                if(el.next().length > 0){
-                    el.next().remove();
-                }
-
+                el.next().remove();
                 if(el.val() === ''){
-                    $(`<span class="text-danger pt-3">${el.prev().text()} is required!</span>`).insertAfter(el);
+                    el.after(`<span class="text-danger pt-3">${el.prev().text()} is required!</span>`);
                     required = 'error';
-                    console.log(required);
                 }
                 else if(!($.isNumeric(el.val()))){
-                    $(`<span class="text-danger pt-3">${el.prev().text()} must be number!</span>`).insertAfter(el);
+                    el.after(`<span class="text-danger pt-3">${el.prev().text()} must be number!</span>`);
                     required = 'error';
-                    console.log(required);
                 }
             }
             else if(el.is('textarea') && (el.val() === '') && field_required){
-                if(el.next().length > 0){
-                    el.next().remove();
-                }
-                $(`<span class="text-danger pt-3">${el.prev().text()} is required!</span>`).insertAfter(el);
+                el.next().remove();
+                el.after(`<span class="text-danger pt-3">${el.prev().text()} is required!</span>`);
                 required = 'error';
-                console.log(required);
             }
             else if(el.is('input') && (el.attr('data-select') === 'datepicker') && field_required){
-                if(el.next().length > 0){
-                    el.next().remove();
-                }
+                el.next().remove();
                 if(el.val() === ''){
-                    $(`<span class="text-danger pt-3">${el.prev().text()} is required!</span>`).insertAfter(el);
+                    el.after(`<span class="text-danger pt-3">${el.prev().text()} is required!</span>`);
                     required = 'error';
-                    console.log(required);
                 }
             }
             else if(el.is('input') && (el.attr('type') === 'email') && field_required){
@@ -72,22 +56,29 @@ class FormValidator{
                 el.next().remove();
 
                 if(el.val() === ''){
-                    $(`<span class="text-danger pt-3">${el.prev().text()} is required!</span>`).insertAfter(el);
+                    el.after(`<span class="text-danger pt-3">${el.prev().text()} is required!</span>`);
                     required = 'error';
-                    console.log(required);
                 }
-                else if(!emailRegex.test(el.val())){
-                    el.after($(`<span class="text-danger pt-3">${el.prev().text()} is not correct!</span>`));
+                else if(!(emailRegex.test(el.val()))){
+                    el.after(`<span class="text-danger pt-3">${el.prev().text()} is not correct!</span>`);
                     required = 'error';
-                    console.log(required);
                 }
             }
-            else if(el.is('input') && (el.attr('type') === 'text') && field_required){
-                const phoneRegex = /^\d{12}$/;
-                if(!($.isNumeric(el.val())) || !(phoneRegex.test(el.val()))){
-                    $(`<span class="text-danger pt-3">${el.prev().text()} is not correct!</span>`).insertAfter(el);
+            else if(el.is('input') && (el.attr('type') === 'text') && field_required && phone){
+                const phoneRegex = /^\d{9,12}$/;
+                el.next().remove();
+
+                if(el.val() === ''){
+                    el.after(`<span class="text-danger pt-3">${el.prev().text()} is required!</span>`);
                     required = 'error';
-                    console.log(required);
+                }
+                else if(!($.isNumeric(el.val()))){
+                    el.after(`<span class="text-danger pt-3">${el.prev().text()} is must be number!</span>`);
+                    required = 'error';
+                }
+                else if(!(phoneRegex.test(el.val()))){
+                    el.after(`<span class="text-danger pt-3">${el.prev().text()} is not correct!</span>`);
+                    required = 'error';
                 }
             }
         });
@@ -100,13 +91,15 @@ class FormValidator{
 
         div.find(`.${className}`).each(function(){
             let el = $(this);
+            let phone = el.data('phone') == true ? el.data('phone') : false;
+
             if(el.is('select') && (el.val() !== '')){
                 let parent = el.parent();
                 if(parent.next().length > 0){
                     parent.next().remove();
                 }
             }
-            else if(el.is('input') && el.attr('type') === 'text'){
+            else if(el.is('input') && (el.attr('type') === 'text') && (!phone)){
                 if(el.val() !== ''){
                     el.next().length > 0 ? el.next().remove() : false;
                 }
@@ -130,13 +123,13 @@ class FormValidator{
             else if(el.is('input') && (el.attr('type') === 'email')){
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 
-                if(el.val() !== '' || emailRegex.test(el.val())){
+                if(el.val() !== '' && emailRegex.test(el.val())){
                     el.next().length > 0 ? el.next().remove() : false;
                 }
             }
             else if(el.is('input') && (el.attr('type') === 'text') && phone){
-                const phoneRegex = /^\d{12}$/;
-                if(($.isNumeric(el.val())) && (phoneRegex.test(el.val()))){
+                const phoneRegex = /^\d{9,12}$/;
+                if(($.isNumeric(el.val())) && (phoneRegex.test(el.val())) && el.val() !== ''){
                     el.next().length > 0 ? el.next().remove() : false;
                 }
             }
@@ -167,9 +160,6 @@ class FormValidator{
                 el.next().length > 0 ? el.next().remove() : false;
             }
             else if(el.is('input') && (el.attr('type') === 'email')){
-                el.next().length > 0 ? el.next().remove() : false;
-            }
-            else if(el.is('input') && (el.attr('type') === 'text') && phone){
                 el.next().length > 0 ? el.next().remove() : false;
             }
         });
