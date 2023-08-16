@@ -99,6 +99,15 @@ class ActivityController extends Controller
         return JDV::result($send_request);
     }
 
+    function approveRequestDiscount(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $instance = new Activity(null,$ss);
+        $send_request = $instance->approveRequestDiscount($req->all(),$ss);
+
+        return JDV::raw($send_request);
+    }
+
     function previewRequestPaymentFee(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
