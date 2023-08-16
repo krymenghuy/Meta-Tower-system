@@ -120,8 +120,10 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
     Route::prefix('approval')->group(function(){
         Route::post('/discount-count',[ActivityController::class,'requestDiscountCount']);
-        Route::post('/request-change',[ActivityController::class,'approvalActivityListPaginateList']);
-        Route::post('/request-change-approve',[ActivityController::class,'approveRequestChange']);
+        Route::post('/request-change-list',[ActivityController::class,'approvalActivityListPaginateList']);
+        Route::post('/request-discount-list',[ActivityController::class,'requestDiscountListPaginate']);
+        Route::post('/approve-request-change',[ActivityController::class,'approveRequestChange']);
+        Route::post('/approve-request-discount',[ActivityController::class,'approveRequestDiscount']);
 
     });
     //end::ActivityController

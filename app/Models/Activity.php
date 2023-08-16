@@ -128,7 +128,7 @@ class Activity //extends Model
             $search_value = escape_like_str($search_value);
             $str_search ="(s.name LIKE '%$search_value%' OR s.code = '$search_value')";
         }
-        $selectCols = 'r.status_id,r.id as request_id,e.campus_id,s.id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id,e.level_id';
+        $selectCols = 'r.authorized,r.status_id,r.id as request_id,e.campus_id,s.id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id,e.level_id';
         $query = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->join('requests as r','r.student_id','=','s.id')
@@ -147,6 +147,7 @@ class Activity //extends Model
             $row->session = $this->getSession($row->session_id)->name;
             $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
             $row->school = $campus->details($row->campus_id,$ss)->name;
+            $row->status = $row->authorized == 0? 'pending' : 'approved';
             $row->family_id = 'TEST10023';
             unset($row->file_name);
         }
@@ -357,8 +358,6 @@ class Activity //extends Model
         return DV::depends($success,['action'=>'Request sent success ('.$success.') with ('.$cross_values.') failed','message' => "Request send wait author to approve",'data'=>$test],"Missing All ($cross_values)");
     }
 
-
-
     function createRequestDiscount($arr,$ss){
         $ss = $ss?$ss:$this->id;
         $v_rule = [
@@ -383,9 +382,13 @@ class Activity //extends Model
             'remarks' => $remarks,
             'amount' => $inputs['amount'],
             'type' => $inputs['type'],
-            'authorized' => 1,
             'status_id' => 1, // create request status id = 1;
         ];
+
+        $paid = DB::table('payments as p')->join('enrollments as e','e.id','=','p.enrollment_id')->where('e.student_id',$student_id)->where('p.pmt_status','=','paid')->where('p.status_id',2)->first();
+
+        if($paid) return DV::error('Tuition is already paid');
+
         $newID = saveData($ss,'discount_request',['id' => null],$dis_arr,[],1);
 
         return DV::depends($newID,['action' => 'Request Created']);
@@ -432,7 +435,7 @@ class Activity //extends Model
         $current_page =isset($filter['current_page'])?$filter['current_page']:1;
         $per_page =isset($filter['per_page'])?$filter['per_page']:10;
         if(!is_numeric($current_page)) $current_page=1;
-        $authorized = isset($filter['authorized'])?$filter['authorized']:1;
+        $authorized = isset($filter['authorized'])?$filter['authorized']:0;
         $skip_rows = ($current_page -1) * $per_page;
 
         $str_search ="1=1";
@@ -464,12 +467,52 @@ class Activity //extends Model
         foreach($rows as $row) {
             $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
             // $row->request_change = $this->getRequestChanges($row->request_id,$ss);
-            $row->status = $authorized == 1? 'pending' : 'approved';
+            $row->status = $authorized == 0? 'pending' : 'approved';
             // $row->school = $campus->details($row->campus_id,$ss)->name;
             unset($row->file_name);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
+
+
+
+    function approveRequestDiscount($arr=[],$ss){
+        $approve_info = null;
+        $price_list = new PriceList(null,$ss);
+        if(!isset($arr['approve_info'])) return DV::error('Approve info is required');
+        $approve_info = $arr['approve_info'];
+        $success = 0;
+        $cross_values = 0;
+        foreach($approve_info as $info){
+            $v_rule = [
+                'discount_id' => '1|number|exists=discount_request.id',
+                'remarks' => '0|string|1,250'
+                // 'from_level_id' => '0|number|exists=program_levels.id',
+                // 'to_level_id' => '0|number|exists=program_levels.id',
+                // 'from_session_id' => '0|number|exists=sessions.id',
+                // 'to_session_id' => '0|number|exists=sessions.id',
+                // 'from_campus_id' => '0|number|exists=campuses.id',
+                // 'to_campus_id' => '0|number|exists=campuses.id',
+            ];
+            $res = validateObject($info, $v_rule,1,[],$ss->lang,0,null);
+            if($res->error) return DV::error($res->error);
+            $inputs = $res->values;
+            $id = $inputs['discount_id'];
+            $discountTypeInfo = DB::table('discount_request')->where('id',$id)->where('branch_id',$ss->branch_id)->selectRaw('amount,type,discount_type_id,student_id')->first();
+            $enrollment = DB::table('enrollments as e')->where('e.student_id',$discountTypeInfo->student_id)
+                        ->join('terms as t','t.id','=','e.term_id')
+                        ->selectRaw('e.id')
+                        ->first();
+            $selectPayment = 'tuition_due';
+            $payment = DB::table('payments')->where('enrollment_id',$enrollment->id)->where('branch_id',$ss->branch_id)->where('status_id',1)->where('pmt_status','unpaid')->selectRaw($selectPayment)->first();
+
+            if(!$payment) continue;
+            DB::table('discount_request')->where('id',$id)->update([
+                ''
+            ]);
+        }
+        return $enrollment;
     }
 
 
