@@ -114,6 +114,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/request-discount/list-paginate',[ActivityController::class,'requestDiscountListPaginate']);
         Route::post('/request-change/delete',[ActivityController::class,'deleteRequest']);
         Route::post('/request-discount/delete',[ActivityController::class,'deleteRequestDiscount']);
+        Route::post('/preview-request-payment',[ActivityController::class,'previewRequestPaymentFee']);
     });
     // Route::post('/approve/general/list-paginate',[ActivityController::class,'approveGeneralListPaginateList']);
 
@@ -136,7 +137,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('/option/discount-type',[GeneralSettingsController::class,'requestDiscountOptions']);
     Route::post('/option/request-type-input',[GeneralSettingsController::class,'requestTypeTnput']);
     Route::post('/option/request-type-dialog',[GeneralSettingsController::class,'requestTypeDialog']);
-    Route::post('/option/student-level',[GeneralSettingsController::class,'optionsStudentLevel']);
+    Route::post('/option/student-request-info',[GeneralSettingsController::class,'optionsStudentRequest']);
     //begin::StudentController
     Route::prefix('student')->group(function () {
         Route::post('/registration', [StudentController::class, 'studentRegistration']);

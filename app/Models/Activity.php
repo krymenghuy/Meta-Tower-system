@@ -173,9 +173,10 @@ class Activity //extends Model
             $search_value = escape_like_str($search_value);
             $str_search ="(s.name LIKE '%$search_value%' OR s.code = '$search_value')";
         }
-        $selectCols = 'r.status_id,e.campus_id,s.id as student_id,r.id as request_id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id';
+        $selectCols = 'r.status_id,e.campus_id,s.id as student_id,r.id as request_id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id,r.request_type_id';
         $query = DB::table('requests as r')
                 ->join('students as s','s.id','=','r.student_id')
+                ->join('request_changes as rc','rc.request_id','=','r.id')
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->selectRaw($selectCols)
                 ->where('r.branch_id',$branch_id)
@@ -195,6 +196,12 @@ class Activity //extends Model
             $row->status = $authorized == 0? 'pending' : 'approved';
             $row->school = $campus->details($row->campus_id,$ss)->name;
             unset($row->file_name);
+            $row->preview = PriceList::previewRequestPayment([
+                'student_id' => $row->student_id,
+                'request_type_id' => $row->request_type_id,
+                "to_level_id" => 26,
+                "to_session_id" => 2
+            ],$ss);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -308,6 +315,9 @@ class Activity //extends Model
             else if($req_type_id == 2){    //* request campus
                 $from_id = $from_campus_id;
                 $to_id = $to_campus_id;
+
+                saveData($ss,'enrollments',['student_id',$reqStudent->student_id,['campus_id',$to_campus_id]]);
+
             }
             else if($req_type_id == 3){     //* request session
                 $req_arr = [
