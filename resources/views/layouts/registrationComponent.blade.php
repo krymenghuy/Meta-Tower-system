@@ -179,7 +179,7 @@
                     </div>
                     <div class="form-group">
                         <label for="father_phone" class="form-label trans-text" data-langprop="titles.Father Phone"></label>
-                        <input type="text" class="form-control data-input" data-field="father_phone"/>
+                        <input type="text" class="form-control data-input" data-field="father_phone" data-phone="true"/>
                     </div>
                     <div class="form-group">
                         <label for="address" class="form-label trans-text" data-langprop="titles.Home Address"></label>
@@ -207,7 +207,7 @@
                     </div>
                     <div class="form-group">
                         <label for="mother_phone" class="form-label trans-text" data-langprop="titles.Mother Phone"></label>
-                        <input type="text" class="form-control data-input" data-field="mother_phone"/>
+                        <input type="text" class="form-control data-input" data-field="mother_phone" data-phone="true"/>
                     </div>
                     <div class="form-group">
                         <label for="address" class="form-label trans-text" data-langprop="titles.Home Address"></label>
