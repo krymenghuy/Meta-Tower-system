@@ -4,7 +4,7 @@
             <i class="fa-solid fa-plus"></i>
             <span class="trans-text" data-langprop="buttons.New Deposit"></span>
         </button>
-        <input type="search" class="form-control width--search-inner" placeholder="Search by Name or ID..."/>
+        <input id="_dpf_elSearch" type="search" class="form-control width--search-inner" placeholder="Search by Name or ID..."/>
     </div>
     <div class="table-responsive mt-3 p-3 bg-white rounded-3">
         <table id="tbl_dpf_" class="table"></table>

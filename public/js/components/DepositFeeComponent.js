@@ -6,6 +6,7 @@ var DepositFeeComponent = new function(){
 
     this.tblDepositFee = mThis.self.find('#tbl_dpf_');
     this.btnNew = mThis.self.find('#dpf_btn_new');
+    this.elSearch = mThis.self.find('#_dpf_elSearch');
 
     this.init = () => {
         mThis.btnNew.on('click',function(e){
@@ -133,6 +134,7 @@ var DepositFeeComponent = new function(){
                     }
                 });
             }
+            this.search = new SearchData(mThis.elSearch,mThis.tblDepositFee);
 
             if(typeof onFinish === 'function') onFinish();
         });
@@ -162,6 +164,7 @@ let DepositFeeDialog = new function(){
     this.div_newStudent = mThis.self.find('#dpf-new-student');
     this.div_oldStudent = mThis.self.find('#dpf-old-student');
     this.elStudent = mThis.div_oldStudent.find('#dlg_dpf_student');
+    this.validate = null;
 
     mThis.elStudent.on('change',function(e){
         e.preventDefault();
@@ -211,12 +214,18 @@ let DepositFeeDialog = new function(){
     this.togglePanel = (value) => {
         switch(value){
             case 'new':{
+                mThis.validate = new FormValidator(mThis.div_newStudent,{
+                    className: 'data-input'
+                });
                 mThis.setDataForm(null, mThis.div_newStudent, () => {
                     mThis.div_newStudent.show('slow').siblings().hide('slow');
                 });
                 break;
             }
             case 'old':{
+                mThis.validate = new FormValidator(mThis.div_oldStudent,{
+                    className: 'data-input'
+                });
                 mThis.prepareFormOptionOld(() => {
                     mThis.setDataForm(null, mThis.div_oldStudent, () => {
                         mThis.div_oldStudent.show('slow').siblings().hide('slow');
@@ -343,7 +352,7 @@ let DepositFeeDialog = new function(){
         });
     }
 
-    this.validate = new FormValidator(mThis.self,{
+    mThis.validate = new FormValidator(mThis.div_newStudent,{
         className: 'data-input'
     });
 
@@ -356,6 +365,9 @@ let DepositFeeDialog = new function(){
             if(options.id > 0){
                 mThis.elTitle.text(LocaleManager.trans('Modify Deposit','titles'));
                 mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input deposit details','titles'));
+                mThis.validate = new FormValidator(mThis.div_oldStudent,{
+                    className: 'data-input'
+                });
                 mThis.loadFormDetails(options);
             }
             else{

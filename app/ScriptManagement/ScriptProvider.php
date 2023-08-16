@@ -100,6 +100,7 @@ class ScriptProvider
             'output_file' => '/dist/js/ksm.components.js',
             'files' => [
                 '/js/components/FormValidator.js',
+                '/js/components/SearchData.js',
                 '/assets/js/formUtils.js',
                 '/js/layout/main.js?v=1',
                 '/js/components/PDFReport.js',
