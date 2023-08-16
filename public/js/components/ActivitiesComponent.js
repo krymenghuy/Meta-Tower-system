@@ -67,7 +67,9 @@ var ActivitiesComponent = new function(){
     },
     {
         title: "Status",
-        data: (data, a, b) => {}
+        data: (data, a, b) => {
+            return [`<span class="p-2 bg-warning text-white rounded-3">${data.status}</span>`].join('');
+        }
     },
     {
         title: "Action",
