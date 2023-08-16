@@ -28,7 +28,7 @@ window.vsapi = new function(){
 			 let cookie_name = 'vsksm997878za';
 			 let access_token = null;
 			 let c_match = document.cookie.match(new RegExp('(^| )' + cookie_name + '=([^;]+)'));
-			 if (c_match) access_token = c_match[2]; 
+			 if(c_match) access_token = c_match[2];
 		  //end:: read cookie for access token
 	   
 		   //let csrf_token  = $('meta[name="csrf-token"]').attr('content');

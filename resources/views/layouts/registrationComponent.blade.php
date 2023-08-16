@@ -215,7 +215,7 @@
                     </div>
                     <div class="d-flex justify-content-center">
                         <button id="btn--save" class="btn btn-primary" type="button">
-                            <span class="trans-text" data-langprop="buttons.Add Student"></span>
+                            <span class="trans-text" data-langprop="buttons.Save"></span>
                         </button>
                     </div>
                 </div>

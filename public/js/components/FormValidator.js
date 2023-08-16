@@ -12,7 +12,6 @@ class FormValidator{
 
         div.find(`.${className}`).each(function(){
             let el = $(this);
-            let phone = el.data('phone') ? el.data('phone') : false;
             let field_required = el.data('required') == false ? el.data('required') : true;
 
             if(el.is('select') && (el.val() === '') && field_required){
@@ -22,6 +21,7 @@ class FormValidator{
                 }
                 $(`<span class="text-danger pt-3">${parent.prev().text()} is required!</span>`).insertAfter(parent);
                 required = 'error';
+                console.log(required);
             }
             else if(el.is('input') && (el.attr('type') === 'text') && field_required){
                 if(el.next().length > 0){
@@ -30,6 +30,7 @@ class FormValidator{
                 if(el.val() === ''){
                     $(`<span class="text-danger pt-3">${el.prev().text()} is required!</span>`).insertAfter(el);
                     required = 'error';
+                    console.log(required);
                 }
             }
             else if(el.is('input') && (el.attr('type') === 'number') && field_required){
@@ -40,10 +41,12 @@ class FormValidator{
                 if(el.val() === ''){
                     $(`<span class="text-danger pt-3">${el.prev().text()} is required!</span>`).insertAfter(el);
                     required = 'error';
+                    console.log(required);
                 }
                 else if(!($.isNumeric(el.val()))){
                     $(`<span class="text-danger pt-3">${el.prev().text()} must be number!</span>`).insertAfter(el);
                     required = 'error';
+                    console.log(required);
                 }
             }
             else if(el.is('textarea') && (el.val() === '') && field_required){
@@ -52,6 +55,7 @@ class FormValidator{
                 }
                 $(`<span class="text-danger pt-3">${el.prev().text()} is required!</span>`).insertAfter(el);
                 required = 'error';
+                console.log(required);
             }
             else if(el.is('input') && (el.attr('data-select') === 'datepicker') && field_required){
                 if(el.next().length > 0){
@@ -60,24 +64,30 @@ class FormValidator{
                 if(el.val() === ''){
                     $(`<span class="text-danger pt-3">${el.prev().text()} is required!</span>`).insertAfter(el);
                     required = 'error';
+                    console.log(required);
                 }
             }
             else if(el.is('input') && (el.attr('type') === 'email') && field_required){
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if(el.next().length > 0){
-                    el.next().remove();
-                }
+                el.next().remove();
 
-                if((!emailRegex.test(el.val())) || (el.val() === '')){
-                    $(`<span class="text-danger pt-3">${el.prev().text()} is not correct!</span>`).insertAfter(el);
+                if(el.val() === ''){
+                    $(`<span class="text-danger pt-3">${el.prev().text()} is required!</span>`).insertAfter(el);
                     required = 'error';
+                    console.log(required);
+                }
+                else if(!emailRegex.test(el.val())){
+                    el.after($(`<span class="text-danger pt-3">${el.prev().text()} is not correct!</span>`));
+                    required = 'error';
+                    console.log(required);
                 }
             }
-            else if(el.is('input') && (el.attr('type') === 'text') && field_required && phone){
+            else if(el.is('input') && (el.attr('type') === 'text') && field_required){
                 const phoneRegex = /^\d{12}$/;
                 if(!($.isNumeric(el.val())) || !(phoneRegex.test(el.val()))){
                     $(`<span class="text-danger pt-3">${el.prev().text()} is not correct!</span>`).insertAfter(el);
                     required = 'error';
+                    console.log(required);
                 }
             }
         });
