@@ -112,13 +112,16 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/create-request-discount',[ActivityController::class,'createRequestDiscount']);
         Route::post('/send-request-discount',[ActivityController::class,'sendRequestDiscount']);
         Route::post('/request-discount/list-paginate',[ActivityController::class,'requestDiscountListPaginate']);
+        Route::post('/request-change/delete',[ActivityController::class,'deleteRequest']);
+        Route::post('/request-discount/delete',[ActivityController::class,'deleteRequestDiscount']);
     });
-    Route::post('/approve/general/list-paginate',[ActivityController::class,'approveGeneralListPaginateList']);
+    // Route::post('/approve/general/list-paginate',[ActivityController::class,'approveGeneralListPaginateList']);
 
     Route::prefix('approval')->group(function(){
         Route::post('/discount-count',[ActivityController::class,'requestDiscountCount']);
         Route::post('/request-change',[ActivityController::class,'approvalActivityListPaginateList']);
         Route::post('/request-change-approve',[ActivityController::class,'approveRequestChange']);
+
     });
     //end::ActivityController
 
@@ -141,6 +144,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/delete-student',[StudentController::class,'deleteStudent']);
         Route::post('/details-student',[StudentController::class,'studentDetials']);
         Route::post('/delete-verified',[StudentController::class,'deleteVerifiedStudent']);
+        Route::post('/information',[StudentController::class,'studentInformation']);
 
         //** PriceListController */
         Route::post('/invoice-list',[PriceListController::class,'studentInvoice']);

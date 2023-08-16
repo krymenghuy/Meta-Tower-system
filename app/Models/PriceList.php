@@ -503,20 +503,22 @@ class PriceList //extends Model
         $d = (object)$arr;
         $level_id = $d->level_id;
         $start_date = isset($d->start_date)?$d->start_date:getNowTime();
-        $academic_year = $d->academic_year;
+        $academic_year = isset($d->academin_year)?$d->academic_year:null;
         $session_id = $d->session_id;
         $level_info = DB::table('program_levels as l')->where('id',$level_id)->selectRaw('program_id,id,prev_level_id')->first();
         $start_date = convertDate($start_date);
         // $prev_level_id = $level_info->prev_level_id;
         $str_date = 'Date(l.start_date)<=\''.$start_date.'\' AND Date(l.end_date)>=\''.$start_date.'\'';
-        $row = DB::table('price_list as l')
+        $query = DB::table('price_list as l')
                 ->join('price_list_items as i','i.list_id','=','l.id')
                 ->whereRaw($str_date)
                 ->where('i.program_id',$level_info->program_id)
-                ->where('l.academic_year',$academic_year)
-                ->where('i.session_id',$session_id)
-                ->selectRaw('l.id as price_list_id,i.price,i.program_id')
-                ->first();
+                ->where('i.session_id',$session_id);
+                if($academic_year){
+                    $query->where('l.academic_year',$academic_year);
+                }
+                $query->selectRaw('l.id as price_list_id,i.price,i.program_id');
+                $row = $query->first();
         if(!$row) return DV::error('Could not find price list');
         return (object)['price' => $row->price,'price_list_id'=>$row->price_list_id];
     }
@@ -554,7 +556,7 @@ class PriceList //extends Model
         $query = DB::table('payments as ep')
                 ->join('enrollments as e','e.id','=','ep.enrollment_id')
                 ->join('students as s','s.id','=','e.student_id')
-                ->join('status as st','st.id','=','e.status_id')
+                ->join('pmt_status as st','st.id','=','e.status_id')
                 ->selectRaw($selectCols)
                 ->where('ep.branch_id',$branch_id);
                 if ($status_id !== null && strtolower($status_id) != '4') {
@@ -592,7 +594,6 @@ class PriceList //extends Model
         $d = (object)$arr;
         $weeks = isset($d->weeks) ? $d->weeks :null;
         $days = isset($d->days) ? $d->days :null;
-
         $selectCols = 'ep.pmt_option_id,s.name,e.campus_id,e.program_id,e.level_id,e.session_id,e.academic_year,e.start_date';
 
         $row = DB::table('enrollments as e')
@@ -601,12 +602,14 @@ class PriceList //extends Model
                 ->where('s.id',$id)
                 ->selectRaw($selectCols)
                 ->get()->first();
+
         if(!$row) return null;
         $start_date = isset($d->start_date)?$d->start_date:$row->start_date;
         unset($row->start_date);
         $session = isset($d->session_id) ? $d->session_id : $row->session_id;
         $pmt_option_id = isset($d->pmt_option_id) ? $d->pmt_option_id: $row->pmt_option_id;
         $level_id = isset($d->level_id) ? $d->level_id:$row->level_id;
+        $academic_year = isset($d->academic_year)?$d->academic_year:$row->academic_year;
         $months = null;
         if($pmt_option_id == 1){
             $months = isset($d->months) ? $d->months:3;
@@ -617,7 +620,7 @@ class PriceList //extends Model
         }
         $arr = [
             "level_id" => $level_id,
-            "academic_year" => "2023-2024",
+            "academic_year" => $academic_year,
             "session_id" => $session,
             "prev_level_id" => "0",
             "start_date" => $start_date,
@@ -628,6 +631,12 @@ class PriceList //extends Model
         ];
 
         $row->payment_info = $this->payment_processing($arr);
+
+        unset($row->level_id);
+        unset($row->pmt_option_id);
+        unset($row->name);
+        unset($row->program_id);
+        unset($row->session_id);
         return $row;
     }
 
@@ -832,7 +841,7 @@ class PriceList //extends Model
             $str_search ="(st.code ='$search_value' OR st.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 'p.tuition_paid,p.tuition_due,e.tuition_end_date,st.id,st.file_name,p.status_id as pstatus_id,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.school_id';
+        $selectCols = 'p.tuition_paid,p.tuition_due,e.tuition_end_date,st.id,st.file_name,p.status_id as pstatus_id,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.school_id,e.status_id';
         $query = DB::table('students as st')
                 ->join('enrollments as e','e.student_id','=','st.id')
                 ->join('payments as p','p.enrollment_id','=','e.id')
@@ -862,11 +871,15 @@ class PriceList //extends Model
             // $row->status = $row->pstatus_id == 1? 'unpaid' : 'paid';
             $row->previous_school = Student::getPrevSchool($row->school_id)->name;
             $tuition_end_date = convertDate($row->tuition_end_date);
-            $row->pmt_status = 'Unpaid';
+            $row->pmt_status = 'unpaid';
             if($tuition_end_date){
-                if($tuition_end_date > date('Y-m-d')){
+                if($tuition_end_date > date('Y-m-d') && $row->status_id == 3){
                     $row->pmt_status = 'paid';
-                }else $row->pmt_status = 'expired';
+                }
+                else if($tuition_end_date < date('Y-m-d') && $row->status_id == 3){
+                    $row->pmt_status = 'expired';
+                }
+                else $row->pmt_status = 'unpaid';
             }
             // unset($row->pstatus_id);
         }
@@ -882,15 +895,19 @@ class PriceList //extends Model
         $row = DB::table('students as s')->where('s.id',$id)
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->join('payments as p','p.enrollment_id','=','e.id')
-                ->selectRaw('s.id as student_id,p.second_child_discount,p.special_discount,e.academic_year,p.tuition_due,p.policy_discount,e.start_date,e.tuition_end_date,p.tuition,s.code as student_code,s.name as student_name,e.campus_id,e.level_id')
+                ->selectRaw('s.id as student_id,p.second_child_discount,p.special_discount,e.academic_year,p.tuition_due,p.policy_discount,e.start_date,e.tuition_end_date,p.tuition,s.code as student_code,s.name as student_name,e.campus_id,e.level_id,e.status_id')
                 ->get()->first();
         if(!$row) return DV::error('Not Found');
         $tuition_end_date = convertDate($row->tuition_end_date);
         $row->pmt_status = 'Unpaid';
         if($tuition_end_date){
-            if($tuition_end_date > date('Y-m-d')){
+            if($tuition_end_date > date('Y-m-d') && $row->status_id == 3){
                 $row->pmt_status = 'paid';
-            }else $row->pmt_status = 'expired';
+            }
+            else if($tuition_end_date < date('Y-m-d') && $row->status_id == 3){
+                $row->pmt_status = 'expired';
+            }
+            else $row->pmt_status = 'unpaid';
         }
 
         $invoice_number =isset( $d->invoice_number)?$d->invoice_number:null;
@@ -1065,7 +1082,7 @@ class PriceList //extends Model
         $student = DB::table('students')->where('branch_id',$ss->branch_id)->where('id',$student_id)->selectRaw('id')->first();
         $enr_info = DB::table('enrollments as e')->where('student_id',$student->id)
                     ->join('payments as p','p.enrollment_id','=','e.id')
-                    ->selectRaw('e.id as enr_id,p.tuition,e.start_date,e.tuition_end_date,e.academic_year,p.policy_discount')
+                    ->selectRaw('e.id as enr_id,p.tuition,e.start_date,e.tuition_end_date,e.academic_year,p.policy_discount,e.status_id')
                     ->first();
         $tuition_end_date = convertDate($enr_info->tuition_end_date);
         $enr_info->pmt_status = 'Unpaid';
@@ -1094,11 +1111,22 @@ class PriceList //extends Model
 
                 if(strtolower($fee['fee_type']) == 'tuition_fee'){
                     if($tuition_end_date){
-                        if($tuition_end_date > date('Y-m-d')){
-                            $enr_info->pmt_status = 'paid';
+                        if($tuition_end_date > date('Y-m-d') && $enr_info->status_id == 3){
+                            $row->pmt_status = 'paid';
                             return DV::error('Tuition Fee is paid');
-                        }else $enr_info->pmt_status = 'expired';
+                        }
+                        else if($tuition_end_date < date('Y-m-d') && $enr_info->status_id == 3){
+                            $row->pmt_status = 'expired';
+                            return DV::error('Tuition Fee is expired');
+                        }
+                        // else $row->pmt_status = 'unpaid';
                     }
+                    // if($tuition_end_date){
+                    //     if($tuition_end_date > date('Y-m-d')){
+                    //         $enr_info->pmt_status = 'paid';
+                    //         return DV::error('Tuition Fee is paid');
+                    //     }else $enr_info->pmt_status = 'expired';
+                    // }
                     $fee['price'] = $enr_info->tuition;
                     $fee['date_range'] = $enr_info->start_date . ' to ' . $enr_info->tuition_end_date;
                     $fee['fee_type'] = 'tuition_fee';
@@ -1217,6 +1245,7 @@ class PriceList //extends Model
                     'tuition_due' => $current_payment_info->price,
                     'price_list_id' => $current_payment_info->price_list_id
                 ];
+
                 saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
                 saveData($ss,'enrollments',['id' => $row->enr_id],[
                     'status_id' => 3,//* paid
@@ -1282,6 +1311,7 @@ class PriceList //extends Model
                     'tuition_due' => $current_payment_info->price,
                     'price_list_id' => $current_payment_info->price_list_id
                 ];
+
                 saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
                 saveData($ss,'enrollments',['id' => $row->enr_id],[
                     'status_id' => 3,//* paid
@@ -1329,7 +1359,6 @@ class PriceList //extends Model
             }
         }
 
-
         return [
             'enrollment'=>$pre_enr,
             'current_payment_info' => $current_payment_info,
@@ -1371,23 +1400,162 @@ class PriceList //extends Model
     static function getPaymentInfo($enr_id,$ss){
         return DB::table('payments')->where('enrollment_id',$enr_id)
                 ->where('branch_id',$ss->branch_id)
-                ->selectRaw('tuition,tuition_due,tuition_paid');
-    }
-    static function findStudiedDaysFee($arr,$ss){
-
+                ->selectRaw('tuition,tuition_due,tuition_paid')->first();
     }
 
-    static function findPaidAmount($arr=[],$ss){
+
+    static function findRequestPayment($arr=[],$ss){
         $d = (object)$arr;
-        $row = DB::table('enrollments as e')
-        ->join('students as s','s.id','=','e.student_id')
-        ->where('s.id',$d->student_id)
-        ->selectRaw('e.id as enr_id')->first();
-        // $row->payment_info = self::getPaymentInfo($row->enr_id,$ss);
-        return $row;
+        $student_id = $d->student_id;
+        $surcharge = 0;
+        $return_fee = 0;
+
+        $payment_info = DB::table('enrollments as e')->where('e.student_id',$student_id)->join('payments as p','p.enrollment_id','=','e.id')->join('terms as t','t.id','=','e.term_id')->selectRaw('e.id as enr_id,p.tuition_paid,e.tuition_end_date,e.start_date,e.session_id,e.level_id,e.campus_id')->get()->first();
+        $studied_days = date('d') - date('d',strtotime($payment_info->start_date));
+        $parent_info = DB::table('student_guardians as sg')
+                    ->where('sg.student_id',$student_id)
+                    ->join('students as s','s.id','=','sg.student_id')
+                    ->join('guardians as g','g.id','=','sg.guardian_id')
+                    ->selectRaw('g.name,g.phone_number')
+                    ->get()->first();
+
+        if($d->request_type_id == 1){
+            $start_date = $payment_info->start_date;
+
+            $end_date = $payment_info->tuition_end_date;
+
+            $x = dateDiff_days($start_date,$end_date);
+            if(!$x) $x=1;
+            $per_day = $payment_info->tuition_paid / $x;
+            $deduct_day_fee = number_format($per_day * $studied_days,2);
+            $fee_left = $payment_info->tuition_paid - $deduct_day_fee;
+
+            $level_pmt_arr = [
+                'student_id' => $d->student_id,
+                'start_date' => $start_date,
+                'session_id' => $d->session_id,
+                'level_id' => $d->to_level_id
+            ];
+            $new_level_fee = self::findLevelPayFee($level_pmt_arr,$ss);
+            $amount = $new_level_fee - $fee_left;
+            if($amount>0){
+                $surcharge = $amount;
+                DB::table('request_changes')->where('request_id',$d->request_id)->update([
+                    'calculated_fee' => $surcharge
+                ]);
+                DB::table('enrollments')->where('student_id',$student_id)->update([
+                    'status_id' => 4, // status_id 4 additional fee
+                ]);
+                DB::table('payments')->where('enrollment_id',$payment_info->enr_id)->update([
+                    'tuition_due' => $amount,
+                    'tuition_paid' => 0,
+                ]);
+            }else{
+                $return_fee = number_format($amount,2);
+                saveData($ss,'deposite',['id' => null],[
+                    'level_id' => $payment_info->level_id,
+                    'student_id' => $student_id,
+                    'campus_id' => $payment_info->campus_id,
+                    'deposite_amount' => abs($return_fee),
+                    'session_id' => $payment_info->session_id,
+                    'parent_phone' => $parent_info->phone_number,
+                    'note' => 'Ramaining money will be set into deposite'
+                ]
+                ,[],1);
+                DB::table('request_changes')->where('request_id',$d->request_id)->update([
+                    'calculated_fee' => $return_fee
+                ]);
+            }
+
+            return (object)['old_days_fee' => $deduct_day_fee,'fee_left' => $fee_left,'new_level' => $new_level_fee,'surcharge'=>$surcharge,'return_fee' => $return_fee];
+
+        }else if($d->request_type_id == 3){
+
+            $start_date = $payment_info->start_date;
+
+            $end_date = $payment_info->tuition_end_date;
+
+            $x = dateDiff_days($start_date,$end_date);
+            if(!$x) $x=1;
+            $per_day = $payment_info->tuition_paid / $x;
+            $deduct_day_fee = number_format($per_day * $studied_days,2);
+            $fee_left = $payment_info->tuition_paid - $deduct_day_fee;
+
+
+            $arr_new_fee = [
+                'student_id' => $d->student_id,
+                'session_id' => $d->to_session_id,
+            ];
+
+            $new_fee = self::findLevelPayFee($arr_new_fee,$ss);
+            $amount = $new_fee - $fee_left;
+            if($amount>0){
+                $surcharge = $amount;
+                DB::table('request_changes')->where('request_id',$d->request_id)->update([
+                    'calculated_fee' => $surcharge
+                ]);
+                DB::table('enrollments')->where('student_id',$student_id)->update([
+                    'status_id' => 4, // status_id 4 additional fee
+                ]);
+            }else{
+                $return_fee = number_format($amount,2);
+                saveData($ss,'deposite',['id' => null],[
+                    'level_id' => $payment_info->level_id,
+                    'student_id' => $student_id,
+                    'campus_id' => $payment_info->campus_id,
+                    'deposite_amount' => abs($return_fee),
+                    'session_id' => $payment_info->session_id,
+                    'parent_phone' => $parent_info->phone_number,
+                    'note' => 'Ramaining money will be set into deposite'
+                ]
+                ,[],1);
+                DB::table('request_changes')->where('request_id',$d->request_id)->update([
+                    'calculated_fee' => $return_fee
+                ]);
+            }
+
+            return (object)['old_days_fee' => 0,'fee_left' => $fee_left,'new_level' => $new_fee,'surcharge'=>$surcharge,'return_fee' => $return_fee];
+        }
     }
 
-    static function findNewLevelPayFee($arr,$ss){
+    static function findStudiedDaysFee($arr,$ss){
+        $instance = new PriceList(null,$ss);
+        $d = (object)$arr;
+        $days = $d->days;
+        $student_id = $d->student_id;
+        $payment_info = DB::table('enrollments as e')->where('e.student_id',$student_id)->join('payments as p','p.enrollment_id','=','e.id')->selectRaw('p.tuition_paid,e.tuition_end_date,e.start_date')->get()->first();
+        $start_date = $payment_info->start_date;
 
+        $end_date = $payment_info->tuition_end_date;
+
+        $x = dateDiff_days($start_date,$end_date);
+        if(!$x) $x=1;
+        $per_day = $payment_info->tuition_paid / $x;
+        $deduct_day_fee = number_format($per_day * $days,2);
+        $fee_left = $payment_info->tuition_paid - $deduct_day_fee;
+
+        return (object)['old_days_fee' => $deduct_day_fee,'remain_fee' => $fee_left];
     }
+
+
+    // ['next_pay_fee,studied_days_fee,pmt_option]
+    static function findLevelPayFee($arr,$ss){
+        $d = (object)$arr;
+        $instance = new PriceList(null,$ss);
+        $row = $instance->previewPendingPaymentDetails($arr,$d->student_id,$ss);
+
+        return $row->payment_info->tuition_due;
+    }
+
+    // static function findPaidAmount($arr=[],$ss){
+    //     $d = (object)$arr;
+    //     $row = DB::table('enrollments as e')
+    //     ->join('students as s','s.id','=','e.student_id')
+    //     ->where('s.id',$d->student_id)
+    //     ->selectRaw('e.id as enr_id')->first();
+    //     $row->payment_info = self::getPaymentInfo($row->enr_id,$ss);
+    //     if(!$row) return $row=null;
+    //     return $row;
+    // }
+
 }

@@ -9,6 +9,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class Activity //extends Model
 {
     // use HasFactory;
+    //** note :   request status id (1 = created) (2 = send_request) (3 = approved) */
     protected $id=null,$ss=null;
     function __construct($id=null,$ss=null){
         $this->id = $id;
@@ -70,7 +71,7 @@ class Activity //extends Model
                 'request_id' => $reqNewID,
                 'request_name' => $request_name
             ];
-            saveData($ss,'request_change',[],$level_arr,[],1);
+            saveData($ss,'request_changes',[],$level_arr,[],1);
         }
         return DV::depends($reqNewID,['action' => 'Request Created']);
     }
@@ -127,7 +128,7 @@ class Activity //extends Model
             $search_value = escape_like_str($search_value);
             $str_search ="(s.name LIKE '%$search_value%' OR s.code = '$search_value')";
         }
-        $selectCols = 'r.id as request_id,e.campus_id,s.id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id,e.level_id';
+        $selectCols = 'r.status_id,r.id as request_id,e.campus_id,s.id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id,e.level_id';
         $query = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->join('requests as r','r.student_id','=','s.id')
@@ -162,7 +163,7 @@ class Activity //extends Model
         $current_page =isset($filter['current_page'])?$filter['current_page']:1;
         $per_page =isset($filter['per_page'])?$filter['per_page']:10;
         if(!is_numeric($current_page)) $current_page=1;
-        $authorized = isset($filter['authorized'])?$filter['authorized']:2;
+        $authorized = isset($filter['authorized'])?$filter['authorized']:0;
         $skip_rows = ($current_page -1) * $per_page;
 
         $str_search ="1=1";
@@ -172,13 +173,14 @@ class Activity //extends Model
             $search_value = escape_like_str($search_value);
             $str_search ="(s.name LIKE '%$search_value%' OR s.code = '$search_value')";
         }
-        $selectCols = 'e.campus_id,s.id as student_id,r.id as request_id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id';
+        $selectCols = 'r.status_id,e.campus_id,s.id as student_id,r.id as request_id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id';
         $query = DB::table('requests as r')
                 ->join('students as s','s.id','=','r.student_id')
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->selectRaw($selectCols)
                 ->where('r.branch_id',$branch_id)
-                ->whereRaw($str_moreWhere)->whereRaw($str_search);
+                ->whereRaw($str_moreWhere)->whereRaw($str_search)
+                ->where('r.status_id',2);
                 if($type){
                     $query->where('r.request_type_id',$type);
                 }
@@ -200,7 +202,7 @@ class Activity //extends Model
 
     function getRequestChanges($id,$ss){
         $level = new ProgramLevel();
-        $row = DB::table('request_change as rg')->where('rg.request_id',$id)
+        $row = DB::table('request_changes as rg')->where('rg.request_id',$id)
                 ->join('requests as r','r.id','=','rg.request_id')
                 ->selectRaw('rg.request_name,rg.remarks,rg.from_id,rg.to_id,r.request_type_id')->first();
         switch($row->request_type_id){
@@ -228,7 +230,7 @@ class Activity //extends Model
         return DB::table('students as s')->where('s.branch_id',$ss->branch_id)
             ->where('s.id',$id)
             ->join('enrollments as e','e.student_id','=','s.id')
-            ->selectRaw('s.name,s.id,e.level_id,e.term_id,e.session_id,e.campus_id')
+            ->selectRaw('e.start_date,s.name,s.id,e.level_id,e.term_id,e.session_id,e.campus_id,e.academic_year')
             ->first();
     }
 
@@ -253,6 +255,7 @@ class Activity //extends Model
 
     function approveRequestChange($arr=[],$ss){
         $approve_info = null;
+        $price_list = new PriceList(null,$ss);
         if(!isset($arr['approve_info'])) return DV::error('Approve info is required');
         $approve_info = $arr['approve_info'];
         $success = 0;
@@ -272,28 +275,50 @@ class Activity //extends Model
             if($res->error) return DV::error($res->error);
             $inputs = $res->values;
             $req_type_id = DB::table('requests')->where('id',$inputs['request_id'])->take(1)->value('request_type_id');
-            $from_level_id = isset($inputs['from_level_id'])?$inputs['from_level_id']:null;
-            $to_level_id = isset($inputs['to_level_id'])?$inputs['to_level_id']:null;
-            $from_session_id = isset($inputs['from_session_id'])?$inputs['from_session_id']:null;
-            $to_session_id = isset($inputs['to_session_id'])?$inputs['to_session_id']:null;
-            $from_campus_id = isset($inputs['from_campus_id'])?$inputs['from_campus_id']:null;
-            $to_campus_id = isset($inputs['to_campus_id'])?$inputs['to_campus_id']:null;
-            // $studentInfo = $this->getStudentInfo($inputs['student_id'],$ss);
+
+
             $remarks = isset($arr['remarks'])?$arr['remarks']:null;
             $from_id = null;
             $to_id = null;
+            $test=0;
             $id = $inputs['request_id'];
+            $reqStudent = DB::table('requests as r')->where('r.id',$id)->join('request_changes as rc','rc.request_id','=','r.id')->selectRaw('r.student_id,rc.from_id,rc.to_id')->first();
+
+            $from_level_id = isset($inputs['from_level_id'])?$inputs['from_level_id']:$reqStudent->from_id;
+            $to_level_id = isset($inputs['to_level_id'])?$inputs['to_level_id']:$reqStudent->to_id;
+            $from_session_id = isset($inputs['from_session_id'])?$inputs['from_session_id']:$reqStudent->from_id;
+            $to_session_id = isset($inputs['to_session_id'])?$inputs['to_session_id']:$reqStudent->to_id;
+            $from_campus_id = isset($inputs['from_campus_id'])?$inputs['from_campus_id']:$reqStudent->from_id;
+            $to_campus_id = isset($inputs['to_campus_id'])?$inputs['to_campus_id']:$reqStudent->to_id;
+
+            $student_info = self::getStudentInfo($reqStudent->student_id,$ss);
+            $start_date = $student_info->start_date;
             if($req_type_id == 1){ //* request level
-                $from_id = $from_level_id;
-                $to_id = $to_level_id;
+                $studied_days = date('d') - date('d',strtotime($student_info->start_date));
+                $req_arr = [
+                    'request_type_id' => $req_type_id,
+                    'request_id' => $id,
+                    'student_id' => $reqStudent->student_id,
+                    'start_date' => $start_date,
+                    'session_id' => $student_info->session_id,
+                    'to_level_id' => $to_level_id,
+                ];
+                $test = PriceList::findRequestPayment($req_arr,$ss);
             }
             else if($req_type_id == 2){    //* request campus
                 $from_id = $from_campus_id;
                 $to_id = $to_campus_id;
             }
             else if($req_type_id == 3){     //* request session
-                $from_id = $from_campus_id;
-                $to_id = $to_session_id;
+                $req_arr = [
+                    'request_type_id' => $req_type_id,
+                    'request_id' => $id,
+                    'student_id' => $reqStudent->student_id,
+                    'session_id' => $student_info->session_id,
+                    'to_session_id' => $to_session_id,
+                ];
+
+                $test = PriceList::findRequestPayment($req_arr,$ss);
             }
 
             $approve_arr = [
@@ -301,7 +326,7 @@ class Activity //extends Model
                 'auth_uid' => $ss->id,
                 'auth_user' => $ss->full_name,
                 'authorized' => 1, //  approved
-                'status_id' => 3 // approve request Status ID = 3 final processing;
+                'status_id' => 3 // approve request Status ID = 3
             ];
 
             $approveRequestID =1;//saveData($ss,'requests',['id' => $id],$approve_arr,[],1);//DB::table('requests')->where('id',$id)->update($approve_arr);
@@ -317,9 +342,7 @@ class Activity //extends Model
             }
 
             $success ++;
-
         }
-        $test = PriceList::findPaidAmount(1,$ss);
 
         return DV::depends($success,['action'=>'Request sent success ('.$success.') with ('.$cross_values.') failed','message' => "Request send wait author to approve",'data'=>$test],"Missing All ($cross_values)");
     }
@@ -431,11 +454,27 @@ class Activity //extends Model
         foreach($rows as $row) {
             $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
             // $row->request_change = $this->getRequestChanges($row->request_id,$ss);
-            $row->status = $authorized < 2? 'pending' : 'approved';
+            $row->status = $authorized == 1? 'pending' : 'approved';
             // $row->school = $campus->details($row->campus_id,$ss)->name;
             unset($row->file_name);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
+
+    function deleteRequestChange($d,$ss=null){
+        $ss = $ss?$ss:$this->ss;
+        $id = isset($d->id) ? $d->id : $d->request_id;
+        $delete = DB::table('requests')->where('id',$id)->delete();
+        return DV::depends($delete,['action' => 'delete']);
+    }
+
+    function deleteRequestDiscount($d,$ss=null){
+        $ss = $ss?$ss:$this->ss;
+        $id = isset($d->id) ? $d->id : $d->discount_request_id;
+        $delete = DB::table('discount_request')->where('id',$id)->delete();
+        return DV::depends($delete,['action' => 'delete']);
+    }
+
 }

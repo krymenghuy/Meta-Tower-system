@@ -38,7 +38,7 @@ class ServicePlan //extends Model
          $x = DB::table('service_plan_items')->where('service_plan_id',$id)->where('service_id',$c->service_id)->update(['max_sku'=>$c->max_sku,'updated_at'=>getNowTime(),'update_user'=>$ss->full_name]);
          if(!$x){
             saveData($ss,'service_plan_items',['id'=>null],['service_plan_id'=>$id,'service_id'=>$c->service_id,'max_sku'=>$c->max_sku],[],1);
-         } 
+         }
         $i++;
       }while($c);
     }
@@ -61,7 +61,7 @@ class ServicePlan //extends Model
         'is_package'=>'1|number|default=1',
         'category_id'=>'1|number|default=3'
       ];
-      $table_name = self::$table_name; 
+      $table_name = self::$table_name;
       $uniqu = ["$branch_id|$table_name|name|id=id"];
       $res = validateObject($arr,$v_rule,true,[],$ss->lang,false,$uniqu);
       if($res->error) return DV::error($res->error);
@@ -77,10 +77,10 @@ class ServicePlan //extends Model
       unset($inputs['max_sku']);
       unset($inputs['service_id']);
       //End of creating service array
-      
+
       $photo = $inputs['photo'];
       unset($inputs['photo']);
-    
+
 
       if(!isset($services) || !isset($services[0])) return DV::error("At least one service is required in a service plan");
       $price = $inputs['price'];
@@ -96,20 +96,20 @@ class ServicePlan //extends Model
       }
       $inputs['id'] =$id;
       $inputs['member_count'] = self::countMember($branch_id,$id);
-      return DV::depends($id,$inputs,"Something went wrong in saving Servie Plan"); 
+      return DV::depends($id,$inputs,"Something went wrong in saving Servie Plan");
     }
-    
+
     // static function verifyServicePlan($inputs,$id,$service_id){
-    //    //$inputs = ['pmt_cycle','currency_code'] 
+    //    //$inputs = ['pmt_cycle','currency_code']
     //    $x = DB::table('service_plans')->where('id',$id)->where('service_id',$service_id)->update($inputs);
     //    if(!$x){
     //     $inputs['id']=$id;
-    //     $inputs['service_id']=$service_id; 
+    //     $inputs['service_id']=$service_id;
     //     DB::table('service_plans')->insert($inputs);
     //    }
     //    return null;
     // }
-   
+
     static function getDeleteError($id){
       $member_count = DB::table('plan_subscriptions')->where('service_plan_id',$id)->count('id');
       if($member_count>0) return "Service Plan cannot be deleted because there are some enrolled subscribers";
@@ -130,7 +130,7 @@ class ServicePlan //extends Model
 
     static function form_options($ss){
       return (object)[
-        'services'=>DB::table('medical_services as s')->where('s.branch_id',$ss->branch_id)->where('is_package',0)->selectRaw("s.id,s.name as service_name")->orderBy('s.name','ASC')->get()  
+        'services'=>DB::table('medical_services as s')->where('s.branch_id',$ss->branch_id)->where('is_package',0)->selectRaw("s.id,s.name as service_name")->orderBy('s.name','ASC')->get()
       ];
     }
 
@@ -172,13 +172,13 @@ class ServicePlan //extends Model
             $items = self::getApplicableServices($branch_id,$id);
             //Take only the first service that is included or part of the Service Plan
             if(isset($items[0])){
-                $row->service_id =$items[0]->service_id; 
-                $row->max_sku = $items[0]->max_sku; 
+                $row->service_id =$items[0]->service_id;
+                $row->max_sku = $items[0]->max_sku;
             }
         }
         return isset($rows[0])?$rows[0]:null;
     }
- 
+
     function addItem($arr, $id=null,$ss=null){
         $id =$id?$id:$this->getId();
         $ss =$ss?$ss:$this->getUserInfo();
@@ -193,7 +193,7 @@ class ServicePlan //extends Model
         ]);
         return Dv::success();
     }
-    
+
     function deleteItem($service_id, $id=null,$ss=null){
         $id =$id?$id:$this->getId();
         $ss =$ss?$ss:$this->getUserInfo();
@@ -206,16 +206,16 @@ class ServicePlan //extends Model
         $ss =$ss?$ss:$this->getUserInfo();
         $cols ="s.id,s.name,s.price,s.service_type";
         return Db::table('service_plan_items as t')->join('medical_services as s','s.id','=','t.service_id')->where('t.service_plan_id',$id)->selectRaw($cols)->orderBy('s.id','DESC')->get();
- 
+
     }
-   
+
     function addSubscriber($arr =[],$id=null,$ss=null){
         $service_plan_id =$id?$id:$this->getId();
         $ss =$ss?$ss:$this->getUserInfo();
         $branch_id = $ss->branch_id;
         $customer_table = InvoiceSettings::$customer_table;
         $v_rule = [
-          'id'=>"0|number|identity=1",  
+          'id'=>"0|number|identity=1",
           'client_id'=>"1|number|exists=$customer_table.id",
           'service_plan_id'=>"1|number|exists=service_plans.id|text=Service Plan identity is not a valid",
           'sales_agent_id'=>'0|number|exists=employees.id|text=Sales agent must be a valid employee',
@@ -241,7 +241,7 @@ class ServicePlan //extends Model
                 self::refreshMemberCount($branch_id,$service_plan_id);
             }
         //}else $id = $rows[0]->id;
-       
+
         return DV::depends($id,['id'=>$id,'members'=>$this->getSubscribers($service_plan_id,$ss)],"Something went wrong saving Service Plan Subscription");
     }
 
@@ -251,7 +251,7 @@ class ServicePlan //extends Model
         $branch_id = $ss->branch_id;
         $x = DB::table('plan_subscriptions')->where('branch_id',$branch_id)->where('client_id',$client_id)->where('service_plan_id',$service_plan_id)->delete();
         if($x) DB::table('services_performed')->where('branch_id',$branch_id)->where('service_plan_id',$service_plan_id)->where('client_id',$client_id)->delete();
-        
+
         self::refreshMemberCount($branch_id,$service_plan_id);
         return DV::depends(1,['members'=>$this->getSubscribers($id,$ss)]);
     }
