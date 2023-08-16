@@ -233,6 +233,8 @@ let RequestDialog = new function(){
     this.elTitle = mThis.self.find('.modal-title');
     this.btnSave = mThis.self.find('#dlg_att_btn_save');
 
+    this.data = null;
+
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
         mThis.validate.validator(() => {
@@ -268,25 +270,61 @@ let RequestDialog = new function(){
                     second_call ? false : (option, d && d.student_list_options.map(op => {
                         option = [option,`<option value="${op.student_id}">${op.student_name} (${op.student_code})</option>`].join('');
                     }),option = [`<option selected></option>`,option].join(''),el.html(option));
+                    mThis.getStudentInfo(el);
                     break;
                 case 'request_type_id':
                     second_call ? false : VSUtil.setComboItems(el,d.request_type_options,'id','name',null,null,null);
                     mThis.getField(el, d);
                     break;
                 case 'to_level_id':
-                case 'from_level_id':
                     VSUtil.setComboItems(el,d.level_options,'id','level',null,null,null);
                     break;
-                case 'from_campus_id':
+                case 'from_level_id':
+                    VSUtil.setComboItems(el,d.level_options,'id','level',null,null,null);
+                    if(mThis.data) el.val(mThis.data['level_id']).trigger('change');
+                    break;
                 case 'to_campus_id':
                     VSUtil.setComboItems(el,d.campus_options,'id','campus',null,null,null);
                     break;
-                case 'from_session_id':
+                case 'from_campus_id':
+                    VSUtil.setComboItems(el,d.campus_options,'id','campus',null,null,null);
+                    if(mThis.data) el.val(mThis.data['campus_id']).trigger('change');
+                    break;
                 case 'to_session_id':
                     VSUtil.setComboItems(el,d.sessions_options,'id','name',null,null,null);
                     break;
+                case 'from_session_id':
+                    VSUtil.setComboItems(el,d.sessions_options,'id','name',null,null,null);
+                    if(mThis.data) el.val(mThis.data['session_id']).trigger('change');
+                    break;
                 default:
                     break;
+            }
+        });
+    }
+
+    this.getStudentInfo = (el) => {
+        el.on('change',function(e){
+            e.preventDefault();
+            let id = $(this).val();
+            
+            if(id){
+                window.vsapi.call(`${main_view.base_url}/api/option/student-request-info`,{'student_id': id},null,false).then(res => {
+                    let d = {};
+                    if(res.status_code === 200){
+                        d = res.data;
+                        mThis.data = d;
+                    }
+
+                    let field = null;
+                    let input = el.closest('.form-group').nextUntil('.stop')[1];
+                    if(input)
+                        field = $(input).children().find(`select.data-input`);
+                    if(field){
+                        let f = field.data('field').substr(5);
+                        field.val(d[f]).trigger('change');
+                    }
+                });
             }
         });
     }
@@ -322,6 +360,11 @@ let RequestDialog = new function(){
                         div.nextUntil('div.stop').remove();
                     $(html).insertAfter(div);
                     div.parent().find('select.modal-select2').select2();
+                    if(mThis.data){
+                        let field = div.next().find('select.data-input');
+                        let f = field.data('field').substr(5);
+                        field.val(mThis.data[f]).trigger('change');
+                    }
                 }
                 else{
                     if(div.nextUntil('div.stop').length > 0)

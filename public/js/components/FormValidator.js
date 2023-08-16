@@ -73,11 +73,11 @@ class FormValidator{
                     required = 'error';
                 }
                 else if(!($.isNumeric(el.val()))){
-                    el.after(`<span class="text-danger pt-3">${el.prev().text()} is must be number!</span>`);
+                    el.after(`<span class="text-danger pt-3">${el.prev().text()} must be number!</span>`);
                     required = 'error';
                 }
                 else if(!(phoneRegex.test(el.val()))){
-                    el.after(`<span class="text-danger pt-3">${el.prev().text()} is not correct!</span>`);
+                    el.after(`<span class="text-danger pt-3">${el.prev().text()} must be 9 digits to 12 digits!</span>`);
                     required = 'error';
                 }
             }
