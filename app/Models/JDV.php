@@ -20,7 +20,7 @@ class JDV
       else if($len<=0) return false;
       else return true;
    }
- 
+
    static function getFriendlyName($field=''){
      return str_replace("_"," ",$field);
    }
@@ -54,7 +54,7 @@ class JDV
           }
        };
        return makeJsonResponse ((object)['status'=>'Error','status_code'=>$status_code,'error_message'=>Localization::translate($lang,$error_message),'data'=>$def_result]);
-       
+
       //  switch($status_code){
       //           case 401:{
       //               $error_message = $error_message?$error_message:"Authentication failed";
@@ -67,7 +67,7 @@ class JDV
       //           case 403:{
       //               $err_message = $error_message?$err_message:"Permission required";
       //               return makeJsonResponse ((object)['status'=>'Error','status_code'=>403,'error_message'=>Localization::translate($lang,$error_message),'data'=>$def_result]);
-      //           } 
+      //           }
       //           default:
       //           {
       //               return makeJsonResponse ((object)['status'=>'OK','status_code'=>200,'data'=>$def_result]);
@@ -76,16 +76,16 @@ class JDV
       //  }
 
     }
- 
+
     //return error object. default status code is 405 for Data Validation error;
     static function error($err_message=null,$lang=null,$status_code=405,$err_code=null,$createLogFile=false){
         if (!$lang) $lang = Session('lang','en');
-        
+
         if(!$status_code) $status_code=0;
         if($status_code === 200) $status_code =405;// Status_code cannot be 200 for error
         $err_message=$err_message?$err_message:"There was an error but error message was not supplied by the developer";
         $langSection ='validation';
-        return makeJsonResponse ((object)['error_message'=>Localization::translate($lang,$err_message,$langSection),'status'=>'Error','status_code'=>$status_code,"error_code"=>$err_code]); 
+        return makeJsonResponse ((object)['error_message'=>Localization::translate($lang,$err_message,$langSection),'status'=>'Error','status_code'=>$status_code,"error_code"=>$err_code]);
         //if $createLogFile ==true then todo: create log file to store error message
     }
 
@@ -107,7 +107,7 @@ class JDV
       foreach($arrs as $prop=>$val) $d->{$prop} = $val;
       $res->data = $d;
       return makeJsonResponse($res);
-    } 
+    }
 
     //returns SELECT QUERY result as JSON array.
     //This method should be predicated soon!

@@ -237,7 +237,7 @@ class GeneralSettings //extends Model
     }
 
     static function paymentStatusOption(){
-        $rows = DB::table('status')->selectRaw('name,id')->get();
+        $rows = DB::table('pmt_status')->selectRaw('name,id')->get();
         $rows[] =['id'=>4,'name' => 'All'];
         return $rows;
     }
@@ -304,7 +304,7 @@ class GeneralSettings //extends Model
             return (object)[
                 'label' => 'Session',
                 'to' => 'to_session_id',
-                'from' => 'to_session_id'
+                'from' => 'from_session_id'
             ];
         }
     }
