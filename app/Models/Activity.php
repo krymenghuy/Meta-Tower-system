@@ -509,7 +509,7 @@ class Activity //extends Model
 
             if(!$payment) continue;
             DB::table('discount_request')->where('id',$id)->update([
-                ''
+                'amount'
             ]);
         }
         return $enrollment;
