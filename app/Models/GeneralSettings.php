@@ -324,12 +324,15 @@ class GeneralSettings //extends Model
         ];
     }
 
-    static function optionsStudentLevel($student_id,$ss){
+    static function optionsStudentRequest($student_id,$ss){
         $row = DB::table('enrollments as e')->where('student_id',$student_id)
+                ->join('students as s','s.id','=','e.student_id')
                 ->join('terms as t','t.id','=','e.term_id')
-                ->selectRaw('e.level_id')
+                ->selectRaw('e.level_id,e.session_id,e.campus_id,s.name as student_name,s.name_kh,s.date_of_birth,s.place_of_birth')
                 ->first();
         $row->level =  DB::table('program_levels')->where('id',$row->level_id)->selectRaw('name as level')->first()->level;
+        $row->session = DB::table('sessions')->where('id',$row->session_id)->selectRaw('name')->first()->name;
+        $row->campus = DB::table('campuses')->where('id',$row->campus_id)->selectRaw('name')->first()->name;
         return $row;
     }
 }

@@ -336,11 +336,11 @@ class GeneralSettingsController extends Controller
     return JDV::result($options);
   }
 
-  function optionsStudentLevel(Request $req){
+  function optionsStudentRequest(Request $req){
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss);
 
-    $options = GeneralSettings::optionsStudentLevel($req->student_id,$ss);
+    $options = GeneralSettings::optionsStudentRequest($req->student_id,$ss);
     return JDV::result($options);
   }
 

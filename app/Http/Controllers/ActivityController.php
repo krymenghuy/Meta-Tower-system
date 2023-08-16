@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Activity;
 use App\Models\JDV;
+use App\Models\PriceList;
 use App\Models\UM;
 use Illuminate\Http\Request;
 
@@ -96,6 +97,14 @@ class ActivityController extends Controller
         $send_request = $instance->requestDiscountListPaginate($req->all(),$ss);
 
         return JDV::result($send_request);
+    }
+
+    function previewRequestPaymentFee(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $preview = PriceList::previewRequestPayment($req->all(),$ss);
+        return JDV::result($preview);
     }
 
     function deleteRequest(Request $req){

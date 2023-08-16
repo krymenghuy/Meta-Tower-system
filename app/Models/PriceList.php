@@ -1403,6 +1403,79 @@ class PriceList //extends Model
                 ->selectRaw('tuition,tuition_due,tuition_paid')->first();
     }
 
+    static function previewRequestPayment($arr=[],$ss){
+        $v_rule = [
+            'student_id' => '1|number|exists=students.id',
+            'request_type_id' => '1|number|exists=request_types.id',
+            'to_level_id' => '0|number|exists=program_levels.id',
+            'to_session_id' => '0|number|exists=sessions.id',
+        ];
+        $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
+        if($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+        $d = (object)$inputs;
+        $student_id = $d->student_id;
+        $return_fee = 0 ;
+        $payment_info = DB::table('enrollments as e')->where('e.student_id',$student_id)->join('payments as p','p.enrollment_id','=','e.id')->join('terms as t','t.id','=','e.term_id')->selectRaw('e.id as enr_id,p.tuition_paid,e.tuition_end_date,e.start_date,e.session_id,e.level_id,e.campus_id')->get()->first();
+        $studied_days = date('d') - date('d',strtotime($payment_info->start_date));
+        if($d->request_type_id == 1){
+            $start_date = $payment_info->start_date;
+
+            $end_date = $payment_info->tuition_end_date;
+
+            $x = dateDiff_days($start_date,$end_date);
+            if(!$x) $x=1;
+            $per_day = $payment_info->tuition_paid / $x;
+            $deduct_day_fee = number_format($per_day * $studied_days,2);
+            $fee_left = $payment_info->tuition_paid - $deduct_day_fee;
+
+            $level_pmt_arr = [
+                'student_id' => $d->student_id,
+                'start_date' => $start_date,
+                'session_id' => $payment_info->session_id,
+                'level_id' => $d->to_level_id
+            ];
+            $new_level_fee = self::findLevelPayFee($level_pmt_arr,$ss);
+            $amount = $new_level_fee - $fee_left;
+            if($amount>0){
+                $surcharge = $amount;
+            }else{
+                $return_fee = number_format($amount,2);
+            }
+
+            return (object)['old_days_fee' => $deduct_day_fee,'fee_left' => $fee_left,'new_level' => $new_level_fee,'surcharge'=>$surcharge,'return_fee' => $return_fee];
+
+        }else if($d->request_type_id == 3){
+
+            $start_date = $payment_info->start_date;
+
+            $end_date = $payment_info->tuition_end_date;
+
+            $x = dateDiff_days($start_date,$end_date);
+            if(!$x) $x=1;
+            $per_day = $payment_info->tuition_paid / $x;
+            $deduct_day_fee = number_format($per_day * $studied_days,2);
+            $fee_left = $payment_info->tuition_paid - $deduct_day_fee;
+
+
+            $arr_new_fee = [
+                'student_id' => $d->student_id,
+                'session_id' => $d->to_session_id,
+            ];
+
+            $new_fee = self::findLevelPayFee($arr_new_fee,$ss);
+            $amount = $new_fee - $fee_left;
+            if($amount>0){
+                $surcharge = $amount;
+
+            }else{
+                $return_fee = number_format($amount,2);
+
+            }
+
+            return (object)['old_days_fee' => 0,'fee_left' => $fee_left,'new_level' => $new_fee,'surcharge'=>$surcharge,'return_fee' => $return_fee];
+        }
+    }
 
     static function findRequestPayment($arr=[],$ss){
         $d = (object)$arr;
