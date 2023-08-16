@@ -1444,11 +1444,15 @@ class PriceList //extends Model
                     'calculated_fee' => $surcharge
                 ]);
                 DB::table('enrollments')->where('student_id',$student_id)->update([
+                    'level_id' => $d->to_level_id,
                     'status_id' => 4, // status_id 4 additional fee
                 ]);
                 DB::table('payments')->where('enrollment_id',$payment_info->enr_id)->update([
-                    'tuition_due' => $amount,
-                    'tuition_paid' => 0,
+                    'tuition_due' => $fee_left + $surcharge,
+                    'pmt_status' => 'unpaid',
+                    'status_id' => '1',
+                    'level_id' => $d->to_level_id,
+                    // 'tuition_paid' => 0,
                 ]);
             }else{
                 $return_fee = number_format($amount,2);
@@ -1495,7 +1499,15 @@ class PriceList //extends Model
                     'calculated_fee' => $surcharge
                 ]);
                 DB::table('enrollments')->where('student_id',$student_id)->update([
+                    'session_id' => $d->to_session_id,
                     'status_id' => 4, // status_id 4 additional fee
+                ]);
+                DB::table('payments')->where('enrollment_id',$payment_info->enr_id)->update([
+                    'tuition_due' => $fee_left + $surcharge,
+                    'pmt_status' => 'unpaid',
+                    'status_id' => '1',
+                    'session_id' => $d->to_session_id,
+                    // 'tuition_paid' => 0,
                 ]);
             }else{
                 $return_fee = number_format($amount,2);

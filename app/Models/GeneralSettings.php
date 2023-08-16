@@ -323,4 +323,13 @@ class GeneralSettings //extends Model
             'campus_options' => Setting::campus_options($ss),
         ];
     }
+
+    static function optionsStudentLevel($student_id,$ss){
+        $row = DB::table('enrollments as e')->where('student_id',$student_id)
+                ->join('terms as t','t.id','=','e.term_id')
+                ->selectRaw('e.level_id')
+                ->first();
+        $row->level =  DB::table('program_levels')->where('id',$row->level_id)->selectRaw('name as level')->first()->level;
+        return $row;
+    }
 }
