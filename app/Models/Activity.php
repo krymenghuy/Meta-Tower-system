@@ -184,11 +184,12 @@ class Activity //extends Model
             $search_value = escape_like_str($search_value);
             $str_search ="(s.name LIKE '%$search_value%' OR s.code = '$search_value')";
         }
-        $selectCols = 'rc.reuqest_name,r.status_id,e.campus_id,s.id as student_id,r.id as request_id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id,r.request_type_id';
-        $query = DB::table('requests as r')
-                ->join('students as s','s.id','=','r.student_id')
-                ->join('request_changes as rc','rc.request_id','=','r.id')
-                ->join('enrollments as e','e.student_id','=','s.id')
+        $selectCols = 'rc.request_name,r.status_id,e.campus_id,s.id as student_id,r.id as request_id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id,r.request_type_id';
+        $query = DB::table('students as s')
+                ->join('requests as r','r.student_id','=','s.id')
+                ->join('request_changes as rc','r.id','=','rc.request_id')
+                ->join('enrollments as e','e.id','=','rc.enrollment_id')
+                ->join('terms as t','t.id','=','e.term_id')
                 ->selectRaw($selectCols)
                 ->where('r.branch_id',$branch_id)
                 ->whereRaw($str_moreWhere)->whereRaw($str_search)
