@@ -340,6 +340,11 @@ class GeneralSettings //extends Model
         ];
     }
 
+    static function getstudentEnrollments($d,$ss){
+        $id = isset($d->id)?$d->id:$d->student_id;
+        return DB::table('enrollments')->where('student_id',$id)->selectRaw('id as enrollment_id,student_id,term_id,session_id,program_id,level_id,campus_id')->first();
+    }
+
     static function optionsStudentRequest($d,$ss){
         $enrollment_id = $d->enrollment_id;
         $row = DB::table('enrollments as e')->where('e.id',$enrollment_id)
