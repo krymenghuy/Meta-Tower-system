@@ -332,7 +332,7 @@ class GeneralSettings //extends Model
 
     static function requestTypeDialog($ss=null){
         return (object)[
-            'student_list_options' => DB::table('students')->selectRaw('name as student_name,id as student_id,code as student_code')->get(),
+            'student_list_options' => DB::table('students as s')->selectRaw('s.name as student_name,s.id as student_id,s.code as student_code')->get(),
             'request_type_options' => self::requestTypesOptions(),
             'sessions_options' => Setting::session_options($ss),
             'level_options' => Setting::level_options($ss),
@@ -340,8 +340,9 @@ class GeneralSettings //extends Model
         ];
     }
 
-    static function optionsStudentRequest($student_id,$ss){
-        $row = DB::table('enrollments as e')->where('student_id',$student_id)
+    static function optionsStudentRequest($d,$ss){
+        $enrollment_id = $d->enrollment_id;
+        $row = DB::table('enrollments as e')->where('e.id',$enrollment_id)
                 ->join('students as s','s.id','=','e.student_id')
                 ->join('terms as t','t.id','=','e.term_id')
                 ->selectRaw('e.level_id,e.session_id,e.campus_id,s.name as student_name,s.name_kh,s.date_of_birth,s.place_of_birth')
@@ -351,4 +352,15 @@ class GeneralSettings //extends Model
         $row->campus = DB::table('campuses')->where('id',$row->campus_id)->selectRaw('name')->first()->name;
         return $row;
     }
+    // static function optionsStudentRequest($student_id,$ss){
+    //     $row = DB::table('enrollments as e')->where('student_id',$student_id)
+    //             ->join('students as s','s.id','=','e.student_id')
+    //             ->join('terms as t','t.id','=','e.term_id')
+    //             ->selectRaw('e.level_id,e.session_id,e.campus_id,s.name as student_name,s.name_kh,s.date_of_birth,s.place_of_birth')
+    //             ->first();
+    //     $row->level =  DB::table('program_levels')->where('id',$row->level_id)->selectRaw('name as level')->first()->level;
+    //     $row->session = DB::table('sessions')->where('id',$row->session_id)->selectRaw('name')->first()->name;
+    //     $row->campus = DB::table('campuses')->where('id',$row->campus_id)->selectRaw('name')->first()->name;
+    //     return $row;
+    // }
 }

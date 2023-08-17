@@ -1285,7 +1285,7 @@ class PriceList //extends Model
                 $pre_enr = [
                     'term_id' => null,
                     'student_id' => $student_id,
-                    'level_id' => $row->level_id,
+                    'level_id' => $next_level->id,
                     'session_id' => $row->session_id,
                     'campus_id' => $row->campus_id,
                     'tuition_due' => $next_payment_info->price,

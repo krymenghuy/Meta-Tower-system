@@ -28,6 +28,7 @@ class Activity //extends Model
             'to_session_id' => '0|number|exists=sessions.id',
             'from_campus_id' => '0|number|exists=campuses.id',
             'to_campus_id' => '0|number|exists=campuses.id',
+            'enrollment_id' => '0|number|exists=enrollments.id',
         ];
         $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
@@ -40,6 +41,10 @@ class Activity //extends Model
         unset($inputs['level_id']);
         unset($inputs['request_type_id']);
         $studentInfo = $this->getStudentInfo($inputs['student_id'],$ss);
+        $enrollment_id =isset($inputs['enrollment_id'])?$inputs['enrollment_id']:$studentInfo->enrollment_id;
+        $enrollment = DB::table('enrollments')->where('id',$enrollment_id)->selectRaw('id,term_id')->first();
+        $term_id = $enrollment->term_id;
+
         $from_id = null;
         $to_id = null;
         $request_name = DB::table('request_types')->where('id',$req_type_id)->take(1)->value('name');
@@ -47,10 +52,12 @@ class Activity //extends Model
             $from_id = $inputs['from_level_id'];
             $to_id = $to_level_id;
         }
+
         else if($req_type_id == 2){    //* request campus
             $from_id = $inputs['from_campus_id'];
             $to_id = $to_campus_id;
         }
+
         else if($req_type_id == 3){     //* request session
             $from_id = $inputs['from_session_id'];
             $to_id = $to_session_id;
@@ -59,7 +66,7 @@ class Activity //extends Model
         $req_arr = [
             'request_type_id' => $req_type_id,
             'student_id' => $inputs['student_id'],
-            'term_id' => $studentInfo->term_id,
+            'term_id' => $term_id,
             'status_id' => 1 // create request Status ID = 1;
         ];
         $reqNewID = saveData($ss,'requests',[],$req_arr,[],1);
@@ -69,6 +76,7 @@ class Activity //extends Model
                 'to_id' => $to_id,
                 'remarks'=>$remarks,
                 'request_id' => $reqNewID,
+                'enrollment_id' => $enrollment->id,
                 'request_name' => $request_name
             ];
             saveData($ss,'request_changes',[],$level_arr,[],1);
@@ -130,8 +138,10 @@ class Activity //extends Model
         }
         $selectCols = 'r.authorized,r.status_id,r.id as request_id,e.campus_id,s.id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id,e.level_id';
         $query = DB::table('students as s')
-                ->join('enrollments as e','e.student_id','=','s.id')
                 ->join('requests as r','r.student_id','=','s.id')
+                ->join('request_changes as rc','r.id','=','rc.request_id')
+                ->join('enrollments as e','e.id','=','rc.enrollment_id')
+                ->join('terms as t','t.id','=','e.term_id')
                 ->selectRaw($selectCols)
                 ->where('s.branch_id',$branch_id)
                 ->where('r.status_id',1)
@@ -174,7 +184,7 @@ class Activity //extends Model
             $search_value = escape_like_str($search_value);
             $str_search ="(s.name LIKE '%$search_value%' OR s.code = '$search_value')";
         }
-        $selectCols = 'r.status_id,e.campus_id,s.id as student_id,r.id as request_id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id,r.request_type_id';
+        $selectCols = 'rc.reuqest_name,r.status_id,e.campus_id,s.id as student_id,r.id as request_id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id,r.request_type_id';
         $query = DB::table('requests as r')
                 ->join('students as s','s.id','=','r.student_id')
                 ->join('request_changes as rc','rc.request_id','=','r.id')
@@ -234,12 +244,17 @@ class Activity //extends Model
         return $row;
     }
 
-    function getStudentInfo($id,$ss){
-        return DB::table('students as s')->where('s.branch_id',$ss->branch_id)
+    function getStudentInfo($id,$ss,$term_id=null){
+        $q =  DB::table('students as s')->where('s.branch_id',$ss->branch_id)
             ->where('s.id',$id)
             ->join('enrollments as e','e.student_id','=','s.id')
-            ->selectRaw('e.start_date,s.name,s.id,e.level_id,e.term_id,e.session_id,e.campus_id,e.academic_year')
-            ->first();
+            ->selectRaw('e.start_date,s.name,s.id,e.level_id,e.term_id,e.session_id,e.campus_id,e.academic_year,e.id as enrollment_id');
+            if($term_id){
+                $q->where('e.term_id',$term_id);
+            }
+
+        $row = $q->orderBy('e.id','desc')->first();
+        return $row;
     }
 
     function getSession($id){
@@ -299,7 +314,7 @@ class Activity //extends Model
             $from_campus_id = isset($inputs['from_campus_id'])?$inputs['from_campus_id']:$reqStudent->from_id;
             $to_campus_id = isset($inputs['to_campus_id'])?$inputs['to_campus_id']:$reqStudent->to_id;
 
-            $student_info = self::getStudentInfo($reqStudent->student_id,$ss);
+            $student_info = self::getStudentInfo($reqStudent->student_id,$ss,null);
             $start_date = $student_info->start_date;
             if($req_type_id == 1){ //* request level
                 $studied_days = date('d') - date('d',strtotime($student_info->start_date));
