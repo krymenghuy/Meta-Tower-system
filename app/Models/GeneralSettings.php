@@ -170,6 +170,22 @@ class GeneralSettings //extends Model
         return  DB::table('organizations as org')->whereRaw('IFNULL(org.inactive,0) =0')->where('org.branch_id',$branch_id)->selectRaw("org.id,org.name as org_name")->get();
     }
 
+    static function studentInfo($student_id){
+        $selectCols = 'e.school_id,s.name as student_name,s.name_kh,s.id as student_id,e.session_id,e.term_id,e.campus_id,e.level_id,e.academic_year,p.pmt_option_id';
+        $row = DB::table('students as s')->where('s.id',$student_id)
+            ->join('enrollments as e','e.student_id','=','s.id')
+            ->join('terms as t','e.term_id','=','t.id')
+            ->join('payments as p','p.enrollment_id','=','e.id')
+            ->selectRaw($selectCols)
+            ->first();
+        if(!$row) return $row=null;
+        return $row;
+    }
+
+    static function getLevel($level=null,$ss=null) {
+        $branch_id = $ss->branch_id;
+        return DB::table('program_levels')->where('id',$level)->selectRaw('program_id,name as level,name,id as level_id,id')->first();
+    }
     static function options_program($ss){
         $branch_id = $ss->branch_id;
         return  DB::table('programs AS p')->where('p.branch_id',$branch_id)->selectRaw("p.id,p.name as program_name")->orderByRaw('p.name','ASC')->get();

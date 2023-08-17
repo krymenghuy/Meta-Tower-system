@@ -505,14 +505,30 @@ class Activity //extends Model
                         ->selectRaw('e.id')
                         ->first();
             $selectPayment = 'tuition_due';
-            $payment = DB::table('payments')->where('enrollment_id',$enrollment->id)->where('branch_id',$ss->branch_id)->where('status_id',1)->where('pmt_status','unpaid')->selectRaw($selectPayment)->first();
+            $payment = DB::table('payments')->where('enrollment_id',$enrollment->id)->where('branch_id',$ss->branch_id)->where('status_id',1)->where('pmt_status','unpaid')->first();
 
-            if(!$payment) continue;
-            DB::table('discount_request')->where('id',$id)->update([
-                'amount'
-            ]);
+
+            if($discountTypeInfo->discount_type_id == 1){
+                $discount =($payment->tuition_due * $discountTypeInfo->amount)/100;
+                $tuition_due = $$payment->tuition_due - $discount;
+                $dis_arr_info = [
+                    'special_discount' =>  $discountTypeInfo->amount,
+                    'tuition_due' => $tuition_due,
+                ];
+                if(!$payment) continue;
+                DB::table('payments')->where('id',$id)->update($dis_arr_info);
+            }
+            else{
+                $discount =($payment->tuition_due * $discountTypeInfo->amount)/100;
+                $tuition_due = $$payment->tuition_due - $discount;
+                $dis_arr_info = [
+                    'second_child_discount' =>  $discountTypeInfo->amount,
+                    'tuition_due' => $tuition_due,
+                ];
+                DB::table('discount_request')->where('id',$id)->update($dis_arr_info);
+            }
         }
-        return $enrollment;
+        return 'sdfs';
     }
 
 
