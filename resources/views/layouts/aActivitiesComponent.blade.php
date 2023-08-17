@@ -56,12 +56,10 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"></h5>
+                <h5 class="modal-title trans-text" data-langprop="titles.Apply Approval"></h5>
                 <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                
-            </div>
+            <div id="modal_body" class="modal-body"></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
