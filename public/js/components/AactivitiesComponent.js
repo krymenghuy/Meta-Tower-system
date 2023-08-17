@@ -73,8 +73,8 @@ var AactivitiesComponent = new function(){
                 <a href="javascript:void(0)" class="btn-aavt-approval" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}">
                     <i class="fa-regular fa-circle-check fa-beat fs-5 text-success"></i>
                 </a>
-                <a href="javascript:void(0)" class="btn-aavt-modify" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}">
-                    <i class="fa-regular fa-pen-to-square fs-5 text-warning"></i>
+                <a href="javascript:void(0)" class="btn-aavt-reject" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}">
+                    <i class="fa-regular fa-circle-xmark text-warning fs-5"></i>
                 </a>
                 <a href="javascript:void(0)" class="btn-aavt-delete" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}">
                     <i class="fa-regular fa-trash-can fs-5 text-danger"></i>
@@ -102,9 +102,19 @@ var AactivitiesComponent = new function(){
             },
             'beforeRender':()=>{}
         });
+        mThis.tblActivaties = $(mThis.itemView.getTable());
+
+        mThis.tblActivaties.on('click','a.btn-aavt-approval',function(e){
+            e.preventDefault();
+            let op = {
+                'student_id': $(this).data('studentid'),
+                'request_type_id': $(this).data('request_typeid')
+            };
+            ApprovalDialog.show(op);
+        });
 
         mThis.cfg = new ExpandableRowConfig('tbl__aavt_table', {
-            'dontExpandByClickingOn': ['btn-aavt-approval', 'btn-aavt-modify','btn-aavt-delete'],
+            'dontExpandByClickingOn': ['btn-aavt-approval', 'btn-aavt-reject','btn-aavt-delete'],
             'onOpen': (container, detail_tr, parent_tr) => {
                 let qtr = $(parent_tr);
                 let op = {
@@ -210,6 +220,27 @@ var AactivitiesComponent = new function(){
             x.fadeOut('fast',function(){
                 mThis.self.hide().fadeIn(300);
             });
+        });
+    }
+}
+
+let ApprovalDialog = new function(){
+    let mThis = this;
+    this.self = $('#dlg_aact_');
+
+    this.elTitle = mThis.self.find('.modal-title');
+
+    this.show = (options) => {
+        if(!options) options = {};
+
+        if(options.id > 0){
+            mThis.elTitle.text(LocaleManager.trans('Approval','titles'));
+        }
+        else{
+
+        }
+        mThis.self.modal({
+            backdrop: 'static'
         });
     }
 }

@@ -51,3 +51,25 @@
     </div>
     <div id="tbl__aavt" class="table-responsive p-3 bg-white rounded-3 mt-3"></div>
 </div>
+
+<div class="modal fade" id="dlg_aact_" tabindex="-1" aria-labelledby="dlg_aact_title" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
+                    <span class="trans-text" data-langprop="buttons.Cancel"></span>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm">
+                    <span class="trans-text" data-langprop="buttons.Save"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
