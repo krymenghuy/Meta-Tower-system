@@ -36,7 +36,7 @@ var PaymentPendingComponent = new function(){
         title: "Action",
         data: (data, a, b) => {
             return [`<div class="d-flex gap-2">
-                <a href="javascript:void(0)" class="btn-ppd-modify" data-id="${data.id}">
+                <a href="javascript:void(0)" class="btn-ppd-modify" data-id="${data.enrollment_id}">
                     <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
                 </a>
             </div>`].join('');
