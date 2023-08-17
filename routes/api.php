@@ -9,6 +9,7 @@ use App\Http\Controllers\Login\GuardianLoginController;
 use App\Http\Controllers\Mobile\HomePageController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\ProgramLevelController;
+use App\Http\Controllers\PromoteStudentController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentGroupController;
@@ -128,6 +129,12 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     });
     //end::ActivityController
 
+    //begin::PromoteController
+    Route::prefix('promote')->group(function(){
+        Route::post('/students',[PromoteStudentController::class,'promoteStudents']);
+    });
+    //end::PromoteController
+
 
 
     Route::post('/form-option',[SettingController::class,'select_options']);
@@ -144,7 +151,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::prefix('student')->group(function () {
         Route::post('/registration', [StudentController::class, 'studentRegistration']);
         Route::post('/list-paginate',[StudentController::class,'studentPaginate']);
-        Route::post('/delete-student',[StudentController::class,'deleteStudent']);
+        Route::post('/delete-student-enrollment',[StudentController::class,'deleteStudentEnrollment']);
         Route::post('/details-student',[StudentController::class,'studentDetials']);
         Route::post('/delete-verified',[StudentController::class,'deleteVerifiedStudent']);
         Route::post('/information',[StudentController::class,'studentInformation']);

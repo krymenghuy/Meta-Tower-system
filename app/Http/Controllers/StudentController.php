@@ -34,11 +34,11 @@ class StudentController extends Controller
         return JDV::result($details);
     }
 
-    function deleteStudent(Request $req){
+    function deleteStudentEnrollment(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
 
-        $delete = Student::deleteStudent($req->id,$ss);
+        $delete = Student::deleteStudentEnrollment($req->id,$ss);
         return JDV::raw($delete);
     }
 

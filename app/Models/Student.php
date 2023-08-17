@@ -144,7 +144,7 @@ class Student //extends Model
                 ];
                 $savePaymentID = saveData($ss,'payments',['enrollment_id' => $id?$enrollment_id:null],$en_payment_data,[],1);
 
-                if($savePaymentID && $id || $id == 0){
+                if($savePaymentID && !$id || $id == 0){
                     DB::table('enrollment_payment')->insert([
                         'enrollment_id' => $enrollment_id,
                         'pmt_id' => $savePaymentID
@@ -185,6 +185,10 @@ class Student //extends Model
     static function studentListPaginate($filter=[],$ss){
         $campus = new Campus();
         $branch_id = $ss->branch_id;
+        $campus_id = isset($filter['campus_id'])?$filter['campus_id']:null;
+        $level_id = isset($filter['level_id'])?$filter['level_id']:null;
+        $session_id = isset($filter['session_id'])?$filter['session_id']:null;
+        $acadmic_year = isset($filter['academic_year'])?$filter['academic_year']:null;
         $search_value =isset($filter['search_value'])?$filter['search_value']:null;
         $current_page =isset($filter['current_page'])?$filter['current_page']:1;
         $per_page =isset($filter['per_page'])?$filter['per_page']:10;
@@ -196,18 +200,30 @@ class Student //extends Model
         if($search_value){
             $skip_rows =0;
             $search_value = escape_like_str($search_value);
-            // $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+            $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 's.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.school_id';
+        $selectCols = 'e.id as enrollment_id,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.school_id';
         $query = DB::table('students as st')
                 ->join('enrollments as e','e.student_id','=','st.id')
                 ->join('sessions as s','s.id','=','e.session_id')
                 ->join('terms as t','t.id','=','e.term_id')
                 ->selectRaw($selectCols)
                 ->where('st.branch_id',$branch_id)
-                ->whereRaw($str_moreWhere)->whereRaw($str_search)
-                ->orderBy('id','desc');
+                ->whereRaw($str_moreWhere)->whereRaw($str_search);
+                if($level_id){
+                    $query->where('e.level_id',$level_id);
+                }
+                if($campus_id){
+                    $query->where('e.campus_id',$campus_id);
+                }
+                if($session_id){
+                    $query->where('e.session_id',$session_id);
+                }
+                if($acadmic_year){
+                    $query->where('e.academic_year',$acadmic_year);
+                }
+                $query->orderBy('id','desc');
         $count_query = clone $query;
         $count = $count_query->count('st.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -453,10 +469,10 @@ class Student //extends Model
     }
 
 
-    static function deleteStudent($id,$ss){
+    static function deleteStudentEnrollment($id,$ss){
         // $file_name = DB::table('students')->where('id',$id)->take(1)->value('file_name');
         // if($file_name) PublicStorage::delete($ss->branch_id,'students','image',$file_name);
-        $delete = DB::table('enrollments')->where('student_id',$id)->delete();
+        $delete = DB::table('enrollments')->where('id',$id)->delete();
         return DV::depends($delete,['action' => 'Deleted']);
     }
 

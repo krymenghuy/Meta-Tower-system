@@ -552,10 +552,11 @@ class PriceList //extends Model
             $search_value = escape_like_str($search_value);
             $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
         }
-        $selectCols = 's.id,e.status_id,st.name as status,s.name,s.name_kh,ep.tuition,ep.tuition_due,ep.tuition_paid';
+        $selectCols = 'e.id as enrollment_id,s.id,e.status_id,st.name as status,s.name,s.name_kh,ep.tuition,ep.tuition_due,ep.tuition_paid';
         $query = DB::table('payments as ep')
                 ->join('enrollments as e','e.id','=','ep.enrollment_id')
                 ->join('students as s','s.id','=','e.student_id')
+                ->join('terms as t','t.id','=','e.term_id')
                 ->join('pmt_status as st','st.id','=','e.status_id')
                 ->selectRaw($selectCols)
                 ->where('ep.branch_id',$branch_id);
@@ -574,7 +575,8 @@ class PriceList //extends Model
         $row = DB::table('enrollments as e')
                 ->join('students as s','s.id','=','e.student_id')
                 ->join('payments as ep','ep.enrollment_id','=','e.id')
-                ->where('s.id',$id)
+                // ->where('s.id',$id)
+                ->where('e.id',$id)
                 ->selectRaw('e.level_id,e.session_id,e.campus_id,e.start_date,ep.pmt_option_id')
                 ->first();
                 if($row->pmt_option_id == 1){
@@ -780,9 +782,11 @@ class PriceList //extends Model
         $query = DB::table('invoices as inv')
                 ->join('students as s','s.id','=','inv.student_id')
                 ->join('enrollments as e','e.student_id','=','s.id')
+                ->join('terms as t','e.term_id','=','t.id')
                 ->join('payments as p','p.enrollment_id','=','e.id')
                 ->selectRaw($selectCols)
                 ->where('inv.branch_id',$branch_id)
+                ->where('e.status_id',2)
                 ->whereRaw($str_moreWhere)->whereRaw($str_search)
                 ->orderBy('inv.id','desc');
                 if($academic_year){
