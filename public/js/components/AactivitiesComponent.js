@@ -4,121 +4,193 @@ var AactivitiesComponent = new function(){
     this.title_prop = "Activities";
     this.self = $('#_main_aActivitiesComponent');
 
-    this.tblActivities = mThis.self.find('.tbl__aavt');
+    this.data_request = [];
 
-    this.init = () => {}
+    this.cols = [{
+        title: "Check",
+        className: "position-relative text-center",
+        data: () => {
+            return [` <input class="form-check-input" type="checkbox"/>`].join('');
+        }
+    },
+    {
+        title: "Image",
+        data: (data, a, b) => {
+            let image = data.image_url ? data.image_url : '';
+            return [`<img class="image-student-tbl" src="${image}" alt=""/>`].join('');
+        }
+    },
+    {
+        title: "Student ID",
+        data: "student_code"
+    },
+    {
+        title: "Full Name",
+        data: "student_name"
+    },
+    {
+        title: "Full Name (KH)",
+        data: "name_kh"
+    },
+    {
+        title: "Sex",
+        data: "sex"
+    },
+    {
+        title: "Date of Birth",
+        data: "date_of_birth"
+    },
+    {
+        title: "Approved By",
+        data: "auth_user"
+    },
+    {
+        title: "Cancelled By",
+        data: "reject_by"
+    },
+    {
+        title: "Date",
+        data: "date"
+    },
+    {
+        title: "Admission Date",
+        data: "admission_date"
+    },
+    {
+        title: "School",
+        data: "school"
+    },
+    {
+        title: "Status",
+        data: (data, a, b) => {
+            return [`<span class="p-2 bg-warning text-white rounded-3 text-capitalize">${data.status}</span>`].join('');
+        }
+    },
+    {
+        title: "Action",
+        data: (data, a, b) => {
+            return [`<div class="d-flex gap-2">
+                <a href="javascript:void(0)" class="btn-aavt-approval" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}">
+                    <i class="fa-regular fa-circle-check fa-beat fs-5 text-success"></i>
+                </a>
+                <a href="javascript:void(0)" class="btn-aavt-modify" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}">
+                    <i class="fa-regular fa-pen-to-square fs-5 text-warning"></i>
+                </a>
+                <a href="javascript:void(0)" class="btn-aavt-delete" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}">
+                    <i class="fa-regular fa-trash-can fs-5 text-danger"></i>
+                </a>
+            </div>`].join('');
+        }
+    }];
 
-    this.displayActivities = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/`,null,null).then(res => {
-            let data = [];
+    this.init = () => {
+        mThis.itemView = new ListView('tbl__aavt',{
+            'fetchApi':`${main_view.base_url}/api/approval/request-change-list`,
+            'columns': mThis.cols,
+            'tableClass':"table header-light-blue header-uppercase",
+            'rowCreated':(data, index, tr) => {
+                tr.setAttribute('data-studentid',data.student_id);
+                tr.setAttribute('data-request_typeid',data.request_type_id);
+                tr.setAttribute('data-requestid',data.request_id);
+                let op = {
+                    'student_id': data.student_id,
+                    'request_type_id' : data.request_type_id,
+                    'request_id': data.request_id,
+                    'request_change': data.request_change
+                };
+                mThis.data_request.push(op);
+            },
+            'beforeRender':()=>{}
+        });
+
+        mThis.cfg = new ExpandableRowConfig('tbl__aavt_table', {
+            'dontExpandByClickingOn': ['btn-aavt-approval', 'btn-aavt-modify','btn-aavt-delete'],
+            'onOpen': (container, detail_tr, parent_tr) => {
+                let qtr = $(parent_tr);
+                let op = {
+                    'student_id': qtr.data('studentid'),
+                    'request_type_id': qtr.data('request_typeid'),
+                    'request_id': qtr.data('requestid')
+                };
+                if((op.student_id > 0) && (op.request_type_id > 0))
+                    mThis.displayApprovalActivityDetails(detail_tr,op);
+            }
+        });
+    }
+
+    this.displayApprovalActivityDetails = (tr, op) => {
+        let div_wrapper = $(tr).find('.expandable-row-container');
+        div_wrapper.addClass(['p-3','rounded-3']);
+
+        let html = null, cur_symbol = '$';
+        div_wrapper.empty();
+        let request_change = mThis.data_request.filter((d) => {
+            if((d.student_id == op.student_id) && (d.request_type_id == op.request_type_id) && (d.request_id == op.request_id)){
+                return d;
+            }
+        });
+
+        window.vsapi.call(`${main_view.base_url}/api/activity/preview-request-payment`,op,null,false).then(res => {
+            let d = {};
             if(res.status_code === 200){
-                data = StringSanitizer.sanitizeObject(res.data);
+                d = res.data;
             }
-
-            let cols = [{
-                title: "No",
-                data: (data, a, b) => {
-                    return [`<span>${cnt++}</span>`].join('');
-                }
-            },
-            {
-                className: 'select-checkbox',
-                searchPanes: {
-                    show: true,
-                    options: [
-                        {
-                            label: 'Checked',
-                            value: function(rowData,rowIdx){}
-                        },
-                        {
-                            label: 'Un-Checked',
-                            value: function(rowData, rowIdx){}
-                        }
-                    ]
-                }
-            },
-            {
-                title: "Invoice No",
-                data: "invoice_number"
-            },
-            {
-                title: "Invoice Date",
-                data: "invoice_date"
-            },
-            {
-                title: "Student ID",
-                data: "student_id"
-            },
-            {
-                title: "Student Name",
-                data: "student_name"
-            },
-            {
-                title: "Description",
-                data: "description"
-            },
-            {
-                title: "Status",
-                data: "status"
-            },
-            {
-                title: "Cancelled By",
-                data: "cancelled_by"
-            },
-            {
-                title: "Date",
-                data: "date"
-            },
-            {
-                title: "Time",
-                data: "time"
-            },
-            {
-                title: "Amount",
-                data: "amount"
-            }];
-
-            if(mThis.table){
-                mThis.tblActivities.DataTable().clear().destroy();
-                mThis.tblActivities.empty();
-                mThis.table = null;
-            }
-
-            if(!mThis.table){
-                mThis.table = mThis.tblActivities.DataTable({
-                    searching: false,
-                    destroy: true,
-                    paging: true,
-                    ordering: false,
-                    retrieve: true,
-                    info: true,
-                    pageLength: 10,
-                    bLengthChange: false,
-                    saveState: true,
-                    processing: true,
-                    language: {
-                        'loadingRecords': '&nbsp;',
-                        'processing': 'Loading...',
-                        "emptyTable": LocaleManager.trans('No data to display', 'datatable')
-                    },
-                    data: data,
-                    columns: cols,
-                    createdRow: function (row, data, dataIndex) {
-                        let tr = $(row);
-                        tr.data('id', data.id);
-                    }
-                });
-            }
-
-            if(typeof onFinish === 'function') onFinish();
+            html = [`<div class="row gy-2">
+                <div class="col-lg-6 bg-light rounded-3 px-0">
+                    <div class="rounded-top-3 bg-warning-subtle p-2">Payment Preview</div>
+                    <div class="row row-cols-2 gy-2 p-3">
+                        <div class="col-md-6">
+                            <p>
+                                <span>Old Days Fee</span>
+                                <span>:</span>
+                                <span>${cur_symbol} ${d.old_days_fee}</span>
+                            </p>
+                            <p>
+                                <span>Fee Left</span>
+                                <span>:</span>
+                                <span>${cur_symbol} ${d.fee_left}</span>
+                            </p>
+                            <p>
+                                <span>New Level</span>
+                                <span>:</span>
+                                <span>${cur_symbol} ${d.new_level}</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                <span>Surcharge</span>
+                                <span>:</span>
+                                <span>${cur_symbol} ${d.surcharge}</span>
+                            </p>
+                            <p>
+                                <span>Return Fee</span>
+                                <span>:</span>
+                                <span>${cur_symbol} ${d.return_fee}</span>
+                            </p>
+                            <p>
+                                <span>Academic Year</span>
+                                <span>:</span>
+                                <span>${d.academic_year}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    
+                </div>
+            </div>`].join('');
+            div_wrapper.html(html);
         });
     }
 
     this.show = (options) => {
         if(!options) options = {};
-        mThis.displayActivities(() => {
+        mThis.itemView.showPage(null,null,() => {
             main_view.setTitle(mThis.title_prop);
-            mThis.self.show().siblings().hide();
+            let x = mThis.self.siblings(':visible');
+            x.fadeOut('fast',function(){
+                mThis.self.hide().fadeIn(300);
+            });
         });
     }
 }

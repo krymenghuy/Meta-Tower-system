@@ -49,7 +49,5 @@
             </div>
         </div>
     </div>
-    <div class="table-responsive p-3 mt-3">
-        <table class="table tbl__aavt"></table>
-    </div>
+    <div id="tbl__aavt" class="table-responsive p-3 bg-white rounded-3 mt-3"></div>
 </div>

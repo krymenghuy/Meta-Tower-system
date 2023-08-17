@@ -134,7 +134,7 @@
                 <div class="col">
                     <div class="form-group">
                         <label for="previous_school" class="form-label trans-text" data-langprop="titles.Previous School"></label>
-                        <input type="text" class="form-control data-input" data-field="previous_school"/>
+                        <input type="text" class="form-control data-input" data-field="previous_school" data-required="false"/>
                     </div>
                     <div class="form-group">
                         <label for="admission_date" class="form-label trans-text" data-langprop="titles.Admission Date"></label>

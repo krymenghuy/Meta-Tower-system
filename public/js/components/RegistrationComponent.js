@@ -246,7 +246,7 @@ var RegistrationComponent = new function(){
                                                 <i class="fa-regular fa-pen-to-square fs-5"></i>
                                                 <span class="ps-2 trans-text" data-langprop="titles.Edit"></span>
                                             </a>
-                                            <a href="javascript:void(0)" class="btn-rgs-delete pt-2" data-id="${item.id}">
+                                            <a href="javascript:void(0)" class="btn-rgs-delete pt-2" data-id="${item.enrollment_id}">
                                                 <i class="fa-regular fa-trash-can fs-5"></i>
                                                 <span class="ps-2 trans-text" data-langprop="titles.Delete"></span>
                                             </a>
@@ -408,7 +408,7 @@ var RegistrationComponent = new function(){
 
                 cv_interact.confirm('Delete this information?',{title: 'Delete Information', context: 'delete'},(e) => {
                     if(e){
-                        window.vsapi.call(`${main_view.base_url}/api/student/delete-student`,op,null).then(res => {
+                        window.vsapi.call(`${main_view.base_url}/api/student/delete-student-enrollment`,op,null).then(res => {
                             if(res.status_code === 200){
                                 mThis.displayStudentList(null);
                             }
