@@ -70,8 +70,8 @@ var AactivitiesComponent = new function(){
         title: "Action",
         data: (data, a, b) => {
             return [`<div class="d-flex gap-2">
-                <a href="javascript:void(0)" class="btn-aavt-approval" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}">
-                    <i class="fa-regular fa-circle-check fa-beat fs-5 text-success"></i>
+                <a href="javascript:void(0)" class="btn-aavt-approval" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}" data-requestname="${data.request_name}">
+                    <i class="fa-regular fa-circle-check fs-5 text-success"></i>
                 </a>
                 <a href="javascript:void(0)" class="btn-aavt-reject" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}">
                     <i class="fa-regular fa-circle-xmark text-warning fs-5"></i>
@@ -108,7 +108,9 @@ var AactivitiesComponent = new function(){
             e.preventDefault();
             let op = {
                 'student_id': $(this).data('studentid'),
-                'request_type_id': $(this).data('request_typeid')
+                'request_type_id': $(this).data('request_typeid'),
+                'request_type_name': $(this).data('requestname'),
+                'student_name': $(this).closest('tr').find('.Full-Name').text()
             };
             ApprovalDialog.show(op);
         });
@@ -229,18 +231,79 @@ let ApprovalDialog = new function(){
     this.self = $('#dlg_aact_');
 
     this.elTitle = mThis.self.find('.modal-title');
+    this.elBody = mThis.self.find('#modal_body');
+
+    this.renderBody = (d,onFinish = null) => {
+        window.vsapi.call(`${main_view.base_url}/api/option/request-type-input`,{'request_type_id': d.request_type_id},null,false).then(res => {
+            let data = {};
+            if(res.status_code === 200){
+                data = res.data;
+            }
+            let html = [`<div class="row gy-2">
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label for="student_id" class="form-label">Student Name</label>
+                        <input type="text" class="form-control" value="${d.student_name}" readonly/>
+                    </div>
+                    <div class="form-group">
+                        <label for="student_id" class="form-label">Request Type</label>
+                        <input type="text" class="form-control" value="${d.request_type_name}" readonly/>
+                    </div>
+                    <div class="form-group">
+                        <label for="${data.from}" class="form-label">From ${data.label}</label>
+                        <div class="width-select-dialog">
+                            <select class="modal-select2 data-input" data-field="${data.from}"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="${data.to}" class="form-label">To ${data.label}</label>
+                        <div class="width-select-dialog">
+                            <select class="modal-select2 data-input" data-field="${data.to}"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6"></div>
+            </div>`].join('');
+            mThis.elBody.html(html);
+            mThis.elBody.find('select.modal-select2').select2({
+                tag: 'true'
+            });
+            mThis.setOption(mThis.elBody);
+        });
+        if(typeof onFinish === 'function') onFinish();
+    }
+
+    this.setOption = (body) => {
+        window.vsapi.call(`${main_view.base_url}/api/option/request-type-dialog`,null,null,false).then(res => {
+            let d = {};
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            body.find('.data-input').each(function(){
+                let el = $(this);
+                let f = el.data('field');
+                switch(f){
+                    case 'from_level_id':
+                        VSUtil.setComboItems(el,d.level_options,'id','level',null,null,null);
+                        break;
+                    case 'to_level_id':
+                        VSUtil.setComboItems(el,d.level_options,'id','level',null,null,null);
+                        break;
+                    default:
+                        break;
+                }
+            });
+        });
+    }
 
     this.show = (options) => {
         if(!options) options = {};
 
-        if(options.id > 0){
-            mThis.elTitle.text(LocaleManager.trans('Approval','titles'));
-        }
-        else{
-
-        }
-        mThis.self.modal({
-            backdrop: 'static'
+        mThis.renderBody(options, () => {
+            mThis.elTitle.text(LocaleManager.trans('Apply Approval','titles'));
+            mThis.self.modal({
+                backdrop: 'static'
+            });
         });
     }
 }
