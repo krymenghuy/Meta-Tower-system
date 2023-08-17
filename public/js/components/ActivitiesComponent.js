@@ -68,7 +68,7 @@ var ActivitiesComponent = new function(){
     {
         title: "Status",
         data: (data, a, b) => {
-            return [`<span class="p-2 bg-warning text-white rounded-3">${data.status}</span>`].join('');
+            return [`<span class="p-2 bg-warning text-white rounded-3 text-capitalize">${data.status}</span>`].join('');
         }
     },
     {
@@ -283,21 +283,24 @@ let RequestDialog = new function(){
                     break;
                 case 'from_level_id':
                     VSUtil.setComboItems(el,d.level_options,'id','level',null,null,null);
-                    if(mThis.data) el.val(mThis.data['level_id']).trigger('change');
+                    if(mThis.data && mThis.options.std_id)
+                        el.val(mThis.data['level_id']).trigger('change');
                     break;
                 case 'to_campus_id':
                     VSUtil.setComboItems(el,d.campus_options,'id','campus',null,null,null);
                     break;
                 case 'from_campus_id':
                     VSUtil.setComboItems(el,d.campus_options,'id','campus',null,null,null);
-                    if(mThis.data) el.val(mThis.data['campus_id']).trigger('change');
+                    if(mThis.data && mThis.options.std_id)
+                        el.val(mThis.data['campus_id']).trigger('change');
                     break;
                 case 'to_session_id':
                     VSUtil.setComboItems(el,d.sessions_options,'id','name',null,null,null);
                     break;
                 case 'from_session_id':
                     VSUtil.setComboItems(el,d.sessions_options,'id','name',null,null,null);
-                    if(mThis.data) el.val(mThis.data['session_id']).trigger('change');
+                    if(mThis.data && mThis.options.std_id)
+                        el.val(mThis.data['session_id']).trigger('change');
                     break;
                 default:
                     break;
@@ -309,6 +312,7 @@ let RequestDialog = new function(){
         el.on('change',function(e){
             e.preventDefault();
             let id = $(this).val();
+            mThis.options.std_id = id;
             
             if(id){
                 window.vsapi.call(`${main_view.base_url}/api/option/student-request-info`,{'student_id': id},null,false).then(res => {
