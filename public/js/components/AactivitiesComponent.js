@@ -129,6 +129,11 @@ var AactivitiesComponent = new function(){
                 return d;
             }
         });
+        request_change = request_change[0].request_change;
+        ['from_id','to_id','request_type_id'].map(obj => {
+            delete(request_change[obj]);
+        });
+        console.log(request_change);
 
         window.vsapi.call(`${main_view.base_url}/api/activity/preview-request-payment`,op,null,false).then(res => {
             let d = {};
@@ -175,8 +180,17 @@ var AactivitiesComponent = new function(){
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6">
-                    
+                <div class="col-lg-6 bg-light rounded-3 px-0">
+                    <div class="rounded-top-3 bg-danger-subtle p-2">Request Change Preview</div>
+                    <div class="row row-cols-2 gy-2 p-3">
+                        ${inner_html,Object.keys(request_change).map(key => {
+                            inner_html = [inner_html,`<div class="col-md-6">
+                                <span>${key}</span>
+                                <span>:</span>
+                                <span>${request_name[`${key}`]}</span>
+                            </div>`].join('');
+                        }),inner_html}
+                    </div>
                 </div>
             </div>`].join('');
             div_wrapper.html(html);
