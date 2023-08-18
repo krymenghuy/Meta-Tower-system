@@ -35,7 +35,7 @@ class Guardian //extends Model
 
         $newID = saveData($ss,'guardians',['id' => $id],$inputs,[],1);
         if($newID){
-            PublicStorage::saveImage($ss->branch_id,self::$img_dir,);
+            PublicStorage::saveImage($ss->branch_id,self::$img_dir,null,$image,null,['id'=>$newID,'store'=>'guardians.file_name']);
         }
 
         return $inputs;
@@ -55,23 +55,36 @@ class Guardian //extends Model
         if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search ="(st.code ='$search_value' OR st.name LIKE '%$search_value%')";
+            $str_search ="(.code ='$search_value' OR st.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 's.id as student_id,inv.due_amount,inv.paid_amount,inv.is_paid,inv.id,inv.updated_at as paid,e.session_id,s.code as student_code,inv.invoice_date,inv.due_date,e.program_id,e.level_id,s.name as student_name,p.status_id as pstatus_id,e.academic_year,e.start_date,e.tuition_end_date,inv.due_date,inv.invoice_number,inv.amount';
-        $query =  DB::table('guardians')
+        $selectCols = 'g.name,g.phone_number,g.email,e.n_id';
+        $query =  DB::table('guardians as g')
                 ->whereRaw($str_search)
+                ->selectRaw($selectCols)
                 // ->whereRaw($str_moreWhere)->whereRaw($str_search)
-                ->orderBy('inv.id','desc');
+                ->orderBy('g.id','desc');
 
         $count_query = clone $query;
-        $count = $count_query->count('inv.id');
+        $count = $count_query->count('g.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-        foreach($rows as $row) {
+        // foreach($rows as $row) {
 
-        }
+        // }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
+
+    function connectToChild($arr,$ss){
+        $d = (object)$arr;
+        $inputs = [
+            'student_id' => $d->student_id,
+            'guardian_id' => $d->guardian_id,
+        ];
+        $exists =  DB::table('student_guardians')->where('student_id',$d->student_id)->where('guardian_id',$d->guardian_id)->exists();
+        if($exists) return DV::error('Already connected');
+        $newID = saveData($ss,'student_guardians',['id' => null],$inputs,[],1);
+        return ;
     }
 }

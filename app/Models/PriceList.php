@@ -577,7 +577,7 @@ class PriceList //extends Model
                 ->join('payments as ep','ep.enrollment_id','=','e.id')
                 // ->where('s.id',$id)
                 ->where('e.id',$id)
-                ->selectRaw('e.level_id,e.session_id,e.campus_id,e.start_date,ep.pmt_option_id')
+                ->selectRaw('e.id as enrollment_id,e.level_id,e.session_id,e.campus_id,e.start_date,ep.pmt_option_id')
                 ->first();
                 if($row->pmt_option_id == 1){
                     $row->months = 3;
@@ -647,7 +647,7 @@ class PriceList //extends Model
         $d = (object)$arr;
         $instance = new PriceList(null,$ss);
         $v_rule = [
-            'id' => '0|number|exists=students.id',
+            'id' => '0|number|exists=enrollments.id',
             'level_id' => '0|number|exists=program_levels.id',
             'session_id' => '0|number|exists=sessions.id',
             'start_date' => '0|date',
@@ -678,10 +678,11 @@ class PriceList //extends Model
         ];
         if($academic_year) $arr = ['academic_year' => $academic_year];
         $months=null;
-        $paid_student = DB::table('enrollments as e')->where('student_id',$id)->join('payments as p','e.id','=','p.enrollment_id')->where('tuition_paid','!=','null')->get()->first();
+        $paid_student = DB::table('enrollments as e')->where('e.id',$id)->join('payments as p','e.id','=','p.enrollment_id')->where('tuition_paid','!=','null')->get()->first();
         if($paid_student){ return DV::error('Student already paid');}
-        $id = saveData($ss,'enrollments',['student_id' => $id],$arr,[],1);
-        $enr = DB::table('enrollments')->where('student_id',$id)->selectRaw('id,level_id,academic_year,session_id,start_date')->first();
+        $id = saveData($ss,'enrollments',['id' => $id],$arr,[],1);
+        $enr = DB::table('enrollments as e')->where('id',$id)->selectRaw('e.student_id,e.id,e.level_id,e.academic_year,e.session_id,e.start_date')->first();
+        $student_id = $enr->student_id;
         if($pmt_option_id){
 
             if($pmt_option_id == 1){
@@ -702,7 +703,7 @@ class PriceList //extends Model
                 "days" => $days,
                 "pmt_option_id"=> $pmt_option_id
             ];
-            $preview = $instance->previewPendingPaymentDetails($arr,$id,$ss);
+            $preview = $instance->previewPendingPaymentDetails($arr,$student_id,$ss);
             $payment_info = $preview->payment_info;
 
             $discount_info = $instance->getPolicyDiscount($pmt_option_id,$payment_info->price_list_id);
@@ -778,7 +779,7 @@ class PriceList //extends Model
             $str_search ="(st.code ='$search_value' OR st.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 's.id as student_id,inv.due_amount,inv.paid_amount,inv.is_paid,inv.id,inv.updated_at as paid,e.session_id,s.code as student_code,inv.invoice_date,inv.due_date,e.program_id,e.level_id,s.name as student_name,p.status_id as pstatus_id,e.academic_year,e.start_date,e.tuition_end_date,inv.due_date,inv.invoice_number,inv.amount';
+        $selectCols = 'e.id as enrollment_id,s.id as student_id,inv.due_amount,inv.paid_amount,inv.is_paid,inv.id,inv.updated_at as paid,e.session_id,s.code as student_code,inv.invoice_date,inv.due_date,e.program_id,e.level_id,s.name as student_name,p.status_id as pstatus_id,e.academic_year,e.start_date,e.tuition_end_date,inv.due_date,inv.invoice_number,inv.amount';
         $query = DB::table('invoices as inv')
                 ->join('students as s','s.id','=','inv.student_id')
                 ->join('enrollments as e','e.student_id','=','s.id')
@@ -896,9 +897,11 @@ class PriceList //extends Model
         $d = (object)$arr;
         $id = $d->id;
         $campus = new Campus();
-        $row = DB::table('students as s')->where('s.id',$id)
+        $row = DB::table('students as s')
+                // ->where('s.id',$id)
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->join('payments as p','p.enrollment_id','=','e.id')
+                ->where('e.id',$id)
                 ->selectRaw('s.id as student_id,p.second_child_discount,p.special_discount,e.academic_year,p.tuition_due,p.policy_discount,e.start_date,e.tuition_end_date,p.tuition,s.code as student_code,s.name as student_name,e.campus_id,e.level_id,e.status_id')
                 ->get()->first();
         if(!$row) return DV::error('Not Found');
@@ -1074,7 +1077,8 @@ class PriceList //extends Model
     static function generateInvoice($arr=[],$ss){
         $v_rule = [
             'due_date' => '1|string',
-            'student_id' => '1|number|exists=students.id',
+            // 'student_id' => '0|number|exists=students.id',
+            'enrollment_id' => '1|number|exists=enrollments.id',
             'qty' => '0|number',
             'fee_types' => '0|array',
             'note' => '0|string|1,300',
@@ -1082,15 +1086,17 @@ class PriceList //extends Model
         $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
-        $student_id = $inputs['student_id'];
-        $student = DB::table('students')->where('branch_id',$ss->branch_id)->where('id',$student_id)->selectRaw('id')->first();
-        $enr_info = DB::table('enrollments as e')->where('student_id',$student->id)
+        // $student_id = $inputs['student_id'];
+        $enrollment_id = $inputs['enrollment_id'];
+        unset($inputs['enrollment_id']);
+        // $student = DB::table('students')->where('branch_id',$ss->branch_id)->where('id',$student_id)->selectRaw('id')->first();
+        $enr_info = DB::table('enrollments as e')->where('e.id',$enrollment_id)
                     ->join('payments as p','p.enrollment_id','=','e.id')
-                    ->selectRaw('e.id as enr_id,p.tuition,e.start_date,e.tuition_end_date,e.academic_year,p.policy_discount,e.status_id')
+                    ->selectRaw('e.id as enr_id,p.tuition,e.start_date,e.tuition_end_date,e.academic_year,p.policy_discount,e.status_id,e.student_id')
                     ->first();
         $tuition_end_date = convertDate($enr_info->tuition_end_date);
         $enr_info->pmt_status = 'Unpaid';
-
+        $inputs['student_id'] = $enr_info->student_id;
         $inputs['due_date'] = convertDate($inputs['due_date']);
         $qty = $inputs['qty'];
         unset($inputs['qty']);
@@ -1137,7 +1143,7 @@ class PriceList //extends Model
                     $fee['discount'] = $enr_info->policy_discount;
                     $fee['start_date'] = $enr_info->start_date;
                     $fee['end_date'] = $enr_info->tuition_end_date;
-                    $is_tuition_fee = self::getTuitionDueByStudent($student->id);
+                    $is_tuition_fee = self::getTuitionDueByStudent($enr_info->student_id);
                     $getTuitionFeeType = 'tuition_type';
                     $invoice_type = 'tuition_fee';
                 }
@@ -1177,7 +1183,7 @@ class PriceList //extends Model
             ]);
             // saveData($ss,'payments',['enrollment_id' => $enr_info->enr_id],['tuition_due' => $due_amount]);
         }
-        return DV::depends($save_inv,['action'=>'Generated','match'=>$matchedStudents]);
+        return DV::depends($save_inv,['action'=>'Generated','match'=>$enr_info->student_id]);
     }
 
     static function setInvoiceCode($ss,$newID){
