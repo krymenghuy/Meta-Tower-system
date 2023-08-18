@@ -70,7 +70,7 @@ var AactivitiesComponent = new function(){
         title: "Action",
         data: (data, a, b) => {
             return [`<div class="d-flex gap-2">
-                <a href="javascript:void(0)" class="btn-aavt-approval" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}" data-requestname="${data.request_name}">
+                <a href="javascript:void(0)" class="btn-aavt-approval" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}" data-requestname="${data.request_name}" data-from="${data.request_change.from_id}" data-to="${data.request_change.to_id}">
                     <i class="fa-regular fa-circle-check fs-5 text-success"></i>
                 </a>
                 <a href="javascript:void(0)" class="btn-aavt-reject" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}">
@@ -110,6 +110,8 @@ var AactivitiesComponent = new function(){
                 'student_id': $(this).data('studentid'),
                 'request_type_id': $(this).data('request_typeid'),
                 'request_type_name': $(this).data('requestname'),
+                'from_id': $(this).data('from'),
+                'to_id': $(this).data('to'),
                 'student_name': $(this).closest('tr').find('.Full-Name').text()
             };
             ApprovalDialog.show(op);
@@ -252,7 +254,7 @@ let ApprovalDialog = new function(){
                     <div class="form-group">
                         <label for="${data.from}" class="form-label">From ${data.label}</label>
                         <div class="width-select-dialog">
-                            <select class="modal-select2 data-input" data-field="${data.from}"></select>
+                            <select class="modal-select2 data-input" data-field="${data.from}" disabled></select>
                         </div>
                     </div>
                     <div class="form-group">
@@ -262,18 +264,18 @@ let ApprovalDialog = new function(){
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6"></div>
+                <div id="pre_price" class="col-lg-6 d-flex align-items-center"></div>
             </div>`].join('');
             mThis.elBody.html(html);
             mThis.elBody.find('select.modal-select2').select2({
                 tag: 'true'
             });
-            mThis.setOption(mThis.elBody);
+            mThis.setOption(mThis.elBody, d, mThis.elBody.find('#pre_price'));
         });
         if(typeof onFinish === 'function') onFinish();
     }
 
-    this.setOption = (body) => {
+    this.setOption = (body, data, div) => {
         window.vsapi.call(`${main_view.base_url}/api/option/request-type-dialog`,null,null,false).then(res => {
             let d = {};
             if(res.status_code === 200){
@@ -284,22 +286,70 @@ let ApprovalDialog = new function(){
                 let f = el.data('field');
                 switch(f){
                     case 'from_level_id':
-                        VSUtil.setComboItems(el,d.level_options,'id','level',null,null,null);
+                        VSUtil.setComboItems(el,d.level_options,'id','level',null,null,data.from_id);
                         break;
                     case 'to_level_id':
-                        VSUtil.setComboItems(el,d.level_options,'id','level',null,null,null);
+                        VSUtil.setComboItems(el,d.level_options,'id','level',null,null,data.to_id);
+                        mThis.getDataPreview(el,data,div);
                         break;
                     case 'from_session_id':
-                        VSUtil.setComboItems(el,d.sessions,'id','name',null,null,null);
+                        VSUtil.setComboItems(el,d.sessions_options,'id','name',null,null,data.from_id);
                         break;
                     case 'to_session_id':
-                        VSUtil.setComboItems(el,d.sessions,'id','name',null,null,null);
+                        VSUtil.setComboItems(el,d.sessions_options,'id','name',null,null,data.to_id);
+                        mThis.getDataPreview(el,data,div);
+                        break;
+                    case 'from_campus_id':
+                        VSUtil.setComboItems(el,d.campus_options,'id','campus',null,null,data.from_id);
+                        break;
+                    case 'to_campus_id':
+                        VSUtil.setComboItems(el,d.campus_options,'id','campus',null,null,data.to_id);
+                        mThis.getDataPreview(el,data,div);
                         break;
                     default:
                         break;
                 }
             });
         });
+    }
+
+    this.getDataPreview = (el,d,div) => {
+        let html = null, inner_html = null;
+        el.on('change',function(e){
+            e.preventDefault();
+            let op = {
+                'student_id': d.student_id,
+                'request_type_id': d.request_type_id
+            }
+            op[$(this).data('field')] = $(this).val();
+
+            window.vsapi.call(`${main_view.base_url}/api/activity/preview-request-payment`,op,null,null,false).then(res => {
+                let data = {};
+                if(res.status_code === 200){
+                    data = res.data;
+                }
+                if(data){
+                    html = [`<div class="row gy-2 w-100 h-100">
+                        <div class="border rounded-3 p-3">
+                            ${inner_html=null, Object.keys(data).map(key => {
+                                inner_html = [inner_html,`<div class="col-md-12 mb-3">
+                                    <span class="text-capitalize text-primary">${key.replaceAll('_',' ')}</span>
+                                    <span>:</span>
+                                    <span>${key === 'academic_year' ? '':'$'} ${data[key]}</span>
+                                </div>`].join('');
+                            }),inner_html}
+                        </div>
+                    </div>`].join('');
+                    div.html(html);
+                }
+                else{
+                    div.empty();
+                }
+            });
+        });
+
+        if(div.children().length === 0)
+            el.trigger('change');
     }
 
     this.show = (options) => {
