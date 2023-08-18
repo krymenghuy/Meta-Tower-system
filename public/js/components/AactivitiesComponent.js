@@ -289,6 +289,9 @@ let ApprovalDialog = new function(){
                     case 'to_level_id':
                         VSUtil.setComboItems(el,d.level_options,'id','level',null,null,null);
                         break;
+                    case 'to_session_id':
+                        VSUtil.setComboItems(el,d.sessions,'id','name',null,null,null);
+                        break;
                     default:
                         break;
                 }
