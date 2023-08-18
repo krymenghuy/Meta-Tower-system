@@ -545,7 +545,7 @@ let GenerateInvoiceFSN = new function(){
 
     this.getDataForm = () => {
         let d = {
-            'student_id': mThis.options.id,
+            'enrollment_id': mThis.options.id,
             'fee_types': []
         };
 
