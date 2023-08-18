@@ -916,6 +916,7 @@ class PriceList //extends Model
             }
             else $row->pmt_status = 'unpaid';
         }
+        $student_id = $row->student_id;
 
         $invoice_number =isset( $d->invoice_number)?$d->invoice_number:null;
         $row->campus = $campus->details($row->campus_id,$ss)->name;
@@ -925,13 +926,13 @@ class PriceList //extends Model
         $row->amount = $row->tuition;
         $row->total = $row->tuition_due;
         $row->fee_type = 'tuition_fee';
-        $row->due_date = self::getInvoiceInfo($id)->due_date;
-        $row->invoice_number = self::getInvoiceInfo($id)->invoice_number;
-        $row->other_fees = self::getOtherFeeTypes($id,$invoice_number);
+        $row->due_date = self::getInvoiceInfo($student_id)->due_date;
+        $row->invoice_number = self::getInvoiceInfo($student_id)->invoice_number;
+        $row->other_fees = self::getOtherFeeTypes($student_id,$invoice_number);
         unset($row->tuition);
         unset($row->tuition_due);
         unset($row->policy_discount);
-        $row->deposite_amount = self::studentDeposite($id);
+        $row->deposite_amount = self::studentDeposite($student_id);
 
         return $row;
     }
