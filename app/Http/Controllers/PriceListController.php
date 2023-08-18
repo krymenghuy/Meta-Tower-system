@@ -13,7 +13,7 @@ class PriceListController extends Controller
        $ss = UM::getUserInfoByToken($req,-1);
        if($ss->status_code !==200) return JDV::raw($ss);
        $p = new PriceList($req->id,$ss);
-       $data = $p->list_paginate($req->all);
+       $data = $p->list_paginate($req->all());
        return JDV::result($data);
     }
 
