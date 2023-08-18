@@ -138,7 +138,7 @@ var FindStudentComponent = new function(){
                             </div>
                             <div class="col">
                                 <div class="d-flex align-items-start justify-content-end gap-2">
-                                    <button class="btn btn-sm btn-primary rounded-3 btn--gnInvoice" type="button" data-id="${item.id}">
+                                    <button class="btn btn-sm btn-primary rounded-3 btn--gnInvoice" type="button" data-id="${item.enrollment_id}">
                                         <span class="text-nowrap trans-text" data-langprop="buttons.Ganerate Invoice"></span>
                                     </button>
                                     <button class="btn btn-sm btn-danger rounded-3 btn--Options position-relative text-nowrap" type="button">
