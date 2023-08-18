@@ -64,8 +64,8 @@
                 <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button type="button" class="btn btn-primary btn-sm">
-                    <span class="trans-text" data-langprop="buttons.Save"></span>
+                <button id="dlg_aact_btn_save" type="button" class="btn btn-primary btn-sm">
+                    <span class="trans-text" data-langprop="buttons.Approve"></span>
                 </button>
             </div>
         </div>

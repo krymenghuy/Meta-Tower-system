@@ -69,14 +69,15 @@ var AactivitiesComponent = new function(){
     {
         title: "Action",
         data: (data, a, b) => {
+            let cls = data.status === 'pending' ? '' : 'd-none';
             return [`<div class="d-flex gap-2">
-                <a href="javascript:void(0)" class="btn-aavt-approval" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}" data-requestname="${data.request_name}" data-from="${data.request_change.from_id}" data-to="${data.request_change.to_id}">
+                <a href="javascript:void(0)" class="btn-aavt-approval ${cls}" data-requestid="${data.request_id}" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}" data-requestname="${data.request_name}" data-from="${data.request_change.from_id}" data-to="${data.request_change.to_id}">
                     <i class="fa-regular fa-circle-check fs-5 text-success"></i>
                 </a>
-                <a href="javascript:void(0)" class="btn-aavt-reject" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}">
+                <a href="javascript:void(0)" class="btn-aavt-reject ${cls}" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}">
                     <i class="fa-regular fa-circle-xmark text-warning fs-5"></i>
                 </a>
-                <a href="javascript:void(0)" class="btn-aavt-delete" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}">
+                <a href="javascript:void(0)" class="btn-aavt-delete ${cls}" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}">
                     <i class="fa-regular fa-trash-can fs-5 text-danger"></i>
                 </a>
             </div>`].join('');
@@ -108,11 +109,15 @@ var AactivitiesComponent = new function(){
             e.preventDefault();
             let op = {
                 'student_id': $(this).data('studentid'),
+                'request_id': $(this).data('requestid'),
                 'request_type_id': $(this).data('request_typeid'),
                 'request_type_name': $(this).data('requestname'),
                 'from_id': $(this).data('from'),
                 'to_id': $(this).data('to'),
-                'student_name': $(this).closest('tr').find('.Full-Name').text()
+                'student_name': $(this).closest('tr').find('.Full-Name').text(),
+                'onClose': () => {
+                    mThis.itemView.showPage(null);
+                }
             };
             ApprovalDialog.show(op);
         });
@@ -231,9 +236,32 @@ var AactivitiesComponent = new function(){
 let ApprovalDialog = new function(){
     let mThis = this;
     this.self = $('#dlg_aact_');
+    this.options = {};
 
     this.elTitle = mThis.self.find('.modal-title');
     this.elBody = mThis.self.find('#modal_body');
+    this.btnSave = mThis.self.find('#dlg_aact_btn_save');
+
+    mThis.btnSave.on('click',function(e){
+        e.preventDefault();
+        let op = {
+            'approve_info': [
+                {
+                    'request_id': mThis.options.request_id
+                }
+            ]
+        };
+        window.vsapi.call(`${main_view.base_url}/api/approval/approve-request-change`,op,null).then(res => {
+            if(res.status_code === 200){
+                mThis.self.modal('hide');
+                cv_interact.success('Approved Successfully!');
+                if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
+            }
+            else{
+                cv_interact.error(res.error_message);
+            }
+        });
+    });
 
     this.renderBody = (d,onFinish = null) => {
         window.vsapi.call(`${main_view.base_url}/api/option/request-type-input`,{'request_type_id': d.request_type_id},null,false).then(res => {
@@ -354,6 +382,7 @@ let ApprovalDialog = new function(){
 
     this.show = (options) => {
         if(!options) options = {};
+        mThis.options = options;
 
         mThis.renderBody(options, () => {
             mThis.elTitle.text(LocaleManager.trans('Apply Approval','titles'));
