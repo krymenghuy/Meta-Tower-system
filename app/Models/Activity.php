@@ -550,11 +550,13 @@ class Activity //extends Model
 
     function rejectRequestChange($d,$ss){
         $id = isset($d->id) ? $d->id :$d->request_id;
+        $remarks = $d->remarks;
         $ss = $ss?$ss:$this->ss;
         $id = isset($d->id) ? $d->id : $d->request_id;
         $delete = DB::table('requests')->where('id',$id)->update([
             'stutus' => 4,// reject
-            'auth_user' => $ss->full_name
+            'auth_user' => $ss->full_name,
+            'remarks' => $remarks
         ]);
         return DV::depends($delete,['action' => 'delete']);
     }
