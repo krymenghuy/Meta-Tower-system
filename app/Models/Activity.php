@@ -174,7 +174,6 @@ class Activity //extends Model
         $current_page =isset($filter['current_page'])?$filter['current_page']:1;
         $per_page =isset($filter['per_page'])?$filter['per_page']:10;
         if(!is_numeric($current_page)) $current_page=1;
-        $authorized = isset($filter['authorized'])?$filter['authorized']:0;
         $skip_rows = ($current_page -1) * $per_page;
 
         $str_search ="1=1";
@@ -184,7 +183,7 @@ class Activity //extends Model
             $search_value = escape_like_str($search_value);
             $str_search ="(s.name LIKE '%$search_value%' OR s.code = '$search_value')";
         }
-        $selectCols = 'rc.request_name,r.status_id,e.campus_id,s.id as student_id,r.id as request_id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id,r.request_type_id';
+        $selectCols = 'r.auth_date as date,r.auth_user,rc.request_name,r.status_id,e.campus_id,s.id as student_id,r.id as request_id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id,r.request_type_id,r.authorized';
         $query = DB::table('students as s')
                 ->join('requests as r','r.student_id','=','s.id')
                 ->join('request_changes as rc','r.id','=','rc.request_id')
@@ -193,27 +192,28 @@ class Activity //extends Model
                 ->selectRaw($selectCols)
                 ->where('r.branch_id',$branch_id)
                 ->whereRaw($str_moreWhere)->whereRaw($str_search)
-                ->where('r.status_id',2);
-                if($type){
-                    $query->where('r.request_type_id',$type);
-                }
-                $query->where('r.authorized',$authorized);
+                ->where('r.status_id','>',1);
+                // if($type){
+                //     $query->where('r.request_type_id',$type);
+                // }
+                // $query->where('r.authorized',$authorized);
         $count_query = clone $query;
-        $count = $count_query->count('r.id');
+        $count = $count_query->count('s.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach($rows as $row) {
+            $authorized = isset($filter['authorized'])?$filter['authorized']:$row->authorized;
             $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
             $row->request_change = $this->getRequestChanges($row->request_id,$ss);
-            $row->status = $authorized == 0? 'pending' : 'approved';
+            $row->status = $authorized == 0 ? 'pending' : 'approved';
             $row->school = $campus->details($row->campus_id,$ss)->name;
             unset($row->file_name);
-            $row->preview = PriceList::previewRequestPayment([
-                'student_id' => $row->student_id,
-                'request_type_id' => $row->request_type_id,
-                "to_level_id" => 26,
-                "to_session_id" => 2
-            ],$ss);
+            // $row->preview = PriceList::previewRequestPayment([
+            //     'student_id' => $row->student_id,
+            //     'request_type_id' => $row->request_type_id,
+            //     "to_level_id" => 26,
+            //     "to_session_id" => 2
+            // ],$ss);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -356,7 +356,7 @@ class Activity //extends Model
                 'status_id' => 3 // approve request Status ID = 3
             ];
 
-            $approveRequestID =1;//saveData($ss,'requests',['id' => $id],$approve_arr,[],1);//DB::table('requests')->where('id',$id)->update($approve_arr);
+            $approveRequestID = saveData($ss,'requests',['id' => $id],$approve_arr,[],1);//DB::table('requests')->where('id',$id)->update($approve_arr);
             if($approveRequestID){
                 $req_change_arr = [
                     'from_id' => $from_id,
@@ -550,11 +550,13 @@ class Activity //extends Model
 
     function rejectRequestChange($d,$ss){
         $id = isset($d->id) ? $d->id :$d->request_id;
+        $remarks = $d->remarks;
         $ss = $ss?$ss:$this->ss;
         $id = isset($d->id) ? $d->id : $d->request_id;
         $delete = DB::table('requests')->where('id',$id)->update([
             'stutus' => 4,// reject
-            'auth_user' => $ss->full_name
+            'auth_user' => $ss->full_name,
+            'remarks' => $remarks
         ]);
         return DV::depends($delete,['action' => 'delete']);
     }

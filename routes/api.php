@@ -12,6 +12,7 @@ use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\ProgramLevelController;
 use App\Http\Controllers\PromoteStudentController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\StudentAttendanceController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentGroupController;
 use App\Http\Controllers\TermController;
@@ -170,6 +171,10 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/invoice-delete',[PriceListController::class,'deleteInvoice']);
         Route::post('/invoice-to-active',[PriceListController::class,'turnInvoiceToActive']);
         Route::post('/invoice-update',[PriceListController::class,'updateInvoice']);
+
+
+        //** AttendanceController */
+        Route::post('/save-attendance',[StudentAttendanceController::class,'saveAttendance']);
     });
     //end::StudentController
 
