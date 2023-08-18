@@ -5,6 +5,7 @@ use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AudioController;
 use App\Http\Controllers\CampusController;
 use App\Http\Controllers\DepositeController;
+use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\Login\GuardianLoginController;
 use App\Http\Controllers\Mobile\HomePageController;
 use App\Http\Controllers\ProgramController;
@@ -116,6 +117,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/request-change/delete',[ActivityController::class,'deleteRequest']);
         Route::post('/request-discount/delete',[ActivityController::class,'deleteRequestDiscount']);
         Route::post('/preview-request-payment',[ActivityController::class,'previewRequestPaymentFee']);
+        Route::post('/reject-request',[ActivityController::class,'rejectRequestChange']);
+
     });
     // Route::post('/approve/general/list-paginate',[ActivityController::class,'approveGeneralListPaginateList']);
 
@@ -506,6 +509,12 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
       // Route::post('other-fee/delete-item', [PolicyDiscountController::class, 'deleteItem']);
 
   //End::OtherFeeController
+
+    //begin::GuardianController
+    Route::prefix('guardian')->group(function(){
+        Route::post('save',[GuardianController::class,'save']);
+    });
+    //end::GuardianController
 
     //begin::Currency APIs
     Route::prefix('currency')->group(function () {

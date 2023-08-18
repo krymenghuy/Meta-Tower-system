@@ -543,8 +543,20 @@ class Activity //extends Model
                 ];
                 DB::table('discount_request')->where('id',$id)->update($dis_arr_info);
             }
+            $success ++;
         }
-        return 'sdfs';
+        return DV::depends($success,['action' => 'Approved']);
+    }
+
+    function rejectRequestChange($d,$ss){
+        $id = isset($d->id) ? $d->id :$d->request_id;
+        $ss = $ss?$ss:$this->ss;
+        $id = isset($d->id) ? $d->id : $d->request_id;
+        $delete = DB::table('requests')->where('id',$id)->update([
+            'stutus' => 4,// reject
+            'auth_user' => $ss->full_name
+        ]);
+        return DV::depends($delete,['action' => 'delete']);
     }
 
 
@@ -561,5 +573,4 @@ class Activity //extends Model
         $delete = DB::table('discount_request')->where('id',$id)->delete();
         return DV::depends($delete,['action' => 'delete']);
     }
-
 }

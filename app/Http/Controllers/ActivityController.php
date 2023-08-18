@@ -130,4 +130,13 @@ class ActivityController extends Controller
         $delete = new Activity(null,$ss);
         return JDV::raw($delete->deleteRequestDiscount($req,$ss));
     }
+
+
+    function rejectRequet(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code != 200) return $ss;
+
+        $delete = new Activity(null,$ss);
+        return JDV::raw($delete->rejectRequestChange($req,$ss));
+    }
 }

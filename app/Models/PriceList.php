@@ -29,7 +29,7 @@ class PriceList //extends Model
     }
 
     static function getAcademicYearID($academic_year){
-      return DV::table('academic_years as y')->where('y.academic_year',$academic_year)->take(1)->value('id');
+      return DB::table('academic_years as y')->where('y.academic_year',$academic_year)->take(1)->value('id');
     }
 
     function save($arr=[],$id=null,$ss=null){
@@ -59,12 +59,12 @@ class PriceList //extends Model
        $inputs['start_date'] = convertDate($start_date);
 
         $err = self::checkDateOverlap($start_date,$end_date,$id);
-       if($err){
-          return DV::error($err);
-       }
+        if($err){
+            return DV::error($err);
+        }
 
        $academic_year = $inputs['academic_year'];
-       $inputs['ac_year_int'] = self::getAcademicYearID($academic_year);
+       $inputs['ac_year_id'] = self::getAcademicYearID($academic_year);
        $id = saveData($ss,'price_list',['id'=>$id],$inputs,[],1,false);
        return DV::depends($id,['action'=>$action,'price_list'=>$this->list_price_list()],'Failed to save price list');
     }
@@ -1246,7 +1246,7 @@ class PriceList //extends Model
                     'level_id' => $row->level_id,
                     'session_id' => $row->session_id,
                     'campus_id' => $row->campus_id,
-                    'tuition_due' => $current_payment_info->price,
+                    'tuition_due' => $row->tuition_due,
                     'price_list_id' => $current_payment_info->price_list_id
                 ];
 
@@ -1293,6 +1293,7 @@ class PriceList //extends Model
                 ];
                 saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
             }
+
         }
         if($last_level->id == $current_level->id){
 
@@ -1312,7 +1313,7 @@ class PriceList //extends Model
                     'level_id' => $row->level_id,
                     'session_id' => $row->session_id,
                     'campus_id' => $row->campus_id,
-                    'tuition_due' => $current_payment_info->price,
+                    'tuition_due' => $row->tuition_due,
                     'price_list_id' => $current_payment_info->price_list_id
                 ];
 
@@ -1338,6 +1339,7 @@ class PriceList //extends Model
                         ],[],1);
                     }
                 }
+
             }
 
             if($next_level){
@@ -1360,6 +1362,7 @@ class PriceList //extends Model
                     ];
                     saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
                 }
+
             }
         }
 
@@ -1369,6 +1372,7 @@ class PriceList //extends Model
             'next_payment_info' =>$next_payment_info,
             'last_level_next_level' =>$next_level
         ];
+
     }
 
 

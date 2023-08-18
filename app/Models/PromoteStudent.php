@@ -107,12 +107,12 @@ class PromoteStudent //extends Model
                     ]);
                 }
             }
-            $keeps[] = $new_enroll;
+            // $keeps[] = $new_enroll;
 
             $success ++;
             // $arr_
         }
-        return DV::depends($success,['action'=>'Promoted','ddd'=>$level]);
+        return DV::depends($success,['action'=>'Promoted']);
     }
 
 }
