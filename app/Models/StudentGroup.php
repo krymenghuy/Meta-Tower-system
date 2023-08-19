@@ -29,7 +29,7 @@ class StudentGroup //extends Model
             'remarks' => '0|string|0-250',
 
         ];
-        
+
         $res = validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
@@ -45,11 +45,11 @@ class StudentGroup //extends Model
 
         $created = false;
         if(!$id) $created = true;
- 
+
         $g_name = $inputs['term_id'].'.'.$inputs['campus_shortcut'].'.'.$level.'.'.$inputs['session_shortcut'];
         $inputs['name'] =$g_name;
         $serial_number = null;
- 
+
         unset($inputs['campus_shortcut']);
         unset($inputs['session_shortcut']);
 
@@ -60,10 +60,10 @@ class StudentGroup //extends Model
             $g_name .='.'.$serial_number;
         }else
             $serial_number = DB::table('student_groups as g')->where('id',$newID)->take(1)->value('serial_number');
-        $g_name .='.'.$serial_number; 
+        $g_name .='.'.$serial_number;
         return DV::depends($newID,['group_name'=>$g_name,'groups']);
     }
-   
+
     static function getLevelShortcut($level_id){
       $level_name =  DB::table('program_levels AS l')->where('l.id',$level_id)->take(1)->value('name');
       $level_name =$level_name?$level_name:'';
@@ -73,10 +73,10 @@ class StudentGroup //extends Model
     }
 
     static function getCampusId($shortcut){
-      return DB::table('campuses as c')->where('shortcut',$shortcut)->take(1)->value('id'); 
+      return DB::table('campuses as c')->where('shortcut',$shortcut)->take(1)->value('id');
     }
     static function getSessionId($shortcut){
-        return DB::table('sessions as ss')->where('shortcut',$shortcut)->take(1)->value('id'); 
+        return DB::table('sessions as ss')->where('shortcut',$shortcut)->take(1)->value('id');
     }
 
     static function setGroupNumber($group_id,$campus_id,$level_id,$session_id,$group_name,$des_name=null){
@@ -94,16 +94,16 @@ class StudentGroup //extends Model
     static function list($arr, $ss){
         $branch_id = $ss->branch_id;
         $d = (object)$arr;
-        $term_id = isset($d->term_id)?$d->term_id:0; 
-        $campus_id = isset($d->campus_id)?$d->campus_id:0; 
+        $term_id = isset($d->term_id)?$d->term_id:0;
+        $campus_id = isset($d->campus_id)?$d->campus_id:0;
         //$search_value = isset($d->search_value)?$d->search_value:null;
         $program_id = isset($d->program_id)?$d->program_id:null;
         $level_id = isset($d->level_id)?$d->level_id:null;
         $session_id = isset($d->session_id)?$d->session_id:null;
-       
+
 
         $str_wheres ='g.branch_id = '.$branch_id.' AND g.term_id ='.$term_id;
-        if($level_id >0) 
+        if($level_id >0)
           $str_wheres .=' AND g.level_id ='.$level_id;
         else if ($program_id > 0){
             $str_wheres .=' AND g.program_id ='.$program_id;
@@ -112,7 +112,7 @@ class StudentGroup //extends Model
         if($campus_id > 0) $str_wheres .= ' AND g.campus_id ='.$campus_id;
 
        return DB::table('student_groups AS g')
-                ->join('campuses AS c','c.id','=','g.campus_id') 
+                ->join('campuses AS c','c.id','=','g.campus_id')
                 ->join('sessions as s','g.session_id' ,'=' ,'s.id')
                 ->join('program_levels as pl','pl.id','=','g.level_id')
                 ->selectRaw('g.id,g.term_id,CONCAT(g.name,\'.\',g.serial_number) AS `name`,g.level_id,pl.name AS level_name,g.session_id,s.name AS session_name,s.shortcut AS session_shortcut,g.remarks')
@@ -122,7 +122,7 @@ class StudentGroup //extends Model
     static function list_paginate($arr, $ss){
         $branch_id = $ss->branch_id;
         $d = (object)$arr;
-        $term_id = isset($d->term_id)?$d->term_id:0; 
+        $term_id = isset($d->term_id)?$d->term_id:0;
         $campus_id = isset($d->campus_id)?$d->campus_id:null;
 
         $current_page =isset($arr['current_page'])?$arr['current_page']:1;
@@ -136,7 +136,7 @@ class StudentGroup //extends Model
         $session_id = isset($d->session_id)?$d->session_id:null;
 
         $str_wheres ='g.branch_id = '.$branch_id.' AND g.term_id ='.$term_id;
-        if($level_id >0) 
+        if($level_id >0)
           $str_wheres .=' AND g.level_id ='.$level_id;
         else if ($program_id > 0){
             $str_wheres .=' AND g.program_id ='.$program_id;
@@ -166,7 +166,7 @@ class StudentGroup //extends Model
                 ->where('g.id',$id)
                 ->where('g.branch_id',$branch_id)->first();
     }
- 
+
     function delete($id=null,$ss=null){
         $branch_id = $ss->branch_id;
         $id =$id?$id:$this->id;
@@ -183,7 +183,7 @@ class StudentGroup //extends Model
          'programs'=>GeneralSettings::options_program($ss),
          'sessions'=>GeneralSettings::options_session($ss),
          'student_group'=>self::details($id,$ss)
-       ];  
+       ];
     }
 
 
@@ -203,7 +203,7 @@ class StudentGroup //extends Model
     }
 
 
-    static function assignGroupToStudent($arr,$ss){
+    function assignStudentToGroup($arr,$ss){
         $v_rule = [
             'student_id' => '1|number|exists=students.id',
             'group_id' => '1|number|exists=student_groups.id',

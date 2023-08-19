@@ -675,6 +675,7 @@ class PriceList //extends Model
             'session_id' => $inputs['session_id'],
             'start_date' => $inputs['start_date'],
             'status_id' => 2,
+
         ];
         if($academic_year) $arr = ['academic_year' => $academic_year];
         $months=null;
@@ -719,7 +720,7 @@ class PriceList //extends Model
                 'policy_discount' => $discount_info->discount,
             ];
             $set_pmt_option = saveData($ss,'payments',['enrollment_id' => $enr->id],$pmt_arr,[],1);
-            DB::table('enrollments')->where('student_id',$id)->where('branch_id',$ss->branch_id)->update([
+            DB::table('enrollments')->where('student_id',$student_id)->where('branch_id',$ss->branch_id)->update([
                 "tuition_end_date" => $payment_info->end_date,
             ]);
         }

@@ -57,4 +57,12 @@ class StudentGroupController extends Controller
         return JDV::result($d);
 
     }
+
+    function assignStudentToGroup(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $g = new StudentGroup(null,$ss);
+        $d = $g->assignStudentToGroup($req->all(),$ss);
+        return JDV::raw($d);
+    }
 }

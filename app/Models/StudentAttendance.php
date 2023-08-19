@@ -40,7 +40,7 @@ class StudentAttendance //extends Model
         $term_id = $inputs['term_id'];
         $group_id = $inputs['group_id'];
 
-        $enr_info = DB::table('enrollments as e')->where('e.student_id',$student_id)->where('e.level_id',$level_id)->where('e.id',$enrollment_id)->where('e.status_id','>',2)->selectRaw('e.tuition_end_date,e.student_id,e.level_id,e.session_id,e.start_date')->first();
+        $enr_info = DB::table('enrollments as e')->where('e.student_id',$student_id)->where('e.level_id',$level_id)->where('e.id',$enrollment_id)->where('e.status_id','>=',3)->selectRaw('e.tuition_end_date,e.student_id,e.level_id,e.session_id,e.start_date')->first();
         $level = GeneralSettings::getLevel($level_id,$ss);
         $scan_status = null;
         if(!$enr_info){
@@ -49,20 +49,23 @@ class StudentAttendance //extends Model
         if($enr_info->tuition_end_date < $present){
             return DV::error('Student enrollment is not available or expired');
         }
-        $selectGroup = '';
+        $selectGroup = 'sg.checkin_time,sg.checkout_time';
         $group = DB::table('group_members as gm')->where('gm.student_id',$student_id)
-                ->join('student_groups as sg','sg.id','=','gm.group_id')->selectRaw('sg.check_in_time')
+                ->join('student_groups as sg','sg.id','=','gm.group_id')->selectRaw($selectGroup)
                 ->first();
         $time = date('H:i:s');
         $check_in_out_count = DB::table('student_attendances')->where('student_id',$student_id)->whereDate('session_date', '=', DB::raw('CURDATE()'))->count();
-        $check_in = isset($arr['check_in'])?$arr['check_in']:$group->check_in_time;
-        $status = $this->checkInOutStatus($check_in,$present_time); // status % Present, Absent,Permission %
+        $check_in = isset($arr['check_in'])?$arr['check_in']:$group->checkin_time;
+        $check_out = isset($arr['check_in'])?$arr['check_in']:$group->checkout_time;
+        $status =  null; // status % Present, Absent,Permission %
 
         //** */
         if($check_in_out_count < 1){
             $scan_status = 'in'; // check in;
+            $status = $this->checkInStatus($check_in,$present_time);
         }else if ($check_in_out_count <2){
             $scan_status = 'out'; // check out;
+            $status = $this->checkOutStatus($check_in,$present_time);
         }else {
             return DV::error('Already check in and out');
         }
@@ -77,29 +80,32 @@ class StudentAttendance //extends Model
             "status_id" => $status->status_id,
             "scan_status" => $scan_status,
             "created_at" => getNowTime(),
-            "updated_at" => getNowTime()
+            "updated_at" => getNowTime(),
+            "in_out_time" => $present_time
         ];
         $newID = DB::table('student_attendances')->insert($arr_attenance);
 
         $test = [
             'session_date' => getNowTime(),
             'diff_time' => $status,
-            'status_' => $group->check_in_time,
+            'status_' => $group->checkin_time,
             'count' => $check_in_out_count,
-            "scan_status" => $scan_status
+            "scan_status" => $scan_status,
+            "early" => $status->early,
+            "late" => $status->late,
         ];
 
         return $test;
 
     }
 
-    function checkInOutStatus($class_start,$present_time){
-        $diff_time = diff_time($class_start,$present_time);
+    function checkOutStatus($class_end,$present_time){
+        $diff_time = diff_time($class_end,$present_time);
         $status_id = 0;
         $late = 0;
         $early = 0;
         if($diff_time < 1){
-            $early = $diff_time;
+            $early = abs( $diff_time);
             return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];
         }
         if($diff_time >1 && $diff_time < 15){
@@ -107,6 +113,23 @@ class StudentAttendance //extends Model
             $late = $diff_time;
             return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];
         }
-        return $status_id;
+        return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];
+    }
+
+    function checkInStatus($class_start,$present_time){
+        $diff_time = diff_time($class_start,$present_time);
+        $status_id = 0;
+        $late = 0;
+        $early = 0;
+        if($diff_time < 1){
+            $early = abs( $diff_time);
+            return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];
+        }
+        if($diff_time >1 && $diff_time < 15){
+            $status_id = 1;// Present;
+            $late = $diff_time;
+            return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];
+        }
+        return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];
     }
 }
