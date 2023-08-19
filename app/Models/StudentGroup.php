@@ -27,6 +27,7 @@ class StudentGroup //extends Model
             'checkin_time'=>'1|string|0-100',
             'checkout_time' => '1|string|0-100',
             'remarks' => '0|string|0-250',
+
         ];
         
         $res = validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
@@ -68,6 +69,7 @@ class StudentGroup //extends Model
       $level_name =$level_name?$level_name:'';
       $level_name = Sanitizer::sanitize($level_name);
       return str_replace(' ','',$level_name);
+
     }
 
     static function getCampusId($shortcut){
@@ -182,5 +184,41 @@ class StudentGroup //extends Model
          'sessions'=>GeneralSettings::options_session($ss),
          'student_group'=>self::details($id,$ss)
        ];  
+    }
+
+
+    static function setUniqueGroupNumber($len=null,$level_id,$session_id,$ss){
+        if (!$len) $len = 5;
+        $level = GeneralSettings::getLevel($level_id,$ss);
+        $level_name = strtoupper(substr($level->name,0,2));
+        $session = GeneralSettings::getSession($session_id);
+        $session = $session->name;
+        $string = $session;
+        $letters = implode(" ", array_map(function ($word) {
+            return strtoupper($word[0]);
+        }, explode(" ", $string)));
+        $session_prefix = str_replace(" ", "", $letters);
+        $group_name = $level_name.'.'.$session_prefix;
+        return $group_name;
+    }
+
+
+    static function assignGroupToStudent($arr,$ss){
+        $v_rule = [
+            'student_id' => '1|number|exists=students.id',
+            'group_id' => '1|number|exists=student_groups.id',
+        ];
+        $res = validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
+        if($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+
+        $newID = saveData($ss,'group_members',['id' => null],$inputs,[],1);
+        return DV::depends($newID,['action'=> 'Assigned']);
+    }
+
+    static function groupMemberList($ss){
+        $branch_id = $ss->branch_id;
+        $rows = DB::table('group_members as gm')->join('students as s','s.id','=','gm.student_id')->where('branch_id',$branch_id);
+        return $rows;
     }
 }

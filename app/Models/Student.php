@@ -116,6 +116,7 @@ class Student //extends Model
             ];
             if(!$id){
                     $en_student_data['status_id'] = $statusID;
+                    $en_student_data['is_new_student'] = 1;
             }
             $enrollment_id = saveData($ss,'enrollments',['student_id'=>$id],$en_student_data,[],1);
             $save_pmt_paramsID=null;
@@ -203,7 +204,7 @@ class Student //extends Model
             $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 'e.id as enrollment_id,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.school_id';
+        $selectCols = 'e.is_new_student,e.id as enrollment_id,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.school_id';
         $query = DB::table('students as st')
                 ->join('enrollments as e','e.student_id','=','st.id')
                 ->join('sessions as s','s.id','=','e.session_id')
@@ -228,13 +229,12 @@ class Student //extends Model
         $count = $count_query->count('st.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row) {
-            // $status = rand(0,1)?'New':'Old';
             $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
             $row->parent_info = self::getChildParent($row->id);
             unset($row->file_name);
             $row->campus = $campus->details($row->campus_id,$ss)->name;
             $row->level = self::getProgramLevel($row->level_id);
-            // $row->student_type = $status;
+            $row->student_type = $row->is_new_student == 0 ? 'Old' : 'New';
 
             $row->previous_school = self::getPrevSchool($row->school_id)->name;
         }
