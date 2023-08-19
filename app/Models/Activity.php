@@ -582,4 +582,53 @@ class Activity //extends Model
         $delete = DB::table('discount_request')->where('id',$id)->delete();
         return DV::depends($delete,['action' => 'delete']);
     }
+
+    function approvalDiscountListPaginate($filter,$ss){
+        $campus = new Campus();
+        $ss = $ss?$ss:$this->ss;
+        $branch_id = $ss->branch_id;
+        $type = isset($filter['discount_type_id'])?$filter['discount_type_id']:null;
+        $search_value =isset($filter['search_value'])?$filter['search_value']:null;
+        $current_page =isset($filter['current_page'])?$filter['current_page']:1;
+        $per_page =isset($filter['per_page'])?$filter['per_page']:10;
+        if(!is_numeric($current_page)) $current_page=1;
+        $authorized = isset($filter['authorized'])?$filter['authorized']:0;
+        $skip_rows = ($current_page -1) * $per_page;
+
+        $str_search ="1=1";
+        $str_moreWhere="1=1";
+        if($search_value){
+            $skip_rows =0;
+            $search_value = escape_like_str($search_value);
+            // $str_search ="(i.code = '$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+            $str_search ="(s.name LIKE '%$search_value%' OR s.code = '%$search_value%')";
+        }
+
+        $selectCols = 'dr.id,dr.amount,dt.name as discount_type,s.file_name,s.code,s.name,s.name_kh,s.sex,s.date_of_birth,formatDate(dr.updated_at) as updated_at,s.update_user,dr.remarks';
+        $query = DB::table('discount_request as dr')
+                ->join('discount_types as dt','dt.id','=','dr.discount_type_id')
+                ->join('students as s','s.id','=','dr.student_id')
+                ->where('dr.branch_id',$branch_id)
+                ->where('dr.status_id','>',1)
+                ->selectRaw($selectCols)
+                ->whereRaw($str_moreWhere)->whereRaw($str_search);
+                if($type){
+                    $query->where('r.request_type_id',$type);
+                }
+                $query->where('dr.authorized',$authorized);
+
+        $count_query = clone $query;
+        $count = $count_query->count('dr.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+
+        foreach($rows as $row) {
+            $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
+            // $row->request_change = $this->getRequestChanges($row->request_id,$ss);
+            $row->status = $authorized == 0? 'pending' : 'approved';
+            // $row->school = $campus->details($row->campus_id,$ss)->name;
+            unset($row->file_name);
+        }
+
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
 }

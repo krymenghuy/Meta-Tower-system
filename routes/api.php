@@ -128,7 +128,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::prefix('approval')->group(function(){
         Route::post('/discount-count',[ActivityController::class,'requestDiscountCount']);
         Route::post('/request-change-list',[ActivityController::class,'approvalActivityListPaginateList']);
-        Route::post('/request-discount-list',[ActivityController::class,'requestDiscountListPaginate']);
+        Route::post('/request-discount-list',[ActivityController::class,'approvalDiscountListPaginate']);
         Route::post('/approve-request-change',[ActivityController::class,'approveRequestChange']);
         Route::post('/approve-request-discount',[ActivityController::class,'approveRequestDiscount']);
         Route::post('/reject-request-change',[ActivityController::class,'rejectRequestChange']);
@@ -142,7 +142,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     });
     //end::PromoteController
 
- 
+
     Route::post('/form-option',[SettingController::class,'select_options']);
     Route::post('option/prev-program',[SettingController::class,'prevPrograms']);
     Route::post('option/prev-program-level',[SettingController::class,'prevProgramLevels']);
@@ -224,6 +224,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/details', [StudentGroupController::class, 'getDetails']);
         Route::post('/delete', [StudentGroupController::class, 'delete']);
         Route::post('/form-options', [StudentGroupController::class, 'getFormOptions']);
+        Route::post('/assign',[StudentGroupController::class,'assignStudentToGroup']);
     });
     //end::StudentGroupController
 
@@ -436,7 +437,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('Bill/settings/save-vendor-type', [VendorController::class, 'saveVendorType']);
     Route::post('Bill/settings/delete-vendor-type', [VendorController::class, 'saveVendorType']);
 
-      
+
     //begin::PriceListController
     Route::post('price-list/list-paginate', [PriceListController::class, 'getPriceList_paginate']);
     Route::post('price-list/delete', [PriceListController::class, 'deletePriceList']);
