@@ -346,7 +346,11 @@ class GeneralSettings //extends Model
 
     static function getstudentEnrollments($d,$ss){
         $id = isset($d->id)?$d->id:$d->student_id;
-        return DB::table('enrollments')->where('student_id',$id)->selectRaw('id as enrollment_id,student_id,term_id,session_id,program_id,level_id,campus_id')->get();
+        $rows = DB::table('enrollments')->where('student_id',$id)->selectRaw('id as enrollment_id,student_id,term_id,session_id,program_id,level_id,campus_id')->get();
+        foreach($rows as $row){
+            $row->level = 'Enrollment level ('.self::getLevel($row->level_id,$ss)->level.')';
+        }
+        return $rows;
     }
 
     static function optionsStudentRequest($d,$ss){
