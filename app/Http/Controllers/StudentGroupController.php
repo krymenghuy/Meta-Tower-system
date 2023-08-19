@@ -55,5 +55,6 @@ class StudentGroupController extends Controller
         $g = new StudentGroup($req->id,$ss);
         $d = $g->getFormOptions($req->id,$ss);
         return JDV::result($d);
+
     }
 }

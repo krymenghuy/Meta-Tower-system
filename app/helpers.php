@@ -296,6 +296,15 @@ function prn_allowed($prn_id,$module_id){
     return $month == 2 ? ($year % 4 ? 28 : ($year % 100 ? 29 : ($year % 400 ? 28 : 29))) : (($month - 1) % 7 % 2 ? 30 : 31);
  }
 
+ function diff_time($start_time,$current_time){
+    $startTimeTimestamp = strtotime($start_time);
+    $currentDateTimeTimestamp = strtotime($current_time);
+
+    // Calculate the difference in minutes
+    $minuteDifference = round(($currentDateTimeTimestamp - $startTimeTimestamp) / 60);
+    return $minuteDifference;
+ }
+
  function dateDiff_days($start_date,$end_date){
     $date1 = new DateTime($start_date);
     $date2 = New DateTime($end_date);
