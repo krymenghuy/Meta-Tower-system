@@ -52,6 +52,8 @@ use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ExchangeRateController;
 
 use App\Http\Controllers\EmployeeController;
+use App\Models\GeneralSettings;
+
 //use App\Models\PublicStorage;
 //use App\Models\SystemSetting;
 // use App\Models\Patient;
@@ -140,8 +142,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     });
     //end::PromoteController
 
-
-
+ 
     Route::post('/form-option',[SettingController::class,'select_options']);
     Route::post('option/prev-program',[SettingController::class,'prevPrograms']);
     Route::post('option/prev-program-level',[SettingController::class,'prevProgramLevels']);
@@ -153,6 +154,13 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('/option/request-type-dialog',[GeneralSettingsController::class,'requestTypeDialog']);
     Route::post('/option/student-request-info',[GeneralSettingsController::class,'optionsStudentRequest']);
     Route::post('/option/student-enrollment',[GeneralSettingsController::class,'optionStudentEnrollments']);
+
+    Route::prefix('settings')->group(function () {
+        Route::post('/options-level', [GeneralSettingsController::class, 'getOptions_level']);
+        Route::post('/options-program', [StudentController::class, 'getOptions_program']);
+        Route::post('/options-academic-year', [StudentController::class, 'getOptions_academic_year']);
+        Route::post('/options-term', [StudentController::class, 'getOptions_term']);
+    });
 
     //begin::StudentController
     Route::prefix('student')->group(function () {
@@ -212,8 +220,10 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::prefix('student-group')->group(function () {
         Route::post('/save', [StudentGroupController::class, 'save']);
         Route::post('/list', [StudentGroupController::class, 'getList']);
+        Route::post('/list-paginate', [StudentGroupController::class, 'getList_paginate']);
         Route::post('/details', [StudentGroupController::class, 'getDetails']);
         Route::post('/delete', [StudentGroupController::class, 'delete']);
+        Route::post('/form-options', [StudentGroupController::class, 'getFormOptions']);
     });
     //end::StudentGroupController
 
@@ -426,53 +436,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('Bill/settings/save-vendor-type', [VendorController::class, 'saveVendorType']);
     Route::post('Bill/settings/delete-vendor-type', [VendorController::class, 'saveVendorType']);
 
-    // //begin::InventorySettingsController =>  Inventory Settings.
-    // Route::post('inventory/settings/options-group', [InventorySettingsController::class, 'getComboItems_group']);
-    // Route::post('inventory/settings/item-form-options', [InventorySettingsController::class, 'getItemFormOptions']);
-    // Route::post('inventory/settings/stock-tracking-options', [InventorySettingsController::class, 'getStockTrackingFormOptions']);
-    // Route::post('inventory/settings/vpo-form-options', [InventorySettingsController::class, 'getReceiveVPOOptions']);
-    // Route::post('inventory/settings/options-detail-type', [InventorySettingsController::class, 'getComboItems_detailtype']);
-    // Route::post('inventory/settings/options-category', [InventorySettingsController::class, 'getComboItems_category']);
-    // Route::post('inventory/settings/options-unit', [InventorySettingsController::class, 'getComboItems_unit']);
-    // Route::post('inventory/settings/options-sku', [InventorySettingsController::class, 'getComboItems_unit']);
-    // Route::post('inventory/settings/options-manufacturer', [InventorySettingsController::class, 'getComboItems_manufacturer']);
-    // Route::post('inventory/settings/save-unit', [InventorySettingsController::class, 'saveUnit']);
-    // Route::post('inventory/settings/save-sku', [InventorySettingsController::class, 'saveUnit']);
-    // Route::post('inventory/settings/save-manufacturer', [InventorySettingsController::class, 'saveManufacturer']);
-    // Route::post('inventory/settings/save-brand', [InventorySettingsController::class, 'saveBrand']);
-    // Route::post('inventory/settings/options-stock-class', [InventorySettingsController::class, 'getComboItems_stockclass']);
-    // Route::post('inventory/settings/receive-stock-options', [InventorySettingsController::class, 'getReceiveStockFormOptions']);
-    // Route::post('inventory/settings/options-warehouse', [InventorySettingsController::class, 'getComboItems_warehouse']);
-
-    // Route::post('inventory/settings/unit/delete', [InventorySettingsController::class, 'deleteUnit']);
-    // Route::post('inventory/settings/unit/list', [InventorySettingsController::class, 'getUnitList']);
-    // Route::post('inventory/settings/unit/save', [InventorySettingsController::class, 'saveUnit']);
-    // //Route::post('inventory/settings/delete-sku', [InventorySettingsController::class, 'deleteUnit']);
-
-    // Route::post('inventory/settings/manufacturer/delete', [InventorySettingsController::class, 'deleteManufacturer']);
-    // Route::post('inventory/settings/manufacturer/list', [InventorySettingsController::class, 'getManufacturerList']);
-    // Route::post('inventory/settings/manufacturer/save', [InventorySettingsController::class, 'saveManufacturer']);
-
-    // // Route::post('inventory/settings/brand/delete', [InventorySettingsController::class, 'deleteBrand']);
-    // // Route::post('inventory/settings/brand/list', [InventorySettingsController::class, 'getBrandList']);
-    // // Route::post('inventory/settings/brand/save', [InventorySettingsController::class, 'saveBrand']);
-
-    // // *** inventory/group/save
-    // Route::post('inventory/settings/brand/save', function (Request $req) {
-    //     $res = Brand::createOrUpdate($req);
-    //     return response()->json($res);
-    // });
-
-    // Route::post('inventory/settings/brand/delete', function (Request $req) {
-    //     $res = Brand::deletePermanently($req);
-    //     return response()->json($res);
-    // });
-    // Route::post('inventory/settings/brand/list', function (Request $req) {
-    //     $res = Brand::list($req);
-    //     return response()->json($res);
-    // });
-    // //end::InventorySettingsController =>  Inventory Settings.
-
+      
     //begin::PriceListController
     Route::post('price-list/list-paginate', [PriceListController::class, 'getPriceList_paginate']);
     Route::post('price-list/delete', [PriceListController::class, 'deletePriceList']);

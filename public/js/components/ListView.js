@@ -143,7 +143,7 @@ class ListView{
 	// 	return (target.parentNode.classList.contains(cssClass) || target.classList.contains(cssClass));
 	// }
 
-	show(filter =null,current_page=null,onFinish=null){
+	show(filter =null,current_page=1,onFinish=null){
       this.showPage(filter,current_page,onFinish);
 	}
 
