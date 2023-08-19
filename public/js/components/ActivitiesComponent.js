@@ -269,14 +269,14 @@ let RequestDialog = new function(){
             let f = el.data('field');
             switch(f){
                 case 'student_id':
-                    second_call ? false : (option, d && d.student_list_options.map(op => {
+                    second_call ? false : ((option, d && d.student_list_options.map(op => {
                         option = [option,`<option value="${op.student_id}">${op.student_name} (${op.student_code})</option>`].join('');
-                    }),option = [`<option selected></option>`,option].join(''),el.html(option));
-                    mThis.getStudentInfo(el);
+                    }),option = [`<option selected></option>`,option].join(''),el.html(option)),
+                    mThis.getStudentEnrollment(el, d));
                     break;
                 case 'request_type_id':
-                    second_call ? false : VSUtil.setComboItems(el,d.request_type_options,'id','name',null,null,null);
-                    mThis.getField(el, d);
+                    second_call ? false : (VSUtil.setComboItems(el,d.request_type_options,'id','name',null,null,null),
+                    mThis.getField(el, d));
                     break;
                 case 'to_level_id':
                     VSUtil.setComboItems(el,d.level_options,'id','level',null,null,null);
@@ -308,14 +308,56 @@ let RequestDialog = new function(){
         });
     }
 
-    this.getStudentInfo = (el) => {
+    this.getStudentEnrollment = (el, data) => {
+        let elAfter = null, elNext = el.closest('.form-group');
         el.on('change',function(e){
             e.preventDefault();
             let id = $(this).val();
-            mThis.options.std_id = id;
-            
+
             if(id){
-                window.vsapi.call(`${main_view.base_url}/api/option/student-request-info`,{'student_id': id},null,false).then(res => {
+                let html = null, inner_html = null;
+                window.vsapi.call(`${main_view.base_url}/api/option/student-enrollment`,{'student_id': id},null,false).then(res => {
+                    let d = [];
+                    if(res.status_code === 200){
+                        d = res.data;
+                    }
+                    html = [`<div class="enroll form-group">
+                        <label for="enrollment_id" class="form-label">Enrollment</label>
+                        <div class="width-select-dialog">
+                            <select class="modal-select2 data-input enroll-select" data-field="enrollment_id">
+                                ${inner_html=null,d & d.map(enroll => {
+                                    inner_html = [inner_html,`<option value="${enroll.enrollment_id}">${enroll.level}</option>`].join('');
+                                }),inner_html=[inner_html,`<option selected></option>`]}
+                            </select>
+                        </div>
+                    </div>`].join('');
+                    let parent = elNext.parent();
+                    if(elAfter)
+                        elAfter.remove();
+                    elNext.after(html);
+                    elAfter = parent.find('.enroll');
+                    parent.find('select.modal-select2').select2();
+                    mThis.getStudentInfo(parent.find('select.enroll-select'));
+                });
+            }
+            else{
+                if(elAfter)
+                    elAfter.remove();
+            }
+            mThis.addOptionToElement(data,true);
+        });
+    }
+
+    this.getStudentInfo = (el) => {
+        el.on('change',function(e){
+            e.preventDefault();
+            let op = {
+                'enrollment_id': $(this).val()
+            };
+            mThis.options.std_id = op.enrollment_id;
+
+            if((op.enrollment_id != '') && (op.enrollment_id > 0)){
+                window.vsapi.call(`${main_view.base_url}/api/option/student-request-info`,op,null,false).then(res => {
                     let d = {};
                     if(res.status_code === 200){
                         d = res.data;
@@ -325,12 +367,15 @@ let RequestDialog = new function(){
                     let field = null;
                     let input = el.closest('.form-group').nextUntil('.stop')[1];
                     if(input)
-                        field = $(input).children().find(`select.data-input`);
+                        field = $(input).children().find('select.data-input');
                     if(field){
                         let f = field.data('field').substr(5);
                         field.val(d[f]).trigger('change');
                     }
                 });
+            }
+            else{
+                mThis.data = {};
             }
         });
     }

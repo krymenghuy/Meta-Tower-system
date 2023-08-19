@@ -63,12 +63,24 @@ var StudentGroupComponent = new function(){
                 data: "program_type"
             },
             {
-                title: "Session",
-                data: "session"
+                title: "Check In Time",
+                data: "check_in_time"
+            },
+            {
+                title: "Check Out Time",
+                data: "check_out_time"
+            },
+            {
+                title: "Term",
+                data: "term"
             },
             {
                 title: "Level",
                 data: "level"
+            },
+            {
+                title: "Session",
+                data: "session"
             },
             {
                 title: "Total Student",
