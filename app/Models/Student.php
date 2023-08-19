@@ -212,18 +212,18 @@ class Student //extends Model
                 ->selectRaw($selectCols)
                 ->where('st.branch_id',$branch_id)
                 ->whereRaw($str_moreWhere)->whereRaw($str_search);
-                if($level_id){
-                    $query->where('e.level_id',$level_id);
-                }
-                if($campus_id){
-                    $query->where('e.campus_id',$campus_id);
-                }
-                if($session_id){
-                    $query->where('e.session_id',$session_id);
-                }
-                if($acadmic_year){
-                    $query->where('e.academic_year',$acadmic_year);
-                }
+                // if($level_id){
+                //     $query->where('e.level_id',$level_id);
+                // }
+                // if($campus_id){
+                //     $query->where('e.campus_id',$campus_id);
+                // }
+                // if($session_id){
+                //     $query->where('e.session_id',$session_id);
+                // }
+                // if($acadmic_year){
+                //     $query->where('e.academic_year',$acadmic_year);
+                // }
                 $query->orderBy('id','desc');
         $count_query = clone $query;
         $count = $count_query->count('st.id');

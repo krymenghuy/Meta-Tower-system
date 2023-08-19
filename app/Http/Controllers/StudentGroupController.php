@@ -41,4 +41,11 @@ class StudentGroupController extends Controller
         $delete = StudentGroup::delete($req->id,$ss);
         return JDV::raw($delete);
     }
+    function assignStudentToGroup(){
+        // $ss = UM::getUserInfoByToken($req,-1);
+        // if($ss->status_code !=200) return $ss;
+
+        // $delete = StudentGroup::assignGroupToStudent();
+        // return JDV::raw($delete);
+    }
 }
