@@ -132,7 +132,7 @@ class ActivityController extends Controller
     }
 
 
-    function rejectRequet(Request $req){
+    function rejectRequestChange(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code != 200) return $ss;
 

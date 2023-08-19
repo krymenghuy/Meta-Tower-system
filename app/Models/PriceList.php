@@ -1043,9 +1043,9 @@ class PriceList //extends Model
             $table_name = "invoice_code_control";
             $target_table = "invoices";
             $target_column = "invoice_number";
-             $com_branch_id = null;
-             $str_company_branch='1=1';
-             if($com_branch_id > 0) $str_company_branch ='com_branch_id ='.$com_branch_id;
+            $com_branch_id = null;
+            $str_company_branch='1=1';
+            if($com_branch_id > 0) $str_company_branch ='com_branch_id ='.$com_branch_id;
             if (!$invoice_id) return null;
 
             //if ($def_prefix) $where_branch .=" AND prefix ='$def_prefix'";

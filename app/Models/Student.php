@@ -116,6 +116,7 @@ class Student //extends Model
             ];
             if(!$id){
                     $en_student_data['status_id'] = $statusID;
+                    $en_student_data['is_new_student'] = 1;
             }
             $enrollment_id = saveData($ss,'enrollments',['student_id'=>$id],$en_student_data,[],1);
             $save_pmt_paramsID=null;
