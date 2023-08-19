@@ -6,15 +6,7 @@ var AactivitiesComponent = new function(){
 
     this.data_request = [];
 
-    this.cols = [
-    // {
-    //     title: "Check",
-    //     className: "position-relative text-center",
-    //     data: () => {
-    //         return [` <input class="form-check-input" type="checkbox"/>`].join('');
-    //     }
-    // },
-    {
+    this.cols = [{
         title: "Image",
         data: (data, a, b) => {
             let image = data.image_url ? data.image_url : '';
@@ -71,12 +63,13 @@ var AactivitiesComponent = new function(){
     {
         title: "Action",
         data: (data, a, b) => {
-            let cls = data.status === 'pending' ? '' : 'd-none';
+            let cls = data.status === 'pending' ? '' : data.status === 'rejected' ? '' : 'd-none';
+            let rejected_cls = data.status === 'rejected' ? 'd-none' : '';
             return [`<div class="d-flex gap-2">
                 <a href="javascript:void(0)" class="btn-aavt-approval ${cls}" data-requestid="${data.request_id}" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}" data-requestname="${data.request_name}" data-from="${data.request_change.from_id}" data-to="${data.request_change.to_id}">
                     <i class="fa-regular fa-circle-check fs-5 text-success"></i>
                 </a>
-                <a href="javascript:void(0)" class="btn-aavt-reject ${cls}" data-requestid="${data.request_id}">
+                <a href="javascript:void(0)" class="btn-aavt-reject ${rejected_cls} ${cls}" data-requestid="${data.request_id}">
                     <i class="fa-regular fa-circle-xmark text-warning fs-5"></i>
                 </a>
                 <a href="javascript:void(0)" class="btn-aavt-delete ${cls}" data-requestid="${data.request_id}">

@@ -272,7 +272,7 @@ let RequestDialog = new function(){
                     second_call ? false : ((option, d && d.student_list_options.map(op => {
                         option = [option,`<option value="${op.student_id}">${op.student_name} (${op.student_code})</option>`].join('');
                     }),option = [`<option selected></option>`,option].join(''),el.html(option)),
-                    mThis.getStudentEnrollment(el, d));
+                    mThis.getStudentEnrollment(el));
                     break;
                 case 'request_type_id':
                     second_call ? false : (VSUtil.setComboItems(el,d.request_type_options,'id','name',null,null,null),
@@ -308,7 +308,7 @@ let RequestDialog = new function(){
         });
     }
 
-    this.getStudentEnrollment = (el, data) => {
+    this.getStudentEnrollment = (el) => {
         let elAfter = null, elNext = el.closest('.form-group');
         el.on('change',function(e){
             e.preventDefault();
@@ -344,7 +344,6 @@ let RequestDialog = new function(){
                 if(elAfter)
                     elAfter.remove();
             }
-            mThis.addOptionToElement(data,true);
         });
     }
 
@@ -409,7 +408,7 @@ let RequestDialog = new function(){
 
                     if(div.nextUntil('div.stop').length > 0)
                         div.nextUntil('div.stop').remove();
-                    $(html).insertAfter(div);
+                    div.after(html);
                     div.parent().find('select.modal-select2').select2();
                     if(mThis.data){
                         let field = div.next().find('select.data-input');
