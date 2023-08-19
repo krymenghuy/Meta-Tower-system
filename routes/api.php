@@ -118,7 +118,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/request-change/delete',[ActivityController::class,'deleteRequest']);
         Route::post('/request-discount/delete',[ActivityController::class,'deleteRequestDiscount']);
         Route::post('/preview-request-payment',[ActivityController::class,'previewRequestPaymentFee']);
-        Route::post('/reject-request',[ActivityController::class,'rejectRequestChange']);
+
 
     });
     // Route::post('/approve/general/list-paginate',[ActivityController::class,'approveGeneralListPaginateList']);
@@ -129,6 +129,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/request-discount-list',[ActivityController::class,'requestDiscountListPaginate']);
         Route::post('/approve-request-change',[ActivityController::class,'approveRequestChange']);
         Route::post('/approve-request-discount',[ActivityController::class,'approveRequestDiscount']);
+        Route::post('/reject-request-change',[ActivityController::class,'rejectRequestChange']);
 
     });
     //end::ActivityController

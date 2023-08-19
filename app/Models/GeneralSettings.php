@@ -182,6 +182,10 @@ class GeneralSettings //extends Model
         return $row;
     }
 
+    static function getSession($session_id){
+        return DB::table('sessions')->where('id',$session_id)->selectRaw('id,name,id as session_id,name as session')->first();
+    }
+
     static function getLevel($level=null,$ss=null) {
         $branch_id = $ss->branch_id;
         return DB::table('program_levels')->where('id',$level)->selectRaw('program_id,name as level,name,id as level_id,id')->first();
@@ -342,7 +346,7 @@ class GeneralSettings //extends Model
 
     static function getstudentEnrollments($d,$ss){
         $id = isset($d->id)?$d->id:$d->student_id;
-        return DB::table('enrollments')->where('student_id',$id)->selectRaw('id as enrollment_id,student_id,term_id,session_id,program_id,level_id,campus_id')->first();
+        return DB::table('enrollments')->where('student_id',$id)->selectRaw('id as enrollment_id,student_id,term_id,session_id,program_id,level_id,campus_id')->get();
     }
 
     static function optionsStudentRequest($d,$ss){

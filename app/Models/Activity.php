@@ -183,7 +183,7 @@ class Activity //extends Model
             $search_value = escape_like_str($search_value);
             $str_search ="(s.name LIKE '%$search_value%' OR s.code = '$search_value')";
         }
-        $selectCols = 'r.auth_date as date,r.auth_user,rc.request_name,r.status_id,e.campus_id,s.id as student_id,r.id as request_id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id,r.request_type_id,r.authorized';
+        $selectCols = 'formatTime(r.updated_at) as updated_at,r.update_user,r.auth_date as date,r.auth_user,rc.request_name,r.status_id,e.campus_id,s.id as student_id,r.id as request_id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id,r.request_type_id,r.authorized';
         $query = DB::table('students as s')
                 ->join('requests as r','r.student_id','=','s.id')
                 ->join('request_changes as rc','r.id','=','rc.request_id')
@@ -200,12 +200,19 @@ class Activity //extends Model
         $count_query = clone $query;
         $count = $count_query->count('s.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-
+        $status =null;
         foreach($rows as $row) {
+            if($row->status_id == 2){
+                $status = "pending";
+            }else if($row->status_id == 3){
+                $status = 'approved';
+            }else{
+                $status = 'rejected';
+            }
             $authorized = isset($filter['authorized'])?$filter['authorized']:$row->authorized;
             $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
             $row->request_change = $this->getRequestChanges($row->request_id,$ss);
-            $row->status = $authorized == 0 ? 'pending' : 'approved';
+            $row->status = $status;
             $row->school = $campus->details($row->campus_id,$ss)->name;
             unset($row->file_name);
             // $row->preview = PriceList::previewRequestPayment([
@@ -223,7 +230,7 @@ class Activity //extends Model
         $level = new ProgramLevel();
         $row = DB::table('request_changes as rg')->where('rg.request_id',$id)
                 ->join('requests as r','r.id','=','rg.request_id')
-                ->selectRaw('rg.request_name,rg.remarks,rg.from_id,rg.to_id,r.request_type_id')->first();
+                ->selectRaw('r.update_user as requester,rg.request_name,rg.remarks,rg.from_id,rg.to_id,r.request_type_id')->first();
         switch($row->request_type_id){
             case 1:
                 $row->from_level = $level->details($row->from_id,$ss)->name;
@@ -554,11 +561,11 @@ class Activity //extends Model
         $ss = $ss?$ss:$this->ss;
         $id = isset($d->id) ? $d->id : $d->request_id;
         $delete = DB::table('requests')->where('id',$id)->update([
-            'stutus' => 4,// reject
+            'status_id' => 4,// reject
             'auth_user' => $ss->full_name,
             'remarks' => $remarks
         ]);
-        return DV::depends($delete,['action' => 'delete']);
+        return DV::depends($delete,['action' => 'reject']);
     }
 
 
