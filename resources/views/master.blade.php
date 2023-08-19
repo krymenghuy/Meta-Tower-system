@@ -70,7 +70,7 @@
                                 <div id="_main_top_right_menus" class="mainview-top-right">
                                     <div class="form-inline">
                                         <div class="dropdown choose--language">
-                                            <button id="_main_btn_lang" class="btn-dropdown align--language" data-menu="lang">
+                                            <button id="_main_btn_lang" class="btn-dropdown main-menu-button align--language" data-menu="lang">
                                                 <img class="mr-1" src="{{ asset('assets/images/icons/khmer.png') }}" style="height:25px"/>
                                                 <span id="_main_lang_name">
                                                     <?php
@@ -98,7 +98,7 @@
                                             </div>
                                         </div>
                                         <div class="dropdown mr-3 nav--notification">
-                                            <button id="_main_btn_notif" class="btn-dropdown" data-menu="notif">
+                                            <button id="_main_btn_notif" class="btn-dropdown main-menu-button" data-menu="notif">
                                                 <i class="fa-regular fa-bell fs-4"></i>
                                                 <span class="number--notification" id="_main_notif_count">0</span>
                                             </button>
@@ -110,7 +110,7 @@
                                             </div>
                                         </div>
                                         <div class="dropdown user--info">
-                                            <button id="_main_btn_user" class="btn-dropdown" data-menu="user">
+                                            <button id="_main_btn_user" class="btn-dropdown main-menu-button" data-menu="user">
                                                 <img class="mr-1" src="{{ asset('assets/images/icons/user.png') }}" style="height:30px"/>
                                                 <span>
                                                     <?php

@@ -6,13 +6,14 @@ var AactivitiesComponent = new function(){
 
     this.data_request = [];
 
-    this.cols = [{
-        title: "Check",
-        className: "position-relative text-center",
-        data: () => {
-            return [` <input class="form-check-input" type="checkbox"/>`].join('');
-        }
-    },
+    this.cols = [
+    // {
+    //     title: "Check",
+    //     className: "position-relative text-center",
+    //     data: () => {
+    //         return [` <input class="form-check-input" type="checkbox"/>`].join('');
+    //     }
+    // },
     {
         title: "Image",
         data: (data, a, b) => {
