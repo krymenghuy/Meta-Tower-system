@@ -352,6 +352,30 @@ class GeneralSettingsController extends Controller
     return JDV::result($options);
   }
 
+  function getOptions_level(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return $ss; //user not authenticated
+    $program_id = $req->program_id?$req->program_id:$req->id;
+    return JDV::result(GeneralSettings::options_level($program_id,$ss));
+  }
+
+  function getOptions_program(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return $ss; //user not authenticated
+    return JDV::result(GeneralSettings::options_program($ss));
+  }
+  function getOptions_academic_year(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return $ss; //user not authenticated
+    return JDV::result(GeneralSettings::options_academic_year($ss));
+  }
+
+  function getOptions_session(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return $ss; //user not authenticated
+    return JDV::result(GeneralSettings::options_session($ss));
+  }
+
   // static function getComboItems_department(Request $req){
   //    $ss = UM::getUserInfoByToken($req,-1);
   //    if($ss->status_code !=200) return $ss; //user not authenticated
