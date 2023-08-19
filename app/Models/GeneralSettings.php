@@ -181,6 +181,9 @@ class GeneralSettings //extends Model
         if(!$row) return $row=null;
         return $row;
     }
+    static function options_session($ss){
+      return DB::table('sessions as ss')->where('branch_id',$ss->branch_id)->selectRaw('id,name as session_name,shortcut')->get(); 
+    }
 
     static function getSession($session_id){
         return DB::table('sessions')->where('id',$session_id)->selectRaw('id,name,id as session_id,name as session')->first();
@@ -188,17 +191,20 @@ class GeneralSettings //extends Model
 
     static function getLevel($level=null,$ss=null) {
         $branch_id = $ss->branch_id;
-        return DB::table('program_levels')->where('id',$level)->selectRaw('program_id,name as level,name,id as level_id,id')->first();
+        return DB::table('program_levels')->where('id',$level)->selectRaw('program_id,name as level,name,id as level_id,shortcut,id')->first();
     }
     static function options_program($ss){
         $branch_id = $ss->branch_id;
-        return  DB::table('programs AS p')->where('p.branch_id',$branch_id)->selectRaw("p.id,p.name as program_name")->orderByRaw('p.name','ASC')->get();
+        return DB::select(DB::raw('SELECT p.id, p.name AS program_name, shortcut FROM programs AS p WHERE branch_id ='.$branch_id.' ORDER BY name ASC'));
     }
     static function options_level($program_id=null,$ss){
         //$branch_id = $ss->branch_id;
         return  DB::table('program_levels AS p')->where('p.program_id',$program_id)->selectRaw('p.id,p.program_id,p.name as level_name,p.level_order,p.prev_level_id')->orderByRaw('p.level_order ASC')->get();
     }
-
+    static function options_campus($ss){
+        $branch_id = $ss->branch_id;
+        return  DB::table('campuses AS c')->where('c.branch_id',$branch_id)->selectRaw('c.id,c.name as campus_name,c.shortcut')->get();
+    }
     static function options_academic_year($ss){
         $branch_id = $ss->branch_id;
         return  DB::table('academic_years AS a')->where('a.branch_id',$branch_id)->selectRaw('a.id,a.academic_year,formatDate(a.start_date) AS start_date,formatDate(a.end_date) AS end_date')->orderByRaw('a.start_date ASC')->get();
@@ -211,7 +217,7 @@ class GeneralSettings //extends Model
     static function options_term($academic_year,$ss){
        $branch_id = $ss->branch_id;
        $str_year ='1=1';
-       if($academic_year>0) $str_year ='academic_year =\''.$academic_year.'\'';
+       if($academic_year > 0) $str_year ='academic_year =\''.$academic_year.'\'';
        return DB::table('terms as t')->where('t.branch_id',$branch_id)->selectRaw('t.id,t.`name` as term_name')->orderByRaw('start_date DESC')->get();
     }
 

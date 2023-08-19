@@ -1,19 +1,103 @@
 'use strict';
 var StudentGroupComponent = new function(){
     let mThis = this;
-    this.title_prop = 'Student Group';
+    this.title_prop = 'Student Groups';
     this.self = $('#_main_studentGroupComponent');
-
     this.tblStudentGroup = mThis.self.find('#_sdg_tbl');
     this.btnNew = mThis.self.find('#_sdg_btn_new');
+  
+    this.elFilter_term = this.self.find('#_sdg_filter_term');
+    this.elFilter_program = this.self.find('#_sdg_filter_program');
+    this.elFilter_session = this.self.find('#_sdg_filter_session');
 
+    this.cols = [
+        {
+            title: "Group Name",
+            data: (data,index,tr) =>{
+                if(data.name == data.descriptive_name) data.name ='';
+                if(!data.descriptive_name) data.descriptive_name = data.name;
+                return ['<div class="d-flex flex-column"><span class="fw-semibold">',data.descriptive_name,'</span><span class="text-left text-muted">',data.name,'</span></div>'].join('');
+            }
+        },
+        {
+            title: "Session",
+            data: "session_name"
+        },
+        {
+            title: "Program",
+            data: (data,index,tr) =>{
+                return ['<div class="d-flex flex-column"><span class="fw-semibold">',data.program_name,'</span><span class="text-left">',data.level_name,'</span></div>'].join('');
+            }
+        },
+        {
+            title: "Students",
+            data: "student_count"
+        },
+        {
+            title: "Remarks",
+            data: (data,index,tr)=>{
+                return data.remarks?data.remarks:'No Remarks';
+            }
+        },
+        {
+            title: "Action",
+            data: (data, index, tr) => {
+                return [`<div class="d-flex gap-2">
+                    <a href="javascript:void(0)" class="btn-sdg-modify" data-id="${data.id}">
+                        <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
+                    </a>
+                    <a href="javascript:void(0)" class="btn-sdg-delete" data-id="${data.id}">
+                        <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                    </a>
+                </div>`].join('');
+            }
+        }];
+
+    this.getFilterData = ()=>{
+     return {
+       'term_id':mThis.elFilter_term.val(),
+       'program_id':mThis.elFilter_program.val(),
+       'session_id':mThis.elFilter_session.val()
+     };
+    }
+
+   //*** init StudentGroupsComponent
     this.init = () => {
+        mThis.groupListview = new ListView('div_group_list',{
+            'fetchApi':`${main_view.base_url}/api/student-group/list-paginate`,
+            'columns': mThis.cols,
+            'tableClass':"table header-light-blue header-uppercase",
+            'rowCreated':(data, index, tr) => {
+                tr.setAttribute('data-id',data.id);
+                tr.setAttribute('data-sessionid',data.session_id);
+            },
+            'beforeRender':()=>{}
+        });
+
+        mThis.tblStudentGroup = $(mThis.groupListview.getTable());
+
+        mThis.elFilter_term.on('change',e=>{
+            e.preventDefault();
+            mThis.groupListview.showPage(mThis.getFilterData(),null,null);
+        });
+
+        mThis.elFilter_program.on('change',e=>{
+            e.preventDefault();
+            mThis.groupListview.showPage(mThis.getFilterData(),null,null);
+        });
+
+        mThis.elFilter_session.on('change',e=>{
+            e.preventDefault();
+            mThis.groupListview.showPage(mThis.getFilterData(),null,null);
+        });
+
+
         mThis.btnNew.on('click',function(e){
             e.preventDefault();
             let op = {
                 'id': 0,
                 'onClose': () => {
-                    mThis.displayStudentGroup();
+                    mThis.groupListview.showPage(mThis.getFilterData(),null,null);
                 }
             };
             StudentGroupDialog.show(op);
@@ -46,104 +130,31 @@ var StudentGroupComponent = new function(){
             });
         });
     }
-
-    this.displayStudentGroup = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/student-group/list`,null,null).then(res => {
-            let data = [];
-            if(res.status_code === 200){
-                data = res.data;
-            }
-
-            let cols = [{
-                title: "Name",
-                data: "name"
-            },
-            {
-                title: "Program Type",
-                data: "program_type"
-            },
-            {
-                title: "Check In Time",
-                data: "check_in_time"
-            },
-            {
-                title: "Check Out Time",
-                data: "check_out_time"
-            },
-            {
-                title: "Term",
-                data: "term"
-            },
-            {
-                title: "Level",
-                data: "level"
-            },
-            {
-                title: "Session",
-                data: "session"
-            },
-            {
-                title: "Total Student",
-                data: "total_students"
-            },
-            {
-                title: "Action",
-                data: (data, a, b) => {
-                    return [`<div class="d-flex gap-2">
-                        <a href="javascript:void(0)" class="btn-sdg-modify" data-id="${data.id}">
-                            <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
-                        </a>
-                        <a href="javascript:void(0)" class="btn-sdg-delete" data-id="${data.id}">
-                            <i class="fa-regular fa-trash-can text-danger fs-5"></i>
-                        </a>
-                    </div>`].join('');
-                }
-            }];
-
-            if(mThis.table){
-                mThis.tblStudentGroup.DataTable().clear().destroy();
-                mThis.tblStudentGroup.empty();
-                mThis.table = null;
-            }
-
-            if(!mThis.table){
-                mThis.table = mThis.tblStudentGroup.DataTable({
-                    searching: false,
-                    destroy: true,
-                    paging: true,
-                    ordering: false,
-                    retrieve: true,
-                    info: true,
-                    pageLength: 10,
-                    bLengthChange: false,
-                    saveState: true,
-                    processing: true,
-                    language: {
-                        loadingRecords: '&nbsp;',
-                        processing: 'Loading...',
-                        emptyTable: LocaleManager.trans('No data to display', 'datatable')
-                    },
-                    data: data,
-                    columns: cols,
-                    createdRow: function (row, data, dataIndex) {
-                        row.setAttribute('data-id',data.id);
-                    }
-                });
-            }
-
-            if(typeof onFinish === 'function') onFinish();
-        });
+ 
+    this.loadFilterOptions = (onFinish=null)=>{
+       vsapi.call(`${main_view.base_url}/api/student-group/form-options`,{'id':null},null,false).then(res=>{
+           if(res.status_code === 200){
+                let d =StringSanitizer.sanitizeObject( res.data,null,[]);
+                VSUtil.setComboItems(mThis.elFilter_term,d.terms,'id','term_name',null,null,null);
+                VSUtil.setComboItems(mThis.elFilter_program,d.programs,'id','program_name',null,null,null);
+                VSUtil.setComboItems(mThis.elFilter_session,d.sessions,'id','session_name',null,null,null);
+                mThis.elFilter_term.val(d.terms[0].id).trigger('change');
+                onFinish();
+           }else cv_interact.error('Failed to load Filter data for Student Groups Component');
+       });
     }
 
     this.show = (options) => {
         if(!options) options = {};
-        mThis.displayStudentGroup(() => {
-            main_view.setTitle(mThis.title_prop);
-            let x = mThis.self.siblings(':visible');
-            x.fadeOut('fast',function(){
-                mThis.self.hide().fadeIn(300);
-            });
-        });
+
+        mThis.loadFilterOptions(()=>{
+             main_view.setTitle(mThis.title_prop);
+             let x = mThis.self.siblings(':visible');
+             x.fadeOut('fast',function(){
+                 mThis.self.hide().fadeIn(300);
+             });
+        }); 
+      
     }
 }
 
@@ -151,9 +162,14 @@ let StudentGroupDialog = new function(){
     let mThis = this;
     this.self = $('#dlg_sdg_');
     this.options = {};
-
+ 
     this.elTitle = mThis.self.find('.modal-title');
     this.elSession = mThis.self.find('#dlg_sdg_session');
+    this.elProgram = mThis.self.find('#dlg_sdg_program');
+    this.elCampus = mThis.self.find('#dlg_sdg_campus');
+    this.elGroupName = mThis.self.find('#dlg_sdg_name');
+    this.elAcademicYear = mThis.self.find('#dlg_sdg_academic_year');
+    this.elTerm = mThis.self.find('#dlg_sdg_term');
     this.elLevel = mThis.self.find('#dlg_sdg_level');
     this.btnSave = mThis.self.find('#dlg_sdg_btn_save');
 
@@ -161,6 +177,7 @@ let StudentGroupDialog = new function(){
         e.preventDefault();
         mThis.validate.validator(() => {
             let p = mThis.getDataForm();
+           
             window.vsapi.call(`${main_view.base_url}/api/student-group/save`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
@@ -186,7 +203,7 @@ let StudentGroupDialog = new function(){
         return p;
     }
 
-    this.setDataForm = (d) => {
+    this.setFormData = (d) => {
         d = d ? d : {};
         mThis.validate.resetForm();
         mThis.self.find('.data-input').each(function(){
@@ -199,26 +216,65 @@ let StudentGroupDialog = new function(){
         });
     }
 
-    this.loadFormDetail = (options) => {
-        window.vsapi.call(`${main_view.base_url}/api/student-group/details`,{'id': options.id},null).then(res => {
+    mThis.elCampus.change('change',e=>{
+       mThis.setGroupName();
+    });
+
+    mThis.elProgram.on('change',e=>{
+        window.vsapi.call(`${main_view.base_url}/api/settings/options-level`,{'program_id':mThis.elProgram.val()},null,false).then(res => {
+            let d = [];
+            if(res.status_code === 200){
+                d = StringSanitizer.sanitizeObject(res.data,null,null);
+            }
+            VSUtil.setComboItems(mThis.elLevel,d,'id','level_name',null,null,null);
+        });
+    });
+
+    mThis.elAcademicYear.on('change',e=>{
+        window.vsapi.call(`${main_view.base_url}/api/settings/options-term`,{'academic_year':mThis.elAcademicYear.val()},null,false).then(res => {
+            let d = [];
+            if(res.status_code === 200){
+                d = StringSanitizer.sanitizeObject(res.data,null,null);
+            }
+            VSUtil.setComboItems(mThis.elTerm,d,'id','term_name',null,null,null);
+        });
+    });
+
+    mThis.elLevel.on('change',e=>{
+        mThis.setGroupName();
+    });
+
+    mThis.elSession.on('change',e=>{
+        mThis.setGroupName();
+    });
+
+    mThis.elTerm.on('change',e=>{
+        mThis.setGroupName();
+    });
+ 
+    this.prepareFormOption = (group_id,onFinish = null) => {
+        window.vsapi.call(`${main_view.base_url}/api/student-group/form-options`,{'id':group_id},null,false).then(res => {
             let d = {};
             if(res.status_code === 200){
-                d = res.data;
+                d = StringSanitizer.sanitizeObject(res.data,null,['academic_year']);
             }
-            mThis.setDataForm(d);
+            VSUtil.setComboItems(mThis.elCampus,d.campuses,'shortcut','campus_name',null,null,null);
+            VSUtil.setComboItems(mThis.elAcademicYear,d.academic_years,'academic_year','academic_year',null,null,null);
+            VSUtil.setComboItems(mThis.elProgram,d.programs,'id','program_name',null,null,null);
+            VSUtil.setComboItems(mThis.elSession,d.sessions,'shortcut','session_name',null,null,null);
+            if(typeof onFinish === 'function') onFinish(d);
         });
     }
 
-    this.prepareFormOption = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
-            let d = {};
-            if(res.status_code === 200){
-                d = res.data;
-            }
-            VSUtil.setComboItems(mThis.elSession,d.sessions,'id','name',null,null,null);
-            VSUtil.setComboItems(mThis.elLevel,d.levels,'id','level',null,null,null);
-            if(typeof onFinish === 'function') onFinish();
-        });
+    this.setGroupName = ()=>{
+      let c = mThis.elCampus.val();
+      let l = mThis.elLevel.find('option:selected').text();
+      l = StringSanitizer.sanitizeOut(l);
+      l = (l+'').replace(/\s/g,'',l);
+      let s = mThis.elSession.val();
+      let term_id = mThis.elTerm.val();
+      let g_name = [term_id,'.',c,'.',l,'.',s,'#'].join('');
+      mThis.elGroupName.val(g_name);
     }
 
     this.validate = new FormValidator(mThis.self,{
@@ -229,16 +285,14 @@ let StudentGroupDialog = new function(){
         if(!options) options = {};
         mThis.options = options;
 
-        mThis.prepareFormOption(() => {
-            if(options.id > 0){
+        mThis.prepareFormOption(options.id,(d) => {
+            if(d.student_group){
                 mThis.elTitle.text(LocaleManager.trans('Modify Student Group','titles'));
-                mThis.loadFormDetail(options);
             }
             else{
                 mThis.elTitle.text(LocaleManager.trans('New Student Group','titles'));
-                mThis.setDataForm(null);
             }
-    
+            mThis.setFormData(d.student_group);
             mThis.self.modal({
                 backdrop:'static'
             });

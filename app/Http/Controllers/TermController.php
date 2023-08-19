@@ -9,11 +9,9 @@ use Illuminate\Http\Request;
 
 class TermController extends Controller
 {
-    //
     function save(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
-
         $row = new Term($req->id,$ss);
         $save = $row->save($req->all());
         return JDV::raw($save);

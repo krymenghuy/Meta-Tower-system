@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Models;
-
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use DB;
@@ -11,7 +9,9 @@ class Campus //extends Model
     // use HasFactory;
     static function save($arr=[],$id=null,$ss){
     $v_rule = [
-            'name' => '1|string',
+            'name' => '1|string|1-350',
+            'shortcut'=>'1|string|1-15',
+            'address'=>'0|string|0-250',
             'loc_lat' => '0|number',
             'loc_lng' => '0|number',
         ];
