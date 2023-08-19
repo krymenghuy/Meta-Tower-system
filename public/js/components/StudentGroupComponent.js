@@ -148,7 +148,6 @@ var StudentGroupComponent = new function(){
         if(!options) options = {};
 
         mThis.loadFilterOptions(()=>{
-             //mThis.groupListview.showPage(null);
              main_view.setTitle(mThis.title_prop);
              let x = mThis.self.siblings(':visible');
              x.fadeOut('fast',function(){
@@ -247,21 +246,11 @@ let StudentGroupDialog = new function(){
 
     mThis.elSession.on('change',e=>{
         mThis.setGroupName();
-    })
+    });
 
     mThis.elTerm.on('change',e=>{
         mThis.setGroupName();
-    })
-
-    // this.loadFormDetail = (options) => {
-    //     window.vsapi.call(`${main_view.base_url}/api/student-group/details`,{'id': options.id},null).then(res => {
-    //         let d = {};
-    //         if(res.status_code === 200){
-    //             d = res.data;
-    //         }
-    //         mThis.setDataForm(d);
-    //     });
-    // }
+    });
  
     this.prepareFormOption = (group_id,onFinish = null) => {
         window.vsapi.call(`${main_view.base_url}/api/student-group/form-options`,{'id':group_id},null,false).then(res => {

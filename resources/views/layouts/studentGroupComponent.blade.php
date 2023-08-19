@@ -68,12 +68,6 @@
                                 <select id="dlg_sdg_level" class="modal-select2 data-input" data-field="level_id"></select>
                             </div>
                         </div>
-
-                        <!-- <div class="form-group">
-                            <label for="program_type" class="form-label trans-text" data-langprop="titles.Program Type"></label>
-                            <input type="text" class="form-control data-input" data-field="program_type"/>
-                        </div> -->
-
                         <div class="form-group col-lg-12">
                             <label for="session_id" class="form-label trans-text" data-langprop="titles.Session"></label>
                             <div class="width-select-dialog">
