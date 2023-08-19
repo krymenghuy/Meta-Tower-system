@@ -1,5 +1,5 @@
 <div id="_main_discountComponent" class="mobile-padding p-3" style="display:none">
-    <div class="d-block bg-white p-3 rounded-4">
+    <div class="d-block bg-white p-3 rounded-3">
         <div class="d-flex">
             <span class="trans-text fs-5" data-langprop="titles.Special Discount"></span>
             <span class="px-2 fs-5">/</span>
@@ -9,13 +9,17 @@
             <div class="col">
                 <div class="form-group">
                     <label for="discount_type" class="form-label trans-text" data-langprop="titles.Discount Type"></label>
-                    <select class="modal-select2 form-control data-input" data-field="discount_type"></select>
+                    <div class="width-select-dialog">
+                        <select class="modal-select2 form-control data-input" data-field="discount_type"></select>
+                    </div>
                 </div>
             </div>
             <div class="col">
                 <div class="form-group">
                     <label for="academic_year" class="form-label trans-text" data-langprop="titles.Academic Year"></label>
-                    <select class="modal-select2 form-control data-input" data-field="academic_year"></select>
+                    <div class="width-select-dialog">
+                        <select class="modal-select2 form-control data-input" data-field="academic_year"></select>
+                    </div>
                 </div>
             </div>
             <div class="col">
@@ -36,7 +40,7 @@
         <button class="btn btn-primary btn-sm" type="button">
             <span class="trans-text" data-langprop="buttons.Approve"></span>
         </button>
-        <input type="search" class="form-control width--search-inner" placeholder="Search by Name or ID..."/>
+        <input type="search" class="form-control width--search-inner"/>
         <div class="d-flex justify-content-end w-100">
             <div class="d-flex gap-2">
                 <button class="btn btn-sm btn-primary" type="button">
@@ -54,7 +58,5 @@
             </div>
         </div>
     </div>
-    <div class="table-responsive mt-3 p-3">
-        <table class="table tbl__apv"></table>
-    </div>
+    <div id="" class="table-responsive mt-3 p-3 bg-white rounded-3"></div>
 </div>

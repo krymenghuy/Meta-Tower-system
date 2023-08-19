@@ -47,7 +47,6 @@ var RegistrationComponent = new function(){
             mThis.validate.validator(() => {
                 let p = mThis.getDataForm(mThis.div_input, 'data-input');
                 p = mThis.prepareData(p);
-                console.log(p);
                 window.vsapi.call(`${main_view.base_url}/api/student/registration`,p,null).then(res => {
                     if(res.status_code === 200){
                         mThis.options.photo = null;
