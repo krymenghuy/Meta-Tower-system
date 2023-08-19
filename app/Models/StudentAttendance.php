@@ -53,46 +53,93 @@ class StudentAttendance //extends Model
         $group = DB::table('group_members as gm')->where('gm.student_id',$student_id)
                 ->join('student_groups as sg','sg.id','=','gm.group_id')->selectRaw($selectGroup)
                 ->first();
-        $time = date('H:i:s');
-        $check_in_out_count = DB::table('student_attendances')->where('student_id',$student_id)->whereDate('session_date', '=', DB::raw('CURDATE()'))->count();
+        $current_date = isset($arr['current_date'])?date('Y-m-d',strtotime($arr['current_date'])):DB::raw('CURDATE()');
+        $check_in_out = DB::table('student_attendances')->where('student_id',$student_id)->whereDate('session_date', '=', $current_date)->selectRaw('is_finished,id')->first();
         $check_in = isset($arr['check_in'])?$arr['check_in']:$group->checkin_time;
         $check_out = isset($arr['check_in'])?$arr['check_in']:$group->checkout_time;
         $status =  null; // status % Present, Absent,Permission %
+        $in_diff_time = 0;
+        $out_diff_time = 0;
+        $in_remarks = "null";
+        $out_remarks = "";
+        $id = null;
+        $is_finished = $check_in_out?$check_in_out->is_finished:null;
+        if($check_in_out){
+            $id = $check_in_out->id;
+        }
 
-        //** */
-        if($check_in_out_count < 1){
+
+        if($is_finished === null || $is_finished <0){
             $scan_status = 'in'; // check in;
             $status = $this->checkInStatus($check_in,$present_time);
-        }else if ($check_in_out_count <2){
-            $scan_status = 'out'; // check out;
-            $status = $this->checkOutStatus($check_in,$present_time);
-        }else {
+            $earliness = $status->early;
+            $lateness = $status->late;
+            if($earliness){
+                $in_remarks = "Check in ".$this->formatMinsTime($earliness)." early";
+                $in_diff_time= $earliness;
+            }else{
+                $in_remarks = "Check in ".$this->formatMinsTime($lateness)." late";
+                $in_diff_time = $lateness;
+            }
+            $is_finished = 0;
+
+        }else if($is_finished == 0 ){
+            $scan_status = 'out'; // check in;
+            $status = $this->checkOutStatus($check_out,$present_time);
+            $earliness = $status->early;
+            $lateness = $status->late;
+            if($earliness){
+                $out_remarks = "Check out ".$this->formatMinsTime($earliness)." early";
+                $out_diff_time = $earliness;
+            }else{
+                $out_remarks = "Check out ".$this->formatMinsTime($lateness)." late";
+                $out_diff_time = $lateness;
+            }
+            $is_finished = 1;
+        }else{
             return DV::error('Already check in and out');
         }
 
         $arr_attenance = [
-            "session_date" => date('Y-m-d'),
+            "session_date" => $current_date,
             "student_id" => $student_id,
             "level_id" => $level_id,
             "term_id" => $term_id,
             "group_id" => $group_id,
             "program_id" => $level->program_id,
             "status_id" => $status->status_id,
-            "scan_status" => $scan_status,
             "created_at" => getNowTime(),
-            "updated_at" => getNowTime(),
-            "in_out_time" => $present_time
+            "in_diff_time" => $in_diff_time,
+            "checkin_time" => $present_time,
+            "in_remarks" => $in_remarks,
+            "is_finished" => $is_finished,
         ];
-        $newID = DB::table('student_attendances')->insert($arr_attenance);
+        $update=[];
+        if($id){
+            $update = [
+                "is_finished" => $is_finished,
+                "checkout_time" => $present_time,
+                "out_remarks" => $out_remarks,
+                "out_diff_time" => $out_diff_time,
+                "updated_at" => getNowTime(),
+            ];
+            DB::table('student_attendances')->where('id',$id)->update($update);
+        }else{
+            DB::table('student_attendances')->insert($arr_attenance);
+        }
+
 
         $test = [
             'session_date' => getNowTime(),
             'diff_time' => $status,
             'status_' => $group->checkin_time,
-            'count' => $check_in_out_count,
+            'count' => $check_in_out,
             "scan_status" => $scan_status,
             "early" => $status->early,
             "late" => $status->late,
+            "id" => $id,
+            "update"=>$update,
+            "is_finished" => $is_finished
         ];
 
         return $test;
@@ -105,10 +152,10 @@ class StudentAttendance //extends Model
         $late = 0;
         $early = 0;
         if($diff_time < 1){
-            $early = abs( $diff_time);
+            $early = $diff_time;
             return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];
         }
-        if($diff_time >1 && $diff_time < 15){
+        if($diff_time >=1 && $diff_time < 15){
             $status_id = 1;// Present;
             $late = $diff_time;
             return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];
@@ -122,14 +169,24 @@ class StudentAttendance //extends Model
         $late = 0;
         $early = 0;
         if($diff_time < 1){
-            $early = abs( $diff_time);
+            $early = $diff_time;
             return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];
         }
-        if($diff_time >1 && $diff_time < 15){
+        if($diff_time >=1 && $diff_time < 15){
             $status_id = 1;// Present;
             $late = $diff_time;
             return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];
         }
         return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];
+    }
+
+    function formatMinsTime($minutes) {
+        if ($minutes < 60) {
+            return $minutes . " min";
+        } else {
+            $hours = floor($minutes / 60);
+            $remainingMinutes = $minutes % 60;
+            return $hours . " hour" . ($hours > 1 ? "s" : "") . ($remainingMinutes > 0 ? " " . $remainingMinutes . " min" : "");
+        }
     }
 }
