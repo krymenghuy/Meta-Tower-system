@@ -541,7 +541,7 @@ class Student //extends Model
     static function getStudentEnrollmentInfo($d,$ss=null){
         $student_id = isset($d->student_id)?$d->student_id:$d;
         // $filter = $d;
-        $selectCols = 'e.id,s.name as session,c.name as campus,pmt.tuition,pmt.tuition_due,pmt.tuition_paid,pl.name as level,e.academic_year,e.status_id';
+        $selectCols = 'e.session_id,e.id,c.name as campus,pmt.tuition,pmt.tuition_due,pmt.tuition_paid,pl.name as level,e.academic_year,e.status_id';
         // $branch_id = $ss->branch_id;
         // $search_value =isset($filter['search_value'])?$filter['search_value']:null;
         // $current_page =isset($filter['current_page'])?$filter['current_page']:1;
@@ -558,7 +558,6 @@ class Student //extends Model
         $query =  DB::table('enrollments as e')
                 ->where('e.student_id', $student_id)
                 ->join('payments as pmt','pmt.enrollment_id','=','e.id')
-                ->join('sessions as s','s.id','=','e.id')
                 ->join('campuses as c','e.campus_id','=','c.id')
                 ->join('program_levels as pl','e.level_id','=','pl.id')
                 ->selectRaw($selectCols);
@@ -580,6 +579,7 @@ class Student //extends Model
                 $status = 'surcharge';
             }
             $row->status = strtolower($status);
+            $row->session = GeneralSettings::getSession($row->session_id)->name;
         }
         return $rows;
         // return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
