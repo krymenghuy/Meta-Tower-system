@@ -181,6 +181,7 @@
                                 @include('layouts.academicYearComponent')
                                 @include('layouts.paymentPendingComponent')
                                 @include('layouts.requestDiscountComponent')
+                                @include('layouts.promoteStudentComponent')
                             </div>
                         </div>
                     </div>
