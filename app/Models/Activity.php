@@ -537,12 +537,12 @@ class Activity //extends Model
                 $dis_arr_info = [
                     'special_discount' =>  $discountTypeInfo->amount,
                     'tuition_due' => $tuition_due,
-                    // 'authorized' => 1
                 ];
                 if(!$payment) continue;
                 DB::table('payments')->where('id',$enrollment->id)->update($dis_arr_info);
                 DB::table('discount_request')->where('id',$id)->update([
-                    'authorized'=> 1
+                    'authorized'=> 1,
+                    'status_id' => 3
                 ]);
             }
             else{
@@ -555,7 +555,8 @@ class Activity //extends Model
                 if(!$payment) continue;
                 DB::table('payments')->where('id',$enrollment->id)->update($dis_arr_info);
                 DB::table('discount_request')->where('id',$id)->update([
-                    'authorized'=> 1
+                    'authorized'=> 1,
+                    'status_id' => 3
                 ]);
             }
             $success ++;
@@ -569,6 +570,19 @@ class Activity //extends Model
         $ss = $ss?$ss:$this->ss;
         $id = isset($d->id) ? $d->id : $d->request_id;
         $delete = DB::table('requests')->where('id',$id)->update([
+            'status_id' => 4,// reject
+            'auth_user' => $ss->full_name,
+            'remarks' => $remarks
+        ]);
+        return DV::depends($delete,['action' => 'reject']);
+    }
+
+    function rejectRequestDiscount($d,$ss){
+        $id = isset($d->id) ? $d->id :$d->discount_id;
+        $remarks = $d->remarks;
+        $ss = $ss?$ss:$this->ss;
+        $id = isset($d->id) ? $d->id : $d->discount_id;
+        $delete = DB::table('discount_request')->where('id',$id)->update([
             'status_id' => 4,// reject
             'auth_user' => $ss->full_name,
             'remarks' => $remarks
@@ -612,7 +626,7 @@ class Activity //extends Model
             $str_search ="(s.name LIKE '%$search_value%' OR s.code = '%$search_value%')";
         }
 
-        $selectCols = 'dr.authorized,dr.id,dr.amount,dt.name as discount_type,s.file_name,s.code,s.name,s.name_kh,s.sex,s.date_of_birth,formatDate(dr.updated_at) as updated_at,s.update_user,dr.remarks';
+        $selectCols = 'dr.status_id,dr.authorized,dr.id,dr.amount,dt.name as discount_type,s.file_name,s.code,s.name,s.name_kh,s.sex,s.date_of_birth,formatDate(dr.updated_at) as updated_at,s.update_user,dr.remarks';
         $query = DB::table('discount_request as dr')
                 ->join('discount_types as dt','dt.id','=','dr.discount_type_id')
                 ->join('students as s','s.id','=','dr.student_id')
@@ -630,9 +644,16 @@ class Activity //extends Model
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach($rows as $row) {
+            if($row->status_id == 2){
+                $status = "pending";
+            }else if($row->status_id == 3){
+                $status = 'approved';
+            }else{
+                $status = 'rejected';
+            }
             $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
             // $row->request_change = $this->getRequestChanges($row->request_id,$ss);
-            $row->status = $row->authorized == 0? 'pending' : 'approved';
+            $row->status = $status;
             // $row->school = $campus->details($row->campus_id,$ss)->name;
             unset($row->file_name);
         }

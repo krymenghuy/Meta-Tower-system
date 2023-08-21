@@ -132,9 +132,10 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/approve-request-change',[ActivityController::class,'approveRequestChange']);
         Route::post('/approve-request-discount',[ActivityController::class,'approveRequestDiscount']);
         Route::post('/reject-request-change',[ActivityController::class,'rejectRequestChange']);
-
+        Route::post('/reject-request-discount',[ActivityController::class,'rejectRequestDiscount']);
     });
     //end::ActivityController
+
 
     //begin::PromoteController
     Route::prefix('promote')->group(function(){
@@ -483,7 +484,9 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
     //begin::GuardianController
     Route::prefix('guardian')->group(function(){
-        Route::post('save',[GuardianController::class,'save']);
+        Route::post('/save',[GuardianController::class,'save']);
+        Route::post('/list',[GuardianController::class,'list']);
+        Route::post('/details',[GuardianController::class,'details']);
     });
     //end::GuardianController
 

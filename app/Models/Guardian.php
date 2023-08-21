@@ -10,8 +10,15 @@ class Guardian //extends Model
 {
     // use HasFactory;
 
-    protected static $img_dir = 'guardiains';
-    static function save($arr=[],$id=null,$ss){
+    protected $img_dir = 'guardiains',$id = null, $ss = null;
+
+    function __construct($id=null,$ss=null){
+        $this->id = $id;
+        $this->ss = $ss;
+    }
+    function save($arr=[],$id=null,$ss=null){
+        $id = $id?$id:$this->id;
+        $ss = $ss?$ss:$this->ss;
         $v_rule = [
             'name' => '0|string|1,30',
             'email' => '0|string',
@@ -42,7 +49,8 @@ class Guardian //extends Model
     }
 
 
-    static function guardianList($filter,$ss){
+    function guardianList($filter,$ss=null){
+        $ss = $ss?$ss:$this->ss;
         $branch_id = $ss->branch_id;
         $search_value =isset($filter['search_value'])?$filter['search_value']:null;
         $current_page =isset($filter['current_page'])?$filter['current_page']:1;
@@ -68,10 +76,6 @@ class Guardian //extends Model
         $count_query = clone $query;
         $count = $count_query->count('g.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-
-        // foreach($rows as $row) {
-
-        // }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
