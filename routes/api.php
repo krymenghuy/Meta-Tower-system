@@ -185,7 +185,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
 
         //** AttendanceController */
-        Route::post('/save-attendance',[StudentAttendanceController::class,'saveAttendance']);
+        Route::post('/attendance-save',[StudentAttendanceController::class,'saveAttendance']);
+        Route::post('/attendance-save',[StudentAttendanceController::class,'AttendanceList']);
     });
     //end::StudentController
 
