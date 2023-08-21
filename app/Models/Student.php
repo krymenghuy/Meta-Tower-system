@@ -444,10 +444,8 @@ class Student //extends Model
             // $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 'st.name_kh,e.start_date as admission_date,st.sex,st.file_name,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.school_id';
+        $selectCols = 'st.name_kh,st.sex,st.file_name,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name';
         $query = DB::table('students as st')
-                ->join('enrollments as e','e.student_id','=','st.id')
-                ->join('sessions as s','e.session_id','=','s.id')
                 ->selectRaw($selectCols)
                 ->where('st.branch_id',$branch_id)
                 ->whereRaw($str_moreWhere)->whereRaw($str_search)
