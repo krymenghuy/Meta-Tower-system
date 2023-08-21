@@ -133,7 +133,7 @@ var StudentInformationComponent = new function(){
                 </div>`].join('');
             });
 
-            div_wrapper.html(html);
+            div_wrapper.html(['<div class="position-absolute d-flex gap-2">',html,'</div>'].join(''));
         });
     }
 

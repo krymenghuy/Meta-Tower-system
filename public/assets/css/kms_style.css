@@ -600,10 +600,12 @@ li.kt-menu__section {
 }
 
 .on-hover-to-scroll{
+    position: relative;
     display: flex;
     flex-wrap: nowrap;
     overflow-x : hidden;
     padding:1rem;
+    min-height: 200px;
 }
 
 .on-hover-to-scroll:hover{
