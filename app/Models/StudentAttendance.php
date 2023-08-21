@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use DB;
+use Illuminate\Pagination\LengthAwarePaginator;
 class StudentAttendance //extends Model
 {
     // use HasFactory;
@@ -58,14 +59,11 @@ class StudentAttendance //extends Model
         ->selectRaw('id,checkin_time,checkout_time,term_id')
         ->first();
 
-
         if($group_in){
             $group = $group_in;
         }else{
             $group = $group_out;
         }
-
-
 
         $member = DB::table('group_members')->where('student_id', $student_id)->where('group_id', $group->id)->first();
 
@@ -219,5 +217,37 @@ class StudentAttendance //extends Model
             $remainingMinutes = $minutes % 60;
             return $hours . " hour" . ($hours > 1 ? "s" : "") . ($remainingMinutes > 0 ? " " . $remainingMinutes . " min" : "");
         }
+    }
+
+
+    function attendanceList($filter=[],$ss=null){
+        $branch_id = $ss->branch_id;
+        $search_value =isset($filter['search_value'])?$filter['search_value']:null;
+        $current_page =isset($filter['current_page'])?$filter['current_page']:1;
+        $per_page =isset($filter['per_page'])?$filter['per_page']:10;
+        if(!is_numeric($current_page)) $current_page=1;
+        $skip_rows = ($current_page -1) * $per_page;
+
+        $str_search ="1=1";
+        $str_moreWhere="1=1";
+        if($search_value){
+            $skip_rows = 0;
+            $search_value = escape_like_str($search_value);
+            // $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+        }
+
+        $selectCols = '';
+        $query = DB::table('')
+                ->whereRaw($str_moreWhere)->whereRaw($str_search)
+                ->orderBy('id','desc');
+        $count_query = clone $query;
+        $count = $count_query->count('id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+        foreach($rows as $row) {
+
+        }
+
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+
     }
 }
