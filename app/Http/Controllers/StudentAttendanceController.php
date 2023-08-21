@@ -22,7 +22,7 @@ class StudentAttendanceController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
         $instance = new StudentAttendance(null,$ss);
-        $save = $instance->attendanceList($req->all(),$ss);
-        return JDV::raw($save);
+        $list = $instance->attendanceList($req->all(),$ss);
+        return JDV::raw($list);
     }
 }
