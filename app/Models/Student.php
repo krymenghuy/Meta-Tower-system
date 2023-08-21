@@ -444,7 +444,7 @@ class Student //extends Model
             // $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 'e.start_date as admission_date,st.sex,st.file_name,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.school_id';
+        $selectCols = 'st.name_kh,e.start_date as admission_date,st.sex,st.file_name,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.school_id';
         $query = DB::table('students as st')
                 ->join('enrollments as e','e.student_id','=','st.id')
                 ->join('sessions as s','e.session_id','=','s.id')
@@ -467,6 +467,8 @@ class Student //extends Model
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
+    // static function getStudent
 
 
     static function deleteStudentEnrollment($id,$ss){
@@ -542,9 +544,11 @@ class Student //extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    static function getStudentEnrollmentInfo($student_id){
+    static function getStudentEnrollmentInfo($d){
+        $student_id = isset($d->student_id)?$d->student_id:$d;
         $selectCols = 's.name as session,c.name as campus,pmt.tuition,pmt.tuition_due,pmt.tuition_paid';
         return DB::table('enrollments as e')
+                ->where('e.student_id', $student_id)
                 ->join('payments as pmt','pmt.enrollment_id','=','e.id')
                 ->join('sessions as s','s.id','=','e.id')
                 ->join('campuses as c','e.campus_id','=','c.id')

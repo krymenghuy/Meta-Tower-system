@@ -66,16 +66,19 @@ class Guardian //extends Model
             $str_search ="(.code ='$search_value' OR st.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 'g.name,g.phone_number,g.email,e.n_id';
-        $query =  DB::table('guardians as g')
+        $selectCols = 's.id';
+        $query =  DB::table('students as s')
                 ->whereRaw($str_search)
                 ->selectRaw($selectCols)
                 // ->whereRaw($str_moreWhere)->whereRaw($str_search)
-                ->orderBy('g.id','desc');
+                ->orderBy('s.id','desc');
 
         $count_query = clone $query;
-        $count = $count_query->count('g.id');
+        $count = $count_query->count('s.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
+        foreach($rows as $row){
+            $row->parent = $this->getParentInfo($row->id);
+        }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
@@ -90,5 +93,14 @@ class Guardian //extends Model
         if($exists) return DV::error('Already connected');
         $newID = saveData($ss,'student_guardians',['id' => null],$inputs,[],1);
         return ;
+    }
+
+    function getParentInfo($student_id){
+        return DB::table('student_guardians as sg')
+                ->join('guardians as g','g.id','=','sg.guardian_id')
+                ->where('sg.student_id',$student_id)
+                ->selectRaw('g.name,g.phone_number,g.email,g.n_id,sg.family_code as family_id')
+                ->get();
+
     }
 }

@@ -350,11 +350,23 @@ class GeneralSettings //extends Model
         ];
     }
 
-    static function getstudentEnrollments($d,$ss){
+    static function optionsStudentEnrollments($d,$ss){
         $id = isset($d->id)?$d->id:$d->student_id;
         $rows = DB::table('enrollments')->where('student_id',$id)->selectRaw('id as enrollment_id,student_id,term_id,session_id,program_id,level_id,campus_id')->get();
         foreach($rows as $row){
             $row->level = 'Enrollment level ('.self::getLevel($row->level_id,$ss)->level.')';
+        }
+        return $rows;
+    }
+
+    static function getstudentEnrollmentsInfo($d,$ss){
+        $id = isset($d->id)?$d->id:$d->student_id;
+        $rows = DB::table('enrollments as e')->where('student_id',$id)->selectRaw('e.id as enrollment_id,e.student_id,e.term_id,e.session_id,e.program_id,e.level_id,e.campus_id,p.tuition,p.tuition_due,e.tuition_end_date')
+                ->join('payments as p','p.enrollment_id','=','e.id')->get();
+        foreach($rows as $row){
+            $row->level = 'Enrollment level ('.self::getLevel($row->level_id,$ss)->level.')';
+            $row->campus = DB::table('campuses')->where('id',$row->campus_id)->first()->name;
+            $row->session = self::getSession($row->session_id)->name;
         }
         return $rows;
     }
