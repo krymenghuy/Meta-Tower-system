@@ -17,4 +17,12 @@ class StudentAttendanceController extends Controller
         $save = $instance->saveAttendance($req->all());
         return JDV::raw($save);
     }
+
+    function attendanceList(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $instance = new StudentAttendance(null,$ss);
+        $save = $instance->attendanceList($req->all(),$ss);
+        return JDV::raw($save);
+    }
 }

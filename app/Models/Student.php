@@ -457,7 +457,7 @@ class Student //extends Model
             $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
             $row->family_id = DB::table('student_guardians')->where('student_id',$row->id)->first()->family_code;
             unset($row->file_name);
-            $row->enrollment_info = self::getStudentEnrollmentInfo($row->id);
+            $row->enrollment_info = self::getStudentEnrollmentInfo($row->id,$ss);
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
@@ -540,14 +540,21 @@ class Student //extends Model
 
     static function getStudentEnrollmentInfo($d,$ss=null){
         $student_id = isset($d->student_id)?$d->student_id:$d;
-        $filter = $d;
+        // $filter = $d;
         $selectCols = 'e.id,s.name as session,c.name as campus,pmt.tuition,pmt.tuition_due,pmt.tuition_paid,pl.name as level,e.academic_year,e.status_id';
-        $branch_id = $ss->branch_id;
-        $search_value =isset($filter['search_value'])?$filter['search_value']:null;
-        $current_page =isset($filter['current_page'])?$filter['current_page']:1;
-        $per_page =isset($filter['per_page'])?$filter['per_page']:10;
-        if(!is_numeric($current_page)) $current_page=1;
-        $skip_rows = ($current_page -1) * $per_page;
+        // $branch_id = $ss->branch_id;
+        // $search_value =isset($filter['search_value'])?$filter['search_value']:null;
+        // $current_page =isset($filter['current_page'])?$filter['current_page']:1;
+        // $per_page =isset($filter['per_page'])?$filter['per_page']:10;
+        // if(!is_numeric($current_page)) $current_page=1;
+        // $skip_rows = ($current_page -1) * $per_page;
+        // $str_search ="1=1";
+        // $str_moreWhere="1=1";
+        // if($search_value){
+        //     $skip_rows =0;
+        //     $search_value = escape_like_str($search_value);
+        //     // $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+        // }
         $query =  DB::table('enrollments as e')
                 ->where('e.student_id', $student_id)
                 ->join('payments as pmt','pmt.enrollment_id','=','e.id')
@@ -555,10 +562,12 @@ class Student //extends Model
                 ->join('campuses as c','e.campus_id','=','c.id')
                 ->join('program_levels as pl','e.level_id','=','pl.id')
                 ->selectRaw($selectCols);
+                // ->whereRaw($str_search);
 
-        $count_query = clone $query;
-        $count = $count_query->count('e.id');
-        $rows = $query->skip($skip_rows)->take($per_page)->get();
+        // $count_query = clone $query;
+        // $count = $count_query->count('e.id');
+        // $rows = $query->skip($skip_rows)->take($per_page)->get();
+        $rows = $query->get();
         foreach($rows as $row){
             $status = null;
             if($row->status_id == 1){
@@ -572,8 +581,8 @@ class Student //extends Model
             }
             $row->status = strtolower($status);
         }
-
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+        return $rows;
+        // return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
 }
