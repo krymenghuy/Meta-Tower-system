@@ -4,13 +4,17 @@
             <div class="col">
                 <div class="form-group">
                     <label for="discount_type" class="form-label trans-text" data-langprop="titles.Discount Type"></label>
-                    <select class="modal-select2 form-control data-input" data-field="discount_type"></select>
+                    <div class="width--filter-inner">
+                        <select class="modal-select2 form-control data-input" data-field="discount_type"></select>
+                    </div>
                 </div>
             </div>
             <div class="col">
                 <div class="form-group">
                     <label for="academic_year" class="form-label trans-text" data-langprop="titles.Academic Year"></label>
-                    <select class="modal-select2 form-control data-input" data-field="academic_year"></select>
+                    <div class="width--filter-inner">
+                        <select class="modal-select2 form-control data-input" data-field="academic_year"></select>
+                    </div>
                 </div>
             </div>
             <div class="col">

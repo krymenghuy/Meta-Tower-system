@@ -35,15 +35,19 @@ var AactivitiesComponent = new function(){
     },
     {
         title: "Approved By",
-        data: "auth_user"
+        data: (data, a, b) => {
+            let auth_user = data.auth_user ? data.auth_user : '', date = data.auth_date ? data.auth_date : '';
+            return [`<p class="pb-0 mb-1">${auth_user}</p>
+            <small>${date}</small>`].join('');
+        }
     },
     {
         title: "Cancelled By",
-        data: "reject_by"
-    },
-    {
-        title: "Date",
-        data: "date"
+        data: (data, a, b) => {
+            let reject_by = data.reject_by ? data.reject_by : '', date = data.reject_date ? data.reject_date : '';
+            return [`<p class="pb-0 mb-1">${reject_by}</p>
+            <small>${date}</small>`].join('');
+        }
     },
     {
         title: "Admission Date",

@@ -4,127 +4,142 @@ var StudentInformationComponent = new function(){
     this.title_prop = "Student Information";
     this.self = $('#_main_studentInformationComponent');
 
-    this.tblStudentInformation = mThis.self.find('.tbl--sin');
+    this.cols = [{
+        title: "Image",
+        data: (data, a, b) => {
+            let image = data.image_url ? data.image_url : '';
+            return [`<img class="image-student-tbl" src="${image}" alt=""/>`].join('');
+        }
+    },
+    {
+        title: "Student ID",
+        data: "student_code"
+    },
+    {
+        title: "Full Name",
+        data: "name"
+    },
+    {
+        title: "Full Name (KH)",
+        data: "name_kh"
+    },
+    {
+        title: "Sex",
+        data: (data, a, b) => {
+            return [`${data.sex === 'M' ? 'Male' : 'Female'}`].join('');
+        }
+    },
+    {
+        title: "Date of Birth",
+        data: "date_of_birth"
+    },
+    {
+        title: "Family ID",
+        data: "family_id"
+    },
+    {
+        title: "Action",
+        data: (data, a, b) => {
+            return [`<div class="d-flex gap-2">
+                <a href="javascript:void(0)" class="btn-sin-details" data-id="${data.id}">
+                    <i class="fa-regular fa-pen-to-square fs-5 text-warning"></i>
+                </a>
+            </div>`].join('');
+        }
+    }];
 
-    this.init = () => {}
+    this.init = () => {
+        mThis.itemView = new ListView('tbl--sin',{
+            'fetchApi':`${main_view.base_url}/api/student/information`,
+            'columns': mThis.cols,
+            'tableClass':"table header-light-blue header-uppercase",
+            'rowCreated':(data, index, tr) => {
+                tr.setAttribute('data-id',data.id);
+            },
+            'beforeRender':()=>{}
+        });
 
-    this.displayStudentInformation = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/`,null,null).then(res => {
-            let data = [];
+        mThis.cfg = new ExpandableRowConfig('tbl--sin_table',{
+            'dontExpandByClickingOn': ['btn-sin-details'],
+            'onOpen': (container, detail_tr, parent_tr) => {
+                let qtr = $(parent_tr);
+                let id = qtr.data('id');
+                if(id > 0)
+                    mThis.displayStudentInformationDetails(detail_tr,id);
+            }
+        });
+    }
+
+    this.displayStudentInformationDetails = (tr, id) => {
+        let div_wrapper = $(tr).find('.expandable-row-container');
+        div_wrapper.addClass(['p-3','d-flex','flex-nowrap','gap-2','overflow-x-auto']);
+        div_wrapper.empty();
+        let html = null;
+
+        window.vsapi.call(`${main_view.base_url}/api/student/enrollment-details`,{'student_id': id},null,false).then(res => {
+            let d = [], cur_symbol = '$';
             if(res.status_code === 200){
-                data = StringSanitizer.sanitizeObject(res.data);
+                d = res.data;
             }
+            
+            d && d.map(enroll => {
+                let cls = enroll.status === 'pending' ? 'text-danger' : enroll.status === 'surcharge' ? 'text-warning' : enroll.status === 'verified' ? 'text-primary' : 'text-success';
 
-            let cnt = 1;
-            let cols = [{
-                title: "No",
-                data: (data, a, b) => {
-                    return [`<span>${cnt++}</span>`].join('');
-                }
-            },
-            {
-                title: "Image",
-                data: (data, a, b) => {
-                    return [`<img src="${data.image_url}" alt=""/>`].join();
-                }
-            },
-            {
-                title: "School",
-                data: "school"
-            },
-            {
-                title: "Student ID",
-                data: "student_id"
-            },
-            {
-                title: "Full Name",
-                data: "full_name"
-            },
-            {
-                title: "Full Name (KH)",
-                data: "full_name_kh"
-            },
-            {
-                title: "Sex",
-                data: "sex"
-            },
-            {
-                title: "Date of Birth",
-                data: "date_of_birth"
-            },
-            {
-                title: "Admission Date",
-                data: "admission_date"
-            },
-            {
-                title: "Section",
-                data: "section"
-            },
-            {
-                title: "Class",
-                data: "class"
-            },
-            {
-                title: "Father Name",
-                data: "father_name"
-            },
-            {
-                title: "Family ID",
-                data: "family_id"
-            },
-            {
-                title: "Father Phone",
-                data: "father_phone"
-            },
-            {
-                title: "Action",
-                data: (data, a, b) => {
-                    return [`<button class="btn btn-danger btn-sm">
-                        <span class="trans-text" data-langprop="buttons.Options">Options</span>
-                        <i class="fa-solid fa-caret-down ps-2"></i>
-                    </button>`].join('');
-                }
-            }];
+                html = [html, `<div class="d-flex w-50 rounded-3 bg-light">
+                    <div class="w-50 p-3">
+                        <p>
+                            <span class="text-primary-emphasis">Campus</span>
+                            <span>:</span>
+                            <span>${enroll.campus}</span>
+                        </p>
+                        <p>
+                            <span class="text-primary-emphasis">Session</span>
+                            <span>:</span>
+                            <span>${enroll.session}</span>
+                        </p>
+                        <p>
+                            <span class="text-primary-emphasis">Level</span>
+                            <span>:</span>
+                            <span>${enroll.level}</span>
+                        </p>
+                        <p>
+                            <span class="text-primary-emphasis">Academic Year</span>
+                            <span>:</span>
+                            <span>${enroll.academic_year}</span>
+                        </p>
+                    </div>
+                    <div class="w-50 p-3">
+                        <p>
+                            <span class="text-primary-emphasis">Tuition</span>
+                            <span>:</span>
+                            <span>${cur_symbol} ${enroll.tuition}</span>
+                        </p>
+                        <p>
+                            <span class="text-primary-emphasis">Tuition Due</span>
+                            <span>:</span>
+                            <span>${cur_symbol} ${enroll.tuition_due}</span>
+                        </p>
+                        <p>
+                            <span class="text-primary-emphasis">Tuition Paid</span>
+                            <span>:</span>
+                            <span>${cur_symbol} ${enroll.tuition_paid}</span>
+                        </p>
+                        <p>
+                            <span class="text-primary-emphasis">Status</span>
+                            <span>:</span>
+                            <span class="text-capitalize ${cls}">${enroll.status}</span>
+                        </p>
+                    </div>
+                </div>`].join('');
+            });
 
-            if(mThis.table){
-                mThis.tblStudentInformation.DataTable().clear().destroy();
-                mThis.tblStudentInformation.empty();
-                mThis.table = null;
-            }
-
-            if(!mThis.table){
-                mThis.table = mThis.tblStudentInformation.DataTable({
-                    searching: false,
-                    destroy: true,
-                    paging: true,
-                    ordering: false,
-                    retrieve: true,
-                    info: true,
-                    pageLength: 10,
-                    bLengthChange: false,
-                    saveState: true,
-                    processing: true,
-                    language: {
-                        'loadingRecords': '&nbsp;',
-                        'processing': 'Loading...',
-                        "emptyTable": LocaleManager.trans('No data to display', 'datatable')
-                    },
-                    data: data,
-                    columns: cols,
-                    createdRow: function (row, data, dataIndex) {
-                        let tr = $(row);
-                        tr.data('id', data.id);
-                    }
-                });
-            }
-
-            if(typeof onFinish === 'function') onFinish();
+            div_wrapper.html(html);
         });
     }
 
     this.show = (options) => {
         if(!options) options = {};
-        mThis.displayStudentInformation(() => {
+        mThis.itemView.showPage(null,null,() => {
             main_view.setTitle(mThis.title_prop);
             mThis.self.show().siblings().hide();
         });

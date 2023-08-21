@@ -10,7 +10,5 @@
             <span class="trans-text" data-langprop="buttons.Find"></span>
         </button>
     </div>
-    <div class="table-responsive mt-3 p-3">
-        <table class="table tbl--sin"></table>
-    </div>
+    <div id="tbl--sin" class="table-responsive mt-3 p-3 rounded-3 bg-white"></div>
 </div>
