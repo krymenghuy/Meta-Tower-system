@@ -94,17 +94,19 @@ class PromoteStudent //extends Model
                     'tuition_due' => $payment_process->tuition_due,
                     'program_id' => $level->program_id,
                     'policy_discount' => $payment_process->discount->discount,
-                    'is_new_student' => 1
+
                 ];
 
                 $new_pmt_id = saveData($ss,'payments',['id' => null],$new_pmt_arr,[],1);
                 if($new_pmt_id){
                     DB::table('enrollment_payment')->insert([
                         'enrollment_id' => $newEnrID,
-                        'pmt_id' => $new_pmt_id
+                        'pmt_id' => $new_pmt_id,
+
                     ]);
                     DB::table('enrollments')->where('id',$newEnrID)->update([
                         'tuition_end_date' => $payment_process->end_date,
+                        'is_new_student' => 1
                     ]);
                 }
             }

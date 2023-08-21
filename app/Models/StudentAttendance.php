@@ -219,7 +219,6 @@ class StudentAttendance //extends Model
         }
     }
 
-
     function attendanceList($filter=[],$ss=null){
         $branch_id = $ss->branch_id;
         $search_value =isset($filter['search_value'])?$filter['search_value']:null;
@@ -236,18 +235,20 @@ class StudentAttendance //extends Model
             // $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
         }
 
-        $selectCols = '';
-        $query = DB::table('')
+        $selectCols = 's.date_of_birth as dob';
+        $query = DB::table('students as s')
                 ->whereRaw($str_moreWhere)->whereRaw($str_search)
+                ->selectRaw($selectCols)
                 ->orderBy('id','desc');
         $count_query = clone $query;
         $count = $count_query->count('id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row) {
-
+            $row->age = getAge($row->dob);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
 
     }
+
 }
