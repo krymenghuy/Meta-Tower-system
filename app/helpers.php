@@ -305,6 +305,14 @@ function prn_allowed($prn_id,$module_id){
     return $minuteDifference;
  }
 
+ function getAge($year_of_birth){
+    $birth_year = date('Y',strtotime($year_of_birth));
+    $currentYear = date('Y');
+
+    return $currentYear - $birth_year;
+
+ }
+
  function dateDiff_days($start_date,$end_date){
     $date1 = new DateTime($start_date);
     $date2 = New DateTime($end_date);
