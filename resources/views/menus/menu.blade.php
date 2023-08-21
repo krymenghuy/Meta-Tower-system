@@ -169,7 +169,7 @@
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="RequestDiscountComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{ asset('assets/images/icons/activities.png') }}"/>
+                                    <img class="icons" src="{{ asset('assets/images/icons/discount_act.png') }}"/>
                                 </span>
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Discount"></span>
                             </a>
