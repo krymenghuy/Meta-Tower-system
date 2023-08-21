@@ -136,7 +136,7 @@ class ActivityController extends Controller
         if($ss->status_code != 200) return $ss;
 
         $delete = new Activity(null,$ss);
-        return JDV::raw($delete->approvalDiscountListPaginate($req->all(),$ss));
+        return JDV::result($delete->approvalDiscountListPaginate($req->all(),$ss));
     }
 
 

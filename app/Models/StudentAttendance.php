@@ -17,9 +17,9 @@ class StudentAttendance //extends Model
     function saveAttendance($arr=[],$ss=null){
         $ss = $ss?$ss:$this->ss;
         $v_rule = [
-            'enrollment_id' => '0|number|exists=enrollments.id',
+            // 'enrollment_id' => '0|number|exists=enrollments.id',
             'student_id' => '1|number|exists=students.id',
-            'level_id' => '1|number|exists=program_levels.id',
+            // 'level_id' => '1|number|exists=program_levels.id',
             'term_id' => '1|number|exists=terms.id',
             'group_id' => '1|number|exists=student_groups.id',
             'session_date' => '0|date',
@@ -68,7 +68,6 @@ class StudentAttendance //extends Model
             $id = $check_in_out->id;
         }
 
-
         if($is_finished === null || $is_finished <0){
             $scan_status = 'in'; // check in;
             $status = $this->checkInStatus($check_in,$present_time);
@@ -115,6 +114,10 @@ class StudentAttendance //extends Model
             "is_finished" => $is_finished,
         ];
         $update=[];
+        $groups = DB::table('students_groups')
+        ->whereRaw('checkin_time <= 900')
+        ->orWhereRaw('TIME_TO_SEC(your_time_column) > 900')
+        ->get();
         if($id){
             $update = [
                 "is_finished" => $is_finished,
@@ -123,9 +126,9 @@ class StudentAttendance //extends Model
                 "out_diff_time" => $out_diff_time,
                 "updated_at" => getNowTime(),
             ];
-            DB::table('student_attendances')->where('id',$id)->update($update);
+            // DB::table('student_attendances')->where('id',$id)->update($update);
         }else{
-            DB::table('student_attendances')->insert($arr_attenance);
+            // DB::table('student_attendances')->insert($arr_attenance);
         }
 
 
