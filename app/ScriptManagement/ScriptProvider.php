@@ -140,6 +140,7 @@ class ScriptProvider
                 '/js/components/AcademicYearComponent.js',
                 '/js/components/PaymentPendingComponent.js',
                 '/js/components/RequestDiscountComponent.js',
+                '/js/components/PromoteStudentComponent.js',
                 'assets/js/pusher/pusher.min.js',
                 '/js/components/pusher_connect.js'
             ]

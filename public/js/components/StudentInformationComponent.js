@@ -134,6 +134,10 @@ var StudentInformationComponent = new function(){
             });
 
             div_wrapper.html(['<div class="position-absolute d-flex gap-2">',html,'</div>'].join(''));
+            div_wrapper.on('wheel',function(e){
+                let event = e.originalEvent;
+                this.scrollLeft += event.deltaY;
+            });
         });
     }
 
@@ -141,7 +145,10 @@ var StudentInformationComponent = new function(){
         if(!options) options = {};
         mThis.itemView.showPage(null,null,() => {
             main_view.setTitle(mThis.title_prop);
-            mThis.self.show().siblings().hide();
+            let x = mThis.self.siblings(':visible');
+            x.fadeOut('fast',function(){
+                mThis.self.hide().fadeIn(300);
+            });
         });
     }
 }
