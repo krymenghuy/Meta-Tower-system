@@ -566,7 +566,7 @@ class Activity //extends Model
 
     function rejectRequestChange($d,$ss){
         $id = isset($d->id) ? $d->id :$d->request_id;
-        $remarks = $d->remarks;
+        $remarks = isset($d->remarks)?$d->remarks:$d->remark;
         $ss = $ss?$ss:$this->ss;
         $id = isset($d->id) ? $d->id : $d->request_id;
         $delete = DB::table('requests')->where('id',$id)->update([
@@ -579,7 +579,7 @@ class Activity //extends Model
 
     function rejectRequestDiscount($d,$ss){
         $id = isset($d->id) ? $d->id :$d->discount_id;
-        $remarks = $d->remarks;
+        $remarks = isset($d->remarks)?$d->remarks:$d->remark;
         $ss = $ss?$ss:$this->ss;
         $id = isset($d->id) ? $d->id : $d->discount_id;
         $delete = DB::table('discount_request')->where('id',$id)->update([

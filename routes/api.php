@@ -171,6 +171,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/details-student',[StudentController::class,'studentDetials']);
         Route::post('/delete-verified',[StudentController::class,'deleteVerifiedStudent']);
         Route::post('/information',[StudentController::class,'studentInformation']);
+        Route::post('/enrollment-details',[StudentController::class,'getStudentEnrollmentInfo']);
 
         //** PriceListController */
         Route::post('/invoice-list',[PriceListController::class,'studentInvoice']);
