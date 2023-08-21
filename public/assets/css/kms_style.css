@@ -594,3 +594,18 @@ li.kt-menu__section {
     height:50px;
     border-radius: 50%;
 }
+
+.min-width-box-enroll{
+    min-width: fit-content;
+}
+
+.on-hover-to-scroll{
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x : hidden;
+    padding:1rem;
+}
+
+.on-hover-to-scroll:hover{
+    overflow-x:scroll;
+}

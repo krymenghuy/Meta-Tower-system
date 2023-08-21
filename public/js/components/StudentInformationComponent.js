@@ -72,7 +72,7 @@ var StudentInformationComponent = new function(){
 
     this.displayStudentInformationDetails = (tr, id) => {
         let div_wrapper = $(tr).find('.expandable-row-container');
-        div_wrapper.addClass(['p-3','d-flex','flex-nowrap','gap-2','overflow-x-auto']);
+        div_wrapper.addClass(['gap-2','on-hover-to-scroll']);
         div_wrapper.empty();
         let html = null;
 
@@ -85,8 +85,8 @@ var StudentInformationComponent = new function(){
             d && d.map(enroll => {
                 let cls = enroll.status === 'pending' ? 'text-danger' : enroll.status === 'surcharge' ? 'text-warning' : enroll.status === 'verified' ? 'text-primary' : 'text-success';
 
-                html = [html, `<div class="d-flex w-50 rounded-3 bg-light">
-                    <div class="w-50 p-3">
+                html = [html, `<div class="d-flex w-50 rounded-3 bg-light gap-2 min-width-box-enroll">
+                    <div class="w-50 p-3 text-nowrap">
                         <p>
                             <span class="text-primary-emphasis">Campus</span>
                             <span>:</span>
