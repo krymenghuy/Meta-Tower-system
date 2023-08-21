@@ -182,7 +182,7 @@ class GeneralSettings //extends Model
         return $row;
     }
     static function options_session($ss){
-      return DB::table('sessions as ss')->where('branch_id',$ss->branch_id)->selectRaw('id,name as session_name,shortcut')->get(); 
+      return DB::table('sessions as ss')->where('branch_id',$ss->branch_id)->selectRaw('id,name as session_name,shortcut')->get();
     }
 
     static function getSession($session_id){

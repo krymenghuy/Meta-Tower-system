@@ -14,7 +14,17 @@ class GuardianController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code != 200) return $ss;
 
-        $save = Guardian::save($req->all(),$req->id,$ss);
+        $instance = new Guardian();
+        $save = $instance->save($req->all(),$req->id,$ss);
         return JDV::raw($save);
+    }
+
+    function list(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code != 200) return $ss;
+
+        $instance = new Guardian();
+        $list = $instance->guardianList($req->all(),$ss);
+        return JDV::raw($list);
     }
 }
