@@ -186,7 +186,7 @@ class StudentAttendance //extends Model
             $early = $diff_time;
             return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];
         }
-        if($diff_time >=1 && $diff_time < 15){
+        if($diff_time >=1 ){
             $status_id = 1;// Present;
             $late = $diff_time;
             return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];
@@ -203,7 +203,7 @@ class StudentAttendance //extends Model
             $early = $diff_time;
             return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];
         }
-        if($diff_time >=1 && $diff_time < 15){
+        if($diff_time >=1){
             $status_id = 1;// Present;
             $late = $diff_time;
             return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];

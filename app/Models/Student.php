@@ -455,14 +455,10 @@ class Student //extends Model
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row) {
             $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
-            $row->parent_info = self::getChildParent($row->id);
+            $row->family_id = DB::table('student_guardians')->where('student_id',$row->id)->first()->family_code;
             unset($row->file_name);
             $row->enrollment_info = self::getStudentEnrollmentInfo($row->id);
-            // $row->level = self::getProgramLevel($row->level_id);
-
-            // $row->previous_school = self::getPrevSchool($row->school_id)->name;
         }
-
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
@@ -542,17 +538,42 @@ class Student //extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    static function getStudentEnrollmentInfo($d){
+    static function getStudentEnrollmentInfo($d,$ss=null){
         $student_id = isset($d->student_id)?$d->student_id:$d;
-        $selectCols = 's.name as session,c.name as campus,pmt.tuition,pmt.tuition_due,pmt.tuition_paid';
-        return DB::table('enrollments as e')
+        $filter = $d;
+        $selectCols = 'e.id,s.name as session,c.name as campus,pmt.tuition,pmt.tuition_due,pmt.tuition_paid,pl.name as level,e.academic_year,e.status_id';
+        $branch_id = $ss->branch_id;
+        $search_value =isset($filter['search_value'])?$filter['search_value']:null;
+        $current_page =isset($filter['current_page'])?$filter['current_page']:1;
+        $per_page =isset($filter['per_page'])?$filter['per_page']:10;
+        if(!is_numeric($current_page)) $current_page=1;
+        $skip_rows = ($current_page -1) * $per_page;
+        $query =  DB::table('enrollments as e')
                 ->where('e.student_id', $student_id)
                 ->join('payments as pmt','pmt.enrollment_id','=','e.id')
                 ->join('sessions as s','s.id','=','e.id')
                 ->join('campuses as c','e.campus_id','=','c.id')
                 ->join('program_levels as pl','e.level_id','=','pl.id')
-                ->selectRaw($selectCols)
-                ->get();
+                ->selectRaw($selectCols);
+
+        $count_query = clone $query;
+        $count = $count_query->count('e.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+        foreach($rows as $row){
+            $status = null;
+            if($row->status_id == 1){
+                $status = 'pending';
+            }else if($row->status_id ==2){
+                $status = 'verified';
+            }else if($row->status_id ==3){
+                $status = 'paid';
+            }else if($row->status_id ==4){
+                $status = 'surcharge';
+            }
+            $row->status = strtolower($status);
+        }
+
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
 }

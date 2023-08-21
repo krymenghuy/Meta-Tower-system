@@ -62,7 +62,7 @@ class StudentController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
 
-        $list = Student::getStudentEnrollmentInfo($req);
+        $list = Student::getStudentEnrollmentInfo($req->all(),$ss);
         return JDV::result($list);
     }
 
