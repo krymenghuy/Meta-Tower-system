@@ -58,14 +58,15 @@ var DiscountComponent = new function(){
     {
         title: "Action",
         data: (data, a, b) => {
+            let cls = data.status === 'pending' ? '' : data.status === 'approved' ? 'd-none' : '',cls_reject = data.status === 'rejected' ? 'd-none' : '';
             return [`<div class="d-flex gap-2">
-                <a href="javascript:void(0)" class="btn-dns-approve" data-id="${data.id}">
+                <a href="javascript:void(0)" class="btn-dns-approve ${cls}" data-id="${data.id}">
                     <i class="fa-regular fa-circle-check fs-5 text-success"></i>
                 </a>
-                <a href="javascript:void(0)" class="btn-dns-reject" data-id="${data.id}">
+                <a href="javascript:void(0)" class="btn-dns-reject ${cls} ${cls_reject}" data-id="${data.id}">
                     <i class="fa-regular fa-circle-xmark fs-5 text-warning"></i>
                 </a>
-                <a href="javascript:void(0)" class="btn-dns-delete" data-id="${data.id}">
+                <a href="javascript:void(0)" class="btn-dns-delete ${cls}" data-id="${data.id}">
                     <i class="fa-regular fa-trash-can fs-5 text-danger"></i>
                 </a>
             </div>`].join('');
