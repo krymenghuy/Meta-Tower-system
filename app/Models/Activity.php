@@ -533,22 +533,30 @@ class Activity //extends Model
 
             if($discountTypeInfo->discount_type_id == 1){
                 $discount =($payment->tuition_due * $discountTypeInfo->amount)/100;
-                $tuition_due = $$payment->tuition_due - $discount;
+                $tuition_due = $payment->tuition_due - $discount;
                 $dis_arr_info = [
                     'special_discount' =>  $discountTypeInfo->amount,
                     'tuition_due' => $tuition_due,
+                    // 'authorized' => 1
                 ];
                 if(!$payment) continue;
-                DB::table('payments')->where('id',$id)->update($dis_arr_info);
+                DB::table('payments')->where('id',$enrollment->id)->update($dis_arr_info);
+                DB::table('discount_request')->where('id',$id)->update([
+                    'authorized'=> 1
+                ]);
             }
             else{
                 $discount =($payment->tuition_due * $discountTypeInfo->amount)/100;
-                $tuition_due = $$payment->tuition_due - $discount;
+                $tuition_due = $payment->tuition_due - $discount;
                 $dis_arr_info = [
                     'second_child_discount' =>  $discountTypeInfo->amount,
                     'tuition_due' => $tuition_due,
                 ];
-                DB::table('discount_request')->where('id',$id)->update($dis_arr_info);
+                if(!$payment) continue;
+                DB::table('payments')->where('id',$enrollment->id)->update($dis_arr_info);
+                DB::table('discount_request')->where('id',$id)->update([
+                    'authorized'=> 1
+                ]);
             }
             $success ++;
         }
@@ -592,7 +600,7 @@ class Activity //extends Model
         $current_page =isset($filter['current_page'])?$filter['current_page']:1;
         $per_page =isset($filter['per_page'])?$filter['per_page']:10;
         if(!is_numeric($current_page)) $current_page=1;
-        $authorized = isset($filter['authorized'])?$filter['authorized']:0;
+        // $authorized = isset($filter['authorized'])?$filter['authorized']:0;
         $skip_rows = ($current_page -1) * $per_page;
 
         $str_search ="1=1";
@@ -604,18 +612,18 @@ class Activity //extends Model
             $str_search ="(s.name LIKE '%$search_value%' OR s.code = '%$search_value%')";
         }
 
-        $selectCols = 'dr.id,dr.amount,dt.name as discount_type,s.file_name,s.code,s.name,s.name_kh,s.sex,s.date_of_birth,formatDate(dr.updated_at) as updated_at,s.update_user,dr.remarks';
+        $selectCols = 'dr.authorized,dr.id,dr.amount,dt.name as discount_type,s.file_name,s.code,s.name,s.name_kh,s.sex,s.date_of_birth,formatDate(dr.updated_at) as updated_at,s.update_user,dr.remarks';
         $query = DB::table('discount_request as dr')
                 ->join('discount_types as dt','dt.id','=','dr.discount_type_id')
                 ->join('students as s','s.id','=','dr.student_id')
                 ->where('dr.branch_id',$branch_id)
-                ->where('dr.status_id','>',1)
+                // ->where('dr.status_id','>',1)
                 ->selectRaw($selectCols)
                 ->whereRaw($str_moreWhere)->whereRaw($str_search);
-                if($type){
-                    $query->where('r.request_type_id',$type);
-                }
-                $query->where('dr.authorized',$authorized);
+                // if($type){
+                //     $query->where('r.request_type_id',$type);
+                // }
+                // $query->where('dr.authorized',$authorized);
 
         $count_query = clone $query;
         $count = $count_query->count('dr.id');
@@ -624,7 +632,7 @@ class Activity //extends Model
         foreach($rows as $row) {
             $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
             // $row->request_change = $this->getRequestChanges($row->request_id,$ss);
-            $row->status = $authorized == 0? 'pending' : 'approved';
+            $row->status = $row->authorized == 0? 'pending' : 'approved';
             // $row->school = $campus->details($row->campus_id,$ss)->name;
             unset($row->file_name);
         }
