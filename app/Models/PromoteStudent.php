@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use DB;
+use Illuminate\Pagination\LengthAwarePaginator;
 class PromoteStudent //extends Model
 {
     // use HasFactory;
@@ -73,7 +74,7 @@ class PromoteStudent //extends Model
                     'school_id' => $info->school_id,
                     'academic_year' => $academic_year,
                 ];
-                $newEnrID = 1;//saveData($ss,'enrollments',['id' => null],$new_enroll,[],1);
+                $newEnrID = saveData($ss,'enrollments',['id' => null],$new_enroll,[],1);
                 if($newEnrID){
                     $months = 0;
                     if($pmt_option_id == 1){
@@ -106,20 +107,19 @@ class PromoteStudent //extends Model
                         'tuition_due' => $payment_process->tuition_due,
                         'program_id' => $nextLevel->program_id,
                         'policy_discount' => $payment_process->discount->discount,
-
                     ];
 
-                        $new_pmt_id = 1;//saveData($ss,'payments',['id' => null],$new_pmt_arr,[],1);
+                    $new_pmt_id = saveData($ss,'payments',['id' => null],$new_pmt_arr,[],1);
                     if($new_pmt_id){
-                        // DB::table('enrollment_payment')->insert([
-                        //     'enrollment_id' => $newEnrID,
-                        //     'pmt_id' => $new_pmt_id,
+                        DB::table('enrollment_payment')->insert([
+                            'enrollment_id' => $newEnrID,
+                            'pmt_id' => $new_pmt_id,
 
-                        // ]);
-                        // DB::table('enrollments')->where('id',$newEnrID)->update([
-                        //     'tuition_end_date' => $payment_process->end_date,
-                        //     'is_new_student' => 1
-                        // ]);
+                        ]);
+                        DB::table('enrollments')->where('id',$newEnrID)->update([
+                            'tuition_end_date' => $payment_process->end_date,
+                            'is_new_student' => 1
+                        ]);
                     }
                 }
                 $keeps[] = $new_pmt_arr;
@@ -129,9 +129,51 @@ class PromoteStudent //extends Model
             $success ++;
         }
 
-
-
         return DV::depends($success,['action'=>$keeps,'levels'=>$arr_level]);
+    }
+
+    function promotedStudentListPag($filter=[],$ss=null){
+        $branch_id = $ss->branch_id;
+        $search_value =isset($filter['search_value'])?$filter['search_value']:null;
+        $current_page =isset($filter['current_page'])?$filter['current_page']:1;
+        $per_page =isset($filter['per_page'])?$filter['per_page']:10;
+        if(!is_numeric($current_page)) $current_page=1;
+        $skip_rows = ($current_page -1) * $per_page;
+
+        $str_search ="1=1";
+        $str_moreWhere="1=1";
+        if($search_value){
+            $skip_rows = 0;
+            $search_value = escape_like_str($search_value);
+            $str_search ="(s.code ='$search_value' OR s.name LIKE '%$search_value%')";
+        }
+
+        $selectCols = 's.sex,s.name,s.name_kh,s.code,s.id,s.date_of_birth as dob';
+        $query = DB::table('students as s')
+
+                ->whereRaw($str_moreWhere)->whereRaw($str_search)
+                ->selectRaw($selectCols)
+                ->orderBy('id','desc');
+        $count_query = clone $query;
+        $count = $count_query->count('id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+        foreach($rows as $row) {
+            $row->age = getAge($row->dob);
+        }
+
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+
+    }
+
+    static function promotedEnrollment($d,$ss){
+        $id = isset($d->student_id) ? $d->student_id : $d->id;
+        if(!$id){
+            $id = $d;
+        }
+
+        $rows = DB::table('enrollments')->where('student_id',$id)->where('is_new_promote')->first();
+        return $rows;
+
     }
 
     function getFormOptions($d=null,$ss=null){
@@ -139,6 +181,10 @@ class PromoteStudent //extends Model
         $id = isset($d->prev_term_id)?$d->prev_term_id:$d->term_id;
         $row = Term::optionsTerm($d,$ss);
         return $row;
+    }
+
+    function verifyPromotedStudent(){
+
     }
 
 }
