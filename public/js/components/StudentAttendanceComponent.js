@@ -33,10 +33,6 @@ var StudentAttendanceComponent = new function(){
         data: "group_name"
     },
     {
-        title: "Session",
-        data: "session"
-    },
-    {
         title: "Family ID",
         data: "family_id"
     }];
@@ -57,9 +53,9 @@ var StudentAttendanceComponent = new function(){
             'onOpen': (container, detail_tr, parent_tr) => {
                 let qtr = $(parent_tr);
                 let op = {
-                    'id': qtr.data('id')
+                    'student_id': qtr.data('id')
                 };
-                if(op.id > 0)
+                if(op.student_id > 0)
                     mThis.displayStudentAttendanceDetails(detail_tr, op);
             }
         });
@@ -67,7 +63,30 @@ var StudentAttendanceComponent = new function(){
 
     this.displayStudentAttendanceDetails = (tr, op) => {
         let div_wrapper = $(tr).find('.expandable-row-container');
-        div_wrapper.addClass(['p-3']);
+        div_wrapper.addClass(['p-3','bg-light-subtle']);
+        div_wrapper.empty();
+        let html = null, inner_html = null;
+
+        window.vsapi.call(`${main_view.base_url}/api/student/attendance-details`,op,null,false).then(res => {
+            let d = [];
+            if(res.status_code === 200){
+                d = res.data;
+            }
+
+            d && d.map(t => {
+                t && t.attendance_list.map(dt => {
+                    let cls = dt.status === 'P' ? 'bg-success-subtle text-success' : dt.status === 'Pr' ? 'bg-info-subtle text-primary' : dt.status === 'A' ? 'bg-danger-subtle text-danger' : 'bg-secondary-subtle';
+
+                    inner_html = [inner_html,`<div class="d-block">
+                        <div class="px-3 py-2 text-center" style="width: ${(div_wrapper.width())/32}">${dt.day ? dt.day : ''}</div>
+                        <div class="px-3 py-2 rounded-3 ${cls}" style="width: ${(div_wrapper.width())/32}">${dt.status}</div>
+                    </div>`].join('');
+                });
+                
+                html = [html,`<p>${t.date}</p>`,'<div class="d-flex gap-2 flex-nowrap mt-3">',inner_html,'</div>'].join('');
+            });
+            div_wrapper.html(html);
+        });
     }
 
     this.show = (options) => {
