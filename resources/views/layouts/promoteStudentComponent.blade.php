@@ -43,7 +43,7 @@
                     <div class="col-lg-6">
                         <label for="program_id" class="form-label trans-text" data-langprop="titles.Program"></label>
                         <div class="width-select-dialog">
-                            <select class="modal-select2 data-input" data-field="program_id"></select>
+                            <select class="modal-select2 data-input data-program" data-field="program_id"></select>
                         </div>
                     </div>
                     <div class="col-lg-6">
@@ -56,8 +56,8 @@
                 <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button type="button" class="btn btn-primary btn-sm">
-                    <span class="trans-text" data-langprop="buttons.Save"></span>
+                <button id="dlg_pms_btn_save" type="button" class="btn btn-primary btn-sm">
+                    <span class="trans-text text-nowrap" data-langprop="buttons.Promote Now"></span>
                 </button>
             </div>
         </div>
