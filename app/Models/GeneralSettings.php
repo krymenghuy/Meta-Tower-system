@@ -391,6 +391,26 @@ class GeneralSettings //extends Model
         return $row;
     }
 
+    static function optionsGroup($d,$ss=null){
+        $branch_id = $ss->branch_id;
+        $id = isset($d->group_id) ? $d->group_id :$d->id;
+        if(!$id){
+            $id = $d;
+        }
+        $row = DB::table('student_groups as sg')->where('id',$id)->where('sg.branch_id',$branch_id)->selectRaw('sg.name,sg.id')->get();
+        return $row;
+    }
+
+    static function optionsAttendanceTypes(){
+        $rows = DB::table('attendance_types')->selectRaw('name,id,short_hand')->get();
+        foreach($rows as $row){
+            $row->name = $row->name.'('.$row->short_hand.')';
+        }
+        return $rows;
+    }
+
+
+
     // static function optionsStudentRequest($student_id,$ss){
     //     $row = DB::table('enrollments as e')->where('student_id',$student_id)
     //             ->join('students as s','s.id','=','e.student_id')

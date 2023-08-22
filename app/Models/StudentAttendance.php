@@ -15,7 +15,24 @@ class StudentAttendance //extends Model
         $this->ss = $ss;
     }
 
-    function saveAttendance($arr=[],$ss=null){
+    function saveAttendance($arr=[],$id=null,$ss=null){
+        $ss = $ss?$ss:$this->ss;
+        $id = $id?$id:$this->id;
+
+        $v_rule = [
+            'student_id' => "1|number|exist=group_members.student_id",
+            'in_remarks' => '0|string|1,150',
+            'out_remarks' => '0|string|1,150',
+            'checkin_time' => '0|string',
+            'checkout_time' => '0|string',
+            'status' => '0|number|exist=attendance_types.id',
+            'program_id' => '1|number'
+        ];
+        return 0;
+    }
+
+
+    function scanAttendance($arr=[],$ss=null){
         $ss = $ss?$ss:$this->ss;
         $mins = 15; // for find class start and end time which > between < mins
         $v_rule = [
@@ -208,7 +225,7 @@ class StudentAttendance //extends Model
             // $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 's.sex,s.name,s.name_kh,s.code,s.id,s.date_of_birth as dob';
+        $selectCols = 's.id as student_id,s.sex,s.name,s.name_kh,s.code,s.id,s.date_of_birth as dob';
         $query = DB::table('students as s')
                 ->whereRaw($str_moreWhere)->whereRaw($str_search)
                 ->selectRaw($selectCols)
@@ -228,7 +245,7 @@ class StudentAttendance //extends Model
     function attendanceDetails($d,$ss){
         $id = isset($d->student_id)?$d->student_id:$d;
         $ss = $ss?$ss:$this->ss;
-        $selectCols = 'DATE_FORMAT(session_date, "%b-%Y") as date';
+        $selectCols = 'sa.student_id,DATE_FORMAT(session_date, "%b-%Y") as date';
 
         $subquery = DB::table('student_attendances')
             ->selectRaw('MAX(session_date) as max_date')
@@ -239,6 +256,7 @@ class StudentAttendance //extends Model
             ->joinSub($subquery, 'sub', function ($join) {
                 $join->on('sa.session_date', '=', 'sub.max_date');
             })
+            ->where('sa.student_id', $id)
             ->selectRaw($selectCols)
             ->get();
         foreach($rows as $row){
@@ -259,6 +277,7 @@ class StudentAttendance //extends Model
             ->selectRaw($selectCols)
             ->whereYear('sa.session_date', $findYear)
             ->whereMonth('sa.session_date', $findMonth)
+            ->where('sa.student_id',$student_id)
             ->get();
         foreach($rows as $row){
             $status = 'A'; // absent
@@ -276,6 +295,32 @@ class StudentAttendance //extends Model
         }
 
         return $rows;
+    }
 
+
+    function studentListInfoByGroup($d,$ss=null){
+        $ss = $ss?$ss:$this->ss;
+        $branch_id = $ss->branch_id;
+        $id = isset($d->group_id) ? $d->group_id : $d->id;
+        $rows = DB::table('group_members as gm')->where('gm.group_id',$id)
+            ->join('students as s','s.id','=','gm.student_id')
+            ->selectRaw('gm.id,s.id as student_id,s.name as student_name,s.code')
+            ->where('gm.branch_id',$branch_id)->get();
+        return $rows;
+    }
+
+    function optionsGroup($arr,$ss=null){
+        $ss = $ss?$ss:$this->ss;
+        $d = (object)$arr;
+        $id = isset($d->group_id) ? $d->group_id:$d->id;
+        if($id){
+            $id = $d;
+        }
+        $rows = GeneralSettings::optionsGroup($id,$ss);
+        return $rows;
+    }
+
+    function optionsAttendanceTypes(){
+        return GeneralSettings::optionsAttendanceTypes();
     }
 }
