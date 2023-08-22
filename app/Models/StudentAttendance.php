@@ -210,7 +210,7 @@ class StudentAttendance //extends Model
             // $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 's.id,s.date_of_birth as dob';
+        $selectCols = 's.sex,s.name,s.name_kh,s.code,s.id,s.date_of_birth as dob';
         $query = DB::table('students as s')
                 ->whereRaw($str_moreWhere)->whereRaw($str_search)
                 ->selectRaw($selectCols)
@@ -221,7 +221,6 @@ class StudentAttendance //extends Model
         foreach($rows as $row) {
             $row->age = getAge($row->dob);
             $row->family_id = DB::table('student_guardians')->where('student_id',$row->id)->first()->family_code;
-            $row->attendance_info = $this->attendanceDetails($row->id,$ss);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -231,10 +230,35 @@ class StudentAttendance //extends Model
     function attendanceDetails($d,$ss){
         $id = isset($d->student_id)?$d->student_id:$d;
         $ss = $ss?$ss:$this->ss;
-        $selectCols = 'sa.status_id,sa.in_diff_time,out_diff_time,in_remarks as check_in_remarks,out_remarks as check_out_remarks';
+        $selectCols = 'formatDate(sa.session_date) as date';
         $rows = DB::table('student_attendances as sa')->where('sa.student_id',$id)
             ->selectRaw($selectCols)
             ->get();
+        foreach($rows as $row){
+            // $status = 'A'; // absent
+            // if($row->status_id == 1){
+            //     $status = 'P';
+            // }else if($row->status_id == 2){
+            //     $status = 'PR';
+            // }
+            $row->date = date('M-Y',strtotime($row->date));
+            $row->attendance_list = $this->getAttendanceInMonth($row->date);
+
+            // $row->check_in = formatMinsTime($row->in_diff_time);
+            // $row->check_out = formatMinsTime($row->out_diff_time);
+            unset($row->in_diff_time);
+            unset($row->out_diff_time);
+        }
+        return $rows;
+    }
+
+    function getAttendanceInMonth($date){
+        $selectCols = 'sa.status_id,sa.in_diff_time,out_diff_time,in_remarks as check_in_remarks,out_remarks as check_out_remarks';
+        // $findDate = date('M',strtotime($date));
+        $findMonth = date('m',strtotime($date));
+        $findYear = date('Y',strtotime($date));
+        $rows = DB::table('student_attendances as sa')->whereMonth('sa.session_date', $findMonth)
+        ->whereYear('sa.session_date', $findYear)->selectRaw($selectCols)->get();
         foreach($rows as $row){
             $status = 'A'; // absent
             if($row->status_id == 1){
@@ -243,11 +267,12 @@ class StudentAttendance //extends Model
                 $status = 'PR';
             }
             $row->status = $status;
-            // $row->check_in = formatMinsTime($row->in_diff_time);
-            // $row->check_out = formatMinsTime($row->out_diff_time);
+            $row->check_in = formatMinsTime($row->in_diff_time);
+            $row->check_out = formatMinsTime($row->out_diff_time);
             unset($row->in_diff_time);
             unset($row->out_diff_time);
         }
+
         return $rows;
     }
 }

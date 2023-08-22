@@ -31,7 +31,7 @@ class PromoteStudent //extends Model
         foreach($promote_info as $info){
             $v_rule = [
                 'term_id' => '1|number|exists=terms.id',
-                'next_term_id' => '1|number|exists=terms.id',
+                'next_term_id' => '0|number|exists=terms.id',
             ];
             $res = validateObject($info,$v_rule,1,[],$ss->lang,0,null);
             if($res->error) return DV::error($res->error);
@@ -58,6 +58,7 @@ class PromoteStudent //extends Model
                 $pmt_option_id = isset($d->pmt_option_id)?$d->pmt_option_id:$info->pmt_option_id;
                 $term_id =  isset($d->term_id)?$d->term_id:$info->term_id;
                 $nextLevel = GeneralSettings::getNextLevelByCurrentLevel($level_id,$ss);
+                if(!$nextLevel) return DV::error('There is no next level');
                 $student_id = $info->student_id;
 
                 $new_enroll = [
@@ -105,11 +106,10 @@ class PromoteStudent //extends Model
                         'tuition_due' => $payment_process->tuition_due,
                         'program_id' => $nextLevel->program_id,
                         'policy_discount' => $payment_process->discount->discount,
-                        'level' => $nextLevel
 
                     ];
 
-                     $new_pmt_id = 1;//saveData($ss,'payments',['id' => null],$new_pmt_arr,[],1);
+                        $new_pmt_id = 1;//saveData($ss,'payments',['id' => null],$new_pmt_arr,[],1);
                     if($new_pmt_id){
                         // DB::table('enrollment_payment')->insert([
                         //     'enrollment_id' => $newEnrID,
@@ -122,14 +122,16 @@ class PromoteStudent //extends Model
                         // ]);
                     }
                 }
-
                 $keeps[] = $new_pmt_arr;
+
             }
 
             $success ++;
-
         }
-        return DV::depends($success,['action'=>$keeps]);
+
+
+
+        return DV::depends($success,['action'=>$keeps,'levels'=>$arr_level]);
     }
 
     function getFormOptions($d=null,$ss=null){
