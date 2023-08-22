@@ -616,3 +616,12 @@ li.kt-menu__section {
 .width-search-box{
     max-width:300px;
 }
+
+.max-height-details{
+    overflow: hidden;
+    max-height: 200px;
+}
+
+.max-height-details:hover{
+    overflow: auto;
+}
