@@ -313,6 +313,16 @@ function prn_allowed($prn_id,$module_id){
 
  }
 
+ function formatMinsTime($minutes) {
+    if ($minutes < 60) {
+        return $minutes . " min";
+    } else {
+        $hours = floor($minutes / 60);
+        $remainingMinutes = $minutes % 60;
+        return $hours . " hour" . ($hours > 1 ? "s" : "") . ($remainingMinutes > 0 ? " " . $remainingMinutes . " min" : "");
+    }
+}
+
  function dateDiff_days($start_date,$end_date){
     $date1 = new DateTime($start_date);
     $date2 = New DateTime($end_date);

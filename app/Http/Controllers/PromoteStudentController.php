@@ -17,4 +17,14 @@ class PromoteStudentController extends Controller
         $promote = $x->promoteStudents($req->all(),$ss);
         return JDV::raw($promote);
     }
+
+
+    function getFormOptions(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $x = new PromoteStudent(null,$ss);
+        $options = $x->getFormOptions($req,$ss);
+        return JDV::result($options);
+    }
 }

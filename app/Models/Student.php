@@ -539,7 +539,11 @@ class Student //extends Model
     }
 
     static function getStudentEnrollmentInfo($d,$ss=null){
-        $student_id = isset($d->student_id)?$d->student_id:$d;
+        // $d = (object)$d;
+        $student_id = isset($d->student_id)?$d->student_id:isset($d->id);
+        if(!$student_id){
+            $student_id = $d;
+        }
         // $filter = $d;
         $selectCols = 'e.session_id,e.id,c.name as campus,pmt.tuition,pmt.tuition_due,pmt.tuition_paid,pl.name as level,e.academic_year,e.status_id';
         // $branch_id = $ss->branch_id;
