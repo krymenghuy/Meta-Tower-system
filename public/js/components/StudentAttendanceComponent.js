@@ -63,29 +63,41 @@ var StudentAttendanceComponent = new function(){
 
     this.displayStudentAttendanceDetails = (tr, op) => {
         let div_wrapper = $(tr).find('.expandable-row-container');
-        div_wrapper.addClass(['p-3','bg-light-subtle']);
+        div_wrapper.addClass(['p-3','bg-light-subtle','max-height-details']);
         div_wrapper.empty();
-        let html = null, inner_html = null;
+        let html = null;
 
         window.vsapi.call(`${main_view.base_url}/api/student/attendance-details`,op,null,false).then(res => {
             let d = [];
             if(res.status_code === 200){
                 d = res.data;
             }
+            let first = 0;
 
             d && d.map(t => {
+                let inner_html=null;
                 t && t.attendance_list.map(dt => {
                     let cls = dt.status === 'P' ? 'bg-success-subtle text-success' : dt.status === 'Pr' ? 'bg-info-subtle text-primary' : dt.status === 'A' ? 'bg-danger-subtle text-danger' : 'bg-secondary-subtle';
 
                     inner_html = [inner_html,`<div class="d-block">
                         <div class="px-3 py-2 text-center" style="width: ${(div_wrapper.width())/32}">${dt.day ? dt.day : ''}</div>
-                        <div class="px-3 py-2 rounded-3 ${cls}" style="width: ${(div_wrapper.width())/32}">${dt.status}</div>
+                        <div class="tooltip-custom position-relative px-3 py-2 rounded-3 ${cls}" style="width: ${(div_wrapper.width())/32}" role="button">${dt.status}</div>
                     </div>`].join('');
                 });
                 
-                html = [html,`<p>${t.date}</p>`,'<div class="d-flex gap-2 flex-nowrap mt-3">',inner_html,'</div>'].join('');
+                html = [html,`<div class="${first == 0 ? '' : 'mt-3'}"><p>${t.date}</p>`,'<div class="d-flex gap-2 flex-nowrap mt-3">',inner_html,'</div></div>'].join('');
+                first = 1;
             });
+
             div_wrapper.html(html);
+            let div = div_wrapper.find('.tooltip-custom');
+            div.each(function(){
+                $(this).popover({
+                    html: true,
+                    trigger : 'hover',
+                    title: ["<span class='pg-remarks-title'>Test</span>"].join('')
+                });
+            });
         });
     }
 
