@@ -386,7 +386,9 @@ class GeneralSettings //extends Model
 
     static function getNextLevelByCurrentLevel($level_id=null,$ss=null){
         $branch_id = $ss?$ss->branch_id:1;
-        return DB::table('program_levels')->where('prev_level_id',$level_id)->where('branch_id',$branch_id)->selectRaw('program_id,id,name,id as level_id,name as level')->first();
+        $row = DB::table('program_levels')->where('prev_level_id',$level_id)->where('branch_id',$branch_id)->selectRaw('program_id,id,name,id as level_id,name as level')->first();
+        if(!$row) return $row=null;
+        return $row;
     }
 
     // static function optionsStudentRequest($student_id,$ss){
