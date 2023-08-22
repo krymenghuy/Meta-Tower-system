@@ -235,30 +235,21 @@ class StudentAttendance //extends Model
             ->selectRaw($selectCols)
             ->get();
         foreach($rows as $row){
-            // $status = 'A'; // absent
-            // if($row->status_id == 1){
-            //     $status = 'P';
-            // }else if($row->status_id == 2){
-            //     $status = 'PR';
-            // }
             $row->date = date('M-Y',strtotime($row->date));
-            $row->attendance_list = $this->getAttendanceInMonth($row->date);
-
-            // $row->check_in = formatMinsTime($row->in_diff_time);
-            // $row->check_out = formatMinsTime($row->out_diff_time);
+            $row->attendance_list = $this->getAttendanceInMonth($row->date,$id);
             unset($row->in_diff_time);
             unset($row->out_diff_time);
         }
         return $rows;
     }
 
-    function getAttendanceInMonth($date){
+    function getAttendanceInMonth($date,$student_id){
         $selectCols = 'sa.status_id,sa.in_diff_time,out_diff_time,in_remarks as check_in_remarks,out_remarks as check_out_remarks';
         // $findDate = date('M',strtotime($date));
         $findMonth = date('m',strtotime($date));
         $findYear = date('Y',strtotime($date));
         $rows = DB::table('student_attendances as sa')->whereMonth('sa.session_date', $findMonth)
-        ->whereYear('sa.session_date', $findYear)->selectRaw($selectCols)->get();
+        ->whereYear('sa.session_date', $findYear)->where('student_id',$student_id)->selectRaw($selectCols)->get();
         foreach($rows as $row){
             $status = 'A'; // absent
             if($row->status_id == 1){
