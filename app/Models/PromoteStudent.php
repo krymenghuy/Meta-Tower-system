@@ -20,104 +20,111 @@ class PromoteStudent //extends Model
         if(isset($arr['promote_info'])){
             $promote_info = $arr['promote_info'];
         }else return DV::error('promote_info is required');
+        $program_id = isset($arr['program_id'])?$arr['program_id']:null ;
+        $levels = DB::table('program_levels')->where('program_id',$program_id)->selectRaw('id')->get();
+        $arr_level = [];
+        foreach($levels as $level){
+            $arr_level[] = $level->id;
+        }
         $success = 0;
         $keeps=[];
         foreach($promote_info as $info){
             $v_rule = [
-                // 'student_id' => '1|number|exists=students.id',
-                // 'to_level_id' => '0|number|exists=program_levels.id',
                 'term_id' => '1|number|exists=terms.id',
-                // 'session_id' => '0|number|exists=sessions.id',
-                // 'campus_id' => '0|number|exists=campuses.id',
-                // 'start_date' => '0|string',
+                'next_term_id' => '1|number|exists=terms.id',
             ];
             $res = validateObject($info,$v_rule,1,[],$ss->lang,0,null);
             if($res->error) return DV::error($res->error);
             $inputs = $res->values;
             $d = (object)$inputs;
             $term_id = $d->term_id;
+            $nextTerm = $d->next_term_id;
             $enr_status_id = 1; // 1=active, 2 = Drop Off, 3 = Suspended;
-            $enr_info = DB::table('enrollments as e')->where('e.term_id',$term_id)
+            $q = DB::table('enrollments as e')->where('e.term_id',$term_id)
                         ->join('payments as p','p.enrollment_id','=','e.id')
-                        ->where('enrollment_status_id',$enr_status_id)
-                        ->selectRaw('p.pmt_option_id,e.school_id,e.student_id,e.campus_id,e.session_id,e.level_id,e.program_id,e.academic_year')
-                        ->first();
-            $level_id = isset($d->to_level_id)?$d->to_level_id:$enr_info->level_id;
-            $session_id = isset($d->session_id)?$d->session_id:$enr_info->session_id;
-            $campus_id = isset($d->campus_id)?$d->campus_id:$enr_info->campus_id;
-            $start_date = isset($d->start_date)?convertDate($d->start_date):date('Y-m-d');
-            $academic_year = isset($d->academic_year)?$d->academic_year:$enr_info->academic_year;
-            $pmt_option_id = isset($d->pmt_option_id)?$d->pmt_option_id:$enr_info->pmt_option_id;
-            $term_id =  isset($d->term_id)?$d->term_id:$enr_info->term_id;
-            $level = GeneralSettings::getLevel($level_id,$ss);
-            $student_id = $enr_info->student_id;
-            $new_enroll = [
-                'student_id' => $student_id,
-                'level_id' => $level_id,
-                'session_id' => $session_id,
-                'campus_id' => $campus_id,
-                'start_date' => $start_date,
-                'program_id' => $level->program_id,
-                'term_id' => $term_id,
-                'status_id' => 1,
-                'school_id' => $enr_info->school_id,
-                'academic_year' => $academic_year,
-            ];
+                        ->where('enrollment_status_id',$enr_status_id);
+                        if($program_id){
+                            $q->whereIn('e.level_id',$arr_level);
+                        }
+            $enr_info = $q->selectRaw('p.pmt_option_id,e.school_id,e.student_id,e.campus_id,e.session_id,e.level_id,e.program_id,e.academic_year')
+                        ->get();
 
-            $keeps[] = $new_enroll;
+            foreach($enr_info as $info){
+                $level_id = isset($d->to_level_id)?$d->to_level_id:$info->level_id;
+                $session_id = isset($d->session_id)?$d->session_id:$info->session_id;
+                $campus_id = isset($d->campus_id)?$d->campus_id:$info->campus_id;
+                $start_date = isset($d->start_date)?convertDate($d->start_date):date('Y-m-d');
+                $academic_year = isset($d->academic_year)?$d->academic_year:$info->academic_year;
+                $pmt_option_id = isset($d->pmt_option_id)?$d->pmt_option_id:$info->pmt_option_id;
+                $term_id =  isset($d->term_id)?$d->term_id:$info->term_id;
+                $nextLevel = GeneralSettings::getNextLevelByCurrentLevel($level_id,$ss);
+                $student_id = $info->student_id;
 
-            //
-
-            $newEnrID = 1;//saveData($ss,'enrollments',['id' => null],$new_enroll,[],1);
-            if($newEnrID){
-                $months = 0;
-                if($pmt_option_id == 1){
-                    $months = 3;
-                }else if($pmt_option_id == 2){
-                    $months = 6;
-                }else if($pmt_option_id == 3){
-                    $months = 12;
-                }
-
-                $payment_process = $price_list->payment_processing([
-                    'pmt_option_id' => $pmt_option_id,
+                $new_enroll = [
+                    'student_id' => $student_id,
+                    'level_id' => $nextLevel->id,
+                    'session_id' => $session_id,
+                    'campus_id' => $campus_id,
                     'start_date' => $start_date,
-                    'level_id' => $level_id,
-                    'session_id' => $session_id,
-                    'months' => $months,
+                    'program_id' => $nextLevel->program_id,
+                    'term_id' => $nextTerm,
+                    'status_id' => 1,// is pending
+                    'school_id' => $info->school_id,
                     'academic_year' => $academic_year,
-                ]);
-
-                $new_pmt_arr = [
-                    'term_id' => $term_id,
-                    'level_id' => $level_id,
-                    'session_id' => $session_id,
-                    'enrollment_id' => $newEnrID,
-                    'pmt_option_id' => $pmt_option_id,
-                    'status_id' => 1, // unpaid
-                    'pmt_status' => 'unpaid', //
-                    'price_list_id' => $payment_process->price_list_id,
-                    'tuition' => $payment_process->tuition,
-                    'tuition_due' => $payment_process->tuition_due,
-                    'program_id' => $level->program_id,
-                    'policy_discount' => $payment_process->discount->discount,
-
                 ];
+                $newEnrID = 1;//saveData($ss,'enrollments',['id' => null],$new_enroll,[],1);
+                if($newEnrID){
+                    $months = 0;
+                    if($pmt_option_id == 1){
+                        $months = 3;
+                    }else if($pmt_option_id == 2){
+                        $months = 6;
+                    }else if($pmt_option_id == 3){
+                        $months = 12;
+                    }
 
-                $new_pmt_id = saveData($ss,'payments',['id' => null],$new_pmt_arr,[],1);
-                if($new_pmt_id){
-                    // DB::table('enrollment_payment')->insert([
-                    //     'enrollment_id' => $newEnrID,
-                    //     'pmt_id' => $new_pmt_id,
+                    $payment_process = $price_list->payment_processing([
+                        'pmt_option_id' => $pmt_option_id,
+                        'start_date' => $start_date,
+                        'level_id' => $level_id,
+                        'session_id' => $session_id,
+                        'months' => $months,
+                        'academic_year' => $academic_year,
+                    ]);
 
-                    // ]);
-                    // DB::table('enrollments')->where('id',$newEnrID)->update([
-                    //     'tuition_end_date' => $payment_process->end_date,
-                    //     'is_new_student' => 1
-                    // ]);
+                    $new_pmt_arr = [
+                        'term_id' => $nextTerm,
+                        'level_id' => $nextLevel->id,
+                        'session_id' => $session_id,
+                        'enrollment_id' => $newEnrID,
+                        'pmt_option_id' => $pmt_option_id,
+                        'status_id' => 1, // unpaid
+                        'pmt_status' => 'unpaid', //
+                        'price_list_id' => $payment_process->price_list_id,
+                        'tuition' => $payment_process->tuition,
+                        'tuition_due' => $payment_process->tuition_due,
+                        'program_id' => $nextLevel->program_id,
+                        'policy_discount' => $payment_process->discount->discount,
+                        'level' => $nextLevel
+
+                    ];
+
+                     $new_pmt_id = 1;//saveData($ss,'payments',['id' => null],$new_pmt_arr,[],1);
+                    if($new_pmt_id){
+                        // DB::table('enrollment_payment')->insert([
+                        //     'enrollment_id' => $newEnrID,
+                        //     'pmt_id' => $new_pmt_id,
+
+                        // ]);
+                        // DB::table('enrollments')->where('id',$newEnrID)->update([
+                        //     'tuition_end_date' => $payment_process->end_date,
+                        //     'is_new_student' => 1
+                        // ]);
+                    }
                 }
-            }
 
+                $keeps[] = $new_pmt_arr;
+            }
 
             $success ++;
 
@@ -131,7 +138,5 @@ class PromoteStudent //extends Model
         $row = Term::optionsTerm($d,$ss);
         return $row;
     }
-
-
 
 }
