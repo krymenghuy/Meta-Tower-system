@@ -612,3 +612,7 @@ li.kt-menu__section {
     overflow-x:scroll;
     scroll-behavior: smooth;
 }
+
+.width-search-box{
+    max-width:300px;
+}

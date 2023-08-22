@@ -185,7 +185,7 @@
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="PromoteStudentComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{ asset('assets/images/icons/student_group.png') }}"/>
+                                    <img class="icons" src="{{ asset('assets/images/icons/promote_student.png') }}"/>
                                 </span>
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Promote"></span>
                             </a>
