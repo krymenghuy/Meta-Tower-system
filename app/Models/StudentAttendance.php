@@ -17,14 +17,9 @@ class StudentAttendance //extends Model
 
     function saveAttendance($arr=[],$ss=null){
         $ss = $ss?$ss:$this->ss;
+        $mins = 15; // for find class start and end time which > between < mins
         $v_rule = [
-            // 'enrollment_id' => '0|number|exists=enrollments.id',
             'student_id' => '1|number|exists=students.id',
-            // 'level_id' => '1|number|exists=program_levels.id',
-            'term_id' => '1|number|exists=terms.id',
-            'group_id' => '1|number|exists=student_groups.id',
-            'session_date' => '0|date',
-            'status_id' => '0|number',
             'remarks' => '0|string|1,150'
         ];
 
@@ -38,25 +33,25 @@ class StudentAttendance //extends Model
         $present = convertDate($inputs['present']);
         $present_time = isset($arr['present_time'])?$arr['present_time']: date('H:i');
         $group = null;
-        // $level_id = $inputs['level_id'];
-        // $term_id = $inputs['term_id'];
-        // $group_id = $inputs['group_id'];
 
-        $group_in = DB::table('student_groups')
+
+        $group_in = DB::table('student_groups as sg')
+        ->join('group_members as gm','sg.id','=','gm.group_id')->where('gm.student_id',$student_id)
         ->whereBetween(DB::raw('TIME(checkin_time)'), [
-            date('H:i', strtotime("$present_time -15 minutes")),
-            date('H:i', strtotime("$present_time +15 minutes")),
+            date('H:i', strtotime("$present_time -$mins minutes")),
+            date('H:i', strtotime("$present_time +$mins minutes")),
         ])
         ->orderByRaw("ABS(TIME_TO_SEC(TIME(checkin_time)) - TIME_TO_SEC(?))", [$present_time])
-        ->selectRaw('id,checkin_time,checkout_time,term_id')
+        ->selectRaw('sg.id,sg.checkin_time,sg.checkout_time,sg.term_id')
         ->first();
 
-        $group_out = DB::table('student_groups')
+        $group_out = DB::table('student_groups as sg')
+        ->join('group_members as gm','sg.id','=','gm.group_id')->where('gm.student_id',$student_id)
         ->whereBetween(DB::raw('TIME(checkout_time)'), [
-            date('H:i', strtotime("$present_time -15 minutes")),
-            date('H:i', strtotime("$present_time +15 minutes")),
+            date('H:i', strtotime("$present_time -$mins minutes")),
+            date('H:i', strtotime("$present_time +$mins minutes")),
         ])->orderByRaw("ABS(TIME_TO_SEC(TIME(checkout_time)) - TIME_TO_SEC(?))", [$present_time])
-        ->selectRaw('id,checkin_time,checkout_time,term_id')
+        ->selectRaw('sg.id,sg.checkin_time,sg.checkout_time,sg.term_id')
         ->first();
 
         if($group_in){
@@ -65,8 +60,7 @@ class StudentAttendance //extends Model
             $group = $group_out;
         }
 
-        $member = DB::table('group_members')->where('student_id', $student_id)->where('group_id', $group->id)->first();
-
+        if(!$group)return DV::error('Student does not exist in group');
         $enr_info = DB::table('enrollments as e')->where('e.student_id',$student_id)->where('e.term_id',$group->term_id)->where('e.status_id','>=',3)->selectRaw('e.id,e.tuition_end_date,e.student_id,e.level_id,e.session_id,e.start_date')->first();
         $level = GeneralSettings::getLevel($enr_info->level_id,$ss);
         $scan_status = null;
@@ -76,10 +70,7 @@ class StudentAttendance //extends Model
         if($enr_info->tuition_end_date < $present){
             return DV::error('Student enrollment is not available or expired');
         }
-        // $selectGroup = 'sg.checkin_time,sg.checkout_time';
-        // $group = DB::table('group_members as gm')->where('gm.student_id',$student_id)
-        //         ->join('student_groups as sg','sg.id','=','gm.group_id')->selectRaw($selectGroup)
-        //         ->first();
+
         $current_date = isset($arr['current_date'])?date('Y-m-d',strtotime($arr['current_date'])):DB::raw('CURDATE()');
         $check_in_out = DB::table('student_attendances')->where('student_id',$student_id)->whereDate('session_date', '=', $current_date)->selectRaw('is_finished,id')->first();
         $check_in = isset($arr['check_in'])?$arr['check_in']:$group->checkin_time;
@@ -98,13 +89,13 @@ class StudentAttendance //extends Model
         if($is_finished === null || $is_finished <0){
             $scan_status = 'in'; // check in;
             $status = $this->checkInStatus($check_in,$present_time);
-            $earliness = $status->early;
+            $earliness = abs($status->early);
             $lateness = $status->late;
             if($earliness){
-                $in_remarks = "Check in ".$this->formatMinsTime($earliness)." early";
+                $in_remarks = "Check in ".formatMinsTime($earliness)." earlier";
                 $in_diff_time= $earliness;
             }else{
-                $in_remarks = "Check in ".$this->formatMinsTime($lateness)." late";
+                $in_remarks = "Check in ".formatMinsTime($lateness)." late";
                 $in_diff_time = $lateness;
             }
             $is_finished = 0;
@@ -112,13 +103,13 @@ class StudentAttendance //extends Model
         }else if($is_finished == 0 ){
             $scan_status = 'out'; // check in;
             $status = $this->checkOutStatus($check_out,$present_time);
-            $earliness = $status->early;
+            $earliness = abs($status->early);
             $lateness = $status->late;
             if($earliness){
-                $out_remarks = "Check out ".$this->formatMinsTime($earliness)." early";
+                $out_remarks = "Check out ".formatMinsTime($earliness)." earlier";
                 $out_diff_time = $earliness;
             }else{
-                $out_remarks = "Check out ".$this->formatMinsTime($lateness)." late";
+                $out_remarks = "Check out ".formatMinsTime($lateness)." late";
                 $out_diff_time = $lateness;
             }
             $is_finished = 1;
@@ -182,13 +173,9 @@ class StudentAttendance //extends Model
         $early = 0;
         if($diff_time < 1){
             $early = $diff_time;
-            return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];
         }
-        if($diff_time >=1 ){
-            $status_id = 1;// Present;
-            $late = $diff_time;
-            return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];
-        }
+        $late = $diff_time;
+
         return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];
     }
 
@@ -199,25 +186,13 @@ class StudentAttendance //extends Model
         $early = 0;
         if($diff_time < 1){
             $early = $diff_time;
-            return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];
         }
-        if($diff_time >=1){
-            $status_id = 1;// Present;
-            $late = $diff_time;
-            return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];
-        }
+        $status_id = 1;// Present;
+        $late = $diff_time;
         return (object)['status_id'=>$status_id,'late'=>$late,'early'=>$early];
     }
 
-    function formatMinsTime($minutes) {
-        if ($minutes < 60) {
-            return $minutes . " min";
-        } else {
-            $hours = floor($minutes / 60);
-            $remainingMinutes = $minutes % 60;
-            return $hours . " hour" . ($hours > 1 ? "s" : "") . ($remainingMinutes > 0 ? " " . $remainingMinutes . " min" : "");
-        }
-    }
+
 
     function attendanceList($filter=[],$ss=null){
         $branch_id = $ss->branch_id;
@@ -235,7 +210,7 @@ class StudentAttendance //extends Model
             // $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 's.date_of_birth as dob';
+        $selectCols = 's.id,s.date_of_birth as dob';
         $query = DB::table('students as s')
                 ->whereRaw($str_moreWhere)->whereRaw($str_search)
                 ->selectRaw($selectCols)
@@ -245,10 +220,34 @@ class StudentAttendance //extends Model
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row) {
             $row->age = getAge($row->dob);
+            $row->family_id = DB::table('student_guardians')->where('student_id',$row->id)->first()->family_code;
+            $row->attendance_info = $this->attendanceInfo($row->id,$ss);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-
     }
 
+
+    function attendanceInfo($d,$ss){
+        $id = isset($d->student_id)?$d->student_id:$d;
+        $ss = $ss?$ss:$this->ss;
+        $selectCols = 'sa.status_id,sa.in_diff_time,out_diff_time,in_remarks as check_in_remarks,out_remarks as check_out_remarks';
+        $rows = DB::table('student_attendances as sa')->where('sa.student_id',$id)
+            ->selectRaw($selectCols)
+            ->get();
+        foreach($rows as $row){
+            $status = 'A'; // absent
+            if($row->status_id == 1){
+                $status = 'P';
+            }else if($row->status_id == 2){
+                $status = 'PR';
+            }
+            $row->status = $status;
+            // $row->check_in = formatMinsTime($row->in_diff_time);
+            // $row->check_out = formatMinsTime($row->out_diff_time);
+            unset($row->in_diff_time);
+            unset($row->out_diff_time);
+        }
+        return $rows;
+    }
 }

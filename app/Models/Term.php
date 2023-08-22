@@ -49,7 +49,7 @@ class Term //extends Model
         $newId = saveData($ss,'terms',['id'=>$id],$inputs,[],1,false);
         return DV::depends($newId,['action'=>$action,'terms'=>self::list(null,$ss)]);
     }
- 
+
     function list($arr=[],$ss=null){
         $ss = $ss?$ss:$this->user_info;
         $branch_id = $ss->branch_id;
@@ -89,9 +89,40 @@ class Term //extends Model
         $term =null;
         if($id>0) $term = self::details($id,$ss);
         return (object)[
-          'term'=>$term,  
+          'term'=>$term,
           'terms'=>GeneralSettings::options_term(null,$ss),
           'academic_years'=>GeneralSettings::options_academic_year($ss)
         ];
+    }
+
+    static function optionsTerm($d=null,$ss=null){
+        $program_id = isset($d->program_id)?$d->program_id:null;
+        $term_id = isset($d->term_id)?$d->term_id:$d->prev_term_id;
+        $levels = DB::table('program_levels')->where('program_id',$program_id)->selectRaw('id')->get();
+        $count = 0;
+        $count = DB::table('student_groups as sg')
+                ->where('sg.term_id',$term_id)
+                ->join('group_members as gm','gm.group_id','=','sg.id')
+                ->count('gm.group_id');
+        // if($program_id){
+        //     foreach($levels as $level){
+        //         $count = DB::table('student_groups as sg')
+        //             ->where('sg.level_id',$level->id)
+        //             ->join('group_members as gm','gm.group_id','=','sg.id')
+        //             ->count('sg.level_id');
+        //         $count ++;
+        //     }
+        // }
+
+        $res = [
+            // 'level' => $level,
+            'count' => $count,
+            'next_term' => self::getNextTerm($term_id)
+        ];
+        return $res;
+    }
+
+    static function getNextTerm($prev_term_id=null){
+        return DB::table('terms')->where('prev_term_id',$prev_term_id)->selectRaw('id,name,period_type,start_date,end_date,academic_year')->first();
     }
 }
