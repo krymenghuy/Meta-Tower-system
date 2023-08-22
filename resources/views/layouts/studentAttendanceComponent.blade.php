@@ -4,25 +4,33 @@
             <div class="col">
                 <div class="form-group">
                     <label for="academic_year" class="form-label trans-text" data-langprop="titles.Academic Year"></label>
-                    <select class="modal-select2 form-contorl data-input" data-field="academic_year"></select>
+                    <div class="width-select-dialog">
+                        <select class="modal-select2 data-input" data-field="academic_year"></select>
+                    </div>
                 </div>
             </div>
             <div class="col">
                 <div class="form-group">
-                    <label for="campus" class="form-label trans-text" data-langprop="titles.Campus"></label>
-                    <select class="modal-select2 form-contorl data-input" data-field="campus"></select>
+                    <label for="campus_id" class="form-label trans-text" data-langprop="titles.Campus"></label>
+                    <div class="width-select-dialog">
+                        <select class="modal-select2 data-input" data-field="campus_id"></select>
+                    </div>
                 </div>
             </div>
             <div class="col">
                 <div class="form-group">
-                    <label for="class" class="form-label trans-text" data-langprop="titles.Class"></label>
-                    <select class="modal-select2 form-contorl data-input" data-field="class"></select>
+                    <label for="level_id" class="form-label trans-text" data-langprop="titles.Class"></label>
+                    <div class="width-select-dialog">
+                        <select class="modal-select2 data-input" data-field="level_id"></select>
+                    </div>
                 </div>
             </div>
             <div class="col">
                 <div class="form-group">
-                    <label for="section" class="form-label trans-text" data-langprop="titles.Section"></label>
-                    <select class="modal-select2 form-contorl data-input" data-field="section"></select>
+                    <label for="session_id" class="form-label trans-text" data-langprop="titles.Session"></label>
+                    <div class="width-select-dialog">
+                        <select class="modal-select2 data-input" data-field="session_id"></select>
+                    </div>
                 </div>
             </div>
         </div>
@@ -52,7 +60,5 @@
             </div>
         </div>
     </div>
-    <div class="table-responsive mt-3 p-3">
-        <table class="table tbl--san"></table>
-    </div>
+    <div id="tbl--san" class="table-responsive mt-3 p-3 rounded-3 bg-white"></div>
 </div>

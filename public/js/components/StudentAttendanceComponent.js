@@ -4,110 +4,80 @@ var StudentAttendanceComponent = new function(){
     this.title_prop = "Student Attendance";
     this.self = $('#_main_studentAttendanceComponent');
 
-    this.tblStudentAttendance = mThis.self.find('.tbl--san');
+    this.cols = [{
+        title: "Student ID",
+        data: "code"
+    },
+    {
+        title: "Full Name",
+        data: "name"
+    },
+    {
+        title: "Full Name (KH)",
+        data: "name_kh"
+    },
+    {
+        title: "Age",
+        data: "age"
+    },
+    {
+        title: "Date of Birth",
+        data: "dob"
+    },
+    {
+        title: "Sex",
+        data: "sex"
+    },
+    {
+        title: "Group",
+        data: "group_name"
+    },
+    {
+        title: "Session",
+        data: "session"
+    },
+    {
+        title: "Family ID",
+        data: "family_id"
+    }];
 
-    this.init = () => {}
-
-    this.displayStudentAttendance = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/`,null,null).then(res => {
-            let data = [];
-            if(res.status_code === 200){
-                data = StringSanitizer.satinizeObject(res.data);
-            }
-
-            let cnt = 1;
-            let cols = [{
-                title: "No",
-                data: (data, a, b) => {
-                    return [`<span>${cnt++}</span>`].join('');
-                }
+    this.init = () => {
+        mThis.itemView = new ListView('tbl--san',{
+            'fetchApi':`${main_view.base_url}/api/student/attendance-list`,
+            'columns': mThis.cols,
+            'tableClass':"table header-light-blue header-uppercase",
+            'rowCreated':(data, index, tr) => {
+                tr.dataset.id = data.id;
             },
-            {
-                title: "Student Name",
-                data: "student_name"
-            },
-            {
-                title: "Sex",
-                data: "sex"
-            },
-            {
-                title: "Age",
-                data: "age"
-            },
-            {
-                title: "DOB",
-                data: "date_of_birth"
-            },
-            {
-                title: "Section",
-                data: "section"
-            },
-            {
-                title: "Present",
-                data: "present"
-            },
-            {
-                title: "Permission",
-                data: "permission"
-            },
-            {
-                title: "Absent",
-                data: "ansent"
-            },
-            {
-                title: "Date",
-                data: "date"
-            },
-            {
-                title: "Family ID",
-                data: "parent_id"
-            },
-            {
-                title: "Father Phone",
-                data: "father_phone"
-            }];
-
-            if(mThis.table){
-                mThis.tblStudentAttendance.DataTable().clear().destroy();
-                mThis.tblStudentAttendance.empty();
-                mThis.table = null;
-            }
-
-            if(!mThis.table){
-                mThis.table = mThis.tblStudentAttendance.DataTable({
-                    searching: false,
-                    destroy: true,
-                    paging: true,
-                    ordering: false,
-                    retrieve: true,
-                    info: true,
-                    pageLength: 10,
-                    bLengthChange: false,
-                    saveState: true,
-                    processing: true,
-                    language: {
-                        'loadingRecords': '&nbsp;',
-                        'processing': 'Loading...',
-                        "emptyTable": LocaleManager.trans('No data to display', 'datatable')
-                    },
-                    data: data,
-                    columns: cols,
-                    createdRow: function (row, data, dataIndex) {
-                        let tr = $(row);
-                        tr.data('id', data.id);
-                    }
-                });
-            }
-
-            if(typeof onFinish === 'function') onFinish();
+            'beforeRender':()=>{}
         });
+
+        mThis.cfg = new ExpandableRowConfig('tbl--san_table',{
+            'dontExpandByClickingOn': [],
+            'onOpen': (container, detail_tr, parent_tr) => {
+                let qtr = $(parent_tr);
+                let op = {
+                    'id': qtr.data('id')
+                };
+                if(op.id > 0)
+                    mThis.displayStudentAttendanceDetails(detail_tr, op);
+            }
+        });
+    }
+
+    this.displayStudentAttendanceDetails = (tr, op) => {
+        let div_wrapper = $(tr).find('.expandable-row-container');
+        div_wrapper.addClass(['p-3']);
     }
 
     this.show = (options) => {
         if(!options) options = {};
-        mThis.displayStudentAttendance(() => {
+        mThis.itemView.showPage(null,null,() => {
             main_view.setTitle(mThis.title_prop);
-            mThis.self.show().siblings().hide();
+            let x = mThis.self.siblings(':visible');
+            x.fadeOut('fast',function(){
+                mThis.self.hide().fadeIn(300);
+            });
         });
     }
 }

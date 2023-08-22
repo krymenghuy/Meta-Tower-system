@@ -609,7 +609,7 @@ li.kt-menu__section {
 }
 
 .on-hover-to-scroll:hover{
-    overflow-x:scroll;
+    overflow-x:auto;
     scroll-behavior: smooth;
 }
 
