@@ -26,7 +26,7 @@
                         <div class="form-group">
                             <label for="term_id" class="form-label trans-text" data-langprop="titles.Current Term"></label>
                             <div class="width-select-dialog">
-                                <select class="modal-select2 data-input" data-field="term_id"></select>
+                                <select class="modal-select2 data-input data-term" data-field="term_id"></select>
                             </div>
                         </div>
                     </div>

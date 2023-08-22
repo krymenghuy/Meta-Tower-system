@@ -43,18 +43,80 @@ let PromoteStudentDialog = new function(){
                 switch(f){
                     case 'term_id':
                         VSUtil.setComboItems(el,d.terms,'id','term',null,null,null);
+                        mThis.getPromoteByTerm(el);
                         break;
                     case 'next_term_id':
                         VSUtil.setComboItems(el,d.terms,'id','term',null,null,null);
                         break;
                     case 'program_id':
                         VSUtil.setComboItems(el,d.programs,'id','program_name',null,null,null);
+                        mThis.getPromoteByProgram(el);
                         break;
                     default:
                         break;
                 }
             });
             if(typeof onFinish === 'function') onFinish();
+        });
+    }
+
+    this.getPromoteByTerm = (el) => {
+        el.on('change',function(e){
+            e.preventDefault();
+            let op = {
+                'term_id': $(this).val(),
+                'program_id': ''
+            };
+            window.vsapi.call(`${main_view.base_url}/api/promote/form-options`,op,null,false).then(res => {
+                let d = {};
+                if(res.status_code === 200){
+                    d = res.data;
+                }
+                mThis.self.find('.data-input').each(function(){
+                    let el = $(this);
+                    let f = el.data('field');
+                    let next_term_id = (d && d['next_term']) ? d['next_term']['id'] : null;
+
+                    switch(f){
+                        case 'next_term_id':
+                            el.val(next_term_id).trigger('change');
+                            break;
+                        case 'total_student':
+                            el.val(d.count).trigger('change');
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            });
+        });
+    }
+
+    this.getPromoteByProgram = (el) => {
+        el.on('change',function(e){
+            e.preventDefault();
+            let op = {
+                'term_id': $(this).closest('.modal-body').find('.data-term').val(),
+                'program_id': $(this).val()
+            };
+            window.vsapi.call(`${main_view.base_url}/api/promote/form-options`,op,null,false).then(res => {
+                let d = {};
+                if(res.status_code === 200){
+                    d = res.data;
+                }
+                mThis.self.find('.data-input').each(function(){
+                    let el = $(this);
+                    let f = el.data('field');
+
+                    switch(f){
+                        case 'total_student':
+                            el.val(d.count).trigger('change');
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            });
         });
     }
 
