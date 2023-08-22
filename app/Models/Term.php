@@ -99,23 +99,28 @@ class Term //extends Model
         $program_id = isset($d->program_id)?$d->program_id:null;
         $term_id = isset($d->term_id)?$d->term_id:$d->prev_term_id;
         $levels = DB::table('program_levels')->where('program_id',$program_id)->selectRaw('id')->get();
+        $arr_level = [];
+        foreach($levels as $level){
+            $arr_level[] = $level->id;
+        }
         $count = 0;
         $count = DB::table('student_groups as sg')
                 ->where('sg.term_id',$term_id)
                 ->join('group_members as gm','gm.group_id','=','sg.id')
                 ->count('gm.group_id');
-        // if($program_id){
-        //     foreach($levels as $level){
-        //         $count = DB::table('student_groups as sg')
-        //             ->where('sg.level_id',$level->id)
-        //             ->join('group_members as gm','gm.group_id','=','sg.id')
-        //             ->count('sg.level_id');
-        //         $count ++;
-        //     }
-        // }
+
+        $count = DB::table('student_groups as sg')
+                    ->whereIn('sg.level_id',$arr_level)
+                    ->join('group_members as gm','gm.group_id','=','sg.id')
+                    ->count('sg.level_id');
+        if($program_id){
+            $count = DB::table('student_groups as sg')
+                    ->whereIn('sg.level_id',$arr_level)
+                    ->join('group_members as gm','gm.group_id','=','sg.id')
+                    ->count('sg.level_id');
+        }
 
         $res = [
-            // 'level' => $level,
             'count' => $count,
             'next_term' => self::getNextTerm($term_id)
         ];
