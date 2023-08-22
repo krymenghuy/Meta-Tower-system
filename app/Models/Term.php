@@ -109,15 +109,27 @@ class Term //extends Model
                 ->join('group_members as gm','gm.group_id','=','sg.id')
                 ->count('gm.group_id');
 
-        $count = DB::table('student_groups as sg')
-                    ->whereIn('sg.level_id',$arr_level)
-                    ->join('group_members as gm','gm.group_id','=','sg.id')
-                    ->count('sg.level_id');
+
         if($program_id){
-            $count = DB::table('student_groups as sg')
-                    ->whereIn('sg.level_id',$arr_level)
-                    ->join('group_members as gm','gm.group_id','=','sg.id')
-                    ->count('sg.level_id');
+            // $count = DB::table('student_groups as sg')
+            //         ->whereIn('sg.level_id',$arr_level)
+            //         // ->where('sg.term_id',$term_id)
+            //         ->join('group_members as gm','gm.group_id','=','sg.id')
+            //         ->count('gm.group_id');
+            $arr = DB::table('student_groups as sg')
+                ->whereIn('sg.level_id', $arr_level)
+                ->where('sg.term_id', $term_id)
+                ->join('group_members as gm', 'gm.group_id', '=', 'sg.id')
+                ->select('gm.group_id', DB::raw('COUNT(*) as count'))
+                ->groupBy('gm.group_id')
+                ->get();
+            // $q = (object)$arr;
+            if(!isset($arr[0])) {
+                $count = 0;
+            }else{
+                $count = $arr[0]->count;
+            }
+
         }
 
         $res = [

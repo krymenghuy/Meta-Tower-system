@@ -62,7 +62,7 @@ class StudentAttendance //extends Model
 
         if(!$group)return DV::error('Student does not exist in group');
         $enr_info = DB::table('enrollments as e')->where('e.student_id',$student_id)->where('e.term_id',$group->term_id)->where('e.status_id','>=',3)->selectRaw('e.id,e.tuition_end_date,e.student_id,e.level_id,e.session_id,e.start_date')->first();
-        $level = GeneralSettings::getLevel($enr_info->level_id,$ss);
+
         $scan_status = null;
         if(!$enr_info){
             return  DV::error('Student might not enroll or exist in group yet');
@@ -70,6 +70,7 @@ class StudentAttendance //extends Model
         if($enr_info->tuition_end_date < $present){
             return DV::error('Student enrollment is not available or expired');
         }
+        $level = GeneralSettings::getLevel($enr_info->level_id,$ss);
 
         $current_date = isset($arr['current_date'])?date('Y-m-d',strtotime($arr['current_date'])):DB::raw('CURDATE()');
         $check_in_out = DB::table('student_attendances')->where('student_id',$student_id)->whereDate('session_date', '=', $current_date)->selectRaw('is_finished,id')->first();
@@ -132,7 +133,6 @@ class StudentAttendance //extends Model
             "is_finished" => $is_finished,
         ];
         $update=[];
-
 
         if($id){
             $update = [
@@ -221,14 +221,14 @@ class StudentAttendance //extends Model
         foreach($rows as $row) {
             $row->age = getAge($row->dob);
             $row->family_id = DB::table('student_guardians')->where('student_id',$row->id)->first()->family_code;
-            $row->attendance_info = $this->attendanceInfo($row->id,$ss);
+            $row->attendance_info = $this->attendanceDetails($row->id,$ss);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
 
-    function attendanceInfo($d,$ss){
+    function attendanceDetails($d,$ss){
         $id = isset($d->student_id)?$d->student_id:$d;
         $ss = $ss?$ss:$this->ss;
         $selectCols = 'sa.status_id,sa.in_diff_time,out_diff_time,in_remarks as check_in_remarks,out_remarks as check_out_remarks';
