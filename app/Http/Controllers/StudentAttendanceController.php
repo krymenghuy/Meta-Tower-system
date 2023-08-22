@@ -10,11 +10,20 @@ use Illuminate\Http\Request;
 class StudentAttendanceController extends Controller
 {
     //
+
     function saveAttendance(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
         $instance = new StudentAttendance(null,$ss);
-        $save = $instance->saveAttendance($req->all());
+        $save = $instance->saveAttendance($req->all(),$req->id,$ss);
+        return JDV::raw($save);
+    }
+
+    function scanAttendance(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $instance = new StudentAttendance(null,$ss);
+        $save = $instance->scanAttendance($req->all());
         return JDV::raw($save);
     }
 
@@ -26,11 +35,35 @@ class StudentAttendanceController extends Controller
         return JDV::result($list);
     }
 
-function attendanceDetails(Request $req){
+    function attendanceDetails(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
         $instance = new StudentAttendance(null,$ss);
         $list = $instance->attendanceDetails($req,$ss);
+        return JDV::result($list);
+    }
+
+    function studentListByGroup(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $instance = new StudentAttendance(null,$ss);
+        $list = $instance->studentListInfoByGroup($req,$ss);
+        return JDV::result($list);
+    }
+
+    function optionsGroup(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $instance = new StudentAttendance(null,$ss);
+        $list = $instance->optionsGroup($req->all(),$ss);
+        return JDV::result($list);
+    }
+
+    function optionsAttendanceTypes(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $instance = new StudentAttendance(null,$ss);
+        $list = $instance->optionsAttendanceTypes();
         return JDV::result($list);
     }
 }
