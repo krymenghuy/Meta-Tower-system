@@ -30,6 +30,24 @@ var PromoteStudentComponent = new function(){
 let PromoteStudentDialog = new function(){
     let mThis = this;
     this.self = $('#dlg_pms_');
+    this.options = {};
+
+    this.btnSave = mThis.self.find('#dlg_pms_btn_save');
+
+    mThis.btnSave.on('click',function(e){
+        e.preventDefault();
+        let p = mThis.getDataForm();
+        window.vsapi.call(`${main_view.base_url}/api/promote/students`,p,null).then(res => {
+            if(res.status_code === 200){
+                mThis.self.modal('hide');
+                if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
+                cv_interact.success('Students Promoted Successfully!');
+            }
+            else{
+                cv_interact.error(res.error_message);
+            }
+        });
+    });
 
     this.prepareFormOption = (onFinish = null) => {
         window.vsapi.call(`${main_view.base_url}/api/form-option`,null,null,false).then(res => {
@@ -65,7 +83,7 @@ let PromoteStudentDialog = new function(){
             e.preventDefault();
             let op = {
                 'term_id': $(this).val(),
-                'program_id': ''
+                'program_id': $(this).closest('.modal-body').find('.data-program').val()
             };
             window.vsapi.call(`${main_view.base_url}/api/promote/form-options`,op,null,false).then(res => {
                 let d = {};
@@ -120,8 +138,28 @@ let PromoteStudentDialog = new function(){
         });
     }
 
+    this.getDataForm = () => {
+        let p = {};
+        mThis.self.find('.data-input').each(function(){
+            let el = $(this);
+            let f = el.data('field');
+            p[f] = el.val();
+        });
+        p.promote_info = [{
+            "term_id": p.term_id,
+            "next_term_id": p.next_term_id
+        }];
+        ['total_student','term_id','next_term_id'].forEach(ob => {
+            delete(p[ob]);
+        });
+
+        return p;
+    }
+
     this.show = (options) => {
         if(!options) options = {};
+        mThis.options = options;
+        
         mThis.prepareFormOption(() => {
             mThis.self.modal({
                 backdrop: 'static'
