@@ -58,7 +58,6 @@ var TermComponent = new function(){
                 title: "Term Name",
                 data: (data,a,b)=>{
                     return ['<div class="d-flex flex-column"><p class="fw-bold">',data.name,'</p>'
-                    //,'<p class="text-left text-muted">',data.period_type,'</p>'
                     ,'</div>'].join('');
                 }
             },
@@ -206,15 +205,6 @@ let TermDialog = new function(){
               
              }
         }
-
-        //,"apiSave":{
-        //     "endpoint":`${main_view.base_url}/api/inventory/settings/save-brand`
-        // }
-
-        // //When user clicks on Delete button
-        //, "apiDelete":{
-        //     "endpoint":`${main_view.base_url}/api/academic-year/delete`
-        // }
     });
 
 
@@ -285,7 +275,6 @@ let TermDialog = new function(){
                     {
                         el = mThis.elAcademic;
                         text_field ='academic_year';
-                        //value_field='id';
                         data_prop ='academic_years';
                         method_name = 'api/settings/options-academic-year';
                         break;
@@ -310,18 +299,7 @@ let TermDialog = new function(){
                 if(def_value) el.val(def_value).trigger('change');        
             }
          });
-    } 
- 
-    // this.loadFormDetail = (options) => {
-    //     window.vsapi.call(`${main_view.base_url}/api/term/details`,{'id': options.id},null).then(res => {
-    //         let data = {};
-    //         if(res.status_code === 200){
-    //             data = res.data;
-    //         }
-    //         mThis.setDataForm(data);
-    //         if(typeof onFinish === 'function') onFinish();
-    //     });
-    // }
+    }
 
     this.close =()=>{
         mThis.self.modal('hide');
@@ -334,11 +312,9 @@ let TermDialog = new function(){
         mThis.prepareFormOption(options.id,d => {
             if(options.term){
                 mThis.elTitle.text(LocaleManager.trans('Modify Term','titles'));
-                //mThis.loadFormDetail(term);
             }
             else{
                 mThis.elTitle.text(LocaleManager.trans('New Term','titles'));
-                //mThis.setDataForm(null);
             }
             mThis.setDataForm(d.term);
             mThis.self.modal({
@@ -348,7 +324,6 @@ let TermDialog = new function(){
     }
 }
 
-//begin::AcademicYearDialog
  let AcademicYearDoalog = new function(){
     let mThis =this;
     this.self = $('#dlgAcadYear');
@@ -359,7 +334,6 @@ let TermDialog = new function(){
       e.preventDefault();
       let p = mThis.getFormData();
       vsapi.call(`${main_view.base_url}/api/academic-year/save`,p,null,false).then(res=>{
-          //alert(JSON.stringify(res));
           if(res.status_code === 200){  
               if(typeof mThis.options.onClose === 'function') mThis.options.onClose({'academic_years':res.data.academic_years,'id':res.data.id});
               mThis.self.modal('hide');
@@ -424,8 +398,7 @@ let TermDialog = new function(){
 
        });
     }
- }
-//end::AcademicYearDialog
+}
 
 window.addEventListener('DOMContentLoaded',() => {
     TermComponent.init();

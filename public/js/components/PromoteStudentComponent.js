@@ -37,16 +37,21 @@ let PromoteStudentDialog = new function(){
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
         let p = mThis.getDataForm();
-        window.vsapi.call(`${main_view.base_url}/api/promote/students`,p,null).then(res => {
-            if(res.status_code === 200){
-                mThis.self.modal('hide');
-                if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
-                cv_interact.success('Students Promoted Successfully!');
-            }
-            else{
-                cv_interact.error(res.error_message);
-            }
-        });
+        if(p.promote_info.next_term_id > 0){
+            window.vsapi.call(`${main_view.base_url}/api/promote/students`,p,null).then(res => {
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
+                    cv_interact.success('Students Promoted Successfully!');
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                }
+            });
+        }
+        else{
+            cv_interact.error('Next Term Cannot Empty!');
+        }
     });
 
     this.prepareFormOption = (onFinish = null) => {
