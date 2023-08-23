@@ -52,7 +52,7 @@ class StudentAttendance //extends Model
         $inputs['session_date'] = isset($inputs['session_date'])? date('Y-m-d',strtotime($inputs['session_date'])):date('Y-m-d');
         $d = (object)$inputs;
 
-        $catchDate = DB::table('student_attendances')->whereDay('session_date','>',$inputs['session_date']);
+        $catchDate = DB::table('student_attendances')->whereDay('session_date','>',);
 
         if($status_id == 2 || $status_id ==3){
             $inputs['is_finished'] = 1;
@@ -278,61 +278,69 @@ class StudentAttendance //extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-
-    function attendanceDetails($d,$ss){
-        $id = isset($d->student_id)?$d->student_id:$d;
-        $ss = $ss?$ss:$this->ss;
-        $selectCols = 'sa.student_id,DATE_FORMAT(session_date, "%b-%Y") as date';
-
-        $subquery = DB::table('student_attendances')
-            ->selectRaw('MAX(session_date) as max_date')
-            ->where('student_id', $id)
-            ->groupBy(DB::raw('YEAR(session_date), MONTH(session_date)'));
-
-        $rows = DB::table('student_attendances as sa')
-            ->joinSub($subquery, 'sub', function ($join) {
-                $join->on('sa.session_date', '=', 'sub.max_date');
-            })
-            ->where('sa.student_id', $id)
-            ->selectRaw($selectCols)
-            ->get();
-        foreach($rows as $row){
-            $row->date = date('M-Y',strtotime($row->date));
-            $row->attendance_list = $this->getAttendanceInMonth($row->date,$id);
-            unset($row->in_diff_time);
-            unset($row->out_diff_time);
-        }
-        return $rows;
+    function attendanceDateDetails($student_id,$date,$ss){
+        $row = DB::table('student_attendances')->where('student_id',$student_id)->where('session_date',$date)->selectRaw('student_id')->first();
+        return $row;
     }
 
-    function getAttendanceInMonth($date,$student_id){
-        $selectCols = 'sa.id,sa.session_date,sa.status_id,sa.in_diff_time,out_diff_time,in_remarks as check_in_remarks,out_remarks as check_out_remarks';
-        $findMonth = date('m',strtotime($date));
-        $findYear = date('Y',strtotime($date));
 
-        $rows = DB::table('student_attendances as sa')
-            ->selectRaw($selectCols)
-            ->whereYear('sa.session_date', $findYear)
-            ->whereMonth('sa.session_date', $findMonth)
-            ->where('sa.student_id',$student_id)
-            ->get();
-        foreach($rows as $row){
-            $status = 'A'; // absent
-            if($row->status_id == 1){
-                $status = 'P';
-            }else if($row->status_id == 2){
-                $status = 'Pr';
-            }
-            $row->day = date('d',strtotime($row->session_date));
-            $row->status = $status;
-            $row->check_in = formatMinsTime($row->in_diff_time);
-            $row->check_out = formatMinsTime($row->out_diff_time);
-            unset($row->in_diff_time);
-            unset($row->out_diff_time);
-        }
 
-        return $rows;
-    }
+
+
+    // function attendanceDetails($d,$ss){
+    //     $id = isset($d->student_id)?$d->student_id:$d;
+    //     $ss = $ss?$ss:$this->ss;
+    //     $selectCols = 'sa.student_id,DATE_FORMAT(session_date, "%b-%Y") as date';
+
+    //     $subquery = DB::table('student_attendances')
+    //         ->selectRaw('MAX(session_date) as max_date')
+    //         ->where('student_id', $id)
+    //         ->groupBy(DB::raw('YEAR(session_date), MONTH(session_date)'));
+
+    //     $rows = DB::table('student_attendances as sa')
+    //         ->joinSub($subquery, 'sub', function ($join) {
+    //             $join->on('sa.session_date', '=', 'sub.max_date');
+    //         })
+    //         ->where('sa.student_id', $id)
+    //         ->selectRaw($selectCols)
+    //         ->get();
+    //     foreach($rows as $row){
+    //         $row->date = date('M-Y',strtotime($row->date));
+    //         $row->attendance_list = $this->getAttendanceInMonth($row->date,$id);
+    //         unset($row->in_diff_time);
+    //         unset($row->out_diff_time);
+    //     }
+    //     return $rows;
+    // }
+
+    // function getAttendanceInMonth($date,$student_id){
+    //     $selectCols = 'sa.id,sa.session_date,sa.status_id,sa.in_diff_time,out_diff_time,in_remarks as check_in_remarks,out_remarks as check_out_remarks';
+    //     $findMonth = date('m',strtotime($date));
+    //     $findYear = date('Y',strtotime($date));
+
+    //     $rows = DB::table('student_attendances as sa')
+    //         ->selectRaw($selectCols)
+    //         ->whereYear('sa.session_date', $findYear)
+    //         ->whereMonth('sa.session_date', $findMonth)
+    //         ->where('sa.student_id',$student_id)
+    //         ->get();
+    //     foreach($rows as $row){
+    //         $status = 'A'; // absent
+    //         if($row->status_id == 1){
+    //             $status = 'P';
+    //         }else if($row->status_id == 2){
+    //             $status = 'Pr';
+    //         }
+    //         $row->day = date('d',strtotime($row->session_date));
+    //         $row->status = $status;
+    //         $row->check_in = formatMinsTime($row->in_diff_time);
+    //         $row->check_out = formatMinsTime($row->out_diff_time);
+    //         unset($row->in_diff_time);
+    //         unset($row->out_diff_time);
+    //     }
+
+    //     return $rows;
+    // }
 
     function getStatusText($status_id){
         return isset(self::$statuses[$status_id])?self::$statuses[$status_id]:null;
@@ -344,7 +352,7 @@ class StudentAttendance //extends Model
         $date = date('Y-m-d',strtotime($year.'-'.$month.'-'.$day));
         $today = date('Y-m-d');
         $day_name = date('D',strtotime($date));
-        $except_days =[
+        $except_days = [
             'Sun','Sat'
         ];
         if( in_array($day_name,$except_days)) return (object)[
@@ -360,7 +368,7 @@ class StudentAttendance //extends Model
 
         if($date>$today) return (object)[
                             'day' => $day,
-                            'status' => '????',
+                            'status' => '?',
                             'check_in_remarks' => '',
                             'check_out_remarks' => '',
                             'status_id' => '',
@@ -403,7 +411,6 @@ class StudentAttendance //extends Model
     function getAttendanceDetails($student_id){
         $rows = DB::select(DB::raw('select DISTINCT MONTH(session_date) as month,YEAR(session_date) as year from student_attendances Order by year,month asc limit 6'));
         foreach($rows as $row){
-
             $row->date = numToMonth($row->month,true).'-'.$row->year;
             $row->attendance_list = $this->getAttendanceDetailsByMonth($student_id,$row->month,$row->year);
         }
