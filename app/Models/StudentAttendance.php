@@ -4,12 +4,18 @@ namespace App\Models;
 
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
+use DateTime;
 use DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 class StudentAttendance //extends Model
 {
     // use HasFactory;
     protected $ss = null,$id=null;
+    protected static $statuses = [
+        1 => 'P',
+        2 => 'Pr',
+        3 => 'A',
+    ];
     function __construct($id=null,$ss=null){
         $this->id = $id;
         $this->ss = $ss;
@@ -25,10 +31,41 @@ class StudentAttendance //extends Model
             'out_remarks' => '0|string|1,150',
             'checkin_time' => '0|string',
             'checkout_time' => '0|string',
-            'status' => '0|number|exist=attendance_types.id',
-            'program_id' => '1|number'
+            'status_id' => '1|number|exist=attendance_types.id',
+            'is_finished' => '0|number|default=0',
+            'session_date' => '0|string'
         ];
-        return 0;
+
+        $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
+        if($res->error) return DV::error($res->error);
+
+        $inputs = $res->values;
+        $is_finished = $inputs['is_finished'];
+        if($is_finished>1 || $is_finished <0)return DV::error('is_finished status must be 0,1');
+        $student_id = $inputs['student_id'];
+        $group = GeneralSettings::getGroupByStudent($student_id,$ss);
+        $level = GeneralSettings::getLevel($group->level_id,$ss);
+        $inputs['program_id'] = $level->program_id;
+        $inputs['level_id'] = $level->id;
+        $status_id = $inputs['status_id'];
+
+        $inputs['session_date'] = isset($inputs['session_date'])? date('Y-m-d',strtotime($inputs['session_date'])):date('Y-m-d');
+        $d = (object)$inputs;
+
+        $catchDate = DB::table('student_attendances')->whereDay('session_date','>',$inputs['session_date']);
+
+        if($status_id == 2 || $status_id ==3){
+            $inputs['is_finished'] = 1;
+            if(isset($d->in_remarks) && !isset($d->out_remarks)){
+                $d->out_remarks = $d->in_remarks;
+            }
+            if(isset($d->out_remarks) && !isset($d->in_remarks)){
+                $d->in_remarks = $d->out_remarks;
+            }
+        }
+        $newID = saveData($ss,'student_attendances',['id' => $id],$inputs,[],1);
+
+        return DV::depends($newID,$inputs);
     }
 
 
@@ -284,7 +321,7 @@ class StudentAttendance //extends Model
             if($row->status_id == 1){
                 $status = 'P';
             }else if($row->status_id == 2){
-                $status = 'PR';
+                $status = 'Pr';
             }
             $row->day = date('d',strtotime($row->session_date));
             $row->status = $status;
@@ -295,6 +332,96 @@ class StudentAttendance //extends Model
         }
 
         return $rows;
+    }
+
+    function getStatusText($status_id){
+        return isset(self::$statuses[$status_id])?self::$statuses[$status_id]:null;
+    }
+
+    function getAttendanceInfo($rows,$day,$month,$year,$student_id){
+        $c = null;
+        $i=0;
+        $date = date('Y-m-d',strtotime($year.'-'.$month.'-'.$day));
+        $today = date('Y-m-d');
+        $day_name = date('D',strtotime($date));
+        $except_days =[
+            'Sun','Sat'
+        ];
+        if( in_array($day_name,$except_days)) return (object)[
+            'day' => $day,
+            'status' => $day_name,
+            'check_in_remarks' => '',
+            'check_out_remarks' => '',
+            'status_id' => '',
+            "session_date" => $date,
+            'check_in_time' => '',
+            'check_out_time' => '',
+        ];
+
+        if($date>$today) return (object)[
+                            'day' => $day,
+                            'status' => '????',
+                            'check_in_remarks' => '',
+                            'check_out_remarks' => '',
+                            'status_id' => '',
+                            "session_date" => $date,
+                            'check_in_time' => '',
+                            'check_out_time' => '',
+                        ];
+        do{
+            if(!isset($rows[$i])) break;
+            $c = $rows[$i];
+            if($day == $c->day){
+                return (object)[
+                    'day' => $c->day,
+                    'status' => $this->getStatusText($c->status_id),
+                    'check_in_remarks' => $c->in_remarks,
+                    'check_out_remarks' => $c->out_remarks,
+                    'status_id' => '',
+                    "session_date" => $date,
+                    'check_in_time' => '',
+                    'check_out_time' => '',
+                ];
+            }
+
+
+            $i++;
+        }while($c);
+
+        return (object)[
+            'day' => $day,
+            'check_in_remarks' => 'not scan',
+            'check_out_remarks' => '',
+            'status' => 'A',
+            'status_id' => '',
+            "session_date" => $date,
+            'check_in_time' => '',
+            'check_out_time' => '',
+        ];
+    }
+
+    function getAttendanceDetails($student_id){
+        $rows = DB::select(DB::raw('select DISTINCT MONTH(session_date) as month,YEAR(session_date) as year from student_attendances Order by year,month asc limit 6'));
+        foreach($rows as $row){
+
+            $row->date = numToMonth($row->month,true).'-'.$row->year;
+            $row->attendance_list = $this->getAttendanceDetailsByMonth($student_id,$row->month,$row->year);
+        }
+        return $rows;
+    }
+
+    function getAttendanceDetailsByMonth($student_id,$month,$year){
+        $days = days_in_month($month,$year);
+        $i=0;
+        $attendance_list =[];
+        $rows = DB::table('student_attendances')->whereMonth('session_date',$month)->whereYear('session_date',$year)->where('student_id',$student_id)->selectRaw('student_id,group_id,session_date,DAY(session_date) as day,status_id,in_remarks,out_remarks')->get();
+        do{
+            $i++;
+            $x = $this->getAttendanceInfo($rows,$i,$month,$year,$student_id);
+            $attendance_list[] = $x;
+        }while ($i<$days);
+
+        return $attendance_list;
     }
 
 
