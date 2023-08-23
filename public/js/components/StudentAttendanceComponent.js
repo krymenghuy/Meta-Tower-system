@@ -77,11 +77,11 @@ var StudentAttendanceComponent = new function(){
             d && d.map(t => {
                 let inner_html=null;
                 t && t.attendance_list.map(dt => {
-                    let cls = dt.status === 'P' ? 'bg-success-subtle text-success' : dt.status === 'Pr' ? 'bg-info-subtle text-primary' : dt.status === 'A' ? 'bg-danger-subtle text-danger' : 'bg-secondary-subtle';
+                    let cls = dt.status === 'P' ? 'bg-success-subtle text-success' : dt.status === 'Pr' ? 'bg-info-subtle text-primary' : dt.status === 'A' ? 'bg-danger-subtle text-danger' : dt.status === 'Sun' ? 'text-danger-emphasis bg-secondary-subtle' : dt.status === 'Sat' ? 'text-warning-emphasis bg-secondary-subtle' : 'bg-secondary-subtle';
 
                     inner_html = [inner_html,`<div class="d-block">
                         <div class="px-3 py-2 text-center" style="width: ${(div_wrapper.width())/32}">${dt.day ? dt.day : ''}</div>
-                        <div class="tooltip-custom position-relative px-3 py-2 text-center rounded-3 ${cls}" style="width: ${(div_wrapper.width())/32}" role="button" data-details="${JSON.stringify(dt).replaceAll('\"','\'')}">${dt.status}</div>
+                        <div class="tooltip-custom position-relative px-3 py-2 text-center rounded-3 ${cls}" data-id="${dt.attendance_id}" style="width: ${(div_wrapper.width())/32}" role="button" data-details="${JSON.stringify(dt).replaceAll('\"','\'')}">${dt.status}</div>
                     </div>`].join('');
                 });
                 
@@ -91,6 +91,7 @@ var StudentAttendanceComponent = new function(){
 
             div_wrapper.html(['<div class="position-absolute p-3">',html,'</div>'].join(''));
             let div = div_wrapper.find('.tooltip-custom');
+
             div.each(function(){
                 let details = $(this).data('details');
                 details = details.replaceAll("\'","\"");
@@ -101,19 +102,9 @@ var StudentAttendanceComponent = new function(){
                     trigger : 'hover',
                     title: ["<span>Attendance Details</span>"].join(''),
                     content: [`<p>
-                        <span class="text-info">Check In</span>
-                        <span>:</span></br>
-                        <span>${details.check_in ? details.check_in : ''}</span>
-                    </p>
-                    <p>
                         <span class="text-info">Check In Remarks</span>
                         <span>:</span></br>
                         <span>${details.check_in_remarks ? details.check_in_remarks : ''}</span>
-                    </p>
-                    <p>
-                        <span class="text-info">Check Out</span>
-                        <span>:</span></br>
-                        <span>${details.check_out ? details.check_out : ''}</span>
                     </p>
                     <p>
                         <span class="text-info">Check Out Remarks</span>
@@ -121,6 +112,14 @@ var StudentAttendanceComponent = new function(){
                         <span>${details.check_out_remarks ? details.check_out_remarks : ''}</span>
                     </p>`].join('')
                 });
+            });
+
+            div.on('click',function(e){
+                e.preventDefault();
+                let p = {
+                    'id': $(this).data('id')
+                };
+                StudentAttendanceDialog.show(p);
             });
         });
     }
@@ -132,6 +131,88 @@ var StudentAttendanceComponent = new function(){
             let x = mThis.self.siblings(':visible');
             x.fadeOut('fast',function(){
                 mThis.self.hide().fadeIn(300);
+            });
+        });
+    }
+}
+
+let StudentAttendanceDialog = new function(){
+    let mThis = this;
+    this.self = $('#dlg_san_');
+    this.options = {};
+
+    this.btnSave = mThis.self.find('#dlg_san_btn_save');
+    this.elStatus = mThis.self.find('#dlg_el_status');
+
+    mThis.btnSave.on('click',function(e){
+        e.preventDefault();
+        let op = mThis.getDataForm();
+        window.vsapi.call(`${main_view.base_url}/api/student/attendance-save`,op,null).then(res => {
+            if(res.status_code === 200){
+                console.log(res.data);
+                cv_interact.success('Updated Attedance Successfully!');
+            }
+            else{
+                cv_interact.error(res.error_message);
+            }
+        });
+    });
+
+    this.loadFormDetails = (op) => {
+        window.vsapi.call(`${main_view.base_url}/api/student/attendance-date-details`,op,null,false).then(res => {
+            let d = {};
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            mThis.setDataForm(d);
+        });
+    }
+
+    this.setDataForm = (d) => {
+        d = d ? d : {};
+        mThis.options.student_id = d.student_id;
+        mThis.options.id = d.id;
+
+        mThis.self.find('.data-input').each(function(){
+            let el = $(this);
+            let f = el.data('field');
+            if(el.is('select'))
+                el.val(d[f]).trigger('change');
+            else
+                el.val(d[f]);
+        });
+    }
+
+    this.getDataForm = () => {
+        let p = {
+            'id': mThis.options.id,
+            'student_id': mThis.options.student_id
+        };
+        mThis.self.find('.data-input').each(function(){
+            let el = $(this);
+            let f = el.data('field');
+            p[f] = el.val();
+        });
+        return p;
+    }
+
+    this.prepareFormOption = (op, onFinish = null) => {
+        window.vsapi.call(`${main_view.base_url}/api/student/options-attendance-types`,null,null,false).then(res => {
+            let d = [];
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            VSUtil.setComboItems(mThis.elStatus,d,'id','name',null,null,null);
+            mThis.loadFormDetails(op);
+            if(typeof onFinish === 'function') onFinish();
+        });
+    }
+
+    this.show = (options) => {
+        if(!options) options = {};
+        mThis.prepareFormOption(options, () => {
+            mThis.self.modal({
+                backdrop: 'static'
             });
         });
     }
