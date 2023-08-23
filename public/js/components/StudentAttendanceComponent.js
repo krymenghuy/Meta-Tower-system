@@ -81,7 +81,7 @@ var StudentAttendanceComponent = new function(){
 
                     inner_html = [inner_html,`<div class="d-block">
                         <div class="px-3 py-2 text-center" style="width: ${(div_wrapper.width())/32}">${dt.day ? dt.day : ''}</div>
-                        <div class="tooltip-custom position-relative px-3 py-2 rounded-3 ${cls}" style="width: ${(div_wrapper.width())/32}" role="button">${dt.status}</div>
+                        <div class="tooltip-custom position-relative px-3 py-2 text-center rounded-3 ${cls}" style="width: ${(div_wrapper.width())/32}" role="button" data-details="${JSON.stringify(dt).replaceAll('\"','\'')}">${dt.status}</div>
                     </div>`].join('');
                 });
                 
@@ -92,10 +92,33 @@ var StudentAttendanceComponent = new function(){
             div_wrapper.html(html);
             let div = div_wrapper.find('.tooltip-custom');
             div.each(function(){
+                let details = $(this).data('details');
+                details = details.replaceAll("\'","\"");
+                details = JSON.parse(details);
                 $(this).popover({
                     html: true,
                     trigger : 'hover',
-                    title: ["<span class='pg-remarks-title'>Test</span>"].join('')
+                    title: ["<span>Attendance Details</span>"].join(''),
+                    content: [`<p>
+                        <span class="text-info">Check In</span>
+                        <span>:</span></br>
+                        <span>${details.check_in}</span>
+                    </p>
+                    <p>
+                        <span class="text-info">Check In Remarks</span>
+                        <span>:</span></br>
+                        <span>${details.check_in_remarks}</span>
+                    </p>
+                    <p>
+                        <span class="text-info">Check Out</span>
+                        <span>:</span></br>
+                        <span>${details.check_out}</span>
+                    </p>
+                    <p>
+                        <span class="text-info">Check Out Remarks</span>
+                        <span>:</span></br>
+                        <span>${details.check_out_remarks}</span>
+                    </p>`].join('')
                 });
             });
         });
