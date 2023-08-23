@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Mobile;
+namespace App\Http\Controllers\MobileSetting;
 
 use App\Http\Controllers\Controller;
 use App\Models\JDV;
-use App\Models\Mobile\HomePage;
+use App\Models\MobileSetting\HomePage;
 use App\Models\UM;
 use Illuminate\Http\Request;
 

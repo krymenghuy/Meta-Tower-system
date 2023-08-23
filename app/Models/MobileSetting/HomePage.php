@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Mobile;
+namespace App\Models\MobileSetting;
 
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
