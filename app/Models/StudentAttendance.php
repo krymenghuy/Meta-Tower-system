@@ -278,14 +278,20 @@ class StudentAttendance //extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    function attendanceDateDetails($student_id,$date,$ss){
-        $date = date('Y-m-d',strtotime($date));
-        $row = DB::table('student_attendances as sa')->where('sa.student_id',$student_id)
-                ->where('sa.session_date',$date)
-                ->selectRaw('sa.out_diff_time,sa.session_date,sa.student_id,sa.status_id,sa.in_diff_time,sa.is_finished,sa.in_remarks,sa.out_remarks,sa.checkin_time,sa.checkout_time')->first();
+    function attendanceDateDetails($arr,$ss=null){
+        $ss = $ss ? $ss:$this->ss;
+        $branch_id = $ss->branch_id;
+        $d = (object)$arr;
+        $id = isset($d->id)?$d->id:$d->attendance_id;
+        // $date = date('Y-m-d',strtotime($date));
+        $row = DB::table('student_attendances as sa')
+                ->where('sa.id',7)
+                // ->where('sa.student_id',$student_id)
+                // ->where('sa.session_date',$date)
+                ->selectRaw('sa.id,sa.out_diff_time,sa.session_date,sa.student_id,sa.status_id,sa.in_diff_time,sa.is_finished,sa.in_remarks,sa.out_remarks,sa.checkin_time,sa.checkout_time')->first();
         if(!$row){
             return (object)[
-                'student_id' => $student_id,
+                'student_id' => $id,
                 'status_id' => '',
                 'in_diff_time' => '',
                 'is_finished' => '',
