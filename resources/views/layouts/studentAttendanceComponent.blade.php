@@ -62,3 +62,68 @@
     </div>
     <div id="tbl--san" class="table-responsive mt-3 p-3 rounded-3 bg-white"></div>
 </div>
+
+<div class="modal fade" id="dlg_san_" tabindex="-1" aria-labelledby="dlg_san_title" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title trans-text" data-langprop="titles.Modify Student Attendance"></h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row gy-2">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="session_date" class="form-label trans-text" data-langprop="titles.Session Date"></label>
+                            <input data-select="datepicker" class="form-control data-input" data-field="session_date"/>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="checkin_time" class="form-label trans-text" data-langprop="titles.Check In Time"></label>
+                            <input type="time" class="form-control data-input" data-field="checkin_time"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row gy-2">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="in_remarks" class="form-label trans-text" data-langprop="titles.Check In Remarks"></label>
+                            <textarea class="form-control data-input" data-field="in_remarks"></textarea>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="checkout_time" class="form-label trans-text" data-langprop="titles.Check Out Time"></label>
+                            <input type="time" class="form-control data-input" data-field="checkout_time"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row gy-2">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="out_remarks" class="form-label trans-text" data-langprop="titles.Check Out Remarks"></label>
+                            <textarea class="form-control data-input" data-field="out_remarks"></textarea>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="status_id" class="form-label trans-text" data-langprop="titles.Status"></label>
+                            <div class="width-select-dialog">
+                                <select id="dlg_el_status" class="modal-select2 data-input" data-field="status_id"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
+                    <span class="trans-text" data-langprop="buttons.Cancel"></span>
+                </button>
+                <button id="dlg_san_btn_save" type="button" class="btn btn-primary btn-sm">
+                    <span class="trans-text" data-langprop="buttons.Save"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
