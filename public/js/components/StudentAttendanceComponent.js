@@ -81,7 +81,7 @@ var StudentAttendanceComponent = new function(){
 
                     inner_html = [inner_html,`<div class="d-block">
                         <div class="px-3 py-2 text-center" style="width: ${(div_wrapper.width())/32}">${dt.day ? dt.day : ''}</div>
-                        <div class="tooltip-custom position-relative px-3 py-2 text-center rounded-3 ${cls}" data-id="${dt.attendance_id}" style="width: ${(div_wrapper.width())/32}" role="button" data-details="${JSON.stringify(dt).replaceAll('\"','\'')}">${dt.status}</div>
+                        <div class="tooltip-custom position-relative px-3 py-2 text-center rounded-3 ${cls}" data-id="${dt.attendance_id}" data-day="${[dt.day,t.date].join('-')}" style="width: ${(div_wrapper.width())/32}" role="button" data-details="${JSON.stringify(dt).replaceAll('\"','\'')}">${dt.status}</div>
                     </div>`].join('');
                 });
                 
@@ -117,7 +117,9 @@ var StudentAttendanceComponent = new function(){
             div.on('click',function(e){
                 e.preventDefault();
                 let p = {
-                    'id': $(this).data('id')
+                    'id': $(this).data('id'),
+                    'student_id': op.student_id,
+                    'date': $(this).data('day')
                 };
                 StudentAttendanceDialog.show(p);
             });
@@ -147,15 +149,16 @@ let StudentAttendanceDialog = new function(){
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
         let op = mThis.getDataForm();
-        window.vsapi.call(`${main_view.base_url}/api/student/attendance-save`,op,null).then(res => {
-            if(res.status_code === 200){
-                console.log(res.data);
-                cv_interact.success('Updated Attedance Successfully!');
-            }
-            else{
-                cv_interact.error(res.error_message);
-            }
-        });
+        console.log(op);
+        // window.vsapi.call(`${main_view.base_url}/api/student/attendance-save`,op,null).then(res => {
+        //     if(res.status_code === 200){
+        //         console.log(res.data);
+        //         cv_interact.success('Updated Attedance Successfully!');
+        //     }
+        //     else{
+        //         cv_interact.error(res.error_message);
+        //     }
+        // });
     });
 
     this.loadFormDetails = (op) => {
@@ -170,8 +173,8 @@ let StudentAttendanceDialog = new function(){
 
     this.setDataForm = (d) => {
         d = d ? d : {};
-        mThis.options.student_id = d.student_id;
-        mThis.options.id = d.id;
+        mThis.options.student_id = d.student_id ? d.student_id : mThis.options.student_id;
+        mThis.options.id = d.id ? d.id : '';
 
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
