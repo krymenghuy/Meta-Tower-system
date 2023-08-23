@@ -7,7 +7,6 @@ use App\Http\Controllers\CampusController;
 use App\Http\Controllers\DepositeController;
 use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\Login\GuardianLoginController;
-use App\Http\Controllers\Mobile\HomePageController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\ProgramLevelController;
 use App\Http\Controllers\PromoteStudentController;
@@ -191,9 +190,12 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/attendance-scan',[StudentAttendanceController::class,'scanAttendance']);
         Route::post('/attendance-list',[StudentAttendanceController::class,'attendanceList']);
         Route::post('/attendance-details',[StudentAttendanceController::class,'attendanceDetails']);
+        Route::post('/attendance-date-details',[StudentAttendanceController::class,'getAttendanceDateDetails']);
         Route::post('/options-by-group',[StudentAttendanceController::class,'studentListByGroup']);
         Route::post('/options-group',[StudentAttendanceController::class,'optionsGroup']);
         Route::post('/options-attendance-types',[StudentAttendanceController::class,'optionsAttendanceTypes']);
+
+
 
 
 

@@ -279,7 +279,25 @@ class StudentAttendance //extends Model
     }
 
     function attendanceDateDetails($student_id,$date,$ss){
-        $row = DB::table('student_attendances')->where('student_id',$student_id)->where('session_date',$date)->selectRaw('student_id')->first();
+        $date = date('Y-m-d',strtotime($date));
+        $row = DB::table('student_attendances as sa')->where('sa.student_id',$student_id)
+                ->where('sa.session_date',$date)
+                ->selectRaw('sa.out_diff_time,sa.session_date,sa.student_id,sa.status_id,sa.in_diff_time,sa.is_finished,sa.in_remarks,sa.out_remarks,sa.checkin_time,sa.checkout_time')->first();
+        if(!$row){
+            return (object)[
+                'student_id' => $student_id,
+                'status_id' => '',
+                'in_diff_time' => '',
+                'is_finished' => '',
+                'in_remarks' => '',
+                'out_remarks' => '',
+                'checkin_time' => '',
+                'checkout_time' => '',
+                'out_diff_time' => '',
+
+            ];
+        }
+        $row->status = $this->getStatusText($row->status_id);
         return $row;
     }
 
