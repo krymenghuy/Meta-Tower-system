@@ -36,7 +36,8 @@ class StudentAttendance //extends Model
             'checkout_time' => '0|string',
             'status_id' => '1|number|exists=attendance_types.id',
             'is_finished' => '0|number|default=1',
-            'session_date' => '1|string'
+            'session_date' => '1|string',
+            'remarks' => '0|string|1,150'
         ];
 
         $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
@@ -91,7 +92,6 @@ class StudentAttendance //extends Model
             $out_diff_time = $lateness;
         }
         $is_finished = 1;
-
 
         $arr_attendance = [
             "session_date" => $session_date,
@@ -366,7 +366,7 @@ class StudentAttendance //extends Model
                 ->where('sa.id',$id)
                 // ->where('sa.student_id',$student_id)
                 // ->where('sa.session_date',$date)
-                ->selectRaw('sa.id,sa.out_diff_time,sa.session_date,sa.student_id,sa.status_id,sa.in_diff_time,sa.is_finished,sa.in_remarks,sa.out_remarks,DATE_FORMAT(sa.checkin_time, "%k:%i") as checkin_time,DATE_FORMAT(checkout_time, "%k:%i") as checkout_time')->first();
+                ->selectRaw("sa.id,sa.out_diff_time,sa.session_date,sa.student_id,sa.status_id,sa.in_diff_time,sa.is_finished,sa.in_remarks,sa.out_remarks,sa.checkin_time,sa.checkout_time")->first();
         if(!$row || !isset($id)){
             return (object)[
                 'student_id' => '',
