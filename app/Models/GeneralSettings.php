@@ -226,7 +226,7 @@ class GeneralSettings //extends Model
         $row = DB::table('student_groups as sg')->join('group_members as gm','gm.group_id','=','sg.id')->where('sg.branch_id',$branch_id)->where('gm.student_id',$student_id)
             ->selectRaw('sg.level_id,sg.term_id')
             ->first();
-        if(!$row) return (object)[];
+        if(!isset($row)) return (object)[];
         return $row;
     }
 

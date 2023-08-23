@@ -15,7 +15,9 @@ class StudentAttendance //extends Model
         1 => 'P',
         2 => 'Pr',
         3 => 'A',
-    ];
+    ]  , $mins = 15;
+
+
     function __construct($id=null,$ss=null){
         $this->id = $id;
         $this->ss = $ss;
@@ -24,16 +26,17 @@ class StudentAttendance //extends Model
     function saveAttendance($arr=[],$id=null,$ss=null){
         $ss = $ss?$ss:$this->ss;
         $id = $id?$id:$this->id;
+        $mins = 15;
 
         $v_rule = [
-            'student_id' => '1|number|exist=group_members.student_id',
+            'student_id' => '1|number|exists=group_members.student_id',
             'in_remarks' => '0|string|1,150',
             'out_remarks' => '0|string|1,150',
             'checkin_time' => '0|string',
             'checkout_time' => '0|string',
-            'status_id' => '1|number|exist=attendance_types.id',
-            'is_finished' => '0|number|default=0',
-            'session_date' => '0|string'
+            'status_id' => '1|number|exists=attendance_types.id',
+            'is_finished' => '0|number|default=1',
+            'session_date' => '1|string'
         ];
 
         $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
@@ -43,29 +46,104 @@ class StudentAttendance //extends Model
         if($is_finished>1 || $is_finished <0)return DV::error('is_finished status must be 0,1');
         $student_id = $inputs['student_id'];
         $group = GeneralSettings::getGroupByStudent($student_id,$ss);
-        $level = GeneralSettings::getLevel($group->level_id,$ss);
+        $level_id = 0 ;
+        if(isset($group->level_id)) $level_id = $group->level_id;
+
+        $level = GeneralSettings::getLevel($level_id,$ss);
         $inputs['program_id'] = $level->program_id;
         $inputs['level_id'] = $level->id;
         $status_id = $inputs['status_id'];
+        $session_date = $inputs['session_date'];
+        $d = (object)$inputs;
+        $checkout_time = isset($d->checkout_time)?$d->checkout_time:date('Y-m-d');
+        $checkin_time = isset($d->checkin_time)?$d->checkin_time:date('Y-m-d');
 
         $inputs['session_date'] = isset($inputs['session_date'])? date('Y-m-d',strtotime($inputs['session_date'])):date('Y-m-d');
         $d = (object)$inputs;
+        $group = $this->getCheckInAndOutBetweenTime($student_id,$checkin_time,$mins);
+        $group_in = $group->checkin;
+        if($group_in){
+            $group = $group_in;
+        }
+
+        $checkInStatus = $this->checkInStatus($group->start,$checkin_time);
+        $checkOutStatus = $this->checkOutStatus($group->end,$checkout_time);
+
+        // $scan_in = 'in'; // check in;
+        $earliness = abs($checkInStatus->early);
+        $lateness = $checkInStatus->late;
+        if($earliness){
+            $in_remarks = "Check in ".formatMinsTime($earliness)." earlier";
+            $in_diff_time= $earliness;
+        }else{
+            $in_remarks = "Check in ".formatMinsTime($lateness)." late";
+            $in_diff_time = $lateness;
+        }
+
+        // $scan_out = 'out'; // check out;
+        $earliness = abs($checkOutStatus->early);
+        $lateness = $checkOutStatus->late;
+        if($earliness){
+            $out_remarks = "Check out ".formatMinsTime($earliness)." earlier";
+            $out_diff_time = $earliness;
+        }else{
+            $out_remarks = "Check out ".formatMinsTime($lateness)." late";
+            $out_diff_time = $lateness;
+        }
+        $is_finished = 1;
 
 
-        // $catchDate = DB::table('student_attendances')->whereDay('session_date','>',);
+        $arr_attendance = [
+            "session_date" => $session_date,
+            "student_id" => $student_id,
+            "level_id" => $level->id,
+            "term_id" => $group->term_id,
+            "group_id" => $group->id,
+            "program_id" => $level->program_id,
+            "status_id" => $group_in->status_id,
+            "in_diff_time" => $in_diff_time,
+            "out_diff_time" => $out_diff_time,
+            "checkin_time" => $checkin_time,
+            "checkout_time" => $checkout_time,
+            "in_remarks" => $in_remarks,
+            "out_remarks" => $out_remarks,
+            "is_finished" => $is_finished,
+        ];
 
-        // if($status_id == 2 || $status_id ==3){
-        //     $inputs['is_finished'] = 1;
-        //     if(isset($d->in_remarks) && !isset($d->out_remarks)){
-        //         $d->out_remarks = $d->in_remarks;
-        //     }
-        //     if(isset($d->out_remarks) && !isset($d->in_remarks)){
-        //         $d->in_remarks = $d->out_remarks;
-        //     }
-        // }
-        $newID = 1;//saveData($ss,'student_attendances',['id' => $id],$inputs,[],1,1);
+        $newID = saveData($ss,'student_attendances',['id' => $id],$arr_attendance,[],1,1);
 
-        return DV::depends($newID,$inputs);
+        return DV::depends($newID,['group_out' => $arr_attendance]);
+    }
+
+    function getCheckInAndOutBetweenTime($student_id,$checkin_time,$mins){
+        $group_in = DB::table('student_groups as sg')
+        ->join('group_members as gm','sg.id','=','gm.group_id')->where('gm.student_id',$student_id)
+        ->whereBetween(DB::raw('TIME(checkin_time)'), [
+            date('H:i', strtotime("$checkin_time -$mins minutes")),
+            date('H:i', strtotime("$checkin_time +$mins minutes")),
+        ])
+        ->orderByRaw("ABS(TIME_TO_SEC(TIME(checkin_time)) - TIME_TO_SEC(?))", [$checkin_time])
+        ->selectRaw('sg.id,sg.checkin_time,sg.checkin_time as start,sg.checkout_time,sg.checkout_time as end,sg.term_id')
+        ->first();
+        if($group_in) $group_in->status_id = 1;
+
+
+        // $group_out = DB::table('student_groups as sg')
+        // ->join('group_members as gm','sg.id','=','gm.group_id')->where('gm.student_id',$student_id)
+        // ->whereBetween(DB::raw('TIME(checkout_time)'), [
+        //     date('H:i', strtotime("$checkout_time -$mins minutes")),
+        //     date('H:i', strtotime("$checkout_time +$mins minutes")),
+        // ])->orderByRaw("ABS(TIME_TO_SEC(TIME(checkout_time)) - TIME_TO_SEC(?))", [$checkout_time])
+        // ->selectRaw('sg.id,sg.checkin_time,sg.checkout_time,sg.term_id')
+        // ->first();
+
+
+
+
+        return (object)[
+            'checkin' => $group_in,
+            // 'checkout' => $group_out
+        ];
     }
 
 
@@ -288,7 +366,7 @@ class StudentAttendance //extends Model
                 ->where('sa.id',$id)
                 // ->where('sa.student_id',$student_id)
                 // ->where('sa.session_date',$date)
-                ->selectRaw('sa.id,sa.out_diff_time,sa.session_date,sa.student_id,sa.status_id,sa.in_diff_time,sa.is_finished,sa.in_remarks,sa.out_remarks,sa.checkin_time,sa.checkout_time')->first();
+                ->selectRaw('sa.id,sa.out_diff_time,sa.session_date,sa.student_id,sa.status_id,sa.in_diff_time,sa.is_finished,sa.in_remarks,sa.out_remarks,DATE_FORMAT(sa.checkin_time, "%k:%i") as checkin_time,DATE_FORMAT(checkout_time, "%k:%i") as checkout_time')->first();
         if(!$row || !isset($id)){
             return (object)[
                 'student_id' => '',
