@@ -26,7 +26,7 @@ class StudentAttendance //extends Model
         $id = $id?$id:$this->id;
 
         $v_rule = [
-            'student_id' => "1|number|exist=group_members.student_id",
+            'student_id' => '1|number|exist=group_members.student_id',
             'in_remarks' => '0|string|1,150',
             'out_remarks' => '0|string|1,150',
             'checkin_time' => '0|string',
@@ -38,7 +38,6 @@ class StudentAttendance //extends Model
 
         $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
-
         $inputs = $res->values;
         $is_finished = $inputs['is_finished'];
         if($is_finished>1 || $is_finished <0)return DV::error('is_finished status must be 0,1');
@@ -52,18 +51,19 @@ class StudentAttendance //extends Model
         $inputs['session_date'] = isset($inputs['session_date'])? date('Y-m-d',strtotime($inputs['session_date'])):date('Y-m-d');
         $d = (object)$inputs;
 
-        $catchDate = DB::table('student_attendances')->whereDay('session_date','>',);
 
-        if($status_id == 2 || $status_id ==3){
-            $inputs['is_finished'] = 1;
-            if(isset($d->in_remarks) && !isset($d->out_remarks)){
-                $d->out_remarks = $d->in_remarks;
-            }
-            if(isset($d->out_remarks) && !isset($d->in_remarks)){
-                $d->in_remarks = $d->out_remarks;
-            }
-        }
-        $newID = saveData($ss,'student_attendances',['id' => $id],$inputs,[],1);
+        // $catchDate = DB::table('student_attendances')->whereDay('session_date','>',);
+
+        // if($status_id == 2 || $status_id ==3){
+        //     $inputs['is_finished'] = 1;
+        //     if(isset($d->in_remarks) && !isset($d->out_remarks)){
+        //         $d->out_remarks = $d->in_remarks;
+        //     }
+        //     if(isset($d->out_remarks) && !isset($d->in_remarks)){
+        //         $d->in_remarks = $d->out_remarks;
+        //     }
+        // }
+        $newID = 1;//saveData($ss,'student_attendances',['id' => $id],$inputs,[],1,1);
 
         return DV::depends($newID,$inputs);
     }
@@ -282,14 +282,14 @@ class StudentAttendance //extends Model
         $ss = $ss ? $ss:$this->ss;
         $branch_id = $ss->branch_id;
         $d = (object)$arr;
-        $id = isset($d->id)?$d->id:$d->attendance_id;
+        $id = isset($d->id)?$d->id:null;
         // $date = date('Y-m-d',strtotime($date));
         $row = DB::table('student_attendances as sa')
                 ->where('sa.id',$id)
                 // ->where('sa.student_id',$student_id)
                 // ->where('sa.session_date',$date)
                 ->selectRaw('sa.id,sa.out_diff_time,sa.session_date,sa.student_id,sa.status_id,sa.in_diff_time,sa.is_finished,sa.in_remarks,sa.out_remarks,sa.checkin_time,sa.checkout_time')->first();
-        if(!$row){
+        if(!$row || !isset($id)){
             return (object)[
                 'student_id' => '',
                 'status_id' => '',
