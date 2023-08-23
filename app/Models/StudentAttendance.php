@@ -62,6 +62,7 @@ class StudentAttendance //extends Model
         $inputs['session_date'] = isset($inputs['session_date'])? date('Y-m-d',strtotime($inputs['session_date'])):date('Y-m-d');
         $d = (object)$inputs;
         $group = $this->getCheckInAndOutBetweenTime($student_id,$checkin_time,$mins);
+        if(!$group) return DV::error('Group not found or invalid checkin time to compare');
         $group_in = $group->checkin;
         if($group_in){
             $group = $group_in;
@@ -112,10 +113,11 @@ class StudentAttendance //extends Model
 
         $newID = saveData($ss,'student_attendances',['id' => $id],$arr_attendance,[],1,1);
 
-        return DV::depends($newID,['group_out' => $arr_attendance]);
+        return DV::depends($newID,['group_out' => $group]);
     }
 
     function getCheckInAndOutBetweenTime($student_id,$checkin_time,$mins){
+
         $group_in = DB::table('student_groups as sg')
         ->join('group_members as gm','sg.id','=','gm.group_id')->where('gm.student_id',$student_id)
         ->whereBetween(DB::raw('TIME(checkin_time)'), [
@@ -125,7 +127,13 @@ class StudentAttendance //extends Model
         ->orderByRaw("ABS(TIME_TO_SEC(TIME(checkin_time)) - TIME_TO_SEC(?))", [$checkin_time])
         ->selectRaw('sg.id,sg.checkin_time,sg.checkin_time as start,sg.checkout_time,sg.checkout_time as end,sg.term_id')
         ->first();
-        if($group_in) $group_in->status_id = 1;
+        if($group_in) {
+            $group_in->status_id = 1;
+            return (object)[
+                'checkin' => $group_in,
+                // 'checkout' => $group_out
+            ];
+        }
 
 
         // $group_out = DB::table('student_groups as sg')
@@ -140,10 +148,7 @@ class StudentAttendance //extends Model
 
 
 
-        return (object)[
-            'checkin' => $group_in,
-            // 'checkout' => $group_out
-        ];
+        return null;
     }
 
 
