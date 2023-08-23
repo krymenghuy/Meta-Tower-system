@@ -291,7 +291,7 @@ class StudentAttendance //extends Model
                 ->selectRaw('sa.id,sa.out_diff_time,sa.session_date,sa.student_id,sa.status_id,sa.in_diff_time,sa.is_finished,sa.in_remarks,sa.out_remarks,sa.checkin_time,sa.checkout_time')->first();
         if(!$row){
             return (object)[
-                'student_id' => $id,
+                'student_id' => '',
                 'status_id' => '',
                 'in_diff_time' => '',
                 'is_finished' => '',
