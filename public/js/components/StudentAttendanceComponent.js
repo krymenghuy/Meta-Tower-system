@@ -89,12 +89,13 @@ var StudentAttendanceComponent = new function(){
                 first = 1;
             });
 
-            div_wrapper.html(html);
+            div_wrapper.html(['<div class="position-absolute p-3">',html,'</div>'].join(''));
             let div = div_wrapper.find('.tooltip-custom');
             div.each(function(){
                 let details = $(this).data('details');
                 details = details.replaceAll("\'","\"");
                 details = JSON.parse(details);
+
                 $(this).popover({
                     html: true,
                     trigger : 'hover',
@@ -102,22 +103,22 @@ var StudentAttendanceComponent = new function(){
                     content: [`<p>
                         <span class="text-info">Check In</span>
                         <span>:</span></br>
-                        <span>${details.check_in}</span>
+                        <span>${details.check_in ? details.check_in : ''}</span>
                     </p>
                     <p>
                         <span class="text-info">Check In Remarks</span>
                         <span>:</span></br>
-                        <span>${details.check_in_remarks}</span>
+                        <span>${details.check_in_remarks ? details.check_in_remarks : ''}</span>
                     </p>
                     <p>
                         <span class="text-info">Check Out</span>
                         <span>:</span></br>
-                        <span>${details.check_out}</span>
+                        <span>${details.check_out ? details.check_out : ''}</span>
                     </p>
                     <p>
                         <span class="text-info">Check Out Remarks</span>
                         <span>:</span></br>
-                        <span>${details.check_out_remarks}</span>
+                        <span>${details.check_out_remarks ? details.check_out_remarks : ''}</span>
                     </p>`].join('')
                 });
             });

@@ -619,9 +619,12 @@ li.kt-menu__section {
 
 .max-height-details{
     overflow: hidden;
-    max-height: 200px;
+    height: 200px;
+    max-height:200px;
+    position: relative;
 }
 
 .max-height-details:hover{
     overflow: auto;
+    scroll-behavior: smooth;
 }
