@@ -278,14 +278,20 @@ class StudentAttendance //extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    function attendanceDateDetails($student_id,$date,$ss){
-        $date = date('Y-m-d',strtotime($date));
-        $row = DB::table('student_attendances as sa')->where('sa.student_id',$student_id)
-                ->where('sa.session_date',$date)
-                ->selectRaw('sa.out_diff_time,sa.session_date,sa.student_id,sa.status_id,sa.in_diff_time,sa.is_finished,sa.in_remarks,sa.out_remarks,sa.checkin_time,sa.checkout_time')->first();
+    function attendanceDateDetails($arr,$ss=null){
+        $ss = $ss ? $ss:$this->ss;
+        $branch_id = $ss->branch_id;
+        $d = (object)$arr;
+        $id = isset($d->id)?$d->id:$d->attendance_id;
+        // $date = date('Y-m-d',strtotime($date));
+        $row = DB::table('student_attendances as sa')
+                ->where('sa.id',$id)
+                // ->where('sa.student_id',$student_id)
+                // ->where('sa.session_date',$date)
+                ->selectRaw('sa.id,sa.out_diff_time,sa.session_date,sa.student_id,sa.status_id,sa.in_diff_time,sa.is_finished,sa.in_remarks,sa.out_remarks,sa.checkin_time,sa.checkout_time')->first();
         if(!$row){
             return (object)[
-                'student_id' => $student_id,
+                'student_id' => '',
                 'status_id' => '',
                 'in_diff_time' => '',
                 'is_finished' => '',
@@ -375,6 +381,7 @@ class StudentAttendance //extends Model
         ];
         if( in_array($day_name,$except_days)) return (object)[
             'day' => $day,
+            'attendance_id' => '',
             'status' => $day_name,
             'check_in_remarks' => '',
             'check_out_remarks' => '',
@@ -386,6 +393,7 @@ class StudentAttendance //extends Model
 
         if($date>$today) return (object)[
                             'day' => $day,
+                            'attendance_id' => '',
                             'status' => '?',
                             'check_in_remarks' => '',
                             'check_out_remarks' => '',
@@ -400,6 +408,7 @@ class StudentAttendance //extends Model
             if($day == $c->day){
                 return (object)[
                     'day' => $c->day,
+                    'attendance_id' => $c->attendance_id,
                     'status' => $this->getStatusText($c->status_id),
                     'check_in_remarks' => $c->in_remarks,
                     'check_out_remarks' => $c->out_remarks,
@@ -416,6 +425,7 @@ class StudentAttendance //extends Model
 
         return (object)[
             'day' => $day,
+            'attendance_id' => '',
             'check_in_remarks' => 'not scan',
             'check_out_remarks' => '',
             'status' => 'A',
@@ -439,7 +449,7 @@ class StudentAttendance //extends Model
         $days = days_in_month($month,$year);
         $i=0;
         $attendance_list =[];
-        $rows = DB::table('student_attendances')->whereMonth('session_date',$month)->whereYear('session_date',$year)->where('student_id',$student_id)->selectRaw('student_id,group_id,session_date,DAY(session_date) as day,status_id,in_remarks,out_remarks')->get();
+        $rows = DB::table('student_attendances')->whereMonth('session_date',$month)->whereYear('session_date',$year)->where('student_id',$student_id)->selectRaw('id as attendance_id,student_id,group_id,session_date,DAY(session_date) as day,status_id,in_remarks,out_remarks')->get();
         do{
             $i++;
             $x = $this->getAttendanceInfo($rows,$i,$month,$year,$student_id);
