@@ -313,6 +313,17 @@ function prn_allowed($prn_id,$module_id){
 
  }
 
+
+ function numToMonth($num,$is_short_cut=false){
+    if(!$is_short_cut){
+        $is_short_cut = null;
+    }else{
+        $is_short_cut = 3;
+    }
+
+    $dateObj = DateTime::createFromFormat('!m', $num);
+    return  substr($dateObj->format('F'),0,$is_short_cut);
+ }
  function formatMinsTime($minutes) {
     if ($minutes < 60) {
         return $minutes . " min";
