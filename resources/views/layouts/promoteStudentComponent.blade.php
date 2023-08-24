@@ -10,7 +10,7 @@
             </div>
         </div>
     </div>
-    <div class="table-responsive p-3 bg-white rounded-3 mt-3"></div>
+    <div id="tbl_pms_" class="table-responsive p-3 bg-white rounded-3 mt-3"></div>
 </div>
 
 <div class="modal fade" id="dlg_pms_" tabindex="-1" aria-labelledby="dlg_pms_title" aria-hidden="true">

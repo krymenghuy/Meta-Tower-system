@@ -6,12 +6,55 @@ var PromoteStudentComponent = new function(){
 
     this.btnNew = mThis.self.find('#_pms_btn_new');
 
+    this.cols = [{
+        title: "Student ID",
+        data: "code"
+    },
+    {
+        title: "Full Name",
+        data: "name"
+    },
+    {
+        title: "Full Name (KH)",
+        data: "name_kh"
+    },
+    {
+        title: "Age",
+        data: "age"
+    },
+    {
+        title: "Date of Birth",
+        data: "dob"
+    },
+    {
+        title: "Action",
+        data: (data, a, b) => {
+            return [`<div class="d-flex gap-2">
+                <a href="javascript:void(0)" class="btn-pms-delete" data-id="${data.id}">
+                    <i class="fa-regular fa-trash-can text-danger"></i>
+                </a>
+            </div>`].join('');
+        }
+    }];
+
     this.init = () => {
+        mThis.itemView = new ListView('tbl_pms_',{
+            'fetchApi':`${main_view.base_url}/api/promote/student-list-paginate`,
+            'columns': mThis.cols,
+            'tableClass':"table header-light-blue header-uppercase",
+            'rowCreated':(data, index, tr) => {
+                tr.setAttribute('data-id',data.id);
+            },
+            'beforeRender':()=>{}
+        });
+
         mThis.btnNew.on('click',function(e){
             e.preventDefault();
             let op = {
                 'id': 0,
-                'onClose': () => {}
+                'onClose': () => {
+                    mThis.itemView.showPage(null);
+                }
             };
             PromoteStudentDialog.show(op);
         });
@@ -19,10 +62,12 @@ var PromoteStudentComponent = new function(){
 
     this.show = (options) => {
         if(!options) options = {};
-        main_view.setTitle(mThis.title_prop);
-        let x = mThis.self.siblings(':visible');
-        x.fadeOut('fast',function(){
-            mThis.self.hide().fadeIn(300);
+        mThis.itemView.showPage(null,null,() => {
+            main_view.setTitle(mThis.title_prop);
+            let x = mThis.self.siblings(':visible');
+            x.fadeOut('fast',function(){
+                mThis.self.hide().fadeIn(300);
+            });
         });
     }
 }

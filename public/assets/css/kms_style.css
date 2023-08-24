@@ -18,6 +18,16 @@ body {
     overflow: hidden;
 }
 
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+}
+
+input{
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
 li.kt-menu__section {
     margin-top: 8px !important;
     background: #EBF5FB;

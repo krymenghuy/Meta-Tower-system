@@ -203,7 +203,6 @@ class PromoteStudent //extends Model
         }
 
         return $row;
-
     }
 
     function getFormOptions($d=null,$ss=null){
