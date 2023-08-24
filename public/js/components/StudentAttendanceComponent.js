@@ -81,7 +81,7 @@ var StudentAttendanceComponent = new function(){
 
                     inner_html = [inner_html,`<div class="d-block">
                         <div class="px-3 py-2 text-center" style="width: ${(div_wrapper.width())/32}">${dt.day ? dt.day : ''}</div>
-                        <div class="tooltip-custom position-relative px-3 py-2 text-center rounded-3 ${cls}" data-id="${dt.attendance_id}" data-day="${[dt.day,t.date].join('-')}" style="width: ${(div_wrapper.width())/32}" role="button" data-details="${JSON.stringify(dt).replaceAll('\"','\'')}">${dt.status}</div>
+                        <div class="tooltip-custom position-relative px-3 py-2 text-center rounded-3 ${cls}" data-id="${dt.attendance_id}" data-status="${dt.status_id}" data-day="${[dt.day,t.date].join('-')}" style="width: ${(div_wrapper.width())/32}" role="button" data-details="${JSON.stringify(dt).replaceAll('\"','\'')}">${dt.status}</div>
                     </div>`].join('');
                 });
                 
@@ -119,7 +119,8 @@ var StudentAttendanceComponent = new function(){
                 let p = {
                     'id': $(this).data('id'),
                     'student_id': op.student_id,
-                    'date': $(this).data('day')
+                    'date': $(this).data('day'),
+                    'status_id': $(this).data('status')
                 };
                 StudentAttendanceDialog.show(p);
             });
@@ -166,6 +167,7 @@ let StudentAttendanceDialog = new function(){
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
+                d.extend = op;
             }
             mThis.setDataForm(d);
         });
@@ -188,11 +190,15 @@ let StudentAttendanceDialog = new function(){
     this.handleData = (d) => {
         d = d ? d : {};
         mThis.options.student_id = d.student_id ? d.student_id : mThis.options.student_id;
-        mThis.options.id = d.id ? d.id : '';
-        
+        mThis.options.id = d.id ? d.id : d.extend.id;
+
+        d.session_date = d.session_date ? d.session_date : d.extend.date;
+        d.status_id = d.status_id ? d.status_id : d.extend.status_id;
+
         ['checkin_time','checkout_time'].map(key => {
             d[key] = d[key].split(' ')[1] ? d[key].split(' ')[1] : d[key];
         });
+        console.log(d);
     }
 
     this.getDataForm = () => {
@@ -222,6 +228,8 @@ let StudentAttendanceDialog = new function(){
 
     this.show = (options) => {
         if(!options) options = {};
+        mThis.options = options;
+        
         mThis.prepareFormOption(options, () => {
             mThis.self.modal({
                 backdrop: 'static'
