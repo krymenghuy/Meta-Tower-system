@@ -189,10 +189,16 @@ class GeneralSettings //extends Model
         return DB::table('sessions')->where('id',$session_id)->selectRaw('id,name,id as session_id,name as session')->first();
     }
 
-    static function getLevel($level=null,$ss=null) {
+    static function getLevel($level_id=null,$ss=null) {
         $branch_id = $ss->branch_id;
-        return DB::table('program_levels')->where('id',$level)->selectRaw('program_id,name as level,name,id as level_id,shortcut,id')->first();
+        return DB::table('program_levels')->where('id',$level_id)->selectRaw('program_id,name as level,name,id as level_id,shortcut,id')->first();
     }
+
+    static function getProgramByLevel($level_id=null,$ss=null) {
+        $branch_id = $ss->branch_id;
+        return DB::table('programs as p')->join('program_levels as pl','p.id','=','pl.program_id')->where('pl.id',$level_id)->selectRaw('p.name as program,p.id as program_id,p.id,p.name')->first();
+    }
+
     static function options_program($ss){
         $branch_id = $ss->branch_id;
         return DB::select(DB::raw('SELECT p.id, p.name AS program_name, shortcut FROM programs AS p WHERE branch_id ='.$branch_id.' ORDER BY name ASC'));

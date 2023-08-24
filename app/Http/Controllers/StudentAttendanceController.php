@@ -50,7 +50,7 @@ class StudentAttendanceController extends Controller
         if($ss->status_code !=200) return $ss;
         $instance = new StudentAttendance(null,$ss);
         // $list = $instance->attendanceDetails($req,$ss);
-        $list = $instance->getAttendanceDetails($req->student_id);
+        $list = $instance->getAttendanceDetails($req->all());
         return JDV::result($list);
     }
 

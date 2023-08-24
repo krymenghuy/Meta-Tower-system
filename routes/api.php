@@ -7,6 +7,9 @@ use App\Http\Controllers\CampusController;
 use App\Http\Controllers\DepositeController;
 use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\Login\GuardianLoginController;
+use App\Http\Controllers\MobileApi\AttendanceController;
+use App\Http\Controllers\MobileApi\HomePageController;
+use App\Http\Controllers\MobileSetting\BannerController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\ProgramLevelController;
 use App\Http\Controllers\PromoteStudentController;
@@ -20,6 +23,7 @@ use App\Http\Controllers\PolicyDiscountController;
 use App\Http\Controllers\OtherFeeController;
 
 
+use App\Models\MobileApi\FrontBanner;
 use Illuminate\Http\Request;
 //use App\Models\SMS;
 //use App\Models\Notifier;
@@ -76,6 +80,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('auth/login', [LoginController::class, 'apiLogin']);
 Route::post('/auth/guardian/login',[GuardianLoginController::class,'guardianLogin']);
+Route::post('/auth/guardian/profile',[GuardianLoginController::class,'getGuardianProfile']);
+
 
 // Route::get('env/20230120AZ99/vars',function(){
 //     $vars =[
@@ -91,7 +97,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //mobile api
 
     Route::prefix('mobile')->group(function(){
-        Route::post('/connected-student',[HomePageController::class,'connectedStudent']);
+        Route::post('/home-page',[HomePageController::class,'homePage']);
+        Route::post('/student-attendance',[AttendanceController::class,'attendanceList']);
     });
 
     //end mobile api
@@ -496,6 +503,15 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
       // Route::post('other-fee/delete-item', [PolicyDiscountController::class, 'deleteItem']);
 
   //End::OtherFeeController
+
+  //begin::MobileSettingsController
+    Route::prefix('mobile-settings')->group(function(){
+        Route::post('/banner-save',[BannerController::class,'save']);
+        Route::post('/banner-list',[BannerController::class,'list']);
+        Route::post('/banner-details',[BannerController::class,'details']);
+        Route::post('/banner-delete',[BannerController::class,'delete']);
+    });
+  //end::MobileSettingsController
 
     //begin::GuardianController
     Route::prefix('guardian')->group(function(){

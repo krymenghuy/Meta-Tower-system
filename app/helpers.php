@@ -314,7 +314,7 @@ function prn_allowed($prn_id,$module_id){
  }
 
 
- function numToMonth($num,$is_short_cut=false){
+ function getMonthName($num,$is_short_cut=false){
     if($num>12 || $num<1) return DV::error('num must be between 1 and 12');
     if(!$is_short_cut){
         $is_short_cut = null;

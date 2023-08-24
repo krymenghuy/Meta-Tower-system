@@ -23,7 +23,7 @@ class PromoteStudentController extends Controller
         if($ss->status_code !=200) return $ss;
         $x = new PromoteStudent();
         $promote = $x->promotedStudentListPag($req->all(),$ss);
-        return JDV::raw($promote);
+        return JDV::result($promote);
 
     }
 
