@@ -4,7 +4,7 @@
             <i class="fa-solid fa-plus"></i>
             <span class="trans-text" data-langprop="buttons.Add List"></span>
         </button>
-        <input type="search" class="form-control width--search-inner" placeholder="Search..."/>
+        <input type="search" id="el_ntf_search" class="form-control width--search-inner"/>
         <button class="btn btn-sm btn-primary" type="button">
             <span class="trans-text" data-langprop="buttons.Filter By Year"></span>
             <i class="fa-solid fa-caret-down ps-2"></i>

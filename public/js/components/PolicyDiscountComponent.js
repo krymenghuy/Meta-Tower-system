@@ -127,6 +127,8 @@ var PolicyDiscountComponent = new function(){
             if(e.keyCode === 13)
                 mThis.itemView.showPage({'search_value': $(this).val()});
         });
+
+        new SearchData(mThis.elSearch,mThis.tblPolicyDiscount);
     }
 
     this.show = (options) => {

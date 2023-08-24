@@ -4,6 +4,8 @@ var StudentAttendanceComponent = new function(){
     this.title_prop = "Student Attendance";
     this.self = $('#_main_studentAttendanceComponent');
 
+    this.elSearch = mThis.self.find('#el_san_search');
+
     this.cols = [{
         title: "Student ID",
         data: "code"
@@ -47,6 +49,9 @@ var StudentAttendanceComponent = new function(){
             },
             'beforeRender':()=>{}
         });
+        
+        mThis.tblStudent = $(mThis.itemView.getTable());
+        new SearchData(mThis.elSearch, mThis.tblStudent);
 
         mThis.cfg = new ExpandableRowConfig('tbl--san_table',{
             'dontExpandByClickingOn': [],
@@ -163,7 +168,10 @@ let StudentAttendanceDialog = new function(){
     });
 
     this.loadFormDetails = (op) => {
-        window.vsapi.call(`${main_view.base_url}/api/student/attendance-date-details`,op,null,false).then(res => {
+        let p = {
+            'id': op.id
+        };
+        window.vsapi.call(`${main_view.base_url}/api/student/attendance-date-details`,p,null,false).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
@@ -198,7 +206,7 @@ let StudentAttendanceDialog = new function(){
         ['checkin_time','checkout_time'].map(key => {
             d[key] = d[key].split(' ')[1] ? d[key].split(' ')[1] : d[key];
         });
-        console.log(d);
+        delete(d.extend);
     }
 
     this.getDataForm = () => {
@@ -229,7 +237,7 @@ let StudentAttendanceDialog = new function(){
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;
-        
+
         mThis.prepareFormOption(options, () => {
             mThis.self.modal({
                 backdrop: 'static'

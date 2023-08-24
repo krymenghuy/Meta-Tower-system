@@ -404,6 +404,7 @@ li.kt-menu__section {
     min-width: 200px;
 }
 
+.width-select-in-form .select2,
 .width--filter-inner .select2,
 .width--search-inner .select2{
     width:100%;
@@ -627,4 +628,116 @@ li.kt-menu__section {
 .max-height-details:hover{
     overflow: auto;
     scroll-behavior: smooth;
+}
+
+.main-container{
+    padding: 10px 16px;
+    display:none;
+}
+
+.btn-filter{
+    background-color:var(--bs-primary);
+    color:#fff;
+    padding:0.65rem 1rem;
+    border:none;
+    border-radius:var(--bs-border-radius);
+    white-space: nowrap;
+}
+
+.btn-print{
+    background-color:#FFB800;
+    color:#fff;
+    padding:0.65rem 1rem;
+    border:none;
+    border-radius: var(--bs-border-radius);
+    white-space: nowrap;
+}
+
+.btn-add,
+.btn-pdf{
+    background-color:#01B0FF;
+    color:#fff;
+    padding:0.65rem 1rem;
+    border:none;
+    border-radius: var(--bs-border-radius);
+    white-space:nowrap;
+}
+
+.card-report{
+    display:flex;
+    align-items:center;
+    border:1px solid #6c757d;
+    border-radius:var(--bs-border-radius-lg);
+    padding:1rem;
+    background-color:#fff;
+    box-shadow:0 0.5rem 1rem #00000026;
+    height:100%;
+}
+
+.h-img-report{
+    display:flex;
+    justify-content:flex-end;
+    width:100%;
+    height:100%;
+}
+
+.h-img-report img{
+    min-width:200px;
+    height:250px;
+}
+
+.container-table{
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--bs-border-radius-lg);
+    border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+    padding: 1rem;
+    margin-top: 1rem;
+    background-color:#fff;
+    box-shadow:0 0.5rem 1rem #00000026;
+}
+
+.container-table .table-title{
+    font-family: Poppins;
+    padding:1rem;
+    font-size:calc(1rem + 0.3vw);
+    --bs-text-opacity: 1;
+    color: #6c757d;
+}
+
+.container-table .table thead > tr > th{
+    font-family:Poppins;
+    font-size: 1rem;
+    color:#008DCD;
+    text-transform: uppercase;
+    white-space:nowrap;
+}
+
+.container-table .table tbody > tr > td{
+    max-height: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.del-marker{
+    margin:0;
+    padding:0;
+    list-style-type: none;
+    font-family:Poppins;
+    max-height:300px;
+    overflow-y:auto;
+}
+
+.del-marker li{
+    padding:0.5rem 0;
+    cursor:pointer;
+}
+
+.del-marker li i{
+    padding-right:0.5em;
+    font-size:1.25rem;
+}
+
+.del-marker li:hover{
+    color:var(--bs-primary);
 }
