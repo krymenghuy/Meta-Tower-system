@@ -150,15 +150,15 @@ let StudentAttendanceDialog = new function(){
         e.preventDefault();
         let op = mThis.getDataForm();
         console.log(op);
-        // window.vsapi.call(`${main_view.base_url}/api/student/attendance-save`,op,null).then(res => {
-        //     if(res.status_code === 200){
-        //         console.log(res.data);
-        //         cv_interact.success('Updated Attedance Successfully!');
-        //     }
-        //     else{
-        //         cv_interact.error(res.error_message);
-        //     }
-        // });
+        window.vsapi.call(`${main_view.base_url}/api/student/attendance-save`,op,null).then(res => {
+            if(res.status_code === 200){
+                console.log(res.data);
+                cv_interact.success('Updated Attedance Successfully!');
+            }
+            else{
+                cv_interact.error(res.error_message);
+            }
+        });
     });
 
     this.loadFormDetails = (op) => {
@@ -173,8 +173,7 @@ let StudentAttendanceDialog = new function(){
 
     this.setDataForm = (d) => {
         d = d ? d : {};
-        mThis.options.student_id = d.student_id ? d.student_id : mThis.options.student_id;
-        mThis.options.id = d.id ? d.id : '';
+        mThis.handleData(d);
 
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
@@ -183,6 +182,16 @@ let StudentAttendanceDialog = new function(){
                 el.val(d[f]).trigger('change');
             else
                 el.val(d[f]);
+        });
+    }
+
+    this.handleData = (d) => {
+        d = d ? d : {};
+        mThis.options.student_id = d.student_id ? d.student_id : mThis.options.student_id;
+        mThis.options.id = d.id ? d.id : '';
+        
+        ['checkin_time','checkout_time'].map(key => {
+            d[key] = d[key].split(' ')[1] ? d[key].split(' ')[1] : d[key];
         });
     }
 
