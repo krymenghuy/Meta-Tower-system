@@ -159,6 +159,7 @@ class PromoteStudent //extends Model
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row) {
             $row->age = getAge($row->dob);
+            $row->promote = self::promotedEnrollment($row->id,$ss);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -170,8 +171,7 @@ class PromoteStudent //extends Model
         if(!$id){
             $id = $d;
         }
-
-        $rows = DB::table('enrollments')->where('student_id',$id)->where('is_new_promote')->first();
+        $rows = DB::table('enrollments as e')->where('e.student_id',$id)->where('e.is_new_promote',1)->first();
         return $rows;
 
     }

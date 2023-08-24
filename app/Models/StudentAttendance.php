@@ -642,7 +642,7 @@ class StudentAttendance //extends Model
         $ss = $ss?$ss:$this->ss;
         $rows = DB::table('students as s')
             ->join('enrollments as e','e.student_id','=','s.id')
-            ->selectRaw('student_attendances')
+            ->selectRaw('s.name,s.name_kh')
             ->get();
         return $rows;
     }

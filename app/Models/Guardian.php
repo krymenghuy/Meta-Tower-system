@@ -66,7 +66,7 @@ class Guardian //extends Model
             $str_search ="(.code ='$search_value' OR st.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 's.id';
+        $selectCols = 's.id as student_id';
         $query =  DB::table('students as s')
                 ->whereRaw($str_search)
                 ->selectRaw($selectCols)
@@ -77,7 +77,7 @@ class Guardian //extends Model
         $count = $count_query->count('s.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
-            $row->parent = $this->getParentInfo($row->id);
+            $row->parent = $this->getParentInfo($row->student_id);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
