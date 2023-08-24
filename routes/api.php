@@ -195,7 +195,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/options-by-group',[StudentAttendanceController::class,'studentListByGroup']);
         Route::post('/options-group',[StudentAttendanceController::class,'optionsGroup']);
         Route::post('/options-attendance-types',[StudentAttendanceController::class,'optionsAttendanceTypes']);
-
+        Route::post('/attendance-list-report',[StudentAttendanceController::class,'studentAttendanceListReport']);
 
 
 
