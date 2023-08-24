@@ -150,7 +150,6 @@ class PromoteStudent //extends Model
 
         $selectCols = 's.sex,s.name,s.name_kh,s.code,s.id,s.date_of_birth as dob';
         $query = DB::table('students as s')
-
                 ->whereRaw($str_moreWhere)->whereRaw($str_search)
                 ->selectRaw($selectCols)
                 ->orderBy('id','desc');
@@ -166,13 +165,13 @@ class PromoteStudent //extends Model
 
     }
 
-    static function promotedEnrollment($d,$ss){
-        $id = isset($d->student_id) ? $d->student_id : $d->id;
+    static function promotedEnrollment($d=null,$ss=null){
+        $id = isset($d->student_id) ? $d->student_id : $d;
         if(!$id){
             $id = $d;
         }
-        $rows = DB::table('enrollments as e')->where('e.student_id',$id)->where('e.is_new_promote',1)->first();
-        return $rows;
+        $row = DB::table('enrollments as e')->where('e.student_id',$id)->where('e.is_new_promote',1)->first();
+        return $row;
 
     }
 
