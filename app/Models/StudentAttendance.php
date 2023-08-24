@@ -54,6 +54,18 @@ class StudentAttendance //extends Model
         $inputs['program_id'] = $level->program_id;
         $inputs['level_id'] = $level->id;
         $session_date = date('Y-m-d',strtotime($inputs['session_date']));
+        $today = date('Y-m-d');
+        $day_name = date('D',strtotime($session_date));
+        $except_days = [
+            'Sun','Sat'
+        ];
+        if( in_array($day_name,$except_days)){
+            return DV::error('The day is weekend');
+        }
+        if($session_date>$today){
+            return DV::error('The day not yet come');
+        }
+
         $d = (object)$inputs;
         $checkout_time = isset($d->checkout_time)?$d->checkout_time:date('Y-m-d');
         $checkin_time = isset($d->checkin_time)?$d->checkin_time:date('Y-m-d');
@@ -367,16 +379,47 @@ class StudentAttendance //extends Model
         $branch_id = $ss->branch_id;
         $d = (object)$arr;
         $id = isset($d->id)?$d->id:null;
-        // $date = date('Y-m-d',strtotime($date));
+        $date = isset($arr['date'])?$arr['date']:date('Y-m-d');
         $row = DB::table('student_attendances as sa')
                 ->where('sa.id',$id)
                 // ->where('sa.student_id',$student_id)
                 // ->where('sa.session_date',$date)
                 ->selectRaw("sa.id,sa.out_diff_time,sa.session_date,sa.student_id,sa.status_id,sa.in_diff_time,sa.is_finished,sa.in_remarks,sa.out_remarks,sa.checkin_time,sa.checkout_time")->first();
+        $date = date('Y-m-d',strtotime($date));
+        $today = date('Y-m-d');
+        $day_name = date('D',strtotime($date));
+        $except_days = [
+            'Sun','Sat'
+        ];
+        if( in_array($day_name,$except_days)){
+            return (object)[
+                'student_id' => '',
+                'status_id' => 3,
+                'in_diff_time' => '',
+                'is_finished' => '',
+                'in_remarks' => 'Weekends',
+                'out_remarks' => '',
+                'checkin_time' => '',
+                'checkout_time' => '',
+                'out_diff_time' => '',
+            ];
+        }
+
+        if($date>$today) return (object)[
+                            'student_id' => '',
+                            'status_id' => '',
+                            'in_diff_time' => '',
+                            'is_finished' => '',
+                            'in_remarks' => '',
+                            'out_remarks' => '',
+                            'checkin_time' => '',
+                            'checkout_time' => '',
+                            'out_diff_time' => '',
+                        ];
         if(!$row || !isset($id)){
             return (object)[
                 'student_id' => '',
-                'status_id' => '',
+                'status_id' => 3,
                 'in_diff_time' => '',
                 'is_finished' => '',
                 'in_remarks' => '',
@@ -467,7 +510,7 @@ class StudentAttendance //extends Model
             'day' => $day,
             'attendance_id' => '',
             'status' => $day_name,
-            'check_in_remarks' => '',
+            'check_in_remarks' => 'Weekends',
             'check_out_remarks' => '',
             'status_id' => '',
             "session_date" => $date,
@@ -513,7 +556,7 @@ class StudentAttendance //extends Model
             'check_in_remarks' => 'not scan',
             'check_out_remarks' => '',
             'status' => 'A',
-            'status_id' => '',
+            'status_id' => 3,
             "session_date" => $date,
             'check_in_time' => '',
             'check_out_time' => '',
@@ -593,5 +636,14 @@ class StudentAttendance //extends Model
 
     function optionsAttendanceTypes(){
         return GeneralSettings::optionsAttendanceTypes();
+    }
+
+    function attendanceListReport($arr=[],$ss=null){
+        $ss = $ss?$ss:$this->ss;
+        $rows = DB::table('students as s')
+            ->join('enrollments as e','e.student_id','=','s.id')
+            ->selectRaw('student_attendances')
+            ->get();
+        return $rows;
     }
 }
