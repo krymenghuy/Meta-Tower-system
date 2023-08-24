@@ -18,6 +18,15 @@ class PromoteStudentController extends Controller
         return JDV::raw($promote);
     }
 
+    function promoteListPaginate(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $x = new PromoteStudent();
+        $promote = $x->promotedStudentListPag($req->all(),$ss);
+        return JDV::raw($promote);
+
+    }
+
 
     function getFormOptions(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);

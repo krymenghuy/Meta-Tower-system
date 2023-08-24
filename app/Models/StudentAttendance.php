@@ -46,15 +46,14 @@ class StudentAttendance //extends Model
         $is_finished = $inputs['is_finished'];
         if($is_finished>1 || $is_finished <0)return DV::error('is_finished status must be 0,1');
         $student_id = $inputs['student_id'];
-        $group = GeneralSettings::getGroupByStudent($student_id,$ss);
+        $getGroup = GeneralSettings::getGroupByStudent($student_id,$ss);
         $level_id = 0 ;
-        if(isset($group->level_id)) $level_id = $group->level_id;
+        if(isset($getGroup->level_id)) $level_id = $getGroup->level_id;
 
         $level = GeneralSettings::getLevel($level_id,$ss);
         $inputs['program_id'] = $level->program_id;
         $inputs['level_id'] = $level->id;
-        $status_id = $inputs['status_id'];
-        $session_date = $inputs['session_date'];
+        $session_date = date('Y-m-d',strtotime($inputs['session_date']));
         $d = (object)$inputs;
         $checkout_time = isset($d->checkout_time)?$d->checkout_time:date('Y-m-d');
         $checkin_time = isset($d->checkin_time)?$d->checkin_time:date('Y-m-d');
@@ -62,7 +61,7 @@ class StudentAttendance //extends Model
         $inputs['session_date'] = isset($inputs['session_date'])? date('Y-m-d',strtotime($inputs['session_date'])):date('Y-m-d');
         $d = (object)$inputs;
         $group = $this->getCheckInAndOutBetweenTime($student_id,$checkin_time,$mins);
-        if(!$group) return DV::error('Group not found or invalid checkin time to compare');
+        if(!$group) return DV::error('Group not found Please Input check in and out time for this group');
         $group_in = $group->checkin;
         if($group_in){
             $group = $group_in;
@@ -94,6 +93,8 @@ class StudentAttendance //extends Model
         }
         $is_finished = 1;
 
+        $status_id = isset($inputs['status_id']) ? $inputs['status_id']:$group_in->status_id;
+
         $arr_attendance = [
             "session_date" => $session_date,
             "student_id" => $student_id,
@@ -101,7 +102,7 @@ class StudentAttendance //extends Model
             "term_id" => $group->term_id,
             "group_id" => $group->id,
             "program_id" => $level->program_id,
-            "status_id" => $group_in->status_id,
+            "status_id" => $status_id,
             "in_diff_time" => $in_diff_time,
             "out_diff_time" => $out_diff_time,
             "checkin_time" => $checkin_time,
@@ -216,7 +217,7 @@ class StudentAttendance //extends Model
         $status =  null; // status % Present, Absent,Permission %
         $in_diff_time = 0;
         $out_diff_time = 0;
-        $in_remarks = "null";
+        $in_remarks = "";
         $out_remarks = "";
         $id = null;
         $is_finished = $check_in_out?$check_in_out->is_finished:null;
@@ -519,10 +520,35 @@ class StudentAttendance //extends Model
         ];
     }
 
+    function statusCount($student_id,$month,$year){
+        $rows = $this->getAttendanceDetailsByMonth($student_id,$month,$year);
+        $statusA = [];
+        $statusP = [];
+        $statusPr = [];
+        foreach($rows as $row){
+            if($row->status == 'A'){
+               $statusA[] = $row->status;
+            }
+            if($row->status == 'P'){
+                $statusP[] = $row->status;
+             }
+             if($row->status == 'Pr'){
+                $statusPr[] = $row->status;
+             }
+        }
+        $res = (object)[
+            'absent' => count($statusA),
+            'present' => count($statusP),
+            'permission' => count($statusPr),
+        ];
+
+        return $res;
+    }
     function getAttendanceDetails($student_id){
         $rows = DB::select(DB::raw('select DISTINCT MONTH(session_date) as month,YEAR(session_date) as year from student_attendances Order by year,month asc limit 6'));
         foreach($rows as $row){
             $row->date = numToMonth($row->month,true).'-'.$row->year;
+            $row->status = $this->statusCount($student_id,$row->month,$row->year);
             $row->attendance_list = $this->getAttendanceDetailsByMonth($student_id,$row->month,$row->year);
         }
         return $rows;

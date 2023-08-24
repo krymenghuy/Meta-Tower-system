@@ -139,6 +139,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //begin::PromoteController
     Route::prefix('promote')->group(function(){
         Route::post('/students',[PromoteStudentController::class,'promoteStudents']);
+        Route::post('/student-list-paginate',[PromoteStudentController::class,'promoteListPaginate']);
         Route::post('/form-options',[PromoteStudentController::class,'getFormOptions']);
 
     });
