@@ -541,11 +541,11 @@ class StudentAttendance //extends Model
                     'check_out_remarks' => $c->out_remarks,
                     'status_id' => '',
                     "session_date" => $date,
-                    'check_in_time' => '',
-                    'check_out_time' => '',
+                    'check_in_time' => $c->checkin_time,
+                    'check_out_time' => $c->checkout_time,
+                    'reason' => $c->remarks,
                 ];
             }
-
 
             $i++;
         }while($c);
@@ -587,10 +587,29 @@ class StudentAttendance //extends Model
 
         return $res;
     }
-    function getAttendanceDetails($student_id){
-        $rows = DB::select(DB::raw('select DISTINCT MONTH(session_date) as month,YEAR(session_date) as year from student_attendances Order by year,month asc limit 6'));
+    function getAttendanceDetails($arr){
+        $d = (object)$arr;
+        $student_id = isset($d->student_id)?$d->student_id:null;
+        $limit = isset($d->limit)?$d->limit:6;
+        $session_date = isset($d->session_date)?date('Y-m-d',strtotime($d->session_date)):null;
+        if(!$student_id){
+            return DV::error('Student ID is required');
+        }
+        $exist = DB::table('student_attendances')->where('student_id',$student_id)->exists();
+        if(!$exist){
+            return DV::error('Student ID is invalid');
+        }
+
+
+        if (!$session_date) {
+            $sessionDateCondition = "1 = 1";
+        } else {
+            $sessionDateCondition = "session_date = '$session_date'";
+        }
+
+        $rows = DB::select(DB::raw("SELECT DISTINCT MONTH(session_date) AS month, YEAR(session_date) AS year FROM student_attendances WHERE $sessionDateCondition ORDER BY year, month ASC LIMIT $limit"));
         foreach($rows as $row){
-            $row->date = numToMonth($row->month,true).'-'.$row->year;
+            $row->date = getMonthName($row->month,true).'-'.$row->year;
             $row->status = $this->statusCount($student_id,$row->month,$row->year);
             $row->attendance_list = $this->getAttendanceDetailsByMonth($student_id,$row->month,$row->year);
         }
@@ -601,7 +620,7 @@ class StudentAttendance //extends Model
         $days = days_in_month($month,$year);
         $i=0;
         $attendance_list =[];
-        $rows = DB::table('student_attendances')->whereMonth('session_date',$month)->whereYear('session_date',$year)->where('student_id',$student_id)->selectRaw('id as attendance_id,student_id,group_id,session_date,DAY(session_date) as day,status_id,in_remarks,out_remarks')->get();
+        $rows = DB::table('student_attendances')->whereMonth('session_date',$month)->whereYear('session_date',$year)->where('student_id',$student_id)->selectRaw('remarks,id as attendance_id,student_id,group_id,session_date,DAY(session_date) as day,status_id,in_remarks,out_remarks,checkin_time,checkout_time')->get();
         do{
             $i++;
             $x = $this->getAttendanceInfo($rows,$i,$month,$year,$student_id);
