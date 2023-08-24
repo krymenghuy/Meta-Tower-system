@@ -47,7 +47,7 @@ class PromoteStudent //extends Model
                         if($program_id){
                             $q->whereIn('e.level_id',$arr_level);
                         }
-            $enr_info = $q->selectRaw('p.pmt_option_id,e.school_id,e.student_id,e.campus_id,e.session_id,e.level_id,e.program_id,e.academic_year')
+            $enr_info = $q->selectRaw('p.pmt_option_id,e.school_id,e.student_id,e.campus_id,e.session_id,e.level_id,e.program_id,e.academic_year,e.is_new_promote')
                         ->get();
 
             foreach($enr_info as $info){
@@ -61,6 +61,10 @@ class PromoteStudent //extends Model
                 $nextLevel = GeneralSettings::getNextLevelByCurrentLevel($level_id,$ss);
                 if(!$nextLevel) return DV::error('There is no next level');
                 $student_id = $info->student_id;
+                $promoted = DB::table('enrollments')->where('is_new_promote',1)->exists();
+                if($promoted){
+                    continue;
+                }
 
                 $new_enroll = [
                     'student_id' => $student_id,
@@ -118,7 +122,8 @@ class PromoteStudent //extends Model
                         ]);
                         DB::table('enrollments')->where('id',$newEnrID)->update([
                             'tuition_end_date' => $payment_process->end_date,
-                            'is_new_student' => 1
+                            'is_new_student' => 0,
+                            'is_new_promote' => 1
                         ]);
                     }
                 }
@@ -148,17 +153,31 @@ class PromoteStudent //extends Model
             $str_search ="(s.code ='$search_value' OR s.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 's.sex,s.name,s.name_kh,s.code,s.id,s.date_of_birth as dob';
+        $selectCols = 'e.status_id,e.session_id,e.campus_id,e.level_id,s.sex,s.name,s.name_kh,s.code,s.id,s.date_of_birth as dob';
         $query = DB::table('students as s')
+                ->join('enrollments as e','e.student_id','=','s.id')
+                ->where('e.is_new_promote',1)
                 ->whereRaw($str_moreWhere)->whereRaw($str_search)
                 ->selectRaw($selectCols)
-                ->orderBy('id','desc');
+                ->orderBy('s.id','desc');
         $count_query = clone $query;
-        $count = $count_query->count('id');
+        $count = $count_query->count('s.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row) {
+            $status = 'pending';
+            if($row->status_id == 1){
+                $status = "pending";
+            }else if($row->status_id == 2){
+                $status = 'verified';
+            }else{
+                $status = 'paid';
+            }
+            $row->session = GeneralSettings::getSession($row->session_id)->name;
+            $row->campus_id = DB::table('campuses')->where('id',$row->campus_id)->first()->name;
+            $row->level = GeneralSettings::getLevel($row->level_id,$ss)->name;
+            $row->status = $status;
             $row->age = getAge($row->dob);
-            $row->promote = self::promotedEnrollment($row->id,$ss);
+            // $row->promote_info = self::promotedEnrollment($row->id,$ss);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -167,10 +186,22 @@ class PromoteStudent //extends Model
 
     static function promotedEnrollment($d=null,$ss=null){
         $id = isset($d->student_id) ? $d->student_id : $d;
-        if(!$id){
-            $id = $d;
+        $row = DB::table('enrollments as e')->where('e.student_id',$id)->selectRaw('e.status_id,e.level_id,e.session_id,e.campus_id')->where('e.is_new_promote',1)->first();
+        if($row){
+            $status = 'pending';
+            if($row->status_id == 1){
+                $status = "pending";
+            }else if($row->status_id == 2){
+                $status = 'verified';
+            }else{
+                $status = 'paid';
+            }
+            $row->session = GeneralSettings::getSession($row->session_id);
+            $row->campus_id = DB::table('campuses')->where('id',$row->campus_id)->first()->name;
+            $row->level = GeneralSettings::getLevel($row->level_id,$ss)->name;
+            $row->status = $status;
         }
-        $row = DB::table('enrollments as e')->where('e.student_id',$id)->where('e.is_new_promote',1)->first();
+
         return $row;
 
     }
