@@ -32,6 +32,14 @@ var ReportCenterComponent = new function(){
         'text_field':'warehouse_name'
     },
     {
+        'type':'select',
+        'api_fetch':`${main_view.base_url}/api/inventory/settings/options-warehouse`,
+        'api_params':{},
+        'name':'group_id',
+        'value_field':'id',
+        'text_field':'warehouse_name'
+    },
+    {
         'type':'date',
         'name':'start_date',
     },
@@ -125,7 +133,7 @@ var ReportCenterComponent = new function(){
         let html = null, inner_html = null;
         if(p.param){
             p.param.map(item => {
-                let title = item.split('_').join(' ');
+                let title = item.replace('_id','').split('_').join(' ');
                 mThis.filter_fields.map(f => {
                     if(f.type === 'select' && f.name === item){
                         let id = ['select_',f.name].join('');
