@@ -6,6 +6,7 @@ var NonTuitionFeeComponent = new function(){
 
     this.tblNonTuitionFee = mThis.self.find('#tbl_ntf');
     this.btnAdd = mThis.self.find('#ntf_btn_add');
+    this.elSearch = mThis.self.find('#el_ntf_search');
 
     this.init = () => {
         mThis.btnAdd.on('click',function(e){
@@ -48,6 +49,8 @@ var NonTuitionFeeComponent = new function(){
                 }
             });
         });
+
+        new SearchData(mThis.elSearch,mThis.tblNonTuitionFee);
     }
 
     this.displayNonTuitionFee = (onFinish = null) => {

@@ -4,6 +4,8 @@ var StudentInformationComponent = new function(){
     this.title_prop = "Student Information";
     this.self = $('#_main_studentInformationComponent');
 
+    this.elSearch = mThis.self.find('#el_sin_search');
+
     this.cols = [{
         title: "Image",
         data: (data, a, b) => {
@@ -58,6 +60,9 @@ var StudentInformationComponent = new function(){
             },
             'beforeRender':()=>{}
         });
+
+        mThis.tblStudent = $(mThis.itemView.getTable());
+        new SearchData(mThis.elSearch,mThis.tblStudent);
 
         mThis.cfg = new ExpandableRowConfig('tbl--sin_table',{
             'dontExpandByClickingOn': ['btn-sin-details'],

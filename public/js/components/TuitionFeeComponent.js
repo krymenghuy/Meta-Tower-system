@@ -126,6 +126,8 @@ var TuitionFeeComponent = new function(){
             if(e.keyCode === 13)
                 mThis.itemView.showPage({'search_value': $(this).val()});
         });
+
+        new SearchData(mThis.elSearch,mThis.tblTuitionFee);
     }
 
     this.displayPriceListItem = (tr, id) => {
@@ -144,9 +146,9 @@ var TuitionFeeComponent = new function(){
             }
 
             html = [`<div class="p-3 rounded-3 bg-white">
-                    <button id="${btn_id}" class="btn btn-outline-primary btn-sm" type="button">
-                        <span class="trans-text text-nowrap" data-langprop="buttons.Add Price Item"></span>
-                    </button>
+                <button id="${btn_id}" class="btn btn-outline-primary btn-sm" type="button">
+                    <span class="trans-text text-nowrap" data-langprop="buttons.Add Price Item"></span>
+                </button>
             </div>
             <div class="table-responsive p-2">
                 <table class="tbl_tff_item table">

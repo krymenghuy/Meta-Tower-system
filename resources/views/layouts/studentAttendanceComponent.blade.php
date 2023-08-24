@@ -37,7 +37,7 @@
     </div>
     <div class="mt-3">
         <div class="d-flex gap-2">
-            <input type="search" class="form-control width--search-inner" placeholder="Search by Name or ID..."/>
+            <input type="search" id="el_san_search" class="form-control width--search-inner"/>
             <button class="btn btn-sm btn-primary text-nowrap" type="button">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <span class="trans-text" data-langprop="buttons.Find"></span>
