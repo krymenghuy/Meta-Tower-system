@@ -295,7 +295,7 @@ class Student //extends Model
 
             if($newID>0){
                 $family_id = self::setCode('FML',$ss,$child_id);
-                $exists_fmlCode = DB::table('student_guardians')->where('student_id',$child_id)->where('family_code',null)->exists();
+                $exists_fmlCode = DB::table('student_guardians')->where('student_id',$child_id)->where('family_code','=',null)->exists();
                 if($exists_fmlCode){
                     DB::table('student_guardians')->where('guardian_id',$newID)->update(['family_code'=>$family_id]);
                 }
@@ -330,7 +330,7 @@ class Student //extends Model
                 }
                 // link parent with child
                 if(!$exist){
-                    saveData($ss,'student_guardians',[],['guardian_id'=>$newID,'student_id'=>$child_id,'guardian_role'=>$pf['role']],[],1);
+                    saveData($ss,'student_guardians',[],['guardian_id'=>$newID,'student_id'=>$child_id,'guardian_role'=>$pf['role'],'family_code'=>$family_id],[],1);
                 }
             }
             $i++;
