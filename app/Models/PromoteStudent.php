@@ -173,7 +173,6 @@ class PromoteStudent //extends Model
         }
         $rows = DB::table('enrollments as e')->where('e.student_id',$id)->where('e.is_new_promote',1)->first();
         return $rows;
-
     }
 
     function getFormOptions($d=null,$ss=null){

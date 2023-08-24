@@ -11,30 +11,6 @@ var ReportCenterComponent = new function(){
         'type':'select',
         'api_fetch':`${main_view.base_url}/api/inventory/settings/options-warehouse`,
         'api_params':{},
-        'name':'loan_type_id',
-        'value_field':'id',
-        'text_field':'warehouse_name'
-    },
-    {
-        'type':'select',
-        'api_fetch':`${main_view.base_url}/api/inventory/settings/options-warehouse`,
-        'api_params':{},
-        'name':'borrower_id',
-        'value_field':'id',
-        'text_field':'warehouse_name'
-    },
-    {
-        'type':'select',
-        'api_fetch':`${main_view.base_url}/api/inventory/settings/options-warehouse`,
-        'api_params':{},
-        'name':'user_id',
-        'value_field':'id',
-        'text_field':'warehouse_name'
-    },
-    {
-        'type':'select',
-        'api_fetch':`${main_view.base_url}/api/inventory/settings/options-warehouse`,
-        'api_params':{},
         'name':'group_id',
         'value_field':'id',
         'text_field':'warehouse_name'
