@@ -58,7 +58,7 @@ var ManageAccountComponent = new function(){
                 <a href="javascript:void(0)" class="btn-mna-add_img" data-id="${parent}">
                     <i class="fa-solid fa-image-portrait text-info fs-5"></i>
                 </a>
-                <a href="javascript:void(0)" class="btn-mna-add_img" data-id="${data.family_code}">
+                <a href="javascript:void(0)" class="btn-mna-details" data-id="${data.family_code}">
                     <i class="fa-solid fa-up-right-from-square text-success fs-5"></i>
                 </a>
             </div>`].join('');
@@ -75,8 +75,19 @@ var ManageAccountComponent = new function(){
             },
             'beforeRender':()=>{}
         });
+        mThis.tblParent = $(mThis.itemView.getTable());
 
-        
+        mThis.tblParent.on('click','a.btn-mna-add_img',function(e){
+            e.preventDefault();
+            let parent = $(this).data('id');
+            console.log(parent);
+        });
+
+        mThis.tblParent.on('click','a.btn-mna-details',function(e){
+            e.preventDefault();
+            let family = $(this).data('id');
+            console.log(family);
+        });
 
         mThis.btnAdd.on('click',function(e){
             e.preventDefault();

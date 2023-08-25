@@ -330,35 +330,35 @@
                 <div class="row gy-2">
                     <div class="col-md-8">
                         <p class="mb-1">
-                            <span class="trans-text" data-langprop="titles.Student Name"></span>
+                            <span class="trans-text align-info-student" data-langprop="titles.Student Name"></span>
                             <span class="px-2">:</span>
                             <strong>
                                 <span class="data-show" data-field="name"></span>
                             </strong>
                         </p>
                         <p class="mb-1">
-                            <span class="trans-text" data-langprop="titles.Sex"></span>
+                            <span class="trans-text align-info-student" data-langprop="titles.Sex"></span>
                             <span class="px-2">:</span>
                             <strong>
                                 <span class="data-show" data-field="sex"></span>
                             </strong>
                         </p>
                         <p class="mb-1">
-                            <span class="trans-text" data-langprop="titles.Date of Birth"></span>
+                            <span class="trans-text align-info-student" data-langprop="titles.Date of Birth"></span>
                             <span class="px-2">:</span>
                             <strong>
                                 <span class="data-show" data-field="date_of_birth"></span>
                             </strong>
                         </p>
                         <p class="mb-1">
-                            <span class="trans-text" data-langprop="titles.Phone Number"></span>
+                            <span class="trans-text align-info-student" data-langprop="titles.Phone Number"></span>
                             <span class="px-2">:</span>
                             <strong>
                                 <span class="data-show" data-field="phone_number"></span>
                             </strong>
                         </p>
                         <p class="mb-1">
-                            <span class="trans-text" data-langprop="titles.Email"></span>
+                            <span class="trans-text align-info-student" data-langprop="titles.Email"></span>
                             <span class="px-2">:</span>
                             <strong>
                                 <span class="data-show" data-field="email"></span>
@@ -372,7 +372,7 @@
                     </div>
                 </div>
                 <p class="mb-1">
-                    <span class="trans-text" data-langprop="titles.Home Address"></span>
+                    <span class="trans-text align-info-student" data-langprop="titles.Home Address"></span>
                     <span class="px-2">:</span>
                     <strong>
                         <span class="data-show" data-field="address"></span>
@@ -382,35 +382,35 @@
                 <p class="fs-5 fw-bold text-primary trans-text" data-langprop="titles.Academic Information"></p>
                 <div class="d-block">
                     <p class="mb-1">
-                        <span class="trans-text" data-langprop="titles.Student ID"></span>
+                        <span class="trans-text align-info-student" data-langprop="titles.Student ID"></span>
                         <span class="px-2">:</span>
                         <strong>
                             <span class="data-show" data-field="student_code"></span>
                         </strong>
                     </p>
                     <p class="mb-1">
-                        <span class="trans-text" data-langprop="titles.Class"></span>
+                        <span class="trans-text align-info-student" data-langprop="titles.Class"></span>
                         <span class="px-2">:</span>
                         <strong>
                             <span class="data-show" data-field="level"></span>
                         </strong>
                     </p>
                     <p class="mb-1">
-                        <span class="trans-text" data-langprop="titles.Previous School"></span>
+                        <span class="trans-text align-info-student" data-langprop="titles.Previous School"></span>
                         <span class="px-2">:</span>
                         <strong>
                             <span class="data-show" data-field="previous_school"></span>
                         </strong>
                     </p>
                     <p class="mb-1">
-                        <span class="trans-text" data-langprop="titles.Campus"></span>
+                        <span class="trans-text align-info-student" data-langprop="titles.Campus"></span>
                         <span class="px-2">:</span>
                         <strong>
                             <span class="data-show" data-field="campus"></span>
                         </strong>
                     </p>
                     <p class="mb-1">
-                        <span class="trans-text" data-langprop="titles.Session"></span>
+                        <span class="trans-text align-info-student" data-langprop="titles.Session"></span>
                         <span class="px-2">:</span>
                         <strong>
                             <span class="data-show" data-field="session"></span>
@@ -421,70 +421,70 @@
                 <p class="fs-5 fw-bold text-primary trans-text" data-langprop="titles.Parent Information"></p>
                 <div class="d-block">
                     <p class="mb-1">
-                        <span class="trans-text" data-langprop="titles.Father Name"></span>
+                        <span class="trans-text align-info-student" data-langprop="titles.Father Name"></span>
                         <span class="px-2">:</span>
                         <strong>
                             <span class="data-show" data-field="father_name"></span>
                         </strong>
                     </p>
                     <p class="mb-1">
-                        <span class="trans-text" data-langprop="titles.Mother Name"></span>
+                        <span class="trans-text align-info-student" data-langprop="titles.Mother Name"></span>
                         <span class="px-2">:</span>
                         <strong>
                             <span class="data-show" data-field="mother_name"></span>
                         </strong>
                     </p>
                     <p class="mb-1">
-                        <span class="trans-text" data-langprop="titles.Father Email"></span>
+                        <span class="trans-text align-info-student" data-langprop="titles.Father Email"></span>
                         <span class="px-2">:</span>
                         <strong>
                             <span class="data-show" data-field="father_email"></span>
                         </strong>
                     </p>
                     <p class="mb-1">
-                        <span class="trans-text" data-langprop="titles.Mother Email"></span>
+                        <span class="trans-text align-info-student" data-langprop="titles.Mother Email"></span>
                         <span class="px-2">:</span>
                         <strong>
                             <span class="data-show" data-field="mother_email"></span>
                         </strong>
                     </p>
                     <p class="mb-1">
-                        <span class="trans-text" data-langprop="titles.Father Phone"></span>
+                        <span class="trans-text align-info-student" data-langprop="titles.Father Phone"></span>
                         <span class="px-2">:</span>
                         <strong>
                             <span class="data-show" data-field="father_phone"></span>
                         </strong>
                     </p>
                     <p class="mb-1">
-                        <span class="trans-text" data-langprop="titles.Mother Phone"></span>
+                        <span class="trans-text align-info-student" data-langprop="titles.Mother Phone"></span>
                         <span class="px-2">:</span>
                         <strong>
                             <span class="data-show" data-field="mother_phone"></span>
                         </strong>
                     </p>
                     <p class="mb-1">
-                        <span class="trans-text" data-langprop="titles.Father ID Card"></span>
+                        <span class="trans-text align-info-student" data-langprop="titles.Father ID Card"></span>
                         <span class="px-2">:</span>
                         <strong>
                             <span class="data-show" data-field="father_nid"></span>
                         </strong>
                     </p>
                     <p class="mb-1">
-                        <span class="trans-text" data-langprop="titles.Mother ID Card"></span>
+                        <span class="trans-text align-info-student" data-langprop="titles.Mother ID Card"></span>
                         <span class="px-2">:</span>
                         <strong>
                             <span class="data-show" data-field="mother_nid"></span>
                         </strong>
                     </p>
                     <p class="mb-1">
-                        <span class="trans-text" data-langprop="titles.Religion"></span>
+                        <span class="trans-text align-info-student" data-langprop="titles.Religion"></span>
                         <span class="px-2">:</span>
                         <strong>
                             <span class="data-show" data-field="religion"></span>
                         </strong>
                     </p>
                     <p class="mb-1">
-                        <span class="trans-text" data-langprop="titles.Address"></span>
+                        <span class="trans-text align-info-student" data-langprop="titles.Address"></span>
                         <span class="px-2">:</span>
                         <strong>
                             <span class="data-show" data-field="mother_address"></span>
