@@ -600,7 +600,6 @@ class StudentAttendance //extends Model
             return DV::error('Student ID is invalid');
         }
 
-
         if (!$session_date) {
             $sessionDateCondition = "1 = 1";
         } else {
@@ -659,10 +658,27 @@ class StudentAttendance //extends Model
 
     function attendanceListReport($arr=[],$ss=null){
         $ss = $ss?$ss:$this->ss;
-        $rows = DB::table('students as s')
-            ->join('enrollments as e','e.student_id','=','s.id')
-            ->selectRaw('s.name,s.name_kh')
-            ->get();
+        $d = (object)$arr;
+        $group_id =isset($d->group_id)?$d->group_id:null;
+        $search_value =isset($d->search_value)?$d->search_value:null;
+        $selectCols = 's.name,s.name_kh';
+        $str_search ="1=1";
+        $str_moreWhere = '1=1';
+        if($search_value){
+            $skip_rows = 0;
+            $search_value = escape_like_str($search_value);
+            $str_search ="(s.code ='$search_value' OR s.name LIKE '%$search_value%')";
+        }
+        $q = DB::table('students as s')
+            ->join('group_members as gm','gm.student_id','=','s.id')
+            ->join('student_groups as sg','sg.id','=','gm.group_id')
+            ->where('sg.id',$group_id)
+            ->whereRaw($str_moreWhere)->whereRaw($str_search);
+
+
+
+        $rows = $q->whereRaw($str_search)->selectRaw($selectCols)->get();
         return $rows;
     }
+
 }

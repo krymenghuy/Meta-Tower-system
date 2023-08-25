@@ -25,6 +25,6 @@ class GuardianController extends Controller
 
         $instance = new Guardian();
         $list = $instance->guardianList($req->all(),$ss);
-        return JDV::raw($list);
+        return JDV::result($list);
     }
 }
