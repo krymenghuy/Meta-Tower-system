@@ -74,9 +74,7 @@ var ReportCenterComponent = new function(){
                 </div>
             </div>
         </div>
-        <div class="container-table">
-            <table id="_rpt_table" class="table"></table>
-        </div>`].join('');
+        <div id="_rpt_table" class="container-table"></div>`].join('');
 
         mThis.self.html(html);
         mThis.getValueWhenClick(mThis.self.find('#_rpt_name'));
@@ -196,53 +194,13 @@ var ReportCenterComponent = new function(){
     }
 
     this.getDataTable = (p) => {
-        window.vsapi.call(`${main_view.base_url}/api/`,p,null,false).then(res => {
+        window.vsapi.call(`${main_view.base_url}/api/student/attendance-list-report`,p,null,false).then(res => {
             let data = [];
             if(res.status_code === 200){
                 data = res.data;
             }
-            mThis.renderTable($('#_rpt_table'), data);
+            renderTable($('#_rpt_table'), data);
         });
-    }
-
-    this.renderTable = (tbl, d) => {
-        let cols = [];
-        cols.push({
-            title: `${d.title}`,
-            data: `${d.field}`
-        });
-
-        if(mThis.table){
-            tbl.DataTable().clear().destroy();
-            tbl.empty();
-            mThis.table = null;
-        }
-
-        if(!mThis.table){
-            mThis.table = tbl.DataTable({
-                searching: false,
-                destroy: true,
-                paging: true,
-                ordering: false,
-                retrieve: true,
-                info: true,
-                pageLength: 10,
-                bLengthChange: false,
-                saveState: true,
-                processing: true,
-                language: {
-                    loadingRecords: '&nbsp;',
-                    processing: 'Loading...',
-                    emptyTable: LocaleManager.trans('No data to display', 'datatable')
-                },
-                data: d,
-                columns: cols,
-                createdRow: function (row, data, dataIndex){
-                    let tr = $(row);
-                    tr.data('id', data.id);
-                }
-            });
-        }
     }
 
     this.getValueWhenClick = (div) => {

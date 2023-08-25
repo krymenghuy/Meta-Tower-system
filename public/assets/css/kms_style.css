@@ -52,6 +52,10 @@ li.kt-menu__section {
     color: #0E75D9 !important;
 }
 
+.icons{
+    filter: invert(53%) sepia(46%) saturate(7477%) hue-rotate(219deg) brightness(90%) contrast(91%);
+}
+
 .kt-menu__link-icon img {
     width: 22px;
     height: 22px;
@@ -763,4 +767,15 @@ li.kt-menu__section {
     width:150px;
     display: inline-block;
     color:#70bddf;
+}
+
+.width-show-total{
+    min-width:200px;
+    clear: both;
+    float: right;
+    display:block;
+    position: absolute;
+    width: fit-content;
+    height:fit-content;
+    right: 0;
 }

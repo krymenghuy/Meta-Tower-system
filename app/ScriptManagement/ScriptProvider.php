@@ -101,6 +101,7 @@ class ScriptProvider
             'files' => [
                 '/js/components/FormValidator.js',
                 '/js/components/SearchData.js',
+                '/js/components/RenderTableReport.js',
                 '/assets/js/formUtils.js',
                 '/js/layout/main.js?v=1',
                 '/js/components/PDFReport.js',
