@@ -5,6 +5,7 @@ var PromoteStudentComponent = new function(){
     this.self = $('#_main_promoteStudentComponent');
 
     this.btnNew = mThis.self.find('#_pms_btn_new');
+    this.elSearch = mThis.self.find('#el_pms_search');
 
     this.cols = [{
         title: "Student ID",
@@ -27,11 +28,40 @@ var PromoteStudentComponent = new function(){
         data: "dob"
     },
     {
+        title: "Sex",
+        data: (data, a, b) => {
+            let sex = data.sex === 'M' ? 'Male' : 'Female';
+            return sex;
+        }
+    },
+    {
+        title: "Level",
+        data: "level"
+    },
+    {
+        title: "Session",
+        data: "session"
+    },
+    {
+        title: "Campus",
+        data: "campus"
+    },
+    {
+        title: "Status",
+        data: (data, a, b) => {
+            let cls = data.status === 'pending' ? 'bg-warning' : 'bg-success';
+            return [`<span class="p-2 rounded-3 text-white ${cls}">${data.status}</span>`].join('');
+        }
+    },
+    {
         title: "Action",
         data: (data, a, b) => {
             return [`<div class="d-flex gap-2">
+                <a href="javascript:void(0)" class="btn-pms-verify" data-id="${data.id}">
+                    <i class="fa-regular fa-circle-check text-success fs-5"></i>
+                </a>
                 <a href="javascript:void(0)" class="btn-pms-delete" data-id="${data.id}">
-                    <i class="fa-regular fa-trash-can text-danger"></i>
+                    <i class="fa-regular fa-trash-can text-danger fs-5"></i>
                 </a>
             </div>`].join('');
         }
@@ -46,6 +76,44 @@ var PromoteStudentComponent = new function(){
                 tr.setAttribute('data-id',data.id);
             },
             'beforeRender':()=>{}
+        });
+
+        mThis.tblPromote = $(mThis.itemView.getTable());
+        new SearchData(mThis.elSearch,mThis.tblPromote);
+
+        mThis.tblPromote.on('click','a.btn-pms-verify',function(e){
+            e.preventDefault();
+            let op = {
+                'id': $(this).data('id')
+            };
+            cv_interact.confirm('Verify this student?',{title: 'Verify Student', context: 'OK'},(e) => {
+                if(e){
+                    window.vsapi.call(`${main_view.base_url}/`,op,null).then(res => {
+                        if(res.status_code === 200){
+                            mThis.itemView.showPage(null);
+                        }
+                        else{
+                            cv_interact.error(res.error_message);
+                        }
+                    });
+                }
+            });
+        });
+
+        mThis.tblPromote.on('click','a.btn-pms-delete',function(e){
+            e.preventDefault();
+            let op = {
+                'id': $(this).data('id')
+            };
+            cv_interact.confirm('Delete this student?',{title: 'Delete Student', context: 'delete'},(e) => {
+                if(e){
+                    window.vsapi.call(`${main_view.base_url}/`,op,null).then(res => {
+                        if(res.status_code === 200){
+                            mThis.itemView.showPage(null);
+                        }
+                    });
+                }
+            });
         });
 
         mThis.btnNew.on('click',function(e){

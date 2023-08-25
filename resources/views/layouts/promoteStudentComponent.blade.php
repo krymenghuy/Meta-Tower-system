@@ -4,7 +4,7 @@
             <span class="trans-text text-nowrap" data-langprop="buttons.Promote Student"></span>
         </button>
         <div class="input-group flex-nowrap">
-            <input type="search" class="form-control width-search-box"/>
+            <input type="search" id="el_pms_search" class="form-control width-search-box"/>
             <div class="input-group-text">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </div>
