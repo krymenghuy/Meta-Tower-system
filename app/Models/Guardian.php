@@ -92,15 +92,55 @@ class Guardian //extends Model
         $exists =  DB::table('student_guardians')->where('student_id',$d->student_id)->where('guardian_id',$d->guardian_id)->exists();
         if($exists) return DV::error('Already connected');
         $newID = saveData($ss,'student_guardians',['id' => null],$inputs,[],1);
-        return ;
+        return DV::depends($newID,'Connected');
     }
 
     function getParentInfo($student_id){
-        return DB::table('student_guardians as sg')
-                ->join('guardians as g','g.id','=','sg.guardian_id')
-                ->where('sg.student_id',$student_id)
-                ->selectRaw('g.name,g.phone_number,g.email,g.n_id,sg.family_code as family_id')
-                ->get();
+        // $parents = DB::table('student_guardians as sg')
+        //     ->join('guardians as g', 'g.id', '=', 'sg.guardian_id')
+        //     ->where('sg.student_id', $student_id)
+        //     ->selectRaw('g.role,g.name, g.phone_number, g.email, g.n_id, sg.family_code as family_id')
+        //     ->get();
 
+
+        // return $parents;
+        $parents = DB::table('student_guardians as sg')
+            ->join('guardians as g', 'g.id', '=', 'sg.guardian_id')
+            ->where('sg.student_id', $student_id)
+            ->selectRaw('g.role,g.name, g.phone_number, g.email, g.n_id, sg.family_code as family_id')
+            ->get();
+
+            $mergedObject = (object) [
+                "father_name" => null,
+                "father_phone" => null,
+                "father_n_id" => null,
+                "father_email" => null,
+                "mother_name" => null,
+                "mother_phone" => null,
+                "mother_n_id" => null,
+                "mother_n_email" => null,
+                "family_id" =>null
+
+            ];
+
+            foreach ($parents as $p) {
+                if ($p->role == 'father') {
+                    $mergedObject->father_name = $p->name;
+                    $mergedObject->father_phone = $p->phone_number;
+                    $mergedObject->father_n_id = $p->n_id;
+                    $mergedObject->father_email = $p->email;
+                }
+                if ($p->role == 'mother') {
+                    $mergedObject->mother_name = $p->name;
+                    $mergedObject->mother_phone = $p->phone_number;
+                    $mergedObject->mother_n_id = $p->n_id;
+                    $mergedObject->mother_email = $p->email;
+                }
+                $mergedObject->family_id = $p->family_id;
+            }
+
+
+        return $mergedObject;
     }
+
 }

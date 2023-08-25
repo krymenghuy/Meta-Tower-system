@@ -14,7 +14,9 @@ class HomePage //extends Model
         $banner = DB::table('banners')->selectRaw('file_name')->get();
         $branch_id = $ss->branch_id;
         foreach($banner as $row){
-            $row->image_url = PublicStorage::getUrl($branch_id,'banner','image').$row->file_name;
+            if($row->file_name){
+                $row->image_url = PublicStorage::getUrl($branch_id,'banners','image').$row->file_name;
+            }
             unset($row->file_name);
         }
 

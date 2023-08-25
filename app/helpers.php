@@ -305,8 +305,8 @@ function prn_allowed($prn_id,$module_id){
     return $minuteDifference;
  }
 
- function getAge($year_of_birth){
-    $birth_year = date('Y',strtotime($year_of_birth));
+ function getAge($dob){
+    $birth_year = date('Y',strtotime($dob));
     $currentYear = date('Y');
 
     return $currentYear - $birth_year;
