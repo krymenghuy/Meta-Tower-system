@@ -66,21 +66,38 @@ class Guardian //extends Model
             $str_search ="(.code ='$search_value' OR st.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 's.id as student_id';
-        $query =  DB::table('students as s')
-                ->whereRaw($str_search)
-                ->selectRaw($selectCols)
-                // ->whereRaw($str_moreWhere)->whereRaw($str_search)
-                ->orderBy('s.id','desc');
+        $selectCols = 'g.id as guardian_id,g.role,g.name, g.phone_number, g.email, g.n_id, sg.family_code';
+        $query =  DB::table('student_guardians as sg')
+            ->join('guardians as g', 'g.id', '=', 'sg.guardian_id')
+            ->selectRaw($selectCols);
+
 
         $count_query = clone $query;
-        $count = $count_query->count('s.id');
+        $count = $count_query->count('guardian_id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-        foreach($rows as $row){
-            $row->parent = $this->getParentInfo($row->student_id);
+        $groupedParents = [];
+        foreach ($rows as $p) {
+            $familyCode = $p->family_code;
+
+            if (!isset($groupedParents[$familyCode])) {
+                $groupedParents[$familyCode] = [
+                    "family_code" => $familyCode,
+                    "parents" => []
+                ];
+            }
+
+            $groupedParents[$familyCode]["parents"][] = [
+                "role" => $p->role,
+                "name" => $p->name,
+                "phone_number" => $p->phone_number,
+                "email" => $p->email,
+                "n_id" => $p->n_id
+            ];
         }
 
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+        $groupedParents = array_values($groupedParents);
+
+        return new LengthAwarePaginator($groupedParents, $count, $per_page, $current_page);
     }
 
     function connectToChild($arr,$ss){
@@ -93,54 +110,6 @@ class Guardian //extends Model
         if($exists) return DV::error('Already connected');
         $newID = saveData($ss,'student_guardians',['id' => null],$inputs,[],1);
         return DV::depends($newID,'Connected');
-    }
-
-    function getParentInfo($student_id){
-        // $parents = DB::table('student_guardians as sg')
-        //     ->join('guardians as g', 'g.id', '=', 'sg.guardian_id')
-        //     ->where('sg.student_id', $student_id)
-        //     ->selectRaw('g.role,g.name, g.phone_number, g.email, g.n_id, sg.family_code as family_id')
-        //     ->get();
-
-
-        // return $parents;
-        $parents = DB::table('student_guardians as sg')
-            ->join('guardians as g', 'g.id', '=', 'sg.guardian_id')
-            ->where('sg.student_id', $student_id)
-            ->selectRaw('g.role,g.name, g.phone_number, g.email, g.n_id, sg.family_code as family_id')
-            ->get();
-
-            $mergedObject = (object) [
-                "father_name" => null,
-                "father_phone" => null,
-                "father_n_id" => null,
-                "father_email" => null,
-                "mother_name" => null,
-                "mother_phone" => null,
-                "mother_n_id" => null,
-                "mother_n_email" => null,
-                "family_id" =>null
-
-            ];
-
-            foreach ($parents as $p) {
-                if ($p->role == 'father') {
-                    $mergedObject->father_name = $p->name;
-                    $mergedObject->father_phone = $p->phone_number;
-                    $mergedObject->father_n_id = $p->n_id;
-                    $mergedObject->father_email = $p->email;
-                }
-                if ($p->role == 'mother') {
-                    $mergedObject->mother_name = $p->name;
-                    $mergedObject->mother_phone = $p->phone_number;
-                    $mergedObject->mother_n_id = $p->n_id;
-                    $mergedObject->mother_email = $p->email;
-                }
-                $mergedObject->family_id = $p->family_id;
-            }
-
-
-        return $mergedObject;
     }
 
 }

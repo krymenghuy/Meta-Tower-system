@@ -190,7 +190,7 @@ class GeneralSettings //extends Model
     }
 
     static function getLevel($level_id=null,$ss=null) {
-        $branch_id = $ss->branch_id;
+        $branch_id = $ss?$ss->branch_id:null;
         return DB::table('program_levels')->where('id',$level_id)->selectRaw('program_id,name as level,name,id as level_id,shortcut,id')->first();
     }
 
