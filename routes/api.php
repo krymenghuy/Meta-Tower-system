@@ -517,6 +517,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::prefix('guardian')->group(function(){
         Route::post('/save',[GuardianController::class,'save']);
         Route::post('/list',[GuardianController::class,'list']);
+        Route::post('/test',[GuardianController::class,'test']);
         Route::post('/details',[GuardianController::class,'details']);
     });
     //end::GuardianController

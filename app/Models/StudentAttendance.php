@@ -544,11 +544,12 @@ class StudentAttendance //extends Model
                     'status' => $this->getStatusText($c->status_id),
                     'check_in_remarks' => $c->in_remarks,
                     'check_out_remarks' => $c->out_remarks,
-                    'status_id' => '',
+                    'status_id' => $c->status_id,
                     "session_date" => $date,
                     'check_in_time' => $c->checkin_time,
                     'check_out_time' => $c->checkout_time,
                     'reason' => $c->remarks,
+                    "class" => GeneralSettings::getLevel($c->level)->name
                 ];
             }
 
@@ -602,7 +603,7 @@ class StudentAttendance //extends Model
         }
         $exist = DB::table('student_attendances')->where('student_id',$student_id)->exists();
         if(!$exist){
-            return DV::error('Student ID is invalid');
+            return DV::error('Student not exists in attendance list');
         }
 
         $sessionDateCondition = "1 = 1";
@@ -623,6 +624,9 @@ class StudentAttendance //extends Model
         $i=0;
         $attendance_list =[];
         $rows = DB::table('student_attendances')->whereMonth('session_date',$month)->whereYear('session_date',$year)->where('student_id',$student_id)->selectRaw('remarks,id as attendance_id,student_id,group_id,session_date,DAY(session_date) as day,status_id,in_remarks,out_remarks,checkin_time,checkout_time')->get();
+        foreach($rows as $row){
+            $row->level = DB::table('student_groups')->where('id',$row->group_id)->first()->level_id;
+        }
         do{
             $i++;
             $x = $this->getAttendanceInfo($rows,$i,$month,$year,$student_id);

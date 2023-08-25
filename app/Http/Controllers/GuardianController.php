@@ -27,4 +27,13 @@ class GuardianController extends Controller
         $list = $instance->guardianList($req->all(),$ss);
         return JDV::result($list);
     }
+
+    function test(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code != 200) return $ss;
+
+        $instance = new Guardian();
+        $list = $instance->test();
+        return JDV::result($list);
+    }
 }
