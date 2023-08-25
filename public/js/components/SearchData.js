@@ -1,7 +1,7 @@
 class SearchData{
-    constructor(elSearch,block_search){
+    constructor(elSearch,tbl_search){
         this.search = elSearch;
-        this.block = block_search;
+        this.block = tbl_search;
         this.searchDataInTr();
     }
 

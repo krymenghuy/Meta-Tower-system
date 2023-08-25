@@ -337,6 +337,16 @@ window.addEventListener('DOMContentLoaded',(e)=>{
     main_view.setLangMenu(LocaleManager.currentLanguage.code);
 });
 
+let input = document.getElementsByTagName("input");
+for(let i=0; i < input.length; i++){
+    let type = input[i].getAttribute('type');
+    if(type !== 'email' && type !== 'number'){
+        input[i].addEventListener('select',function(){
+            this.selectionStart = this.selectionEnd;
+        },false);
+    }
+}
+
 // window.oncontextmenu = function(){
 //     return false;
 // }

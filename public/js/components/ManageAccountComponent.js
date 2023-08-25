@@ -4,122 +4,98 @@ var ManageAccountComponent = new function(){
     this.title_prop = "Manage Account";
     this.self = $('#_main_manageAccountComponent');
 
-    this.tblManageAccount = mThis.self.find('.tbl__mna');
-    this.btnAdd = mThis.self.find('.btn--add');
+    this.btnAdd = mThis.self.find('#_mna_btn_new');
+
+    this.cols = [{
+        title: "Name",
+        data: (data, a, b) => {
+            let father_name = data.parents && data.parents[0].name ? data.parents[0].name : '',
+            mother_name = data.parents && data.parents[1].name ? data.parents[1].name : '';
+            return [`<p class="pb-0 mb-1">${father_name}</p>
+            <hr class="p-0"/>
+            <p class="pb-0 mb-1">${mother_name}</p>`].join('');
+        }
+    },
+    {
+        title: "Phone Number",
+        data: (data, a, b) => {
+            let father_phone = data.parents && data.parents[0].phone_number ? data.parents[0].phone_number : '', mother_phone = data.parents && data.parents[1].phone_number ? data.parents[1].phone_number : '';
+            return [`<p class="pb-0 mb-1">${father_phone}</p>
+            <hr class="p-0"/>
+            <p class="pb-0 mb-1">${mother_phone}</p>`].join('');
+        }
+    },
+    {
+        title: "Email",
+        data: (data, a, b) => {
+            let father_email = data.parents && data.parents[0].email ? data.parents[0].email : '', mother_email = data.parents && data.parents[1].email ? data.parents[1].email : '';
+            return [`<p class="pb-0 mb-1">${father_email}</p>
+            <hr class="p-0"/>
+            <p class="pb-0 mb-1">${mother_email}</p>`].join('');
+        }
+    },
+    {
+        title: "National Card ID",
+        data: (data, a, b) => {
+            let father_nid = data.parents && data.parents[0].n_id ? data.parents[0].n_id : '', mother_nid = data.parents && data.parents[1].n_id ? data.parents[1].n_id : '';
+            return [`<p class="pb-0 mb-1">${father_nid}</p>
+            <hr class="p-0"/>
+            <p class="pb-0 mb-1">${mother_nid}</p>`].join('');
+        }
+    },
+    {
+        title: "Family ID",
+        className: "align-middle",
+        data: "family_code"
+    },
+    {
+        title: "Action",
+        className: "align-middle",
+        data: (data, a, b) => {
+            let father_id = data.parents && data.parents[0].id, mother_id = data.parents && data.parents[1].id
+            parent = [father_id,mother_id].join('-');
+            return [`<div class="d-flex gap-2">
+                <a href="javascript:void(0)" class="btn-mna-add_img" data-id="${parent}">
+                    <i class="fa-solid fa-image-portrait text-info fs-5"></i>
+                </a>
+                <a href="javascript:void(0)" class="btn-mna-add_img" data-id="${data.family_code}">
+                    <i class="fa-solid fa-up-right-from-square text-success fs-5"></i>
+                </a>
+            </div>`].join('');
+        }
+    }];
 
     this.init = () => {
+        mThis.itemView = new ListView('tbl__mna',{
+            'fetchApi':`${main_view.base_url}/api/guardian/list`,
+            'columns': mThis.cols,
+            'tableClass':"table header-light-blue header-uppercase",
+            'rowCreated':(data, index, tr) => {
+                tr.dataset.id = data.id;
+            },
+            'beforeRender':()=>{}
+        });
+
+        
+
         mThis.btnAdd.on('click',function(e){
             e.preventDefault();
             let op = {
-                'onClose': (e) => {
-                    if(e){
-                        mThis.displayManageAccount();
-                    }
+                'id': 0,
+                'onClose': () => {
+                    mThis.itemView.showPage(null);
                 }
             };
             ManageAccountDialog.show(op);
         });
     }
 
-    this.displayManageAccount = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/`,null,null).then(res => {
-            let data = [];
-            if(res.status_code === 200){
-                data = StringSanitizer.sanitizeObject(res.data);
-            }
-
-            let cols = [{
-                title: "No",
-                data: (data, a, b) => {
-                    return [`<span>${cnt++}</span>`].join('');
-                }
-            },
-            {
-                title: "Name",
-                data: "name"
-            },
-            {
-                title: "Email",
-                data: "email"
-            },
-            {
-                title: "Phone",
-                data: "phone"
-            },
-            {
-                title: "Parent ID Card",
-                data: "parent_id_card"
-            },
-            {
-                title: "Profession",
-                data: "profession"
-            },
-            {
-                title: "Childs",
-                data: (data, a, b) => {
-                    return [`<button class="btn btn-sm btn-success" type="button">
-                        <span class="trans-text" data-langprop="buttons.Connected Students"></span>
-                    </button>`].join('');
-                }
-            },
-            {
-                title: "Reset Password",
-                data: (data, a, b) => {
-                    return [`<button class="btn btn-sm btn-primary" type="button">
-                        <span class="trans-text" data-langprop="buttons.Reset Password"></span>
-                    </button>`].join('');
-                }
-            },
-            {
-                title: "Actions",
-                data: (data, a, b) => {
-                    return [`<button class="btn btn-sm btn-danger" type="button">
-                        <span class="trans-text" data-langprop="buttons.Options"></span>
-                        <i class="fa-solid fa-caret-down"></i>
-                    </button>`].join('');
-                }
-            }];
-
-            if(mThis.table){
-                mThis.tblManageAccount.DataTable().clear().destroy();
-                mThis.tblManageAccount.empty();
-                mThis.table = null;
-            }
-
-            if(!mThis.table){
-                mThis.table = mThis.tblManageAccount.DataTable({
-                    searching: false,
-                    destroy: true,
-                    paging: true,
-                    ordering: false,
-                    retrieve: true,
-                    info: true,
-                    pageLength: 10,
-                    bLengthChange: false,
-                    saveState: true,
-                    processing: true,
-                    language: {
-                        'loadingRecords': '&nbsp;',
-                        'processing': 'Loading...',
-                        "emptyTable": LocaleManager.trans('No data to display', 'datatable')
-                    },
-                    data: data,
-                    columns: cols,
-                    createdRow: function (row, data, dataIndex) {
-                        let tr = $(row);
-                        tr.data('id', data.id);
-                    }
-                });
-            }
-
-            if(typeof onFinish === 'function') onFinish();
-        });
-    }
-
     this.show = (options) => {
         if(!options) options = {};
-        main_view.setTitle(mThis.title_prop);
-        mThis.self.show().siblings().hide();
+        mThis.itemView.showPage(null,null,() => {
+            main_view.setTitle(mThis.title_prop);
+            mThis.self.show().siblings().hide();
+        });
     }
 }
 

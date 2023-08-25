@@ -24,9 +24,16 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 input{
-  -moz-appearance: textfield;
-  appearance: textfield;
+    -moz-appearance: textfield;
+    appearance: textfield;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
+
 
 li.kt-menu__section {
     margin-top: 8px !important;

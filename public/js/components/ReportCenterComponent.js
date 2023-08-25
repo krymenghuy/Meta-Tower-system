@@ -9,11 +9,11 @@ var ReportCenterComponent = new function(){
 
     this.filter_fields = [{
         'type':'select',
-        'api_fetch':`${main_view.base_url}/api/inventory/settings/options-warehouse`,
+        'api_fetch':`${main_view.base_url}/api/student/options-group`,
         'api_params':{},
         'name':'group_id',
         'value_field':'id',
-        'text_field':'warehouse_name'
+        'text_field':'name'
     },
     {
         'type':'date',

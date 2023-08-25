@@ -1,6 +1,6 @@
 <div id="_main_manageAccountComponent" class="mobile-padding p-3" style="display:none">
-    <div class="d-flex gap-2">
-        <button class="btn btn-sm btn-primary text-nowrap btn--add" type="button">
+    <div class="d-flex gap-2 p-3 bg-white rounded-3">
+        <button id="_mna_btn_new" class="btn btn-sm btn-primary text-nowrap" type="button">
             <i class="fa-solid fa-plus"></i>
             <span class="trans-text text-nowrap" data-langprop="buttons.Add Parent"></span>
         </button>
@@ -22,9 +22,7 @@
             </div>
         </div>
     </div>
-    <div class="table-responsive p-3 mt-3">
-        <table id="tbl__mna" class="table tbl__mna"></table>
-    </div>
+    <div id="tbl__mna" class="table-responsive p-3 bg-white rounded-3 mt-3"></div>
 </div>
 
 <div id="dlg__mna" class="modal fade" tabindex="-1" aria-labelledby="dlg__mna_title" aria-hidden="true">
