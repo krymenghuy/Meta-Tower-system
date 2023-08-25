@@ -366,9 +366,14 @@ class StudentAttendance //extends Model
         $count_query = clone $query;
         $count = $count_query->count('id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
+
         foreach($rows as $row) {
+            $p_info = DB::table('student_guardians')->where('student_id',$row->id)->first();
+            if($p_info){
+                $p_info = $p_info->family_code;
+            }
             $row->age = getAge($row->dob);
-            $row->family_id = DB::table('student_guardians')->where('student_id',$row->id)->first()->family_code;
+            $row->family_id = $p_info;
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -600,12 +605,10 @@ class StudentAttendance //extends Model
             return DV::error('Student ID is invalid');
         }
 
-        if (!$session_date) {
-            $sessionDateCondition = "1 = 1";
-        } else {
+        $sessionDateCondition = "1 = 1";
+        if ($session_date) {
             $sessionDateCondition = "session_date = '$session_date'";
         }
-
         $rows = DB::select(DB::raw("SELECT DISTINCT MONTH(session_date) AS month, YEAR(session_date) AS year FROM student_attendances WHERE $sessionDateCondition ORDER BY year, month ASC LIMIT $limit"));
         foreach($rows as $row){
             $row->date = getMonthName($row->month,true).'-'.$row->year;
@@ -661,24 +664,30 @@ class StudentAttendance //extends Model
         $d = (object)$arr;
         $group_id =isset($d->group_id)?$d->group_id:null;
         $search_value =isset($d->search_value)?$d->search_value:null;
-        $selectCols = 's.name,s.name_kh';
+
         $str_search ="1=1";
-        $str_moreWhere = '1=1';
         if($search_value){
-            $skip_rows = 0;
             $search_value = escape_like_str($search_value);
             $str_search ="(s.code ='$search_value' OR s.name LIKE '%$search_value%')";
         }
+
+        $selectCols = 's.id as student_id,s.name,s.name_kh,s.date_of_birth,s.sex,sg.session_id';
         $q = DB::table('students as s')
             ->join('group_members as gm','gm.student_id','=','s.id')
             ->join('student_groups as sg','sg.id','=','gm.group_id')
             ->where('sg.id',$group_id)
-            ->whereRaw($str_moreWhere)->whereRaw($str_search);
-
-
+            ->whereRaw($str_search);
 
         $rows = $q->whereRaw($str_search)->selectRaw($selectCols)->get();
+        foreach ($rows as $row){
+            $row->age = getAge($row->date_of_birth);
+            $row->session = GeneralSettings::getSession($row->session_id)->name;
+            $row->attendance_list = $this->getAttendanceDetails([
+                'student_id' => $row->student_id,
+            ]);
+        }
         return $rows;
     }
+
 
 }
