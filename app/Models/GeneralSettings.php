@@ -406,14 +406,10 @@ class GeneralSettings //extends Model
         return $row;
     }
 
-    static function optionsGroup($d,$ss=null){
+    static function optionsGroup($ss=null){
         $branch_id = $ss->branch_id;
-        $id = isset($d->group_id) ? $d->group_id :$d->id;
-        if(!$id){
-            $id = $d;
-        }
-        $row = DB::table('student_groups as sg')->where('id',$id)->where('sg.branch_id',$branch_id)->selectRaw('sg.name,sg.id')->get();
-        return $row;
+        $rows = DB::table('student_groups as sg')->where('sg.branch_id',$branch_id)->selectRaw('sg.name,sg.id')->get();
+        return $rows;
     }
 
     static function optionsAttendanceTypes(){
@@ -422,6 +418,9 @@ class GeneralSettings //extends Model
             $row->name = $row->name.'('.$row->short_hand.')';
         }
         return $rows;
+    }
+    static function getCampus($id){
+        return DB::table('campuses')->where('id',$id)->selectRaw('id,name,name as campus')->first();
     }
 
 

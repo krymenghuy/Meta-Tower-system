@@ -521,6 +521,8 @@ class StudentAttendance //extends Model
             "session_date" => $date,
             'check_in_time' => '',
             'check_out_time' => '',
+            "class" => GeneralSettings::getLevel($rows[0]->level)->name
+
         ];
 
         if($date>$today) return (object)[
@@ -533,6 +535,7 @@ class StudentAttendance //extends Model
                             "session_date" => $date,
                             'check_in_time' => '',
                             'check_out_time' => '',
+                            "class" => GeneralSettings::getLevel($rows[0]->level)->name
                         ];
         do{
             if(!isset($rows[$i])) break;
@@ -566,6 +569,7 @@ class StudentAttendance //extends Model
             "session_date" => $date,
             'check_in_time' => '',
             'check_out_time' => '',
+            "class" => GeneralSettings::getLevel($rows[0]->level)->name
         ];
     }
 
@@ -593,11 +597,40 @@ class StudentAttendance //extends Model
 
         return $res;
     }
+
+    function countStatusOnDate(){
+        // $attendanceCounts = DB::table('student_attendances')
+        //     ->select('session_date', 'status_id', DB::raw('COUNT(*) as count'))
+        //     ->groupBy('session_date', 'status_id')
+        //     ->get();
+
+        // $result = [];
+
+        // foreach ($attendanceCounts as $row) {
+        //     $sessionDate = $row->session_date;
+        //     $status = $row->status_id;
+        //     $count = $row->count;
+
+        //     if (!isset($result[$sessionDate])) {
+        //         $result[$sessionDate] = [];
+        //     }
+
+        //     $result[$sessionDate][$status] = $count;
+        // }
+        // return $result;
+    }
     function getAttendanceDetails($arr){
         $d = (object)$arr;
         $student_id = isset($d->student_id)?$d->student_id:null;
         $limit = isset($d->limit)?$d->limit:6;
+        $is_shortMonthName = isset($d->short_month_name)?$d->short_month_name:true;
+        $aToz = isset($d->a_to_z)?$d->a_to_z:'ASC';
+        if($aToz == 0){
+            $aToz ='DESC';
+        }
         $session_date = isset($d->session_date)?date('Y-m-d',strtotime($d->session_date)):null;
+        $startDate =  isset($d->start_date)?date('Y-m-d',strtotime($d->start_date)):null;
+        $endDate =  isset($d->end_date)?date('Y-m-d',strtotime($d->end_date)):null;
         if(!$student_id){
             return DV::error('Student ID is required');
         }
@@ -610,9 +643,12 @@ class StudentAttendance //extends Model
         if ($session_date) {
             $sessionDateCondition = "session_date = '$session_date'";
         }
-        $rows = DB::select(DB::raw("SELECT DISTINCT MONTH(session_date) AS month, YEAR(session_date) AS year FROM student_attendances WHERE $sessionDateCondition ORDER BY year, month ASC LIMIT $limit"));
+        if($startDate && $endDate) {
+            $sessionDateCondition = "session_date BETWEEN '$startDate' AND '$endDate'";
+        }
+        $rows = DB::select(DB::raw("SELECT DISTINCT MONTH(session_date) AS month, YEAR(session_date) AS year FROM student_attendances WHERE $sessionDateCondition ORDER BY year, month $aToz LIMIT $limit"));
         foreach($rows as $row){
-            $row->date = getMonthName($row->month,true).'-'.$row->year;
+            $row->date = getMonthName($row->month,$is_shortMonthName).'-'.$row->year;
             $row->status = $this->statusCount($student_id,$row->month,$row->year);
             $row->attendance_list = $this->getAttendanceDetailsByMonth($student_id,$row->month,$row->year);
         }
@@ -648,14 +684,9 @@ class StudentAttendance //extends Model
         return $rows;
     }
 
-    function optionsGroup($arr,$ss=null){
+    function optionsGroup($ss=null){
         $ss = $ss?$ss:$this->ss;
-        $d = (object)$arr;
-        $id = isset($d->group_id) ? $d->group_id:$d->id;
-        if($id){
-            $id = $d;
-        }
-        $rows = GeneralSettings::optionsGroup($id,$ss);
+        $rows = GeneralSettings::optionsGroup($ss);
         return $rows;
     }
 
@@ -664,15 +695,30 @@ class StudentAttendance //extends Model
     }
 
     function attendanceListReport($arr=[],$ss=null){
+        $d = (object)$arr;
+        $group_id =isset($d->group_id)?$d->group_id:null;
+        $rows = DB::table('student_groups as sg')->where('sg.id',$group_id)->selectRaw('sg.campus_id,sg.level_id')->get();
+        foreach($rows as $row){
+            $row->campus = GeneralSettings::getCampus($row->campus_id)->name;
+            $row->report = $this->attendanceReportInfo($arr,$ss);
+            // $row->d = $this->countStatusOnDate();
+        }
+
+        return $rows;
+
+    }
+
+    function attendanceReportInfo($arr=[],$ss=null){
         $ss = $ss?$ss:$this->ss;
         $d = (object)$arr;
         $group_id =isset($d->group_id)?$d->group_id:null;
         $search_value =isset($d->search_value)?$d->search_value:null;
+        $session_date = isset($d->session_date)?$d->session_date:null;
 
         $str_search ="1=1";
         if($search_value){
             $search_value = escape_like_str($search_value);
-            $str_search ="(s.code ='$search_value' OR s.name LIKE '%$search_value%')";
+            $str_search ="(sg. ='$search_value' OR s.name LIKE '%$search_value%')";
         }
 
         $selectCols = 's.id as student_id,s.name,s.name_kh,s.date_of_birth,s.sex,sg.session_id';
@@ -682,12 +728,14 @@ class StudentAttendance //extends Model
             ->where('sg.id',$group_id)
             ->whereRaw($str_search);
 
-        $rows = $q->whereRaw($str_search)->selectRaw($selectCols)->get();
+        $rows = $q->selectRaw($selectCols)->get();
         foreach ($rows as $row){
             $row->age = getAge($row->date_of_birth);
             $row->session = GeneralSettings::getSession($row->session_id)->name;
-            $row->attendance_list = $this->getAttendanceDetails([
+            $row->list = $this->getAttendanceDetails([
                 'student_id' => $row->student_id,
+                "session_date" => $session_date,
+                'short_month_name' =>false
             ]);
         }
         return $rows;

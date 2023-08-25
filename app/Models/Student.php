@@ -248,9 +248,10 @@ class Student //extends Model
                 ->join('guardians as g','g.id','=','sg.guardian_id')
                 ->where('s.id',$id)
                 // ->where('g.role','mother')
-                ->selectRaw('g.name as parent_name,g.phone_number,g.email')
+                ->selectRaw('sg.family_code,g.name as parent_name,g.phone_number,g.email')
                 ->get()->first();
-        $row->family_id = 'FML1200449';
+        $row->family_id = $row->family_code;
+        unset($row->family_code);
         return $row;
     }
 
