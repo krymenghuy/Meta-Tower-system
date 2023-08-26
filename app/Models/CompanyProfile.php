@@ -2,232 +2,121 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\DV;
-use App\Models\UM;
-use Carbon\Carbon;
+//use Illuminate\Database\Eloquent\Factories\HasFactory;
+//use Illuminate\Database\Eloquent\Model;
+//use Carbon\Carbon;
+//use Sanitizer;
 use DB;
-use Sanitizer;
 
-class CompanyProfile extends Model
+class CompanyProfile //extends Model
 {
-    use HasFactory;
-  
-  protected $userInfo = null;
+  //use HasFactory;
+   protected $userInfo = null;
+   protected static $logo_dir ="identity";
+   protected static $img_dir ='brand-images';
 
-  function __construct($userInfo=null){
-        $this->userInfo = $userInfo;
-  }
+   function __construct($userInfo=null){
+      $this->userInfo = $userInfo;
+   }
  
-  function getUserInfo()
-  {
+   function getUserInfo(){
     return $this->userInfo;
-  }
+   }
 
-  //saveDetails() saveCompanyProfile()
-  function save($arr=[]) {
-    //$branch_id = $this->getBranchId();
-    $ss = $this->getUserInfo();
-    //if (!prn_allowed(0,105)) return DV::error('No access to Company Profile');
+   static function saveDetails($arr, $ss) {
      $branch_id = $ss->branch_id;
-     $data =(object)$arr; 
-     if(!isset($data->name)) return DV::error("Company name cannot be empty");
+     $validate_rule = [
+      'name'=>'1|string|1-150',
+      'name_kh'=>'0|string|0-150',
+       'phone_number'=>'1|phone|0-80',
+       'email'=>'0|email|0-100',
+       'first_cp_name'=>'0|string|0-100',
+       'second_cp_name'=>'0|string|0-100',
+       'address'=>'0|string|0-250',
+       'address_kh'=>'0|string|0-250',
+       'first_cp_phone'=>'0|phone|0-50',
+       'second_cp_phone'=>'0|phone|0-50',
+       'logo'=>'0|image'
 
-     if(!isset($data->name_kh)) $data->name_kh = $data->name;
-     if (!isset($data->phone_number)) return DV::error("Phone number cannot be empty");
-     if(!isset($data->first_cp_name)) $data->first_cp_name = null;
-     if(!isset($data->second_cp_name)) $data->second_cp_name = null;
-     if(!isset($data->address)) $data->address = null;
-     if(!isset($data->first_cp_phone)) $data->first_cp_phone =null;
-     if(!isset($data->second_cp_phone)) $data->second_cp_phone =null;
-     $photo = isset($data->photo)?$data->photo:null;
-     //$id = $data->branch_id;
-     if ($branch_id>0) {
-       DB::table('um_branches')->where('branch_id',$branch_id)->update(array(
-           'name'=>$data->name,
-           'name_kh'=>$data->name_kh,
-           'email'=>$data->email,
-           'address'=>$data->address,
-           'address_kh'=>$data->address_kh,
-           'phone_number'=>$data->phone_number,
-           'first_cp_name'=>$data->first_cp_name,
-           'second_cp_name'=>$data->second_cp_name,
-           'first_cp_phone'=>$data->first_cp_phone,
-           'second_cp_phone'=>$data->second_cp_phone,
-           'update_user'=>$ss->login_name,
-           'update_date'=>getNowTime()
-       ));
-       if($photo){
-         PublicStorage::saveImage($branch_id,'identity',null,$photo,null,['branch_id'=>$branch_id,'sore'=>"um_branches.logo_file_name"]);
-       }
-     } else {
-          //error
-          return DV::error("Invalid company identifier");
+     ];
+     $res = validateObject($arr,$validate_rule,true,['email'=>['.','-','@']],$ss->lang,false,[]);
+     if($res->error) return DV::error($res->error);
+     $inputs = $res->values;
+     $logo = $inputs['logo'];
+     unset($inputs['logo']);
+
+     $address_kh = $inputs['address_kh'];
+     if(!$address_kh) $inputs['address_kh'] = $inputs['address'];
+
+     $name_kh = $inputs['name_kh'];
+     if (!$name_kh) $inputs['name_kh'] = $inputs['name'];
+     $id = saveData($ss,'um_branches',['branch_id'=>$branch_id],$inputs,[],0);
+     if($id){
+       if($logo) PublicStorage::saveImage($branch_id,self::$logo_dir,null,$logo,['branch_id'=>$branch_id,'store'=>'um_branches.logo_file_name']);
      }
-     return DV::success();
+     return DV::depends($id,null,'Failed to update company information');
    }  
 
-   function getDetails($id=null){
-      if(!$id){
-        $ss = $this->getUserInfo();  
-        $id = $ss->branch_id;
-      }
-      return self::details($id); 
-   } 
-
-   static function details($branch_id){
-      //if (!prn_allowed(0,105)) return DV::error('No access to Company Profile');
-      $rows = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw("branch_id,name,name_kh,`address`,address_kh,phone_number,email,first_cp_name,second_cp_name,first_cp_phone,second_cp_phone,logo_file_name")->take(1)->get();
-      foreach($rows as $row){
-        $url = PublicStorage::getUrl($branch_id,"identity","image");
-        $row->logo_url = $url.$row->logo_file_name;
-        unset($row->logo_file_name);
+   function getDetails($ss) {
+      $ss = $ss?$ss:$this->getUserInfo();
+      $branch_id = $ss->branch_id;
+      $rows = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw("branch_id,name,name_kh,`address`,address_kh,phone_number,email,first_cp_name,second_cp_name,first_cp_phone,second_cp_phone")->take(1)->get();
+      foreach($rows as $row) {
+        $row->logo_url =self::logoUrl($ss);
         return $row;
       }
       return null;
-   }
+   } 
 
+  static function details($branch_id) {
+    $rows = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw("branch_id,name,name_kh,`address`,address_kh,phone_number,email,first_cp_name,second_cp_name,first_cp_phone,second_cp_phone")->take(1)->get();
+    foreach($rows as $row) {
+      $row->logo_url =self::logoUrl((object)['branch_id'=>$branch_id]);
+      return $row;
+    }
+    return null;
+ } 
   /** Start Save  and retrieve company's logo **/
-  function saveLogo($arr =[])
-  {   
-    $ss = $this->getUserInfo();
+  static function saveLogo($d,$ss)
+  { 
     $branch_id = $ss->branch_id; 
-    $photo = isset($arr['photo'])?$arr['photo']:null;
-    if(!$photo) $photo =isset($arr['logo'])?$arr['logo']:null;
-    if($photo)
-       {
-         $mx = PublicStorage::saveImage($branch_id,"identity",null,$photo,null,["branch_id"=>$branch_id,"store"=>"um_branches.logo_file_name"]);
-         return DV::depends($mx->status ==='OK',['logo_url'=>isset($mx->image_url)?$mx->image_url:null],isset($mx->error_message)?$mx->error_message:"error");  
-       }
-    else return DV::error("There are no image data provided"); 
+	  $file_type = isset($d['file_type'])?$d['file_type']:'png';
+    $photo = isset($d['photo_data'])?$d['photo_data']: (isset($d['photoData'])?$d['photoData']:null);
+
+    $logo_file_name = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw('logo_file_name')->take(1)->value('logo_file_name');
+    //if($logo_file_name) PublicStorage::delete($branch_id,self::$logo_dir,'image',$logo_file_name);
+    $maxSize =500;
+	  $res = PublicStorage::saveImage($branch_id,self::$logo_dir,$file_type,$photo,$maxSize);
+    if($res->status ==='OK'){
+      DB::table('um_branches')->where('branch_id',$branch_id)->update(['logo_file_type'=>$res->extension,'logo_file_name'=>$res->file_name]);
+      $url = PublicStorage::getUrl($branch_id,self::$logo_dir ,'image').$res->file_name;
+      return DV::depends(1,['logo_url'=>$url]);
+    }else return DV::error($res->error_message);
+
   }
   
-  // function getLogo($ss=null)
-  // {
-  //       if(!$ss) $ss = $this->getUserInfo();
-  //       $branch_id = $ss->branch_id;
-  //       $rows = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw('logo_file_name,logo_file_type')->take(1)->get();
-  //       foreach($rows as $row)
-  //       {
-  //         $content = readFileContent($row->logo_file_name);   
-  //         $p = "data".Sanitizer::getEncodedChar(':')."image".Sanitizer::getEncodedChar("/").$row->logo_file_type.";"."base64".Sanitizer::getEncodedChar(',');
-  //         //****Return for javascript client
-  //         //return $p.base64_encode($content);
-  //         //**** return direct from server
-  //         return  "data:image/jpg;base64,".base64_encode($content);
-          
-  //       }
-  //       return null;
-  // }
-  
-  function getLogo($ss=null)
-  {
-        if(!$ss) $ss = $this->getUserInfo();
-        $branch_id = $ss->branch_id;
-        $rows = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw('logo_file_name,logo_file_type')->take(1)->get();
-        foreach($rows as $row) return PublicStorage::getUrl($branch_id,"identity","image").$row->logo_file_name;
-        return null;
+  static function logoUrl($ss){
+    $branch_id = 0;
+    if(is_numeric($ss)) $branch_id  = $ss;
+    else $branch_id = $ss->branch_id;
+    $branch = getDataRow('um_branches',['branch_id',$branch_id],"logo_file_name");
+    if(!$branch) return null;
+    return PublicStorage::getUrl($branch_id,self::$logo_dir,'image').$branch->logo_file_name;
   }
-  
+
   function getLogoUrl($ss=null)
   {
-        if(!$ss) $ss = $this->getUserInfo();
-        $branch_id = $ss->branch_id;
-        $rows = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw('logo_file_name,logo_file_type')->take(1)->get();
-        foreach($rows as $row)
-        {
-           $url = PublicStorage::getUrl($branch_id,"general","image");
-           $url = $url.$row->logo_file_name;
-           return $url;
-        }
-        return null;
+    $ss = $ss?$ss:$this->getUserInfo();
+    return self::logoUrl($ss);
   }
- 
-  
-  //return list of images for mobiles App
-  function getBrandImages($arr =[], $ss=null)
+   
+  static function deleteLogo($ss)
   {
-      if(!$ss) $ss = $this->getUserInfo();
-      if($ss) $branch_id = $ss->branch_id; else $branch_id = 1; //problem when many companies substribe to any App
-      $d = (object)$arr;
-      $app_id = $d->app_id;
-      $rows = DB::table('brand_images AS b')->where('b.app_id',$app_id)->selectRaw('b.file_name,b.file_type,b.img_title')->orderByRaw('b.create_date DESC')->get();
-      $imgs = [];
-      foreach($rows as $row)
-      {
-        $content = readFileContent($row->file_name);   
-        //$p = "data".getEncodedChar(':')."image".getEncodedChar("/").$row->file_type.";"."base64".getEncodedChar(',');
-        //****Return for javascript client
-        //return $p.base64_encode($content);
-        //**** return direct from server
-        $m = (object)array(
-          'image'=> "data:image/jpg;base64,".base64_encode($content),
-          'file_type'=>$row->file_type,
-          'title'=>$row->img_title
-        );
-        $imgs[] = $m;
-      }
-      return $imgs;
-  }
-
-  //$arr = ['photo_data','file_type','app_id']
-  function saveBrandImage($arr = [], $ss=null)
-  {  
-    $data = (object)$arr; 
-    if(!$ss) $ss = $this->getUserInfo(); 
-	  $result = (object)array('error_message'=>null,'status'=>'OK');
-	  $fileTypes = ['jpg','png','jpeg','svg'];
-    $branch_id = $ss->branch_id;
-	  $file_type= isset($data->file_type)?$data->file_type:null;
-	  $fileContent= isset($data->photo_data)?$data->photo_data:null;
-    $app_id = $data->app_id;
-
-     
-    //$dir = getcwd(). '/storage/companies/'.$branch_id.'_data/identity/';
-      $dir = getcwd(). '/uploads/companies/'.$branch_id.'_data/identity/';
-	  //DB::table('um_branches')->where('branch_id',1)->update(array('logo_file_name'=>$dir));   
-	  $fileName =$dir.$branch_id."_logo_".date('Ymd_hms');
-	  
-	  $mResult = createFile($file_type,$fileName,$fileContent);
-	  ////DB::table('um_branches')->where('branch_id',$branch_id)->update(array('logo_file_name'=>$mResult->error)); 
-	  if (!$mResult->error)
-	  {	
-        $rows = DB::table('brand_images')->where('app_id',$app_id)->selectRaw('file_name')->take(1)->get();  
-        //todo: detect for error when two users try to delete this file at same time
-        foreach($rows as $row) deleteFile($row->file_name); 
-          DB::table('brand_images')->where('app_id',$app_id)->update(array('file_type'=>$file_type,'file_name'=>basename($mResult->filename)));
-          return DV::success();
-	  } else 
-	  {
-		  return DV::error($mResult->error);
-	  }		  
-	    
-  }
-  
-  function deleteBrandImage($id,$ss=null)
-  {
-          if(!$ss) $ss = $this->getUserInfo(); 
-          $branch_id = $ss->branch_id;
-          $app_id = $d->app_id;
-          $file_id = $d->id; 
-          $rows = DB::table('brand_iamges')->where('app_id',$app_id)->where('id',$file_id)->selectRaw('file_name')->take(1)->get();
-          foreach($rows as $row) {
-            deleteFile($row->file_name);
-          }
-          DB::table('brand_images')->where('app_id',$app_id)->where('id',$id)->delete();
-          return DV::success();
-  }
- 
-  function deleteLogo($ss=null)
-  {
-        if(!$ss) $ss = $this->getUserInfo();
-        $branch_id = $ss->branch_id;
-        $logo_file_name = DB::table('um_branches')->where('branch_id',$branch_id)->take(1)->value('logo_file_name'); 
-        if($logo_file_name) {
-          deleteFile(PublicStorage::getDiskPath($branch_id,"identity","image").$logo_file_name);
-        }
-        DB::table('um_branches')->where('branch_id',$branch_id)->update(array('logo_file_type'=>null,'logo_file_name'=>null));
-        return DV::success();
+     //$ss = $ss?$ss:$this->getUserInfo();
+     $branch_id = $ss->branch_id;
+     $rows = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw('logo_file_name')->take(1)->get();
+     foreach($rows as $row) PublicStorage::delete($branch_id,self::$logo_dir,'image',$row->logo_file_name); 
+     DB::table('um_branches')->where('branch_id',$branch_id)->update(array('logo_file_type'=>null,'logo_file_name'=>null));
+     return DV::success(); 
   }
 }
