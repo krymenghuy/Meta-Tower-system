@@ -9,12 +9,13 @@ var InvoicesComponent = new function(){
         data: "invoice_number"
     },
     {
-        title: "Student Code",
-        data: "student_code"
-    },
-    {
-        title: "Student Name",
-        data: "student_name"
+        title: "Student",
+        data: (data, a, b) => {
+            let student_code = data.student_code ? data.student_code : '',
+            student_name = data.student_name ? data.student_name : '';
+            return [`<p class="pb-0 mb-1">${student_name}</p>
+            <small>${student_code}</small>`].join('');
+        }
     },
     {
         title: "School Level",
