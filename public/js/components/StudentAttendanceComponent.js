@@ -169,7 +169,8 @@ let StudentAttendanceDialog = new function(){
 
     this.loadFormDetails = (op) => {
         let p = {
-            'id': op.id
+            'id': op.id,
+            'date': op.date
         };
         window.vsapi.call(`${main_view.base_url}/api/student/attendance-date-details`,p,null,false).then(res => {
             let d = {};
