@@ -972,15 +972,23 @@ class PriceList //extends Model
         $due_date = isset($d->due_date)?$d->due_date:null;
         $insert_info = isset($d->insert_info)?$d->insert_info:null;
         $delete_info = isset($d->delete_info)?$d->delete_info:null;
+        $keeper = [];
         foreach($insert_info as $ins_info){
-
+            $other_fee = DB::table('other_fees')->where('name',$ins_info['fee_type'])->selectRaw('name,amount,description')->first();
+            $updateOrInsert = [
+                "invoice_id" => $id,
+                "fee_type" => $ins_info['fee_type'],
+                'price' => $other_fee->amount,
+                'description' => $ins_info['description']
+            ];
+            $newID = saveData($ss,'invoice_item',['id'=>$ins_info['invoice_item_id']],$updateOrInsert);
         }
 
         foreach($delete_info as $del_info){
 
         }
 
-        return $insert_info;
+        return $keeper;
 
     }
 
