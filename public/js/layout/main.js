@@ -339,11 +339,12 @@ window.addEventListener('DOMContentLoaded',(e)=>{
 
 let input = document.getElementsByTagName("input");
 for(let i=0; i < input.length; i++){
-    let type = input[i].getAttribute('type');
-    if(type !== 'email' && type !== 'number'){
-        input[i].addEventListener('select',function(){
-            this.selectionStart = this.selectionEnd;
-        },false);
+    input[i].onselect = function(e){
+        e.preventDefault();
+    }
+
+    input[i].onfocus = function(e){
+        e.preventDefault();
     }
 }
 
