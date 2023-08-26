@@ -763,13 +763,13 @@ class PriceList //extends Model
 
     /** getInvoiceList() */
     static function studentInvoice($filter=[],$ss){
-        // $campus = new Campus();
-        //$program = new Program();
         $branch_id = $ss->branch_id;
-        $academic_year = isset($filter['academic_year']) ? $filter['academic_year']:null;
-        $search_value =isset($filter['search_value'])?$filter['search_value']:null;
-        $current_page =isset($filter['current_page'])?$filter['current_page']:1;
-        $per_page =isset($filter['per_page'])?$filter['per_page']:10;
+        $d = (object)$filter;
+        $academic_year = isset($d->academic_year) ? $d->academic_year:null;
+        $search_value =isset($d->search_value)?$d->search_value:null;
+        $campus_id =isset($d->campus_id)?$d->campus_id:null;
+        $current_page =isset($d->current_page)?$d->current_page:1;
+        $per_page =isset($d->per_page)?$d->per_page:10;
         if(!is_numeric($current_page)) $current_page=1;
         $skip_rows = ($current_page -1) * $per_page;
 
@@ -780,6 +780,7 @@ class PriceList //extends Model
             $search_value = escape_like_str($search_value);
             $str_search ='(st.code =\''.$search_value.'\' OR st.name LIKE \'%'.$search_value.'%\')';
         }
+        if($campus_id > 0)  $str_search .=' AND e.campus_id ='.$campus_id;
         $get_level = ',(SELECT l.`name` FROM program_levels AS l WHERE l.id = e.level_id LIMIT 1) AS level';
         $selectCols = 'e.id as enrollment_id,s.id as student_id,inv.invoice_type,inv.due_amount,inv.paid_amount,inv.is_paid,inv.id,e.session_id,s.code as student_code,formatDate(inv.invoice_date) AS invoice_date,e.program_id,m.name AS program,e.level_id,s.name as student_name,p.status_id as pstatus_id,e.academic_year'.$get_level.',e.start_date,formatDate(e.tuition_end_date) AS tuition_end_date,formatDate(inv.due_date) AS due_date,inv.invoice_number,inv.amount,inv.update_user,formatDate(inv.pmt_date) AS pmt_date,formatTime(inv.updated_at) AS updated_at';
         $query = DB::table('invoices as inv')
