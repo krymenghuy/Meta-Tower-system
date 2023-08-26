@@ -437,7 +437,7 @@ let GenerateInvoiceFSN = new function(){
                 </tr>`}
                 ${modify ? (inner_html,d && d.other_fees.map(fee => {
                     inner_html = [inner_html,`<tr>
-                        <td class="data-get" data-field="fee_type" data-value="${fee.fee_type}">${fee.fee_type ? fee.fee_type : 'N/A'}</td>
+                        <td class="data-get" data-field="fee_type" data-value="${fee.fee_type}" data-id="${fee.invoice_item_id}">${fee.fee_type ? fee.fee_type : 'N/A'}</td>
                         <td>${fee.description ? fee.description : 'N/A'}</td>
                         <td>${fee.date_range ? fee.date_range : 'N/A'}</td>
                         <td>${fee.amount ? ['$',fee.amount].join(' ') : 'N/A'}</td>
@@ -585,6 +585,9 @@ let GenerateInvoiceFSN = new function(){
             let el = $(this);
             let f = el.data('field');
             d[f] = el.data('value');
+            if(el.data('id')){
+                d['invoice_item_id'] = el.data('id')
+            }
             p.insert_info.push(d);
         });
 
