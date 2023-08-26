@@ -929,7 +929,7 @@ class PriceList //extends Model
             else $row->pmt_status = 'unpaid';
         }
         $student_id = $row->student_id;
-
+        $invoice_id = self::getInvoiceInfo($student_id);
         $invoice_number =isset( $d->invoice_number)?$d->invoice_number:null;
         $row->campus = $campus->details($row->campus_id,$ss)->name;
         $row->date_range = $row->start_date.' to '.$row->tuition_end_date;
@@ -940,7 +940,9 @@ class PriceList //extends Model
         $row->fee_type = 'tuition_fee';
         $row->due_date = self::getInvoiceInfo($student_id)->due_date;
         $row->invoice_number = self::getInvoiceInfo($student_id)->invoice_number;
-        $row->invoice_id = self::getInvoiceInfo($student_id)->id;
+        if($invoice_id){
+            $row->invoice_id = $invoice_id->id;
+        }
         $row->other_fees = self::getOtherFeeTypes($student_id,$invoice_number);
         unset($row->tuition);
         unset($row->tuition_due);
@@ -956,7 +958,7 @@ class PriceList //extends Model
                 ->selectRaw('i.due_date,i.invoice_number,i.id')
                 ->first();
 
-        if(!$row) return (object)['due_date'=>null, 'invoice_number'=>null];
+        if(!$row) return (object)['due_date'=>null, 'invoice_number'=>null,'id'=>null];
 
         return $row;
     }
@@ -979,13 +981,14 @@ class PriceList //extends Model
                 "invoice_id" => $id,
                 "fee_type" => $ins_info['fee_type'],
                 'price' => $other_fee->amount,
-                'description' => $ins_info['description']
+                'description' => $other_fee->description
             ];
-            $newID = saveData($ss,'invoice_item',['id'=>$ins_info['invoice_item_id']],$updateOrInsert);
+            $inv_item_id = isset($ins_info['invoice_item_id'])?$ins_info['invoice_item_id']:null;
+            $newID = saveData($ss,'invoice_item',['id'=>$inv_item_id],$updateOrInsert);
         }
 
         foreach($delete_info as $del_info){
-
+            DB::table('invoice_item')->where('id',$del_info['invoice_item_id'])->delete();
         }
 
         return $keeper;

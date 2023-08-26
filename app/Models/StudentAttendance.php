@@ -384,12 +384,17 @@ class StudentAttendance //extends Model
         $branch_id = $ss->branch_id;
         $d = (object)$arr;
         $id = isset($d->id)?$d->id:null;
+        $student_id = isset($d->student_id)?$d->student_id:null;
         $date = isset($arr['date'])?$arr['date']:date('Y-m-d');
-        $row = DB::table('student_attendances as sa')
-                ->where('sa.id',$id)
-                // ->where('sa.student_id',$student_id)
+        $q = DB::table('student_attendances as sa');
+                if($id){
+                    $q->where('sa.id',$id);
+                }
+                $q->where('sa.student_id',$student_id);
+
                 // ->where('sa.session_date',$date)
-                ->selectRaw("sa.id,sa.out_diff_time,sa.session_date,sa.student_id,sa.status_id,sa.in_diff_time,sa.is_finished,sa.in_remarks,sa.out_remarks,sa.checkin_time,sa.checkout_time")->first();
+        $row = $q->selectRaw("sa.id,sa.out_diff_time,sa.session_date,sa.student_id,sa.status_id,sa.in_diff_time,sa.is_finished,sa.in_remarks,sa.out_remarks,sa.checkin_time,sa.checkout_time,sa.level_id")->first();
+        $group = DB::table('student_groups')->where('level_id',$row->level_id)->first();
         $date = date('Y-m-d',strtotime($date));
         $today = date('Y-m-d');
         $day_name = date('D',strtotime($date));
@@ -429,8 +434,8 @@ class StudentAttendance //extends Model
                 'is_finished' => '',
                 'in_remarks' => '',
                 'out_remarks' => '',
-                'checkin_time' => '',
-                'checkout_time' => '',
+                'checkin_time' => $group->checkin_time,
+                'checkout_time' => $group->checkout_time,
                 'out_diff_time' => '',
 
             ];
@@ -521,6 +526,7 @@ class StudentAttendance //extends Model
             "session_date" => $date,
             'check_in_time' => '',
             'check_out_time' => '',
+            'group_id' => $rows[0]->group_id,
             "class" => GeneralSettings::getLevel($rows[0]->level)->name
 
         ];
@@ -535,6 +541,7 @@ class StudentAttendance //extends Model
                             "session_date" => $date,
                             'check_in_time' => '',
                             'check_out_time' => '',
+                            'group_id' => $rows[0]->group_id,
                             "class" => GeneralSettings::getLevel($rows[0]->level)->name
                         ];
         do{
@@ -552,6 +559,7 @@ class StudentAttendance //extends Model
                     'check_in_time' => $c->checkin_time,
                     'check_out_time' => $c->checkout_time,
                     'reason' => $c->remarks,
+                    'group_id' => $c->group_id,
                     "class" => GeneralSettings::getLevel($c->level)->name
                 ];
             }
@@ -569,6 +577,7 @@ class StudentAttendance //extends Model
             "session_date" => $date,
             'check_in_time' => '',
             'check_out_time' => '',
+            'group_id' => $rows[0]->group_id,
             "class" => GeneralSettings::getLevel($rows[0]->level)->name
         ];
     }
@@ -647,7 +656,7 @@ class StudentAttendance //extends Model
         if($startDate && $endDate) {
             $sessionDateCondition = "session_date BETWEEN '$startDate' AND '$endDate'";
         }
-        $rows = DB::select(DB::raw("SELECT DISTINCT MONTH(session_date) AS month, YEAR(session_date) AS year FROM student_attendances WHERE $sessionDateCondition ORDER BY year, month $aToz LIMIT $limit"));
+        $rows = DB::select(DB::raw("SELECT DISTINCT MONTH(session_date) AS month, YEAR(session_date) AS year,group_id FROM student_attendances WHERE $sessionDateCondition ORDER BY year, month $aToz LIMIT $limit"));
         foreach($rows as $row){
             $row->date = getMonthName($row->month,$is_shortMonthName).'-'.$row->year;
             $row->status = $this->statusCount($student_id,$row->month,$row->year);

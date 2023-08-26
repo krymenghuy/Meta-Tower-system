@@ -408,7 +408,7 @@ class GeneralSettings //extends Model
 
     static function optionsGroup($ss=null){
         $branch_id = $ss->branch_id;
-        $rows = DB::table('student_groups as sg')->where('sg.branch_id',$branch_id)->selectRaw('sg.name,sg.id')->get();
+        $rows = DB::table('student_groups as sg')->where('sg.branch_id',$branch_id)->selectRaw('sg.name as group_name,sg.id as group_id,sg.name,sg.id')->get();
         return $rows;
     }
 

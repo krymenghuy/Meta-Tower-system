@@ -17,7 +17,8 @@ class Setting //extends Model
             'levels' => self::level_options($ss),
             'campuses' => self::campus_options($ss),
             'academic_year' => self::getAcademicYear($ss),
-            'terms' => self::getTermsOptions($ss)
+            'terms' => self::getTermsOptions($ss),
+            'groups' => GeneralSettings::optionsGroup($ss)
         ];
         return $res;
     }
