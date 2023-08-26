@@ -80,9 +80,9 @@ class UM
         ];
 
         self::$user_classes = [
-          'admin'=>['used'=>1,'name'=>'Admin','app_id'=>getAdminAppId()],
-          'staff'=>['used'=>1,'name'=>'Staff','app_id'=>getAdminAppId()],
-          'guardian'=>['used'=>1,'name'=>'Guardian','app_id'=>Config::get('app.customer_app_id')]
+          'admin'=>['used'=>1,'name'=>'Admin','app_id'=>getAdminAppId(),'token_age'=>null],
+          'staff'=>['used'=>1,'name'=>'Staff','app_id'=>getAdminAppId(),'token_age'=>null],
+          'guardian'=>['used'=>1,'name'=>'Guardian','app_id'=>Config::get('app.customer_app_id'),'token_age'=>0]
           //'client'=>['used'=>1,'name'=>'Client','app_id'=>getClientAppId()],
           //'superadmin'=>['used'=>1,'name'=>'Super Admin','app_id'=>getAdminAppId()],
           //'admin_support'=>['used'=>0,'name'=>'Admin Support','app_id'=>getAdminAppId()],
@@ -922,17 +922,34 @@ class UM
 
    //Create token|createToken()| createJWT()
    //NOTE: $userInfo is array ['branch_id','official_id','user_class','full_name',...]
-   static function createJWT($userInfo=[], $lifespan=0){
-     $nowTime = time();
-     self::$jwt_payload['iat'] = $nowTime; //Issue At
-     self::$jwt_payload['nbf'] = $nowTime; //nbf = Not Before
-     if (!$lifespan) $lifespan = self::$jwt_lifespan;
-     self::$jwt_payload['exp'] =$nowTime + $lifespan; //Expire At
-
-     $arr  = (array)$userInfo;
-     foreach($arr as $p=>$value) self::$jwt_payload[$p]=$value;
-     return JWT::encode(self::$jwt_payload, self::$jwt_key, self::$jwt_encode);
-   }
+   static function createJWT($userInfo = [], $lifespan = null) {
+    $nowTime = time();
+    self::$jwt_payload['iat'] = $nowTime; // Issue At
+    self::$jwt_payload['nbf'] = $nowTime; // Not Before
+    
+    $arr = (array)$userInfo; 
+    $user_class = $arr['user_class'];
+    
+    if ($lifespan === null) {
+        $lifespan = self::$user_classes[$user_class]['token_age'];
+    }
+    
+    if ($lifespan === 0) {
+        $exp = $nowTime + 60 * 60 * 24 * 365 * 10; // Set token to expire in 10 years
+    } elseif ($lifespan > 0) {
+        $exp = $nowTime + $lifespan;
+    } else {
+        $exp = $nowTime + 180 * 60; // Default expiration if lifespan is negative
+    }
+    
+    self::$jwt_payload['exp'] = $exp; // Expire At
+    
+    foreach ($arr as $p => $value) {
+        self::$jwt_payload[$p] = $value;
+    }
+    
+    return JWT::encode(self::$jwt_payload, self::$jwt_key, self::$jwt_encode);
+ } 
 
    //checkUser , validateUser, checkPassword, login, Signin
    /** login() | verifyUser() check user login and pwd and then returns object $result = {status, error_message, user} **/
@@ -964,7 +981,8 @@ class UM
                         $row->mods = $this->getAccessibleModulesByUserId_internal($row->user_id);
                         $row->prns = $this->getPermissionsByUserId_internal($row->user_id);
                         $row->access_token = $sess->access_token;
-                        $refresh_token =self::createJWT(['login_name'=>$row->login_name,'user_class'=>$row->user_class],60*60);
+                        $token_age = self::$user_classes[$row->user_class]['token_age'];
+                        $refresh_token =self::createJWT(['login_name'=>$row->login_name,'user_class'=>$row->user_class],$token_age);
                         // if(self::$use_jwt===1)
                         //   $row->access_token = self::createJWT($row,60);
                         // else

@@ -40,7 +40,7 @@ class PriceList //extends Model
          'name'=>'1|string|1-200',
          'start_date'=>'1|date',
          'end_date'=>'1|date',
-         'academic_year'=>'1|string|35',
+         'academic_year'=>'1|string|1-35',
          'description'=>'0|string|0-250'
        ];
 
@@ -761,6 +761,7 @@ class PriceList //extends Model
     }
 
 
+    /** getInvoiceList() */
     static function studentInvoice($filter=[],$ss){
         // $campus = new Campus();
         $program = new Program();
@@ -777,13 +778,14 @@ class PriceList //extends Model
         if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search ="(st.code ='$search_value' OR st.name LIKE '%$search_value%')";
+            $str_search ='(st.code =\''.$search_value.'\' OR st.name LIKE \'%'.$search_value.'%\')';
         }
-
-        $selectCols = 'e.id as enrollment_id,s.id as student_id,inv.due_amount,inv.paid_amount,inv.is_paid,inv.id,inv.updated_at as paid,e.session_id,s.code as student_code,inv.invoice_date,inv.due_date,e.program_id,e.level_id,s.name as student_name,p.status_id as pstatus_id,e.academic_year,e.start_date,e.tuition_end_date,inv.due_date,inv.invoice_number,inv.amount';
+        $get_level = ',(SELECT l.`name` FROM program_levels AS l WHERE l.id = e.level_id LIMIT 1) AS level';
+        $selectCols = 'e.id as enrollment_id,s.id as student_id,inv.invoice_type,inv.due_amount,inv.paid_amount,inv.is_paid,inv.id,e.session_id,s.code as student_code,formatDate(inv.invoice_date) AS invoice_date,e.program_id,m.name AS program,e.level_id,s.name as student_name,p.status_id as pstatus_id,e.academic_year'.$get_level.',e.start_date,formatDate(e.tuition_end_date) AS tuition_end_date,formatDate(inv.due_date) AS due_date,inv.invoice_number,inv.amount,inv.update_user,formatDate(inv.pmt_date) AS pmt_date,formatTime(inv.updated_at) AS updated_at';
         $query = DB::table('invoices as inv')
                 ->join('students as s','s.id','=','inv.student_id')
                 ->join('enrollments as e','e.student_id','=','s.id')
+                ->join('programs as m','m.id','=','e.program_id')
                 ->join('terms as t','e.term_id','=','t.id')
                 ->join('payments as p','p.enrollment_id','=','e.id')
                 ->selectRaw($selectCols)
@@ -798,12 +800,17 @@ class PriceList //extends Model
         $count = $count_query->count('inv.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
+        $session_list =  DB::table('sessions')->where('branch_id',$branch_id)->selectRaw('id,name')->get();
+        $session_list->filter();
         foreach($rows as $row) {
-            $row->level = Student::getProgramLevel($row->level_id);
+            //$row->level = Student::getProgramLevel($row->level_id);
             $row->status = $row->is_paid == 1? 'paid' : 'unpaid';
-            $row->program = $program->details($row->program_id,$ss)->name;
-            $row->session = DB::table('sessions')->where('id',$row->session_id)->selectRaw('name')->first()->name;
-            $row->paid_date = date('Y-m-d',strtotime($row->paid));
+            //$row->program = $program->details($row->program_id,$ss)->name;
+            $this_session = $session_list->filter(function ($c) use($row) {
+                return $c->id === $row->session_id;
+            })->first();
+
+            $row->session = $this_session? $this_session->name:'NA';
             unset($row->session_id);
             unset($row->paid);
         }
