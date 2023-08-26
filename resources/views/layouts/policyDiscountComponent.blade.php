@@ -60,7 +60,7 @@
                 <button class="btn btn-sm btn-secondary" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button id="dlg_pld_btn_save" class="btn btn-sm btn-primary" type="button">
+                <button id="dlg_pld_btn_save" class="btn btn-sm btn-primary btn-animate" type="button">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>
