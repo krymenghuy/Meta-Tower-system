@@ -2,9 +2,15 @@
     <div class="p-3 bg-white rounded-3">
         <div class="d-flex flex-row justify-content-between">
            <div class="d-flex flex-row gap-2">
-               <select  id="_sdg_filter_term" class="modal-select2"></select>
-               <select  id="_sdg_filter_program" class="modal-select2"></select>
-               <select  id="_sdg_filter_session" class="modal-select2"></select>
+                <div class="width-select-dialog">
+                    <select id="_sdg_filter_term" class="modal-select2"></select>
+                </div>
+                <div class="width-select-dialog">
+                    <select id="_sdg_filter_program" class="modal-select2"></select>
+                </div>
+                <div class="width-select-dialog">
+                    <select id="_sdg_filter_session" class="modal-select2"></select>
+                </div>
            </div>
            <button id="_sdg_btn_new" class="btn btn-primary btn-sm" type="button">
                <i class="fa-solid fa-plus"></i>

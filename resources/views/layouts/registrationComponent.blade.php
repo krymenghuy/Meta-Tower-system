@@ -116,6 +116,12 @@
                             <select class="modal-select2 form-control data-input" data-field="campus_id"></select>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label for="group_id" class="form-label trans-text" data-langprop="titles.Group"></label>
+                        <div class="width-select-dialog">
+                            <select class="modal-select2 data-input" data-field="group_id"></select>
+                        </div>
+                    </div>
                 </div>
                 <div class="col">
                     <div class="form-group">
