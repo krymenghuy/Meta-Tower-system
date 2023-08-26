@@ -4,6 +4,8 @@ var DiscountComponent = new function(){
     this.title_prop = "Discount";
     this.self = $('#_main_discountComponent');
 
+    this.elFilterContainer = mThis.self.find('#el_dsn_container');
+
     this.cols = [{
         title: "Image",
         data: (data, a, b) => {
@@ -153,10 +155,32 @@ var DiscountComponent = new function(){
         });
     }
 
+    this.prepareFilter = () => {
+        window.vsapi.call(`${main_view.base_url}/`,null,null,false).then(res => {
+            let d = {};
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            mThis.elFilterContainer.find('.data-input').each(function(){
+                let el = $(this);
+                let f = el.data('field');
+                switch(f){
+                    case '':
+                        break;
+                    case '':
+                        break;
+                    default:
+                        break;
+                }
+            });
+        });
+    }
+
     this.show = (options) => {
         if(!options) options = {};
         mThis.itemView.showPage(null,null,() => {
             main_view.setTitle(mThis.title_prop);
+            mThis.prepareFilter();
             let x = mThis.self.siblings(':visible');
             x.fadeOut('fast',function(){
                 mThis.self.hide().fadeIn(300);

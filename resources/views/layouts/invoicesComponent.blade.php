@@ -1,9 +1,8 @@
 <div id="_main_invoicesComponent" class="mobile-padding p-3" style="display:none">
     <div class="d-flex gap-2 bg-white rounded-3 p-3">
-        <button class="btn btn-sm btn-primary" type="button">
-            <span></span>
-            <i class="fa-solid fa-caret-down"></i>
-        </button>
+        <div class="height-select2">
+            <select class="modal-select2"></select>
+        </div>
         <input type="search" class="form-control width--search-inner" placeholder="Search by Name or ID..."/>
         <button class="btn btn-sm btn-primary" type="button">
             <i class="fa-solid fa-magnifying-glass"></i>

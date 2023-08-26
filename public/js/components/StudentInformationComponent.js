@@ -5,6 +5,7 @@ var StudentInformationComponent = new function(){
     this.self = $('#_main_studentInformationComponent');
 
     this.elSearch = mThis.self.find('#el_sin_search');
+    this.elFilter = mThis.self.find('#el_sin_filter');
 
     this.cols = [{
         title: "Image",
@@ -72,6 +73,16 @@ var StudentInformationComponent = new function(){
                 if(id > 0)
                     mThis.displayStudentInformationDetails(detail_tr,id);
             }
+        });
+    }
+
+    this.prepareAcademic = () => {
+        window.vsapi.call(`${main_view.base_url}/api/academic-year/list`,null,null,false).then(res => {
+            let d = [];
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            VSUtil.setComboItems(mThis.elFilter,d,'id','academic_year',null,null,null);
         });
     }
 
@@ -150,6 +161,7 @@ var StudentInformationComponent = new function(){
         if(!options) options = {};
         mThis.itemView.showPage(null,null,() => {
             main_view.setTitle(mThis.title_prop);
+            mThis.prepareAcademic();
             let x = mThis.self.siblings(':visible');
             x.fadeOut('fast',function(){
                 mThis.self.hide().fadeIn(300);

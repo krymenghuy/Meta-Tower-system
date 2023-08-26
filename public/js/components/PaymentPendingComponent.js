@@ -30,37 +30,25 @@ var PaymentPendingComponent = new (function () {
         {
             title: "Status",
             data: (data, a, b) => {
-                return [
-                    `<span class="p-2 ${
-                        data.status === "pending"
-                            ? "bg-danger"
-                            : `${
-                                  data.status === "verified"
-                                      ? "bg-info"
-                                      : "bg-success"
-                              }`
-                    } text-white rounded-3 text-capitalize">${
-                        data.status
-                    }</span>`,
-                ].join("");
+                let cls = data.status === 'pending' ? 'bg-danger' : data.status === 'verified' ? 'bg-info' : 'bg-success';
+                return [`<span class="p-2 ${cls} text-white rounded-3 text-capitalize"> ${data.status}</span>`].join('');
             },
         },
         {
             title: "Action",
             data: (data, a, b) => {
-                return [
-                    `<div class="d-flex gap-2">
-                <a href="javascript:void(0)" class="btn-ppd-modify" data-id="${data.enrollment_id}">
-                    <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
-                </a>
-            </div>`,
-                ].join("");
+                let cls = data.status === 'paid' ? 'd-none' : '';
+                return [`<div class="d-flex gap-2">
+                    <a href="javascript:void(0)" class="btn-ppd-modify ${cls}" data-id="${data.enrollment_id}">
+                        <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
+                    </a>
+                </div>`].join('');
             },
         },
     ];
 
     this.init = () => {
-        mThis.itemView = new ListView("_ppd_tbl", {
+        mThis.itemView = new ListView("_ppd_tbl",{
             fetchApi: `${main_view.base_url}/api/price-list/pending/payment`,
             columns: mThis.cols,
             tableClass: "table header-light-blue header-uppercase",
@@ -72,7 +60,7 @@ var PaymentPendingComponent = new (function () {
 
         mThis.tblPaymentPending = $(mThis.itemView.getTable());
 
-        mThis.tblPaymentPending.on("click", "a.btn-ppd-modify", function (e) {
+        mThis.tblPaymentPending.on("click", "a.btn-ppd-modify",function(e){
             e.preventDefault();
             let op = {
                 id: $(this).data("id"),
@@ -83,7 +71,7 @@ var PaymentPendingComponent = new (function () {
             PaymentPendingDialog.show(op);
         });
 
-        mThis.elSearch.on("change", function (e) {
+        mThis.elSearch.on("change", function(e){
             e.preventDefault();
             let op = {
                 status_id: $(this).val(),
@@ -93,27 +81,13 @@ var PaymentPendingComponent = new (function () {
     };
 
     this.prepareOptions = () => {
-        window.vsapi
-            .call(
-                `${main_view.base_url}/api/settings/status-options`,
-                null,
-                null
-            )
-            .then((res) => {
-                let data = {};
-                if (res.status_code === 200) {
-                    data = res.data;
-                }
-                VSUtil.setComboItems(
-                    mThis.elSearch,
-                    data,
-                    "id",
-                    "name",
-                    null,
-                    null,
-                    "4"
-                );
-            });
+        window.vsapi.call(`${main_view.base_url}/api/settings/status-options`,null,null).then((res) => {
+            let data = {};
+            if (res.status_code === 200) {
+                data = res.data;
+            }
+            VSUtil.setComboItems(mThis.elSearch,data,"id","name",null,null,"4");
+        });
     };
 
     this.show = (options) => {
