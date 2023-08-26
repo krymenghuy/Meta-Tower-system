@@ -764,7 +764,7 @@ class PriceList //extends Model
     /** getInvoiceList() */
     static function studentInvoice($filter=[],$ss){
         // $campus = new Campus();
-        $program = new Program();
+        //$program = new Program();
         $branch_id = $ss->branch_id;
         $academic_year = isset($filter['academic_year']) ? $filter['academic_year']:null;
         $search_value =isset($filter['search_value'])?$filter['search_value']:null;
@@ -801,7 +801,6 @@ class PriceList //extends Model
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         $session_list =  DB::table('sessions')->where('branch_id',$branch_id)->selectRaw('id,name')->get();
-        $session_list->filter();
         foreach($rows as $row) {
             //$row->level = Student::getProgramLevel($row->level_id);
             $row->status = $row->is_paid == 1? 'paid' : 'unpaid';
