@@ -624,10 +624,11 @@ class StudentAttendance //extends Model
         $student_id = isset($d->student_id)?$d->student_id:null;
         $limit = isset($d->limit)?$d->limit:6;
         $is_shortMonthName = isset($d->short_month_name)?$d->short_month_name:true;
-        $aToz = isset($d->a_to_z)?$d->a_to_z:'ASC';
-        if($aToz == 0){
+        $aToz = isset($d->a_to_z)?$d->a_to_z:null;
+        if($aToz){
             $aToz ='DESC';
-        }
+        }else $aToz = 'ASC';
+
         $session_date = isset($d->session_date)?date('Y-m-d',strtotime($d->session_date)):null;
         $startDate =  isset($d->start_date)?date('Y-m-d',strtotime($d->start_date)):null;
         $endDate =  isset($d->end_date)?date('Y-m-d',strtotime($d->end_date)):null;
@@ -655,9 +656,9 @@ class StudentAttendance //extends Model
         return $rows;
     }
 
-    function getAttendanceDetailsByMonth($student_id,$month,$year){
-        $days = days_in_month($month,$year);
-        $i=0;
+    function getAttendanceDetailsByMonth($student_id,$month,$year,$from_day=null,$to_day=null){
+        $days = $to_day?$to_day:days_in_month($month,$year);
+        $i=$from_day?$from_day-1:0;
         $attendance_list =[];
         $rows = DB::table('student_attendances')->whereMonth('session_date',$month)->whereYear('session_date',$year)->where('student_id',$student_id)->selectRaw('remarks,id as attendance_id,student_id,group_id,session_date,DAY(session_date) as day,status_id,in_remarks,out_remarks,checkin_time,checkout_time')->get();
         foreach($rows as $row){
@@ -695,51 +696,104 @@ class StudentAttendance //extends Model
     }
 
     function attendanceListReport($arr=[],$ss=null){
-        $d = (object)$arr;
-        $group_id =isset($d->group_id)?$d->group_id:null;
-        $rows = DB::table('student_groups as sg')->where('sg.id',$group_id)->selectRaw('sg.campus_id,sg.level_id')->get();
-        foreach($rows as $row){
-            $row->campus = GeneralSettings::getCampus($row->campus_id)->name;
-            $row->report = $this->attendanceReportInfo($arr,$ss);
-            // $row->d = $this->countStatusOnDate();
-        }
-
-        return $rows;
-
-    }
-
-    function attendanceReportInfo($arr=[],$ss=null){
         $ss = $ss?$ss:$this->ss;
         $d = (object)$arr;
         $group_id =isset($d->group_id)?$d->group_id:null;
-        $search_value =isset($d->search_value)?$d->search_value:null;
-        $session_date = isset($d->session_date)?$d->session_date:null;
+        if(!$group_id) return DV::error('Group ID is required');
+        $session_date = isset($d->session_date)?date('Y-m-d',strtotime($d->session_date)):null;
+        $startDate =  isset($d->start_date)?date('Y-m-d',strtotime($d->start_date)):null;
+        $endDate =  isset($d->end_date)?date('Y-m-d',strtotime($d->end_date)):null;
+        $limit = isset($d->limit)?$d->limit:6;
+        $is_shortMonthName = isset($d->short_month_name)?$d->short_month_name:false;
+        $aToz = isset($d->a_to_z)?$d->a_to_z:null;
+        $row = DB::table('student_groups as sg')->where('sg.id',$group_id)
+            ->selectRaw('sg.id as group_id,sg.campus_id,sg.level_id')->first();
+        $from_day = date('d',strtotime($startDate));
+        $to_day = date('d',strtotime($endDate));
+        $arr_report = [
+            "session_date" => $session_date,
+            "a_to_z" => $aToz,
+            "limit" => $limit,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'short_month_name' => $is_shortMonthName,
+            "from_day" => $from_day,
+            "to_day" => $to_day
 
-        $str_search ="1=1";
-        if($search_value){
-            $search_value = escape_like_str($search_value);
-            $str_search ="(sg. ='$search_value' OR s.name LIKE '%$search_value%')";
-        }
+        ];
 
-        $selectCols = 's.id as student_id,s.name,s.name_kh,s.date_of_birth,s.sex,sg.session_id';
-        $q = DB::table('students as s')
-            ->join('group_members as gm','gm.student_id','=','s.id')
-            ->join('student_groups as sg','sg.id','=','gm.group_id')
-            ->where('sg.id',$group_id)
-            ->whereRaw($str_search);
+        $row->session_date = $this->studentGroupAttendanceReport($group_id,$arr_report,$ss);
+        // // $row->list = $this->studentGroupAttendanceReport($row->group_id,$ss);
+        return $row;
 
-        $rows = $q->selectRaw($selectCols)->get();
-        foreach ($rows as $row){
-            $row->age = getAge($row->date_of_birth);
-            $row->session = GeneralSettings::getSession($row->session_id)->name;
-            $row->list = $this->getAttendanceDetails([
-                'student_id' => $row->student_id,
-                "session_date" => $session_date,
-                'short_month_name' =>false
-            ]);
-        }
-        return $rows;
     }
+
+    function studentGroupAttendanceReport($group_id,$arr=[],$ss=null){
+        $ss = $ss?$ss:$this->ss;
+        $d = (object)$arr;
+        $limit = isset($d->limit)?$d->limit:6;
+        $is_shortMonthName = isset($d->short_month_name)?$d->short_month_name:true;
+        $aToz = isset($d->a_to_z)?$d->a_to_z:null;
+        if($aToz){
+            $aToz ='DESC';
+        }else $aToz = 'ASC';
+        $from_day = isset($d->from_day)?$d->from_day:null;
+        $to_day = isset($d->to_day)?$d->to_day:null;
+
+        $session_date = isset($d->session_date)?date('Y-m-d',strtotime($d->session_date)):null;
+        $startDate =  isset($d->start_date)?date('Y-m-d',strtotime($d->start_date)):null;
+        $endDate =  isset($d->end_date)?date('Y-m-d',strtotime($d->end_date)):null;
+
+        $sessionDateCondition = "1 = 1";
+        if ($session_date) {
+            $sessionDateCondition = "session_date = '$session_date'";
+        }
+        if($startDate && $endDate) {
+            $sessionDateCondition = "session_date BETWEEN '$startDate' AND '$endDate'";
+        }
+        $distinctDates = DB::table('student_attendances')
+            ->selectRaw('DISTINCT YEAR(session_date) as year, MONTH(session_date) as month')
+            ->whereRaw($sessionDateCondition)
+            ->orderBy('year',$aToz)
+            ->orderBy('month',$aToz)
+            ->get();
+
+        $attendanceData = [];
+        foreach ($distinctDates as $date) {
+            $year = $date->year;
+            $month = $date->month;
+
+            $attendanceRecords = DB::table('student_attendances as sa')
+                ->join('students as s','s.id','=','sa.student_id')
+                ->where('sa.group_id',$group_id)
+                ->whereYear('sa.session_date', $year)
+                ->whereMonth('sa.session_date', $month)
+                ->selectRaw('sa.student_id,s.name,s.date_of_birth,s.sex')
+                ->get();
+            foreach($attendanceRecords as $r){
+                $r->attendance_list = $this->getAttendanceDetailsByMonth($r->student_id,$month,$year,$from_day,$to_day);
+            }
+            // $date->attendance_list = $this->getAttendanceDetailsByMonth($r->student_id,$month,$year);
+            $attendanceData[] = [
+                'date' => $year.'-'.getMonthName($month,$is_shortMonthName),
+                'list' => $attendanceRecords,
+            ];
+        }
+        return $attendanceData;
+    }
+
+    // function attendanceReportInfo($student_id,$ss){
+    //     $sessionDateCondition = "1 = 1";
+    //     $limit = 1;
+    //     // if ($session_date) {
+    //     //     $sessionDateCondition = "session_date = '$session_date'";
+    //     // }
+    //     $rows = $rows = DB::select(DB::raw("SELECT DISTINCT group_id, MONTH(session_date) AS month, YEAR(session_date) AS year FROM student_attendances WHERE $sessionDateCondition ORDER BY year, month ASC LIMIT $limit"));
+    //     foreach($rows as $row){
+    //         // $row->list = $this->getAttendanceDetailsByMonth($student_id,$row->month,$row->year);
+    //     }
+    //     return $rows;
+    // }
 
 
 }
