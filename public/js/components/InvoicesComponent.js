@@ -100,7 +100,7 @@ var InvoicesComponent = new function(){
                 'student_id': $(this).data('studentid'),
                 'invoice_number': $(this).data('invoice')
             };
-            cv_interact.confirm('Do you want to pay now?',{title: 'Pay', context: 'OK'},(e) => {
+            cv_interact.confirm('Recieve pay now?',{title: 'Pay', context: 'OK'},(e) => {
                 if(e){
                     window.vsapi.call(`${main_view.base_url}/api/student/school-fee/pay`,op,null).then(res => {
                         if(res.status_code === 200){

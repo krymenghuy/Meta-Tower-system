@@ -50,7 +50,7 @@ var PromoteStudentComponent = new function(){
         title: "Status",
         data: (data, a, b) => {
             let cls = data.status === 'pending' ? 'bg-warning' : 'bg-success';
-            return [`<span class="p-2 rounded-3 text-white ${cls}">${data.status}</span>`].join('');
+            return [`<span class="text-capitalize p-2 rounded-3 text-white ${cls}">${data.status}</span>`].join('');
         }
     },
     {
@@ -150,7 +150,7 @@ let PromoteStudentDialog = new function(){
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
         let p = mThis.getDataForm();
-        if(p.promote_info.next_term_id > 0){
+        if(p.promote_info[0].next_term_id > 0){
             window.vsapi.call(`${main_view.base_url}/api/promote/students`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
