@@ -707,7 +707,7 @@ class StudentAttendance //extends Model
         $is_shortMonthName = isset($d->short_month_name)?$d->short_month_name:false;
         $aToz = isset($d->a_to_z)?$d->a_to_z:null;
         $row = DB::table('student_groups as sg')->where('sg.id',$group_id)
-            ->selectRaw('sg.id as group_id,sg.campus_id,sg.level_id')->first();
+            ->selectRaw('sg.id as group_id,sg.campus_id,sg.level_id,sg.session_id')->first();
         $from_day = date('d',strtotime($startDate));
         $to_day = date('d',strtotime($endDate));
         $arr_report = [
@@ -719,11 +719,14 @@ class StudentAttendance //extends Model
             'short_month_name' => $is_shortMonthName,
             "from_day" => $from_day,
             "to_day" => $to_day
-
         ];
-
+        $row->program = GeneralSettings::getProgramByLevel($row->level_id,$ss)->name;
+        $row->campus = GeneralSettings::getCampus($row->campus_id)->name;
+        $row->level = GeneralSettings::getLevel($row->level_id,$ss)->name;
+        $row->session = GeneralSettings::getSession($row->session_id)->name;
+        $row-> count = $this->countGroupMembers($group_id,$ss);
         $row->session_date = $this->studentGroupAttendanceReport($group_id,$arr_report,$ss);
-        // // $row->list = $this->studentGroupAttendanceReport($row->group_id,$ss);
+
         return $row;
 
     }
@@ -782,18 +785,19 @@ class StudentAttendance //extends Model
         return $attendanceData;
     }
 
-    // function attendanceReportInfo($student_id,$ss){
-    //     $sessionDateCondition = "1 = 1";
-    //     $limit = 1;
-    //     // if ($session_date) {
-    //     //     $sessionDateCondition = "session_date = '$session_date'";
-    //     // }
-    //     $rows = $rows = DB::select(DB::raw("SELECT DISTINCT group_id, MONTH(session_date) AS month, YEAR(session_date) AS year FROM student_attendances WHERE $sessionDateCondition ORDER BY year, month ASC LIMIT $limit"));
-    //     foreach($rows as $row){
-    //         // $row->list = $this->getAttendanceDetailsByMonth($student_id,$row->month,$row->year);
-    //     }
-    //     return $rows;
-    // }
+    function countGroupMembers($group_id,$ss){
+        $rows = DB::table('group_members as gm')
+            ->join('students as s','s.id','=','gm.student_id')
+            ->where('gm.group_id',$group_id)
+            ->selectRaw('s.sex')->get();
+        $female = [];
+        foreach($rows as $row){
+            if($row->sex == 'female'){
+                $female[$row->sex] = $row->sex;
+            }
+        }
+        return $female;
+    }
 
 
 }
