@@ -764,7 +764,6 @@ class PriceList //extends Model
     /** getInvoiceList() */
     static function studentInvoice($filter=[],$ss){
         // $campus = new Campus();
-        $program = new Program();
         $branch_id = $ss->branch_id;
         $academic_year = isset($filter['academic_year']) ? $filter['academic_year']:null;
         $search_value =isset($filter['search_value'])?$filter['search_value']:null;
@@ -801,7 +800,6 @@ class PriceList //extends Model
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         $session_list =  DB::table('sessions')->where('branch_id',$branch_id)->selectRaw('id,name')->get();
-        $session_list->filter();
         foreach($rows as $row) {
             //$row->level = Student::getProgramLevel($row->level_id);
             $row->status = $row->is_paid == 1? 'paid' : 'unpaid';
@@ -972,15 +970,23 @@ class PriceList //extends Model
         $due_date = isset($d->due_date)?$d->due_date:null;
         $insert_info = isset($d->insert_info)?$d->insert_info:null;
         $delete_info = isset($d->delete_info)?$d->delete_info:null;
+        $keeper = [];
         foreach($insert_info as $ins_info){
-
+            $other_fee = DB::table('other_fees')->where('name',$ins_info['fee_type'])->selectRaw('name,amount,description')->first();
+            $updateOrInsert = [
+                "invoice_id" => $id,
+                "fee_type" => $ins_info['fee_type'],
+                'price' => $other_fee->amount,
+                'description' => $ins_info['description']
+            ];
+            $newID = saveData($ss,'invoice_item',['id'=>$ins_info['invoice_item_id']],$updateOrInsert);
         }
 
         foreach($delete_info as $del_info){
 
         }
 
-        return $insert_info;
+        return $keeper;
 
     }
 
