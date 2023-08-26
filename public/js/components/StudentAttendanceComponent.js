@@ -34,10 +34,6 @@ var StudentAttendanceComponent = new function(){
         }
     },
     {
-        title: "Group",
-        data: "group_name"
-    },
-    {
         title: "Family ID",
         data: "family_id"
     }];
@@ -130,7 +126,8 @@ var StudentAttendanceComponent = new function(){
                     'date': $(this).data('day'),
                     'status_id': $(this).data('status')
                 };
-                StudentAttendanceDialog.show(p);
+                if(p.status_id)
+                    StudentAttendanceDialog.show(p);
             });
         });
     }
@@ -173,6 +170,7 @@ let StudentAttendanceDialog = new function(){
     this.loadFormDetails = (op) => {
         let p = {
             'id': op.id,
+            'student_id': op.student_id,
             'date': op.date
         };
         window.vsapi.call(`${main_view.base_url}/api/student/attendance-date-details`,p,null,false).then(res => {
