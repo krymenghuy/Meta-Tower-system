@@ -11,7 +11,7 @@
 </div>
 
 <div id="dlg_cps_" class="modal fade" tabindex="-1" aria-labelledby="dlg_cps_title" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog vs-modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title"></h4>
@@ -19,8 +19,12 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="name" class="form-label trans-text" data-langprop="titles.Name"></label>
+                    <label for="name" class="form-label trans-text" data-langprop="titles.Campus Name"></label>
                     <input type="text" class="form-control data-input" data-field="name"/>
+                </div>
+                <div class="form-group">
+                    <label for="name" class="form-label trans-text" data-langprop="titles.Shortcut"></label>
+                    <input type="text" class="form-control data-input" data-field="shortcut"/>
                 </div>
             </div>
             <div class="modal-footer">

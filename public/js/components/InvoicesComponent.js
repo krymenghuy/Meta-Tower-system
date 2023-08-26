@@ -3,21 +3,22 @@ var InvoicesComponent = new function(){
     let mThis = this;
     this.title_prop = "Invoices";
     this.self = $('#_main_invoicesComponent');
+    this.currency_symbol= '$';
 
     this.cols = [{
         title: "Invoice Number",
-        data: "invoice_number"
+        data:(data,index,tr)=>{
+            return ['<div class="d-flex flex-column"><a href="javascript:void(0)" class="btn-inv-print" data-id="',data.id,'">',data.invoice_number,'</a><span class="text-left text-success">',data.invoice_type?data.invoice_type:'General','</span></div>'].join('');
+        }
     },
     {
-        title: "Student Code",
-        data: "student_code"
+        title: "Student",
+        data: (data,index,tr)=>{
+            return ['<div class="d-flex flex-column"><a href="javascript:void(0)" class="lnk-print-invoice" data-id="',data.id,'">',data.student_name,'</a><span class="text-left p-2">',data.student_code,'</span></div>'].join('');
+        }
     },
     {
-        title: "Student Name",
-        data: "student_name"
-    },
-    {
-        title: "School Level",
+        title: "Program",
         data: (data, a, b) => {
             return [`<p class="pb-0 mb-1">${data.program}</p>
             <small class="text-center">(${data.session})</small>`].join('');
@@ -34,34 +35,43 @@ var InvoicesComponent = new function(){
             return [`<span class="p-2 rounded-3 text-white text-capitalize ${bg}">${data.status}</span>`].join('');
         }
     },
+    // {
+    //     title: "Amount",
+    //     data: (data, a, b) => {
+    //         let amount = data.amount ? ['$',data.amount].join(' ') : 'N/A';
+    //         return amount;
+    //     }
+    // },
     {
-        title: "Amount",
+        title: "Due",
         data: (data, a, b) => {
-            let amount = data.amount ? ['$',data.amount].join(' ') : 'N/A';
-            return amount;
+            const cur =  data.currency_symbol?data.currency_symbol:mThis.currency_symbol;
+            let due_amount = data.due_amount ? [cur,data.due_amount].join(' ') : 'NA';
+            return due_amount;
         }
     },
     {
         title: "Paid",
         data: (data, a, b) => {
-            let paid_amount = data.paid_amount ? ['$',data.paid_amount].join('') : 'N/A';
+            const cur =  data.currency_symbol?data.currency_symbol:mThis.currency_symbol;
+            let paid_amount = data.paid_amount ? [cur,data.paid_amount].join('') : 'NA';
             return paid_amount;
         }
     },
+ 
     {
-        title: "Due Amount",
-        data: (data, a, b) => {
-            let due_amount = data.due_amount ? ['$',data.due_amount].join(' ') : 'N/A';
-            return due_amount;
-        }
-    },
-    {
-        title: "Invoice Date",
+        title: "Issue Date",
         data: "invoice_date"
     },
     {
-        title: "Paid Date",
-        data: "paid_date"
+        title: "Pmt Date",
+        data: "pmt_date"
+    },
+    {
+        title: "Last Updated",
+        data:(data,index,tr)=>{
+            return ['<div class="d-flex flex-column"><span class="fw-semibold">',data.update_user,'</span><span class="text-left text-muted" style="font-size:0.9em">',data.updated_at,'</span></div>'].join('');
+        }
     },
     {
         title: "Action",
@@ -76,8 +86,11 @@ var InvoicesComponent = new function(){
                 </a>
                 <a href="javascript:void(0)" class="btn-inv-delete ${cls}" data-id="${data.id}">
                     <i class="fa-regular fa-trash-can text-danger fs-5"></i>
-                </a>
-            </div>`].join('');
+                </a>`,
+                `<a href="javascript:void(0)" class="btn-inv-print" data-id="${data.id}">
+                 <i class="fa fa-print text-primary fs-5"></i>
+                </a>`,
+            `</div>`].join('');
         }
     }];
 
@@ -94,6 +107,12 @@ var InvoicesComponent = new function(){
 
         mThis.tblInvoice = $(mThis.itemView.getTable());
         
+        mThis.tblInvoice.on('click','a.btn-inv-print',function(e){
+            e.preventDefault();
+            const invoice_id = $(this).data('id');
+            alert('todo: Print invoice ID ' + invoice_id);
+        });
+
         mThis.tblInvoice.on('click','a.btn-inv-pay',function(e){
             e.preventDefault();
             let op = {
