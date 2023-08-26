@@ -11,9 +11,9 @@ var ManageAccountComponent = new function(){
         data: (data, a, b) => {
             let father_name = data.parents && data.parents[0].name ? data.parents[0].name : '',
             mother_name = data.parents && data.parents[1].name ? data.parents[1].name : '';
-            return [`<p class="pb-0 mb-1">${father_name}</p>
+            return [`<p class="pb-0 mb-1 text-capitalize">${father_name}</p>
             <hr class="p-0"/>
-            <p class="pb-0 mb-1">${mother_name}</p>`].join('');
+            <p class="pb-0 mb-1 text-capitalize">${mother_name}</p>`].join('');
         }
     },
     {

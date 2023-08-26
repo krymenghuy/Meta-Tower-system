@@ -3,19 +3,27 @@ var InvoicesComponent = new function(){
     let mThis = this;
     this.title_prop = "Invoices";
     this.self = $('#_main_invoicesComponent');
-    this.currency_symbol= '$';
+
+    this.currency_symbol = '$';
 
     this.cols = [{
         title: "Invoice Number",
-        data:(data,index,tr)=>{
-            return ['<div class="d-flex flex-column"><a href="javascript:void(0)" class="btn-inv-print" data-id="',data.id,'">',data.invoice_number,'</a><span class="text-left text-success">',data.invoice_type?data.invoice_type:'General','</span></div>'].join('');
+        data: (data, index, tr) => {
+            return [`<div class="d-flex flex-column">
+                <a href="javascript:void(0)" class="btn-inv-print" data-id="${data.id}">${data.invoice_number}</a>
+                <small class="text-capitalize text-left text-success">${data.invoice_type ? data.invoice_type.replace('_',' ') : 'General'}</small>
+            </div>`].join('');
         }
     },
     {
         title: "Student",
-        data: (data,index,tr)=>{
-            return ['<div class="d-flex flex-column"><a href="javascript:void(0)" class="lnk-print-invoice" data-id="',data.id,'">',data.student_name,'</a><span class="text-left p-2">',data.student_code,'</span></div>'].join('');
-
+        data: (data, index, tr) => {
+            return [`<div class="d-flex flex-column">
+                <a href="javascript:void(0)" class="lnk-print-invoice" data-id="${data.id}">
+                    <p class="pb-0 mb-1 text-capitalize">${data.student_name}</p>
+                </a>
+                <small class="text-capitalize">${data.student_code}</small>
+            </div>`].join('');
         }
     },
     {
@@ -36,13 +44,6 @@ var InvoicesComponent = new function(){
             return [`<span class="p-2 rounded-3 text-white text-capitalize ${bg}">${data.status}</span>`].join('');
         }
     },
-    // {
-    //     title: "Amount",
-    //     data: (data, a, b) => {
-    //         let amount = data.amount ? ['$',data.amount].join(' ') : 'N/A';
-    //         return amount;
-    //     }
-    // },
     {
         title: "Due",
         data: (data, a, b) => {
@@ -70,8 +71,11 @@ var InvoicesComponent = new function(){
     },
     {
         title: "Last Updated",
-        data:(data,index,tr)=>{
-            return ['<div class="d-flex flex-column"><span class="fw-semibold">',data.update_user,'</span><span class="text-left text-muted" style="font-size:0.9em">',data.updated_at,'</span></div>'].join('');
+        data: (data, index, tr)=>{
+            return [`<div class="d-flex flex-column">
+                <span class="fw-semibold">${data.update_user}</span>
+                <small class="text-muted">${data.updated_at}</small>
+            </div>`].join('');
         }
     },
     {
@@ -87,11 +91,11 @@ var InvoicesComponent = new function(){
                 </a>
                 <a href="javascript:void(0)" class="btn-inv-delete ${cls}" data-id="${data.id}">
                     <i class="fa-regular fa-trash-can text-danger fs-5"></i>
-                </a>`,
-                `<a href="javascript:void(0)" class="btn-inv-print" data-id="${data.id}">
-                 <i class="fa fa-print text-primary fs-5"></i>
-                </a>`,
-            `</div>`].join('');
+                </a>
+                <a href="javascript:void(0)" class="btn-inv-print" data-id="${data.id}">
+                    <i class="fa fa-print text-primary fs-5"></i>
+                </a>
+            </div>`].join('');
         }
     }];
 

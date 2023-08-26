@@ -506,6 +506,8 @@ var RegistrationComponent = new function(){
                     case 'term_id':
                         VSUtil.setComboItems(el,d.terms,'id','term',null,null,null);
                         break;
+                    case 'group_id':
+                        VSUtil.setComboItems(el,d.groups,'id','group_name',null,null,null);
                     default:
                         break;
                 }
