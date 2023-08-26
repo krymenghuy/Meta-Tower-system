@@ -309,8 +309,10 @@ let RequestDialog = new function(){
     }
 
     this.getStudentEnrollment = (el) => {
-        let elAfter = null, elNext = el.closest('.form-group');
-        el.on('change',function(e){
+        let elAfter = el.closest('.modal-body').find('.enroll'),
+        elNext = el.closest('.form-group');
+
+        el.off('change').on('change',function(e){
             e.preventDefault();
             let id = $(this).val();
 
