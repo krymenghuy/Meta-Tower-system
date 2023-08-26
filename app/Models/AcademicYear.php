@@ -27,8 +27,9 @@ class AcademicYear //extends Model
         $v_rule = [
             'id'=>'0|number|identity=1',
             'academic_year' => '1|string|1-150',
-            'start_date' => '0|string',
-            'end_date' => '0|string',
+            'start_date' => '1|date',
+            'end_date' => '1|date',
+            'remarks' => '0|string|0-250',
         ];
         $branch_id = $ss->branch_id;
         $unique =[$branch_id.'|academic_years|academic_year|id=id|text=Academic year already exists'];
@@ -57,13 +58,13 @@ class AcademicYear //extends Model
 
     static function list($ss){
         $branch_id = $ss->branch_id;
-        $rows = DB::table('academic_years')->selectRaw('id,academic_year,create_user,start_date,end_date,formatDate(created_at) as date')->where('branch_id',$branch_id)->get();
+        $rows = DB::table('academic_years AS a')->selectRaw('a.id,a.academic_year,formatDate(start_date) AS start_date,formatDate(end_date) AS end_date,a.update_user,formatTime(a.updated_at) AS updated_at')->where('a.branch_id',$branch_id)->get();
         return $rows;
     }
 
-    static function details($academic_year,$ss){
+    static function details($id,$ss){
         $branch_id = $ss->branch_id;
-        $row = DB::table('academic_years')->selectRaw('id,academic_year,start_date,end_date')->where('academic_year',$academic_year)->where('branch_id',$branch_id)->first();
+        $row = DB::table('academic_years')->selectRaw('id,academic_year,formatDate(start_date) AS start_date,formatDate(end_date) AS end_date,remarks')->where('id',$id)->where('branch_id',$branch_id)->first();
         return $row;
     }
 
