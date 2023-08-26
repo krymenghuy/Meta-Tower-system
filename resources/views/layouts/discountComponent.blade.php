@@ -5,7 +5,7 @@
             <span class="px-2 fs-5">/</span>
             <span class="trans-text fs-5" data-langprop="titles.Child Policy"></span>
         </div>
-        <div class="row row-cols-lg-4 gap-2 mt-3">
+        <div id="el_dsn_container" class="row row-cols-lg-4 gap-2 mt-3">
             <div class="col">
                 <div class="form-group">
                     <label for="discount_type" class="form-label trans-text" data-langprop="titles.Discount Type"></label>

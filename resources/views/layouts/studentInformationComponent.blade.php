@@ -1,9 +1,8 @@
 <div id="_main_studentInformationComponent" class="mobile-padding p-3" style="display:none">
     <div class="d-flex gap-2">
-        <button class="btn btn-sm btn-primary" type="button">
-            <span></span>
-            <i class="fa-solid fa-caret-down"></i>
-        </button>
+        <div class="height-select2">
+            <select id="el_sin_filter" class="modal-select2"></select>
+        </div>
         <input type="search" id="el_sin_search" class="form-control width--search-inner"/>
         <button class="btn btn-sm btn-primary" type="button">
             <i class="fa-solid fa-magnifying-glass"></i>
