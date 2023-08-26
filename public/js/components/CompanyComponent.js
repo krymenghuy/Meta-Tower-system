@@ -1,14 +1,14 @@
 'use strict';
-let CompanyComponent = new function(){
+var CompanyComponent = new function(){
     let mThis = this;
 	this.title_prop = "Company Profile";
     this.base_url = $('#__base_url').val();
     this.self = $('#_main_companyComponent');
-    this.btnSave = $('#_main_comp_btnSaveProfile');
+    this.btnSave = this.self.find('#_main_comp_btnSaveProfile');
 
-	this.imgLogo = $('#com_imgLogo');
-	this.btnChooseLogo = $('#com_btnChooseLogo');
-	this.btnDeleteLogo = $('#com_btnDeleteLogo');
+	this.imgLogo = this.self.find('#com_imgLogo');
+	this.btnChooseLogo = this.self.find('#com_btnChooseLogo');
+	this.btnDeleteLogo = this.self.find('#com_btnDeleteLogo');
 	this.fields =[];
 
 	this.btnSave.on('click',function(e){

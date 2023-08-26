@@ -571,14 +571,12 @@ Route::post('getComboItems_price_list', [SystemSettingController::class, 'getCom
 //end::SystemSettingController
 
 //begin::CompanyProfileController
-Route::post('company/save-logo', [CompanyProfileController::class, 'saveCompanyLogo']);
-Route::post('company/logo', [CompanyProfileController::class, 'getCompanyLogo']);
-Route::post('company/delete-logo', [CompanyProfileController::class, 'deleteCompanyLogo']);
-Route::post('company/save-profile', [CompanyProfileController::class, 'saveCompanyInfo']);
-Route::post('company/profile', [CompanyProfileController::class, 'getCompanyInfo']);
-Route::post('company/info', [CompanyProfileController::class, 'getCompanyInfo']);
-// Route::post('getBrandImages_driver', [CompanyProfileController::class, 'getBrandImages_driver']);
-// Route::post('getBrandImages_sender', [CompanyProfileController::class, 'getBrandImages_sender']);
+    Route::post('company/save-logo', [CompanyProfileController::class, 'saveCompanyLogo']);
+    Route::post('company/logo-url', [CompanyProfileController::class, 'getCompanyLogo']);
+    Route::post('company/delete-logo', [CompanyProfileController::class, 'deleteCompanyLogo']);
+    Route::post('company/save-details', [CompanyProfileController::class, 'saveCompanyInfo']);
+    Route::post('company/details', [CompanyProfileController::class, 'getCompanyInfo']);
+    Route::post('company/info', [CompanyProfileController::class, 'getCompanyInfo']);
 //end::CompanyProfileController
 
 

@@ -36,14 +36,14 @@ var InvoicesComponent = new function(){
     {
         title: "Level",
         data: "level"
-    },
-    {
-        title: "Status",
-        data: (data, a, b) => {
-            let bg = data.status === 'unpaid' ? 'bg-danger':'bg-success';
-            return [`<span class="p-2 rounded-3 text-white text-capitalize ${bg}">${data.status}</span>`].join('');
-        }
-    },
+    },  
+    // {
+    //     title: "Amount",
+    //     data: (data, a, b) => {
+    //         let amount = data.amount ? ['$',data.amount].join(' ') : 'N/A';
+    //         return amount;
+    //     }
+    // },
     {
         title: "Due",
         data: (data, a, b) => {
@@ -68,6 +68,13 @@ var InvoicesComponent = new function(){
     {
         title: "Pmt Date",
         data: "pmt_date"
+    },
+    {
+        title: "Status",
+        data: (data, a, b) => {
+            let bg = data.status === 'unpaid' ? 'bg-danger':'bg-success';
+            return [`<span class="p-2 rounded-3 text-white text-capitalize ${bg}">${data.status}</span>`].join('');
+        }
     },
     {
         title: "Last Updated",
