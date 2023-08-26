@@ -15,6 +15,7 @@ var InvoicesComponent = new function(){
         title: "Student",
         data: (data,index,tr)=>{
             return ['<div class="d-flex flex-column"><a href="javascript:void(0)" class="lnk-print-invoice" data-id="',data.id,'">',data.student_name,'</a><span class="text-left p-2">',data.student_code,'</span></div>'].join('');
+
         }
     },
     {
