@@ -28,7 +28,10 @@ var StudentAttendanceComponent = new function(){
     },
     {
         title: "Sex",
-        data: "sex"
+        data: (data, a, b) => {
+            let sex = data.sex === 'M' ? 'Male' : 'Female';
+            return sex;
+        }
     },
     {
         title: "Group",
