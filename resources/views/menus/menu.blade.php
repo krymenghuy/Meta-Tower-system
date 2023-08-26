@@ -306,14 +306,47 @@
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Student Attendance"></span>
                             </a>
                         </li>
-                        <li class="kt-menu__item" aria-haspopup="true">
+                        <!-- <li class="kt-menu__item" aria-haspopup="true">
                             <a href="StudentAttendanceReportComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{ asset('assets/images/icons/student_attendance_report.png') }}"/>
                                 </span>
-                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Student Attendance Report"></span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Attendance Report"></span>
+                            </a>
+                        </li> -->
+                    </ul>
+                </div>
+            </li>
+
+            
+            <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+                <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons" src="{{ asset('assets/images/icons/student_attendance.png') }}"/>
+                    </span>
+                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Academic Calendar"></span>
+                    <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                </a>
+                <div class="kt-menu__submenu ">
+                    <span class="kt-menu__arrow"></span>
+                    <ul class="kt-menu__subnav">
+                    <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="TermComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/term.png') }}"/>
+                                </span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Term"></span>
                             </a>
                         </li>
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="AcademicYearComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/academic_year.png') }}"/>
+                                </span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Academic Year"></span>
+                            </a>
+                        </li>
+                         
                     </ul>
                 </div>
             </li>
@@ -371,22 +404,6 @@
                                     <img class="icons" src="{{asset('assets/images/icons/program.png')}}"/>
                                 </span>
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Program"></span>
-                            </a>
-                        </li>
-                        <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="TermComponent" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{ asset('assets/images/icons/term.png') }}"/>
-                                </span>
-                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Term"></span>
-                            </a>
-                        </li>
-                        <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="AcademicYearComponent" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{ asset('assets/images/icons/academic_year.png') }}"/>
-                                </span>
-                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Academic Year"></span>
                             </a>
                         </li>
                     </ul>

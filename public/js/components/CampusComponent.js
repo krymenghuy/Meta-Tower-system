@@ -54,9 +54,14 @@ var CampusComponent = new function(){
                 data = res.data;
             }
 
-            let cols = [{
-                title: "Name",
+            let cols = [
+                {
+                title: "Campus Name",
                 data: "name"
+            },
+            {
+                title: "Shortcut",
+                data: "shortcut"
             },
             {
                 title: "Action",

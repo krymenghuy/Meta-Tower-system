@@ -26,13 +26,13 @@ class Campus //extends Model
 
     static function list($ss){
         $branch_id = $ss->branch_id;
-        $rows = DB::table('campuses as c')->selectRaw('c.name,id')->where('c.branch_id',$branch_id)->get();
+        $rows = DB::table('campuses as c')->selectRaw('c.name,c.shortcut,id')->where('c.branch_id',$branch_id)->get();
         return $rows;
     }
 
     static function details($id,$ss){
         $branch_id = $ss->branch_id;
-        $row = DB::table('campuses')->where('id',$id)->where('branch_id',$branch_id)->first();
+        $row = DB::table('campuses')->where('id',$id)->selectRaw('id,name,shortcut')->where('branch_id',$branch_id)->first();
         return $row;
     }
 

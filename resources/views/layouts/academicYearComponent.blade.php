@@ -10,7 +10,7 @@
 </div>
 
 <div class="modal fade" id="dlg_adm_" tabindex="-1" aria-labelledby="dlg_adm_title" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog vs-modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title"></h1>
@@ -20,6 +20,14 @@
                 <div class="form-group">
                     <label for="academic_year" class="form-label trans-text" data-langprop="titles.Academic Year"></label>
                     <input type="text" class="form-control data-input" data-field="academic_year"/>
+                </div>
+                <div class="form-group">
+                    <label for="academic_year" class="form-label trans-text" data-langprop="titles.Start Date"></label>
+                    <input data-select="datepicker" class="form-control data-input" data-field="start_date"/>
+                </div>
+                <div class="form-group">
+                    <label for="academic_year" class="form-label trans-text" data-langprop="titles.End Date"></label>
+                    <input data-select="datepicker" class="form-control data-input" data-field="end_date"/>
                 </div>
             </div>
             <div class="modal-footer">

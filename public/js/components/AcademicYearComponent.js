@@ -54,17 +54,28 @@ var AcademicYearComponent = new function(){
                 data = res.data;
             }
 
-            let cols = [{
+            let cols = [
+                {
                 title: "Academic Year",
                 data: "academic_year"
             },
             {
-                title: "Created By",
-                data: "create_user"
+                title: "Start Date",
+                data: "start_date"
             },
             {
-                title: "Date",
-                data: "date"
+                title: "End Date",
+                data: "end_date"
+            },
+            // {
+            //     title: "Dropout Students",
+            //     data: "dropout_count"
+            // },
+            {
+                title: "Updated By",
+                data: (data,index,tr)=>{
+                    return ['<div class="d-flex flex-column"><span class="fw-semibold">',data.update_user,'</span><span class="text-left text-muted" style="font-size:0.9em">',data.updated_at,'</span></div>'].join('');
+                }
             },
             {
                 title: "Action",
@@ -135,6 +146,17 @@ let AcademicDialog = new function(){
 
     this.elTitle = mThis.self.find('.modal-title');
     this.btnSave = mThis.self.find('#dlg_adm_btn_save');
+
+    this.btnSave.on('click',e=>{
+        let p = mThis.getDataForm();
+        window.vsapi.call(`${main_view.base_url}/api/academic-year/save`,p,null,false).then(res => {
+            let data = {};
+            if(res.status_code === 200){
+                 if(typeof mThis.options.onClose ==='function') mThis.options.onClose();
+                 mThis.self.modal('hide');
+            }else cv_interact.error(res.error_message);
+        });
+    });
 
     this.getDataForm = () => {
         let p = {
