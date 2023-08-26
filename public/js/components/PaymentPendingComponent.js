@@ -6,6 +6,7 @@ var PaymentPendingComponent = new (function () {
 
     this.elSearch = mThis.self.find("#_ppd_search");
 
+    let cur_symbol = '$';
     this.cols = [
         {
             title: "Name Khmer",
@@ -17,15 +18,21 @@ var PaymentPendingComponent = new (function () {
         },
         {
             title: "Tuition",
-            data: "tuition",
+            data: (data, a, b) => {
+                return [cur_symbol,data.tuition].join(' ');
+            }
         },
         {
             title: "Tuition Due",
-            data: "tuition_due",
+            data: (data, a, b) => {
+                return [cur_symbol,data.tuition_due].join(' ');
+            }
         },
         {
             title: "Tuition Paid",
-            data: "tuition_paid",
+            data: (data, a, b) => {
+                return [cur_symbol,data.tuition_paid].join(' ');
+            }
         },
         {
             title: "Status",

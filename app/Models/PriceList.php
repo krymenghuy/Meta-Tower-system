@@ -970,68 +970,16 @@ class PriceList //extends Model
         if(!$exists_invoice) return DV::error('ID does not exist');
         $due_date = isset($d->due_date)?$d->due_date:null;
         $insert_info = isset($d->insert_info)?$d->insert_info:null;
-        // for
-        // $delete_info = isset($d->delete_info)?$d->delete_info:null;
-        // $insert_info = isset($d->insert_info)?$d->insert_info:null;
+        $delete_info = isset($d->delete_info)?$d->delete_info:null;
+        foreach($insert_info as $ins_info){
 
-        // $insert_amt = [];
+        }
 
+        foreach($delete_info as $del_info){
 
-        // $delete_amt = [];
-        // $deduct_amt = 0;
-        // $new_amt = 0;
-        // $total_due_amt = 0;
-        // $total_amt = 0;
-        // $exist_tuitionFee = DB::table('invoice_item')->where('invoice_id',$id)->where('fee_type','tuition_fee')->exists();
-        // $enr_info = DB::table('enrollments as e')->where('student_id',$exists_invoice->student_id)
-        //             ->join('payments as p','p.enrollment_id','=','e.id')
-        //             ->selectRaw('p.tuition_due,e.id as enr_id,p.tuition,e.start_date,e.tuition_end_date,e.academic_year,p.policy_discount')
-        //             ->first();
-        //     $total_amt = $enr_info->tuition_due;
-        // if($exist_tuitionFee) {
-        //     $invoice =  DB::table('invoices')->where('id',$id)->selectRaw('student_id,due_amount,amount')->first();
+        }
 
-        //     $total_due_amt = $invoice->due_amount;
-        //     $total_amt = $invoice->amount;
-
-        // }else{
-        //     $invoice =  DB::table('invoices')->where('id',$id)->where('fee_type','!=','tuition_fee')->selectRaw('student_id,due_amount,amount')->first();
-        //     $total_due_amt =  DB::table('invoice_item')->where('invoice_id',$id)->where('fee_type','!=','tuition_fee')->sum('price');
-        //     $total_amt = $invoice->amount;
-        // }
-
-        // if($insert_info){
-        //     foreach($insert_info as $fee){
-        //         $data_rows = DB::table('other_fees')->where('academic_year',$enr_info->academic_year)->where('name',$fee['fee_type'])->selectRaw('amount,start_date,end_date,description')->get();
-        //         foreach($data_rows as $row){
-        //             $fee['price'] = $row->amount;
-        //             $fee['date_range'] = isset($row->start_date)?$row->start_date . ' to ' . $row->end_date:null;
-        //             $fee['description'] = $row->description;
-        //             $insert_amt[] = $row->amount;
-        //         }
-        //         // $invoice_item = saveData($ss,'invoice_item',["id"=>null],$fee,[],1);
-        //     }
-        // }
-
-        // if($delete_info){
-        //     foreach($delete_info as $info){
-        //         $delete_amt[] = $info['amount'];
-        //         DB::table('invoice_item')->where('id',$info['invoice_item_id'])->where('fee_type','!=','tuition_fee')->where('branch_id',$branch_id)->delete();
-        //     }
-        //     $deduct_amt = array_sum($delete_amt);
-        //     $new_amt = $total_due_amt - $deduct_amt;
-
-        // }
-        // $inputs = [
-        //     'due_date' => $due_date
-        // ];
-
-        // if($new_amt>0){
-        //     $inputs['due_amount'] = $new_amt;
-        //     $inputs['amount'] =  $total_amt - $deduct_amt;
-        // }
-        // $id = saveData($ss,'invoices',['id' => $id],$inputs,[],1);
-        // return DV::depends($id,['action'=>'Updated']);
+        return $insert_info;
 
     }
 
@@ -1670,7 +1618,6 @@ class PriceList //extends Model
         $d = (object)$arr;
         $instance = new PriceList(null,$ss);
         $row = $instance->previewPendingPaymentDetails($arr,$d->student_id,$ss);
-
         return $row->payment_info->tuition_due;
     }
 
