@@ -217,7 +217,7 @@ class PromoteStudent //extends Model
         return $row;
     }
 
-    function verifyPromotedStudent(){
+    function verifyPromotedStudent($id=null,$ss=null){
 
     }
 

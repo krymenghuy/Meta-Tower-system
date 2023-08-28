@@ -28,12 +28,12 @@ class GuardianController extends Controller
         return JDV::result($list);
     }
 
-    function test(Request $req){
+    function parentChildrenDetails(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code != 200) return $ss;
 
         $instance = new Guardian();
-        $list = $instance->test();
+        $list = $instance->parentChildren($req->all(),$ss);
         return JDV::result($list);
     }
 }
