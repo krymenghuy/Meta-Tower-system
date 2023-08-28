@@ -67,7 +67,7 @@ var StudentAttendanceComponent = new function(){
 
     this.displayStudentAttendanceDetails = (tr, op) => {
         let div_wrapper = $(tr).find('.expandable-row-container');
-        div_wrapper.addClass(['p-3','bg-light-subtle','max-height-details']);
+        div_wrapper.addClass('bg-light-subtle');
         div_wrapper.empty();
         let html = null;
 
@@ -94,6 +94,8 @@ var StudentAttendanceComponent = new function(){
             });
 
             div_wrapper.html(['<div class="position-absolute p-3">',html,'</div>'].join(''));
+            if(d.length > 0)
+                div_wrapper.addClass(['p-3','max-height-details']);
             let div = div_wrapper.find('.tooltip-custom');
 
             div.each(function(){

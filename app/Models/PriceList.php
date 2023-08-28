@@ -519,7 +519,7 @@ class PriceList //extends Model
                 }
                 $query->selectRaw('l.id as price_list_id,i.price,i.program_id');
                 $row = $query->first();
-        if(!$row) return DV::error('Could not find price list');
+        if(!$row) return (object)['price' => 0,'price_list_id' => null];
         return (object)['price' => $row->price,'price_list_id'=>$row->price_list_id];
     }
 
