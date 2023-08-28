@@ -151,7 +151,7 @@ let PromoteStudentDialog = new function(){
         e.preventDefault();
         let p = mThis.getDataForm();
         if(p.promote_info[0].next_term_id > 0){
-            window.vsapi.call(`${main_view.base_url}/api/promote/students`,p,null).then(res => {
+            window.vsapi.call(`${main_view.base_url}/api/promote/students`,p,null,mThis.btnSave).then(res => {
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
                     if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
