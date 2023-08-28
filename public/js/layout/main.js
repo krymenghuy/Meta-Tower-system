@@ -89,6 +89,18 @@ let main_view = new function(){
             mThis.prev_shown_dropdown_menus = div;
         });
 
+        
+        $(document).on("click", function (e) {
+            let x = mThis.top_right_menus.find(".dropdown-menu");
+            let container = x.parent();
+            if(container){
+                if(!container.is(e.target) && container.has(e.target).length === 0) {
+                    x.removeClass("show");
+                }
+            }
+            e.stopPropagation();
+        });
+
         // document.addEventListener('click',e=>{
         //    e.preventDefault();
         //    let d = mThis.clickOnClass(e.currentTarget,'btn-dropdown');
@@ -105,27 +117,6 @@ let main_view = new function(){
         //    document.body.querySelectorAll('.dropdown-menu').remove('show'); 
         // });
         
-        $(document).on('click',function(e){
-            //let x = mThis.top_right_menus.find('div.dropdown-menu'); 
-            let x = document.body.querySelector('div.dropdown-menu'); 
-            let container =  $(x.closest('div.dropdown'));
-            //if(container){
-                if (!container.is(e.target) && container.has(e.target).length === 0)
-                {
-                    x.classList.remove('show');
-                }
-                // else{
-                //     const btn = e.target.closest('.btn-dropdown');
-                //     if(btn){
-                //         const div = btn.closest('div.dropdown');
-                //        // if(div) div.querySelector('div.dropdown-menu').classList.toggle('show');
-                //         //btn.closest('div.dropdown').querySelector('div.dropdown-menu').classList.toggle('show');
-                //     }
-                // }
-            //}
-            e.stopPropagation();
-        });
-   
         this.mnuLogout.on('click',(e)=>{
             cv_interact.confirm("Do you want to log out?",{"title":"M-Clinic System","confirmButtonText":"Log Out","cancelButtonText":"No, I stay in","context":"delete","translate":true},(e)=>{
                 if(e){
