@@ -519,6 +519,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/list',[GuardianController::class,'list']);
         Route::post('/test',[GuardianController::class,'test']);
         Route::post('/details',[GuardianController::class,'details']);
+        Route::post('/children-details',[GuardianController::class,'parentChildrenDetails']);
     });
     //end::GuardianController
 

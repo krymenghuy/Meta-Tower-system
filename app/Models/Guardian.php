@@ -87,6 +87,7 @@ class Guardian //extends Model
             }
 
             $groupedParents[$familyCode]["parents"][] = [
+                'id' => $p->guardian_id,
                 "role" => $p->role,
                 "name" => $p->name,
                 "phone_number" => $p->phone_number,
@@ -110,6 +111,21 @@ class Guardian //extends Model
         if($exists) return DV::error('Already connected');
         $newID = saveData($ss,'student_guardians',['id' => null],$inputs,[],1);
         return DV::depends($newID,'Connected');
+    }
+
+    function parentChildren($arr=[],$ss=null){
+        $d = (object)$arr;
+        $ss = $ss?$ss:$this->ss;
+        $family_id = isset($d->family_id)?$d->family_id:null;
+        $rows = DB::table('students as s')
+                ->join('student_guardians as sg','sg.student_id','=','s.id')
+                ->join('guardians as g','g.id','=','sg.guardian_id')
+                ->where('sg.family_code',$family_id)
+                ->distinct()
+                ->selectRaw('s.name,s.id as student_id,date_of_birth,s.phone_number,s.name_kh,s.file_name')
+                ->get();
+        if(!isset($rows)) return  null;
+        return $rows;
     }
 
 }

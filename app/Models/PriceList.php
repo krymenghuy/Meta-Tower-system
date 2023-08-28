@@ -813,6 +813,7 @@ class PriceList //extends Model
             $row->session = $this_session? $this_session->name:'NA';
             unset($row->session_id);
             unset($row->paid);
+
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -1245,6 +1246,7 @@ class PriceList //extends Model
                 saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
                 saveData($ss,'enrollments',['id' => $row->enr_id],[
                     'status_id' => 3,//* paid
+                    'pmt_date' => date('Y-m-d H:i:s')
                 ],[],1);
 
                 if($getInvoiceInfo->invoice_type == 'tuition_fee'){
@@ -1383,7 +1385,7 @@ class PriceList //extends Model
         return DV::depends($revive,['action' => 'Invoices is active now']);
     }
 
-    static function deleteInvoice($d,$ss){
+    static function deleteInvoice($d,$ss){ //** update invoice to inactive  */
         $id = $d->id;
         $purpose = isset($d->purpose)?$d->purpose:$d->remarks;
         $delete = DB::table('invoices')->where('id',$id)->update([
