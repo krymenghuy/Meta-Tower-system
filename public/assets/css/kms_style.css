@@ -708,7 +708,6 @@ li.kt-menu__section {
 }
 
 .container-table{
-    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     border-radius: var(--bs-border-radius-lg);
     border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
@@ -716,6 +715,13 @@ li.kt-menu__section {
     margin-top: 1rem;
     background-color:#fff;
     box-shadow:0 0.5rem 1rem #00000026;
+    overflow: hidden;
+    max-height: 700px;
+}
+
+.container-table:hover{
+    overflow: auto;
+    max-height: 700px;
 }
 
 .container-table .table-title{
@@ -738,6 +744,14 @@ li.kt-menu__section {
     max-height: 150px;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.table-responsive-hover{
+    overflow: hidden;
+}
+
+.table-responsive-hover:hover{
+    overflow-x: auto;
 }
 
 .del-marker{

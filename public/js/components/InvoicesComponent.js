@@ -177,7 +177,18 @@ var InvoicesComponent = new function(){
     }
 
     this.displayInvoiceDetails = (tr, id) => {
-        console.log(id);
+        let div_wrapper = $(tr).find('.expandable-row-container'),
+        html = null;
+        div_wrapper.empty();
+
+        window.vsapi.call(`${main_view.base_url}/api/invoice/items`,{'invoice_id': id},null,false).then(res => {
+            let d = [];
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            html = [`<div>Test</div>`].join('');
+            div_wrapper.html(html);
+        });
     }
 
     this.show = (options) => {
