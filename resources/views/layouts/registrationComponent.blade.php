@@ -29,7 +29,7 @@
             </div>
         </div>
         <div class="d-flex align-items-center gap-2 mt-3">
-            <button id="_rgs_btnRegister" class="btn btn-primary btn-animate" type="button">
+            <button id="_rgs_btnRegister" class="btn btn-primary  " type="button">
                 <span class="trans-text" data-langprop="buttons.Register"></span>
             </button>
             <input type="search" class="form-control width--search" placeholder="Search by Name or ID..."/>
@@ -219,7 +219,7 @@
                         <textarea class="form-control data-input" data-field="mother_address"></textarea>
                     </div>
                     <div class="d-flex justify-content-center">
-                        <button id="btn--save" class="btn btn-primary btn-animate" type="button">
+                        <button id="btn--save" class="btn btn-primary  " type="button">
                             <span class="trans-text" data-langprop="buttons.Save"></span>
                         </button>
                     </div>

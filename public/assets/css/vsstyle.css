@@ -321,7 +321,8 @@ label.simple-label {
   }
 }
 
-.btn-animate{
+.btn-working{
+  pointer-events: none;
   position: relative;
   text-decoration: none;
   font-weight: 600;
@@ -331,7 +332,7 @@ label.simple-label {
   isolation: isolate;
 }
 
-.btn-animate::before{
+.btn-working::before{
   content: "";
   position: absolute;
   top: 0;
@@ -346,7 +347,7 @@ label.simple-label {
   transition: translate 0.25s ease-out;
 }
 
-.btn-animate:before {
+.btn-working:before {
   animation-play-state: running;
   transition-duration: 0.75s;
   translate: 0% 0%;
@@ -358,7 +359,7 @@ label.simple-label {
   }
 }
 
-.btn-animate span {
+.btn-working span {
   position: relative;
   display: block;
   padding: 0.5rem 1rem;

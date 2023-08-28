@@ -3,7 +3,7 @@ use App\Http\Controllers\UMController;
 use App\Http\Controllers\PusherController;
 
 Route::post('logout', [UMController::class, 'logout']);
-Route::post('settings/lang', [UMController::class, 'getLang']);
+Route::get('settings/lang', [UMController::class, 'getLang']);
 Route::post('settings/save-lang', [UMController::class, 'saveLang']);
  
 Route::post('broadcast/auth', [PusherController::class, 'pusherAuth']); //->middleware('auth');
