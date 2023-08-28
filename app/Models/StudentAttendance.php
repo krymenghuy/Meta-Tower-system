@@ -694,9 +694,11 @@ class StudentAttendance //extends Model
         return $rows;
     }
 
-    function optionsGroup($ss=null){
+    function optionsGroup($ss=null,$d=null){
         $ss = $ss?$ss:$this->ss;
-        $rows = GeneralSettings::optionsGroup($ss);
+        $level_id = $d->level_id;
+        $campus_id = $d->campus_id;
+        $rows = GeneralSettings::optionsGroup($ss,$level_id,$campus_id);
         return $rows;
     }
 

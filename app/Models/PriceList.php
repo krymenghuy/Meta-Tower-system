@@ -785,7 +785,7 @@ class PriceList //extends Model
         $selectCols = 'e.id as enrollment_id,s.id as student_id,inv.invoice_type,inv.due_amount,inv.paid_amount,inv.is_paid,inv.id,e.session_id,s.code as student_code,formatDate(inv.invoice_date) AS invoice_date,e.program_id,m.name AS program,e.level_id,s.name as student_name,p.status_id as pstatus_id,e.academic_year'.$get_level.',e.start_date,formatDate(e.tuition_end_date) AS tuition_end_date,formatDate(inv.due_date) AS due_date,inv.invoice_number,inv.amount,inv.update_user,formatDate(inv.pmt_date) AS pmt_date,formatTime(inv.updated_at) AS updated_at';
         $query = DB::table('invoices as inv')
                 ->join('students as s','s.id','=','inv.student_id')
-                ->join('enrollments as e','e.student_id','=','s.id')
+                ->join('enrollments as e','e.id','=','inv.enrollment_id')
                 ->join('programs as m','m.id','=','e.program_id')
                 ->join('terms as t','e.term_id','=','t.id')
                 ->join('payments as p','p.enrollment_id','=','e.id')
@@ -987,10 +987,11 @@ class PriceList //extends Model
             $newID = saveData($ss,'invoice_item',['id'=>$inv_item_id],$updateOrInsert);
         }
 
-        foreach($delete_info as $del_info){
-            DB::table('invoice_item')->where('id',$del_info['invoice_item_id'])->delete();
+        if(isset($delete_info)){
+            foreach($delete_info as $del_info){
+                DB::table('invoice_item')->where('id',$del_info['invoice_item_id'])->delete();
+            }
         }
-
         return $keeper;
 
     }
@@ -1064,7 +1065,7 @@ class PriceList //extends Model
         unset($inputs['inv_id']);
         // $student_id = $inputs['student_id'];
         $enrollment_id = $inputs['enrollment_id'];
-        unset($inputs['enrollment_id']);
+        // unset($inputs['enrollment_id']);
         // $student = DB::table('students')->where('branch_id',$ss->branch_id)->where('id',$student_id)->selectRaw('id')->first();
         $enr_info = DB::table('enrollments as e')->where('e.id',$enrollment_id)
                     ->join('payments as p','p.enrollment_id','=','e.id')
