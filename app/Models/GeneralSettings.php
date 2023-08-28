@@ -406,9 +406,14 @@ class GeneralSettings //extends Model
         return $row;
     }
 
-    static function optionsGroup($ss=null){
+    static function optionsGroup($ss=null,$level_id=null,$campus_id=null){
         $branch_id = $ss->branch_id;
-        $rows = DB::table('student_groups as sg')->where('sg.branch_id',$branch_id)->selectRaw('sg.name as group_name,sg.id as group_id,sg.name,sg.id')->get();
+
+        $search = '1=1';
+        if($level_id){
+            $search = "level_id = '$level_id' AND campus_id = '$campus_id'";
+        }
+        $rows = DB::table('student_groups as sg')->where('sg.branch_id',$branch_id)->whereRaw($search)->selectRaw('sg.name as group_name,sg.id as group_id,sg.name,sg.id')->get();
         return $rows;
     }
 

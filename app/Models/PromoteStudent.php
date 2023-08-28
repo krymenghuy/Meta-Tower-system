@@ -61,10 +61,10 @@ class PromoteStudent //extends Model
                 $nextLevel = GeneralSettings::getNextLevelByCurrentLevel($level_id,$ss);
                 if(!$nextLevel) return DV::error('There is no next level');
                 $student_id = $info->student_id;
-                $promoted = DB::table('enrollments')->where('is_new_promote',1)->exists();
-                if($promoted){
-                    continue;
-                }
+                // $promoted = DB::table('enrollments')->where('is_new_promote',1)->exists();
+                // if($promoted){
+                //     continue;
+                // }
 
                 $new_enroll = [
                     'student_id' => $student_id,
@@ -77,8 +77,12 @@ class PromoteStudent //extends Model
                     'status_id' => 1,// is pending
                     'school_id' => $info->school_id,
                     'academic_year' => $academic_year,
+                    'is_new_promote' => 1,
                 ];
                 $newEnrID = saveData($ss,'enrollments',['id' => null],$new_enroll,[],1);
+                DB::table('enrollments')->where('student_id',$info->student_id)->update([
+                    'is_new_student' => 0,
+                ]);
                 if($newEnrID){
                     $months = 0;
                     if($pmt_option_id == 1){
@@ -98,6 +102,12 @@ class PromoteStudent //extends Model
                         'academic_year' => $academic_year,
                     ]);
 
+                    // DB::table('enrollments')->where('id',$newEnrID)->update([
+                    //     'tuition_end_date' => $payment_process->end_date,
+                    //     'is_new_student' => 0,
+                    //     'is_new_promote' => 1
+                    // ]);
+
                     $new_pmt_arr = [
                         'term_id' => $nextTerm,
                         'level_id' => $nextLevel->id,
@@ -114,20 +124,15 @@ class PromoteStudent //extends Model
                     ];
 
                     $new_pmt_id = saveData($ss,'payments',['id' => null],$new_pmt_arr,[],1);
-                    if($new_pmt_id){
-                        DB::table('enrollment_payment')->insert([
-                            'enrollment_id' => $newEnrID,
-                            'pmt_id' => $new_pmt_id,
+                    DB::table('enrollment_payment')->insert([
+                        'enrollment_id' => $newEnrID,
+                        'pmt_id' => $new_pmt_id,
 
-                        ]);
-                        DB::table('enrollments')->where('id',$newEnrID)->update([
-                            'tuition_end_date' => $payment_process->end_date,
-                            'is_new_student' => 0,
-                            'is_new_promote' => 1
-                        ]);
-                    }
+                    ]);
+
                 }
-                $keeps[] = $new_pmt_arr;
+
+                $keeps[] = $new_enroll;
 
             }
 

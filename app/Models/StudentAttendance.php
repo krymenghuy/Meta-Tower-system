@@ -384,17 +384,17 @@ class StudentAttendance //extends Model
         $branch_id = $ss->branch_id;
         $d = (object)$arr;
         $id = isset($d->id)?$d->id:null;
-        $student_id = isset($d->student_id)?$d->student_id:null;
+        $group_id = isset($d->group_id)?$d->group_id:null;
         $date = isset($arr['date'])?$arr['date']:date('Y-m-d');
         $q = DB::table('student_attendances as sa');
                 if($id){
                     $q->where('sa.id',$id);
                 }
-                $q->where('sa.student_id',$student_id);
+                // $q->where('sa.student_id',$student_id);
 
                 // ->where('sa.session_date',$date)
         $row = $q->selectRaw("sa.id,sa.out_diff_time,sa.session_date,sa.student_id,sa.status_id,sa.in_diff_time,sa.is_finished,sa.in_remarks,sa.out_remarks,sa.checkin_time,sa.checkout_time,sa.level_id")->first();
-        $group = DB::table('student_groups')->where('level_id',$row->level_id)->first();
+        $group = DB::table('student_groups')->where('level_id',$group_id)->first();
         $date = date('Y-m-d',strtotime($date));
         $today = date('Y-m-d');
         $day_name = date('D',strtotime($date));
@@ -694,9 +694,11 @@ class StudentAttendance //extends Model
         return $rows;
     }
 
-    function optionsGroup($ss=null){
+    function optionsGroup($ss=null,$d=null){
         $ss = $ss?$ss:$this->ss;
-        $rows = GeneralSettings::optionsGroup($ss);
+        $level_id = $d->level_id;
+        $campus_id = $d->campus_id;
+        $rows = GeneralSettings::optionsGroup($ss,$level_id,$campus_id);
         return $rows;
     }
 

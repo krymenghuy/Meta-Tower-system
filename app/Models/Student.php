@@ -32,14 +32,15 @@ class Student //extends Model
             'pmt_mode' => '0|number|default=1',
             'academic_year' => '1|string|1,25',
             'status_id' => '0|number|exists=status.id',
-            'tuition' => '0|number|default=0',
-            'tuition_due' => '0|number|default=0',
+            // 'tuition' => '0|number|default=0',
+            // 'tuition_due' => '0|number|default=0',
             'discount' => '0|number|default=0',
-            'tuition_paid' => '0|number|default=0',
+            // 'tuition_paid' => '0|number|default=0',
             'pmt_option_id' => '0|number|exists=pmt_options.id|default=2',
             'pmt_status' => '0|string|default=unpaid',
             'student_code' => '0|string',
-            'term_id' => '1|number|exists=terms.id'
+            'term_id' => '1|number|exists=terms.id',
+            'group_id' => '1|number|exists=student_groups.id',
         ];
         $branch_id = $ss->branch_id;
         $email_char = ['@','.'];
@@ -50,6 +51,8 @@ class Student //extends Model
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $parent_info = isset($arr['parent_info']) ? $arr['parent_info'] :null;
+        $group_id = $inputs['group_id'];
+        unset($inputs['group_id']);
 
         $code = $inputs['student_code'];
         $inputs['code'] = $code;
@@ -68,10 +71,10 @@ class Student //extends Model
         $pmt_status = $inputs['pmt_status'];
         // $tuition_start_date = $inputs['tuition_start_date'];
 
-        $tuition = $inputs['tuition'];
-        $tuition_due = $inputs['tuition_due'];
+        // $tuition = $inputs['tuition'];
+        // $tuition_due = $inputs['tuition_due'];
 
-        $tuition_paid = $inputs['tuition_paid'];
+        // $tuition_paid = $inputs['tuition_paid'];
         $academic_year = $inputs['academic_year'];
         $inputs['status_id'] = 1;
         $statusID = $inputs['status_id'];
@@ -87,7 +90,7 @@ class Student //extends Model
         unset($inputs['pmt_option_id']);
         unset($inputs['pmt_status']);
 
-        $is_create = (!$id || $id==0);
+        // $is_create = (!$id || $id==0);
 
         unset($inputs['level_id'],$inputs['session_id'],$inputs['campus_id'],$inputs['previous_school'],$inputs['shift_id'],$inputs['term_id'],$inputs['pmt_mode']);
 
@@ -178,6 +181,12 @@ class Student //extends Model
                     unlink($filePath);
                 }
             }
+
+            // add student to group
+            saveData($ss,'group_members',['student_id' => $newID],[
+                "student_id" => $newID,
+                'group_id' => $group_id
+            ],[],1);
         }
         return DV::depends($newID,['action'=>'Saved','parent_info' => $p_info,'Parameter'=>$save_pmt_paramsID]);
     }
