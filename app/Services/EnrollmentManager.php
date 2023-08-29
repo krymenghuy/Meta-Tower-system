@@ -48,6 +48,7 @@ class EnrollmentManager {
           'place_of_birth' => '0|string|0-250',
           'address' => '1|string|0-350',
           'photo' => '0|image',
+          'group_id' => '0|number|exists=student_groups.id',
           'level_id' => '0|number|exists=program_levels.id',
           'session_id'=> '1|number|exists=sessions.id',
           'campus_id'=> '1|number|exists=campuses.id',
@@ -63,8 +64,7 @@ class EnrollmentManager {
           'pmt_option_id' => '0|number|exists=pmt_options.id|default=2',
           'pmt_status' => '0|choice|paid,unpaid|default=unpaid',
           'student_code' => '0|string',
-          'term_id' => '1|number|exists=terms.id',
-          'group_id' => '1|number|exists=student_groups.id',
+          'term_id' => '1|number|exists=terms.id'
       ];
       $branch_id = $ss->branch_id;
       $email_char = ['@','.','-','_'];
