@@ -11,7 +11,7 @@ var InvoicesComponent = new function(){
         data: (data, index, tr) => {
             return [`<div class="d-flex flex-column">
                 <a href="javascript:void(0)" class="btn-inv-print" data-id="${data.id}">${data.invoice_number}</a>
-                <small class="text-capitalize text-left text-success">${data.invoice_type ? data.invoice_type.replace('_',' ') : 'General'}</small>
+                <small class="text-capitalize text-left text-success">${data.invoice_type ? data.invoice_type.replaceAll('_',' ') : 'General'}</small>
             </div>`].join('');
         }
     },
@@ -37,13 +37,6 @@ var InvoicesComponent = new function(){
         title: "Level",
         data: "level"
     },  
-    // {
-    //     title: "Amount",
-    //     data: (data, a, b) => {
-    //         let amount = data.amount ? ['$',data.amount].join(' ') : 'N/A';
-    //         return amount;
-    //     }
-    // },
     {
         title: "Due",
         data: (data, a, b) => {
@@ -170,6 +163,31 @@ var InvoicesComponent = new function(){
                     });
                 }
             });
+        });
+
+        this.cfg = new ExpandableRowConfig('tbl_inv__table',{
+            'dontExpandByClickingOn': ['btn-inv-print','btn-inv-pay','btn-inv-modify', 'btn-inv-delete'],
+            'onOpen': (container, detail_tr, parent_tr) => {
+                let qtr = $(parent_tr);
+                let id = qtr.data('id');
+                if(id > 0)
+                    mThis.displayInvoiceDetails(detail_tr, id);
+            }
+        });
+    }
+
+    this.displayInvoiceDetails = (tr, id) => {
+        let div_wrapper = $(tr).find('.expandable-row-container'),
+        html = null;
+        div_wrapper.empty();
+
+        window.vsapi.call(`${main_view.base_url}/api/invoice/items`,{'invoice_id': id},null,false).then(res => {
+            let d = [];
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            html = [`<div>Test</div>`].join('');
+            div_wrapper.html(html);
         });
     }
 

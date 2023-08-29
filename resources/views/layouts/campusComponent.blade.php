@@ -31,7 +31,7 @@
                 <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button id="dlg_cps_btn_save" type="button" class="btn btn-primary btn-sm">
+                <button id="dlg_cps_btn_save" type="button" class="btn btn-primary btn-sm btn-animate">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>

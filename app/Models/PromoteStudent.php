@@ -158,9 +158,11 @@ class PromoteStudent //extends Model
             $str_search ="(s.code ='$search_value' OR s.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 'e.status_id,e.session_id,e.campus_id,e.level_id,s.sex,s.name,s.name_kh,s.code,s.id,s.date_of_birth as dob';
+        $selectCols = 'e.status_id,e.session_id,e.campus_id,c.`name` AS campus,e.level_id,l.`name` as level,s.sex,s.name,s.name_kh,s.code,s.id,s.date_of_birth as dob';
         $query = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
+                ->join('program_levels as l','l.id','=','e.level_id')
+                ->join('campuses as c','c.id','=','e.campus_id')
                 ->where('e.is_new_promote',1)
                 ->whereRaw($str_moreWhere)->whereRaw($str_search)
                 ->selectRaw($selectCols)
@@ -178,8 +180,8 @@ class PromoteStudent //extends Model
                 $status = 'paid';
             }
             $row->session = GeneralSettings::getSession($row->session_id)->name;
-            $row->campus_id = DB::table('campuses')->where('id',$row->campus_id)->first()->name;
-            $row->level = GeneralSettings::getLevel($row->level_id,$ss)->name;
+            //$row->campus_id = DB::table('campuses')->where('id',$row->campus_id)->first()->name;
+            //$row->level = GeneralSettings::getLevel($row->level_id,$ss)->name;
             $row->status = $status;
             $row->age = getAge($row->dob);
             // $row->promote_info = self::promotedEnrollment($row->id,$ss);
@@ -217,7 +219,7 @@ class PromoteStudent //extends Model
         return $row;
     }
 
-    function verifyPromotedStudent(){
+    function verifyPromotedStudent($id=null,$ss=null){
 
     }
 

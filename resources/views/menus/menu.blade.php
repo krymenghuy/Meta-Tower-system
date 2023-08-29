@@ -314,14 +314,14 @@
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Student Attendance"></span>
                             </a>
                         </li>
-                        <!-- <li class="kt-menu__item" aria-haspopup="true">
+                        <li class="kt-menu__item" aria-haspopup="true">
                             <a href="StudentAttendanceReportComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{ asset('assets/images/icons/student_attendance_report.png') }}"/>
                                 </span>
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Attendance Report"></span>
                             </a>
-                        </li> -->
+                        </li>
                     </ul>
                 </div>
             </li>

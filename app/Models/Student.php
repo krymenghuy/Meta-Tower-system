@@ -186,10 +186,11 @@ class Student //extends Model
             // }
 
             // add student to group
+
             saveData($ss,'group_members',['student_id' => $newID],[
                 "student_id" => $newID,
                 'group_id' => $group_id
-            ],[],1);
+            ],[],1,true);
         }
         return DV::depends($newID,['parent_info' =>$p_info,'Parameter'=>$save_pmt_paramsID]);
     }
@@ -221,6 +222,7 @@ class Student //extends Model
                 ->join('enrollments as e','e.student_id','=','st.id')
                 ->join('sessions as s','s.id','=','e.session_id')
                 ->join('terms as t','t.id','=','e.term_id')
+                // ->join('group_members as gm','gm.student_id','=','st.id')
                 ->selectRaw($selectCols)
                 ->where('st.branch_id',$branch_id)
                 ->whereRaw($str_moreWhere)->whereRaw($str_search);
@@ -247,8 +249,9 @@ class Student //extends Model
             $row->campus = $campus->details($row->campus_id,$ss)->name;
             $row->level = self::getProgramLevel($row->level_id);
             $row->student_type = $row->is_new_student == 0 ? 'Old' : 'New';
-
             $row->previous_school = self::getPrevSchool($row->prev_school_id)->name;
+            $row->group_id = DB::table('group_members')->where('student_id',$row->id)->first()->group_id;
+
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -555,7 +558,7 @@ class Student //extends Model
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-
+ 
     static function getStudentEnrollmentInfo($d,$ss=null){
         // $d = (object)$d;
         $student_id = isset($d->student_id)?$d->student_id:isset($d->id);
@@ -605,6 +608,11 @@ class Student //extends Model
         }
         return $rows;
         // return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
+
+
+    function updateStudentBasicInfro($arr=[],$id=null,$ss=null){
+
     }
 
 }

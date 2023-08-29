@@ -15,7 +15,7 @@ class StudentAttendance //extends Model
         1 => 'P',
         2 => 'Pr',
         3 => 'A',
-    ]  , $mins = 15;
+    ]  , $mins = 15; //**  */
 
 
     function __construct($id=null,$ss=null){
@@ -122,6 +122,7 @@ class StudentAttendance //extends Model
             "in_remarks" => $in_remarks,
             "out_remarks" => $out_remarks,
             "is_finished" => $is_finished,
+            'remarks' => $inputs['remarks']
         ];
 
         $newID = saveData($ss,'student_attendances',['id' => $id],$arr_attendance,[],1,1);
@@ -282,7 +283,7 @@ class StudentAttendance //extends Model
             "in_remarks" => $in_remarks,
             "is_finished" => $is_finished,
         ];
-        $update=[];
+        $update = [];
 
         if($id){
             $update = [
@@ -446,8 +447,6 @@ class StudentAttendance //extends Model
 
 
 
-
-
     // function attendanceDetails($d,$ss){
     //     $id = isset($d->student_id)?$d->student_id:$d;
     //     $ss = $ss?$ss:$this->ss;
@@ -522,7 +521,7 @@ class StudentAttendance //extends Model
             'status' => $day_name,
             'check_in_remarks' => 'Weekends',
             'check_out_remarks' => '',
-            'status_id' => '',
+            'status_id' => '4',
             "session_date" => $date,
             'check_in_time' => '',
             'check_out_time' => '',
@@ -537,12 +536,12 @@ class StudentAttendance //extends Model
                             'status' => '?',
                             'check_in_remarks' => '',
                             'check_out_remarks' => '',
-                            'status_id' => '',
+                            'status_id' => 4,
                             "session_date" => $date,
                             'check_in_time' => '',
                             'check_out_time' => '',
-                            'group_id' => $rows[0]->group_id,
-                            "class" => GeneralSettings::getLevel($rows[0]->level)->name
+                            'group_id' => '',//$rows[0]->group_id,
+                            "class" => '',//GeneralSettings::getLevel($rows[0]->level)->name
                         ];
         do{
             if(!isset($rows[$i])) break;
@@ -793,7 +792,9 @@ class StudentAttendance //extends Model
                 'list' => $attendanceRecords,
             ];
         }
+
         return $attendanceData;
+
     }
 
     function countGroupMembers($group_id,$ss){
@@ -809,6 +810,4 @@ class StudentAttendance //extends Model
         }
         return $female;
     }
-
-
 }
