@@ -847,41 +847,6 @@ class StudentAttendance //extends Model
 
         }
 
-        // $currentYear = date('Y');
-        // $currentMonth = $startMonth;
-        // $currentDay = $startDay;
-        // $d=[];
-
-        // do {
-        //     $formatted_date = sprintf('%04d-%02d-%02d', $currentYear, $currentMonth, $currentDay);
-        //     $d[] = "Processing date: $formatted_date" . PHP_EOL;
-
-        //     $days_in_month = cal_days_in_month(CAL_GREGORIAN, $currentMonth, $currentYear);
-        //     if ($currentDay < $days_in_month) {
-        //         $currentDay++;
-        //     } else {
-        //         $currentDay = 1;
-        //         if ($currentMonth < 12) {
-        //             $currentMonth++;
-        //         } else {
-        //             $currentMonth = 1;
-        //             $currentYear++;
-        //         }
-        //     }
-        // } while ($currentYear <= $endYear && ($currentYear < $endYear || $currentMonth <= $endMonth));
-        // $months = [];
-        // do{
-        //     $days = days_in_month($month,)
-        //     $i++;
-        // }while($i<=$days);
-        // $distinctDates = DB::table('student_attendances')
-        //     ->selectRaw('DISTINCT YEAR(session_date) as year, MONTH(session_date) as month')
-        //     ->whereRaw($sessionDateCondition)
-        //     ->orderBy('year',$aToz)
-        //     ->orderBy('month',$aToz)
-        //     ->limit($limit)
-        //     ->get();
-
         $attendanceData = [];
         $test = [];
         foreach ($months as $date) {
@@ -928,7 +893,10 @@ class StudentAttendance //extends Model
                 }
 
                 $stData = [
-                    's' => $st,
+                    'name' => $st->name,
+                    'sex' => $st->sex,
+                    'date_of_birth' => $st->date_of_birth,
+                    'start_date' => $st->start_date,
                     'list' => $att_info
                 ];
                 $stData = array_filter($stData);
@@ -938,53 +906,6 @@ class StudentAttendance //extends Model
 
             $attendanceData[] = $monthData;
         }
-
-        // foreach ($months as $date) {
-        //     $year = $date->year;
-        //     $month = $date->month;
-
-        //     $days_between = [];
-        //     $current_date = new DateTime("$year-$month-01");
-        //     $end_date_obj = new DateTime("$year-$month-01");
-        //     $end_date_obj->modify('last day of this month');
-
-        //     $current_day = $current_date->format('d');
-
-        //     foreach($students as $st){
-        //         while ($current_date <= $end_date_obj) {
-        //             if ($current_date >= new DateTime($startDate) && $current_date <= new DateTime($endDate)) {
-        //                 $days_between[] = ['day' => $current_date->format('d')];
-        //                 // foreach($students as $st){
-        //                     $att_info[] = $this->getAttendanceInfo($att_items,$current_day,$month,$year,$st->student_id);
-        //                 // }
-        //             }else if(!$startDate && !$endDate){
-        //                 $days_between[] = ['day' => $current_date->format('d')];
-        //                 //$att_info[] = '';//$this->getAttendanceInfo($att_items,$current_day,$month,$year,$st->student_id);
-        //                 // $
-        //             }
-
-        //             $current_date->modify('+1 day');
-        //             $current_day ++;
-        //         }
-        //         $st->list = $att_info;
-        //         $test[] = $att_info;
-
-        //     }
-
-
-
-        //     $attendanceData[] = [
-        //         'test' => 'test',
-        //         'date' => $year.'-'.getMonthName($month,$is_shortMonthName),
-        //         'days' => $days_between,
-        //         "students" => $students,
-        //         'info' => $att_info
-        //         // 'list' => ['days' => $days_between,'attendances' => $attendanceRecords]
-        //     ];
-        //     $attendanceData[]=[
-        //         'd'=>$months
-        //     ];
-        // }
 
         return $attendanceData;
 
