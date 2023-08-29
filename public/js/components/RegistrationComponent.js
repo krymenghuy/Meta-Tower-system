@@ -11,29 +11,24 @@ var RegistrationComponent = new function(){
     this.div_list = mThis.self.find('#st-register--list');
     this.elFilter_program = this.self.find('#_rgs_filter_program');
     this.elFilter_level = this.self.find('#_rgs_filter_level');
-    //this.div_register_list = mThis.self.find('#_rgs_list');
 
     this.elTerm = this.self.find('#_rgs_term');
     this.elGroup = this.self.find('#_rgs_group');
-    //this.elSession = this.self.find('#_rgs_session');
-    //this.elProgram = this.self.find('#_rgs_program');
 
     this.elPrevSchool = this.self.find('#_rgs_prev_school');
     this.lnkAddGroup = this.self.find('#_rgs_lnkAddStudentGroup');
  
     this.init = () => {
-
         mThis.studentListView = new ListView('_reg_list_view',{
             'fetchApi':`${main_view.base_url}/api/enrollment/list-paginate`,
             'perPage':5,
-            'renderItems':(items,list_container)=>{
-                  //list_container.innerHTML =null;
-                  mThis.renderStudents(list_container,items);
-            }
-            ,'listContainerClass':null
-          });
+            'renderItems':(items,list_container) => {
+                mThis.renderStudents(list_container,items);
+            },
+            'listContainerClass':null
+        });
         
-          this.prev_school_label = new OptionEditor('_rgs_prev_school_label',{
+        this.prev_school_label = new OptionEditor('_rgs_prev_school_label',{
             "selectElement":mThis.elPrevSchool,
             'label':"Previous School",
             "buttons":['add','delete','edit'],
@@ -121,7 +116,7 @@ var RegistrationComponent = new function(){
             window.vsapi.call(`${main_view.base_url}/api/enrollment/save`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.options.photo = null;
-                    RegistrationComponent.show();
+                    mThis.div_list.show().siblings().hide();
                 }
                 else cv_interact.error(res.error_message);
             });
