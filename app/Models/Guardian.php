@@ -122,29 +122,57 @@ class Guardian //extends Model
         if($family_id || $guardian_id){
             $str_search = "family_code='$family_id' OR guardian_id = '$guardian_id'";
         }
-        $group_data = [];
+        // $group_data = [];
         $rows = DB::table('student_guardians')
             ->whereRaw($str_search)
             ->select('student_id','family_code')
             ->distinct()
             ->get();
+        // if ($family_id || $guardian_id) {
+        //     $str_search = "family_code = '$family_id' OR guardian_id = '$guardian_id'";
+        // }
 
-        foreach($rows as $row){
+        $groupedData = [];
+
+        // $rows = DB::table('student_guardians')
+        //     ->whereRaw($str_search)
+        //     ->select('student_id', 'family_code as family_id')
+        //     ->distinct()
+        //     ->get();
+
+        foreach ($rows as $row) {
             $studentId = $row->student_id;
             $familyId = $row->family_code;
-            if (!isset($group_data[$family_id])) {
-                $group_data[$family_id] = [
-                    'family_id' => $family_id,
-                    'students' => [],
-            ];
+
+            if (!isset($groupedData[$familyId])) {
+                $groupedData[$familyId] = [
+                    'family_id' => $familyId,
+                    'children' => []
+                ];
             }
-            $group_data[$familyId]['students'][] = [
+
+            $groupedData[$familyId]['children'][] = [
                 'student_id' => $studentId
             ];
         }
 
+        // foreach($rows as $row){
+        //     $studentId = $row->student_id;
+        //     $familyId = $row->family_code;
+        //     if (!isset($group_data[$family_id])) {
+        //         $group_data[$family_id] = [
+        //             'family_id' => $family_id,
+        //             'students' => [],
+        //         ];
+        //     }
+
+        //     $group_data[$familyId]['students'][] = [
+        //         'student_id' => $studentId
+        //     ];
+        // }
+
         if(!isset($rows)) return  null;
-        return array_values($group_data);
+        return array_values($groupedData);
     }
 
 }
