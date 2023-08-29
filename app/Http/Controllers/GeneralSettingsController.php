@@ -36,7 +36,7 @@ class GeneralSettingsController extends Controller
       $rows = DB::table('medical_services as s')->selectRaw("s.id as value,s.name as text")->get();
       return JDV::result($rows);
   }
-
+ 
     function getProductData(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !=200) return JDV::emptyResult($ss); //user not authenticated
@@ -351,15 +351,44 @@ class GeneralSettingsController extends Controller
     $options = GeneralSettings::optionsStudentEnrollments($req,$ss);
     return JDV::result($options);
   }
-
-
+ 
   function getOptions_level(Request $req){
-    $ss = UM::getUserInfoByToken($req,-1);
-    if($ss->status_code !=200) return $ss; //user not authenticated
+    //$ss = UM::getUserInfoByToken($req,-1);
+    //if($ss->status_code !=200) return $ss; //user not authenticated
     $program_id = $req->program_id?$req->program_id:$req->id;
-    return JDV::result(GeneralSettings::options_level($program_id,$ss));
+    return JDV::result(GeneralSettings::options_level($program_id));
   }
 
+  function getOptions_school(Request $req){
+    //$ss = UM::getUserInfoByToken($req,-1);
+    //if($ss->status_code !=200) return $ss; //user not authenticated
+    return JDV::result(GeneralSettings::options_school());
+  }
+
+  function getOptions_group(Request $req){
+    //$ss = UM::getUserInfoByToken($req,-1);
+    //if($ss->status_code !=200) return $ss; //user not authenticated
+    return JDV::result(GeneralSettings::options_group($req->term_id,null));
+  }
+
+  function saveOption_school(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return $ss;
+    return JDV::raw(GeneralSettings::saveOption_school($req->all(),$req->id,$ss));
+  }
+
+  function deleteOption_school(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return $ss;
+    return JDV::raw(GeneralSettings::deleteOption_school($req->id,$ss));
+  }
+
+  function saveSchool(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return $ss;
+    return JDV::raw(GeneralSettings::saveSchool($req->all(),$ss));
+  }
+ 
   function getOptions_program(Request $req){
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !=200) return $ss; //user not authenticated

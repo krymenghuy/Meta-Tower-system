@@ -42,16 +42,16 @@ var PolicyDiscountComponent = new function(){
     {
         title: "Created By",
         data: (data, a, b) => {
-            return [`<p class="pb-0 mb-0">${data.create_user}</p>
-            <p class="pb-0 mb-0">${data.created_at}</p>`].join('');
+            return [`<p class="pb-0 mb-0">`,data.update_user,`</p>
+            <p class="pb-0 mb-0"><small>`,data.updated_at,`</small></p>`].join('');
         }
     },
     {
-        title: "Authorized By",
+        title: "Authorization",
         data: (data, a, b) => {
-            let user = data.auth_user ? data.auth_user : '';
-            return [`<p class="pb-0 mb-0">${user}</p>
-            <p class="pb-0 mb-0">${data.auth_date}</p>`].join('');
+            let auth_info = data.auth_user ? [`<p class="d-block pb-0 mb-0">${user}</p>
+            <p class="d-block pb-0 mb-0">${data.auth_date}</p>`].join('') : '<span class="text-warning p-1">Pending</span>';
+            return auth_info;
         }
     },
     {

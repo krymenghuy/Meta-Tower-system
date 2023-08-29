@@ -200,10 +200,12 @@ class GeneralSettings //extends Model
     }
 
     static function options_program($ss){
-        $branch_id = $ss->branch_id;
-        return DB::select(DB::raw('SELECT p.id, p.name AS program_name, shortcut FROM programs AS p WHERE branch_id ='.$branch_id.' ORDER BY name ASC'));
+        $branch_id = $ss?$ss->branch_id:null;
+        $str_where ='';
+        if($branch_id>0) $str_where = ' WHERE p.branch_id ='.$branch_id;
+        return DB::select(DB::raw('SELECT p.id, p.name AS program_name, shortcut FROM programs AS p '.$str_where.' ORDER BY name ASC'));
     }
-    static function options_level($program_id=null,$ss){
+    static function options_level($program_id=null){
         //$branch_id = $ss->branch_id;
         return  DB::table('program_levels AS p')->where('p.program_id',$program_id)->selectRaw('p.id,p.program_id,p.name as level_name,p.level_order,p.prev_level_id')->orderByRaw('p.level_order ASC')->get();
     }
@@ -216,9 +218,43 @@ class GeneralSettings //extends Model
         return  DB::table('academic_years AS a')->where('a.branch_id',$branch_id)->selectRaw('a.id,a.academic_year,formatDate(a.start_date) AS start_date,formatDate(a.end_date) AS end_date')->orderByRaw('a.start_date ASC')->get();
     }
 
+    //payment options
+    static function options_pmt($ss=null){
+        return DB::table('pmt_options')->selectRaw('name,id')->get();
+    }
+
+    static function options_school($ss=null){
+        return DB::table('schools')->selectRaw('name,id')->get();
+    }
+    static function options_group($term_id,$filter=null){
+        if(!$filter) 
+        return DB::table('student_groups')->where('term_id',$term_id)->selectRaw('id,name AS group_name,campus_id,session_id,level_id')->get();
+    }
+
+    static function saveOption_school($arr,$id, $ss){
+        $d = (object)$arr;
+        $id = saveData($ss,'schools',['id'=>$id],['name'=>$d->name],[],1,false);
+        return DV::depends($id,['schools'=>self::options_school($ss)]);
+    }
+
+    static function deleteOption_school($id, $ss){
+       $x = DB::table('schools')->where('id',$id)->delete();
+       return DV::depends($x,['schools'=>self::options_school($ss)]);
+    }
+
+    static function options_price_list($ss){
+        $branch_id = $ss->branch_id;
+        return DB::table('price_list')->where('branch_id',$branch_id)->selectRaw('name,id')->get();
+    }
+
     static function options_sales_agent($ss){
         $branch_id = $ss->branch_id;
         return DB::table('employees AS e')->join('persons as p','p.id','=','e.person_id')->where('e.branch_id',$branch_id)->selectRaw("e.id, CONCAT(p.last_name,' ',p.first_name) as sales_agent_name")->orderBy('sales_agent_name','ASC')->get();
+    }
+    /** return list of terms by term names prefixed with academic year */
+    static function options_acad_term($ss){
+        $branch_id = $ss->branch_id;
+        return DB::table('terms as t')->where('t.branch_id',$branch_id)->selectRaw('t.id,CONCAT(t.academic_year,\' \',t.name) AS term_name')->orderByRaw('start_date DESC')->get();
     }
     static function options_term($academic_year,$ss){
        $branch_id = $ss->branch_id;

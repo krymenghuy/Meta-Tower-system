@@ -6,11 +6,83 @@ var RegistrationComponent = new function(){
     this.options = {};
     
     this.btnRegister = $('#_rgs_btnRegister');
+    this.div_filter_form = this.self.find('#_rgs_filters');
     this.div_input = mThis.self.find('#st-register--input');
     this.div_list = mThis.self.find('#st-register--list');
-    this.div_register_list = mThis.self.find('#_rgs_list');
+    this.elFilter_program = this.self.find('#_rgs_filter_program');
+    this.elFilter_level = this.self.find('#_rgs_filter_level');
+    //this.div_register_list = mThis.self.find('#_rgs_list');
 
+    this.elTerm = this.self.find('#_rgs_term');
+    this.elGroup = this.self.find('#_rgs_group');
+    //this.elSession = this.self.find('#_rgs_session');
+    //this.elProgram = this.self.find('#_rgs_program');
+
+    this.elPrevSchool = this.self.find('#_rgs_prev_school');
+    this.lnkAddGroup = this.self.find('#_rgs_lnkAddStudentGroup');
+ 
     this.init = () => {
+
+        mThis.studentListView = new ListView('_reg_list_view',{
+            'fetchApi':`${main_view.base_url}/api/enrollment/list-paginate`,
+            'perPage':5,
+            'renderItems':(items,list_container)=>{
+                  //list_container.innerHTML =null;
+                  mThis.renderStudents(list_container,items);
+            }
+            ,'listContainerClass':null
+          });
+        
+          this.prev_school_label = new OptionEditor('_rgs_prev_school_label',{
+            "selectElement":mThis.elPrevSchool,
+            'label':"Previous School",
+            "buttons":['add','delete','edit'],
+            "value_field":"id",
+            "text_field":"name",
+            "dataprop":"schools",
+            "langprop":"titles",
+            "apiSave":{
+               "endpoint":`${main_view.base_url}/api/settings/school/save`
+            //    ,"params":(oldValue,newValue)=>{
+            //        return {'name':newValue};
+            //    }
+            },
+            "apiDelete":{
+               "endpoint":`${main_view.base_url}/api/settings/school/delete`
+            }
+        });
+
+        mThis.lnkAddGroup.on('click',e=>{
+            const group_id = 0;
+            let op = {
+               'id':group_id, 
+               'onClose':(d)=>{
+                  alert('onClose');
+               }
+            };
+            StudentGroupDialog.show(op);
+        });
+
+        mThis.elTerm.on('change',e=>{
+            e.preventDefault();
+            vsapi.get(`${main_view.base_url}/api/settings/options-group-all`,{'term_id':mThis.elTerm.val()}).then(res=>{
+                let items = res.status_code ===200?res.data:[];
+                VSUtil.setComboItems(mThis.elGroup,items,'id','group_name',null,'(Choose Group)',null);
+            });
+        });
+
+          mThis.elFilter_program.on('change',function(e){
+              vsapi.get(`${main_view.base_url}/api/settings/options-level`,{'program_id':$(this).val()}).then(res=>{
+                  let items = res.status_code ===200?res.data:[];
+                  VSUtil.setComboItems(mThis.elFilter_level,items,'id','level_name',null,'(All Grades)',null);
+                  mThis.elFilter_level.val(null).trigger('change');
+              });
+          });
+
+        mThis.elFilter_level.on('change',function(e){
+           mThis.studentListView.showPage(mThis.getFilterData());
+        });
+
         mThis.div_input.find('#clickable_img').on('click',function(e){
             e.preventDefault();
             FileChooser.chooseFile(null,(d) => {
@@ -44,20 +116,14 @@ var RegistrationComponent = new function(){
 
         mThis.div_input.on('click','button#btn--save',function(e){
             e.preventDefault();
-            mThis.validate.validator(() => {
-                let p = mThis.getDataForm(mThis.div_input, 'data-input');
-                p = mThis.prepareData(p);
-                window.vsapi.call(`${main_view.base_url}/api/student/registration`,p,null).then(res => {
-                    if(res.status_code === 200){
-                        mThis.options.photo = null;
-                        mThis.displayStudentList(null,() => {
-                            mThis.div_list.show().siblings().hide();
-                        });
-                    }
-                    else{
-                        cv_interact.error(res.error_message);
-                    }
-                });
+            let p = mThis.getDataForm(mThis.div_input, 'data-input');
+            p = mThis.prepareData(p);
+            window.vsapi.call(`${main_view.base_url}/api/enrollment/save`,p,null).then(res => {
+                if(res.status_code === 200){
+                    mThis.options.photo = null;
+                    RegistrationComponent.show();
+                }
+                else cv_interact.error(res.error_message);
             });
         });
     }
@@ -170,20 +236,11 @@ var RegistrationComponent = new function(){
         callback && callback(regex.test(imageUrl));
     }
 
-    this.displayStudentList = (op=null, onFinish = null) => {
-        op = op ? op : {
-            'current_page':'1',
-            'per_page':'8'
-        }
-        window.vsapi.call(`${main_view.base_url}/api/student/list-paginate`,op,null).then(res => {
-            let d = {};
-            if(res.status_code === 200){
-                d = res.data;
-            }
-
+     
+    this.renderStudents = (div_register_list,data) => {
             let html = null;
-            d && d.data.map(item => {
-                html = [html,`<div class="d-flex p-3 bg-white h-info-student">
+            (data || []).map(item => {
+                html = [html,`<div class="d-flex p-3 bg-white h-info-student mb-2">
                     <div class="div-img">
                         <img src="${item.image_url}" alt=""/>
                     </div>
@@ -296,60 +353,59 @@ var RegistrationComponent = new function(){
                 </div>`].join('');
             });
 
-            if(d.data.length > 0){
-                html = [html,`<div class="d-flex bg-white p-3 rounded-3 align-items-center gap-2">
-                    <div class="d-flex gap-1">
-                        ${mThis.createPagination(d, op.current_page)}
-                    </div>
-                    <span class="text-nowrap">${d.data && d.data.length} of ${d.total} students</span>
-                </div>`].join('');
-            }
+            // if(d.data.length > 0){
+            //     html = [html,`<div class="d-flex bg-white p-3 rounded-3 align-items-center gap-2">
+            //         <div class="d-flex gap-1">
+            //             ${mThis.createPagination(d, op.current_page)}
+            //         </div>
+            //         <span class="text-nowrap">${d.data && d.data.length} of ${d.total} students</span>
+            //     </div>`].join('');
+            // }
 
-            mThis.div_register_list.html(html);
-            mThis.controlOption(mThis.div_register_list,op);
-            LocaleManager.translateZone('_rgs_list');
-            if(typeof onFinish === 'function') onFinish();
-        });
+            div_register_list.innerHTML = html;
+            const j_div = $(div_register_list);
+            mThis.setEvents(j_div);
+            LocaleManager.translateZone(j_div);
     }
 
-    this.createPagination = (d, current_page) => {
-        d = d ? d : {};
-        let html = null,
-        end_page = Math.ceil((d && d.total)/(d && d.per_page)),
-        start_page = 1;
+    // this.createPagination = (d, current_page) => {
+    //     d = d ? d : {};
+    //     let html = null,
+    //     end_page = Math.ceil((d && d.total)/(d && d.per_page)),
+    //     start_page = 1;
 
-        if(current_page == end_page){
-            html = [html,`<button class="btn btn-sm border btn-pagination ${(current_page-1) == 0 ? 'd-none':''}">${current_page-1}</button>
-            <button class="btn btn-primary btn-sm btn-pagination">${current_page}</button>`].join('');
-        }
-        else if(current_page == start_page){
-            html = [html,`<button class="btn btn-primary btn-sm btn-pagination">${current_page}</button>
-            <button class="btn btn-sm border btn-pagination">${parseInt(current_page)+1}</button>`].join('');
-        }
-        else{
-            html = [html,`<button class="btn btn-sm border btn-pagination">${current_page-1}</button>
-            <button class="btn btn-primary btn-sm btn-pagination">${current_page}</button>
-            <button class="btn btn-sm border btn-pagination">${parseInt(current_page)+1}</button>`].join('');
-        }
-        return html;
-    }
+    //     if(current_page == end_page){
+    //         html = [html,`<button class="btn btn-sm border btn-pagination ${(current_page-1) == 0 ? 'd-none':''}">${current_page-1}</button>
+    //         <button class="btn btn-primary btn-sm btn-pagination">${current_page}</button>`].join('');
+    //     }
+    //     else if(current_page == start_page){
+    //         html = [html,`<button class="btn btn-primary btn-sm btn-pagination">${current_page}</button>
+    //         <button class="btn btn-sm border btn-pagination">${parseInt(current_page)+1}</button>`].join('');
+    //     }
+    //     else{
+    //         html = [html,`<button class="btn btn-sm border btn-pagination">${current_page-1}</button>
+    //         <button class="btn btn-primary btn-sm btn-pagination">${current_page}</button>
+    //         <button class="btn btn-sm border btn-pagination">${parseInt(current_page)+1}</button>`].join('');
+    //     }
+    //     return html;
+    // }
 
-    this.controlOption = (container, op) => {
+    this.setEvents = (container) => {
         let div = container.find('.w-options');
-        let btn = mThis.div_register_list.find('button.btn--Options');
+        let btn = container.find('button.btn--Options');
 
-        container.find('button.btn-pagination').on('click',function(e){
-            e.preventDefault();
-            op.current_page = $(this).text();
-            mThis.displayStudentList(op);
-        });
+        // container.find('button.btn-pagination').on('click',function(e){
+        //     e.preventDefault();
+        //     op.current_page = $(this).text();
+        //     mThis.renderStudents(op);
+        // });
 
         btn.off('click').on('click',function(e){
             e.preventDefault();
             $(this).find('.w-options').toggle('fast');
         });
 
-        mThis.div_register_list.on('click','button.btn--gnCard',function(e){
+        container.on('click','button.btn--gnCard',function(e){
             e.preventDefault();
             let op = {
                 'id': $(this).data('id')
@@ -407,9 +463,9 @@ var RegistrationComponent = new function(){
 
                 cv_interact.confirm('Delete this information?',{title: 'Delete Information', context: 'delete'},(e) => {
                     if(e){
-                        window.vsapi.call(`${main_view.base_url}/api/student/delete-student-enrollment`,op,null).then(res => {
+                        window.vsapi.call(`${main_view.base_url}/api/enrollment/delete`,op,null).then(res => {
                             if(res.status_code === 200){
-                                mThis.displayStudentList(null);
+                                mThis.studentListView.showPage(mThis.getFilterData());
                             }
                             else{
                                 cv_interact.error(res.error_message);
@@ -422,21 +478,16 @@ var RegistrationComponent = new function(){
     }
 
     this.loadDataEdit = (op, onFinish) => {
-        window.vsapi.call(`${main_view.base_url}/api/student/details-student`,op,null).then(res => {
-            let data = {};
-            if(res.status_code === 200){
-                data = StringSanitizer.sanitizeObject(res.data,null,['image_url','father_email','mother_email']);
-            }
+        window.vsapi.call(`${main_view.base_url}/api/enrollment/details`,op,null,false).then(res => {
+            const  data = res.status_code ===200? StringSanitizer.sanitizeObject(res.data,null,['image_url','father_email','mother_email']):{};
+           
             if(typeof onFinish === 'function') onFinish(data);
         });
     }
-
     this.loadDataPrint = (op, onFinish) => {
-        window.vsapi.call(`${main_view.base_url}/api/student/details-student`,op,null).then(res => {
-            let data = {};
-            if(res.status_code === 200){
-                data = StringSanitizer.sanitizeObject(res.data,null,['image_url']);
-            }
+        window.vsapi.call(`${main_view.base_url}/api/enrollment/details`,op,null).then(res => {
+            const data = res.status_code === 200? StringSanitizer.sanitizeObject(res.data,null,['image_url']):{};
+            console.error(data);
             if(typeof onFinish === 'function') onFinish(data);
         });
     }
@@ -455,7 +506,7 @@ var RegistrationComponent = new function(){
 
     this.setDataForm = (d) => {
         d = d ? d : {};
-        mThis.validate.resetForm();
+        //mThis.validate.resetForm();
         let div = mThis.div_input.find('#contain_img');
         mThis.renderImage(div,d.image_url);
 
@@ -480,31 +531,30 @@ var RegistrationComponent = new function(){
         });
     }
 
-    this.prepareFormOption = (div, class_name, onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
-            let d = {};
-            if(res.status_code === 200){
-                d = res.data;
-            }
-
-            div.find(`.${class_name}`).each(function(){
-                let el = $(this);
-                let f = el.data('field');
+    this.prepareFormOption = (div,className, onFinish = null) => {
+        window.vsapi.call(`${main_view.base_url}/api/enrollment/form-options`,null,null).then(res => {
+            const d = res.status_code ===200? StringSanitizer.sanitizeObject(res.data,null,[]):{};
+            div.find(`.${className}`).each(function(){
+                const el = $(this);
+                const f = el.data('field');
                 switch(f){
                     case 'academic_year':
-                        VSUtil.setComboItems(el,d.academic_year,'academic_year','academic_year',null,null,null);
+                        VSUtil.setComboItems(el,d.academic_years,'academic_year','academic_year',null,null,null);
                         break;
-                    case 'level_id':
-                        VSUtil.setComboItems(el,d.levels,'id','level',null,null,null);
-                        break;
+                    case 'program_id':
+                            VSUtil.setComboItems(el,d.programs,'id','program_name',null,null,null);
+                            break;    
+                    // case 'level_id':
+                    //     VSUtil.setComboItems(el,d.levels,'id','level_name',null,null,null);
+                    //     break;
                     case 'session_id':
-                        VSUtil.setComboItems(el,d.sessions,'id','name',null,null,null);
+                        VSUtil.setComboItems(el,d.sessions,'id','session_name',null,null,null);
                         break;
                     case 'campus_id':
-                        VSUtil.setComboItems(el,d.campuses,'id','campus',null,null,null);
+                        VSUtil.setComboItems(el,d.campuses,'id','campus_name',null,null,null);
                         break;
                     case 'term_id':
-                        VSUtil.setComboItems(el,d.terms,'id','term',null,null,null);
+                        VSUtil.setComboItems(el,d.terms,'id','term_name',null,null,null);
                         break;
                     case 'group_id':
                         VSUtil.setComboItems(el,d.groups,'id','group_name',null,null,null);
@@ -512,20 +562,29 @@ var RegistrationComponent = new function(){
                         break;
                 }
             });
-
-            mThis.displayStudentList(null);
             if(typeof onFinish === 'function') onFinish();
         });
     }
 
-    this.validate = new FormValidator(mThis.div_input,{
-        className: 'data-input'
-    });
+    // this.validate = new FormValidator(mThis.div_input,{
+    //     className: 'data-input'
+    // });
+    
+    this.getFilterData = ()=>{
+        let p = {};
+        mThis.div_filter_form.find('.filter-field').each(function(){
+            let el = $(this);
+            const f = el.data('field');
+            if(f) p[f] = el.val();
+        });
+        return p;
+    }
 
     this.show = (options) => {
         if(!options) options = {};
-        mThis.prepareFormOption(mThis.div_list,'data-select',() => {
+        mThis.prepareFormOption(mThis.div_list,'filter-field',() => {
             main_view.setTitle(mThis.title_prop);
+            mThis.studentListView.showPage(mThis.getFilterData());
             let x = mThis.self.siblings(':visible');
             x.fadeOut('fast',function(){
                 mThis.self.hide().fadeIn(300);

@@ -1,29 +1,29 @@
 <div id="_main_registrationComponent" class="mobile-padding p-3" style="display:none">
     <div id="st-register--list" class="st-register--list">
         <div class="bg-white p-4 rounded-4">
-            <div class="row row-cols-lg-4 gy-2">
+            <div id="_rgs_filters" class="row row-cols-lg-4 gy-2">
                 <div class="col">
-                    <label for="academic_year" class="form-label trans-text" data-langprop="titles.Academic Year"></label>
+                    <label for="academic_year" class="form-label trans-text" data-langprop="titles.Term"></label>
                     <div class="width-select-dialog">
-                        <select class="modal-select2 data-select" data-field="academic_year"></select>
+                        <select id="_rgs_filter_term" class="modal-select2 data-select filter-field" data-field="term_id"></select>
                     </div>
                 </div>
                 <div class="col">
                     <label for="campus_id" class="form-label trans-text" data-langprop="titles.Campus"></label>
                     <div class="width-select-dialog">
-                        <select class="modal-select2 data-select" data-field="campus_id"></select>
+                        <select id="_rgs_filter_campus" class="modal-select2 data-select filter-field" data-field="campus_id"></select>
                     </div>
                 </div>
                 <div class="col">
-                    <label for="level_id" class="form-label trans-text" data-langprop="titles.Class"></label>
+                    <label for="level_id" class="form-label trans-text" data-langprop="titles.Program"></label>
                     <div class="width-select-dialog">
-                        <select class="modal-select2 data-select" data-field="level_id"></select>
+                        <select id ="_rgs_filter_program" class="modal-select2 data-select filter-field" data-field="program_id"></select>
                     </div>
                 </div>
                 <div class="col">
-                    <label for="session_id" class="form-label trans-text" data-langprop="titles.Session"></label>
+                    <label for="session_id" class="form-label trans-text" data-langprop="titles.Level"></label>
                     <div class="width-select-dialog">
-                        <select class="modal-select2 data-select" data-field="session_id"></select>
+                        <select id="_rgs_filter_level" class="modal-select2 data-select filter-field" data-field="level_id"></select>
                     </div>
                 </div>
             </div>
@@ -34,7 +34,7 @@
             </button>
             <input type="search" class="form-control width--search" placeholder="Search by Name or ID..."/>
         </div>
-        <div id="_rgs_list" class="_rgs_list"></div>
+        <div id="_reg_list_view" class="_rgs_list"></div>
     </div>
     <div id="st-register--input" class="st-register--input" style="display:none">
         <div class="bg-primary rounded-top-3">
@@ -48,16 +48,16 @@
                 <div class="col">
                     <div class="form-group">
                         <label for="name" class="form-label trans-text" data-langprop="titles.Student Name (Khmer)"></label>
-                        <input type="text" class="form-control data-input" data-field="name_kh"/>
+                        <input type="text" class="form-control data-input" data-field="name_kh" data-required="1" data-ffield="Khmer name"/>
                     </div>
                     <div class="form-group">
                         <label for="name_kh" class="form-label trans-text" data-langprop="titles.Student Name (Latin)"></label>
-                        <input type="text" class="form-control data-input" data-field="name"/>
+                        <input type="text" class="form-control data-input" data-field="name" data-ffield="Name" data-required="1"/>
                     </div>
                     <div class="form-group">
                         <label for="sex" class="form-label trans-text" data-langprop="titles.Gender"></label>
                         <div class="width-select-dialog">
-                            <select class="modal-select2 form-control data-input" data-field="sex">
+                            <select data-required="1" class="modal-select2 form-control data-input" data-field="sex">
                                 <option value="M">Male</option>
                                 <option value="F">Female</option>
                                 <option selected></option>
@@ -66,7 +66,7 @@
                     </div>
                     <div class="form-group">
                         <label for="date_of_birth" class="form-label trans-text" data-langprop="titles.Date of Birth"></label>
-                        <input data-select="datepicker" class="form-control data-input" data-field="date_of_birth"/>
+                        <input data-required="1" data-select="datepicker" class="form-control data-input" data-field="date_of_birth"/>
                     </div>
                 </div>
                 <div class="col">
@@ -80,7 +80,7 @@
                     </div>
                     <div class="form-group">
                         <label for="phone_number" class="form-label trans-text" data-langprop="titles.Phone Number"></label>
-                        <input type="text" class="form-control data-input" data-field="phone_number" data-phone="true"/>
+                        <input data-required="1" type="text" class="form-control data-input" data-field="phone_number" data-ffield="Phone number" data-required="1" data-type="phone"/>
                     </div>
                     <div class="form-group">
                         <label for="address" class="form-label trans-text" data-langprop="titles.Home Address"></label>
@@ -88,8 +88,12 @@
                     </div>
                 </div>
                 <div class="col">
+                   <div class="form-group">
+                        <label for="student_code" class="form-label trans-text" data-langprop="titles.Student ID"></label>
+                        <input type="text" class="form-control data-input" data-field="student_code" data-required="false" placeholder="auto" readonly/>
+                   </div>
+
                     <div class="form-group">
-                        <label for="photo" class="form-label trans-text" data-langprop="titles.Photo"></label>
                         <div class="d-flex align-items-center justify-content-center">
                             <div class="border-outside-img">
                                 <div id="contain_img" class="contain-img">
@@ -104,77 +108,83 @@
             </div>
             <label for="academic_information" class="form-label trans-text fs-5 text-primary" data-langprop="titles.Academic Information"></label>
             <div class="row row-cols-lg-4">
+
                 <div class="col">
-                    <div class="form-group">
-                        <label for="student_code" class="form-label trans-text" data-langprop="titles.Student Code"></label>
-                        <input type="text" class="form-control data-input" data-field="student_code" data-required="false" readonly/>
+                        <div class="form-group">
+                            <label for="academic_year" class="form-label trans-text" data-langprop="titles.Academic Year"></label>
+                            <div class="width-select-dialog">
+                                <select data-required="1" class="modal-select2 data-input" data-field="academic_year"></select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="term_id" class="form-label trans-text" data-langprop="titles.Term"></label>
+                            <div class="width-select-dialog">
+                                <select id="_rgs_term" data-required="1" class="modal-select2 data-input" data-field="term_id"></select>
+                            </div>
+                        </div>
                     </div>
+
+                <div class="col">
+                   
                     <div class="form-group">
                         <label for="campus_id" class="form-label trans-text" data-langprop="titles.Campus"></label>
                         <div class="width-select-dialog">
-                            <select class="modal-select2 form-control data-input" data-field="campus_id"></select>
+                            <select id="_rgs_campus" data-required="1" class="modal-select2 form-control data-input" data-field="campus_id"></select>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="group_id" class="form-label trans-text" data-langprop="titles.Group"></label>
+                        <label for="level_id" class="form-label trans-text" data-langprop="titles.Program"></label>
                         <div class="width-select-dialog">
-                            <select class="modal-select2 data-input" data-field="group_id"></select>
+                            <select id="_rgs_program" data-required="1" class="modal-select2 data-input" data-field="program_id"></select>
                         </div>
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-group">
-                        <label for="level_id" class="form-label trans-text" data-langprop="titles.Class"></label>
-                        <div class="width-select-dialog">
-                            <select class="modal-select2 data-input" data-field="level_id"></select>
-                        </div>
-                    </div>
                     <div class="form-group">
                         <label for="session_id" class="form-label trans-text" data-langprop="titles.Session"></label>
                         <div class="width-select-dialog">
-                            <select class="modal-select2 form-control data-input" data-field="session_id"></select>
+                            <select id="_rgs_session" data-required="1" class="modal-select2 form-control data-input" data-field="session_id"></select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="group_id" class="form-label trans-text" data-langprop="titles.Group"></label>&nbsp;
+                        <a href="javascript:void(0)" id="_rgs_lnkAddStudentGroup" class="">
+                          <i class="fas fa-plus-circle text-success" style="font-size: 14px;"></i>
+                        </a>
+                        <div class="width-select-dialog">
+                            <select  id="_rgs_group" data-required="1" class="modal-select2 data-input" data-field="group_id"></select>
                         </div>
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-group">
-                        <label for="previous_school" class="form-label trans-text" data-langprop="titles.Previous School"></label>
-                        <input type="text" class="form-control data-input" data-field="previous_school" data-required="false"/>
+                        <span id="_rgs_prev_school_label" class="d-block p-1"></span>
+                        <div class="width-select-dialog">
+                          <select id="_rgs_prev_school" class="modal-select2 data-input" data-field="prev_school_id" data-ffield="Previous school" data-required="0"></select>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="admission_date" class="form-label trans-text" data-langprop="titles.Admission Date"></label>
-                        <input data-select="datepicker" class="form-control data-input" data-field="admission_date"/>
+                        <input data-required="1" data-select="datepicker" class="form-control data-input" data-field="admission_date"/>
                     </div>
                 </div>
-                <div class="col">
-                    <div class="form-group">
-                        <label for="academic_year" class="form-label trans-text" data-langprop="titles.Academic Year"></label>
-                        <div class="width-select-dialog">
-                            <select class="modal-select2 data-input" data-field="academic_year"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="term_id" class="form-label trans-text" data-langprop="titles.Term"></label>
-                        <div class="width-select-dialog">
-                            <select class="modal-select2 data-input" data-field="term_id"></select>
-                        </div>
-                    </div>
-                </div>
+          
             </div>
             <label for="parent_information" class="form-label trans-text fs-5 text-primary" data-langprop="titles.Parent Information"></label>
             <div class="row row-cols-lg-4">
                 <div class="col">
                     <div class="form-group">
                         <label for="father_name" class="form-label trans-text" data-langprop="titles.Father Name"></label>
-                        <input type="text" class="form-control data-input" data-field="father_name"/>
+                        <input data-required="1" type="text" class="form-control data-input" data-field="father_name"/>
                     </div>
                     <div class="form-group">
                         <label for="father_id_card" class="form-label trans-text" data-langprop="titles.Father ID Card"></label>
-                        <input type="text" class="form-control data-input" data-field="father_nid"/>
+                        <input data-required="1" type="text" class="form-control data-input" data-field="father_nid"/>
                     </div>
                     <div class="form-group">
                         <label for="Religion" class="form-label trans-text" data-langprop="titles.Father Religion"></label>
-                        <input type="text" class="form-control data-input" data-field="father_religion"/>
+                        <input data-required="1" type="text" class="form-control data-input" data-field="father_religion"/>
                     </div>
                 </div>
                 <div class="col">
@@ -184,7 +194,7 @@
                     </div>
                     <div class="form-group">
                         <label for="father_phone" class="form-label trans-text" data-langprop="titles.Father Phone"></label>
-                        <input type="text" class="form-control data-input" data-field="father_phone" data-phone="true"/>
+                        <input data-required="1" type="text" class="form-control data-input" data-field="father_phone" data-phone="true"/>
                     </div>
                     <div class="form-group">
                         <label for="address" class="form-label trans-text" data-langprop="titles.Home Address"></label>
@@ -194,15 +204,15 @@
                 <div class="col">
                     <div class="form-group">
                         <label for="mother_name" class="form-label trans-text" data-langprop="titles.Mother Name"></label>
-                        <input type="text" class="form-control data-input" data-field="mother_name"/>
+                        <input data-required="1" type="text" class="form-control data-input" data-field="mother_name"/>
                     </div>
                     <div class="form-group">
                         <label for="mother_id_card" class="form-label trans-text" data-langprop="titles.Mother ID Card"></label>
-                        <input type="text" class="form-control data-input" data-field="mother_nid"/>
+                        <input data-required="1" type="text" class="form-control data-input" data-field="mother_nid"/>
                     </div>
                     <div class="form-group">
                         <label for="religion" class="form-label trans-text" data-langprop="titles.Mother Religion"></label>
-                        <input type="text" class="form-control data-input" data-field="mother_religion"/>
+                        <input data-required="1" type="text" class="form-control data-input" data-field="mother_religion"/>
                     </div>
                 </div>
                 <div class="col">
@@ -212,7 +222,7 @@
                     </div>
                     <div class="form-group">
                         <label for="mother_phone" class="form-label trans-text" data-langprop="titles.Mother Phone"></label>
-                        <input type="text" class="form-control data-input" data-field="mother_phone" data-phone="true"/>
+                        <input data-required="1" type="text" class="form-control data-input" data-field="mother_phone" data-phone="true"/>
                     </div>
                     <div class="form-group">
                         <label for="address" class="form-label trans-text" data-langprop="titles.Home Address"></label>
@@ -352,7 +362,7 @@
                             <span class="trans-text align-info-student" data-langprop="titles.Date of Birth"></span>
                             <span class="px-2">:</span>
                             <strong>
-                                <span class="data-show" data-field="date_of_birth"></span>
+                               <span class="data-show" data-field="date_of_birth" data-ffield="Date of birth"></span>
                             </strong>
                         </p>
                         <p class="mb-1">
@@ -404,7 +414,7 @@
                         <span class="trans-text align-info-student" data-langprop="titles.Previous School"></span>
                         <span class="px-2">:</span>
                         <strong>
-                            <span class="data-show" data-field="previous_school"></span>
+                            <span class="data-show" data-field="prev_school_name"></span>
                         </strong>
                     </p>
                     <p class="mb-1">
