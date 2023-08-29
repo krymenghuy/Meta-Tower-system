@@ -198,7 +198,7 @@ var ReportCenterComponent = new function(){
                 let f = el.data('field');
                 if(el.data('required')){
                     p['required'] = {
-                        'text': [f.replaceAll('_id','').toUpperCase(),' cannot empty!'].join(''),
+                        'text': [mThis.capitalize(f.replaceAll('_id','')),' cannot empty!'].join(''),
                         'value': el.val()
                     };
                 }
@@ -213,6 +213,8 @@ var ReportCenterComponent = new function(){
             }
         });
     }
+
+    this.capitalize = (str, lower = false) => (lower ? str.toLowerCase() : str).replace(/(?:^|\s|["'([{])+\S/g, match => match.toUpperCase());
 
     this.getDataTable = (p) => {
         window.vsapi.call(`${main_view.base_url}/api/student/attendance-list-report`,p,null,false).then(res => {
@@ -237,6 +239,7 @@ var ReportCenterComponent = new function(){
             };
             mThis.renderFilters(mThis.self.find('#_rpt_input_filter'), p);
         });
+        div.find('li.report-name').first().trigger('click');
     }
 
     this.show = (options) => {
