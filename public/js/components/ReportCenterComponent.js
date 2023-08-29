@@ -191,16 +191,21 @@ var ReportCenterComponent = new function(){
             div.find('.data-input').each(function(){
                 let el = $(this);
                 let f = el.data('field');
-                if(el.data('required'))
-                    p['required'] = [f.replaceAll('_id','').toUpperCase(),' is required'].join('');
+                if(el.data('required')){
+                    p['required'] = {
+                        'text': [f.replaceAll('_id','').toUpperCase(),' cannot empty!'].join(''),
+                        'value': el.val()
+                    };
+                }
                 p[f] = el.val();
             });
-            // if(p.required){
-            //     cv_interact.warning(p.required);
-            // }
-            // else{
+
+            if(p.required && !(p.required.value) && p.required.text){
+                cv_interact.warning(p.required.text);
+            }
+            else{
                 mThis.getDataTable(p);
-            // }
+            }
         });
     }
 
