@@ -195,10 +195,12 @@ var ReportCenterComponent = new function(){
                     p['required'] = [f.replaceAll('_id','').toUpperCase(),' is required'].join('');
                 p[f] = el.val();
             });
-            if(p.required){
-                
-            }
-            mThis.getDataTable(p);
+            // if(p.required){
+            //     cv_interact.warning(p.required);
+            // }
+            // else{
+                mThis.getDataTable(p);
+            // }
         });
     }
 
