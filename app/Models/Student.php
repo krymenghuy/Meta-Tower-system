@@ -183,10 +183,11 @@ class Student //extends Model
             }
 
             // add student to group
+
             saveData($ss,'group_members',['student_id' => $newID],[
                 "student_id" => $newID,
                 'group_id' => $group_id
-            ],[],1);
+            ],[],1,true);
         }
         return DV::depends($newID,['action'=>'Saved','parent_info' => $p_info,'Parameter'=>$save_pmt_paramsID]);
     }
@@ -245,7 +246,7 @@ class Student //extends Model
             $row->campus = $campus->details($row->campus_id,$ss)->name;
             $row->level = self::getProgramLevel($row->level_id);
             $row->student_type = $row->is_new_student == 0 ? 'Old' : 'New';
-
+            $row->group_id = DB::table('group_members')->where('student_id',$row->id)->first()->group_id;
             $row->previous_school = self::getPrevSchool($row->school_id)->name;
 
         }

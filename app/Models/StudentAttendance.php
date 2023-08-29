@@ -122,6 +122,7 @@ class StudentAttendance //extends Model
             "in_remarks" => $in_remarks,
             "out_remarks" => $out_remarks,
             "is_finished" => $is_finished,
+            'remarks' => $inputs['remarks']
         ];
 
         $newID = saveData($ss,'student_attendances',['id' => $id],$arr_attendance,[],1,1);

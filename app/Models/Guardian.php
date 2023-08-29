@@ -117,15 +117,34 @@ class Guardian //extends Model
         $d = (object)$arr;
         $ss = $ss?$ss:$this->ss;
         $family_id = isset($d->family_id)?$d->family_id:null;
-        $rows = DB::table('students as s')
-                ->join('student_guardians as sg','sg.student_id','=','s.id')
-                ->join('guardians as g','g.id','=','sg.guardian_id')
-                ->where('sg.family_code',$family_id)
-                ->distinct()
-                ->selectRaw('s.name,s.id as student_id,date_of_birth,s.phone_number,s.name_kh,s.file_name')
-                ->get();
+        $guardian_id = isset($d->guardian_id)?$d->guardian_id:null;
+        $str_search = '1=1';
+        if($family_id || $guardian_id){
+            $str_search = "family_code='$family_id' OR guardian_id = '$guardian_id'";
+        }
+        $group_data = [];
+        $rows = DB::table('student_guardians')
+            ->whereRaw($str_search)
+            ->select('student_id','family_code')
+            ->distinct()
+            ->get();
+
+        foreach($rows as $row){
+            $studentId = $row->student_id;
+            $familyId = $row->family_code;
+            if (!isset($group_data[$family_id])) {
+                $group_data[$family_id] = [
+                    'family_id' => $family_id,
+                    'students' => [],
+            ];
+            }
+            $group_data[$familyId]['students'][] = [
+                'student_id' => $studentId
+            ];
+        }
+
         if(!isset($rows)) return  null;
-        return $rows;
+        return array_values($group_data);
     }
 
 }
