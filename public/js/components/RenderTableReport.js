@@ -71,6 +71,13 @@ function renderTable(div, data){
     });
 
     div.html(html);
+    let zoom = 100;
+    div.on('wheel',(e) => {
+        if(e.originalEvent.shiftKey){
+            e.originalEvent.deltaY > 0 ? zoom -= 0.5 : zoom += 0.5;
+            div.css('zoom',zoom+'%');
+        }
+    });
     div.closest('.main-container').find('#_rpt_container').toggle('slow');
 }
 
