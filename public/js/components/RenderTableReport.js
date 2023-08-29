@@ -1,6 +1,7 @@
 let HtmlString = null;
 
 function renderTable(div, data){
+    console.log(data);
     if(data && !($.isEmptyObject(data))){
         let html = [`<div class="d-flex justify-content-center mb-3">
             <div class="w-25 position-relative">
@@ -16,8 +17,8 @@ function renderTable(div, data){
             </div>
             <div class="width-show-total">
                 <h5 class="text-nowrap">Campus: ${data.campus ? data.campus : ''}</h5>
-                <p>Total Students: ${data.total_student ? data.total_student : ''}</p>
-                <p>Female Students: ${data.female_student ? data.female_student : ''}</p>
+                <p>Total Students: ${data.count_students ? data.count_students.all : ''}</p>
+                <p>Female Students: ${data.count_students ? data.count_students.female : ''}</p>
             </div>
         </div>`].join('');
 
