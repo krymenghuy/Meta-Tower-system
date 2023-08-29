@@ -19,8 +19,8 @@ class EnrollmentController extends Controller
     function saveEnrollment(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
-        $m = new EnrollmentManager(null,$ss);
-        $res = $m->saveEnrollment($req->all());
+        $m = new EnrollmentManager($req->id,$ss);
+        $res = $m->saveEnrollment($req->all(),$req->id);
         return JDV::raw($res);
     }
  

@@ -90,16 +90,21 @@ let main_view = new function(){
         });
 
         
-        $(document).on("click", function (e) {
-            let x = mThis.top_right_menus.find(".dropdown-menu");
+        $(document).on('click', function (e) {
+            let x = $(this).find('body div.dropdown-menu');
             let container = x.parent();
-            if(container){
-                if(!container.is(e.target) && container.has(e.target).length === 0) {
-                    x.removeClass("show");
+            if (container) {
+                if (!container.is(e.target) && container.has(e.target).length === 0) {
+                    x.removeClass('show');
                 }
             }
             e.stopPropagation();
         });
+
+        $(document).on('click', '.dropdown-item', function (e) {
+            $(this).parent().removeClass('show');
+        }); 
+
 
         // document.addEventListener('click',e=>{
         //    e.preventDefault();

@@ -47,7 +47,7 @@ class PromoteStudent //extends Model
                         if($program_id){
                             $q->whereIn('e.level_id',$arr_level);
                         }
-            $enr_info = $q->selectRaw('p.pmt_option_id,e.school_id,e.student_id,e.campus_id,e.session_id,e.level_id,e.program_id,e.academic_year,e.is_new_promote')
+            $enr_info = $q->selectRaw('p.pmt_option_id,e.school_id,e.student_id,e.campus_id,e.session_id,e.level_id,e.program_id,e.academic_year,e.promoted')
                         ->get();
 
             foreach($enr_info as $info){
@@ -61,7 +61,7 @@ class PromoteStudent //extends Model
                 $nextLevel = GeneralSettings::getNextLevelByCurrentLevel($level_id,$ss);
                 if(!$nextLevel) return DV::error('There is no next level');
                 $student_id = $info->student_id;
-                // $promoted = DB::table('enrollments')->where('is_new_promote',1)->exists();
+                // $promoted = DB::table('enrollments')->where('promoted',1)->exists();
                 // if($promoted){
                 //     continue;
                 // }
@@ -77,7 +77,7 @@ class PromoteStudent //extends Model
                     'status_id' => 1,// is pending
                     'school_id' => $info->school_id,
                     'academic_year' => $academic_year,
-                    'is_new_promote' => 1,
+                    'promoted' => 1,
                 ];
                 $newEnrID = saveData($ss,'enrollments',['id' => null],$new_enroll,[],1);
                 DB::table('enrollments')->where('student_id',$info->student_id)->update([
@@ -105,7 +105,7 @@ class PromoteStudent //extends Model
                     // DB::table('enrollments')->where('id',$newEnrID)->update([
                     //     'tuition_end_date' => $payment_process->end_date,
                     //     'is_new_student' => 0,
-                    //     'is_new_promote' => 1
+                    //     'promoted' => 1
                     // ]);
 
                     $new_pmt_arr = [
@@ -163,7 +163,7 @@ class PromoteStudent //extends Model
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->join('program_levels as l','l.id','=','e.level_id')
                 ->join('campuses as c','c.id','=','e.campus_id')
-                ->where('e.is_new_promote',1)
+                ->where('e.promoted',1)
                 ->whereRaw($str_moreWhere)->whereRaw($str_search)
                 ->selectRaw($selectCols)
                 ->orderBy('s.id','desc');
@@ -193,7 +193,7 @@ class PromoteStudent //extends Model
 
     static function promotedEnrollment($d=null,$ss=null){
         $id = isset($d->student_id) ? $d->student_id : $d;
-        $row = DB::table('enrollments as e')->where('e.student_id',$id)->selectRaw('e.status_id,e.level_id,e.session_id,e.campus_id')->where('e.is_new_promote',1)->first();
+        $row = DB::table('enrollments as e')->where('e.student_id',$id)->selectRaw('e.status_id,e.level_id,e.session_id,e.campus_id')->where('e.promoted',1)->first();
         if($row){
             $status = 'pending';
             if($row->status_id == 1){
