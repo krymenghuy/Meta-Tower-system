@@ -136,7 +136,7 @@ class Student //extends Model
             // }
 
             ////$getEnrollment = DB::table('enrollments')->where('id',$enrollment_id)->selectRaw('session_id,school_id')->first();
-            
+
             //** save or update payment table
             if($enrollment_id){
                 $en_payment_data = [
@@ -382,7 +382,7 @@ class Student //extends Model
                 ->where('e.id',$enrollment_id)
                 ->selectRaw($selectCols)
                 ->first();
-       if(!$row) return null;  
+       if(!$row) return null;
             //$row->level = self::getProgramLevel($row->level_id);
             //$row->campus = self::getCampus($row->campus_id);
             $row->parent_info = self::getGuardians($row->student_id);
@@ -392,7 +392,7 @@ class Student //extends Model
             $row->image_url= validateUrl($url,null);
             unset($row->file_name);
             return $row;
-       
+
     }
 
     static function getCampus($id){
@@ -411,7 +411,7 @@ class Student //extends Model
         return null;
     }
     static function getPrevSchool($id){
-        $row =  DB::table('school')->where('id',$id)->selectRaw('id,name')->first();
+        $row =  DB::table('schools')->where('id',$id)->selectRaw('id,name')->first();
         return $row? $row: (object)['name'=>'','id'=>null];
     }
 
@@ -562,7 +562,7 @@ class Student //extends Model
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
- 
+
     static function getStudentEnrollmentInfo($d,$ss=null){
         // $d = (object)$d;
         $student_id = isset($d->student_id)?$d->student_id:isset($d->id);

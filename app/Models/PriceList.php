@@ -856,7 +856,7 @@ class PriceList //extends Model
             $str_search ="(st.code ='$search_value' OR st.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 'e.id as enrollment_id,p.tuition_paid,p.tuition_due,e.tuition_end_date,st.id,st.file_name,p.status_id as pstatus_id,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.school_id,e.status_id';
+        $selectCols = 'e.id as enrollment_id,p.tuition_paid,p.tuition_due,e.tuition_end_date,st.id as student_id,st.file_name,p.status_id as pstatus_id,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.prev_school_id,e.status_id';
         $query = DB::table('students as st')
                 ->join('enrollments as e','e.student_id','=','st.id')
                 ->join('payments as p','p.enrollment_id','=','e.id')
@@ -878,13 +878,13 @@ class PriceList //extends Model
             $status = rand(0,1)?'New':'Old';
             $status = 'New';
             $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
-            $row->parent_info = Student::getChildParent($row->id);
+            $row->parent_info = Student::getParentInfo($row->student_id);
             unset($row->file_name);
             $row->campus = $campus->details($row->campus_id,$ss)->name;
             $row->level = Student::getProgramLevel($row->level_id);
             $row->student_type = $status;
             // $row->status = $row->pstatus_id == 1? 'unpaid' : 'paid';
-            $row->previous_school = Student::getPrevSchool($row->school_id)->name;
+            $row->previous_school = Student::getPrevSchool($row->prev_school_id)->name;
             $tuition_end_date = convertDate($row->tuition_end_date);
             $row->pmt_status = 'unpaid';
             if($tuition_end_date){
@@ -1246,7 +1246,6 @@ class PriceList //extends Model
                 saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
                 saveData($ss,'enrollments',['id' => $row->enr_id],[
                     'status_id' => 3,//* paid
-                    'pmt_date' => date('Y-m-d H:i:s')
                 ],[],1);
 
                 if($getInvoiceInfo->invoice_type == 'tuition_fee'){
@@ -1257,12 +1256,14 @@ class PriceList //extends Model
                     ],[],1);
                     saveData($ss,'invoices',['student_id' => $student_id,'invoice_number'=>$invoice_number],[
                         'is_paid' => 1,//* paid
-                        'paid_amount' => $getInvoiceInfo->due_amount
+                        'paid_amount' => $getInvoiceInfo->due_amount,
+                        'pmt_date' => date('Y-m-d H:i:s')
                     ],[],1);
                 }else{
                     saveData($ss,'invoices',['student_id' => $student_id,'invoice_number'=>$invoice_number],[
                         'is_paid' => 1,//* paid
-                        'paid_amount' => $getInvoiceInfo->due_amount
+                        'paid_amount' => $getInvoiceInfo->due_amount,
+                        'pmt_date' => date('Y-m-d H:i:s')
                     ],[],1);
                 }
 
@@ -1637,7 +1638,7 @@ class PriceList //extends Model
     function getInvoiceItems($invoice_id,$ss=null){
         $ss = $ss?$ss:$this->user_info;
         $discount_type =',\'percentage\' AS discount_type';
-        return DB::table('invoice_items AS i')->where('invoice_id',$invoice_id)->selectRaw('i.id,i.invoice_id,i.fee_type,i.description,i.qty,i.price,i.date_range,i.discount,i.discount_amount,i.discount_percent,i.discount_type,i.net_amount,i.start_date,i.end_date')->get(); 
+        return DB::table('invoice_items AS i')->where('invoice_id',$invoice_id)->selectRaw('i.id,i.invoice_id,i.fee_type,i.description,i.qty,i.price,i.date_range,i.discount,i.discount_amount,i.discount_percent,i.discount_type,i.net_amount,i.start_date,i.end_date')->get();
     }
 
 }
