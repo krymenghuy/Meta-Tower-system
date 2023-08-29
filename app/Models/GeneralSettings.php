@@ -191,7 +191,8 @@ class GeneralSettings //extends Model
 
     static function getLevel($level_id=null,$ss=null) {
         $branch_id = $ss?$ss->branch_id:null;
-        return DB::table('program_levels')->where('id',$level_id)->selectRaw('program_id,name as level,name,id as level_id,shortcut,id')->first();
+        $row = DB::table('program_levels')->where('id',$level_id)->selectRaw('program_id,name as level,name,id as level_id,shortcut,id')->first();
+        return $row;
     }
 
     static function getProgramByLevel($level_id=null,$ss=null) {
@@ -227,7 +228,7 @@ class GeneralSettings //extends Model
         return DB::table('schools')->selectRaw('name,id')->get();
     }
     static function options_group($term_id,$filter=null){
-        if(!$filter) 
+        if(!$filter)
         return DB::table('student_groups')->where('term_id',$term_id)->selectRaw('id,name AS group_name,campus_id,session_id,level_id')->get();
     }
 
