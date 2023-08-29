@@ -42,7 +42,7 @@ var ReportCenterComponent = new function(){
                 <span class="trans-text" data-langprop="buttons.Filter"></span>
             </button>
             <div class="d-flex justify-content-end gap-2 w-100">
-                <button class="btn-print" type="button">
+                <button id="_rpt_pdf" class="btn-print" type="button">
                     <span class="trans-text" data-langprop="buttons.Print"></span>
                     <i class="fa-solid fa-print"></i>
                 </button>
@@ -79,14 +79,19 @@ var ReportCenterComponent = new function(){
 
         mThis.self.html(html);
         mThis.getValueWhenClick(mThis.self.find('#_rpt_name'));
-        mThis.controlFilterPanel(mThis.self);
+        mThis.controlPanel(mThis.self);
         LocaleManager.translateZone('_main_reportCenterComponent');
     }
 
-    this.controlFilterPanel = (div) => {
+    this.controlPanel = (div) => {
         div.find('#_rpt_filter').on('click',function(e){
             e.preventDefault();
             div.find('#_rpt_container').toggle('slow');
+        });
+
+        div.find('#_rpt_pdf').off('click').on('click',function(e){
+            e.preventDefault();
+            windowPrint();
         });
     }
 

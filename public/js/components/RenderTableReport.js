@@ -1,5 +1,6 @@
+let HtmlString = null;
+
 function renderTable(div, data){
-    console.log(data);
     if(data && !($.isEmptyObject(data))){
         let html = [`<div class="d-flex justify-content-center mb-3">
             <div class="w-25 position-relative">
@@ -44,9 +45,9 @@ function renderTable(div, data){
                         </tr>
                     </thead>
                     <tbody>
-                        ${student=null,tbl && tbl.list.map(st => {
+                        ${student=null,tbl && tbl.students.map(st => {
                             let inner_html=null;
-                            st && st.attendance_list.map(d => {
+                            st && st.list.map(d => {
                                 let cls = d.status === 'A' ? 'text-white bg-danger' : d.status === 'P' ? 'text-white bg-success' : d.status === 'Sat' ? 'text-danger-emphasis bg-danger-subtle' : d.status === 'Sun' ? 'text-danger bg-danger-subtle' : d.status === 'Pr' ? 'text-white bg-warning' : 'text-body-emphasis bg-dark-subtle';
 
                                 inner_html = [inner_html,`<td class="${cls}">${d.status}</td>`].join('');
@@ -58,7 +59,7 @@ function renderTable(div, data){
                                 <td>${st.sex === 'M' ? 'Male' : 'Female'}</td>
                                 <td>${calculate_age(new Date(st.date_of_birth))}</td>
                                 <td>${st.date_of_birth ? st.date_of_birth : ''}</td>
-                                <td></td>
+                                <td>${st.start_date ? st.start_date : ''}</td>
                                 <td>${data.session ? data.session : ''}</td>
                                 ${inner_html ? inner_html : ''}
                                 <td></td>
@@ -78,7 +79,18 @@ function renderTable(div, data){
             }
         });
         div.closest('.main-container').find('#_rpt_container').toggle('slow');
+        HtmlString = html;
     }
+}
+
+function windowPrint(){
+    let myWindow = window.open('','PRINT','height=500,width=600');
+    myWindow.document.write(HtmlString);
+    myWindow.document.close();
+    myWindow.focus();
+    myWindow.print();
+    myWindow.close();
+    return false;
 }
 
 function calculate_age(dob){
