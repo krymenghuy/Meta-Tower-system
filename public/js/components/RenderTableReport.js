@@ -102,7 +102,7 @@ function windowPrint(){
             myWindow.focus();
             myWindow.print();
             myWindow.close();
-        },500);
+        },100);
     }
     else{
         cv_interact.warning('Select Run Report Before Print!');
