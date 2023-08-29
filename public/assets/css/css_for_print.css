@@ -45,4 +45,14 @@ body{
         color-adjust: exact !important;
         print-color-adjust: exact !important;
     }
+
+    body table{
+        font-size:normal;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    header, footer, aside, form{
+        display: none;
+    }
 }

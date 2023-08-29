@@ -89,7 +89,7 @@ function windowPrint(){
         myWindow.document.write(`<!DOCTYPE html>
         <html >
             <head>
-                <title>Student Attendaces</title>
+                <title>Student Attendaces Report</title>
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
                 <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/ksm_style.css"/>
                 <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/vsstyle.css"/>
