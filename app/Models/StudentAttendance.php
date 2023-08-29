@@ -888,47 +888,99 @@ class StudentAttendance //extends Model
             $year = $date->year;
             $month = $date->month;
 
-            $days_between = [];
             $current_date = new DateTime("$year-$month-01");
             $end_date_obj = new DateTime("$year-$month-01");
             $end_date_obj->modify('last day of this month');
 
-            $current_day = $current_date->format('d');
+            $days_between = [];
 
-            foreach($students as $st){
-                while ($current_date <= $end_date_obj) {
-                    if ($current_date >= new DateTime($startDate) && $current_date <= new DateTime($endDate)) {
-                        $days_between[] = ['day' => $current_date->format('d')];
-                        // foreach($students as $st){
-                            $att_info[] = $this->getAttendanceInfo($att_items,$current_day,$month,$year,$st->student_id);
-                        // }
-                    }else if(!$startDate && !$endDate){
-                        $days_between[] = ['day' => $current_date->format('d')];
-                        //$att_info[] = '';//$this->getAttendanceInfo($att_items,$current_day,$month,$year,$st->student_id);
-                        // $
-                    }
+            // based on month and year of the start_date field
+            $start_day = ($year == date('Y', $start_timestamp) && $month == date('m', $start_timestamp))
+                ? max(date('d', $start_timestamp), 1)
+                : 1;
 
-                    $current_date->modify('+1 day');
-                    $current_day ++;
-                }
-                $st->list = $att_info;
-                $test[] = $att_info;
+            // based on month and year of the end_date field
+            $end_day = ($year == date('Y', $end_timestamp) && $month == date('m', $end_timestamp))
+                ? min(date('d', $end_timestamp), (int)$end_date_obj->format('d'))
+                : (int)$end_date_obj->format('d');
 
+            for ($day = $start_day; $day <= $end_day; $day++) {
+                $days_between[] = ['day' => $day]; //str_pad($day, 2, '0', STR_PAD_LEFT)
             }
 
-
-
-            $attendanceData[] = [
-                'date' => $year.'-'.getMonthName($month,$is_shortMonthName),
+            $monthData = [
+                'date' => $year . '-' . getMonthName($month, $is_shortMonthName),
                 'days' => $days_between,
-                "students" => $students,
-                'info' => $test
-                // 'list' => ['days' => $days_between,'attendances' => $attendanceRecords]
+                'students' => []
             ];
-            $attendanceData[]=[
-                'd'=>$months
-            ];
+
+            foreach ($students as $st) {
+                $current_date = new DateTime("$year-$month-01");
+                $end_date_obj = new DateTime("$year-$month-01");
+                $end_date_obj->modify('last day of this month');
+
+                $att_info = [];
+                while ($current_date <= $end_date_obj) {
+                    if ($current_date >= new DateTime($startDate) && $current_date <= new DateTime($endDate)) {
+                        $att_info[] = $this->getAttendanceInfo($att_items, $current_date->format('d'), $month, $year, $st->student_id);
+                    }
+                    $current_date->modify('+1 day');
+                }
+
+                $monthData['students'][] = $st;
+                $st->list = $att_info;
+                $st->age = getAge($st->date_of_birth);
+            }
+
+            $attendanceData[] = $monthData;
         }
+
+        // foreach ($months as $date) {
+        //     $year = $date->year;
+        //     $month = $date->month;
+
+        //     $days_between = [];
+        //     $current_date = new DateTime("$year-$month-01");
+        //     $end_date_obj = new DateTime("$year-$month-01");
+        //     $end_date_obj->modify('last day of this month');
+
+        //     $current_day = $current_date->format('d');
+
+        //     foreach($students as $st){
+        //         while ($current_date <= $end_date_obj) {
+        //             if ($current_date >= new DateTime($startDate) && $current_date <= new DateTime($endDate)) {
+        //                 $days_between[] = ['day' => $current_date->format('d')];
+        //                 // foreach($students as $st){
+        //                     $att_info[] = $this->getAttendanceInfo($att_items,$current_day,$month,$year,$st->student_id);
+        //                 // }
+        //             }else if(!$startDate && !$endDate){
+        //                 $days_between[] = ['day' => $current_date->format('d')];
+        //                 //$att_info[] = '';//$this->getAttendanceInfo($att_items,$current_day,$month,$year,$st->student_id);
+        //                 // $
+        //             }
+
+        //             $current_date->modify('+1 day');
+        //             $current_day ++;
+        //         }
+        //         $st->list = $att_info;
+        //         $test[] = $att_info;
+
+        //     }
+
+
+
+        //     $attendanceData[] = [
+        //         'test' => 'test',
+        //         'date' => $year.'-'.getMonthName($month,$is_shortMonthName),
+        //         'days' => $days_between,
+        //         "students" => $students,
+        //         'info' => $att_info
+        //         // 'list' => ['days' => $days_between,'attendances' => $attendanceRecords]
+        //     ];
+        //     $attendanceData[]=[
+        //         'd'=>$months
+        //     ];
+        // }
 
         return $attendanceData;
 
