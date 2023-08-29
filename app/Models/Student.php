@@ -186,10 +186,11 @@ class Student //extends Model
             // }
 
             // add student to group
+
             saveData($ss,'group_members',['student_id' => $newID],[
                 "student_id" => $newID,
                 'group_id' => $group_id
-            ],[],1);
+            ],[],1,true);
         }
         return DV::depends($newID,['parent_info' =>$p_info,'Parameter'=>$save_pmt_paramsID]);
     }
@@ -221,6 +222,7 @@ class Student //extends Model
                 ->join('enrollments as e','e.student_id','=','st.id')
                 ->join('sessions as s','s.id','=','e.session_id')
                 ->join('terms as t','t.id','=','e.term_id')
+                // ->join('group_members as gm','gm.student_id','=','st.id')
                 ->selectRaw($selectCols)
                 ->where('st.branch_id',$branch_id)
                 ->whereRaw($str_moreWhere)->whereRaw($str_search);
@@ -247,8 +249,14 @@ class Student //extends Model
             $row->campus = $campus->details($row->campus_id,$ss)->name;
             $row->level = self::getProgramLevel($row->level_id);
             $row->student_type = $row->is_new_student == 0 ? 'Old' : 'New';
+<<<<<<< HEAD
 
             $row->previous_school = self::getPrevSchool($row->prev_school_id)->name;
+=======
+            $row->group_id = DB::table('group_members')->where('student_id',$row->id)->first()->group_id;
+            $row->previous_school = self::getPrevSchool($row->school_id)->name;
+
+>>>>>>> c750fd376869a0c96c00637dd1a050717856a124
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -514,22 +522,23 @@ class Student //extends Model
         return DV::depends($updated,'Delete verified student');
     }
 
-    static function studentPaginate($filter=[],$ss){
-        $branch_id = $ss->branch_id;
-        $search_value =isset($filter['search_value'])?$filter['search_value']:null;
-        $current_page =isset($filter['current_page'])?$filter['current_page']:1;
-        $per_page =isset($filter['per_page'])?$filter['per_page']:10;
-        if(!is_numeric($current_page)) $current_page=1;
-        $skip_rows = ($current_page -1) * $per_page;
+    // static function studentPaginate($filter=[],$ss){
+    //     $branch_id = $ss->branch_id;
+    //     $search_value =isset($filter['search_value'])?$filter['search_value']:null;
+    //     $current_page =isset($filter['current_page'])?$filter['current_page']:1;
+    //     $per_page =isset($filter['per_page'])?$filter['per_page']:10;
+    //     if(!is_numeric($current_page)) $current_page=1;
+    //     $skip_rows = ($current_page -1) * $per_page;
 
-        $str_search ="1=1";
-        $str_moreWhere="1=1";
-        if($search_value){
-            $skip_rows =0;
-            $search_value = escape_like_str($search_value);
-            // $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
-        }
+    //     $str_search ="1=1";
+    //     $str_moreWhere="1=1";
+    //     if($search_value){
+    //         $skip_rows =0;
+    //         $search_value = escape_like_str($search_value);
+    //         // $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+    //     }
 
+<<<<<<< HEAD
         $selectCols = 's.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.prev_school_id';
         $query = DB::table('students as st')
                 ->join('enrollments as e','e.student_id','=','st.id')
@@ -552,9 +561,34 @@ class Student //extends Model
 
             $row->previous_school = self::getPrevSchool($row->prev_school_id)->name;
         }
+=======
+    //     $selectCols = 'gm.group_id,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.school_id';
+    //     $query = DB::table('students as st')
+    //             ->join('enrollments as e','e.student_id','=','st.id')
+    //             ->join('sessions as s','s.id','=','e.session_id')
+    //             ->join('group_members as gm','gm.student_id','=','st.id')
+    //             ->selectRaw($selectCols)
+    //             ->where('st.branch_id',$branch_id)
+    //             ->whereRaw($str_moreWhere)->whereRaw($str_search)
+    //             ->orderBy('id','desc');
+    //     $count_query = clone $query;
+    //     $count = $count_query->count('st.id');
+    //     $rows = $query->skip($skip_rows)->take($per_page)->get();
+    //     foreach($rows as $row) {
+    //         $status = rand(0,1)?'New':'Old';
+    //         $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
+    //         $row->parent_info = self::getChildParent($row->id);
+    //         unset($row->file_name);
+    //         // $row->campus = $campus->details($row->campus_id,$ss)->name;
+    //         $row->level = self::getProgramLevel($row->level_id);
+    //         $row->student_type = $status;
 
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-    }
+    //         $row->previous_school = self::getPrevSchool($row->school_id)->name;
+    //     }
+>>>>>>> c750fd376869a0c96c00637dd1a050717856a124
+
+    //     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    // }
 
     static function getStudentEnrollmentInfo($d,$ss=null){
         // $d = (object)$d;
@@ -605,6 +639,11 @@ class Student //extends Model
         }
         return $rows;
         // return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
+
+
+    function updateStudentBasicInfro($arr=[],$id=null,$ss=null){
+
     }
 
 }

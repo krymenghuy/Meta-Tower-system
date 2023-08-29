@@ -177,7 +177,7 @@
                 <button class="btn btn-secondary btn-sm" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button id="dlg_dpf_btn_save" class="btn btn-sm btn-primary" type="button">
+                <button id="dlg_dpf_btn_save" class="btn btn-sm btn-primary btn-animate" type="button">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>

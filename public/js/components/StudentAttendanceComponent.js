@@ -67,7 +67,7 @@ var StudentAttendanceComponent = new function(){
 
     this.displayStudentAttendanceDetails = (tr, op) => {
         let div_wrapper = $(tr).find('.expandable-row-container');
-        div_wrapper.addClass(['p-3','bg-light-subtle','max-height-details']);
+        div_wrapper.addClass('bg-light-subtle');
         div_wrapper.empty();
         let html = null;
 
@@ -76,6 +76,7 @@ var StudentAttendanceComponent = new function(){
             if(res.status_code === 200){
                 d = res.data;
             }
+            console.log(d);
             let first = 0;
 
             d && d.map(t => {
@@ -85,7 +86,7 @@ var StudentAttendanceComponent = new function(){
 
                     inner_html = [inner_html,`<div class="d-block">
                         <div class="px-3 py-2 text-center" style="width: ${(div_wrapper.width())/32}">${dt.day ? dt.day : ''}</div>
-                        <div class="tooltip-custom position-relative px-3 py-2 text-center rounded-3 ${cls}" data-id="${dt.attendance_id}" data-status="${dt.status_id}" data-day="${[dt.day,t.date].join('-')}" style="width: ${(div_wrapper.width())/32}" role="button" data-details="${JSON.stringify(dt).replaceAll('\"','\'')}">${dt.status}</div>
+                        <div class="tooltip-custom position-relative px-3 py-2 text-center rounded-3 ${cls}" data-id="${dt.attendance_id}" data-status="${dt.status_id}" data-day="${[dt.day,t.date].join('-')}" data-groupid="${t.group_id}" style="width: ${(div_wrapper.width())/32}" role="button" data-details="${JSON.stringify(dt).replaceAll('\"','\'')}">${dt.status}</div>
                     </div>`].join('');
                 });
                 
@@ -94,6 +95,8 @@ var StudentAttendanceComponent = new function(){
             });
 
             div_wrapper.html(['<div class="position-absolute p-3">',html,'</div>'].join(''));
+            if(d.length > 0)
+                div_wrapper.addClass(['p-3','max-height-details']);
             let div = div_wrapper.find('.tooltip-custom');
 
             div.each(function(){
@@ -122,6 +125,7 @@ var StudentAttendanceComponent = new function(){
                 e.preventDefault();
                 let p = {
                     'id': $(this).data('id'),
+                    'group_id': $(this).data('groupid'),
                     'student_id': op.student_id,
                     'date': $(this).data('day'),
                     'status_id': $(this).data('status')
@@ -171,7 +175,8 @@ let StudentAttendanceDialog = new function(){
         let p = {
             'id': op.id,
             'student_id': op.student_id,
-            'date': op.date
+            'date': op.date,
+            'group_id': op.group_id
         };
         window.vsapi.call(`${main_view.base_url}/api/student/attendance-date-details`,p,null,false).then(res => {
             let d = {};
@@ -179,6 +184,7 @@ let StudentAttendanceDialog = new function(){
                 d = res.data;
                 d.extend = op;
             }
+            console.log(d);
             mThis.setDataForm(d);
         });
     }
