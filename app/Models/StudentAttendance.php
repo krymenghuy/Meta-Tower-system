@@ -527,7 +527,7 @@ class StudentAttendance //extends Model
             'check_in_time' => '',
             'check_out_time' => '',
             'group_id' => $rows[0]->group_id,
-            "class" => GeneralSettings::getLevel($rows[0]->level)->name
+            "class" => GeneralSettings::getLevel($rows[0]->level_id)->name
 
         ];
 
@@ -542,7 +542,7 @@ class StudentAttendance //extends Model
                             'check_in_time' => '',
                             'check_out_time' => '',
                             'group_id' => '',//$rows[0]->group_id,
-                            "class" => '',//GeneralSettings::getLevel($rows[0]->level)->name
+                            "class" => '',//GeneralSettings::getLevel($rows[0]->elevl)->name
                         ];
         do{
             if(!isset($rows[$i])) break;
@@ -560,7 +560,7 @@ class StudentAttendance //extends Model
                     'check_out_time' => $c->checkout_time,
                     'reason' => $c->remarks,
                     'group_id' => $c->group_id,
-                    "class" => GeneralSettings::getLevel($c->level)->name
+                    "class" => GeneralSettings::getLevel($c->level_id)->name
                 ];
             }
 
@@ -578,7 +578,7 @@ class StudentAttendance //extends Model
             'check_in_time' => '',
             'check_out_time' => '',
             'group_id' => $rows[0]->group_id,
-            "class" => GeneralSettings::getLevel($rows[0]->level)->name
+            "class" => GeneralSettings::getLevel($rows[0]->level_id)->name
         ];
     }
 
@@ -742,6 +742,13 @@ class StudentAttendance //extends Model
 
     }
 
+    function getAttendanceRows($start_date,$end_date,$group_id){
+        $start_date = convertDate($start_date);
+        $end_date = convertDate($end_date);
+        $rows = DB::table('student_attendances')->whereRaw("DATE(session_date) BETWEEN '$start_date' AND '$end_date'")->selectRaw('level_id,group_id,remarks,checkin_time,checkout_time,in_remarks,out_remarks,status_id,student_id,id as attendance_id,DAY(session_date) as day,MONTH (session_date) as `month`, YEAR(session_date) as `year`')->get();
+        return $rows;
+    }
+
     function studentGroupAttendanceReport($group_id,$arr=[],$ss=null){
         $ss = $ss?$ss:$this->ss;
         $d = (object)$arr;
@@ -760,13 +767,22 @@ class StudentAttendance //extends Model
         $from_day = $startDate? date('d',strtotime($startDate)):null;
         $to_day = $endDate?date('d',strtotime($endDate)):null;
 
+        // $existSessionDate = DB::table('student_attendances')->where('session_date',$startDate)->exists();
+
         $sessionDateCondition = "1 = 1";
         if ($session_date) {
-            $sessionDateCondition = "session_date = '$session_date'";
+            $sessionDateCondition = "DATE(session_date) = '$session_date'";
         }
         if($startDate && $endDate) {
-            $sessionDateCondition = "session_date BETWEEN '$startDate' AND '$endDate'";
+            $sessionDateCondition = "DATE(session_date) BETWEEN '$startDate' AND '$endDate'";
         }
+        $att_items = $this->getAttendanceRows($startDate,$endDate,$group_id);
+        $students = DB::table('group_members as gm')
+                ->join('students as s','s.id','=','gm.student_id')
+                ->join('enrollments as e','e.id','=','gm.enrollment_id')
+                ->where('gm.group_id',$group_id)
+                ->selectRaw(' s.id as student_id,s.name,s.date_of_birth,s.sex,e.start_date')
+                ->get();
         $distinctDates = DB::table('student_attendances')
             ->selectRaw('DISTINCT YEAR(session_date) as year, MONTH(session_date) as month')
             ->whereRaw($sessionDateCondition)
@@ -783,32 +799,42 @@ class StudentAttendance //extends Model
             $current_date = new DateTime("$year-$month-01");
             $end_date_obj = new DateTime("$year-$month-01");
             $end_date_obj->modify('last day of this month');
+            $current_day = $current_date->format('d');
 
-            while ($current_date <= $end_date_obj) {
-                if ($current_date >= new DateTime($startDate) && $current_date <= new DateTime($endDate)) {
-                    $days_between[] = ['day' => $current_date->format('d')];
-                }else if(!$startDate && !$endDate){
-                    $days_between[] = ['day' => $current_date->format('d')];
+            foreach($students as $st){
+                while ($current_date <= $end_date_obj) {
+                    if ($current_date >= new DateTime($startDate) && $current_date <= new DateTime($endDate)) {
+                        $days_between[] = ['day' => $current_date->format('d')];
+                        // foreach($students as $st){
+                            $att_info[] = $this->getAttendanceInfo($att_items,$current_day,$month,$year,$st->student_id);
+                        // }
+                    }else if(!$startDate && !$endDate){
+                        $days_between[] = ['day' => $current_date->format('d')];
+                    }
+
+                    $current_date->modify('+1 day');
+                    $current_day ++;
                 }
-
-                $current_date->modify('+1 day');
+                $st->list = $att_info;
             }
 
-            $attendanceRecords = DB::table('student_attendances as sa')
-                ->join('students as s','s.id','=','sa.student_id')
-                ->where('sa.group_id',$group_id)
-                ->whereYear('sa.session_date', $year)
-                ->whereMonth('sa.session_date', $month)
-                ->selectRaw('DISTINCT sa.student_id,s.name,s.date_of_birth,s.sex')
-                ->get();
-            foreach($attendanceRecords as $r){
-                $r->attendance_list = $this->getAttendanceDetailsByMonth($r->student_id,$month,$year,$from_day,$to_day);
-            }
+
+
+        //     $attendanceRecords = DB::table('student_attendances as sa')
+        //     ->join('students as s','s.id','=','sa.student_id')
+        //     ->where('sa.group_id',$group_id)
+        //     ->whereYear('sa.session_date', $year)
+        //     ->whereMonth('sa.session_date', $month)
+        //     ->selectRaw('DISTINCT sa.student_id,s.name,s.date_of_birth,s.sex')
+        //     ->get();
+        // foreach($attendanceRecords as $r){
+        //     $r->attendance_list = $this->getAttendanceDetailsByMonth($r->student_id,$month,$year,$from_day,$to_day);
+        // }
             // $date->attendance_list = $this->getAttendanceDetailsByMonth($r->student_id,$month,$year);
             $attendanceData[] = [
                 'date' => $year.'-'.getMonthName($month,$is_shortMonthName),
                 'days' => $days_between,
-                "list" => $attendanceRecords
+                "students" => $students
                 // 'list' => ['days' => $days_between,'attendances' => $attendanceRecords]
             ];
         }

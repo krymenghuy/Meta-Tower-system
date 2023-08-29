@@ -217,9 +217,11 @@ class EnrollmentManager {
         //   }
 
           // add student to group
-          saveData($ss,'group_members',['student_id' => $newID],[
+          $g_id = DB::table('group_members')->where('enrollment_id',$enrollment_id)->take(1)->value('id');
+          saveData($ss,'group_members',['id' => $g_id],[
               "student_id" => $newID,
-              'group_id' => $group_id
+              'group_id' => $group_id,
+              'enrollment_id' => $enrollment_id
           ],[],1);
       }
       return DV::depends($newID,['parent_info' =>$p_info],'Failed to save student enrollmemnt');
