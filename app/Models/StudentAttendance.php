@@ -927,9 +927,13 @@ class StudentAttendance //extends Model
                     $current_date->modify('+1 day');
                 }
 
-                $monthData['students'][] = $st;
-                $st->list = $att_info;
-                $st->age = getAge($st->date_of_birth);
+                $stData = [
+                    's' => $st,
+                    'list' => $att_info
+                ];
+                $stData = array_filter($stData);
+
+                $monthData['students'][] = $stData;
             }
 
             $attendanceData[] = $monthData;
