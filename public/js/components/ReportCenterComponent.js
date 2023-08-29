@@ -13,7 +13,8 @@ var ReportCenterComponent = new function(){
         'api_params':{},
         'name':'group_id',
         'value_field':'id',
-        'text_field':'name'
+        'text_field':'name',
+        'required': 'true'
     },
     {
         'type':'date',
@@ -119,7 +120,7 @@ var ReportCenterComponent = new function(){
                                 </div>
                             </div>
                         </div>`].join('');
-                        mThis.getDataOption(f.api_fetch, f.api_params, f.value_field, f.text_field, id);
+                        mThis.getDataOption(f.api_fetch, f.api_params, f.value_field, f.text_field, f.required,id);
                     }
                     else if(f.type === 'date' && f.name === item){
                         inner_html = [inner_html, `<div class="col-lg-6">
@@ -157,13 +158,14 @@ var ReportCenterComponent = new function(){
         LocaleManager.translateZone('_rpt_input_filter');
     }
 
-    this.getDataOption = (api, param, value, text, id) => {
+    this.getDataOption = (api, param, value, text, required, id) => {
         mThis.options.params = mThis.options.params ? mThis.options.params : [];
         mThis.options.params.push({
             'api': api,
             'param': param,
             'value': value,
             'text': text,
+            'required': required,
             'dom_id': id
         });
     }
@@ -174,7 +176,9 @@ var ReportCenterComponent = new function(){
             window.vsapi.call(item.api, item.param, null, false).then(res => {
                 if(res.status_code === 200){
                     data = res.data;
-                    VSUtil.setComboItems(div.find(`#${item.dom_id}`), data, item.value, item.text, null, null, null);
+                    let el = div.find(`#${item.dom_id}`);
+                    el.attr('data-required',item.required);
+                    VSUtil.setComboItems(el, data, item.value, item.text, null, null, null);
                 }
             });
         });
@@ -187,15 +191,20 @@ var ReportCenterComponent = new function(){
             div.find('.data-input').each(function(){
                 let el = $(this);
                 let f = el.data('field');
+                if(el.data('required'))
+                    p['required'] = [f.replaceAll('_id','').toUpperCase(),' is required'].join('');
                 p[f] = el.val();
             });
+            if(p.required){
+                
+            }
             mThis.getDataTable(p);
         });
     }
 
     this.getDataTable = (p) => {
         window.vsapi.call(`${main_view.base_url}/api/student/attendance-list-report`,p,null,false).then(res => {
-            let data = [];
+            let data = {};
             if(res.status_code === 200){
                 data = res.data;
             }
