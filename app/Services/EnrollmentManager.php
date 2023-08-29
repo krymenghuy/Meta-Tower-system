@@ -39,6 +39,7 @@ class EnrollmentManager {
         $ss = $ss?$ss:$this->user_info;
         $id =$id?$id:$this->id;
         $v_rule = [
+          'student_code' => '0|string|0-20',
           'name' => '1|string|1,150',
           'name_kh' => '1|string|1,150',
           'sex' => '1|choice|F,M,O',
@@ -63,7 +64,7 @@ class EnrollmentManager {
           // 'tuition_paid' => '0|number|default=0',
           'pmt_option_id' => '0|number|exists=pmt_options.id|default=2',
           'pmt_status' => '0|choice|paid,unpaid|default=unpaid',
-          'student_code' => '0|string',
+         
           'term_id' => '1|number|exists=terms.id'
       ];
       $branch_id = $ss->branch_id;
@@ -96,6 +97,7 @@ class EnrollmentManager {
       $term_id = $inputs['term_id'];
       $pmt_option_id = $inputs['pmt_option_id'];
       $pmt_status = $inputs['pmt_status'];
+     
       // $tuition_start_date = $inputs['tuition_start_date'];
 
       // $tuition = $inputs['tuition'];
@@ -119,26 +121,35 @@ class EnrollmentManager {
       // $is_create = (!$id || $id==0);
 
       unset($inputs['level_id'],$inputs['session_id'],$inputs['campus_id'],$inputs['previous_school'],$inputs['shift_id'],$inputs['term_id'],$inputs['pmt_mode']);
-
+      $enrollmentInfo= null;
+      $student_id =null;
+      if($id > 0){
+        $enrollmentInfo = DB::table('enrollments as e')->where('id',$id)->selectRaw('student_id')->take(1)->get()->first();
+        if(!$enrollmentInfo) return DV::error('It seems the enrollment ID does not exist');
+        $student_id = $enrollmentInfo->student_id;
+      }
+      
       $to_delete_image = $id && (!$image || isImage($image));
       if($to_delete_image){
         $prev_file_name = DB::table('students')->where('id',$id)->take(1)->value('file_name');
-        if( $prev_file_name) PublicStorage::delete($branch_id,'students','image',$prev_file_name);
+        if($prev_file_name) PublicStorage::delete($branch_id,'students','image',$prev_file_name);
         $inputs['file_name']=null;
       }
-      if(!$id && Student::checkParentLoginName($parent_info)) return DV::error('Login name is already taken');;
-      $newID = saveData($ss,'students',['id' => $id],$inputs,[],1,1);
+      
+      if(!$id && Student::checkParentLoginName($parent_info)) return DV::error('Parent Login name is already taken. Father or mother phone number is used as parent login');
+      $student_id = saveData($ss,'students',['id' =>$student_id],$inputs,[],1,1);
 
-      if($newID > 0){
-          PublicStorage::saveImage($branch_id,"students",null,$image,null, ['id' => $newID, 'store' => 'students.file_name']);
+      if($student_id > 0){
+          PublicStorage::saveImage($branch_id,"students",null,$image,null, ['id' => $student_id, 'store' => 'students.file_name']);
           //** give register student by generate code and update */
-          if(!$code) Student::setStudentCode('ST',$ss,$newID);
+          ////if(!$code) Student::setStudentCode('ST',$ss,$newID);
+          setOfficialCode($branch_id,'student_code_control','students',['id'=>$student_id]);
 
           $program = DB::table('programs as p')->join('program_levels as pl','p.id','=','pl.program_id')->selectRaw('p.id')->where('pl.id',$level_id)->first();
           if(!$level_id) return DV::error('Failed to identify program name based on the given level or grade');
           //** save or update enrollments table
           $en_student_data = [
-              'student_id' => $newID,
+              'student_id' => $student_id,
               'level_id' => $level_id,
               'program_id' => $program->id,
               'session_id' => $session_id,
@@ -202,7 +213,7 @@ class EnrollmentManager {
         //   //** save into guardian table and generate login information for female type or if one take that one
         //   //** link parent(s) to child
         //   //** using guardian's phone number for login name and password default = 123456 */
-           $p_info = Student::saveParentInfo($parent_info,$newID,$ss);
+           $p_info = Student::saveParentInfo($parent_info,$student_id,$ss);
 
         //   // **delete Images in Folder if not exists in DB;
         //   $folderPath = public_path('/uploads/public/'.$ss->branch_id.'_data/students/images');
@@ -219,12 +230,14 @@ class EnrollmentManager {
           // add student to group
           $g_id = DB::table('group_members')->where('enrollment_id',$enrollment_id)->take(1)->value('id');
           saveData($ss,'group_members',['id' => $g_id],[
-              "student_id" => $newID,
+              "student_id" => $student_id,
               'group_id' => $group_id,
-              'enrollment_id' => $enrollment_id
+              'enrollment_id' => $enrollment_id,
+              'is_major'=>1,
+              'fee_required'=>1
           ],[],1);
       }
-      return DV::depends($newID,['parent_info' =>$p_info],'Failed to save student enrollmemnt');
+      return DV::depends($enrollment_id,['parent_info' =>$p_info],'Failed to save student enrollmemnt');
   }
 
   static function getPrevSchool($id){
@@ -278,8 +291,8 @@ static function getFormOptions($ss){
         //'levels' => self::level_options($ss),
         'campuses' => GeneralSettings::options_campus($ss),
         'academic_years' => GeneralSettings::options_academic_year($ss),
-        'terms' => GeneralSettings::options_acad_term($ss),
-        'prev_schools' => GeneralSettings::options_school($ss)
+        'terms' => GeneralSettings::options_term(null,$ss),
+        'schools' => GeneralSettings::options_school($ss)
        // ,'groups' => GeneralSettings::options_group($term_id,$ss)
     ];
     return $res;
@@ -288,9 +301,11 @@ static function getFormOptions($ss){
     function getEnrollmentDetails($id=null,$ss=null){
         $ss = $ss?$ss:$this->user_info;
         $id = $id?$id:$this->id;
-        $selectCols = 'e.id,e.term_id,e.student_id,ss.name as session,e.prev_school_id,e.campus_id,e.level_id,l.`name` AS `level`,c.`name` AS `campus`,e.session_id,s.id,e.academic_year,s.sex,s.`name`,s.sex,s.date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth,formatDate(e.start_date) as admission_date';
+        $selectCols = 'e.id,s.id AS student_id,e.term_id,e.student_id,ss.name as session,e.prev_school_id,e.program_id,e.level_id,e.campus_id,e.session_id,g.id AS group_id,g.name AS group_name, l.`name` AS `level`,c.`name` AS `campus`,e.academic_year,s.sex,s.`name`,s.sex,formatDate(s.date_of_birth) AS date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth,formatDate(e.start_date) as admission_date';
         $row = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
+                ->join('group_members as gm','e.id','=','gm.enrollment_id')
+                ->join('student_groups as g','g.id','=','gm.group_id')
                 ->join('program_levels as l','l.id','=','e.level_id')
                 ->join('campuses as c','c.id','=','e.campus_id')
                 ->join('sessions as ss','ss.id','=','e.session_id')
@@ -303,7 +318,7 @@ static function getFormOptions($ss){
                         $url =null;
                         if($row->file_name){
                             $url = PublicStorage::getUrl($ss->branch_id,'students','image').$row->file_name;
-                            $row->image_url = checkFileUrl($url);
+                            $row->image_url = validateUrl($url,null);
                         }
                         unset($row->file_name);
                         return $row;
@@ -313,6 +328,7 @@ static function getFormOptions($ss){
       $ss = $ss?$ss:$this->user_info;
       $branch_id = $ss->branch_id;
       $d = (object)$filter;
+      $term_id = isset($d->term_id)?$d->term_id:null;
       $academic_year = isset($d->academic_year)?$d->academic_year:null;
       $campus_id = isset($d->campus_id)?$d->campus_id:null;
       $program_id = isset($d->program_id)?$d->program_id:null;
@@ -339,17 +355,20 @@ static function getFormOptions($ss){
       if($level_id > 0) $str_moreWhere .= ' AND e.level_id ='.$level_id;
       else if($program_id > 0) $str_moreWhere .= ' AND e.program_id ='.$program_id;
 
-      $selectCols = 'e.is_new_student,e.id as enrollment_id,e.student_id,s.name as session,e.level_id, e.prev_school_id,c.`name` AS campus,l.`name` AS level,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name, CASE e.is_new_student WHEN 1 THEN \'NEW\' ELSE \'Old\' END AS student_type';
-      $query = DB::table('students as st')
-              ->join('enrollments as e','e.student_id','=','st.id')
+      $selectCols = 'e.id,st.id AS student_id,e.is_new_student,s.name AS session,e.level_id,g.`name` AS group_name, g.id AS group_id, e.prev_school_id,c.`name` AS campus,l.`name` AS level,e.campus_id,e.academic_year,st.code as student_code,st.name,st.name_kh,st.sex,formatDate(st.date_of_birth) AS date_of_birth,st.file_name, CASE e.is_new_student WHEN 1 THEN \'NEW\' ELSE \'Old\' END AS student_type';
+      $query = DB::table('enrollments as e')
+              ->join('group_members as gm','e.id','=','gm.enrollment_id')
+              ->join('student_groups as g','g.id','=','gm.group_id')
+              ->join('students as st','e.student_id','=','st.id')
               ->join('campuses as c','c.id','=','e.campus_id')
               ->join('program_levels as l','l.id','=','e.level_id')
               ->join('sessions as s','s.id','=','e.session_id')
               ->join('terms as t','t.id','=','e.term_id')
               ->selectRaw($selectCols)
               ->where('st.branch_id',$branch_id)
+              ->where('e.term_id',$term_id)
               ->whereRaw($str_moreWhere)->whereRaw($str_search);
-              $query->orderBy('id','desc');
+              $query->orderByRaw('e.id desc,s.id');
       $count_query = clone $query;
       $count = $count_query->count('st.id');
       $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -357,7 +376,7 @@ static function getFormOptions($ss){
         $row->image_url=null;
         if($row->file_name){
             $url = PublicStorage::getUrl($ss->branch_id,'students','image').$row->file_name;
-            $row->image_url = checkFileUrl($url);
+            $row->image_url = validateUrl($url,null);
         }
           $row->parent_info = Student::getParentInfo($row->student_id);
           unset($row->file_name);

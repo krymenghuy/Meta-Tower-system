@@ -48,7 +48,7 @@ class UM
       'super_admin'=>0,
       'staff'=>0,
       'admin_support'=>0, /* Backend user's login can be email, phone, or any name */
-      'guardian' => 0
+      'parent' => 0
     ];
 
     protected static $required_official_profile = [
@@ -56,7 +56,7 @@ class UM
       'staff'=>1,
       'super_admin'=>0,
       'admin_support'=>0,
-      'guardian' => 0
+      'parent' => 0
     ];
 
     protected static $new_user_required_password = [
@@ -64,7 +64,7 @@ class UM
       'admin'=>1,
       'super_admin'=>1,
       'admin_support'=>1, /* Backend user's login can be email, phone, or any name */
-      'guardian'=>1,
+      'parent'=>1,
     ];
 
     protected $userInfo=null;
@@ -82,7 +82,7 @@ class UM
         self::$user_classes = [
           'admin'=>['used'=>1,'name'=>'Admin','app_id'=>getAdminAppId(),'token_age'=>null],
           'staff'=>['used'=>1,'name'=>'Staff','app_id'=>getAdminAppId(),'token_age'=>null],
-          'guardian'=>['used'=>1,'name'=>'Guardian','app_id'=>Config::get('app.customer_app_id'),'token_age'=>0]
+          'parent'=>['used'=>1,'name'=>'Guardian','app_id'=>Config::get('app.customer_app_id'),'token_age'=>0]
           //'client'=>['used'=>1,'name'=>'Client','app_id'=>getClientAppId()],
           //'superadmin'=>['used'=>1,'name'=>'Super Admin','app_id'=>getAdminAppId()],
           //'admin_support'=>['used'=>0,'name'=>'Admin Support','app_id'=>getAdminAppId()],
@@ -215,7 +215,7 @@ class UM
 /*##### begin::InApp UserModel ##### */
 
     function getAppIdByUserClass($user_class){
-        if($user_class === 'guardian'){
+        if($user_class === 'parent'){
             return Config::get('app.customer_app_id');
 
         }else{
@@ -541,7 +541,7 @@ class UM
              "login_name"=>"1|string|1-35|text=The login name is too long. Max 35 characters",
              "password"=>"0|string|0-100",
              "email"=>"0|email",
-             "user_class"=>"1|choice|admin,guardian",
+             "user_class"=>"1|choice|admin,parent",
              "subs_id"=>"0|string",
              "role_id"=>"1|number|exists=um_roles.id|text=User role is missing",
              "official_code"=>"0|string|1-25",

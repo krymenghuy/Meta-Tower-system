@@ -94,13 +94,14 @@ class Student //extends Model
 
         unset($inputs['level_id'],$inputs['session_id'],$inputs['campus_id'],$inputs['previous_school'],$inputs['shift_id'],$inputs['term_id'],$inputs['pmt_mode']);
 
-        if(!$id && self::checkParentLoginName($parent_info)) return DV::error('Login name is already taken');;
+        if(!$id && self::checkParentLoginName($parent_info)) return DV::error('Parent Login name is already taken. Father or mother phone number is used as parent login');
         $newID = saveData($ss,'students',['id' => $id],$inputs,[],1,1);
 
         if($newID > 0){
             PublicStorage::saveImage($branch_id,"students",null,$image,null, ['id' => $newID, 'store' => 'students.file_name']);
             //** give register student by generate code and update */
-            if(!$code) self::setStudentCode('ST',$ss,$newID);
+            //if(!$code) self::setStudentCode(null,$ss,$newID);
+            setOfficialCode($branch_id,'student_code_control','students',['id'=>$newID]);
 
             $program = DB::table('programs as p')->join('program_levels as pl','p.id','=','pl.program_id')->selectRaw('p.id')->where('pl.id',$level_id)->first();
 
@@ -275,9 +276,8 @@ class Student //extends Model
     static function checkParentLoginName($info){
         foreach ($info as $parentInfo) {
             // Check if the record with the unique identifier exists in the database
-            $uniqueIdentifier = $parentInfo['father_phone'] ?? $parentInfo['mother_phone'];
-            $existingRecord = DB::table('um_users')->where('login_name', $uniqueIdentifier)
-                                        ->first();
+            $parent_login = $parentInfo['father_phone'] ?? $parentInfo['mother_phone'];
+            $existingRecord = DB::table('um_users')->where('login_name', $parent_login)->first();
             // If the record exists, update it; otherwise, insert a new record
         }
         return $existingRecord?true:false;
@@ -289,6 +289,7 @@ class Student //extends Model
         return $new_code;
     }
     static function saveParentInfo($parent_info,$child_id,$ss){
+        $def_password ='123456';
         // $student_code = DB::table('students')->where('id',$child_id)->pluck('id');
         $um = new UM();
         $um_ = null;
@@ -321,12 +322,12 @@ class Student //extends Model
                 if(count($parent_info)==1){
                     $arr= [
                         'login_name' => $inputs['phone_number'],
-                        'user_class' => 'guardian',
+                        'user_class' => 'parent',
                         'role_id' => '16',
                         'official_id' => $newID,
                         // 'official_code' =>$student_code,
                         'email' =>$inputs['email'],
-                        'password' => "123456",
+                        'password' =>$def_password,
                         'full_name' => $inputs['name']
                     ];
                    $um_ = $um->saveUser($arr,$ss);
@@ -341,7 +342,7 @@ class Student //extends Model
                         'official_id' => $female_guardian->id,
                         // 'official_code' =>$student_code,
                         'email' => $female_guardian->email,
-                        'password' => "123456",
+                        'password' => $def_password,
                         'full_name' => $female_guardian->name,
                     ];
                   $um_ = $um->saveUser($arr,$ss);
@@ -356,12 +357,12 @@ class Student //extends Model
         return $um_;
     }
 
-    static function setStudentCode($prefix,$ss,$newID){
-        $branch_id = $ss->branch_id;
-        $new_code = $prefix.$branch_id.formatNumber($newID,4);
-        DB::table('students')->where('id',$newID)->update(['code' => $new_code]);
-    }
-
+    // static function setStudentCode($prefix,$ss,$newID){
+    //     $branch_id = $ss->branch_id;
+    //     $new_code = $prefix.$branch_id.formatNumber($newID,5);
+    //     DB::table('students')->where('id',$newID)->update(['code' => $new_code]);
+    // }
+ 
     static function getFutureTime($daysToAdd) {
         $currentTimestamp = time();
 

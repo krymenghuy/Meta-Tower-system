@@ -187,7 +187,7 @@ function newOTP($length=6)
 //   return null;
 // }
 
-function setOfficialCode($branch_id,$code_control_table,$target_table,$key_field=[],$def_prefix="",$len=5,Closure $onSuccess = null){
+function setOfficialCode($branch_id,$code_control_table,$target_table,$key_field,$def_prefix="",$len=5,Closure $onSuccess = null){
     if (!$key_field) return null;
     if(!$len) $len=5;
 
