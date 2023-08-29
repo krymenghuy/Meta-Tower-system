@@ -518,21 +518,21 @@ class Student //extends Model
         return DV::depends($updated,'Delete verified student');
     }
 
-    // static function studentPaginate($filter=[],$ss){
-    //     $branch_id = $ss->branch_id;
-    //     $search_value =isset($filter['search_value'])?$filter['search_value']:null;
-    //     $current_page =isset($filter['current_page'])?$filter['current_page']:1;
-    //     $per_page =isset($filter['per_page'])?$filter['per_page']:10;
-    //     if(!is_numeric($current_page)) $current_page=1;
-    //     $skip_rows = ($current_page -1) * $per_page;
+    static function studentPaginate($filter=[],$ss){
+        $branch_id = $ss->branch_id;
+        $search_value =isset($filter['search_value'])?$filter['search_value']:null;
+        $current_page =isset($filter['current_page'])?$filter['current_page']:1;
+        $per_page =isset($filter['per_page'])?$filter['per_page']:10;
+        if(!is_numeric($current_page)) $current_page=1;
+        $skip_rows = ($current_page -1) * $per_page;
 
-    //     $str_search ="1=1";
-    //     $str_moreWhere="1=1";
-    //     if($search_value){
-    //         $skip_rows =0;
-    //         $search_value = escape_like_str($search_value);
-    //         // $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
-    //     }
+        $str_search ="1=1";
+        $str_moreWhere="1=1";
+        if($search_value){
+            $skip_rows =0;
+            $search_value = escape_like_str($search_value);
+            // $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+        }
 
     //     $selectCols = 's.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.prev_school_id';
     //     $query = DB::table('students as st')
@@ -560,6 +560,9 @@ class Student //extends Model
     //     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     // }
 
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
+ 
     static function getStudentEnrollmentInfo($d,$ss=null){
         // $d = (object)$d;
         $student_id = isset($d->student_id)?$d->student_id:isset($d->id);
