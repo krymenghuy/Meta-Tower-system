@@ -7,7 +7,7 @@ function renderTable(div, data){
                 <img class="w-100 object-fit-contain" src="${main_view.base_url}/assets/images/logo/photo_report.png" alt=""/>
             </div>
         </div>
-        <div class="d-flex position-relative">
+        <div class="d-flex position-relative w-100">
             <div class="d-block w-100">
                 <h4 class="text-center text-uppercase">Monthly Student Attendance</h4>
                 <p class="text-center w-100">
@@ -15,7 +15,7 @@ function renderTable(div, data){
                 </p>
             </div>
             <div class="width-show-total">
-                <h5>Campus: ${data.campus ? data.campus : ''}</h5>
+                <h5 class="text-nowrap">Campus: ${data.campus ? data.campus : ''}</h5>
                 <p>Total Students: ${data.total_student ? data.total_student : ''}</p>
                 <p>Female Students: ${data.female_student ? data.female_student : ''}</p>
             </div>
@@ -84,13 +84,23 @@ function renderTable(div, data){
 }
 
 function windowPrint(){
-    let myWindow = window.open('','PRINT','height=500,width=600');
-    myWindow.document.write(HtmlString);
+    let myWindow = window.open('','PRINT');
+    myWindow.document.write(`<!DOCTYPE html>
+    <html >
+        <head>
+            <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
+            <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/ksm_style.css"/>
+            <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/vsstyle.css"/>
+            <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/css_for_print.css"/>
+        </head>
+        <body>${HtmlString.replaceAll('table-responsive ','')}</body>
+    </html>`);
     myWindow.document.close();
-    myWindow.focus();
-    myWindow.print();
-    myWindow.close();
-    return false;
+    setTimeout(() => {
+        myWindow.focus();
+        myWindow.print();
+        myWindow.close();
+    },1000);
 }
 
 function calculate_age(dob){

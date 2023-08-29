@@ -1,0 +1,43 @@
+*,
+html,
+body{
+    padding:0;
+    margin:0;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    font-family: Poppins;
+}
+
+html,
+body{
+    height:fit-content;
+    width:fit-content;
+    padding:0 10px;
+}
+
+.width-show-total{
+    min-width:200px;
+    clear: both;
+    float: right;
+    display:block;
+    position: absolute;
+    width: fit-content;
+    height:fit-content;
+    right: 0;
+}
+
+@page{
+    margin: 0;
+}
+
+@media print{
+    html,
+    body{
+        height:fit-content;
+        width:fit-content;
+        zoom:85%;
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
