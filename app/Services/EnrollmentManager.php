@@ -8,13 +8,13 @@ use App\Models\GeneralSettings;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class EnrollmentManager {
-    
+
     protected $id =null, $user_info = null;
     function __construct($id=null,$user_info){
         $this->id = $id;
         $this->user_info = $user_info;
-    } 
- 
+    }
+
     static function getFutureTime($daysToAdd) {
       $currentTimestamp = time();
 
@@ -119,7 +119,7 @@ class EnrollmentManager {
       // $is_create = (!$id || $id==0);
 
       unset($inputs['level_id'],$inputs['session_id'],$inputs['campus_id'],$inputs['previous_school'],$inputs['shift_id'],$inputs['term_id'],$inputs['pmt_mode']);
-      
+
       $to_delete_image = $id && (!$image || isImage($image));
       if($to_delete_image){
         $prev_file_name = DB::table('students')->where('id',$id)->take(1)->value('file_name');
@@ -154,7 +154,7 @@ class EnrollmentManager {
                   $en_student_data['is_new_student'] = 1;
           }
           $enrollment_id = saveData($ss,'enrollments',['id'=>$id],$en_student_data,[],1);
-        
+
         //   $save_pmt_paramsID=null;
         //   if($id == 0 || $id == 'undefined'){
         //           //** save into pmt_parameters */
@@ -365,6 +365,6 @@ static function getFormOptions($ss){
       return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-      
+
 }
 ?>

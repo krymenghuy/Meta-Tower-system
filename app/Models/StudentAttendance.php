@@ -282,6 +282,7 @@ class StudentAttendance //extends Model
             "checkin_time" => $present_time,
             "in_remarks" => $in_remarks,
             "is_finished" => $is_finished,
+            'enrollment_id' => $enr_info->id
         ];
         $update = [];
 
@@ -750,12 +751,14 @@ class StudentAttendance //extends Model
         if($aToz){
             $aToz ='DESC';
         }else $aToz = 'ASC';
-        $from_day = isset($d->from_day)?$d->from_day:null;
-        $to_day = isset($d->to_day)?$d->to_day:null;
 
-        $session_date = isset($d->session_date)?date('Y-m-d',strtotime($d->session_date)):null;
-        $startDate =  isset($d->start_date)?date('Y-m-d',strtotime($d->start_date)):null;
-        $endDate =  isset($d->end_date)?date('Y-m-d',strtotime($d->end_date)):null;
+
+
+        $session_date = isset($d->session_date)?date('Y-m-',strtotime($d->session_date)):null;
+        $startDate =  isset($d->start_date)?date("Y-m-d",strtotime($d->start_date)):null;
+        $endDate =  isset($d->end_date)?date("Y-m-d",strtotime($d->end_date)):null;
+        $from_day = $startDate? date('d',strtotime($startDate)):null;
+        $to_day = $endDate?date('d',strtotime($endDate)):null;
 
         $sessionDateCondition = "1 = 1";
         if ($session_date) {
@@ -776,12 +779,27 @@ class StudentAttendance //extends Model
             $year = $date->year;
             $month = $date->month;
 
+            $days_between = [];
+            $current_date = new DateTime("$year-$month-01");
+            $end_date_obj = new DateTime("$year-$month-01");
+            $end_date_obj->modify('last day of this month');
+
+            while ($current_date <= $end_date_obj) {
+                if ($current_date >= new DateTime($startDate) && $current_date <= new DateTime($endDate)) {
+                    $days_between[] = ['day' => $current_date->format('d')];
+                }else if(!$startDate && !$endDate){
+                    $days_between[] = ['day' => $current_date->format('d')];
+                }
+
+                $current_date->modify('+1 day');
+            }
+
             $attendanceRecords = DB::table('student_attendances as sa')
                 ->join('students as s','s.id','=','sa.student_id')
                 ->where('sa.group_id',$group_id)
                 ->whereYear('sa.session_date', $year)
                 ->whereMonth('sa.session_date', $month)
-                ->selectRaw('sa.student_id,s.name,s.date_of_birth,s.sex')
+                ->selectRaw('DISTINCT sa.student_id,s.name,s.date_of_birth,s.sex')
                 ->get();
             foreach($attendanceRecords as $r){
                 $r->attendance_list = $this->getAttendanceDetailsByMonth($r->student_id,$month,$year,$from_day,$to_day);
@@ -789,7 +807,9 @@ class StudentAttendance //extends Model
             // $date->attendance_list = $this->getAttendanceDetailsByMonth($r->student_id,$month,$year);
             $attendanceData[] = [
                 'date' => $year.'-'.getMonthName($month,$is_shortMonthName),
-                'list' => $attendanceRecords,
+                'days' => $days_between,
+                "list" => $attendanceRecords
+                // 'list' => ['days' => $days_between,'attendances' => $attendanceRecords]
             ];
         }
 
