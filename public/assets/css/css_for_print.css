@@ -26,6 +26,10 @@ body{
     right: 0;
 }
 
+.fs-5-1{
+    font-size:1.1rem;
+}
+
 @page{
     size:A4 landscape;
     margin: 0;

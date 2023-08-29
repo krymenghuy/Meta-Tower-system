@@ -10,7 +10,7 @@ function renderTable(div, data){
         <div class="d-flex position-relative w-100">
             <div class="d-block w-100">
                 <h4 class="text-center text-uppercase">Monthly Student Attendance</h4>
-                <p class="text-center w-100">
+                <p class="text-center w-100 fs-5-1">
                     Kindergarten (${data.session ? data.session : ''}) - ${data.level ? data.level : ''}
                 </p>
             </div>
@@ -84,23 +84,29 @@ function renderTable(div, data){
 }
 
 function windowPrint(){
-    let myWindow = window.open('','PRINT');
-    myWindow.document.write(`<!DOCTYPE html>
-    <html >
-        <head>
-            <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
-            <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/ksm_style.css"/>
-            <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/vsstyle.css"/>
-            <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/css_for_print.css"/>
-        </head>
-        <body>${HtmlString.replaceAll('table-responsive ','')}</body>
-    </html>`);
-    myWindow.document.close();
-    setTimeout(() => {
-        myWindow.focus();
-        myWindow.print();
-        myWindow.close();
-    },1000);
+    if(HtmlString){
+        let myWindow = window.open('','PRINT');
+        myWindow.document.write(`<!DOCTYPE html>
+        <html >
+            <head>
+                <title>Student Attendaces</title>
+                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
+                <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/ksm_style.css"/>
+                <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/vsstyle.css"/>
+                <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/css_for_print.css"/>
+            </head>
+            <body>${HtmlString.replaceAll('table-responsive ','')}</body>
+        </html>`);
+        myWindow.document.close();
+        setTimeout(() => {
+            myWindow.focus();
+            myWindow.print();
+            myWindow.close();
+        },500);
+    }
+    else{
+        cv_interact.warning('Select Run Report Before Print!');
+    }
 }
 
 function calculate_age(dob){
