@@ -1,4 +1,5 @@
 function renderTable(div, data){
+    console.log(data);
     if(data && !($.isEmptyObject(data))){
         let html = [`<div class="d-flex justify-content-center mb-3">
             <div class="w-25 position-relative">
@@ -20,11 +21,7 @@ function renderTable(div, data){
         </div>`].join('');
 
         data && data.session_date.map(tbl => {
-            let student = null, cnt = 1, cols = 0;
-
-            tbl.list.map(at => {
-                cols = cols > at.attendance_list.length ? cols : at.attendance_list.length;
-            });
+            let student = null, days = null,cnt = 1, cols = tbl.days.length;
 
             html = [html,`<div class="table-responsive mt-3 p-3 bg-white table-responsive-hover">
                 <table class="table table-bordered text-nowrap">
@@ -41,7 +38,9 @@ function renderTable(div, data){
                             <td rowspan="2" class="align-middle">Phone Number</td>
                         </tr>
                         <tr>
-                            <td></td>
+                            ${days=null,tbl.days.map(d => {
+                                days = [days,`<td>${d.day}</td>`].join('')
+                            }),days}
                         </tr>
                     </thead>
                     <tbody>
