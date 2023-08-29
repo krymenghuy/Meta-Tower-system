@@ -1,5 +1,6 @@
 function renderTable(div, data){
     console.log(data);
+    data = data ? data : {};
     let html = [`<div class="d-flex justify-content-center mb-3">
         <div class="w-25 position-relative">
             <img class="w-100 object-fit-contain" src="${main_view.base_url}/assets/images/logo/photo_report.png" alt=""/>
@@ -20,7 +21,7 @@ function renderTable(div, data){
     </div>`].join('');
 
     data && data.session_date.map(tbl => {
-        let student = null, cnt = 1, cols=0;
+        let student = null, cnt = 1, cols = 0;
 
         tbl.list.map(at => {
             cols = cols > at.attendance_list.length ? cols : at.attendance_list.length;
@@ -48,7 +49,7 @@ function renderTable(div, data){
                     ${student=null,tbl && tbl.list.map(st => {
                         let inner_html=null;
                         st && st.attendance_list.map(d => {
-                            let cls = d.status === 'A' ? 'bg-danger' : d.status === 'Pr' ? 'bg-warning' : 'bg-success';
+                            let cls = d.status === 'A' ? 'bg-danger' : d.status === 'P' ? 'bg-warning' : 'bg-success';
                             inner_html = [inner_html,`<td class="text-white ${cls}">${d.status}</td>`].join('');
                         });
 
