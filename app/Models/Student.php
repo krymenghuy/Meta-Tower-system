@@ -266,6 +266,7 @@ class Student //extends Model
                 // ->where('g.role','mother')
                 ->selectRaw('sg.family_code,g.name as parent_name,g.phone_number,g.email')
                 ->get()->first();
+        if(!$row) return null;
         $row->family_id = $row->family_code;
         unset($row->family_code);
         return $row;
