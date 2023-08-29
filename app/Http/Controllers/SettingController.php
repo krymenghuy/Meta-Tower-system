@@ -33,6 +33,4 @@ class SettingController extends Controller
         $options = Setting::prevProgramLevelOptions($ss);
         return JDV::result($options);
     }
-
-
 }

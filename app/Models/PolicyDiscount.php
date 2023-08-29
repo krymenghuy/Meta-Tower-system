@@ -79,7 +79,7 @@ class PolicyDiscount //extends Model
         if ($academic_year >0) $str_search = ($str_search? ' AND ':'').' d.academic_year =\''.$academic_year.'\'';
         if ($search_value >0) $str_search = ($str_search? ' AND ':'').' (d.discount ='.$search_value.')';
 
-        $cols = 'd.id,d.discount,d.discount_type,d.pmt_option_id,op.name as pmt_option,s.`name` as `session`, l.id as price_list_id,l.name as price_list_name,l.academic_year,formatDate(l.start_date) AS start_date, formatDate(l.end_date) AS end_date,d.create_user,formatDate(d.created_at) as created_at,d.auth_user,d.auth_date';
+        $cols = 'd.id,d.discount,d.discount_type,d.pmt_option_id,op.name as pmt_option,s.`name` as `session`, l.id as price_list_id,l.name as price_list_name,l.academic_year,formatDate(l.start_date) AS start_date, formatDate(l.end_date) AS end_date,d.update_user,formatDate(d.updated_at) as updated_at,d.auth_user,formatTime(d.auth_date) AS auth_date';
         $query = DB::table('policy_discounts as d')->join('price_list as l','l.id','=','d.price_list_id')->join('pmt_options as op','op.id','=','d.pmt_option_id')->join('sessions as s','s.id','=','d.session_id')->where('d.branch_id',$branch_id)->whereRaw($str_search)->selectRaw($cols);
 
         $count_query = clone $query;

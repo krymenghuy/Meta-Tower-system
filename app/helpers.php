@@ -1639,10 +1639,12 @@ function readFileContent($fileName=null)
      * This is useful when api response many images files to browsers, so to avoid many errors of 404
      * **/
     function checkFileUrl($url) {
+        if(!$url) return false;
         $localFilePath = $_SERVER['DOCUMENT_ROOT'] . parse_url($url, PHP_URL_PATH);
         return file_exists($localFilePath) && getimagesize($localFilePath);
     }
-    function validateUrl($url,$otherWise="") {
+    function validateUrl($url,$otherWise=null) {
+        if(!$url) return null;
         $localFilePath = $_SERVER['DOCUMENT_ROOT'] . parse_url($url, PHP_URL_PATH);
         $exists = file_exists($localFilePath) && getimagesize($localFilePath);
         return $exists?$url:$otherWise;

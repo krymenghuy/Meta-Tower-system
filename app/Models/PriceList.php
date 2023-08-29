@@ -972,7 +972,7 @@ class PriceList //extends Model
         if(!is_numeric($id)) return DV::error('ID must be a number');
         $exists_invoice = DB::table('invoices')->where('id',$id)->where('branch_id',$branch_id)->selectRaw('student_id')->first();
         if(!$exists_invoice) return DV::error('ID does not exist');
-        $due_date = isset($d->due_date)?$d->due_date:null;
+        //$due_date = isset($d->due_date)?$d->due_date:null;
         $insert_info = isset($d->insert_info)?$d->insert_info:null;
         $delete_info = isset($d->delete_info)?$d->delete_info:null;
         $keeper = [];

@@ -16,6 +16,7 @@ use App\Http\Controllers\PromoteStudentController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\StudentAttendanceController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\StudentGroupController;
 use App\Http\Controllers\TermController;
 use App\Http\Controllers\PriceListController;
@@ -45,17 +46,14 @@ use App\Http\Controllers\GeneralSettingsController;
 use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\WebReportController;
 //use App\Http\Controllers\NotificationController;
-
-
-
-use App\Http\Controllers\Invoice\InvoiceController;
+ 
 use App\Http\Controllers\Bill\VendorController;
 
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ExchangeRateController;
 
 use App\Http\Controllers\EmployeeController;
-use App\Models\GeneralSettings;
+//use App\Models\GeneralSettings;
 
 //use App\Models\PublicStorage;
 //use App\Models\SystemSetting;
@@ -185,6 +183,19 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/items',[PriceListController::class,'getInvoiceItems']);
     });
   
+    //begin:: EnrollmentManager
+    Route::prefix('enrollment')->group(function () {
+        //Route::post('/registration', [StudentController::class, 'studentRegistration']);
+        Route::post('/form-options',[EnrollmentController::class,'getFormOptions']);
+        Route::post('/list-paginate',[EnrollmentController::class,'list_paginate']);
+        Route::post('/delete',[EnrollmentController::class,'deleteEnrollment']);
+        Route::post('/student-info',[EnrollmentController::class,'studentDetials']);
+        Route::post('/delete-verified',[EnrollmentController::class,'deleteVerifiedEnrollment']);
+        Route::post('/save',[EnrollmentController::class,'saveEnrollment']);
+        Route::post('/details',[EnrollmentController::class,'getEnrollmentDetails']);
+    });
+    //end::EnrollmentManager
+
     //begin::StudentController
     Route::prefix('student')->group(function () {
         Route::post('/registration', [StudentController::class, 'studentRegistration']);
@@ -194,7 +205,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/delete-verified',[StudentController::class,'deleteVerifiedStudent']);
         Route::post('/information',[StudentController::class,'studentInformation']);
         Route::post('/enrollment-details',[StudentController::class,'getStudentEnrollmentInfo']);
-
+        
         //** PriceListController */
         Route::post('/invoice-list',[PriceListController::class,'studentInvoice']);
         Route::post('/generate-invoice',[PriceListController::class,'generateInvoice']);
@@ -418,6 +429,13 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('service-track/save', [ServiceTrackController::class, 'saveTrack']);
     Route::post('service-track/info', [ServiceTrackController::class, 'getTrackDetails']);
     //End::ServiceTrackController
+
+    Route::get('settings/options-school', [GeneralSettingsController::class, 'getOptions_school']);
+    Route::get('settings/options-level', [GeneralSettingsController::class, 'getOptions_level']);
+    Route::get('settings/options-program', [GeneralSettingsController::class, 'getOptions_program']);
+    Route::get('settings/options-group-all', [GeneralSettingsController::class, 'getOptions_group']);
+    Route::post('settings/school/save', [GeneralSettingsController::class, 'saveOption_school']);
+    Route::post('settings/school/delete', [GeneralSettingsController::class, 'deleteOption_school']);
 
     //begin::VendorController
     Route::post('vendor/save', [VendorController::class, 'saveVendor']);

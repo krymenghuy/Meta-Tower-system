@@ -270,10 +270,10 @@ label.simple-label {
 
 .error_text {
   color: red;
-  font-size: 1em;
+  position: absolute;
+  /* font-size: 1em;
   padding: 3px;
-  font-family: 'Khmer OS Content', 'Robotto', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
-  display: block;
+  font-family: 'Khmer OS Content', 'Robotto', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)'; */
 }
 
 @media screen and (min-width: 1400px) and (max-width:2000px) {
