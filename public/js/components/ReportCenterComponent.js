@@ -198,7 +198,7 @@ var ReportCenterComponent = new function(){
                 let f = el.data('field');
                 if(el.data('required')){
                     p['required'] = {
-                        'text': [mThis.capitalize(f.replaceAll('_id','')),' cannot empty!'].join(''),
+                        'text': [mThis.capitalize(f.replaceAll('_id','')),'cannot empty!'].join(' '),
                         'value': el.val()
                     };
                 }

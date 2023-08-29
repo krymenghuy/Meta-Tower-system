@@ -46,6 +46,12 @@ function renderTable(div, data){
                     </thead>
                     <tbody>
                         ${student=null,tbl && tbl.students.map(st => {
+                            const options = {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric'
+                            };
+
                             let inner_html=null;
                             st && st.list.map(d => {
                                 let cls = d.status === 'A' ? 'text-white bg-danger' : d.status === 'P' ? 'text-white bg-success' : d.status === 'Sat' ? 'text-danger-emphasis bg-danger-subtle' : d.status === 'Sun' ? 'text-danger bg-danger-subtle' : d.status === 'Pr' ? 'text-white bg-warning' : 'text-body-emphasis bg-dark-subtle';
@@ -58,8 +64,8 @@ function renderTable(div, data){
                                 <td class="text-capitalize">${st.name ? st.name : ''}</td>
                                 <td>${st.sex === 'M' ? 'Male' : 'Female'}</td>
                                 <td>${calculate_age(new Date(st.date_of_birth))}</td>
-                                <td>${st.date_of_birth ? st.date_of_birth : ''}</td>
-                                <td>${st.start_date ? st.start_date : ''}</td>
+                                <td>${st.date_of_birth ? new Date(st.date_of_birth).toLocaleDateString('km-kh',options).replaceAll(' ','-') : ''}</td>
+                                <td>${st.start_date ? new Date(st.start_date).toLocaleDateString('km-kh',options).replaceAll(' ','-') : ''}</td>
                                 <td>${data.session ? data.session : ''}</td>
                                 ${inner_html ? inner_html : ''}
                                 <td></td>
@@ -110,8 +116,12 @@ function windowPrint(){
 }
 
 function calculate_age(dob){
-    let diff_ms = Date.now() - dob.getTime();
-    let age_dt = new Date(diff_ms);
-
-    return Math.abs(age_dt.getUTCFullYear() - 1970);
+    if(!dob){
+        return 0;
+    }
+    else{
+        let diff_ms = Date.now() - dob.getTime();
+        let age_dt = new Date(diff_ms);
+        return Math.abs(age_dt.getUTCFullYear()-1970);
+    }
 }
