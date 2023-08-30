@@ -185,7 +185,7 @@
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="AssignStudentComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{ asset('assets/images/icons/student_group.png') }}"/>
+                                    <img class="icons" src="{{ asset('assets/images/icons/assign_student.png') }}"/>
                                 </span>
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Assign To Group"></span>
                             </a>
@@ -201,7 +201,6 @@
                     </ul>
                 </div>
             </li>
-
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
@@ -232,7 +231,6 @@
                     </ul>
                 </div>
             </li>
-
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
@@ -263,7 +261,6 @@
                     </ul>
                 </div>
             </li>
-
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
@@ -294,7 +291,6 @@
                     </ul>
                 </div>
             </li>
-
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
@@ -325,8 +321,6 @@
                     </ul>
                 </div>
             </li>
-
-            
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
@@ -354,11 +348,9 @@
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Academic Year"></span>
                             </a>
                         </li>
-                         
                     </ul>
                 </div>
             </li>
-
             <li class="kt-menu__item" aria-haspopup="true">
                 <a href="ReportCenterComponent" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">

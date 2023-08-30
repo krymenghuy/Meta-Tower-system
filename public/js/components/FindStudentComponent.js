@@ -202,22 +202,23 @@ var FindStudentComponent = new function(){
 
             mThis.panelStudentList.html(html);
             LocaleManager.translateZone('_fns_list');
-            mThis.controlOption();
+            mThis.controlOption(mThis.panelStudentList);
             mThis.prepareOptions(mThis.div_list);
             if(typeof onFinish === 'function') onFinish();
         });
     }
 
-    this.controlOption = () => {
-        let div = mThis.panelStudentList.find('.w-options');
-        let btn = mThis.panelStudentList.find('.btn--Options');
+    this.controlOption = (div_con) => {
+        let div = div_con.find('.w-options');
+        let btn = div_con.find('.btn--Options');
+        div_con.css('max-height',(window.innerHeight - 250)+'px');
 
         btn.on('click',function(e){
             e.preventDefault();
             $(this).find('.w-options').toggle('fast');
         });
 
-        mThis.panelStudentList.find('.btn--gnInvoice').on('click',function(e){
+        div_con.find('.btn--gnInvoice').on('click',function(e){
             e.preventDefault();
             let op = {
                 'id': $(this).data('id'),

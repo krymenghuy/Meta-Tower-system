@@ -797,3 +797,11 @@ li.kt-menu__section {
     height:fit-content;
     right: 0;
 }
+
+.fns-set-overflow{
+    overflow: hidden;
+}
+
+.fns-set-overflow:hover{
+    overflow: auto;
+}
