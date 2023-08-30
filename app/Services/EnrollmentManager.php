@@ -288,7 +288,7 @@ static function getFormOptions($ss){
         'sessions' => GeneralSettings::options_session($ss),
         //'pmt_options' => GeneralSettings::options_pmt($ss),
         'programs' => GeneralSettings::options_program($ss),
-        //'levels' => self::level_options($ss),
+        'levels' => GeneralSettings::options_level(null,$ss),
         'campuses' => GeneralSettings::options_campus($ss),
         'academic_years' => GeneralSettings::options_academic_year($ss),
         'terms' => GeneralSettings::options_term(null,$ss),

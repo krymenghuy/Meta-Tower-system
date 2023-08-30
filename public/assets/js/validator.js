@@ -355,11 +355,11 @@ let Validator = new function () {
             if(!dtype) dtype = el.data('datatype');
             switch(dtype){
                 case 'email':{
-                    err ='Email is not valid';
+                    err ='Email is not correct';
                     break;
                 } 
                 case 'phone':{
-                    err ='Phone number is not valid';
+                    err ='Phone number is not correct';
                     break;
                 } 
                 case 'name':{
@@ -367,43 +367,52 @@ let Validator = new function () {
                     break;
                 } 
                 case 'lastname':{
-                    err ='Last name is not valid'; 
+                    err ='Last name is not correct'; 
                     break;
                 } 
                 case 'firstname':{
-                    err ='First name is not valid';
+                    err ='First name is not correct';
                     break;
                 } 
                 case 'sex':{
-                    err ='Sex is not valid';
+                    err ='Sex is not correct';
                     break;
                 } 
                 case 'date_of_birth':{
-                    err ='Date of birth is not valid';
+                    err ='Date of birth is not correct';
                     break;
                 } 
                 case 'dob':{
-                    err ='Date of birth is not valid';
+                    err ='Date of birth is not correct';
                     break;
                 } 
                 case 'start_date':{
-                    err ='Start date is not valid';
+                    err ='Start date is not correct';
                     break;
                 } 
                 case 'end_date':{
-                    err ='End date is not valid';
+                    err ='End date is not correct';
                     break;
                 } 
                 default:{
                     let f = el.data('ffield');
                     f = f?f:el.data('field');
-                    err =`${f} is not valid`;
+                    f = mThis.properCase(f);
+                    err =[f?f:'This field',` is required`].join('');
                     break;
                 } 
             }
  
         }       
         return mThis.trans(err);
+    }
+
+    this.properCase = (inputString) =>{
+        if(!inputString) return null;
+        return inputString
+          .split('_')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
     }
 
     this.clearErrors = (div)=>{
@@ -456,8 +465,8 @@ let Validator = new function () {
            case 'range':{
              let min = el.data('min');
              let max = el.data('max');
-             if(!$.isNumeric(min)) min =0;
-             if(!$.isNumeric(max)) max =0;   
+             if(!(min>0 || min <=0)) min =0;
+             if(!(max >0 || max <=0)) max =0;   
              if(el.val() < min || el.val() > max) return mThis.getErrorText(el,dtype);  
              break;
            }

@@ -19,7 +19,8 @@ class Program // extends Model
         $id = $id?$id:$this->id;
         $v_rule = [
             'department_id' => '1|number|default=1',
-            'name' => '0|string|1-50',
+            'name' => '0|string|1-200',
+            'description' => '0|string|1-250',
             'prev_program_id' => '0|number|exists=programs.id'
         ];
 
@@ -34,24 +35,16 @@ class Program // extends Model
     function list($ss=null){
         $ss = $ss?$ss:$this->user_info;
         $branch_id = $ss->branch_id;
-
-        $selectRow = "p.id,p.department_id,d.name as department,p.name,p.created_at,p.create_user";
-
-        $rows = DB::table('programs as p')->join('departments as d','p.department_id','=','d.id')->selectRaw($selectRow)->where('p.branch_id',$branch_id)->get();
-
-        foreach($rows as $row){
-            $row->date = explode(' ',$row->created_at)[0];
-            unset($row->created_at);
-            unset($row->photo_file_name);
-        }
-        return $rows;
+        $selectRow = 'p.id,p.department_id,d.name as department,p.description,p.name,p.prev_program_id,(SELECT `name` FROM programs WHERE id = p.prev_program_id LIMIT 1) AS prev_program,formatTime(p.updated_at) AS updated_at,p.update_user,p.create_user';
+        return DB::table('programs as p')->join('departments as d','p.department_id','=','d.id')->selectRaw($selectRow)->where('p.branch_id',$branch_id)->get();
+ 
     }
 
     function details($id=null,$ss=null){
         $ss = $ss?$ss:$this->user_info;
         $id = $id?$id:$this->id;
         $branch_id = $ss->branch_id;
-        $row = DB::table('programs as p')->selectRaw('p.id,p.department_id,p.name')
+        $row = DB::table('programs as p')->selectRaw('p.id,p.department_id,p.name,p.prev_program_id,p.description')
                 ->where('p.branch_id',$branch_id)
                 ->where('p.id',$id)->get()->first();
         return $row;
