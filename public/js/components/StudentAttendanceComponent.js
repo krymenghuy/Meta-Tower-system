@@ -76,7 +76,6 @@ var StudentAttendanceComponent = new function(){
             if(res.status_code === 200){
                 d = res.data;
             }
-            console.log(d);
             let first = 0;
 
             d && d.map(t => {

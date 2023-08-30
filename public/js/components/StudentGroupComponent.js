@@ -13,8 +13,8 @@ var StudentGroupComponent = new function(){
     this.cols = [
         {
             title: "Group Name",
-            data: (data,index,tr) =>{
-                if(data.name == data.descriptive_name) data.name ='';
+            data: (data, index, tr) =>{
+                if(data.name == data.descriptive_name) data.name = '';
                 if(!data.descriptive_name) data.descriptive_name = data.name;
                 return ['<div class="d-flex flex-column"><span class="fw-semibold">',data.descriptive_name,'</span><span class="text-left text-muted">',data.name,'</span></div>'].join('');
             }
@@ -25,7 +25,7 @@ var StudentGroupComponent = new function(){
         },
         {
             title: "Program",
-            data: (data,index,tr) =>{
+            data: (data, index, tr) =>{
                 return ['<div class="d-flex flex-column"><span class="fw-semibold">',data.program_name,'</span><span class="text-left">',data.level_name,'</span></div>'].join('');
             }
         },
@@ -35,8 +35,8 @@ var StudentGroupComponent = new function(){
         },
         {
             title: "Remarks",
-            data: (data,index,tr)=>{
-                return data.remarks?data.remarks:'No Remarks';
+            data: (data, index, tr) => {
+                return data.remarks ? data.remarks : 'No Remarks';
             }
         },
         {
@@ -54,11 +54,11 @@ var StudentGroupComponent = new function(){
         }];
 
     this.getFilterData = ()=>{
-     return {
-       'term_id':mThis.elFilter_term.val(),
-       'program_id':mThis.elFilter_program.val(),
-       'session_id':mThis.elFilter_session.val()
-     };
+        return {
+            'term_id':mThis.elFilter_term.val(),
+            'program_id':mThis.elFilter_program.val(),
+            'session_id':mThis.elFilter_session.val()
+        };
     }
 
    //*** init StudentGroupsComponent
@@ -76,21 +76,20 @@ var StudentGroupComponent = new function(){
 
         mThis.tblStudentGroup = $(mThis.groupListview.getTable());
 
-        mThis.elFilter_term.on('change',e=>{
+        mThis.elFilter_term.on('change',function(e){
             e.preventDefault();
             mThis.groupListview.showPage(mThis.getFilterData(),null,null);
         });
 
-        mThis.elFilter_program.on('change',e=>{
+        mThis.elFilter_program.on('change',function(e){
             e.preventDefault();
             mThis.groupListview.showPage(mThis.getFilterData(),null,null);
         });
 
-        mThis.elFilter_session.on('change',e=>{
+        mThis.elFilter_session.on('change',function(e){
             e.preventDefault();
             mThis.groupListview.showPage(mThis.getFilterData(),null,null);
         });
-
 
         mThis.btnNew.on('click',function(e){
             e.preventDefault();
@@ -132,29 +131,30 @@ var StudentGroupComponent = new function(){
     }
  
     this.loadFilterOptions = (onFinish=null)=>{
-       vsapi.call(`${main_view.base_url}/api/student-group/form-options`,{'id':null},null,false).then(res=>{
-           if(res.status_code === 200){
+        vsapi.call(`${main_view.base_url}/api/student-group/form-options`,{'id':null},null,false).then(res => {
+            if(res.status_code === 200){
                 let d =StringSanitizer.sanitizeObject( res.data,null,[]);
                 VSUtil.setComboItems(mThis.elFilter_term,d.terms,'id','term_name',null,null,null);
                 VSUtil.setComboItems(mThis.elFilter_program,d.programs,'id','program_name',null,null,null);
                 VSUtil.setComboItems(mThis.elFilter_session,d.sessions,'id','session_name',null,null,null);
-                mThis.elFilter_term.val(d.terms[0].id).trigger('change');
+                mThis.elFilter_term.val(d.term && d.terms[0].id).trigger('change');
                 onFinish();
-           }else cv_interact.error('Failed to load Filter data for Student Groups Component');
-       });
+            }
+            else
+                cv_interact.error('Failed to load Filter data for Student Groups Component');
+        });
     }
 
     this.show = (options) => {
         if(!options) options = {};
 
         mThis.loadFilterOptions(()=>{
-             main_view.setTitle(mThis.title_prop);
-             let x = mThis.self.siblings(':visible');
-             x.fadeOut('fast',function(){
-                 mThis.self.hide().fadeIn(300);
-             });
-        }); 
-      
+            main_view.setTitle(mThis.title_prop);
+            let x = mThis.self.siblings(':visible');
+            x.fadeOut('fast',function(){
+                mThis.self.hide().fadeIn(300);
+            });
+        });
     }
 }
 
@@ -216,11 +216,13 @@ let StudentGroupDialog = new function(){
         });
     }
 
-    mThis.elCampus.change('change',e=>{
+    mThis.elCampus.change('change',function(e){
+        e.preventDefault();
        mThis.setGroupName();
     });
 
-    mThis.elProgram.on('change',e=>{
+    mThis.elProgram.on('change',function(e){
+        e.preventDefault();
         window.vsapi.call(`${main_view.base_url}/api/settings/options-level`,{'program_id':mThis.elProgram.val()},null,false).then(res => {
             let d = [];
             if(res.status_code === 200){
@@ -230,7 +232,8 @@ let StudentGroupDialog = new function(){
         });
     });
 
-    mThis.elAcademicYear.on('change',e=>{
+    mThis.elAcademicYear.on('change',function(e){
+        e.preventDefault();
         window.vsapi.call(`${main_view.base_url}/api/settings/options-term`,{'academic_year':mThis.elAcademicYear.val()},null,false).then(res => {
             let d = [];
             if(res.status_code === 200){
@@ -240,15 +243,18 @@ let StudentGroupDialog = new function(){
         });
     });
 
-    mThis.elLevel.on('change',e=>{
+    mThis.elLevel.on('change',function(e){
+        e.preventDefault();
         mThis.setGroupName();
     });
 
-    mThis.elSession.on('change',e=>{
+    mThis.elSession.on('change',function(e){
+        e.preventDefault();
         mThis.setGroupName();
     });
 
-    mThis.elTerm.on('change',e=>{
+    mThis.elTerm.on('change',function(e){
+        e.preventDefault();
         mThis.setGroupName();
     });
  
@@ -267,14 +273,14 @@ let StudentGroupDialog = new function(){
     }
 
     this.setGroupName = ()=>{
-      let c = mThis.elCampus.val();
-      let l = mThis.elLevel.find('option:selected').text();
-      l = StringSanitizer.sanitizeOut(l);
-      l = (l+'').replace(/\s/g,'',l);
-      let s = mThis.elSession.val();
-      let term_id = mThis.elTerm.val();
-      let g_name = [term_id,'.',c,'.',l,'.',s,'#'].join('');
-      mThis.elGroupName.val(g_name);
+        let c = mThis.elCampus.val();
+        let l = mThis.elLevel.find('option:selected').text();
+        l = StringSanitizer.sanitizeOut(l);
+        l = (l+'').replace(/\s/g,'',l);
+        let s = mThis.elSession.val();
+        let term_id = mThis.elTerm.val();
+        let g_name = [term_id,'.',c,'.',l,'.',s,'#'].join('');
+        mThis.elGroupName.val(g_name);
     }
 
     this.validate = new FormValidator(mThis.self,{
