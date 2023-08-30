@@ -176,21 +176,34 @@ var ProgramComponent = new function(){
                 data = res.data;
             }
 
-            let cols = [{
-                title: "Name",
-                data: "name"
+            let cols = [
+                {
+                title: "Program Name",
+                data: (data,index,tr)=>{
+                    return ['<span class="fw-semibold">',data.name,'</span>'].join('');
+                }
             },
             {
-                title: "Department",
-                data: "department"
+                title: "Previous",
+                data: (data,index,tr)=>{
+                    return ['<span class="fw-semibold">',data.prev_program?data.prev_program:'None','</span>'].join('');
+                }
+            },
+            // {
+            //     title: "Department",
+            //     data: "department"
+            // },
+             {
+                title: "Description",
+                data: (data,index,tr)=>{
+                    return data.description?data.description:'N/A';
+                }
             },
             {
-                title: "Created",
-                data: "create_user"
-            },
-            {
-                title: "Date",
-                data: "date"
+                title: "Updated",
+                data: (data,index,tr)=>{
+                    return ['<span class="d-block fw-semibold">',data.update_user,'<span><span class="d-block text-left p-1 text-muted"><small>',data.updated_at,'</small></span>'].join('');
+                }
             },
             {
                 title: "Action",
@@ -317,7 +330,7 @@ let ProgramDialog = new function(){
             if(res.status_code === 200){
                 d = res.data;
             }
-            VSUtil.setComboItems(mThis.elProgram,d,'id','program',null,null,null);
+            VSUtil.setComboItems(mThis.elProgram,d,'id','program',true,'None',0);
             if(typeof onFinish === 'function') onFinish();
         });
     }
@@ -411,7 +424,7 @@ let ProgramLevelDialog = new function(){
             if(res.status_code === 200){
                 d = res.data;
             }
-            VSUtil.setComboItems(mThis.elLevel,d,'id','level',null,null,null);
+            VSUtil.setComboItems(mThis.elLevel,d,'id','level',true,'None',0);
             if(typeof onFinish === 'function') onFinish();
         });
     }

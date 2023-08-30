@@ -478,8 +478,9 @@ class Student //extends Model
         $count = $count_query->count('st.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row) {
+            $family = DB::table('student_guardians')->where('student_id',$row->id)->first();
             $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
-            $row->family_id = DB::table('student_guardians')->where('student_id',$row->id)->first()->family_code;
+            $row->family_id = $family?$family->family_code:null;
             unset($row->file_name);
             $row->enrollment_info = self::getStudentEnrollmentInfo($row->id,$ss);
         }

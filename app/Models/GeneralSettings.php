@@ -204,11 +204,13 @@ class GeneralSettings //extends Model
         $branch_id = $ss?$ss->branch_id:null;
         $str_where ='';
         if($branch_id>0) $str_where = ' WHERE p.branch_id ='.$branch_id;
-        return DB::select(DB::raw('SELECT p.id, p.name AS program_name, shortcut FROM programs AS p '.$str_where.' ORDER BY name ASC'));
+        return DB::select(DB::raw('SELECT p.id, p.name AS program_name, shortcut FROM programs AS p '.$str_where.' ORDER BY order_number ASC'));
     }
     static function options_level($program_id=null){
         //$branch_id = $ss->branch_id;
-        return  DB::table('program_levels AS p')->where('p.program_id',$program_id)->selectRaw('p.id,p.program_id,p.name as level_name,p.level_order,p.prev_level_id')->orderByRaw('p.level_order ASC')->get();
+        $str_program ='1=1';
+        if($program_id>0) $str_program ='l.program_id='.$program_id;
+        return  DB::table('program_levels AS l')->join('programs as p','p.id','=','l.program_id')->whereRaw($str_program)->selectRaw('l.id,l.program_id,l.name as level_name,l.level_order,l.prev_level_id')->orderByRaw('p.order_number ASC,l.level_order ASC')->get();
     }
     static function options_campus($ss){
         $branch_id = $ss->branch_id;
@@ -228,8 +230,17 @@ class GeneralSettings //extends Model
         return DB::table('schools')->selectRaw('name,id')->get();
     }
     static function options_group($term_id,$filter=null){
-        if(!$filter)
-        return DB::table('student_groups')->where('term_id',$term_id)->selectRaw('id,name AS group_name,campus_id,session_id,level_id')->get();
+        $str_where ='1=1';
+        if($filter){
+            $d = (object)$filter;
+            $level_id = isset($d->level_id)?$d->level_id:null;
+            $session_id = isset($d->session_id)?$d->session_id:null;
+            $campus_id = isset($d->campus_id)?$d->campus_id:null; 
+            if($campus_id>0) $str_where .=' AND g.campus_id ='.$campus_id;
+            if($level_id>0) $str_where .=' AND g.level_id ='.$level_id;
+            if($session_id>0) $str_where .=' AND g.session_id ='.$session_id;
+        }
+        return DB::table('student_groups AS g')->where('g.term_id',$term_id)->whereRaw($str_where)->selectRaw('g.id,g.name AS group_name,g.campus_id,g.session_id,g.level_id')->get();
     }
 
     static function saveOption_school($arr,$id, $ss){
@@ -324,7 +335,7 @@ class GeneralSettings //extends Model
         return(object)[
             'options_student' => DB::table('students')->selectRaw('name as student_name,id')->get(),
             'options_campus' => DB::table('campuses')->selectRaw('name as campus_name,id')->get(),
-            'options_program_level' => DB::table('program_levels')->selectRaw('name as level,id')->get(),
+            'options_program_level' => DB::table('program_levels')->selectRaw('name as level,id')->orderBy('order_number ASC')->get(),
             'options_session' => DB::table('sessions')->selectRaw('name as session,id')->get(),
         ];
     }

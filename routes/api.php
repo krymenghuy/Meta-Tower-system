@@ -167,7 +167,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/options-level', [GeneralSettingsController::class, 'getOptions_level']);
         Route::post('/options-program', [StudentController::class, 'getOptions_program']);
         Route::post('/options-academic-year', [StudentController::class, 'getOptions_academic_year']);
-        Route::post('/options-term', [StudentController::class, 'getOptions_term']);
+        //Route::post('/options-term', [StudentController::class, 'getOptions_term']);
+        Route::post('/options-term', [GeneralSettingsController::class, 'getOptions_term']);
     });
 
     Route::prefix('invoice')->group(function (){
@@ -434,6 +435,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::get('settings/options-level', [GeneralSettingsController::class, 'getOptions_level']);
     Route::get('settings/options-program', [GeneralSettingsController::class, 'getOptions_program']);
     Route::get('settings/options-group-all', [GeneralSettingsController::class, 'getOptions_group']);
+    Route::post('settings/options-group', [GeneralSettingsController::class, 'getOptions_group']);
     Route::post('settings/school/save', [GeneralSettingsController::class, 'saveOption_school']);
     Route::post('settings/school/delete', [GeneralSettingsController::class, 'deleteOption_school']);
 
