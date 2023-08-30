@@ -760,7 +760,11 @@ li.kt-menu__section {
     list-style-type: none;
     font-family:Poppins;
     max-height:300px;
-    overflow-y:auto;
+    overflow:hidden;
+}
+
+.del-marker:hover{
+    overflow: auto;
 }
 
 .del-marker li{

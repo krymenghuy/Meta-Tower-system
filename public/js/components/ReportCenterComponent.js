@@ -46,7 +46,7 @@ var ReportCenterComponent = new function(){
                     <span class="trans-text" data-langprop="buttons.Print"></span>
                     <i class="fa-solid fa-print"></i>
                 </button>
-                <button class="btn-pdf" type="button">
+                <button id="_rpt_excel" class="btn-pdf" type="button">
                     <span class="trans-text" data-langprop="buttons.Export"></span>
                     <i class="fa-regular fa-file-pdf"></i>
                 </button>
@@ -84,6 +84,10 @@ var ReportCenterComponent = new function(){
     }
 
     this.controlPanel = (div) => {
+        const tbl = div.find('#_rpt_table').children();
+        if(tbl.length === 0)
+            HtmlString = null;
+
         div.find('#_rpt_filter').on('click',function(e){
             e.preventDefault();
             div.find('#_rpt_container').toggle('slow');
@@ -92,6 +96,11 @@ var ReportCenterComponent = new function(){
         div.find('#_rpt_pdf').off('click').on('click',function(e){
             e.preventDefault();
             windowPrint();
+        });
+
+        div.find('#_rpt_excel').off('click').on('click',function(e){
+            e.preventDefault();
+            exportToExcel();
         });
     }
 
@@ -146,12 +155,17 @@ var ReportCenterComponent = new function(){
             </div>`].join('');
         }
 
-        html = [`<div class="row row-cols-lg-2 w-100">${inner_html}</div>
+        html = [`<div class="row row-cols-lg-2 w-100">
+            ${inner_html ? inner_html : `<div class="col">
+                <h4 class="text-muted text-center">No Filter</h4>
+            </div>`}
+        </div>
         <div class="form-group mt-3">
             <button id="_rpt_btn_report" class="btn-filter" type="button">
                 <span class="trans-text" data-langprop="buttons.Run Report"></span>
             </button>
         </div>`].join('');
+
         div.html(html);
         mThis.runReport(div);
         mThis.renderSelect(div);
@@ -209,20 +223,20 @@ var ReportCenterComponent = new function(){
                 cv_interact.warning(p.required.text);
             }
             else{
-                mThis.getDataTable(p);
+                mThis.getDataTable(div.closest('.main-container'),p);
             }
         });
     }
 
     this.capitalize = (str, lower = false) => (lower ? str.toLowerCase() : str).replace(/(?:^|\s|["'([{])+\S/g, match => match.toUpperCase());
 
-    this.getDataTable = (p) => {
+    this.getDataTable = (div, p) => {
         window.vsapi.call(`${main_view.base_url}/api/student/attendance-list-report`,p,null,false).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = res.data;
             }
-            renderTable($('#_rpt_table'), data);
+            renderTable(div.find('#_rpt_table'), data);
         });
     }
 

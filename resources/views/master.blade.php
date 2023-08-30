@@ -14,7 +14,7 @@
     <head>
         <base href="../">
         <meta charset="utf-8" />
-        <title>KSM System</title>
+        <title>Kids World School</title>
         <link type="images/png" rel="icon" href="{{ asset('assets/images/logo/logo.png') }}"/>
         <meta name="description" content="Updates and statistics">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
