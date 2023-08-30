@@ -1377,9 +1377,9 @@ class PriceList //extends Model
 
         $revive = DB::table('invoices')->where('id',$id)
                 ->where('branch_id',$ss->branch_id)
-                ->where('in_active',1)
+                ->where('inactive',1)
                 ->update([
-                    'in_active' => 0,
+                    'inactive' => 0,
                     'purpose' => $purpose,
                 ]);
         if(!$revive) return DV::error('Could not find invoice to revive');
@@ -1390,11 +1390,11 @@ class PriceList //extends Model
         $id = $d->id;
         $purpose = isset($d->purpose)?$d->purpose:$d->remarks;
         $delete = DB::table('invoices')->where('id',$id)->update([
-            'in_active' => 1,
+            'inactive' => 1,
             'purpose' => $purpose
         ]);
-        $in_active = DB::table('invoices')->where('id',$id)->where('branch_id',$ss->branch_id)->take(1)->value('in_active');
-        if($in_active == 1){
+        $inactive = DB::table('invoices')->where('id',$id)->where('branch_id',$ss->branch_id)->take(1)->value('inactive');
+        if($inactive == 1){
             $delete = DB::table('invoices')->where('id',$id)->where('branch_id',$ss->branch_id)->delete();
         }
         return DV::depends($delete,['action'=>'Deleted','status'=>'Status change to in active']);
