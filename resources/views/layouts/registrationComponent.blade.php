@@ -107,19 +107,18 @@
                 </div>
             </div>
             <label for="academic_information" class="form-label trans-text fs-5 text-primary" data-langprop="titles.Academic Information"></label>
-            <div class="row row-cols-lg-4">
-
+            <div class="row row-cols-lg-4" id="_rgs_div_enrollment_path">
                 <div class="col">
                         <div class="form-group">
                             <label for="academic_year" class="form-label trans-text" data-langprop="titles.Academic Year"></label>
                             <div class="width-select-dialog">
-                                <select data-required="1" class="modal-select2 data-input" data-field="academic_year"></select>
+                                <select  id="_rgs_acad_year"  data-required="1" class="modal-select2 data-input" data-field="academic_year"></select>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="term_id" class="form-label trans-text" data-langprop="titles.Term"></label>
                             <div class="width-select-dialog">
-                                <select id="_rgs_term" data-required="1" class="modal-select2 data-input" data-field="term_id"></select>
+                                <select id="_rgs_term" data-required="1" class="modal-select2 data-input g-filter" data-field="term_id"></select>
                             </div>
                         </div>
                     </div>
@@ -129,13 +128,13 @@
                     <div class="form-group">
                         <label for="campus_id" class="form-label trans-text" data-langprop="titles.Campus"></label>
                         <div class="width-select-dialog">
-                            <select id="_rgs_campus" data-required="1" class="modal-select2 form-control data-input" data-field="campus_id"></select>
+                            <select id="_rgs_campus" data-required="1" class="modal-select2 form-control data-input g-filter" data-field="campus_id"></select>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="level_id" class="form-label trans-text" data-langprop="titles.Program"></label>
+                        <label for="level_id" class="form-label trans-text" data-langprop="titles.Grade"></label>
                         <div class="width-select-dialog">
-                            <select id="_rgs_program" data-required="1" class="modal-select2 data-input" data-field="program_id"></select>
+                            <select id="_rgs_level" data-required="1" class="modal-select2 data-input g-filter" data-field="level_id"></select>
                         </div>
                     </div>
                 </div>
@@ -143,7 +142,7 @@
                     <div class="form-group">
                         <label for="session_id" class="form-label trans-text" data-langprop="titles.Session"></label>
                         <div class="width-select-dialog">
-                            <select id="_rgs_session" data-required="1" class="modal-select2 form-control data-input" data-field="session_id"></select>
+                            <select id="_rgs_session" data-required="1" class="modal-select2 form-control data-input g-filter" data-field="session_id"></select>
                         </div>
                     </div>
 

@@ -368,7 +368,13 @@ class GeneralSettingsController extends Controller
   function getOptions_group(Request $req){
     //$ss = UM::getUserInfoByToken($req,-1);
     //if($ss->status_code !=200) return $ss; //user not authenticated
-    return JDV::result(GeneralSettings::options_group($req->term_id,null));
+    return JDV::result(GeneralSettings::options_group($req->term_id,$req->all()));
+  }
+
+  function getOptions_term(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return $ss; //user not authenticated
+    return JDV::result(GeneralSettings::options_term($req->academic_year,$ss));
   }
 
   function saveOption_school(Request $req){

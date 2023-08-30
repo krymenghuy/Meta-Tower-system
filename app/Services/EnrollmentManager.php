@@ -282,21 +282,21 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
     return DV::depends($updated,'Delete verified student');
 }
 
-static function getFormOptions($ss){
-    $res = [
-        //'price_list'=>GeneralSettings::price_list_options($ss),
-        'sessions' => GeneralSettings::options_session($ss),
-        //'pmt_options' => GeneralSettings::options_pmt($ss),
-        'programs' => GeneralSettings::options_program($ss),
-        //'levels' => self::level_options($ss),
-        'campuses' => GeneralSettings::options_campus($ss),
-        'academic_years' => GeneralSettings::options_academic_year($ss),
-        'terms' => GeneralSettings::options_term(null,$ss),
-        'schools' => GeneralSettings::options_school($ss)
-       // ,'groups' => GeneralSettings::options_group($term_id,$ss)
-    ];
-    return $res;
-}
+    static function getFormOptions($ss){
+        $res = [
+            //'price_list'=>GeneralSettings::price_list_options($ss),
+            'sessions' => GeneralSettings::options_session($ss),
+            //'pmt_options' => GeneralSettings::options_pmt($ss),
+            'programs' => GeneralSettings::options_program($ss),
+            'levels' => GeneralSettings::options_level(null,$ss),
+            'campuses' => GeneralSettings::options_campus($ss),
+            'academic_years' => GeneralSettings::options_academic_year($ss),
+            'terms' => GeneralSettings::options_term(null,$ss),
+            'schools' => GeneralSettings::options_school($ss)
+        // ,'groups' => GeneralSettings::options_group($term_id,$ss)
+        ];
+        return $res;
+    }
 
     function getEnrollmentDetails($id=null,$ss=null){
         $ss = $ss?$ss:$this->user_info;

@@ -37,7 +37,6 @@ use App\Http\Controllers\Login\LoginController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\CompanyProfileController;
 
-//use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\DashboardController;
 //use App\Http\Controllers\MobileAppSettingsController;
@@ -45,6 +44,7 @@ use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\GeneralSettingsController;
 use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\WebReportController;
+use App\Http\Controllers\ReportController;
 //use App\Http\Controllers\NotificationController;
  
 use App\Http\Controllers\Bill\VendorController;
@@ -167,7 +167,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/options-level', [GeneralSettingsController::class, 'getOptions_level']);
         Route::post('/options-program', [StudentController::class, 'getOptions_program']);
         Route::post('/options-academic-year', [StudentController::class, 'getOptions_academic_year']);
-        Route::post('/options-term', [StudentController::class, 'getOptions_term']);
+        //Route::post('/options-term', [StudentController::class, 'getOptions_term']);
+        Route::post('/options-term', [GeneralSettingsController::class, 'getOptions_term']);
     });
 
     Route::prefix('invoice')->group(function (){
@@ -434,6 +435,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::get('settings/options-level', [GeneralSettingsController::class, 'getOptions_level']);
     Route::get('settings/options-program', [GeneralSettingsController::class, 'getOptions_program']);
     Route::get('settings/options-group-all', [GeneralSettingsController::class, 'getOptions_group']);
+    Route::post('settings/options-group', [GeneralSettingsController::class, 'getOptions_group']);
     Route::post('settings/school/save', [GeneralSettingsController::class, 'saveOption_school']);
     Route::post('settings/school/delete', [GeneralSettingsController::class, 'deleteOption_school']);
 
@@ -535,6 +537,33 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
   //End::OtherFeeController
 
+  //begin::ReportController
+   Route::post('report-center/report-list', [ReportController::class, 'getReportList']);
+   Route::post('report-center/filter-options', [WebReportController::class, 'getReportFilterOptions']);
+
+  Route::prefix('reports')->group(function(){
+    Route::post('/list',[ReportController::class,'getReportList']);
+    Route::post('/filter-options', [ReportController::class, 'getReportFilterOptions']);
+
+    Route::post('finance/activities',[ReportController::class,'getActivities']);
+    Route::post('finance/payments',[ReportController::class,'getInvoicePayments']);
+    Route::post('finance/invoice-list',[ReportController::class,'getInvoiceList']);
+    Route::post('finance/invoice-paid',[ReportController::class,'getPaidInvoices']);
+    Route::post('finance/expired-students',[ReportController::class,'getExpiredStudents']);
+    Route::post('finance/students-with-sepcial-discount',[ReportController::class,'getStudentsWithSpecialDiscount']);
+    Route::post('finance/student-counts-by-pmt-option',[ReportController::class,'countStudentsByPmtOptions']);
+
+    Route::post('enrollment/student-referrers',[ReportController::class,'getStudentReferers']);
+    Route::post('enrollment/family-list',[ReportController::class,'getFimilyList']);
+    Route::post('enrollment/activities',[ReportController::class,'getActivities']);
+    Route::post('enrollment/attendance-summary',[ReportController::class,'getAttendanceSummary']);
+    Route::post('enrollment/student-list',[ReportController::class,'getStudentList']);
+    Route::post('enrollment/dropout-students',[ReportController::class,'getDropoutStudents']);
+    Route::post('enrollment/new-students',[ReportController::class,'getNewStudents']);
+  });
+ //end::ReportController
+
+
   //begin::MobileSettingsController
     Route::prefix('mobile-settings')->group(function(){
         Route::post('/banner-save',[BannerController::class,'save']);
@@ -586,17 +615,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('deletePromotion', [PromotionController::class, 'deletePromotion']);
     //end::PromotionController
 });
-
-//begin::ReportController/WebReportController
-
-//end::ReportController/WebReportController
-Route::post('report-center/report-list', [WebReportController::class, 'getReportList']);
-Route::post('report-center/filter-options', [WebReportController::class, 'getReportFilterOptions']);
-Route::post('test/test-api', function () {
-    $data = "This is result of api";
-    return response()->json($data);
-});
-
+   
 //begin::SystemSettingController
 Route::post('getComboItems_price_list', [SystemSettingController::class, 'getComboItems_price_list']);
 
