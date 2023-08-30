@@ -786,8 +786,7 @@ class StudentAttendance //extends Model
             $count_col_absent = 0;
             $count_col_present = 0;
             $count_col_permission = 0;
-            // $dailyAttCount = [];
-            $d=[];
+            $daily_attendance = [];
             foreach ($students as $st) {
                 $current_date = new DateTime("$year-$month-01");
                 $end_date_obj = new DateTime("$year-$month-01");
@@ -810,63 +809,59 @@ class StudentAttendance //extends Model
                     'list' => $att_info,
                 ];
 
-                // $days=[];
-                // $d=$att_info;
+                foreach($att_info as $att){
 
-                // foreach($att_info as $att){
-                //     if($att->status == 'A' || $att->status_id == 3){
-                //         $count_col_absent ++;
-                //     }
-                //     if($att->status == 'P' || $att->status_id == 1){
-                //         $count_col_present ++;
-                //     }
-                //     if($att->status == 'Pr' || $att->status_id == 2){
-                //         $count_col_permission ++;
-                //     }
-                // }
-                $dayCounts = [];
-
-                foreach ($att_info as $att) {
-                    if ($att->status == 'A' || $att->status_id == 3) {
-                        $count_col_absent++;
+                    if($att->status == 'A' || $att->status_id == 3){
+                        $count_col_absent ++;
                     }
-                    if ($att->status == 'P' || $att->status_id == 1) {
-                        $count_col_present++;
+                    if($att->status == 'P' || $att->status_id == 1){
+                        $count_col_present ++;
                     }
-                    if ($att->status == 'Pr' || $att->status_id == 2) {
-                        $count_col_permission++;
+                    if($att->status == 'Pr' || $att->status_id == 2){
+                        $count_col_permission ++;
                     }
 
-                    if ($att->status == 'A' || $att->status_id == 3) {
-                        $dayCounts[$day]['absent']++;
-                    }
-                    if ($att->status == 'P' || $att->status_id == 1) {
-                        $dayCounts[$day]['present']++;
-                    }
-                    if ($att->status == 'Pr' || $att->status_id == 2) {
-                        $dayCounts[$day]['permission']++;
-                    }
+                    $daily_attendance[] = self::countDailyAttendance($att_info, $att->day);
 
                 }
+                $processedData = [];
 
-                $days = [];
-                foreach ($dayCounts as $day => $counts) {
-                    $days[] = [
-                        'day' => $day,
-                        'absent' => $counts['absent'],
-                        'present' => $counts['present'],
-                        'permission' => $counts['permission'],
-                    ];
+                foreach ($daily_attendance as $item) {
+                    $day = $item->day;
+
+                    if (!isset($processedData[$day])) {
+                        $processedData[$day] = [
+                            'day' => $day,
+                            'absent' => 0,
+                            'present' => 0,
+                            'permission' => 0
+                        ];
+                    }
+
+                    if ($item->absent == 1) {
+                        $processedData[$day]['absent']++;
+                    }
+
+                    if ($item->present == 1) {
+                        $processedData[$day]['present']++;
+                    }
+
+                    if ($item->permission == 1) {
+                        $processedData[$day]['permission']++;
+                    }
                 }
+
+
 
                 $monthData['monthly_attendance'] = [
                     'absent' =>$count_col_absent,
                     'permission' => $count_col_permission,
                     'present' => $count_col_present,
-
                 ];
+                $result = array_values($processedData);
+                $monthData['daily_attetndance'] = $result;
+
                 $monthData['students'][] = $stData;
-                $monthData['dd'][] = $days;
 
             }
 
@@ -879,30 +874,33 @@ class StudentAttendance //extends Model
     }
 
     function countDailyAttendance($arr, $day) {
-        $absent = 0;
-        $present = 0;
-        $permission = 0;
+        $filteredData = array_filter($arr, function ($att) use ($day) {
+            return $att->day == $day;
+        });
 
-        // Loop through the array to count the statuses for the specific day
-        foreach ($arr as $item) {
-            if ($item->day == $day) {
-                if ($item->status == 'A' || $item->status_id == 3) {
-                    $absent++;
-                } elseif ($item->status == 'P' || $item->status_id == 1) {
-                    $present++;
-                } elseif ($item->status == 'Pr' || $item->status_id == 2) {
-                    $permission++;
-                }
+        $countA = 0;
+        $countP = 0;
+        $countPr = 0;
+
+        foreach ($filteredData as $att) {
+            if ($att->status == 'A' || $att->status_id == 3) {
+                $countA++;
+            }
+            if ($att->status == 'P' || $att->status_id == 1) {
+                $countP++;
+            }
+            if ($att->status == 'Pr' || $att->status_id == 2) {
+                $countPr++;
             }
         }
 
-        return [
-            'absent' => $absent,
-            'present' => $present,
-            'permission' => $permission
+        return (object)[
+            'day' => $day,
+            'absent' => $countA,
+            'present' => $countP,
+            'permission' => $countPr
         ];
     }
-
 
     function countGroupMembers($group_id,$ss){
         $rows = DB::table('group_members as gm')
