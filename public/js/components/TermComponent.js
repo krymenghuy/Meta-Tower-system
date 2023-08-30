@@ -37,7 +37,7 @@ var TermComponent = new function(){
             };
             cv_interact.confirm('Delete this term?',{ title: 'Delete Term', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/term/delete`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/term/delete`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.displayTerm();
                         }
@@ -48,7 +48,7 @@ var TermComponent = new function(){
     }
 
     this.displayTerm = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/term/list`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/term/list`,null,null).then(res => {
             let data = [];
             if(res.status_code === 200){
                 data = res.data;
@@ -211,7 +211,7 @@ let TermDialog = new function(){
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
         let p = mThis.getDataForm();
-        window.vsapi.call(`${main_view.base_url}/api/term/save`,p,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/term/save`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
                 if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
@@ -247,7 +247,7 @@ let TermDialog = new function(){
     }
 
     this.prepareFormOption = (term_id,onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/term/form-options`,{'id':term_id},null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/term/form-options`,{'id':term_id},null,false).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;

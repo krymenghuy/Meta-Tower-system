@@ -77,7 +77,7 @@ var StudentInformationComponent = new function(){
     }
 
     this.prepareAcademic = () => {
-        window.vsapi.call(`${main_view.base_url}/api/academic-year/list`,null,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/academic-year/list`,null,null,false).then(res => {
             let d = [];
             if(res.status_code === 200){
                 d = res.data;
@@ -92,7 +92,7 @@ var StudentInformationComponent = new function(){
         div_wrapper.empty();
         let html = null;
 
-        window.vsapi.call(`${main_view.base_url}/api/student/enrollment-details`,{'student_id': id},null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/student/enrollment-details`,{'student_id': id},null,false).then(res => {
             let d = [], cur_symbol = '$';
             if(res.status_code === 200){
                 d = res.data;

@@ -133,7 +133,7 @@ var RegistrationComponent = new function(){
             e.preventDefault();
             let p = mThis.getDataForm(mThis.div_input, 'data-input');
             p = mThis.prepareData(p);
-            window.vsapi.call(`${main_view.base_url}/api/enrollment/save`,p,null).then(res => {
+            vsapi.call(`${main_view.base_url}/api/enrollment/save`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.options.photo = null;
                     mThis.div_list.show().siblings().hide();
@@ -449,7 +449,7 @@ var RegistrationComponent = new function(){
 
                 cv_interact.confirm('Delete this enrollment?',{title: 'Delete Information', context: 'delete'},(e) => {
                     if(e){
-                        window.vsapi.call(`${main_view.base_url}/api/enrollment/delete`,op,null).then(res => {
+                        vsapi.call(`${main_view.base_url}/api/enrollment/delete`,op,null).then(res => {
                             if(res.status_code === 200){
                                 mThis.studentListView.showPage(mThis.getFilterData());
                             }
@@ -464,14 +464,14 @@ var RegistrationComponent = new function(){
     }
 
     this.loadDataEdit = (op, onFinish) => {
-        window.vsapi.call(`${main_view.base_url}/api/enrollment/details`,op,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/enrollment/details`,op,null,false).then(res => {
             const data = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data,null,['image_url','father_email','mother_email']):{};
 
             if(typeof onFinish === 'function') onFinish(data);
         });
     }
     this.loadDataPrint = (op, onFinish) => {
-        window.vsapi.call(`${main_view.base_url}/api/enrollment/details`,op,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/enrollment/details`,op,null).then(res => {
             const data = res.status_code === 200? StringSanitizer.sanitizeObject(res.data,null,['image_url']):{};
             if(typeof onFinish === 'function') onFinish(data);
         });
@@ -519,7 +519,7 @@ var RegistrationComponent = new function(){
     }
 
     this.prepareFormOption = (div,className, onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/enrollment/form-options`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/enrollment/form-options`,null,null).then(res => {
          
             const d = res.status_code ===200? StringSanitizer.sanitizeObject(res.data,null,[]):{};
             div.find(`.${className}`).each(function(){

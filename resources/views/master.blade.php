@@ -25,11 +25,11 @@
         <meta name="asset_url" content="{{ asset('assets/') }}" />
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <?php ScriptManager::render('priority-one',0);?>
+        <?php ScriptManager::render('priority-one',1);?>
         <?php StyleManager::render('vsksm-style',1); ?> 
         <?php
-            ScriptManager::render('primary',0);
-            ScriptManager::render('primary-async',0);
+            ScriptManager::render('primary',1);
+            ScriptManager::render('primary-async',1);
             ScriptManager::render('primary-defer',1);
             ScriptManager::render('components',1);
         ?>

@@ -2,12 +2,16 @@
     <div id="div--ssp" class="div--ssp">
         <div class="d-flex align-items-center justify-content-center bg-white rounded-4 p-3">
             <div class="d-block">
-                <h2 class="trans-text text-primary text-center" data-langprop="titles.Search Student for Payment"></h2>
+                <h2 class="trans-text text-primary text-center" data-langprop="titles.Search Student"></h2>
                 <div class="d-bf d-flex aling-items-center mt-5 gap-2">
-                    <input type="search" class="form-control data-input width--search-inner" data-field="search_value" placeholder="Search by Name or ID..."/>
+                    
                     <div class="width--search-inner">
                         <select class="modal-select2 form-control data-input" data-field="academic_year"></select>
                     </div>
+                    <div class="width--search-inner">
+                        <select class="modal-select2 form-control data-input" data-field="term_id"></select>
+                    </div>
+                    <input type="search" class="form-control data-input width--search-inner" data-field="search_value" placeholder="Search by Name or ID..."/>
                     <button id="btn--find" class="btn btn-primary btn--find text-nowrap" type="button">
                         <i class="fa-solid fa-magnifying-glass"></i>
                         <span class="trans-text" data-langprop="buttons.Find"></span>
@@ -24,6 +28,9 @@
         <div class="d-flex gap-2">
             <div class="height-select2">
                 <select class="modal-select2 data-input" data-field="academic_year"></select>
+            </div>
+            <div class="height-select2">
+                <select class="modal-select2 data-input" data-field="term_id"></select>
             </div>
             <input type="search" class="form-control width--search-inner data-input" data-field="search_value" placeholder="Search by Name or ID..."/>
             <button id="_fns_btn_filter" class="btn btn-primary btn-sm text-nowrap" type="button">

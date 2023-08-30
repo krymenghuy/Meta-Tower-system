@@ -37,7 +37,7 @@ var AcademicYearComponent = new function(){
             };
             cv_interact.confirm('Delete this academic year?',{ title: 'Delete Academic Year', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/academic-year/delete`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/academic-year/delete`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.displayAcademic();
                         }
@@ -48,7 +48,7 @@ var AcademicYearComponent = new function(){
     }
 
     this.displayAcademic = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/academic-year/list`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/academic-year/list`,null,null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = res.data;
@@ -149,7 +149,7 @@ let AcademicDialog = new function(){
 
     this.btnSave.on('click',e=>{
         let p = mThis.getDataForm();
-        window.vsapi.call(`${main_view.base_url}/api/academic-year/save`,p,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/academic-year/save`,p,null,false).then(res => {
             let data = {};
             if(res.status_code === 200){
                  if(typeof mThis.options.onClose ==='function') mThis.options.onClose();
@@ -181,7 +181,7 @@ let AcademicDialog = new function(){
     }
 
     this.loadFormDetail = (options) => {
-        window.vsapi.call(`${main_view.base_url}/api/academic-year/details`,{'id': options.id},null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/academic-year/details`,{'id': options.id},null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = res.data;

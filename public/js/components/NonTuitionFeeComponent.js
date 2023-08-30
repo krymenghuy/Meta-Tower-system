@@ -38,7 +38,7 @@ var NonTuitionFeeComponent = new function(){
             };
             cv_interact.confirm('Delete this Fee Type',{title: 'Delete Fee Type', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/other-fee/delete`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/other-fee/delete`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.displayNonTuitionFee();
                         }
@@ -54,7 +54,7 @@ var NonTuitionFeeComponent = new function(){
     }
 
     this.displayNonTuitionFee = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/other-fee/list`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/other-fee/list`,null,null).then(res => {
             let data = [];
             if(res.status_code === 200){
                 data = StringSanitizer.sanitizeObject(res.data);
@@ -177,7 +177,7 @@ let NonTuitionFeeOutsideDialog = new function(){
         e.preventDefault();
         mThis.validate.validator(() => {
             let p = mThis.getDataForm();
-            window.vsapi.call(`${main_view.base_url}/api/other-fee/save`,p,null).then(res => {
+            vsapi.call(`${main_view.base_url}/api/other-fee/save`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
                     if(typeof mThis.options.onClose === 'function')
@@ -216,7 +216,7 @@ let NonTuitionFeeOutsideDialog = new function(){
     }
 
     this.loadDataEdit = (options) => {
-        window.vsapi.call(`${main_view.base_url}/api/other-fee/details`,{'id': options.id},null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/other-fee/details`,{'id': options.id},null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = StringSanitizer.sanitizeObject(res.data,null,['academic_year']);
@@ -226,7 +226,7 @@ let NonTuitionFeeOutsideDialog = new function(){
     }
 
     this.prepareFormOption = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;

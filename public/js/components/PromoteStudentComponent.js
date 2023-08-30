@@ -88,7 +88,7 @@ var PromoteStudentComponent = new function(){
             };
             cv_interact.confirm('Verify this student?',{title: 'Verify Student', context: 'OK'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.itemView.showPage(null);
                         }
@@ -107,7 +107,7 @@ var PromoteStudentComponent = new function(){
             };
             cv_interact.confirm('Delete this student?',{title: 'Delete Student', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.itemView.showPage(null);
                         }
@@ -151,7 +151,7 @@ let PromoteStudentDialog = new function(){
         e.preventDefault();
         let p = mThis.getDataForm();
         if(p.promote_info[0].next_term_id > 0){
-            window.vsapi.call(`${main_view.base_url}/api/promote/students`,p,null,mThis.btnSave).then(res => {
+            vsapi.call(`${main_view.base_url}/api/promote/students`,p,null,mThis.btnSave).then(res => {
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
                     if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
@@ -168,7 +168,7 @@ let PromoteStudentDialog = new function(){
     });
 
     this.prepareFormOption = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/form-option`,null,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/form-option`,null,null,false).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
@@ -203,7 +203,7 @@ let PromoteStudentDialog = new function(){
                 'term_id': $(this).val(),
                 'program_id': $(this).closest('.modal-body').find('.data-program').val()
             };
-            window.vsapi.call(`${main_view.base_url}/api/promote/form-options`,op,null,false).then(res => {
+            vsapi.call(`${main_view.base_url}/api/promote/form-options`,op,null,false).then(res => {
                 let d = {};
                 if(res.status_code === 200){
                     d = res.data;
@@ -235,7 +235,7 @@ let PromoteStudentDialog = new function(){
                 'term_id': $(this).closest('.modal-body').find('.data-term').val(),
                 'program_id': $(this).val()
             };
-            window.vsapi.call(`${main_view.base_url}/api/promote/form-options`,op,null,false).then(res => {
+            vsapi.call(`${main_view.base_url}/api/promote/form-options`,op,null,false).then(res => {
                 let d = {};
                 if(res.status_code === 200){
                     d = res.data;
