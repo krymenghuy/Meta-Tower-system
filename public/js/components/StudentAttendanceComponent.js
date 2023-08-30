@@ -71,7 +71,7 @@ var StudentAttendanceComponent = new function(){
         div_wrapper.empty();
         let html = null;
 
-        window.vsapi.call(`${main_view.base_url}/api/student/attendance-details`,op,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/student/attendance-details`,op,null,false).then(res => {
             let d = [];
             if(res.status_code === 200){
                 d = res.data;
@@ -159,7 +159,7 @@ let StudentAttendanceDialog = new function(){
         e.preventDefault();
         let op = mThis.getDataForm();
         console.log(op);
-        window.vsapi.call(`${main_view.base_url}/api/student/attendance-save`,op,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/student/attendance-save`,op,null).then(res => {
             if(res.status_code === 200){
                 console.log(res.data);
                 cv_interact.success('Updated Attedance Successfully!');
@@ -177,7 +177,7 @@ let StudentAttendanceDialog = new function(){
             'date': op.date,
             'group_id': op.group_id
         };
-        window.vsapi.call(`${main_view.base_url}/api/student/attendance-date-details`,p,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/student/attendance-date-details`,p,null,false).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
@@ -230,7 +230,7 @@ let StudentAttendanceDialog = new function(){
     }
 
     this.prepareFormOption = (op, onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/student/options-attendance-types`,null,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/student/options-attendance-types`,null,null,false).then(res => {
             let d = [];
             if(res.status_code === 200){
                 d = res.data;

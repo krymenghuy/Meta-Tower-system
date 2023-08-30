@@ -115,7 +115,7 @@ var RequestDiscountComponent = new function(){
                     }
                 ]
             };
-            window.vsapi.call(`${main_view.base_url}/api/activity/send-request-discount`,op,null).then(res => {
+            vsapi.call(`${main_view.base_url}/api/activity/send-request-discount`,op,null).then(res => {
                 if(res.status_code === 200){
                     mThis.itemView.showPage(null);
                     cv_interact.success('Request has been seen!');
@@ -133,7 +133,7 @@ var RequestDiscountComponent = new function(){
             };
             cv_interact.confirm('Delete this request?',{title: 'Delete Request', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/activity/request-discount/delete`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/activity/request-discount/delete`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.itemView.showPage(null);
                         }
@@ -159,7 +159,7 @@ var RequestDiscountComponent = new function(){
             };
             p.request_info.push(obj);
         });
-        window.vsapi.call(`${main_view.base_url}/api/activity/send-request-discount`,p,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/activity/send-request-discount`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.itemView.showPage(null);
                 cv_interact.success('Request has been seen!');
@@ -171,7 +171,7 @@ var RequestDiscountComponent = new function(){
     }
 
     this.prepareOption = () => {
-        window.vsapi.call(`${main_view.base_url}/api/option/discount-type`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/option/discount-type`,null,null).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
@@ -206,7 +206,7 @@ let RequestDiscountDialog = new function(){
         e.preventDefault();
         mThis.validate.validator(() => {
             let p = mThis.getDataForm();
-            window.vsapi.call(`${main_view.base_url}/api/activity/create-request-discount`,p,null).then(res => {
+            vsapi.call(`${main_view.base_url}/api/activity/create-request-discount`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
                     if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
@@ -245,7 +245,7 @@ let RequestDiscountDialog = new function(){
 
     this.prepareFormOption = (onFinish=null) => {
         let option = '';
-        window.vsapi.call(`${main_view.base_url}/api/option/discount-type`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/option/discount-type`,null,null).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;

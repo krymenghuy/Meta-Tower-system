@@ -126,7 +126,7 @@ var InvoicesComponent = new function(){
             };
             cv_interact.confirm('Recieve pay now?',{title: 'Pay', context: 'OK'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/student/school-fee/pay`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/student/school-fee/pay`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.itemView.showPage(null);
                         }
@@ -156,7 +156,7 @@ var InvoicesComponent = new function(){
             };
             cv_interact.confirm('Delete this invoice?',{title: 'Delete Invoice', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/student/invoice-delete`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/student/invoice-delete`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.itemView.showPage(null);
                         }
@@ -181,7 +181,7 @@ var InvoicesComponent = new function(){
         html = null;
         div_wrapper.empty();
 
-        window.vsapi.call(`${main_view.base_url}/api/invoice/items`,{'invoice_id': id},null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/invoice/items`,{'invoice_id': id},null,false).then(res => {
             let d = [];
             if(res.status_code === 200){
                 d = res.data;

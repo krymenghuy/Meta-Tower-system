@@ -9,7 +9,7 @@ var StudentAttendanceReportComponent = new function(){
     this.init = () => {}
     
     this.displayStudentAttendanceReport = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/`,null,null).then(res => {
             let data = [];
             if(res.status_code === 200){
                 data = StringSanitizer.sanitizeObject(res.data);

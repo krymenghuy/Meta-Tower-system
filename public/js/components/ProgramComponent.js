@@ -37,7 +37,7 @@ var ProgramComponent = new function(){
             };
             cv_interact.confirm('Delete this program?',{title: 'Delete Program', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/program/delete`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/program/delete`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.displayProgram();
                         }
@@ -68,7 +68,7 @@ var ProgramComponent = new function(){
 
         div_wrapper.empty();
 
-        window.vsapi.call(`${main_view.base_url}/api/program/levels`,{'id': id},null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/program/levels`,{'id': id},null).then(res => {
             let data = [];
 
             if(res.status_code === 200){
@@ -136,7 +136,7 @@ var ProgramComponent = new function(){
             };
             cv_interact.confirm('Delete this level?',{title: 'Delete Level', context: 'delete'},e => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/program-level/delete`,p,null,false).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/program-level/delete`,p,null,false).then(res => {
                         if(res.status_code === 200){
                             mThis.renderProgramLevels(tbody,res.data.levels)
                         }
@@ -170,7 +170,7 @@ var ProgramComponent = new function(){
     }
 
     this.displayProgram = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/program/list`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/program/list`,null,null).then(res => {
             let data = [];
             if(res.status_code === 200){
                 data = res.data;
@@ -279,7 +279,7 @@ let ProgramDialog = new function(){
         e.preventDefault();
         mThis.validate.validator(() => {
             let p = mThis.getDataForm();
-            window.vsapi.call(`${main_view.base_url}/api/program/save`,p,null).then(res => {
+            vsapi.call(`${main_view.base_url}/api/program/save`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
                     if(typeof mThis.options.onClose === 'function') mThis.options.onClose(res.data.levels);
@@ -315,7 +315,7 @@ let ProgramDialog = new function(){
     }
 
     this.loadFormDetails = (options) => {
-        window.vsapi.call(`${main_view.base_url}/api/program/details`,{'id': options.id},null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/program/details`,{'id': options.id},null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = res.data;
@@ -325,7 +325,7 @@ let ProgramDialog = new function(){
     }
 
     this.prepareFormOptions = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/option/prev-program`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/option/prev-program`,null,null).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
@@ -372,7 +372,7 @@ let ProgramLevelDialog = new function(){
     this.btnSave.on('click',function(){
         mThis.validate.validator(() => {
             let p =mThis.getDataForm();
-            window.vsapi.call(`${main_view.base_url}/api/program-level/save`,p,null,false).then(res=>{
+            vsapi.call(`${main_view.base_url}/api/program-level/save`,p,null,false).then(res=>{
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
                     if(typeof mThis.options.onClose === 'function')
@@ -409,7 +409,7 @@ let ProgramLevelDialog = new function(){
     }
 
     this.loadFormDetails = (options) => {
-        window.vsapi.call(`${main_view.base_url}/api/program-level/details`,{'id': options.id},null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/program-level/details`,{'id': options.id},null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = res.data;
@@ -419,7 +419,7 @@ let ProgramLevelDialog = new function(){
     }
 
     this.prepareFormOptions = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/option/prev-program-level`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/option/prev-program-level`,null,null).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;

@@ -96,7 +96,7 @@ var DiscountComponent = new function(){
                     }
                 ]
             };
-            window.vsapi.call(`${main_view.base_url}/api/approval/approve-request-discount`,op,null).then(res => {
+            vsapi.call(`${main_view.base_url}/api/approval/approve-request-discount`,op,null).then(res => {
                 if(res.status_code === 200){
                     mThis.itemView.showPage(null);
                     cv_interact.success('Approved Successfully!');
@@ -125,7 +125,7 @@ var DiscountComponent = new function(){
                         return 'You need to write something!';
                     else{
                         op.remark = value;
-                        window.vsapi.call(`${main_view.base_url}/api/approval/reject-request-discount`,op,null).then(res => {
+                        vsapi.call(`${main_view.base_url}/api/approval/reject-request-discount`,op,null).then(res => {
                             if(res.status_code === 200){
                                 mThis.itemView.showPage(null);
                             }
@@ -145,7 +145,7 @@ var DiscountComponent = new function(){
             };
             cv_interact.confirm('Delete this request?',{title: 'Delete Request', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/activity/request-discount/delete`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/activity/request-discount/delete`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.itemView.showPage(null);
                         }
@@ -156,7 +156,7 @@ var DiscountComponent = new function(){
     }
 
     this.prepareFilter = () => {
-        window.vsapi.call(`${main_view.base_url}/`,null,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/`,null,null,false).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;

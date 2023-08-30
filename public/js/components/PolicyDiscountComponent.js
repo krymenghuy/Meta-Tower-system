@@ -110,7 +110,7 @@ var PolicyDiscountComponent = new function(){
             };
             cv_interact.confirm('Delete this policy?',{title: 'Delete Policy', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/pol-discount/delete`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/pol-discount/delete`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.itemView.showPage({'search_value': mThis.elSearch.val()});
                         }
@@ -158,7 +158,7 @@ let PolicyDiscountOutsideDialog = new function(){
         e.preventDefault();
         mThis.validate.validator(() => {
             let p = mThis.getDataForm();
-            window.vsapi.call(`${main_view.base_url}/api/pol-discount/save`,p,null).then(res => {
+            vsapi.call(`${main_view.base_url}/api/pol-discount/save`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
                     if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
@@ -196,7 +196,7 @@ let PolicyDiscountOutsideDialog = new function(){
     }
 
     this.loadDataEdit = (options) => {
-        window.vsapi.call(`${main_view.base_url}/api/pol-discount/details`,{'id': options.id},null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/pol-discount/details`,{'id': options.id},null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = StringSanitizer.sanitizeObject(res.data);
@@ -206,7 +206,7 @@ let PolicyDiscountOutsideDialog = new function(){
     }
 
     this.prepareFormOptions = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;

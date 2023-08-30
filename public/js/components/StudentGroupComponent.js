@@ -120,7 +120,7 @@ var StudentGroupComponent = new function(){
             };
             cv_interact.confirm('Delete this group?',{title: 'Delete Group', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/student-group/delete`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/student-group/delete`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.displayStudentGroup();
                         }
@@ -178,7 +178,7 @@ let StudentGroupDialog = new function(){
         mThis.validate.validator(() => {
             let p = mThis.getDataForm();
            
-            window.vsapi.call(`${main_view.base_url}/api/student-group/save`,p,null).then(res => {
+            vsapi.call(`${main_view.base_url}/api/student-group/save`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
                     if(typeof mThis.options.onClose === 'function')
@@ -223,7 +223,7 @@ let StudentGroupDialog = new function(){
 
     mThis.elProgram.on('change',function(e){
         e.preventDefault();
-        window.vsapi.call(`${main_view.base_url}/api/settings/options-level`,{'program_id':mThis.elProgram.val()},null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/settings/options-level`,{'program_id':mThis.elProgram.val()},null,false).then(res => {
             let d = [];
             if(res.status_code === 200){
                 d = StringSanitizer.sanitizeObject(res.data,null,null);
@@ -234,7 +234,7 @@ let StudentGroupDialog = new function(){
 
     mThis.elAcademicYear.on('change',function(e){
         e.preventDefault();
-        window.vsapi.call(`${main_view.base_url}/api/settings/options-term`,{'academic_year':mThis.elAcademicYear.val()},null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/settings/options-term`,{'academic_year':mThis.elAcademicYear.val()},null,false).then(res => {
             let d = [];
             if(res.status_code === 200){
                 d = StringSanitizer.sanitizeObject(res.data,null,null);
@@ -259,7 +259,7 @@ let StudentGroupDialog = new function(){
     });
  
     this.prepareFormOption = (group_id,onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/student-group/form-options`,{'id':group_id},null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/student-group/form-options`,{'id':group_id},null,false).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = StringSanitizer.sanitizeObject(res.data,null,['academic_year']);
