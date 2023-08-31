@@ -23,8 +23,9 @@ class Invoice //extends Model
             'note' => '0|string|1,300',
             'invoice_id' => '0|number|exists=invoices.id',
             'currency_code' => '0|string|default=USD',
-            'referrer_uid' => '0|number|exists=students.id',
-            '' => ''
+            'referrer_id' => '0|number|exists=students.id',
+            'commission' => '0|number',
+            'referrer_type' => '0|string|default=student'
         ];
         $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
@@ -86,7 +87,7 @@ class Invoice //extends Model
                     $fee['discount'] = $enr_info->policy_discount;
                     $fee['start_date'] = $enr_info->start_date;
                     $fee['end_date'] = $enr_info->tuition_end_date;
-                    $is_tuition_fee = self::getTuitionDueByStudent($enr_info->student_id);
+                    $is_tuition_fee = self::getTuitionDueByEnrollmentID($enrollment_id);
                     $getTuitionFeeType = 'tuition_type';
                     $invoice_type = 'tuition_fee';
                 }
@@ -309,6 +310,7 @@ class Invoice //extends Model
                         'status_id' => 2, //* 'paid'
                         'tuition_paid' => $row->tuition_due,
                     ],[],1);
+
                     saveData($ss,'invoices',['enrollment_id' => $row->enr_id,'id'=>$inv_id],[
                         'is_paid' => 1,//* paid
                         'paid_amount' => $getInvoiceInfo->due_amount,
@@ -598,8 +600,8 @@ class Invoice //extends Model
         return $keeper;
     }
 
-    static function getTuitionDueByStudent($student_id){
-        $row = DB::table('enrollments as e')->where('e.student_id',$student_id)
+    static function getTuitionDueByEnrollmentID($enrollment_id){
+        $row = DB::table('enrollments as e')->where('e.id',$enrollment_id)
         ->join('payments as p','p.enrollment_id','=','e.id')
         ->selectRaw('p.tuition_due')
         ->get()->first();
