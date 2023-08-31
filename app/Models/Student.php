@@ -362,7 +362,7 @@ class Student //extends Model
     //     $new_code = $prefix.$branch_id.formatNumber($newID,5);
     //     DB::table('students')->where('id',$newID)->update(['code' => $new_code]);
     // }
- 
+
     static function getFutureTime($daysToAdd) {
         $currentTimestamp = time();
 
@@ -510,7 +510,7 @@ class Student //extends Model
                 "tuition_due" => 0,
                 "tuition_paid" => 0,
                 "session_id" => 0,
-                "status_id" => 0,
+                "status_id" => 1,
                 "price_list_id" => 0,
                 "program_id" => 0,
                 "level_id" => 0,
@@ -521,50 +521,50 @@ class Student //extends Model
         return DV::depends($updated,'Delete verified student');
     }
 
-    static function studentPaginate($filter=[],$ss){
-        $branch_id = $ss->branch_id;
-        $search_value =isset($filter['search_value'])?$filter['search_value']:null;
-        $current_page =isset($filter['current_page'])?$filter['current_page']:1;
-        $per_page =isset($filter['per_page'])?$filter['per_page']:10;
-        if(!is_numeric($current_page)) $current_page=1;
-        $skip_rows = ($current_page -1) * $per_page;
+    // static function studentPaginate($filter=[],$ss){
+    //     $branch_id = $ss->branch_id;
+    //     $search_value =isset($filter['search_value'])?$filter['search_value']:null;
+    //     $current_page =isset($filter['current_page'])?$filter['current_page']:1;
+    //     $per_page =isset($filter['per_page'])?$filter['per_page']:10;
+    //     if(!is_numeric($current_page)) $current_page=1;
+    //     $skip_rows = ($current_page -1) * $per_page;
 
-        $str_search ="1=1";
-        $str_moreWhere="1=1";
-        if($search_value){
-            $skip_rows =0;
-            $search_value = escape_like_str($search_value);
-            // $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
-        }
-
-    //     $selectCols = 's.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.prev_school_id';
-    //     $query = DB::table('students as st')
-    //             ->join('enrollments as e','e.student_id','=','st.id')
-    //             ->join('sessions as s','s.id','=','e.session_id')
-    //             ->selectRaw($selectCols)
-    //             ->where('st.branch_id',$branch_id)
-    //             ->whereRaw($str_moreWhere)->whereRaw($str_search)
-    //             ->orderBy('id','desc');
-    //     $count_query = clone $query;
-    //     $count = $count_query->count('st.id');
-    //     $rows = $query->skip($skip_rows)->take($per_page)->get();
-    //     foreach($rows as $row) {
-    //         $status = rand(0,1)?'New':'Old';
-    //         $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
-    //         $row->parent_info = self::getParentInfo($row->id);
-    //         unset($row->file_name);
-    //         // $row->campus = $campus->details($row->campus_id,$ss)->name;
-    //         $row->level = self::getProgramLevel($row->level_id);
-    //         $row->student_type = $status;
-
-    //         $row->previous_school = self::getPrevSchool($row->prev_school_id)->name;
+    //     $str_search ="1=1";
+    //     $str_moreWhere="1=1";
+    //     if($search_value){
+    //         $skip_rows =0;
+    //         $search_value = escape_like_str($search_value);
+    //         // $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
     //     }
+
+    // //     $selectCols = 's.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.prev_school_id';
+    // //     $query = DB::table('students as st')
+    // //             ->join('enrollments as e','e.student_id','=','st.id')
+    // //             ->join('sessions as s','s.id','=','e.session_id')
+    // //             ->selectRaw($selectCols)
+    // //             ->where('st.branch_id',$branch_id)
+    // //             ->whereRaw($str_moreWhere)->whereRaw($str_search)
+    // //             ->orderBy('id','desc');
+    // //     $count_query = clone $query;
+    // //     $count = $count_query->count('st.id');
+    // //     $rows = $query->skip($skip_rows)->take($per_page)->get();
+    // //     foreach($rows as $row) {
+    // //         $status = rand(0,1)?'New':'Old';
+    // //         $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
+    // //         $row->parent_info = self::getParentInfo($row->id);
+    // //         unset($row->file_name);
+    // //         // $row->campus = $campus->details($row->campus_id,$ss)->name;
+    // //         $row->level = self::getProgramLevel($row->level_id);
+    // //         $row->student_type = $status;
+
+    // //         $row->previous_school = self::getPrevSchool($row->prev_school_id)->name;
+    // //     }
+
+    // //     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    // // }
 
     //     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     // }
-
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-    }
 
     static function getStudentEnrollmentInfo($d,$ss=null){
         // $d = (object)$d;
@@ -616,5 +616,5 @@ class Student //extends Model
         return $rows;
         // return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
- 
+
 }

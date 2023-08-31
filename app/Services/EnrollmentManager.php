@@ -264,18 +264,17 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
     $ss = $ss?$ss:$this->user_info;
     $id = $id?$id:$this->id;
     //$branch_id = $ss->branch_id;
-    $arr = [
+    $enr = DB::table('enrollments')->where('id',$id)->selectRaw('id')->get()->first();
+    $delete = saveData($ss,'enrollments',['id' => $id],[
         'status_id' => 1,
-    ];
-    $enr = DB::table('enrollments')->where('student_id',$id)->selectRaw('id')->get()->first();
-    $delete = saveData($ss,'enrollments',['student_id' => $id],$arr,[],1);
+    ],[],1);
     if($delete){
         $change_fields = [
             "tuition" => 0,
             "tuition_due" => 0,
             "tuition_paid" => 0,
             "session_id" => 0,
-            "status_id" => 0,
+            "status_id" => 1,
             "price_list_id" => 0,
             "program_id" => 0,
             "level_id" => 0,
@@ -283,7 +282,7 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
         ];
         $updated = saveData($ss,'payments',['enrollment_id' => $enr->id],$change_fields,[],1);
     }
-    return DV::depends($updated,'Delete verified student');
+    return DV::depends($delete,'Delete verified student');
 }
 
     static function getFormOptions($ss){
@@ -390,6 +389,9 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
       return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-
+    function generateNewEnrollentToStudent($arr=[],$id,$ss){
+        $v_rule = [];
+        return '';
+    }
 }
 ?>
