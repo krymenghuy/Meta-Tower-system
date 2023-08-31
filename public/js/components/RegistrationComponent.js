@@ -16,6 +16,7 @@ var RegistrationComponent = new function(){
 
     this.elAcademicYear = this.self.find('#_rgs_acad_year');
     this.elTerm = this.self.find('#_rgs_term');
+    this.elLevel = this.self.find('#_rgs_level');
     this.elGroup = this.self.find('#_rgs_group');
 
     this.elPrevSchool = this.self.find('#_rgs_prev_school');
@@ -64,10 +65,15 @@ var RegistrationComponent = new function(){
         
         mThis.lnkAddGroup.on('click',e=>{
             const group_id = 0;
+            const sel_level_id = mThis.elLevel.val();
+            if(sel_level_id ==0 || !sel_level_id){
+                cv_interact.warning('Please select a Level or Grade');
+                return;
+            }
             let op = {
                 'id':group_id, 
-                'onClose':(d)=>{
-                  //mThis.refreshOptions('group');
+                'onClose':()=>{
+                   mThis.elLevel.trigger('change');
                 }
             };
             StudentGroupDialog.show(op);

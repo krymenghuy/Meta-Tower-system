@@ -732,16 +732,14 @@ class UM
               an associative array, you will need to cast it as such:
           */
 
-          try{
-              //   $encrypter = app(\Illuminate\Contracts\Encryption\Encrypter::class);
-              //   //$access_token= null;
-              //   try{
-              //     $access_token = $encrypter->decrypt($access_token,false);
-              //   }catch(Exception $e){
-              //       return null;
-              //   }
             JWT::$leeway = 60; // $leeway in seconds
-            $decoded = JWT::decode($access_token, new Key(self::$jwt_key, self::$jwt_encode));
+            $decoded = null;
+            try{
+              $decoded = JWT::decode($access_token, new Key(self::$jwt_key, self::$jwt_encode));
+            }catch(\Exception $e){
+              return DV::error($e->getMessage(),$def_lang,403);
+            }
+           
             if(!isset($decoded->user_id)) $decoded->user_id = $decoded->id;
 
             //#begin:: Get special active fields "is_locked,status,lang". These fields need to be updated in the decoded JWT token on every api call
@@ -757,17 +755,6 @@ class UM
             $ret =(object)['status_code'=>200,'status'=>'OK'];
             foreach((array)$decoded as $prop=>$value) $ret->{$prop} = $value;
             return $ret;
-         }catch(\Exception $e){
-              $err = $e->getMessage();
-              if($err==="Expired token")  return DV::error($err,$def_lang,402);
-
-                \Log::error($err, [
-                  'file' => $e->getFile(),
-                  'line' => $e->getLine()
-                  ]);
-
-                 return DV::error($err,$def_lang,500); //Invalid token => user unauthenticated
-         }
 
       }else{
         //NOTE: verifyUserToken() will check if the given token is Not yet expired, and is valid, then return the valid token
