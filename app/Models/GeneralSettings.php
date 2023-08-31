@@ -208,7 +208,8 @@ class GeneralSettings //extends Model
     }
     static function options_level($program_id=null){
         //$branch_id = $ss->branch_id;
-        return  DB::table('program_levels AS p')->where('p.program_id',$program_id)->selectRaw('p.id,p.program_id,p.name as level_name,p.level_order,p.prev_level_id')->orderByRaw('p.level_order ASC')->get();
+        $str_program = ($program_id > 0)? 'p.program_id = '.$program_id : '1=1';
+        return  DB::table('program_levels AS p')->whereRaw($str_program)->selectRaw('p.id,p.program_id,p.name as level_name,p.level_order,p.prev_level_id')->orderByRaw('p.level_order ASC')->get();
     }
     static function options_campus($ss){
         $branch_id = $ss->branch_id;
