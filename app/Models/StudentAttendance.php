@@ -410,7 +410,7 @@ class StudentAttendance //extends Model
         if( in_array($day_name,$except_days)){
             return (object)[
                 'student_id' => '',
-                'status_id' => 3,
+                'status_id' => 4,
                 'in_diff_time' => '',
                 'is_finished' => '',
                 'in_remarks' => 'Weekends',
@@ -423,7 +423,7 @@ class StudentAttendance //extends Model
 
         if($date>$today) return (object)[
                             'student_id' => '',
-                            'status_id' => '',
+                            'status_id' => '6',
                             'in_diff_time' => '',
                             'is_finished' => '',
                             'in_remarks' => '',
@@ -590,6 +590,7 @@ class StudentAttendance //extends Model
             $row->date = getMonthName($row->month,$is_shortMonthName).'-'.$row->year;
             $row->status = $this->statusCount($student_id,$row->month,$row->year);
             $row->attendance_list = $this->getAttendanceDetailsByMonth($student_id,$row->month,$row->year);
+            $row->group_name = DB::table('student_groups as sg')->join('student_attendances as sa','sa.group_id','=','sg.id')->where('sa.student_id',$student_id)->first()->name;
         }
         return $rows;
     }
@@ -601,6 +602,7 @@ class StudentAttendance //extends Model
         $rows = DB::table('student_attendances')->whereMonth('session_date',$month)->whereYear('session_date',$year)->where('student_id',$student_id)->selectRaw('remarks,id as attendance_id,student_id,group_id,session_date,DAY(session_date) as day,status_id,in_remarks,out_remarks,checkin_time,checkout_time')->get();
         foreach($rows as $row){
             $row->level_id = DB::table('student_groups')->where('id',$row->group_id)->first()->level_id;
+
         }
         do{
             $i++;
@@ -639,6 +641,9 @@ class StudentAttendance //extends Model
         $d = (object)$arr;
         $group_id =isset($d->group_id)?$d->group_id:null;
         if(!$group_id) return DV::error('Group ID is required');
+        $existGroup = DB::table('student_groups')->where('id',$group_id)->exists();
+        if(!$existGroup) return DV::error('Group not found');
+
         $session_date = isset($d->session_date)?date('Y-m-d',strtotime($d->session_date)):null;
         $startDate =  isset($d->start_date)?date('Y-m-d',strtotime($d->start_date)):null;
         $endDate =  isset($d->end_date)?date('Y-m-d',strtotime($d->end_date)):null;
