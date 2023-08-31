@@ -31,7 +31,10 @@ class Invoice //extends Model
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $inv_id = $inputs['invoice_id'];
+        $referrer_type = $inputs['referrer_type'];
         $commission = isset($inputs['commission'])?$inputs['commission']:null;
+        $referrer_id = isset($inputs['referrer_id'])?$inputs['referrer_id']:null;
+        unset($inputs['referrer_id'],$inputs['commission'],$inputs['referrer_type']);
         unset($inputs['invoice_id']);
         $enrollment_id = $inputs['enrollment_id'];
         $enr_info = DB::table('enrollments as e')->where('e.id',$enrollment_id)
@@ -50,6 +53,7 @@ class Invoice //extends Model
         unset($inputs['fee_types']);
         $inputs['invoice_date'] =  $issue_date;
         $keep_amount = [];
+        $invoiceItemID =[];
         $amount = 0;
         //$last_id = DB::table('invoices')->selectRaw('id')->orderBy('id','desc')->first();
         $is_tuition_fee = 0;
@@ -95,11 +99,13 @@ class Invoice //extends Model
                 $data_rows = DB::table('other_fees')->where('academic_year',$enr_info->academic_year)->where('name',$fee['fee_type'])->selectRaw('amount,start_date,end_date,description')->get();
                 foreach($data_rows as $row){
                     $fee['price'] = $row->amount;
+                    $fee['net_amount'] = $row->amount;
                     $fee['date_range'] = isset($row->start_date)?$row->start_date . ' to ' . $row->end_date:null;
                     $fee['description'] = $row->description;
                     $keep_amount[] = $row->amount;
                 }
                 $invoice_items = saveData($ss,'invoice_items',["id"=>isset($fee["id"])?$fee["id"]:null],$fee,[],1);
+                $invoice_items [] = $invoice_items;
             }
             if($getTuitionFeeType){
                 $amount = array_sum($keep_amount) + $enr_info->tuition;
@@ -127,6 +133,10 @@ class Invoice //extends Model
                 'invoice_type' => $invoice_type
             ]);
             if($inv){
+                DB::table('invoice_items')->where('invoice_id',$save_inv)->where('fee_type',$invoice_type)->update([
+                    'net_amount' => $due_amount - $doposite_amt
+                ]);
+
                 DB::table('students as s')
                     ->join('deposite as d', 's.name', '=', 'd.student_name')
                     ->where('s.date_of_birth', '=', DB::raw('d.date_of_birth'))
@@ -136,7 +146,14 @@ class Invoice //extends Model
             }
             //**save referrer */
             if($commission){
-                $save = saveData($ss,'referals',['id' => null],);
+                $save = saveData($ss,'referals',['id' => null],[
+                    'commission' => $commission,
+                    'commission_type' => '%',
+                    'referrer_id' => $referrer_id,
+                    'student_id' => $enr_info->student_id,
+                    'invoice_id' => $save_inv,
+                    'referrer_type' => $referrer_type
+                ]);
             }
         }
         return DV::depends($save_inv,['action'=>'Generated']);
@@ -636,7 +653,7 @@ class Invoice //extends Model
 
     function deleteInvoice($d,$ss){ //** only delete upaid invoice  */
         $id = $d->id;
-        $is_paid = DB::table('invoices')->where('id',$id)->where('is_paid',1)->where('branch_id',$ss->branch_id)->take(1)->value('inactive');
+        $is_paid = DB::table('invoices')->where('id',$id)->where('is_paid',1)->where('branch_id',$ss->branch_id)->exists();
         if($is_paid) return DV::error('Can not delete, Invoice is already paid');
         $delete = DB::table('invoices')->where('id',$id)->delete();
         if($delete){

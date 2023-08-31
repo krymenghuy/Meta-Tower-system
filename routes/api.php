@@ -232,7 +232,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/find',[InvoiceController::class,'findStudent']);
         Route::post('/generate-invoice/details',[PriceListController::class,'generateInvoiceDetails']);
         Route::post('/school-fee/pay',[InvoiceController::class,'schoolFeePay']);
-        // Route::post('/invoice-delete',[PriceListController::class,'deleteInvoice']);
+        Route::post('/invoice-delete',[InvoiceController::class,'deleteInvoice']);
         // Route::post('/invoice-to-active',[PriceListController::class,'turnInvoiceToActive']);
         // Route::post('/invoice-update',[PriceListController::class,'updateInvoice']);
         // Route::post('/invoice-items',[PriceListController::class,'getInvoiceItems']);

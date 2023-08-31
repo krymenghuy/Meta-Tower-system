@@ -10,7 +10,7 @@ class Guardian //extends Model
 {
     // use HasFactory;
 
-    protected $img_dir = 'guardiains',$id = null, $ss = null;
+    protected $img_dir = 'guardians',$id = null, $ss = null;
 
     function __construct($id=null,$ss=null){
         $this->id = $id;
@@ -23,29 +23,27 @@ class Guardian //extends Model
             'name' => '0|string|1,30',
             'email' => '0|string',
             'photo' => '0|image',
-            'phone_number' => '0|number|9,16',
-            'profession' => '0|string',
+            // 'phone_number' => '0|number|9,16',
+            // 'profession' => '0|string',
             'address' => '0|string',
             'religion' => '0|string',
-            'n_id' => '0|string|1,30'
+            // 'n_id' => '0|string|1,30'
         ];
 
-        $res = validateObject($arr,$v_rule,1,['email' => ['@','.']],$ss->lang,0,null);
+        $res = validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $image = $inputs['photo'];
         unset($inputs['photo']);
-        $existPhone = DB::table('guardians')->where('phone_number',$inputs['phone_number'])->exists();
-        if($existPhone) return DV::error('Phone number is already used');
-        $existEmail = DB::table('guardians')->where('email',$inputs['email'])->exists();
-        if($existEmail) return DV::error('Email is already used');
+        $existEmail = DB::table('guardians')->where('id',$id)->where('email',$inputs['email'])->exists();
+        if(!$existEmail) return DV::error('Email is already used');
 
         $newID = saveData($ss,'guardians',['id' => $id],$inputs,[],1);
         if($newID){
-            PublicStorage::saveImage($ss->branch_id,self::$img_dir,null,$image,null,['id'=>$newID,'store'=>'guardians.file_name']);
+            PublicStorage::saveImage($ss->branch_id,$this->img_dir,null,$image,null,['id'=>$newID,'store'=>'guardians.file_name']);
         }
-
         return $inputs;
+
     }
 
 
