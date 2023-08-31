@@ -284,7 +284,6 @@ var FindStudentComponent = new function(){
             if(res.status_code === 200){
                 data = res.data;
             }
-            console.log(data);
             if(typeof onFinish === 'function') onFinish(data);
         });
     }
@@ -315,7 +314,6 @@ let GenerateInvoiceFSN = new function(){
         let p = {};
         if(mThis.options.action === 'modify'){
             p = mThis.getDataFormUpdate();
-            console.log(p);
             vsapi.call(`${main_view.base_url}/api/student/invoice-update`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
