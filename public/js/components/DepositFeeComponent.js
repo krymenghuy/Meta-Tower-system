@@ -57,6 +57,7 @@ var DepositFeeComponent = new function(){
 
             let cols = [{
                 title: "Student Name",
+                className: 'text-capitalize',
                 data: "student_name"
             },
             {
@@ -69,11 +70,25 @@ var DepositFeeComponent = new function(){
             },
             {
                 title: "Date of Birth",
-                data: "date_of_birth"
+                data: (data, a, b) => {
+                    let dob = data.date_of_birth ? data.date_of_birth : '';
+                    return new Date(dob).toLocaleDateString('km-KH',{
+                        'day':'numeric',
+                        'month':'short',
+                        'year':'numeric'
+                    }).replaceAll(' ','-').replace(',','');
+                }
             },
             {
                 title: "Expire Date",
-                data: "expire_date"
+                data: (data, a, b) => {
+                    let expire_date = data.expire_date ? data.expire_date : '';
+                    return new Date(expire_date).toLocaleDateString('km-KH',{
+                        'day':'numeric',
+                        'month':'short',
+                        'year':'numeric'
+                    }).replaceAll(' ','-').replace(',','');
+                }
             },
             {
                 title: "Amount",
