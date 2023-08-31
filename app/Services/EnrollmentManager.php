@@ -285,7 +285,7 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
     }
     return DV::depends($delete,'Delete verified student');
 }
- 
+
 
     function getEnrollmentDetails($id=null,$ss=null){
         $ss = $ss?$ss:$this->user_info;
@@ -293,12 +293,13 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
         $selectCols = 'e.id,s.id AS student_id,e.term_id,e.student_id,ss.name as session,e.prev_school_id,e.program_id,e.level_id,e.campus_id,e.session_id,g.id AS group_id,g.name AS group_name, l.`name` AS `level`,c.`name` AS `campus`,e.academic_year,s.sex,s.`name`,s.sex,formatDate(s.date_of_birth) AS date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth,formatDate(e.start_date) as admission_date';
         $row = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
+                ->where('e.id',$id)
                 ->join('group_members as gm','e.id','=','gm.enrollment_id')
                 ->join('student_groups as g','g.id','=','gm.group_id')
                 ->join('program_levels as l','l.id','=','e.level_id')
                 ->join('campuses as c','c.id','=','e.campus_id')
                 ->join('sessions as ss','ss.id','=','e.session_id')
-                ->where('e.id',$id)
+
                 ->selectRaw($selectCols)
                 ->first();
             if(!$row) return null;
@@ -310,7 +311,7 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
                             $row->image_url = validateUrl($url,null);
                         }
                         unset($row->file_name);
-                        return $row;
+            return $row;
     }
 
     /** getFormOptions is postive in case of Editing existing Enrollment  */
