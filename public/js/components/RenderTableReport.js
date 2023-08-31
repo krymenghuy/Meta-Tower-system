@@ -1,3 +1,4 @@
+'use strict';
 let HtmlString = null;
 
 function renderTable(div, data){
@@ -62,6 +63,9 @@ function renderTable(div, data){
                                 month: 'short',
                                 year: 'numeric'
                             };
+                            attendance.total_present = 0,
+                            attendance.total_permission = 0,
+                            attendance.total_absent = 0;
 
                             let inner_html=null;
                             st && st.list && st.list.map(d => {
@@ -80,13 +84,13 @@ function renderTable(div, data){
                                 <td>${data.session ? data.session : ''}</td>
                                 ${inner_html ? inner_html : '<td></td>'}
                                 <td class="align-middle text-center text-white bg-success">
-                                    ${tbl.monthly_attendance && tbl.monthly_attendance[index].present}
+                                    ${tbl.monthly_attendance && tbl.monthly_attendance[index].present, attendance.total_present = attendance.total_present + parseInt(tbl.monthly_attendance[index].present)}
                                 </td>
                                 <td class="align-middle text-center text-white bg-warning">
-                                    ${tbl.monthly_attendance && tbl.monthly_attendance[index].permission}
+                                    ${tbl.monthly_attendance && tbl.monthly_attendance[index].permission,attendance.total_permission = attendance.total_permission + parseInt(tbl.monthly_attendance[index].permission)}
                                 </td>
                                 <td class="align-middle text-center text-white bg-danger">
-                                    ${tbl.monthly_attendance && tbl.monthly_attendance[index].absent}
+                                    ${tbl.monthly_attendance && tbl.monthly_attendance[index].absent,attendance.total_absent = attendance.total_absent + parseInt(tbl.monthly_attendance[index].absent)}
                                 </td>
                                 <td>
                                     ${options.phone=null,tbl.phone_number && tbl.phone_number[index].map(p => {
@@ -113,9 +117,9 @@ function renderTable(div, data){
                             <td colspan="2" class="align-middle text-end">Present:</td>
                             <td class="text-white bg-success text-center">P</td>
                             ${attendance.present}
-                            <td rowspan="3" class="align-middle text-center text-white bg-success"></td>
-                            <td rowspan="3" class="align-middle text-center text-white bg-warning"></td>
-                            <td rowspan="3" class="align-middle text-center text-white bg-danger"></td>
+                            <td rowspan="3" class="align-middle text-center text-white bg-success">${attendance.total_present}</td>
+                            <td rowspan="3" class="align-middle text-center text-white bg-warning">${attendance.total_permission}</td>
+                            <td rowspan="3" class="align-middle text-center text-white bg-danger">${attendance.total_absent}</td>
                             <td rowspan="3" class="align-middle text-center"></td>
                         </tr>
                         <tr>
