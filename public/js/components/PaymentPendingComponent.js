@@ -1,5 +1,5 @@
 "use strict";
-var PaymentPendingComponent = new (function () {
+var PaymentPendingComponent = new function(){
     let mThis = this;
     this.title_prop = "Payment Pending";
     this.self = $("#_main_paymentPendingComponent");
@@ -131,9 +131,9 @@ var PaymentPendingComponent = new (function () {
             });
         });
     };
-})();
+};
 
-let PaymentPendingDialog = new (function () {
+let PaymentPendingDialog = new function(){
     let mThis = this;
     this.self = $("#dlg_ppd_");
     this.options = {};
@@ -142,51 +142,35 @@ let PaymentPendingDialog = new (function () {
     this.elPayment = mThis.self.find("#dlg_ppd_pmt");
     this.modalBody = mThis.self.find(".modal-body");
 
-    mThis.elPayment.on("change", function (e) {
+    mThis.elPayment.on("change",function(e){
         e.preventDefault();
         let op = {
             id: $(this).val(),
         };
-        vsapi
-            .call(
-                `${main_view.base_url}/api/settings/payment-options`,
-                op,
-                null,
-                false
-            )
-            .then((res) => {
-                if (res.status_code === 200) {
-                    let div = mThis.modalBody.children().last();
-                    div.after(
-                        [
-                            `<div class="form-group">
+        vsapi.call(`${main_view.base_url}/api/settings/payment-options`,op,null,false).then((res) => {
+            if(res.status_code === 200){
+                let div = mThis.modalBody.children().last();
+                div.after([`<div class="form-group">
                     <label for="${res.data.name}" class="form-label text-capitalize">${res.data.name}</label>
                     <input type="number" class="form-control data-input" data-field="${res.data.name}"/>
-                </div>`,
-                        ].join("")
-                    );
-                    if (div.length > 0) div.remove();
-                }
-            });
+                </div>`].join(''));
+                if(div.length > 0)
+                    div.remove();
+            }
+        });
     });
 
     mThis.btnSave.on("click", function (e) {
         e.preventDefault();
         mThis.validate.validator(() => {
             let p = mThis.getDataForm();
-            vsapi
-                .call(
-                    `${main_view.base_url}/api/price-list/update/pending-payment`,
-                    p,
-                    null
-                )
-                .then((res) => {
-                    if (res.status_code === 200) {
-                        mThis.self.modal("hide");
-                        if (typeof mThis.options.onClose === "function")
-                            mThis.options.onClose();
-                    }
-                });
+            vsapi.call(`${main_view.base_url}/api/price-list/update/pending-payment`,p,null).then((res) => {
+                if(res.status_code === 200){
+                    mThis.self.modal("hide");
+                    if (typeof mThis.options.onClose === "function")
+                        mThis.options.onClose();
+                }
+            });
         });
     });
 
@@ -208,79 +192,49 @@ let PaymentPendingDialog = new (function () {
         mThis.self.find(".data-input").each(function () {
             let el = $(this);
             let f = el.data("field");
-            if (el.is("select")) el.val(d[f]).trigger("change");
-            else el.val(d[f]);
+            if(el.is("select"))
+                el.val(d[f]).trigger("change");
+            else
+                el.val(d[f]);
         });
     };
 
     this.prepareFormOption = (onFinish = null) => {
-        vsapi
-            .call(`${main_view.base_url}/api/form-option`, null, null)
-            .then((res) => {
-                let d = {};
-                if (res.status_code === 200) {
-                    d = res.data;
+        vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then((res) => {
+            let d = {};
+            if (res.status_code === 200) {
+                d = res.data;
+            }
+            mThis.self.find(".data-input").each(function () {
+                let el = $(this);
+                let f = el.data("field");
+                switch (f) {
+                    case "pmt_option_id":
+                        VSUtil.setComboItems(el,d.pmt_options,"id","name",null,null,null);
+                        break;
+                    case "session_id":
+                        VSUtil.setComboItems(el,d.sessions,"id","name",null,null,null);
+                        break;
+                    case "level_id":
+                        VSUtil.setComboItems(el,d.levels,"id","level",null,null,null);
+                        break;
+                    default:
+                        break;
                 }
-                mThis.self.find(".data-input").each(function () {
-                    let el = $(this);
-                    let f = el.data("field");
-                    switch (f) {
-                        case "pmt_option_id":
-                            VSUtil.setComboItems(
-                                el,
-                                d.pmt_options,
-                                "id",
-                                "name",
-                                null,
-                                null,
-                                null
-                            );
-                            break;
-                        case "session_id":
-                            VSUtil.setComboItems(
-                                el,
-                                d.sessions,
-                                "id",
-                                "name",
-                                null,
-                                null,
-                                null
-                            );
-                            break;
-                        case "level_id":
-                            VSUtil.setComboItems(
-                                el,
-                                d.levels,
-                                "id",
-                                "level",
-                                null,
-                                null,
-                                null
-                            );
-                            break;
-                        default:
-                            break;
-                    }
-                });
-
-                if (typeof onFinish === "function") onFinish();
             });
+
+            if(typeof onFinish === "function") onFinish();
+        });
     };
 
     this.loadFormDetails = (options) => {
-        vsapi
-            .call(
-                `${main_view.base_url}/api/price-list/pending-payment/details`,
-                { id: options.id },
-                null
-            )
-            .then((res) => {
-                let data = {};
-                if (res.status_code === 200) {
-                    data = res.data;
-                }
-                mThis.setDataForm(data);
-            });
+        vsapi.call(`${main_view.base_url}/api/price-list/pending-payment/details`,{ id: options.id },null).then((res) => {
+            let data = {};
+            if(res.status_code === 200){
+                data = res.data;
+            }
+            mThis.setDataForm(data);
+        });
     };
 
     this.validate = new FormValidator(mThis.self, {
@@ -299,7 +253,7 @@ let PaymentPendingDialog = new (function () {
             });
         });
     };
-})();
+};
 
 window.addEventListener("DOMContentLoaded", () => {
     PaymentPendingComponent.init();

@@ -2,7 +2,6 @@
 let HtmlString = null;
 
 function renderTable(div, data){
-    console.log(data);
     if(data && !($.isEmptyObject(data))){
         let html = [`<div class="d-flex justify-content-center mb-3">
             <div class="w-25 position-relative">
@@ -79,8 +78,8 @@ function renderTable(div, data){
                                 <td class="text-capitalize">${st.name ? st.name : ''}</td>
                                 <td>${st.sex === 'M' ? 'Male' : 'Female'}</td>
                                 <td>${calculate_age(new Date(st.date_of_birth))}</td>
-                                <td>${st.date_of_birth ? new Date(st.date_of_birth).toLocaleDateString('km-kh',options).replaceAll(' ','-') : ''}</td>
-                                <td>${st.start_date ? new Date(st.start_date).toLocaleDateString('km-kh',options).replaceAll(' ','-') : ''}</td>
+                                <td>${st.date_of_birth ? new Date(st.date_of_birth).toLocaleDateString('km-KH',options).replaceAll(' ','-') : ''}</td>
+                                <td>${st.start_date ? new Date(st.start_date).toLocaleDateString('km-KH',options).replaceAll(' ','-') : ''}</td>
                                 <td>${data.session ? data.session : ''}</td>
                                 ${inner_html ? inner_html : '<td></td>'}
                                 <td class="align-middle text-center text-white bg-success">
