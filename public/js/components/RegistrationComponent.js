@@ -67,7 +67,7 @@ var RegistrationComponent = new function(){
             let op = {
                 'id':group_id, 
                 'onClose':(d)=>{
-                    alert('onClose');
+                  //mThis.refreshOptions('group');
                 }
             };
             StudentGroupDialog.show(op);
