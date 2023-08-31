@@ -136,7 +136,7 @@ var StudentGroupComponent = new function(){
                 let d =StringSanitizer.sanitizeObject( res.data,null,[]);
                 VSUtil.setComboItems(mThis.elFilter_term,d.terms,'id','term_name',null,null,null);
                 VSUtil.setComboItems(mThis.elFilter_program,d.programs,'id','program_name',null,null,null);
-                VSUtil.setComboItems(mThis.elFilter_session,d.sessions,'id','session_name',null,null,null);
+                VSUtil.setComboItems(mThis.elFilter_session,d.sessions,'id','session_name',true,'(All Session)',0);
                 mThis.elFilter_term.val(d.term && d.terms[0].id).trigger('change');
                 onFinish();
             }

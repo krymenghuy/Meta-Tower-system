@@ -37,28 +37,19 @@ var PaymentPendingComponent = new function(){
         {
             title: "Status",
             data: (data, a, b) => {
-                let cls =
-                    data.status === "pending"
-                        ? "bg-danger"
-                        : data.status === "verified"
-                        ? "bg-info"
-                        : "bg-success";
-                return [
-                    `<span class="p-2 ${cls} text-white rounded-3 text-capitalize"> ${data.status}</span>`,
-                ].join("");
+                let cls = data.status === "pending" ? "bg-danger" : data.status === "verified" ? "bg-info" : "bg-success";
+                return [`<span class="p-2 ${cls} text-white rounded-3 text-capitalize"> ${data.status}</span>`].join('');
             },
         },
         {
             title: "Action",
             data: (data, a, b) => {
                 let cls = data.status === "paid" ? "d-none" : "";
-                return [
-                    `<div class="d-flex gap-2">
+                return [`<div class="d-flex gap-2">
                     <a href="javascript:void(0)" class="btn-ppd-modify ${cls}" data-id="${data.enrollment_id}">
                         <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
                     </a>
-                </div>`,
-                ].join("");
+                </div>`].join('');
             },
         },
     ];
@@ -97,27 +88,13 @@ var PaymentPendingComponent = new function(){
     };
 
     this.prepareOptions = () => {
-        vsapi
-            .call(
-                `${main_view.base_url}/api/settings/status-options`,
-                null,
-                null
-            )
-            .then((res) => {
-                let data = {};
-                if (res.status_code === 200) {
-                    data = res.data;
-                }
-                VSUtil.setComboItems(
-                    mThis.elSearch,
-                    data,
-                    "id",
-                    "name",
-                    null,
-                    null,
-                    "4"
-                );
-            });
+        vsapi.call(`${main_view.base_url}/api/settings/status-options`,null,null).then((res) => {
+            let data = {};
+            if(res.status_code === 200){
+                data = res.data;
+            }
+            VSUtil.setComboItems(mThis.elSearch,data,"id","name",null,null,"4");
+        });
     };
 
     this.show = (options) => {

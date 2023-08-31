@@ -12,10 +12,12 @@ var StudentAttendanceComponent = new function(){
     },
     {
         title: "Full Name",
+        className: 'text-capitalize',
         data: "name"
     },
     {
         title: "Full Name (KH)",
+        className: 'text-capitalize',
         data: "name_kh"
     },
     {
