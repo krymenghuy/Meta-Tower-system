@@ -96,7 +96,7 @@ var StudentAttendanceComponent = new function(){
                     </div>`].join('');
                 });
                 
-                html = [html,`<div class="${first == 0 ? '' : 'mt-3'}"><p>${t.date}</p>`,'<div class="d-flex gap-2 flex-nowrap mt-3">',inner_html,'</div></div>'].join('');
+                html = [html,`<div class="${first == 0 ? '' : 'mt-3'}"><p>${t.date} ( ${t.group_name} )</p>`,'<div class="d-flex gap-2 flex-nowrap mt-3">',inner_html,'</div></div>'].join('');
                 first = 1;
             });
 
@@ -188,7 +188,6 @@ let StudentAttendanceDialog = new function(){
                 d = res.data;
                 d.extend = op;
             }
-            console.log(d);
             mThis.setDataForm(d);
         });
     }
