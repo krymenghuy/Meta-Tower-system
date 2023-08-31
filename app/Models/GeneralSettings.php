@@ -229,8 +229,17 @@ class GeneralSettings //extends Model
         return DB::table('schools')->selectRaw('name,id')->get();
     }
     static function options_group($term_id,$filter=null){
-        if(!$filter)
-        return DB::table('student_groups')->where('term_id',$term_id)->selectRaw('id,name AS group_name,campus_id,session_id,level_id')->get();
+        // if(!$filter)
+        $d = (object)$filter;
+        $campus_id = isset($d->campus_id) ? $d->campus_id :null;
+        $level_id = isset($d->level_id) ? $d->level_id :null;
+        $session_id = isset($d->session_id) ? $d->session_id :null;
+        $str_search ="term_id = $term_id";
+        if($campus_id>0) $str_search.=' AND campus_id = '.$campus_id;
+        if($level_id>0) $str_search.=' AND level_id = '.$level_id;
+        if($session_id>0) $str_search.=' AND session_id = '.$session_id;
+
+        return DB::table('student_groups')->whereRaw($str_search)->selectRaw('id,name AS group_name,campus_id,session_id,level_id')->get();
     }
 
     static function saveOption_school($arr,$id, $ss){

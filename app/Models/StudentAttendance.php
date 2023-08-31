@@ -362,11 +362,12 @@ class StudentAttendance //extends Model
 
         $selectCols = 's.id as student_id,s.sex,s.name,s.name_kh,s.code,s.id,s.date_of_birth as dob';
         $query = DB::table('students as s')
+                ->join('student_attendances as sa','sa.student_id','=','s.id')
                 ->whereRaw($str_moreWhere)->whereRaw($str_search)
                 ->selectRaw($selectCols)
-                ->orderBy('id','desc');
+                ->orderBy('s.id','desc');
         $count_query = clone $query;
-        $count = $count_query->count('id');
+        $count = $count_query->count('s.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach($rows as $row) {
@@ -387,6 +388,9 @@ class StudentAttendance //extends Model
         $d = (object)$arr;
         $id = isset($d->id)?$d->id:null;
         $group_id = isset($d->group_id)?$d->group_id:null;
+        if(!$group_id) return DV::error('Group ID is required');
+        $existGroup = DB::table('student_groups')->where('id',$group_id)->exists();
+        if(!$existGroup) return DV::error('Group not found');
         $date = isset($arr['date'])?$arr['date']:date('Y-m-d');
         $q = DB::table('student_attendances as sa');
                 if($id){
@@ -396,7 +400,7 @@ class StudentAttendance //extends Model
 
                 // ->where('sa.session_date',$date)
         $row = $q->selectRaw("sa.id,sa.out_diff_time,sa.session_date,sa.student_id,sa.status_id,sa.in_diff_time,sa.is_finished,sa.in_remarks,sa.out_remarks,sa.checkin_time,sa.checkout_time,sa.level_id")->first();
-        $group = DB::table('student_groups')->where('level_id',$group_id)->first();
+        $group = DB::table('student_groups')->where('id',$group_id)->first();
         $date = date('Y-m-d',strtotime($date));
         $today = date('Y-m-d');
         $day_name = date('D',strtotime($date));
