@@ -116,14 +116,14 @@ class PriceListController extends Controller
         return JDV::result($details);
     }
 
-    function studentInvoice(Request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss;
+    // function studentInvoice(Request $req){
+    //     $ss = UM::getUserInfoByToken($req,-1);
+    //     if($ss->status_code !=200) return $ss;
 
-        $find = PriceList::studentInvoice($req->all(),$ss);
-        return JDV::result($find);
+    //     $find = PriceList::studentInvoice($req->all(),$ss);
+    //     return JDV::result($find);
 
-    }
+    // }
 
     function findStudent(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
@@ -133,62 +133,62 @@ class PriceListController extends Controller
         return JDV::result($find);
     }
 
-    function schoolFeePay(Request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss;
-        $pay = PriceList::schoolFeePay($req->all(),$ss);
-        return JDV::result($pay);
-    }
+    // function schoolFeePay(Request $req){
+    //     $ss = UM::getUserInfoByToken($req,-1);
+    //     if($ss->status_code !=200) return $ss;
+    //     $pay = PriceList::schoolFeePay($req->all(),$ss);
+    //     return JDV::result($pay);
+    // }
 
-    function generateInvoiceDetails(Request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss;
+    // function generateInvoiceDetails(Request $req){
+    //     $ss = UM::getUserInfoByToken($req,-1);
+    //     if($ss->status_code !=200) return $ss;
 
-        $details = PriceList::generateInvoiceDetails($req->all(),$ss);
-        return JDV::result($details);
-    }
+    //     $details = PriceList::generateInvoiceDetails($req->all(),$ss);
+    //     return JDV::result($details);
+    // }
 
-    function generateInvoice(Request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss;
+    // function generateInvoice(Request $req){
+    //     $ss = UM::getUserInfoByToken($req,-1);
+    //     if($ss->status_code !=200) return $ss;
 
-        $details = PriceList::generateInvoice($req->all(),$ss);
-        return JDV::raw($details);
-    }
+    //     $details = PriceList::generateInvoice($req->all(),$ss);
+    //     return JDV::raw($details);
+    // }
 
-    function deleteInvoice(Request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss;
+    // function deleteInvoice(Request $req){
+    //     $ss = UM::getUserInfoByToken($req,-1);
+    //     if($ss->status_code !=200) return $ss;
 
-        $delete = PriceList::deleteInvoice($req,$ss);
-        return JDV::raw($delete);
-    }
+    //     $delete = PriceList::deleteInvoice($req,$ss);
+    //     return JDV::raw($delete);
+    // }
 
-    function turnInvoiceToActive(Request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss;
+    // function turnInvoiceToActive(Request $req){
+    //     $ss = UM::getUserInfoByToken($req,-1);
+    //     if($ss->status_code !=200) return $ss;
 
-        $active = PriceList::reviveInActiveInvoice($req,$ss);
-        return JDV::raw($active);
-    }
+    //     $active = PriceList::reviveInActiveInvoice($req,$ss);
+    //     return JDV::raw($active);
+    // }
 
-    function updateInvoice(Request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss;
+    // function updateInvoice(Request $req){
+    //     $ss = UM::getUserInfoByToken($req,-1);
+    //     if($ss->status_code !=200) return $ss;
 
-        $update = PriceList::updateInvoice($req->all(),$ss);
-        return JDV::raw($update);
-    }
+    //     $update = PriceList::updateInvoice($req->all(),$ss);
+    //     return JDV::raw($update);
+    // }
 
-    /**
-     * getInvoiceItems() for Invoice's expandable details
-     */
-    function getInvoiceItems(Request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss;
-        $p = new PriceList(null,$ss);
-        $data = $p->getInvoiceItems($req->invoice_id);
-        return JDV::result($data);
-    }
-    
+    // /**
+    //  * getInvoiceItems() for Invoice's expandable details
+    //  */
+    // function getInvoiceItems(Request $req){
+    //     $ss = UM::getUserInfoByToken($req,-1);
+    //     if($ss->status_code !=200) return $ss;
+    //     $p = new PriceList(null,$ss);
+    //     $data = $p->getInvoiceItems($req->invoice_id);
+    //     return JDV::result($data);
+    // }
+
 }

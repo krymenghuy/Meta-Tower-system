@@ -64,6 +64,7 @@ class EnrollmentManager {
           // 'tuition_paid' => '0|number|default=0',
           'pmt_option_id' => '0|number|exists=pmt_options.id|default=2',
           'pmt_status' => '0|choice|paid,unpaid|default=unpaid',
+          'referrer_id' => '0|number|exists=students.id',
           'term_id' => '1|number|exists=terms.id'
       ];
       $branch_id = $ss->branch_id;
@@ -96,7 +97,7 @@ class EnrollmentManager {
       $term_id = $inputs['term_id'];
       $pmt_option_id = $inputs['pmt_option_id'];
       $pmt_status = $inputs['pmt_status'];
-     
+
       // $tuition_start_date = $inputs['tuition_start_date'];
 
       // $tuition = $inputs['tuition'];
@@ -117,6 +118,9 @@ class EnrollmentManager {
       unset($inputs['academic_year']);
       unset($inputs['pmt_option_id']);
       unset($inputs['pmt_status']);
+
+
+
       // $is_create = (!$id || $id==0);
 
       unset($inputs['level_id'],$inputs['session_id'],$inputs['campus_id'],$inputs['previous_school'],$inputs['shift_id'],$inputs['term_id'],$inputs['pmt_mode']);
@@ -127,14 +131,14 @@ class EnrollmentManager {
         if(!$enrollmentInfo) return DV::error('It seems the enrollment ID does not exist');
         $student_id = $enrollmentInfo->student_id;
       }
-      
+
       $to_delete_image = $id && (!$image || isImage($image));
       if($to_delete_image){
         $prev_file_name = DB::table('students')->where('id',$id)->take(1)->value('file_name');
         if($prev_file_name) PublicStorage::delete($branch_id,'students','image',$prev_file_name);
         $inputs['file_name']=null;
       }
-      
+
       if(!$id && Student::checkParentLoginName($parent_info)) return DV::error('Parent Login name is already taken. Father or mother phone number is used as parent login');
       $student_id = saveData($ss,'students',['id' =>$student_id],$inputs,[],1,1);
 
@@ -157,6 +161,7 @@ class EnrollmentManager {
               'pmt_mode' => $pmt_mode,
               'academic_year' => $academic_year,
               'term_id' => $term_id,
+              'referrer_id' => $inputs['referrer_id'],
               'start_date' => convertDate($admission_date),
           ];
           if(!$id){
@@ -260,18 +265,17 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
     $ss = $ss?$ss:$this->user_info;
     $id = $id?$id:$this->id;
     //$branch_id = $ss->branch_id;
-    $arr = [
+    $enr = DB::table('enrollments')->where('id',$id)->selectRaw('id')->get()->first();
+    $delete = saveData($ss,'enrollments',['id' => $id],[
         'status_id' => 1,
-    ];
-    $enr = DB::table('enrollments')->where('student_id',$id)->selectRaw('id')->get()->first();
-    $delete = saveData($ss,'enrollments',['student_id' => $id],$arr,[],1);
+    ],[],1);
     if($delete){
         $change_fields = [
             "tuition" => 0,
             "tuition_due" => 0,
             "tuition_paid" => 0,
             "session_id" => 0,
-            "status_id" => 0,
+            "status_id" => 1,
             "price_list_id" => 0,
             "program_id" => 0,
             "level_id" => 0,
@@ -279,7 +283,7 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
         ];
         $updated = saveData($ss,'payments',['enrollment_id' => $enr->id],$change_fields,[],1);
     }
-    return DV::depends($updated,'Delete verified student');
+    return DV::depends($delete,'Delete verified student');
 }
  
 
@@ -389,6 +393,9 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
       return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-
+    function generateNewEnrollentToStudent($arr=[],$id,$ss){
+        $v_rule = [];
+        return '';
+    }
 }
 ?>

@@ -753,6 +753,7 @@ class StudentAttendance //extends Model
         }
 
         $attendanceData = [];
+
         foreach ($months as $date) {
             $year = $date->year;
             $month = $date->month;
@@ -783,10 +784,9 @@ class StudentAttendance //extends Model
                 'students' => []
             ];
 
-            $count_col_absent = 0;
-            $count_col_present = 0;
-            $count_col_permission = 0;
             $daily_attendance = [];
+            $guardian_phoneNum = [];
+
             foreach ($students as $st) {
                 $current_date = new DateTime("$year-$month-01");
                 $end_date_obj = new DateTime("$year-$month-01");
@@ -801,7 +801,13 @@ class StudentAttendance //extends Model
                     $current_date->modify('+1 day');
                 }
 
+                $guardian_phoneNum[] = DB::table('student_guardians as sg')->where('sg.student_id',$st->student_id)
+                                    ->join('guardians as g','sg.guardian_id','=','g.id')
+                                    ->selectRaw('g.phone_number')
+                                    ->get();
+
                 $stData = [
+                    'student_id' => $st->student_id,
                     'name' => $st->name,
                     'sex' => $st->sex,
                     'date_of_birth' => $st->date_of_birth,
@@ -809,21 +815,31 @@ class StudentAttendance //extends Model
                     'list' => $att_info,
                 ];
 
+                $count_col_absent = 0;
+                $count_col_present = 0;
+                $count_col_permission = 0;
+                $count_rowsA=[];
+                $count_rowsP=[];
+                $count_rowsPr=[];
                 foreach($att_info as $att){
 
                     if($att->status == 'A' || $att->status_id == 3){
-                        $count_col_absent ++;
+
+                        $count_rowsA[] = $count_col_absent ++;
                     }
                     if($att->status == 'P' || $att->status_id == 1){
-                        $count_col_present ++;
+
+                        $count_rowsP[] = $count_col_present ++;
                     }
                     if($att->status == 'Pr' || $att->status_id == 2){
-                        $count_col_permission ++;
+
+                        $count_rowsPr[] = $count_col_permission ++;
                     }
 
                     $daily_attendance[] = self::countDailyAttendance($att_info, $att->day);
 
                 }
+
                 $processedData = [];
 
                 foreach ($daily_attendance as $item) {
@@ -850,17 +866,22 @@ class StudentAttendance //extends Model
                         $processedData[$day]['permission']++;
                     }
                 }
-
-
-
-                $monthData['monthly_attendance'] = [
-                    'absent' =>$count_col_absent,
-                    'permission' => $count_col_permission,
-                    'present' => $count_col_present,
-                ];
                 $result = array_values($processedData);
-                $monthData['daily_attetndance'] = $result;
 
+
+
+                // $monthData['monthly_attendance'][]= [
+                //     'absent' =>$count_col_absent,
+                //     'permission' => $count_col_permission,
+                //     'present' => $count_col_present,
+                // ];
+                $monthData['monthly_attendance'][]= [
+                    'absent' =>count($count_rowsA),
+                    'permission' => count($count_rowsPr),
+                    'present' =>count($count_rowsP),
+                ];
+                $monthData['daily_attendance'] = $result;
+                $monthData['phone_number'] = $guardian_phoneNum;
                 $monthData['students'][] = $stData;
 
             }
