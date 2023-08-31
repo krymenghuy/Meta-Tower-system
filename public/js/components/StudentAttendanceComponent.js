@@ -136,7 +136,7 @@ var StudentAttendanceComponent = new function(){
                     'date': $(this).data('day'),
                     'status_id': $(this).data('status')
                 };
-                if(p.status_id)
+                if(p.status_id != 4)
                     StudentAttendanceDialog.show(p);
             });
         });

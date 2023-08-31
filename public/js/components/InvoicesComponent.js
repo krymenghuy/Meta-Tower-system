@@ -124,7 +124,7 @@ var InvoicesComponent = new function(){
                 'enrollment_id': $(this).data('enrollmentid'),
                 'inv_id': $(this).data('id')
             };
-            cv_interact.confirm('Recieve pay now?',{title: 'Pay', context: 'OK'},(e) => {
+            cv_interact.confirm('Recieve Payment?',{title: 'Pay', context: 'OK'},(e) => {
                 if(e){
                     vsapi.call(`${main_view.base_url}/api/student/school-fee/pay`,op,null).then(res => {
                         if(res.status_code === 200){
@@ -186,19 +186,65 @@ var InvoicesComponent = new function(){
             if(res.status_code === 200){
                 d = res.data;
             }
-            (d || []).map(inv => {
-                html = [html,`<div class="d-flex w-50 rounded-3 bg-light gap-2 min-width-box-enroll">
-                    <div class="w-50 p-3 text-nowrap">
-                        <span class="text-primary-emphasis">Fee Type</span>
-                        <span>:</span>
-                        <span class="text-capitalize">${inv.fee_type ? inv.fee_type.replaceAll('_',' ') : ''}</span>
-                    </div>
-                    <div class="w-50 p-3 text-nowrap"></div>
-                </div>`].join('');
-            });
-            console.log(d);
-            html = [`<div class="d-flex flex-nowrap gap-2">`,html,`</div>`].join('');
-            div_wrapper.html(html);
+
+            if(d && d.length > 0){
+                d.map(inv => {
+                    let cur_symbol = '$';
+                    html = [html,`<div class="d-flex w-50 rounded-3 bg-light gap-2 min-width-box-enroll">
+                        <div class="w-50 p-3 text-nowrap">
+                            <p>
+                                <span class="text-primary-emphasis">Fee Type</span>
+                                <span>:</span>
+                                <span class="text-capitalize">${inv.fee_type ? inv.fee_type.replaceAll('_',' ') : ''}</span>
+                            </p>
+                            <p>
+                                <span class="text-primary-emphasis">Price</span>
+                                <span>:</span>
+                                <span class="text-capitalize">${inv.price ? [cur_symbol,inv.price].join(' ') : 'N/A'}</span>
+                            </p>
+                            <p>
+                                <span class="text-primary-emphasis">Net Amount</span>
+                                <span>:</span>
+                                <span class="text-capitalize">${inv.net_amount ? [cur_symbol,inv.net_amount].join(' ') : 'N/A'}</span>
+                            </p>
+                            <p>
+                                <span class="text-primary-emphasis">Discount</span>
+                                <span>:</span>
+                                <span class="text-capitalize">${inv.discount ? inv.discount : 'N/A'}</span>
+                            </p>
+                            <p>
+                                <span class="text-primary-emphasis">Discount Type</span>
+                                <span>:</span>
+                                <span class="text-capitalize">${inv.discount_type ? inv.discount_type : 'Percentage'}</span>
+                            </p>
+                        </div>
+                        <div class="w-50 p-3 text-nowrap">
+                            <p>
+                                <span class="text-primary-emphasis">Start Date</span>
+                                <span>:</span>
+                                <span class="text-capitalize">${inv.start_date ? new Date(inv.start_date).toLocaleDateString('km-KH',{'day': 'numeric','month':'short','year':'numeric'}) : 'N/A'}</span>
+                            </p>
+                            <p>
+                                <span class="text-primary-emphasis">Date Range</span>
+                                <span>:</span>
+                                <span class="text-wrap">${inv.date_range ? inv.date_range : 'N/A'}</span>
+                            </p>
+                            <p>
+                                <span class="text-primary-emphasis">End Date</span>
+                                <span>:</span>
+                                <span class="text-capitalize">${inv.end_date ? new Date(inv.net_amount).toLocaleDateString('km-KH',{'day':'numeric','month':'short','year':'numeric'}) : 'N/A'}</span>
+                            </p>
+                            <p>
+                                <span class="text-primary-emphasis">Description</span>
+                                <span>:</span>
+                                <span class="text-wrap">${inv.description ? inv.description : 'N/A'}</span>
+                            </p>
+                        </div>
+                    </div>`].join('');
+                });
+                html = [`<div class="d-flex flex-nowrap gap-2">`,html,`</div>`].join('');
+                div_wrapper.html(html).addClass(['p-3','on-hover-to-scroll']);
+            }
         });
     }
 
