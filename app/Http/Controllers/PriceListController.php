@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Invoice;
 use Illuminate\Http\Request;
 use App\Models\JDV;
 use App\Models\UM;
@@ -125,13 +126,13 @@ class PriceListController extends Controller
 
     // }
 
-    function findStudent(Request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss;
+    // function findStudent(Request $req){
+    //     $ss = UM::getUserInfoByToken($req,-1);
+    //     if($ss->status_code !=200) return $ss;
 
-        $find = PriceList::findStudent($req->all(),$ss);
-        return JDV::result($find);
-    }
+    //     $find = PriceList::findStudent($req->all(),$ss);
+    //     return JDV::result($find);
+    // }
 
     // function schoolFeePay(Request $req){
     //     $ss = UM::getUserInfoByToken($req,-1);
@@ -140,13 +141,13 @@ class PriceListController extends Controller
     //     return JDV::result($pay);
     // }
 
-    // function generateInvoiceDetails(Request $req){
-    //     $ss = UM::getUserInfoByToken($req,-1);
-    //     if($ss->status_code !=200) return $ss;
-
-    //     $details = PriceList::generateInvoiceDetails($req->all(),$ss);
-    //     return JDV::result($details);
-    // }
+    function generateInvoiceDetails(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $x = new Invoice();
+        $details = $x->generateInvoiceDetails($req->all(),$ss);
+        return JDV::result($details);
+    }
 
     // function generateInvoice(Request $req){
     //     $ss = UM::getUserInfoByToken($req,-1);
