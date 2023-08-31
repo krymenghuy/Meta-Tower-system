@@ -158,10 +158,8 @@ let StudentAttendanceDialog = new function(){
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
         let op = mThis.getDataForm();
-        console.log(op);
         vsapi.call(`${main_view.base_url}/api/student/attendance-save`,op,null).then(res => {
             if(res.status_code === 200){
-                console.log(res.data);
                 cv_interact.success('Updated Attedance Successfully!');
             }
             else{
@@ -183,7 +181,6 @@ let StudentAttendanceDialog = new function(){
                 d = res.data;
                 d.extend = op;
             }
-            console.log(d);
             mThis.setDataForm(d);
         });
     }

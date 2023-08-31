@@ -83,13 +83,13 @@ var RegistrationComponent = new function(){
             });
         });
       
-          mThis.elFilter_program.on('change',function(e){
-              vsapi.call(`${main_view.base_url}/api/settings/options-level`,{'program_id':$(this).val()},null,false).then(res=>{
-                  let items = res.status_code ===200?res.data:[];
-                  VSUtil.setComboItems(mThis.elFilter_level,items,'id','level_name',true,'(All Grades)',0);
-                  mThis.elFilter_level.val(0).trigger('change');
-              });
-          });
+        mThis.elFilter_program.on('change',function(e){
+            vsapi.call(`${main_view.base_url}/api/settings/options-level`,{'program_id':$(this).val()},null,false).then(res=>{
+                let items = res.status_code ===200?res.data:[];
+                VSUtil.setComboItems(mThis.elFilter_level,items,'id','level_name',true,'(All Grades)',0);
+                mThis.elFilter_level.val(0).trigger('change');
+            });
+        });
 
         mThis.elFilter_level.on('change',function(e){
             e.preventDefault();
@@ -194,9 +194,9 @@ var RegistrationComponent = new function(){
     this.getEnrollmentPath = ()=>{
         let p = {};
         mThis.div_enroll_path.find('.data-input').each(function(){
-          const el = $(this);  
-          const f = el.data('field');
-          p[f] = el.val();
+            const el = $(this);  
+            const f = el.data('field');
+            p[f] = el.val();
         });
         return p;
     }
@@ -206,7 +206,7 @@ var RegistrationComponent = new function(){
         //mThis.getEnrollmentPath() will return the selected op such as  {'academic_year','term_id','level_id','session_id'}
         const op = mThis.getEnrollmentPath();
         vsapi.call(`${main_view.base_url}/api/settings/options-group`,op,null,false).then(res=>{
-            let items = res.status_code ===200?StringSanitizer.sanitizeObject(res.data,null,['group_name']):[];
+            let items = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data,null,['group_name']):[];
             VSUtil.setComboItems(mThis.elGroup,items,'id','group_name',true,'(Choose Group)',null);
             mThis.elGroup.val(mThis.selected_options.group_id).trigger('change');
         });
@@ -520,8 +520,7 @@ var RegistrationComponent = new function(){
 
     this.prepareFormOption = (div,className, onFinish = null) => {
         vsapi.call(`${main_view.base_url}/api/enrollment/form-options`,null,null).then(res => {
-         
-            const d = res.status_code ===200? StringSanitizer.sanitizeObject(res.data,null,[]):{};
+            const d = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data,null,[]) : {};
             div.find(`.${className}`).each(function(){
                 const el = $(this);
                 const f = el.data('field');
