@@ -47,7 +47,7 @@ class EnrollmentManager {
           'phone_number' => '0|phone',
           'email' => '0|email',
           'place_of_birth' => '0|string|0-250',
-          'address' => '1|string|0-350',
+          'address' => '0|string|0-350',
           'photo' => '0|image',
           'group_id' => '0|number|exists=student_groups.id',
           'level_id' => '0|number|exists=program_levels.id',
@@ -64,7 +64,6 @@ class EnrollmentManager {
           // 'tuition_paid' => '0|number|default=0',
           'pmt_option_id' => '0|number|exists=pmt_options.id|default=2',
           'pmt_status' => '0|choice|paid,unpaid|default=unpaid',
-         
           'term_id' => '1|number|exists=terms.id'
       ];
       $branch_id = $ss->branch_id;
@@ -237,7 +236,8 @@ class EnrollmentManager {
               'fee_required'=>1
           ],[],1);
       }
-      return DV::depends($enrollment_id,['parent_info' =>$p_info],'Failed to save student enrollmemnt');
+      $enroll_path = (object)['academic_year'=>$academic_year,'campus_id'=>$campus_id,'term_id'=>$term_id,'program_id'=>$program->id,'level_id'=>$level_id,'session_id'=>$session_id];
+      return DV::depends($enrollment_id,['enrollment_path'=>$enroll_path,'parent_info' =>$p_info],'Failed to save student enrollmemnt');
   }
 
   static function getPrevSchool($id){
@@ -281,22 +281,7 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
     }
     return DV::depends($updated,'Delete verified student');
 }
-
-    static function getFormOptions($ss){
-        $res = [
-            //'price_list'=>GeneralSettings::price_list_options($ss),
-            'sessions' => GeneralSettings::options_session($ss),
-            //'pmt_options' => GeneralSettings::options_pmt($ss),
-            'programs' => GeneralSettings::options_program($ss),
-            'levels' => GeneralSettings::options_level(null,$ss),
-            'campuses' => GeneralSettings::options_campus($ss),
-            'academic_years' => GeneralSettings::options_academic_year($ss),
-            'terms' => GeneralSettings::options_term(null,$ss),
-            'schools' => GeneralSettings::options_school($ss)
-        // ,'groups' => GeneralSettings::options_group($term_id,$ss)
-        ];
-        return $res;
-    }
+ 
 
     function getEnrollmentDetails($id=null,$ss=null){
         $ss = $ss?$ss:$this->user_info;
@@ -322,6 +307,24 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
                         }
                         unset($row->file_name);
                         return $row;
+    }
+
+    /** getFormOptions is postive in case of Editing existing Enrollment  */
+    function getFormOptions($enrollment_id,$ss){
+            $res = [
+                //'price_list'=>GeneralSettings::price_list_options($ss),
+                'sessions' => GeneralSettings::options_session($ss),
+                //'pmt_options' => GeneralSettings::options_pmt($ss),
+                'programs' => GeneralSettings::options_program($ss),
+                'levels' => GeneralSettings::options_level(null,$ss),
+                'campuses' => GeneralSettings::options_campus($ss),
+                'academic_years' => GeneralSettings::options_academic_year($ss),
+                'terms' => GeneralSettings::options_term(null,$ss),
+                'schools' => GeneralSettings::options_school($ss),
+                'enrollment_info'=> $this->getEnrollmentDetails($enrollment_id,$ss)
+            // ,'groups' => GeneralSettings::options_group($term_id,$ss)
+            ];
+            return $res;
     }
 
    function list_paginate($filter,$ss=null){

@@ -309,7 +309,7 @@
     
                         if (!mThis.base_url) mThis.base_url = $('meta[name="base_url"]').attr('content');
     
-                        vsapi.call(`${mThis.base_url}/api/settings/lang-all`,p,'POST').then((res)=>{
+                        vsapi.call(`${mThis.base_url}/api/settings/lang-all`,p,null).then((res)=>{
                                 if (res.status_code === 200){
                                         let bs = [];
                                         try{

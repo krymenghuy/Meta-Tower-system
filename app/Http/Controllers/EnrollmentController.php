@@ -52,7 +52,8 @@ class EnrollmentController extends Controller
     function getFormOptions(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
-        $options = EnrollmentManager::getFormOptions($ss);
+        $m = new EnrollmentManager(null,$ss);
+        $options = $m->getFormOptions($req->enrollment_id,$ss);
         return JDV::result($options);
     }
 }
