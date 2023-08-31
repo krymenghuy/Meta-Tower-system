@@ -20,10 +20,12 @@ var StudentInformationComponent = new function(){
     },
     {
         title: "Full Name",
+        className: "text-capitalize",
         data: "name"
     },
     {
         title: "Full Name (KH)",
+        className: "text-capitalize",
         data: "name_kh"
     },
     {
@@ -40,7 +42,7 @@ var StudentInformationComponent = new function(){
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric'
-            }).replaceAll(' ','-');
+            }).replaceAll(' ','-').replace(',','');
         }
     },
     {

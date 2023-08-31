@@ -182,14 +182,14 @@
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Group"></span>
                             </a>
                         </li>
-                        <li class="kt-menu__item" aria-haspopup="true">
+                        <!-- <li class="kt-menu__item" aria-haspopup="true">
                             <a href="AssignStudentComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{ asset('assets/images/icons/assign_student.png') }}"/>
                                 </span>
                                 <span class="kt-menu__link-text trans-text" data-langprop="menus.Assign To Group"></span>
                             </a>
-                        </li>
+                        </li> -->
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="PromoteStudentComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">

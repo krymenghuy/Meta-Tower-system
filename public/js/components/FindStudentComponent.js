@@ -38,8 +38,7 @@ var FindStudentComponent = new function(){
 
     this.prepareOptions = (div,onFinish = null) => {
         vsapi.post(`${main_view.base_url}/api/find-student/filter-options`,null,false).then(res => {
-            const data = res.status_code === 200?res.data:{};
-            console.error(data);      
+            const data = res.status_code === 200 ? res.data : {};
             div.find('.data-input').each(function(){
                 let el = $(this);
                 let f = el.data('field');
@@ -68,138 +67,140 @@ var FindStudentComponent = new function(){
             d = d.data;
 
             let html = null;
-            d.map(item => {
-                let cls = item.pmt_status === 'paid' ? 'text-success' : item.pmt_status === 'unpaid' ? 'text-dark' : 'text-danger';
-                html = [html,`<div class="d-flex p-3 bg-white h-info-student">
-                    <div class="div-img">
-                        <img src="${item.image_url}" alt=""/>
-                    </div>
-                    <div class="d-block ms-3 w-100">
-                        <div class="row row-cols-lg-4 mb-0">
-                            <div class="col">
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Student ID"></p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.student_code}</p>
+            if(d && d.length > 0){
+                d.map(item => {
+                    let cls = item.pmt_status === 'paid' ? 'text-success' : item.pmt_status === 'unpaid' ? 'text-dark' : 'text-danger';
+                    html = [html,`<div class="d-flex p-3 bg-white h-info-student">
+                        <div class="div-img">
+                            <img src="${item.image_url}" alt=""/>
+                        </div>
+                        <div class="d-block ms-3 w-100">
+                            <div class="row row-cols-lg-4 mb-0">
+                                <div class="col">
+                                    <div class="d-flex">
+                                        <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Student ID"></p>
+                                        <p class="px-2">:</p>
+                                        <p class="text-nowrap">${item.student_code}</p>
+                                    </div>
+                                    <div class="d-flex">
+                                        <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Name"></p>
+                                        <p class="px-2">:</p>
+                                        <p class="text-capitalize text-nowrap">${item.name}</p>
+                                    </div>
+                                    <div class="d-flex">
+                                        <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Female"></p>
+                                        <p class="px-2">:</p>
+                                        <p class="text-nowrap">${item.sex === 'M' ? 'Male':'Female'}</p>
+                                    </div>
+                                    <div class="d-flex">
+                                        <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Date of Birth"></p>
+                                        <p class="px-2">:</p>
+                                        <p class="text-nowrap">${new Date(item.date_of_birth).toLocaleDateString('km-KH',{'day':'numeric','month':'short','year':'numeric'}).replaceAll(' ','-').replace(',','')}</p>
+                                    </div>
                                 </div>
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Name"></p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.name}</p>
+                                <div class="col">
+                                    <div class="d-flex">
+                                        <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Parent Name"></p>
+                                        <p class="px-2">:</p>
+                                        <p class="text-capitalize text-nowrap">${item.parent_info && item.parent_info.parent_name}</p>
+                                    </div>
+                                    <div class="d-flex">
+                                        <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Parent Phone"></p>
+                                        <p class="px-2">:</p>
+                                        <p class="text-nowrap">${item.parent_info && item.parent_info.phone_number}</p>
+                                    </div>
+                                    <div class="d-flex">
+                                        <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Parent Email"></p>
+                                        <p class="px-2">:</p>
+                                        <p class="text-nowrap">${item.parent_info && item.parent_info.email}</p>
+                                    </div>
                                 </div>
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Female"></p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.sex === 'M' ? 'Male':'Female'}</p>
+                                <div class="col">
+                                    <div class="d-flex">
+                                        <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Tuition Due"></p>
+                                        <p class="px-2">:</p>
+                                        <p class="text-nowrap">${cur_symbol} ${item.tuition_due ? item.tuition_due : '0.00'}</p>
+                                    </div>
+                                    <div class="d-flex">
+                                        <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Tuition Paid"></p>
+                                        <p class="px-2">:</p>
+                                        <p class="text-nowrap">${cur_symbol} ${item.tuition_paid ? item.tuition_paid : '0.00'}</p>
+                                    </div>
+                                    <div class="d-flex">
+                                        <p class="text-nowrap text-muted trans-text" data-langprop="titles.Payment Status"></p>
+                                        <p class="px-2">:</p>
+                                        <p class="text-nowrap text-capitalize">${item.pmt_status}</p>
+                                    </div>
+                                    <div class="d-flex">
+                                        <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.End Date"></p>
+                                        <p class="px-2">:</p>
+                                        <p class="text-nowrap ${cls}">${new Date(item.tuition_end_date).toLocaleDateString('km-KH',{'day':'numeric','month':'short','year':'numeric'}).replaceAll(' ','-').replace(',','')}</p>
+                                    </div>
                                 </div>
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Date of Birth"></p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.date_of_birth}</p>
+                                <div class="col">
+                                    <div class="d-flex align-items-start justify-content-end gap-2">
+                                        <button class="btn btn-sm btn-primary rounded-3 btn--gnInvoice" type="button" data-id="${item.enrollment_id}">
+                                            <span class="text-nowrap trans-text" data-langprop="buttons.Ganerate Invoice"></span>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger rounded-3 btn--Options position-relative text-nowrap" type="button">
+                                            <span class="text-nowrap trans-text" data-langprop="buttons.Options"></span>
+                                            <i class="fa-solid fa-caret-down ps-2"></i>
+                                            <div class="w-options gap-2 shadow p-3 rounded-3" style="display:none">
+                                                <a href="javascript:void(0)" class="btn-fns-details border-bottom pb-2" data-id="${item.enrollment_id}">
+                                                    <i class="fa-solid fa-up-right-from-square fs-5"></i>
+                                                    <span class="ps-2 trans-text" data-langprop="titles.Detials"></span>
+                                                </a>
+                                                <a href="javascript:void(0)" class="btn-fns-delete pt-2" data-id="${item.id}">
+                                                    <i class="fa-regular fa-trash-can fs-5"></i>
+                                                    <span class="ps-2 trans-text" data-langprop="titles.Delete"></span>
+                                                </a>
+                                            </div>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col">
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Parent Name"></p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.parent_info && item.parent_info.parent_name}</p>
+                            <hr class="bg-dark m-1 p-0"/>
+                            <div class="row row-cols-5 mt-2">
+                                <div class="col">
+                                    <div class="d-flex">
+                                        <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Academic Year"></p>
+                                        <p class="px-2">:</p>
+                                        <p class="text-nowrap">${item.academic_year}</p>
+                                    </div>
                                 </div>
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Parent Phone"></p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.parent_info && item.parent_info.phone_number}</p>
+                                <div class="col">
+                                    <div class="d-flex">
+                                        <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Campus"></p>
+                                        <p class="px-2">:</p>
+                                        <p class="text-nowrap">${item.campus}</p>
+                                    </div>
                                 </div>
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Parent Email"></p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.parent_info && item.parent_info.email}</p>
+                                <div class="col">
+                                    <div class="d-flex">
+                                        <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Class"></p>
+                                        <p class="px-2">:</p>
+                                        <p class="text-nowrap">${item.level}</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col">
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Tuition Due"></p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${cur_symbol} ${item.tuition_due ? item.tuition_due : '0.00'}</p>
+                                <div class="col">
+                                    <div class="d-flex">
+                                        <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Session"></p>
+                                        <p class="px-2">:</p>
+                                        <p class="text-nowrap">${item.session}</p>
+                                    </div>
                                 </div>
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Tuition Paid"></p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${cur_symbol} ${item.tuition_paid ? item.tuition_paid : '0.00'}</p>
-                                </div>
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text" data-langprop="titles.Payment Status"></p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${item.pmt_status}</p>
-                                </div>
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.End Date"></p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap ${cls}">${item.tuition_end_date}</p>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="d-flex align-items-start justify-content-end gap-2">
-                                    <button class="btn btn-sm btn-primary rounded-3 btn--gnInvoice" type="button" data-id="${item.enrollment_id}">
-                                        <span class="text-nowrap trans-text" data-langprop="buttons.Ganerate Invoice"></span>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger rounded-3 btn--Options position-relative text-nowrap" type="button">
-                                        <span class="text-nowrap trans-text" data-langprop="buttons.Options"></span>
-                                        <i class="fa-solid fa-caret-down ps-2"></i>
-                                        <div class="w-options gap-2 shadow p-3 rounded-3" style="display:none">
-                                            <a href="javascript:void(0)" class="btn-fns-details border-bottom pb-2" data-id="${item.id}">
-                                                <i class="fa-solid fa-up-right-from-square fs-5"></i>
-                                                <span class="ps-2 trans-text" data-langprop="titles.Detials"></span>
-                                            </a>
-                                            <a href="javascript:void(0)" class="btn-fns-delete pt-2" data-id="${item.id}">
-                                                <i class="fa-regular fa-trash-can fs-5"></i>
-                                                <span class="ps-2 trans-text" data-langprop="titles.Delete"></span>
-                                            </a>
-                                        </div>
-                                    </button>
+                                <div class="col">
+                                    <div class="d-flex">
+                                        <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Student Type"></p>
+                                        <p class="px-2">:</p>
+                                        <p class="text-nowrap">${item.student_type}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <hr class="bg-dark m-1 p-0"/>
-                        <div class="row row-cols-5 mt-2">
-                            <div class="col">
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Academic Year"></p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.academic_year}</p>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Campus"></p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.campus}</p>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Class"></p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.level}</p>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Session"></p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.session}</p>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Student Type"></p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.student_type}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>`].join('');
-            });
+                    </div>`].join('');
+                });
+            }
 
             mThis.panelStudentList.html(html);
             LocaleManager.translateZone('_fns_list');
@@ -283,6 +284,7 @@ var FindStudentComponent = new function(){
             if(res.status_code === 200){
                 data = res.data;
             }
+            console.log(data);
             if(typeof onFinish === 'function') onFinish(data);
         });
     }

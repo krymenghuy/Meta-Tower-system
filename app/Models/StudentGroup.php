@@ -139,7 +139,7 @@ class StudentGroup //extends Model
         if($level_id >0)
           $str_wheres .=' AND g.level_id ='.$level_id;
         else if ($program_id > 0){
-            $str_wheres .=' AND g.program_id ='.$program_id;
+            $str_wheres .=' AND p.id ='.$program_id;
         }
         if($session_id > 0) $str_wheres  .= ' AND g.session_id ='.$session_id;
         if($campus_id > 0) $str_wheres .= ' AND g.campus_id ='.$campus_id;
