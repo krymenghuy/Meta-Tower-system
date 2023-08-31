@@ -227,14 +227,14 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
         //** PriceListController */
         Route::post('/invoice-list',[InvoiceController::class,'studentInvoice']);
-        Route::post('/generate-invoice',[PriceListController::class,'generateInvoice']);
+        // Route::post('/generate-invoice',[PriceListController::class,'generateInvoice']);
         Route::post('/find',[PriceListController::class,'findStudent']);
-        Route::post('/generate-invoice/details',[PriceListController::class,'generateInvoiceDetails']);
-        Route::post('/school-fee/pay',[PriceListController::class,'schoolFeePay']);
-        Route::post('/invoice-delete',[PriceListController::class,'deleteInvoice']);
-        Route::post('/invoice-to-active',[PriceListController::class,'turnInvoiceToActive']);
-        Route::post('/invoice-update',[PriceListController::class,'updateInvoice']);
-        Route::post('/invoice-items',[PriceListController::class,'getInvoiceItems']);
+        // Route::post('/generate-invoice/details',[PriceListController::class,'generateInvoiceDetails']);
+        // Route::post('/school-fee/pay',[PriceListController::class,'schoolFeePay']);
+        // Route::post('/invoice-delete',[PriceListController::class,'deleteInvoice']);
+        // Route::post('/invoice-to-active',[PriceListController::class,'turnInvoiceToActive']);
+        // Route::post('/invoice-update',[PriceListController::class,'updateInvoice']);
+        // Route::post('/invoice-items',[PriceListController::class,'getInvoiceItems']);
 
         //** AttendanceController */
         Route::post('/attendance-save',[StudentAttendanceController::class,'saveAttendance']);
