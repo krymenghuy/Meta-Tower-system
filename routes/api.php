@@ -690,7 +690,7 @@ Route::post('settings/save-department', [GeneralSettingsController::class, 'save
 Route::post('settings/delete-department', [GeneralSettingsController::class, 'deleteDepartment']);
 Route::post('settings/department-info', [GeneralSettingsController::class, 'getDepartmentDetails']);
 Route::post('settings/options-academic-year', [GeneralSettingsController::class, 'GetComboItems_academic_year']);
-Route::post('settings/options-term', [GeneralSettingsController::class, 'GetComboItems_term']);
+Route::post('settings/options-term', [GeneralSettingsController::class, 'getOptions_term']);
 
 Route::post('settings/options-pmt-method', [GeneralSettingsController::class, 'getComboItems_pmt_method']);
 Route::post('settings/save-position', [GeneralSettingsController::class, 'savePosition']);

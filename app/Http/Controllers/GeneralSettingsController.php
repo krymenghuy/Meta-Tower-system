@@ -392,7 +392,7 @@ class GeneralSettingsController extends Controller
   function saveSchool(Request $req){
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !=200) return $ss;
-    return JDV::raw(GeneralSettings::saveSchool($req->all(),$ss));
+    return JDV::raw(GeneralSettings::saveOption_school($req->all(),$req->id,$ss));
   }
  
   function getOptions_program(Request $req){
