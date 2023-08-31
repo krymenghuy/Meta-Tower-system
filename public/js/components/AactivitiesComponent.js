@@ -140,7 +140,7 @@ var AactivitiesComponent = new function(){
                     }
                     else{
                         op.remark = value;
-                        window.vsapi.call(`${main_view.base_url}/api/approval/reject-request-change`,op,null).then(res => {
+                        vsapi.call(`${main_view.base_url}/api/approval/reject-request-change`,op,null).then(res => {
                             if(res.status_code === 200){
                                 mThis.itemView.showPage(null);
                             }
@@ -160,7 +160,7 @@ var AactivitiesComponent = new function(){
             };
             cv_interact.confirm('Delete this request?',{title: 'Delete Request', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/activity/request-change/delete`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/activity/request-change/delete`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.itemView.showPage(null);
                         }
@@ -202,7 +202,7 @@ var AactivitiesComponent = new function(){
             delete(request_change[obj]);
         });
 
-        window.vsapi.call(`${main_view.base_url}/api/activity/preview-request-payment`,op,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/activity/preview-request-payment`,op,null,false).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
@@ -298,7 +298,7 @@ let ApprovalDialog = new function(){
                 }
             ]
         };
-        window.vsapi.call(`${main_view.base_url}/api/approval/approve-request-change`,op,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/approval/approve-request-change`,op,null).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
                 cv_interact.success('Approved Successfully!');
@@ -311,7 +311,7 @@ let ApprovalDialog = new function(){
     });
 
     this.renderBody = (d,onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/option/request-type-input`,{'request_type_id': d.request_type_id},null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/option/request-type-input`,{'request_type_id': d.request_type_id},null,false).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = res.data;
@@ -351,7 +351,7 @@ let ApprovalDialog = new function(){
     }
 
     this.setOption = (body, data, div) => {
-        window.vsapi.call(`${main_view.base_url}/api/option/request-type-dialog`,null,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/option/request-type-dialog`,null,null,false).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
@@ -398,7 +398,7 @@ let ApprovalDialog = new function(){
             }
             op[$(this).data('field')] = $(this).val();
 
-            window.vsapi.call(`${main_view.base_url}/api/activity/preview-request-payment`,op,null,null,false).then(res => {
+            vsapi.call(`${main_view.base_url}/api/activity/preview-request-payment`,op,null,null,false).then(res => {
                 let data = {};
                 if(res.status_code === 200){
                     data = res.data;

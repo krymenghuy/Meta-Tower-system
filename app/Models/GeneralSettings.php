@@ -324,7 +324,9 @@ class GeneralSettings //extends Model
         return(object)[
             'options_student' => DB::table('students')->selectRaw('name as student_name,id')->get(),
             'options_campus' => DB::table('campuses')->selectRaw('name as campus_name,id')->get(),
-            'options_program_level' => DB::table('program_levels')->selectRaw('name as level,id')->get(),
+
+            'options_program_level' => DB::table('program_levels')->selectRaw('name as level,id')->orderBy('order_number','ASC')->get(),
+
             'options_session' => DB::table('sessions')->selectRaw('name as session,id')->get(),
         ];
     }

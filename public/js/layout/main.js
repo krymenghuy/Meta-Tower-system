@@ -236,7 +236,7 @@ let main_view = new function(){
     }
 
     this.displayNotifications = ()=> {
-        window.vsapi.call(`${mThis.base_url}/api/notifications`,null).then((res)=>{
+        vsapi.call(`${mThis.base_url}/api/notifications`,null).then((res)=>{
             let i=0;
             if(res.status_code ===200){
                 let d = res.data;
@@ -272,7 +272,7 @@ let main_view = new function(){
 
     this.displayTasks =()=> {
         let items =null;
-        window.vsapi.call(`${mThis.base_url}/api/pending-requests`,null).then((res)=>{
+        vsapi.call(`${mThis.base_url}/api/pending-requests`,null).then((res)=>{
             if(res.status_code===200){
                 let d = res.data;
                 let i=0;

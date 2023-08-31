@@ -309,7 +309,7 @@
     
                         if (!mThis.base_url) mThis.base_url = $('meta[name="base_url"]').attr('content');
     
-                        window.vsapi.call(`${mThis.base_url}/api/settings/lang-all`,p,'POST').then((res)=>{
+                        vsapi.call(`${mThis.base_url}/api/settings/lang-all`,p,'POST').then((res)=>{
                                 if (res.status_code === 200){
                                         let bs = [];
                                         try{
@@ -338,7 +338,7 @@
                     let p = {'lang':lang};
                     if (!mThis.base_url) document.querySelector('meta[name="base_url"]').getAttribute('content');
 
-                    window.vsapi.call(`${mThis.base_url}/api/settings/save-lang`,p,null,false).then((res)=>{
+                    vsapi.call(`${mThis.base_url}/api/settings/save-lang`,p,null,false).then((res)=>{
                     if (res.status_code === 200){
                     //    if (mThis.lang != lang)
                     //    {

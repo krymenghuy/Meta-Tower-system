@@ -99,7 +99,7 @@ var TuitionFeeComponent = new function(){
             };
             cv_interact.confirm('Delete this tuition fee?',{title: 'Delete Tuition Fee', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/price-list/delete`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/price-list/delete`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.itemView.showPage({'search_value': $(this).val()});
                         }
@@ -139,7 +139,7 @@ var TuitionFeeComponent = new function(){
         let html = null;
         let btn_id = [wrapper_id,'btn',id].join('_');
 
-        window.vsapi.call(`${main_view.base_url}/api/price-list/items`,{'id': id},null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/price-list/items`,{'id': id},null).then(res => {
             let data = [];
             if(res.status_code === 200){
                 data = res.data;
@@ -226,7 +226,7 @@ var TuitionFeeComponent = new function(){
             };
             cv_interact.confirm('Delete this price?',{title: 'Delete Price', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/price-list/delete-item`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/price-list/delete-item`,op,null).then(res => {
                         if(res.status_code === 200){
                             let d = res.data;
                             mThis.renderExpandable(tbody,d.price_list_items, id);
@@ -262,7 +262,7 @@ let TuitionFeeOutsideDialog = new function(){
         e.preventDefault();
         mThis.validate.validator(() => {
             let p = mThis.getDataForm();
-            window.vsapi.call(`${main_view.base_url}/api/price-list/save`,p,null).then(res => {
+            vsapi.call(`${main_view.base_url}/api/price-list/save`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
                     if(typeof mThis.options.onClose === 'function')
@@ -298,7 +298,7 @@ let TuitionFeeOutsideDialog = new function(){
     }
 
     this.loadDataEdit = (options) => {
-        window.vsapi.call(`${main_view.base_url}/api/price-list/details`,{'id': options.id},null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/price-list/details`,{'id': options.id},null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = StringSanitizer.sanitizeObject(res.data);
@@ -308,7 +308,7 @@ let TuitionFeeOutsideDialog = new function(){
     }
 
     this.prepareFormOption = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/academic-year/list`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/academic-year/list`,null,null).then(res => {
             let d = [];
             if(res.status_code === 200){
                 d = res.data;
@@ -359,7 +359,7 @@ let PriceItemDialog = new function(){
         e.preventDefault();
         mThis.validate.validator(() => {
             let p = mThis.getDataForm();
-            window.vsapi.call(`${main_view.base_url}/api/price-list/save-item`,p,null).then(res => {
+            vsapi.call(`${main_view.base_url}/api/price-list/save-item`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
                     let d = res.data;
@@ -400,7 +400,7 @@ let PriceItemDialog = new function(){
     }
 
     this.prepareFormOption = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
@@ -412,7 +412,7 @@ let PriceItemDialog = new function(){
     }
 
     this.loadDataEdit = (options) => {
-        window.vsapi.call(`${main_view.base_url}/api/price-list/item-details`,{'id': options.id},null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/price-list/item-details`,{'id': options.id},null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = StringSanitizer.sanitizeObject(res.data);

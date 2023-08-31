@@ -26,7 +26,7 @@ var ReportCenterComponent = new function(){
     }];
 
     this.displayMainOptions = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/report-center/report-list`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/report-center/report-list`,null,null).then(res => {
             let data = [];
             if(res.status_code === 200){
                 data = res.data;
@@ -192,7 +192,7 @@ var ReportCenterComponent = new function(){
     this.renderSelect = (div) => {
         mThis.options.params.map(item => {
             let data = [];
-            window.vsapi.call(item.api, item.param, null, false).then(res => {
+            vsapi.call(item.api, item.param, null, false).then(res => {
                 if(res.status_code === 200){
                     data = res.data;
                     let el = div.find(`#${item.dom_id}`);
@@ -231,7 +231,7 @@ var ReportCenterComponent = new function(){
     this.capitalize = (str, lower = false) => (lower ? str.toLowerCase() : str).replace(/(?:^|\s|["'([{])+\S/g, match => match.toUpperCase());
 
     this.getDataTable = (div, p) => {
-        window.vsapi.call(`${main_view.base_url}/api/student/attendance-list-report`,p,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/student/attendance-list-report`,p,null,false).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = res.data;

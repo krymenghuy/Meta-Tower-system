@@ -55,7 +55,7 @@ let CountryListPanel = new function () {
       if (!p.id) p.id = 0;
       cv_interact.confirm('Delete this country?', { title: 'Delete Country', 'context': 'delete' }, function(e){
         if(e){
-          window.vsapi.call([mThis.base_url, '/api/location/country/delete'].join(''), p).then((res) => {
+          vsapi.call([mThis.base_url, '/api/location/country/delete'].join(''), p).then((res) => {
             if(res.status_code === 200){
               mThis.displayCountries();
             }
@@ -113,7 +113,7 @@ let CountryListPanel = new function () {
     mThis.selected_country_name = null;
 
     mThis.tblCountries_body.innerHTML = null;
-    window.vsapi.call([mThis.base_url, '/api/location/countries'].join(''), null).then((res) => {
+    vsapi.call([mThis.base_url, '/api/location/countries'].join(''), null).then((res) => {
       if(res.status_code === 200){
         let countries = StringSanitizer.sanitizeObject(res.data, null, ['flag', 'image', 'image_url']);
         mThis.renderCountries(countries);
@@ -157,7 +157,7 @@ var ZoneTabView = new function () {
       method_name = 'location/options-village';
     }
 
-    window.vsapi.call([mThis.base_url, '/api/', method_name].join(''), p).then((res) => {
+    vsapi.call([mThis.base_url, '/api/', method_name].join(''), p).then((res) => {
       if(res.status_code === 200){
         let rows = StringSanitizer.sanitizeObject(res.data);
 
@@ -235,7 +235,7 @@ var ZoneTabView = new function () {
     InputBox1.show(option,function(d){
       if(d){
         let p = { 'id': id, 'country_id': CountryListPanel.selected_country_id, 'name': d, 'name_kh': d };
-        window.vsapi.call([mThis.base_url, '/api/location/city/save'].join(''), p).then((res) => {
+        vsapi.call([mThis.base_url, '/api/location/city/save'].join(''), p).then((res) => {
           if(res.status_code === 200){
             mThis.displayCities(CountryListPanel.selected_country_id);
           }
@@ -270,7 +270,7 @@ var ZoneTabView = new function () {
     InputBox1.show(option,function(d){
       if(d){
         let p = { 'city_id': mThis.elFilter_city.val(), 'name': d, 'name_kh': d };
-        window.vsapi.call([mThis.base_url, '/api/location/district/save'].join(''), p, null, false).then((res) => {
+        vsapi.call([mThis.base_url, '/api/location/district/save'].join(''), p, null, false).then((res) => {
           if(res.status_code === 200){
             mThis.elFilter_city.trigger('change');
           }
@@ -295,7 +295,7 @@ var ZoneTabView = new function () {
     InputBox1.show(option, function(d){
       if(d){
         let p = { 'district_id': mThis.elFilter_district.val(), 'name': d, 'name_kh': d };
-        window.vsapi.call([mThis.base_url, '/api/location/commune/save'].join(''), p).then((res) => {
+        vsapi.call([mThis.base_url, '/api/location/commune/save'].join(''), p).then((res) => {
           if(res.status_code === 200){
             mThis.displayCommunes(p.district_id);
           }
@@ -312,7 +312,7 @@ var ZoneTabView = new function () {
     if (!p.city_id) p.city_id = 0;
     cv_interact.confirm('Delete this city?', { title: 'Delete City', context: 'delete' }, function(e){
       if(e){
-        window.vsapi.call([mThis.base_url, '/api/location/city/delete'].join(''), p).then((res) => {
+        vsapi.call([mThis.base_url, '/api/location/city/delete'].join(''), p).then((res) => {
           if(res.status_code === 200){
             mThis.displayCities(mThis.country_id);
           }
@@ -329,7 +329,7 @@ var ZoneTabView = new function () {
     if (!p.id) p.id = 0;
     cv_interact.confirm('Delete this commune?', { 'title': 'Delete Commune', context: 'delete' }, function(e){
       if(e){
-        window.vsapi.call([mThis.base_url, '/api/location/commune/delete'].join(''), p, null, false).then(res => {
+        vsapi.call([mThis.base_url, '/api/location/commune/delete'].join(''), p, null, false).then(res => {
           if(res.status_code === 200){
             mThis.displayCommunes(mThis.elFilter_district.val());
           }
@@ -346,7 +346,7 @@ var ZoneTabView = new function () {
     if (!p.district_id) p.district_id = 0;
     cv_interact.confirm('Delete this distrinct?', { title: 'Delete District', context: 'delete' }, function(e){
       if(e){
-        window.vsapi.call([mThis.base_url, '/api/location/district/delete'].join(''), p).then((res) => {
+        vsapi.call([mThis.base_url, '/api/location/district/delete'].join(''), p).then((res) => {
           if(res.status_code === 200){
             mThis.displayDistricts(mThis.elFilter_city.val());
           }
@@ -396,7 +396,7 @@ var ZoneTabView = new function () {
     p.country_id = country_id;
     mThis.tblCities_body.empty();
 
-    window.vsapi.call([mThis.base_url, '/api/location/cities'].join(''), p).then((res) => {
+    vsapi.call([mThis.base_url, '/api/location/cities'].join(''), p).then((res) => {
       if(res.status_code === 200){
         let rows = StringSanitizer.sanitizeObject(res.data);
         let i = 0, c;
@@ -434,7 +434,7 @@ var ZoneTabView = new function () {
     p.city_id = city_id;
     mThis.tblDistricts_body.empty();
 
-    window.vsapi.call([mThis.base_url, '/api/location/districts'].join(''), p).then(res => {
+    vsapi.call([mThis.base_url, '/api/location/districts'].join(''), p).then(res => {
       if (res.status_code === 200) {
         let rows = StringSanitizer.sanitizeObject(res.data);
         let i = 0, c;
@@ -467,7 +467,7 @@ var ZoneTabView = new function () {
     if (!district_id) district_id = mThis.elFilter_district.val();
     p.district_id = district_id;
     mThis.tblCommunes_body.empty();
-    window.vsapi.call([mThis.base_url, '/api/location/communes'].join(''), p, null, false).then(res => {
+    vsapi.call([mThis.base_url, '/api/location/communes'].join(''), p, null, false).then(res => {
       if (res.status_code === 200) {
         let rows = StringSanitizer.sanitizeObject(res.data);
         let i = 0, c;
@@ -495,7 +495,7 @@ var ZoneTabView = new function () {
     InputBox1.show(option, function (d) {
       let p = { 'id': id, 'name': d, 'district_id': district_id };
 
-      window.vsapi.call([mThis.base_url, '/api/location/commune/save'].join(''), p).then((res) => {
+      vsapi.call([mThis.base_url, '/api/location/commune/save'].join(''), p).then((res) => {
         if(res.status_code === 200){
           mThis.displayCommunes(district_id);
         }
@@ -509,7 +509,7 @@ var ZoneTabView = new function () {
     let option = { title: 'Rename District', 'blankErrorMessage': 'Location name cannot be empty', 'btnOKText': 'Save Change', 'dataLabel': 'District Name', 'defaultValue': name };
     InputBox1.show(option, function (d) {
       let p = { 'id': id, 'name': d, 'city_id': city_id };
-      window.vsapi.call([mThis.base_url, '/api/location/district/save'].join(''), p).then((res) => {
+      vsapi.call([mThis.base_url, '/api/location/district/save'].join(''), p).then((res) => {
         if(res.status_code === 200){
           mThis.displayDistricts(city_id);
         }
@@ -523,7 +523,7 @@ var ZoneTabView = new function () {
     let option = { title: 'Rename City', 'blankErrorMessage': 'Location name cannot be empty', 'btnOKText': 'Save Change', 'dataLabel': 'City Name', 'defaultValue': name };
     InputBox1.show(option, function (d) {
       let p = { 'id': id, 'name': d, 'country_id': country_id };
-      window.vsapi.call([mThis.base_url, '/api/location/city/save'].join(''), p).then((res) => {
+      vsapi.call([mThis.base_url, '/api/location/city/save'].join(''), p).then((res) => {
         if(res.status_code === 200){
           mThis.displayCities(country_id);
         }

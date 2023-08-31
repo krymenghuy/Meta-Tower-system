@@ -37,7 +37,7 @@ var CampusComponent = new function(){
             };
             cv_interact.confirm('Delete this campus?',{title: 'Delete Campus', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/campus/delete`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/campus/delete`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.displayCampus();
                         }
@@ -48,7 +48,7 @@ var CampusComponent = new function(){
     }
 
     this.displayCampus = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/campus/list`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/campus/list`,null,null).then(res => {
             let data = [];
             if(res.status_code === 200){
                 data = res.data;
@@ -136,7 +136,7 @@ let CampusDialog = new function(){
         e.preventDefault();
         mThis.validate.validator(() => {
             let p = mThis.getDataForm();
-            window.vsapi.call(`${main_view.base_url}/api/campus/save`,p,null).then(res => {
+            vsapi.call(`${main_view.base_url}/api/campus/save`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
                     if(typeof mThis.options.onClose === 'function')
@@ -172,7 +172,7 @@ let CampusDialog = new function(){
     }
 
     this.loadFormDetail = (options) => {
-        window.vsapi.call(`${main_view.base_url}/api/campus/details`,{'id': options.id},null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/campus/details`,{'id': options.id},null).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;

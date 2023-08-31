@@ -38,7 +38,7 @@ var DepositFeeComponent = new function(){
             };
             cv_interact.confirm('Delete this deposit?',{title: 'Delete Deposit', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/deposite/delete`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/deposite/delete`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.displayDepositFee();
                         }
@@ -49,7 +49,7 @@ var DepositFeeComponent = new function(){
     }
 
     this.displayDepositFee = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/deposite/list`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/deposite/list`,null,null).then(res => {
             let data = [];
             if(res.status_code === 200){
                 data = StringSanitizer.sanitizeObject(res.data);
@@ -170,7 +170,7 @@ let DepositFeeDialog = new function(){
         e.preventDefault();
         let id = $(this).val();
         if(id > 0){
-            window.vsapi.call(`${main_view.base_url}/api/deposite/student-info`,{'id': id},null,false).then(res => {
+            vsapi.call(`${main_view.base_url}/api/deposite/student-info`,{'id': id},null,false).then(res => {
                 let data = {};
                 if(res.status_code === 200){
                     data = res.data;
@@ -192,7 +192,7 @@ let DepositFeeDialog = new function(){
                 p = mThis.getDataForm(mThis.div_oldStudent);
             }
             if(p.student_id) delete(p.id);
-            window.vsapi.call(`${main_view.base_url}/api/deposite/save`,p,null).then(res => {
+            vsapi.call(`${main_view.base_url}/api/deposite/save`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
                     if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
@@ -264,7 +264,7 @@ let DepositFeeDialog = new function(){
     }
 
     this.prepareFormOptionOld = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/settings/deposite-options`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/settings/deposite-options`,null,null).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
@@ -330,7 +330,7 @@ let DepositFeeDialog = new function(){
     }
 
     this.prepareFormOptionNew = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
@@ -343,7 +343,7 @@ let DepositFeeDialog = new function(){
     this.loadFormDetails = (options) => {
         mThis.self.find('.div--tab').removeClass('d-flex').hide();
         mThis.div_newStudent.show().siblings().hide();
-        window.vsapi.call(`${main_view.base_url}/api/deposite/details`,{'id': options.id},null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/deposite/details`,{'id': options.id},null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = res.data;

@@ -37,18 +37,19 @@ var FindStudentComponent = new function(){
     }
 
     this.prepareOptions = (div,onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/academic-year/list`,null,null,false).then(res => {
-            let data = {};
-            if(res.status_code === 200){
-                data = res.data;
-            }
+        vsapi.post(`${main_view.base_url}/api/find-student/filter-options`,null,false).then(res => {
+            const data = res.status_code === 200?res.data:{};
+            console.error(data);      
             div.find('.data-input').each(function(){
                 let el = $(this);
                 let f = el.data('field');
                 switch(f){
                     case 'academic_year':
-                        VSUtil.setComboItems(el,data,'academic_year','academic_year',null,null,null);
+                        VSUtil.setComboItems(el,data.academic_years,'academic_year','academic_year',null,null,null);
                         break;
+                    case 'term_id':
+                        VSUtil.setComboItems(el,data.terms,'id','term_name',true,'(All Terms)',0);
+                        break;    
                     default:
                         break;
                 }
@@ -59,7 +60,7 @@ var FindStudentComponent = new function(){
 
     this.displayStudentList = (op, onFinish = null) => {
         let cur_symbol = '$';
-        window.vsapi.call(`${main_view.base_url}/api/student/find`,op,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/student/find`,op,null).then(res => {
             let d = [];
             if(res.status_code === 200){
                 d = res.data;
@@ -262,7 +263,7 @@ var FindStudentComponent = new function(){
 
                 cv_interact.confirm('Delete this information?',{title: 'Delete Information', context: 'delete'},(e) => {
                     if(e){
-                        window.vsapi.call(`${main_view.base_url}/api/student/delete-verified`,op,null).then(res => {
+                        vsapi.call(`${main_view.base_url}/api/enrollment/delete-verified`,op,null).then(res => {
                             if(res.status_code === 200){
                                 mThis.displayStudentList();
                             }
@@ -277,7 +278,7 @@ var FindStudentComponent = new function(){
     }
 
     this.loadFormDetails = (op, onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/student/details-student`,op,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/enrollment/details`,op,null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = res.data;
@@ -313,7 +314,7 @@ let GenerateInvoiceFSN = new function(){
         if(mThis.options.action === 'modify'){
             p = mThis.getDataFormUpdate();
             console.log(p);
-            window.vsapi.call(`${main_view.base_url}/api/student/invoice-update`,p,null).then(res => {
+            vsapi.call(`${main_view.base_url}/api/student/invoice-update`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
                     if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
@@ -326,7 +327,7 @@ let GenerateInvoiceFSN = new function(){
         }
         else{
             p = mThis.getDataForm();
-            window.vsapi.call(`${main_view.base_url}/api/student/generate-invoice`,p,null).then(res => {
+            vsapi.call(`${main_view.base_url}/api/student/generate-invoice`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
                     if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
@@ -345,7 +346,7 @@ let GenerateInvoiceFSN = new function(){
         };
         if(options.action === 'modify')
             op.invoice_number = options.invoice_number;
-        window.vsapi.call(`${main_view.base_url}/api/student/generate-invoice/details`,op,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/student/generate-invoice/details`,op,null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = res.data;
@@ -466,7 +467,7 @@ let GenerateInvoiceFSN = new function(){
 
     this.addRow = (tbody,d, btn) => {
         let html=null, option=null;
-        window.vsapi.call(`${main_view.base_url}/api/option/other-fee`,{'academic_year': d.academic_year}).then(res => {
+        vsapi.call(`${main_view.base_url}/api/option/other-fee`,{'academic_year': d.academic_year}).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
@@ -503,7 +504,7 @@ let GenerateInvoiceFSN = new function(){
         tbody.find(`#${select}`).off('change').on('change',function(e){
             e.preventDefault();
             let tr = $(this).closest('tr');
-            window.vsapi.call(`${main_view.base_url}/api/option/other-fee-info`,{'name': $(this).val()},null,false).then(res => {
+            vsapi.call(`${main_view.base_url}/api/option/other-fee-info`,{'name': $(this).val()},null,false).then(res => {
                 let d = {};
                 if(res.status_code === 200){
                     d = res.data;

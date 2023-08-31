@@ -1,6 +1,6 @@
 <div id="_main_programComponent" class="mobile-padding p-3" style="display:none">
     <div class="p-3 bg-white rounded-3">
-        <button id="_pgm_btn_new" class="btn btn-primary" type="button">
+        <button id="_pgm_btn_new" class="btn btn-primary btn-sm" type="button">
             <span class="trans-text" data-langprop="buttons.Add Program"></span>
         </button>
     </div>
@@ -29,10 +29,10 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button id="dlg_pgm_btn_save" type="button" class="btn btn-primary btn-sm btn-animate">
+                <button id="dlg_pgm_btn_save" type="button" class="btn btn-primary btn-sm">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>
@@ -60,10 +60,10 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button id="dlg_pgm_detail_btn_save" type="button" class="btn btn-primary btn-sm btn-animate">
+                <button id="dlg_pgm_detail_btn_save" type="button" class="btn btn-primary btn-sm">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>

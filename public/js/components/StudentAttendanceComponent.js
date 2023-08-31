@@ -71,12 +71,11 @@ var StudentAttendanceComponent = new function(){
         div_wrapper.empty();
         let html = null;
 
-        window.vsapi.call(`${main_view.base_url}/api/student/attendance-details`,op,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/student/attendance-details`,op,null,false).then(res => {
             let d = [];
             if(res.status_code === 200){
                 d = res.data;
             }
-            console.log(d);
             let first = 0;
 
             d && d.map(t => {
@@ -159,10 +158,8 @@ let StudentAttendanceDialog = new function(){
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
         let op = mThis.getDataForm();
-        console.log(op);
-        window.vsapi.call(`${main_view.base_url}/api/student/attendance-save`,op,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/student/attendance-save`,op,null).then(res => {
             if(res.status_code === 200){
-                console.log(res.data);
                 cv_interact.success('Updated Attedance Successfully!');
             }
             else{
@@ -178,13 +175,12 @@ let StudentAttendanceDialog = new function(){
             'date': op.date,
             'group_id': op.group_id
         };
-        window.vsapi.call(`${main_view.base_url}/api/student/attendance-date-details`,p,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/student/attendance-date-details`,p,null,false).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
                 d.extend = op;
             }
-            console.log(d);
             mThis.setDataForm(d);
         });
     }
@@ -231,7 +227,7 @@ let StudentAttendanceDialog = new function(){
     }
 
     this.prepareFormOption = (op, onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/student/options-attendance-types`,null,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/student/options-attendance-types`,null,null,false).then(res => {
             let d = [];
             if(res.status_code === 200){
                 d = res.data;

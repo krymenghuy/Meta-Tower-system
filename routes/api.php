@@ -212,6 +212,9 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     });
     //end::EnrollmentManager
 
+    //api endpoint for filter options on the Find Students Component
+    Route::post('/find-student/filter-options', [GeneralSettingsController::class, 'getOptions_academic_year']);
+
     //begin::StudentController
     Route::prefix('student')->group(function () {
         Route::post('/registration', [StudentController::class, 'studentRegistration']);

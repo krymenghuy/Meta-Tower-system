@@ -88,7 +88,7 @@ var PaymentPendingComponent = new (function () {
     };
 
     this.prepareOptions = () => {
-        window.vsapi.call(`${main_view.base_url}/api/settings/status-options`,null,null).then((res) => {
+        vsapi.call(`${main_view.base_url}/api/settings/status-options`,null,null).then((res) => {
             let data = {};
             if (res.status_code === 200) {
                 data = res.data;
