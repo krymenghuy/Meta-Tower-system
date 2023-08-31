@@ -204,16 +204,31 @@ class StudentGroup //extends Model
 
 
     function assignStudentToGroup($arr,$ss){
+
         $v_rule = [
-            'student_id' => '1|number|exists=students.id',
+            'assign_info' => '0|array',
             'group_id' => '1|number|exists=student_groups.id',
         ];
         $res = validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
+        $assign_info = $inputs['assign_info'];
+        $failed = [];
+        $success = 0;
+        foreach($assign_info as $info){
+            $existsStudent = DB::table('students')->where('id',$info['student_id'])->exists();
+            if($existsStudent){
+                $failed['student_id'] = $info['student_id'];
+                continue;
+            }
+            $success ++;
+            $newID = saveData($ss,'group_members',['id' => null],[
+                'group_id' => $inputs['group_id'],
+                'student_id' => $info['student_id']
+            ],[],1);
+        }
 
-        $newID = saveData($ss,'group_members',['id' => null],$inputs,[],1);
-        return DV::depends($newID,['action'=> 'Assigned']);
+        return DV::depends($newID,['action'=> 'Assigned','failed'=>$failed]);
     }
 
     static function groupMemberList($ss){

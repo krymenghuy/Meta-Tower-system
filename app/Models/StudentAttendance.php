@@ -127,7 +127,7 @@ class StudentAttendance //extends Model
 
         $newID = saveData($ss,'student_attendances',['id' => $id],$arr_attendance,[],1,1);
 
-        return DV::depends($newID,['group_out' => $group]);
+        return DV::depends($newID,self::getAttendanceDetails(['student_id'=>$student_id]));
     }
 
     function getCheckInAndOutBetweenTime($student_id,$checkin_time,$mins){
@@ -363,6 +363,7 @@ class StudentAttendance //extends Model
         $selectCols = 's.id as student_id,s.sex,s.name,s.name_kh,s.code,s.id,s.date_of_birth as dob';
         $query = DB::table('students as s')
                 ->join('student_attendances as sa','sa.student_id','=','s.id')
+                ->distinct()
                 ->whereRaw($str_moreWhere)->whereRaw($str_search)
                 ->selectRaw($selectCols)
                 ->orderBy('s.id','desc');
