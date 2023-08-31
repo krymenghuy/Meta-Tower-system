@@ -74,71 +74,77 @@ var StudentAttendanceComponent = new function(){
 
     this.displayStudentAttendanceDetails = (tr, op) => {
         let div_wrapper = $(tr).find('.expandable-row-container');
-        div_wrapper.addClass('bg-light-subtle');
-        div_wrapper.empty();
-        let html = null;
 
         vsapi.call(`${main_view.base_url}/api/student/attendance-details`,op,null,false).then(res => {
             let d = [];
             if(res.status_code === 200){
                 d = res.data;
             }
-            let first = 0;
+            mThis.renderAttendance(div_wrapper, d, op);
+        });
+    }
 
-            d && d.map(t => {
-                let inner_html=null;
-                t && t.attendance_list.map(dt => {
-                    let cls = dt.status === 'P' ? 'bg-success-subtle text-success' : dt.status === 'Pr' ? 'bg-info-subtle text-primary' : dt.status === 'A' ? 'bg-danger-subtle text-danger' : dt.status === 'Sun' ? 'text-danger-emphasis bg-secondary-subtle' : dt.status === 'Sat' ? 'text-warning-emphasis bg-secondary-subtle' : 'bg-secondary-subtle';
+    this.renderAttendance = (div_wrapper, d, op) => {
+        div_wrapper.addClass('bg-light-subtle');
+        div_wrapper.empty();
+        let html = null, first = 0;
 
-                    inner_html = [inner_html,`<div class="d-block">
-                        <div class="px-3 py-2 text-center" style="width: ${(div_wrapper.width())/32}">${dt.day ? dt.day : ''}</div>
-                        <div class="tooltip-custom position-relative px-3 py-2 text-center rounded-3 ${cls}" data-id="${dt.attendance_id}" data-status="${dt.status_id}" data-day="${[dt.day,t.date].join('-')}" data-groupid="${t.group_id}" style="width: ${(div_wrapper.width())/32}" role="button" data-details="${JSON.stringify(dt).replaceAll('\"','\'')}">${dt.status}</div>
-                    </div>`].join('');
-                });
-                
-                html = [html,`<div class="${first == 0 ? '' : 'mt-3'}"><p>${t.date} ( ${t.group_name} )</p>`,'<div class="d-flex gap-2 flex-nowrap mt-3">',inner_html,'</div></div>'].join('');
-                first = 1;
+        d && d.map(t => {
+            let inner_html=null;
+            t && t.attendance_list.map(dt => {
+                let cls = dt.status === 'P' ? 'bg-success-subtle text-success' : dt.status === 'Pr' ? 'bg-info-subtle text-primary' : dt.status === 'A' ? 'bg-danger-subtle text-danger' : dt.status === 'Sun' ? 'text-danger-emphasis bg-secondary-subtle' : dt.status === 'Sat' ? 'text-warning-emphasis bg-secondary-subtle' : 'bg-secondary-subtle';
+
+                inner_html = [inner_html,`<div class="d-block">
+                    <div class="px-3 py-2 text-center" style="width: ${(div_wrapper.width())/32}">${dt.day ? dt.day : ''}</div>
+                    <div class="tooltip-custom position-relative px-3 py-2 text-center rounded-3 ${cls}" data-id="${dt.attendance_id}" data-status="${dt.status_id}" data-day="${[dt.day,t.date].join('-')}" data-groupid="${t.group_id}" style="width: ${(div_wrapper.width())/32}" role="button" data-details="${JSON.stringify(dt).replaceAll('\"','\'')}">${dt.status}</div>
+                </div>`].join('');
             });
+            
+            html = [html,`<div class="${first == 0 ? '' : 'mt-3'}"><p>${t.date} ( ${t.group_name} )</p>`,'<div class="d-flex gap-2 flex-nowrap mt-3">',inner_html,'</div></div>'].join('');
+            first = 1;
+        });
 
-            div_wrapper.html(['<div class="position-absolute p-3">',html,'</div>'].join(''));
-            if(d.length > 0)
-                div_wrapper.addClass(['p-3','max-height-details']);
-            let div = div_wrapper.find('.tooltip-custom');
+        div_wrapper.html(['<div class="position-absolute p-3">',html,'</div>'].join(''));
+        if(d.length > 0)
+            div_wrapper.addClass(['p-3','max-height-details']);
+        let div = div_wrapper.find('.tooltip-custom');
 
-            div.each(function(){
-                let details = $(this).data('details');
-                details = details.replaceAll("\'","\"");
-                details = JSON.parse(details);
+        div.each(function(){
+            let details = $(this).data('details');
+            details = details.replaceAll("\'","\"");
+            details = JSON.parse(details);
 
-                $(this).popover({
-                    html: true,
-                    trigger : 'hover',
-                    title: ["<span>Attendance Details</span>"].join(''),
-                    content: [`<p>
-                        <span class="text-info">Check In Remarks</span>
-                        <span>:</span></br>
-                        <span>${details.check_in_remarks ? details.check_in_remarks : ''}</span>
-                    </p>
-                    <p>
-                        <span class="text-info">Check Out Remarks</span>
-                        <span>:</span></br>
-                        <span>${details.check_out_remarks ? details.check_out_remarks : ''}</span>
-                    </p>`].join('')
-                });
+            $(this).popover({
+                html: true,
+                trigger : 'hover',
+                title: ["<span>Attendance Details</span>"].join(''),
+                content: [`<p>
+                    <span class="text-info">Check In Remarks</span>
+                    <span>:</span></br>
+                    <span>${details.check_in_remarks ? details.check_in_remarks : ''}</span>
+                </p>
+                <p>
+                    <span class="text-info">Check Out Remarks</span>
+                    <span>:</span></br>
+                    <span>${details.check_out_remarks ? details.check_out_remarks : ''}</span>
+                </p>`].join('')
             });
+        });
 
-            div.on('click',function(e){
-                e.preventDefault();
-                let p = {
-                    'id': $(this).data('id'),
-                    'group_id': $(this).data('groupid'),
-                    'student_id': op.student_id,
-                    'date': $(this).data('day'),
-                    'status_id': $(this).data('status')
-                };
-                if(p.status_id != 4)
-                    StudentAttendanceDialog.show(p);
-            });
+        div.on('click',function(e){
+            e.preventDefault();
+            let p = {
+                'id': $(this).data('id'),
+                'group_id': $(this).data('groupid'),
+                'student_id': op.student_id,
+                'date': $(this).data('day'),
+                'status_id': $(this).data('status'),
+                'onClose': (d) => {
+                    mThis.renderAttendance(div_wrapper, d, op);
+                }
+            };
+            if(p.status_id != 4)
+                StudentAttendanceDialog.show(p);
         });
     }
 
@@ -167,6 +173,9 @@ let StudentAttendanceDialog = new function(){
         let op = mThis.getDataForm();
         vsapi.call(`${main_view.base_url}/api/student/attendance-save`,op,null).then(res => {
             if(res.status_code === 200){
+                mThis.self.modal('hide');
+                if(typeof mThis.options.onClose === 'function')
+                    mThis.options.onClose(res.data);
                 cv_interact.success('Updated Attedance Successfully!');
             }
             else{
