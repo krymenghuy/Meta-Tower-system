@@ -46,7 +46,7 @@ use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\WebReportController;
 use App\Http\Controllers\ReportController;
 //use App\Http\Controllers\NotificationController;
- 
+
 use App\Http\Controllers\Bill\VendorController;
 
 use App\Http\Controllers\CurrencyController;
@@ -144,6 +144,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //begin::PromoteController
     Route::prefix('promote')->group(function(){
         Route::post('/students',[PromoteStudentController::class,'promoteStudents']);
+        Route::post('/verify',[PromoteStudentController::class,'verifyPromotedStudent']);
         Route::post('/student-list-paginate',[PromoteStudentController::class,'promoteListPaginate']);
         Route::post('/form-options',[PromoteStudentController::class,'getFormOptions']);
 
@@ -183,7 +184,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/update',[PriceListController::class,'updateInvoice']);
         Route::post('/items',[PriceListController::class,'getInvoiceItems']);
     });
-  
+
     //begin:: EnrollmentManager
     Route::prefix('enrollment')->group(function () {
         //Route::post('/registration', [StudentController::class, 'studentRegistration']);
@@ -209,7 +210,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/delete-verified',[StudentController::class,'deleteVerifiedStudent']);
         Route::post('/information',[StudentController::class,'studentInformation']);
         Route::post('/enrollment-details',[StudentController::class,'getStudentEnrollmentInfo']);
-        
+
         //** PriceListController */
         Route::post('/invoice-list',[PriceListController::class,'studentInvoice']);
         Route::post('/generate-invoice',[PriceListController::class,'generateInvoice']);
@@ -618,7 +619,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('deletePromotion', [PromotionController::class, 'deletePromotion']);
     //end::PromotionController
 });
-   
+
 //begin::SystemSettingController
 Route::post('getComboItems_price_list', [SystemSettingController::class, 'getComboItems_price_list']);
 

@@ -219,8 +219,33 @@ class PromoteStudent //extends Model
         return $row;
     }
 
-    function verifyPromotedStudent($id=null,$ss=null){
-
+    function verifyPromotedStudent($arr=null,$ss=null){
+        $d = (object)$arr;
+        if(!isset($d->verify_info)) return DV::error('verify info is required');
+        $verify_info = $d->verify_info;
+        $success = 0;
+        $keep_id = [];
+        foreach($verify_info as $info){
+            $v_rule = [
+                'id' => '0|number|exists=enrollments.id',
+                'enrollment_id' => '0|number|exists=enrollments.id',
+            ];
+            $res = validateObject($info,$v_rule,0,[],$ss->lang,0,null);
+            if($res->error) return DV::error($res->error);
+            $inputs = $res->values;
+            $id = isset($inputs['id'])?$inputs['id']:$inputs['enrollment_id'];
+            $not_new_promote = DB::table('enrollments')->where('id',$id)->where('promoted',0)->exists();
+            if($not_new_promote){
+                $keep_id['id'] = $id;
+                continue;
+            }
+            saveData($ss,'enrollments as e',['id' => $id],[
+                'status_id' => 2, // pending
+                'promoted' => 0 //
+            ],[],1);
+            $success ++;
+        }
+        return DV::depends($success,['success'=>$success,'failed'=>$keep_id]);
     }
 
 }

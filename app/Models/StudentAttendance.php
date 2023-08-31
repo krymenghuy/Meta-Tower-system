@@ -785,6 +785,7 @@ class StudentAttendance //extends Model
             ];
 
             $daily_attendance = [];
+            $guardian_phoneNum = [];
 
             foreach ($students as $st) {
                 $current_date = new DateTime("$year-$month-01");
@@ -800,7 +801,13 @@ class StudentAttendance //extends Model
                     $current_date->modify('+1 day');
                 }
 
+                $guardian_phoneNum[] = DB::table('student_guardians as sg')->where('sg.student_id',$st->student_id)
+                                    ->join('guardians as g','sg.guardian_id','=','g.id')
+                                    ->selectRaw('g.phone_number')
+                                    ->get();
+
                 $stData = [
+                    'student_id' => $st->student_id,
                     'name' => $st->name,
                     'sex' => $st->sex,
                     'date_of_birth' => $st->date_of_birth,
@@ -873,8 +880,8 @@ class StudentAttendance //extends Model
                     'permission' => count($count_rowsPr),
                     'present' =>count($count_rowsP),
                 ];
-                $monthData['daily_attetndance'] = $result;
-
+                $monthData['daily_attendance'] = $result;
+                $monthData['phone_number'] = $guardian_phoneNum;
                 $monthData['students'][] = $stData;
 
             }
