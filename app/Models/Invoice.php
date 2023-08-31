@@ -17,22 +17,22 @@ class Invoice //extends Model
     function generateInvoice($arr=[],$ss){
         $v_rule = [
             'due_date' => '1|string',
-            // 'student_id' => '0|number|exists=students.id',
             'enrollment_id' => '1|number|exists=enrollments.id',
             'qty' => '0|number',
             'fee_types' => '0|array',
             'note' => '0|string|1,300',
             'invoice_id' => '0|number|exists=invoices.id',
+            'currency_code' => '0|string|default=USD',
+            'referrer_uid' => '0|number|exists=students.id',
+            '' => ''
         ];
         $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $inv_id = $inputs['invoice_id'];
+        $commission = isset($inputs['commission'])?$inputs['commission']:null;
         unset($inputs['invoice_id']);
-        // $student_id = $inputs['student_id'];
         $enrollment_id = $inputs['enrollment_id'];
-        // unset($inputs['enrollment_id']);
-        // $student = DB::table('students')->where('branch_id',$ss->branch_id)->where('id',$student_id)->selectRaw('id')->first();
         $enr_info = DB::table('enrollments as e')->where('e.id',$enrollment_id)
                     ->join('payments as p','p.enrollment_id','=','e.id')
                     ->selectRaw('e.id as enr_id,p.tuition,e.start_date,e.tuition_end_date,e.academic_year,p.policy_discount,e.status_id,e.student_id')
@@ -133,7 +133,10 @@ class Invoice //extends Model
                             'is_used' => 1
                     ]);
             }
-            // saveData($ss,'payments',['enrollment_id' => $enr_info->enr_id],['tuition_due' => $due_amount]);
+            //**save referrer */
+            if($commission){
+                $save = saveData($ss,'referals',['id' => null],);
+            }
         }
         return DV::depends($save_inv,['action'=>'Generated']);
     }
@@ -309,13 +312,17 @@ class Invoice //extends Model
                     saveData($ss,'invoices',['enrollment_id' => $row->enr_id,'id'=>$inv_id],[
                         'is_paid' => 1,//* paid
                         'paid_amount' => $getInvoiceInfo->due_amount,
-                        'pmt_date' => date('Y-m-d H:i:s')
+                        'pmt_date' => date('Y-m-d H:i:s'),
+                        'receiver_uid' => $ss->id,
+                        'receiver' => $ss->full_name
                     ],[],1);
                 }else{
                     saveData($ss,'invoices',['enrollment_id' => $row->enr_id,'id'=>$inv_id],[
                         'is_paid' => 1,//* paid
                         'paid_amount' => $getInvoiceInfo->due_amount,
-                        'pmt_date' => date('Y-m-d H:i:s')
+                        'pmt_date' => date('Y-m-d H:i:s'),
+                        'receiver_uid' => $ss->id,
+                        'receiver' => $ss->full_name
                     ],[],1);
                 }
 
@@ -375,12 +382,18 @@ class Invoice //extends Model
                         ],[],1);
                         saveData($ss,'invoices',['enrollment_id' => $row->enr_id,'id'=>$inv_id],[
                             'is_paid' => 1,//* paid
-                            'paid_amount' => $getInvoiceInfo->due_amount
+                            'paid_amount' => $getInvoiceInfo->due_amount,
+                            'pmt_date' => date('Y-m-d H:i:s'),
+                            'receiver_uid' => $ss->id,
+                            'receiver' => $ss->full_name
                         ],[],1);
                     }else{
                         saveData($ss,'invoices',['enrollment_id' => $row->enr_id,'id'=>$inv_id],[
                             'is_paid' => 1,//* paid
-                            'paid_amount' => $getInvoiceInfo->due_amount
+                            'paid_amount' => $getInvoiceInfo->due_amount,
+                            'pmt_date' => date('Y-m-d H:i:s'),
+                            'receiver_uid' => $ss->id,
+                            'receiver' => $ss->full_name
                         ],[],1);
                     }
                 }
@@ -604,33 +617,40 @@ class Invoice //extends Model
         return $row;
     }
 
-    function reviveInActiveInvoice($d,$ss=null){
-        $ss = $ss?$ss:$this->ss;
-        $id = $d->id;
-        $purpose = $d->purpose;
+    // function reviveInActiveInvoice($d,$ss=null){
+    //     $ss = $ss?$ss:$this->ss;
+    //     $id = $d->id;
+    //     $purpose = $d->purpose;
 
-        $revive = DB::table('invoices')->where('id',$id)
-                ->where('branch_id',$ss->branch_id)
-                ->where('inactive',1)
-                ->update([
-                    'inactive' => 0,
-                    'purpose' => $purpose,
-                ]);
-        return DV::depends($revive,['action' => 'Invoices is active now'],'Could not find invoice to revive');
-    }
+    //     $revive = DB::table('invoices')->where('id',$id)
+    //             ->where('branch_id',$ss->branch_id)
+    //             ->where('inactive',1)
+    //             ->update([
+    //                 'inactive' => 0,
+    //                 'purpose' => $purpose,
+    //             ]);
+    //     return DV::depends($revive,['action' => 'Invoices is active now'],'Could not find invoice to revive');
+    // }
 
-    function deleteInvoice($d,$ss){ //** update invoice to inactive  */
+    function deleteInvoice($d,$ss){ //** only delete upaid invoice  */
         $id = $d->id;
-        $purpose = isset($d->purpose)?$d->purpose:$d->remarks;
-        $delete = DB::table('invoices')->where('id',$id)->update([
-            'inactive' => 1,
-            'purpose' => $purpose
-        ]);
-        $inactive = DB::table('invoices')->where('id',$id)->where('branch_id',$ss->branch_id)->take(1)->value('inactive');
-        if($inactive == 1){
-            $delete = DB::table('invoices')->where('id',$id)->where('branch_id',$ss->branch_id)->delete();
+        $is_paid = DB::table('invoices')->where('id',$id)->where('is_paid',1)->where('branch_id',$ss->branch_id)->take(1)->value('inactive');
+        if($is_paid) return DV::error('Can not delete, Invoice is already paid');
+        $delete = DB::table('invoices')->where('id',$id)->delete();
+        if($delete){
+            DB::table('invoice_items')->where('invoice_id',$id)->delete();
         }
-        return DV::depends($delete,['action'=>'Deleted','status'=>'Status change to in active']);
+        return DV::depends($delete,'Delete');
+        // $purpose = isset($d->purpose)?$d->purpose:$d->remarks;
+        // $delete = DB::table('invoices')->where('id',$id)->update([
+        //     'inactive' => 1,
+        //     'purpose' => $purpose
+        // ]);
+        // $inactive = DB::table('invoices')->where('id',$id)->where('branch_id',$ss->branch_id)->take(1)->value('inactive');
+        // if($inactive == 1){
+        //     $delete = DB::table('invoices')->where('id',$id)->where('branch_id',$ss->branch_id)->delete();
+        // }
+        // return DV::depends($delete,['action'=>'Deleted','status'=>'Status change to in active']);
     }
 
     function getInvoiceItems($invoice_id,$ss=null){
