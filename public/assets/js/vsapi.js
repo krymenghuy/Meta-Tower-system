@@ -17,32 +17,39 @@ const vsapi = (function () {
     };
   }
 
+  //handleCustomerErrorCode() will handle only error code such as status_code = 401|402|403. It does not handle status 200 and 405 (custom validation error code)
+  function handleCustomerErrorCode(res,url=null){
+    if ([401,402,403].indexOf(res.status_code)>=0){
+      //401: User authentication failed
+      //status 403: 'CSRF Token is not correct'
+      //status: 402: Token expired
+      window.location.href = '/';
+    }else if (res.status_code === 405) {
+      throw new Error('Error status 405: method not allowed at url ' + url);
+    } else if (res.status_code === 500) {
+      throw new Error('Error status 500 at ' + url);
+    } else return res;
+  }
+
   async function handleDebouncedFetch(url, options, loader, agent) {
     try {
-      if (loader && loader instanceof jQuery) {
-        loader.show();
-      } else if (loader) {
-        loader.style.display = 'block';
-      }
+      
+      // if (loader && loader instanceof jQuery) {
+      //   loader.show();
+      // } else if (loader) {
+      //   loader.style.display = 'block';
+      // }
 
       const response = await fetch(url, options);
-      const data = await response.json();
+      const res = await response.json();
 
-      if (!response.ok) {
-        if (data.status_code === 401 || data.status_code === 402) {
-          window.location.href = '/';
-        } else if (data.status_code === 403) {
-          console.error('Error status 403 at url ' + url);
-          window.location.href = '/';
-        } else if (data.status_code === 405) {
-          console.error('Error status 405: method not allowed at url ' + url);
-        } else if (data.status_code === 500) {
-          console.error('Error status 500 at ' + url);
-        }
-        throw new Error(JSON.stringify(data));
-      }
+      if (response.ok){
+        //handle custom's error code
+        if([200,405].indexOf(res.status_code) >=0) return res;
+        return handleCustomerErrorCode(res,url);
+      } 
+      else throw new Error(JSON.stringify(response));
 
-      return data;
     } catch (error) {
       console.error(error + ' Error at url =>  ' + url);
       throw error;
@@ -71,7 +78,9 @@ const vsapi = (function () {
 
   api.post = async (url, data = {}, agent = null, loader = null) => {
     loader = loader === null ? defaultLoader : false;
-    const access_token = document.cookie.split('; ').find(row => row.startsWith('vsksm997878za')).split('=')[1];
+    let access_token = null;
+    let cookie = document.cookie.split('; ').find(row => row.startsWith('vsksm997878za'));
+    if(cookie) access_token = cookie.split('=')[1];
 
     const options = {
       method: 'POST',
@@ -93,7 +102,9 @@ const vsapi = (function () {
 
   api.call = async (url, data = {}, agent = null, loader = null) => {
     loader = loader === null ? defaultLoader : false;
-    const access_token = document.cookie.split('; ').find(row => row.startsWith('vsksm997878za')).split('=')[1];
+    let access_token = null;
+    let cookie = document.cookie.split('; ').find(row => row.startsWith('vsksm997878za'));
+    if(cookie) access_token = cookie.split('=')[1];
 
     const options = {
       method: 'POST',

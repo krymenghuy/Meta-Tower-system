@@ -74,7 +74,7 @@ class PusherController extends Controller
                   
                   //return JDV::result(json_decode($auth)); //This wont work because incorrect JSON structure for the client Pusher object to validate
                   /** IMPORTANT NOTE: => It must reponse to client (ie: javascript Pusher object), MUST return as {"auth": signature_string }  WHRERE "signature_string" is combination of "pusher_app_key:$generated_sign" **/
-                  return response($auth, 200);
+                  return JDV::result($auth);
 
                 // $pusher = new Pusher($app_key, $secret, $app_id);
                 // $string_to_sign = $socket_id.":".$channel_name;
