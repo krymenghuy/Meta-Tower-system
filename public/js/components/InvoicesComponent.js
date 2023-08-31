@@ -83,7 +83,7 @@ var InvoicesComponent = new function(){
         data: (data, a, b) => {
             let cls = data.status === 'unpaid' ? 'd-block':'d-none'; 
             return [`<div class="d-flex gap-2">
-                <a href="javascript:void(0)" class="btn-inv-pay ${cls}" data-studentid="${data.student_id}" data-invoice="${data.invoice_number}">
+                <a href="javascript:void(0)" class="btn-inv-pay ${cls}" data-enrollmentid="${data.enrollment_id}" data-id="${data.id}">
                     <i class="fa-solid fa-hand-holding-dollar text-success fs-5"></i>
                 </a>
                 <a href="javascript:void(0)" class="btn-inv-modify ${cls}" data-id="${data.id}" data-studentid="${data.student_id}" data-invoice="${data.invoice_number}">
@@ -121,8 +121,8 @@ var InvoicesComponent = new function(){
         mThis.tblInvoice.on('click','a.btn-inv-pay',function(e){
             e.preventDefault();
             let op = {
-                'student_id': $(this).data('studentid'),
-                'invoice_number': $(this).data('invoice')
+                'enrollment_id': $(this).data('enrollmentid'),
+                'inv_id': $(this).data('id')
             };
             cv_interact.confirm('Recieve pay now?',{title: 'Pay', context: 'OK'},(e) => {
                 if(e){
