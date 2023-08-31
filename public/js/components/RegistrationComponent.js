@@ -571,7 +571,7 @@ var RegistrationComponent = new function(){
                         VSUtil.setComboItems(el,d.campuses,'id','campus_name',null,null,null);
                         break;
                     case 'term_id':
-                        VSUtil.setComboItems(el,d.terms,'id','acad_term',null,null,null);
+                        VSUtil.setComboItems(el,d.terms,'id','term_name',null,null,null);
                         break;
                     case 'group_id':
                         VSUtil.setComboItems(el,d.groups,'id','group_name',null,null,null);
