@@ -1,6 +1,7 @@
 let HtmlString = null;
 
 function renderTable(div, data){
+    console.log(data);
     if(data && !($.isEmptyObject(data))){
         let html = [`<div class="d-flex justify-content-center mb-3">
             <div class="w-25 position-relative">
@@ -29,7 +30,7 @@ function renderTable(div, data){
         </div>`].join('');
 
         data && data.session_date && data.session_date.map(tbl => {
-            let student = null, days = null,cnt = 1, cols = tbl.days.length;
+            let student = null, days = null, cnt = 1, cols = tbl.days.length, attendance = {};
 
             html = [html,`<div class="table-responsive mt-3 p-3 bg-white table-responsive-hover">
                 <table class="table table-bordered text-nowrap">
@@ -42,17 +43,20 @@ function renderTable(div, data){
                             <td rowspan="2" class="align-middle text-center">DOB</td>
                             <td rowspan="2" class="align-middle text-center">Starting Date</td>
                             <td rowspan="2" class="align-middle text-center">Shift</td>
-                            <td class="align-middle text-center" colspan="${parseInt(cols)}">${tbl.date ? tbl.date : ''}</td>
+                            <td class="align-middle text-center" colspan="${parseInt(cols+3)}">${tbl.date ? tbl.date : ''}</td>
                             <td rowspan="2" class="align-middle text-center">Phone Number</td>
                         </tr>
                         <tr>
                             ${days=null,tbl && tbl.days && tbl.days.map(d => {
                                 days = [days,`<td class="align-middle text-center">${d.day}</td>`].join('')
                             }),days}
+                            <td class="align-middle text-center text-white bg-success">P</td>
+                            <td class="align-middle text-center text-white bg-warning">Pr</td>
+                            <td class="align-middle text-center text-white bg-danger">A</td>
                         </tr>
                     </thead>
                     <tbody>
-                        ${student=null,tbl && tbl.students && tbl.students.map(st => {
+                        ${student=null,tbl && tbl.students && tbl.students.map((st,index) => {
                             const options = {
                                 day: 'numeric',
                                 month: 'short',
@@ -75,9 +79,55 @@ function renderTable(div, data){
                                 <td>${st.start_date ? new Date(st.start_date).toLocaleDateString('km-kh',options).replaceAll(' ','-') : ''}</td>
                                 <td>${data.session ? data.session : ''}</td>
                                 ${inner_html ? inner_html : '<td></td>'}
-                                <td></td>
+                                <td class="align-middle text-center text-white bg-success">
+                                    ${tbl.monthly_attendance && tbl.monthly_attendance[index].present}
+                                </td>
+                                <td class="align-middle text-center text-white bg-warning">
+                                    ${tbl.monthly_attendance && tbl.monthly_attendance[index].permission}
+                                </td>
+                                <td class="align-middle text-center text-white bg-danger">
+                                    ${tbl.monthly_attendance && tbl.monthly_attendance[index].absent}
+                                </td>
+                                <td>
+                                    ${options.phone=null,tbl.phone_number && tbl.phone_number[index].map(p => {
+                                        options.phone = [options.phone,p.phone_number].join(' / ');
+                                    }),options.phone.replace(' / ','')}
+                                </td>
                             </tr>`].join('');
                         }),student}
+
+                        ${attendance.daily=null,
+                            attendance.absent=null,
+                            attendance.permission=null,
+                            attendance.present=null,
+                            tbl && tbl.daily_attendance && tbl.daily_attendance.map(at => {
+                            let cls = ((at.absent == 0) && (at.permission == 0) && (at.present == 0)) ? 'bg-danger-subtle' : 'align-middle text-center';
+
+                            attendance.absent = [attendance.absent,`<td class="${cls}">${at.absent == 0 ? '' : at.absent}</td>`].join('');
+
+                            attendance.permission = [attendance.permission,`<td class="${cls}">${at.permission == 0 ? '' : at.permission}</td>`].join('');
+
+                            attendance.present = [attendance.present,`<td class="${cls}">${at.present == 0 ? '' : at.present }</td>`].join('');
+                        }),attendance.daily=[`<tr>
+                            <td colspan="4" rowspan="3" class="align-middle text-center fs-4">Total</td>
+                            <td colspan="2" class="align-middle text-end">Present:</td>
+                            <td class="text-white bg-success text-center">P</td>
+                            ${attendance.present}
+                            <td rowspan="3" class="align-middle text-center text-white bg-success"></td>
+                            <td rowspan="3" class="align-middle text-center text-white bg-warning"></td>
+                            <td rowspan="3" class="align-middle text-center text-white bg-danger"></td>
+                            <td rowspan="3" class="align-middle text-center"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="align-middle text-end">Permission:</td>
+                            <td class="text-white bg-warning text-center">Pr</td>
+                            ${attendance.permission}
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="align-middle text-end">Absent:</td>
+                            <td class="text-white bg-danger text-center">A</td>
+                            ${attendance.absent}
+                        </tr>`].join(''),attendance.daily}
                     </tbody>
                 </table>
             </div>`].join('');

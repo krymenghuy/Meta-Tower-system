@@ -107,7 +107,7 @@ var ActivitiesComponent = new function(){
                     }
                 ]
             }
-            window.vsapi.call(`${main_view.base_url}/api/activity/send-request-change`,op,null).then(res => {
+            vsapi.call(`${main_view.base_url}/api/activity/send-request-change`,op,null).then(res => {
                 if(res.status_code === 200){
                     mThis.itemView.showPage(null);
                     cv_interact.success('Request has been seen!');
@@ -161,7 +161,7 @@ var ActivitiesComponent = new function(){
             obj['request_id'] = tr.data('requestid');
             p.request_info.push(obj);
         });
-        window.vsapi.call(`${main_view.base_url}/api/activity/send-request-change`,p,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/activity/send-request-change`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.itemView.showPage(null);
                 cv_interact.success('Request has been seen!');
@@ -173,7 +173,7 @@ var ActivitiesComponent = new function(){
     }
 
     this.prepareOptions = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/form-option`,null,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/form-option`,null,null,false).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
@@ -204,7 +204,7 @@ var ActivitiesComponent = new function(){
     }
 
     this.prepareRequest = () => {
-        window.vsapi.call(`${main_view.base_url}/api/option/request-type`,null,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/option/request-type`,null,null,false).then(res => {
             let d = [];
             if(res.status_code === 200){
                 d = res.data;
@@ -241,7 +241,7 @@ let RequestDialog = new function(){
         e.preventDefault();
         mThis.validate.validator(() => {
             let p = mThis.getDataForm();
-            window.vsapi.call(`${main_view.base_url}/api/activity/create-request-change`,p,null).then(res => {
+            vsapi.call(`${main_view.base_url}/api/activity/create-request-change`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
                     if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
@@ -251,7 +251,7 @@ let RequestDialog = new function(){
     });
 
     this.prepareFormOption = (onFinish = null) => {
-        window.vsapi.call(`${main_view.base_url}/api/option/request-type-dialog`,null,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/option/request-type-dialog`,null,null,false).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
@@ -318,7 +318,7 @@ let RequestDialog = new function(){
 
             if(id){
                 let html = null, inner_html = null;
-                window.vsapi.call(`${main_view.base_url}/api/option/student-enrollment`,{'student_id': id},null,false).then(res => {
+                vsapi.call(`${main_view.base_url}/api/option/student-enrollment`,{'student_id': id},null,false).then(res => {
                     let d = [];
                     if(res.status_code === 200){
                         d = res.data;
@@ -358,7 +358,7 @@ let RequestDialog = new function(){
             mThis.options.std_id = op.enrollment_id;
 
             if((op.enrollment_id != '') && (op.enrollment_id > 0)){
-                window.vsapi.call(`${main_view.base_url}/api/option/student-request-info`,op,null,false).then(res => {
+                vsapi.call(`${main_view.base_url}/api/option/student-request-info`,op,null,false).then(res => {
                     let d = {};
                     if(res.status_code === 200){
                         d = res.data;
@@ -387,7 +387,7 @@ let RequestDialog = new function(){
 
         el.off('change').on('change',function(e){
             e.preventDefault();
-            window.vsapi.call(`${main_view.base_url}/api/option/request-type-input`,{'request_type_id': $(this).val()},null,false).then(res => {
+            vsapi.call(`${main_view.base_url}/api/option/request-type-input`,{'request_type_id': $(this).val()},null,false).then(res => {
                 let d = {};
                 if(res.status_code === 200){
                     d = res.data;
