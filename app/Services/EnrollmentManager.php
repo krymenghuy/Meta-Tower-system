@@ -303,14 +303,14 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
                 ->selectRaw($selectCols)
                 ->first();
             if(!$row) return null;
-                        $row->parent_info = Student::getGuardians($row->student_id);
-                        $row->prev_school_name = self::getPrevSchool($row->prev_school_id)->name;
-                        $url =null;
-                        if($row->file_name){
-                            $url = PublicStorage::getUrl($ss->branch_id,'students','image').$row->file_name;
-                            $row->image_url = validateUrl($url,null);
-                        }
-                        unset($row->file_name);
+                $row->parent_info = Student::getGuardians($row->student_id);
+                $row->prev_school_name = self::getPrevSchool($row->prev_school_id)->name;
+                $url =null;
+                if($row->file_name){
+                    $url = PublicStorage::getUrl($ss->branch_id,'students','image').$row->file_name;
+                    $row->image_url = validateUrl($url,null);
+                }
+                unset($row->file_name);
             return $row;
     }
 
