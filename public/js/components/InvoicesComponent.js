@@ -40,7 +40,7 @@ var InvoicesComponent = new function(){
     {
         title: "Due",
         data: (data, a, b) => {
-            const cur =  data.currency_symbol?data.currency_symbol:mThis.currency_symbol;
+            const cur =  data.currency_symbol ? data.currency_symbol : mThis.currency_symbol;
             let due_amount = data.due_amount ? [cur,data.due_amount].join(' ') : 'NA';
             return due_amount;
         }
@@ -65,7 +65,7 @@ var InvoicesComponent = new function(){
     {
         title: "Status",
         data: (data, a, b) => {
-            let bg = data.status === 'unpaid' ? 'bg-danger':'bg-success';
+            let bg = data.status === 'unpaid' ? 'bg-danger' : 'bg-success';
             return [`<span class="p-2 rounded-3 text-white text-capitalize ${bg}">${data.status}</span>`].join('');
         }
     },
@@ -186,7 +186,18 @@ var InvoicesComponent = new function(){
             if(res.status_code === 200){
                 d = res.data;
             }
-            html = [`<div>Test</div>`].join('');
+            (d || []).map(inv => {
+                html = [html,`<div class="d-flex w-50 rounded-3 bg-light gap-2 min-width-box-enroll">
+                    <div class="w-50 p-3 text-nowrap">
+                        <span class="text-primary-emphasis">Fee Type</span>
+                        <span>:</span>
+                        <span class="text-capitalize">${inv.fee_type ? inv.fee_type.replaceAll('_',' ') : ''}</span>
+                    </div>
+                    <div class="w-50 p-3 text-nowrap"></div>
+                </div>`].join('');
+            });
+            console.log(d);
+            html = [`<div class="d-flex flex-nowrap gap-2">`,html,`</div>`].join('');
             div_wrapper.html(html);
         });
     }

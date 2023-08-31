@@ -34,7 +34,14 @@ var StudentInformationComponent = new function(){
     },
     {
         title: "Date of Birth",
-        data: "date_of_birth"
+        data: (data, a, b) => {
+            let dob = data.date_of_birth ? data.date_of_birth : '';
+            return new Date(dob).toLocaleDateString('km-KH',{
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            }).replaceAll(' ','-');
+        }
     },
     {
         title: "Family ID",

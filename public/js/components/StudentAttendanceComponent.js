@@ -24,7 +24,14 @@ var StudentAttendanceComponent = new function(){
     },
     {
         title: "Date of Birth",
-        data: "dob"
+        data: (data, a, b) => {
+            let dob = data.dob ? data.dob : '';
+            return new Date(dob).toLocaleDateString('km-KH',{
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            }).replaceAll(' ','-');
+        }
     },
     {
         title: "Sex",
@@ -181,6 +188,7 @@ let StudentAttendanceDialog = new function(){
                 d = res.data;
                 d.extend = op;
             }
+            console.log(d);
             mThis.setDataForm(d);
         });
     }
