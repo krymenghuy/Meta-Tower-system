@@ -205,7 +205,6 @@ var AactivitiesComponent = new function(){
 
     this.displayApprovalActivityDetails = (tr, op) => {
         let div_wrapper = $(tr).find('.expandable-row-container');
-        div_wrapper.addClass(['p-3','rounded-3']);
 
         let html = null, inner_html = null, cur_symbol = '$';
         div_wrapper.empty();
@@ -226,64 +225,66 @@ var AactivitiesComponent = new function(){
             if(res.status_code === 200){
                 d = res.data;
             }
-            html = [`<div class="row gy-2">
-                <div class="col-lg-6">
-                    <div class="bg-light h-100 rounded-3">
-                        <div class="rounded-top-3 bg-warning-subtle p-2">Payment Preview</div>
-                        <div class="row row-cols-2 gy-2 p-3">
-                            <div class="col-md-6">
-                                <p>
-                                    <span>Old Days Fee</span>
-                                    <span>:</span>
-                                    <span>${cur_symbol} ${d.old_days_fee}</span>
-                                </p>
-                                <p>
-                                    <span>Fee Left</span>
-                                    <span>:</span>
-                                    <span>${cur_symbol} ${d.fee_left}</span>
-                                </p>
-                                <p>
-                                    <span>New Level</span>
-                                    <span>:</span>
-                                    <span>${cur_symbol} ${d.new_level}</span>
-                                </p>
-                            </div>
-                            <div class="col-md-6">
-                                <p>
-                                    <span>Surcharge</span>
-                                    <span>:</span>
-                                    <span>${cur_symbol} ${d.surcharge}</span>
-                                </p>
-                                <p>
-                                    <span>Return Fee</span>
-                                    <span>:</span>
-                                    <span>${cur_symbol} ${d.return_fee}</span>
-                                </p>
-                                <p>
-                                    <span>Academic Year</span>
-                                    <span>:</span>
-                                    <span>${d.academic_year}</span>
-                                </p>
+            if(d && !($.isEmptyObject(d))){
+                html = [`<div class="row gy-2">
+                    <div class="col-lg-6">
+                        <div class="bg-light h-100 rounded-3">
+                            <div class="rounded-top-3 bg-warning-subtle p-2">Payment Preview</div>
+                            <div class="row row-cols-2 gy-2 p-3">
+                                <div class="col-md-6">
+                                    <p>
+                                        <span>Old Days Fee</span>
+                                        <span>:</span>
+                                        <span>${cur_symbol} ${d.old_days_fee}</span>
+                                    </p>
+                                    <p>
+                                        <span>Fee Left</span>
+                                        <span>:</span>
+                                        <span>${cur_symbol} ${d.fee_left}</span>
+                                    </p>
+                                    <p>
+                                        <span>New Level</span>
+                                        <span>:</span>
+                                        <span>${cur_symbol} ${d.new_level}</span>
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>
+                                        <span>Surcharge</span>
+                                        <span>:</span>
+                                        <span>${cur_symbol} ${d.surcharge}</span>
+                                    </p>
+                                    <p>
+                                        <span>Return Fee</span>
+                                        <span>:</span>
+                                        <span>${cur_symbol} ${d.return_fee}</span>
+                                    </p>
+                                    <p>
+                                        <span>Academic Year</span>
+                                        <span>:</span>
+                                        <span>${d.academic_year}</span>
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="bg-light h-100 rounded-3">
-                        <div class="rounded-top-3 bg-danger-subtle p-2">Request Change Preview</div>
-                        <div class="row row-cols-2 gy-2 p-3">
-                            ${inner_html,Object.keys(request_change).map(key => {
-                                inner_html = [inner_html,`<div class="col-md-6 mb-1">
-                                    <span class="text-capitalize">${key.replace('_',' ')}</span>
-                                    <span>:</span>
-                                    <span>${request_change[`${key}`]}</span>
-                                </div>`].join('');
-                            }),inner_html}
+                    <div class="col-lg-6">
+                        <div class="bg-light h-100 rounded-3">
+                            <div class="rounded-top-3 bg-danger-subtle p-2">Request Change Preview</div>
+                            <div class="row row-cols-2 gy-2 p-3">
+                                ${inner_html,Object.keys(request_change).map(key => {
+                                    inner_html = [inner_html,`<div class="col-md-6 mb-1">
+                                        <span class="text-capitalize">${key.replace('_',' ')}</span>
+                                        <span>:</span>
+                                        <span>${request_change[`${key}`]}</span>
+                                    </div>`].join('');
+                                }),inner_html}
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>`].join('');
-            div_wrapper.html(html);
+                </div>`].join('');
+                div_wrapper.html(html).addClass(['p-3','rounded-3']);
+            }
         });
     }
 
