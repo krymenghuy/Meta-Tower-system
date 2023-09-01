@@ -23,16 +23,16 @@ class EnrollmentController extends Controller
         $res = $m->saveEnrollment($req->all(),$req->id);
         return JDV::raw($res);
     }
- 
+
     function getEnrollmentDetails(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
         $m = new EnrollmentManager($req->id,$ss);
-        $data = $m->getEnrollmentDetails();
+        $data = $m->getEnrollmentDetails($req->id);
         return JDV::result($data);
     }
 
- 
+
     function deleteEnrollment(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
