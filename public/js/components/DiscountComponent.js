@@ -19,10 +19,12 @@ var DiscountComponent = new function(){
     },
     {
         title: "Full Name",
+        className: "text-capitalize",
         data: "name"
     },
     {
         title: "Full Name (KH)",
+        className: 'text-capitalize',
         data: "name_kh"
     },
     {
@@ -33,7 +35,14 @@ var DiscountComponent = new function(){
     },
     {
         title: "Date of Birth",
-        data: "date_of_birth"
+        data: (data, a, b) => {
+            let dob = data.date_of_birth ? data.date_of_birth : '';
+            return new Date(dob).toLocaleDateString('km-KH',{
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            }).replaceAll(' ','-').replace(',','');
+        }
     },
     {
         title: "Amount",
