@@ -84,7 +84,7 @@ var ManageAccountComponent = new function(){
             let op = {
                 'father_id': id[0],
                 'mother_id': id[1],
-                'action': 'add_photo',
+                'action': 'add-photo',
                 'onClose': () => {
                     mThis.itemView.showPage(null);
                 }
@@ -94,8 +94,14 @@ var ManageAccountComponent = new function(){
 
         mThis.tblParent.on('click','a.btn-mna-details',function(e){
             e.preventDefault();
-            let family = $(this).data('id');
-            console.log(family);
+            let op = {
+                'family_id': $(this).data('id'),
+                'action': 'get-child',
+                'onClose': () => {
+                    mThis.itemView.showPage(null);
+                }
+            };
+            ManageAccountDialog.show(op);
         });
 
         mThis.btnAdd.on('click',function(e){
@@ -130,17 +136,20 @@ let ManageAccountDialog = new function(){
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        let p = mThis.getImage(mThis.elBody);
-        vsapi.call(`${main_view.base_url}/api/guardian/save`,p,null).then(res => {
-            if(res.status_code === 200){
-                mThis.self.modal('hide');
-                if(typeof mThis.options.onClose === 'function')
-                    mThis.options.onClose();
-            }
-            else{
-                cv_interact.error(res.error_message);
-            }
-        });
+        let p = {};
+        if(mThis.options.action === 'add-photo'){
+            p = mThis.getImage(mThis.elBody);
+            vsapi.call(`${main_view.base_url}/api/guardian/save`,p,null).then(res => {
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    if(typeof mThis.options.onClose === 'function')
+                        mThis.options.onClose();
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                }
+            });
+        }
     });
 
     this.inputParentPhoto = (div,options) => {
@@ -179,7 +188,7 @@ let ManageAccountDialog = new function(){
             FileChooser.chooseFile(null,(d) => {
                 if(d){
                     let parent = $(this).parent(), label = parent.siblings().attr('for');
-                    let html = [`<img class="w-100 h-100 object-fit-contain rounded data-input" src="${d.dataUrl}" alt="${d.file_type}" data-field="photo" data-id="${op[`${label.split('_')[0]}_id`]}"/>
+                    let html = [`<img class="w-100 h-100 object-fit-contain rounded data-input" src="${d.dataUrl}" alt="${d.file_type}" data-id="${op[`${label.split('_')[0]}_id`]}"/>
                     <div class="btn-delete position-absolute rounded bg-dark p-2 top-0 end-0">
                         <a href="javascript:void(0)" class="photo-delete">
                             <i class="fa-regular fa-trash-can fs-5 text-danger" role="button"></i>
@@ -208,14 +217,19 @@ let ManageAccountDialog = new function(){
             'parent_info': []
         };
         div.find('.data-input').each(function(){
-            let ob = {};
             let el = $(this);
-            let f = el.data('field');
-            ob[f] = el.attr('src');
-            ob['id'] = el.data('id');
-            p.parent_info.push(ob);
+            p.parent_info.push({
+                'photo': el.attr('src'),
+                'id': el.data('id')
+            });
         });
         return p;
+    }
+
+    this.displayChildren = (div) => {
+        let dialog = div.closest('.modal-dialog');
+        if(!(dialog.hasClass('modal-lg'))) dialog.addClass('modal-lg');
+        div.empty();
     }
 
     this.show = (options) => {
@@ -225,6 +239,10 @@ let ManageAccountDialog = new function(){
         if((options.father_id > 0) || (options.mother_id > 0)){
             mThis.elTitle.text(LocaleManager.trans('Add Photo','titles'));
             mThis.inputParentPhoto(mThis.elBody,options);
+        }
+        else if(options.family_id){
+            mThis.elTitle.text(LocaleManager.trans('Children','titles'));
+            mThis.displayChildren(mThis.elBody);
         }
         else{
             mThis.elTitle.text(LocaleManager.trans('Connected Students','titles'));
