@@ -17,32 +17,52 @@ class Guardian //extends Model
         $this->ss = $ss;
     }
     function save($arr=[],$id=null,$ss=null){
-        $id = $id?$id:$this->id;
         $ss = $ss?$ss:$this->ss;
-        $v_rule = [
-            'name' => '0|string|1,30',
-            'email' => '0|string',
-            'photo' => '0|image',
-            // 'phone_number' => '0|number|9,16',
-            // 'profession' => '0|string',
-            'address' => '0|string',
-            'religion' => '0|string',
-            // 'n_id' => '0|string|1,30'
-        ];
+        $d = (object)$arr;
+        $parent_info = isset($d->parent_info) ?$d->parent_info:null;
+        if(!$parent_info) return DV::error('parent_info is required');
+        $success=0;
+        foreach($parent_info as $info){
+            $v_rule = [
+                'name' => '0|string|1,30',
+                'email' => '0|string',
+                'photo' => '0|image',
+                // 'phone_number' => '0|number|9,16',
+                // 'profession' => '0|string',
+                'address' => '0|string',
+                'religion' => '0|string',
+                // 'n_id' => '0|string|1,30'
+            ];
 
-        $res = validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
-        if($res->error) return DV::error($res->error);
-        $inputs = $res->values;
-        $image = $inputs['photo'];
-        unset($inputs['photo']);
-        $existEmail = DB::table('guardians')->where('id',$id)->where('email',$inputs['email'])->exists();
-        if(!$existEmail) return DV::error('Email is already used');
+            $res = validateObject($info,$v_rule,1,['email'=>['@','.','_']],$ss->lang,0,null);
+            if($res->error) return DV::error($res->error);
+            $inputs = $res->values;
 
-        $newID = saveData($ss,'guardians',['id' => $id],$inputs,[],1);
-        if($newID){
-            PublicStorage::saveImage($ss->branch_id,$this->img_dir,null,$image,null,['id'=>$newID,'store'=>'guardians.file_name']);
+            $image = $inputs['photo'];
+            $email = $inputs['email'];
+            unset($inputs['photo']);
+            $id = $info['id'];
+            $user = DB::table('guardians')->where('id',$id)->first();
+            if ($user->email !== $email) {
+                $existingUser = DB::table('guardians')
+                    ->where('email', $email)
+                    ->first();
+                if ($existingUser) {
+                    return DV::error('Email already exists');
+                }
+            }
+
+            $newID = saveData($ss,'guardians',['id' => $id],$inputs,[],1);
+
+            if($newID){
+                PublicStorage::saveImage($ss->branch_id,$this->img_dir,null,$image,null,['id'=>$newID,'store'=>'guardians.file_name']);
+            }
+            $success++;
         }
-        return $inputs;
+
+
+
+        return DV::depends($success,'Updated');
 
     }
 
