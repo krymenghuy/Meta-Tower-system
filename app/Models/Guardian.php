@@ -161,7 +161,7 @@ class Guardian //extends Model
                 ];
             }
 
-            $groupedData[$familyId]['children'][] = DB::table('students')->where('id',$studentId)->get();
+            $groupedData[$familyId]['children'] = DB::table('students')->where('id',$studentId)->get();
         }
 
         // foreach($rows as $row){
