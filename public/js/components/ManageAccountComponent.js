@@ -222,11 +222,9 @@ let ManageAccountDialog = new function(){
         if(!options) options = {};
         mThis.options = options;
 
-        if(!($.isEmptyObject(options))){
-            if((options.father_id > 0) || (options.mother_id > 0)){
-                mThis.elTitle.text(LocaleManager.trans('Add Photo','titles'));
-                mThis.inputParentPhoto(mThis.elBody,options);
-            }
+        if((options.father_id > 0) || (options.mother_id > 0)){
+            mThis.elTitle.text(LocaleManager.trans('Add Photo','titles'));
+            mThis.inputParentPhoto(mThis.elBody,options);
         }
         else{
             mThis.elTitle.text(LocaleManager.trans('Connected Students','titles'));
