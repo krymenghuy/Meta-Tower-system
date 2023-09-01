@@ -231,7 +231,7 @@ var ReportCenterComponent = new function(){
     this.capitalize = (str, lower = false) => (lower ? str.toLowerCase() : str).replace(/(?:^|\s|["'([{])+\S/g, match => match.toUpperCase());
 
     this.getDataTable = (div, p) => {
-        vsapi.call(`${main_view.base_url}/api/student/attendance-list-report`,p,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/reports/attendance/list`,p,null,false).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = res.data;
