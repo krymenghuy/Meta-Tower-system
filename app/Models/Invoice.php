@@ -620,6 +620,8 @@ class Invoice //extends Model
         $insert_info = isset($d->insert_info)?$d->insert_info:null;
         $delete_info = isset($d->delete_info)?$d->delete_info:null;
         $keeper = [];
+        $success = 0;
+        $delete = 0;
         foreach($insert_info as $ins_info){
             $other_fee = DB::table('other_fees')->where('name',$ins_info['fee_type'])->selectRaw('name,amount,description')->first();
             $updateOrInsert = [
@@ -630,14 +632,16 @@ class Invoice //extends Model
             ];
             $inv_item_id = isset($ins_info['invoice_item_id'])?$ins_info['invoice_item_id']:null;
             $newID = saveData($ss,'invoice_items',['id'=>$inv_item_id],$updateOrInsert);
+            $success ++;
         }
 
         if(isset($delete_info)){
             foreach($delete_info as $del_info){
                 DB::table('invoice_items')->where('id',$del_info['invoice_item_id'])->delete();
+                $delete ++;
             }
         }
-        return $keeper;
+        return DV::depends($success || $delete);
     }
 
     static function getTuitionDueByEnrollmentID($enrollment_id){

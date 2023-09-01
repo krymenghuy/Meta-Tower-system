@@ -78,4 +78,18 @@ class ReportController extends Controller
     return JDV::result($rpt->attendanceListReport($req->all(),$ss));
   }
 
+  function getStudentInfoList(Request $req){
+    $ss = UM::getUserInfoByToken($req, -1);
+    if ($ss->status_code != 200) return $ss;
+    $rpt = new Report();
+    return JDV::result($rpt->getStudentListReport($req->all(),$ss));
+  }
+
+  function getFamilyInfoList(Request $req){
+    $ss = UM::getUserInfoByToken($req, -1);
+    if ($ss->status_code != 200) return $ss;
+    $rpt = new Report();
+    return JDV::result($rpt->getFamilyListReport($req->all(),$ss));
+  }
+
 }

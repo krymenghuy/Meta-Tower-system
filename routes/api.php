@@ -234,7 +234,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/school-fee/pay',[InvoiceController::class,'schoolFeePay']);
         Route::post('/invoice-delete',[InvoiceController::class,'deleteInvoice']);
         // Route::post('/invoice-to-active',[PriceListController::class,'turnInvoiceToActive']);
-        // Route::post('/invoice-update',[PriceListController::class,'updateInvoice']);
+        Route::post('/invoice-update',[InvoiceController::class,'updateInvoice']);
         // Route::post('/invoice-items',[PriceListController::class,'getInvoiceItems']);
 
         //** AttendanceController */
@@ -579,6 +579,10 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('enrollment/student-list',[ReportController::class,'getStudentList']);
     Route::post('enrollment/dropout-students',[ReportController::class,'getDropoutStudents']);
     Route::post('enrollment/new-students',[ReportController::class,'getNewStudents']);
+
+    Route::post('/student-info',[ReportController::class,'getStudentInfoList']);
+    Route::post('/family-info',[ReportController::class,'getFamilyInfoList']);
+
 
     Route::post('/attendance/list',[ReportController::class,'getAttendanceList']);
   });
