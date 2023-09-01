@@ -105,7 +105,7 @@ class Invoice //extends Model
                     $keep_amount[] = $row->amount;
                 }
                 $invoice_items = saveData($ss,'invoice_items',["id"=>isset($fee["id"])?$fee["id"]:null],$fee,[],1);
-                $invoice_items [] = $invoice_items;
+                $invoiceItemID ['inv_item_id'] = $invoice_items;
             }
             if($getTuitionFeeType){
                 $amount = array_sum($keep_amount) + $enr_info->tuition;
@@ -145,15 +145,18 @@ class Invoice //extends Model
                     ]);
             }
             //**save referrer */
-            if($commission){
+            if($commission && $referrer_id){
                 $save = saveData($ss,'referals',['id' => null],[
                     'commission' => $commission,
-                    'commission_type' => '%',
+                    'commission_type' => 'percentage',
                     'referrer_id' => $referrer_id,
                     'student_id' => $enr_info->student_id,
                     'invoice_id' => $save_inv,
+                    'is_paid' => 0,
                     'referrer_type' => $referrer_type
                 ]);
+                DB::table('students')->where('id', $enr_info->student_id)->update(['referrer_id' => $referrer_id]);
+                DB::table('enrollments')->where('id', $enrollment_id)->update(['referrer_id' => $referrer_id]);
             }
         }
         return DV::depends($save_inv,['action'=>'Generated']);
@@ -282,172 +285,179 @@ class Invoice //extends Model
         $enrollment_id = $d->enrollment_id;
         $inv_id =$d->inv_id;
         $getInvoiceInfo = self::getRelatedInvoice($enrollment_id,$inv_id);
-        $row = DB::table('students as s')
-                ->join('enrollments as e','e.student_id','=','s.id')
+        $row = DB::table('enrollments as e')
                 ->where('e.id',$enrollment_id)
                 ->join('payments as p','p.enrollment_id','=','e.id')
                 ->selectRaw('e.student_id,p.tuition_due,e.id as enr_id,e.start_date,e.term_id,e.program_id,e.level_id,e.session_id,e.campus_id,p.pmt_option_id,e.academic_year')
                 ->get()->first();
+        // $row = DB::table('students as s')
+        //         ->join('enrollments as e','e.student_id','=','s.id')
+        //         ->where('e.id',$enrollment_id)
+        //         ->join('payments as p','p.enrollment_id','=','e.id')
+        //         ->selectRaw('e.student_id,p.tuition_due,e.id as enr_id,e.start_date,e.term_id,e.program_id,e.level_id,e.session_id,e.campus_id,p.pmt_option_id,e.academic_year')
+        //         ->get()->first();
         $current_level = GeneralSettings::getLevel($row->level_id,$ss);
         $last_level = DB::table('program_levels')->where('program_id',$current_level->program_id)->selectRaw('id,name')->orderBy('id','desc')->first();
         // $current_program = GeneralSettings::getProgramByLevel($row->level_id,$ss);
         // $next_program = GeneralSettings::getNextProgram($current_program->program_id,$ss);
         $next_level = GeneralSettings::getNextLevelByCurrentLevel($row->level_id,$ss);
+        $referrer =  DB::table('referals')->where('student_id',$row->student_id)->where('is_paid',0)->first();
+        return $referrer;
         // $pmt_option_id = $row->pmt_option_id;
-        $next_payment_info = null;
-        $current_payment_info=null;
-        $pre_enr = null;
-        if($current_level->id != $last_level->id){
-            $current_payment_info = $instance->getMonthlyFee([
-                    'academic_year' => $row->academic_year,
-                    'level_id' => $row->level_id,
-                    'session_id' => $row->session_id,
-                    'start_date' => $row->start_date,
-                ]);
+        // $next_payment_info = null;
+        // $current_payment_info=null;
+        // $pre_enr = null;
+        // if($current_level->id != $last_level->id){
+        //     $current_payment_info = $instance->getMonthlyFee([
+        //             'academic_year' => $row->academic_year,
+        //             'level_id' => $row->level_id,
+        //             'session_id' => $row->session_id,
+        //             'start_date' => $row->start_date,
+        //         ]);
 
-            if($current_payment_info){
-                $pre_enr = [
-                    'term_id' => $row->term_id,
-                    'student_id' => $row->student_id,
-                    'level_id' => $row->level_id,
-                    'session_id' => $row->session_id,
-                    'campus_id' => $row->campus_id,
-                    'tuition_due' => $row->tuition_due,
-                    'price_list_id' => $current_payment_info->price_list_id
-                ];
+        //     if($current_payment_info){
+        //         $pre_enr = [
+        //             'term_id' => $row->term_id,
+        //             'student_id' => $row->student_id,
+        //             'level_id' => $row->level_id,
+        //             'session_id' => $row->session_id,
+        //             'campus_id' => $row->campus_id,
+        //             'tuition_due' => $row->tuition_due,
+        //             'price_list_id' => $current_payment_info->price_list_id
+        //         ];
 
-                saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
-                saveData($ss,'enrollments',['id' => $row->enr_id],[
-                    'status_id' => 3,//* paid
-                ],[],1);
+        //         saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
+        //         saveData($ss,'enrollments',['id' => $row->enr_id],[
+        //             'status_id' => 3,//* paid
+        //         ],[],1);
 
-                if($getInvoiceInfo->invoice_type == 'tuition_fee'){
-                    saveData($ss,'payments',['enrollment_id' => $row->enr_id],[
-                        'pmt_status'=>'paid',
-                        'status_id' => 2, //* 'paid'
-                        'tuition_paid' => $row->tuition_due,
-                    ],[],1);
+        //         if($getInvoiceInfo->invoice_type == 'tuition_fee'){
+        //             saveData($ss,'payments',['enrollment_id' => $row->enr_id],[
+        //                 'pmt_status'=>'paid',
+        //                 'status_id' => 2, //* 'paid'
+        //                 'tuition_paid' => $row->tuition_due,
+        //             ],[],1);
 
-                    saveData($ss,'invoices',['enrollment_id' => $row->enr_id,'id'=>$inv_id],[
-                        'is_paid' => 1,//* paid
-                        'paid_amount' => $getInvoiceInfo->due_amount,
-                        'pmt_date' => date('Y-m-d H:i:s'),
-                        'receiver_uid' => $ss->id,
-                        'receiver' => $ss->full_name
-                    ],[],1);
-                }else{
-                    saveData($ss,'invoices',['enrollment_id' => $row->enr_id,'id'=>$inv_id],[
-                        'is_paid' => 1,//* paid
-                        'paid_amount' => $getInvoiceInfo->due_amount,
-                        'pmt_date' => date('Y-m-d H:i:s'),
-                        'receiver_uid' => $ss->id,
-                        'receiver' => $ss->full_name
-                    ],[],1);
-                }
+        //             saveData($ss,'invoices',['enrollment_id' => $row->enr_id,'id'=>$inv_id],[
+        //                 'is_paid' => 1,//* paid
+        //                 'paid_amount' => $getInvoiceInfo->due_amount,
+        //                 'pmt_date' => date('Y-m-d H:i:s'),
+        //                 'receiver_uid' => $ss->id,
+        //                 'receiver' => $ss->full_name
+        //             ],[],1);
+        //         }else{
+        //             saveData($ss,'invoices',['enrollment_id' => $row->enr_id,'id'=>$inv_id],[
+        //                 'is_paid' => 1,//* paid
+        //                 'paid_amount' => $getInvoiceInfo->due_amount,
+        //                 'pmt_date' => date('Y-m-d H:i:s'),
+        //                 'receiver_uid' => $ss->id,
+        //                 'receiver' => $ss->full_name
+        //             ],[],1);
+        //         }
 
-            }
-            if(isset($current_payment_info->status) == 'Error') return DV::error($current_payment_info->error_message);
+        //     }
+        //     if(isset($current_payment_info->status) == 'Error') return DV::error($current_payment_info->error_message);
 
-            $next_payment_info = $instance->getMonthlyFee([
-                'academic_year' => $row->academic_year,
-                'level_id' => $next_level->id,
-                'session_id' => $row->session_id,
-                'start_date' => $row->start_date,
-            ]);
-            if($next_payment_info){
-                $pre_enr = [
-                    'term_id' => null,
-                    'student_id' => $row->student_id,
-                    'level_id' => $next_level->id,
-                    'session_id' => $row->session_id,
-                    'campus_id' => $row->campus_id,
-                    'tuition_due' => $next_payment_info->price,
-                    'price_list_id' => $next_payment_info->price_list_id
-                ];
-                saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
-            }
-        }
-        if($last_level->id == $current_level->id){
-            $current_payment_info = $instance->getMonthlyFee([
-                'academic_year' => $row->academic_year,
-                'level_id' => $row->level_id,
-                'session_id' => $row->session_id,
-                'start_date' => $row->start_date,
+        //     $next_payment_info = $instance->getMonthlyFee([
+        //         'academic_year' => $row->academic_year,
+        //         'level_id' => $next_level->id,
+        //         'session_id' => $row->session_id,
+        //         'start_date' => $row->start_date,
+        //     ]);
+        //     if($next_payment_info){
+        //         $pre_enr = [
+        //             'term_id' => null,
+        //             'student_id' => $row->student_id,
+        //             'level_id' => $next_level->id,
+        //             'session_id' => $row->session_id,
+        //             'campus_id' => $row->campus_id,
+        //             'tuition_due' => $next_payment_info->price,
+        //             'price_list_id' => $next_payment_info->price_list_id
+        //         ];
+        //         saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
+        //     }
+        // }
+        // if($last_level->id == $current_level->id){
+        //     $current_payment_info = $instance->getMonthlyFee([
+        //         'academic_year' => $row->academic_year,
+        //         'level_id' => $row->level_id,
+        //         'session_id' => $row->session_id,
+        //         'start_date' => $row->start_date,
 
-            ]);
+        //     ]);
 
-            if(isset($current_payment_info->status) == 'Error') return DV::error($current_payment_info->error_message);
-            if($current_payment_info){
-                $pre_enr = [
-                    'term_id' => $row->term_id,
-                    'student_id' => $row->student_id,
-                    'level_id' => $row->level_id,
-                    'session_id' => $row->session_id,
-                    'campus_id' => $row->campus_id,
-                    'tuition_due' => $row->tuition_due,
-                    'price_list_id' => $current_payment_info->price_list_id
-                ];
+        //     if(isset($current_payment_info->status) == 'Error') return DV::error($current_payment_info->error_message);
+        //     if($current_payment_info){
+        //         $pre_enr = [
+        //             'term_id' => $row->term_id,
+        //             'student_id' => $row->student_id,
+        //             'level_id' => $row->level_id,
+        //             'session_id' => $row->session_id,
+        //             'campus_id' => $row->campus_id,
+        //             'tuition_due' => $row->tuition_due,
+        //             'price_list_id' => $current_payment_info->price_list_id
+        //         ];
 
-                saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
-                saveData($ss,'enrollments',['id' => $row->enr_id],[
-                    'status_id' => 3,//* paid
-                ],[],1);
-                if($getInvoiceInfo){
-                    if($getInvoiceInfo->invoice_type == 'tuition_fee'){
-                        saveData($ss,'payments',['enrollment_id' => $row->enr_id],[
-                            'pmt_status'=>'paid',
-                            'status_id' => 2, //* 'paid'
-                            'tuition_paid' => $row->tuition_due,
-                        ],[],1);
-                        saveData($ss,'invoices',['enrollment_id' => $row->enr_id,'id'=>$inv_id],[
-                            'is_paid' => 1,//* paid
-                            'paid_amount' => $getInvoiceInfo->due_amount,
-                            'pmt_date' => date('Y-m-d H:i:s'),
-                            'receiver_uid' => $ss->id,
-                            'receiver' => $ss->full_name
-                        ],[],1);
-                    }else{
-                        saveData($ss,'invoices',['enrollment_id' => $row->enr_id,'id'=>$inv_id],[
-                            'is_paid' => 1,//* paid
-                            'paid_amount' => $getInvoiceInfo->due_amount,
-                            'pmt_date' => date('Y-m-d H:i:s'),
-                            'receiver_uid' => $ss->id,
-                            'receiver' => $ss->full_name
-                        ],[],1);
-                    }
-                }
+        //         saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
+        //         saveData($ss,'enrollments',['id' => $row->enr_id],[
+        //             'status_id' => 3,//* paid
+        //         ],[],1);
+        //         if($getInvoiceInfo){
+        //             if($getInvoiceInfo->invoice_type == 'tuition_fee'){
+        //                 saveData($ss,'payments',['enrollment_id' => $row->enr_id],[
+        //                     'pmt_status'=>'paid',
+        //                     'status_id' => 2, //* 'paid'
+        //                     'tuition_paid' => $row->tuition_due,
+        //                 ],[],1);
+        //                 saveData($ss,'invoices',['enrollment_id' => $row->enr_id,'id'=>$inv_id],[
+        //                     'is_paid' => 1,//* paid
+        //                     'paid_amount' => $getInvoiceInfo->due_amount,
+        //                     'pmt_date' => date('Y-m-d H:i:s'),
+        //                     'receiver_uid' => $ss->id,
+        //                     'receiver' => $ss->full_name
+        //                 ],[],1);
+        //             }else{
+        //                 saveData($ss,'invoices',['enrollment_id' => $row->enr_id,'id'=>$inv_id],[
+        //                     'is_paid' => 1,//* paid
+        //                     'paid_amount' => $getInvoiceInfo->due_amount,
+        //                     'pmt_date' => date('Y-m-d H:i:s'),
+        //                     'receiver_uid' => $ss->id,
+        //                     'receiver' => $ss->full_name
+        //                 ],[],1);
+        //             }
+        //         }
 
-            }
+        //     }
 
-            if($next_level){
-                $next_payment_info = $instance->getMonthlyFee([
-                    'academic_year' => $row->academic_year,
-                    'level_id' => $next_level->id,
-                    'session_id' => $row->session_id,
-                    'start_date' => $row->start_date,
-                ]);
+        //     if($next_level){
+        //         $next_payment_info = $instance->getMonthlyFee([
+        //             'academic_year' => $row->academic_year,
+        //             'level_id' => $next_level->id,
+        //             'session_id' => $row->session_id,
+        //             'start_date' => $row->start_date,
+        //         ]);
 
-                if($next_payment_info){
-                    $pre_enr = [
-                        'term_id' => null,
-                        'student_id' => $row->student_id,
-                        'level_id' => $next_level->id,
-                        'session_id' => $row->session_id,
-                        'campus_id' => $row->campus_id,
-                        'tuition_due' => $next_payment_info->price,
-                        'price_list_id' => $next_payment_info->price_list_id
-                    ];
-                    saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
-                }
-            }
-        }
+        //         if($next_payment_info){
+        //             $pre_enr = [
+        //                 'term_id' => null,
+        //                 'student_id' => $row->student_id,
+        //                 'level_id' => $next_level->id,
+        //                 'session_id' => $row->session_id,
+        //                 'campus_id' => $row->campus_id,
+        //                 'tuition_due' => $next_payment_info->price,
+        //                 'price_list_id' => $next_payment_info->price_list_id
+        //             ];
+        //             saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
+        //         }
+        //     }
+        // }
 
-        return [
-            'enrollment'=>$pre_enr,
-            'current_payment_info' => $current_payment_info,
-            'next_payment_info' =>$next_payment_info,
-            'last_level_next_level' =>$next_level
-        ];
+        // return [
+        //     'enrollment'=>$pre_enr,
+        //     'current_payment_info' => $current_payment_info,
+        //     'next_payment_info' =>$next_payment_info,
+        //     'last_level_next_level' =>$next_level
+        // ];
     }
 
     static function studentDeposite($id){

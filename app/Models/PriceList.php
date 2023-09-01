@@ -1387,14 +1387,13 @@ class PriceList //extends Model
         $inputs = $res->values;
         $d = (object)$inputs;
         $student_id = $d->student_id;
-        $return_fee = 0 ;
-
+        $return_fee = 0;
+        $surcharge = 0;
         $payment_info = DB::table('enrollments as e')->where('e.student_id',$student_id)->join('payments as p','p.enrollment_id','=','e.id')->join('terms as t','t.id','=','e.term_id')->selectRaw('e.id as enr_id,p.tuition_paid,e.tuition_end_date,e.start_date,e.session_id,e.level_id,e.campus_id,e.academic_year')->get()->first();
         $start_date = isset($d->start_date) ? $d->start_date :$payment_info->start_date;
         $studied_days = date('d') - date('d',strtotime($start_date));
         $academic_year = isset($d->academic_year)?$d->academic_year:$payment_info->academic_year;
         if($d->request_type_id == 1){
-
 
             $end_date = $payment_info->tuition_end_date;
 
