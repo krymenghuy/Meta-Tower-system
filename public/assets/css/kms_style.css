@@ -805,3 +805,21 @@ li.kt-menu__section {
 .fns-set-overflow:hover{
     overflow: auto;
 }
+
+.height-photo{
+    height:200px;
+    max-height:250px;
+    position: relative;
+}
+
+.height-photo:hover .btn-delete{
+    display:block;
+}
+
+.btn-delete{
+    display:none;
+}
+
+.add-photo{
+    cursor: pointer;
+}

@@ -32,12 +32,12 @@
                 <h5 class="modal-title"></h5>
                 <button class="btn-close" type="button" aria-label="Close" data-dismiss="modal"></button>
             </div>
-            <div class="modal-body"></div>
+            <div id="dlg_mna_body" class="modal-body"></div>
             <div class="modal-footer">
                 <button class="btn btn-sm btn-secondary" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button class="btn btn-sm btn-primary" type="button">
+                <button id="dlg_mna_btn_save" class="btn btn-sm btn-primary" type="button">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>

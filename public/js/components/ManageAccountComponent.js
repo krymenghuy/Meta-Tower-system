@@ -79,8 +79,17 @@ var ManageAccountComponent = new function(){
 
         mThis.tblParent.on('click','a.btn-mna-add_img',function(e){
             e.preventDefault();
-            let parent = $(this).data('id');
-            console.log(parent);
+            let parent = $(this).data('id'),
+            id = parent.split('-');
+            let op = {
+                'father_id': id[0],
+                'mother_id': id[1],
+                'action': 'add_photo',
+                'onClose': () => {
+                    mThis.itemView.showPage(null);
+                }
+            };
+            ManageAccountDialog.show(op);
         });
 
         mThis.tblParent.on('click','a.btn-mna-details',function(e){
@@ -113,18 +122,115 @@ var ManageAccountComponent = new function(){
 let ManageAccountDialog = new function(){
     let mThis = this;
     this.self = $('#dlg__mna');
+    this.options = {};
 
     this.elTitle = mThis.self.find('.modal-title');
+    this.elBody = mThis.self.find('#dlg_mna_body');
+    this.btnSave = mThis.self.find('#dlg_mna_btn_save');
+
+    mThis.btnSave.on('click',function(e){
+        e.preventDefault();
+        let p = mThis.getImage(mThis.elBody);
+        vsapi.call(`${main_view.base_url}/api/guardian/save`,p,null).then(res => {
+            if(res.status_code === 200){
+                mThis.self.modal('hide');
+                if(typeof mThis.options.onClose === 'function')
+                    mThis.options.onClose();
+            }
+            else{
+                cv_interact.error(res.error_message);
+            }
+        });
+    });
+
+    this.inputParentPhoto = (div,options) => {
+        div.closest('.modal-dialog').removeClass('modal-lg');
+        let html = [`<div class="row row-cols-lg-2 gy-2">
+            <div class="col">
+                <div class="form-group">
+                    <label for="father_photo" class="form-label trans-text" data-langprop="titles.Father Photo"></label>
+                    <div class="border w-100 rounded-3 height-photo">
+                        <div class="add-photo d-flex align-items-center justify-content-center w-100 h-100">
+                            <i class="fa-solid fa-image-portrait fs-3 text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="mother_photo" class="form-label trans-text" data-langprop="titles.Mother Photo"></label>
+                    <div class="border w-100 rounded-3 height-photo">
+                        <div class="add-photo d-flex align-items-center justify-content-center w-100 h-100">
+                            <i class="fa-solid fa-image-portrait fs-3 text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`].join('');
+
+        div.html(html);
+        mThis.chooseImage(div,options);
+        LocaleManager.translateZone('dlg_mna_body');
+    }
+
+    this.chooseImage = (div,op) => {
+        div.find('.add-photo').on('click',function(e){
+            e.preventDefault();
+            FileChooser.chooseFile(null,(d) => {
+                if(d){
+                    let parent = $(this).parent(), label = parent.siblings().attr('for');
+                    let html = [`<img class="w-100 h-100 object-fit-contain rounded data-input" src="${d.dataUrl}" alt="${d.file_type}" data-field="photo" data-id="${op[`${label.split('_')[0]}_id`]}"/>
+                    <div class="btn-delete position-absolute rounded bg-dark p-2 top-0 end-0">
+                        <a href="javascript:void(0)" class="photo-delete">
+                            <i class="fa-regular fa-trash-can fs-5 text-danger" role="button"></i>
+                        </a>
+                    </div>`].join('');
+                    parent.html(html);
+                    mThis.deleteImage(parent,op);
+                }
+            });
+        });
+    }
+
+    this.deleteImage = (div,op) => {
+        div.on('click','a.photo-delete',function(e){
+            e.preventDefault();
+            let html = [`<div class="add-photo d-flex align-items-center justify-content-center w-100 h-100">
+                <i class="fa-solid fa-image-portrait fs-3 text-muted"></i>
+            </div>`].join('');
+            div.html(html);
+            mThis.chooseImage(div,op);
+        });
+    }
+
+    this.getImage = (div) => {
+        let p = {
+            'parent_info': []
+        };
+        div.find('.data-input').each(function(){
+            let ob = {};
+            let el = $(this);
+            let f = el.data('field');
+            ob[f] = el.attr('src');
+            ob['id'] = el.data('id');
+            p.parent_info.push(ob);
+        });
+        return p;
+    }
 
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;
 
-        if(options.id > 0){}
+        if(!($.isEmptyObject(options))){
+            if((options.father_id > 0) || (options.mother_id > 0)){
+                mThis.elTitle.text(LocaleManager.trans('Add Photo','titles'));
+                mThis.inputParentPhoto(mThis.elBody,options);
+            }
+        }
         else{
             mThis.elTitle.text(LocaleManager.trans('Connected Students','titles'));
         }
-
         mThis.self.modal({
             backdrop: 'static',
         });
