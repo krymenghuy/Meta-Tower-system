@@ -635,12 +635,47 @@ class StudentAttendance //extends Model
 
     function attendanceListReport($arr,$ss=null){
         $ss = $ss?$ss:$this->ss;
+        $branch_id = $ss->branch_id;
+        $d = (object)$arr;
+        $str_search = 'status_id = 1';
+        $session_date = isset($d->session_date) ? date('Y-m-d',strtotime($d->session_date)) :null;
+
+        if($session_date){
+            $str_search .= " AND DATE(sa.session_date) = '$session_date'" ;
+            // $str_search = 'YEAR(sa.session_date) = ' . date('Y',strtotime($session_date)).' AND MONTH(sa.session_date) = '.date('m',strtotime($session_date));
+        }
         $rows = DB::table('students as s')
             ->join('student_attendances as sa','s.id','=','sa.student_id')
-            ->where('sa.status_id',1)
-            ->selectRaw('s.name,s.name_kh,s.sex,s.date_of_birth,s.phone_number,s.email')
+            ->whereRaw($str_search)
+            ->join('student_groups as sg','sa.group_id','=','sg.id')
+            ->selectRaw('s.id as student_id,s.name,s.name_kh,s.sex,s.date_of_birth,s.phone_number,s.email,sg.session_id,sg.level_id,s.file_name,sa.checkin_time,sa.checkout_time,sa.in_remarks,out_remarks,DATE(sa.session_date) as session_date')
             ->get();
-        return $rows;
+
+        $i=0;
+
+        while($i<count($rows)){
+            $row = $rows[$i];
+            $row->session = GeneralSettings::getSession($row->session_id)->name;
+            if($row->file_name == null){
+                $row->image_url = null;
+            }else  $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
+
+            $row->level = GeneralSettings::getLevel($row->level_id)->name;
+
+            $row->parent_phone = DB::table('student_guardians as sg')->where('sg.student_id',$row->student_id)
+                                    ->join('guardians as g','sg.guardian_id','=','g.id')
+                                    ->selectRaw('g.phone_number')
+                                    ->get();
+            $row->family_id = DB::table('student_guardians as sg')->where('sg.student_id',$row->student_id)->selectRaw('sg.family_code as family_id')->distinct()->first()->family_id;
+            $i++;
+            unset($row->file_name);
+        }
+        $tmp = [];
+        $tmp['students'] = $rows;
+        $tmp['count_info'] = json_decode(json_encode($this->countStudentAttendance(1,$ss)),true);
+        $tmp['count_info']['campus'] = 'All';
+        // $dc = json_encode($tmp);
+        return $tmp;
     }
 
     // DB::table('student_guardians as sg')->where('sg.student_id',$st->student_id)
@@ -650,6 +685,27 @@ class StudentAttendance //extends Model
 
     function optionsAttendanceTypes(){
         return GeneralSettings::optionsAttendanceTypes();
+    }
+
+    function countStudentAttendance($status_id,$ss){
+        $rows = DB::table('group_members as gm')
+            ->join('students as s','s.id','=','gm.student_id')
+            ->join('student_attendances as sa','s.id','=','sa.student_id')
+            ->where('sa.status_id',$status_id)
+            ->selectRaw('s.sex')->get();
+        $female = [];
+        $all = [];
+        foreach($rows as $row){
+            if($row->sex == 'F'){
+                $female[] = $row->sex;
+            }
+            $all[] = $row->sex;
+        }
+        return (object)[
+            'female' => count($female),
+            'all' => count($all),
+            'male' => count($all) - count($female)
+        ];
     }
 
 }
