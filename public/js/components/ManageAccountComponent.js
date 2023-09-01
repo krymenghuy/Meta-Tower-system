@@ -8,16 +8,24 @@ var ManageAccountComponent = new function(){
 
     this.cols = [{
         title: "Name",
-        data: (data, a, b) => {
+        data: (data, index, tr) => {
             let father_name = data.parents && data.parents[0].name ? data.parents[0].name : '',
-            mother_name = data.parents && data.parents[1].name ? data.parents[1].name : '';
-            return [`<p class="pb-0 mb-1 text-capitalize">${father_name}</p>
+            mother_name = data.parents && data.parents[1].name ? data.parents[1].name : '', father_photo = data.parents && data.parents[0].image_url ? data.parents[0].image_url : '', mother_photo = data.parents && data.parents[1].image_url ? data.parents[1].image_url : '';
+
+            return [`<div class="d-flex align-items-center gap-2">
+                <img class="image-student-tbl" src="${father_photo}" alt=""/>
+                <p class="pb-0 mb-1 text-capitalize">${father_name}</p>
+            </div>
             <hr class="p-0"/>
-            <p class="pb-0 mb-1 text-capitalize">${mother_name}</p>`].join('');
+            <div class="d-flex align-items-center gap-2">
+                <img class="image-student-tbl" src="${mother_photo}" alt=""/>
+                <p class="pb-0 mb-1 text-capitalize">${mother_name}</p>
+            </div>`].join('');
         }
     },
     {
         title: "Phone Number",
+        className: "align-middle",
         data: (data, a, b) => {
             let father_phone = data.parents && data.parents[0].phone_number ? data.parents[0].phone_number : '', mother_phone = data.parents && data.parents[1].phone_number ? data.parents[1].phone_number : '';
             return [`<p class="pb-0 mb-1">${father_phone}</p>
@@ -27,6 +35,7 @@ var ManageAccountComponent = new function(){
     },
     {
         title: "Email",
+        className: "align-middle",
         data: (data, a, b) => {
             let father_email = data.parents && data.parents[0].email ? data.parents[0].email : '', mother_email = data.parents && data.parents[1].email ? data.parents[1].email : '';
             return [`<p class="pb-0 mb-1">${father_email}</p>
@@ -36,6 +45,7 @@ var ManageAccountComponent = new function(){
     },
     {
         title: "National Card ID",
+        className: "align-middle",
         data: (data, a, b) => {
             let father_nid = data.parents && data.parents[0].n_id ? data.parents[0].n_id : '', mother_nid = data.parents && data.parents[1].n_id ? data.parents[1].n_id : '';
             return [`<p class="pb-0 mb-1">${father_nid}</p>
@@ -46,7 +56,10 @@ var ManageAccountComponent = new function(){
     {
         title: "Family ID",
         className: "align-middle",
-        data: "family_code"
+        data: (data, index, tr) => {
+            let family_code = data.family_code ? data.family_code : '';
+            return family_code;
+        }
     },
     {
         title: "Action",
