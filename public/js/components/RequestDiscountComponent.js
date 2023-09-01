@@ -28,24 +28,36 @@ var RequestDiscountComponent = new function(){
     },
     {
         title: "Full Name",
+        className: 'text-capitalize',
         data: "name"
     },
     {
         title: "Full Name (KH)",
+        className: 'text-capitalize',
         data: "name_kh"
     },
     {
         title: "Sex",
-        data: "sex"
+        data: (data, a, b) => {
+            let sex = data.sex === 'M' ? 'Male' : 'Female';
+            return sex;
+        }
     },
     {
         title: "Date of Birth",
-        data: "date_of_birth"
+        data: (data, a, b) => {
+            let dob = data.date_of_birth ? data.date_of_birth : '';
+            return new Date(dob).toLocaleDateString('km-KH',{
+                'day':'numeric',
+                'month':'short',
+                'year':'numeric'
+            }).replaceAll(' ','-').replace(',','');
+        }
     },
     {
         title: "Discount",
         data: (data, a, b) => {
-            let discount_type = data.type === 'percentage' ? '%':'$';
+            let discount_type = data.type === 'amount' ? '$':'%';
             let amount = data.amount ? data.amount : 'N/A';
             return [`${amount} ${data.amount ? discount_type : ''}`].join('');
         }
@@ -58,11 +70,15 @@ var RequestDiscountComponent = new function(){
     },
     {
         title: "Created By",
-        data: "update_user"
-    },
-    {
-        title: "Created At",
-        data: "updated_at"
+        data: (data, a, b) => {
+            let update_user = data.update_user ? data.update_user : '',updated_at = data.updated_at ? data.updated_at : '';
+            return [`<p class="pb-0 mb-1 text-capitalize">${update_user}</p>
+            <small>${new Date(updated_at).toLocaleDateString('km-KH',{
+                'day':'numeric',
+                'month':'short',
+                'year':'numeric'
+            }).replaceAll(' ','-').replace(',','')}</small>`].join('');
+        }
     },
     {
         title: "Remark",

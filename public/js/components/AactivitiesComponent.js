@@ -19,19 +19,31 @@ var AactivitiesComponent = new function(){
     },
     {
         title: "Full Name",
+        className: 'text-capitalize',
         data: "student_name"
     },
     {
         title: "Full Name (KH)",
+        className: 'text-capitalize',
         data: "name_kh"
     },
     {
         title: "Sex",
-        data: "sex"
+        data: (data, a, b) => {
+            let sex = data.sex === 'M' ? 'Male':'Female';
+            return sex;
+        }
     },
     {
         title: "Date of Birth",
-        data: "date_of_birth"
+        data: (data, a, b) => {
+            let dob = data.date_of_birth ? data.date_of_birth : '';
+            return new Date(dob).toLocaleDateString('km-KH',{
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            }).replaceAll(' ','-').replace(',','');
+        }
     },
     {
         title: "Approved By",
@@ -51,7 +63,14 @@ var AactivitiesComponent = new function(){
     },
     {
         title: "Admission Date",
-        data: "admission_date"
+        data: (data, a, b) => {
+            let admission_date = data.admission_date ? data.admission_date : '';
+            return new Date(admission_date).toLocaleDateString('km-KH',{
+                day: 'numeric',
+                month:'short',
+                year: 'numeric'
+            }).replaceAll(' ','-').replace(',','');
+        }
     },
     {
         title: "School",

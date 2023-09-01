@@ -10,10 +10,12 @@ var PaymentPendingComponent = new function(){
     this.cols = [
         {
             title: "Name Khmer",
+            className: 'text-capitalize',
             data: "name_kh",
         },
         {
             title: "Name",
+            className: 'text-capitalize',
             data: "name",
         },
         {
