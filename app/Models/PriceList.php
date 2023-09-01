@@ -284,13 +284,7 @@ class PriceList //extends Model
 
         $monthly_fee_info = $this->getMonthlyFee($arr);
         $price = $monthly_fee_info->price;
-        // if($pmt_option == 1){
-        //     $d->months = $d->months ? $d->months:3;
-        // }else if($pmt_option == 2){
-        //     $d->months = $d->months ? $d->months:6;
-        // }else if($pmt_option == 3){
-        //     $d->months = $d->months ? $d->months:12;
-        // }
+
         if($d->months<3){
             $weekly_tuition_due = null;
 

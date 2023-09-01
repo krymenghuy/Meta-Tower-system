@@ -11,7 +11,7 @@ use App\Models\GeneralSettings;
 
 class ReportController extends Controller
 {
-    
+
   function getReportList(Request $req)
   {
     $ss = UM::getUserInfoByToken($req, -1);
@@ -46,7 +46,7 @@ class ReportController extends Controller
     $rpt = new Report();
     return JDV::result($rpt->getStudentList($req->term_id,$req->new_student));
   }
- 
+
   function getNewStudents(Request $req){
     $ss = UM::getUserInfoByToken($req, -1);
     if ($ss->status_code != 200) return $ss; //user not authenticated
@@ -70,5 +70,12 @@ class ReportController extends Controller
     $rpt = new Report();
     return JDV::result($rpt->getInvoiceList($req->all()));
   }
- 
+
+  function getAttendanceList(Request $req){
+    $ss = UM::getUserInfoByToken($req, -1);
+    if ($ss->status_code != 200) return $ss;
+    $rpt = new Report();
+    return JDV::result($rpt->attendanceListReport($req->all(),$ss));
+  }
+
 }

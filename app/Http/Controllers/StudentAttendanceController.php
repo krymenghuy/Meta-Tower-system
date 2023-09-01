@@ -86,4 +86,5 @@ class StudentAttendanceController extends Controller
         $list = $instance->attendanceListReport($req->all(),$ss);
         return JDV::result($list);
     }
+
 }

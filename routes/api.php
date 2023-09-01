@@ -579,6 +579,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('enrollment/student-list',[ReportController::class,'getStudentList']);
     Route::post('enrollment/dropout-students',[ReportController::class,'getDropoutStudents']);
     Route::post('enrollment/new-students',[ReportController::class,'getNewStudents']);
+
+    Route::post('/attendance/list',[ReportController::class,'getAttendanceList']);
   });
  //end::ReportController
 

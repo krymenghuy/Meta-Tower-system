@@ -24,33 +24,33 @@ class Guardian //extends Model
         $success=0;
         foreach($parent_info as $info){
             $v_rule = [
-                'name' => '0|string|1,30',
-                'email' => '0|string',
+                // 'name' => '0|string|1,30',
+                // 'email' => '0|string',
                 'photo' => '0|image',
                 // 'phone_number' => '0|number|9,16',
                 // 'profession' => '0|string',
-                'address' => '0|string',
-                'religion' => '0|string',
+                // 'address' => '0|string',
+                // 'religion' => '0|string',
                 // 'n_id' => '0|string|1,30'
             ];
-
-            $res = validateObject($info,$v_rule,1,['email'=>['@','.','_']],$ss->lang,0,null);
+            $img_char = ['+',':',',',';','=','/','\\','?'];
+            $res = validateObject($info,$v_rule,1,['email'=>['@','.','_'],'photo'=>$img_char],$ss->lang,0,null);
             if($res->error) return DV::error($res->error);
             $inputs = $res->values;
-
+            // $email = $inputs['email'];
             $image = $inputs['photo'];
-            $email = $inputs['email'];
+
             unset($inputs['photo']);
             $id = $info['id'];
-            $user = DB::table('guardians')->where('id',$id)->first();
-            if ($user->email !== $email) {
-                $existingUser = DB::table('guardians')
-                    ->where('email', $email)
-                    ->first();
-                if ($existingUser) {
-                    return DV::error('Email already exists');
-                }
-            }
+            // $user = DB::table('guardians')->where('id',$id)->first();
+            // if ($user->email !== $email) {
+            //     $existingUser = DB::table('guardians')
+            //         ->where('email', $email)
+            //         ->first();
+            //     if ($existingUser) {
+            //         return DV::error('Email already exists');
+            //     }
+            // }
 
             $newID = saveData($ss,'guardians',['id' => $id],$inputs,[],1);
 
@@ -59,8 +59,6 @@ class Guardian //extends Model
             }
             $success++;
         }
-
-
 
         return DV::depends($success,'Updated');
 
@@ -84,7 +82,7 @@ class Guardian //extends Model
             $str_search ="(.code ='$search_value' OR st.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 'g.id as guardian_id,g.role,g.name, g.phone_number, g.email, g.n_id, sg.family_code';
+        $selectCols = 'g.id as guardian_id,g.role,g.name, g.phone_number, g.email, g.n_id, sg.family_code,g.file_name';
         $query =  DB::table('student_guardians as sg')
             ->join('guardians as g', 'g.id', '=', 'sg.guardian_id')
             ->selectRaw($selectCols);
@@ -103,6 +101,7 @@ class Guardian //extends Model
                     "parents" => []
                 ];
             }
+            $p->image_url = PublicStorage::getUrl($branch_id,'guardians','image').$p->file_name;
 
             $groupedParents[$familyCode]["parents"][] = [
                 'id' => $p->guardian_id,
@@ -110,8 +109,11 @@ class Guardian //extends Model
                 "name" => $p->name,
                 "phone_number" => $p->phone_number,
                 "email" => $p->email,
-                "n_id" => $p->n_id
+                "n_id" => $p->n_id,
+                'image_url' => $p->image_url
             ];
+            unset($p->file_name);
+
         }
 
         $groupedParents = array_values($groupedParents);
@@ -140,23 +142,13 @@ class Guardian //extends Model
         if($family_id || $guardian_id){
             $str_search = "family_code='$family_id' OR guardian_id = '$guardian_id'";
         }
-        // $group_data = [];
         $rows = DB::table('student_guardians')
             ->whereRaw($str_search)
             ->select('student_id','family_code')
             ->distinct()
             ->get();
-        // if ($family_id || $guardian_id) {
-        //     $str_search = "family_code = '$family_id' OR guardian_id = '$guardian_id'";
-        // }
 
         $groupedData = [];
-
-        // $rows = DB::table('student_guardians')
-        //     ->whereRaw($str_search)
-        //     ->select('student_id', 'family_code as family_id')
-        //     ->distinct()
-        //     ->get();
 
         foreach ($rows as $row) {
             $studentId = $row->student_id;
@@ -169,9 +161,7 @@ class Guardian //extends Model
                 ];
             }
 
-            $groupedData[$familyId]['children'][] = [
-                'student_id' => $studentId
-            ];
+            $groupedData[$familyId]['children'][] = DB::table('students')->where('id',$studentId)->get();
         }
 
         // foreach($rows as $row){
