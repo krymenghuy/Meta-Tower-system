@@ -172,7 +172,7 @@ class Student //extends Model
             //** save into guardian table and generate login information for female type or if one take that one
             //** link parent(s) to child
             //** using guardian's phone number for login name and password default = 123456 */
-            $p_info = self::saveParentInfo($parent_info,$newID,$ss);
+
 
             // // **delete Images in Folder if not exists in DB;
             // $folderPath = public_path('/uploads/public/'.$ss->branch_id.'_data/students/images');
@@ -193,7 +193,7 @@ class Student //extends Model
                 'group_id' => $group_id
             ],[],1,true);
         }
-        return DV::depends($newID,['parent_info' =>$p_info,'Parameter'=>$save_pmt_paramsID]);
+        // return DV::depends($newID,['parent_info' =>$p_info,'Parameter'=>$save_pmt_paramsID]);
     }
 
     //* for enrollments section
