@@ -290,12 +290,12 @@
                     </div>
                     <div class="col">
                         <div class="shadow-sm w-100 h-100 rounded-3 border position-relative p-2">
-                            <div class="w-75 d-flex gap-2">
-                                <div class="w-50">
-                                    <img class="data-show" alt="" data-field="mother_profile"/>
+                            <div class="w-100 d-flex justify-content-between gap-2">
+                                <div class="student-image">
+                                    <img class="data-show w-100 h-100" alt="" data-field="mother_profile"/>
                                 </div>
-                                <div class="w-50">
-                                    <img class="data-show" alt="" data-field="father_profile"/>
+                                <div class="student-image">
+                                    <img class="data-show w-100 h-100" alt="" data-field="father_profile"/>
                                 </div>
                             </div>
                             <p class="fs-5 fw-bold text-primary text-center">Terms and Usage Conditions</p>
