@@ -24,7 +24,8 @@ class Setting //extends Model
     }
     // use HasFactory;
     static function pmt_options($ss){
-        return DB::table('pmt_options')->selectRaw('name,id')->get();
+        $limit = 3;
+        return DB::table('pmt_options')->selectRaw('name,id')->limit($limit)->orderBy('id','asc')->get();
     }
 
     static function price_list_options($ss){

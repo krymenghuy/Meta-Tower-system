@@ -62,6 +62,21 @@ class PriceList //extends Model
         if($err){
             return DV::error($err);
         }
+        $selfExist = DB::table('price_list')->where('id',$id)->selectRaw('name')->first();
+
+        if($id){
+            if($selfExist->name != $inputs['name']){
+                $uniqueName = DB::table('price_list')->where('name',$selfExist->name)->exists();
+                if($uniqueName){
+                    return DV::error('Name is already used');
+                }
+            }
+        }else {
+            $uniqueName = DB::table('price_list')->where('name',$inputs['name'])->exists();
+            if($uniqueName){
+                return DV::error('Name is already used');
+            }
+        }
 
        $academic_year = $inputs['academic_year'];
        $inputs['ac_year_id'] = self::getAcademicYearID($academic_year);
