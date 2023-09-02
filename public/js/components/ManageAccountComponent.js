@@ -239,10 +239,42 @@ let ManageAccountDialog = new function(){
         return p;
     }
 
-    this.displayChildren = (div) => {
+    this.displayChildren = (div,op) => {
         let dialog = div.closest('.modal-dialog');
         if(!(dialog.hasClass('modal-lg'))) dialog.addClass('modal-lg');
         div.empty();
+        mThis.getChildren(div,op);
+    }
+
+    this.getChildren = (div,op) => {
+        vsapi.call(`${main_view.base_url}/api/guardian/children-details`,{'family_id': op.family_id},null,false).then(res => {
+            let d = [];
+            if(res.status_code === 200){
+                d = res.data;
+                console.log(res.data);
+            }
+            let html = [`<div class="table-responsive p-3 tbl-on-hover-to-scroll">
+                <table class="table">
+                    <thead>
+                        <tr class="text-nowrap">
+                            <td>Student ID</td>
+                            <td>Photo</td>
+                            <td>Student Name</td>
+                            <td>Student Name (KH)</td>
+                            <td>Date Of Birth</td>
+                            <td>Sex</td>
+                            <td>Place Of Birth</td>
+                            <td>Address</td>
+                            <td>Phone Number</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>`].join('');
+            div.html(html);
+        });
     }
 
     this.show = (options) => {
@@ -255,7 +287,7 @@ let ManageAccountDialog = new function(){
         }
         else if(options.family_id){
             mThis.elTitle.text(LocaleManager.trans('Children','titles'));
-            mThis.displayChildren(mThis.elBody);
+            mThis.displayChildren(mThis.elBody,options);
         }
         else{
             mThis.elTitle.text(LocaleManager.trans('Connected Students','titles'));
