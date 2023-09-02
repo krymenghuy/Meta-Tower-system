@@ -65,7 +65,8 @@ class EnrollmentManager {
           'pmt_option_id' => '0|number|exists=pmt_options.id|default=2',
           'pmt_status' => '0|choice|paid,unpaid|default=unpaid',
           'referrer_id' => '0|number|exists=students.id',
-          'term_id' => '1|number|exists=terms.id'
+          'term_id' => '1|number|exists=terms.id',
+          'family_code' => '0|number|exists=student_guardians.family_code',
       ];
       $branch_id = $ss->branch_id;
       $email_char = ['@','.','-','_'];
@@ -217,7 +218,11 @@ class EnrollmentManager {
         //   //** save into guardian table and generate login information for female type or if one take that one
         //   //** link parent(s) to child
         //   //** using guardian's phone number for login name and password default = 123456 */
-           $p_info = Student::saveParentInfo($parent_info,$student_id,$ss);
+        //    if(){
+
+        //    }else{
+        //         $p_info = Student::saveParentInfo($parent_info,$student_id,$ss);
+        //    }
 
         //   // **delete Images in Folder if not exists in DB;
         //   $folderPath = public_path('/uploads/public/'.$ss->branch_id.'_data/students/images');
@@ -303,7 +308,7 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
                 ->selectRaw($selectCols)
                 ->first();
             if(!$row) return null;
-                $row->parent_info = Student::getGuardians($row->student_id);
+                $row->parent_info = Student::getGuardians($row->student_id,$ss);
                 $row->prev_school_name = self::getPrevSchool($row->prev_school_id)->name;
                 $url =null;
                 if($row->file_name){

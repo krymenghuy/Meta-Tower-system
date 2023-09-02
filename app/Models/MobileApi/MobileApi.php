@@ -2,14 +2,21 @@
 
 namespace App\Models\MobileApi;
 
-// use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Illuminate\Database\Eloquent\Model;
 use App\Models\GeneralSettings;
 use App\Models\PublicStorage;
+use App\Models\StudentAttendance;
+// use Illuminate\Database\Eloquent\Factories\HasFactory;
+// use Illuminate\Database\Eloquent\Model;
 use DB;
-class HomePage //extends Model
+class MobileApi //xtends Model
 {
     // use HasFactory;
+    function attendanceList($filter){
+        $att = new StudentAttendance();
+        $row =  $att->getAttendanceDetails($filter);
+        return $row;
+    }
+
     function homePage($ss){
         $banner = DB::table('banners')->selectRaw('file_name')->get();
         $branch_id = $ss->branch_id;
