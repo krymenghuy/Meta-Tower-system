@@ -102,7 +102,22 @@ var StudentAttendanceComponent = new function(){
                 </div>`].join('');
             });
             
-            html = [html,`<div class="${first == 0 ? '' : 'mt-3'}"><p>${t.date} ( ${t.group_name} )</p>`,'<div class="d-flex gap-2 flex-nowrap mt-3">',inner_html,'</div></div>'].join('');
+            html = [html,`<div class="${first == 0 ? '' : 'mt-3'}"><p>${t.date} ( ${t.group_name} )</p>`,'<div class="d-flex gap-2 flex-nowrap mt-3">',inner_html,`</div>
+                <div class="d-flex gap-3 w-100 justify-content-end pt-3">
+                    <p class="m-0">
+                        <span class="pe-4">Present:</span>
+                        <span class="text-success">${t.status ? t.status.present : ''}</span>
+                    </p>
+                    <p class="m-0">
+                        <span class="pe-4">Permission:</span>
+                        <span class="text-info">${t.status ? t.status.permission : ''}</span>
+                    </p>
+                    <p class="m-0">
+                        <span class="pe-4">Absent:</span>
+                        <span class="text-danger">${t.status ? t.status.absent : ''}</span>
+                    </p>
+                </div>
+            </div>`].join('');
             first = 1;
         });
 
