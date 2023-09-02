@@ -110,7 +110,7 @@ class EnrollmentManager {
       $statusID = $inputs['status_id'];
       $inputs['date_of_birth'] = date('Y-m-d',strtotime($inputs['date_of_birth']));
       $admission_date = isset($arr['admission_date']) ? $arr['admission_date'] :null;
-      $family_code = $inputs['family_code'];
+      $family_code = isset($inputs['family_code'])?$inputs['family_code']:null;
       unset($inputs['status_id']);
       unset($inputs['student_code']);
       unset($inputs['tuition']);
@@ -142,7 +142,7 @@ class EnrollmentManager {
         $inputs['file_name']=null;
       }
 
-      if(!$id && Student::checkParentLoginName($parent_info)) return DV::error('Parent Login name is already taken. Father or mother phone number is used as parent login');
+      if(!$id && !$family_code && Student::checkParentLoginName($parent_info)) return DV::error('Parent Login name is already taken. Father or mother phone number is used as parent login');
       $student_id = saveData($ss,'students',['id' =>$student_id],$inputs,[],1,1);
 
       if($student_id > 0){
@@ -220,11 +220,21 @@ class EnrollmentManager {
         //   //** save into guardian table and generate login information for female type or if one take that one
         //   //** link parent(s) to child
         //   //** using guardian's phone number for login name and password default = 123456 */
-        //    if(){
-
-        //    }else{
-        //         $p_info = Student::saveParentInfo($parent_info,$student_id,$ss);
-        //    }
+        $p_info = 0;
+        if($family_code){
+            $rows = DB::table('student_guardians')->where('family_code',$family_code)->selectRaw('guardian_id,guardian_role,family_code')->get();
+            foreach($rows as $row){
+               saveData($ss,'student_guardians',['id' => null],[
+                'student_id' => $student_id,
+                'guardian_id' => $row->guardian_id,
+                'guardian_role' => $row->guardian_role,
+                'family_code' => $row->family_code,
+               ],[],1);
+            }
+            $p_info = $rows;
+        }else{
+            $p_info = Student::saveParentInfo($parent_info,$student_id,$ss);
+        }
 
         //   // **delete Images in Folder if not exists in DB;
         //   $folderPath = public_path('/uploads/public/'.$ss->branch_id.'_data/students/images');
@@ -241,7 +251,7 @@ class EnrollmentManager {
           // add student to group
           $g_id = DB::table('group_members')->where('enrollment_id',$enrollment_id)->take(1)->value('id');
           saveData($ss,'group_members',['id' => $g_id],[
-              "student_id" => $student_id,
+              "student_id" => $student_id ,
               'group_id' => $group_id,
               'enrollment_id' => $enrollment_id,
               'is_major'=>1,
