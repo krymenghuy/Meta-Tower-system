@@ -2,17 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+// use Illuminate\Database\Eloquent\Factories\HasFactory;
+// use Illuminate\Database\Eloquent\Model;
 use App\Models\CompanyProfile;
 use DB;
 
-class Report extends Model
+class Report //extends Model
 {
-    use HasFactory;
-    protected $companyModel;
+    //use HasFactory;
+    //protected $companyModel;
 
-    public function __construct(array $attributes = [])
+    function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
         $this->companyModel = new CompanyProfile();
