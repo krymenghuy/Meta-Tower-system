@@ -222,6 +222,10 @@ class StudentAttendance //extends Model
         if($enr_info->tuition_end_date < $present){
             return DV::error('Student enrollment is not available or expired');
         }
+
+        // if($current_date > $today){
+        //     return DV::error('Student');
+        // }
         $level = GeneralSettings::getLevel($enr_info->level_id,$ss);
 
         $current_date = isset($arr['current_date'])?date('Y-m-d',strtotime($arr['current_date'])):DB::raw('CURDATE()');
@@ -301,21 +305,21 @@ class StudentAttendance //extends Model
         }
 
 
-        $test = [
-            'session_date' => getNowTime(),
-            'diff_time' => $status,
-            'status_' => $group->checkin_time,
-            'count' => $check_in_out,
-            "scan_status" => $scan_status,
-            "early" => $status->early,
-            "late" => $status->late,
-            "id" => $id,
-            "update"=>$update,
-            "is_finished" => $is_finished,
-            "group" => $group,
-        ];
+        // $test = [
+        //     'session_date' => getNowTime(),
+        //     'diff_time' => $status,
+        //     'status_' => $group->checkin_time,
+        //     'count' => $check_in_out,
+        //     "scan_status" => $scan_status,
+        //     "early" => $status->early,
+        //     "late" => $status->late,
+        //     "id" => $id,
+        //     "update"=>$update,
+        //     "is_finished" => $is_finished,
+        //     "group" => $group,
+        // ];
 
-        return  date('H:i', strtotime("$present_time - $mins minutes"));
+        return $arr_attenance;
 
     }
 
@@ -664,7 +668,7 @@ class StudentAttendance //extends Model
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->join('student_groups as sg','sa.group_id','=','sg.id')
-            ->selectRaw('sa.out_diff_time,s.id as student_id,s.name,s.name_kh,s.sex,s.date_of_birth,s.phone_number,s.email,sg.session_id,sg.level_id,s.file_name,sa.checkin_time,sa.checkout_time,sa.in_remarks,out_remarks,DATE(sa.session_date) as session_date');
+            ->selectRaw('sa.in_diff_time,sa.out_diff_time,s.id as student_id,s.name,s.name_kh,s.sex,s.date_of_birth,s.phone_number,s.email,sg.session_id,sg.level_id,s.file_name,sa.checkin_time,sa.checkout_time,sa.in_remarks,out_remarks,DATE(sa.session_date) as session_date');
 
             $count_query = clone $query;
             $count = $count_query->count('s.id');
@@ -679,7 +683,7 @@ class StudentAttendance //extends Model
             }else  $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
 
             $row->level = GeneralSettings::getLevel($row->level_id)->name;
-            // $row->leave_early = 'd';
+            $row->in_remarks = formatMinsTime($row->in_diff_time);
             $row->out_remarks = formatMinsTime($row->out_diff_time);
 
             $row->parent_phone = DB::table('student_guardians as sg')->where('sg.student_id',$row->student_id)
