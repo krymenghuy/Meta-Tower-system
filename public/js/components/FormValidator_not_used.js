@@ -8,7 +8,8 @@ class FormValidator{
 
     validator = (onFinish=null) => {
         let required = '';
-        let div = this.form, className = this.className;
+        let div = this.form;
+        let className = this.className;
 
         div.find(`.${className}`).each(function(){
             let el = $(this);

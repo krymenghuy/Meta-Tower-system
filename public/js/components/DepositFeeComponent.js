@@ -179,8 +179,7 @@ let DepositFeeDialog = new function(){
     this.div_newStudent = mThis.self.find('#dpf-new-student');
     this.div_oldStudent = mThis.self.find('#dpf-old-student');
     this.elStudent = mThis.div_oldStudent.find('#dlg_dpf_student');
-    this.validate = null;
-
+    
     mThis.elStudent.on('change',function(e){
         e.preventDefault();
         let id = $(this).val();
@@ -197,25 +196,26 @@ let DepositFeeDialog = new function(){
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        mThis.validate.validator(() => {
-            let p = {};
+        let p = null;
 
-            if(mThis.options.dn === 'new'){
-                p = mThis.getDataForm(mThis.div_newStudent);
+        if(mThis.options.dn === 'new'){
+            p = mThis.getDataForm(mThis.div_newStudent,false);
+        }
+        else if(mThis.options.dn === 'old'){
+            p = mThis.getDataForm(mThis.div_oldStudent,false);
+        }
+        if(!p) return;
+
+        if(p.student_id) delete(p.id);
+
+        vsapi.call(`${main_view.base_url}/api/deposite/save`,p,null).then(res => {
+            if(res.status_code === 200){
+                mThis.self.modal('hide');
+                if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
             }
-            else if(mThis.options.dn === 'old'){
-                p = mThis.getDataForm(mThis.div_oldStudent);
+            else{
+                cv_interact.error(res.error_message);
             }
-            if(p.student_id) delete(p.id);
-            vsapi.call(`${main_view.base_url}/api/deposite/save`,p,null).then(res => {
-                if(res.status_code === 200){
-                    mThis.self.modal('hide');
-                    if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
-                }
-                else{
-                    cv_interact.error(res.error_message);
-                }
-            });
         });
     });
 
@@ -229,18 +229,12 @@ let DepositFeeDialog = new function(){
     this.togglePanel = (value) => {
         switch(value){
             case 'new':{
-                mThis.validate = new FormValidator(mThis.div_newStudent,{
-                    className: 'data-input'
-                });
                 mThis.setDataForm(null, mThis.div_newStudent, () => {
                     mThis.div_newStudent.show('slow').siblings().hide('slow');
                 });
                 break;
             }
             case 'old':{
-                mThis.validate = new FormValidator(mThis.div_oldStudent,{
-                    className: 'data-input'
-                });
                 mThis.prepareFormOptionOld(() => {
                     mThis.setDataForm(null, mThis.div_oldStudent, () => {
                         mThis.div_oldStudent.show('slow').siblings().hide('slow');
@@ -289,24 +283,30 @@ let DepositFeeDialog = new function(){
         });
     }
 
-    this.getDataForm = (div) => {
+    this.getDataForm = (div,slient=false) => {
         let p = {
             'id': mThis.options.id ? mThis.options.id : 0
         };
-
+        let has_error = false;
         div.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
+            if(el.data('error')==1){
+                if(!slient) cv_interact.warning([Validator.properCase(f),' is not correct'].join(''));
+                has_error = true;
+                return false;
+            }
+
             if(f === 'student_id')
                 p['student_name'] = el.find(':selected').text();
             p[f] = el.val();
         });
-        return p;
+        return has_error? null:p;
     }
 
     this.setDataForm = (d=null, div, onFinish=null) => {
         d = d ? d : {};
-        mThis.validate.resetForm();
+        Validator.clearErrors(div);
         div.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -366,11 +366,7 @@ let DepositFeeDialog = new function(){
             mThis.setDataForm(data,mThis.div_newStudent);
         });
     }
-
-    mThis.validate = new FormValidator(mThis.div_newStudent,{
-        className: 'data-input'
-    });
-
+ 
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;
@@ -380,9 +376,6 @@ let DepositFeeDialog = new function(){
             if(options.id > 0){
                 mThis.elTitle.text(LocaleManager.trans('Modify Deposit','titles'));
                 mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input deposit details','titles'));
-                mThis.validate = new FormValidator(mThis.div_oldStudent,{
-                    className: 'data-input'
-                });
                 mThis.loadFormDetails(options);
             }
             else{

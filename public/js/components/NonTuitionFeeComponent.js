@@ -175,36 +175,41 @@ let NonTuitionFeeOutsideDialog = new function(){
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        mThis.validate.validator(() => {
-            let p = mThis.getDataForm();
-            vsapi.call(`${main_view.base_url}/api/other-fee/save`,p,null).then(res => {
-                if(res.status_code === 200){
-                    mThis.self.modal('hide');
-                    if(typeof mThis.options.onClose === 'function')
-                        mThis.options.onClose();
-                }
-                else{
-                    cv_interact.error(res.error_message);
-                }
-            });
+        let p = mThis.getDataForm(false);
+        if(!p) return;
+        vsapi.call(`${main_view.base_url}/api/other-fee/save`,p,null).then(res => {
+            if(res.status_code === 200){
+                mThis.self.modal('hide');
+                if(typeof mThis.options.onClose === 'function')
+                    mThis.options.onClose();
+            }
+            else{
+                cv_interact.error(res.error_message);
+            }
         });
     });
 
-    this.getDataForm = () => {
+    this.getDataForm = (silence=false) => {
         let p = {
             'id': mThis.options.id
         };
+
+        let has_error = false;
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
+            if(el.data('error') ==1){
+                has_error = true;
+                cv_interact.warning([Validator.properCase(f),' is not correct'].join(''));
+                return false;
+            }
             let f = el.data('field');
             p[f] = el.val();
         });
-        return p;
+        return has_error?null:p;
     }
 
     this.setDataForm = (d) => {
         d = d ? d : {};
-        mThis.validate.resetForm();
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -236,11 +241,7 @@ let NonTuitionFeeOutsideDialog = new function(){
             if(typeof onFinish === 'function') onFinish();
         });
     }
-
-    this.validate = new FormValidator(mThis.self,{
-        className: 'data-input'
-    });
-
+ 
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;
@@ -256,7 +257,8 @@ let NonTuitionFeeOutsideDialog = new function(){
                 mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input fee type details','titles'));
                 mThis.setDataForm(null);
             }
-    
+            //Clear error signs
+            Validator.clearErrors(mThis.self.find('.modal-body'));
             mThis.self.modal({
                 backdrop: 'static'
             });

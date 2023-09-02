@@ -12,6 +12,7 @@
     "devDependencies": {
         "axios": "^0.21",
         "bootstrap": "^4.6.0",
+        "javascript-obfuscator": "^4.0.2",
         "jquery": "^3.6",
         "laravel-mix": "^6.0.6",
         "lodash": "^4.17.19",
@@ -32,6 +33,8 @@
         "pdfmake": "^0.2.4",
         "pusher-js": "^4.4.0",
         "save": "^2.4.0",
+        "terser": "^5.19.3",
+        "uglify-js": "^3.17.4",
         "vue-router": "^3.5.2"
     }
 }

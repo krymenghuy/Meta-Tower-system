@@ -47,7 +47,7 @@ class ScriptProvider
         ],
         'pdfmake' => [
             'attr' => 'defer',
-            'single_file' => 0,
+            'single_file' => 0, /* original 0*/
             'output_file' => '/dist/js/vs.pdfmake.js',
             'minify' => 0,
             'files' => [
@@ -99,7 +99,6 @@ class ScriptProvider
             'single_file' => 1,
             'output_file' => '/dist/js/ksm.components.js',
             'files' => [
-                '/js/components/FormValidator.js',
                 '/js/components/SearchData.js',
                 '/js/components/RenderTableReport.js',
                 '/assets/js/formUtils.js',
