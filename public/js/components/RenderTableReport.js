@@ -65,6 +65,9 @@ function renderTable(div, data){
                                 month: 'short',
                                 year: 'numeric'
                             };
+                            attendance.total_present = attendance.total_present + parseInt(tbl.monthly_attendance[index].present);
+                            attendance.total_permission = attendance.total_permission + parseInt(tbl.monthly_attendance[index].permission);
+                            attendance.total_absent = attendance.total_absent + parseInt(tbl.monthly_attendance[index].absent);
 
                             let inner_html=null;
                             st && st.list && st.list.map(d => {
@@ -83,13 +86,13 @@ function renderTable(div, data){
                                 <td>${data.session ? data.session : ''}</td>
                                 ${inner_html ? inner_html : '<td></td>'}
                                 <td class="align-middle text-center text-white bg-success">
-                                    ${tbl.monthly_attendance && tbl.monthly_attendance[index].present, attendance.total_present = attendance.total_present + parseInt(tbl.monthly_attendance[index].present)}
+                                    ${tbl.monthly_attendance && tbl.monthly_attendance[index].present}
                                 </td>
                                 <td class="align-middle text-center text-white bg-warning">
-                                    ${tbl.monthly_attendance && tbl.monthly_attendance[index].permission,attendance.total_permission = attendance.total_permission + parseInt(tbl.monthly_attendance[index].permission)}
+                                    ${tbl.monthly_attendance && tbl.monthly_attendance[index].permission}
                                 </td>
                                 <td class="align-middle text-center text-white bg-danger">
-                                    ${tbl.monthly_attendance && tbl.monthly_attendance[index].absent,attendance.total_absent = attendance.total_absent + parseInt(tbl.monthly_attendance[index].absent)}
+                                    ${tbl.monthly_attendance && tbl.monthly_attendance[index].absent}
                                 </td>
                                 <td>
                                     ${options.phone=null,tbl.phone_number && tbl.phone_number[index].map(p => {
