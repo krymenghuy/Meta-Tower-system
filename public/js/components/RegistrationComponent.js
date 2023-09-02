@@ -119,7 +119,6 @@ var RegistrationComponent = new function(){
             mThis.options.mother_id = null;
             mThis.options.photo = null;
             mThis.prepareFormOption(null,mThis.div_input,'data-input',() => {
-                console.log(mThis.getFilterData());
                 mThis.setDataForm(mThis.getFilterData());
                 mThis.div_input.siblings(":visible").fadeOut("fast", function() {
                     mThis.div_input.hide().fadeIn(300);
@@ -215,15 +214,6 @@ var RegistrationComponent = new function(){
         });
         return p;
     }
-
-    // this.setEnrollmentPath = (d)=>{
-    //     mThis.div_enroll_path.find('.data-input').each(function(){
-    //       const el = $(this);  
-    //       const f = el.data('field');
-    //       mThis.selected_options[f] = d[f];
-    //       if(['academic_year','campus_id'].indexOf(f) >=0) el.val(d[f]).trigger('change');
-    //     });
-    // }
 
     /** load Select options in Group select box*/
     this.loadOptions_group = ()=>{
@@ -395,7 +385,7 @@ var RegistrationComponent = new function(){
                 cnt++;
             });
 
-            if(cnt ==0){
+            if(cnt == 0){
                 html =`<div class="d-flex bg-white p-3 rounded-3 align-items-center">There are no registered students</div>`;
             }
 
@@ -456,15 +446,9 @@ var RegistrationComponent = new function(){
                 mThis.options.id = enrollment_id;
 
                 mThis.prepareFormOption(enrollment_id,mThis.div_input,'data-input',(d) => {
-                    console.log(d.enrollment_info);
                     mThis.setDataForm(d.enrollment_info);
-                    //mThis.studentListView.showPage(mThis.getFilterData());
                     mThis.div_input.fadeIn(300).siblings().hide();
                 });
-
-                // mThis.loadDataEdit(op, (data) => {
-                  
-                // });
             });
 
             div.on('click','a.btn-rgs-delete',function(e){
@@ -489,16 +473,9 @@ var RegistrationComponent = new function(){
         }
     }
 
-    // this.loadDataEdit = (op, onFinish) => {
-    //     vsapi.call(`${main_view.base_url}/api/enrollment/details`,op,null,false).then(res => {
-    //         const data = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data,null,['image_url','father_email','mother_email']):{};
-    //         if(typeof onFinish === 'function') onFinish(data);
-    //     });
-    // }
-
     this.loadDataPrint = (op, onFinish) => {
         vsapi.call(`${main_view.base_url}/api/enrollment/details`,op,null).then(res => {
-            const data = res.status_code === 200? StringSanitizer.sanitizeObject(res.data,null,['image_url']):{};
+            const data = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data,null,['image_url','father_profile','mother_profile','father_email','mother_email']) : {};
             if(typeof onFinish === 'function') onFinish(data);
         });
     }
@@ -515,7 +492,7 @@ var RegistrationComponent = new function(){
 
             if (el.data('error')==1){
                 if(!silence) cv_interact.warning([validator.properCase(f),' is not correct'].join(''));
-                has_error =true;
+                has_error = true;
                 return false;
             }
             p[f] = el.val();
@@ -536,7 +513,7 @@ var RegistrationComponent = new function(){
             let f = el.data('field');
             if(el.is('select'))
             {
-                mThis.selected_options[f] =d[f];
+                mThis.selected_options[f] = d[f];
                 el.val(d[f]).trigger('change');
             }
             else if(f === 'father_religion')
@@ -554,8 +531,7 @@ var RegistrationComponent = new function(){
 
     this.prepareFormOption = (enrollment_id,div,className, onFinish = null) => {
         vsapi.call(`${main_view.base_url}/api/enrollment/form-options`,{'enrollment_id':enrollment_id},null,false).then(res => {
-            //StringSanitizer.sanitizeObject(res.data,null,['image_url','father_email','mother_email'])
-            const d = res.status_code ===200? res.data:{};
+            const d = res.status_code === 200 ? res.data : {};
 
             div.find(`.${className}`).each(function(){
                 const el = $(this);
@@ -593,7 +569,7 @@ var RegistrationComponent = new function(){
         });
     }
     
-    this.getFilterData = ()=>{
+    this.getFilterData = () => {
         let p = {};
         mThis.div_filter_form.find('.filter-field').each(function(){
             let el = $(this);
@@ -605,12 +581,12 @@ var RegistrationComponent = new function(){
 
     //Set Filter options on Registration Form. In case of this.setFilterData(null) then the default options will be first option of every SELECT box
     this.setFilterData =(d=null)=>{
-        const use_default =!d;
-        d = d?d:{};
+        const use_default = !d;
+        d = d ? d : {};
         mThis.div_filter_form.find('.filter-field').each(function(){
             let el = $(this);
             const f = el.data('field');
-            if(use_default) 
+            if(use_default)
             {
                 const first = el.find('option:first').val();
                 el.val(first).trigger('change');
@@ -648,7 +624,7 @@ let PrintCardDialog = new function(){
 
     this.setDataForm = (d) => {
         d = d ? d : {};
-        d['sex'] = d['sex'] === 'M' ? 'Male':'Female';
+        d['sex'] = d['sex'] === 'M' ? 'Male' : 'Female';
 
         mThis.self.find('.data-show').each(function(){
             let el = $(this);
@@ -688,7 +664,7 @@ let StudentDetailDialog = new function(){
 
     this.setDataForm = (d) => {
         d = d ? d : {};
-        d['sex'] = d['sex'] === 'M' ? 'Male':'Female';
+        d['sex'] = d['sex'] === 'M' ? 'Male' : 'Female';
         mThis.self.find('.data-show').each(function(){
             let el = $(this);
             let f = el.data('field');
