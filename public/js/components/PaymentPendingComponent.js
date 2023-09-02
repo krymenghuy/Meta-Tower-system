@@ -141,33 +141,38 @@ let PaymentPendingDialog = new function(){
 
     mThis.btnSave.on("click", function (e) {
         e.preventDefault();
-        mThis.validate.validator(() => {
-            let p = mThis.getDataForm();
-            vsapi.call(`${main_view.base_url}/api/price-list/update/pending-payment`,p,null).then((res) => {
-                if(res.status_code === 200){
-                    mThis.self.modal("hide");
-                    if (typeof mThis.options.onClose === "function")
-                        mThis.options.onClose();
-                }
-            });
+        let p = mThis.getDataForm(false);
+        if(!p) return;
+        vsapi.call(`${main_view.base_url}/api/price-list/update/pending-payment`,p,null).then((res) => {
+            if(res.status_code === 200){
+                mThis.self.modal("hide");
+                if (typeof mThis.options.onClose === "function")
+                    mThis.options.onClose();
+            }
         });
     });
 
-    this.getDataForm = () => {
+    this.getDataForm = (silent=false) => {
         let p = {
             id: mThis.options.id,
         };
+        let has_error = false;
         mThis.self.find(".data-input").each(function () {
             let el = $(this);
             let f = el.data("field");
+            if(el.data('error')==1){
+                has_error = true;
+                if(!silent) cv_interact.warning([Validator.properCase(f),' is not correct'].join(''));
+                return false;
+            }
             p[f] = el.val();
         });
-        return p;
+        return has_error? null: p;
     };
 
     this.setDataForm = (d) => {
         d = d ? d : {};
-        mThis.validate.resetForm();
+        Validator.clearErrors(mThis.self);
         mThis.self.find(".data-input").each(function () {
             let el = $(this);
             let f = el.data("field");
@@ -215,11 +220,7 @@ let PaymentPendingDialog = new function(){
             mThis.setDataForm(data);
         });
     };
-
-    this.validate = new FormValidator(mThis.self, {
-        className: "data-input",
-    });
-
+ 
     this.show = (options) => {
         if (!options) options = {};
         mThis.options = options;

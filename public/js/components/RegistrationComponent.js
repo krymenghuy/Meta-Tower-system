@@ -119,8 +119,9 @@ var RegistrationComponent = new function(){
             mThis.options.mother_id = null;
             mThis.options.photo = null;
             mThis.prepareFormOption(null,mThis.div_input,'data-input',() => {
-                console.log(mThis.getFilterData());
+                //Set some default data such as Term_id, and Session etc from the currently selected filter on the main form
                 mThis.setDataForm(mThis.getFilterData());
+                Validator.clearErrors(mThis.div_input);
                 mThis.div_input.siblings(":visible").fadeOut("fast", function() {
                     mThis.div_input.hide().fadeIn(300);
                 });

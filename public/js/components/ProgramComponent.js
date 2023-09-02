@@ -277,36 +277,41 @@ let ProgramDialog = new function(){
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        mThis.validate.validator(() => {
-            let p = mThis.getDataForm();
-            vsapi.call(`${main_view.base_url}/api/program/save`,p,null).then(res => {
-                if(res.status_code === 200){
-                    mThis.self.modal('hide');
-                    if(typeof mThis.options.onClose === 'function') mThis.options.onClose(res.data.levels);
-                }
-                else{
-                    cv_interact.error(res.error_message);
-                }
-            });
+        let p = mThis.getDataForm(false);
+        if(!p) return;
+        vsapi.call(`${main_view.base_url}/api/program/save`,p,null).then(res => {
+            if(res.status_code === 200){
+                mThis.self.modal('hide');
+                if(typeof mThis.options.onClose === 'function') mThis.options.onClose(res.data.levels);
+            }
+            else{
+                cv_interact.error(res.error_message);
+            }
         });
     });
 
-    this.getDataForm = () => {
+    this.getDataForm = (silent=false) => {
         let p = {
             'id': mThis.options.id,
             'program_id':mThis.options.program_id
         };
+        let has_error = false;
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
+            if(el.data('error')==1){
+                if(!silent) cv_interact.warning([Validator.properCase(f),' is not correct'].join(''));
+                has_error = true;
+                return false;
+            }
             p[f] = el.val();
         });
-        return p;
+        return has_error? null : p;
     }
 
     this.setDataForm = (d) => {
         d = d ? d : {};
-        mThis.validate.resetForm();
+        Validator.clearErrors(mThis.self);
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -334,11 +339,7 @@ let ProgramDialog = new function(){
             if(typeof onFinish === 'function') onFinish();
         });
     }
-
-    this.validate = new FormValidator(mThis.self,{
-        className: 'data-input'
-    });
-
+ 
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;
@@ -370,37 +371,41 @@ let ProgramLevelDialog = new function(){
     this.elLevel = mThis.self.find('#dlg_detail_pgm_level');
     
     this.btnSave.on('click',function(){
-        mThis.validate.validator(() => {
-            let p =mThis.getDataForm();
-            vsapi.call(`${main_view.base_url}/api/program-level/save`,p,null,false).then(res=>{
-                if(res.status_code === 200){
-                    mThis.self.modal('hide');
-                    if(typeof mThis.options.onClose === 'function')
-                        mThis.options.onClose(res.data.levels);
-                }
-                else
-                    cv_interact.error(res.error_message);
-            });
+        let p =mThis.getDataForm(false);
+        if(!p) return;
+        vsapi.call(`${main_view.base_url}/api/program-level/save`,p,null,false).then(res=>{
+            if(res.status_code === 200){
+                mThis.self.modal('hide');
+                if(typeof mThis.options.onClose === 'function')
+                    mThis.options.onClose(res.data.levels);
+            }
+            else
+                cv_interact.error(res.error_message);
         });
     });
 
-    this.getDataForm = () => {
+    this.getDataForm = (silent = false) => {
         let p = {
             'id': mThis.options.id,
             'program_id':mThis.options.program_id
         };
-
+         let has_error = false;
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
+            if(el.data('error')==1){
+                if(!silent) cv_interact.warning([Validator.properCase(f),' is not correct'].join(''));
+                has_error =true;
+                return false;
+            }
             p[f] = el.val();
         });
-        return p;
+        return has_error? null: p;
     }
 
     this.setDataForm = (d) => {
         d = d ? d : {};
-        mThis.validate.resetForm();
+        Validator.clearErrors(mThis.self);
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -428,11 +433,7 @@ let ProgramLevelDialog = new function(){
             if(typeof onFinish === 'function') onFinish();
         });
     }
-
-    this.validate = new FormValidator(mThis.self,{
-        className: 'data-input'
-    });
-
+ 
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;

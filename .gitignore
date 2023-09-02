@@ -1,4 +1,5 @@
-/app/ScriptManagement/ScriptManager.php
+/app/ScriptManagement/obfuscate.js
+/app/ScriptManagement/obfuscate_old.js
 /app/ScriptManagement/ScriptManager1.php
 /app/ScriptManagement/Minifier.php
 /app/StyleManagement/StyleManager.php

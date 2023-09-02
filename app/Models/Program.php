@@ -19,7 +19,7 @@ class Program // extends Model
         $id = $id?$id:$this->id;
         $v_rule = [
             'department_id' => '1|number|default=1',
-            'name' => '0|string|1-200',
+            'name' => '1|string|1-200|text=Program name cannot be empty',
             'description' => '0|string|1-250',
             'prev_program_id' => '0|number|exists=programs.id'
         ];

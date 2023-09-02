@@ -22,7 +22,7 @@ class ProgramLevel //extends Model
 
         $v_rule = [
             'program_id' => '1|number|exists=programs.id',
-            'name' => '0|string|1-100',
+            'name' => '1|string|1-150|text=Level or Grade cannot be empty',
             'prev_level_id' => '0|number|exists=program_levels.id',
             'level_order'=>'0|number|default=0'
         ];
