@@ -69,8 +69,7 @@ var StudentAttendanceReportComponent = new function(){
         className: 'align-middle',
         data: (data, a, b) => {
             let comeLate = data.in_remarks ? data.in_remarks : '';
-            let late = comeLate.match(/\d/g).join('');
-            return [late,`${late < 60 ? 'min' : 'h'}`].join(' ');
+            return comeLate;
         }
     },
     {
@@ -106,8 +105,7 @@ var StudentAttendanceReportComponent = new function(){
         className: 'align-middle',
         data: (data, a, b) => {
             let leaveLate = data.out_remarks ? data.out_remarks : '';
-            let late = leaveLate.match(/\d/g).join('');
-            return [late,`${late < 60 ? 'min' : 'h'}`].join(' ');
+            return leaveLate;
         }
     },
     {
