@@ -687,12 +687,12 @@ class StudentAttendance //extends Model
             $i++;
             unset($row->file_name);
         }
-        $tmp = [];
-        $tmp['students'] = $rows;
-        $tmp['count_info'] = json_decode(json_encode($this->countStudentAttendance(1,$ss)),true);
-        $tmp['count_info']['campus'] = 'All';
+        // $tmp = [];
+        // $tmp['students'] = $rows;
+        // $tmp['count_info'] = json_decode(json_encode($this->countStudentAttendance(1,$ss)),true);
+        // $tmp['count_info']['campus'] = 'All';
         // return $tmp;
-        return new LengthAwarePaginator($tmp, $count, $per_page, $current_page);
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
     // DB::table('student_guardians as sg')->where('sg.student_id',$st->student_id)
