@@ -137,6 +137,7 @@ class Guardian //extends Model
     function parentChildren($arr=[],$ss=null){
         $d = (object)$arr;
         $ss = $ss?$ss:$this->ss;
+        $branch_id = $ss->branch_id;
         $family_id = isset($d->family_id)?$d->family_id:null;
         $guardian_id = isset($d->guardian_id)?$d->guardian_id:null;
         $str_search = '1=1';
@@ -152,24 +153,20 @@ class Guardian //extends Model
         $groupedData = [];
 
         foreach ($rows as $row) {
+
             $studentId = $row->student_id;
             $familyId = $row->family_code;
 
-            if (!isset($groupedData[$familyId])) {
-                $groupedData[$familyId] = [
-                    'family_id' => $familyId,
-                    'children' => []
-                ];
-            }
-
             $child = DB::table('students')->where('id', $studentId)->first();
             if ($child) {
-                $groupedData[$familyId]['children'][] = $child;
+                if(isset($child->file_name) == null) {
+                    $child->image_url = '';
+                }else $child->image_url = PublicStorage::getUrl($branch_id,'students','image').$child->file_name;
+                $groupedData['children'][] = $child;
             }
-
         }
 
-        return array_values($groupedData);
+        return $groupedData;
     }
 
 }

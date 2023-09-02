@@ -387,7 +387,7 @@ class Student //extends Model
        if(!$row) return null;
             //$row->level = self::getProgramLevel($row->level_id);
             //$row->campus = self::getCampus($row->campus_id);
-            $row->parent_info = self::getGuardians($row->student_id);
+            $row->parent_info = self::getGuardians($row->student_id,$ss);
             $row->previous_school = self::getPrevSchool($row->prev_school_id)->name;
             $url =null;
             if($row->file_name) $url = PublicStorage::getUrl($ss->branch_id,'students','image').$row->file_name;
@@ -417,12 +417,13 @@ class Student //extends Model
         return $row? $row: (object)['name'=>'','id'=>null];
     }
 
-    static function getGuardians($student_id){
+    static function getGuardians($student_id,$ss){
+        $branch_id = $ss->branch_id;
         $rows = DB::table('student_guardians as sg')
                 ->where('sg.student_id',$student_id)
                 ->join('guardians as g','sg.guardian_id' ,'=', 'g.id')
                 ->join('students as s','s.id','=','sg.student_id')
-                ->selectRaw('g.id,g.name,g.role,g.phone_number,g.email,g.address,g.religion,g.n_id')
+                ->selectRaw('g.id,g.name,g.role,g.phone_number,g.email,g.address,g.religion,g.n_id,g.file_name')
                 ->get();
         foreach($rows as $row){
             if(strtolower($row->role) == 'father'){
@@ -430,7 +431,9 @@ class Student //extends Model
                 $row->father_phone =$row->phone_number;
                 $row->father_email =$row->email;
                 $row->father_nid = $row->n_id;
-                $row->father_profile = "";
+                if($row->file_name){
+                    $row->father_profile = PublicStorage::getUrl($branch_id,'guardians','image').$row->file_name;
+                }else $row->father_profile = "";
                 unset($row->name);
                 unset($row->email);
                 unset($row->n_id);
@@ -441,7 +444,10 @@ class Student //extends Model
                 $row->mother_phone =$row->phone_number;
                 $row->mother_email =$row->email;
                 $row->mother_nid = $row->n_id;
-                $row->mother_profile = "";
+                if($row->file_name){
+                    $row->mother_profile = PublicStorage::getUrl($branch_id,'guardians','image').$row->file_name;
+                }else $row->mother_profile = "";
+
                 unset($row->name);
                 unset($row->email);
                 unset($row->n_id);

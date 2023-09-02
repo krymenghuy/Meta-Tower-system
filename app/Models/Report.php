@@ -506,7 +506,7 @@ class Report extends Model
             $uniqueParents = [];
             foreach ($parents as $parent) {
                 if(isset($parent->file_name) == null){
-                    $parent->image_url = null;
+                    $parent->image_url = '';
                 }else $parent->image_url = PublicStorage::getUrl($branch_id,'guardians','image').$parent->file_name;
                 $key = $parent->name . $parent->family_code;
                 if (!isset($uniqueParents[$key])) {
