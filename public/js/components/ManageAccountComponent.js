@@ -166,7 +166,9 @@ let ManageAccountDialog = new function(){
     });
 
     this.inputParentPhoto = (div,options) => {
-        div.closest('.modal-dialog').removeClass('modal-lg');
+        let dialog = div.closest('.modal-dialog');
+        dialog.removeClass('modal-lg');
+        dialog.find('.modal-footer').show();
         let html = [`<div class="row row-cols-lg-2 gy-2">
             <div class="col">
                 <div class="form-group">
@@ -242,6 +244,7 @@ let ManageAccountDialog = new function(){
     this.displayChildren = (div,op) => {
         let dialog = div.closest('.modal-dialog');
         if(!(dialog.hasClass('modal-lg'))) dialog.addClass('modal-lg');
+        dialog.find('.modal-footer').hide();
         div.empty();
         mThis.getChildren(div,op);
     }
@@ -251,12 +254,12 @@ let ManageAccountDialog = new function(){
             let d = [];
             if(res.status_code === 200){
                 d = res.data;
-                console.log(res.data);
             }
-            let html = [`<div class="table-responsive p-3 tbl-on-hover-to-scroll">
+            let html = null, inner_html = null;
+            html = [`<div class="table-responsive p-3 tbl-on-hover-to-scroll">
                 <table class="table">
                     <thead>
-                        <tr class="text-nowrap">
+                        <tr class="text-nowrap text-primary">
                             <td>Student ID</td>
                             <td>Photo</td>
                             <td>Student Name</td>
@@ -269,7 +272,25 @@ let ManageAccountDialog = new function(){
                         </tr>
                     </thead>
                     <tbody>
-                        
+                        ${inner_html=null,d.map(child => {
+                            inner_html = [inner_html,`<tr class="text-nowrap">
+                                <td class="align-middle">${child.code ? child.code : ''}</td>
+                                <td>
+                                    <img class="image-student-tbl" src="${child.image_url ? child.image_url : ''}" alt=""/>
+                                </td>
+                                <td class="align-middle">${child.name ? child.name : ''}</td>
+                                <td class="align-middle">${child.name_kh ? child.name_kh : ''}</td>
+                                <td class="align-middle">${child.date_of_birth ? new Date(child.date_of_birth).toLocaleDateString('km-KH',{
+                                    day: 'numeric',
+                                    month: 'short',
+                                    year: 'numeric'
+                                }).replaceAll(' ','-').replace(',','') : ''}</td>
+                                <td class="align-middle">${child.sex === 'M' ? 'Male' : 'Female'}</td>
+                                <td class="align-middle">${child.place_of_birth ? child.place_of_birth : ''}</td>
+                                <td class="align-middle">${child.address ? child.address : ''}</td>
+                                <td class="align-middle">${child.phone_number ? child.phone_number : 'N/A'}</td>
+                            </tr>`].join('');
+                        }),inner_html}
                     </tbody>
                 </table>
             </div>`].join('');

@@ -111,7 +111,7 @@ var ReportCenterComponent = new function(){
         d.map(item => {
             html = [html, `<li class="report-name" data-param="${item.params}" data-code="${item.code}">
                 <i class="fa-regular fa-rectangle-list"></i>
-                <span>${item.name}</span>
+                <span class="text-capitalize">${item.name}</span>
             </li>`].join('');
         });
         return html;

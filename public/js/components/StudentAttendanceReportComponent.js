@@ -4,130 +4,83 @@ var StudentAttendanceReportComponent = new function(){
     this.title_prop = "Student Attendance Report";
     this.self = $('#_main_studentAttendanceReportComponent');
 
-    this.tblStudentAttendanceReport = mThis.self.find('.tbl--sar');
+    this.cols = [{
+        title: "Photo",
+        data: (data, a, b) => {
+            let image = [`<img class="image-student-tbl" src="${data.image_url ? data.image_url : ''}" alt=""/>`].join('');
+            return image;
+        }
+    },
+    {
+        title: "Student ID",
+        data: "code"
+    },
+    {
+        title: "Student Name",
+        data: "name"
+    },
+    {
+        title: "Gender",
+        data: (data, a, b) => {
+            let sex = data.sex === 'M' ? 'Male' : 'Female';
+            return sex;
+        }
+    },
+    {
+        title: "Class",
+        data: "level"
+    },
+    {
+        title: "Session",
+        data: "session"
+    },
+    {
+        title: "Date",
+        data: (data, a, b) => {
+            let session_date = data.session_date ? data.session_date : '';
+            return new Date(session_date).toLocaleDateString('km-KH',{
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            }).replaceAll(' ','-').replace(',','');
+        }
+    },
+    {
+        title: "Check-In",
+        data: (data, a, b) => {
+            let checkIn = data.checkin_time ? data.checkin_time : '';
+            return new Date(`1970-01-01T${checkIn}Z`).toLocaleTimeString('en-US',{
+                timeZone: 'UTC',
+                hour12: true,
+                hour:'numeric',
+                minute: 'numeric'
+            });
+        }
+    },
+    {
+        title: "Come Late",
+        data: (data, a, b) => {
+            let comeLate = data.in_remarks ? data.in_remarks : '';
+            comeLate = comeLate.replace(/^\D+/g, '');
+            return comeLate;
+        }
+    }];
 
-    this.init = () => {}
-    
-    this.displayStudentAttendanceReport = (onFinish = null) => {
-        vsapi.call(`${main_view.base_url}/api/`,null,null).then(res => {
-            let data = [];
-            if(res.status_code === 200){
-                data = StringSanitizer.sanitizeObject(res.data);
-            }
-
-            let cnt = 1;
-            let cols = [{
-                title: "No",
-                data: (data, a, b) => {
-                    return [`<span>${cnt++}</span>`].join('');
-                }
+    this.init = () => {
+        mThis.itemView = new ListView('tbl_astr_',{
+            'fetchApi':`${main_view.base_url}/api/student/attendance-list-report`,
+            'columns': mThis.cols,
+            'tableClass':"table header-light-blue header-uppercase",
+            'rowCreated':(data, index, tr) => {
+                tr.setAttribute('data-id',data.id);
             },
-            {
-                title: "Image",
-                data: (data, a, b) => {
-                    return [`<img src="${data.image_url}" alt=""/>`].join('');
-                }
-            },
-            {
-                title: "Student ID",
-                data: "student_id"
-            },
-            {
-                title: "Student Name",
-                data: "student_name"
-            },
-            {
-                title: "Sex",
-                data: "sex"
-            },
-            {
-                title: "Class",
-                data: "class"
-            },
-            {
-                title:"Section",
-                data: "section"
-            },
-            {
-                title: "Date",
-                data: "date"
-            },
-            {
-                title: "Check-in",
-                data: "check_in"
-            },
-            {
-                title: "Come Late",
-                data: "come_late"
-            },
-            {
-                title: "School Bus",
-                data: "school_bus"
-            },
-            {
-                title: "Pick Up",
-                data: "pick_up"
-            },
-            {
-                title: "Check-out",
-                data: "check_out"
-            },
-            {
-                title: "Leave Early",
-                data: "leave_early"
-            },
-            {
-                title: "Leave Late",
-                data: "leave_late"
-            },
-            {
-                title: "Family ID",
-                data: "parent_id"
-            },
-            {
-                title: "Father Phone",
-                data: "father_phone"
-            }];
-
-            if(!mThis.table){
-                mThis.tblStudentAttendanceReport.DataTable().clear().destroy();
-                mThis.tblStudentAttendanceReport.empty();
-                mThis.table = null;
-            }
-
-            if(mThis.table){
-                mThis.table = mThis.tblStudentAttendanceReport.DataTable({
-                    searching: false,
-                    destroy: true,
-                    paging: true,
-                    ordering: false,
-                    retrieve: true,
-                    info: true,
-                    pageLength: 10,
-                    bLengthChange: false,
-                    saveState: true,
-                    processing: true,
-                    language: {
-                        'loadingRecords': '&nbsp;',
-                        'processing': 'Loading...',
-                        "emptyTable": LocaleManager.trans('No data to display', 'datatable')
-                    },
-                    data: data,
-                    columns: cols,
-                    createdRow: function (row, data, dataIndex) {
-                        let tr = $(row);
-                        tr.data('id', data.id);
-                    }
-                });
-            }
-
-            if(typeof onFinish === 'function') onFinish();
+            'beforeRender':() => {}
         });
     }
 
     this.show = (options) => {
         if(!options) options = {};
-        mThis.displayStudentAttendanceReport(() => {
+        mThis.itemView.showPage(null,null,() => {
             main_view.setTitle(mThis.title_prop);
             mThis.self.show().siblings().hide();
         });

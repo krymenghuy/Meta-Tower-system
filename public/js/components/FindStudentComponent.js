@@ -150,7 +150,7 @@ var FindStudentComponent = new function(){
                                                     <i class="fa-solid fa-up-right-from-square fs-5"></i>
                                                     <span class="ps-2 trans-text" data-langprop="titles.Detials"></span>
                                                 </a>
-                                                <a href="javascript:void(0)" class="btn-fns-delete pt-2" data-id="${item.id}">
+                                                <a href="javascript:void(0)" class="btn-fns-delete pt-2" data-id="${item.enrollment_id}">
                                                     <i class="fa-regular fa-trash-can fs-5"></i>
                                                     <span class="ps-2 trans-text" data-langprop="titles.Delete"></span>
                                                 </a>
