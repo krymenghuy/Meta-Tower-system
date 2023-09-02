@@ -60,5 +60,5 @@
             </div>
         </div>
     </div>
-    <div id="tbl_astr_" class="table-responsive bg-white rounded-3 mt-3 p-3"></div>
+    <div id="tbl_astr_" class="table-responsive bg-white rounded-3 mt-3 p-3 table-responsive-hover"></div>
 </div>

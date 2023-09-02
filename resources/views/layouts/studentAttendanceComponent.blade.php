@@ -60,7 +60,7 @@
             </div>
         </div>
     </div>
-    <div id="tbl--san" class="table-responsive mt-3 p-3 rounded-3 bg-white"></div>
+    <div id="tbl--san" class="table-responsive mt-3 p-3 rounded-3 bg-white table-responsive-hover"></div>
 </div>
 
 <div class="modal fade" id="dlg_san_" tabindex="-1" aria-labelledby="dlg_san_title" aria-hidden="true">

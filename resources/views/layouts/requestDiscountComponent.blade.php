@@ -15,7 +15,7 @@
             </button>
         </div>
     </div>
-    <div id="_rqdc_tbl" class="table-responsive p-3 bg-white rounded-3 mt-3"></div>
+    <div id="_rqdc_tbl" class="table-responsive p-3 bg-white rounded-3 mt-3 table-responsive-hover"></div>
 </div>
 
 <div class="modal fade" id="dlg_rqdc_" tabindex="-1" aria-labelledby="dlg_rqdc_title" aria-hidden="true">

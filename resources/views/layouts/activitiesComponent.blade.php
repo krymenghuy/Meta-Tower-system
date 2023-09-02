@@ -53,7 +53,7 @@
                     </button>
                 </div>
             </div>
-            <div id="div_att_list" class="table-responsive mt-3 p-3 rounded-3 bg-white"></div>
+            <div id="div_att_list" class="table-responsive mt-3 p-3 rounded-3 bg-white table-responsive-hover"></div>
         </div>
     </div>
 </div>

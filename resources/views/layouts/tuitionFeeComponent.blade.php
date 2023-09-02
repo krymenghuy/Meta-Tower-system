@@ -10,7 +10,7 @@
             <i class="fa-solid fa-caret-down ps-2"></i>
         </button>
     </div>
-    <div id="_ttf_tbl" class="table-responsive mt-3 p-3 bg-white border rounded-3"></div>
+    <div id="_ttf_tbl" class="table-responsive mt-3 p-3 bg-white border rounded-3 table-responsive-hover"></div>
 </div>
 
 <div id="dlg_ttf" class="modal fade" tabindex="-1" aria-labelledby="dlg_ttf_title" aria-hidden="true">

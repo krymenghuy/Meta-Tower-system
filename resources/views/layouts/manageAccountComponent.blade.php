@@ -22,7 +22,7 @@
             </div>
         </div>
     </div>
-    <div id="tbl__mna" class="table-responsive p-3 bg-white rounded-3 mt-3"></div>
+    <div id="tbl__mna" class="table-responsive p-3 bg-white rounded-3 mt-3 table-responsive-hover"></div>
 </div>
 
 <div id="dlg__mna" class="modal fade" tabindex="-1" aria-labelledby="dlg__mna_title" aria-hidden="true">

@@ -4,7 +4,7 @@
             <span class="trans-text" data-langprop="buttons.Add Program"></span>
         </button>
     </div>
-    <div class="table-responsive p-3 rounded-3 mt-3 bg-white">
+    <div class="table-responsive p-3 rounded-3 mt-3 bg-white table-responsive-hover">
         <table id="_pgm_tbl" class="table"></table>
     </div>
 </div>

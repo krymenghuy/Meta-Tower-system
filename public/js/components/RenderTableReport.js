@@ -56,15 +56,15 @@ function renderTable(div, data){
                         </tr>
                     </thead>
                     <tbody>
-                        ${student=null,tbl && tbl.students && tbl.students.map((st,index) => {
+                        ${attendance.total_present = 0,
+                            attendance.total_permission = 0,
+                            attendance.total_absent = 0,
+                            student=null,tbl && tbl.students && tbl.students.map((st,index) => {
                             const options = {
                                 day: 'numeric',
                                 month: 'short',
                                 year: 'numeric'
                             };
-                            attendance.total_present = 0,
-                            attendance.total_permission = 0,
-                            attendance.total_absent = 0;
 
                             let inner_html=null;
                             st && st.list && st.list.map(d => {

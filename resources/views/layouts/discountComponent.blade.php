@@ -58,5 +58,5 @@
             </div>
         </div>
     </div>
-    <div id="_dsn_tbl" class="table-responsive mt-3 p-3 bg-white rounded-3"></div>
+    <div id="_dsn_tbl" class="table-responsive mt-3 p-3 bg-white rounded-3 table-responsive-hover"></div>
 </div>

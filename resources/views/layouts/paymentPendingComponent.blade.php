@@ -4,7 +4,7 @@
             <select id="_ppd_search" class="modal-select2"></select>
         </div>
     </div>
-    <div id="_ppd_tbl" class="table-responsive p-3 bg-white rounded-3 mt-3"></div>
+    <div id="_ppd_tbl" class="table-responsive p-3 bg-white rounded-3 mt-3 table-responsive-hover"></div>
 </div>
 
 <div class="modal fade" id="dlg_ppd_" tabindex="-1" aria-labelledby="dlg_ppd_title" aria-hidden="true">
