@@ -627,7 +627,16 @@ li.kt-menu__section {
     flex-wrap: nowrap;
     overflow-x : hidden;
     padding:1rem;
-    min-height: 200px;
+    min-height: 220px;
+}
+
+.tbl-on-hover-to-scroll{
+    overflow: hidden;
+}
+
+.tbl-on-hover-to-scroll:hover{
+    overflow:auto;
+    scroll-behavior: smooth;
 }
 
 .on-hover-to-scroll:hover{
