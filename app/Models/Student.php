@@ -533,7 +533,7 @@ class Student //extends Model
         if(!$student_id){
             $student_id = $d;
         }
-        // $filter = $d;
+        // $filter = $d;s
         $selectCols = 'e.session_id,e.id,c.name as campus,pmt.tuition,pmt.tuition_due,pmt.tuition_paid,pl.name as level,e.academic_year,e.status_id';
         // $branch_id = $ss->branch_id;
         // $search_value =isset($filter['search_value'])?$filter['search_value']:null;
@@ -576,6 +576,32 @@ class Student //extends Model
         }
         return $rows;
         // return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
+
+    function updateStudentInfo($arr=[],$ss){
+
+        $v_rule = [
+            'id' => '1|number|exists=students',
+            'name' => '0|string|1,50',
+            'name_kh' => '0|string|1,50',
+            'sex' => '0|string|1,30',
+            'date_of_birth' => '0|string',
+            'phone_number' => '0|string|1,20',
+            'email' => '0|string',
+            'address' => '0|string',
+            'photo' => '0|string',
+            'place_of_birth' => '0|string|1,150',
+            'prev_school_id' => '',
+        ];
+        $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
+        if($res->error) return $res->error;
+        $inputs = $res->values;
+
+        $id = $inputs['id'];
+        unset($inputs['id']);
+        $newID = saveData($ss,'students',['id' => $id],$inputs,[],1);
+
+        return DV::depends($newID,'Update');
     }
 
 }

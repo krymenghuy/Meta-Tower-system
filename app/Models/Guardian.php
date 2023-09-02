@@ -162,7 +162,7 @@ class Guardian //extends Model
                 if(isset($child->file_name) == null) {
                     $child->image_url = '';
                 }else $child->image_url = PublicStorage::getUrl($branch_id,'students','image').$child->file_name;
-                $groupedData['children'][] = $child;
+                $groupedData[] = $child;
             }
         }
 
