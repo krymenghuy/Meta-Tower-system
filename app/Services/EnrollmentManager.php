@@ -110,6 +110,7 @@ class EnrollmentManager {
       $statusID = $inputs['status_id'];
       $inputs['date_of_birth'] = date('Y-m-d',strtotime($inputs['date_of_birth']));
       $admission_date = isset($arr['admission_date']) ? $arr['admission_date'] :null;
+      $family_code = $inputs['family_code'];
       unset($inputs['status_id']);
       unset($inputs['student_code']);
       unset($inputs['tuition']);
@@ -119,6 +120,7 @@ class EnrollmentManager {
       unset($inputs['academic_year']);
       unset($inputs['pmt_option_id']);
       unset($inputs['pmt_status']);
+      unset($inputs['family_code']);
 
 
 

@@ -47,7 +47,7 @@ class PromoteStudent //extends Model
                         if($program_id){
                             $q->whereIn('e.level_id',$arr_level);
                         }
-            $enr_info = $q->selectRaw('p.pmt_option_id,e.school_id,e.student_id,e.campus_id,e.session_id,e.level_id,e.program_id,e.academic_year,e.promoted')
+            $enr_info = $q->selectRaw('p.pmt_option_id,e.prev_school_id,e.student_id,e.campus_id,e.session_id,e.level_id,e.program_id,e.academic_year,e.promoted')
                         ->get();
 
             foreach($enr_info as $info){
@@ -75,7 +75,7 @@ class PromoteStudent //extends Model
                     'program_id' => $nextLevel->program_id,
                     'term_id' => $nextTerm,
                     'status_id' => 1,// is pending
-                    'school_id' => $info->school_id,
+                    'prev_school_id' => $info->prev_school_id,
                     'academic_year' => $academic_year,
                     'promoted' => 1,
                 ];
@@ -102,11 +102,11 @@ class PromoteStudent //extends Model
                         'academic_year' => $academic_year,
                     ]);
 
-                    // DB::table('enrollments')->where('id',$newEnrID)->update([
-                    //     'tuition_end_date' => $payment_process->end_date,
-                    //     'is_new_student' => 0,
-                    //     'promoted' => 1
-                    // ]);
+                    DB::table('enrollments')->where('id',$newEnrID)->update([
+                        'tuition_end_date' => $payment_process->end_date,
+                        'is_new_student' => 0,
+                        'promoted' => 1
+                    ]);
 
                     $new_pmt_arr = [
                         'term_id' => $nextTerm,
@@ -127,7 +127,6 @@ class PromoteStudent //extends Model
                     DB::table('enrollment_payment')->insert([
                         'enrollment_id' => $newEnrID,
                         'pmt_id' => $new_pmt_id,
-
                     ]);
 
                 }
@@ -166,9 +165,9 @@ class PromoteStudent //extends Model
                 ->where('e.promoted',1)
                 ->whereRaw($str_moreWhere)->whereRaw($str_search)
                 ->selectRaw($selectCols)
-                ->orderBy('s.id','desc');
+                ->orderBy('e.id','desc');
         $count_query = clone $query;
-        $count = $count_query->count('s.id');
+        $count = $count_query->count('e.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row) {
             $status = 'pending';
