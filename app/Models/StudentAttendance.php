@@ -637,22 +637,39 @@ class StudentAttendance //extends Model
         $ss = $ss?$ss:$this->ss;
         $branch_id = $ss->branch_id;
         $d = (object)$arr;
-        $str_search = 'status_id = 1';
+        $search_value =isset($d->search_value)?$d->search_value:null;
+
+        $current_page =isset($d->current_page)?$d->current_page:1;
+        $per_page =isset($d->per_page)?$d->per_page:10;
+        if(!is_numeric($current_page)) $current_page=1;
+        $skip_rows = ($current_page -1) * $per_page;
+
+        $str_search ="1=1";
+        $str_moreWhere="1=1";
+        if($search_value){
+            $skip_rows =0;
+            $search_value = escape_like_str($search_value);
+            $str_moreWhere ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+        }
+
         $session_date = isset($d->session_date) ? date('Y-m-d',strtotime($d->session_date)) :null;
 
         if($session_date){
             $str_search .= " AND DATE(sa.session_date) = '$session_date'" ;
             // $str_search = 'YEAR(sa.session_date) = ' . date('Y',strtotime($session_date)).' AND MONTH(sa.session_date) = '.date('m',strtotime($session_date));
         }
-        $rows = DB::table('students as s')
+        $query = DB::table('students as s')
             ->join('student_attendances as sa','s.id','=','sa.student_id')
             ->whereRaw($str_search)
+            ->whereRaw($str_moreWhere)
             ->join('student_groups as sg','sa.group_id','=','sg.id')
-            ->selectRaw('s.id as student_id,s.name,s.name_kh,s.sex,s.date_of_birth,s.phone_number,s.email,sg.session_id,sg.level_id,s.file_name,sa.checkin_time,sa.checkout_time,sa.in_remarks,out_remarks,DATE(sa.session_date) as session_date')
-            ->get();
+            ->selectRaw('s.id as student_id,s.name,s.name_kh,s.sex,s.date_of_birth,s.phone_number,s.email,sg.session_id,sg.level_id,s.file_name,sa.checkin_time,sa.checkout_time,sa.in_remarks,out_remarks,DATE(sa.session_date) as session_date');
+
+            $count_query = clone $query;
+            $count = $count_query->count('s.id');
+            $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         $i=0;
-
         while($i<count($rows)){
             $row = $rows[$i];
             $row->session = GeneralSettings::getSession($row->session_id)->name;
@@ -674,8 +691,8 @@ class StudentAttendance //extends Model
         $tmp['students'] = $rows;
         $tmp['count_info'] = json_decode(json_encode($this->countStudentAttendance(1,$ss)),true);
         $tmp['count_info']['campus'] = 'All';
-        // $dc = json_encode($tmp);
-        return $tmp;
+        // return $tmp;
+        return new LengthAwarePaginator($tmp, $count, $per_page, $current_page);
     }
 
     // DB::table('student_guardians as sg')->where('sg.student_id',$st->student_id)
