@@ -518,7 +518,7 @@ class Report extends Model
                         'role' => $parent->role,
                         'sex' => $parent->sex,
                         'national_id' => $parent->n_id,
-                        'image_url' => $parent->image_url
+                        'image_url' => $parent->image_url,
                     ];
                 }
             }

@@ -248,7 +248,7 @@ class PriceList //extends Model
                 ->where('price_list_id',$id)
                 ->selectRaw('discount,discount_type')
                 ->get()->first();
-        if(!$row)  return (object)['dicount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0];
+        if(!$row)  return (object)['discount_percent' => 0,'discount_amount' => 0,'discount_type'=>0,'discount'=>0];
         $discount_percent = $row->discount;
         return (object)['discount_percent' => $discount_percent,'discount_type'=>$row->discount_type,'discount'=>$row->discount];
     }
@@ -355,6 +355,9 @@ class PriceList //extends Model
                         'academic_year' => $d->academic_year,
                     ]);
                     $weekly_tuition_due = $total_weekly_Fee->tuition_due;
+                    $base_amount = $price * $term;
+                    $monthly_tuition_due = $price * $pay_month;
+                }else{
                     $base_amount = $price * $term;
                     $monthly_tuition_due = $price * $pay_month;
                 }
