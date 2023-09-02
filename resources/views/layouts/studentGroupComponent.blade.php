@@ -18,7 +18,7 @@
             </button>
         </div>
     </div>
-    <div id="div_group_list" class="p-3 mt-3 rounded-3 bg-white"></div>
+    <div id="div_group_list" class="p-3 mt-3 rounded-3 bg-white table-responsive-hover"></div>
 </div>
 
 <div id="dlg_sdg_" class="modal fade" tabindex="-1" aria-labelledby="dlg_sdg_title" aria-hidden="true">

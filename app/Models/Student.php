@@ -172,7 +172,7 @@ class Student //extends Model
             //** save into guardian table and generate login information for female type or if one take that one
             //** link parent(s) to child
             //** using guardian's phone number for login name and password default = 123456 */
-            $p_info = self::saveParentInfo($parent_info,$newID,$ss);
+
 
             // // **delete Images in Folder if not exists in DB;
             // $folderPath = public_path('/uploads/public/'.$ss->branch_id.'_data/students/images');
@@ -193,7 +193,7 @@ class Student //extends Model
                 'group_id' => $group_id
             ],[],1,true);
         }
-        return DV::depends($newID,['parent_info' =>$p_info,'Parameter'=>$save_pmt_paramsID]);
+        // return DV::depends($newID,['parent_info' =>$p_info,'Parameter'=>$save_pmt_paramsID]);
     }
 
     //* for enrollments section
@@ -252,7 +252,7 @@ class Student //extends Model
             $row->student_type = $row->is_new_student == 0 ? 'Old' : 'New';
 
             $row->previous_school = self::getPrevSchool($row->prev_school_id)->name;
-            $row->group_id = DB::table('group_members')->where('student_id',$row->id)->first()->group_id;
+            // $row->group_id = DB::table('group_members')->where('student_id',$row->id)->first()->group_id;
 
         }
 
@@ -387,7 +387,7 @@ class Student //extends Model
        if(!$row) return null;
             //$row->level = self::getProgramLevel($row->level_id);
             //$row->campus = self::getCampus($row->campus_id);
-            $row->parent_info = self::getGuardians($row->student_id);
+            $row->parent_info = self::getGuardians($row->student_id,$ss);
             $row->previous_school = self::getPrevSchool($row->prev_school_id)->name;
             $url =null;
             if($row->file_name) $url = PublicStorage::getUrl($ss->branch_id,'students','image').$row->file_name;
@@ -417,12 +417,13 @@ class Student //extends Model
         return $row? $row: (object)['name'=>'','id'=>null];
     }
 
-    static function getGuardians($student_id){
+    static function getGuardians($student_id,$ss){
+        $branch_id = $ss->branch_id;
         $rows = DB::table('student_guardians as sg')
                 ->where('sg.student_id',$student_id)
                 ->join('guardians as g','sg.guardian_id' ,'=', 'g.id')
                 ->join('students as s','s.id','=','sg.student_id')
-                ->selectRaw('g.id,g.name,g.role,g.phone_number,g.email,g.address,g.religion,g.n_id')
+                ->selectRaw('g.id,g.name,g.role,g.phone_number,g.email,g.address,g.religion,g.n_id,g.file_name')
                 ->get();
         foreach($rows as $row){
             if(strtolower($row->role) == 'father'){
@@ -430,7 +431,9 @@ class Student //extends Model
                 $row->father_phone =$row->phone_number;
                 $row->father_email =$row->email;
                 $row->father_nid = $row->n_id;
-                $row->father_profile = "";
+                if($row->file_name){
+                    $row->father_profile = PublicStorage::getUrl($branch_id,'guardians','image').$row->file_name;
+                }else $row->father_profile = "";
                 unset($row->name);
                 unset($row->email);
                 unset($row->n_id);
@@ -441,7 +444,10 @@ class Student //extends Model
                 $row->mother_phone =$row->phone_number;
                 $row->mother_email =$row->email;
                 $row->mother_nid = $row->n_id;
-                $row->mother_profile = "";
+                if($row->file_name){
+                    $row->mother_profile = PublicStorage::getUrl($branch_id,'guardians','image').$row->file_name;
+                }else $row->mother_profile = "";
+
                 unset($row->name);
                 unset($row->email);
                 unset($row->n_id);
@@ -518,53 +524,8 @@ class Student //extends Model
             ];
             $updated = saveData($ss,'payments',['enrollment_id' => $enr->id],$change_fields,[],1);
         }
-        return DV::depends($updated,'Delete verified student');
+        return DV::depends($delete,'Delete verified student');
     }
-
-    // static function studentPaginate($filter=[],$ss){
-    //     $branch_id = $ss->branch_id;
-    //     $search_value =isset($filter['search_value'])?$filter['search_value']:null;
-    //     $current_page =isset($filter['current_page'])?$filter['current_page']:1;
-    //     $per_page =isset($filter['per_page'])?$filter['per_page']:10;
-    //     if(!is_numeric($current_page)) $current_page=1;
-    //     $skip_rows = ($current_page -1) * $per_page;
-
-    //     $str_search ="1=1";
-    //     $str_moreWhere="1=1";
-    //     if($search_value){
-    //         $skip_rows =0;
-    //         $search_value = escape_like_str($search_value);
-    //         // $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
-    //     }
-
-    // //     $selectCols = 's.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.prev_school_id';
-    // //     $query = DB::table('students as st')
-    // //             ->join('enrollments as e','e.student_id','=','st.id')
-    // //             ->join('sessions as s','s.id','=','e.session_id')
-    // //             ->selectRaw($selectCols)
-    // //             ->where('st.branch_id',$branch_id)
-    // //             ->whereRaw($str_moreWhere)->whereRaw($str_search)
-    // //             ->orderBy('id','desc');
-    // //     $count_query = clone $query;
-    // //     $count = $count_query->count('st.id');
-    // //     $rows = $query->skip($skip_rows)->take($per_page)->get();
-    // //     foreach($rows as $row) {
-    // //         $status = rand(0,1)?'New':'Old';
-    // //         $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
-    // //         $row->parent_info = self::getParentInfo($row->id);
-    // //         unset($row->file_name);
-    // //         // $row->campus = $campus->details($row->campus_id,$ss)->name;
-    // //         $row->level = self::getProgramLevel($row->level_id);
-    // //         $row->student_type = $status;
-
-    // //         $row->previous_school = self::getPrevSchool($row->prev_school_id)->name;
-    // //     }
-
-    // //     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-    // // }
-
-    //     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-    // }
 
     static function getStudentEnrollmentInfo($d,$ss=null){
         // $d = (object)$d;
@@ -572,7 +533,7 @@ class Student //extends Model
         if(!$student_id){
             $student_id = $d;
         }
-        // $filter = $d;
+        // $filter = $d;s
         $selectCols = 'e.session_id,e.id,c.name as campus,pmt.tuition,pmt.tuition_due,pmt.tuition_paid,pl.name as level,e.academic_year,e.status_id';
         // $branch_id = $ss->branch_id;
         // $search_value =isset($filter['search_value'])?$filter['search_value']:null;
@@ -615,6 +576,32 @@ class Student //extends Model
         }
         return $rows;
         // return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
+
+    function updateStudentInfo($arr=[],$ss){
+
+        $v_rule = [
+            'id' => '1|number|exists=students',
+            'name' => '0|string|1,50',
+            'name_kh' => '0|string|1,50',
+            'sex' => '0|string|1,30',
+            'date_of_birth' => '0|string',
+            'phone_number' => '0|string|1,20',
+            'email' => '0|string',
+            'address' => '0|string',
+            'photo' => '0|string',
+            'place_of_birth' => '0|string|1,150',
+            'prev_school_id' => '',
+        ];
+        $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
+        if($res->error) return $res->error;
+        $inputs = $res->values;
+
+        $id = $inputs['id'];
+        unset($inputs['id']);
+        $newID = saveData($ss,'students',['id' => $id],$inputs,[],1);
+
+        return DV::depends($newID,'Update');
     }
 
 }

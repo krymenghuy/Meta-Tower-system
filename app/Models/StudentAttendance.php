@@ -188,9 +188,9 @@ class StudentAttendance //extends Model
 
         $group_in = DB::table('student_groups as sg')
         ->join('group_members as gm','sg.id','=','gm.group_id')->where('gm.student_id',$student_id)
-        ->whereBetween(DB::raw('TIME(checkin_time)'), [
-            date('H:i', strtotime("$present_time -$mins minutes")),
-            date('H:i', strtotime("$present_time +$mins minutes")),
+        ->whereBetween(DB::raw('TIME(sg.checkin_time)'), [
+            date('H:i', strtotime("$present_time - $mins minutes")),
+            date('H:i', strtotime("$present_time + $mins minutes")),
         ])
         ->orderByRaw("ABS(TIME_TO_SEC(TIME(checkin_time)) - TIME_TO_SEC(?))", [$present_time])
         ->selectRaw('sg.id,sg.checkin_time,sg.checkout_time,sg.term_id')
@@ -207,9 +207,10 @@ class StudentAttendance //extends Model
 
         if($group_in){
             $group = $group_in;
-        }else{
-            $group = $group_out;
         }
+        // else{
+        //     $group = $group_out;
+        // }
 
         if(!$group)return DV::error('Student does not exist in group');
         $enr_info = DB::table('enrollments as e')->where('e.student_id',$student_id)->where('e.term_id',$group->term_id)->where('e.status_id','>=',3)->selectRaw('e.id,e.tuition_end_date,e.student_id,e.level_id,e.session_id,e.start_date')->first();
@@ -221,6 +222,10 @@ class StudentAttendance //extends Model
         if($enr_info->tuition_end_date < $present){
             return DV::error('Student enrollment is not available or expired');
         }
+
+        // if($current_date > $today){
+        //     return DV::error('Student');
+        // }
         $level = GeneralSettings::getLevel($enr_info->level_id,$ss);
 
         $current_date = isset($arr['current_date'])?date('Y-m-d',strtotime($arr['current_date'])):DB::raw('CURDATE()');
@@ -300,21 +305,21 @@ class StudentAttendance //extends Model
         }
 
 
-        $test = [
-            'session_date' => getNowTime(),
-            'diff_time' => $status,
-            'status_' => $group->checkin_time,
-            'count' => $check_in_out,
-            "scan_status" => $scan_status,
-            "early" => $status->early,
-            "late" => $status->late,
-            "id" => $id,
-            "update"=>$update,
-            "is_finished" => $is_finished,
-            "group" => $group,
-        ];
+        // $test = [
+        //     'session_date' => getNowTime(),
+        //     'diff_time' => $status,
+        //     'status_' => $group->checkin_time,
+        //     'count' => $check_in_out,
+        //     "scan_status" => $scan_status,
+        //     "early" => $status->early,
+        //     "late" => $status->late,
+        //     "id" => $id,
+        //     "update"=>$update,
+        //     "is_finished" => $is_finished,
+        //     "group" => $group,
+        // ];
 
-        return $test;
+        return $arr_attenance;
 
     }
 
@@ -635,12 +640,66 @@ class StudentAttendance //extends Model
 
     function attendanceListReport($arr,$ss=null){
         $ss = $ss?$ss:$this->ss;
-        $rows = DB::table('students as s')
+        $branch_id = $ss->branch_id;
+        $d = (object)$arr;
+        $search_value =isset($d->search_value)?$d->search_value:null;
+
+        $current_page =isset($d->current_page)?$d->current_page:1;
+        $per_page =isset($d->per_page)?$d->per_page:10;
+        if(!is_numeric($current_page)) $current_page=1;
+        $skip_rows = ($current_page -1) * $per_page;
+
+        $str_search ="1=1";
+        $str_moreWhere="1=1";
+        if($search_value){
+            $skip_rows =0;
+            $search_value = escape_like_str($search_value);
+            $str_moreWhere ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+        }
+
+        $session_date = isset($d->session_date) ? date('Y-m-d',strtotime($d->session_date)) :null;
+
+        if($session_date){
+            $str_search .= " AND DATE(sa.session_date) = '$session_date'" ;
+            // $str_search = 'YEAR(sa.session_date) = ' . date('Y',strtotime($session_date)).' AND MONTH(sa.session_date) = '.date('m',strtotime($session_date));
+        }
+        $query = DB::table('students as s')
             ->join('student_attendances as sa','s.id','=','sa.student_id')
-            ->where('sa.status_id',1)
-            ->selectRaw('s.name,s.name_kh,s.sex,s.date_of_birth,s.phone_number,s.email')
-            ->get();
-        return $rows;
+            ->whereRaw($str_search)
+            ->whereRaw($str_moreWhere)
+            ->join('student_groups as sg','sa.group_id','=','sg.id')
+            ->selectRaw('sa.in_diff_time,sa.out_diff_time,s.id as student_id,s.name,s.name_kh,s.sex,s.date_of_birth,s.phone_number,s.email,sg.session_id,sg.level_id,s.file_name,sa.checkin_time,sa.checkout_time,sa.in_remarks,out_remarks,DATE(sa.session_date) as session_date');
+
+            $count_query = clone $query;
+            $count = $count_query->count('s.id');
+            $rows = $query->skip($skip_rows)->take($per_page)->get();
+
+        $i=0;
+        while($i<count($rows)){
+            $row = $rows[$i];
+            $row->session = GeneralSettings::getSession($row->session_id)->name;
+            if($row->file_name == null){
+                $row->image_url = null;
+            }else  $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
+
+            $row->level = GeneralSettings::getLevel($row->level_id)->name;
+            $row->in_remarks = formatMinsTime($row->in_diff_time);
+            $row->out_remarks = formatMinsTime($row->out_diff_time);
+
+            $row->parent_phone = DB::table('student_guardians as sg')->where('sg.student_id',$row->student_id)
+                                    ->join('guardians as g','sg.guardian_id','=','g.id')
+                                    ->selectRaw('g.phone_number')
+                                    ->get();
+            $row->family_id = DB::table('student_guardians as sg')->where('sg.student_id',$row->student_id)->selectRaw('sg.family_code as family_id')->distinct()->first()->family_id;
+            $i++;
+            unset($row->file_name);
+        }
+        // $tmp = [];
+        // $tmp['students'] = $rows;
+        // $tmp['count_info'] = json_decode(json_encode($this->countStudentAttendance(1,$ss)),true);
+        // $tmp['count_info']['campus'] = 'All';
+        // return $tmp;
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
     // DB::table('student_guardians as sg')->where('sg.student_id',$st->student_id)
@@ -650,6 +709,27 @@ class StudentAttendance //extends Model
 
     function optionsAttendanceTypes(){
         return GeneralSettings::optionsAttendanceTypes();
+    }
+
+    function countStudentAttendance($status_id,$ss){
+        $rows = DB::table('group_members as gm')
+            ->join('students as s','s.id','=','gm.student_id')
+            ->join('student_attendances as sa','s.id','=','sa.student_id')
+            ->where('sa.status_id',$status_id)
+            ->selectRaw('s.sex')->get();
+        $female = [];
+        $all = [];
+        foreach($rows as $row){
+            if($row->sex == 'F'){
+                $female[] = $row->sex;
+            }
+            $all[] = $row->sex;
+        }
+        return (object)[
+            'female' => count($female),
+            'all' => count($all),
+            'male' => count($all) - count($female)
+        ];
     }
 
 }

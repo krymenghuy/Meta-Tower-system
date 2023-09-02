@@ -8,16 +8,24 @@ var ManageAccountComponent = new function(){
 
     this.cols = [{
         title: "Name",
-        data: (data, a, b) => {
+        data: (data, index, tr) => {
             let father_name = data.parents && data.parents[0].name ? data.parents[0].name : '',
-            mother_name = data.parents && data.parents[1].name ? data.parents[1].name : '';
-            return [`<p class="pb-0 mb-1 text-capitalize">${father_name}</p>
+            mother_name = data.parents && data.parents[1].name ? data.parents[1].name : '', father_photo = data.parents && data.parents[0].image_url ? data.parents[0].image_url : '', mother_photo = data.parents && data.parents[1].image_url ? data.parents[1].image_url : '';
+
+            return [`<div class="d-flex align-items-center gap-2">
+                <img class="image-student-tbl" src="${father_photo}" alt=""/>
+                <p class="pb-0 mb-1 text-capitalize">${father_name}</p>
+            </div>
             <hr class="p-0"/>
-            <p class="pb-0 mb-1 text-capitalize">${mother_name}</p>`].join('');
+            <div class="d-flex align-items-center gap-2">
+                <img class="image-student-tbl" src="${mother_photo}" alt=""/>
+                <p class="pb-0 mb-1 text-capitalize">${mother_name}</p>
+            </div>`].join('');
         }
     },
     {
         title: "Phone Number",
+        className: "align-middle",
         data: (data, a, b) => {
             let father_phone = data.parents && data.parents[0].phone_number ? data.parents[0].phone_number : '', mother_phone = data.parents && data.parents[1].phone_number ? data.parents[1].phone_number : '';
             return [`<p class="pb-0 mb-1">${father_phone}</p>
@@ -27,6 +35,7 @@ var ManageAccountComponent = new function(){
     },
     {
         title: "Email",
+        className: "align-middle",
         data: (data, a, b) => {
             let father_email = data.parents && data.parents[0].email ? data.parents[0].email : '', mother_email = data.parents && data.parents[1].email ? data.parents[1].email : '';
             return [`<p class="pb-0 mb-1">${father_email}</p>
@@ -36,6 +45,7 @@ var ManageAccountComponent = new function(){
     },
     {
         title: "National Card ID",
+        className: "align-middle",
         data: (data, a, b) => {
             let father_nid = data.parents && data.parents[0].n_id ? data.parents[0].n_id : '', mother_nid = data.parents && data.parents[1].n_id ? data.parents[1].n_id : '';
             return [`<p class="pb-0 mb-1">${father_nid}</p>
@@ -46,7 +56,10 @@ var ManageAccountComponent = new function(){
     {
         title: "Family ID",
         className: "align-middle",
-        data: "family_code"
+        data: (data, index, tr) => {
+            let family_code = data.family_code ? data.family_code : '';
+            return family_code;
+        }
     },
     {
         title: "Action",
@@ -153,7 +166,9 @@ let ManageAccountDialog = new function(){
     });
 
     this.inputParentPhoto = (div,options) => {
-        div.closest('.modal-dialog').removeClass('modal-lg');
+        let dialog = div.closest('.modal-dialog');
+        dialog.removeClass('modal-lg');
+        dialog.find('.modal-footer').show();
         let html = [`<div class="row row-cols-lg-2 gy-2">
             <div class="col">
                 <div class="form-group">
@@ -226,10 +241,61 @@ let ManageAccountDialog = new function(){
         return p;
     }
 
-    this.displayChildren = (div) => {
+    this.displayChildren = (div,op) => {
         let dialog = div.closest('.modal-dialog');
         if(!(dialog.hasClass('modal-lg'))) dialog.addClass('modal-lg');
+        dialog.find('.modal-footer').hide();
         div.empty();
+        mThis.getChildren(div,op);
+    }
+
+    this.getChildren = (div,op) => {
+        vsapi.call(`${main_view.base_url}/api/guardian/children-details`,{'family_id': op.family_id},null,false).then(res => {
+            let d = [];
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            let html = null, inner_html = null;
+            html = [`<div class="table-responsive p-3 tbl-on-hover-to-scroll">
+                <table class="table">
+                    <thead>
+                        <tr class="text-nowrap text-primary">
+                            <td>Student ID</td>
+                            <td>Photo</td>
+                            <td>Student Name</td>
+                            <td>Student Name (KH)</td>
+                            <td>Date Of Birth</td>
+                            <td>Sex</td>
+                            <td>Place Of Birth</td>
+                            <td>Address</td>
+                            <td>Phone Number</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${inner_html=null,d.map(child => {
+                            inner_html = [inner_html,`<tr class="text-nowrap">
+                                <td class="align-middle">${child.code ? child.code : ''}</td>
+                                <td>
+                                    <img class="image-student-tbl" src="${child.image_url ? child.image_url : ''}" alt=""/>
+                                </td>
+                                <td class="align-middle">${child.name ? child.name : ''}</td>
+                                <td class="align-middle">${child.name_kh ? child.name_kh : ''}</td>
+                                <td class="align-middle">${child.date_of_birth ? new Date(child.date_of_birth).toLocaleDateString('km-KH',{
+                                    day: 'numeric',
+                                    month: 'short',
+                                    year: 'numeric'
+                                }).replaceAll(' ','-').replace(',','') : ''}</td>
+                                <td class="align-middle">${child.sex === 'M' ? 'Male' : 'Female'}</td>
+                                <td class="align-middle">${child.place_of_birth ? child.place_of_birth : ''}</td>
+                                <td class="align-middle">${child.address ? child.address : ''}</td>
+                                <td class="align-middle">${child.phone_number ? child.phone_number : 'N/A'}</td>
+                            </tr>`].join('');
+                        }),inner_html}
+                    </tbody>
+                </table>
+            </div>`].join('');
+            div.html(html);
+        });
     }
 
     this.show = (options) => {
@@ -242,7 +308,7 @@ let ManageAccountDialog = new function(){
         }
         else if(options.family_id){
             mThis.elTitle.text(LocaleManager.trans('Children','titles'));
-            mThis.displayChildren(mThis.elBody);
+            mThis.displayChildren(mThis.elBody,options);
         }
         else{
             mThis.elTitle.text(LocaleManager.trans('Connected Students','titles'));

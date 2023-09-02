@@ -325,13 +325,14 @@ function prn_allowed($prn_id,$module_id){
     $dateObj = DateTime::createFromFormat('!m', $num);
     return  substr($dateObj->format('F'),0,$is_short_cut);
  }
- function formatMinsTime($minutes) {
+ function formatMinsTime($minutes,$short_hand=false) {
+    $short_hand = true?'h':'hour';
     if ($minutes < 60) {
         return $minutes . " min";
     } else {
         $hours = floor($minutes / 60);
         $remainingMinutes = $minutes % 60;
-        return $hours . " hour" . ($hours > 1 ? "s" : "") . ($remainingMinutes > 0 ? " " . $remainingMinutes . " min" : "");
+        return $hours . " $short_hand" . ($hours && $short_hand == true > 1 ? "s" : "") . ($remainingMinutes > 0 ? " " . $remainingMinutes . " min" : "");
     }
 }
 

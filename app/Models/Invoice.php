@@ -102,6 +102,7 @@ class Invoice //extends Model
                     $fee['net_amount'] = $row->amount;
                     $fee['date_range'] = isset($row->start_date)?$row->start_date . ' to ' . $row->end_date:null;
                     $fee['description'] = $row->description;
+                    $fee['net_amount'] = $row->amount;
                     $keep_amount[] = $row->amount;
                 }
                 $invoice_items = saveData($ss,'invoice_items',["id"=>isset($fee["id"])?$fee["id"]:null],$fee,[],1);
@@ -572,7 +573,7 @@ class Invoice //extends Model
                 ->where('e.status_id','!=',1) //* for verified up to paid
                 ->orderBy('id','desc');
                 if($academic_year){
-                    $query->where('academic_year',$academic_year);
+                    $query->where('e.academic_year',$academic_year);
                 }
         $count_query = clone $query;
         $count = $count_query->count('st.id');
@@ -619,7 +620,9 @@ class Invoice //extends Model
         //$due_date = isset($d->due_date)?$d->due_date:null;
         $insert_info = isset($d->insert_info)?$d->insert_info:null;
         $delete_info = isset($d->delete_info)?$d->delete_info:null;
-        $keeper = [];
+        $amount_keeper = [];
+        $success = 0;
+        $delete = 0;
         foreach($insert_info as $ins_info){
             $other_fee = DB::table('other_fees')->where('name',$ins_info['fee_type'])->selectRaw('name,amount,description')->first();
             $updateOrInsert = [
@@ -630,14 +633,18 @@ class Invoice //extends Model
             ];
             $inv_item_id = isset($ins_info['invoice_item_id'])?$ins_info['invoice_item_id']:null;
             $newID = saveData($ss,'invoice_items',['id'=>$inv_item_id],$updateOrInsert);
+            $amount_keeper[] = $other_fee->amount;
+            $success ++;
         }
 
         if(isset($delete_info)){
             foreach($delete_info as $del_info){
                 DB::table('invoice_items')->where('id',$del_info['invoice_item_id'])->delete();
+                $delete ++;
             }
         }
-        return $keeper;
+        DB::table('invoices')->where('id',$id)->update(['amount'=>array_sum($amount_keeper),'due_amount'=>array_sum($amount_keeper)]);
+        return DV::depends($success || $delete,$amount_keeper);
     }
 
     static function getTuitionDueByEnrollmentID($enrollment_id){

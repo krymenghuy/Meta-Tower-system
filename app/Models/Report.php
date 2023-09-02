@@ -452,6 +452,87 @@ class Report extends Model
 
   //** end Attendance Report */
 
-  //**  */
+  //** Student List Report */
+
+  function getStudentListReport($arr=[],$ss){
+    $branch_id = $ss->branch_id;
+    $rows = DB::table('students as s')->selectRaw('s.name,s.name_kh,s.sex,s.email,s.phone_number,s.date_of_birth,s.file_name')->get();
+    foreach($rows as $row){
+        $row->age = getAge($row->date_of_birth);
+        if(isset($row->file_name)){
+            $row->image_url = PublicStorage::getUrl($branch_id,'students',' image').$row->file_name;
+        }else $row->image_url = null;
+
+        unset($row->file_name);
+    }
+    return $rows;
+  }
+
+  //** end Student List Report */
+
+  //** Family List Report*/
+
+    function getFamilyListReport($arr=[],$ss){
+        $branch_id = $ss->branch_id;
+        $rows = DB::table('student_guardians as sg')
+            ->select('sg.student_id','sg.family_code')
+            ->groupBy('sg.student_id', 'sg.family_code')->get();
+        $i=0;
+        $tmp_keeper = [];
+        while($i<count($rows)){
+            $row = $rows[$i];
+            $studentID = $row->student_id;
+            $family_id = $row->family_code;
+            if(!isset($tmp_keeper[$family_id])){
+                $tmp_keeper[$family_id] = [
+                    'family_id' => $family_id,
+                    'parents' => [],
+                    'children' => []
+                ];
+            }
+
+            $child = DB::table('students')->where('id', $studentID)->first();
+            if ($child) {
+                $tmp_keeper[$family_id]['children'][] = $child;
+            }
+
+            $parents = DB::table('guardians as g')
+                ->join('student_guardians as sg', 'g.id', '=', 'sg.guardian_id')
+                ->selectRaw('g.name, sg.family_code,g.phone_number,g.sex,g.n_id,g.address,g.email,g.file_name,g.role')
+                ->where('sg.family_code', $family_id)
+                ->distinct()
+                ->get();
+
+            $uniqueParents = [];
+            foreach ($parents as $parent) {
+                if(isset($parent->file_name) == null){
+                    $parent->image_url = '';
+                }else $parent->image_url = PublicStorage::getUrl($branch_id,'guardians','image').$parent->file_name;
+                $key = $parent->name . $parent->family_code;
+                if (!isset($uniqueParents[$key])) {
+                    $uniqueParents[$key] = [
+                        'name' => $parent->name,
+                        'phone' => $parent->phone_number,
+                        'email' => $parent->email,
+                        'address' => $parent->address,
+                        'role' => $parent->role,
+                        'sex' => $parent->sex,
+                        'national_id' => $parent->n_id,
+                        'image_url' => $parent->image_url,
+                    ];
+                }
+            }
+
+            $tmp_keeper[$family_id]['parents'] = array_values($uniqueParents);
+
+            $i++;
+        }
+
+        // return $rows;
+
+        return array_values($tmp_keeper);
+    }
+
+  //** end family list report */
 
 }

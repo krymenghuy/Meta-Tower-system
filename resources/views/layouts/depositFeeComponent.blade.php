@@ -6,7 +6,7 @@
         </button>
         <input id="_dpf_elSearch" type="search" class="form-control width--search-inner" placeholder="Search by Name or ID..."/>
     </div>
-    <div class="table-responsive mt-3 p-3 bg-white rounded-3">
+    <div class="table-responsive mt-3 p-3 bg-white rounded-3 table-responsive-hover">
         <table id="tbl_dpf_" class="table"></table>
     </div>
 </div>

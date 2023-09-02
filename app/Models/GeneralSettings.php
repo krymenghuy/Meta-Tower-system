@@ -222,7 +222,7 @@ class GeneralSettings //extends Model
 
     //payment options
     static function options_pmt($ss=null){
-        return DB::table('pmt_options')->selectRaw('name,id')->get();
+        return DB::table('pmt_options')->selectRaw('name,id')->limit(3)->orderBy('id','asc')->get();
     }
 
     static function options_school($ss=null){
