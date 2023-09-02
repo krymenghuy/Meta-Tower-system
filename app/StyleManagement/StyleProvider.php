@@ -8,6 +8,8 @@ class StyleProvider
         'vsksm-style' => [
             'output_file' => '/dist/css/vsksm-style.css',
             'files' => [
+                'assets/css/vsstyle.css',/** Must be set before bootstrap**/
+                'assets/css/kms_style.css', /** Must be set before bootstrap**/
                 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css',
                 '/assets/vendors/custom/datatables/datatables.bundle.css',
                 '/assets/vendors/general/perfect-scrollbar/css/perfect-scrollbar.css',
@@ -26,8 +28,6 @@ class StyleProvider
                 'assets/css/demo1/style.bundle.css',
                 'assets/css/loader.css',
                 'assets/css/jquery.datepicker2.css',
-                'assets/css/vsstyle.css',
-                'assets/css/kms_style.css',
                 'assets/css/vs-pagination.css',
                 'assets/css/sweetalert2.min.css',
                 'assets/plugins/chart.js/Chart.css',
