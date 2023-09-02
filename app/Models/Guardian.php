@@ -85,6 +85,7 @@ class Guardian //extends Model
         $selectCols = 'g.id as guardian_id,g.role,g.name, g.phone_number, g.email, g.n_id, sg.family_code,g.file_name';
         $query =  DB::table('student_guardians as sg')
             ->join('guardians as g', 'g.id', '=', 'sg.guardian_id')
+            ->distinct()
             ->selectRaw($selectCols);
 
 
@@ -136,6 +137,7 @@ class Guardian //extends Model
     function parentChildren($arr=[],$ss=null){
         $d = (object)$arr;
         $ss = $ss?$ss:$this->ss;
+        $branch_id = $ss->branch_id;
         $family_id = isset($d->family_id)?$d->family_id:null;
         $guardian_id = isset($d->guardian_id)?$d->guardian_id:null;
         $str_search = '1=1';
@@ -144,43 +146,27 @@ class Guardian //extends Model
         }
         $rows = DB::table('student_guardians')
             ->whereRaw($str_search)
-            ->select('student_id','family_code')
-            ->distinct()
+            ->select('student_id', 'family_code')
+            ->groupBy('student_id', 'family_code')
             ->get();
 
         $groupedData = [];
 
         foreach ($rows as $row) {
+
             $studentId = $row->student_id;
             $familyId = $row->family_code;
 
-            if (!isset($groupedData[$familyId])) {
-                $groupedData[$familyId] = [
-                    'family_id' => $familyId,
-                    'children' => []
-                ];
+            $child = DB::table('students')->where('id', $studentId)->first();
+            if ($child) {
+                if(isset($child->file_name) == null) {
+                    $child->image_url = '';
+                }else $child->image_url = PublicStorage::getUrl($branch_id,'students','image').$child->file_name;
+                $groupedData[] = $child;
             }
-
-            $groupedData[$familyId]['children'] = DB::table('students')->where('id',$studentId)->get();
         }
 
-        // foreach($rows as $row){
-        //     $studentId = $row->student_id;
-        //     $familyId = $row->family_code;
-        //     if (!isset($group_data[$family_id])) {
-        //         $group_data[$family_id] = [
-        //             'family_id' => $family_id,
-        //             'students' => [],
-        //         ];
-        //     }
-
-        //     $group_data[$familyId]['students'][] = [
-        //         'student_id' => $studentId
-        //     ];
-        // }
-
-        if(!isset($rows)) return  null;
-        return array_values($groupedData);
+        return $groupedData;
     }
 
 }

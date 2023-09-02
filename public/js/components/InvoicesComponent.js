@@ -256,7 +256,7 @@ var InvoicesComponent = new function(){
                         </div>
                     </div>`].join('');
                 });
-                html = [`<div class="d-flex flex-nowrap gap-2">`,html,`</div>`].join('');
+                html = [`<div class="position-absolute d-flex flex-nowrap gap-2">`,html,`</div>`].join('');
                 div_wrapper.html(html).addClass(['p-3','on-hover-to-scroll']);
             }
         });

@@ -10,6 +10,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\Login\GuardianLoginController;
 use App\Http\Controllers\MobileApi\AttendanceController;
 use App\Http\Controllers\MobileApi\HomePageController;
+use App\Http\Controllers\MobileApi\MobileApiController;
 use App\Http\Controllers\MobileSetting\BannerController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\ProgramLevelController;
@@ -96,8 +97,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //mobile api
 
     Route::prefix('mobile')->group(function(){
-        Route::post('/home-page',[HomePageController::class,'homePage']);
-        Route::post('/student-attendance',[AttendanceController::class,'attendanceList']);
+        Route::post('/home-page',[MobileApiController::class,'homePage']);
+        Route::post('/student-attendance',[MobileApiController::class,'attendanceList']);
     });
 
     //end mobile api
@@ -234,7 +235,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/school-fee/pay',[InvoiceController::class,'schoolFeePay']);
         Route::post('/invoice-delete',[InvoiceController::class,'deleteInvoice']);
         // Route::post('/invoice-to-active',[PriceListController::class,'turnInvoiceToActive']);
-        // Route::post('/invoice-update',[PriceListController::class,'updateInvoice']);
+        Route::post('/invoice-update',[InvoiceController::class,'updateInvoice']);
         // Route::post('/invoice-items',[PriceListController::class,'getInvoiceItems']);
 
         //** AttendanceController */
@@ -579,6 +580,10 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('enrollment/student-list',[ReportController::class,'getStudentList']);
     Route::post('enrollment/dropout-students',[ReportController::class,'getDropoutStudents']);
     Route::post('enrollment/new-students',[ReportController::class,'getNewStudents']);
+
+    Route::post('/student-info',[ReportController::class,'getStudentInfoList']);
+    Route::post('/family-info',[ReportController::class,'getFamilyInfoList']);
+
 
     Route::post('/attendance/list',[ReportController::class,'getAttendanceList']);
   });

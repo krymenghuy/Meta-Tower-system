@@ -82,7 +82,8 @@ class UM
         self::$user_classes = [
           'admin'=>['used'=>1,'name'=>'Admin','app_id'=>getAdminAppId(),'token_age'=>null],
           'staff'=>['used'=>1,'name'=>'Staff','app_id'=>getAdminAppId(),'token_age'=>null],
-          'parent'=>['used'=>1,'name'=>'Guardian','app_id'=>Config::get('app.customer_app_id'),'token_age'=>0]
+          'parent'=>['used'=>1,'name'=>'Guardian','app_id'=>Config::get('app.customer_app_id'),'token_age'=>0],
+          'guardian'=>['used'=>1,'name'=>'Guardian','app_id'=>Config::get('app.customer_app_id'),'token_age'=>0]
           //'client'=>['used'=>1,'name'=>'Client','app_id'=>getClientAppId()],
           //'superadmin'=>['used'=>1,'name'=>'Super Admin','app_id'=>getAdminAppId()],
           //'admin_support'=>['used'=>0,'name'=>'Admin Support','app_id'=>getAdminAppId()],
@@ -739,7 +740,7 @@ class UM
             }catch(\Exception $e){
               return DV::error($e->getMessage(),$def_lang,403);
             }
-           
+
             if(!isset($decoded->user_id)) $decoded->user_id = $decoded->id;
 
             //#begin:: Get special active fields "is_locked,status,lang". These fields need to be updated in the decoded JWT token on every api call
@@ -913,14 +914,14 @@ class UM
     $nowTime = time();
     self::$jwt_payload['iat'] = $nowTime; // Issue At
     self::$jwt_payload['nbf'] = $nowTime; // Not Before
-    
-    $arr = (array)$userInfo; 
+
+    $arr = (array)$userInfo;
     $user_class = $arr['user_class'];
-    
+
     if ($lifespan === null) {
         $lifespan = self::$user_classes[$user_class]['token_age'];
     }
-    
+
     if ($lifespan === 0) {
         $exp = $nowTime + 60 * 60 * 24 * 365 * 10; // Set token to expire in 10 years
     } elseif ($lifespan > 0) {
@@ -928,15 +929,15 @@ class UM
     } else {
         $exp = $nowTime + 180 * 60; // Default expiration if lifespan is negative
     }
-    
+
     self::$jwt_payload['exp'] = $exp; // Expire At
-    
+
     foreach ($arr as $p => $value) {
         self::$jwt_payload[$p] = $value;
     }
-    
+
     return JWT::encode(self::$jwt_payload, self::$jwt_key, self::$jwt_encode);
- } 
+ }
 
    //checkUser , validateUser, checkPassword, login, Signin
    /** login() | verifyUser() check user login and pwd and then returns object $result = {status, error_message, user} **/
