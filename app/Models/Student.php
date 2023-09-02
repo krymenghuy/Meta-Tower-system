@@ -524,7 +524,7 @@ class Student //extends Model
             ];
             $updated = saveData($ss,'payments',['enrollment_id' => $enr->id],$change_fields,[],1);
         }
-        return DV::depends($updated,'Delete verified student');
+        return DV::depends($delete,'Delete verified student');
     }
 
     static function getStudentEnrollmentInfo($d,$ss=null){

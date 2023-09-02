@@ -221,14 +221,14 @@ class StudentGroup //extends Model
                 $failed['student_id'] = $info['student_id'];
                 continue;
             }
-            $success ++;
             $newID = saveData($ss,'group_members',['id' => null],[
                 'group_id' => $inputs['group_id'],
                 'student_id' => $info['student_id']
             ],[],1);
+            $success++;
         }
 
-        return DV::depends($newID,['action'=> 'Assigned','failed'=>$failed]);
+        return DV::depends($success,['action'=> 'Assigned','failed'=>$failed]);
     }
 
     static function groupMemberList($ss){

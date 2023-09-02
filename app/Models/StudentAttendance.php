@@ -188,9 +188,9 @@ class StudentAttendance //extends Model
 
         $group_in = DB::table('student_groups as sg')
         ->join('group_members as gm','sg.id','=','gm.group_id')->where('gm.student_id',$student_id)
-        ->whereBetween(DB::raw('TIME(checkin_time)'), [
-            date('H:i', strtotime("$present_time -$mins minutes")),
-            date('H:i', strtotime("$present_time +$mins minutes")),
+        ->whereBetween(DB::raw('TIME(sg.checkin_time)'), [
+            date('H:i', strtotime("$present_time - $mins minutes")),
+            date('H:i', strtotime("$present_time + $mins minutes")),
         ])
         ->orderByRaw("ABS(TIME_TO_SEC(TIME(checkin_time)) - TIME_TO_SEC(?))", [$present_time])
         ->selectRaw('sg.id,sg.checkin_time,sg.checkout_time,sg.term_id')
@@ -207,9 +207,10 @@ class StudentAttendance //extends Model
 
         if($group_in){
             $group = $group_in;
-        }else{
-            $group = $group_out;
         }
+        // else{
+        //     $group = $group_out;
+        // }
 
         if(!$group)return DV::error('Student does not exist in group');
         $enr_info = DB::table('enrollments as e')->where('e.student_id',$student_id)->where('e.term_id',$group->term_id)->where('e.status_id','>=',3)->selectRaw('e.id,e.tuition_end_date,e.student_id,e.level_id,e.session_id,e.start_date')->first();
@@ -314,7 +315,7 @@ class StudentAttendance //extends Model
             "group" => $group,
         ];
 
-        return $test;
+        return  date('H:i', strtotime("$present_time - $mins minutes"));
 
     }
 
@@ -663,7 +664,7 @@ class StudentAttendance //extends Model
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->join('student_groups as sg','sa.group_id','=','sg.id')
-            ->selectRaw('s.id as student_id,s.name,s.name_kh,s.sex,s.date_of_birth,s.phone_number,s.email,sg.session_id,sg.level_id,s.file_name,sa.checkin_time,sa.checkout_time,sa.in_remarks,out_remarks,DATE(sa.session_date) as session_date');
+            ->selectRaw('sa.out_diff_time,s.id as student_id,s.name,s.name_kh,s.sex,s.date_of_birth,s.phone_number,s.email,sg.session_id,sg.level_id,s.file_name,sa.checkin_time,sa.checkout_time,sa.in_remarks,out_remarks,DATE(sa.session_date) as session_date');
 
             $count_query = clone $query;
             $count = $count_query->count('s.id');
@@ -678,6 +679,8 @@ class StudentAttendance //extends Model
             }else  $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
 
             $row->level = GeneralSettings::getLevel($row->level_id)->name;
+            // $row->leave_early = 'd';
+            $row->out_remarks = formatMinsTime($row->out_diff_time);
 
             $row->parent_phone = DB::table('student_guardians as sg')->where('sg.student_id',$row->student_id)
                                     ->join('guardians as g','sg.guardian_id','=','g.id')
