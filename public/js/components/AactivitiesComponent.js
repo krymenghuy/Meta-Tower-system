@@ -19,7 +19,7 @@ var AactivitiesComponent = new function(){
     },
     {
         title: "Full Name",
-        className: 'text-capitalize',
+        className: 'Full-Name text-capitalize',
         data: "student_name"
     },
     {
