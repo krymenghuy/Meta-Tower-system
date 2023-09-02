@@ -4,7 +4,7 @@
             <span class="trans-text" data-langprop="buttons.New"></span>
         </button>
     </div>
-    <div class="table-responsive p-3 bg-white rounded-3 mt-3">
+    <div class="table-responsive p-3 bg-white rounded-3 mt-3 table-responsive-hover">
         <table id="_adm_tbl" class="table"></table>
     </div>
 </div>

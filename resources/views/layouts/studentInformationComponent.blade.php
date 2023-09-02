@@ -9,5 +9,5 @@
             <span class="trans-text" data-langprop="buttons.Find"></span>
         </button>
     </div>
-    <div id="tbl--sin" class="table-responsive mt-3 p-3 rounded-3 bg-white"></div>
+    <div id="tbl--sin" class="table-responsive mt-3 p-3 rounded-3 bg-white table-responsive-hover"></div>
 </div>
