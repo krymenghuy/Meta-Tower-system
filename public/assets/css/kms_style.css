@@ -757,10 +757,11 @@ li.kt-menu__section {
 
 .table-responsive-hover{
     overflow: hidden;
+    max-height:700px;
 }
 
 .table-responsive-hover:hover{
-    overflow-x: auto;
+    overflow: auto;
 }
 
 .del-marker{

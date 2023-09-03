@@ -44,7 +44,7 @@ var StudentAttendanceReportComponent = new function(){
         className: 'align-middle',
         data: (data, a, b) => {
             let session_date = data.session_date ? data.session_date : '';
-            return new Date(session_date).toLocaleDateString('km-KH',{
+            return new Date(session_date).toLocaleDateString('en-GB',{
                 day: 'numeric',
                 month: 'short',
                 year: 'numeric'
