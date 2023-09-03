@@ -4,9 +4,7 @@
   justify-content: center;
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
-  line-height: 1.5;
-  color: #212529;
-  background-color: #fff;
+  background-color: #97afb7;
   border: 1px solid #dee2e6;
   cursor: pointer;
   border-radius: 0.25rem;
@@ -14,12 +12,12 @@
 }
 
 .vs-btn-page:hover {
-  color: #212529;
+  color: #fefefe;
   text-decoration: none;
-  background-color: #e9ecef;
+  background-color: #7d8a97;
   border-color: #dee2e6;
 }
 .vs-btn-page.active, .current-page.active {
-  background-color: #000;
+  background-color: #0eaede;
   color: #fff !important;
 }

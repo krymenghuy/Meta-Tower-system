@@ -7,11 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\Report;
 use App\Models\JDV;
 use App\Models\UM;
-use App\Models\GeneralSettings;
+//use App\Models\GeneralSettings;
 
 class ReportController extends Controller
 {
-
   function getReportList(Request $req)
   {
     $ss = UM::getUserInfoByToken($req, -1);

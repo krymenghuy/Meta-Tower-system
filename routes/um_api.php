@@ -5,7 +5,8 @@ use App\Http\Controllers\PusherController;
 Route::post('logout', [UMController::class, 'logout']);
 Route::get('settings/lang', [UMController::class, 'getLang']);
 Route::post('settings/save-lang', [UMController::class, 'saveLang']);
- 
+
+Route::post('auth/um-options', [UMController::class, 'getUserManagementOptions']);
 Route::post('broadcast/auth', [PusherController::class, 'pusherAuth']); //->middleware('auth');
 Route::post('auth/auth-data', [UMController::class, 'getAuthData']);
 //Route::post('getComboItems_userclass', [UMController::class, 'getComboItems_userclass']);
@@ -16,14 +17,15 @@ Route::prefix('application')->group(function () {
     Route::post('/module/create', [UMController::class, 'createModule']);
     Route::post('/module/delete', [UMController::class, 'deleteModule']);
     Route::post('/module/list', [UMController::class, 'getModuleList']);
-    Route::post('/module/option-module', [UMController::class, 'getComboItems_module']);
+    Route::post('/module/option-module', [UMController::class, 'getComboItems_module']); 
 });
- 
+
 Route::prefix('module')->group(function () {
     Route::post('/create', [UMController::class, 'createModule']);
     Route::post('/delete', [UMController::class,"deleteModule"]);
     Route::post('/list', [UMController::class, 'getModuleList']);
     Route::post('/options-module', [UMController::class, 'getComboItems_module']);
+    Route::post('/save-module-list', [UMController::class, 'saveModuleList']);
 });
 
 Route::prefix('permission')->group(function () {
@@ -63,7 +65,6 @@ Route::prefix('user')->group(function () {
 });
 
 Route::prefix('role')->group(function () {
-
     Route::post('/list', [UMController::class,"getRoleList"]);
     Route::post('/save', [UMController::class,"saveRole"]);
     Route::post('/delete', [UMController::class,"deleteRole"]);
@@ -79,6 +80,7 @@ Route::prefix('role')->group(function () {
 
     Route::post('/access-modules', [UMController::class, 'getAccessibleModules']);
     Route::post('/access-module/list', [UMController::class, 'getAccessibleModules']);
+    Route::post('/access-module/list-all', [UMController::class, 'getAccessibleModules_all']);
     Route::post('access-module/add', [UMController::class, 'addAccessibleModule']);
     Route::post('access-module/remove', [UMController::class, 'removeAccessibleModule']);
     Route::post('/permissions', [UMController::class, 'getPermissionsByRole']);
@@ -93,5 +95,7 @@ Route::prefix('role')->group(function () {
  
 Route::post('encryptData', [UMController::class, 'encryptData']);   
 Route::post('allowed', [UMController::class, 'allowed']); 
+Route::get('csrf-token', [UMController::class, 'refreshCsrfToken']); 
+
 
 

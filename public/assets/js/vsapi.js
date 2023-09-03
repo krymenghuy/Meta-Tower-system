@@ -87,7 +87,7 @@ const vsapi = (function () {
 
       if (response.status === 429) {
         // Handle the 429 error here
-        toastr.error('It seems unusal that you have made too many requests or too many clicks. Wait a moment for server to respond :)');
+        toastr.error('Oops! Wait a moment. You have made too many requests or clicks');
         // You can implement retry logic or show a message to the user
        
           if (retryCount < maxRetries) {
@@ -100,10 +100,12 @@ const vsapi = (function () {
             await new Promise(resolve => setTimeout(resolve, nextRetryDelay));
             return handleDebouncedFetch(url, options, loader, agent);
           } else {
+            toastr.error('You have made too many requests or clicks, so max retries already exceeded!');
+            retryCount =0;
             console.error('429 Too Many Requests: Max retries exceeded');
-            throw new Error('429 Too Many Requests');
-          }
-          
+            return {}; 
+            //throw new Error('429 Too Many Requests');
+          }  
 
       } else if (response.ok) {
         retryCount=0;
@@ -125,12 +127,12 @@ const vsapi = (function () {
         // This is a network-related error, you can handle it here
         toastr.error('It seems your connection is temporarily lost');
         cv_interact.warning('It seems your connection is lost');
-        return {};
       } else {
         // in production mode, disable this error show
         console.error(error + ' Error at url =>  ' + url);
         // throw error;
       }
+      return {};
     } finally {
       isAPICallInProgress = false; // Reset the flag when the API call is completed
 

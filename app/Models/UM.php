@@ -90,21 +90,21 @@ class UM
           //'super_admin'=>['used'=>0,'name'=>'Super Admin','app_id'=>getAdminAppId()]
         ];
         //parent::__construct($attributes);
-
     }
 
-    // //Temporary function, getting auth code
-    // function getUserInfoByToken1($req,$user_class=null){
-    //    $ss = self::getUserInfoByToken($req,-1);
-    //    if($ss->status_code !=200)
-    //       return '#350';
-    //    else{
-    //       $ss->id = $ss->official_id;
-    //       $ss->code = $ss->official_code;
-    //       return $ss;
-    //    }
-    // }
-
+    function getUserManagementOptions(){
+      $user_classes = self::getUserClasses();
+      return (object)[
+         "user_classes"=>$user_classes,
+         "single_user_class"=>(isset($user_classes[0]) && !isset($user_classes[1])),
+         "allow_add_remove_role_member"=>1,
+         "allow_create_user"=>1,
+         "allow_edit_user_details"=>1,
+         "allow_add_remove_role"=>1,
+         "allow_modify_role"=>0
+      ];
+    }
+     
     static function getUserClasses(){
       return self::$user_classes;
     }
@@ -1106,13 +1106,7 @@ class UM
    }
 
    function getComboItems_role($user_class=null,$ss=null){
-      //  $ss = self::getUserInfoByToken($d,-1);
-      //  if($ss->status_code !=200) return $ss; //user not authenticated
-      //  $branch_id = Sanitizer::sanitize($ss->branch_id);
-       //$user_class = isset($d->user_class)?$d->user_class:null;
        $str_user_class ="1=1";
-       //if($user_class) $str_user_class ="u.user_class='$user_class'";
-       //if(!empty($d->user_class)) $str_user_class =" AND r.user_class ='$user_class'";
        return DB::select(DB::raw("SELECT r.name, r.id FROM um_roles AS r WHERE $str_user_class ORDER BY `name` ASC "));
     }
 
@@ -1399,15 +1393,15 @@ class UM
       if(count($q) >0) return true;
       return false;
     }
-
+ 
     function getComboItems_userclass($d=null){
       $items = [];
       foreach(self::$user_classes as $key=>$item){
-        if ($item['used'] ===1) $items[] = (object)['user_class'=>$key,'user_class_name'=>$item['name']];
+        if ($item['used'] ===1) $items[] = (object)['user_class'=>$key,'user_class_name'=>$item['name']]; 
       }
-      return $items;
+      return $items;   
     }
-
+    
     static function logout_mobile($user_id,$app_id){
       if (!self::existsBy('user_id',$user_id,$app_id)) return "User identity not valid";
       DB::table('um_sessions')->where('user_id',$user_id)->where('app_id',$app_id)->delete();
