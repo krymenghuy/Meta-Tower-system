@@ -12,11 +12,11 @@ class Report //extends Model
     //use HasFactory;
     //protected $companyModel;
 
-    function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-        $this->companyModel = new CompanyProfile();
-    }
+    // function __construct(array $attributes = [])
+    // {
+    //     parent::__construct($attributes);
+    //     $this->companyModel = new CompanyProfile();
+    // }
 
     static function list($ss){
         return DB::select("SELECT id, `name`, `hidden`,code,category,rpt.module_id,rpt.description,rpt.params,rpt.display_order,rpt.hidden FROM reports AS rpt WHERE IFNULL(rpt.hidden,0) = 0 ORDER BY rpt.category,rpt.display_order ASC");

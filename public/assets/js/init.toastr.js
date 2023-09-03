@@ -5,9 +5,9 @@ let KTAppOptions = {
             "dark": "#282a3c",
             "light": "#ffffff",
             "primary": "#5867dd",
-            "success": "#34bfa3",
-            "info": "#36a3f7",
-            "warning": "#ffb822",
+            "success": "#0E8E46",
+            "info": "#04389E",
+            "warning": "#DFBA04",
             "danger": "#fd3995"
         },
         "base": {
@@ -29,13 +29,21 @@ let KTAppOptions = {
                 "preventDuplicates": false,
                 "onclick": null,
                 "showDuration": "300",
-                "hideDuration": "1000",
-                "timeOut": "5000",
+                "hideDuration": "300",
+                "timeOut": "400",
                 "extendedTimeOut": "1000",
                 "showEasing": "swing",
                 "hideEasing": "linear",
                 "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
+                "hideMethod": "fadeOut",
+                "onShown": function () {
+                    // When a toast is shown, check if there are more than 2 toasts displayed.
+                    // If so, hide the oldest toast.
+                    if (toastr.visible().length > 2) {
+                      const oldestToast = toastr.getContainer().find(".toast:first");
+                      toastr.clear(oldestToast);
+                    }
+                  }
                 };
 
                 //toastr.success("{{ Session::get('flash_message') }}");   
