@@ -121,9 +121,7 @@ class EnrollmentManager {
       unset($inputs['pmt_option_id']);
       unset($inputs['pmt_status']);
       unset($inputs['family_code']);
-
-
-
+ 
       // $is_create = (!$id || $id==0);
 
       unset($inputs['level_id'],$inputs['session_id'],$inputs['campus_id'],$inputs['previous_school'],$inputs['shift_id'],$inputs['term_id'],$inputs['pmt_mode']);
@@ -137,9 +135,12 @@ class EnrollmentManager {
 
       $to_delete_image = $id && (!$image || isImage($image));
       if($to_delete_image){
-        $prev_file_name = DB::table('students')->where('id',$id)->take(1)->value('file_name');
-        if($prev_file_name) PublicStorage::delete($branch_id,'students','image',$prev_file_name);
-        $inputs['file_name']=null;
+        $prev_file_name = DB::table('students')->where('id',$student_id)->take(1)->value('file_name');
+        if($prev_file_name){
+            PublicStorage::delete($branch_id,'students','image',$prev_file_name);
+            $inputs['file_name']=null;
+        }
+       
       }
 
       if(!$id && !$family_code && Student::checkParentLoginName($parent_info)) return DV::error('Parent Login name is already taken. Father or mother phone number is used as parent login');
@@ -207,47 +208,9 @@ class EnrollmentManager {
                   ]);
               }
           }
-
-        //   if($prev_school){
-        //       $save_prev_school = saveData($ss,'school',['id' =>$getEnrollment?$getEnrollment->school_id:null],['name' => $prev_school],[],1);
-        //       if($save_prev_school){
-        //           DB::table('enrollments')->where('student_id',$newID)->update([
-        //               'school_id' => $save_prev_school
-        //           ]);
-        //       }
-        //   }
-
-        //   //** save into guardian table and generate login information for female type or if one take that one
-        //   //** link parent(s) to child
-        //   //** using guardian's phone number for login name and password default = 123456 */
-        $p_info = 0;
-        if($family_code){
-            $rows = DB::table('student_guardians')->where('family_code',$family_code)->selectRaw('guardian_id,guardian_role,family_code')->get();
-            foreach($rows as $row){
-               saveData($ss,'student_guardians',['id' => null],[
-                'student_id' => $student_id,
-                'guardian_id' => $row->guardian_id,
-                'guardian_role' => $row->guardian_role,
-                'family_code' => $row->family_code,
-               ],[],1);
-            }
-            $p_info = $rows;
-        }else{
-            $p_info = Student::saveParentInfo($parent_info,$student_id,$ss);
-        }
-
-        //   // **delete Images in Folder if not exists in DB;
-        //   $folderPath = public_path('/uploads/public/'.$ss->branch_id.'_data/students/images');
-        //   $filesInDatabase = DB::table('students')->pluck('file_name');
-        //   $filesInFolder = glob($folderPath . '/*');
-
-        //   foreach ($filesInFolder as $filePath) {
-        //       $fileName = basename($filePath);
-        //       if (!in_array($fileName, $filesInDatabase->toArray())) {
-        //           unlink($filePath);
-        //       }
-        //   }
-
+      
+        $um_res = Student::saveParentInfo($parent_info,$student_id,$ss);
+        
           // add student to group
           $g_id = DB::table('group_members')->where('enrollment_id',$enrollment_id)->take(1)->value('id');
           saveData($ss,'group_members',['id' => $g_id],[
@@ -259,7 +222,7 @@ class EnrollmentManager {
           ],[],1);
       }
       $enroll_path = (object)['academic_year'=>$academic_year,'campus_id'=>$campus_id,'term_id'=>$term_id,'program_id'=>$program->id,'level_id'=>$level_id,'session_id'=>$session_id];
-      return DV::depends($enrollment_id,['enrollment_path'=>$enroll_path,'parent_info' =>$p_info],'Failed to save student enrollmemnt');
+      return DV::depends($enrollment_id,['enrollment_path'=>$enroll_path,'login_info' =>$um_res],'Failed to save student enrollmemnt');
   }
 
   static function getPrevSchool($id){

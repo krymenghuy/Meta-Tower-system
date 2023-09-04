@@ -525,6 +525,11 @@ class UM
          return $rows;
     }
 
+    static function loginExists($login_name){
+       $id = DB::table('um_users as u')->where('login_name',$login_name)->value('id');
+       return $id?true:false;
+    }
+ 
     // function person_exists($id){
     //    $rows = DB::table('persons as p')->where('id',$id)->selectRaw('id')->limit(1)->get();
     //    foreach($rows as $row) return true;
@@ -1059,24 +1064,23 @@ class UM
         return DV::success();
     }
 
-      function changeLoginName($login_name,$new_login_name,$ss=null){
-         $ss =$ss?$ss:$this->userInfo;
+      function changeLoginName($login_name,$new_login_name){
+         //$ss =$ss?$ss:$this->userInfo;
          //$branch_id = Sanitizer::sanitize($ss->branch_id);
-         $login_name = Sanitizer::sanitize($d->login_name,['@','-','.']);
-         $new_login_name = Sanitizer::sanitize($d->new_login_name,['@','-','.']);
-
          $user_id = DB::table('um_users')->where('login_name',$login_name)->selectRaw('id')->take(1)->value("id");
 
-         if (empty($user_id)) return DV::error("The provided login name does not exists");
-         if(empty($new_login_name)) return DV::error("New login name cannot be blank");
+         if (!$user_id) return DV::error("The previous login name does not exist");
+         if(!$new_login_name) return DV::error("New login name cannot be empty");
 
          if ($this->user_exists($new_login_name,$user_id)) {
              return DV::error("Login named `$new_login_name` already in use");
          }
-         if (strtolower($login_name) === strtolower($new_login_name)) return null;// "New login name cannot be the same as the old login name";
-         DB::update(DB::raw("UPDATE um_users SET login_name ='$new_login_name' WHERE login_name ='$login_name'"));
+         if (strtolower($login_name) === strtolower($new_login_name)) return DV::error('You have attempted to change login name to the same one');// "New login name cannot be the same as the old login name";
+         DB::table('um_users')->where('id',$user_id)->update([
+          'login_name'=>$new_login_name
+         ]);
          //DB::table('um_users')->where('login_name',$login_name)->update(array('login_name',$new_login_name)); //error WHY???
-         return DV::success();
+         return DV::success(['new_login_name'=>$new_login_name]);
       }
 
       function createLoginSession($user_id = null){
