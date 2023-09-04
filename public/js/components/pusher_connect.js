@@ -4,25 +4,28 @@ var PusherClient = new function () {
     this.user_id = $('meta[name="sess_user_id"]').attr('content');
 
     this.current_view_name = '';
-    this.backend_channel_name = ['vsmclinic.backend.', this.branch_id].join('');
+    this.backend_channel_name = ['vsksmkidsworld.backend.', this.branch_id].join('');
     this.pusher_channel = { 'bind': () => { return; } };
 
     //###begin::connect and then subscript to backend channel (Using internet-based Pusher service)
     //pusher_app_key are in .env file, and in main.js
     //cookie_name are set in main.js, app.js, vsapi.js, loginController.php, Master.blade.php, "login/index.blade.php" 
-    let pusher_app_key = 'b7351506ee87f3eec932'; //process.env.PUSHER_APP_KEY
-    let pusher = new Pusher(pusher_app_key, {
-        cluster: 'mt1',
+    const pusher_app_key = '23c76a62b1a7d4f37586'; //process.env.PUSHER_APP_KEY
+    Pusher.logToConsole = true;
+    const pusher = new Pusher(pusher_app_key, {
+        cluster: 'ap1',
         useTLS: true,
-        disableStats: true,
+        //disableStats: false,
         authorizer: function authorizer(channel, options) {
             return {
                 authorize: function authorize(socketId, callback) {
-                    let p = { "socket_id": socketId, "channel_name": channel.name };
-                    vsapi.call(`${main_view.base_url}/api/broadcast/auth`, p).then(auth_data => {
+                    const p = { "socket_id": socketId, "channel_name": channel.name };
+                    vsapi.call(`${main_view.base_url}/api/broadcast/auth`, p).then(res => {
                         console.log('Pusher authorization succeeded!');
+                        //res.data is supposed to be the @auth_datas
                         //NOTE: @auth_data ={"auth":"app_key:sig"} . For example,  @auth_data = {"auth":"b7351506ee87f3eec932:3c27d88c6944726d39052efd50770468b23b0e9987e981acbc5ed58ba4bb1d51"}
-                        callback(null, auth_data);
+                        //callback('Some problem occurred during channel authentication!',res.data);
+                        callback(null,res.data);
                     });
                 }
             };
@@ -34,55 +37,37 @@ var PusherClient = new function () {
     });
 
     //begin::Channel subscription
-    mThis.pusher_channel = pusher.subscribe(`private-${mThis.backend_channel_name}`);
-
+    mThis.pusher_channel = pusher.subscribe(`private-${mThis.backend_channel_name}`);  
     mThis.pusher_channel.bind('pusher:subscription_succeeded', (d) => {
         console.info("Channel subscription succeeded");
     });
-
+ 
     mThis.pusher_channel.bind('pusher:subscription_error', (d) => {
         console.error("Channel subscription error: " + d);
     });
+    // mThis.pusher_channel.bind('appointment_created', d => {
+    //     let data = d.data;
+    //     Swal.fire({
+    //         position: 'top-end',
+    //         icon: 'success',
+    //         title: data.message,
+    //         toast: true,
+    //         showConfirmButton: false,
+    //         timer: 2000,
+    //         showClass: {
+    //             popup: 'animate__animated animate__fadeInDown'
+    //         },
+    //     });
 
-    mThis.pusher_channel.bind('appointment_created', d => {
-        let data = d.data;
-        Swal.fire({
-            position: 'top-end',
-            icon: 'success',
-            title: data.message,
-            toast: true,
-            showConfirmButton: false,
-            timer: 2000,
-            showClass: {
-                popup: 'animate__animated animate__fadeInDown'
-            },
-        });
+    //     let order_id = data.order ? data.order.id : 0;
+    //     let image_count = (data.order || {}).image_count;
+    //     OrderImagesComponent.addImage(order_id, data.img, image_count);
+    // });
 
-        let order_id = data.order ? data.order.id : 0;
-        let image_count = (data.order || {}).image_count;
-        OrderImagesComponent.addImage(order_id, data.img, image_count);
-    });
-
-    mThis.pusher_channel.bind('payment_received', d => {
-        let data = d.data;
-        Swal.fire({
-            position: 'top-end',
-            icon: 'success',
-            title: data.message,
-            toast: true,
-            showConfirmButton: false,
-            timer: 2000,
-            showClass: {
-                popup: 'animate__animated animate__fadeInDown'
-            },
-        });
-
-        let order_id = data.order_id;
-        OrderImagesComponent.removeImage(order_id, data.image_id, data.image_count);
-    });
-
+    
     //subscript to Pusher event
     mThis.pusher_channel.bind('message_received', function (data) {
+        alert(JSON.stringify(data));
         Swal.fire({
             position: 'top-end',
             icon: 'success',
