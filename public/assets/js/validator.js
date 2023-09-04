@@ -468,18 +468,4 @@ window.addEventListener('DOMContentLoaded', function(){
             });
         }
     });
-    this.removeEventListener('DOMContentLoaded',() => {
-        $(document).find('.data-input').each(function(){
-            let el = $(this);
-            if(el.data('required') == 1){
-                el.on('blur', () => {
-                    Validator.checkValue(el);
-                });
-    
-                el.on('change', () => {
-                    Validator.checkValue(el);
-                });
-            }
-        });
-    });
 });
