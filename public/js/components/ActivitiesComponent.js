@@ -251,6 +251,9 @@ let RequestDialog = new function(){
     let mThis = this;
     this.self = $('#dlg_att_');
     this.options = {};
+    let ref = {
+        click: true
+    };
 
     this.elTitle = mThis.self.find('.modal-title');
     this.btnSave = mThis.self.find('#dlg_att_btn_save');
@@ -259,14 +262,22 @@ let RequestDialog = new function(){
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        let p = mThis.getDataForm(false);
-        if(!p) return;
-        vsapi.call(`${main_view.base_url}/api/activity/create-request-change`,p,null).then(res => {
-            if(res.status_code === 200){
-                mThis.self.modal('hide');
-                if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
-            }
-        });
+        let p = mThis.getDataForm();
+        if(ref.click){
+            vsapi.call(`${main_view.base_url}/api/activity/create-request-change`,p,null).then(res => {
+                ref.click = false;
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    if(typeof mThis.options.onClose === 'function')
+                        mThis.options.onClose();
+                    ref.click = true;
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                    ref.click = true;
+                }
+            });
+        }
     });
 
     this.prepareFormOption = (onFinish = null) => {
@@ -446,27 +457,21 @@ let RequestDialog = new function(){
         });
     }
 
-    this.getDataForm = (silent=false) => {
+    this.getDataForm = () => {
         let p = {
             'id': mThis.options.id
         };
-        let has_error = false;
+
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
-            if(el.data('error')==1){
-                if(!silent) cv_interact.warning([Validator.properCase(f),' is not correct'].join(''));
-                has_error = true;
-                return false;
-            }
             p[f] = el.val();
         });
-        return has_error? null: p;
+        return p;
     }
 
     this.setDataForm = (d) => {
         d = d ? d : {};
-        Validator.clearErrors(mThis.self);
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');

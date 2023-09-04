@@ -167,6 +167,9 @@ let NonTuitionFeeOutsideDialog = new function(){
     let mThis = this;
     this.self = $('#dlg_ntf');
     this.options = {};
+    let ref = {
+        click: true
+    };
 
     this.elTitle = mThis.self.find('.modal-title');
     this.btnSave = mThis.self.find('#dlg_ntf_btn_save');
@@ -175,37 +178,35 @@ let NonTuitionFeeOutsideDialog = new function(){
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        let p = mThis.getDataForm(false);
-        if(!p) return;
-        vsapi.call(`${main_view.base_url}/api/other-fee/save`,p,null).then(res => {
-            if(res.status_code === 200){
-                mThis.self.modal('hide');
-                if(typeof mThis.options.onClose === 'function')
-                    mThis.options.onClose();
-            }
-            else{
-                cv_interact.error(res.error_message);
-            }
-        });
+        let p = mThis.getDataForm();
+        if(ref.click){
+            vsapi.call(`${main_view.base_url}/api/other-fee/save`,p,null).then(res => {
+                ref.click = false;
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    if(typeof mThis.options.onClose === 'function')
+                        mThis.options.onClose();
+                    ref.click = true;
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                    ref.click = true;
+                }
+            });
+        }
     });
 
-    this.getDataForm = (silence=false) => {
+    this.getDataForm = () => {
         let p = {
             'id': mThis.options.id
         };
 
-        let has_error = false;
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
-            if(el.data('error') ==1){
-                has_error = true;
-                cv_interact.warning([Validator.properCase(f),' is not correct'].join(''));
-                return false;
-            }
             let f = el.data('field');
             p[f] = el.val();
         });
-        return has_error?null:p;
+        return p;
     }
 
     this.setDataForm = (d) => {
@@ -257,8 +258,7 @@ let NonTuitionFeeOutsideDialog = new function(){
                 mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input fee type details','titles'));
                 mThis.setDataForm(null);
             }
-            //Clear error signs
-            Validator.clearErrors(mThis.self.find('.modal-body'));
+
             mThis.self.modal({
                 backdrop: 'static'
             });

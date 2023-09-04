@@ -147,6 +147,9 @@ let PolicyDiscountOutsideDialog = new function(){
     let mThis = this;
     this.self = $('#dlg__pld');
     this.options = {};
+    let ref = {
+        click: true
+    };
 
     this.elTitle = mThis.self.find('.modal-title');
     this.btnSave = mThis.self.find('#dlg_pld_btn_save');
@@ -156,41 +159,38 @@ let PolicyDiscountOutsideDialog = new function(){
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        let p = mThis.getDataForm(false);
-        if(!p) return;
-        vsapi.call(`${main_view.base_url}/api/pol-discount/save`,p,null).then(res => {
-            if(res.status_code === 200){
-                mThis.self.modal('hide');
-                if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
-            }
-            else{
-                cv_interact.error(res.error_message);
-            }
-        });
+        let p = mThis.getDataForm();
+        if(ref.click){
+            vsapi.call(`${main_view.base_url}/api/pol-discount/save`,p,null).then(res => {
+                ref.click = false;
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    if(typeof mThis.options.onClose === 'function')
+                        mThis.options.onClose();
+                    ref.click = true;
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                    ref.click = true;
+                }
+            });
+        }
     });
 
-    this.getDataForm = (slient = false) => {
+    this.getDataForm = () => {
         let p = {
             'id': mThis.options.id
         };
-        let has_error = false;
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
-            if(el.data('error')==1){
-                has_error = true;
-                if(!slient) cv_interact.warning([Validator.properCase(f),' is not correct'].join(''));
-                return false;
-            }
-         
             p[f] = el.val();
         });
-        return has_error? null:p;
+        return p;
     }
 
     this.setDataForm = (d) => {
         d = d ? d : {};
-        Validator.clearErrors(mThis.self);
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -239,7 +239,7 @@ let PolicyDiscountOutsideDialog = new function(){
                 mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input discount type details','titles'));
                 mThis.setDataForm(null);
             }
-    
+
             mThis.self.modal({
                 backdrop: 'static'
             });
