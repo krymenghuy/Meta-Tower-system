@@ -121,7 +121,7 @@ class EnrollmentManager {
       unset($inputs['pmt_option_id']);
       unset($inputs['pmt_status']);
       unset($inputs['family_code']);
- 
+
       // $is_create = (!$id || $id==0);
 
       unset($inputs['level_id'],$inputs['session_id'],$inputs['campus_id'],$inputs['previous_school'],$inputs['shift_id'],$inputs['term_id'],$inputs['pmt_mode']);
@@ -140,7 +140,7 @@ class EnrollmentManager {
             PublicStorage::delete($branch_id,'students','image',$prev_file_name);
             $inputs['file_name']=null;
         }
-       
+
       }
 
       if(!$id && !$family_code && Student::checkParentLoginName($parent_info)) return DV::error('Parent Login name is already taken. Father or mother phone number is used as parent login');
@@ -249,9 +249,9 @@ class EnrollmentManager {
         //       }
         //   }
 
-      
+
         $um_res = Student::saveParentInfo($parent_info,$student_id,$ss);
-        
+
           // add student to group
           $g_id = DB::table('group_members')->where('enrollment_id',$enrollment_id)->take(1)->value('id');
           saveData($ss,'group_members',['id' => $g_id],[

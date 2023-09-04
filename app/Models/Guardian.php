@@ -183,22 +183,46 @@ class Guardian //extends Model
             'religion' => '0|string|1-100',
             'national_id' => '1|string',
             'photo' => '0|image',
-            'student_id' => '1|number|exists=students.id',
             'password' => '0|string',
+            'student_info' => '0|array',
         ];
-
-        $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
+        $email_char = ['@','.','-','_'];
+        $address_char = ['@','.','#'];
+        $image_char = ['+',':',',',';','=','/','\\','?'];
+        $res = validateObject($arr,$v_rule,1,['email'=>$email_char,'address'=>$address_char,'photo'=>$image_char],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
-        $student_id = $inputs['student_id'];
         unset($inputs['student_id']);
+        $inputs['n_id'] = $inputs['national_id'];
+        unset($inputs['national_id']);
+        $image = $inputs['photo'];
+        unset($inputs['photo']);
+        $password = isset($inputs['password'])?$inputs['password']:null;
+        unset($inputs['password']);
+        $student_info = $inputs['student_info'];
+        unset($inputs['student_info']);
 
-        $uniqueEmail = isUnique('guardians','email',$inputs['email']);
-        $uniqueEmail = isUnique('guardians','email',$inputs['email']);
+        $inputs['role'] = $inputs['sex'] == 'F'?'mother':'father';
+        $uniqueEmail = DB::table('guardians')->where('email',$inputs['email'])->exists();
+        $uniquePhoneNumber = DB::table('guardians')->where('phone_number',$inputs['phone_number'])->exists();
 
-        $family_code = DB::table('student_guardians')->where('student_id',$student_id)->selectRaw('student_id,family_code')->distinct()->first()->family_code;
+        if($uniqueEmail) return DV::error('Email already exists');
+        if($uniquePhoneNumber) return DV::error('Phone number already exists');
+
+        $childrenID = [];
+        //
+        foreach($student_info as $info){
+            $existsStudent = DB::table('students')->where('id',$info['student_id'])->exists();
+            if(!$existsStudent) return DV::error('Could not find student');
+            $childrenID[] = $info['student_id'];
+        }
+        //
+
+        $family_code = DB::table('student_guardians')->whereIn('student_id',$childrenID)->selectRaw('student_id,family_code')->distinct()->first()->family_code;
         $new_guardianID = saveData($ss,'guardians',['id' => null],$inputs,[],1);
+
         if($new_guardianID>0){
+            $um = new UM();
 
             PublicStorage::saveImage($branch_id,'guardians',null,$image,null,['id' => $new_guardianID,'store'=>'guardians.file_name']);
 
@@ -209,33 +233,35 @@ class Guardian //extends Model
                 'official_id' => $new_guardianID,
                 // 'official_code' =>$student_code,
                 'email' => $inputs['email'],
-                'password' => isset($inputs['password']) ? $inputs['password']:self::$def_password,
-                'full_name' => $female_guardian->name,
+                'password' => $password?$password:self::$def_password,
+                'full_name' => $inputs['name'],
             ];
-            $um_ = $um->saveUser($arr,$ss);
+            $um_ = $um->saveUser($um_info,$ss);
 
             //** link student to requested guardian */
-            $newGuardian = DB::table('student_guardians')->insert([
-                'student_id' => $student_id,
-                'guardian_id' => $new_guardianID,
-                'family_code' => $family_code
-            ]);
+            foreach($student_info as $info){
+                $existsStudent = DB::table('students')->where('id',$info['student_id'])->exists();
+                if(!$existsStudent) return DV::error('Could not find student');
+                $newGuardian = saveData($ss,'student_guardians',['id' => null],[
+                    'student_id' => $info['student_id'],
+                    'guardian_id' => $new_guardianID,
+                    'family_code' => $family_code,
+                    'guardian_role' => $inputs['sex'] == 'F'?'mother':'father'
+                ],[],1);
+                // DB::table('student_guardians')->insert([
+                //     'student_id' => $info['student_id'],
+                //     'guardian_id' => $new_guardianID,
+                //     'family_code' => $family_code,
+                //     'guardian_role' => $inputs['sex'] == 'F'?'mother':'father'
+                // ]);
 
+            }
         }
-        return DV::depends($new_guardianID,'Created');
+        return DV::depends($new_guardianID,$new_guardianID);
     }
 
 
 
-    // function isUnique($tableName, $columnName, $value, $exceptId = null)
-    // {
-    //     $query = DB::table($tableName)->where($columnName, $value);
 
-    //     if (!is_null($exceptId)) {
-    //         $query->where('id', '!=', $exceptId);
-    //     }
-
-    //     return $query->count() === 0;
-    // }
 
 }
