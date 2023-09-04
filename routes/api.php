@@ -82,7 +82,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('auth/login', [LoginController::class, 'apiLogin']);
 Route::post('/auth/guardian/login',[GuardianLoginController::class,'guardianLogin']);
 Route::post('/auth/guardian/profile',[GuardianLoginController::class,'getGuardianProfile']);
-
+Route::post('/auth/guardian/change-password',[GuardianLoginController::class, 'changePasswords']);
+Route::post('/auth/guardian/change-profile',[GuardianLoginController::class, 'changeProfile']);
 
 // Route::get('env/20230120AZ99/vars',function(){
 //     $vars =[
@@ -152,6 +153,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::prefix('promote')->group(function(){
         Route::post('/students',[PromoteStudentController::class,'promoteStudents']);
         Route::post('/verify',[PromoteStudentController::class,'verifyPromotedStudent']);
+        Route::post('/delete',[PromoteStudentController::class,'deleteNewPromoted']);
         Route::post('/student-list-paginate',[PromoteStudentController::class,'promoteListPaginate']);
         Route::post('/form-options',[PromoteStudentController::class,'getFormOptions']);
 
@@ -619,6 +621,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/details',[GuardianController::class,'details']);
         Route::post('/request-account',[GuardianController::class,'parentRequestAccount']);
         Route::post('/children-details',[GuardianController::class,'parentChildrenDetails']);
+        Route::post('/options-family',[GuardianController::class,'optionFamily']);
     });
     //end::GuardianController
 

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Login;
 
 use App\Http\Controllers\Controller;
 use App\Models\JDV;
-use App\Models\MobileApi\HomePage;
+use App\Models\MobileApi\MobileApi;
 use App\Models\UM;
 use Illuminate\Http\Request;
 
@@ -33,8 +33,26 @@ class GuardianLoginController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code != 200) return $ss;
 
-        $d = new HomePage();
+        $d = new MobileApi();
         $profile = $d->guardianProfile($ss);
         return JDV::result($profile);
+    }
+
+    function changePasswords(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code != 200) return $ss;
+
+        $d = new MobileApi();
+        $change = $d->changePassword($req->all(),$ss);
+        return JDV::result($change);
+    }
+
+    function changeProfile(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code != 200) return $ss;
+
+        $d = new MobileApi();
+        $change = $d->changeProfile($req->all(),$ss);
+        return JDV::result($change);
     }
 }

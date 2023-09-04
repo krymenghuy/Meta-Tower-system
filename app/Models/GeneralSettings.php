@@ -487,6 +487,38 @@ class GeneralSettings //extends Model
         return DB::table('campuses')->where('id',$id)->selectRaw('id,name,name as campus')->first();
     }
 
+    static function options_family($ss=null){
+        $branch_id = $ss->branch_id;
+
+        $familyCodes = DB::table('student_guardians')
+        ->select('family_code')
+        ->distinct()
+        ->get();
+
+
+        $result = [];
+        $i=0;
+        foreach ($familyCodes as $familyCode) {
+            $familyPhone = DB::table('guardians as g')
+                ->join('student_guardians as sg', 'g.id', '=', 'sg.guardian_id')
+                ->select('g.name', 'sg.family_code','g.phone_number')
+                ->where('sg.family_code', $familyCode->family_code)
+                ->distinct()
+                ->first()->phone_number;
+
+            $familyObject = (object)[
+                'family_code' => $familyCode->family_code,
+                'family' => $familyCode->family_code.'('.$familyPhone.')',
+            ];
+
+
+            $result[] = $familyObject;
+            $i++;
+        }
+
+        return $result;
+    }
+
 
 
     // static function optionsStudentRequest($student_id,$ss){
