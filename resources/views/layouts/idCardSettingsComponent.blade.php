@@ -1,7 +1,7 @@
 <div id="_main_idCardSettingsComponent" class="mobile-padding p-3" style="display:none">
     <div class="d-block p-3 rounded-4 bg-white">
         <p class="trans-text fs-5" data-langprop="titles.Filter Class to Printing"></p>
-        <div class="row row-cols-lg-4">
+        <div id="container_ics_filter" class="row row-cols-lg-4">
             <div class="col">
                 <label for="campus_id" class="form-label trans-text" data-langprop="titles.Campus"></label>
                 <div class="width-select-dialog">

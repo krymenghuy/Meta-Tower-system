@@ -85,14 +85,17 @@
             
             //console.log('Fresh loaded lang content =' +lang );
             //console.log(JSON.stringify(langContent));
-
             fetch([mThis.base_url,'/api/settings/lang?',params].join(''))
             .then(response =>response.json())
             .then(res =>{
                 //res.data | res.status_code ===200?
-                if(!res.data) alert('Language data not found! This is usually caused by missing Locales language files');
+                if(res instanceof Error || res.status ==='Error'){
+                     console.error(JSON.stringify(res));
+                     return;
+                }
+                if(!res.data) alert('Language data not found! This is usually caused by missing language files');
                             let b = {};
-                            console.log('fresh load lang =' + lang);
+                            console.log('fresh load lang =>' + lang);
                             try{
                               b = JSON.parse(res.data);
                             }catch(e){

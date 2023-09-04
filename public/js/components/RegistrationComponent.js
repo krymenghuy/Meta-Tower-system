@@ -150,16 +150,21 @@ var RegistrationComponent = new function(){
             vsapi.call(`${main_view.base_url}/api/enrollment/save`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.options.photo = null;
+                    const d = res.data;
                     //const filter = mThis.getEnrollmentPath();
                     //NOTE that: after successfully save enrollment info => api enrollment/save() return "res.data.enrollment_path" that is used as filter to refresh the back page in order to display the newly enrolled student
-                    mThis.setFilterData(res.data.enrollment_path);
+                    mThis.setFilterData(d.enrollment_path);
+                    if(d.login_info.parent_login_changed ==1){
+                        cv_interact.info(['Parent login has changed to ',d.login_info.new_login_name].join(''));
+                    }
                     mThis.div_list.fadeIn(300).siblings().hide();
                 }
-                else cv_interact.error(res.error_message);
+                else cv_interact.error(res.error_message?res.error_message:'May be something wrong on server side');
             });
         });
     }
 
+    //renderPhoto()
     this.renderImage = (div, image) => {
         let html = null;
         if(image && image != 'undefined'){
@@ -174,7 +179,8 @@ var RegistrationComponent = new function(){
             </div>`].join('');
         }
         div.html(html);
-
+        //Must store options.photo as image url or as base64 in order to pass back to api. because NULL photo passed to api => means delete the student's photo
+        mThis.options.photo = image;
         div.find('#clickable_img').on('click',function(e){
             e.preventDefault();
             FileChooser.chooseFile(null,(d) => {
@@ -183,6 +189,12 @@ var RegistrationComponent = new function(){
                     mThis.renderImage(div, d.dataUrl);
                 }
             });
+        });
+
+        div.on('mouseenter', () => {
+            div.find('.btn-delete').show();
+        }).on('mouseleave', () => {
+            div.find('.btn-delete').hide();
         });
 
         div.find('.btn-delete').on('click',function(e){
@@ -258,8 +270,9 @@ var RegistrationComponent = new function(){
         ['father_name','father_email','father_phone','father_address','father_id_card','father_religion','mother_name','mother_email','mother_phone','mother_address','mother_id_card','mother_religion'].map(ob => {
             delete d[ob];
         });
+        //NOTE: if provide NULL photo to api enrollment/save() => it will delete existing photo, but if provide url, it wont delete or update the student's photo
+        //mThis.options.photo is a url in case of viewing existing photo. If this url is passed to api, it wont update or delete student's photo
         d.photo = mThis.options.photo;
-
         return d;
     }
      
@@ -547,7 +560,7 @@ var RegistrationComponent = new function(){
                         VSUtil.setComboItems(el,d.levels,'id','level_name',null,null,null);
                         break;
                     case 'program_id':
-                        VSUtil.setComboItems(el,d.programs,'id','program_name',null,null,null);
+                        VSUtil.setComboItems(el,d.programs,'id','program_name',true,'(All Programs)',0);
                         break;
                     case 'session_id':
                         VSUtil.setComboItems(el,d.sessions,'id','session_name',null,null,null);

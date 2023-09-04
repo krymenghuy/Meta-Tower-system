@@ -103,24 +103,7 @@ let main_view = new function(){
 
         $(document).on('click', '.dropdown-item', function (e) {
             $(this).parent().removeClass('show');
-        }); 
-
-
-        // document.addEventListener('click',e=>{
-        //    e.preventDefault();
-        //    let d = mThis.clickOnClass(e.currentTarget,'btn-dropdown');
-        //    if(d){
-        //       d.parentNode.querySelector('.dropdown-menu').classList.toggle('show');
-        //       return;
-        //    }
-
-        //    d = mThis.clickOnClass(e.currentTarget,'dropdown-item');
-        //    if(d){
-        //       d.closest('.dropdown-menu').remove('show');
-        //       return;
-        //    }
-        //    document.body.querySelectorAll('.dropdown-menu').remove('show'); 
-        // });
+        });
         
         this.mnuLogout.on('click',(e)=>{
             cv_interact.confirm("Do you want to log out?",{"title":"M-Clinic System","confirmButtonText":"Log Out","cancelButtonText":"No, I stay in","context":"delete","translate":true},(e)=>{
@@ -327,7 +310,7 @@ let main_view = new function(){
 
 main_view.init();
 
-window.addEventListener('DOMContentLoaded',(e)=>{
+window.addEventListener('DOMContentLoaded',function(){
     LocaleManager.translateZone('_app_content');
     DashboardComponent.show(null);
     main_view.setLangMenu(LocaleManager.currentLanguage.code);

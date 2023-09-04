@@ -11,6 +11,12 @@ use DB;
 class MobileApi //xtends Model
 {
     // use HasFactory;
+    function pickupMyKids($student_id,$ss){
+        $d = (object)['branch_id' => $ss->branch_id,'sender_id' => $ss->official_id,'file_url'=>'file name'];
+        $res = Notifier::notify_admin('pickup_call', $d);
+        return response()->json($res);
+    }
+
     function attendanceList($filter){
         $att = new StudentAttendance();
         $row =  $att->getAttendanceDetails($filter);

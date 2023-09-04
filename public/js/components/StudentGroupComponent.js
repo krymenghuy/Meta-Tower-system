@@ -10,8 +10,7 @@ var StudentGroupComponent = new function(){
     this.elFilter_program = this.self.find('#_sdg_filter_program');
     this.elFilter_session = this.self.find('#_sdg_filter_session');
 
-    this.cols = [
-        {
+    this.cols = [{
             title: "Group Name",
             data: (data, index, tr) =>{
                 if(data.name == data.descriptive_name) data.name = '';
@@ -133,7 +132,7 @@ var StudentGroupComponent = new function(){
     this.loadFilterOptions = (onFinish=null)=>{
         vsapi.call(`${main_view.base_url}/api/student-group/form-options`,{'id':null},null,false).then(res => {
             if(res.status_code === 200){
-                let d =StringSanitizer.sanitizeObject( res.data,null,[]);
+                let d =StringSanitizer.sanitizeObject(res.data,null,[]);
                 VSUtil.setComboItems(mThis.elFilter_term,d.terms,'id','term_name',null,null,null);
                 VSUtil.setComboItems(mThis.elFilter_program,d.programs,'id','program_name',null,null,null);
                 VSUtil.setComboItems(mThis.elFilter_session,d.sessions,'id','session_name',true,'(All Session)',0);
@@ -175,8 +174,7 @@ let StudentGroupDialog = new function(){
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        let p = mThis.getDataForm(false);
-           if(!p) return;
+        let p = mThis.getDataForm();
         vsapi.call(`${main_view.base_url}/api/student-group/save`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
@@ -189,27 +187,21 @@ let StudentGroupDialog = new function(){
         });
     });
 
-    this.getDataForm = (silent=false) => {
+    this.getDataForm = () => {
         let p = {
             'id': mThis.options.id
         };
-        let has_error = true;
+
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
-            if(el.data('error')==1){
-                if(!silent) cv_interact.warning([Validator.properCase(f),' is not correct'].join(''));
-                has_error=true;
-                return false;
-            }
             p[f] = el.val();
         });
-        return has_error? null: p;
+        return p;
     }
 
     this.setFormData = (d) => {
         d = d ? d : {};
-        Validator.clearErrors(mThis.self); 
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -263,7 +255,7 @@ let StudentGroupDialog = new function(){
     });
  
     this.prepareFormOption = (group_id,onFinish = null) => {
-        vsapi.call(`${main_view.base_url}/api/student-group/form-options`,{'id':group_id},null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/student-group/form-options`,{'id': group_id},null,false).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = StringSanitizer.sanitizeObject(res.data,null,['academic_year']);

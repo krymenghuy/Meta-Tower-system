@@ -141,8 +141,7 @@ let PaymentPendingDialog = new function(){
 
     mThis.btnSave.on("click", function (e) {
         e.preventDefault();
-        let p = mThis.getDataForm(false);
-        if(!p) return;
+        let p = mThis.getDataForm();
         vsapi.call(`${main_view.base_url}/api/price-list/update/pending-payment`,p,null).then((res) => {
             if(res.status_code === 200){
                 mThis.self.modal("hide");
@@ -152,27 +151,21 @@ let PaymentPendingDialog = new function(){
         });
     });
 
-    this.getDataForm = (silent=false) => {
+    this.getDataForm = () => {
         let p = {
             id: mThis.options.id,
         };
-        let has_error = false;
+
         mThis.self.find(".data-input").each(function () {
             let el = $(this);
             let f = el.data("field");
-            if(el.data('error')==1){
-                has_error = true;
-                if(!silent) cv_interact.warning([Validator.properCase(f),' is not correct'].join(''));
-                return false;
-            }
             p[f] = el.val();
         });
-        return has_error? null: p;
+        return p;
     };
 
     this.setDataForm = (d) => {
         d = d ? d : {};
-        Validator.clearErrors(mThis.self);
         mThis.self.find(".data-input").each(function () {
             let el = $(this);
             let f = el.data("field");

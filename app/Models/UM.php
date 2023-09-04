@@ -90,21 +90,21 @@ class UM
           //'super_admin'=>['used'=>0,'name'=>'Super Admin','app_id'=>getAdminAppId()]
         ];
         //parent::__construct($attributes);
-
     }
 
-    // //Temporary function, getting auth code
-    // function getUserInfoByToken1($req,$user_class=null){
-    //    $ss = self::getUserInfoByToken($req,-1);
-    //    if($ss->status_code !=200)
-    //       return '#350';
-    //    else{
-    //       $ss->id = $ss->official_id;
-    //       $ss->code = $ss->official_code;
-    //       return $ss;
-    //    }
-    // }
-
+    function getUserManagementOptions(){
+      $user_classes = self::getUserClasses();
+      return (object)[
+         "user_classes"=>$user_classes,
+         "single_user_class"=>(isset($user_classes[0]) && !isset($user_classes[1])),
+         "allow_add_remove_role_member"=>1,
+         "allow_create_user"=>1,
+         "allow_edit_user_details"=>1,
+         "allow_add_remove_role"=>1,
+         "allow_modify_role"=>0
+      ];
+    }
+     
     static function getUserClasses(){
       return self::$user_classes;
     }
@@ -525,6 +525,11 @@ class UM
          return $rows;
     }
 
+    static function loginExists($login_name){
+       $id = DB::table('um_users as u')->where('login_name',$login_name)->value('id');
+       return $id?true:false;
+    }
+ 
     // function person_exists($id){
     //    $rows = DB::table('persons as p')->where('id',$id)->selectRaw('id')->limit(1)->get();
     //    foreach($rows as $row) return true;
@@ -1059,24 +1064,23 @@ class UM
         return DV::success();
     }
 
-      function changeLoginName($login_name,$new_login_name,$ss=null){
-         $ss =$ss?$ss:$this->userInfo;
+      function changeLoginName($login_name,$new_login_name){
+         //$ss =$ss?$ss:$this->userInfo;
          //$branch_id = Sanitizer::sanitize($ss->branch_id);
-         $login_name = Sanitizer::sanitize($d->login_name,['@','-','.']);
-         $new_login_name = Sanitizer::sanitize($d->new_login_name,['@','-','.']);
-
          $user_id = DB::table('um_users')->where('login_name',$login_name)->selectRaw('id')->take(1)->value("id");
 
-         if (empty($user_id)) return DV::error("The provided login name does not exists");
-         if(empty($new_login_name)) return DV::error("New login name cannot be blank");
+         if (!$user_id) return DV::error("The previous login name does not exist");
+         if(!$new_login_name) return DV::error("New login name cannot be empty");
 
          if ($this->user_exists($new_login_name,$user_id)) {
              return DV::error("Login named `$new_login_name` already in use");
          }
-         if (strtolower($login_name) === strtolower($new_login_name)) return null;// "New login name cannot be the same as the old login name";
-         DB::update(DB::raw("UPDATE um_users SET login_name ='$new_login_name' WHERE login_name ='$login_name'"));
+         if (strtolower($login_name) === strtolower($new_login_name)) return DV::error('You have attempted to change login name to the same one');// "New login name cannot be the same as the old login name";
+         DB::table('um_users')->where('id',$user_id)->update([
+          'login_name'=>$new_login_name
+         ]);
          //DB::table('um_users')->where('login_name',$login_name)->update(array('login_name',$new_login_name)); //error WHY???
-         return DV::success();
+         return DV::success(['new_login_name'=>$new_login_name]);
       }
 
       function createLoginSession($user_id = null){
@@ -1106,13 +1110,7 @@ class UM
    }
 
    function getComboItems_role($user_class=null,$ss=null){
-      //  $ss = self::getUserInfoByToken($d,-1);
-      //  if($ss->status_code !=200) return $ss; //user not authenticated
-      //  $branch_id = Sanitizer::sanitize($ss->branch_id);
-       //$user_class = isset($d->user_class)?$d->user_class:null;
        $str_user_class ="1=1";
-       //if($user_class) $str_user_class ="u.user_class='$user_class'";
-       //if(!empty($d->user_class)) $str_user_class =" AND r.user_class ='$user_class'";
        return DB::select(DB::raw("SELECT r.name, r.id FROM um_roles AS r WHERE $str_user_class ORDER BY `name` ASC "));
     }
 
@@ -1399,15 +1397,15 @@ class UM
       if(count($q) >0) return true;
       return false;
     }
-
+ 
     function getComboItems_userclass($d=null){
       $items = [];
       foreach(self::$user_classes as $key=>$item){
-        if ($item['used'] ===1) $items[] = (object)['user_class'=>$key,'user_class_name'=>$item['name']];
+        if ($item['used'] ===1) $items[] = (object)['user_class'=>$key,'user_class_name'=>$item['name']]; 
       }
-      return $items;
+      return $items;   
     }
-
+    
     static function logout_mobile($user_id,$app_id){
       if (!self::existsBy('user_id',$user_id,$app_id)) return "User identity not valid";
       DB::table('um_sessions')->where('user_id',$user_id)->where('app_id',$app_id)->delete();
