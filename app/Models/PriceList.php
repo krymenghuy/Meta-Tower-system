@@ -613,7 +613,7 @@ class PriceList //extends Model
         $row = DB::table('enrollments as e')
                 ->join('students as s','s.id','=','e.student_id')
                 ->join('payments as ep','ep.enrollment_id','=','e.id')
-                ->where('s.id',$id)
+                ->where('e.id',$id)
                 ->selectRaw($selectCols)
                 ->get()->first();
 

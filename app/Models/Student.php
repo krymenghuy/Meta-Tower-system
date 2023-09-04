@@ -339,6 +339,26 @@ class Student //extends Model
                         'password' =>$def_password,
                         'full_name' => $inputs['name']
                     ];
+                   $um_ = $um->saveUser($arr,$ss);
+                }
+                $female_guardian = DB::table('guardians')->selectRaw('id,name,phone_number,email')->where('id',$newID)->where('sex','F')->first();
+                if($female_guardian){
+                    // return $female_guardian;
+                    $arr= [
+                        'login_name' => $female_guardian->phone_number,
+                        'user_class' => 'parent',
+                        'role_id' => '16',
+                        'official_id' => $female_guardian->id,
+                        // 'official_code' =>$student_code,
+                        'email' => $female_guardian->email,
+                        'password' => $def_password,
+                        'full_name' => $female_guardian->name,
+                    ];
+                  $um_ = $um->saveUser($arr,$ss);
+                }
+                // link parent with child
+                if(!$exist){
+                    saveData($ss,'student_guardians',[],['guardian_id'=>$newID,'student_id'=>$child_id,'guardian_role'=>$pf['role'],'family_code'=>$family_id],[],1);
                 }else{
                     /** If parentInfo array contains two parents including both Father and Mother, then take mother as parent account's login */
                     $female_guardian = DB::table('guardians')->selectRaw('id,name,phone_number,email')->where('id',$newID)->where('sex','F')->first();

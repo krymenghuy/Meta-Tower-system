@@ -39,7 +39,7 @@ class Invoice //extends Model
         $enrollment_id = $inputs['enrollment_id'];
         $enr_info = DB::table('enrollments as e')->where('e.id',$enrollment_id)
                     ->join('payments as p','p.enrollment_id','=','e.id')
-                    ->selectRaw('e.id as enr_id,p.tuition,e.start_date,e.tuition_end_date,e.academic_year,p.policy_discount,e.status_id,e.student_id')
+                    ->selectRaw('p.pmt_option_id,e.level_id,e.session_id,p.pmt_status,e.id as enr_id,p.tuition,e.start_date,e.tuition_end_date,e.academic_year,p.policy_discount,e.status_id,e.student_id')
                     ->first();
         $tuition_end_date = convertDate($enr_info->tuition_end_date);
         $enr_info->pmt_status = 'Unpaid';
@@ -70,12 +70,41 @@ class Invoice //extends Model
                 if(strtolower($fee['fee_type']) == 'tuition_fee'){
                     if($tuition_end_date){
                         if($tuition_end_date > date('Y-m-d') && $enr_info->status_id == 3){
-                            $row->pmt_status = 'paid';
+                            $enr_info->pmt_status = 'paid';
                             return DV::error('Tuition Fee is paid');
                         }
                         else if($tuition_end_date < date('Y-m-d') && $enr_info->status_id == 3){
-                            $row->pmt_status = 'expired';
-                            return DV::error('Tuition Fee is expired');
+                            $x = new PriceList(null,$ss);
+                            //** session ,academic year,  */
+                            if($enr_info->pmt_option_id == 1){
+                                $months = 3;//isset($d->months) ? $d->months:3;
+                            }else if($enr_info->pmt_option_id == 2){
+                                $months = 6;//isset($d->months) ? $d->months:6;
+                            }else if($enr_info->pmt_option_id == 3){
+                                $months = 12;//isset($d->months) ? $d->months:12;
+                            }
+                            $arr = [
+                                "level_id" => $enr_info->level_id,
+                                "academic_year" => $enr_info->academic_year,
+                                "session_id" => $enr_info->session_id,
+                                "prev_level_id" => "0",
+                                "start_date" => date('Y-m-d'),
+                                "months" => $months,
+                                // "weeks" => $weeks,
+                                // "days" => $days,
+                                "pmt_option_id"=> $enr_info->pmt_option_id
+                            ];
+                            $newPaymentInfo = $x->previewPendingPaymentDetails($arr,$enr_info->enr_id,$ss);
+                            $updateEnrollment = saveData($ss,'enrollments',['id' => $enrollment_id],[
+                                'tuition_end_date' => $newPaymentInfo->payment_info->end_date
+                            ],[],1);
+                            $updatePayment = saveData($ss,'enrollments',['id' => null],[
+                                'tuition_end_date' => $newPaymentInfo->payment_info->end_date
+                            ],[],1);
+
+                            // $enr_info->pmt_status = 'expired';
+                            // $p_info =
+                            return DV::result($newPaymentInfo);
                         }
                         // else $row->pmt_status = 'unpaid';
                     }
