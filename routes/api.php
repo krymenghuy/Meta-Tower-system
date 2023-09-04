@@ -97,6 +97,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //mobile api
 
     Route::prefix('mobile')->group(function(){
+        Route::post('/pickup-my-kids',[MobileApiController::class,'pickupMyKids']);
         Route::post('/home-page',[MobileApiController::class,'homePage']);
         Route::post('/student-attendance',[MobileApiController::class,'attendanceList']);
     });

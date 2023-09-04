@@ -4,7 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
-use App\Models\CompanyProfile;
+//use App\Models\CompanyProfile;
 use DB;
 
 class Report //extends Model
