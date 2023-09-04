@@ -2,9 +2,9 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
+//use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
+//use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 //use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
@@ -13,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
 //use Session;
 //use Carbon\Carbon;
 
-class MerchantCreatedOrder implements ShouldBroadcast
+class PickupCall implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -37,10 +37,10 @@ class MerchantCreatedOrder implements ShouldBroadcast
         {
             //$sender_id = isset($this->data->sender_id)?$this->data->sender_id:0;
             $branch_id = isset($this->data->branch_id)?$this->data->branch_id:0;
-            return new PrivateChannel('backend.'.$branch_id);
+            return new PrivateChannel(channel_prefix().'backend.'.$branch_id);
         }
         public function broadcastAs()
         {
-            return 'merchant_created_order';
+            return 'pickup_call';
         }
 }

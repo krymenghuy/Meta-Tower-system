@@ -9,7 +9,15 @@ use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
-    //
+    function saveAudioFile(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $id =$req->id?$req->id:$req->student_id;
+        $st = new Student($id,$ss);
+        $res = $st->saveAudioFile($req->base64);
+        return JDV::result($res);
+    }
+
     function studentRegistration(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;

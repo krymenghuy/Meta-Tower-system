@@ -12,6 +12,11 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class Student //extends Model
 {
     // use HasFactory;
+    protected $id = null, $userInfo = null;
+    function __construct($id = null,$userInfo){
+       $this->id = $id;
+       $this->userInfo = $userInfo;
+    }  
 
     static function saveStudent($arr,$id=null,$ss){ //** register only //without payment yet */
         $v_rule = [
@@ -380,6 +385,19 @@ class Student //extends Model
         return $um_res;
     }
     
+    function saveAudioFile($base64, $id=null,$ss=null){
+      $id =$id?$id:$this->id;
+      $ss =$ss?$ss:$this->userInfo;
+      $branch_id = $ss->branch_id;
+      $res = PublicStorage::saveAudio($branch_id,'students',null,$base64,['id'=>$id,'store'=>'students.audio_file']);
+        //   if(isset($res->file_name)){
+        //     DB::table('students')->where('id',$id)->update([
+        //         'audio_file'=>$res->file_name
+        //     ]);
+        //   } 
+        return $res;
+    }
+
     static function getParentLoginInfo($parent_id,$student_id){
       return DB::table('um_users as u')->join('guardians as g','g.id','=','u.official_id')->join('student_guardians AS sg','sg.guardian_id','=','g.id')->where('g.id',$parent_id)->where('sg.student_id',$student_id)->selectRaw('u.id,u.login_name,u.user_class')->get()->first();
     }
