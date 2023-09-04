@@ -36,4 +36,23 @@ class GuardianController extends Controller
         $list = $instance->parentChildren($req->all(),$ss);
         return JDV::result($list);
     }
+
+    function parentRequestAccount(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code != 200) return $ss;
+
+        $instance = new Guardian();
+        $save = $instance->requestAccount($req->all(),$ss);
+        return JDV::result($save);
+
+    }
+
+    function optionFamily(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code != 200) return $ss;
+
+        $instance = new Guardian();
+        $options = $instance->options_family($ss);
+        return JDV::result($options);
+    }
 }

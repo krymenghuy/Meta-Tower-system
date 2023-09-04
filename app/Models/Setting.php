@@ -18,7 +18,8 @@ class Setting //extends Model
             'campuses' => self::campus_options($ss),
             'academic_year' => self::getAcademicYear($ss),
             'terms' => self::getTermsOptions($ss),
-            'groups' => GeneralSettings::optionsGroup($ss)
+            'groups' => GeneralSettings::optionsGroup($ss),
+            'discount_type' => DB::table('discount_types')->selectRaw('name,id')->get()
         ];
         return $res;
     }

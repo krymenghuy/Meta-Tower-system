@@ -304,6 +304,9 @@ let GenerateInvoiceFSN = new function(){
     let mThis = this;
     this.self = $('#dlg_fns_');
     this.options = {};
+    let ref = {
+        click: true
+    };
 
     this.elTitle = mThis.self.find('.modal-title');
     this.tblInvoice = mThis.self.find('#dlg_fns_tbl');
@@ -312,31 +315,41 @@ let GenerateInvoiceFSN = new function(){
     mThis.btnGenerate.on('click',function(e){
         e.preventDefault();
         let p = {};
-        if(mThis.options.action === 'modify'){
-            p = mThis.getDataFormUpdate();
-            vsapi.call(`${main_view.base_url}/api/student/invoice-update`,p,null).then(res => {
-                if(res.status_code === 200){
-                    mThis.self.modal('hide');
-                    if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
-                    cv_interact.success('Invoice Updated Successfully!');
-                }
-                else{
-                    cv_interact.error(res.error_message);
-                }
-            });
-        }
-        else{
-            p = mThis.getDataForm();
-            vsapi.call(`${main_view.base_url}/api/student/generate-invoice`,p,null).then(res => {
-                if(res.status_code === 200){
-                    mThis.self.modal('hide');
-                    if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
-                    cv_interact.success('Invoice Created Successfully!');
-                }
-                else{
-                    cv_interact.error(res.error_message);
-                }
-            });
+        if(ref.click){
+            if(mThis.options.action === 'modify'){
+                p = mThis.getDataFormUpdate();
+                vsapi.call(`${main_view.base_url}/api/student/invoice-update`,p,null).then(res => {
+                    ref.click = false;
+                    if(res.status_code === 200){
+                        mThis.self.modal('hide');
+                        if(typeof mThis.options.onClose === 'function')
+                            mThis.options.onClose();
+                        cv_interact.success('Invoice Updated Successfully!');
+                        ref.click = true;
+                    }
+                    else{
+                        cv_interact.error(res.error_message);
+                        ref.click = true;
+                    }
+                });
+            }
+            else{
+                p = mThis.getDataForm();
+                vsapi.call(`${main_view.base_url}/api/student/generate-invoice`,p,null).then(res => {
+                    ref.click = false;
+                    if(res.status_code === 200){
+                        mThis.self.modal('hide');
+                        if(typeof mThis.options.onClose === 'function')
+                            mThis.options.onClose();
+                        cv_interact.success('Invoice Created Successfully!');
+                        ref.click = true;
+                    }
+                    else{
+                        cv_interact.error(res.error_message);
+                        ref.click = true;
+                    }
+                });
+            }
         }
     });
 

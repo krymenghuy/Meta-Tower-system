@@ -8,7 +8,7 @@ class Campus //extends Model
 {
     // use HasFactory;
     static function save($arr=[],$id=null,$ss){
-    $v_rule = [
+        $v_rule = [
             'name' => '1|string|1-350|text=Campus Name cannot be empty',
             'shortcut'=>'1|string|1-15|text=Campus shortcut name is required',
             'address'=>'0|string|0-250',

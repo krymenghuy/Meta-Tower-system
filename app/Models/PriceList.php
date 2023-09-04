@@ -613,7 +613,7 @@ class PriceList //extends Model
         $row = DB::table('enrollments as e')
                 ->join('students as s','s.id','=','e.student_id')
                 ->join('payments as ep','ep.enrollment_id','=','e.id')
-                ->where('s.id',$id)
+                ->where('e.id',$id)
                 ->selectRaw($selectCols)
                 ->get()->first();
 
@@ -691,8 +691,8 @@ class PriceList //extends Model
 
         if($academic_year) $arr = ['academic_year' => $academic_year];
         $months=null;
-        $paid_student = DB::table('enrollments as e')->where('e.id',$id)->join('payments as p','e.id','=','p.enrollment_id')->where('tuition_paid','!=','null')->get()->first();
-        if($paid_student){ return DV::error('Student already paid');}
+        $paid_student = DB::table('enrollments as e')->where('e.id',$id)->join('payments as p','e.id','=','p.enrollment_id')->where('p.tuition_paid','!=','null')->where('e.status_id','>=',3)->get()->first();
+        if($paid_student){ return DV::error('Student is already paid');}
         $id = saveData($ss,'enrollments',['id' => $id],$arr,[],1);
         $enr = DB::table('enrollments as e')->where('id',$id)->selectRaw('e.student_id,e.id,e.level_id,e.academic_year,e.session_id,e.start_date')->first();
         $student_id = $enr->student_id;

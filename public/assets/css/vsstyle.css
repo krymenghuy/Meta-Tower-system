@@ -271,9 +271,6 @@ label.simple-label {
 .error_text {
   color: red;
   position: absolute;
-  /* font-size: 1em;
-  padding: 3px;
-  font-family: 'Khmer OS Content', 'Robotto', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)'; */
 }
 
 @media screen and (min-width: 1400px) and (max-width:2000px) {
@@ -367,4 +364,14 @@ label.simple-label {
   background: var(--bs-primary);
   border-radius: 3px;
   height: 100%;
+}
+
+.img-logo{
+  max-width: 85px;
+}
+
+.kt-aside__brand .kt-aside__brand-logo{
+  display: flex;
+  justify-content: center;
+  width:100%;
 }

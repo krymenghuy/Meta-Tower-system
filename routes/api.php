@@ -12,6 +12,7 @@ use App\Http\Controllers\MobileApi\AttendanceController;
 use App\Http\Controllers\MobileApi\HomePageController;
 use App\Http\Controllers\MobileApi\MobileApiController;
 use App\Http\Controllers\MobileSetting\BannerController;
+use App\Http\Controllers\MobileSetting\SocialMediaController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\ProgramLevelController;
 use App\Http\Controllers\PromoteStudentController;
@@ -81,7 +82,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('auth/login', [LoginController::class, 'apiLogin']);
 Route::post('/auth/guardian/login',[GuardianLoginController::class,'guardianLogin']);
 Route::post('/auth/guardian/profile',[GuardianLoginController::class,'getGuardianProfile']);
-
+Route::post('/auth/guardian/change-password',[GuardianLoginController::class, 'changePasswords']);
+Route::post('/auth/guardian/change-profile',[GuardianLoginController::class, 'changeProfile']);
 
 // Route::get('env/20230120AZ99/vars',function(){
 //     $vars =[
@@ -100,6 +102,9 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/pickup-my-kids',[MobileApiController::class,'pickupMyKids']);
         Route::post('/home-page',[MobileApiController::class,'homePage']);
         Route::post('/student-attendance',[MobileApiController::class,'attendanceList']);
+        Route::post('/payment-invoice',[MobileApiController::class,'getChildrenInvoices']);
+        Route::post('/student-enrollments',[MobileApiController::class,'getStudentEnrollment']);
+        Route::post('/social-media',[MobileApiController::class,'getSocialMediaList']);
     });
 
     //end mobile api
@@ -112,7 +117,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //
      //
      Route::post('audio/save',[AudioController::class,'saveAudio']);
-     Route::post('audio-base/save',[AudioController::class,'baseAudio']);
+     Route::post('audio',[AudioController::class,'getAudio']);
     //
 
     //begin::ActivityController
@@ -148,6 +153,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::prefix('promote')->group(function(){
         Route::post('/students',[PromoteStudentController::class,'promoteStudents']);
         Route::post('/verify',[PromoteStudentController::class,'verifyPromotedStudent']);
+        Route::post('/delete',[PromoteStudentController::class,'deleteNewPromoted']);
         Route::post('/student-list-paginate',[PromoteStudentController::class,'promoteListPaginate']);
         Route::post('/form-options',[PromoteStudentController::class,'getFormOptions']);
 
@@ -224,7 +230,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/list-paginate',[StudentController::class,'studentPaginate']);
         Route::post('/delete-student-enrollment',[StudentController::class,'deleteStudentEnrollment']);
         Route::post('/details-student',[StudentController::class,'studentDetials']);
-        Route::post('/delete-verified',[StudentController::class,'deleteVerifiedStudent']);
+        Route::post('/delete-verified',[EnrollmentController::class,'deleteVerifiedStudent']);
         Route::post('/information',[StudentController::class,'studentInformation']);
         Route::post('/enrollment-details',[StudentController::class,'getStudentEnrollmentInfo']);
 
@@ -598,6 +604,12 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/banner-list',[BannerController::class,'list']);
         Route::post('/banner-details',[BannerController::class,'details']);
         Route::post('/banner-delete',[BannerController::class,'delete']);
+
+        // Social Media
+        Route::post('/social-media-save',[SocialMediaController::class,'save']);
+        Route::post('/social-media-list',[SocialMediaController::class,'list']);
+        Route::post('/social-media-details',[SocialMediaController::class,'details']);
+        Route::post('/social-media-delete',[SocialMediaController::class,'delete']);
     });
   //end::MobileSettingsController
 
@@ -607,7 +619,9 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/list',[GuardianController::class,'list']);
         Route::post('/test',[GuardianController::class,'test']);
         Route::post('/details',[GuardianController::class,'details']);
+        Route::post('/request-account',[GuardianController::class,'parentRequestAccount']);
         Route::post('/children-details',[GuardianController::class,'parentChildrenDetails']);
+        Route::post('/options-family',[GuardianController::class,'optionFamily']);
     });
     //end::GuardianController
 

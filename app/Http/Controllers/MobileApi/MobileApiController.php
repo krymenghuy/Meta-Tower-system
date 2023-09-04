@@ -36,4 +36,29 @@ class MobileApiController extends Controller
         $list = $d->attendanceList($req->all());
         return JDV::result($list);
     }
+
+    function getChildrenInvoices(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $d = new MobileApi();
+        $list = $d->getChildrenInvoices($req->all(),$ss);
+        return JDV::result($list);
+    }
+
+    function getStudentEnrollment(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $d = new MobileApi();
+        $enr_list = $d->getStudentEnrollemntDetails($req->student_id,$ss);
+        return JDV::result($enr_list);
+    }
+
+    function getSocialMediaList(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $d = new MobileApi();
+        $enr_list = $d->getSocialMedia($ss);
+        return JDV::result($enr_list);
+    }
 }

@@ -5,6 +5,7 @@ var StudentAttendanceComponent = new function(){
     this.self = $('#_main_studentAttendanceComponent');
 
     this.elSearch = mThis.self.find('#el_san_search');
+    this.containerFilter = mThis.self.find('#container_san_filter');
 
     this.cols = [{
         title: "Student ID",
@@ -30,9 +31,9 @@ var StudentAttendanceComponent = new function(){
             let dob = data.dob ? data.dob : '';
             return new Date(dob).toLocaleDateString('km-KH',{
                 day: 'numeric',
-                month: 'long',
+                month: 'short',
                 year: 'numeric'
-            }).replaceAll(' ','-');
+            }).replaceAll(' ','-').replace(',','');
         }
     },
     {
@@ -70,6 +71,38 @@ var StudentAttendanceComponent = new function(){
                 };
                 if(op.student_id > 0)
                     mThis.displayStudentAttendanceDetails(detail_tr, op);
+            }
+        });
+    }
+
+    this.prepareOptions = (onFinish = null) => {
+        let div = mThis.containerFilter;
+        vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
+            if(res.status_code === 200){
+                let d = res.data;
+                if(!($.isEmptyObject(d))){
+                    div.find('.data-input').each(function(){
+                        let el = $(this);
+                        let f = el.data('field');
+                        switch(f){
+                            case 'academic_year':
+                                VSUtil.setComboItems(el,d.academic_year,'academic_year','academic_year',null,null,null);
+                                break;
+                            case 'campus_id':
+                                VSUtil.setComboItems(el,d.campuses,'id','campus',null,null,null);
+                                break;
+                            case 'level_id':
+                                VSUtil.setComboItems(el,d.levels,'id','level',null,null,null);
+                                break;
+                            case 'session_id':
+                                VSUtil.setComboItems(el,d.sessions,'id','name',null,null,null);
+                                break;
+                            default:
+                                break;
+                        }
+                    });
+                }
+                if(typeof onFinish === 'function') onFinish();
             }
         });
     }
@@ -168,10 +201,12 @@ var StudentAttendanceComponent = new function(){
     this.show = (options) => {
         if(!options) options = {};
         mThis.itemView.showPage(null,null,() => {
-            main_view.setTitle(mThis.title_prop);
-            let x = mThis.self.siblings(':visible');
-            x.fadeOut('fast',function(){
-                mThis.self.hide().fadeIn(300);
+            mThis.prepareOptions(() => {
+                main_view.setTitle(mThis.title_prop);
+                let x = mThis.self.siblings(':visible');
+                x.fadeOut('fast',function(){
+                    mThis.self.hide().fadeIn(300);
+                });
             });
         });
     }
