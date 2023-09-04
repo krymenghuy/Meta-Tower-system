@@ -260,7 +260,9 @@ class Guardian //extends Model
         return DV::depends($new_guardianID,$new_guardianID);
     }
 
-
+    function options_family($ss=null){
+        return GeneralSettings::options_family($ss);
+    }
 
 
 

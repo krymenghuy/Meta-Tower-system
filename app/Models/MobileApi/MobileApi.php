@@ -2,12 +2,14 @@
 
 namespace App\Models\MobileApi;
 
+use App\Models\DV;
 use App\Models\GeneralSettings;
 use App\Models\PublicStorage;
 use App\Models\StudentAttendance;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use DB;
+use Illuminate\Support\Facades\Hash;
 class MobileApi //xtends Model
 {
     // use HasFactory;
@@ -58,11 +60,56 @@ class MobileApi //xtends Model
     function guardianProfile($ss){
         $row = DB::table('guardians as g')
             ->where('g.id',$ss->official_id)
-            ->selectRaw('file_name,name,sex,address,role,n_id as national_id,email,phone_number')
+            ->selectRaw('g.file_name,name,sex,address,role,n_id as national_id,email,phone_number')
             ->first();
-        $row->image_url = PublicStorage::getUrl($ss->branch_id,'guardians','image');
+        if(isset($row->file_name)){
+            $row->image_url = PublicStorage::getUrl($ss->branch_id,'guardians','image').$row->file_name;
+        }else $row->image_url = null;
+        unset($row->file_name);
         return $row;
     }
+
+
+    function changePassword($arr=[],$ss){
+
+        $v_rule = [
+            'old_password' => '1|string',
+            'new_password' => '1|string',
+        ];
+
+        $res = validateObject($arr,$v_rule,false,[],$ss->lang,false,null);
+
+        if($res->error) return JDV::error($res->error);
+
+        $inputs = $res->values;
+        $d = (object)$inputs;
+        $findUpdate = DB::table('um_users')->where('official_id',$ss->official_id)->where('user_class','parent')->get()->first();
+
+        if(Hash::check($d->old_password,$findUpdate->hpwd)){
+            $hpwd = Hash::make($inputs['new_password']);
+            $save = DB::table('um_users')->where('official_id',$ss->official_id)->where('user_class','parent')->update([
+                'hpwd' => $hpwd,
+            ]);
+            return DV::success(['message'=>'Password has been changed']);
+        }else{
+            return DV::error('Your password is not correct');
+        }
+    }
+
+    function changeProfile($arr=[],$ss){
+        $v_rule = [
+            'photo' => '0|image',
+        ];
+        $res = validateObject($arr,$v_rule,false,[],$ss->lang,false,null);
+        if($res->error) return JDV::error($res->error);
+        $inputs = $res->values;
+        $image = $inputs['photo'];
+        unset($inputs['photo']);
+
+        $update = PublicStorage::saveImage($ss->branch_id,'guardians',null,$image,null,['id'=>$ss->official_id,'store' => 'guardians.file_name']);
+        return DV::depends($update,'Profile has been changed');
+    }
+
 
     function getStudentLatestEnrollment($student_id,$ss){
         $row = DB::table('enrollments as e')->where('e.branch_id',$ss->branch_id)->where('e.student_id',$student_id)

@@ -247,4 +247,36 @@ class PromoteStudent //extends Model
         return DV::depends($success,['success'=>$success,'failed'=>$keep_id]);
     }
 
+    function deleteNewPromoted($arr=[],$ss){
+        $d = (object)$arr;
+        if(!isset($d->delete_info)) return DV::error('delete info is required');
+        $delete_info = $d->delete_info;
+        $success = 0;
+        $keep_id = [];
+        foreach($delete_info as $info){
+            $v_rule = [
+                'id' => '0|number|exists=enrollments.id',
+                'enrollment_id' => '0|number|exists=enrollments.id',
+            ];
+            $res = validateObject($info,$v_rule,0,[],$ss->lang,0,null);
+            if($res->error) return DV::error($res->error);
+            $inputs = $res->values;
+            $id = isset($inputs['id'])?$inputs['id']:$inputs['enrollment_id'];
+            $not_new_promote = DB::table('enrollments')->where('id',$id)->where('promoted',0)->exists();
+            if($not_new_promote){
+                $keep_id['id'][] = $id;
+                continue;
+            }
+            $delete = DB::table('enrollments')->where('id',$id)->delete();
+            if($delete){
+                DB::table('payments')->where('enrollment_id',$id)->delete();
+                DB::table('enrollment_payment')->where('enrollment_id',$id)->delete();
+            }
+            $success ++;
+        }
+        return DV::depends($success,['success'=>$success,'failed'=>$keep_id],'Selected Enrollments might be not the newest promoted');
+    }
+
+
+
 }

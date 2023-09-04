@@ -283,23 +283,18 @@ class Student //extends Model
         return $existingRecord?true:false;
     }
 
-    static function makeFamilyCode($prefix,$ss,$id){
+    static function setCode($prefix,$ss,$id){
         $branch_id = $ss->branch_id;
         $new_code = $prefix.date('Y').$branch_id.formatNumber($id,4);
         return $new_code;
     }
-
-    static function saveParentInfo($parent_info,$student_id,$ss){
+    static function saveParentInfo($parent_info,$child_id,$ss){
         $def_password ='123456';
         // $student_code = DB::table('students')->where('id',$child_id)->pluck('id');
         $um = new UM();
-        $um_res = null;
+        $um_ = null;
         $i = 0;
-
-        $login_account = []; 
-
         foreach($parent_info as $pf){
-            $new_family_code = null;
             $inputs = [
                 'name' => $pf['father_name'] ?? $pf['mother_name']?? '',
                 'email' => $pf['father_email'] ?? $pf['mother_email']?? '',
@@ -311,25 +306,21 @@ class Student //extends Model
                 'n_id' => $pf['father_nid'] ?? $pf['mother_nid'] ?? ''
             ];
 
-            $prev_id = DB::table('guardians')
-                ->where('id',isset($pf['id'])?$pf['id']:null)->value('id');
+            $exist = DB::table('guardians')
+                ->where('id',isset($pf['id'])?$pf['id']:null)
+                ->exists();
                 $u_id = isset($pf['id'])?$pf['id']:null;
-            $created =  $prev_id>0? false:true;    
-            $newID = saveData($ss,'guardians',['id' =>$prev_id],$inputs,[],1,true);
+            $newID = saveData($ss,'guardians',['id' => $exist?$pf['id']:null],$inputs,[],1);
 
-            if($newID > 0){
-                if($created){
-                    $new_family_code = self::makeFamilyCode('FML',$ss,$student_id);
-                    DB::table('student_guardians')->where('guardian_id',$newID)->update(['family_code'=>$new_family_code]);
-
-                     /** Link parent or guardian to kid/student */
-                    DB::table('student_guardians')->where('guardian_id',$newID)->where('student_id',$student_id)->delete();
-                    DB::table('student_guardians')->insert(['guardian_id'=>$newID,'student_id'=>$student_id,'guardian_role'=>$pf['role'],'family_code'=>$new_family_code]); 
+            if($newID>0){
+                $family_id = self::setCode('FML',$ss,$child_id);
+                $exists_fmlCode = DB::table('student_guardians')->where('student_id',$child_id)->where('family_code','=',null)->exists();
+                if($exists_fmlCode){
+                    DB::table('student_guardians')->where('guardian_id',$newID)->update(['family_code'=>$family_id]);
                 }
 
-                if(!isset($parent_info[1])){
-                    /** If there is only one parent provided in the array $parentInfo, use that parent as login account for parent mobile app */
-                    $login_account = [
+                if(count($parent_info)==1){
+                    $arr= [
                         'login_name' => $inputs['phone_number'],
                         'user_class' => 'parent',
                         'role_id' => '16',
@@ -359,67 +350,15 @@ class Student //extends Model
                 // link parent with child
                 if(!$exist){
                     saveData($ss,'student_guardians',[],['guardian_id'=>$newID,'student_id'=>$child_id,'guardian_role'=>$pf['role'],'family_code'=>$family_id],[],1);
-                }else{
-                    /** If parentInfo array contains two parents including both Father and Mother, then take mother as parent account's login */
-                    $female_guardian = DB::table('guardians')->selectRaw('id,name,phone_number,email')->where('id',$newID)->where('sex','F')->first();
-                    if($female_guardian){
-                        $login_account= [
-                            'login_name' => $female_guardian->phone_number,
-                            'user_class' => 'parent',
-                            'role_id' => '16',
-                            'official_id' => $female_guardian->id,
-                            // 'official_code' =>$student_code,
-                            'email' => $female_guardian->email,
-                            'password' => $def_password,
-                            'full_name' => $female_guardian->name,
-                        ];
-                    }
                 }
-                /** This create user login in case of Creating new parent. if use this code => Please put this code inside if ($created) { ..... }  above */
-                //if(!UM::loginExists($login_account['login_name'])) $um_res = $um->saveUser($login_account,$ss);
             }
             $i++;
         }
-        /** get parent's login account that is connected to this student_id. If it exists with the same phone_number then DO NOT create account anymore, otherwise create a login account for the parent */
-        $parent_login_info = self::getParentLoginInfo($newID,$student_id);
-        if(!$parent_login_info) 
-        {
-            $um_res = $um->saveUser($login_account,$ss);
-             /** Create new to parent login name */
-            $um_res->parent_login_changed = 0; 
-        }
-        else if ($parent_login_info->login_name != $login_account['login_name']){
-            $new_login_name = $login_account['login_name'];
-            $um_res = $um->changeLoginName($parent_login_info->login_name,$new_login_name);
-            $um_res->parent_login_changed = 1; 
-            $um_res->new_login_name =$new_login_name;
-        }else{
-            /** No change to parent login name */
-            $um_res = (object)['parent_login_changed'=>0];
-        }   
-        return $um_res;
-    }
-    
-    static function getParentLoginInfo($parent_id,$student_id){
-      return DB::table('um_users as u')->join('guardians as g','g.id','=','u.official_id')->join('student_guardians AS sg','sg.guardian_id','=','g.id')->where('g.id',$parent_id)->where('sg.student_id',$student_id)->selectRaw('u.id,u.login_name,u.user_class')->get()->first();
-    }
-    // static function setStudentCode($prefix,$ss,$newID){
-    //     $branch_id = $ss->branch_id;
-    //     $new_code = $prefix.$branch_id.formatNumber($newID,5);
-    //     DB::table('students')->where('id',$newID)->update(['code' => $new_code]);
-    // }
-
-    static function getFutureTime($daysToAdd) {
-        $currentTimestamp = time();
-
-        $futureTimestamp = $currentTimestamp + ($daysToAdd * 24 * 60 * 60);
-
-        $futureDate = date('Y-m-d H:i:s', $futureTimestamp);
-
-        return $futureDate;
+        return $um_;
     }
 
-    //getStudentDetails() | getDetails() | getEnrollmentDetails
+
+
     static function enrollmentDetails($enrollment_id,$ss){
         $selectCols = 'e.id,s.id AS student_id,e.term_id,ss.name as session,e.prev_school_id,e.campus_id,e.level_id,l.`name` AS `level`,c.`name` AS `campus`,e.session_id,s.id,e.academic_year,s.sex,s.`name`,s.sex,s.date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth,formatDate(e.start_date) as admission_date';
         $row = DB::table('students as s')

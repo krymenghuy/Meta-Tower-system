@@ -49,7 +49,7 @@ class EnrollmentManager {
           'place_of_birth' => '0|string|0-250',
           'address' => '0|string|0-350',
           'photo' => '0|image',
-          'group_id' => '0|number|exists=student_groups.id',
+          'group_id' => '1|number|exists=student_groups.id',
           'level_id' => '0|number|exists=program_levels.id',
           'session_id'=> '1|number|exists=sessions.id',
           'campus_id'=> '1|number|exists=campuses.id',
