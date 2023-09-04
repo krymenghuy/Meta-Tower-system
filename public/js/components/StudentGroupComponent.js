@@ -255,7 +255,7 @@ let StudentGroupDialog = new function(){
     });
  
     this.prepareFormOption = (group_id,onFinish = null) => {
-        vsapi.call(`${main_view.base_url}/api/student-group/form-options`,{'id':group_id},null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/student-group/form-options`,{'id': group_id},null,false).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = StringSanitizer.sanitizeObject(res.data,null,['academic_year']);

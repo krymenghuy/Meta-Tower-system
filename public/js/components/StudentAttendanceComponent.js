@@ -31,9 +31,9 @@ var StudentAttendanceComponent = new function(){
             let dob = data.dob ? data.dob : '';
             return new Date(dob).toLocaleDateString('km-KH',{
                 day: 'numeric',
-                month: 'long',
+                month: 'short',
                 year: 'numeric'
-            }).replaceAll(' ','-');
+            }).replaceAll(' ','-').replace(',','');
         }
     },
     {

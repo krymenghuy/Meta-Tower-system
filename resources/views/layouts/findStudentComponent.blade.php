@@ -102,11 +102,18 @@
                 <div id="dlg_fns_tbl" class="table-responsive p-3 rounded-3 bg-light"></div>
                 <hr class="height-line"/>
                 <div class="d-flex justify-content-end">
-                    <p class="pb-0 mb-1 ps-0 p-5">
-                        <span class="width-invoice-text">Deduct Deposite</span>
-                        <span class="px-2">:</span>
-                        <span class="data-invoice" data-field="deposite_amount"></span>
-                    </p>
+                    <div class="d-flex flex-column gap-3">
+                        <p class="pb-0 mb-1 ps-0">
+                            <span class="width-invoice-text">Deduct Deposite</span>
+                            <span class="px-2">:</span>
+                            <span class="data-invoice" data-field="deposite_amount"></span>
+                        </p>
+                        <p class="pb-0 mb-1 ps-0">
+                            <span class="width-invoice-text">Total</span>
+                            <span class="px-2">:</span>
+                            <span class="data-invoice" data-field="total"></span>
+                        </p>
+                    </div>
                 </div>
                 <div class="d-block">
                     <p>Note:</p>
