@@ -366,6 +366,12 @@ label.simple-label {
   height: 100%;
 }
 
-.image-logo{
+.img-logo{
   max-width: 85px;
+}
+
+.kt-aside__brand .kt-aside__brand-logo{
+  display: flex;
+  justify-content: center;
+  width:100%;
 }
