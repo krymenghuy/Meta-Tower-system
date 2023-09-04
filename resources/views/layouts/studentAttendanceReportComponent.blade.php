@@ -1,6 +1,6 @@
 <div id="_main_studentAttendanceReportComponent" class="mobile-padding p-3" style="display:none">
     <div class="bg-white p-3 rounded-4">
-        <div class="row row-cols-lg-4">
+        <div id="container_astr_filter" class="row row-cols-lg-4">
             <div class="col">
                 <div class="form-group">
                     <label for="academic_year" class="form-label trans-text" data-langprop="titles.Academic Year"></label>
