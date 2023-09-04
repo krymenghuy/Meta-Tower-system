@@ -327,7 +327,7 @@ let main_view = new function(){
 
 main_view.init();
 
-window.addEventListener('DOMContentLoaded',(e)=>{
+window.addEventListener('DOMContentLoaded',() => {
     LocaleManager.translateZone('_app_content');
     DashboardComponent.show(null);
     main_view.setLangMenu(LocaleManager.currentLanguage.code);
