@@ -15,8 +15,7 @@ let AuthManager = new function(){
                 if(!d.prns) d.prns = [];
                 mThis.prns = d.prns;
                 mThis.is_super_admin = d.is_super_admin;
-                mThis.modules = d.modules?d.modules:[];
-                console.log(d);  
+                mThis.modules = d.modules?d.modules:[]; 
             }
         });
     }
