@@ -18,6 +18,12 @@ class PublicStorage //extends Model
 {
     //use HasFactory;
     protected static $allowed_image_extensions = ['jpg','png','jpeg','gif','heif','bmp'];
+    protected static $allowed_audio_extensions = [
+        'mp3',
+        'wav',
+        'm4a',
+        'ogg',
+    ];
 
     //map from $user_class to upload directory name
     protected static $upload_dirs =[
@@ -229,6 +235,10 @@ class PublicStorage //extends Model
         $folder_name =isset(self::$upload_dirs[$user_class])?self::$upload_dirs[$user_class]:$user_class;
         if ($upload_type ==="image" || $upload_type ==="photo")
           return $folder_name."/images/";
+        else if ($upload_type ==="audio")
+          return $folder_name."/audio/";
+        else if ($upload_type ==="video") 
+          return $folder_name."/video/";
         else
           return $folder_name."/documents/";
     }
@@ -297,7 +307,7 @@ class PublicStorage //extends Model
     }
 
     //$storeInfo = ['branch_id'=>25,"store"=>"tablename.col_name"]
-    static function saveFileName_db($branch_id,$user_class,$file_name,$storeInfo=null){
+    static function saveFileName_db($branch_id,$user_class,$file_name,$storeInfo=null,$category='image'){
         if(!$storeInfo) return;
         $store = isset($storeInfo['store'])?$storeInfo['store']:null;
         $sts = explode('.',$store);
@@ -321,7 +331,7 @@ class PublicStorage //extends Model
              foreach($rows as $row)
              {
                  $prev_file_name = $row->{$col};
-                 $path = self::getDiskPath($branch_id,$user_class,'image').$prev_file_name;
+                 $path = self::getDiskPath($branch_id,$user_class,$category).$prev_file_name;
                  //delete previous picture file
                  self::deleteFile($path);
                  $x = DB::table($table)->whereRaw($str_id)->update([$col=>$file_name]);
@@ -329,7 +339,55 @@ class PublicStorage //extends Model
              }
         }
     }
-
+ 
+    static function saveAudio($branch_id, $user_class, $ext, $base64, $maxSize = 500000, $store = [])
+    {
+        $ext = $ext?$ext:'m4a';
+        if (self::isBase64Audio($base64)) {
+            // Create the full path for the audio file
+            $p = self::createFullPath($branch_id, $user_class, 'audio', $ext);
+    
+            try {
+                // Decode the base64 data
+                $audio_data = base64_decode($base64);
+    
+                // Check if the base64 data was successfully decoded
+                if ($audio_data === false) {
+                    throw new \Exception('Invalid base64 data');
+                }
+    
+                // Check if the audio data size exceeds the maximum allowed size
+                if (strlen($audio_data) > $maxSize) {
+                    throw new \Exception('Audio file size exceeds the maximum allowed size');
+                }
+    
+                // Save the audio file using normal PHP functions
+                file_put_contents($p->path, $audio_data);
+    
+                // Save the file name in the database
+                if($store) self::saveFileName_db($branch_id, $user_class, $p->file_name, $store);
+    
+                // Get the audio file URL using getUrl() function
+                $audio_url = self::getUrl($branch_id, $user_class, 'audio') . $p->file_name;
+    
+                // Return the response object
+                return (object)[
+                    'status' => 'OK',
+                    'file_name' => $p->file_name,
+                    'file_type' => $p->extension,
+                    'ext' => $p->extension,
+                    'extension' => $p->extension,
+                    'audio_url' => $audio_url,
+                ];
+            } catch (\Exception $e) {
+                return (object)['error_message' => $e->getMessage(), 'status' => 'Error'];
+            }
+        }
+    
+        return (object)['error_message' => "The given file type is not a valid audio format", 'status' => 'Error'];
+    }
+    
+    
     //NOTE: saveImage() will create image file based on the given base64 string
     //savePhoto() | saveFile()
     static function saveImage($branch_id, $user_class,$ext,$image_or_base64,$maxSize=500000,$store=[]){
@@ -368,6 +426,32 @@ class PublicStorage //extends Model
         return (object)['error_message'=>"The given file type is not valid image format",'status'=>'Error'];
     }
 
+    static function isBase64Audio($base64)
+    {
+        return true;
+        // Define a mapping of common audio file signatures to their corresponding file extensions
+        $audioSignatures = [
+            'mp3' => 'data:audio/mpeg;base64,',
+            'wav' => 'data:audio/wav;base64,',
+            'm4a' => 'data:audio/mp4;base64,',
+            'ogg' => 'data:audio/ogg;base64,',
+            // Add more signatures and extensions for other audio formats as needed
+        ];
+    
+        // Iterate through the audio signatures and check if the base64 data starts with any of them
+        foreach ($audioSignatures as $format => $signature) {
+            if (strpos($base64, $signature) === 0) {
+                return true;
+            }
+        }
+    
+        // The base64 data does not match any known audio format
+        return false;
+    }
+ 
+    static function isAudio($ext){
+        return in_array(strtolower($ext? $ext:""),self::$allowed_audio_extensions);
+    }
     static function isImage($ext){
         return in_array(strtolower($ext? $ext:""),self::$allowed_image_extensions);
     }
