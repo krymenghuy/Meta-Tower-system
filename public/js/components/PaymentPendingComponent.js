@@ -139,7 +139,7 @@ let PaymentPendingDialog = new function(){
         });
     });
 
-    mThis.btnSave.on("click", function (e) {
+    mThis.btnSave.on("click", function(e){
         e.preventDefault();
         let p = mThis.getDataForm();
         vsapi.call(`${main_view.base_url}/api/price-list/update/pending-payment`,p,null).then((res) => {
