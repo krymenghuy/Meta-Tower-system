@@ -222,7 +222,7 @@ class EnrollmentManager {
         //   //** using guardian's phone number for login name and password default = 123456 */
         $p_info = 0;
         if($family_code){
-            $rows = DB::table('student_guardians')->where('family_code',$family_code)->selectRaw('guardian_id,guardian_role,family_code')->get();
+            $rows = DB::table('student_guardians')->where('family_code',$family_code)->selectRaw('guardian_id,guardian_role,family_code')->distinct()->get();
             foreach($rows as $row){
                saveData($ss,'student_guardians',['id' => null],[
                 'student_id' => $student_id,
@@ -283,11 +283,13 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
     $id = $id?$id:$this->id;
     //$branch_id = $ss->branch_id;
     $enr = DB::table('enrollments')->where('id',$id)->selectRaw('id,status_id')->get()->first();
-    $delete = saveData($ss,'enrollments',['id' => $id],[
-        'status_id' => 1,
-    ],[],1);
+    // $delete = saveData($ss,'enrollments',['id' => $id],[
+    //     'status_id' => 1,
+    // ],[],1);
     if(!$enr) return DV::error('Enrollment info does not exist');
-    if($enr->status_id >=3) return DV::error('Cannot delete enrollment because the student already paid tuition fee');
+    if($enr->status_id >2) {
+        return DV::error('Cannot delete enrollment because the student already paid tuition fee');
+    }
     if($delete){
         $change_fields = [
             "tuition" => 0,

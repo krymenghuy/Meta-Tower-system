@@ -11,6 +11,7 @@ class Guardian //extends Model
     // use HasFactory;
 
     protected $img_dir = 'guardians',$id = null, $ss = null;
+    protected static $def_password = '123456'; // default password for request parent account
 
     function __construct($id=null,$ss=null){
         $this->id = $id;
@@ -168,5 +169,73 @@ class Guardian //extends Model
 
         return $groupedData;
     }
+
+
+    function requestAccount($arr=[],$ss=null){
+        $ss = $ss?$ss:$this->ss;
+        $branch_id = $ss->branch_id;
+        $v_rule = [
+            'name' => '1|string|1-50',
+            'sex' => '1|choice|F,M',
+            'phone_number' => '1|string|1-20',
+            'email' => '0|string',
+            'address' => '1|string|1-200',
+            'religion' => '0|string|1-100',
+            'national_id' => '1|string',
+            'photo' => '0|image',
+            'student_id' => '1|number|exists=students.id',
+            'password' => '0|string',
+        ];
+
+        $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
+        if($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+        $student_id = $inputs['student_id'];
+        unset($inputs['student_id']);
+
+        $uniqueEmail = isUnique('guardians','email',$inputs['email']);
+        $uniqueEmail = isUnique('guardians','email',$inputs['email']);
+
+        $family_code = DB::table('student_guardians')->where('student_id',$student_id)->selectRaw('student_id,family_code')->distinct()->first()->family_code;
+        $new_guardianID = saveData($ss,'guardians',['id' => null],$inputs,[],1);
+        if($new_guardianID>0){
+
+            PublicStorage::saveImage($branch_id,'guardians',null,$image,null,['id' => $new_guardianID,'store'=>'guardians.file_name']);
+
+            $um_info= [
+                'login_name' => $inputs['phone_number'],
+                'user_class' => 'parent',
+                'role_id' => '16',
+                'official_id' => $new_guardianID,
+                // 'official_code' =>$student_code,
+                'email' => $inputs['email'],
+                'password' => isset($inputs['password']) ? $inputs['password']:self::$def_password,
+                'full_name' => $female_guardian->name,
+            ];
+            $um_ = $um->saveUser($arr,$ss);
+
+            //** link student to requested guardian */
+            $newGuardian = DB::table('student_guardians')->insert([
+                'student_id' => $student_id,
+                'guardian_id' => $new_guardianID,
+                'family_code' => $family_code
+            ]);
+
+        }
+        return DV::depends($new_guardianID,'Created');
+    }
+
+
+
+    // function isUnique($tableName, $columnName, $value, $exceptId = null)
+    // {
+    //     $query = DB::table($tableName)->where($columnName, $value);
+
+    //     if (!is_null($exceptId)) {
+    //         $query->where('id', '!=', $exceptId);
+    //     }
+
+    //     return $query->count() === 0;
+    // }
 
 }

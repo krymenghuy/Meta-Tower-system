@@ -337,7 +337,7 @@ class Student //extends Model
                     // return $female_guardian;
                     $arr= [
                         'login_name' => $female_guardian->phone_number,
-                        'user_class' => 'guardian',
+                        'user_class' => 'parent',
                         'role_id' => '16',
                         'official_id' => $female_guardian->id,
                         // 'official_code' =>$student_code,

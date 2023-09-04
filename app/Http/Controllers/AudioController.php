@@ -3,17 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Audio;
+use App\Models\UM;
 use Illuminate\Http\Request;
 
 class AudioController extends Controller
 {
     //
     function saveAudio(Request $req){
-        $save = Audio::saveAudio($req);
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $x = new Audio();
+        $save = $x->saveAudio($req->all(),$ss);
         return $save;
     }
-    function baseAudio(Request $req){
-        $save = Audio::base64Audio($req);
-        return $save;
+
+    function getAudio(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $x = new Audio();
+        $list = $x->getAudio($ss);
+        return $list;
     }
 }

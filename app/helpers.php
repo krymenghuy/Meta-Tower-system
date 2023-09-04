@@ -1721,4 +1721,15 @@ function readFileContent($fileName=null)
 
         return (object)['end_date' => $date];
     }
+
+    function isUnique($tableName, $columnName, $value, $exceptId = null)
+    {
+        $query = DB::table($tableName)->where($columnName, $value);
+
+        if (!is_null($exceptId)) {
+            $query->where('id', '!=', $exceptId);
+        }
+
+        return $query->count() === 0;
+    }
 ?>

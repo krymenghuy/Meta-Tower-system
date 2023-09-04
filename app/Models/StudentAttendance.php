@@ -180,8 +180,8 @@ class StudentAttendance //extends Model
 
         // $enrollment_id = $inputs['enrollment_id'];
         $student_id = $inputs['student_id'];
-        $inputs['present'] = isset($arr['present'])?$arr['present']:date('Y-m-d');
-        $present = convertDate($inputs['present']);
+        $inputs['current_date'] = isset($arr['current_date'])?date('Y-m-d',strtotime($arr['current_date'])):date('Y-m-d');
+        $current_date = $inputs['current_date'];//convertDate($inputs['present']);
         $present_time = isset($arr['present_time'])?$arr['present_time']: date('H:i');
         $group = null;
 
@@ -205,12 +205,21 @@ class StudentAttendance //extends Model
         ->selectRaw('sg.id,sg.checkin_time,sg.checkout_time,sg.term_id')
         ->first();
 
-        if($group_in){
+        $todayYear = $current_date ? date('Y',strtotime($current_date)):date('Y');
+        $todayMonth= $current_date ? date('m',strtotime($current_date)):date('m');
+        $todayDay = $current_date ? date('d',strtotime($current_date)):date('d');
+
+        $strsearch_date = "YEAR(session_date) = '$todayYear' AND MONTH(session_date) = '$todayMonth' AND DAY(session_date) = '$todayDay'";
+
+        // Check if a record with the specified date exists
+        $existDate = DB::table('student_attendances')->whereRaw($strsearch_date)->where('is_finished',0)->exists();
+
+        if(!$existDate){
             $group = $group_in;
         }
-        // else{
-        //     $group = $group_out;
-        // }
+        else{
+            $group = $group_out;
+        }
 
         if(!$group)return DV::error('Student does not exist in group');
         $enr_info = DB::table('enrollments as e')->where('e.student_id',$student_id)->where('e.term_id',$group->term_id)->where('e.status_id','>=',3)->selectRaw('e.id,e.tuition_end_date,e.student_id,e.level_id,e.session_id,e.start_date')->first();
@@ -219,13 +228,12 @@ class StudentAttendance //extends Model
         if(!$enr_info){
             return  DV::error('Student might not enroll or exist in group yet');
         }
-        if($enr_info->tuition_end_date < $present){
+        if($enr_info->tuition_end_date < $current_date){
             return DV::error('Student enrollment is not available or expired');
         }
 
-        // if($current_date > $today){
-        //     return DV::error('Student');
-        // }
+
+
         $level = GeneralSettings::getLevel($enr_info->level_id,$ss);
 
         $current_date = isset($arr['current_date'])?date('Y-m-d',strtotime($arr['current_date'])):DB::raw('CURDATE()');
@@ -238,9 +246,14 @@ class StudentAttendance //extends Model
         $in_remarks = "";
         $out_remarks = "";
         $id = null;
+        $today = date('Y-m-d');
         $is_finished = $check_in_out?$check_in_out->is_finished:null;
         if($check_in_out){
             $id = $check_in_out->id;
+        }
+
+        if($current_date > $today){
+            return DV::error('Day is greater than today');
         }
 
         if($is_finished === null || $is_finished <0){
@@ -318,8 +331,8 @@ class StudentAttendance //extends Model
         //     "is_finished" => $is_finished,
         //     "group" => $group,
         // ];
-
-        return $arr_attenance;
+        // return $arr_attenance;
+        return $existDate;
 
     }
 
@@ -581,7 +594,7 @@ class StudentAttendance //extends Model
         }
         $exist = DB::table('student_attendances')->where('student_id',$student_id)->exists();
         if(!$exist){
-            return DV::error('Student not exists in attendance list');
+            return DV::error('Student does not exists in attendance list');
         }
 
         $sessionDateCondition = "1 = 1";

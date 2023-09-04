@@ -67,6 +67,6 @@ class Banner //extends Model
             PublicStorage::delete($ss->branch_id,$this->img_dir,'image',$file_name);
         }
         $row = DB::table('banners')->where('id',$id)->delete();
-        return $row;
+        return DV::depends($id,'Deleted');
     }
 }
