@@ -15,7 +15,7 @@
         <base href="../">
         <meta charset="utf-8" />
         <title>Kids World School</title>
-        <link type="images/png" rel="icon" href="{{ asset('assets/images/logo/logo.jpg') }}"/>
+        <link type="images/png" rel="icon" href="{{ asset('assets/images/logo/logo.png') }}"/>
         <meta name="description" content="Updates and statistics">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
         <meta name="csrf-token" content="{{ csrf_token() }}" />
@@ -46,7 +46,7 @@
         <div id="kt_header_mobile" class="kt-header-mobile kt-header-mobile--fixed">
             <div class="kt-header-mobile__logo">
                 <a href="javascript:void(0)">
-                    <img alt="Logo" src="{{ asset('assets/images/logo/ksm-logo.png') }}" />
+                    <img alt="Logo" src="{{ asset('assets/images/logo/logo_esthederm.png') }}" />
                 </a>
             </div>
             <div class="kt-header-mobile__toolbar">
@@ -150,6 +150,7 @@
                     <div id="_p2" class="kt-content kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" id="kt_content">
                         <div id="_p1" class="row">
                             <div class="col-lg-12 shadow-box mt-3 ps-4" id="_app_content">
+                                <div class="temp_div"></div>
                                 @include('layouts.inputBoxes')
                                 @include('layouts.dashboardComponent')
                                 @include('layouts.registrationComponent')

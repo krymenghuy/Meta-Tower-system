@@ -151,7 +151,7 @@ var StudentAttendanceReportComponent = new function(){
         vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
             if(res.status_code === 200){
                 let d = res.data;
-                if(!($.isEmptyObject(d))){
+                if(d && !($.isEmptyObject(d))){
                     div.find('.data-input').each(function(){
                         let el = $(this);
                         let f = el.data('field');
