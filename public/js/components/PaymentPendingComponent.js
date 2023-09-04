@@ -148,6 +148,9 @@ let PaymentPendingDialog = new function(){
                 if (typeof mThis.options.onClose === "function")
                     mThis.options.onClose();
             }
+            else{
+                cv_interact.error(res.error_message);
+            }
         });
     });
 
