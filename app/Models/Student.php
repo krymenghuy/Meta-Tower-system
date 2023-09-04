@@ -389,7 +389,7 @@ class Student //extends Model
       $id =$id?$id:$this->id;
       $ss =$ss?$ss:$this->userInfo;
       $branch_id = $ss->branch_id;
-      $res = PublicStorage::saveAudio($branch_id,'students',null,$base64,['id'=>$id,'store'=>'students.audio_file']);
+      $res = PublicStorage::saveAudio($branch_id,'students',null,$base64,null,['id'=>$id,'store'=>'students.audio_file']);
         //   if(isset($res->file_name)){
         //     DB::table('students')->where('id',$id)->update([
         //         'audio_file'=>$res->file_name

@@ -17,7 +17,7 @@ class MobileApiController extends Controller
         $d = new MobileApi();
         $student_id = $req->student_id;
         $res = $d->pickupMyKids($student_id,$ss);
-        return JDV::result($res);
+        return JDV::raw($res);
     }
  
     function homePage(Request $req){

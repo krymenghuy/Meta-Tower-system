@@ -942,40 +942,51 @@ function readFileContent($fileName=null)
           {
             $path = Storage::disk('private')->path('');
           }else{
-             $path = getcwd(). "/uploads/companies/";
+             //$path = Storage::disk('public')->path('');
+             $path = getcwd().Config::get('app.storage_dir');
           }
         return $path;
     }
 
+    //return public url
     function getStorageUrl(){
-      return url('')."/uploads/companies/";
-    }
+      return url('').Config::get('app.storage_dir'); //"/uploads/companies/";
+    } 
 
+    //To upport misspelling version   
     function getAdminAppId(){
-        return "DXM20FKAEFC711EH2E9M9801A7CMD801";
+        return Config::get('app.app_id');
     }
-
-    // function getGuardianAppId(){
-    //     return 'ZAM20FKAEFC722EH2E7M9801B7BZD899';
-    // }
-
-
+    
     function thisAppId()
     {
-      return '7E33ZA1E2D7811EB92C09801A7B0D2FC';
+      return Config::get('app.app_id');
     }
 
     function getAppId(){
-        return "DXM20FKAEFC711EH2E9M9801A7CMD801";
-    }
-
-    function getAppIdByUserClass(){
-        return "DXM20FKAEFC711EH2E9M9801A7CMD801";
+        return Config::get('app.app_id');
     }
 
     function channel_prefix(){
-        return "vsloan.";
+        //NOTE: main.js => mThis.backend_channel_name = 'houex.backend.${branch_id}'
+        return Config::get('app.pusher_channel_prefix');  //return "vsdev.";
     }
+
+    function topic_prefix($user_class){
+        return Config::get('app.fcm_topic_prefix').$user_class;  //return "vsdev".$user_class;
+    }
+
+    function getServerKey(){
+        return Config::get('app.fcm_server_key'); 
+        //return "AAAAsd6RSXs:APA91bH79xi7hY-x1HIpHmwK0GiMq53MVdEc0ruVQt6r60Et8Ww6c1RP1YGs0_Sx_RCUDHvmfI1-Sa4v5KBIVwGha6AC_Q0410CIrwXdJ3KaPx_4c0ftVbfW8FplfJiW52kLbD21WIZT";
+    }
+
+    function getAppIdByUserClass($user_class){
+        if ($user_class ==='parent') return Config::get('app.customer_app_id');
+        else  if ($user_class ==='admin') return Config::get('app.app_id');
+        else  if ($user_class ==='staff') return Config::get('app.app_id');
+        else return Config::get('app.app_id');
+     }
 
     function extendProps($cols=[],$d=null){
         if (!$cols) return $d;
