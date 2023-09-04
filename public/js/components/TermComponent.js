@@ -330,24 +330,30 @@ let AcademicYearDoalog = new function () {
     this.elTitle = this.self.find('.modal-title');
     this.btnSave = this.self.find('#dlgAcadYear_btnSave');
 
-    this.btnSave.on('click', e => {
+    this.btnSave.on('click', (e) => {
         e.preventDefault();
         let p = mThis.getFormData();
         vsapi.call(`${main_view.base_url}/api/academic-year/save`, p, null, false).then(res => {
             if (res.status_code === 200) {
                 if (typeof mThis.options.onClose === 'function') mThis.options.onClose({ 'academic_years': res.data.academic_years, 'id': res.data.id });
                 mThis.self.modal('hide');
-            } else cv_interact.error(res.error_message);
+            }
+            else
+                cv_interact.error(res.error_message);
         });
     });
 
-    this.self.on('show.bs.modal', e => {
+    this.self.on('show.bs.modal',(e) => {
+        e.preventDefault();
         if (mThis.options.previousDialog) mThis.options.previousDialog.close();
     });
 
-    this.self.on('hide.bs.modal', e => {
+    this.self.on('hide.bs.modal', (e) => {
+        e.preventDefault();
         let op = mThis.options.previousDialog_options;
-        op.term = { 'ac_year_id': mThis.options.id };
+        op.term = {
+            'ac_year_id': mThis.options.id
+        };
         if (mThis.options.previousDialog) mThis.options.previousDialog.show(op);
     });
 
