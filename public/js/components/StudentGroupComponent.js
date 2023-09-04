@@ -176,7 +176,8 @@ let StudentGroupDialog = new function(){
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
         let p = mThis.getDataForm(false);
-           if(!p) return;
+        // if(!p) return;
+        // console.log(p);
         vsapi.call(`${main_view.base_url}/api/student-group/save`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
@@ -193,18 +194,20 @@ let StudentGroupDialog = new function(){
         let p = {
             'id': mThis.options.id
         };
-        let has_error = true;
+        // let has_error = true;
+
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
-            if(el.data('error')==1){
-                if(!silent) cv_interact.warning([Validator.properCase(f),' is not correct'].join(''));
-                has_error=true;
-                return false;
-            }
+            // if(el.data('error') == 1){
+            //     if(!silent) cv_interact.warning([Validator.properCase(f),' is not correct'].join(''));
+            //     has_error = true;
+            //     return false;
+            // }
             p[f] = el.val();
         });
-        return has_error? null: p;
+        return p;
+        // return has_error ? null : p;
     }
 
     this.setFormData = (d) => {
