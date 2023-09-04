@@ -171,6 +171,9 @@ let DepositFeeDialog = new function(){
     let mThis = this;
     this.self = $('#dlg_dpf');
     this.options = {};
+    let ref = {
+        click: true
+    };
 
     this.elTitle = mThis.self.find('.modal-title');
     this.btnTab = mThis.self.find('.btn-tab');
@@ -204,19 +207,24 @@ let DepositFeeDialog = new function(){
         else if(mThis.options.dn === 'old'){
             p = mThis.getDataForm(mThis.div_oldStudent,false);
         }
-        if(!p) return;
 
         if(p.student_id) delete(p.id);
 
-        vsapi.call(`${main_view.base_url}/api/deposite/save`,p,null).then(res => {
-            if(res.status_code === 200){
-                mThis.self.modal('hide');
-                if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
-            }
-            else{
-                cv_interact.error(res.error_message);
-            }
-        });
+        if(ref.click){
+            vsapi.call(`${main_view.base_url}/api/deposite/save`,p,null).then(res => {
+                ref.click = false;
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    if(typeof mThis.options.onClose === 'function')
+                        mThis.options.onClose();
+                    ref.click = true;
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                    ref.click = true;
+                }
+            });
+        }
     });
 
     mThis.btnTab.on('click',function(e){
@@ -283,30 +291,22 @@ let DepositFeeDialog = new function(){
         });
     }
 
-    this.getDataForm = (div,slient=false) => {
+    this.getDataForm = (div) => {
         let p = {
             'id': mThis.options.id ? mThis.options.id : 0
         };
-        let has_error = false;
         div.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
-            if(el.data('error')==1){
-                if(!slient) cv_interact.warning([Validator.properCase(f),' is not correct'].join(''));
-                has_error = true;
-                return false;
-            }
-
             if(f === 'student_id')
                 p['student_name'] = el.find(':selected').text();
             p[f] = el.val();
         });
-        return has_error? null:p;
+        return p;
     }
 
     this.setDataForm = (d=null, div, onFinish=null) => {
         d = d ? d : {};
-        Validator.clearErrors(div);
         div.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');

@@ -6,6 +6,8 @@ use App\Models\DV;
 use App\Models\GeneralSettings;
 use App\Models\PublicStorage;
 use App\Models\StudentAttendance;
+use App\Models\Notifier;
+use App\Models\DV;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use DB;
@@ -14,9 +16,14 @@ class MobileApi //xtends Model
 {
     // use HasFactory;
     function pickupMyKids($student_id,$ss){
-        $d = (object)['branch_id' => $ss->branch_id,'sender_id' => $ss->official_id,'file_url'=>'file name'];
+        $row = DB::table('students as st')->where('branch_id',$ss->branch_id)->where('id',$student_id)->take(1)->selectRaw('audio_file')->get()->first();
+        if(!$row) return DV::error('Student identity is not correct');
+        $audio_file_name = $row->audio_file;
+        $audioUrl =null;
+        if($audio_file_name) $audioUrl = PublicStorage::getUrl( $ss->branch_id,'students','audio').$audio_file_name;
+        $d = (object)['branch_id' => $ss->branch_id,'sender_id' =>$ss->official_id,'file_url'=>$audioUrl,'persist'=>0];
         $res = Notifier::notify_admin('pickup_call', $d);
-        return response()->json($res);
+        return $d;
     }
 
     function attendanceList($filter){
