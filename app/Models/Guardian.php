@@ -192,13 +192,24 @@ class Guardian //extends Model
         $inputs = $res->values;
         $student_id = $inputs['student_id'];
         unset($inputs['student_id']);
+        $inputs['n_id'] = $inputs['national_id'];
+        unset($inputs['national_id']);
+        $image = $inputs['photo'];
+        unset($inputs['photo']);
+        $password = isset($inputs['password'])?$inputs['password']:null;
+        unset($inputs['password']);
+
+        $inputs['role'] = $inputs['sex'] == 'F'?'mother':'father';
 
         $uniqueEmail = isUnique('guardians','email',$inputs['email']);
-        $uniqueEmail = isUnique('guardians','email',$inputs['email']);
+        $uniquePhoneNumber = isUnique('guardians','phone_number',$inputs['phone_number']);
+        if($uniqueEmail) return DV::error('Email already exists');
+        if($uniquePhoneNumber) return DV::error('Phone number already exists');
 
         $family_code = DB::table('student_guardians')->where('student_id',$student_id)->selectRaw('student_id,family_code')->distinct()->first()->family_code;
         $new_guardianID = saveData($ss,'guardians',['id' => null],$inputs,[],1);
         if($new_guardianID>0){
+            $um = new UM();
 
             PublicStorage::saveImage($branch_id,'guardians',null,$image,null,['id' => $new_guardianID,'store'=>'guardians.file_name']);
 
@@ -209,16 +220,17 @@ class Guardian //extends Model
                 'official_id' => $new_guardianID,
                 // 'official_code' =>$student_code,
                 'email' => $inputs['email'],
-                'password' => isset($inputs['password']) ? $inputs['password']:self::$def_password,
-                'full_name' => $female_guardian->name,
+                'password' => $password?$password:self::$def_password,
+                'full_name' => $inputs['name'],
             ];
-            $um_ = $um->saveUser($arr,$ss);
+            $um_ = $um->saveUser($um_info,$ss);
 
             //** link student to requested guardian */
             $newGuardian = DB::table('student_guardians')->insert([
                 'student_id' => $student_id,
                 'guardian_id' => $new_guardianID,
-                'family_code' => $family_code
+                'family_code' => $family_code,
+                'guardian_role' => $inputs['sex'] == 'F'?'mother':'father'
             ]);
 
         }
