@@ -100,6 +100,7 @@ class ScriptProvider
             'output_file' => '/dist/js/ksm.components.js',
             'files' => [
                 '/js/components/SearchData.js',
+                '/js/components/DialogFilter.js',
                 '/js/components/RenderTableReport.js',
                 '/assets/js/formUtils.js',
                 '/js/layout/main.js?v=1',
@@ -107,7 +108,6 @@ class ScriptProvider
                 '/js/components/FileChooser.js',
                 '/js/components/ImageHelper.js',
                 '/js/components/ListView.js',
-                //'/js/components/SimpleItemEditor.js',
                 '/js/components/UnauthComponent.js',
                 '/js/components/OptionEditor.js',
                 '/js/components/DashboardComponent.js',

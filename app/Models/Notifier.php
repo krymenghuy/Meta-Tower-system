@@ -38,6 +38,10 @@ class Notifier extends Model
                       event(new \App\Events\PickupCall($data));
                       break;
                     }
+                    case 'message_received':{
+                      broadcast(new \App\Events\MessageReceived($data))->toOthers();
+                      break;
+                    }
                     case 'OtherEventName':{
                       broadcast(new \App\Events\OtherEvent($data))->toOthers();
                       break;
