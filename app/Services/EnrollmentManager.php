@@ -10,7 +10,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class EnrollmentManager {
 
     protected $id =null, $user_info = null;
-    function __construct($id=null,$user_info){
+    function __construct($id=null,$user_info=null){
         $this->id = $id;
         $this->user_info = $user_info;
     }
@@ -417,6 +417,10 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
         ],[],1);
 
         return DV::depends($enrID,'Finalized');
+    }
+
+    function optionsGetGuardianByFamilyCode($familyCode,$ss=null){
+        return GeneralSettings::getParentInfoByFamilyCode($familyCode,$ss);
     }
 
     // function generateNewEnrollentToStudent($arr=[],$id,$ss){

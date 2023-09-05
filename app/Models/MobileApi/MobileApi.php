@@ -109,13 +109,16 @@ class MobileApi //xtends Model
     function changeProfile($arr=[],$ss){
         $v_rule = [
             'photo' => '0|image',
+            'address' => '0|string',
         ];
         $res = validateObject($arr,$v_rule,false,[],$ss->lang,false,null);
-        if($res->error) return JDV::error($res->error);
+        if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $image = $inputs['photo'];
         unset($inputs['photo']);
-
+        $update = DB::table('guardians')->where('id',$ss->official_id)->update([
+            'address' => $inputs['address'],
+        ]);
         $update = PublicStorage::saveImage($ss->branch_id,'guardians',null,$image,null,['id'=>$ss->official_id,'store' => 'guardians.file_name']);
         return DV::depends($update,'Profile has been changed');
     }
@@ -169,7 +172,7 @@ class MobileApi //xtends Model
             } else {
                 $invoice->status_text = 'paid';
 
-                // Check if we have not reached the limit of $limit paid invoices for this student
+                // Check if not reached the limit of $limit paid invoices for this student
                 $limit = 3;
                 if (!isset($paidInvoicesCount[$invoice->student_id]) || $paidInvoicesCount[$invoice->student_id] < $limit) {
                     $combinedData['paid_invoice'][] = $invoice;
