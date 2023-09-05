@@ -300,7 +300,7 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
     function getEnrollmentDetails($id=null,$ss=null){
         $ss = $ss?$ss:$this->user_info;
         $id = $id?$id:$this->id;
-        $selectCols = 'e.id,s.id AS student_id,e.term_id,e.student_id,ss.name as session,e.prev_school_id,e.program_id,e.level_id,e.campus_id,e.session_id,g.id AS group_id,g.name AS group_name, l.`name` AS `level`,c.`name` AS `campus`,e.academic_year,s.sex,s.`name`,s.sex,formatDate(s.date_of_birth) AS date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth,formatDate(e.start_date) as admission_date';
+        $selectCols = 'e.enroll_finalized,e.id,s.id AS student_id,e.term_id,e.student_id,ss.name as session,e.prev_school_id,e.program_id,e.level_id,e.campus_id,e.session_id,g.id AS group_id,g.name AS group_name, l.`name` AS `level`,c.`name` AS `campus`,e.academic_year,s.sex,s.`name`,s.sex,formatDate(s.date_of_birth) AS date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth,formatDate(e.start_date) as admission_date';
         $row = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->where('e.id',$id)
@@ -374,7 +374,7 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
           if($level_id > 0) $str_moreWhere .= ' AND e.level_id ='.$level_id;
           else if($program_id > 0) $str_moreWhere .= ' AND e.program_id ='.$program_id;
 
-          $selectCols = 'e.id,st.id AS student_id,e.is_new_student,s.name AS session,e.level_id,g.`name` AS group_name, g.id AS group_id, e.prev_school_id,c.`name` AS campus,l.`name` AS level,e.campus_id,e.academic_year,st.code as student_code,st.name,st.name_kh,st.sex,formatDate(st.date_of_birth) AS date_of_birth,st.file_name, CASE e.is_new_student WHEN 1 THEN \'NEW\' ELSE \'Old\' END AS student_type';
+          $selectCols = 'e.enroll_finalized,e.id,st.id AS student_id,e.is_new_student,s.name AS session,e.level_id,g.`name` AS group_name, g.id AS group_id, e.prev_school_id,c.`name` AS campus,l.`name` AS level,e.campus_id,e.academic_year,st.code as student_code,st.name,st.name_kh,st.sex,formatDate(st.date_of_birth) AS date_of_birth,st.file_name, CASE e.is_new_student WHEN 1 THEN \'NEW\' ELSE \'Old\' END AS student_type';
           $query = DB::table('enrollments as e')
                   ->join('group_members as gm','e.id','=','gm.enrollment_id')
                   ->join('student_groups as g','g.id','=','gm.group_id')
