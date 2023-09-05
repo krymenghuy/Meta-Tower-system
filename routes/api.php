@@ -226,6 +226,9 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
     //begin::StudentController
     Route::prefix('student')->group(function () {
+        //**option */
+        Route::post('/form-options',[StudentController::class,'formOptions']);
+        //** */
         Route::post('/update-info',[StudentController::class,'updateStudentInfo']);
         Route::post('/save-audio', [StudentController::class, 'saveAudioFile']);
         Route::post('/registration', [StudentController::class, 'studentRegistration']);

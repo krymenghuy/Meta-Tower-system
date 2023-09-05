@@ -487,6 +487,15 @@ class GeneralSettings //extends Model
         return DB::table('campuses')->where('id',$id)->selectRaw('id,name,name as campus')->first();
     }
 
+    static function optionsFindVerifyPmt(){
+        return (object)[
+            "academic_years" => DB::table('academic_years')->selectRaw('academic_year as academic_years,academic_year as id')->get(),
+            "terms" => DB::table('terms')->selectRaw('name as terms_name,id')->get(),
+            'pmt_options' => DB::table('pmt_options')->selectRaw('name as pmt_options_name')->take(3)->orderBy('id','asc')->get(),
+            'sessions' => DB::table('sessions')->selectRaw('name as sessions_name,id')->get()
+        ];
+    }
+
     static function options_family($ss=null){
         $branch_id = $ss->branch_id;
 
