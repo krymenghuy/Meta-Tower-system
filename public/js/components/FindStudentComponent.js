@@ -23,6 +23,13 @@ var FindStudentComponent = new function(){
             e.preventDefault();
             let p = mThis.getDataForm(mThis.div_list);
             mThis.displayStudentList(p);
+            let op = {
+                select: 4,
+                label: ['Academic Year','Term','Option','Session'],
+                field: ['academic_year','terms_id','pmt_options_id','sessions_id'],
+                end_point: `${main_view.base_url}/api/form-option`
+            };
+            DialogFilter(e,op);
         });
     }
 
@@ -37,18 +44,24 @@ var FindStudentComponent = new function(){
     }
 
     this.prepareOptions = (div,onFinish = null) => {
-        vsapi.post(`${main_view.base_url}/api/find-student/filter-options`,null,false).then(res => {
-            const data = res.status_code === 200 ? res.data : {};
+        vsapi.post(`${main_view.base_url}/api/form-option`,null,false).then(res => {
+            const d = res.status_code === 200 ? res.data : {};
             div.find('.data-input').each(function(){
                 let el = $(this);
                 let f = el.data('field');
                 switch(f){
                     case 'academic_year':
-                        VSUtil.setComboItems(el,data.academic_years,'academic_year','academic_year',null,null,null);
+                        VSUtil.setComboItems(el,d.academic_year,'academic_year','academic_year',null,null,null);
                         break;
                     case 'term_id':
-                        VSUtil.setComboItems(el,data.terms,'id','term_name',true,'(All Terms)',0);
-                        break;    
+                        VSUtil.setComboItems(el,d.terms,'id','term',true,'(All Terms)',0);
+                        break;
+                    case 'pmt_options_id':
+                        VSUtil.setComboItems(el,d.pmt_options,'id','name',null,null,null);
+                        break;
+                    case 'session_id':
+                        VSUtil.setComboItems(el,d.sessions,'id','name',null,null,null);
+                        break;
                     default:
                         break;
                 }
@@ -613,7 +626,7 @@ let GenerateInvoiceFSN = new function(){
         if(!options) options = {};
         mThis.options = options;
 
-        mThis.loadFormDetails(mThis.tblInvoice,options,() => {
+        mThis.loadFormDetails(mThis.tblInvoice, options, () => {
             mThis.elTitle.text(LocaleManager.trans('Generate Invoice','titles'));
             mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please select item details','titles'));
 
