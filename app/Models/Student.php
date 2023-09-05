@@ -623,29 +623,59 @@ class Student //extends Model
     }
 
     function updateStudentInfo($arr=[],$ss){
-
+        $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '1|number|exists=students',
             'name' => '0|string|1,50',
             'name_kh' => '0|string|1,50',
-            'sex' => '0|string|1,30',
+            'sex' => '1|string|1,30',
             'date_of_birth' => '0|string',
             'phone_number' => '0|string|1,20',
             'email' => '0|string',
             'address' => '0|string',
             'photo' => '0|string',
             'place_of_birth' => '0|string|1,150',
-            'prev_school_id' => '',
+            // 'prev_school_id' => '0|string',
         ];
-        $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
-        if($res->error) return $res->error;
+        $address_char = ['#',',','@'];
+        $email_char = ['#',',','_','@','.'];
+        $img_char = ['+',':',',',';','=','/','\\','?'];
+        $res = validateObject($arr,$v_rule,1,['email'=>$email_char,'address'=>$address_char,'photo'=>$img_char],$ss->lang,0,null);
+        if($res->error) return DV::error($res->error);
         $inputs = $res->values;
 
         $id = $inputs['id'];
+        $image = $inputs['photo'];
         unset($inputs['id']);
+        unset($inputs['photo']);
+        $inputs['date_of_birth'] = convertDate($inputs['date_of_birth']);
+        $to_delete_image = $id && (!$image || isImage($image));
+        if($to_delete_image){
+            $prev_file_name = DB::table('students')->where('id',$id)->take(1)->value('file_name');
+            if($prev_file_name){
+                PublicStorage::delete($branch_id,'students','image',$prev_file_name);
+                $inputs['file_name']=null;
+            }
+        }
+        $existEmail = isExists('students',['id'=>$id],'email',$inputs['email']);
+        if($existEmail) return DV::error('Email already exists');
+        $existPhoneNumber = isExists('students',['id'=>$id],'phone_number',$inputs['phone_number']);
+        if($existPhoneNumber) return DV::error('Phone number already exists');
         $newID = saveData($ss,'students',['id' => $id],$inputs,[],1);
+        if($newID>0){
+            PublicStorage::saveImage($branch_id,'students',null,$image,null,['id' => $newID,'store' => 'students.file_name']);
+        }
 
         return DV::depends($newID,'Update');
     }
+
+    // function isExists($table,$pk=[],$checkCol,$input){
+    //     $exists = DB::table($table)->where($pk)->selectRaw($checkCol)->first();
+    //     if($exists && $exists->$checkCol != $input){
+    //         $exists = DB::table($table)->where($checkCol,$input)->exists();
+    //         if($exists) return true;
+    //     }
+    //     return false;
+    // }
 
 }

@@ -24,14 +24,14 @@ class Notifier extends Model
     //$d = {branch_id,user_id or sender_id, and other props such as "img", ...}
     static function notify_admin($event_name, $cdata){
       $data =(object)$cdata;
-      //If "persist" is not specified then save the notification to database 
+      //If "persist" is not specified then save the notification to database
       $data->persist = isset($data->persist)?$data->persist:0;
       if (!isset($data->sender_id)) $data->sender_id = isset($data->user_id)?$data->user_id:null;
       if(!isset($data->branch_id) || $data->branch_id <=0){
         //log::error('$branch_id is NULL, so cannot fire event "MessageReceived" ' );
         return "branch_id and sener_id are required to fire the event";
       }
-      $succeeded = true; 
+      $succeeded = true;
       try{
           switch($event_name){
                     case 'pickup_call':{
@@ -47,16 +47,16 @@ class Notifier extends Model
                       $succeeded =false;
                       return "Failed to notify to Web Admin because provided event name is not correct";
                       break;
-                    } 
+                    }
                   }
-                 
+
       }catch (\Exception $e){
-          return $e->getMessage();   
-      } 
+          return $e->getMessage();
+      }
         if($succeeded && $data->persist ==1) self::saveNotification_admin($data->branch_id,$data);
         return null;
     }
-  
+
     //$d = {title,message,image_url}
     static function saveNotification_admin($branch_id,$d){
       $app_id = 'DFB15FKAEEC611EG2E7C9801A7CXD1HK';
@@ -95,7 +95,7 @@ class Notifier extends Model
     //         break;
     //       }
 
-    //     } 
+    //     }
     // }
 
 
@@ -110,7 +110,7 @@ class Notifier extends Model
         //Change this $app_prefix for different mobile app to different clients. For example, driver for BroExpress, Driver App for KonmonDelivery, or Driver app for Development environment
         $app_prefix ="dev";
         $d = $eventInfo;
-        $app_id = getDriverAppId(); 
+        $app_id = getDriverAppId();
         $branch_id = isset($d->branch_id)?$d->branch_id:1;
         $target_user_id = isset($d->target_user_id)?$d->target_user_id:null;
         //if (empty($user_id)) $user_id = isset($d->user_id)?$d->user_id:null;
@@ -140,15 +140,15 @@ class Notifier extends Model
         $notificationBuilder->setData((array)$data)
                             ->setBody($d->message)
                             ->setSound('default');
-        
+
         $notification = $notificationBuilder->build();
-        
+
         $topic = new Topics();
         $topic->topic($app_prefix.$event_name.".".$target_user_id);
 
         if(!is_array($data)) $data = (array)$data;
         $topicResponse = FCM::sendToTopic($topic,null, $notification,null);
-        
+
         $topicResponse->isSuccess();
         $topicResponse->shouldRetry();
         $status = $topicResponse->error();
@@ -169,17 +169,17 @@ class Notifier extends Model
                 'create_date'=>getNowTime()
               ));
              // return $status;
-         }    
+         }
          return $status;
    }
-    
+
    static function notify_merchant($eventInfo,$data=null,$persist=false){
     //Driver App ID = '584C7FF2122D11EC89909801A8B0D7XKD'
 
     //Change this $app_prefix for different mobile app to different clients. For example, driver for BroExpress, Driver App for KonmonDelivery, or Driver app for Development environment
     $app_prefix ="dev";
     $d = $eventInfo;
-    $app_id = getMerchantAppId(); 
+    $app_id = getMerchantAppId();
     $branch_id = isset($d->branch_id)?$d->branch_id:1;
     $target_user_id = isset($d->target_user_id)?$d->target_user_id:null;
     //if (empty($user_id)) $user_id = isset($d->user_id)?$d->user_id:null;
@@ -209,15 +209,15 @@ class Notifier extends Model
     $notificationBuilder->setData((array)$data)
                         ->setBody($d->message)
                         ->setSound('default');
-    
+
     $notification = $notificationBuilder->build();
-    
+
     $topic = new Topics();
     $topic->topic($app_prefix.$event_name.".".$target_user_id);
 
     if(!is_array($data)) $data = (array)$data;
     $topicResponse = FCM::sendToTopic($topic,null, $notification,null);
-    
+
     $topicResponse->isSuccess();
     $topicResponse->shouldRetry();
     $status = $topicResponse->error();
@@ -239,16 +239,16 @@ class Notifier extends Model
             'create_date'=>getNowTime()
           ));
          // return $status;
-     }    
+     }
      return $status;
 }
 
-/*** 
+/***
  notify_mobile() takes @data as param:
  $data =[
     ['user_class','target_user_id','title','message','data','persist'],
     ['user_class','target_user_id','title','message','data','persist']
-  ] 
+  ]
 
   notify_mobile() is to send notifications to one or more apps based on the given param @data = array()
 ***/
@@ -259,7 +259,7 @@ static function notify_mobile($branch_id,$data=[]){
       if(!isset($data[$i])) break;
       $c = (object)$data[$i];
       $str_topic = null;
-     
+
       $target_user_id = isset($c->target_user_id)?$c->target_user_id:null;
       $user_class = isset($c->user_class)?$c->user_class:null;
       $app_id = getAppIdByUserClass($user_class);
@@ -268,7 +268,7 @@ static function notify_mobile($branch_id,$data=[]){
       $custom_data = isset($c->data)?$c->data:null;
       if($target_user_id>0)
         $str_topic = $branch_id.topic_prefix($user_class)."private".$target_user_id;
-      else 
+      else
          $str_topic = $branch_id.topic_prefix($user_class)."general";
 
       // $payload_data = null;
@@ -279,10 +279,10 @@ static function notify_mobile($branch_id,$data=[]){
       //       $dataBuilder->addData($custom_data);
       //       //build custom data as JSON array that is required by fcm_send()
       //       $payload_data = $dataBuilder->build();
-      // } 
-      
+      // }
+
           $notification = [
-              //"condition"=>" 'private' in topics", 
+              //"condition"=>" 'private' in topics",
               'topic'=>$str_topic,
               'title' => isset($c->title)?$c->title:'DMS',
               //'body' =>$c->message."($str_topic)", //message body
@@ -319,16 +319,16 @@ static function notify_mobile($branch_id,$data=[]){
                 'expiry_time'=>$expiry_time,
                 'create_date'=>getNowTime()
               ));
-          //} 
+          //}
       $i++;
   }while($c);
-  return null; 
+  return null;
   // $x = json_decode($res);
   // $x->topic = $str_topic;
-  // return $x; 
+  // return $x;
 }
-  
-    //Admin or (Web) to Merchant or Driver (Mobile apps) (target_user_id ="*" => target all user of the @user_class) 
+
+    //Admin or (Web) to Merchant or Driver (Mobile apps) (target_user_id ="*" => target all user of the @user_class)
     //@event = {'name','title','message',image_url}
     //@payload is optional param that stores data holding extra information
     //$target_user_id ="*" => the notification is for all users of the given @user_class
@@ -344,9 +344,9 @@ static function notify_mobile($branch_id,$data=[]){
 
           if($user_class ==='merchant') $app_id = getMerchantAppId();
           else if ($user_class ==='driver') $app_id = getDriverAppId();
-          
+
           if(!$app_id) return DV::error('user_class or app_id is not correct');
-      
+
           $expiry_time = Carbon::now()->addDay(2);
 
           //$dataBuilder = new PayloadDataBuilder();
@@ -361,17 +361,17 @@ static function notify_mobile($branch_id,$data=[]){
           $notification->image = $image_url;
           $topic = new Topics();
 
-          //use $target_user_id as topic_name to be broadasted through google FCM to Mobile App  
+          //use $target_user_id as topic_name to be broadasted through google FCM to Mobile App
           //$topic_name =$target_user_id;
           $topic->topic($target_user_id?$target_user_id:"*");
           $topicResponse = FCM::sendToTopic($topic, null, $notification,null);
-          
+
           $topicResponse->isSuccess();
           $topicResponse->shouldRetry();
           $status = $topicResponse->error();
-        
+
           //if ($status == 1){
-              
+
                 //Save notification in db table
                 if(!is_numeric($target_user_id)) $target_user_id = null;
                 DB::table('notifications')->insert(array(
@@ -387,10 +387,10 @@ static function notify_mobile($branch_id,$data=[]){
                   'create_date'=>getNowTime()
                 ));
                 //return $status;
-          //}    
+          //}
           return DV::success(["notification_status"=>$status]);
     }
-  
+
     static function getUnreadCount_admin($d=null){
         return 0;
     }
@@ -399,14 +399,14 @@ static function notify_mobile($branch_id,$data=[]){
     }
 
     //$d= {'branch_id','user_class','user_id'}
-    static function getNotificationListByUser($user_id){ 
+    static function getNotificationListByUser($user_id){
        $user = \App\Models\UM::getUserProps($user_id,"id,user_class,app_id,branch_id");
        if(!$user) return [];
         $branch_id = $user->branch_id;
         $user_id = $user->id;
-        $user_class = $user->user_class;  
+        $user_class = $user->user_class;
         $app_id = getAppIdByUserClass($user_class);
-      
+
         $more_wheres ="";
         if ($user_id > 0)
           $more_wheres .="(n.user_id =$user_id OR IFNULL(n.user_id,0) =0)";
@@ -414,41 +414,41 @@ static function notify_mobile($branch_id,$data=[]){
         $str_date = "DATE(create_date) ='".date('Y-m-d')."'";
         return DB::table('notifications AS n')->where('n.branch_id',$branch_id)->where('app_id',$app_id)->whereRaw($more_wheres)->whereRaw($str_date)->whereRaw("IFNULL(is_read,0)=0")->selectRaw("n.id,is_read(n.id,n.user_id) AS is_read,CASE IFNULL(user_id,0) WHEN 0 THEN 'all' ELSE 'me' END AS target_user,message,title,image_url,create_date")->orderBy("n.id","DESC")->get();
     }
-    
+
     //$notification = ['title','body','icon'=>null,'sound'=>'default']
     static function fcm_send($topic_name,$notification=[],$custom_data=array()) {
       //$apiKey = 'AIzaSyD5hjn0SeDJTHasyISJhnXIRVrj-0ZUdRU';
       //get server_key for broexpress system. defined in Helpers.php
-      $apiKey =getServerKey(); 
+      $apiKey =getServerKey();
       //if(!is_array($custom_data)) $custom_data = (array)$custom_data;
       $fields = array('to' => '/topics/'.$topic_name, 'notification' => $notification, 'data'=>$custom_data);
       $headers = array('Authorization: key='.$apiKey, 'Content-Type: application/json', 'priority' => 10);
-    
+
       $url = 'https://fcm.googleapis.com/fcm/send';
-    
+
       // var_dump($fields);
-    
+
       $ch = curl_init();
       curl_setopt($ch, CURLOPT_URL, $url);
       curl_setopt($ch, CURLOPT_POST, true);
       curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    
+
       curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
       $result = curl_exec($ch);
       curl_close($ch);
-    
+
       return $result;
     }
- 
+
       //for mobile user to remove unread-count for specific notifcaition
       static function markRead($notif_id, $user_id){
         if (!$notif_id) return DV::error("Notification identifier is not supplied");
         DB::table('notification_reads')->where('notif_id',$notif_id)->where('user_id',$user_id)->delete();
         DB::table('notification_reads')->insert(['user_id'=>$user_id,'notif_id'=>$notif_id]);
         return null;
-    } 
+    }
 
     //for mobile app user remove All unread-count
     //returns NULL in case of No Error
@@ -459,7 +459,7 @@ static function notify_mobile($branch_id,$data=[]){
         $rows = DB::table('notifications AS n')->whereRaw($more_wheres)->selectRaw("n.id,n.user_id")->get();
         DB::table('notifications AS n')->where("user_id",$user_id)->update(["is_read"=>1]);
         foreach($rows as $row){
-          $rs = DB::table('notification_reads AS r')->where('notif_id',$row->id)->where('user_id',$user_id)->selectRaw("r.id")->limit(1)->get();  
+          $rs = DB::table('notification_reads AS r')->where('notif_id',$row->id)->where('user_id',$user_id)->selectRaw("r.id")->limit(1)->get();
           if(!isset($rs[0])){
               DB::table('notification_reads')->insert(['user_id'=>$user_id,'notif_id'=>$row->id]);
           }
@@ -467,29 +467,29 @@ static function notify_mobile($branch_id,$data=[]){
         return null;
     }
 
-    static function point2point_distance($lat1, $lon1, $lat2, $lon2, $unit='K') 
-    { 
-        $theta = $lon1 - $lon2; 
-        $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta)); 
-        $dist = acos($dist); 
-        $dist = rad2deg($dist); 
+    static function point2point_distance($lat1, $lon1, $lat2, $lon2, $unit='K')
+    {
+        $theta = $lon1 - $lon2;
+        $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+        $dist = acos($dist);
+        $dist = rad2deg($dist);
         $miles = $dist * 60 * 1.1515;
         $unit = strtoupper($unit);
 
-        if ($unit == "K") 
+        if ($unit == "K")
         {
-            return ($miles * 1.609344); 
-        } 
-        else if ($unit == "N") 
+            return ($miles * 1.609344);
+        }
+        else if ($unit == "N")
         {
         return ($miles * 0.8684);
-        } 
-        else 
+        }
+        else
         {
         return $miles;
       }
-    } 
- 
+    }
+
      //return count of unread notifications
      static function getUnreadCount($user_id,$user_class=null){
       if(!$user_id) return 0;
@@ -501,5 +501,5 @@ static function notify_mobile($branch_id,$data=[]){
      }
 
 
-    
+
 }

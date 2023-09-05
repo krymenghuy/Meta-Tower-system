@@ -134,7 +134,6 @@ class EnrollmentManager {
             PublicStorage::delete($branch_id,'students','image',$prev_file_name);
             $inputs['file_name']=null;
         }
-
       }
 
       if(!$id && !$family_code && Student::checkParentLoginName($parent_info)) return DV::error('Parent Login name is already taken. Father or mother phone number is used as parent login');
