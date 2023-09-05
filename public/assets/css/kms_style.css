@@ -834,6 +834,7 @@ li.kt-menu__section {
     cursor: pointer;
 }
 
+.glow-on-hover-finalized,
 .glow-on-hover {
     border: none;
     outline: none;
@@ -845,6 +846,7 @@ li.kt-menu__section {
     border-radius: var(--bs-border-radius);
 }
 
+.glow-on-hover-finalized:before,
 .glow-on-hover:before {
     content: '';
     background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
@@ -862,18 +864,25 @@ li.kt-menu__section {
     border-radius: var(--bs-border-radius);
 }
 
+.glow-on-hover-finalized:active{
+    color: var(--bs-warning);
+}
+
 .glow-on-hover:active {
     color: var(--bs-info);
 }
 
+.glow-on-hover-finalized:after,
 .glow-on-hover:active:after {
     background: transparent;
 }
 
+.glow-on-hover-finalized:before,
 .glow-on-hover:before {
     opacity: 1;
 }
 
+.glow-on-hover-finalized:after,
 .glow-on-hover:after {
     z-index: -1;
     content: '';
@@ -884,6 +893,10 @@ li.kt-menu__section {
     left: 0;
     top: 0;
     border-radius: var(--bs-border-radius);
+}
+
+.glow-on-hover-finalized:after{
+    background: var(--bs-warning);
 }
 
 @keyframes glowing {
