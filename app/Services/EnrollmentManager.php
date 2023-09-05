@@ -58,10 +58,7 @@ class EnrollmentManager {
           'pmt_mode' => '0|number|default=1',
           'academic_year' => '1|string|1,25',
           'status_id' => '0|number|exists=status.id',
-          // 'tuition' => '0|number|default=0',
-          // 'tuition_due' => '0|number|default=0',
           'discount' => '0|number|default=0',
-          // 'tuition_paid' => '0|number|default=0',
           'pmt_option_id' => '0|number|exists=pmt_options.id|default=2',
           'pmt_status' => '0|choice|paid,unpaid|default=unpaid',
           'referrer_id' => '0|number|exists=students.id',
@@ -113,10 +110,7 @@ class EnrollmentManager {
       $family_code = isset($inputs['family_code'])?$inputs['family_code']:null;
       unset($inputs['status_id']);
       unset($inputs['student_code']);
-      unset($inputs['tuition']);
-      unset($inputs['tuition_due']);
       unset($inputs['discount']);
-      unset($inputs['tuition_paid']);
       unset($inputs['academic_year']);
       unset($inputs['pmt_option_id']);
       unset($inputs['pmt_status']);
@@ -144,6 +138,9 @@ class EnrollmentManager {
       }
 
       if(!$id && !$family_code && Student::checkParentLoginName($parent_info)) return DV::error('Parent Login name is already taken. Father or mother phone number is used as parent login');
+      $isFinalized = 1;
+      $finalized = DB::table('enrollments')->where('student_id',$student_id)->where('enroll_finalized',$isFinalized)->first();
+      if($finalized) return DV::error('Enrollment has already been finalized, Cannot edit the enrollment information');
       $student_id = saveData($ss,'students',['id' =>$student_id],$inputs,[],1,1);
 
       if($student_id > 0){
@@ -169,8 +166,9 @@ class EnrollmentManager {
               'start_date' => convertDate($admission_date),
           ];
           if(!$id){
-                  $en_student_data['status_id'] = $statusID;
-                  $en_student_data['is_new_student'] = 1;
+                $en_student_data['status_id'] = $statusID;
+                $en_student_data['is_new_student'] = 1;
+                $en_student_data['enroll_finalized'] = 0;
           }
           $enrollment_id = saveData($ss,'enrollments',['id'=>$id],$en_student_data,[],1);
 
@@ -237,19 +235,6 @@ class EnrollmentManager {
             $p_info = Student::saveParentInfo($parent_info,$student_id,$ss);
         }
 
-        //   // **delete Images in Folder if not exists in DB;
-        //   $folderPath = public_path('/uploads/public/'.$ss->branch_id.'_data/students/images');
-        //   $filesInDatabase = DB::table('students')->pluck('file_name');
-        //   $filesInFolder = glob($folderPath . '/*');
-
-        //   foreach ($filesInFolder as $filePath) {
-        //       $fileName = basename($filePath);
-        //       if (!in_array($fileName, $filesInDatabase->toArray())) {
-        //           unlink($filePath);
-        //       }
-        //   }
-
-
         $um_res = Student::saveParentInfo($parent_info,$student_id,$ss);
 
           // add student to group
@@ -287,13 +272,13 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
     $id = $id?$id:$this->id;
     //$branch_id = $ss->branch_id;
     $enr = DB::table('enrollments')->where('id',$id)->selectRaw('id,status_id')->get()->first();
-    // $delete = saveData($ss,'enrollments',['id' => $id],[
-    //     'status_id' => 1,
-    // ],[],1);
     if(!$enr) return DV::error('Enrollment info does not exist');
     if($enr->status_id >2) {
         return DV::error('Cannot delete enrollment because the student already paid tuition fee');
     }
+    $delete = saveData($ss,'enrollments',['id' => $id],[
+        'status_id' => 1,
+    ],[],1);
     if($delete){
         $change_fields = [
             "tuition" => 0,
@@ -419,9 +404,28 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
       return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    function generateNewEnrollentToStudent($arr=[],$id,$ss){
-        $v_rule = [];
-        return '';
+    function finalizeEnrollment($arr=[],$ss=null){
+        $v_rule = [
+            'enrollment_id' => '1|number|exists=enrollments.id',
+        ];
+        $res = validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
+        if($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+        $id = $inputs['enrollment_id'];
+        unset($inputs['enrollment_id']);
+        $enrID = saveData($ss,'enrollments',['id'=>$id],[
+            'enroll_finalized' => 1
+        ],[],1);
+
+        return DV::depends($enrID,'Finalized');
     }
+
+    // function generateNewEnrollentToStudent($arr=[],$id,$ss){
+    //     $v_rule = [
+    //         '' => '',
+    //     ];
+    //     return '';
+    // }
+
 }
 ?>

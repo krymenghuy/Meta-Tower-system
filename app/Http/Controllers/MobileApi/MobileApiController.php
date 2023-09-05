@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class MobileApiController extends Controller
 {
-  
+
     function pickupMyKids(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
@@ -19,7 +19,7 @@ class MobileApiController extends Controller
         $res = $d->pickupMyKids($student_id,$ss);
         return JDV::raw($res);
     }
- 
+
     function homePage(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
