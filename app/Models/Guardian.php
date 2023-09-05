@@ -11,6 +11,7 @@ class Guardian //extends Model
     // use HasFactory;
 
     protected $img_dir = 'guardians',$id = null, $ss = null;
+    protected static $def_password = '123456'; // default password for request parent account
 
     function __construct($id=null,$ss=null){
         $this->id = $id;
@@ -168,5 +169,101 @@ class Guardian //extends Model
 
         return $groupedData;
     }
+
+
+    function requestAccount($arr=[],$ss=null){
+        $ss = $ss?$ss:$this->ss;
+        $branch_id = $ss->branch_id;
+        $v_rule = [
+            'name' => '1|string|1-50',
+            'sex' => '1|choice|F,M',
+            'phone_number' => '1|string|1-20',
+            'email' => '0|string',
+            'address' => '1|string|1-200',
+            'religion' => '0|string|1-100',
+            'national_id' => '1|string',
+            'photo' => '0|image',
+            'password' => '0|string',
+            'student_info' => '0|array',
+        ];
+        $email_char = ['@','.','-','_'];
+        $address_char = ['@','.','#'];
+        $image_char = ['+',':',',',';','=','/','\\','?'];
+        $res = validateObject($arr,$v_rule,1,['email'=>$email_char,'address'=>$address_char,'photo'=>$image_char],$ss->lang,0,null);
+        if($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+        unset($inputs['student_id']);
+        $inputs['n_id'] = $inputs['national_id'];
+        unset($inputs['national_id']);
+        $image = $inputs['photo'];
+        unset($inputs['photo']);
+        $password = isset($inputs['password'])?$inputs['password']:null;
+        unset($inputs['password']);
+        $student_info = $inputs['student_info'];
+        unset($inputs['student_info']);
+
+        $inputs['role'] = $inputs['sex'] == 'F'?'mother':'father';
+        $uniqueEmail = DB::table('guardians')->where('email',$inputs['email'])->exists();
+        $uniquePhoneNumber = DB::table('guardians')->where('phone_number',$inputs['phone_number'])->exists();
+
+        if($uniqueEmail) return DV::error('Email already exists');
+        if($uniquePhoneNumber) return DV::error('Phone number already exists');
+
+        $childrenID = [];
+        //
+        foreach($student_info as $info){
+            $existsStudent = DB::table('students')->where('id',$info['student_id'])->exists();
+            if(!$existsStudent) return DV::error('Could not find student');
+            $childrenID[] = $info['student_id'];
+        }
+        //
+
+        $family_code = DB::table('student_guardians')->whereIn('student_id',$childrenID)->selectRaw('student_id,family_code')->distinct()->first()->family_code;
+        $new_guardianID = saveData($ss,'guardians',['id' => null],$inputs,[],1);
+
+        if($new_guardianID>0){
+            $um = new UM();
+
+            PublicStorage::saveImage($branch_id,'guardians',null,$image,null,['id' => $new_guardianID,'store'=>'guardians.file_name']);
+
+            $um_info= [
+                'login_name' => $inputs['phone_number'],
+                'user_class' => 'parent',
+                'role_id' => '16',
+                'official_id' => $new_guardianID,
+                // 'official_code' =>$student_code,
+                'email' => $inputs['email'],
+                'password' => $password?$password:self::$def_password,
+                'full_name' => $inputs['name'],
+            ];
+            $um_ = $um->saveUser($um_info,$ss);
+
+            //** link student to requested guardian */
+            foreach($student_info as $info){
+                $existsStudent = DB::table('students')->where('id',$info['student_id'])->exists();
+                if(!$existsStudent) return DV::error('Could not find student');
+                $newGuardian = saveData($ss,'student_guardians',['id' => null],[
+                    'student_id' => $info['student_id'],
+                    'guardian_id' => $new_guardianID,
+                    'family_code' => $family_code,
+                    'guardian_role' => $inputs['sex'] == 'F'?'mother':'father'
+                ],[],1);
+                // DB::table('student_guardians')->insert([
+                //     'student_id' => $info['student_id'],
+                //     'guardian_id' => $new_guardianID,
+                //     'family_code' => $family_code,
+                //     'guardian_role' => $inputs['sex'] == 'F'?'mother':'father'
+                // ]);
+
+            }
+        }
+        return DV::depends($new_guardianID,$new_guardianID);
+    }
+
+    function options_family($ss=null){
+        return GeneralSettings::options_family($ss);
+    }
+
+
 
 }

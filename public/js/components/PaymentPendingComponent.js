@@ -116,6 +116,9 @@ let PaymentPendingDialog = new function(){
     let mThis = this;
     this.self = $("#dlg_ppd_");
     this.options = {};
+    let ref = {
+        click: true
+    };
 
     this.btnSave = mThis.self.find("#dlg_ppd_btn_save");
     this.elPayment = mThis.self.find("#dlg_ppd_pmt");
@@ -124,7 +127,7 @@ let PaymentPendingDialog = new function(){
     mThis.elPayment.on("change",function(e){
         e.preventDefault();
         let op = {
-            id: $(this).val(),
+            id: $(this).val()
         };
         vsapi.call(`${main_view.base_url}/api/settings/payment-options`,op,null,false).then((res) => {
             if(res.status_code === 200){
@@ -139,40 +142,41 @@ let PaymentPendingDialog = new function(){
         });
     });
 
-    mThis.btnSave.on("click", function (e) {
+    mThis.btnSave.on("click", function(e){
         e.preventDefault();
-        let p = mThis.getDataForm(false);
-        if(!p) return;
-        vsapi.call(`${main_view.base_url}/api/price-list/update/pending-payment`,p,null).then((res) => {
-            if(res.status_code === 200){
-                mThis.self.modal("hide");
-                if (typeof mThis.options.onClose === "function")
-                    mThis.options.onClose();
-            }
-        });
+        let p = mThis.getDataForm();
+        if(ref.click){
+            vsapi.call(`${main_view.base_url}/api/price-list/update/pending-payment`,p,null).then((res) => {
+                ref.click = false;
+                if(res.status_code === 200){
+                    mThis.self.modal("hide");
+                    if (typeof mThis.options.onClose === "function")
+                        mThis.options.onClose();
+                    ref.click = true;
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                    ref.click = true;
+                }
+            });
+        }
     });
 
-    this.getDataForm = (silent=false) => {
+    this.getDataForm = () => {
         let p = {
             id: mThis.options.id,
         };
-        let has_error = false;
+
         mThis.self.find(".data-input").each(function () {
             let el = $(this);
             let f = el.data("field");
-            if(el.data('error')==1){
-                has_error = true;
-                if(!silent) cv_interact.warning([Validator.properCase(f),' is not correct'].join(''));
-                return false;
-            }
             p[f] = el.val();
         });
-        return has_error? null: p;
+        return p;
     };
 
     this.setDataForm = (d) => {
         d = d ? d : {};
-        Validator.clearErrors(mThis.self);
         mThis.self.find(".data-input").each(function () {
             let el = $(this);
             let f = el.data("field");

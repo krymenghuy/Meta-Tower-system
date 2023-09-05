@@ -1,7 +1,7 @@
 <div id="_main_printStudentCardComponent" class="mobile-padding p-3" style="display:none">
-    <div class="d-block p-3 bg-white rounded-4">
+    <div class="d-block p-3 bg-white rounded-3">
         <p class="trans-text fs-5" data-langprop="titles.Filter Class to Printing"></p>
-        <div class="row row-cols-lg-4">
+        <div id="container_psc_filter" class="row row-cols-lg-4">
             <div class="col">
                 <div class="form-group">
                     <label for="campus_id" class="form-label trans-text" data-langprop="titles.Campus"></label>

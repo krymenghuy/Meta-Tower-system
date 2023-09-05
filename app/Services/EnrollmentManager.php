@@ -49,7 +49,7 @@ class EnrollmentManager {
           'place_of_birth' => '0|string|0-250',
           'address' => '0|string|0-350',
           'photo' => '0|image',
-          'group_id' => '0|number|exists=student_groups.id',
+          'group_id' => '1|number|exists=student_groups.id',
           'level_id' => '0|number|exists=program_levels.id',
           'session_id'=> '1|number|exists=sessions.id',
           'campus_id'=> '1|number|exists=campuses.id',
@@ -121,7 +121,7 @@ class EnrollmentManager {
       unset($inputs['pmt_option_id']);
       unset($inputs['pmt_status']);
       unset($inputs['family_code']);
- 
+
       // $is_create = (!$id || $id==0);
 
       unset($inputs['level_id'],$inputs['session_id'],$inputs['campus_id'],$inputs['previous_school'],$inputs['shift_id'],$inputs['term_id'],$inputs['pmt_mode']);
@@ -140,7 +140,7 @@ class EnrollmentManager {
             PublicStorage::delete($branch_id,'students','image',$prev_file_name);
             $inputs['file_name']=null;
         }
-       
+
       }
 
       if(!$id && !$family_code && Student::checkParentLoginName($parent_info)) return DV::error('Parent Login name is already taken. Father or mother phone number is used as parent login');
@@ -208,9 +208,50 @@ class EnrollmentManager {
                   ]);
               }
           }
-      
+
+        //   if($prev_school){
+        //       $save_prev_school = saveData($ss,'school',['id' =>$getEnrollment?$getEnrollment->school_id:null],['name' => $prev_school],[],1);
+        //       if($save_prev_school){
+        //           DB::table('enrollments')->where('student_id',$newID)->update([
+        //               'school_id' => $save_prev_school
+        //           ]);
+        //       }
+        //   }
+
+        //   //** save into guardian table and generate login information for female type or if one take that one
+        //   //** link parent(s) to child
+        //   //** using guardian's phone number for login name and password default = 123456 */
+        $p_info = 0;
+        if($family_code){
+            $rows = DB::table('student_guardians')->where('family_code',$family_code)->selectRaw('guardian_id,guardian_role,family_code')->distinct()->get();
+            foreach($rows as $row){
+               saveData($ss,'student_guardians',['id' => null],[
+                'student_id' => $student_id,
+                'guardian_id' => $row->guardian_id,
+                'guardian_role' => $row->guardian_role,
+                'family_code' => $row->family_code,
+               ],[],1);
+            }
+            $p_info = $rows;
+        }else{
+            $p_info = Student::saveParentInfo($parent_info,$student_id,$ss);
+        }
+
+        //   // **delete Images in Folder if not exists in DB;
+        //   $folderPath = public_path('/uploads/public/'.$ss->branch_id.'_data/students/images');
+        //   $filesInDatabase = DB::table('students')->pluck('file_name');
+        //   $filesInFolder = glob($folderPath . '/*');
+
+        //   foreach ($filesInFolder as $filePath) {
+        //       $fileName = basename($filePath);
+        //       if (!in_array($fileName, $filesInDatabase->toArray())) {
+        //           unlink($filePath);
+        //       }
+        //   }
+
+
         $um_res = Student::saveParentInfo($parent_info,$student_id,$ss);
-        
+
           // add student to group
           $g_id = DB::table('group_members')->where('enrollment_id',$enrollment_id)->take(1)->value('id');
           saveData($ss,'group_members',['id' => $g_id],[
@@ -246,11 +287,13 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
     $id = $id?$id:$this->id;
     //$branch_id = $ss->branch_id;
     $enr = DB::table('enrollments')->where('id',$id)->selectRaw('id,status_id')->get()->first();
-    $delete = saveData($ss,'enrollments',['id' => $id],[
-        'status_id' => 1,
-    ],[],1);
+    // $delete = saveData($ss,'enrollments',['id' => $id],[
+    //     'status_id' => 1,
+    // ],[],1);
     if(!$enr) return DV::error('Enrollment info does not exist');
-    if($enr->status_id >=3) return DV::error('Cannot delete enrollment because the student already paid tuition fee');
+    if($enr->status_id >2) {
+        return DV::error('Cannot delete enrollment because the student already paid tuition fee');
+    }
     if($delete){
         $change_fields = [
             "tuition" => 0,

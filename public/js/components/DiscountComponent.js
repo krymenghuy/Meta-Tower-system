@@ -165,7 +165,7 @@ var DiscountComponent = new function(){
     }
 
     this.prepareFilter = () => {
-        vsapi.call(`${main_view.base_url}/`,null,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/form-option`,null,null,false).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
@@ -174,9 +174,11 @@ var DiscountComponent = new function(){
                 let el = $(this);
                 let f = el.data('field');
                 switch(f){
-                    case '':
+                    case 'discount_type':
+                        VSUtil.setComboItems(el,d.discount_type,'id','name',null,null,null);
                         break;
-                    case '':
+                    case 'academic_year':
+                        VSUtil.setComboItems(el,d.academic_year,'academic_year','academic_year',null,null,null);
                         break;
                     default:
                         break;

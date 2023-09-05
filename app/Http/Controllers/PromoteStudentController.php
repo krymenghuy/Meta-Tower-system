@@ -32,7 +32,16 @@ class PromoteStudentController extends Controller
         if($ss->status_code !=200) return $ss;
         $x = new PromoteStudent();
         $verify = $x->verifyPromotedStudent($req->all(),$ss);
-        return JDV::result($verify);
+        return JDV::raw($verify);
+
+    }
+
+    function deleteNewPromoted(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $x = new PromoteStudent();
+        $verify = $x->deleteNewPromoted($req->all(),$ss);
+        return JDV::raw($verify);
 
     }
 

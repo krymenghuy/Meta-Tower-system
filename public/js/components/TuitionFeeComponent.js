@@ -344,6 +344,9 @@ let PriceItemDialog = new function(){
     let mThis = this;
     this.self = $('#dlg_ttf_item');
     this.options = {};
+    let ref = {
+        click: true
+    };
 
     this.elTitle = mThis.self.find('.modal-title');
     this.btnSave = mThis.self.find('#dlg_ttf_item_btn_save');
@@ -352,44 +355,40 @@ let PriceItemDialog = new function(){
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        let p = mThis.getDataForm(false);
-        if(!p) return;
-        vsapi.call(`${main_view.base_url}/api/price-list/save-item`,p,null).then(res => {
-            if(res.status_code === 200){
-                mThis.self.modal('hide');
-                let d = res.data;
-                if(typeof mThis.options.onClose === 'function')
-                    mThis.options.onClose(d.price_list_items);
-            }
-            else{
-                cv_interact.error(res.error_message);
-            }
-        });
+        let p = mThis.getDataForm();
+        if(ref.click){
+            vsapi.call(`${main_view.base_url}/api/price-list/save-item`,p,null).then(res => {
+                ref.click = false;
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    let d = res.data;
+                    if(typeof mThis.options.onClose === 'function')
+                        mThis.options.onClose(d.price_list_items);
+                    ref.click = true;
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                    ref.click = true;
+                }
+            });
+        }
     });
 
-    this.getDataForm = (silence=false) => {
+    this.getDataForm = () => {
         let p = {
             'id': mThis.options.id,
             'list_id': mThis.options.list_id
         };
-        let has_error = false;
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
-            if(el.data('error') ==1){
-                if(!silence) cv_interact.warning([Validator.properCase(f),' is not correct'].join(''));
-                has_error = true;
-                return false;
-            } 
             let f = el.data('field');
             p[f] = el.val();
         });
-        return has_error? null:p;
+        return p;
     }
 
     this.setDataForm = (d) => {
         d = d ? d : {};
-        //Clear error signs
-        Validator.clearErrors(mThis.self.find('.modal-body'));
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');

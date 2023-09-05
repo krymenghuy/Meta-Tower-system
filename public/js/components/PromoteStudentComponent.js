@@ -144,26 +144,35 @@ let PromoteStudentDialog = new function(){
     let mThis = this;
     this.self = $('#dlg_pms_');
     this.options = {};
+    let ref = {
+        click: true
+    };
 
     this.btnSave = mThis.self.find('#dlg_pms_btn_save');
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
         let p = mThis.getDataForm();
-        if(p.promote_info[0].next_term_id > 0){
-            vsapi.call(`${main_view.base_url}/api/promote/students`,p,null,mThis.btnSave).then(res => {
-                if(res.status_code === 200){
-                    mThis.self.modal('hide');
-                    if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
-                    cv_interact.success('Students Promoted Successfully!');
-                }
-                else{
-                    cv_interact.error(res.error_message);
-                }
-            });
-        }
-        else{
-            cv_interact.error('Next Term Cannot Empty!');
+        if(ref.click){
+            if(p.promote_info[0].next_term_id > 0){
+                vsapi.call(`${main_view.base_url}/api/promote/students`,p,null,mThis.btnSave).then(res => {
+                    ref.click = false;
+                    if(res.status_code === 200){
+                        mThis.self.modal('hide');
+                        if(typeof mThis.options.onClose === 'function') mThis.options.onClose();
+                        cv_interact.success('Students Promoted Successfully!');
+                        ref.click = true;
+                    }
+                    else{
+                        cv_interact.error(res.error_message);
+                        ref.click = true;
+                    }
+                });
+            }
+            else{
+                cv_interact.error('Next Term Cannot Empty!');
+                ref.click = true;
+            }
         }
     });
 
