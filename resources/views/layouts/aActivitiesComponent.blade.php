@@ -1,6 +1,6 @@
 <div id="_main_aActivitiesComponent" class="mobile-padding p-3" style="display:none">
     <div class="p-3 rounded-4 bg-white">
-        <div class="row row-cols-lg-4">
+        <div id="container_aavt_filter" class="row row-cols-lg-4 gy-2">
             <div class="col">
                 <div class="form-group">
                     <label for="discount_type" class="form-label trans-text" data-langprop="titles.Discount Type"></label>

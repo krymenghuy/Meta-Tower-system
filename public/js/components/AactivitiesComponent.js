@@ -4,6 +4,8 @@ var AactivitiesComponent = new function(){
     this.title_prop = "Activities";
     this.self = $('#_main_aActivitiesComponent');
 
+    this.containerFilter = mThis.self.find('#container_aavt_filter');
+
     this.data_request = [];
 
     this.cols = [{
@@ -203,6 +205,32 @@ var AactivitiesComponent = new function(){
         });
     }
 
+    this.prepareOption = (onFinish = null) => {
+        let div = mThis.containerFilter;
+        vsapi.call(`${main_view.base_url}/api/form-option`,null,null,false).then(res => {
+            if(res.status_code === 200){
+                let d = res.data;
+                if(d && !($.isEmptyObject(d))){
+                    div.find('.data-input').each(function(){
+                        let el = $(this);
+                        let f = el.data('field');
+                        switch(f){
+                            case 'discount_type':
+                                VSUtil.setComboItems(el,d.discount_type,'id','name',null,null,null);
+                                break;
+                            case 'academic_year':
+                                VSUtil.setComboItems(el,d.academic_year,'academic_year','academic_year',null,null,null);
+                                break;
+                            default:
+                                break;
+                        }
+                    });
+                }
+                if(typeof onFinish === 'function') onFinish();
+            }
+        });
+    }
+
     this.displayApprovalActivityDetails = (tr, op) => {
         let div_wrapper = $(tr).find('.expandable-row-container');
 
@@ -291,10 +319,12 @@ var AactivitiesComponent = new function(){
     this.show = (options) => {
         if(!options) options = {};
         mThis.itemView.showPage(null,null,() => {
-            main_view.setTitle(mThis.title_prop);
-            let x = mThis.self.siblings(':visible');
-            x.fadeOut('fast',function(){
-                mThis.self.hide().fadeIn(300);
+            mThis.prepareOption(() => {
+                main_view.setTitle(mThis.title_prop);
+                let x = mThis.self.siblings(':visible');
+                x.fadeOut('fast',function(){
+                    mThis.self.hide().fadeIn(300);
+                });
             });
         });
     }
