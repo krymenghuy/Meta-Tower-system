@@ -19,7 +19,7 @@ class MobileApi //xtends Model
         $audio_file_name = $row->audio_file;
         $audioUrl =null;
         if($audio_file_name) $audioUrl = PublicStorage::getUrl( $ss->branch_id,'students','audio').$audio_file_name;
-        $d = (object)['branch_id' => $ss->branch_id,'sender_id' =>$ss->official_id,'file_url'=>$audioUrl,'persist'=>0];
+        $d = (object)['branch_id' => $ss->branch_id,'sender_id' =>$ss->official_id,'student_id'=>$student_id,'file_url'=>$audioUrl,'persist'=>0];
         if(!$audioUrl) return DV::error('Failed to call your kid\'s name because audio file is missing');
         $err = Notifier::notify_admin('pickup_call', $d);
         if($err){
