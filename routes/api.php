@@ -82,7 +82,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('auth/login', [LoginController::class, 'apiLogin']);
 Route::post('/auth/guardian/login',[GuardianLoginController::class,'guardianLogin']);
 Route::post('/auth/guardian/profile',[GuardianLoginController::class,'getGuardianProfile']);
-
+Route::post('/auth/guardian/change-password',[GuardianLoginController::class, 'changePasswords']);
+Route::post('/auth/guardian/change-profile',[GuardianLoginController::class, 'changeProfile']);
 
 // Route::get('env/20230120AZ99/vars',function(){
 //     $vars =[
@@ -152,6 +153,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::prefix('promote')->group(function(){
         Route::post('/students',[PromoteStudentController::class,'promoteStudents']);
         Route::post('/verify',[PromoteStudentController::class,'verifyPromotedStudent']);
+        Route::post('/delete',[PromoteStudentController::class,'deleteNewPromoted']);
         Route::post('/student-list-paginate',[PromoteStudentController::class,'promoteListPaginate']);
         Route::post('/form-options',[PromoteStudentController::class,'getFormOptions']);
 
@@ -215,6 +217,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/delete-verified',[EnrollmentController::class,'deleteVerifiedEnrollment']);
         Route::post('/save',[EnrollmentController::class,'saveEnrollment']);
         Route::post('/details',[EnrollmentController::class,'getEnrollmentDetails']);
+        Route::post('/finalize',[EnrollmentController::class,'finalizeEnrollment']);
     });
     //end::EnrollmentManager
 
@@ -223,7 +226,11 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
     //begin::StudentController
     Route::prefix('student')->group(function () {
-        Route::post('/save-audio', [StudentController::class, 'saveAudioFile']);  
+        //**option */
+        Route::post('/form-options',[StudentController::class,'formOptions']);
+        //** */
+        Route::post('/update-info',[StudentController::class,'updateStudentInfo']);
+        Route::post('/save-audio', [StudentController::class, 'saveAudioFile']);
         Route::post('/registration', [StudentController::class, 'studentRegistration']);
         Route::post('/list-paginate',[StudentController::class,'studentPaginate']);
         Route::post('/delete-student-enrollment',[StudentController::class,'deleteStudentEnrollment']);
@@ -619,6 +626,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/details',[GuardianController::class,'details']);
         Route::post('/request-account',[GuardianController::class,'parentRequestAccount']);
         Route::post('/children-details',[GuardianController::class,'parentChildrenDetails']);
+        Route::post('/options-family',[GuardianController::class,'optionFamily']);
     });
     //end::GuardianController
 

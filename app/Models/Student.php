@@ -16,7 +16,7 @@ class Student //extends Model
     function __construct($id = null,$userInfo){
        $this->id = $id;
        $this->userInfo = $userInfo;
-    }  
+    }
 
     static function saveStudent($arr,$id=null,$ss){ //** register only //without payment yet */
         $v_rule = [
@@ -301,7 +301,7 @@ class Student //extends Model
         $um_res = null;
         $i = 0;
 
-        $login_account = []; 
+        $login_account = [];
 
         foreach($parent_info as $pf){
             $new_family_code = null;
@@ -319,7 +319,7 @@ class Student //extends Model
             $prev_id = DB::table('guardians')
                 ->where('id',isset($pf['id'])?$pf['id']:null)->value('id');
                 $u_id = isset($pf['id'])?$pf['id']:null;
-            $created =  $prev_id>0? false:true;    
+            $created =  $prev_id>0? false:true;
             $newID = saveData($ss,'guardians',['id' =>$prev_id],$inputs,[],1,true);
 
             if($newID > 0){
@@ -329,7 +329,7 @@ class Student //extends Model
 
                      /** Link parent or guardian to kid/student */
                     DB::table('student_guardians')->where('guardian_id',$newID)->where('student_id',$student_id)->delete();
-                    DB::table('student_guardians')->insert(['guardian_id'=>$newID,'student_id'=>$student_id,'guardian_role'=>$pf['role'],'family_code'=>$new_family_code]); 
+                    DB::table('student_guardians')->insert(['guardian_id'=>$newID,'student_id'=>$student_id,'guardian_role'=>$pf['role'],'family_code'=>$new_family_code]);
                 }
 
                 if(!isset($parent_info[1])){
@@ -344,26 +344,6 @@ class Student //extends Model
                         'password' =>$def_password,
                         'full_name' => $inputs['name']
                     ];
-                   $um_ = $um->saveUser($arr,$ss);
-                }
-                $female_guardian = DB::table('guardians')->selectRaw('id,name,phone_number,email')->where('id',$newID)->where('sex','F')->first();
-                if($female_guardian){
-                    // return $female_guardian;
-                    $arr= [
-                        'login_name' => $female_guardian->phone_number,
-                        'user_class' => 'parent',
-                        'role_id' => '16',
-                        'official_id' => $female_guardian->id,
-                        // 'official_code' =>$student_code,
-                        'email' => $female_guardian->email,
-                        'password' => $def_password,
-                        'full_name' => $female_guardian->name,
-                    ];
-                  $um_ = $um->saveUser($arr,$ss);
-                }
-                // link parent with child
-                if(!$exist){
-                    saveData($ss,'student_guardians',[],['guardian_id'=>$newID,'student_id'=>$child_id,'guardian_role'=>$pf['role'],'family_code'=>$family_id],[],1);
                 }else{
                     /** If parentInfo array contains two parents including both Father and Mother, then take mother as parent account's login */
                     $female_guardian = DB::table('guardians')->selectRaw('id,name,phone_number,email')->where('id',$newID)->where('sex','F')->first();
@@ -387,34 +367,34 @@ class Student //extends Model
         }
         /** get parent's login account that is connected to this student_id. If it exists with the same phone_number then DO NOT create account anymore, otherwise create a login account for the parent */
         $parent_login_info = self::getParentLoginInfo($newID,$student_id);
-        if(!$parent_login_info) 
+        if(!$parent_login_info)
         {
             $um_res = $um->saveUser($login_account,$ss);
              /** Create new to parent login name */
-            $um_res->parent_login_changed = 0; 
+            $um_res->parent_login_changed = 0;
         }
         else if ($parent_login_info->login_name != $login_account['login_name']){
             $new_login_name = $login_account['login_name'];
             $um_res = $um->changeLoginName($parent_login_info->login_name,$new_login_name);
-            $um_res->parent_login_changed = 1; 
+            $um_res->parent_login_changed = 1;
             $um_res->new_login_name =$new_login_name;
         }else{
             /** No change to parent login name */
             $um_res = (object)['parent_login_changed'=>0];
-        }   
+        }
         return $um_res;
     }
-    
+
     function saveAudioFile($base64, $id=null,$ss=null){
       $id =$id?$id:$this->id;
       $ss =$ss?$ss:$this->userInfo;
       $branch_id = $ss->branch_id;
-      $res = PublicStorage::saveAudio($branch_id,'students',null,$base64,['id'=>$id,'store'=>'students.audio_file']);
+      $res = PublicStorage::saveAudio($branch_id,'students',null,$base64,null,['id'=>$id,'store'=>'students.audio_file']);
         //   if(isset($res->file_name)){
         //     DB::table('students')->where('id',$id)->update([
         //         'audio_file'=>$res->file_name
         //     ]);
-        //   } 
+        //   }
         return $res;
     }
 
@@ -643,29 +623,59 @@ class Student //extends Model
     }
 
     function updateStudentInfo($arr=[],$ss){
-
+        $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '1|number|exists=students',
             'name' => '0|string|1,50',
             'name_kh' => '0|string|1,50',
-            'sex' => '0|string|1,30',
+            'sex' => '1|string|1,30',
             'date_of_birth' => '0|string',
             'phone_number' => '0|string|1,20',
             'email' => '0|string',
             'address' => '0|string',
             'photo' => '0|string',
             'place_of_birth' => '0|string|1,150',
-            'prev_school_id' => '',
+            // 'prev_school_id' => '0|string',
         ];
-        $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
-        if($res->error) return $res->error;
+        $address_char = ['#',',','@'];
+        $email_char = ['#',',','_','@','.'];
+        $img_char = ['+',':',',',';','=','/','\\','?'];
+        $res = validateObject($arr,$v_rule,1,['email'=>$email_char,'address'=>$address_char,'photo'=>$img_char],$ss->lang,0,null);
+        if($res->error) return DV::error($res->error);
         $inputs = $res->values;
 
         $id = $inputs['id'];
+        $image = $inputs['photo'];
         unset($inputs['id']);
+        unset($inputs['photo']);
+        $inputs['date_of_birth'] = convertDate($inputs['date_of_birth']);
+        $to_delete_image = $id && (!$image || isImage($image));
+        if($to_delete_image){
+            $prev_file_name = DB::table('students')->where('id',$id)->take(1)->value('file_name');
+            if($prev_file_name){
+                PublicStorage::delete($branch_id,'students','image',$prev_file_name);
+                $inputs['file_name']=null;
+            }
+        }
+        $existEmail = isExists('students',['id'=>$id],'email',$inputs['email']);
+        if($existEmail) return DV::error('Email already exists');
+        $existPhoneNumber = isExists('students',['id'=>$id],'phone_number',$inputs['phone_number']);
+        if($existPhoneNumber) return DV::error('Phone number already exists');
         $newID = saveData($ss,'students',['id' => $id],$inputs,[],1);
+        if($newID>0){
+            PublicStorage::saveImage($branch_id,'students',null,$image,null,['id' => $newID,'store' => 'students.file_name']);
+        }
 
         return DV::depends($newID,'Update');
     }
+
+    // function isExists($table,$pk=[],$checkCol,$input){
+    //     $exists = DB::table($table)->where($pk)->selectRaw($checkCol)->first();
+    //     if($exists && $exists->$checkCol != $input){
+    //         $exists = DB::table($table)->where($checkCol,$input)->exists();
+    //         if($exists) return true;
+    //     }
+    //     return false;
+    // }
 
 }
