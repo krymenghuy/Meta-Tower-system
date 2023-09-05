@@ -14,18 +14,34 @@ use Illuminate\Support\Facades\Hash;
 class MobileApi //xtends Model
 {
     // use HasFactory;
-    function pickupMyKids($student_id,$ss){
-        $row = DB::table('students as st')->where('branch_id',$ss->branch_id)->where('id',$student_id)->take(1)->selectRaw('audio_file')->get()->first();
-        if(!$row) return DV::error('Student identity is not correct');
-        $audio_file_name = $row->audio_file;
-        $audioUrl =null;
-        if($audio_file_name) $audioUrl = PublicStorage::getUrl( $ss->branch_id,'students','audio').$audio_file_name;
-        $d = (object)['branch_id' => $ss->branch_id,'sender_id' =>$ss->official_id,'student_id'=>$student_id,'file_url'=>$audioUrl,'persist'=>0];
-        if(!$audioUrl) return DV::error('Failed to call your kid\'s name because audio file is missing');
-        $err = Notifier::notify_admin('pickup_call', $d);
-        if($err){
-           return DV::error($err);
+    function pickupMyKids($arr,$ss){
+        $str_ids = null;
+        $ids =[];
+        $i=0;
+        foreach($arr as $st){
+            $id = $st['id']; 
+            if($id > 0) $ids[] = $id;
+            $i++;
         }
+
+        if($i===0) return DV::error('No student IDs provided');
+        $str_ids ='st.id IN ('.implode(',',$ids).')';
+        $rows = DB::table('students as st')->where('st.branch_id',$ss->branch_id)->whereRaw($str_ids)->selectRaw('st.id,st.name,st.audio_file')->get();
+        $students = [];
+        if(!isset($rows[0])) return DV::error('The provided IDs are not correct');
+        foreach($rows as $row){
+            $audio_file_name = $row->audio_file;
+            $audioUrl =null;
+            if($audio_file_name) $audioUrl = PublicStorage::getUrl( $ss->branch_id,'students','audio').$audio_file_name;
+            if(!$audioUrl)  
+              $errors[] = 'Failed to call '.$row->name.'\' s name because the audio file is missing';
+            else $students[] = (object)['student_id'=>$row->id,'file_url'=>$audioUrl];
+        } 
+        //if(!$row) return DV::error('Student identity is not correct');
+        if(!isset($students[0])) return DV::error('Failed to call all your kid\'s names. This is likely because the audio files were unavailable');
+        $d = (object)['branch_id' => $ss->branch_id,'sender_id' =>$ss->official_id,'students'=>$students,'persist'=>0];
+        $err = Notifier::notify_admin('pickup_call', $d);
+        if($err) return DV::error($err);
         return DV::success();
     }
 
