@@ -588,18 +588,26 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('finance/student-counts-by-pmt-option',[ReportController::class,'countStudentsByPmtOptions']);
 
     Route::post('enrollment/student-referrers',[ReportController::class,'getStudentReferers']);
-    Route::post('enrollment/family-list',[ReportController::class,'getFimilyList']);
+    // Route::post('enrollment/family-list',[ReportController::class,'getFamilyList']);
+    Route::post('enrollment/family-list',[ReportController::class,'getFamilyInfoList']);
     Route::post('enrollment/activities',[ReportController::class,'getActivities']);
-    Route::post('enrollment/attendance-summary',[ReportController::class,'getAttendanceSummary']);
+    // Route::post('enrollment/attendance-summary',[ReportController::class,'getAttendanceSummary']);
+    Route::post('enrollment/attendance-summary',[ReportController::class,'getAttendanceList']);
     Route::post('enrollment/student-list',[ReportController::class,'getStudentList']);
     Route::post('enrollment/dropout-students',[ReportController::class,'getDropoutStudents']);
     Route::post('enrollment/new-students',[ReportController::class,'getNewStudents']);
 
-    Route::post('/student-info',[ReportController::class,'getStudentInfoList']);
-    Route::post('/family-info',[ReportController::class,'getFamilyInfoList']);
+    //** */
+    Route::post('enrollment/student-info',[ReportController::class,'getStudentInfoList']);
+    Route::post('enrollment/family-info',[ReportController::class,'getFamilyInfoList']);
+    Route::post('enrollment/attendance/list',[ReportController::class,'getAttendanceList']);
+    //** */
 
-
-    Route::post('/attendance/list',[ReportController::class,'getAttendanceList']);
+     //** */
+    //  Route::post('student-info',[ReportController::class,'getStudentInfoList']);
+    //  Route::post('family-info',[ReportController::class,'getFamilyInfoList']);
+    //  Route::post('attendance/list',[ReportController::class,'getAttendanceList']);
+     //** */
   });
  //end::ReportController
 

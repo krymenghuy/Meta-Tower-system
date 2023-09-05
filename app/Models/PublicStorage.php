@@ -363,12 +363,12 @@ class PublicStorage //extends Model
                 }
 
 
-    
+
                 // // Check if the audio data size exceeds the maximum allowed size
                 // if (strlen($audio_data) > $maxSize) {
                 //     throw new \Exception('Audio file size exceeds the maximum allowed size');
                 // }
-    
+
 
                 // Save the audio file using normal PHP functions
                 file_put_contents($p->path, $audio_data);
@@ -379,7 +379,7 @@ class PublicStorage //extends Model
 
 
                 self::saveFileName_db($branch_id, $user_class, $p->file_name, $store,'audio');
-    
+
 
                 // Get the audio file URL using getUrl() function
                 $audio_url = self::getUrl($branch_id, $user_class, 'audio') . $p->file_name;
