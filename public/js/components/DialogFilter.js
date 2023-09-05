@@ -4,6 +4,7 @@ function DialogFilter(btn,op={
     field: [],
     end_point: ''
 },html=null,callback=null){
+    let pos = btn.target.getClientRects()[0];
     let prev_div = document.getElementById('_dlg_filter_danymic');
     if(prev_div) prev_div.remove();
 
@@ -18,7 +19,7 @@ function DialogFilter(btn,op={
 
     let div = document.createElement('div');
     div.classList.add('bg-white','d-flex','flex-column','position-absolute','shadow','p-3','rounded-3');
-    div.setAttribute('style',`top: ${btn.pageY+10}px; left: ${btn.pageX+10}px; z-index: 99`);
+    div.setAttribute('style',`top: ${pos.top+pos.height}px; left: ${pos.left}px; z-index: 99`);
     div.setAttribute('id','_dlg_filter_danymic');
     div.innerHTML = html ? html : '';
     document.body.appendChild(div);
