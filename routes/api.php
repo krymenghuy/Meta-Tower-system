@@ -217,6 +217,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/delete-verified',[EnrollmentController::class,'deleteVerifiedEnrollment']);
         Route::post('/save',[EnrollmentController::class,'saveEnrollment']);
         Route::post('/details',[EnrollmentController::class,'getEnrollmentDetails']);
+        Route::post('/finalize',[EnrollmentController::class,'finalizeEnrollment']);
     });
     //end::EnrollmentManager
 
@@ -225,7 +226,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
     //begin::StudentController
     Route::prefix('student')->group(function () {
-        Route::post('/save-audio', [StudentController::class, 'saveAudioFile']);  
+        Route::post('/save-audio', [StudentController::class, 'saveAudioFile']);
         Route::post('/registration', [StudentController::class, 'studentRegistration']);
         Route::post('/list-paginate',[StudentController::class,'studentPaginate']);
         Route::post('/delete-student-enrollment',[StudentController::class,'deleteStudentEnrollment']);
