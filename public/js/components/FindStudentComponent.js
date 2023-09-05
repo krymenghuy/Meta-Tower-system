@@ -23,14 +23,34 @@ var FindStudentComponent = new function(){
             e.preventDefault();
             let p = mThis.getDataForm(mThis.div_list);
             mThis.displayStudentList(p);
-            let op = {
-                select: 4,
-                label: ['Academic Year','Term','Option','Session'],
-                field: ['academic_year','terms_id','pmt_options_id','sessions_id'],
-                end_point: `${main_view.base_url}/api/form-option`
-            };
-            DialogFilter(e,op);
+            mThis.createFilter(e);
         });
+    }
+
+    this.createFilter = (e) => {
+        let op = {
+            select: 4,
+            label: ['Academic Year','Term','Option','Session'],
+            field: ['academic_year','terms_id','pmt_options_id','sessions_id'],
+            end_point: `${main_view.base_url}/api/student/form-options`
+        };
+        
+        DialogFilter(e,op,null,(d) => {
+            mThis.filterStudent(d);
+        });
+    }
+
+    this.filterStudent = (div) => {
+        let p = {};
+        $(div).find('.data-filter').each(function(){
+            let el = $(this);
+            el.on('change',function(e){
+                e.preventDefault();
+                let f = el.data('field');
+                p[f] = el.val();
+            });
+        });
+        mThis.displayStudentList(p);
     }
 
     this.getDataForm = (div) => {
@@ -41,33 +61,6 @@ var FindStudentComponent = new function(){
             p[f] = el.val();
         });
         return p;
-    }
-
-    this.prepareOptions = (div,onFinish = null) => {
-        vsapi.post(`${main_view.base_url}/api/form-option`,null,false).then(res => {
-            const d = res.status_code === 200 ? res.data : {};
-            div.find('.data-input').each(function(){
-                let el = $(this);
-                let f = el.data('field');
-                switch(f){
-                    case 'academic_year':
-                        VSUtil.setComboItems(el,d.academic_year,'academic_year','academic_year',null,null,null);
-                        break;
-                    case 'term_id':
-                        VSUtil.setComboItems(el,d.terms,'id','term',true,'(All Terms)',0);
-                        break;
-                    case 'pmt_options_id':
-                        VSUtil.setComboItems(el,d.pmt_options,'id','name',null,null,null);
-                        break;
-                    case 'session_id':
-                        VSUtil.setComboItems(el,d.sessions,'id','name',null,null,null);
-                        break;
-                    default:
-                        break;
-                }
-            });
-            if(typeof onFinish === 'function') onFinish();
-        });
     }
 
     this.displayStudentList = (op, onFinish = null) => {
@@ -218,7 +211,6 @@ var FindStudentComponent = new function(){
             mThis.panelStudentList.html(html);
             LocaleManager.translateZone('_fns_list');
             mThis.controlOption(mThis.panelStudentList);
-            mThis.prepareOptions(mThis.div_list);
             if(typeof onFinish === 'function') onFinish();
         });
     }
@@ -303,12 +295,10 @@ var FindStudentComponent = new function(){
 
     this.show = (options) => {
         if(!options) options = {};
-        mThis.prepareOptions(mThis.div_filter,() => {
-            main_view.setTitle(mThis.title_prop);
-            let x = mThis.self.siblings(':visible');
-            x.fadeOut('fast',function(){
-                mThis.self.hide().fadeIn(300);
-            });
+        main_view.setTitle(mThis.title_prop);
+        let x = mThis.self.siblings(':visible');
+        x.fadeOut('fast',function(){
+            mThis.self.hide().fadeIn(300);
         });
     }
 }
