@@ -156,11 +156,11 @@ class PublicStorage //extends Model
                 $ext = pathinfo($fileName,PATHINFO_EXTENSION);
                 $ext = strtolower($ext?$ext:'');
                 $mime_type = self::getMIMETypeFromExtension($ext);
-                //$ext = self::getExtensionFromMIMEType($file_type);
-                if(!$mime_type){
-                    $result->error= "File MIME type is not valid";
-                    return $result;
-                }
+               
+                // if(!$mime_type){
+                //     $result->error= "File MIME type is not valid";
+                //     return $result;
+                // }
 
                 //$result->error = $file_type;
                 //return $result;
@@ -170,28 +170,11 @@ class PublicStorage //extends Model
                     //$result->error = 'Storage file or folder does not exist';
                     //return $result;
                 }
-
-                //$file_type ='x-msdownload' //Executable file .exe
-
-                //$allowed_exts = ['jpg','jpeg','png','svg','pdf','doc','doxc','xlsx','xls','txt','csv'];
-
-                // $parts = explode('/', $dir);
-                // $file = array_pop($parts);
-                // $dir = '';
-                // foreach($parts as $part)
-                    // if(!is_dir($dir .= "/".$part)) mkdir($dir);
-
-
-                /* First stepSecurity: clean up using code-ignitter function */
-                //$fileContent = $this->security->xss_clean($fileContent);
-
-                # Decode the Base64 string, making sure that it contains only valid characters
+ 
+                // # Decode the Base64 string, making sure that it contains only valid characters
                 $bin = base64_decode($fileContent, true);
                 $test = base64_encode($bin);
-                if ($test != $fileContent) {
-                    $result->error= "Invalid file content. Base64 data is expected";
-                    return $result;
-                }
+                if ($test != $fileContent) return DV::error('Invalid file content. Base64 data is expected'); 
 
                 # Perform a basic validation to make sure that the result is a valid PDF file
                 # Be aware! The magic number (file signature) is not 100% reliable solution to validate PDF files
@@ -201,22 +184,22 @@ class PublicStorage //extends Model
                 //     return $result;
                 // }
 
-                if ($ext==='pdf'){
-                    if (strpos($bin, '%PDF')  != 0 )
-                    {
-                        $result->error = "This pdf file does not have PDF file signature";
-                        return $result;
-                    }
-                }
+                // if ($ext==='pdf'){
+                //     if (strpos($bin, '%PDF')  != 0 ) return DV::error('This pdf file does not have PDF file signature');
+                // }
 
                 //$fileName = $fileName.".".$ext;//No need
-                $success = file_put_contents($fileName, $bin);
+               try{
+                file_put_contents($fileName, $bin);
+               }catch(\exception $e){
+                return DV::error($e->getMessage());
+               }
 
                 // $myfile = fopen($dir."/".$file, "w") or die ("Unable to open file!");
 
                 // fwrite($myfile, $contents);
                 // fclose($myfile);
-
+                $result->status ='OK';
                 $result->extension= $ext;
                 $result->file_type = $ext;
                 $result->file_name = $fileName;
@@ -347,23 +330,13 @@ class PublicStorage //extends Model
             // Create the full path for the audio file
             $p = self::createFullPath($branch_id, $user_class, 'audio', $ext);
 
-            try {
-                // Decode the base64 data
-                $audio_data = base64_decode($base64);
+            //try {
 
-                // Check if the base64 data was successfully decoded
-                if ($audio_data === false) {
-                    throw new \Exception('Invalid base64 data');
-                }
-
-
-                // Check if the audio data size exceeds the maximum allowed size
-                if (strlen($audio_data) > $maxSize) {
-                    throw new \Exception('Audio file size exceeds the maximum allowed size');
-                }
-
-
-    
+                // // Check if the audio data size exceeds the maximum allowed size
+                // if (strlen($audio_data) > $maxSize) {
+                //     throw new \Exception('Audio file size exceeds the maximum allowed size');
+                // }
+ 
                 // // Check if the audio data size exceeds the maximum allowed size
                 // if (strlen($audio_data) > $maxSize) {
                 //     throw new \Exception('Audio file size exceeds the maximum allowed size');
@@ -371,31 +344,28 @@ class PublicStorage //extends Model
     
 
                 // Save the audio file using normal PHP functions
-                file_put_contents($p->path, $audio_data);
-
+                $f_res = self::makeFile($ext,$p->path,$base64);
                 // Save the file name in the database
+                if($f_res->status ==='OK')
+                {
+                    if($store) self::saveFileName_db($branch_id, $user_class, $p->file_name, $store);
+                    // Get the audio file URL using getUrl() function
+                    $audio_url = self::getUrl($branch_id, $user_class, 'audio') . $p->file_name;
 
-                if($store) self::saveFileName_db($branch_id, $user_class, $p->file_name, $store);
-
-
-                self::saveFileName_db($branch_id, $user_class, $p->file_name, $store,'audio');
-    
-
-                // Get the audio file URL using getUrl() function
-                $audio_url = self::getUrl($branch_id, $user_class, 'audio') . $p->file_name;
-
-                // Return the response object
-                return (object)[
-                    'status' => 'OK',
-                    'file_name' => $p->file_name,
-                    'file_type' => $p->extension,
-                    'ext' => $p->extension,
-                    'extension' => $p->extension,
-                    'audio_url' => $audio_url,
-                ];
-            } catch (\Exception $e) {
-                return (object)['error_message' => $e->getMessage(), 'status' => 'Error'];
-            }
+                    // Return the response object
+                    return (object)[
+                        'status' => 'OK',
+                        'file_name' => $p->file_name,
+                        'file_type' => $p->extension,
+                        'ext' => $p->extension,
+                        'extension' => $p->extension,
+                        'audio_url' => $audio_url,
+                    ];
+                }else return $f_res;
+                      
+            // } catch (\Exception $e) {
+            //     return (object)['error_message' => $e->getMessage(), 'status' => 'Error'];
+            // }
         }
 
         return (object)['error_message' => "The given file type is not a valid audio format", 'status' => 'Error'];
@@ -482,25 +452,34 @@ class PublicStorage //extends Model
 
      //savePhoto() | saveFile()
      static function savefile($branch_id, $user_class,$ext,$file_content,$category ='image'){
-        $result = (object)array('error_message'=>null,'status'=>'OK');
         $mime_type ="";
         $ext =$ext?$ext:"";
 
         if (!$branch_id) return DV::error("Failed to upload file due to invalid company identity. Company information is required to identify who the file belongs to");
-
-        //when extension $ext contains invlid char such as '-,?,/' etc. we suspect it can be a mimeType instead of extension
-        if (self::extension_contains_invalid_char($ext))
-            $ext = self::getExtensionFromMIMEType($ext);
-        else $mime_type = self::getMIMETypeFromExtension($ext);
         $new_content =null;
-        //self::isImage() check extension to see if it is image extension
-        $is_image =self::isImage($ext);
-        if($is_image){
-            //compressed base64 string into smaller size, by defaul 500 KB and default format as "png".
-            $mx  = resizeImage_base64($file_content,null,null);
-            if($mx->error) return DV::error($mx->error);
-            return self::saveImage($branch_id,$user_class,$ext,$mx->image,null);
-        }else{
+
+        if ($category ==='image'){
+            //when extension $ext contains invlid char such as '-,?,/' etc. we suspect it can be a mimeType instead of extension
+            if (self::extension_contains_invalid_char($ext))
+               $ext = self::getExtensionFromMIMEType($ext);
+            else $mime_type = self::getMIMETypeFromExtension($ext);
+             
+            //self::isImage() check extension to see if it is image extension
+            $is_image =self::isImage($ext);
+
+            if($is_image){
+              //compressed base64 string into smaller size, by defaul 500 KB and default format as "png".
+              $mx  = resizeImage_base64($file_content,null,null);
+              if($mx->error) return DV::error($mx->error);
+               return self::saveImage($branch_id,$user_class,$ext,$mx->image,null);
+            } return DV::error('Image file extension is not allowed'); 
+        }
+        else if ($category==='audio'){
+            if(!in_array($ext,self::$allowed_audio_extensions)){
+                return DV::error('Audio file does not have correct file type');   
+            }
+        }
+        else{
             $allowed_doc_exts = ['pdf','docx','doc','txt','xlsx','xls','csv'];
             if(!in_array(strtolower($ext),$allowed_doc_exts)) return DV::error("File type $ext is not allowed for upload");
             else $new_content = $file_content;
@@ -511,12 +490,9 @@ class PublicStorage //extends Model
 
         $file_name = $branch_id."_".uniqid()."_".date('Ymd_hms').".$ext";
         $full_path = self::getDiskPath($branch_id,$user_class,$category).$file_name;
-        $mErr = self::makeFile($ext,$full_path,$new_content);
-        if($mErr->error)  {
-           return DV::error($mErr->error);
-        } else {
-            return DV::success(["file_name"=>$file_name,"file_type"=>$ext,"extension"=>$ext,"mime_type"=>$mime_type]);
-        }
+        $f_res = self::makeFile($ext,$full_path,$new_content);
+        return $f_res;
+        
     }
 
     //return a object fileInfo = {'file_name','file_type'} by a given category
