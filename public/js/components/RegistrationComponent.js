@@ -366,7 +366,7 @@ var RegistrationComponent = new function(){
                                 </div>
                                 <div class="d-flex justify-content-end align-items-center h-100" role="button">
                                     <div class="d-block">
-                                        <button class="btn-finally btn btn-sm btn-primary glow-on-hover" type="button" data-id="${item.enrollment_id}">
+                                        <button class="btn-finally btn btn-sm btn-primary glow-on-hover" type="button" data-id="${item.id}">
                                             <span class="trans-text" data-langprop="buttons.Finally"></span>
                                         </button>
                                     </div>
