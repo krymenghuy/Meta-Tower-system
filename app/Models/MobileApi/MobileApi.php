@@ -19,7 +19,7 @@ class MobileApi //xtends Model
         $ids =[];
         $i=0;
         foreach($arr as $st){
-            $id = $st['id']; 
+            $id = $st['id'];
             if($id > 0) $ids[] = $id;
             $i++;
         }
@@ -33,10 +33,10 @@ class MobileApi //xtends Model
             $audio_file_name = $row->audio_file;
             $audioUrl =null;
             if($audio_file_name) $audioUrl = PublicStorage::getUrl( $ss->branch_id,'students','audio').$audio_file_name;
-            if(!$audioUrl)  
+            if(!$audioUrl)
               $errors[] = 'Failed to call '.$row->name.'\' s name because the audio file is missing';
             else $students[] = (object)['student_id'=>$row->id,'file_url'=>$audioUrl];
-        } 
+        }
         //if(!$row) return DV::error('Student identity is not correct');
         if(!isset($students[0])) return DV::error('Failed to call all your kid\'s names. This is likely because the audio files were unavailable');
         $d = (object)['branch_id' => $ss->branch_id,'sender_id' =>$ss->official_id,'students'=>$students,'persist'=>0];
