@@ -327,8 +327,8 @@ class PublicStorage //extends Model
         }
 
         if($table && $col){
-             $rows = DB::table($table)->whereRaw($str_id)->select([$col])->take(1)->get();
-             foreach($rows as $row)
+             $row = DB::table($table)->whereRaw($str_id)->selectRaw($col)->take(1)->get()->first();
+             if($row)
              {
                  $prev_file_name = $row->{$col};
                  $path = self::getDiskPath($branch_id,$user_class,$category).$prev_file_name;
@@ -356,16 +356,30 @@ class PublicStorage //extends Model
                     throw new \Exception('Invalid base64 data');
                 }
 
+
                 // Check if the audio data size exceeds the maximum allowed size
                 if (strlen($audio_data) > $maxSize) {
                     throw new \Exception('Audio file size exceeds the maximum allowed size');
                 }
 
+
+    
+                // // Check if the audio data size exceeds the maximum allowed size
+                // if (strlen($audio_data) > $maxSize) {
+                //     throw new \Exception('Audio file size exceeds the maximum allowed size');
+                // }
+    
+
                 // Save the audio file using normal PHP functions
                 file_put_contents($p->path, $audio_data);
 
                 // Save the file name in the database
+
                 if($store) self::saveFileName_db($branch_id, $user_class, $p->file_name, $store);
+
+
+                self::saveFileName_db($branch_id, $user_class, $p->file_name, $store,'audio');
+    
 
                 // Get the audio file URL using getUrl() function
                 $audio_url = self::getUrl($branch_id, $user_class, 'audio') . $p->file_name;
@@ -428,7 +442,7 @@ class PublicStorage //extends Model
 
     static function isBase64Audio($base64)
     {
-        return true;
+        return true; /** todo: Check this function for correctness */
         // Define a mapping of common audio file signatures to their corresponding file extensions
         $audioSignatures = [
             'mp3' => 'data:audio/mpeg;base64,',

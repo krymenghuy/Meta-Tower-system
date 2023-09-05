@@ -15,9 +15,9 @@ class MobileApiController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
         $d = new MobileApi();
-        $student_id = $req->student_id;
+        $student_id = $req->student_id?$req->student_id:$req->id;
         $res = $d->pickupMyKids($student_id,$ss);
-        return JDV::result($res);
+        return JDV::raw($res);
     }
 
     function homePage(Request $req){
