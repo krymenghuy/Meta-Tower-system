@@ -325,8 +325,9 @@ label.simple-label {
   font-weight: 600;
   border-radius: 6px;
   overflow: hidden;
-  padding: 3px;
+  padding: 3px !important;
   isolation: isolate;
+  cursor: pointer !important;
 }
 
 .btn-working::before{
