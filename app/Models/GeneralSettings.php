@@ -491,7 +491,7 @@ class GeneralSettings //extends Model
         return (object)[
             "academic_years" => DB::table('academic_years')->selectRaw('academic_year as academic_years,academic_year as id')->get(),
             "terms" => DB::table('terms')->selectRaw('name as terms_name,id')->get(),
-            'pmt_options' => DB::table('pmt_options')->selectRaw('name as pmt_options_name')->take(3)->orderBy('id','asc')->get(),
+            'pmt_options' => DB::table('pmt_options')->selectRaw('name as pmt_options_name,id')->take(3)->orderBy('id','asc')->get(),
             'sessions' => DB::table('sessions')->selectRaw('name as sessions_name,id')->get()
         ];
     }
