@@ -1721,6 +1721,14 @@ function readFileContent($fileName=null)
 
         return (object)['end_date' => $date];
     }
+    function isExists($table,$pk=[],$checkCol,$inputValue){
+        $exists = DB::table($table)->where($pk)->selectRaw($checkCol)->first();
+        if($exists && $exists->$checkCol != $inputValue){
+            $exists = DB::table($table)->where($checkCol,$inputValue)->exists();
+            if($exists) return true;
+        }
+        return false;
+    }
 
 
 ?>
