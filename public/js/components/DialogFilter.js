@@ -8,13 +8,15 @@ function DialogFilter(btn,op={
     let prev_div = document.getElementById('_dlg_filter_danymic');
     if(prev_div) prev_div.remove();
 
-    for(let i=0; i < op.select; i++){
-        html = [html,`<div class="form-group">
-            <div class="width--filter-inner">
-                <label for="${op.field[i]}" class="form-label">${op.label[i]}</label>
-                <select class="modal-select2 data-filter" data-field="${op.field[i]}"></select>
-            </div>
-        </div>`].join('');
+    if(!html){
+        for(let i=0; i < op.select; i++){
+            html = [html,`<div class="form-group">
+                <div class="width--filter-inner">
+                    <label for="${op.field[i]}" class="form-label">${op.label[i]}</label>
+                    <select class="modal-select2 data-filter" data-field="${op.field[i]}"></select>
+                </div>
+            </div>`].join('');
+        }
     }
 
     let div = document.createElement('div');
@@ -31,7 +33,8 @@ function DialogFilter(btn,op={
                 let el = $(this);
                 let f = el.data('field');
                 let name = f.replace('_id','');
-                VSUtil.setComboItems(el,d[name],'id','name',null,null,null);
+                let text = d[name] ? `${name}_name` : f+'s';
+                VSUtil.setComboItems(el,(d[name] || d[text]),'id',`${text}`,null,null,null);
             });
         }
     });
