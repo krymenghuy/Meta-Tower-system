@@ -64,4 +64,12 @@ class EnrollmentController extends Controller
         $options = $m->finalizeEnrollment($req->all(),$ss);
         return JDV::result($options);
     }
+
+    function optionsGetGuardianByFamilyCode(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $m = new EnrollmentManager(null,$ss);
+        $options = $m->optionsGetGuardianByFamilyCode($req->family_code,$ss);
+        return JDV::result($options);
+    }
 }

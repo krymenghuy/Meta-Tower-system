@@ -528,6 +528,48 @@ class GeneralSettings //extends Model
         return $result;
     }
 
+    static function getParentInfoByFamilyCode($familyCode,$ss=null){
+        $branch_id = $ss->branch_id;
+        $rows = DB::table('student_guardians')->where('family_code',$familyCode)->selectRaw('guardian_id')->distinct()->get();
+        $guardians = DB::table('guardians')->selectRaw('id,name,sex,role,phone_number,email,n_id,file_name,address,religion')->get();
+        foreach($rows as $row){
+            $guardian = $guardians->filter(function ($c) use($row) {
+                return $c->id === $row->guardian_id;
+            })->first();
+            // if ($guardian && $guardian->role === 'father') {
+            //     $row->father_name = $guardian->name;
+            // }else{
+            //     $row->mother_name = $guardian->name;
+            // }
+
+
+            if($guardian){
+                if(strtolower($guardian->role) === 'father'){
+                    $row->father_name =$guardian->name;
+                    $row->father_phone =$guardian->phone_number;
+                    $row->father_email =$guardian->email;
+                    $row->father_nid = $guardian->n_id;
+                    if($guardian->file_name){
+                        $row->father_profile = PublicStorage::getUrl($branch_id,'guardians','image').$guardian->file_name;
+                    }else $row->father_profile = "";
+                }
+                if(strtolower($guardian->role) === 'mother'){
+                    $row->mother_name =$guardian->name;
+                    $row->mother_phone =$guardian->phone_number;
+                    $row->mother_email =$guardian->email;
+                    $row->mother_nid = $guardian->n_id;
+                    if($guardian->file_name){
+                        $row->mother_profile = PublicStorage::getUrl($branch_id,'guardians','image').$guardian->file_name;
+                    }else $row->mother_profile = "";
+                }
+                $row->address = $guardian->address;
+                $row->role = $guardian->role;
+                $row->religion = $guardian->religion;
+            }
+        }
+        return $rows;
+    }
+
 
 
     // static function optionsStudentRequest($student_id,$ss){

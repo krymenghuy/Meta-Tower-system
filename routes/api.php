@@ -218,6 +218,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/save',[EnrollmentController::class,'saveEnrollment']);
         Route::post('/details',[EnrollmentController::class,'getEnrollmentDetails']);
         Route::post('/finalize',[EnrollmentController::class,'finalizeEnrollment']);
+        Route::post('/get-guardian-info',[EnrollmentController::class,'optionsGetGuardianByFamilyCode']);
     });
     //end::EnrollmentManager
 
