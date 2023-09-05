@@ -29,8 +29,12 @@ var FindStudentComponent = new function(){
                 field: ['academic_year','terms_id','pmt_options_id','sessions_id'],
                 end_point: `${main_view.base_url}/api/form-option`
             };
-            DialogFilter(e,op);
+            DialogFilter(e,op,null,mThis.filterStudent());
         });
+    }
+
+    this.filterStudent = (div) => {
+        console.log(div);
     }
 
     this.getDataForm = (div) => {
