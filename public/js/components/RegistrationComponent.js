@@ -295,6 +295,7 @@ var RegistrationComponent = new function(){
             let html = null;
             let cnt =0;
             (data || []).map(item => {
+                let finalized = item.enroll_finalized === 1 ? 'd-none':''; 
                 html = [html,`<div class="d-flex p-3 bg-white h-info-student mb-2">
                     <div class="div-img">
                         <img src="${item.image_url}" alt=""/>
@@ -340,7 +341,7 @@ var RegistrationComponent = new function(){
                                     <p class="text-nowrap">${item.parent_info && item.parent_info.email}</p>
                                 </div>
                             </div>
-                            <div class="col">
+                            <div class="col position-relative">
                                 <div class="d-flex align-items-start justify-content-end gap-2">
                                     <button class="btn btn-sm btn-primary rounded-3 btn--gnCard" type="button" data-id="${item.id}">
                                         <span class="text-nowrap trans-text" data-langprop="buttons.Ganerate Card"></span>
@@ -353,11 +354,11 @@ var RegistrationComponent = new function(){
                                                 <i class="fa-solid fa-up-right-from-square fs-5"></i>
                                                 <span class="ps-2 trans-text" data-langprop="titles.Detials"></span>
                                             </a>
-                                            <a href="javascript:void(0)" class="btn-rgs-edit border-bottom py-2" data-id="${item.id}">
+                                            <a href="javascript:void(0)" class="${finalized} btn-rgs-edit border-bottom py-2" data-id="${item.id}">
                                                 <i class="fa-regular fa-pen-to-square fs-5"></i>
                                                 <span class="ps-2 trans-text" data-langprop="titles.Edit"></span>
                                             </a>
-                                            <a href="javascript:void(0)" class="btn-rgs-delete pt-2" data-id="${item.id}">
+                                            <a href="javascript:void(0)" class="${finalized} btn-rgs-delete pt-2" data-id="${item.id}">
                                                 <i class="fa-regular fa-trash-can fs-5"></i>
                                                 <span class="ps-2 trans-text" data-langprop="titles.Delete"></span>
                                             </a>
@@ -365,9 +366,9 @@ var RegistrationComponent = new function(){
                                     </button>
                                 </div>
                                 <div class="d-flex justify-content-end align-items-center h-100" role="button">
-                                    <div class="d-block">
-                                        <button class="btn-finally btn btn-sm btn-primary glow-on-hover" type="button" data-id="${item.id}">
-                                            <span class="trans-text" data-langprop="buttons.Finally"></span>
+                                    <div class="d-block position-relative">
+                                        <button class="btn-finalize btn btn-sm btn-primary glow-on-hover" type="button" data-id="${item.id}">
+                                            <span class="trans-text" data-langprop="buttons.Finalize${item.enroll_finalized === 1 ? 'd':''}"></span>
                                         </button>
                                     </div>
                                 </div>
@@ -442,7 +443,7 @@ var RegistrationComponent = new function(){
             $(this).find('.w-options').toggle('fast');
         });
 
-        container.on('click','button.btn--gnCard',function(e){
+        container.find('button.btn--gnCard').on('click',function(e){
             e.preventDefault();
             let op = {
                 'id': $(this).data('id')
@@ -452,18 +453,19 @@ var RegistrationComponent = new function(){
             });
         });
 
-        container.off('click').on('click','button.btn-finally',function(e){
+        container.off('click').on('click','button.btn-finalize',function(e){
             e.preventDefault();
             let op = {
                 'enrollment_id': $(this).data('id')
             };
-            cv_interact.confirm('Do you want to finally this student?',{
+            cv_interact.confirm('Do you want to finalize this student?',{
                 title: 'Finally Student',
                 context: 'OK'
             },(e) => {
                 if(e){
                     vsapi.call(`${main_view.base_url}/api/enrollment/finalize`,op,null).then(res => {
                         if(res.status_code === 200){
+                            mThis.studentListView.showPage(mThis.getFilterData());
                             cv_interact.success('Finalized Successfully!');
                         }
                         else{
