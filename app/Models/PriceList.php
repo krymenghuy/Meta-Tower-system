@@ -571,8 +571,8 @@ class PriceList //extends Model
                 ->join('terms as t','t.id','=','e.term_id')
                 ->join('pmt_status as st','st.id','=','e.status_id')
                 ->selectRaw($selectCols)
-                ->where('ep.branch_id',$branch_id)
-                ->where('enroll_finalized',1);
+                ->where('ep.branch_id',$branch_id);
+                // ->where('enroll_finalized',1);
                 if ($status_id !== null && strtolower($status_id) != '4') {
                     $query->where('e.status_id',$status_id);
                 }
