@@ -577,6 +577,9 @@ class Invoice //extends Model
         $d = (object)$filter;
         $academic_year = isset($d->academic_year) ? $d->academic_year:null;
         $search_value =isset($d->search_value)?$d->search_value:null;
+        $terms_id = isset($d->terms_id)?$d->terms_id:null;
+        $pmt_options_id = isset($d->pmt_options_id)?$d->pmt_options_id:null;
+        $sessions_id = isset($d->sessions_id)?$d->sessions_id:null;
         $current_page =isset($d->current_page)?$d->current_page:1;
         $per_page =isset($d->per_page)?$d->per_page:10;
         if(!is_numeric($current_page)) $current_page=1;
@@ -587,7 +590,16 @@ class Invoice //extends Model
         if($search_value){
             $skip_rows =0;
             $search_value = escape_like_str($search_value);
-            $str_search ="(st.code ='$search_value' OR st.name LIKE '%$search_value%') OR e.term_id = '$search_value";
+            $str_search ="(st.code ='$search_value' OR st.name LIKE '%$search_value%'";
+        }
+        if($terms_id){
+            $str_search .= ' AND e.term_id = '. $terms_id;
+        }
+        if($sessions_id){
+            $str_search .= ' AND e.session_id = '. $sessions_id;
+        }
+        if($pmt_options_id){
+            $str_search .= ' AND p.pmt_option_id = '. $pmt_options_id;
         }
 
         $selectCols = 'e.id as enrollment_id,p.tuition_paid,p.tuition_due,e.tuition_end_date,st.id as student_id,st.file_name,p.status_id as pstatus_id,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.prev_school_id,e.status_id';
