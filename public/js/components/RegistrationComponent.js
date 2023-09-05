@@ -367,7 +367,7 @@ var RegistrationComponent = new function(){
                                 </div>
                                 <div class="d-flex justify-content-end align-items-center h-100" role="button">
                                     <div class="d-block position-relative">
-                                        <button class="btn-finalize btn btn-sm btn-primary glow-on-hover" type="button" data-id="${item.id}">
+                                        <button class="btn-finalize btn btn-sm ${item.enroll_finalized === 1 ? 'glow-on-hover-finalized' : 'glow-on-hover'}" type="button" data-id="${item.id}" data-status="${item.enroll_finalized}">
                                             <span class="trans-text" data-langprop="buttons.Finalize${item.enroll_finalized === 1 ? 'd':''}"></span>
                                         </button>
                                     </div>
@@ -458,22 +458,27 @@ var RegistrationComponent = new function(){
             let op = {
                 'enrollment_id': $(this).data('id')
             };
-            cv_interact.confirm('Do you want to finalize this student?',{
-                title: 'Finally Student',
-                context: 'OK'
-            },(e) => {
-                if(e){
-                    vsapi.call(`${main_view.base_url}/api/enrollment/finalize`,op,null).then(res => {
-                        if(res.status_code === 200){
-                            mThis.studentListView.showPage(mThis.getFilterData());
-                            cv_interact.success('Finalized Successfully!');
-                        }
-                        else{
-                            cv_interact.error(res.error_message);
-                        }
-                    });
-                }
-            });
+            if($(this).data('status') == 1){
+                cv_interact.warning('You finalized this student already!');
+            }
+            else{
+                cv_interact.confirm('Do you want to finalize this student?',{
+                    title: 'Finalize Student',
+                    context: 'OK'
+                },(e) => {
+                    if(e){
+                        vsapi.call(`${main_view.base_url}/api/enrollment/finalize`,op,null).then(res => {
+                            if(res.status_code === 200){
+                                mThis.studentListView.showPage(mThis.getFilterData());
+                                cv_interact.success('Finalized Successfully!');
+                            }
+                            else{
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                    }
+                });
+            }
         });
 
         if(div.length != 0){
