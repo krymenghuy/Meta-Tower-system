@@ -77,14 +77,14 @@ var PusherClient = new function () {
   this.playing = false; // Add a flag to track if audio is currently playing
 
     this.playAudio = () => {
-        if (this.playing || this.audioQueue.length === 0) {
+        if (this.playing || !this.audioQueue[0]) {
             return; // Exit the function if audio is already playing or the queue is empty
         }
 
         this.playing = true; // Set the flag to indicate audio is playing
         const nextAudio = this.audioQueue.shift();
         const audioPlayer = new Audio(nextAudio.file_url);
-
+        
         audioPlayer.addEventListener('ended', () => {
             // Add the current audio back to the end of the queue for continuous looping
             this.audioQueue.push(nextAudio);
@@ -92,14 +92,16 @@ var PusherClient = new function () {
             this.playAudio(); // Play the next audio immediately
         });
 
-        audioPlayer.play().catch(() => {
+        audioPlayer.play().catch((error) => {
             // Handle autoplay error here
-            cv_interact.warning("Please enable autoplay in your browser settings to hear the audio.");
+            if(typeof error =='string' || error.message){
+                if(error.message.includes('Failed to load because no supported source')) cv_interact.warning('Audio file does not exist or is not supported');
+            }
+            else cv_interact.warning("Please enable autoplay in your browser settings to hear the audio.");
             this.playing = false; // Reset the flag on autoplay error
         });
     };
-
-     
+      
     //subscript to Pusher event
     mThis.pusher_channel.bind('message_received', function (data) {
         Swal.fire({
@@ -119,8 +121,10 @@ var PusherClient = new function () {
    mThis.pusher_channel.bind('pickup_call', function (data) {
     const d = data.data;
     if (!mThis.audioQueue) mThis.audioQueue = [];
-    mThis.audioQueue.push({ 'student_id': d.student_id, 'file_url': d.file_url });
-  
+    //d.students array because one parent may have more then one kids to picku up at the same time
+    d.students.map(st=>{
+        mThis.audioQueue.push({ 'student_id': st.student_id, 'file_url': st.file_url });
+    });
     // Trigger playAudio() when the 'pickup_call' event is received
     mThis.playAudio();
   });
