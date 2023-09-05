@@ -592,15 +592,9 @@ class Invoice //extends Model
             $search_value = escape_like_str($search_value);
             $str_search ="(st.code ='$search_value' OR st.name LIKE '%$search_value%'";
         }
-        if($terms_id){
-            $str_search .= ' AND e.term_id = '. $terms_id;
-        }
-        if($sessions_id){
-            $str_search .= ' AND e.session_id = '. $sessions_id;
-        }
-        if($pmt_options_id){
-            $str_search .= ' AND p.pmt_option_id = '. $pmt_options_id;
-        }
+        if($terms_id) $str_search .= ' AND e.term_id = '. $terms_id;
+        if($sessions_id) $str_search .= ' AND e.session_id = '. $sessions_id;
+        if($pmt_options_id) $str_search .= ' AND p.pmt_option_id = '. $pmt_options_id;
 
         $selectCols = 'e.id as enrollment_id,p.tuition_paid,p.tuition_due,e.tuition_end_date,st.id as student_id,st.file_name,p.status_id as pstatus_id,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.prev_school_id,e.status_id';
         $query = DB::table('students as st')
