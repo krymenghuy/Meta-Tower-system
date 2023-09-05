@@ -45,6 +45,14 @@ class MobileApi //xtends Model
         return DV::success();
     }
 
+    static function getProfile($id,$branch_id){
+        $row = DB::table('guardians')->where('id',$id)->selectRaw('file_name')->first();
+        if(isset($row->file_name)==null) return (object)['image_url' => null];
+        $row->image_url = PublicStorage::getUrl($branch_id,'guardians','image').$row->file_name;
+        unset($row->file_name);
+        return $row->image_url;
+    }
+
     function attendanceList($filter){
         $att = new StudentAttendance();
         $row =  $att->getAttendanceDetails($filter);

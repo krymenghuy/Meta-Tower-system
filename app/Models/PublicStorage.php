@@ -336,12 +336,12 @@ class PublicStorage //extends Model
                 // if (strlen($audio_data) > $maxSize) {
                 //     throw new \Exception('Audio file size exceeds the maximum allowed size');
                 // }
- 
+
                 // // Check if the audio data size exceeds the maximum allowed size
                 // if (strlen($audio_data) > $maxSize) {
                 //     throw new \Exception('Audio file size exceeds the maximum allowed size');
                 // }
-    
+
 
                 // Save the audio file using normal PHP functions
                 $f_res = self::makeFile($ext,$p->path,$base64);
@@ -366,6 +366,7 @@ class PublicStorage //extends Model
             // } catch (\Exception $e) {
             //     return (object)['error_message' => $e->getMessage(), 'status' => 'Error'];
             // }
+
         }
 
         return (object)['error_message' => "The given file type is not a valid audio format", 'status' => 'Error'];
