@@ -66,7 +66,8 @@ var RegistrationComponent = new function(){
             mThis.loadOptions_group();
         });
         
-        mThis.lnkAddGroup.on('click',e=>{
+        mThis.lnkAddGroup.on('click',(e)=>{
+            e.preventDefault();
             const group_id = 0;
             const sel_level_id = mThis.elLevel.val();
             if(sel_level_id ==0 || !sel_level_id){
@@ -94,7 +95,7 @@ var RegistrationComponent = new function(){
                 mThis.elTerm.val(mThis.selected_options.term_id).trigger('change');
             });
         });
-      
+
         mThis.elFilter_program.on('change',function(e){
             vsapi.call(`${main_view.base_url}/api/settings/options-level`,{'program_id':$(this).val()},null,false).then(res=>{
                 let items = res.status_code ===200?res.data:[];
@@ -363,6 +364,13 @@ var RegistrationComponent = new function(){
                                         </div>
                                     </button>
                                 </div>
+                                <div class="d-flex justify-content-end align-items-center h-100" role="button">
+                                    <div class="d-block">
+                                        <button class="btn-finally btn btn-sm btn-primary glow-on-hover" type="button" data-id="${item.enrollment_id}">
+                                            <span class="trans-text" data-langprop="buttons.Finally"></span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <hr class="bg-dark m-1 p-0"/>
@@ -399,7 +407,7 @@ var RegistrationComponent = new function(){
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Group"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.group_name?item.group_name:'(Group)'}</p>
+                                    <p class="text-nowrap">${item.group_name ? item.group_name:'(Group)'}</p>
                                 </div>
                             </div>
                             <div class="col">
@@ -441,6 +449,28 @@ var RegistrationComponent = new function(){
             };
             mThis.loadDataPrint(op,(data) => {
                 PrintCardDialog.show(data);
+            });
+        });
+
+        container.off('click').on('click','button.btn-finally',function(e){
+            e.preventDefault();
+            let op = {
+                'enrollment_id': $(this).data('id')
+            };
+            cv_interact.confirm('Do you want to finally this student?',{
+                title: 'Finally Student',
+                context: 'OK'
+            },(e) => {
+                if(e){
+                    vsapi.call(`${main_view.base_url}/api/enrollment/finalize`,op,null).then(res => {
+                        if(res.status_code === 200){
+                            cv_interact.success('Finalized Successfully!');
+                        }
+                        else{
+                            cv_interact.error(res.error_message);
+                        }
+                    });
+                }
             });
         });
 
