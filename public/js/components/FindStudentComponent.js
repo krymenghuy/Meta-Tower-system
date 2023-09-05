@@ -48,9 +48,9 @@ var FindStudentComponent = new function(){
                 e.preventDefault();
                 let f = el.data('field');
                 p[f] = el.val();
+                mThis.displayStudentList(p);
             });
         });
-        mThis.displayStudentList(p);
     }
 
     this.getDataForm = (div) => {
