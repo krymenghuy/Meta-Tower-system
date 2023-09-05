@@ -2,3 +2,7 @@
 [stacktrace]
 #0 {main}
 "} 
+[2023-09-05 13:55:10] local.ERROR: Cannot redeclare escape_like_str() (previously declared in D:\laravel_backend\KSM\app\helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in D:\\laravel_backend\\KSM\\app\\helpers.php:26) at D:\\laravel_backend\\KSM\\app\\helpers.php:26)
+[stacktrace]
+#0 {main}
+"} 
