@@ -36,7 +36,7 @@ class GeneralSettingsController extends Controller
       $rows = DB::table('medical_services as s')->selectRaw("s.id as value,s.name as text")->get();
       return JDV::result($rows);
   }
- 
+
     function getProductData(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !=200) return JDV::emptyResult($ss); //user not authenticated
@@ -351,7 +351,7 @@ class GeneralSettingsController extends Controller
     $options = GeneralSettings::optionsStudentEnrollments($req,$ss);
     return JDV::result($options);
   }
- 
+
   function getOptions_level(Request $req){
     //$ss = UM::getUserInfoByToken($req,-1);
     //if($ss->status_code !=200) return $ss; //user not authenticated
@@ -394,7 +394,7 @@ class GeneralSettingsController extends Controller
     if($ss->status_code !=200) return $ss;
     return JDV::raw(GeneralSettings::saveOption_school($req->all(),$req->id,$ss));
   }
- 
+
   function getOptions_program(Request $req){
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !=200) return $ss; //user not authenticated
@@ -436,5 +436,12 @@ class GeneralSettingsController extends Controller
         //if ($res->status==='Error')
            return JDV::result($res);
         //else return JDV::result($out_param);
+    }
+
+    function optionsFindVerifyPmt(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $options = GeneralSettings::optionsFindVerifyPmt();
+        return JDV::result($options);
     }
 }

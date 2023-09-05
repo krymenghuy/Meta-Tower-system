@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\GeneralSettings;
 use App\Models\JDV;
 use App\Models\Student;
 use App\Models\UM;
@@ -81,6 +82,14 @@ class StudentController extends Controller
         $x = new Student(null,$ss);
         $update = $x->updateStudentInfo($req->all(),$ss);
         return JDV::raw($update);
+    }
+
+    function formOptions(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $options = GeneralSettings::optionsFindVerifyPmt();
+
+        return JDV::result($options);
     }
 
 }
