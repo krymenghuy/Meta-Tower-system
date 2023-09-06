@@ -268,29 +268,30 @@ let StringSanitizer = new function () {
 
     //Sanitizes javascript object (or JSON object). NOTE: This method sanitize the first nesting level of object (Not recursively through all nested props), NOT an array of objects
     //sanitizeArray() recursively
-    this.sanitizeObject = (obj, allowedChars, exceptProps = [], allowedRawChars = false)=> {
-        if (!exceptProps) exceptProps = [];
-        if (!allowedChars) allowedChars = [];
-      
+    this.sanitizeObject = (obj, allowedChars = [], exceptProps = [], allowedRawChars = false)=> {
+        if (obj === null || obj === undefined || typeof obj !== 'object') {
+          // Return null, undefined, or non-object types as is
+          return obj;
+        }
+        exceptProps = exceptProps || [];
         if (Array.isArray(obj)) {
-          const result = obj.map(item => this.sanitizeObject(item, allowedChars, exceptProps, allowedRawChars));
-          return result;
-        } else {
-          for (let property in obj) {
-            if (obj.hasOwnProperty(property) && exceptProps.indexOf(property) === -1) {
-              if (Array.isArray(obj[property])) {
-                obj[property] = this.sanitizeObject(obj[property], allowedChars, exceptProps, allowedRawChars);
-              } else {
-                obj[property] = this.sanitizeOut(obj[property], this.getItemName(property), allowedChars, allowedRawChars);
-              }
+          return obj.map(item => this.sanitizeObject(item, allowedChars, exceptProps, allowedRawChars));
+        }
+        // If obj is an object
+        for (let property in obj) {
+          if (obj.hasOwnProperty(property) && exceptProps.indexOf(property) === -1) {
+            if (typeof obj[property] === 'object') {
+              obj[property] = this.sanitizeObject(obj[property], allowedChars, exceptProps, allowedRawChars);
+            } else {
+              // Handle primitive types here, e.g., string, number, date
+              obj[property] = this.sanitizeOut(obj[property], allowedChars, allowedRawChars);
             }
           }
         }
       
         return obj;
-    };
-      
-      
+      }
+        
     //return decoded character
     this.getDecodeChar =  (e)=> {
         // e is encoded char such as &U01;    

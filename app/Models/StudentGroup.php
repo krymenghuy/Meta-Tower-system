@@ -46,7 +46,7 @@ class StudentGroup //extends Model
         $created = false;
         if(!$id) $created = true;
 
-        $g_name = $inputs['term_id'].'.'.$inputs['campus_shortcut'].'.'.$level.'.'.$inputs['session_shortcut'];
+        $g_name = $inputs['campus_shortcut'].'.'.$level.'.'.$inputs['session_shortcut'];
         $inputs['name'] =$g_name;
         $serial_number = null;
 
@@ -161,14 +161,14 @@ class StudentGroup //extends Model
 
     static function details($id,$ss){
        $branch_id = $ss->branch_id;
-       return DB::table('student_groups as g')
-                ->selectRaw('g.id,CONCAT(g.name,\'.\',g.serial_number) AS `name`,g.descriptive_name,g.remarks,g.campus_id,g.level_id,g.session_id,g.serial_number')
+       return DB::table('student_groups AS g')
+                ->selectRaw('g.id,g.term_id,CONCAT(g.name,\'.\',g.serial_number) AS `name`,g.descriptive_name,g.remarks,g.campus_id,g.level_id,g.session_id,g.serial_number')
                 ->where('g.id',$id)
                 ->where('g.branch_id',$branch_id)->first();
     }
 
     function delete($id=null,$ss=null){
-        $branch_id = $ss->branch_id;
+        //$branch_id = $ss->branch_id;
         $id =$id?$id:$this->id;
         DB::table('group_members')->where('group_id',$id)->delete();
         $x = DB::table('student_groups')->where('id',$id)->delete();

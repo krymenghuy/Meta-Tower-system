@@ -51,9 +51,10 @@ class StudentGroupController extends Controller
 
     function getFormOptions(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss;
-        $g = new StudentGroup($req->id,$ss);
-        $d = $g->getFormOptions($req->id,$ss);
+        if($ss->status_code !=200) return JDV::raw($ss);
+        $id = $req->id?$req->id:$req->group_id;
+        $g = new StudentGroup($id,$ss);
+        $d = $g->getFormOptions($id,$ss);
         return JDV::result($d);
 
     }
