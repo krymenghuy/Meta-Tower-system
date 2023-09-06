@@ -356,6 +356,20 @@ let GenerateInvoiceFSN = new function(){
         }
     });
 
+    this.setTotal = (tbody) => {
+        const div = mThis.self, span_total = div.find('#inv_total');
+        let total = 0;
+        tbody.find('.total-item').each(function(){
+            let el = $(this);
+            let total_item = el.text().replace('$ ','');
+            total_item = parseInt(total_item);
+            total += total_item;
+        });
+        span_total.text(['$',total.toLocaleString('en-US',{
+            minimumFractionDigits: 2
+        })].join(' '));
+    }
+
     this.loadFormDetails = (div,options,onFinish = null) => {
         let op = {
             'id': options.id
@@ -532,13 +546,14 @@ let GenerateInvoiceFSN = new function(){
                 <td>${d.discount ? ['%',d.discount].join(' ') : 'N/A'}</td>
                 <td>${d.special_discount ? ['%',d.special_discount].join(' ') : 'N/A'}</td>
                 <td>${d.second_child_discount ? d.second_child_discount: 'N/A'}</td>
-                <td>${d.total ? ['$',d.total].join(' ') : 'N/A'}</td>
+                <td class="total-item">${d.total ? ['$',d.total].join(' ') : 'N/A'}</td>
                 <td>
                     <a href="javascript:void(0)" class="btn-fee-type-delete">
                         <i class="fa-regular fa-trash-can text-danger fs-5"></i>
                     </a>
                 </td>`].join(''));
                 mThis.deleteFeeRow(tbody);
+                mThis.setTotal(tbody);
             });
         });
     }
@@ -557,6 +572,7 @@ let GenerateInvoiceFSN = new function(){
                         mThis.options.fee_item.push(op);
                     }
                     $(this).closest('tr').remove();
+                    mThis.setTotal(tbody);
                 }
             });
         });
