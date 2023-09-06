@@ -324,7 +324,7 @@ var RegistrationComponent = new function(){
     
     this.renderStudents = (div_register_list,data) => {
             let html = null;
-            let cnt =0;
+            let cnt = 0;
             (data || []).map(item => {
                 let finalized = item.enroll_finalized == 1 ? 'd-none':''; 
                 html = [html,`<div class="d-flex p-3 bg-white h-info-student mb-2">
@@ -474,8 +474,8 @@ var RegistrationComponent = new function(){
     }
 
     this.setEvents = (container) => {
-        let div = container.find('.w-options');
-        let btn = container.find('button.btn--Options');
+        const div = container.find('.w-options'),
+        btn = container.find('button.btn--Options');
 
         btn.off('click').on('click',function(e){
             e.preventDefault();
@@ -602,7 +602,7 @@ var RegistrationComponent = new function(){
 
     this.setDataForm = (d) => {
         d = d ? d : {};
-        let div = mThis.div_input.find('#contain_img');
+        const div = mThis.div_input.find('#contain_img');
         mThis.renderImage(div,d.image_url);
 
         mThis.options.father_id = (d['parent_info'] && d['parent_info'][0] && d['parent_info'][0]['id']);
@@ -611,8 +611,7 @@ var RegistrationComponent = new function(){
         mThis.div_input.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
-            if(el.is('select'))
-            {
+            if(el.is('select')){
                 mThis.selected_options[f] = d[f];
                 el.val(d[f]).trigger('change');
             }
@@ -674,7 +673,8 @@ var RegistrationComponent = new function(){
         mThis.div_filter_form.find('.filter-field').each(function(){
             let el = $(this);
             const f = el.data('field');
-            if(f) p[f] = el.val();
+            if(f)
+                p[f] = el.val();
         });
         return p;
     }
@@ -686,12 +686,12 @@ var RegistrationComponent = new function(){
         mThis.div_filter_form.find('.filter-field').each(function(){
             let el = $(this);
             const f = el.data('field');
-            if(use_default)
-            {
+            if(use_default){
                 const first = el.find('option:first').val();
                 el.val(first).trigger('change');
             }
-            else el.val(d[f]).trigger('change');
+            else
+                el.val(d[f]).trigger('change');
         });
     }
 
@@ -712,7 +712,7 @@ var RegistrationComponent = new function(){
 }
 
 let PrintCardDialog = new function(){
-    let mThis = this;
+    const mThis = this;
     this.self = $('#dlg_rgs_card');
     this.elTitle = mThis.self.find('.modal-title');
     this.btnPrint = mThis.self.find('#dlg_rgs_card_btn_print');
@@ -753,7 +753,7 @@ let PrintCardDialog = new function(){
 }
 
 let StudentDetailDialog = new function(){
-    let mThis = this;
+    const mThis = this;
     this.self = $('#dlg_rgs_detail');
     this.btnPrint = mThis.self.find('#dlg_rgs_detail_btn_print');
 
@@ -766,8 +766,8 @@ let StudentDetailDialog = new function(){
         d = d ? d : {};
         d['sex'] = d['sex'] === 'M' ? 'Male' : 'Female';
         mThis.self.find('.data-show').each(function(){
-            let el = $(this);
-            let f = el.data('field');
+            const el = $(this);
+            const f = el.data('field');
             if(el.is('img'))
                 el.attr('src',d[f]);
             else{
@@ -788,11 +788,11 @@ let StudentDetailDialog = new function(){
 }
 
 let FamilyDialog = new function(){
-    let mThis = this;
+    const mThis = this;
     this.self = $('#dlg_rgs_family_');
 
     this.prepareFormOption = (option) => {
-        let el = mThis.self.find('.data-input');
+        const el = mThis.self.find('.data-input');
         vsapi.call(`${main_view.base_url}/api/guardian/options-family`,null,null,false).then(res => {
             if(res.status_code === 200){
                 const d = res.data;
