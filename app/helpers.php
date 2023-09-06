@@ -1730,4 +1730,10 @@ function readFileContent($fileName=null)
         }
         return false;
     }
+
+    function findExists($table,$findKeys=[]){
+        $find = DB::table($table)->where($findKeys)->exists();
+        if($find) return true;
+        return false;
+    }
 ?>
