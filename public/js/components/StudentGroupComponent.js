@@ -1,6 +1,6 @@
 'use strict';
 var StudentGroupComponent = new function(){
-    let mThis = this;
+    const mThis = this;
     this.title_prop = 'Student Groups';
     this.self = $('#_main_studentGroupComponent');
     this.tblStudentGroup = mThis.self.find('#_sdg_tbl');
@@ -132,7 +132,7 @@ var StudentGroupComponent = new function(){
     this.loadFilterOptions = (onFinish=null)=>{
         vsapi.call(`${main_view.base_url}/api/student-group/form-options`,{'id':null},null,false).then(res => {
             if(res.status_code === 200){
-                let d =StringSanitizer.sanitizeObject(res.data,null,[]);
+                const d = StringSanitizer.sanitizeObject(res.data,null,[]);
                 VSUtil.setComboItems(mThis.elFilter_term,d.terms,'id','term_name',null,null,null);
                 VSUtil.setComboItems(mThis.elFilter_program,d.programs,'id','program_name',null,null,null);
                 VSUtil.setComboItems(mThis.elFilter_session,d.sessions,'id','session_name',true,'(All Session)',0);
@@ -158,7 +158,7 @@ var StudentGroupComponent = new function(){
 }
 
 let StudentGroupDialog = new function(){
-    let mThis = this;
+    const mThis = this;
     this.self = $('#dlg_sdg_');
     this.options = {};
  
@@ -174,7 +174,7 @@ let StudentGroupDialog = new function(){
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        let p = mThis.getDataForm();
+        const p = mThis.getDataForm();
         vsapi.call(`${main_view.base_url}/api/student-group/save`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
@@ -202,9 +202,10 @@ let StudentGroupDialog = new function(){
 
     this.setFormData = (d) => {
         d = d ? d : {};
+        console.log(d);
         mThis.self.find('.data-input').each(function(){
-            let el = $(this);
-            let f = el.data('field');
+            const el = $(this);
+            const f = el.data('field');
             if(el.is('select'))
                 el.val(d[f]).trigger('change');
             else
@@ -214,7 +215,7 @@ let StudentGroupDialog = new function(){
 
     mThis.elCampus.change('change',function(e){
         e.preventDefault();
-       mThis.setGroupName();
+        mThis.setGroupName();
     });
 
     mThis.elProgram.on('change',function(e){
@@ -254,21 +255,22 @@ let StudentGroupDialog = new function(){
         mThis.setGroupName();
     });
  
-    this.prepareFormOption = (group_id,onFinish = null) => {
-        vsapi.call(`${main_view.base_url}/api/student-group/form-options`,{'id': group_id},null,false).then(res => {
+    this.prepareFormOption = (group_id, onFinish = null) => {
+        vsapi.call(`${main_view.base_url}/api/student-group/form-options`,{'id': group_id },null,false).then(res => {
             let d = {};
             if(res.status_code === 200){
+                console.log(res.data);
                 d = StringSanitizer.sanitizeObject(res.data,null,['academic_year']);
             }
             VSUtil.setComboItems(mThis.elCampus,d.campuses,'shortcut','campus_name',null,null,null);
             VSUtil.setComboItems(mThis.elAcademicYear,d.academic_years,'academic_year','academic_year',null,null,null);
             VSUtil.setComboItems(mThis.elProgram,d.programs,'id','program_name',null,null,null);
             VSUtil.setComboItems(mThis.elSession,d.sessions,'shortcut','session_name',null,null,null);
-            if(typeof onFinish === 'function') onFinish(d);
+            if(typeof onFinish === 'function') onFinish();
         });
     }
 
-    this.setGroupName = ()=>{
+    this.setGroupName = () => {
         let c = mThis.elCampus.val();
         let l = mThis.elLevel.find('option:selected').text();
         l = StringSanitizer.sanitizeOut(l);
@@ -283,14 +285,13 @@ let StudentGroupDialog = new function(){
         if(!options) options = {};
         mThis.options = options;
 
-        mThis.prepareFormOption(options.id,(d) => {
-            if(d.student_group){
+        mThis.prepareFormOption(options.id ,() => {
+            if(options.id > 0){
                 mThis.elTitle.text(LocaleManager.trans('Modify Student Group','titles'));
             }
             else{
                 mThis.elTitle.text(LocaleManager.trans('New Student Group','titles'));
             }
-            mThis.setFormData(d.student_group);
             mThis.self.modal({
                 backdrop:'static'
             });
