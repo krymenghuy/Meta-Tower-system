@@ -396,8 +396,11 @@ li.kt-menu__section {
 
 .h-register-input {
     height: calc(80vh - 60px);
+    overflow: hidden;
+}
+
+.h-register-input:hover{
     overflow-y: auto;
-    overflow-x: hidden;
 }
 
 .w-options {
