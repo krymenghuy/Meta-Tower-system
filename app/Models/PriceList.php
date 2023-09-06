@@ -660,7 +660,7 @@ class PriceList //extends Model
 
         $arr = [
             "level_id" => $level_id,
-            "program_id" => $d->program_id,
+            "program_id" => isset($d->program_id)?$d->program_id:null,
             "academic_year" => $academic_year,
             "session_id" => $session,
             "prev_level_id" => "0",
@@ -733,9 +733,14 @@ class PriceList //extends Model
         }else if($pmt_option_id == 3){
             $months = $months? $months:12;
         }
+
+        $discountHistory = DB::table('student_discounts')->where('student_id',$student_id)->get();
+        $getHistory_pmt_option = $discountHistory->filter(function ($o) use ($pmt_option_id){
+            return $o->pmt_option_id == $pmt_option_id;
+        })->first();
         $pmt_arr = [
             "level_id" => $inputs['level_id'],
-            "program_id" => null,
+            // "program_id" => 1,
             "academic_year" => $enr->academic_year,
             "session_id" => $inputs['session_id'],
             // "prev_level_id" => "0",
@@ -745,10 +750,7 @@ class PriceList //extends Model
             "days" => $days,
             "pmt_option_id"=> $pmt_option_id
         ];
-        $discountHistory = DB::table('student_discounts')->where('student_id',$student_id)->get();
-        $getHistory_pmt_option = $discountHistory->filter(function ($o) use ($pmt_option_id){
-            return $o->pmt_option_id == $pmt_option_id;
-        })->first();
+
         $preview = $instance->previewPendingPaymentDetails($pmt_arr,$id,$ss);
         if($preview->status_code !=200) return DV::error($preview->error_message);
         // return $preview;
@@ -757,7 +759,7 @@ class PriceList //extends Model
 
         if($preview->status_code == 200){
             $payment_info = $preview->payment_info;
-            $price_list_id = 2;//$payment_info->price_list_id;//$getHistory_pmt_option->pmt_option_id?:$payment_info->price_list_id;
+            $price_list_id = 3;//$payment_info->price_list_id;//$getHistory_pmt_option->pmt_option_id?:$payment_info->price_list_id;
             $discount_info = $instance->getPolicyDiscount($pmt_option_id,$price_list_id);
             // if($getHistory_pmt_option){
             //     $discount = $getHistory_pmt_option->policy_discount;
