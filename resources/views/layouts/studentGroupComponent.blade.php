@@ -51,7 +51,7 @@
                         </div>
                     </div>
                     <div class="form-group col-lg-4">
-                        <label for="level_id" class="form-label trans-text" data-langprop="titles.Semester"></label>
+                        <label for="term_id" class="form-label trans-text" data-langprop="titles.Semester"></label>
                         <div class="width-select-dialog">
                             <select id="dlg_sdg_term" class="modal-select2 data-input" data-field="term_id"></select>
                         </div>
