@@ -16,26 +16,29 @@ var StudentInformationComponent = new function(){
     },
     {
         title: "Student ID",
+        className: 'align-middle',
         data: "student_code"
     },
     {
         title: "Full Name",
-        className: "text-capitalize",
+        className: "text-capitalize align-middle",
         data: "name"
     },
     {
         title: "Full Name (KH)",
-        className: "text-capitalize",
+        className: "text-capitalize align-middle",
         data: "name_kh"
     },
     {
         title: "Sex",
+        className: 'align-middle',
         data: (data, a, b) => {
             return [`${data.sex === 'M' ? 'Male' : 'Female'}`].join('');
         }
     },
     {
         title: "Date of Birth",
+        className: 'align-middle',
         data: (data, a, b) => {
             let dob = data.date_of_birth ? data.date_of_birth : '';
             return new Date(dob).toLocaleDateString('km-KH',{
@@ -47,13 +50,15 @@ var StudentInformationComponent = new function(){
     },
     {
         title: "Family ID",
+        className: 'align-middle',
         data: "family_id"
     },
     {
         title: "Action",
+        className: 'align-middle',
         data: (data, a, b) => {
             return [`<div class="d-flex gap-2">
-                <a href="javascript:void(0)" class="btn-sin-details" data-id="${data.id}">
+                <a href="javascript:void(0)" class="btn-sin-modify" data-id="${data.id}">
                     <i class="fa-regular fa-pen-to-square fs-5 text-warning"></i>
                 </a>
             </div>`].join('');
@@ -75,13 +80,24 @@ var StudentInformationComponent = new function(){
         new SearchData(mThis.elSearch,mThis.tblStudent);
 
         mThis.cfg = new ExpandableRowConfig('tbl--sin_table',{
-            'dontExpandByClickingOn': ['btn-sin-details'],
+            'dontExpandByClickingOn': ['btn-sin-modify'],
             'onOpen': (container, detail_tr, parent_tr) => {
                 let qtr = $(parent_tr);
                 let id = qtr.data('id');
                 if(id > 0)
                     mThis.displayStudentInformationDetails(detail_tr,id);
             }
+        });
+
+        mThis.tblStudent.on('click','a.btn-sin-modify',function(e){
+            e.preventDefault();
+            let op = {
+                'id': $(this).data('id'),
+                'onClose': () => {
+                    mThis.itemView.showPage(null);
+                }
+            };
+            StudentInfo.show(op);
         });
     }
 
@@ -97,7 +113,6 @@ var StudentInformationComponent = new function(){
 
     this.displayStudentInformationDetails = (tr, id) => {
         let div_wrapper = $(tr).find('.expandable-row-container');
-        div_wrapper.addClass(['gap-2','on-hover-to-scroll']);
         div_wrapper.empty();
         let html = null;
 
@@ -158,11 +173,14 @@ var StudentInformationComponent = new function(){
                 </div>`].join('');
             });
 
-            div_wrapper.html(['<div class="position-absolute d-flex gap-2">',html,'</div>'].join(''));
-            div_wrapper.on('wheel',function(e){
-                let event = e.originalEvent;
-                this.scrollLeft += event.deltaY;
-            });
+            if(d.length > 0){
+                div_wrapper.addClass(['gap-2','on-hover-to-scroll']);
+                div_wrapper.html(['<div class="position-absolute d-flex gap-2">',html,'</div>'].join(''));
+                div_wrapper.on('wheel',function(e){
+                    let event = e.originalEvent;
+                    this.scrollLeft += event.deltaY;
+                });
+            }
         });
     }
 
@@ -175,6 +193,18 @@ var StudentInformationComponent = new function(){
             x.fadeOut('fast',function(){
                 mThis.self.hide().fadeIn(300);
             });
+        });
+    }
+}
+
+let StudentInfo = new function(){
+    const mThis = this;
+    this.self = $('#dlg_sin_');
+
+    this.show = (options) => {
+        if(!options) options = {};
+        mThis.self.modal({
+            backdrop: 'static'
         });
     }
 }
