@@ -161,10 +161,14 @@ class StudentGroup //extends Model
 
     static function details($id,$ss){
        $branch_id = $ss->branch_id;
-       return DB::table('student_groups AS g')
-                ->selectRaw('g.id,g.term_id,CONCAT(g.name,\'.\',g.serial_number) AS `name`,g.descriptive_name,g.remarks,g.campus_id,g.level_id,g.session_id,g.serial_number')
+       $row = DB::table('student_groups AS g')
+                ->selectRaw('g.id,g.term_id,CONCAT(g.name,\'.\',g.serial_number) AS `name`,g.descriptive_name,g.remarks,g.campus_id,g.level_id,g.session_id,g.serial_number,g.checkin_time,g.checkout_time')
                 ->where('g.id',$id)
                 ->where('g.branch_id',$branch_id)->first();
+        if(!$row) return null;
+        $row->has_member = DB::table('group_members as m')->join('student_groups as g','g.id','=','m.group_id')->where('g.id',$id)->selectRaw('g.id')->take(1)->exists();
+        $row->has_attendnace_scanned = DB::table('student_attendances as att')->where('group_id',$id)->selectRaw('id')->take(1)->exists();
+        return $row;
     }
 
     function delete($id=null,$ss=null){

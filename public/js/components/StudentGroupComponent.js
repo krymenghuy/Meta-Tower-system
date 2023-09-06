@@ -207,15 +207,13 @@ let StudentGroupDialog = new function(){
         mThis.self.find('.data-input').each(function(){
             const el = $(this);
             const f = el.data('field');
-            if(el.is('select'))
-            {
+            if(el.is('select')){
                 mThis.selected_options[f] = d[f];
                 el.val(d[f]).trigger('change');
             }
             else
                 el.val(d[f]);
         });
-        console.log( mThis.selected_options);
     }
 
     mThis.elCampus.change('change',function(e){
@@ -233,10 +231,8 @@ let StudentGroupDialog = new function(){
 
     mThis.elAcademicYear.on('change',function(e){
         e.preventDefault();
-        alert(JSON.stringify({'academic_year':mThis.elAcademicYear.val()}));
         vsapi.call(`${main_view.base_url}/api/settings/options-term`,{'academic_year':mThis.elAcademicYear.val()},null,false).then(res => {
-            let terms = (res.status_code === 200)?StringSanitizer.sanitizeObject(res.data,null,null):{};
-            console.error(terms);
+            let terms = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data,null,null) : {};
             VSUtil.setComboItems(mThis.elTerm,terms,'id','term_name',null,null,mThis.selected_options.term_id);
         });
     });
@@ -259,12 +255,12 @@ let StudentGroupDialog = new function(){
   
    this.prepareFormOption = (group_id,onFinish = null) => {
         vsapi.call(`${main_view.base_url}/api/student-group/form-options`,{'id': group_id},null,false).then(res => {
-            const d = (res.status_code === 200)? StringSanitizer.sanitizeObject(res.data,null,['academic_year']) :{};
+            const d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data,null,['academic_year']) : {};
             VSUtil.setComboItems(mThis.elCampus,d.campuses,'shortcut','campus_name',null,null,null);
             VSUtil.setComboItems(mThis.elAcademicYear,d.academic_years,'academic_year','academic_year',null,null,null);
             VSUtil.setComboItems(mThis.elProgram,d.programs,'id','program_name',null,null,null);
             VSUtil.setComboItems(mThis.elSession,d.sessions,'shortcut','session_name',null,null,null);
-            if(typeof onFinish === 'function') onFinish();
+            if(typeof onFinish === 'function') onFinish(d);
         });
    }
 
@@ -284,13 +280,14 @@ let StudentGroupDialog = new function(){
         if(!options) options = {};
         mThis.options = options;
 
-        mThis.prepareFormOption(options.id ,() => {
-            if(options.id > 0){
+        mThis.prepareFormOption(options.id ,(d) => {
+            if(d.student_group){
                 mThis.elTitle.text(LocaleManager.trans('Modify Student Group','titles'));
             }
             else{
                 mThis.elTitle.text(LocaleManager.trans('New Student Group','titles'));
             }
+            mThis.setFormData(d.student_group);
             mThis.self.modal({
                 backdrop:'static'
             });
