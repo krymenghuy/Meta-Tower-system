@@ -66,10 +66,11 @@ var RegistrationComponent = new function(){
             mThis.loadOptions_group();
         });
         
-        mThis.lnkAddGroup.on('click',e=>{
+        mThis.lnkAddGroup.on('click',(e)=>{
+            e.preventDefault();
             const group_id = 0;
             const sel_level_id = mThis.elLevel.val();
-            if(sel_level_id ==0 || !sel_level_id){
+            if(sel_level_id == 0 || !sel_level_id){
                 cv_interact.warning('Please select a Level or Grade');
                 return;
             }
@@ -94,10 +95,10 @@ var RegistrationComponent = new function(){
                 mThis.elTerm.val(mThis.selected_options.term_id).trigger('change');
             });
         });
-      
+
         mThis.elFilter_program.on('change',function(e){
             vsapi.call(`${main_view.base_url}/api/settings/options-level`,{'program_id':$(this).val()},null,false).then(res=>{
-                let items = res.status_code ===200?res.data:[];
+                let items = res.status_code === 200 ? res.data : [];
                 VSUtil.setComboItems(mThis.elFilter_level,items,'id','level_name',true,'(All Grades)',0);
                 mThis.elFilter_level.val(0).trigger('change');
             });
@@ -128,7 +129,7 @@ var RegistrationComponent = new function(){
                 //Set some default data such as Term_id, and Session etc from the currently selected filter on the main form
 
                 mThis.setDataForm(mThis.getFilterData());
-                Validator.clearErrors(mThis.div_input);
+                mThis.getFamilyID();
                 mThis.div_input.siblings(":visible").fadeOut("fast", function(){
                     mThis.div_input.hide().fadeIn(300);
                 });
@@ -147,12 +148,6 @@ var RegistrationComponent = new function(){
         mThis.div_input.on('click','button#btn--save',function(e){
             e.preventDefault();
             let p = mThis.getDataForm(mThis.div_input, 'data-input');
-            if(!p) return;
-            if(!p){
-                cv_interact.warning('It seems your data input are not yet complete');
-                return;
-            }
-            console.log(ref.click);
             p = mThis.prepareData(p);
             if(ref.click){
                 vsapi.call(`${main_view.base_url}/api/enrollment/save`,p,null).then(res => {
@@ -163,7 +158,7 @@ var RegistrationComponent = new function(){
                         //const filter = mThis.getEnrollmentPath();
                         //NOTE that: after successfully save enrollment info => api enrollment/save() return "res.data.enrollment_path" that is used as filter to refresh the back page in order to display the newly enrolled student
                         mThis.setFilterData(d.enrollment_path);
-                        if(d.login_info.parent_login_changed ==1){
+                        if(d.login_info.parent_login_changed == 1){
                             cv_interact.info(['Parent login has changed to ',d.login_info.new_login_name].join(''));
                         }
                         mThis.div_list.fadeIn(300).siblings().hide();
@@ -175,6 +170,43 @@ var RegistrationComponent = new function(){
                     }
                 });
             }
+        });
+    }
+
+    this.setParentInfo = (d) => {
+        d = d ? d : {};
+        const div = mThis.div_input,
+        div_parent = div.find('#_rgs_parent_info');
+        div_parent.find('.data-input').each(function(){
+            const el = $(this);
+            const f = el.data('field');
+            if(el.is('select')){
+                el.val(d[f]).trigger('change');
+            }
+            else if(f === 'father_religion')
+                el.val(d && d[0] && d[0]['religion']);
+            else if(f === 'father_address')
+                el.val(d && d[0] && d[0]['address']);
+            else if(f === 'mother_religion')
+                el.val(d && d[1] && d[1]['religion']);
+            else if(f === 'mother_address')
+                el.val(d && d[1] && d[1]['address']);
+            else
+                el.val(d[f] || (d && d[0] && d[0][f]) || (d && d[1] && d[1][f]));
+        });
+    }
+
+    this.getFamilyID = () => {
+        const div = mThis.div_input,
+        search = div.find('#el_rgs_search');
+        search.on('click',function(e){
+            e.preventDefault();
+            let op = {
+                'onClose': (d) => {
+                    mThis.setParentInfo(d)
+                }
+            };
+            FamilyDialog.show(op);
         });
     }
 
@@ -289,11 +321,12 @@ var RegistrationComponent = new function(){
         d.photo = mThis.options.photo;
         return d;
     }
-     
+    
     this.renderStudents = (div_register_list,data) => {
             let html = null;
             let cnt =0;
             (data || []).map(item => {
+                let finalized = item.enroll_finalized == 1 ? 'd-none':''; 
                 html = [html,`<div class="d-flex p-3 bg-white h-info-student mb-2">
                     <div class="div-img">
                         <img src="${item.image_url}" alt=""/>
@@ -339,7 +372,7 @@ var RegistrationComponent = new function(){
                                     <p class="text-nowrap">${item.parent_info && item.parent_info.email}</p>
                                 </div>
                             </div>
-                            <div class="col">
+                            <div class="col position-relative">
                                 <div class="d-flex align-items-start justify-content-end gap-2">
                                     <button class="btn btn-sm btn-primary rounded-3 btn--gnCard" type="button" data-id="${item.id}">
                                         <span class="text-nowrap trans-text" data-langprop="buttons.Ganerate Card"></span>
@@ -352,16 +385,31 @@ var RegistrationComponent = new function(){
                                                 <i class="fa-solid fa-up-right-from-square fs-5"></i>
                                                 <span class="ps-2 trans-text" data-langprop="titles.Detials"></span>
                                             </a>
-                                            <a href="javascript:void(0)" class="btn-rgs-edit border-bottom py-2" data-id="${item.id}">
+                                            <a href="javascript:void(0)" class="btn-rgs-suspend border-bottom pb-2" data-id="${item.id}">
+                                                <i class="fa-solid fa-spinner fs-5"></i>
+                                                <span class="ps-2 trans-text" data-langprop="titles.Suspended"></span>
+                                            </a>
+                                            <a href="javascript:void(0)" class="btn-rgs-dropout border-bottom pb-2" data-id="${item.id}">
+                                                <i class="fa-regular fa-circle-stop fs-5"></i>
+                                                <span class="ps-2 trans-text" data-langprop="titles.Dropout"></span>
+                                            </a>
+                                            <a href="javascript:void(0)" class="${finalized} btn-rgs-edit border-bottom py-2" data-id="${item.id}">
                                                 <i class="fa-regular fa-pen-to-square fs-5"></i>
                                                 <span class="ps-2 trans-text" data-langprop="titles.Edit"></span>
                                             </a>
-                                            <a href="javascript:void(0)" class="btn-rgs-delete pt-2" data-id="${item.id}">
+                                            <a href="javascript:void(0)" class="${finalized} btn-rgs-delete pt-2" data-id="${item.id}">
                                                 <i class="fa-regular fa-trash-can fs-5"></i>
                                                 <span class="ps-2 trans-text" data-langprop="titles.Delete"></span>
                                             </a>
                                         </div>
                                     </button>
+                                </div>
+                                <div class="d-flex justify-content-end align-items-center h-100" role="button">
+                                    <div class="d-block position-relative">
+                                        <button class="btn-finalize btn btn-sm ${item.enroll_finalized == 1 ? 'glow-on-hover-finalized' : 'glow-on-hover'}" type="button" data-id="${item.id}" data-status="${item.enroll_finalized}">
+                                            <span class="trans-text" data-langprop="buttons.Finalize${item.enroll_finalized == 1 ? 'd':''}"></span>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -399,7 +447,7 @@ var RegistrationComponent = new function(){
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Group"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.group_name?item.group_name:'(Group)'}</p>
+                                    <p class="text-nowrap">${item.group_name ? item.group_name:'(Group)'}</p>
                                 </div>
                             </div>
                             <div class="col">
@@ -434,7 +482,7 @@ var RegistrationComponent = new function(){
             $(this).find('.w-options').toggle('fast');
         });
 
-        container.on('click','button.btn--gnCard',function(e){
+        container.find('button.btn--gnCard').on('click',function(e){
             e.preventDefault();
             let op = {
                 'id': $(this).data('id')
@@ -442,6 +490,34 @@ var RegistrationComponent = new function(){
             mThis.loadDataPrint(op,(data) => {
                 PrintCardDialog.show(data);
             });
+        });
+
+        container.off('click').on('click','button.btn-finalize',function(e){
+            e.preventDefault();
+            let op = {
+                'enrollment_id': $(this).data('id')
+            };
+            if($(this).data('status') == 1){
+                cv_interact.warning('You already finalized this student!');
+            }
+            else{
+                cv_interact.confirm('Do you want to finalize this student?',{
+                    title: 'Finalize Student',
+                    context: 'OK'
+                },(e) => {
+                    if(e){
+                        vsapi.call(`${main_view.base_url}/api/enrollment/finalize`,op,null).then(res => {
+                            if(res.status_code === 200){
+                                mThis.studentListView.showPage(mThis.getFilterData());
+                                cv_interact.success('Finalized Successfully!');
+                            }
+                            else{
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                    }
+                });
+            }
         });
 
         if(div.length != 0){
@@ -511,23 +587,17 @@ var RegistrationComponent = new function(){
     }
 
     /** May revise to be => getDataForm() returns object {data,error} . If there is validation error, the prop "error" is not empty */
-    this.getDataForm = (div, class_name,silence = false) => {
+    this.getDataForm = (div, class_name) => {
         let p = {
             'id': mThis.options.id ? mThis.options.id : null
         };
-        let has_error = false;
+
         div.find(`.${class_name}`).each(function(){
             let el = $(this);
             let f = el.data('field');
-
-            if (el.data('error')==1){
-                if(!silence) cv_interact.warning([validator.properCase(f),' is not correct'].join(''));
-                has_error = true;
-                return false;
-            }
             p[f] = el.val();
         });
-        return has_error?null:p;
+        return p;
     }
 
     this.setDataForm = (d) => {
@@ -713,6 +783,43 @@ let StudentDetailDialog = new function(){
         mThis.setDataForm(options);
         mThis.self.modal({
             backdrop: 'static'
+        });
+    }
+}
+
+let FamilyDialog = new function(){
+    let mThis = this;
+    this.self = $('#dlg_rgs_family_');
+
+    this.prepareFormOption = (option) => {
+        let el = mThis.self.find('.data-input');
+        vsapi.call(`${main_view.base_url}/api/guardian/options-family`,null,null,false).then(res => {
+            if(res.status_code === 200){
+                const d = res.data;
+                VSUtil.setComboItems(el,d,'family_code','family',null,null,null);
+            }
+        });
+        el.on('change',function(e){
+            e.preventDefault();
+            const op = {
+                'family_code': $(this).val()
+            };
+            vsapi.call(`${main_view.base_url}/api/enrollment/get-guardian-info`,op,null,false).then(res => {
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    const d = res.data;
+                    if(typeof option.onClose === 'function')
+                        option.onClose(d);
+                }
+            });
+        });
+    }
+
+    this.show = (options) => {
+        if(!options) options = {};
+        mThis.prepareFormOption(options);
+        mThis.self.modal({
+            backdrop:'static'
         });
     }
 }

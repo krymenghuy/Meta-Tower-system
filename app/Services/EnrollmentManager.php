@@ -1,5 +1,6 @@
 <?php
 namespace App\Services;
+use App\Models\Campus;
 use DB;
 use App\Models\DV;
 use App\Models\Student;
@@ -299,7 +300,7 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
     function getEnrollmentDetails($id=null,$ss=null){
         $ss = $ss?$ss:$this->user_info;
         $id = $id?$id:$this->id;
-        $selectCols = 'e.id,s.id AS student_id,e.term_id,e.student_id,ss.name as session,e.prev_school_id,e.program_id,e.level_id,e.campus_id,e.session_id,g.id AS group_id,g.name AS group_name, l.`name` AS `level`,c.`name` AS `campus`,e.academic_year,s.sex,s.`name`,s.sex,formatDate(s.date_of_birth) AS date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth,formatDate(e.start_date) as admission_date';
+        $selectCols = 'e.enroll_finalized,e.id,s.id AS student_id,e.term_id,e.student_id,ss.name as session,e.prev_school_id,e.program_id,e.level_id,e.campus_id,e.session_id,g.id AS group_id,g.name AS group_name, l.`name` AS `level`,c.`name` AS `campus`,e.academic_year,s.sex,s.`name`,s.sex,formatDate(s.date_of_birth) AS date_of_birth,s.phone_number,s.email,s.address,s.name_kh,s.code as student_code,s.file_name,s.place_of_birth,formatDate(e.start_date) as admission_date';
         $row = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->where('e.id',$id)
@@ -341,67 +342,70 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
             return $res;
     }
 
-   function list_paginate($filter,$ss=null){
+
+    function list_paginate($filter,$ss=null){
       $ss = $ss?$ss:$this->user_info;
-      $branch_id = $ss->branch_id;
-      $d = (object)$filter;
-      $term_id = isset($d->term_id)?$d->term_id:null;
-      $academic_year = isset($d->academic_year)?$d->academic_year:null;
-      $campus_id = isset($d->campus_id)?$d->campus_id:null;
-      $program_id = isset($d->program_id)?$d->program_id:null;
-      $level_id = isset($d->level_id)?$d->level_id:null;
-      $session_id = isset($d->session_id)?$d->session_id:null;
-      $search_value =isset($d->search_value)?$d->search_value:null;
+          $branch_id = $ss->branch_id;
+          $d = (object)$filter;
+          $term_id = isset($d->term_id)?$d->term_id:null;
+          $academic_year = isset($d->academic_year)?$d->academic_year:null;
+          $campus_id = isset($d->campus_id)?$d->campus_id:null;
+          $program_id = isset($d->program_id)?$d->program_id:null;
+          $level_id = isset($d->level_id)?$d->level_id:null;
+          $session_id = isset($d->session_id)?$d->session_id:null;
+          $search_value =isset($d->search_value)?$d->search_value:null;
 
-      $current_page =isset($d->current_page)?$d->current_page:1;
-      $per_page =isset($d->per_page)?$d->per_page:10;
-      if(!is_numeric($current_page)) $current_page=1;
-      $skip_rows = ($current_page -1) * $per_page;
+          $current_page =isset($d->current_page)?$d->current_page:1;
+          $per_page =isset($d->per_page)?$d->per_page:10;
+          if(!is_numeric($current_page)) $current_page=1;
+          $skip_rows = ($current_page -1) * $per_page;
 
-      $str_search ="1=1";
-      $str_moreWhere="1=1";
-      if($search_value){
-          $skip_rows =0;
-          $search_value = escape_like_str($search_value);
-          $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
-      }
-      if($academic_year) $str_moreWhere .= ' AND e.academic_year =\''.$academic_year.'\'';
+          $str_search ="1=1";
+          $str_moreWhere="1=1";
+          if($search_value){
+              $skip_rows =0;
+              $search_value = escape_like_str($search_value);
+              $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+          }
+          if($academic_year) $str_moreWhere .= ' AND e.academic_year =\''.$academic_year.'\'';
 
-      if($campus_id > 0) $str_moreWhere .= ' AND e.campus_id ='.$campus_id;
-      if($session_id > 0) $str_moreWhere .= ' AND e.session_id ='.$session_id;
-      if($level_id > 0) $str_moreWhere .= ' AND e.level_id ='.$level_id;
-      else if($program_id > 0) $str_moreWhere .= ' AND e.program_id ='.$program_id;
+          if($campus_id > 0) $str_moreWhere .= ' AND e.campus_id ='.$campus_id;
+          if($session_id > 0) $str_moreWhere .= ' AND e.session_id ='.$session_id;
+          if($level_id > 0) $str_moreWhere .= ' AND e.level_id ='.$level_id;
+          else if($program_id > 0) $str_moreWhere .= ' AND e.program_id ='.$program_id;
 
-      $selectCols = 'e.id,st.id AS student_id,e.is_new_student,s.name AS session,e.level_id,g.`name` AS group_name, g.id AS group_id, e.prev_school_id,c.`name` AS campus,l.`name` AS level,e.campus_id,e.academic_year,st.code as student_code,st.name,st.name_kh,st.sex,formatDate(st.date_of_birth) AS date_of_birth,st.file_name, CASE e.is_new_student WHEN 1 THEN \'NEW\' ELSE \'Old\' END AS student_type';
-      $query = DB::table('enrollments as e')
-              ->join('group_members as gm','e.id','=','gm.enrollment_id')
-              ->join('student_groups as g','g.id','=','gm.group_id')
-              ->join('students as st','e.student_id','=','st.id')
-              ->join('campuses as c','c.id','=','e.campus_id')
-              ->join('program_levels as l','l.id','=','e.level_id')
-              ->join('sessions as s','s.id','=','e.session_id')
-              ->join('terms as t','t.id','=','e.term_id')
-              ->selectRaw($selectCols)
-              ->where('st.branch_id',$branch_id)
-              ->where('e.term_id',$term_id)
-              ->whereRaw($str_moreWhere)->whereRaw($str_search);
-              $query->orderByRaw('e.id desc,s.id');
-      $count_query = clone $query;
-      $count = $count_query->count('st.id');
-      $rows = $query->skip($skip_rows)->take($per_page)->get();
-      foreach($rows as $row) {
-        $row->image_url=null;
-        if($row->file_name){
-            $url = PublicStorage::getUrl($ss->branch_id,'students','image').$row->file_name;
-            $row->image_url = validateUrl($url,null);
-        }
-          $row->parent_info = Student::getParentInfo($row->student_id);
-          unset($row->file_name);
-          $row->previous_school = self::getPrevSchool($row->prev_school_id)->name;
-      }
+          $selectCols = 'e.enroll_finalized,e.id,st.id AS student_id,e.is_new_student,s.name AS session,e.level_id,g.`name` AS group_name, g.id AS group_id, e.prev_school_id,c.`name` AS campus,l.`name` AS level,e.campus_id,e.academic_year,st.code as student_code,st.name,st.name_kh,st.sex,formatDate(st.date_of_birth) AS date_of_birth,st.file_name, CASE e.is_new_student WHEN 1 THEN \'NEW\' ELSE \'Old\' END AS student_type';
+          $query = DB::table('enrollments as e')
+                  ->join('group_members as gm','e.id','=','gm.enrollment_id')
+                  ->join('student_groups as g','g.id','=','gm.group_id')
+                  ->join('students as st','e.student_id','=','st.id')
+                  ->join('campuses as c','c.id','=','e.campus_id')
+                  ->join('program_levels as l','l.id','=','e.level_id')
+                  ->join('sessions as s','s.id','=','e.session_id')
+                  ->join('terms as t','t.id','=','e.term_id')
+                  ->selectRaw($selectCols)
+                  ->where('st.branch_id',$branch_id)
+                  ->where('e.term_id',$term_id)
+                  ->whereRaw($str_moreWhere)->whereRaw($str_search);
+                  $query->orderByRaw('e.id desc,s.id');
+          $count_query = clone $query;
+          $count = $count_query->count('st.id');
+          $rows = $query->skip($skip_rows)->take($per_page)->get();
+          foreach($rows as $row) {
+            $row->image_url=null;
+            if($row->file_name){
+                $url = PublicStorage::getUrl($ss->branch_id,'students','image').$row->file_name;
+                $row->image_url = validateUrl($url,null);
+            }
+              $row->parent_info = Student::getParentInfo($row->student_id);
+              unset($row->file_name);
+              $row->previous_school = self::getPrevSchool($row->prev_school_id)->name;
+          }
 
-      return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+          return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
+
 
     function finalizeEnrollment($arr=[],$ss=null){
         $v_rule = [

@@ -98,7 +98,7 @@
                         <p class="pb-0 mb-1 ps-0">
                             <span class="width-invoice-text">Total</span>
                             <span class="px-2">:</span>
-                            <span class="data-invoice" data-field="total"></span>
+                            <span id="inv_total" class="data-invoice" data-field="total"></span>
                         </p>
                     </div>
                 </div>
