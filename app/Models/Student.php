@@ -687,6 +687,10 @@ class Student //extends Model
         return DV::depends($newID,'Update');
     }
 
+    function getDiscounts(){
+
+    }
+
     // function isExists($table,$pk=[],$checkCol,$input){
     //     $exists = DB::table($table)->where($pk)->selectRaw($checkCol)->first();
     //     if($exists && $exists->$checkCol != $input){

@@ -61,4 +61,12 @@ class MobileApiController extends Controller
         $enr_list = $d->getSocialMedia($ss);
         return JDV::result($enr_list);
     }
+
+    function getChildLatestInvoice(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $d = new MobileApi();
+        $inv = $d->childLatestInvoice($req->student_id,$ss);
+        return JDV::result($inv);
+    }
 }

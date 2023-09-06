@@ -105,6 +105,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/payment-invoice',[MobileApiController::class,'getChildrenInvoices']);
         Route::post('/student-enrollments',[MobileApiController::class,'getStudentEnrollment']);
         Route::post('/social-media',[MobileApiController::class,'getSocialMediaList']);
+        Route::post('/latest-invoice',[MobileApiController::class,'getChildLatestInvoice']);
     });
 
     //end mobile api
@@ -219,6 +220,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/details',[EnrollmentController::class,'getEnrollmentDetails']);
         Route::post('/finalize',[EnrollmentController::class,'finalizeEnrollment']);
         Route::post('/get-guardian-info',[EnrollmentController::class,'optionsGetGuardianByFamilyCode']);
+
+        Route::post('/test',[EnrollmentController::class,'test']);
     });
     //end::EnrollmentManager
 

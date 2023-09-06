@@ -264,4 +264,19 @@ class MobileApi //xtends Model
         }
         return $rows;
     }
+
+    function childLatestInvoice($childID,$ss){
+        $selectCols = 's.name,i.due_amount,i.paid_amount,i.pmt_date as payment_date,i.is_paid,i.id,i.currency_code';
+        $row = DB::table('invoices as i')->join('students as s','s.id','=','i.student_id')->where('i.student_id',$childID)->where('i.invoice_type','tuition_fee')->selectRaw($selectCols)->orderBy('i.id','desc')->limit(1)->first();
+        if($row){
+            $row->status_text = "unpaid";
+            if($row->is_paid ==1 ){
+                $row->status_text = "paid";
+            }
+            $row->discount = DB::table('invoice_items')->where('fee_type','tuition_fee')->where('invoice_id',$row->id)->first()->discount;
+            $row->discount_type = 'percentage';
+            $row->late_fee = 0;
+        }
+        return $row;
+    }
 }
