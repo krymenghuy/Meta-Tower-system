@@ -80,14 +80,14 @@
                     <div class="form-group col-lg-6">
                         <label for="" class="form-label trans-text" data-langprop="titles.Checkin Time"></label>
                         <div class="width-select-dialog">
-                            <input type="time" class="form-control data-input" data-field="checkin_time" />
+                            <input type="time" class="form-control data-input" data-field="checkin_time"/>
                         </div>
                     </div>
                     <div class="form-group col-lg-6">
                         <label for="level_id" class="form-label trans-text"
                             data-langprop="titles.Checkout Time"></label>
                         <div class="width-select-dialog">
-                            <input type="time" class="form-control data-input" data-field="checkout_time" />
+                            <input type="time" class="form-control data-input" data-field="checkout_time"/>
                         </div>
                     </div>
                     <div class="form-group col-lg-12">
