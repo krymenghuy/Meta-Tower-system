@@ -70,7 +70,7 @@ var RegistrationComponent = new function(){
             e.preventDefault();
             const group_id = 0;
             const sel_level_id = mThis.elLevel.val();
-            if(sel_level_id ==0 || !sel_level_id){
+            if(sel_level_id == 0 || !sel_level_id){
                 cv_interact.warning('Please select a Level or Grade');
                 return;
             }
@@ -98,7 +98,7 @@ var RegistrationComponent = new function(){
 
         mThis.elFilter_program.on('change',function(e){
             vsapi.call(`${main_view.base_url}/api/settings/options-level`,{'program_id':$(this).val()},null,false).then(res=>{
-                let items = res.status_code ===200?res.data:[];
+                let items = res.status_code === 200 ? res.data : [];
                 VSUtil.setComboItems(mThis.elFilter_level,items,'id','level_name',true,'(All Grades)',0);
                 mThis.elFilter_level.val(0).trigger('change');
             });
@@ -129,7 +129,7 @@ var RegistrationComponent = new function(){
                 //Set some default data such as Term_id, and Session etc from the currently selected filter on the main form
 
                 mThis.setDataForm(mThis.getFilterData());
-                Validator.clearErrors(mThis.div_input);
+                mThis.getFamilyID();
                 mThis.div_input.siblings(":visible").fadeOut("fast", function(){
                     mThis.div_input.hide().fadeIn(300);
                 });
@@ -148,12 +148,6 @@ var RegistrationComponent = new function(){
         mThis.div_input.on('click','button#btn--save',function(e){
             e.preventDefault();
             let p = mThis.getDataForm(mThis.div_input, 'data-input');
-            if(!p) return;
-            if(!p){
-                cv_interact.warning('It seems your data input are not yet complete');
-                return;
-            }
-            console.log(ref.click);
             p = mThis.prepareData(p);
             if(ref.click){
                 vsapi.call(`${main_view.base_url}/api/enrollment/save`,p,null).then(res => {
@@ -164,7 +158,7 @@ var RegistrationComponent = new function(){
                         //const filter = mThis.getEnrollmentPath();
                         //NOTE that: after successfully save enrollment info => api enrollment/save() return "res.data.enrollment_path" that is used as filter to refresh the back page in order to display the newly enrolled student
                         mThis.setFilterData(d.enrollment_path);
-                        if(d.login_info.parent_login_changed ==1){
+                        if(d.login_info.parent_login_changed == 1){
                             cv_interact.info(['Parent login has changed to ',d.login_info.new_login_name].join(''));
                         }
                         mThis.div_list.fadeIn(300).siblings().hide();
@@ -176,6 +170,43 @@ var RegistrationComponent = new function(){
                     }
                 });
             }
+        });
+    }
+
+    this.setParentInfo = (d) => {
+        d = d ? d : {};
+        const div = mThis.div_input,
+        div_parent = div.find('#_rgs_parent_info');
+        div_parent.find('.data-input').each(function(){
+            const el = $(this);
+            const f = el.data('field');
+            if(el.is('select')){
+                el.val(d[f]).trigger('change');
+            }
+            else if(f === 'father_religion')
+                el.val(d && d[0] && d[0]['religion']);
+            else if(f === 'father_address')
+                el.val(d && d[0] && d[0]['address']);
+            else if(f === 'mother_religion')
+                el.val(d && d[1] && d[1]['religion']);
+            else if(f === 'mother_address')
+                el.val(d && d[1] && d[1]['address']);
+            else
+                el.val(d[f] || (d && d[0] && d[0][f]) || (d && d[1] && d[1][f]));
+        });
+    }
+
+    this.getFamilyID = () => {
+        const div = mThis.div_input,
+        search = div.find('#el_rgs_search');
+        search.on('click',function(e){
+            e.preventDefault();
+            let op = {
+                'onClose': (d) => {
+                    mThis.setParentInfo(d)
+                }
+            };
+            FamilyDialog.show(op);
         });
     }
 
@@ -290,7 +321,7 @@ var RegistrationComponent = new function(){
         d.photo = mThis.options.photo;
         return d;
     }
-     
+    
     this.renderStudents = (div_register_list,data) => {
             let html = null;
             let cnt =0;
@@ -556,23 +587,17 @@ var RegistrationComponent = new function(){
     }
 
     /** May revise to be => getDataForm() returns object {data,error} . If there is validation error, the prop "error" is not empty */
-    this.getDataForm = (div, class_name,silence = false) => {
+    this.getDataForm = (div, class_name) => {
         let p = {
             'id': mThis.options.id ? mThis.options.id : null
         };
-        let has_error = false;
+
         div.find(`.${class_name}`).each(function(){
             let el = $(this);
             let f = el.data('field');
-
-            if (el.data('error')==1){
-                if(!silence) cv_interact.warning([validator.properCase(f),' is not correct'].join(''));
-                has_error = true;
-                return false;
-            }
             p[f] = el.val();
         });
-        return has_error?null:p;
+        return p;
     }
 
     this.setDataForm = (d) => {
@@ -758,6 +783,43 @@ let StudentDetailDialog = new function(){
         mThis.setDataForm(options);
         mThis.self.modal({
             backdrop: 'static'
+        });
+    }
+}
+
+let FamilyDialog = new function(){
+    let mThis = this;
+    this.self = $('#dlg_rgs_family_');
+
+    this.prepareFormOption = (option) => {
+        let el = mThis.self.find('.data-input');
+        vsapi.call(`${main_view.base_url}/api/guardian/options-family`,null,null,false).then(res => {
+            if(res.status_code === 200){
+                const d = res.data;
+                VSUtil.setComboItems(el,d,'family_code','family',null,null,null);
+            }
+        });
+        el.on('change',function(e){
+            e.preventDefault();
+            const op = {
+                'family_code': $(this).val()
+            };
+            vsapi.call(`${main_view.base_url}/api/enrollment/get-guardian-info`,op,null,false).then(res => {
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    const d = res.data;
+                    if(typeof option.onClose === 'function')
+                        option.onClose(d);
+                }
+            });
+        });
+    }
+
+    this.show = (options) => {
+        if(!options) options = {};
+        mThis.prepareFormOption(options);
+        mThis.self.modal({
+            backdrop:'static'
         });
     }
 }

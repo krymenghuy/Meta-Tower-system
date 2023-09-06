@@ -169,22 +169,15 @@
                     </div>
                 </div>
             </div>
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 pb-3">
                 <label for="parent_information" class="form-label trans-text fs-5 text-primary" data-langprop="titles.Parent Information"></label>
                 <div class="d-flex align-items-center">
-                    <div class="height-select2">
-                        <select class="modal-select2"></select>
-                    </div>
-                    <div class="input-group p-0">
-                        <div class="input-group-text">
-                            <a href="javascript:void(0)">
-                                <i class="fa-solid fa-magnifying-glass fs-5 text-success"></i>
-                            </a>
-                        </div>
-                    </div>
+                    <a href="javascript:void(0)" id="el_rgs_search">
+                        <i class="fa-solid fa-magnifying-glass fs-5 text-success"></i>
+                    </a>
                 </div>
             </div>
-            <div class="row row-cols-lg-4">
+            <div id="_rgs_parent_info" class="row row-cols-lg-4 gap-2">
                 <div class="col">
                     <div class="form-group">
                         <label for="father_name" class="form-label trans-text" data-langprop="titles.Father Name"></label>
@@ -526,6 +519,25 @@
                 <button id="dlg_rgs_detail_btn_print" class="btn btn-sm btn-primary" type="button">
                     <span class="trans-text" data-langprop="buttons.Print Now"></span>
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="dlg_rgs_family_" tabindex="-1" aria-labelledby="dlg_rgs_family_title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title trans-text" data-langprop="titles.Choose Family ID"></h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="family_id" class="form-label trans-text" data-langprop="titles.Family ID"></label>
+                    <div class="width-select-dialog">
+                        <select class="modal-select2 data-input" data-field="family_code"></select>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
