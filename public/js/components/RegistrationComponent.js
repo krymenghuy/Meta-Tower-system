@@ -295,7 +295,7 @@ var RegistrationComponent = new function(){
             let html = null;
             let cnt =0;
             (data || []).map(item => {
-                let finalized = item.enroll_finalized === 1 ? 'd-none':''; 
+                let finalized = item.enroll_finalized == 1 ? 'd-none':''; 
                 html = [html,`<div class="d-flex p-3 bg-white h-info-student mb-2">
                     <div class="div-img">
                         <img src="${item.image_url}" alt=""/>
@@ -367,8 +367,8 @@ var RegistrationComponent = new function(){
                                 </div>
                                 <div class="d-flex justify-content-end align-items-center h-100" role="button">
                                     <div class="d-block position-relative">
-                                        <button class="btn-finalize btn btn-sm ${item.enroll_finalized === 1 ? 'glow-on-hover-finalized' : 'glow-on-hover'}" type="button" data-id="${item.id}" data-status="${item.enroll_finalized}">
-                                            <span class="trans-text" data-langprop="buttons.Finalize${item.enroll_finalized === 1 ? 'd':''}"></span>
+                                        <button class="btn-finalize btn btn-sm ${item.enroll_finalized == 1 ? 'glow-on-hover-finalized' : 'glow-on-hover'}" type="button" data-id="${item.id}" data-status="${item.enroll_finalized}">
+                                            <span class="trans-text" data-langprop="buttons.Finalize${item.enroll_finalized == 1 ? 'd':''}"></span>
                                         </button>
                                     </div>
                                 </div>
@@ -459,7 +459,7 @@ var RegistrationComponent = new function(){
                 'enrollment_id': $(this).data('id')
             };
             if($(this).data('status') == 1){
-                cv_interact.warning('You finalized this student already!');
+                cv_interact.warning('You already finalized this student!');
             }
             else{
                 cv_interact.confirm('Do you want to finalize this student?',{
