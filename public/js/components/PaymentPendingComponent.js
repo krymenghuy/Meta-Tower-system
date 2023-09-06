@@ -150,7 +150,7 @@ let PaymentPendingDialog = new function(){
                 ref.click = false;
                 if(res.status_code === 200){
                     mThis.self.modal("hide");
-                    if (typeof mThis.options.onClose === "function")
+                    if(typeof mThis.options.onClose === "function")
                         mThis.options.onClose();
                     ref.click = true;
                 }

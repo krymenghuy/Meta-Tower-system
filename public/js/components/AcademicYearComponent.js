@@ -54,8 +54,7 @@ var AcademicYearComponent = new function(){
                 data = res.data;
             }
 
-            let cols = [
-                {
+            let cols = [{
                 title: "Academic Year",
                 data: "academic_year"
             },
@@ -67,10 +66,6 @@ var AcademicYearComponent = new function(){
                 title: "End Date",
                 data: "end_date"
             },
-            // {
-            //     title: "Dropout Students",
-            //     data: "dropout_count"
-            // },
             {
                 title: "Updated By",
                 data: (data,index,tr)=>{
@@ -147,14 +142,18 @@ let AcademicDialog = new function(){
     this.elTitle = mThis.self.find('.modal-title');
     this.btnSave = mThis.self.find('#dlg_adm_btn_save');
 
-    this.btnSave.on('click',e=>{
+    this.btnSave.on('click',(e) => {
+        e.preventDefault();
         let p = mThis.getDataForm();
         vsapi.call(`${main_view.base_url}/api/academic-year/save`,p,null,false).then(res => {
             let data = {};
             if(res.status_code === 200){
-                 if(typeof mThis.options.onClose ==='function') mThis.options.onClose();
-                 mThis.self.modal('hide');
-            }else cv_interact.error(res.error_message);
+                if(typeof mThis.options.onClose ==='function')
+                    mThis.options.onClose();
+                mThis.self.modal('hide');
+            }
+            else
+                cv_interact.error(res.error_message);
         });
     });
 
