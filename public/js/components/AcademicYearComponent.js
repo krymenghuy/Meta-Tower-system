@@ -172,7 +172,6 @@ let AcademicDialog = new function(){
 
     this.setDataForm = (d) => {
         d = d ? d : {};
-        validator.clearErrors(mThis.self);
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');

@@ -168,9 +168,22 @@
                         <input data-required="1" data-select="datepicker" class="form-control data-input" data-field="admission_date"/>
                     </div>
                 </div>
-          
             </div>
-            <label for="parent_information" class="form-label trans-text fs-5 text-primary" data-langprop="titles.Parent Information"></label>
+            <div class="d-flex gap-2">
+                <label for="parent_information" class="form-label trans-text fs-5 text-primary" data-langprop="titles.Parent Information"></label>
+                <div class="d-flex align-items-center">
+                    <div class="height-select2">
+                        <select class="modal-select2"></select>
+                    </div>
+                    <div class="input-group p-0">
+                        <div class="input-group-text">
+                            <a href="javascript:void(0)">
+                                <i class="fa-solid fa-magnifying-glass fs-5 text-success"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row row-cols-lg-4">
                 <div class="col">
                     <div class="form-group">
