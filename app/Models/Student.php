@@ -385,6 +385,24 @@ class Student //extends Model
         return $um_res;
     }
 
+    function getDiscounts($program_id,$pmt_option_id,$id=null){
+       $id =$id?$id:$this->id;
+       $str_pmt_option = ($pmt_option_id > 0)? 'd.pmt_option_id ='.$pmt_option_id : '1=1';
+       return DB::table('student_discounts AS d')->join('students as st','st.id','=','d.student_id')->where('st.id',$id)->whereRaw($str_pmt_option)->where('d.program_id',$program_id)->selectRaw('d.id,st.id AS student_id,d.program_id,d.pmt_option_id, d.special_discount, d.policy_discount,other_discount')->get();
+    }
+
+    function getDiscount($program_id,$pmt_option_id,$id=null){
+        $id =$id?$id:$this->id;
+        $row = DB::table('student_discounts AS d')->join('students as st','st.id','=','d.student_id')->where('st.id',$id)->where('pmt_option_id',$pmt_option_id)->where('d.program_id',$program_id)->selectRaw('d.id,st.id AS student_id,d.program_id,d.pmt_option_id, d.special_discount, d.policy_discount,d.other_discount')->get()->first();
+        if(!$row) return (object)['policy_discount'=>0,'special_discount'=>0,'other_discount'=>0];
+        return $row; 
+    }
+
+    function getPriceListDiscount($program_id,$pmt_option_id){
+        return null;
+        //$row = DB::table('admissions as adm')->where('');
+    }
+
     function saveAudioFile($base64, $id=null,$ss=null){
       $id =$id?$id:$this->id;
       $ss =$ss?$ss:$this->userInfo;

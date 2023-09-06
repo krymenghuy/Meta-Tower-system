@@ -19,7 +19,7 @@ class ScriptProvider
             ]
         ],
         'priority-one' => [
-            'attr' => 'async',
+            'attr' => '',
             'single_file' => 1,
             'output_file' => '/dist/js/ksm.priority-one.min.js',
             'files' => [
@@ -45,16 +45,16 @@ class ScriptProvider
                 '/js/components/AuthManager.js'
             ]
         ],
-        'pdfmake' => [
-            'attr' => 'defer',
-            'single_file' => 0, /* original 0*/
-            'output_file' => '/dist/js/vs.pdfmake.js',
-            'minify' => 0,
-            'files' => [
-                '/assets/js/pdfmake.min.js',
-                '/assets/js/vfs_fonts.js',
-            ]
-        ],
+        // 'pdfmake' => [
+        //     'attr' => 'defer',
+        //     'single_file' => 0, /* original 0*/
+        //     'output_file' => '/dist/js/vs.pdfmake.js',
+        //     'minify' => 0,
+        //     'files' => [
+        //         '/assets/js/pdfmake.min.js',
+        //         '/assets/js/vfs_fonts.js',
+        //     ]
+        // ],
         'primary-defer' => [
             'attr' => 'defer',
             'single_file' => 1,
