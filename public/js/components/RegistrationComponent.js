@@ -354,6 +354,14 @@ var RegistrationComponent = new function(){
                                                 <i class="fa-solid fa-up-right-from-square fs-5"></i>
                                                 <span class="ps-2 trans-text" data-langprop="titles.Detials"></span>
                                             </a>
+                                            <a href="javascript:void(0)" class="btn-rgs-suspend border-bottom pb-2" data-id="${item.id}">
+                                                <i class="fa-solid fa-spinner fs-5"></i>
+                                                <span class="ps-2 trans-text" data-langprop="titles.Suspended"></span>
+                                            </a>
+                                            <a href="javascript:void(0)" class="btn-rgs-dropout border-bottom pb-2" data-id="${item.id}">
+                                                <i class="fa-regular fa-circle-stop fs-5"></i>
+                                                <span class="ps-2 trans-text" data-langprop="titles.Dropout"></span>
+                                            </a>
                                             <a href="javascript:void(0)" class="${finalized} btn-rgs-edit border-bottom py-2" data-id="${item.id}">
                                                 <i class="fa-regular fa-pen-to-square fs-5"></i>
                                                 <span class="ps-2 trans-text" data-langprop="titles.Edit"></span>
