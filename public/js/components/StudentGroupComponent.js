@@ -224,7 +224,7 @@ let StudentGroupDialog = new function(){
     mThis.elProgram.on('change',function(e){
         e.preventDefault();
         vsapi.call(`${main_view.base_url}/api/settings/options-level`,{'program_id':mThis.elProgram.val()},null,false).then(res => {
-            let d = (res.status_code===200)?StringSanitizer.sanitizeObject(res.data,null,null):[]; 
+            let d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data,null,null):[];
             VSUtil.setComboItems(mThis.elLevel,d,'id','level_name',null,null,mThis.selected_options.level_id);
         });
     });
@@ -249,13 +249,12 @@ let StudentGroupDialog = new function(){
 
     mThis.elTerm.on('change',function(e){
         e.preventDefault();
-        //const edit_mode = !mThis.options.id;
         mThis.setGroupName();
     });
   
-   this.prepareFormOption = (group_id,onFinish = null) => {
+   this.prepareFormOption = (group_id, onFinish = null) => {
         vsapi.call(`${main_view.base_url}/api/student-group/form-options`,{'id': group_id},null,false).then(res => {
-            const d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data,null,['academic_year']) : {};
+            const d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data,null,['academic_year','checkin_time','checkout_time']) : {};
             VSUtil.setComboItems(mThis.elCampus,d.campuses,'shortcut','campus_name',null,null,null);
             VSUtil.setComboItems(mThis.elAcademicYear,d.academic_years,'academic_year','academic_year',null,null,null);
             VSUtil.setComboItems(mThis.elProgram,d.programs,'id','program_name',null,null,null);

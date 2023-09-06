@@ -397,12 +397,7 @@ class Student //extends Model
         if(!$row) return (object)['policy_discount'=>0,'special_discount'=>0,'other_discount'=>0];
         return $row;
     }
-
-    function getPriceListDiscount($program_id,$pmt_option_id){
-        return null;
-        //$row = DB::table('admissions as adm')->where('');
-    }
-
+ 
     function saveAudioFile($base64, $id=null,$ss=null){
       $id =$id?$id:$this->id;
       $ss =$ss?$ss:$this->userInfo;

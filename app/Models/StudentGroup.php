@@ -27,7 +27,6 @@ class StudentGroup //extends Model
             'checkin_time'=>'1|string|0-100',
             'checkout_time' => '1|string|0-100',
             'remarks' => '0|string|0-250',
-
         ];
 
         $res = validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
@@ -52,6 +51,17 @@ class StudentGroup //extends Model
 
         unset($inputs['campus_shortcut']);
         unset($inputs['session_shortcut']);
+
+        if($id>0){
+             if (self::has_member($id)){
+                //If groupd already has member => Do not allow changing Session, Campus, Term, Level to avoid tuition price change
+                unset($inputs['term_id'], $inputs['campus_id'],$inputs['session_id'],$inputs['session_shortcut'],$inputs['level_id']);
+             }
+             if(self::hasAttendanceScanned($id)){
+                //If group's member has scanned attendance=> do not allow to change checkin_time and checkout_time
+                unset($inputs['checkout_time'],$inputs['checkin_time']);
+             }
+        }
 
         $newID = saveData($ss,'student_groups',['id' => $id],$inputs,[],1);
         if($newID && $created){
@@ -161,14 +171,26 @@ class StudentGroup //extends Model
 
     static function details($id,$ss){
        $branch_id = $ss->branch_id;
+       $get_program = ',(SELECT l.program_id  FROM program_levels as l where l.id = g.level_id LIMIT 1) AS program_id';
        $row = DB::table('student_groups AS g')
-                ->selectRaw('g.id,g.term_id,CONCAT(g.name,\'.\',g.serial_number) AS `name`,g.descriptive_name,g.remarks,g.campus_id,g.level_id,g.session_id,g.serial_number,g.checkin_time,g.checkout_time')
+                ->join('terms AS t','t.id','=','g.term_id')
+                ->join('campuses AS c','c.id','=','g.campus_id')
+                ->join('sessions AS s','s.id','=','g.session_id')
+                ->selectRaw('g.id,g.term_id '.$get_program.',CONCAT(g.name,\'.\',g.serial_number) AS `name`,g.descriptive_name,g.remarks,c.shortcut as campus_shortcut,g.level_id,s.shortcut as session_shortcut,g.serial_number,g.checkin_time,g.checkout_time,t.academic_year')
                 ->where('g.id',$id)
                 ->where('g.branch_id',$branch_id)->first();
         if(!$row) return null;
-        $row->has_member = DB::table('group_members as m')->join('student_groups as g','g.id','=','m.group_id')->where('g.id',$id)->selectRaw('g.id')->take(1)->exists();
-        $row->has_attendnace_scanned = DB::table('student_attendances as att')->where('group_id',$id)->selectRaw('id')->take(1)->exists();
+        $row->has_member = self::has_member($id);
+        $row->has_attendnace_scanned = self::hasAttendanceScanned($id);
         return $row;
+    }
+
+    static function has_member($id){
+      return DB::table('group_members as m')->join('student_groups as g','g.id','=','m.group_id')->where('g.id',$id)->selectRaw('g.id')->take(1)->exists();
+    }
+
+    static function hasAttendanceScanned($id){
+        return DB::table('student_attendances as att')->where('group_id',$id)->selectRaw('id')->take(1)->exists();
     }
 
     function delete($id=null,$ss=null){
