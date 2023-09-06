@@ -395,7 +395,7 @@ class Student //extends Model
         $id =$id?$id:$this->id;
         $row = DB::table('student_discounts AS d')->join('students as st','st.id','=','d.student_id')->where('st.id',$id)->where('pmt_option_id',$pmt_option_id)->where('d.program_id',$program_id)->selectRaw('d.id,st.id AS student_id,d.program_id,d.pmt_option_id, d.special_discount, d.policy_discount,d.other_discount')->get()->first();
         if(!$row) return (object)['policy_discount'=>0,'special_discount'=>0,'other_discount'=>0];
-        return $row; 
+        return $row;
     }
 
     function getPriceListDiscount($program_id,$pmt_option_id){
@@ -685,10 +685,6 @@ class Student //extends Model
         }
 
         return DV::depends($newID,'Update');
-    }
-
-    function getDiscounts(){
-
     }
 
     // function isExists($table,$pk=[],$checkCol,$input){
