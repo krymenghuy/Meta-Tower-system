@@ -125,6 +125,7 @@ var RegistrationComponent = new function(){
             mThis.options.father_id = null;
             mThis.options.mother_id = null;
             mThis.options.photo = null;
+            mThis.options.family_code = null;
             mThis.prepareFormOption(null,mThis.div_input,'data-input',() => {
                 //Set some default data such as Term_id, and Session etc from the currently selected filter on the main form
 
@@ -142,6 +143,7 @@ var RegistrationComponent = new function(){
             mThis.options.father_id = null;
             mThis.options.mother_id = null;
             mThis.options.photo = null;
+            mThis.options.family_code = null;
             mThis.div_list.show().siblings().hide();
         });
 
@@ -175,6 +177,7 @@ var RegistrationComponent = new function(){
 
     this.setParentInfo = (d) => {
         d = d ? d : {};
+        mThis.options.family_code = d.family_code;
         const div = mThis.div_input,
         div_parent = div.find('#_rgs_parent_info');
         div_parent.find('.data-input').each(function(){
@@ -289,7 +292,7 @@ var RegistrationComponent = new function(){
 
     this.prepareData = (d) => {
         d = d ? d : {};
-
+        const family_code = mThis.options.family_code;
         d.parent_info = [
             {
                 'id': mThis.options.father_id,
@@ -313,12 +316,16 @@ var RegistrationComponent = new function(){
             }
         ];
 
-        ['father_name','father_email','father_phone','father_address','father_id_card','father_religion','mother_name','mother_email','mother_phone','mother_address','mother_id_card','mother_religion'].map(ob => {
+        ['father_name','father_email','father_phone','father_address','father_nid','father_religion','mother_name','mother_email','mother_phone','mother_address','mother_nid','mother_religion'].map(ob => {
             delete d[ob];
         });
         //NOTE: if provide NULL photo to api enrollment/save() => it will delete existing photo, but if provide url, it wont delete or update the student's photo
         //mThis.options.photo is a url in case of viewing existing photo. If this url is passed to api, it wont update or delete student's photo
         d.photo = mThis.options.photo;
+        if(family_code){
+            d.family_code = family_code;
+            delete(d.parent_info);
+        }
         return d;
     }
     
@@ -807,7 +814,8 @@ let FamilyDialog = new function(){
             vsapi.call(`${main_view.base_url}/api/enrollment/get-guardian-info`,op,null,false).then(res => {
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
-                    const d = res.data;
+                    let d = res.data;
+                    d.family_code = op.family_code;
                     if(typeof option.onClose === 'function')
                         option.onClose(d);
                 }
