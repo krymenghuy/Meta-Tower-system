@@ -114,7 +114,7 @@
                         <div id="dlg_sin_audio_choose" class="input-group-text" role="button">
                             <i class="fa-regular fa-file-audio fs-3 text-success-emphasis"></i>
                         </div>
-                        <div class="p-4 border rounded w-100 position-relative"></div>
+                        <div id="dlg_sin_audio_show" class="p-4 border rounded w-100 position-relative"></div>
                     </div>
                 </div>
             </div>
@@ -122,7 +122,7 @@
                 <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button type="button" class="btn btn-sm btn-primary">
+                <button id="dlg_sin_audio_btn_save" type="button" class="btn btn-sm btn-primary">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>

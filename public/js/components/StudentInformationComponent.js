@@ -341,17 +341,49 @@ let StudentInfoDialog = new function(){
 let StudentAudioDialog = new function(){
     const mThis = this;
     this.self = $('#dlg_sin_audio');
+    this.options = {};
 
     this.btnAudio = mThis.self.find('#dlg_sin_audio_choose');
+    this.containerAudio = mThis.self.find('#dlg_sin_audio_show');
+    this.btnSave = mThis.self.find('#dlg_sin_audio_btn_save');
 
-    mThis.btnAudio.on('click',function(e){
+    mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        FileChooser.chooseFile('audio/*',(d) => {
-            if(d){
-                console.log(d);
+        const p = mThis.getDataForm();
+        vsapi.call(`${main_view.base_url}/api/student/save-audio`,p,mThis.btnSave).then(res => {
+            if(res.status_code === 200){
+                mThis.self.modal('hide');
+                cv_interact.success('Audio File Uploaded Successfully!');
+            }
+            else{
+                cv_interact.error(res.error_message);
             }
         });
     });
+
+    mThis.btnAudio.on('click',function(e){
+        e.preventDefault();
+        FileChooser.chooseFile({
+            'accept': 'audio/*'
+        },(d) => {
+            if(d){
+                const div = mThis.containerAudio,
+                html = [`<audio class="w-100" controls>
+                    <source class="data-audio" src="${d.dataUrl}" type="audio/${d.file_type}">
+                </audio>`].join('');
+                div.removeClass('p-4').addClass('p-2').html(html);
+            }
+        });
+    });
+
+    this.getDataForm = () => {
+        const div = mThis.self;
+        let p = {
+            'student_id': mThis.options.id,
+            'base64': div.find('.data-audio').prop('src').split(',')[1]
+        };
+        return p;
+    }
 
     this.setInitialStudent = (d) => {
         d = d ? d : {};
@@ -368,6 +400,7 @@ let StudentAudioDialog = new function(){
 
     this.show = (options) => {
         if(!options) options = {};
+        mThis.options = options;
 
         mThis.setInitialStudent(options);
         mThis.self.modal({
