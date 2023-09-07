@@ -13,7 +13,7 @@ class Student //extends Model
 {
     // use HasFactory;
     protected $id = null, $userInfo = null;
-    function __construct($id = null,$userInfo){
+    function __construct($id = null,$userInfo=null){
        $this->id = $id;
        $this->userInfo = $userInfo;
     }
@@ -397,7 +397,7 @@ class Student //extends Model
         if(!$row) return (object)['policy_discount'=>0,'special_discount'=>0,'other_discount'=>0];
         return $row;
     }
-<<<<<<< HEAD
+
 
     function savePaymentHistory($pmt_arr,$enrollment_id,$start_date,$student_id,$ss){
         $instance = new PriceList(null,$ss);
@@ -528,9 +528,7 @@ class Student //extends Model
         //$row = DB::table('admissions as adm')->where('');
     }
 
-=======
- 
->>>>>>> 60f3c7e9b1b7302bcf463d2c7e3e83259aeae483
+
     function saveAudioFile($base64, $id=null,$ss=null){
       $id =$id?$id:$this->id;
       $ss =$ss?$ss:$this->userInfo;
@@ -714,26 +712,12 @@ class Student //extends Model
     }
 
     static function getStudentEnrollmentInfo($d,$ss=null){
-        // $d = (object)$d;
         $student_id = isset($d->student_id)?$d->student_id:isset($d->id);
         if(!$student_id){
             $student_id = $d;
         }
-        // $filter = $d;s
         $selectCols = 'e.session_id,e.id,c.name as campus,pmt.tuition,pmt.tuition_due,pmt.tuition_paid,pl.name as level,e.academic_year,e.status_id';
-        // $branch_id = $ss->branch_id;
-        // $search_value =isset($filter['search_value'])?$filter['search_value']:null;
-        // $current_page =isset($filter['current_page'])?$filter['current_page']:1;
-        // $per_page =isset($filter['per_page'])?$filter['per_page']:10;
-        // if(!is_numeric($current_page)) $current_page=1;
-        // $skip_rows = ($current_page -1) * $per_page;
-        // $str_search ="1=1";
-        // $str_moreWhere="1=1";
-        // if($search_value){
-        //     $skip_rows =0;
-        //     $search_value = escape_like_str($search_value);
-        //     // $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
-        // }
+
         $query =  DB::table('enrollments as e')
                 ->where('e.student_id', $student_id)
                 ->join('payments as pmt','pmt.enrollment_id','=','e.id')
@@ -809,6 +793,17 @@ class Student //extends Model
         }
 
         return DV::depends($newID,'Update');
+    }
+
+    function getStudentBasicInfoDetails($id,$ss=null){
+        $ss = $ss?$ss:$this->userInfo;
+        $id = $id?$id:$this->id;
+        $branch_id = $ss->branch_id;
+        $row = DB::table('students')->where('id',$id)->selectRaw('name,name_kh,email,place_of_birth,date_of_birth,sex,phone_number,address')->first();
+        if(!$row) return null;
+        if(isset($row->file_name)) $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
+        else $row->image_url = null;
+        return $row;
     }
 
     function setStudentOnLeave($arr,$student,$ss){
