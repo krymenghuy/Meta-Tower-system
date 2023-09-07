@@ -368,7 +368,7 @@ let StudentAudioDialog = new function(){
         },(d) => {
             if(d){
                 const div = mThis.containerAudio,
-                html = [`<audio class="w-100" controls>
+                html = [`<audio class="w-100" controls controlsList="nodownload">
                     <source class="data-audio" src="${d.dataUrl}" type="audio/${d.file_type}">
                 </audio>`].join('');
                 div.removeClass('p-4').addClass('p-2').html(html);
