@@ -196,7 +196,7 @@ class GeneralSettings //extends Model
     }
 
     static function getProgramByLevel($level_id=null,$ss=null) {
-        $branch_id = $ss->branch_id;
+        // $branch_id = $ss->branch_id;
         return DB::table('programs as p')->join('program_levels as pl','p.id','=','pl.program_id')->where('pl.id',$level_id)->selectRaw('p.name as program,p.id as program_id,p.id,p.name')->first();
     }
 
@@ -568,6 +568,16 @@ class GeneralSettings //extends Model
             }
         }
         return $rows;
+    }
+
+    static function getPmtOptionMonths($pmt_option_id){
+        if($pmt_option_id == 1){
+            return 3;
+        }else if($pmt_option_id == 2){
+            return 6;
+        }else if($pmt_option_id == 3){
+            return 12;
+        }
     }
 
 
