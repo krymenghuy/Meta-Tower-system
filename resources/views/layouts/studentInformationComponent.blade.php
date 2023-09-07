@@ -90,7 +90,7 @@
 </div>
 
 <div class="modal fade" id="dlg_sin_audio" tabindex="-1" aria-labelledby="dlg_sin_audio_title" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title"></h5>

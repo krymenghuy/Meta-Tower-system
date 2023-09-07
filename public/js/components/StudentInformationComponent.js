@@ -100,7 +100,18 @@ var StudentInformationComponent = new function(){
                     mThis.itemView.showPage(null);
                 }
             };
-            StudentInfo.show(op);
+            StudentInfoDialog.show(op);
+        });
+
+        mThis.tblStudent.on('click','a.btn-sin-modify',function(e){
+            e.preventDefault();
+            let op = {
+                'id': $(this).data('id'),
+                'onClose': () => {
+                    mThis.itemView.showPage(null);
+                }
+            };
+            StudentInfoDialog.show(op);
         });
     }
 
@@ -200,7 +211,7 @@ var StudentInformationComponent = new function(){
     }
 }
 
-let StudentInfo = new function(){
+let StudentInfoDialog = new function(){
     const mThis = this;
     this.self = $('#dlg_sin_');
     this.options = {};
@@ -320,6 +331,18 @@ let StudentInfo = new function(){
             mThis.self.modal({
                 backdrop: 'static'
             });
+        });
+    }
+}
+
+let StudentAudioDialog = new function(){
+    const mThis = this;
+    this.self = $('#dlg_sin_audio');
+
+    this.show = (options) => {
+        if(!options) options = {};
+        mThis.self.modal({
+            backdrop: 'static'
         });
     }
 }

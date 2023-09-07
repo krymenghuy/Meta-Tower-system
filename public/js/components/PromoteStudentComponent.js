@@ -57,10 +57,10 @@ var PromoteStudentComponent = new function(){
         title: "Action",
         data: (data, a, b) => {
             return [`<div class="d-flex gap-2">
-                <a href="javascript:void(0)" class="btn-pms-verify" data-id="${data.id}">
+                <a href="javascript:void(0)" class="btn-pms-verify" data-id="${data.enrollment_id}">
                     <i class="fa-regular fa-circle-check text-success fs-5"></i>
                 </a>
-                <a href="javascript:void(0)" class="btn-pms-delete" data-id="${data.id}">
+                <a href="javascript:void(0)" class="btn-pms-delete" data-id="${data.enrollment_id}">
                     <i class="fa-regular fa-trash-can text-danger fs-5"></i>
                 </a>
             </div>`].join('');
