@@ -173,11 +173,11 @@ var StudentInformationComponent = new function(){
                 </div>`].join('');
             });
 
-            if(d.length > 0){
+            if(d && d.length > 0){
                 div_wrapper.addClass(['gap-2','on-hover-to-scroll']);
                 div_wrapper.html(['<div class="position-absolute d-flex gap-2">',html,'</div>'].join(''));
                 div_wrapper.on('wheel',function(e){
-                    let event = e.originalEvent;
+                    const event = e.originalEvent;
                     this.scrollLeft += event.deltaY;
                 });
             }
@@ -200,9 +200,123 @@ var StudentInformationComponent = new function(){
 let StudentInfo = new function(){
     const mThis = this;
     this.self = $('#dlg_sin_');
+    this.options = {};
+
+    this.btnSave = mThis.self.find('#dlg_sin_btn_save');
+    this.elImage = mThis.self.find('#dlg_sin_choose_image');
+
+    mThis.btnSave.on('click',function(e){
+        e.preventDefault();
+        const p = mThis.getDataForm();
+        vsapi.call(`${main_view.base_url}/api/student/update-info`,p,null).then(res => {
+            if(res.status_code === 200){
+                mThis.self.modal('hide');
+                if(typeof mThis.options.onClose === 'function')
+                    mThis.options.onClose();
+            }
+            else
+                cv_interact.error(res.error_message);
+        });
+    });
+
+    mThis.elImage.on('click',function(e){
+        e.preventDefault();
+        FileChooser.chooseFile(null,(d) => {
+            if(d){
+                const parent = $(this).parent();
+                mThis.setImage(parent,d);
+            }
+        });
+    });
+
+    this.setImage = (div,d) => {
+        const html = [`<img class="w-100 h-100 object-fit-contain data-input" src="${d.dataUrl}" alt="${d.file_type}" data-field="photo"/>
+        <div class="dlg-container-image-icon">
+            <a href="javascript:void(0)" class="dlg-sin-delete">
+                <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+            </a>
+        </div>`].join('');
+        div.html(html);
+        mThis.deleteImage(div);
+    }
+
+    this.deleteImage = (div) => {
+        const delete_btn = div.find('.dlg-sin-delete');
+        delete_btn.on('click',function(e){
+            e.preventDefault();
+            const html = [`<div id="dlg_sin_choose_image" class="dlg-sin-clickable">
+                <i class="fa-regular fa-image fs-2 text-muted"></i>
+            </div>`].join('');
+            div.html(html);
+
+            const choose_btn = div.find('#dlg_sin_choose_image');
+            choose_btn.on('click',function(e){
+                e.preventDefault();
+                FileChooser.chooseFile(null,(d) => {
+                    if(d){
+                        mThis.setImage(div,d);
+                    }
+                });
+            });
+        });
+    }
+
+    this.getDataForm = () => {
+        const div = mThis.self;
+        let p = {
+            'id': mThis.options.id
+        };
+
+        div.find('.data-input').each(function(){
+            const el = $(this);
+            const f = el.data('field');
+            if(el.is('img'))
+                p[f] = el.prop('src');
+            else
+                p[f] = el.val();
+        });
+
+        return p;
+    }
+
+    this.setDataForm = (d) => {
+        d = d ? d : {};
+        const div = mThis.self;
+        if(!($.isEmptyObject(d))){
+            const container_image = div.find('.image-dialog-container');
+            mThis.setImage(container_image, d.image_url);
+        }
+
+        div.find('.data-input').each(function(){
+            const el = $(this);
+            const f = el.data('field');
+            if(el.is('select'))
+                el.val(d[f]).trigger('change');
+            else
+                el.val(d[f]);
+        });
+    }
+
+    this.loadFormDetails = (op,onFinish = null) => {
+        vsapi.call(`${main_view.base_url}/`,{'id': op.id},null).then(res => {
+            let d = {};
+            if(res.status_code === 200){
+                d = res.data;
+            }
+            mThis.setDataForm(d);
+            if(typeof onFinish === 'function') onFinish();
+        });
+    }
 
     this.show = (options) => {
         if(!options) options = {};
+        mThis.options = options;
+
+        mThis.loadFormDetails(options,() => {
+            // mThis.self.modal({
+            //     backdrop: 'static'
+            // });
+        });
         mThis.self.modal({
             backdrop: 'static'
         });
