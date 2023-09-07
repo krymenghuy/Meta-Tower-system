@@ -1,8 +1,8 @@
-[2023-09-07 14:37:29] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
+[2023-09-07 14:43:18] local.ERROR: Cannot redeclare escape_like_str() (previously declared in D:\laravel_backend\KSM\app\helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in D:\\laravel_backend\\KSM\\app\\helpers.php:26) at D:\\laravel_backend\\KSM\\app\\helpers.php:26)
 [stacktrace]
 #0 {main}
 "} 
-[2023-09-07 14:38:29] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
+[2023-09-07 14:43:18] local.ERROR: syntax error, unexpected token "<<", expecting "function" or "const" {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): syntax error, unexpected token \"<<\", expecting \"function\" or \"const\" at D:\\laravel_backend\\KSM\\app\\Models\\Student.php:400)
 [stacktrace]
 #0 {main}
 "} 
