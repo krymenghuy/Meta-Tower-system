@@ -103,15 +103,18 @@ var StudentInformationComponent = new function(){
             StudentInfoDialog.show(op);
         });
 
-        mThis.tblStudent.on('click','a.btn-sin-modify',function(e){
+        mThis.tblStudent.on('click','a.btn-sin-audio',function(e){
             e.preventDefault();
+            const tr = $(this).closest('tr');
             let op = {
                 'id': $(this).data('id'),
+                'name': tr.find('.Full-Name').text(),
+                'photo': tr.find('.image-student-tbl').prop('src'),
                 'onClose': () => {
                     mThis.itemView.showPage(null);
                 }
             };
-            StudentInfoDialog.show(op);
+            StudentAudioDialog.show(op);
         });
     }
 
@@ -339,8 +342,34 @@ let StudentAudioDialog = new function(){
     const mThis = this;
     this.self = $('#dlg_sin_audio');
 
+    this.btnAudio = mThis.self.find('#dlg_sin_audio_choose');
+
+    mThis.btnAudio.on('click',function(e){
+        e.preventDefault();
+        FileChooser.chooseFile('audio/*',(d) => {
+            if(d){
+                console.log(d);
+            }
+        });
+    });
+
+    this.setInitialStudent = (d) => {
+        d = d ? d : {};
+        const div = mThis.self;
+        div.find('.data-input').each(function(){
+            const el = $(this);
+            const f = el.data('field');
+            if(el.is('img'))
+                el.prop('src',d[f]);
+            else
+                el.text(d[f]);
+        });
+    }
+
     this.show = (options) => {
         if(!options) options = {};
+
+        mThis.setInitialStudent(options);
         mThis.self.modal({
             backdrop: 'static'
         });
