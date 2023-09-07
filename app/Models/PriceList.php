@@ -840,7 +840,7 @@ class PriceList //extends Model
 
         if($academic_year) $arr = ['academic_year' => $academic_year];
         $months=isset($inputs['months'])?$inputs['months']:null;
-        $paid_student = DB::table('enrollments as e')->where('e.id',$id)->join('payments as p','e.id','=','p.enrollment_id')->where('p.tuition_paid','!=','null')->where('e.status_id','>=',3)->get()->first();
+        $paid_student = DB::table('enrollments as e')->where('e.id',$id)->join('payments as p','e.id','=','p.enrollment_id')->where('p.tuition_paid','>',0)->where('e.status_id','>=',3)->get()->first();
         if($paid_student){ return DV::error('Student is already paid');}
         $enr = DB::table('enrollments as e')->where('id',$id)->selectRaw('e.program_id,e.student_id,e.id,e.level_id,e.academic_year,e.session_id,e.start_date')->first();
         $student_id = $enr->student_id;
@@ -865,7 +865,7 @@ class PriceList //extends Model
             "academic_year" => $enr->academic_year,
             "session_id" => $inputs['session_id'],
             // "prev_level_id" => "0",
-            "start_date" => $inputs['start_date'],
+            "start_date" => convertDate($inputs['start_date']),
             "months" => $months,
             "weeks" => $weeks,
             "days" => $days,
@@ -877,17 +877,19 @@ class PriceList //extends Model
         if($preview->status_code !=200) return DV::error($preview->error_message);
         // return $preview;
         unset($inputs['months']);
-        $id = 1;saveData($ss,'enrollments',['id' => $id],$arr,[],1);
+        $id = saveData($ss,'enrollments',['id' => $id],$arr,[],1);
 
         if($preview->status_code == 200){
             $student = new Student();
             $payment_info = $preview->payment_info;
             $discount_info=null;
-            $price_list_id = $payment_info->price_list_id;//$getHistory_pmt_option->pmt_option_id?:$payment_info->price_list_id;
+            $price_list_id = $payment_info->price_list_id;
 
             $discount_info = $instance->getPolicyDiscount($pmt_option_id,$payment_info->price_list_id);
-            $discountPriceList = $student->getDiscount($enr->program_id,$pmt_option_id,$student_id);
-            if($discountPriceList){
+            $existsPricelist = findExists('student_pricelist',['student_id'=>$student_id,'inactive'=>0]);
+
+            if($existsPricelist){
+                $discountPriceList = $student->getDiscount($enr->program_id,$pmt_option_id,$student_id);
                 $discount_info = $discountPriceList;
             }
 
@@ -903,10 +905,10 @@ class PriceList //extends Model
                 'price_list_id' => $price_list_id,
                 'policy_discount' => $discount_info->discount,
             ];
-            // $set_pmt_option = saveData($ss,'payments',['enrollment_id' => $enr->id],$pmt_arr,[],1);
-            // DB::table('enrollments')->where('student_id',$student_id)->where('branch_id',$ss->branch_id)->update([
-            //     "tuition_end_date" => null,
-            // ]);
+            $set_pmt_option = saveData($ss,'payments',['enrollment_id' => $enr->id],$pmt_arr,[],1);
+            DB::table('enrollments')->where('student_id',$student_id)->where('branch_id',$ss->branch_id)->update([
+                "tuition_end_date" => null,
+            ]);
         }
 
         return DV::depends($id,$discount_info);
