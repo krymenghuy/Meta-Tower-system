@@ -324,7 +324,7 @@
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
-                        <img class="icons" src="{{ asset('assets/images/icons/student_attendance.png') }}"/>
+                        <img class="icons" src="{{ asset('assets/images/icons/academic_calendar.png') }}"/>
                     </span>
                     <span class="kt-menu__link-text trans-text" data-langprop="menus.Academic Calendar"></span>
                     <i class="kt-menu__ver-arrow la la-angle-right"></i>
