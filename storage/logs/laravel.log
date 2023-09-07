@@ -1,164 +1,24 @@
-[2023-09-07 16:04:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
+[2023-09-07 15:42:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
 [stacktrace]
 #0 {main}
 "} 
-[2023-09-07 16:05:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
+[2023-09-07 15:43:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
 [stacktrace]
 #0 {main}
 "} 
-[2023-09-07 16:06:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
+[2023-09-07 15:44:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
 [stacktrace]
 #0 {main}
 "} 
-[2023-09-07 16:07:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
+[2023-09-07 15:45:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
 [stacktrace]
 #0 {main}
 "} 
-[2023-09-07 16:08:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
+[2023-09-07 15:46:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
 [stacktrace]
 #0 {main}
 "} 
-[2023-09-07 16:09:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:10:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:11:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:12:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:13:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:14:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:15:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:16:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:17:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:18:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:19:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:20:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:21:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:22:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:23:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:24:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:25:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:26:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:27:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:28:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:29:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:30:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:31:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:32:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:33:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:34:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:35:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:36:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:37:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:38:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:39:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:40:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:41:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:42:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:43:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 16:44:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
+[2023-09-07 15:47:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
 [stacktrace]
 #0 {main}
 "} 
