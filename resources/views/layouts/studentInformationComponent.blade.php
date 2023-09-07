@@ -93,11 +93,30 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"></h5>
+                <h5 class="modal-title trans-text" data-langprop="titles.Add Audio"></h5>
                 <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                
+                <div class="form-group">
+                    <div class="d-flex align-items-center flex-column gap-3">
+                        <div class="image-dialog-container">
+                            <img class="object-fit-scale rounded data-input" src="" alt="" data-field="photo"/>
+                        </div>
+                        <p>
+                            <span class="trans-text" data-langprop="titles.Student Name"></span>
+                            <span class="px-3">:</span>
+                            <span class="data-input" data-field="name"></span>
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group flex-nowrap">
+                        <div id="dlg_sin_audio_choose" class="input-group-text" role="button">
+                            <i class="fa-regular fa-file-audio fs-3 text-success-emphasis"></i>
+                        </div>
+                        <div class="p-4 border rounded w-100 position-relative"></div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">
