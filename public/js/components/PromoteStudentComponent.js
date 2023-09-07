@@ -84,11 +84,15 @@ var PromoteStudentComponent = new function(){
         mThis.tblPromote.on('click','a.btn-pms-verify',function(e){
             e.preventDefault();
             let op = {
-                'id': $(this).data('id')
+                'verify_info':[
+                    {
+                        'enrollment_id': $(this).data('id')
+                    }
+                ]
             };
             cv_interact.confirm('Verify this student?',{title: 'Verify Student', context: 'OK'},(e) => {
                 if(e){
-                    vsapi.call(`${main_view.base_url}/`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/promote/verify`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.itemView.showPage(null);
                         }
@@ -103,11 +107,15 @@ var PromoteStudentComponent = new function(){
         mThis.tblPromote.on('click','a.btn-pms-delete',function(e){
             e.preventDefault();
             let op = {
-                'id': $(this).data('id')
+                'delete_info':[
+                    {
+                        'enrollment_id': $(this).data('id')
+                    }
+                ]
             };
             cv_interact.confirm('Delete this student?',{title: 'Delete Student', context: 'delete'},(e) => {
                 if(e){
-                    vsapi.call(`${main_view.base_url}/`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/promote/delete`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.itemView.showPage(null);
                         }
