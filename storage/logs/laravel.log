@@ -1,8 +1,0 @@
-[2023-09-07 15:37:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 
-[2023-09-07 15:38:30] local.ERROR: Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare escape_like_str() (previously declared in /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26) at /Users/alsaivectora/Desktop/vectorasoft/KSM/app/helpers.php:26)
-[stacktrace]
-#0 {main}
-"} 

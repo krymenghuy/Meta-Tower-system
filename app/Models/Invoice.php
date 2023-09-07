@@ -446,10 +446,10 @@ class Invoice //extends Model
                     'price_list_id' => $current_payment_info->price_list_id
                 ];
 
-                // saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
-                // saveData($ss,'enrollments',['id' => $row->enr_id],[
-                //     'status_id' => 3,//* paid
-                // ],[],1);
+                saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
+                saveData($ss,'enrollments',['id' => $row->enr_id],[
+                    'status_id' => 3,//* paid
+                ],[],1);
                 if($getInvoiceInfo){
                     if($getInvoiceInfo->invoice_type == 'tuition_fee'){
                         saveData($ss,'payments',['enrollment_id' => $row->enr_id],[
@@ -627,7 +627,7 @@ class Invoice //extends Model
         $str_search ="1=1";
         $str_moreWhere="1=1";
         if($search_value){
-            $skip_rows =0;
+            $skip_rows = 0;
             $search_value = escape_like_str($search_value);
             $str_search ="(st.code ='$search_value' OR st.name LIKE '%$search_value%'";
         }
