@@ -193,7 +193,7 @@ var StudentAttendanceComponent = new function(){
                     mThis.renderAttendance(div_wrapper, d, op);
                 }
             };
-            if(p.status_id != 4)
+            if((p.status_id != 4) && (p.date <= String(new Date().getDate())))
                 StudentAttendanceDialog.show(p);
         });
     }
