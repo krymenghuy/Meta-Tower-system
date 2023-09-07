@@ -61,6 +61,9 @@ var StudentInformationComponent = new function(){
                 <a href="javascript:void(0)" class="btn-sin-modify" data-id="${data.id}">
                     <i class="fa-regular fa-pen-to-square fs-5 text-warning"></i>
                 </a>
+                <a href="javascript:void(0)" class="btn-sin-audio" data-id="${data.id}">
+                    <i class="fa-solid fa-music fs-5 text-info"></i>
+                </a>
             </div>`].join('');
         }
     }];
@@ -80,7 +83,7 @@ var StudentInformationComponent = new function(){
         new SearchData(mThis.elSearch,mThis.tblStudent);
 
         mThis.cfg = new ExpandableRowConfig('tbl--sin_table',{
-            'dontExpandByClickingOn': ['btn-sin-modify'],
+            'dontExpandByClickingOn': ['btn-sin-modify','btn-sin-audio'],
             'onOpen': (container, detail_tr, parent_tr) => {
                 let qtr = $(parent_tr);
                 let id = qtr.data('id');
@@ -224,20 +227,22 @@ let StudentInfo = new function(){
         FileChooser.chooseFile(null,(d) => {
             if(d){
                 const parent = $(this).parent();
-                mThis.setImage(parent,d);
+                mThis.setImage(parent,d.dataUrl);
             }
         });
     });
 
-    this.setImage = (div,d) => {
-        const html = [`<img class="w-100 h-100 object-fit-contain data-input" src="${d.dataUrl}" alt="${d.file_type}" data-field="photo"/>
-        <div class="dlg-container-image-icon">
-            <a href="javascript:void(0)" class="dlg-sin-delete">
-                <i class="fa-regular fa-trash-can text-danger fs-5"></i>
-            </a>
-        </div>`].join('');
-        div.html(html);
-        mThis.deleteImage(div);
+    this.setImage = (div,image_url) => {
+        if(image_url){
+            const html = [`<img class="w-100 h-100 object-fit-contain rounded-3 data-input" src="${image_url}" alt="" data-field="photo"/>
+            <div class="dlg-container-image-icon">
+                <a href="javascript:void(0)" class="dlg-sin-delete">
+                    <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                </a>
+            </div>`].join('');
+            div.html(html);
+            mThis.deleteImage(div);
+        }
     }
 
     this.deleteImage = (div) => {
@@ -254,7 +259,7 @@ let StudentInfo = new function(){
                 e.preventDefault();
                 FileChooser.chooseFile(null,(d) => {
                     if(d){
-                        mThis.setImage(div,d);
+                        mThis.setImage(div,d.dataUrl);
                     }
                 });
             });
@@ -298,12 +303,11 @@ let StudentInfo = new function(){
     }
 
     this.loadFormDetails = (op,onFinish = null) => {
-        vsapi.call(`${main_view.base_url}/`,{'id': op.id},null).then(res => {
-            let d = {};
+        vsapi.call(`${main_view.base_url}/api/student/details-info`,{'id': op.id},null).then(res => {
             if(res.status_code === 200){
-                d = res.data;
+                const d = res.data;
+                mThis.setDataForm(d);
             }
-            mThis.setDataForm(d);
             if(typeof onFinish === 'function') onFinish();
         });
     }
@@ -313,12 +317,9 @@ let StudentInfo = new function(){
         mThis.options = options;
 
         mThis.loadFormDetails(options,() => {
-            // mThis.self.modal({
-            //     backdrop: 'static'
-            // });
-        });
-        mThis.self.modal({
-            backdrop: 'static'
+            mThis.self.modal({
+                backdrop: 'static'
+            });
         });
     }
 }
