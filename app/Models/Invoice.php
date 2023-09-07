@@ -341,6 +341,9 @@ class Invoice //extends Model
         // $pre_enr = null;
         $start_date = convertDate($row->start_date);
         if($start_date < date('Y-m-d')) $start_date = date('Y-m-d');
+        $months = GeneralSettings::getPmtOptionMonths($pmt_option_id);
+        $endingInfo = findFutureMonths($start_date,$months-1); //** */
+        $end_date =$endingInfo->end_date;
         $tuition_due = $row->tuition_due;
         $successText = null;
         $success = 0;
@@ -375,6 +378,7 @@ class Invoice //extends Model
                 saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
                 saveData($ss,'enrollments',['id' => $row->enr_id],[
                     'status_id' => 3,//* paid
+                    'tuition_end_date' =>$end_date//
                 ],[],1);
 
                 if($getInvoiceInfo->invoice_type == 'tuition_fee'){
@@ -449,6 +453,7 @@ class Invoice //extends Model
                 saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
                 saveData($ss,'enrollments',['id' => $row->enr_id],[
                     'status_id' => 3,//* paid
+                    'tuition_end_date' =>$end_date
                 ],[],1);
                 if($getInvoiceInfo){
                     if($getInvoiceInfo->invoice_type == 'tuition_fee'){
