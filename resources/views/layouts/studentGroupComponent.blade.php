@@ -51,7 +51,7 @@
                         </div>
                     </div>
                     <div class="form-group col-lg-4">
-                        <label for="level_id" class="form-label trans-text" data-langprop="titles.Semester"></label>
+                        <label for="term_id" class="form-label trans-text" data-langprop="titles.Semester"></label>
                         <div class="width-select-dialog">
                             <select id="dlg_sdg_term" class="modal-select2 data-input" data-field="term_id"></select>
                         </div>
@@ -80,14 +80,14 @@
                     <div class="form-group col-lg-6">
                         <label for="" class="form-label trans-text" data-langprop="titles.Checkin Time"></label>
                         <div class="width-select-dialog">
-                            <input type="time" class="form-control data-input" data-field="checkin_time" />
+                            <input type="time" class="form-control data-input" data-field="checkin_time"/>
                         </div>
                     </div>
                     <div class="form-group col-lg-6">
                         <label for="level_id" class="form-label trans-text"
                             data-langprop="titles.Checkout Time"></label>
                         <div class="width-select-dialog">
-                            <input type="time" class="form-control data-input" data-field="checkout_time" />
+                            <input type="time" class="form-control data-input" data-field="checkout_time"/>
                         </div>
                     </div>
                     <div class="form-group col-lg-12">

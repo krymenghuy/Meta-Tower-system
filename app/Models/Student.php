@@ -397,6 +397,7 @@ class Student //extends Model
         if(!$row) return (object)['policy_discount'=>0,'special_discount'=>0,'other_discount'=>0];
         return $row;
     }
+<<<<<<< HEAD
 
     function savePaymentHistory($pmt_arr,$enrollment_id,$start_date,$student_id,$ss){
         $instance = new PriceList(null,$ss);
@@ -527,6 +528,9 @@ class Student //extends Model
         //$row = DB::table('admissions as adm')->where('');
     }
 
+=======
+ 
+>>>>>>> 60f3c7e9b1b7302bcf463d2c7e3e83259aeae483
     function saveAudioFile($base64, $id=null,$ss=null){
       $id =$id?$id:$this->id;
       $ss =$ss?$ss:$this->userInfo;

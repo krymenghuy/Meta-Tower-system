@@ -31,3 +31,5 @@ public/assets/.DS_Store
 public/.DS_Store
 public/assets/.DS_Store
 storage/logs/laravel.log
+laravel.log
+*.log
