@@ -394,7 +394,11 @@ class Student //extends Model
     function getDiscount($program_id,$pmt_option_id,$id=null){
         $id =$id?$id:$this->id;
         $row = DB::table('student_discounts AS d')->join('students as st','st.id','=','d.student_id')->where('st.id',$id)->where('pmt_option_id',$pmt_option_id)->where('d.program_id',$program_id)->selectRaw('d.id,st.id AS student_id,d.program_id,d.pmt_option_id, d.special_discount, d.policy_discount,d.other_discount')->get()->first();
-        if(!$row) return (object)['policy_discount'=>0,'special_discount'=>0,'other_discount'=>0];
+        if(!$row) return (object)['discount'=>0,'dicount_percent'=>0,'discount_type'=>'percentage'];
+        //**note =>  discount,discount_percent = policy_discount */
+        $row->discount = $row->policy_discount;
+        $row->discount_percent = $row->policy_discount;
+        $row->discount_type = "percentage";
         return $row;
     }
 
@@ -820,6 +824,9 @@ class Student //extends Model
         $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
+
+        // update enrollment -> drop
+        // update student_pricelist -> inactive = 1;
     }
 
 }
