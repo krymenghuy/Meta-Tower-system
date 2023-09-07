@@ -33,7 +33,7 @@ class InvoiceController extends Controller
         if($ss->status_code !=200) return $ss;
         $x = new Invoice();
         $pay = $x->schoolFeePay($req->all(),$ss)  ;//PriceList::schoolFeePay($req->all(),$ss);
-        return JDV::result($pay);
+        return JDV::raw($pay);
     }
 
     function generateInvoiceDetails(Request $req){

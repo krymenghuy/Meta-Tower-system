@@ -238,10 +238,23 @@ class PromoteStudent //extends Model
                 $keep_id['id'] = $id;
                 continue;
             }
-            saveData($ss,'enrollments as e',['id' => $id],[
+            $enr = DB::table('enrollments')->where('id',$id)->selectRaw('campus_id,level_id,session_id,term_id,student_id')->get()->first();
+            $existsGroup = findExists('student_groups',['level_id'=>$enr->level_id]);
+            if(!$existsGroup) return DV::error('next group is not available or exists');
+
+            $promoted_id = saveData($ss,'enrollments',['id' => $id],[
                 'status_id' => 2, // pending
                 'promoted' => 0 //
             ],[],1);
+            // set promoted students into groups
+            if($promoted_id>0){
+                $group = DB::table('student_groups')->where('term_id',$enr->term_id)->where('campus_id',$enr->campus_id)->where('level_id',$enr->level_id)->selectRaw('id')->get()->first();
+                saveData($ss,'group_members',['id' => null],[
+                    'student_id' => $enr->student_id,
+                    'enrollment_id' => $promoted_id,
+                    'group_id' => $group->id
+                ],[],1);
+            }
             $success ++;
         }
         return DV::depends($success,['success'=>$success,'failed'=>$keep_id]);

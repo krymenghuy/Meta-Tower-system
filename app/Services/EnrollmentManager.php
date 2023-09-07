@@ -138,6 +138,8 @@ class EnrollmentManager {
         }
       }
 
+    //   if($family_code) unset($parent_info);
+
       if(!$id && !$family_code && Student::checkParentLoginName($parent_info)) return DV::error('Parent Login name is already taken. Father or mother phone number is used as parent login');
       $isFinalized = 1;
       $finalized = DB::table('enrollments')->where('student_id',$student_id)->where('enroll_finalized',$isFinalized)->first();
