@@ -157,7 +157,7 @@ class PromoteStudent //extends Model
             $str_search ="(s.code ='$search_value' OR s.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 'e.status_id,e.session_id,e.campus_id,c.`name` AS campus,e.level_id,l.`name` as level,s.sex,s.name,s.name_kh,s.code,s.id,s.date_of_birth as dob';
+        $selectCols = 'e.id as enrollment_id,e.status_id,e.session_id,e.campus_id,c.`name` AS campus,e.level_id,l.`name` as level,s.sex,s.name,s.name_kh,s.code,s.id as student_id,s.date_of_birth as dob';
         $query = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->join('program_levels as l','l.id','=','e.level_id')
@@ -243,8 +243,9 @@ class PromoteStudent //extends Model
             if(!$existsGroup) return DV::error('next group is not available or exists');
 
             $promoted_id = saveData($ss,'enrollments',['id' => $id],[
-                'status_id' => 2, // pending
-                'promoted' => 0 //
+                'status_id' => 2, // verify
+                'promoted' => 0, //
+                'enroll_finalized' => 1 //
             ],[],1);
             // set promoted students into groups
             if($promoted_id>0){
