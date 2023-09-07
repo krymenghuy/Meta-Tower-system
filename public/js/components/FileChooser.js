@@ -23,11 +23,11 @@ let FileChooser = new function(){
             let files = mThis.fileInput1.prop('files');
             let file = files[0];
             if (file) {
-                if (file.type.match(/^image\/.*/)) {
+                // if (file.type.match(/^image\/.*/)) {
                     reader.readAsDataURL(file);
-                } else {
-                    cv_interact.error('The chosen image file is invalid!');
-                }
+                // } else {
+                    // cv_interact.error('The chosen image file is invalid!');
+                // }
             }
         });
     
