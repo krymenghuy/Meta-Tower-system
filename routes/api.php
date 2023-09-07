@@ -234,6 +234,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/form-options',[StudentController::class,'formOptions']);
         //** */
         Route::post('/update-info',[StudentController::class,'updateStudentInfo']);
+        Route::post('/details-info',[StudentController::class,'getStudentBasicInfoDetails']);
         Route::post('/save-audio', [StudentController::class, 'saveAudioFile']);
         Route::post('/registration', [StudentController::class, 'studentRegistration']);
         Route::post('/list-paginate',[StudentController::class,'studentPaginate']);
@@ -242,6 +243,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/delete-verified',[EnrollmentController::class,'deleteVerifiedStudent']);
         Route::post('/information',[StudentController::class,'studentInformation']);
         Route::post('/enrollment-details',[StudentController::class,'getStudentEnrollmentInfo']);
+
 
         //** PriceListController */
         Route::post('/invoice-list',[InvoiceController::class,'studentInvoice']);
