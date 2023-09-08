@@ -23,9 +23,6 @@ var RegistrationComponent = new function(){
     this.lnkAddGroup = this.self.find('#_rgs_lnkAddStudentGroup');
     
     this.selected_options = {};
-    let ref = {
-        click: true
-    };
 
     this.init = () => {
         mThis.studentListView = new ListView('_reg_list_view',{
@@ -128,7 +125,6 @@ var RegistrationComponent = new function(){
             mThis.options.family_code = null;
             mThis.prepareFormOption(null,mThis.div_input,'data-input',() => {
                 //Set some default data such as Term_id, and Session etc from the currently selected filter on the main form
-
                 mThis.setDataForm(mThis.getFilterData());
                 mThis.getFamilyID();
                 mThis.div_input.siblings(":visible").fadeOut("fast", function(){
@@ -151,27 +147,22 @@ var RegistrationComponent = new function(){
             e.preventDefault();
             let p = mThis.getDataForm(mThis.div_input, 'data-input');
             p = mThis.prepareData(p);
-            if(ref.click){
-                vsapi.call(`${main_view.base_url}/api/enrollment/save`,p,null).then(res => {
-                    ref.click = false;
-                    if(res.status_code === 200){
-                        mThis.options.photo = null;
-                        const d = res.data;
-                        //const filter = mThis.getEnrollmentPath();
-                        //NOTE that: after successfully save enrollment info => api enrollment/save() return "res.data.enrollment_path" that is used as filter to refresh the back page in order to display the newly enrolled student
-                        mThis.setFilterData(d.enrollment_path);
-                        if(d.login_info.parent_login_changed == 1){
-                            cv_interact.info(['Parent login has changed to ',d.login_info.new_login_name].join(''));
-                        }
-                        mThis.div_list.fadeIn(300).siblings().hide();
-                        ref.click = true;
+            vsapi.call(`${main_view.base_url}/api/enrollment/save`,p,null).then(res => {
+                if(res.status_code === 200){
+                    mThis.options.photo = null;
+                    const d = res.data;
+                    //const filter = mThis.getEnrollmentPath();
+                    //NOTE that: after successfully save enrollment info => api enrollment/save() return "res.data.enrollment_path" that is used as filter to refresh the back page in order to display the newly enrolled student
+                    mThis.setFilterData(d.enrollment_path);
+                    if(d.login_info.parent_login_changed == 1){
+                        cv_interact.info(['Parent login has changed to ',d.login_info.new_login_name].join(''));
                     }
-                    else{
-                        cv_interact.error(res.error_message?res.error_message:'May be something wrong on server side');
-                        ref.click = true;
-                    }
-                });
-            }
+                    mThis.div_list.fadeIn(300).siblings().hide();
+                }
+                else{
+                    cv_interact.error(res.error_message ? res.error_message : 'May be something wrong on server side');
+                }
+            });
         });
     }
 

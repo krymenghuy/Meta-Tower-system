@@ -233,6 +233,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         //**option */
         Route::post('/form-options',[StudentController::class,'formOptions']);
         //** */
+        Route::post('/set-leave',[StudentController::class,'setStudentOnLeave']);
         Route::post('/update-info',[StudentController::class,'updateStudentInfo']);
         Route::post('/details-info',[StudentController::class,'getStudentBasicInfoDetails']);
         Route::post('/save-audio', [StudentController::class, 'saveAudioFile']);

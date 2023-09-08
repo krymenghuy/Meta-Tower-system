@@ -342,6 +342,23 @@ function prn_allowed($prn_id,$module_id){
     $diff = $date1->diff($date2);
     return $diff->days;
  }
+ function diffDays($end_date, $leave_date) {
+
+    $end_date = new \DateTime($end_date);
+    $leave_date = new \DateTime($leave_date);
+
+    // Calculate the difference in days
+    $interval = $leave_date->diff($end_date);
+
+    /** check diff days (leave before or after) */
+    if ($leave_date < $end_date) {
+        return '-'.$interval->days;
+    } elseif ($leave_date > $end_date) {
+        return $interval->days;
+    } else {
+        return 0;
+    }
+}
 
  function processQueryString($query_string=null,$sanitize =true,$allow_chars=[]){
     $cs=[];
