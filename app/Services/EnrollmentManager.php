@@ -407,7 +407,7 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
 
           return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-    
+
     //$arr = ['term_id','student_id','leave_type']
     function setLeave($arr,$ss=null){
        $v_rule = [
