@@ -39,7 +39,7 @@ var PaymentPendingComponent = new function(){
         {
             title: "Status",
             data: (data, a, b) => {
-                let cls = data.status === "pending" ? "bg-danger" : data.status === "verified" ? "bg-info" : "bg-success";
+                let cls = data.status === "pending" ? "bg-danger" : data.status === "verified" ? "bg-info" : data.status === 'expired' ? "bg-danger" : "bg-success";
                 return [`<span class="p-2 ${cls} text-white rounded-3 text-capitalize"> ${data.status}</span>`].join('');
             },
         },

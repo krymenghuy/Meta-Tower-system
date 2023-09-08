@@ -73,17 +73,17 @@ function renderTable(div, data){
                             st && st.list && st.list.map(d => {
                                 let cls = d.status === 'A' ? 'text-white bg-danger' : d.status === 'P' ? 'text-white bg-success' : d.status === 'Sat' ? 'text-danger-emphasis bg-danger-subtle' : d.status === 'Sun' ? 'text-danger bg-danger-subtle' : d.status === 'Pr' ? 'text-white bg-warning' : 'text-body-emphasis bg-dark-subtle';
 
-                                inner_html = [inner_html,`<td class="${cls}">${d.status}</td>`].join('');
+                                inner_html = [inner_html,`<td class="align-middle ${cls}">${d.status}</td>`].join('');
                             });
 
                             student = [student,`<tr>
-                                <td>${cnt++}</td>
-                                <td class="text-capitalize">${st.name ? st.name : ''}</td>
-                                <td>${st.sex === 'M' ? 'Male' : 'Female'}</td>
-                                <td>${calculate_age(new Date(st.date_of_birth))}</td>
-                                <td>${st.date_of_birth ? new Date(st.date_of_birth).toLocaleDateString('km-KH',options).replaceAll(' ','-').replace(',','') : ''}</td>
-                                <td>${st.start_date ? new Date(st.start_date).toLocaleDateString('km-KH',options).replaceAll(' ','-').replace(',','') : ''}</td>
-                                <td>${data.session ? data.session : ''}</td>
+                                <td class="align-middle">${cnt++}</td>
+                                <td class="align-middle text-capitalize">${st.name ? st.name : ''}</td>
+                                <td class="align-middle">${st.sex === 'M' ? 'Male' : 'Female'}</td>
+                                <td class="align-middle">${calculate_age(new Date(st.date_of_birth))}</td>
+                                <td class="align-middle">${st.date_of_birth ? new Date(st.date_of_birth).toLocaleDateString('km-KH',options).replaceAll(' ','-').replace(',','') : ''}</td>
+                                <td class="align-middle">${st.start_date ? new Date(st.start_date).toLocaleDateString('km-KH',options).replaceAll(' ','-').replace(',','') : ''}</td>
+                                <td class="align-middle">${data.session ? data.session : ''}</td>
                                 ${inner_html ? inner_html : '<td></td>'}
                                 <td class="align-middle text-center text-white bg-success">
                                     ${tbl.monthly_attendance && tbl.monthly_attendance[index].present}
@@ -94,10 +94,11 @@ function renderTable(div, data){
                                 <td class="align-middle text-center text-white bg-danger">
                                     ${tbl.monthly_attendance && tbl.monthly_attendance[index].absent}
                                 </td>
-                                <td>
+                                <td class="align-middle">
                                     ${options.phone=null,tbl.phone_number && tbl.phone_number[index].map((p,i) => {
-                                        options.phone = [options.phone,p.phone_number].join(`${(i+1) % 2 == 0 ? '<br/>' : ' / '}`);
-                                    }),options.phone.replace(' / ','')}
+                                        console.log(i);
+                                        options.phone = [options.phone,p.phone_number].join(`${(i) % 2 == 0 ? '<br/>' : ' / '}`);
+                                    }),options.phone.replace('<br/>','')}
                                 </td>
                             </tr>`].join('');
                         }),student}

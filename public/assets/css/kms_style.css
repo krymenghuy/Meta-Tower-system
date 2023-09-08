@@ -442,6 +442,29 @@ li.kt-menu__section {
     font-size:1.1rem;
 }
 
+.style-to-select2-multiple .select2-selection{
+    height: auto;
+    font-size:1.1rem;
+    line-height: unset;
+    position: relative;
+    overflow: hidden;
+}
+
+.style-to-select2-multiple .select2-selection__rendered{
+    width:100% !important;
+}
+
+.style-to-select2-multiple .select2-search{
+    overflow: hidden;
+}
+
+.style-to-select2-multiple .select2-search__field{
+    height: calc(1.5em + 1.3rem + 2px) !important;
+    line-height: calc(1.5em + 1.3rem + 2px) !important;
+    font-size:1.1rem;
+    vertical-align: middle;
+}
+
 @media screen and (max-width: 800px) {
     .div--ssp .d-bf {
         display: block !important;

@@ -154,7 +154,7 @@ var RegistrationComponent = new function(){
                     //const filter = mThis.getEnrollmentPath();
                     //NOTE that: after successfully save enrollment info => api enrollment/save() return "res.data.enrollment_path" that is used as filter to refresh the back page in order to display the newly enrolled student
                     mThis.setFilterData(d.enrollment_path);
-                    if(d.login_info.parent_login_changed == 1){
+                    if(d.login_info && d.login_info.parent_login_changed == 1){
                         cv_interact.info(['Parent login has changed to ',d.login_info.new_login_name].join(''));
                     }
                     mThis.div_list.fadeIn(300).siblings().hide();

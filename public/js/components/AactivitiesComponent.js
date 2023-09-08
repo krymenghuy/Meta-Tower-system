@@ -462,7 +462,7 @@ let ApprovalDialog = new function(){
                                     <span>:</span>
                                     <span>${key === 'academic_year' ? '':'$'} ${data[key]}</span>
                                 </div>`].join('');
-                            }),inner_html}
+                            }),inner_html ? inner_html : ''}
                         </div>
                     </div>`].join('');
                     div.html(html);

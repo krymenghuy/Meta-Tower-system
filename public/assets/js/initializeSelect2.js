@@ -14,16 +14,17 @@ window.addEventListener('load', function () {
   });
 
   $(document).find('select.modal-select2').select2({
-    width: '100%'
+    width: '100%',
   }).on('select2:close', function (e) {
     if (Validator) {
       if (typeof Validator.onLostFocus_select2 === 'function') Validator.onLostFocus_select2($(this));
     }
   });
 
-  $(document).on('select2:open', function(e) {
+  $(document).on('select2:open', function (e) {
     window.setTimeout(function () {
-      document.querySelector('input.select2-search__field').focus();
+      const select = document.querySelector('input.select2-search__field');
+      if(select) select.focus();
     }, 0);
   });
 });

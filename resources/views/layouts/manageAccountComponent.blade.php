@@ -1,9 +1,5 @@
 <div id="_main_manageAccountComponent" class="mobile-padding p-3" style="display:none">
     <div class="d-flex gap-2 p-3 bg-white rounded-3">
-        <button id="_mna_btn_new" class="btn btn-sm btn-primary text-nowrap" type="button">
-            <i class="fa-solid fa-plus"></i>
-            <span class="trans-text text-nowrap" data-langprop="buttons.Add Parent"></span>
-        </button>
         <input type="search" class="form-control width--search-inner" placeholder="Search by Name or ID..."/>
         <div class="d-flex justify-content-end w-100">
             <div class="d-flex gap-2">

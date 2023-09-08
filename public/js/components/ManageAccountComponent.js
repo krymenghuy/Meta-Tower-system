@@ -4,8 +4,6 @@ var ManageAccountComponent = new function(){
     this.title_prop = "Manage Account";
     this.self = $('#_main_manageAccountComponent');
 
-    this.btnAdd = mThis.self.find('#_mna_btn_new');
-
     this.cols = [{
         title: "Name",
         data: (data, index, tr) => {
@@ -110,17 +108,6 @@ var ManageAccountComponent = new function(){
             let op = {
                 'family_id': $(this).data('id'),
                 'action': 'get-child',
-                'onClose': () => {
-                    mThis.itemView.showPage(null);
-                }
-            };
-            ManageAccountDialog.show(op);
-        });
-
-        mThis.btnAdd.on('click',function(e){
-            e.preventDefault();
-            let op = {
-                'id': 0,
                 'onClose': () => {
                     mThis.itemView.showPage(null);
                 }
