@@ -188,17 +188,18 @@ class StudentAttendance //extends Model
 
         $group_in = DB::table('student_groups as sg')
         ->join('group_members as gm','sg.id','=','gm.group_id')->where('gm.student_id',$student_id)
+        ->where('gm.inactive',0)
         ->whereBetween(DB::raw('TIME(sg.checkin_time)'), [
             date('H:i', strtotime("$present_time - $mins minutes")),
             date('H:i', strtotime("$present_time + $mins minutes")),
         ])
         ->orderByRaw("ABS(TIME_TO_SEC(TIME(checkin_time)) - TIME_TO_SEC(?))", [$present_time])
-        ->orderBy('sg.id','asc')
         ->selectRaw('sg.id,sg.checkin_time,sg.checkout_time,sg.term_id')
         ->first();
 
         $group_out = DB::table('student_groups as sg')
         ->join('group_members as gm','sg.id','=','gm.group_id')->where('gm.student_id',$student_id)
+        ->where('gm.inactive',0)
         ->whereBetween(DB::raw('TIME(checkout_time)'), [
             date('H:i', strtotime("$present_time -$mins minutes")),
             date('H:i', strtotime("$present_time +$mins minutes")),

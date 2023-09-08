@@ -22,7 +22,7 @@ class InvoiceController extends Controller
     function findStudent(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
-        $x = new Invoice();
+        $x = new Invoice(null,$ss);
         $find = $x->findStudent($req->all(),$ss);
         return JDV::result($find);
     }
