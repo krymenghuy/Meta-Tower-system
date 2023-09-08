@@ -262,10 +262,17 @@ class EnrollmentManager {
 function deleteEnrollment($id=null,$ss=null){
     $ss= $ss?$ss:$this->user_info;
     $id = $id?$id:$this->id;
-    $info =  DB::table('enrollments')->where('id',$id)->selectRaw('id,status_id')->take(1)->get()->first();
+    $info =  DB::table('enrollments')->where('id',$id)->where('enroll_finalized',0)->selectRaw('id,status_id,student_id')->take(1)->get()->first();
     if(!$info) return DV::error('Enrollment info does not exist');
     if($info->status_id >=3) return DV::error('Cannot delete enrollment because the student already paid tuition fee');
     $x = DB::table('enrollments')->where('id',$id)->delete();
+    if($x){
+        // delete related registration information if not finalized yet
+        DB::table('students')->where('id',$info->student_id)->delete();
+        DB::table('payments')->where('enrollment_id',$id)->delete();
+        DB::table('enrollment_payment')->where('enrollment_id',$id)->delete();
+        DB::table('student_guardians')->where('student_id',$info->student_id);
+    }
     return DV::depends($x,null);
 }
 

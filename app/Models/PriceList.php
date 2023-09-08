@@ -678,10 +678,14 @@ class PriceList //extends Model
         $is_old_student = $org_price_list>0;
         $d = (object)$arr;
         $student_id =isset($d->student_id)?$d->student_id:DB::table('enrollments')->where('id',$id)->take(1)->value('student_id');
+        $str_pmt_option_id='1=1';
+        if(isset($d->pmt_option_id)){
+            $str_pmt_option_id = 'pmt_option_id = '.$d->pmt_option_id;
+        }
         if($is_old_student){
             // $priceList = DB::table('student_pricelist')->where('inactive',0)->where('student_id',$student_id)->first();
             $studentDiscount = DB::table('student_discounts')->where('student_id',$student_id)
-                ->where('pmt_option_id',$d->pmt_option_id)
+                ->whereRaw($str_pmt_option_id)
                 ->selectRaw('policy_discount,student_id,pmt_option_id,price_list_id,special_discount,other_discount,program_id')
                 ->get()->first();
             $discount = $studentDiscount->policy_discount + $studentDiscount->special_discount + $studentDiscount->other_discount;

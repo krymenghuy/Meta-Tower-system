@@ -263,4 +263,38 @@ class StudentGroup //extends Model
         $rows = DB::table('group_members as gm')->join('students as s','s.id','=','gm.student_id')->where('branch_id',$branch_id);
         return $rows;
     }
+
+
+    function transferGroup($arr=[],$ss){
+        $v_rule = [
+            'from_group_id' => '1|number|exists=student_groups.id',
+            'to_group_id' => '1|number|exists=student_groups.id'
+        ];
+
+        $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
+        if($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+        $fromID = $inputs['from_group_id'];
+        $toID = $inputs['to_group_id'];
+        if(($fromID == $toID)) return DV::error('Group could not be the same as selected');
+        unset($inputs['from_group_id'],$inputs['to_group_id']);
+        if(!self::validateGroup($fromID,$toID)) return DV::error('Group infomation is not matching');
+        $old = DB::table('student_groups as sg')->where('sg.id',$fromID)
+            ->join('group_members as gm','gm.group_id','=','sg.id')
+            ->selectRaw('gm.student_id,gm.group_id,gm.enrollment_id')
+            ->get();
+        return $old;
+
+    }
+
+    function validateGroup($fromID,$toID){
+        $fromGroup = DB::table('student_groups')->where('id', $fromID)->first();
+        $toGroup = DB::table('student_groups')->where('id', $toID)->first();
+        $from_program_id = GeneralSettings::getProgramByLevel($fromGroup->level_id);
+        $to_program_id = GeneralSettings::getProgramByLevel($toGroup->level_id);
+        if ($fromGroup && $toGroup) {
+            return $fromGroup->term_id == $toGroup->term_id && $from_program_id == $to_program_id && $fromGroup->session_id == $toGroup->session_id;
+        }
+        return false;
+    }
 }

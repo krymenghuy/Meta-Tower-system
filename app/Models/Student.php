@@ -384,7 +384,7 @@ class Student //extends Model
                 $um_res = (object)['parent_login_changed'=>0];
             }
         }
-        return $um_res;
+        return $um_res?$um_res:(object)['parent_login_changed'=>0];
     }
 
     function getDiscounts($program_id,$pmt_option_id,$id=null){
@@ -415,14 +415,21 @@ class Student //extends Model
             ->orderBy('id', 'desc')
             ->value('id');
         $selectCols = 'e.program_id,p.pmt_option_id,e.id as enrollment_id,e.student_id,e.term_id,p.price_list_id';
-        if($oldEnrollment>0){
-            $earliestEnrollment = DB::table('enrollments as e')->where('e.student_id', $student_id)
-                ->where('e.id', '>', $oldEnrollment)
+        $earliestEnrollment = DB::table('enrollments as e')->where('e.student_id', $student_id)
+                ->where('e.id',$enrollment_id)
                 ->join('payments as p','e.id','=','p.enrollment_id')
                 ->where('e.enrollment_status_id',1)->where('e.enroll_finalized',1)
                 ->orderBy('e.id','asc')
                 ->selectRaw($selectCols)
                 ->first();
+        // if($oldEnrollment>0){
+        //     $earliestEnrollment = DB::table('enrollments as e')->where('e.student_id', $student_id)
+        //         ->where('e.id', '>', $oldEnrollment)
+        //         ->join('payments as p','e.id','=','p.enrollment_id')
+        //         ->where('e.enrollment_status_id',1)->where('e.enroll_finalized',1)
+        //         ->orderBy('e.id','asc')
+        //         ->selectRaw($selectCols)
+        //         ->first();
             $pricelist_id = $earliestEnrollment->price_list_id;
             $studentPricelistID = saveData($ss,'student_pricelist',['id'=>null],[
                 'student_id'=>$earliestEnrollment->student_id,
@@ -470,62 +477,62 @@ class Student //extends Model
                 }
             }
             return $earliestEnrollment;
-        }else{
-            $earliestEnrollment = DB::table('enrollments as e')
-                ->join('payments as p','e.id','=','p.enrollment_id')
-                ->where('e.student_id',$student_id)
-                ->where('e.enrollment_status_id',1)
-                ->where('e.enroll_finalized',1)
-                ->selectRaw($selectCols)
-                ->orderBy('e.id','asc')
-                ->first();
-            $pricelist_id = $earliestEnrollment->price_list_id;
-            $studentPricelistID = saveData($ss,'student_pricelist',['id'=>null],[
-                'student_id'=>$earliestEnrollment->student_id,
-                'enrollment_id'=>$earliestEnrollment->enrollment_id,
-                'inactive' => 0,
-                'remarks' => 'using this as payment info as long as student dropout',
-                'start_date' => $start_date,
-                'term_id' => $earliestEnrollment->term_id,
-                'price_list_id' => $pricelist_id
-            ],[],1);
-            if($studentPricelistID>0){
-                $rows = DB::table('pmt_options')->selectRaw('id,name')->limit(3)->orderBy('id','asc')->get();
-                foreach($rows as $row){
-                    if($row->id == 1){
-                        $discount = $instance->getPolicyDiscount($row->id,$pricelist_id);
-                        saveData($ss,'student_discounts',['id'=>null,],[
-                            'student_id'=>$student_id,
-                            'program_id'=>$earliestEnrollment->program_id,
-                            'price_list_id'=>$earliestEnrollment->price_list_id,
-                            'pmt_option_id'=>$row->id,
-                            'policy_discount'=>$discount->discount_percent
-                        ],[],1);
-                    }
-                    if($row->id == 2){
-                        $discount = $instance->getPolicyDiscount($row->id,$pricelist_id);
-                        saveData($ss,'student_discounts',['id'=>null,],[
-                            'student_id'=>$student_id,
-                            'program_id'=>$earliestEnrollment->program_id,
-                            'price_list_id'=>$earliestEnrollment->price_list_id,
-                            'pmt_option_id'=>$row->id,
-                            'policy_discount'=>$discount->discount_percent
-                        ],[],1);
-                    }
-                    if($row->id == 3){
-                        $discount = $instance->getPolicyDiscount($row->id,$pricelist_id);
-                        saveData($ss,'student_discounts',['id'=>null,],[
-                            'student_id'=>$student_id,
-                            'program_id'=>$earliestEnrollment->program_id,
-                            'price_list_id'=>$earliestEnrollment->price_list_id,
-                            'pmt_option_id'=>$row->id,
-                            'policy_discount'=>$discount->discount_percent
-                        ],[],1);;
-                    }
-                }
-            }
-            return $earliestEnrollment;
-        }
+        // }else{
+        //     $earliestEnrollment = DB::table('enrollments as e')
+        //         ->join('payments as p','e.id','=','p.enrollment_id')
+        //         ->where('e.student_id',$student_id)
+        //         ->where('e.enrollment_status_id',1)
+        //         ->where('e.enroll_finalized',1)
+        //         ->selectRaw($selectCols)
+        //         ->orderBy('e.id','asc')
+        //         ->first();
+        //     $pricelist_id = $earliestEnrollment->price_list_id;
+        //     $studentPricelistID = saveData($ss,'student_pricelist',['id'=>null],[
+        //         'student_id'=>$earliestEnrollment->student_id,
+        //         'enrollment_id'=>$earliestEnrollment->enrollment_id,
+        //         'inactive' => 0,
+        //         'remarks' => 'using this as payment info as long as student dropout',
+        //         'start_date' => $start_date,
+        //         'term_id' => $earliestEnrollment->term_id,
+        //         'price_list_id' => $pricelist_id
+        //     ],[],1);
+            // if($studentPricelistID>0){
+            //     $rows = DB::table('pmt_options')->selectRaw('id,name')->limit(3)->orderBy('id','asc')->get();
+            //     foreach($rows as $row){
+            //         if($row->id == 1){
+            //             $discount = $instance->getPolicyDiscount($row->id,$pricelist_id);
+            //             saveData($ss,'student_discounts',['id'=>null,],[
+            //                 'student_id'=>$student_id,
+            //                 'program_id'=>$earliestEnrollment->program_id,
+            //                 'price_list_id'=>$earliestEnrollment->price_list_id,
+            //                 'pmt_option_id'=>$row->id,
+            //                 'policy_discount'=>$discount->discount_percent
+            //             ],[],1);
+            //         }
+            //         if($row->id == 2){
+            //             $discount = $instance->getPolicyDiscount($row->id,$pricelist_id);
+            //             saveData($ss,'student_discounts',['id'=>null,],[
+            //                 'student_id'=>$student_id,
+            //                 'program_id'=>$earliestEnrollment->program_id,
+            //                 'price_list_id'=>$earliestEnrollment->price_list_id,
+            //                 'pmt_option_id'=>$row->id,
+            //                 'policy_discount'=>$discount->discount_percent
+            //             ],[],1);
+            //         }
+            //         if($row->id == 3){
+            //             $discount = $instance->getPolicyDiscount($row->id,$pricelist_id);
+            //             saveData($ss,'student_discounts',['id'=>null,],[
+            //                 'student_id'=>$student_id,
+            //                 'program_id'=>$earliestEnrollment->program_id,
+            //                 'price_list_id'=>$earliestEnrollment->price_list_id,
+            //                 'pmt_option_id'=>$row->id,
+            //                 'policy_discount'=>$discount->discount_percent
+            //             ],[],1);;
+            //         }
+            //     }
+            // }
+            // return $earliestEnrollment;
+        // }
         // return false;
     }
 
@@ -572,7 +579,7 @@ class Student //extends Model
       if(!self::exists($id)) return DV::error('Student ID does not exist');
       $prev_file = DB::table('students as st')->where('st.id',$id)->take(1)->value('audio_file');
       if($prev_file){
-         PublicStorage::delete($branch_id,'students','audio',$prev_file); 
+         PublicStorage::delete($branch_id,'students','audio',$prev_file);
       }
       $res = PublicStorage::saveAudio($branch_id,'students',null,$base64,null,['id'=>$id,'store'=>'students.audio_file']);
       return $res;

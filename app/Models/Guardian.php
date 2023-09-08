@@ -192,16 +192,13 @@ class Guardian //extends Model
         $res = validateObject($arr,$v_rule,1,['email'=>$email_char,'address'=>$address_char,'photo'=>$image_char],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
-        unset($inputs['student_id']);
-        $inputs['n_id'] = $inputs['national_id'];
-        unset($inputs['national_id']);
-        $image = $inputs['photo'];
-        unset($inputs['photo']);
-        $password = isset($inputs['password'])?$inputs['password']:null;
-        unset($inputs['password']);
-        $student_info = $inputs['student_info'];
-        unset($inputs['student_info']);
 
+        $inputs['n_id'] = $inputs['national_id'];
+
+        $image = $inputs['photo'];
+        $password = isset($inputs['password'])?$inputs['password']:null;
+        $student_info = $inputs['student_info'];
+        unset($inputs['student_info'],$inputs['password'],$inputs['national_id'],$inputs['student_id'],$inputs['photo']);
         $inputs['role'] = $inputs['sex'] == 'F'?'mother':'father';
         $uniqueEmail = DB::table('guardians')->where('email',$inputs['email'])->exists();
         $uniquePhoneNumber = DB::table('guardians')->where('phone_number',$inputs['phone_number'])->exists();
@@ -263,7 +260,5 @@ class Guardian //extends Model
     function options_family($ss=null){
         return GeneralSettings::options_family($ss);
     }
-
-
 
 }
