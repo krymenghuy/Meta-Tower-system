@@ -631,7 +631,7 @@ class PriceList //extends Model
             $search_value = escape_like_str($search_value);
             $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
         }
-        $selectCols = 'e.id as enrollment_id,s.id,e.status_id,st.name as status,s.name,s.name_kh,ep.tuition,ep.tuition_due,ep.tuition_paid';
+        $selectCols = 'e.id as enrollment_id,s.id,e.status_id,st.name as status,s.name,s.name_kh,ep.tuition,ep.tuition_due,ep.tuition_paid,e.tuition_end_date';
         $query = DB::table('payments as ep')
                 ->join('enrollments as e','e.id','=','ep.enrollment_id')
                 ->join('students as s','s.id','=','e.student_id')
@@ -647,7 +647,19 @@ class PriceList //extends Model
         $count_query = clone $query;
         $count = $count_query->count('ep.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-
+        foreach ($rows as $row) {
+            $tuition_end_date = convertDate($row->tuition_end_date);
+            $row->pmt_status = 'unpaid';
+            if($tuition_end_date){
+                if($tuition_end_date > date('Y-m-d') && $row->status_id == 3){
+                    $row->status = 'paid';
+                }
+                else if($tuition_end_date < date('Y-m-d') && $row->status_id == 3){
+                    $row->status = 'expired';
+                }
+                else $row->status = 'unpaid';
+            }
+        }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
