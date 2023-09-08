@@ -226,15 +226,20 @@ let StudentInfoDialog = new function(){
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
         const p = mThis.getDataForm();
-        vsapi.call(`${main_view.base_url}/api/student/update-info`,p,null).then(res => {
-            if(res.status_code === 200){
-                mThis.self.modal('hide');
-                if(typeof mThis.options.onClose === 'function')
-                    mThis.options.onClose();
-            }
-            else
-                cv_interact.error(res.error_message);
-        });
+        if(e.originalEvent.detail < 2){
+            vsapi.call(`${main_view.base_url}/api/student/update-info`,p,null).then(res => {
+                if(res.status_code === 200){
+                    mThis.self.modal('hide');
+                    if(typeof mThis.options.onClose === 'function')
+                        mThis.options.onClose();
+                }
+                else
+                    cv_interact.error(res.error_message);
+            });
+        }
+        else{
+            cv_interact.loading();
+        }
     });
 
     mThis.elImage.on('click',function(e){
