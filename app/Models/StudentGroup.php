@@ -192,6 +192,7 @@ class StudentGroup //extends Model
     function delete($id=null,$ss=null){
         //$branch_id = $ss->branch_id;
         $id =$id?$id:$this->id;
+        if(self::has_member($id)) return DV::error('Group with enrolled students cannot be deleted');
         DB::table('group_members')->where('group_id',$id)->delete();
         $x = DB::table('student_groups')->where('id',$id)->delete();
         return DV::depends($x,['student_groups' => self::list([],$ss)]);

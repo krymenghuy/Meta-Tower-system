@@ -397,11 +397,42 @@ class Student //extends Model
         if(!$row) return (object)['policy_discount'=>0,'special_discount'=>0,'other_discount'=>0];
         return $row; 
     }
- 
+
+    function deleteAudioFile($id=null,$ss= null){
+        $id =$id?$id:$this->id;
+        $ss =$ss?$ss:$this->userInfo;
+        $branch_id = $ss->branch_id;
+        $audio_file = DB::table('students as st')->where('st.id',$id)->take(1)->value('audio_file');
+        if($audio_file){
+            $x = PublicStorage::delete($branch_id,'students','audio',$audio_file);
+            DB::table('students')->where('id',$id)->update(['audio_file'=>null]);
+        }
+        return DV::success();
+    }
+
+    function getAudioFile($id=null,$ss= null){
+        $id =$id?$id:$this->id;
+        $ss =$ss?$ss:$this->userInfo;
+        $branch_id = $ss->branch_id;
+        $audio_file = DB::table('students as st')->where('st.id',$id)->take(1)->value('audio_file');
+        $url = null;
+        if($audio_file){
+            $url = PublicStorage::getUrl($branch_id,'students','audio').$audio_file;
+        }
+        return (object)[
+            'file_url'=>$url,
+            'repeated'=>1
+        ];
+    }
+    static function exists($id){
+        $id = DB::table('students as st')->where('id',$id)->take(1)->value('id');
+        return $id?true:false;
+    }
     function saveAudioFile($base64, $id=null,$ss=null){
       $id =$id?$id:$this->id;
       $ss =$ss?$ss:$this->userInfo;
       $branch_id = $ss->branch_id;
+      if(!self::exists($id)) return DV::error('Student ID does not exist');
       $res = PublicStorage::saveAudio($branch_id,'students',null,$base64,null,['id'=>$id,'store'=>'students.audio_file']);
         //   if(isset($res->file_name)){
         //     DB::table('students')->where('id',$id)->update([

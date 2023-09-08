@@ -19,6 +19,24 @@ class StudentController extends Controller
         return JDV::result($res);
     }
 
+    function deleteAudioFile(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $id =$req->id?$req->id:$req->student_id;
+        $st = new Student($id,$ss);
+        $res = $st->deleteAudioFile();
+        return JDV::raw($res);
+    }
+
+    function getAudioFile(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $id =$req->id?$req->id:$req->student_id;
+        $st = new Student($id,$ss);
+        $data = $st->getAudioFile();
+        return JDV::result($data);
+    }
+
     function studentRegistration(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
