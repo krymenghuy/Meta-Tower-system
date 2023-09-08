@@ -16,6 +16,13 @@ class OtherFeeController extends Controller
         return JDV::result($p->getList());
     } 
 
+    function getList_paginate(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $p = new OtherFee(null,$ss);
+        return JDV::result($p->getList_paginate($req->all()));
+    } 
+
     function saveOtherFee(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);

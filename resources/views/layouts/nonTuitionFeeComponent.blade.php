@@ -1,17 +1,19 @@
 <div id="_main_nonTuitionFeeComponent" class="mobile-padding p-3" style="display:none">
-    <div class="d-flex gap-2">
+    <div class="d-flex flex-row justify-content-between">
+        <div class="d-flex gap-2">
+                <input type="search" id="el_ntf_search" class="form-control width--search-inner" placeholder="Search"/>
+                <button class="btn btn-sm btn-primary" type="button">
+                    <span class="trans-text" data-langprop="buttons.Find"></span>
+                    <!-- <i class="fa-solid fa-caret-down ps-2"></i> -->
+                </button>
+        </div>
         <button id="ntf_btn_add" class="btn btn-sm btn-primary" type="button">
             <i class="fa-solid fa-plus"></i>
-            <span class="trans-text" data-langprop="buttons.Add List"></span>
-        </button>
-        <input type="search" id="el_ntf_search" class="form-control width--search-inner"/>
-        <button class="btn btn-sm btn-primary" type="button">
-            <span class="trans-text" data-langprop="buttons.Filter By Year"></span>
-            <i class="fa-solid fa-caret-down ps-2"></i>
+            <span class="trans-text" data-langprop="buttons.Add Invoice Item"></span>
         </button>
     </div>
-    <div class="table-responsive mt-3 p-3 border rounded-3 bg-white table-responsive-hover">
-        <table id="tbl_ntf" class="table"></table>
+    <div id="_ntf_list" class="mt-3 p-3 border rounded-3 bg-white shadow">
+      
     </div>
 </div>
 
@@ -26,6 +28,9 @@
                 <button class="btn-close" type="button" aria-label="Close" data-dismiss="modal"></button>
             </div>
             <div class="modal-body">
+                <div style="display:none"> <select class="data-input" data-field="currency_code" disabled>
+                    <option value="USD" selected>USD</option>
+               </select></div>
                 <div class="row row-cols-lg-2 gy-2">
                     <div class="col">
                         <div class="form-group">
@@ -35,40 +40,41 @@
                     </div>
                     <div class="col">
                         <div class="form-group">
+                            <label for="amount" class="form-label trans-text" data-langprop="titles.Amount"></label>
+                             <div class="d-flex flex-row">
+                                 <input type="number" class="form-control data-input" data-field="amount"/>
+                                 <span class="border rounded-1 p-2">USD</span>
+                             </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="row row-cols-lg-2 gy-2">
+
+                  <div class="col">
+                        <div class="form-group">
+                            <label for="amount_input_mode" class="form-label trans-text" data-langprop="titles.Input Mode"></label>
+                            <div class="width-select-dialog">
+                                <select class="modal-select2 data-input" data-field="amount_input_mode">
+                                    <option value="auto">Auto</option>
+                                    <option value="manual">Manual</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+ 
+                    <div class="col">
+                        <div class="form-group">
                             <label for="program_id" class="form-label trans-text" data-langprop="titles.Program"></label>
                             <div class="width-select-dialog">
                                 <select id="dlg_ntf_program" class="modal-select2 data-input" data-field="program_id"></select>
                             </div>
                         </div>
                     </div>
+
+               
                 </div>
                 <div class="row row-cols-lg-2 gy-2">
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="amount" class="form-label trans-text" data-langprop="titles.Amount"></label>
-                            <input type="number" class="form-control data-input" data-field="amount"/>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="currency_code" class="form-label trans-text" data-langprop="titles.Currency"></label>
-                            <div class="width-select-dialog">
-                                <select class="modal-select2 data-input" data-field="currency_code">
-                                    <option value="USD">USD</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row row-cols-lg-2 gy-2">
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="academic_year" class="form-label trans-text" data-langprop="titles.Academic Year"></label>
-                            <div class="width-select-dialog">
-                                <select id="dlg_ntf_academic" class="modal-select2 data-input" data-field="academic_year"></select>
-                            </div>
-                        </div>
-                    </div>
                     <div class="col">
                         <label for="description" class="form-label trans-text" data-langprop="titles.Description"></label>
                         <textarea class="form-control data-input" data-field="description"></textarea>
