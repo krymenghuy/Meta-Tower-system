@@ -98,11 +98,16 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <div class="d-flex align-items-center flex-column gap-3">
+                    <div class="d-flex align-items-center flex-column gap-2">
                         <div class="image-dialog-container">
-                            <img class="object-fit-scale rounded data-input" src="" alt="" data-field="photo"/>
+                            <img class="w-100 h-100 object-fit-scale rounded data-input" src="" alt="" data-field="photo"/>
                         </div>
-                        <p>
+                        <p class="p-0 m-0">
+                            <span class="trans-text" data-langprop="titles.Student ID"></span>
+                            <span class="px-3">:</span>
+                            <span class="data-input" data-field="code"></span>
+                        </p>
+                        <p class="p-0 m-0">
                             <span class="trans-text" data-langprop="titles.Student Name"></span>
                             <span class="px-3">:</span>
                             <span class="data-input" data-field="name"></span>

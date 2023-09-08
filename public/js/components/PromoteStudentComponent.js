@@ -8,6 +8,14 @@ var PromoteStudentComponent = new function(){
     this.elSearch = mThis.self.find('#el_pms_search');
 
     this.cols = [{
+        title: "Check",
+        className: "text-center position-relative",
+        data: () => {
+            const html = [`<input type="checkbox" class="form-check-input"/>`].join('');
+            return html;
+        }
+    },
+    {
         title: "Student ID",
         data: "code"
     },
@@ -73,7 +81,7 @@ var PromoteStudentComponent = new function(){
             'columns': mThis.cols,
             'tableClass':"table header-light-blue header-uppercase",
             'rowCreated':(data, index, tr) => {
-                tr.setAttribute('data-id',data.id);
+                tr.setAttribute('data-id',data.enrollment_id);
             },
             'beforeRender':()=>{}
         });
