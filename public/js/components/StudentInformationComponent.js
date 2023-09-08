@@ -306,6 +306,21 @@ let StudentInfoDialog = new function(){
             const container_image = div.find('.image-dialog-container');
             mThis.setImage(container_image, d.image_url);
         }
+        else{
+            const container_image = div.find('.image-dialog-container'),
+            html = [`<div id="dlg_sin_choose_image" class="dlg-sin-clickable">
+                <i class="fa-regular fa-image fs-2 text-muted"></i>
+            </div>`].join('');
+            container_image.html(html);
+            container_image.find('#dlg_sin_choose_image').on('click',function(e){
+                e.preventDefault();
+                FileChooser.chooseFile(null,(d) => {
+                    if(d){
+                        mThis.setImage(container_image,d.dataUrl);
+                    }
+                });
+            });
+        }
 
         div.find('.data-input').each(function(){
             const el = $(this);
@@ -399,13 +414,24 @@ let StudentAudioDialog = new function(){
         });
     }
 
+    this.loadFormDetails = (op, onFinish = null) => {
+        vsapi.call(`${main_view.base_url}/api/student/audio`,{'student_id': op.id},null).then(res => {
+            if(res.status_code === 200){
+                const d = res.data;
+                console.log(d);
+                if(typeof onFinish === 'function') onFinish();
+            }
+        });
+    }
+
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;
-
-        mThis.setInitialStudent(options);
-        mThis.self.modal({
-            backdrop: 'static'
+        mThis.loadFormDetails(options,() => {
+            mThis.setInitialStudent(options);
+            mThis.self.modal({
+                backdrop: 'static'
+            });
         });
     }
 }
