@@ -388,14 +388,25 @@ let StudentAudioDialog = new function(){
             'accept': 'audio/*'
         },(d) => {
             if(d){
-                const div = mThis.containerAudio,
-                html = [`<audio class="w-100" controls controlsList="nodownload">
-                    <source class="data-audio" src="${d.dataUrl}" type="audio/${d.file_type}">
-                </audio>`].join('');
-                div.removeClass('p-4').addClass('p-2').html(html);
+                const div = mThis.containerAudio;
+                mThis.setAudio(div,d);
             }
         });
     });
+
+    this.setAudio = (div,d) => {
+        if((d.file_url || d.dataUrl)){
+            const html = [`<audio class="w-100" controls controlsList="nodownload">
+                <source class="data-audio" src="${d.dataUrl ? d.dataUrl : d.file_url}" type="audio/${d.file_type ? d.file_type : d.extensions}">
+                <source class="data-audio" src="${d.dataUrl ? d.dataUrl : d.file_url}" type="audio/mpeg">
+                <source class="data-audio" src="${d.dataUrl ? d.dataUrl : d.file_url}" type="audio/ogg">
+            </audio>`].join('');
+            div.removeClass('p-4').addClass('p-2').html(html);
+        }
+        else{
+            div.removeClass('p-2').addClass('p-4').empty();
+        }
+    }
 
     this.getDataForm = () => {
         const div = mThis.self;
@@ -422,11 +433,27 @@ let StudentAudioDialog = new function(){
     this.loadFormDetails = (op, onFinish = null) => {
         vsapi.call(`${main_view.base_url}/api/student/audio`,{'student_id': op.id},null).then(res => {
             if(res.status_code === 200){
-                const d = res.data;
-                console.log(d);
+                let d = res.data;
+                d.extensions = mThis.getFileExtension(d.file_url);
+                const div = mThis.containerAudio;
+                mThis.setAudio(div,d);
                 if(typeof onFinish === 'function') onFinish();
             }
         });
+    }
+
+    this.getFileExtension = (url) => {
+        if(url && mThis.isValidUrl){
+            const path = url.split('/').pop(),
+            filename = path.split('?')[0],
+            extensions = filename.split('.').pop();
+            return extensions;
+        }
+    }
+
+    this.isValidUrl = (url) => {
+        const pattern = /^(ftp|http|https):\/\/[^ "]+$/;
+        return pattern.test(url);
     }
 
     this.show = (options) => {

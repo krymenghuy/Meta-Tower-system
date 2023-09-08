@@ -147,7 +147,6 @@ var RegistrationComponent = new function(){
             e.preventDefault();
             let p = mThis.getDataForm(mThis.div_input, 'data-input');
             p = mThis.prepareData(p);
-            console.log(p);
             vsapi.call(`${main_view.base_url}/api/enrollment/save`,p,null).then(res => {
                 if(res.status_code === 200){
                     mThis.options.photo = null;
