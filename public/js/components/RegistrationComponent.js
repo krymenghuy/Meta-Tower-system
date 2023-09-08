@@ -505,18 +505,18 @@ var RegistrationComponent = new function(){
                 'enrollment_id': $(this).data('id')
             };
             if($(this).data('status') == 1){
-                cv_interact.warning('You already finalized this student!');
+                cv_interact.warning('This registration is already finalized!');
             }
             else{
-                cv_interact.confirm('Do you want to finalize this student?',{
-                    title: 'Finalize Student',
+                cv_interact.confirm('After finalizing registration, you will not be able to edit or modify it directly. Do you wish to proceed now?',{
+                    title: 'Finalize Registration',
                     context: 'OK'
                 },(e) => {
                     if(e){
                         vsapi.call(`${main_view.base_url}/api/enrollment/finalize`,op,null).then(res => {
                             if(res.status_code === 200){
                                 mThis.studentListView.showPage(mThis.getFilterData());
-                                cv_interact.success('Finalized Successfully!');
+                                cv_interact.success('Registration has been finalized!');
                             }
                             else{
                                 cv_interact.error(res.error_message);
@@ -711,7 +711,7 @@ var RegistrationComponent = new function(){
             main_view.setTitle(mThis.title_prop);
             mThis.studentListView.showPage(mThis.getFilterData());
             let x = mThis.self.siblings(':visible');
-            x.fadeOut('fast',function(){
+            x.hide(0,function(){
                 mThis.self.hide().fadeIn(300);
             });
         });

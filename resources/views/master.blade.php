@@ -42,11 +42,11 @@
             <input type="hidden" id="__xsp_name" value="_csrf_115578" />
             <input type="hidden" id="__xsp_value" value="<?php echo Str::random(30); ?>" />
         </div>
-        <img id="vs_loader1" width="270" height="170" style="display:none;position:fixed;z-index:1000;top:40%;left:40%" class="vs-loader" src="{{ asset('assets/images/vslogo1.gif') }}"/>
+        <!-- <img id="vs_loader1" width="270" height="170" style="display:none;position:fixed;z-index:1000;top:40%;left:40%" class="vs-loader" src="{{ asset('assets/images/vslogo1.gif') }}"/> -->
         <div id="kt_header_mobile" class="kt-header-mobile kt-header-mobile--fixed">
             <div class="kt-header-mobile__logo">
                 <a href="javascript:void(0)">
-                    <img alt="Logo" src="{{ asset('assets/images/logo/logo_esthederm.png') }}" />
+                    <img alt="Logo" src="{{ asset('assets/images/logo/ksm-logo.png') }}" />
                 </a>
             </div>
             <div class="kt-header-mobile__toolbar">

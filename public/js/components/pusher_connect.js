@@ -11,7 +11,7 @@ var PusherClient = new function () {
     //pusher_app_key are in .env file, and in main.js
     //cookie_name are set in main.js, app.js, vsapi.js, loginController.php, Master.blade.php, "login/index.blade.php" 
     const pusher_app_key = '23c76a62b1a7d4f37586'; //process.env.PUSHER_APP_KEY
-    Pusher.logToConsole = true;
+    //Pusher.logToConsole = true; //Turn this line on for debugging Pusher connection
     const pusher = new Pusher(pusher_app_key, {
         cluster: 'ap1',
         useTLS: true,

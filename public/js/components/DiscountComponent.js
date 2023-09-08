@@ -193,7 +193,7 @@ var DiscountComponent = new function(){
             main_view.setTitle(mThis.title_prop);
             mThis.prepareFilter();
             let x = mThis.self.siblings(':visible');
-            x.fadeOut('fast',function(){
+            x.hide(0,function(){
                 mThis.self.hide().fadeIn(300);
             });
         });

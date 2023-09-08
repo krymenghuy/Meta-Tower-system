@@ -134,10 +134,10 @@ var StudentGroupComponent = new function(){
             if(res.status_code === 200){
                 const d =StringSanitizer.sanitizeObject(res.data,null,[]);
                 const def_term_id =d.terms[0]?d.terms[0].id:null;
-                VSUtil.setComboItems(mThis.elFilter_term,d.terms,'id','term_name',null,null,def_term_id);
+                VSUtil.setComboItems(mThis.elFilter_term,d.terms,'id','term_name',null,null,null);
                 VSUtil.setComboItems(mThis.elFilter_program,d.programs,'id','program_name',true,'(All Programs)',0);
                 VSUtil.setComboItems(mThis.elFilter_session,d.sessions,'id','session_name',true,'(All Session)',0);
-                mThis.elFilter_term.val(d.term && d.terms[0].id).trigger('change');
+                mThis.elFilter_term.val(def_term_id).trigger('change');
                 onFinish(d);
             }
             else

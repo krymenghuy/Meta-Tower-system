@@ -18,15 +18,16 @@ const vsapi = (function () {
   // Listen for online and offline events
   window.addEventListener('online', () => {
     connectionLostAlertCount = 0; // Reset the alert count when the user is online
+    toastr.success('You are back online!');
   });
 
   window.addEventListener('offline', () => {
     // Increment the alert count when the user is offline
     connectionLostAlertCount++;
-    toastr.warning('It seems your connection is temporarily lost');
+    //toastr.warning('It seems your connection is temporarily lost');
     // Show connection lost alert up to 3 times
     if (connectionLostAlertCount <= 3) {
-      cv_interact.warning('It seems your connection is lost');
+      toastr.error('It seems your connection is lost');
     } else if (connectionLostAlertCount === 4) {
       // Log the user out after the 4th alert
       window.location.href = '/';
@@ -79,6 +80,7 @@ const vsapi = (function () {
   }
  
   async function handleDebouncedFetch(url, options, loader, agent) {
+    if(!url) return;
     try {
       isAPICallInProgress = true; // Set the flag to true when an API call starts
 
@@ -87,7 +89,7 @@ const vsapi = (function () {
 
       if (response.status === 429) {
         // Handle the 429 error here
-        toastr.error('Oops! Wait a moment. You have made too many requests or clicks');
+        cv_interact.warning('Oops! Wait a moment. You have made too many requests or clicks');
         // You can implement retry logic or show a message to the user
        
           if (retryCount < maxRetries) {
@@ -100,9 +102,9 @@ const vsapi = (function () {
             await new Promise(resolve => setTimeout(resolve, nextRetryDelay));
             return handleDebouncedFetch(url, options, loader, agent);
           } else {
-            toastr.error('You have made too many requests or clicks, so max retries already exceeded!');
+            cv_interact.warning('You have made too many requests or clicks, so max retries already exceeded!');
             retryCount =0;
-            console.error('429 Too Many Requests: Max retries exceeded');
+            //console.error('429 Too Many Requests: Max retries exceeded');
             return {}; 
             //throw new Error('429 Too Many Requests');
           }  
@@ -125,8 +127,8 @@ const vsapi = (function () {
     } catch (error) {
       if (isNetworkError(error)) {
         // This is a network-related error, you can handle it here
-        toastr.error('It seems your connection is temporarily lost');
-        cv_interact.warning('It seems your connection is lost');
+        //toastr.error('It seems your connection is temporarily lost');
+        cv_interact.warning('It seems your internet connection is temporarily off');
       } else {
         // in production mode, disable this error show
         console.error(error + ' Error at url =>  ' + url);
