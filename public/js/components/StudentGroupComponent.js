@@ -123,6 +123,9 @@ var StudentGroupComponent = new function(){
                         if(res.status_code === 200){
                             mThis.groupListview.showPage(mThis.getFilterData());
                         }
+                        else{
+                            cv_interact.error(res.error_message);
+                        }
                     });
                 }
             });
@@ -273,8 +276,6 @@ let StudentGroupDialog = new function(){
         l = StringSanitizer.sanitizeOut(l);
         l = (l+'').replace(/\s/g,'',l);
         let s = mThis.elSession.val();
-        //let term_id = mThis.elTerm.val();
-        //let g_name = [term_id,'.',c,'.',l,'.',s,'#'].join('');
         let g_name = [c,'.',l,'.',s,'#'].join('');
         mThis.elGroupName.val(g_name);
     }

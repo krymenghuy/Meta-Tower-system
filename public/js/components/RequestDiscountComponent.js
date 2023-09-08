@@ -175,15 +175,21 @@ var RequestDiscountComponent = new function(){
             };
             p.request_info.push(obj);
         });
-        vsapi.call(`${main_view.base_url}/api/activity/send-request-discount`,p,null).then(res => {
-            if(res.status_code === 200){
-                mThis.itemView.showPage(null);
-                cv_interact.success('Request has been seen!');
-            }
-            else{
-                cv_interact.error(res.error_message);
-            }
-        });
+        
+        if(p.request_info && p.request_info.length > 0){
+            vsapi.call(`${main_view.base_url}/api/activity/send-request-discount`,p,null).then(res => {
+                if(res.status_code === 200){
+                    mThis.itemView.showPage(null);
+                    cv_interact.success('Request has been seen!');
+                }
+                else{
+                    cv_interact.error(res.error_message);
+                }
+            });
+        }
+        else{
+            cv_interact.warning('Select Request Before Send!');
+        }
     }
 
     this.prepareOption = () => {
