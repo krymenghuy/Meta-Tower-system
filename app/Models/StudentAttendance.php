@@ -193,6 +193,7 @@ class StudentAttendance //extends Model
             date('H:i', strtotime("$present_time + $mins minutes")),
         ])
         ->orderByRaw("ABS(TIME_TO_SEC(TIME(checkin_time)) - TIME_TO_SEC(?))", [$present_time])
+        ->orderBy('sg.id','asc')
         ->selectRaw('sg.id,sg.checkin_time,sg.checkout_time,sg.term_id')
         ->first();
 

@@ -43,11 +43,13 @@ class PromoteStudent //extends Model
             $enr_status_id = 1; // 1=active, 2 = Drop Off, 3 = Suspended;
             $q = DB::table('enrollments as e')->where('e.term_id',$term_id)
                         ->join('payments as p','p.enrollment_id','=','e.id')
-                        ->where('enrollment_status_id',$enr_status_id);
+                        ->where('enrollment_status_id',$enr_status_id)
+                        ->where('e.status_id','>=',3)
+                        ->where('e.promoted',0);
                         if($program_id){
                             $q->whereIn('e.level_id',$arr_level);
                         }
-            $enr_info = $q->selectRaw('p.pmt_option_id,e.prev_school_id,e.student_id,e.campus_id,e.session_id,e.level_id,e.program_id,e.academic_year,e.promoted')
+            $enr_info = $q->selectRaw('e.id as enrollment_id,p.pmt_option_id,e.prev_school_id,e.student_id,e.campus_id,e.session_id,e.level_id,e.program_id,e.academic_year,e.promoted')
                         ->get();
 
             foreach($enr_info as $info){
@@ -61,11 +63,7 @@ class PromoteStudent //extends Model
                 $nextLevel = GeneralSettings::getNextLevelByCurrentLevel($level_id,$ss);
                 if(!$nextLevel) return DV::error('There is no next level');
                 $student_id = $info->student_id;
-                // $promoted = DB::table('enrollments')->where('promoted',1)->exists();
-                // if($promoted){
-                //     continue;
-                // }
-
+                $enrollment_id = $info->enrollment_id;
                 $new_enroll = [
                     'student_id' => $student_id,
                     'level_id' => $nextLevel->id,
@@ -77,12 +75,10 @@ class PromoteStudent //extends Model
                     'status_id' => 1,// is pending
                     'prev_school_id' => $info->prev_school_id,
                     'academic_year' => $academic_year,
-                    'promoted' => 1,
+                    'promoted' => 0,
                 ];
-                $newEnrID = saveData($ss,'enrollments',['id' => null],$new_enroll,[],1);
-                DB::table('enrollments')->where('student_id',$info->student_id)->update([
-                    'is_new_student' => 0,
-                ]);
+                $newEnrID =saveData($ss,'enrollments',['id' => null],$new_enroll,[],1);
+
                 if($newEnrID){
                     $months = 0;
                     if($pmt_option_id == 1){
@@ -92,6 +88,21 @@ class PromoteStudent //extends Model
                     }else if($pmt_option_id == 3){
                         $months = 12;
                     }
+
+                    DB::table('enrollments')->where('student_id',$info->student_id)->update([
+                        'is_new_student' => 0,
+                    ]);
+
+                    $payment_process = $price_list->previewPendingPaymentDetails([
+                        "level_id" => $info->level_id,
+                        "academic_year" => $info->academic_year,
+                        "session_id" => $info->session_id,
+                        "prev_level_id" => "0",
+                        "start_date" => date('Y-m-d'),
+                        "months" => $months,
+                        "pmt_option_id"=> $info->pmt_option_id
+                    ],$enrollment_id,$ss);
+                    $payment_process = $payment_process->payment_info;
 
                     $payment_process = $price_list->payment_processing([
                         'pmt_option_id' => $pmt_option_id,
@@ -131,7 +142,7 @@ class PromoteStudent //extends Model
 
                 }
 
-                $keeps[] = $new_enroll;
+                $keeps[] = $new_pmt_arr;
 
             }
 
@@ -244,7 +255,7 @@ class PromoteStudent //extends Model
 
             $promoted_id = saveData($ss,'enrollments',['id' => $id],[
                 'status_id' => 2, // verify
-                'promoted' => 0, //
+                // 'promoted' => 0, //
                 'enroll_finalized' => 1 //
             ],[],1);
             // set promoted students into groups
@@ -276,12 +287,12 @@ class PromoteStudent //extends Model
             if($res->error) return DV::error($res->error);
             $inputs = $res->values;
             $id = isset($inputs['id'])?$inputs['id']:$inputs['enrollment_id'];
-            $not_new_promote = DB::table('enrollments')->where('id',$id)->where('promoted',0)->exists();
+            $not_new_promote = DB::table('enrollments')->where('id',$id)->where('promoted',1)->exists();
             if($not_new_promote){
                 $keep_id['id'][] = $id;
                 continue;
             }
-            $delete = DB::table('enrollments')->where('id',$id)->delete();
+            $delete = DB::table('enrollments')->where('id',$id)->where('promoted',0)->delete();
             if($delete){
                 DB::table('payments')->where('enrollment_id',$id)->delete();
                 DB::table('enrollment_payment')->where('enrollment_id',$id)->delete();
@@ -290,7 +301,5 @@ class PromoteStudent //extends Model
         }
         return DV::depends($success,['success'=>$success,'failed'=>$keep_id],'Selected Enrollments might be not the newest promoted');
     }
-
-
 
 }

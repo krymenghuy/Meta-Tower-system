@@ -115,7 +115,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //     $file = '';
     //     return $file;
     // });
-    
+
     //  //
     //  Route::post('audio/save',[AudioController::class,'saveAudio']);
     //  Route::post('audio',[AudioController::class,'getAudio']);
@@ -315,6 +315,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/delete', [StudentGroupController::class, 'delete']);
         Route::post('/form-options', [StudentGroupController::class, 'getFormOptions']);
         Route::post('/assign',[StudentGroupController::class,'assignStudentToGroup']);
+        Route::post('/transfer',[StudentGroupController::class,'transferGroupMember']);
     });
     //end::StudentGroupController
 
