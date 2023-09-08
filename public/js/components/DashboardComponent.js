@@ -14,7 +14,7 @@ var DashboardComponent = new function (){
       mThis.self.hide().fadeIn(300);
       return;
     }
-    x.fadeOut('fast',function(){
+    x.hide(0,function(){
       mThis.self.hide().fadeIn(300);
     });
   }
