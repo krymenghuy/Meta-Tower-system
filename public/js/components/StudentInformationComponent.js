@@ -108,6 +108,7 @@ var StudentInformationComponent = new function(){
             const tr = $(this).closest('tr');
             let op = {
                 'id': $(this).data('id'),
+                'code': tr.find('.Student-ID').text(),
                 'name': tr.find('.Full-Name').text(),
                 'photo': tr.find('.image-student-tbl').prop('src'),
                 'onClose': () => {
