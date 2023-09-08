@@ -123,6 +123,9 @@ var StudentGroupComponent = new function(){
                         if(res.status_code === 200){
                             mThis.groupListview.showPage(mThis.getFilterData());
                         }
+                        else{
+                            cv_interact.error(res.error_message);
+                        }
                     });
                 }
             });
