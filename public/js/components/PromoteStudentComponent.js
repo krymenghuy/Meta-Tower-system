@@ -5,6 +5,8 @@ var PromoteStudentComponent = new function(){
     this.self = $('#_main_promoteStudentComponent');
 
     this.btnNew = mThis.self.find('#_pms_btn_new');
+    this.btnVerify = mThis.self.find('#_pmt_btn_verify');
+    this.btnDelete = mThis.self.find('#_pmt_btn_delete');
     this.elSearch = mThis.self.find('#el_pms_search');
 
     this.cols = [{
@@ -142,6 +144,76 @@ var PromoteStudentComponent = new function(){
             };
             PromoteStudentDialog.show(op);
         });
+
+        mThis.btnVerify.on('click',function(e){
+            e.preventDefault();
+            const tbody = mThis.tblPromote.find('tbody');
+            const p = mThis.getCheckStudent(tbody);
+
+            if(p && p.length > 0){
+                const op = {
+                    'verify_info': p
+                };
+                cv_interact.confirm(`Verify ${(p.length > 1) ? 'these' : 'this'} student${(p.length > 1) ? 's' : ''}?`,{
+                    title: 'Verify Student',
+                    context: 'OK'
+                },(e) => {
+                    if(e){
+                        vsapi.call(`${main_view.base_url}/api/promote/verify`,op,null).then(res => {
+                            if(res.status_code === 200){
+                                mThis.itemView.showPage(null);
+                            }
+                            else
+                                cv_interact.error(res.error_message);
+                        });
+                    }
+                });
+            }
+            else{
+                cv_interact.warning('Select Student Before Verify!');
+            }
+        });
+
+        mThis.btnDelete.on('click',function(e){
+            e.preventDefault();
+            const tbody = mThis.tblPromote.find('tbody');
+            const p = mThis.getCheckStudent(tbody);
+
+            if(p && p.length > 0){
+                const op = {
+                    'delete_info': p
+                };
+                cv_interact.confirm(`Delete ${(p.length > 1) ? 'these' : 'this'} student${(p.length > 1) ? 's' : ''}?`,{
+                    title: 'Delete Student',
+                    context: 'delete'
+                },(e) => {
+                    if(e){
+                        vsapi.call(`${main_view.base_url}/api/promote/delete`,op,null).then(res => {
+                            if(res.status_code === 200){
+                                mThis.itemView.showPage(null);
+                            }
+                            else
+                                cv_interact.error(res.error_message);
+                        });
+                    }
+                });
+            }
+            else{
+                cv_interact.warning('Select Student Before Delete!');
+            }
+        });
+    }
+
+    this.getCheckStudent = (tbody) => {
+        let info = [];
+        tbody.find('input[type="checkbox"]:checked').each(function(){
+            const el = $(this);
+            const tr = el.closest('tr');
+            info.push({
+                'enrollment_id': tr.data('id')
+            });
+        });
+        return info;
     }
 
     this.show = (options) => {
