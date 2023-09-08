@@ -143,6 +143,7 @@ class ScriptProvider
                 '/js/components/RequestDiscountComponent.js',
                 '/js/components/PromoteStudentComponent.js',
                 '/js/components/AssignStudentComponent.js',
+                '/js/components/AccountRequestComponent.js',
                 'assets/js/pusher/pusher.min.js',
                 '/js/components/pusher_connect.js'
             ]

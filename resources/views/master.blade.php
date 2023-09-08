@@ -183,6 +183,7 @@
                                 @include('layouts.requestDiscountComponent')
                                 @include('layouts.promoteStudentComponent')
                                 @include('layouts.assignStudentComponent')
+                                @include('layouts.accountRequestComponent')
                             </div>
                         </div>
                     </div>
