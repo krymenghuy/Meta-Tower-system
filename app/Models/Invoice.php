@@ -634,13 +634,13 @@ class Invoice //extends Model
         if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search ="(st.code ='$search_value' OR st.name LIKE '%$search_value%'";
+            $str_search ="(st.code = '$search_value' OR st.name LIKE '%$search_value%')";
         }
         if($terms_id) $str_search .= ' AND e.term_id = '. $terms_id;
         if($sessions_id) $str_search .= ' AND e.session_id = '. $sessions_id;
         if($pmt_options_id) $str_search .= ' AND p.pmt_option_id = '. $pmt_options_id;
 
-        $selectCols = 'e.id as enrollment_id,p.tuition_paid,p.tuition_due,e.tuition_end_date,st.id as student_id,st.file_name,p.status_id as pstatus_id,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.prev_school_id,e.status_id';
+        $selectCols = 'e.id as enrollment_id,p.tuition_paid,p.tuition_due,e.tuition_end_date,st.id as student_id,st.file_name,p.status_id as pstatus_id,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.prev_school_id,e.status_id,e.is_new_student';
         $query = DB::table('students as st')
                 ->join('enrollments as e','e.student_id','=','st.id')
                 ->join('payments as p','p.enrollment_id','=','e.id')
@@ -650,7 +650,7 @@ class Invoice //extends Model
                 ->whereRaw($str_moreWhere)->whereRaw($str_search)
                 ->where('p.status_id','!=','NULL') //* for paid and unpaid
                 ->where('e.status_id','!=',1) //* for verified up to paid
-                ->orderBy('id','desc');
+                ->orderBy('e.id','desc');
                 if($academic_year){
                     $query->where('e.academic_year',$academic_year);
                 }
@@ -659,8 +659,7 @@ class Invoice //extends Model
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row) {
 
-            $status = rand(0,1)?'New':'Old';
-            $status = 'New';
+            $status = ($row->is_new_student) == 1? 'New' :'Old';
             $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
             $row->parent_info = Student::getParentInfo($row->student_id);
             unset($row->file_name);

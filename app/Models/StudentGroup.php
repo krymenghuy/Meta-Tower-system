@@ -279,11 +279,24 @@ class StudentGroup //extends Model
         if(($fromID == $toID)) return DV::error('Group could not be the same as selected');
         unset($inputs['from_group_id'],$inputs['to_group_id']);
         if(!self::validateGroup($fromID,$toID)) return DV::error('Group infomation is not matching');
-        $old = DB::table('student_groups as sg')->where('sg.id',$fromID)
+        $old_group = DB::table('student_groups as sg')->where('sg.id',$fromID)
             ->join('group_members as gm','gm.group_id','=','sg.id')
             ->selectRaw('gm.student_id,gm.group_id,gm.enrollment_id')
             ->get();
-        return $old;
+        $transfer_count = 0;
+        $success = 0;
+        foreach($old_group as $g){
+            $newGroupID = saveData($ss,'group_members',['id'=>null],[
+                'enrollment_id'=>$g->enrollment_id,
+                'group_id'=>$toID,
+                'student_id' => $g->student_id
+            ],[],1);
+            $success ++;
+        }
+        if($success>0) DB::table('group_members')->where('group_id',$fromID)->update([
+            'inactive' => 1
+        ]);
+        return DV::depends($success,'Transfered');
 
     }
 
