@@ -8,6 +8,14 @@ var PromoteStudentComponent = new function(){
     this.elSearch = mThis.self.find('#el_pms_search');
 
     this.cols = [{
+        title: "Check",
+        className: "text-center position-relative",
+        data: () => {
+            const html = [`<input type="checkbox" class="form-check-input"/>`].join('');
+            return html;
+        }
+    },
+    {
         title: "Student ID",
         data: "code"
     },
@@ -57,10 +65,10 @@ var PromoteStudentComponent = new function(){
         title: "Action",
         data: (data, a, b) => {
             return [`<div class="d-flex gap-2">
-                <a href="javascript:void(0)" class="btn-pms-verify" data-id="${data.id}">
+                <a href="javascript:void(0)" class="btn-pms-verify" data-id="${data.enrollment_id}">
                     <i class="fa-regular fa-circle-check text-success fs-5"></i>
                 </a>
-                <a href="javascript:void(0)" class="btn-pms-delete" data-id="${data.id}">
+                <a href="javascript:void(0)" class="btn-pms-delete" data-id="${data.enrollment_id}">
                     <i class="fa-regular fa-trash-can text-danger fs-5"></i>
                 </a>
             </div>`].join('');
@@ -73,7 +81,7 @@ var PromoteStudentComponent = new function(){
             'columns': mThis.cols,
             'tableClass':"table header-light-blue header-uppercase",
             'rowCreated':(data, index, tr) => {
-                tr.setAttribute('data-id',data.id);
+                tr.setAttribute('data-id',data.enrollment_id);
             },
             'beforeRender':()=>{}
         });
@@ -84,11 +92,15 @@ var PromoteStudentComponent = new function(){
         mThis.tblPromote.on('click','a.btn-pms-verify',function(e){
             e.preventDefault();
             let op = {
-                'id': $(this).data('id')
+                'verify_info':[
+                    {
+                        'enrollment_id': $(this).data('id')
+                    }
+                ]
             };
             cv_interact.confirm('Verify this student?',{title: 'Verify Student', context: 'OK'},(e) => {
                 if(e){
-                    vsapi.call(`${main_view.base_url}/`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/promote/verify`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.itemView.showPage(null);
                         }
@@ -103,11 +115,15 @@ var PromoteStudentComponent = new function(){
         mThis.tblPromote.on('click','a.btn-pms-delete',function(e){
             e.preventDefault();
             let op = {
-                'id': $(this).data('id')
+                'delete_info':[
+                    {
+                        'enrollment_id': $(this).data('id')
+                    }
+                ]
             };
             cv_interact.confirm('Delete this student?',{title: 'Delete Student', context: 'delete'},(e) => {
                 if(e){
-                    vsapi.call(`${main_view.base_url}/`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/promote/delete`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.itemView.showPage(null);
                         }

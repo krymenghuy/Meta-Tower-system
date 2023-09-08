@@ -16,26 +16,29 @@ var StudentInformationComponent = new function(){
     },
     {
         title: "Student ID",
+        className: 'align-middle',
         data: "student_code"
     },
     {
         title: "Full Name",
-        className: "text-capitalize",
+        className: "text-capitalize align-middle",
         data: "name"
     },
     {
         title: "Full Name (KH)",
-        className: "text-capitalize",
+        className: "text-capitalize align-middle",
         data: "name_kh"
     },
     {
         title: "Sex",
+        className: 'align-middle',
         data: (data, a, b) => {
             return [`${data.sex === 'M' ? 'Male' : 'Female'}`].join('');
         }
     },
     {
         title: "Date of Birth",
+        className: 'align-middle',
         data: (data, a, b) => {
             let dob = data.date_of_birth ? data.date_of_birth : '';
             return new Date(dob).toLocaleDateString('km-KH',{
@@ -47,14 +50,19 @@ var StudentInformationComponent = new function(){
     },
     {
         title: "Family ID",
+        className: 'align-middle',
         data: "family_id"
     },
     {
         title: "Action",
+        className: 'align-middle',
         data: (data, a, b) => {
             return [`<div class="d-flex gap-2">
-                <a href="javascript:void(0)" class="btn-sin-details" data-id="${data.id}">
+                <a href="javascript:void(0)" class="btn-sin-modify" data-id="${data.id}">
                     <i class="fa-regular fa-pen-to-square fs-5 text-warning"></i>
+                </a>
+                <a href="javascript:void(0)" class="btn-sin-audio" data-id="${data.id}">
+                    <i class="fa-solid fa-music fs-5 text-info"></i>
                 </a>
             </div>`].join('');
         }
@@ -75,13 +83,39 @@ var StudentInformationComponent = new function(){
         new SearchData(mThis.elSearch,mThis.tblStudent);
 
         mThis.cfg = new ExpandableRowConfig('tbl--sin_table',{
-            'dontExpandByClickingOn': ['btn-sin-details'],
+            'dontExpandByClickingOn': ['btn-sin-modify','btn-sin-audio'],
             'onOpen': (container, detail_tr, parent_tr) => {
                 let qtr = $(parent_tr);
                 let id = qtr.data('id');
                 if(id > 0)
                     mThis.displayStudentInformationDetails(detail_tr,id);
             }
+        });
+
+        mThis.tblStudent.on('click','a.btn-sin-modify',function(e){
+            e.preventDefault();
+            let op = {
+                'id': $(this).data('id'),
+                'onClose': () => {
+                    mThis.itemView.showPage(null);
+                }
+            };
+            StudentInfoDialog.show(op);
+        });
+
+        mThis.tblStudent.on('click','a.btn-sin-audio',function(e){
+            e.preventDefault();
+            const tr = $(this).closest('tr');
+            let op = {
+                'id': $(this).data('id'),
+                'code': tr.find('.Student-ID').text(),
+                'name': tr.find('.Full-Name').text(),
+                'photo': tr.find('.image-student-tbl').prop('src'),
+                'onClose': () => {
+                    mThis.itemView.showPage(null);
+                }
+            };
+            StudentAudioDialog.show(op);
         });
     }
 
@@ -97,7 +131,6 @@ var StudentInformationComponent = new function(){
 
     this.displayStudentInformationDetails = (tr, id) => {
         let div_wrapper = $(tr).find('.expandable-row-container');
-        div_wrapper.addClass(['gap-2','on-hover-to-scroll']);
         div_wrapper.empty();
         let html = null;
 
@@ -158,11 +191,14 @@ var StudentInformationComponent = new function(){
                 </div>`].join('');
             });
 
-            div_wrapper.html(['<div class="position-absolute d-flex gap-2">',html,'</div>'].join(''));
-            div_wrapper.on('wheel',function(e){
-                let event = e.originalEvent;
-                this.scrollLeft += event.deltaY;
-            });
+            if(d && d.length > 0){
+                div_wrapper.addClass(['gap-2','on-hover-to-scroll']);
+                div_wrapper.html(['<div class="position-absolute d-flex gap-2">',html,'</div>'].join(''));
+                div_wrapper.on('wheel',function(e){
+                    const event = e.originalEvent;
+                    this.scrollLeft += event.deltaY;
+                });
+            }
         });
     }
 
@@ -175,6 +211,201 @@ var StudentInformationComponent = new function(){
             x.fadeOut('fast',function(){
                 mThis.self.hide().fadeIn(300);
             });
+        });
+    }
+}
+
+let StudentInfoDialog = new function(){
+    const mThis = this;
+    this.self = $('#dlg_sin_');
+    this.options = {};
+
+    this.btnSave = mThis.self.find('#dlg_sin_btn_save');
+    this.elImage = mThis.self.find('#dlg_sin_choose_image');
+
+    mThis.btnSave.on('click',function(e){
+        e.preventDefault();
+        const p = mThis.getDataForm();
+        vsapi.call(`${main_view.base_url}/api/student/update-info`,p,null).then(res => {
+            if(res.status_code === 200){
+                mThis.self.modal('hide');
+                if(typeof mThis.options.onClose === 'function')
+                    mThis.options.onClose();
+            }
+            else
+                cv_interact.error(res.error_message);
+        });
+    });
+
+    mThis.elImage.on('click',function(e){
+        e.preventDefault();
+        FileChooser.chooseFile(null,(d) => {
+            if(d){
+                const parent = $(this).parent();
+                mThis.setImage(parent,d.dataUrl);
+            }
+        });
+    });
+
+    this.setImage = (div,image_url) => {
+        if(image_url){
+            const html = [`<img class="w-100 h-100 object-fit-contain rounded-3 data-input" src="${image_url}" alt="" data-field="photo"/>
+            <div class="dlg-container-image-icon">
+                <a href="javascript:void(0)" class="dlg-sin-delete">
+                    <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                </a>
+            </div>`].join('');
+            div.html(html);
+            mThis.deleteImage(div);
+        }
+    }
+
+    this.deleteImage = (div) => {
+        const delete_btn = div.find('.dlg-sin-delete');
+        delete_btn.on('click',function(e){
+            e.preventDefault();
+            const html = [`<div id="dlg_sin_choose_image" class="dlg-sin-clickable">
+                <i class="fa-regular fa-image fs-2 text-muted"></i>
+            </div>`].join('');
+            div.html(html);
+
+            const choose_btn = div.find('#dlg_sin_choose_image');
+            choose_btn.on('click',function(e){
+                e.preventDefault();
+                FileChooser.chooseFile(null,(d) => {
+                    if(d){
+                        mThis.setImage(div,d.dataUrl);
+                    }
+                });
+            });
+        });
+    }
+
+    this.getDataForm = () => {
+        const div = mThis.self;
+        let p = {
+            'id': mThis.options.id
+        };
+
+        div.find('.data-input').each(function(){
+            const el = $(this);
+            const f = el.data('field');
+            if(el.is('img'))
+                p[f] = el.prop('src');
+            else
+                p[f] = el.val();
+        });
+
+        return p;
+    }
+
+    this.setDataForm = (d) => {
+        d = d ? d : {};
+        const div = mThis.self;
+        if(!($.isEmptyObject(d))){
+            const container_image = div.find('.image-dialog-container');
+            mThis.setImage(container_image, d.image_url);
+        }
+
+        div.find('.data-input').each(function(){
+            const el = $(this);
+            const f = el.data('field');
+            if(el.is('select'))
+                el.val(d[f]).trigger('change');
+            else
+                el.val(d[f]);
+        });
+    }
+
+    this.loadFormDetails = (op,onFinish = null) => {
+        vsapi.call(`${main_view.base_url}/api/student/details-info`,{'id': op.id},null).then(res => {
+            if(res.status_code === 200){
+                const d = res.data;
+                mThis.setDataForm(d);
+            }
+            if(typeof onFinish === 'function') onFinish();
+        });
+    }
+
+    this.show = (options) => {
+        if(!options) options = {};
+        mThis.options = options;
+
+        mThis.loadFormDetails(options,() => {
+            mThis.self.modal({
+                backdrop: 'static'
+            });
+        });
+    }
+}
+
+let StudentAudioDialog = new function(){
+    const mThis = this;
+    this.self = $('#dlg_sin_audio');
+    this.options = {};
+
+    this.btnAudio = mThis.self.find('#dlg_sin_audio_choose');
+    this.containerAudio = mThis.self.find('#dlg_sin_audio_show');
+    this.btnSave = mThis.self.find('#dlg_sin_audio_btn_save');
+
+    mThis.btnSave.on('click',function(e){
+        e.preventDefault();
+        const p = mThis.getDataForm();
+        vsapi.call(`${main_view.base_url}/api/student/save-audio`,p,mThis.btnSave).then(res => {
+            if(res.status_code === 200){
+                mThis.self.modal('hide');
+                cv_interact.success('Audio File Uploaded Successfully!');
+            }
+            else{
+                cv_interact.error(res.error_message);
+            }
+        });
+    });
+
+    mThis.btnAudio.on('click',function(e){
+        e.preventDefault();
+        FileChooser.chooseFile({
+            'accept': 'audio/*'
+        },(d) => {
+            if(d){
+                const div = mThis.containerAudio,
+                html = [`<audio class="w-100" controls controlsList="nodownload">
+                    <source class="data-audio" src="${d.dataUrl}" type="audio/${d.file_type}">
+                </audio>`].join('');
+                div.removeClass('p-4').addClass('p-2').html(html);
+            }
+        });
+    });
+
+    this.getDataForm = () => {
+        const div = mThis.self;
+        let p = {
+            'student_id': mThis.options.id,
+            'base64': div.find('.data-audio').prop('src').split(',')[1]
+        };
+        return p;
+    }
+
+    this.setInitialStudent = (d) => {
+        d = d ? d : {};
+        const div = mThis.self;
+        div.find('.data-input').each(function(){
+            const el = $(this);
+            const f = el.data('field');
+            if(el.is('img'))
+                el.prop('src',d[f]);
+            else
+                el.text(d[f]);
+        });
+    }
+
+    this.show = (options) => {
+        if(!options) options = {};
+        mThis.options = options;
+
+        mThis.setInitialStudent(options);
+        mThis.self.modal({
+            backdrop: 'static'
         });
     }
 }

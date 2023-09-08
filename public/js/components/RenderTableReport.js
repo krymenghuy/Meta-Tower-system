@@ -95,8 +95,8 @@ function renderTable(div, data){
                                     ${tbl.monthly_attendance && tbl.monthly_attendance[index].absent}
                                 </td>
                                 <td>
-                                    ${options.phone=null,tbl.phone_number && tbl.phone_number[index].map(p => {
-                                        options.phone = [options.phone,p.phone_number].join(' / ');
+                                    ${options.phone=null,tbl.phone_number && tbl.phone_number[index].map((p,i) => {
+                                        options.phone = [options.phone,p.phone_number].join(`${(i+1) % 2 == 0 ? '<br/>' : ' / '}`);
                                     }),options.phone.replace(' / ','')}
                                 </td>
                             </tr>`].join('');

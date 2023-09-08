@@ -171,8 +171,12 @@ class StudentGroup //extends Model
 
     static function details($id,$ss){
        $branch_id = $ss->branch_id;
+       $get_program = ',(SELECT l.program_id  FROM program_levels as l where l.id = g.level_id LIMIT 1) AS program_id';
        $row = DB::table('student_groups AS g')
-                ->selectRaw('g.id,g.term_id,CONCAT(g.name,\'.\',g.serial_number) AS `name`,g.descriptive_name,g.remarks,g.campus_id,g.level_id,g.session_id,g.serial_number,g.checkin_time,g.checkout_time')
+                ->join('terms AS t','t.id','=','g.term_id')
+                ->join('campuses AS c','c.id','=','g.campus_id')
+                ->join('sessions AS s','s.id','=','g.session_id')
+                ->selectRaw('g.id,g.term_id '.$get_program.',CONCAT(g.name,\'.\',g.serial_number) AS `name`,g.descriptive_name,g.remarks,c.shortcut as campus_shortcut,g.level_id,s.shortcut as session_shortcut,g.serial_number,g.checkin_time,g.checkout_time,t.academic_year')
                 ->where('g.id',$id)
                 ->where('g.branch_id',$branch_id)->first();
         if(!$row) return null;

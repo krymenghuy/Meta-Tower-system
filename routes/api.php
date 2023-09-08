@@ -105,6 +105,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/payment-invoice',[MobileApiController::class,'getChildrenInvoices']);
         Route::post('/student-enrollments',[MobileApiController::class,'getStudentEnrollment']);
         Route::post('/social-media',[MobileApiController::class,'getSocialMediaList']);
+        Route::post('/latest-invoice',[MobileApiController::class,'getChildLatestInvoice']);
     });
 
     //end mobile api
@@ -219,6 +220,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/details',[EnrollmentController::class,'getEnrollmentDetails']);
         Route::post('/finalize',[EnrollmentController::class,'finalizeEnrollment']);
         Route::post('/get-guardian-info',[EnrollmentController::class,'optionsGetGuardianByFamilyCode']);
+
+        Route::post('/test',[EnrollmentController::class,'test']);
     });
     //end::EnrollmentManager
 
@@ -231,6 +234,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/form-options',[StudentController::class,'formOptions']);
         //** */
         Route::post('/update-info',[StudentController::class,'updateStudentInfo']);
+        Route::post('/details-info',[StudentController::class,'getStudentBasicInfoDetails']);
         Route::post('/save-audio', [StudentController::class, 'saveAudioFile']);
         Route::post('/audio', [StudentController::class, 'getAudioFile']);
         Route::post('/delete-audio', [StudentController::class, 'deleteAudioFile']);
@@ -241,6 +245,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/delete-verified',[EnrollmentController::class,'deleteVerifiedStudent']);
         Route::post('/information',[StudentController::class,'studentInformation']);
         Route::post('/enrollment-details',[StudentController::class,'getStudentEnrollmentInfo']);
+
 
         //** PriceListController */
         Route::post('/invoice-list',[InvoiceController::class,'studentInvoice']);

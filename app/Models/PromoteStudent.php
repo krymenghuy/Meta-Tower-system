@@ -157,7 +157,7 @@ class PromoteStudent //extends Model
             $str_search ="(s.code ='$search_value' OR s.name LIKE '%$search_value%')";
         }
 
-        $selectCols = 'e.status_id,e.session_id,e.campus_id,c.`name` AS campus,e.level_id,l.`name` as level,s.sex,s.name,s.name_kh,s.code,s.id,s.date_of_birth as dob';
+        $selectCols = 'e.id as enrollment_id,e.status_id,e.session_id,e.campus_id,c.`name` AS campus,e.level_id,l.`name` as level,s.sex,s.name,s.name_kh,s.code,s.id as student_id,s.date_of_birth as dob';
         $query = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->join('program_levels as l','l.id','=','e.level_id')
@@ -238,10 +238,24 @@ class PromoteStudent //extends Model
                 $keep_id['id'] = $id;
                 continue;
             }
-            saveData($ss,'enrollments as e',['id' => $id],[
-                'status_id' => 2, // pending
-                'promoted' => 0 //
+            $enr = DB::table('enrollments')->where('id',$id)->selectRaw('campus_id,level_id,session_id,term_id,student_id')->get()->first();
+            $existsGroup = findExists('student_groups',['level_id'=>$enr->level_id]);
+            if(!$existsGroup) return DV::error('next group is not available or exists');
+
+            $promoted_id = saveData($ss,'enrollments',['id' => $id],[
+                'status_id' => 2, // verify
+                'promoted' => 0, //
+                'enroll_finalized' => 1 //
             ],[],1);
+            // set promoted students into groups
+            if($promoted_id>0){
+                $group = DB::table('student_groups')->where('term_id',$enr->term_id)->where('campus_id',$enr->campus_id)->where('level_id',$enr->level_id)->selectRaw('id')->get()->first();
+                saveData($ss,'group_members',['id' => null],[
+                    'student_id' => $enr->student_id,
+                    'enrollment_id' => $promoted_id,
+                    'group_id' => $group->id
+                ],[],1);
+            }
             $success ++;
         }
         return DV::depends($success,['success'=>$success,'failed'=>$keep_id]);

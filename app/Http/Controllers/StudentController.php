@@ -53,11 +53,12 @@ class StudentController extends Controller
         return JDV::result($rows);
     }
 
-    function studentDetials(Request $req){
+    function getStudentBasicInfoDetails(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
+        $x = new Student($req->id,$ss);
 
-        $details = Student::getStudentDetail($req->id,$ss);
+        $details =$x->getStudentBasicInfoDetails($req->id,$ss);
         return JDV::result($details);
     }
 

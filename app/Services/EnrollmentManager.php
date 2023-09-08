@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 use App\Models\Campus;
+use App\Models\PriceList;
 use DB;
 use App\Models\DV;
 use App\Models\Student;
@@ -136,6 +137,8 @@ class EnrollmentManager {
             $inputs['file_name']=null;
         }
       }
+
+    //   if($family_code) unset($parent_info);
 
       if(!$id && !$family_code && Student::checkParentLoginName($parent_info)) return DV::error('Parent Login name is already taken. Father or mother phone number is used as parent login');
       $isFinalized = 1;
@@ -430,6 +433,7 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
     }
 
     /** Finalizing enrollment means to prevent user from editing or modify enrollment, but can request for change of level, program , etc */
+
     function finalizeEnrollment($arr=[],$ss=null){
         $v_rule = [
             'enrollment_id' => '1|number|exists=enrollments.id',
@@ -444,6 +448,35 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
         ],[],1);
 
         return DV::depends($enrID,'Finalized');
+    }
+
+    function saveAdmissionInfo($arr=[],$ss=null){
+        $branch_id = $ss->branch_id;
+        $d = (object)$arr;
+        $priceList = new PriceList();
+        $pmt = [
+            "level_id" => $d->level_id,
+            "academic_year" => $d->academic_year,
+            "session_id" => $d->session_id,
+            "prev_level_id" => "0",
+            "start_date" => $d->start_date,
+            "months" => 6, // option = semester
+            "pmt_option_id"=> 1 // 1 term ,2 semester,3 annual;
+        ];
+        $priceListInfo = $priceList->payment_processing($pmt,$ss);
+        if($priceListInfo->status_code !=200) return DV::error($priceListInfo->error_message);
+        $discountInfo = $priceListInfo->discount;
+
+        $admissionArr = [
+            'student_id' => $d->student_id,
+            'discount' => $discountInfo->discount,
+            'discount_type' => $discountInfo->discount_type,
+            'admission_date' => $d->start_date,
+            'special_discount' => 0,
+        ];
+        $admissionID = 1;//saveData($ss,'admissions',['id'=>null],$admissionArr,[],$branch_id);
+        if($admissionID<0) return false;
+        return true;
     }
 
     function optionsGetGuardianByFamilyCode($familyCode,$ss=null){
