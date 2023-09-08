@@ -32,20 +32,27 @@ class PriceList //extends Model
       return DB::table('academic_years as y')->where('y.academic_year',$academic_year)->take(1)->value('id');
     }
 
+    static function priceListExits($name,$id=null){
+        $str_id ='1=1';
+        if($id>0) $str_id ='id <> '.$id;
+        $test_id = DB::table('price_list')->where('name',$name)->whereRaw($str_id)->take(1)->value('id');
+        return $test_id > 0? true:false;  
+    }
+
+    /** Create or Update Price List */
     function save($arr=[],$id=null,$ss=null){
        $id = $id? $id : $this->id;
        $ss =$ss? $ss: $this->user_info;
 
        $v_rule = [
-         'name'=>'1|string|1-200',
+         'name'=>'1|string|1-200|text=Price list name cannot be empty',
          'start_date'=>'1|date',
          'end_date'=>'1|date',
          'academic_year'=>'1|string|1-35',
          'description'=>'0|string|0-250'
        ];
 
-       $action = 'Updated';
-       if ($id) $action = 'Created';
+       $action = $id> 0? 'Updated':'Created';
        $res = validateObject($arr,$v_rule,true,['academic_year'=>['-']],$ss->lang,false,null);
        if($res->error) return DV::error($res->error);
        $inputs = $res->values;
@@ -62,28 +69,30 @@ class PriceList //extends Model
         if($err){
             return DV::error($err);
         }
-        $selfExist = DB::table('price_list')->where('id',$id)->selectRaw('name')->first();
-
+        $pl_exists = self::priceListExits($inputs['name'],$id);
         if($id){
-            if($selfExist->name != $inputs['name']){
-                $uniqueName = DB::table('price_list')->where('name',$selfExist->name)->exists();
-                if($uniqueName){
-                    return DV::error('Name is already used');
-                }
-            }
-        }else {
-            $uniqueName = DB::table('price_list')->where('name',$inputs['name'])->exists();
-            if($uniqueName){
-                return DV::error('Name is already used');
-            }
+            if($pl_exists)  return DV::error('Name is already used'); 
         }
-
+        
        $academic_year = $inputs['academic_year'];
        $inputs['ac_year_id'] = self::getAcademicYearID($academic_year);
+       $created = $id>0? false:true;
        $id = saveData($ss,'price_list',['id'=>$id],$inputs,[],1,false);
+       if($id > 0 &&   $created ){
+         self::authorize($id,$ss);
+       }
        return DV::depends($id,['action'=>$action,'price_list'=>$this->list_price_list()],'Failed to save price list');
     }
 
+    /** authorize price list authorizePriceList() */
+    static function authorize($id,$ss){
+       DB::table('price_list')->where('id',$id)->update([
+        'authorized'=>1,
+        'auth_user'=>$ss->full_name,
+        'auth_date'=>getNowTime(),
+        'auth_uid'=>$ss->user_id
+       ]); 
+    }
     function delete($id=null){
         $id = $id?$id:$this->id;
         DB::table('price_list_items')->where('id',$id)->delete();
@@ -163,21 +172,34 @@ class PriceList //extends Model
     function list_paginate($arr=[],$ss=null){
         $ss =$ss?$ss:$this->user_info;
         $branch_id =$ss->branch_id;
-
-        $current_page =isset($arr['current_page'])?$arr['current_page']:1;
-        $per_page =isset($arr['per_page'])?$arr['per_page']:10;
+        $d = (object)$arr;
+        $current_page =isset($d->current_page)?$d->current_page:1;
+        $per_page =isset($d->per_page)?$$d->per_page:10;
         if(!is_numeric($current_page)) $current_page=1;
         $skip_rows = ($current_page -1) * $per_page;
         $str_moreWhere ="1=1";
         $str_search="1=1";
 
-        $cols = 'l.id, l.name,l.academic_year, formatDate(l.start_date) as start_date,formatDate(l.end_date) as end_date,l.description,l.update_user AS create_user,formatTime(l.updated_at) as created_at, l.auth_user, formatTime(l.auth_date) AS auth_date';
+        $academic_year = isset($d->academic_year)?$d->academic_year:null;
+        $search_value = isset($d->search_value)?$d->search_value:null;
+        if($academic_year && $academic_year !==0) $str_search ='l.academic_year =\''.$academic_year.'\'';
+        if($search_value){
+            $search_value = escape_like_str($search_value);
+            $str_search .=" AND (l.academic_year LIKE '%$search_value%' OR l.name LIKE '%$search_value%')";
+        }
+        $cols = 'l.id, l.name,l.academic_year, formatDate(l.start_date) as start_date,formatDate(l.end_date) as end_date,l.description,l.update_user AS update_user,formatTime(l.updated_at) as updated_at, l.auth_user, l.authorized, formatTime(l.auth_date) AS auth_date';
         $query = DB::table('price_list as l')->where('l.branch_id',$branch_id)->whereRaw($str_moreWhere)->whereRaw($str_search)->selectRaw($cols);
 
         $count_query = clone $query;
         $count = $count_query->count('l.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
+        foreach($rows as $row) $row->use_case_count = self::useCaseCount($row->id);
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
+
+    /** count that this price_list is being used or assigned to how many students currently */
+    static function useCaseCount($id){
+       return DB::table('student_pricelist as l')->where('l.price_list_id',$id)->whereRaw('IFNULL(l.inactive,0) =0')->count('id');
     }
 
     /**
