@@ -1,13 +1,23 @@
 <div id="_main_promoteStudentComponent" class="mobile-padding p-3" style="display:none">
-    <div class="d-flex gap-2 bg-white rounded-3 p-3">
-        <button id="_pms_btn_new" class="btn btn-primary btn-sm" type="button">
-            <span class="trans-text text-nowrap" data-langprop="buttons.Promote Student"></span>
-        </button>
-        <div class="input-group flex-nowrap">
-            <input type="search" id="el_pms_search" class="form-control width-search-box"/>
-            <div class="input-group-text">
-                <i class="fa-solid fa-magnifying-glass"></i>
+    <div class="d-flex bg-white rounded-3 p-3">
+        <div class="d-flex gap-2 w-100">
+            <button id="_pms_btn_new" class="btn btn-primary btn-sm" type="button">
+                <span class="trans-text text-nowrap" data-langprop="buttons.Promote Student"></span>
+            </button>
+            <div class="input-group flex-nowrap">
+                <input type="search" id="el_pms_search" class="form-control width-search-box"/>
+                <div class="input-group-text" role="button">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
             </div>
+        </div>
+        <div class="d-flex gap-2 justify-content-end">
+            <button id="_pmt_btn_verify" class="btn btn-sm btn-warning" type="button">
+                <span class="trans-text" data-langprop="buttons.Verify"></span>
+            </button>
+            <button id="_pmt_btn_delete" class="btn btn-sm btn-danger" type="button">
+                <span class="trans-text" data-langprop="buttons.Delete"></span>
+            </button>
         </div>
     </div>
     <div id="tbl_pms_" class="table-responsive p-3 bg-white rounded-3 mt-3 table-responsive-hover"></div>
