@@ -164,7 +164,7 @@ class StudentGroup //extends Model
             $count = $count_query->count('g.id');
             $rows = $query->skip($skip_rows)->take($per_page)->get();
             foreach($rows as $row){
-              $row->student_count = DB::table('group_members AS gm')->where('group_id',$row->id)->count('id');
+              $row->student_count = DB::table('group_members AS gm')->where('group_id',$row->id)->whereRaw('IFNULL(gm.inactive,0)=0')->count('id');
             }
             return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
@@ -186,7 +186,7 @@ class StudentGroup //extends Model
     }
 
     static function has_member($id){
-      return DB::table('group_members as m')->join('student_groups as g','g.id','=','m.group_id')->where('g.id',$id)->selectRaw('g.id')->take(1)->exists();
+      return DB::table('group_members as m')->join('student_groups as g','g.id','=','m.group_id')->where('g.id',$id)->whereRaw('IFNULL(m.inactive,0)=0')->selectRaw('g.id')->take(1)->exists();
     }
 
     static function hasAttendanceScanned($id){

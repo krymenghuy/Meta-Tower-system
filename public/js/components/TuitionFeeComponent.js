@@ -5,43 +5,55 @@ var TuitionFeeComponent = new function(){
     this.self = $('#_main_tuitionFeeComponent');
     
     this.btnAdd = mThis.self.find('#ttf_btn_add');
+    this.btnFind = this.self.find('#ttf_btn_find');
     this.elSearch = mThis.self.find('#ttf_search');
+    this.elFilter_academic_year = this.self.find('#_ttf_filter_acad_year');
 
     this.cols = [{
-        title: "Name",
+        title: "Price List",
         data: "name"
     },
     {
-        title: "Start Date",
-        data: "start_date"
+        title: "Date Range",
+        data:(data,index,tr)=>{
+            return [`<span class="border rounded-3 p-2">`,data.start_date,'</span> to <span class="border rounded-3 p-2">',data.end_date,'<span>'].join('');
+        }
     },
     {
-        title: "End Date",
-        data: "end_date"
+        title: "Applied To",
+        data: (data,index,tr)=>{
+            const cls_class = data.use_case_count>0? 'text-danger':'text-muted'; 
+            return [`<span class="`,cls_class,`">`,data.use_case_count,` students</span>`].join('');
+        }
     },
     {
         title: "Academic Year",
         data: "academic_year"
     },
     {
-        title: "Created By",
-        data: (data, a, b) => {
-            let user = data.create_user ? data.create_user : '', date = data.created_at ? data.created_at : '';
-            return [`<p class="pb-0 mb-0">${user}</p>
-            <p class="pb-0 mb-0">${date}</p>`].join('');
-        }
-    },
-    {
-        title: "Authorized By",
-        data: (data, a, b) => {
-            let user = data.auth_user ? data.auth_user : '', date = data.auth_date ? data.auth_date : '';
-            return [`<p class="pb-0 mb-0">${user}</p>
-            <p class="pb-0 mb-0">${date}</p>`].join('');
-        }
-    },
-    {
         title: "Description",
-        data: "description"
+        data: (data,index,tr)=>{
+            return data.description?data.description:'NA';
+        }
+    },
+    {
+        title: "Created By",
+        data: (data, index, tr) => {
+            let user = data.update_user ? data.update_user : '';
+            let date = data.updated_at ? data.updated_at : '';
+            return [`<p class="pb-0 mb-0">${user}</p>
+            <p class="pb-0 mb-0"><small>${date}</small></p>`].join('');
+        }
+    },
+    {
+        title: "Authorization",
+        data: (data, index, tr) => {
+            let user = data.authorized ==1? data.auth_user:null;
+            if(data.authorized ==1 && !user) user = data.update_user;
+            let date = data.authorized ==1? data.auth_date:null;
+            return [`<p class="pb-0 mb-0">`,user?user:'Unknown',`</p>
+            <p class="pb-0 mb-0"><small>`,date,`</small></p>`].join('');
+        }
     },
     {
         title: "Action",
@@ -146,8 +158,8 @@ var TuitionFeeComponent = new function(){
             }
 
             html = [`<div class="p-3 rounded-3 bg-white">
-                <button id="${btn_id}" class="btn btn-outline-primary btn-sm" type="button">
-                    <span class="trans-text text-nowrap" data-langprop="buttons.Add Price Item"></span>
+                <button id="${btn_id}" class="btn btn-outline-primary btn-sm border rounded-5" type="button">
+                    <span class="trans-text text-nowrap" data-langprop="buttons.Add Pricing Option"></span>
                 </button>
             </div>
             <div class="table-responsive p-2">
@@ -236,10 +248,32 @@ var TuitionFeeComponent = new function(){
             });
         });
     }
+    
+    this.elSearch.on('keyup',(e)=>{
+        e.preventDefault();
+        mThis.itemView.showPage({'academic_year':mThis.elFilter_academic_year.value,'search_value':mThis.elSearch.val()});
+    });
+
+    this.btnFind.on('click',e=>{
+        mThis.itemView.showPage({'academic_year':mThis.elFilter_academic_year.val(),'search_value':mThis.elSearch.val()});
+    });
+
+    this.elFilter_academic_year.on('change',(e)=>{
+        mThis.itemView.showPage({'academic_year':e.target.value,'search_value':mThis.elSearch.val()});
+    });
+
+    this.prepareFormOptions =(onFinish)=>{
+        vsapi.call(`${main_view.base_url}/api/academic-year/list`,null,null).then(res => {
+            const d = res.status_code===200? res.data: [];
+            VSUtil.setComboItems(mThis.elFilter_academic_year,d,'academic_year','academic_year',true,'(All Years)',0);
+            onFinish();
+        });
+    }
 
     this.show = (options) => {
         if(!options) options = {};
-        mThis.itemView.showPage(null,null,() => {
+        mThis.prepareFormOptions(()=>{
+            mThis.elFilter_academic_year.trigger('change');
             main_view.setTitle(mThis.title_prop);
             let x = mThis.self.siblings(':visible');
             x.hide(0,function(){
@@ -324,12 +358,12 @@ let TuitionFeeOutsideDialog = new function(){
         mThis.prepareFormOption(() => {
             if(options.id > 0){
                 mThis.elTitle.text(LocaleManager.trans('Edit Price List','titles'));
-                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please check item details before editing','titles'));
+                //mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please check item details before editing','titles'));
                 mThis.loadDataEdit(options);
             }
             else{
                 mThis.elTitle.text(LocaleManager.trans('Add Price List','titles'));
-                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input tuition fee details','titles'));
+                //mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input tuition fee details','titles'));
                 mThis.setDataForm(null);
             }
     
@@ -427,13 +461,13 @@ let PriceItemDialog = new function(){
 
         mThis.prepareFormOption(() => {
             if(options.id > 0){
-                mThis.elTitle.text(LocaleManager.trans('Edit Price List','titles'));
-                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please check item details before editing','titles'));
+                mThis.elTitle.text(LocaleManager.trans('Edit Pricing Option','titles'));
+                //mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please check item details before editing','titles'));
                 mThis.loadDataEdit(options);
             }
             else{
-                mThis.elTitle.text(LocaleManager.trans('Add New Price','titles'));
-                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input item details','titles'));
+                mThis.elTitle.text(LocaleManager.trans('New Pricing Option','titles'));
+                //mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input item details','titles'));
                 mThis.setDataForm(null);
             }
 

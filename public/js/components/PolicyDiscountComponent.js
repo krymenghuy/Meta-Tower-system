@@ -5,27 +5,29 @@ var PolicyDiscountComponent = new function(){
     this.self = $('#_main_policyDiscountComponent');
 
     this.btnAdd = mThis.self.find('#pld_btn_add');
-    this.elSearch = mThis.self.find('#_pdl_search');
+    //this.elSearch = mThis.self.find('#_pdl_search');
+    this.elFilter_academic_year = this.self.find('#_pol_filter_acad_year');
+    this.elFilter_price_list = this.self.find('#_pol_filter_price_list');
 
     this.cols = [{
-        title: "Name",
-        data: "price_list_name"
+        title: "Price List",
+        data: (data,index,tr)=>{
+            return ['<span class="fw-semibold">',data.price_list_name,'</span>'].join('');
+        }
     },
     {
-        title: "Payment Option",
-        data: "pmt_option"
-    },
-    {
-        title: "Start Date",
-        data: "start_date"
-    },
-    {
-        title: "End Date",
-        data: "end_date"
+        title: "Date Range",
+        data: (data,index,tr)=>{
+            return ['<span class="border rounded-3 p-2">',data.start_date,'</span>',' to ','<span class="border rounded-3 p-2">',data.end_date,'</span>'].join('');
+        }
     },
     {
         title: "Academic Year",
         data: "academic_year"
+    },
+    {
+        title: "Payment Option",
+        data: "pmt_option"
     },
     {
         title: "Session",
@@ -40,7 +42,7 @@ var PolicyDiscountComponent = new function(){
         }
     },
     {
-        title: "Created By",
+        title: "Updated By",
         data: (data, a, b) => {
             return [`<p class="pb-0 mb-0">`,data.update_user,`</p>
             <p class="pb-0 mb-0"><small>`,data.updated_at,`</small></p>`].join('');
@@ -48,9 +50,9 @@ var PolicyDiscountComponent = new function(){
     },
     {
         title: "Authorization",
-        data: (data, a, b) => {
-            let auth_info = data.auth_user ? [`<p class="d-block pb-0 mb-0">${user}</p>
-            <p class="d-block pb-0 mb-0">${data.auth_date}</p>`].join('') : '<span class="text-warning p-1">Pending</span>';
+        data: (data, index, tr) => {
+            let auth_info = data.authorized==1? [`<p class="d-block pb-0 mb-0">`,data.auth_user?data.auth_user:data.update_user,`</p>
+            <p class="d-block pb-0 mb-0"><small>${data.auth_date}</small></p>`].join('') : '<span class="text-warning p-1">Pending</span>';
             return auth_info;
         }
     },
@@ -68,6 +70,10 @@ var PolicyDiscountComponent = new function(){
         }
     }];
 
+    this.getFilterData = ()=>{
+        return {'academic_year':mThis.elFilter_academic_year.val(),'price_list_id':mThis.elFilter_price_list.val(),'search_value':null};
+    }
+
     this.init = () => {
         mThis.itemView = new ListView('tbl_pld',{
             'fetchApi':`${main_view.base_url}/api/pol-discount/list-paginate`,
@@ -84,7 +90,7 @@ var PolicyDiscountComponent = new function(){
             let op = {
                 'id': 0,
                 'onClose': () => {
-                    mThis.itemView.showPage({'search_value': mThis.elSearch.val()});
+                    mThis.itemView.showPage(mThis.getFilterData());
                 }
             };
             PolicyDiscountOutsideDialog.show(op);
@@ -97,7 +103,7 @@ var PolicyDiscountComponent = new function(){
             let op = {
                 'id': $(this).data('id'),
                 'onClose': () => {
-                    mThis.itemView.showPage({'search_value': mThis.elSearch.val()});
+                    mThis.itemView.showPage(mThis.getFilterData());
                 }
             };
             PolicyDiscountOutsideDialog.show(op);
@@ -112,7 +118,7 @@ var PolicyDiscountComponent = new function(){
                 if(e){
                     vsapi.call(`${main_view.base_url}/api/pol-discount/delete`,op,null).then(res => {
                         if(res.status_code === 200){
-                            mThis.itemView.showPage({'search_value': mThis.elSearch.val()});
+                            mThis.itemView.showPage(mThis.getFilterData());
                         }
                         else{
                             cv_interact.error(res.error_message);
@@ -122,18 +128,42 @@ var PolicyDiscountComponent = new function(){
             });
         });
 
-        mThis.elSearch.on('keyup',function(e){
-            e.preventDefault();
-            if(e.keyCode === 13)
-                mThis.itemView.showPage({'search_value': $(this).val()});
+        this.elFilter_price_list.on('change',(e)=>{
+            mThis.itemView.showPage(mThis.getFilterData());
         });
 
-        new SearchData(mThis.elSearch,mThis.tblPolicyDiscount);
+        this.elFilter_academic_year.on('change',(e)=>{
+            vsapi.call(`${main_view.base_url}/api/price-list/select-options`,{'academic_year':e.target.value},null).then(res=>{
+                const items = StringSanitizer.sanitizeObject(res.data);
+                VSUtil.setComboItems(mThis.elFilter_price_list,items,'id','price_list_name',true,'(All Price Lists)',0);
+                //mThis.elFilter_price_list.val(0).trigger('change');
+                mThis.itemView.showPage(mThis.getFilterData());
+            });
+        });
+
+        // mThis.elSearch.on('keyup',function(e){
+        //     e.preventDefault();
+        //     if(e.keyCode === 13)
+        //         mThis.itemView.showPage({'search_value': $(this).val()});
+        // });
+
+        //new SearchData(mThis.elSearch,mThis.tblPolicyDiscount);
     }
 
+    this.prepareFormOptions = (onFinish)=>{
+     vsapi.call(`${main_view.base_url}/api/settings/options-academic-year`,null,false).then(res=>{
+        if(res.status_code===200){
+            const items = StringSanitizer.sanitizeObject(res.data);
+            VSUtil.setComboItems(mThis.elFilter_academic_year,items,'academic_year','academic_year',true,'(All Years)',0);
+            onFinish();
+        }else cv_interact.error('Failed to load Price List options');
+        
+     });
+    }
     this.show = (options) => {
         if(!options) options = {};
-        mThis.itemView.showPage(null,null,() => {
+        mThis.prepareFormOptions(()=>{
+            mThis.elFilter_price_list.trigger('change');
             main_view.setTitle(mThis.title_prop);
             let x = mThis.self.siblings(':visible');
             x.hide(0,function(){
@@ -191,6 +221,7 @@ let PolicyDiscountOutsideDialog = new function(){
 
     this.setDataForm = (d) => {
         d = d ? d : {};
+        d.discount_type = d.discount_type?d.discount_type:'percentage';
         mThis.self.find('.data-input').each(function(){
             let el = $(this);
             let f = el.data('field');
@@ -230,13 +261,13 @@ let PolicyDiscountOutsideDialog = new function(){
 
         mThis.prepareFormOptions(() => {
             if(options.id > 0){
-                mThis.elTitle.text(LocaleManager.trans('Edit Discount Policy','titles'));
-                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please check discount type before editing','titles'));
+                mThis.elTitle.text(LocaleManager.trans('Edit Policy Discount','titles'));
+                //mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please check discount type before editing','titles'));
                 mThis.loadDataEdit(options);
             }
             else{
-                mThis.elTitle.text(LocaleManager.trans('Add Discount Policy','titles'));
-                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input discount type details','titles'));
+                mThis.elTitle.text(LocaleManager.trans('Add Policy Discount','titles'));
+                //mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input discount type details','titles'));
                 mThis.setDataForm(null);
             }
 

@@ -262,6 +262,14 @@ class GeneralSettingsController extends Controller
     return DB::table("employees as e")->join('persons as p','p.id','=','e.person_id')->join('employee_positions as ep','ep.emp_id','=','e.id')->where('e.branch_id',$branch_id)->whereRaw($str_where)->selectRaw("e.id,concat(p.last_name,' ',p.first_name) AS consultant_name,e.code")->get();
   }
 
+  function getOptions_price_list(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return JDV::raw($ss);
+    $academic_year = $req->academic_year;
+    $data = GeneralSettings::options_price_list($academic_year,$ss);
+    return JDV::result($data);
+  }
+
   function paymentOptions(Request $req){
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated

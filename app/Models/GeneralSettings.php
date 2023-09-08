@@ -253,9 +253,11 @@ class GeneralSettings //extends Model
        return DV::depends($x,['schools'=>self::options_school($ss)]);
     }
 
-    static function options_price_list($ss){
+    static function options_price_list($academic_year,$ss){
         $branch_id = $ss->branch_id;
-        return DB::table('price_list')->where('branch_id',$branch_id)->selectRaw('name,id')->get();
+        $str_acad ='1=1';
+        if($academic_year) $str_acad ='l.academic_year =\''.$academic_year.'\'';
+        return DB::table('price_list AS l')->where('l.branch_id',$branch_id)->whereRaw($str_acad)->selectRaw('l.name,l.id,l.name as price_list_name')->get();
     }
 
     static function options_sales_agent($ss){
