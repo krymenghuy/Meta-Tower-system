@@ -221,6 +221,18 @@
 			  //result = {'value':'some value here'}
 			  return result;
 		}
+
+		this.loading = () => {
+			Swal.fire({
+                title: 'Data Loading...',
+                icon: 'info',
+                padding: '3em',
+                color: '#716add',
+                showCancelButton: true,
+				showCloseButton: false,
+                allowOutsideClick: false
+            });
+		}
  } //close cv_interact class
  
  //});//close $(document).ready(function()) 

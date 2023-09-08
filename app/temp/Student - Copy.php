@@ -300,7 +300,7 @@ class Student //extends Model
         $um = new UM();
         $um_res = null;
         $i = 0;
-        $newID = 0; // default to reach to the bottom
+
         $login_account = [];
 
         foreach($parent_info as $pf){
@@ -366,23 +366,21 @@ class Student //extends Model
             $i++;
         }
         /** get parent's login account that is connected to this student_id. If it exists with the same phone_number then DO NOT create account anymore, otherwise create a login account for the parent */
-        if($newID>0){
-            $parent_login_info = self::getParentLoginInfo($newID,$student_id);
-            if(!$parent_login_info)
-            {
-                $um_res = $um->saveUser($login_account,$ss);
-                /** Create new to parent login name */
-                $um_res->parent_login_changed = 0;
-            }
-            else if ($parent_login_info->login_name != $login_account['login_name']){
-                $new_login_name = $login_account['login_name'];
-                $um_res = $um->changeLoginName($parent_login_info->login_name,$new_login_name);
-                $um_res->parent_login_changed = 1;
-                $um_res->new_login_name =$new_login_name;
-            }else{
-                /** No change to parent login name */
-                $um_res = (object)['parent_login_changed'=>0];
-            }
+        $parent_login_info = self::getParentLoginInfo($newID,$student_id);
+        if(!$parent_login_info)
+        {
+            $um_res = $um->saveUser($login_account,$ss);
+             /** Create new to parent login name */
+            $um_res->parent_login_changed = 0;
+        }
+        else if ($parent_login_info->login_name != $login_account['login_name']){
+            $new_login_name = $login_account['login_name'];
+            $um_res = $um->changeLoginName($parent_login_info->login_name,$new_login_name);
+            $um_res->parent_login_changed = 1;
+            $um_res->new_login_name =$new_login_name;
+        }else{
+            /** No change to parent login name */
+            $um_res = (object)['parent_login_changed'=>0];
         }
         return $um_res;
     }
@@ -835,68 +833,27 @@ class Student //extends Model
         $ss = $ss?$ss:$this->userInfo;
         $id = $id?$id:$this->id;
         $branch_id = $ss->branch_id;
-        $row = DB::table('students')->where('id',$id)->selectRaw('name,name_kh,email,place_of_birth,date_of_birth,sex,phone_number,address,file_name')->first();
+        $row = DB::table('students')->where('id',$id)->selectRaw('name,name_kh,email,place_of_birth,date_of_birth,sex,phone_number,address')->first();
         if(!$row) return null;
-        if($row->file_name !=null ){
-            $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
-        } else $row->image_url = null;
+        if(isset($row->file_name)) $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
+        else $row->image_url = null;
         return $row;
     }
 
-    //**Student student Onleave  */
-    function setLeave($arr,$id=null,$ss=null){
-        $id = $id?$id:$this->id;
-        $ss = $ss?$ss:$this->userInfo;
+    function setStudentOnLeave($arr,$student,$ss){
         $v_rule = [
             'student_id' => '1|number|exists=students.id',
-            'leave_term_id' => '1|number|exists=terms.id',
+            'term_id' => '1|number|exists=terms.id',
             'leave_remarks' => '0|string|1,350',
             'return_remarks' => '0|string|1,350',
             'return_term_id' => '0|number|exists=terms.id',
             'return_date' => '0|string',
-            'leave_type_id' => '1|number',
+            'leave_type_id' => '0|string',
             'leave_date' => '0|string',
         ];
-
         $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
-        $d = (object)$inputs;
-        $leaveDate = $d->leave_date;
-        $lastEnr = DB::table('enrollments')->where('student_id',$d->student_id)->where('term_id',$d->leave_term_id)->where('status_id','>',2)->selectRaw('id,tuition_end_date')->orderBy('id','desc')->get()->first();
-
-        $leaveDiffDate = diffDays($lastEnr->tuition_end_date,$leaveDate);
-
-        $inputs['leave_diff_days'] = $leaveDiffDate;
-        $enr_status_id = 0;
-        if($d->leave_type_id == 1){
-            $enr_status_id = 2;// drop
-        }else if ($d->leave_type_id == 2){
-            $enr_status_id = 3;// suspend
-        }
-        $returned = 0;
-        if(isset($d->return_date)){
-            $returned = 1;
-            $inputs['has_returned'] = 1;
-        }
-        $newID = saveData($ss,'leaves',['id' => $id],$inputs,['auth_uid'=>$ss->id,'auth_user'=>$ss->full_name],1);
-        if($newID>0 && $returned < 1 && !$id){
-            $updateEnrollment = [
-                'enrollment_status_id' => $enr_status_id
-            ];
-            saveData($ss,'enrollments',['student_id' => $d->student_id,'term_id'=>$d->leave_term_id],[
-                $updateEnrollment
-            ],[],1);
-
-            $updatePriceList = [
-                'inactive' => 1
-            ];
-            saveData($ss,'student_pricelist',['student_id' => $d->student_id],[
-                $updatePriceList
-            ],[],1);
-        }
-
-        return DV::depends($newID,['on_leave' => true,'diff_date' => $leaveDiffDate]);
 
         // update enrollment -> drop
         // update student_pricelist -> inactive = 1;

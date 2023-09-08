@@ -111,15 +111,15 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //end mobile api
 
     //
-    Route::post('audio',function(Request $req){
-        $file = '';
-        return $file;
-    });
-    //
-     //
-     Route::post('audio/save',[AudioController::class,'saveAudio']);
-     Route::post('audio',[AudioController::class,'getAudio']);
-    //
+    // Route::post('audio',function(Request $req){
+    //     $file = '';
+    //     return $file;
+    // });
+    
+    //  //
+    //  Route::post('audio/save',[AudioController::class,'saveAudio']);
+    //  Route::post('audio',[AudioController::class,'getAudio']);
+    // //
 
     //begin::ActivityController
     Route::prefix('activity')->group(function(){
@@ -237,6 +237,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/update-info',[StudentController::class,'updateStudentInfo']);
         Route::post('/details-info',[StudentController::class,'getStudentBasicInfoDetails']);
         Route::post('/save-audio', [StudentController::class, 'saveAudioFile']);
+        Route::post('/audio', [StudentController::class, 'getAudioFile']);
+        Route::post('/delete-audio', [StudentController::class, 'deleteAudioFile']);
         Route::post('/registration', [StudentController::class, 'studentRegistration']);
         Route::post('/list-paginate',[StudentController::class,'studentPaginate']);
         Route::post('/delete-student-enrollment',[StudentController::class,'deleteStudentEnrollment']);
