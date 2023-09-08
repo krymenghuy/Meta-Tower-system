@@ -536,6 +536,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
 
     //begin::PriceListController
+    Route::post('price-list/select-options', [GeneralSettingsController::class, 'getOptions_price_list']);
+    Route::post('price-list/options', [GeneralSettingsController::class, 'getOptions_price_list']);
     Route::post('price-list/list-paginate', [PriceListController::class, 'getPriceList_paginate']);
     Route::post('price-list/delete', [PriceListController::class, 'deletePriceList']);
     Route::post('price-list/save', [PriceListController::class, 'savePriceList']);

@@ -1,13 +1,17 @@
 <div id="_main_tuitionFeeComponent" class="mobile-padding p-3" style="display:none">
-    <div class="d-flex gap-2">
+    <div class="d-flex justify-content-between">
+        <div class="d-flex flex-row gap-2">
+                <select class="modal-select2" id="_ttf_filter_acad_year"></select>
+                <input id="ttf_search" type="search" class="form-control width--search-inner" placeholder="Search..."/>
+                <button id ="ttf_btn_find" class="btn btn-sm btn-primary" type="button">
+                    <span class="trans-text" data-langprop="buttons.Find"></span>
+                    <!-- <i class="fa-solid fa-caret-down ps-2"></i> -->
+                </button>
+        </div>
+
         <button id="ttf_btn_add" class="btn btn-sm btn-primary" type="button">
             <i class="fa-solid fa-plus"></i>
             <span class="trans-text" data-langprop="buttons.Add Price List"></span>
-        </button>
-        <input id="ttf_search" type="search" class="form-control width--search-inner" placeholder="Search..."/>
-        <button class="btn btn-sm btn-primary" type="button">
-            <span class="trans-text" data-langprop="buttons.Filter By Year"></span>
-            <i class="fa-solid fa-caret-down ps-2"></i>
         </button>
     </div>
     <div id="_ttf_tbl" class="table-responsive mt-3 p-3 bg-white border rounded-3 table-responsive-hover"></div>
@@ -25,21 +29,21 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="name" class="form-label trans-text" data-langprop="titles.Name"></label>
-                    <input type="text" class="form-control data-input" data-field="name"/>
+                    <label for="name" class="form-label trans-text" data-langprop="titles.Price List Name"></label>
+                    <input type="text" class="form-control data-input" data-field="name" data-required="1"/>
                 </div>
                 <div class="form-group">
                     <label for="start_date" class="form-label trans-text" data-langprop="titles.Start Date"></label>
-                    <input data-select="datepicker" class="form-control data-input" data-field="start_date"/>
+                    <input data-required="1" data-select="datepicker" class="form-control data-input" data-field="start_date"/>
                 </div>
                 <div class="form-group">
                     <label for="end_date" class="form-label trans-text" data-langprop="titles.End Date"></label>
-                    <input data-select="datepicker" class="form-control data-input" data-field="end_date"/>
+                    <input data-required="1" data-select="datepicker" class="form-control data-input" data-field="end_date"/>
                 </div>
                 <div class="form-group">
                     <label for="academic_year" class="form-label trans-text" data-langprop="titles.Academic Year"></label>
                     <div class="width-select-dialog">
-                        <select id="dlg_tff_academic" class="modal-select2 data-input" data-field="academic_year"></select>
+                        <select data-required="1" id="dlg_tff_academic" class="modal-select2 data-input" data-field="academic_year"></select>
                     </div>
                 </div>
                 <div class="form-group">

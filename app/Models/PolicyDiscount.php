@@ -68,18 +68,18 @@ class PolicyDiscount //extends Model
         $per_page =isset($d->per_page)? $$d->per_page:10;
         if(!is_numeric($current_page)) $current_page=1;
         $skip_rows = ($current_page -1) * $per_page;
-        $str_search="1=1";
+        $str_search='1=1';
 
         $search_value = isset($d->search_value)?$d->search_value:null;
         $price_list_id = isset($d->price_list_id)?$d->price_list_id:null;
         $pmt_option_id = isset($d->pmt_option_id)?$d->pmt_option_id:null;
         $academic_year = isset($d->academic_year)?$d->academic_year:null;
-        if ($pmt_option_id >0) $str_search = ' d.pmt_option_id ='.$pmt_option_id;
-        if ($price_list_id >0) $str_search = ($str_search? ' AND ':'').' d.price_list_id ='.$price_list_id;
-        if ($academic_year >0) $str_search = ($str_search? ' AND ':'').' d.academic_year =\''.$academic_year.'\'';
-        if ($search_value >0) $str_search = ($str_search? ' AND ':'').' (d.discount ='.$search_value.')';
+        if ($pmt_option_id >0) $str_search .= ' AND d.pmt_option_id ='.$pmt_option_id;
+        if ($price_list_id >0) $str_search .=' AND d.price_list_id ='.$price_list_id;
+        if ($academic_year) $str_search .= ' AND l.academic_year =\''.$academic_year.'\'';
+        if ($search_value>0) $str_search .= ' AND (d.discount ='.$search_value.')';
 
-        $cols = 'd.id,d.discount,d.discount_type,d.pmt_option_id,op.name as pmt_option,s.`name` as `session`, l.id as price_list_id,l.name as price_list_name,l.academic_year,formatDate(l.start_date) AS start_date, formatDate(l.end_date) AS end_date,d.update_user,formatDate(d.updated_at) as updated_at,d.auth_user,formatTime(d.auth_date) AS auth_date';
+        $cols = 'd.id,d.discount,d.discount_type,d.pmt_option_id,op.name as pmt_option,s.`name` as `session`, l.id as price_list_id,l.name as price_list_name,l.academic_year,formatDate(l.start_date) AS start_date, formatDate(l.end_date) AS end_date,d.update_user,formatTime(d.updated_at) as updated_at,l.authorized,l.auth_user,formatTime(l.auth_date) AS auth_date';
         $query = DB::table('policy_discounts as d')->join('price_list as l','l.id','=','d.price_list_id')->join('pmt_options as op','op.id','=','d.pmt_option_id')->join('sessions as s','s.id','=','d.session_id')->where('d.branch_id',$branch_id)->whereRaw($str_search)->selectRaw($cols);
 
         $count_query = clone $query;

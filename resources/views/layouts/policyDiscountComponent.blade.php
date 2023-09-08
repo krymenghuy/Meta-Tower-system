@@ -1,14 +1,20 @@
 <div id="_main_policyDiscountComponent" class="mobile-padding p-3" style="display:none">
-    <div class="d-flex gap-2">
-        <button id="pld_btn_add" class="btn btn-sm btn-primary" type="button">
+    <div class="d-flex flex-row justify-content-between">
+       <div class="d-flex flex-row gap-2">
+            <!-- <input id="_pdl_search" type="search" class="form-control width--search-inner" placeholder="Search..."/> -->
+            <!-- <button class="btn btn-sm btn-primary" type="button">
+                <span class="trans-text" data-langprop="buttons.Filter By Year"></span>
+                <i class="fa-solid fa-caret-down ps-2"></i>
+            </button> -->
+            <select class="modal-select2" id="_pol_filter_acad_year"></select>
+            <select class="modal-select2" id="_pol_filter_price_list"></select>
+       </div>
+       <button id="pld_btn_add" class="btn btn-sm btn-primary" type="button">
             <i class="fa-solid fa-plus"></i>
-            <span class="trans-text" data-langprop="buttons.Add Policy"></span>
+            <span class="trans-text" data-langprop="buttons.Add Discount"></span>
         </button>
-        <input id="_pdl_search" type="search" class="form-control width--search-inner" placeholder="Search..."/>
-        <button class="btn btn-sm btn-primary" type="button">
-            <span class="trans-text" data-langprop="buttons.Filter By Year"></span>
-            <i class="fa-solid fa-caret-down ps-2"></i>
-        </button>
+
+       
     </div>
     <div id="tbl_pld" class="table-responsive mt-3 p-3 border rounded-3 bg-white table-responsive-hover"></div>
 </div>
@@ -25,32 +31,32 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="price_list_id" class="form-label trans-text" data-langprop="titles.Name"></label>
+                    <label for="price_list_id" class="form-label trans-text" data-langprop="titles.Price List"></label>
                     <div class="width-select-dialog">
-                        <select id="dlg_pld_price_list" class="modal-select2 data-input" data-field="price_list_id"></select>
+                        <select data-required ="1" id="dlg_pld_price_list" class="modal-select2 data-input" data-field="price_list_id"></select>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="pmt_option_id" class="form-label trans-text" data-langprop="titles.Payment Option"></label>
                     <div class="width-select-dialog">
-                        <select id="dlg_pld_pmt_option" class="modal-select2 data-input" data-field="pmt_option_id"></select>
+                        <select data-required ="1" id="dlg_pld_pmt_option" class="modal-select2 data-input" data-field="pmt_option_id"></select>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="session_id" class="form-label trans-text" data-langprop="titles.Session"></label>
                     <div class="width-select-dialog">
-                        <select id="dlg_pld_session" class="modal-select2 data-input" data-field="session_id"></select>
+                        <select data-required ="1" id="dlg_pld_session" class="modal-select2 data-input" data-field="session_id"></select>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="discount" class="form-label trans-text" data-langprop="titles.Discount"></label>
-                    <input type="number" class="form-control data-input" data-field="discount"/>
+                    <input data-required ="1" type="number" class="form-control data-input" data-field="discount"/>
                 </div>
                 <div class="form-group">
                     <label for="discount_type" class="form-label trans-text" data-langprop="titles.Discount Type"></label>
                     <div class="width-select-dialog">
-                        <select class="modal-select2 data-input" data-field="discount_type">
-                            <option value="percentage">Percentage (%)</option>
+                        <select class="modal-select2 data-input" data-field="discount_type" disabled>
+                            <option value="percentage" selected>Percentage (%)</option>
                             <option value="amount">Amount ($)</option>
                         </select>
                     </div>
