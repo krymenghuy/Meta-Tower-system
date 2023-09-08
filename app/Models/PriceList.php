@@ -36,7 +36,7 @@ class PriceList //extends Model
         $str_id ='1=1';
         if($id>0) $str_id ='id <> '.$id;
         $test_id = DB::table('price_list')->where('name',$name)->whereRaw($str_id)->take(1)->value('id');
-        return $test_id > 0? true:false;  
+        return $test_id > 0? true:false;
     }
 
     /** Create or Update Price List */
@@ -70,10 +70,10 @@ class PriceList //extends Model
             return DV::error($err);
         }
         $pl_exists = self::priceListExits($inputs['name'],$id);
-        if($id){
-            if($pl_exists)  return DV::error('Name is already used'); 
-        }
-        
+
+        if($pl_exists)  return DV::error('Name is already used');
+
+
        $academic_year = $inputs['academic_year'];
        $inputs['ac_year_id'] = self::getAcademicYearID($academic_year);
        $created = $id>0? false:true;
@@ -91,7 +91,7 @@ class PriceList //extends Model
         'auth_user'=>$ss->full_name,
         'auth_date'=>getNowTime(),
         'auth_uid'=>$ss->user_id
-       ]); 
+       ]);
     }
     function delete($id=null){
         $id = $id?$id:$this->id;
