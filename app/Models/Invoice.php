@@ -714,18 +714,20 @@ class Invoice //extends Model
         $amount_keeper = [];
         $success = 0;
         $delete = 0;
-        foreach($insert_info as $ins_info){
-            $other_fee = DB::table('other_fees')->where('name',$ins_info['fee_type'])->selectRaw('name,amount,description')->first();
-            $updateOrInsert = [
-                "invoice_id" => $id,
-                "fee_type" => $ins_info['fee_type'],
-                'price' => $other_fee->amount,
-                'description' => $other_fee->description
-            ];
-            $inv_item_id = isset($ins_info['invoice_item_id'])?$ins_info['invoice_item_id']:null;
-            $newID = saveData($ss,'invoice_items',['id'=>$inv_item_id],$updateOrInsert);
-            $amount_keeper[] = $other_fee->amount;
-            $success ++;
+        if(isset($insert_info)){
+            foreach($insert_info as $ins_info){
+                $other_fee = DB::table('other_fees')->where('name',$ins_info['fee_type'])->selectRaw('name,amount,description')->first();
+                $updateOrInsert = [
+                    "invoice_id" => $id,
+                    "fee_type" => $ins_info['fee_type'],
+                    'price' => $other_fee->amount,
+                    'description' => $other_fee->description
+                ];
+                $inv_item_id = isset($ins_info['invoice_item_id'])?$ins_info['invoice_item_id']:null;
+                $newID = saveData($ss,'invoice_items',['id'=>$inv_item_id],$updateOrInsert);
+                $amount_keeper[] = $other_fee->amount;
+                $success ++;
+            }
         }
 
         if(isset($delete_info)){
@@ -734,7 +736,9 @@ class Invoice //extends Model
                 $delete ++;
             }
         }
-        DB::table('invoices')->where('id',$id)->update(['amount'=>array_sum($amount_keeper),'due_amount'=>array_sum($amount_keeper)]);
+        $tution_fee = DB::table('invoice_items')->where('invoice_id',$id)->where('fee_type','tuition_fee')->take(1)->value('net_amount');
+        // $non_tuition = DB::table('invoice_items')->where('invoice_id',$id)->where('fee_type','tuition_fee')->sum('');
+        DB::table('invoices')->where('id',$id)->update(['amount'=>array_sum($amount_keeper)+$tution_fee,'due_amount'=>array_sum($amount_keeper)+$tution_fee]);
         return DV::depends($success || $delete,$amount_keeper);
     }
 

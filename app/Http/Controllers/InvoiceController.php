@@ -60,13 +60,13 @@ class InvoiceController extends Controller
         return JDV::raw($delete);
     }
 
-    function turnInvoiceToActive(Request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !=200) return $ss;
-        $x = new Invoice();
-        $active = $x->reviveInActiveInvoice($req,$ss);
-        return JDV::raw($active);
-    }
+    // function turnInvoiceToActive(Request $req){
+    //     $ss = UM::getUserInfoByToken($req,-1);
+    //     if($ss->status_code !=200) return $ss;
+    //     $x = new Invoice();
+    //     $active = $x->reviveInActiveInvoice($req,$ss);
+    //     return JDV::raw($active);
+    // }
 
     function updateInvoice(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
