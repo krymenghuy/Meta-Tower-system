@@ -32,7 +32,7 @@
             <button id="_rgs_btnRegister" class="btn btn-primary  " type="button">
                 <span class="trans-text" data-langprop="buttons.Register"></span>
             </button>
-            <input type="search" class="form-control width--search" placeholder="Search by Name or ID..."/>
+            <input id="_rgs_search_student" type="search" class="form-control width--search" placeholder="Search by Name or ID..."/>
         </div>
         <div id="_reg_list_view" class="_rgs_list"></div>
     </div>
@@ -124,7 +124,6 @@
                     </div>
 
                 <div class="col">
-                   
                     <div class="form-group">
                         <label for="campus_id" class="form-label trans-text" data-langprop="titles.Campus"></label>
                         <div class="width-select-dialog">

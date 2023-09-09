@@ -1,6 +1,5 @@
 <?php
 namespace App\Services;
-use App\Models\Campus;
 use App\Models\PriceList;
 use DB;
 use App\Models\DV;
@@ -375,7 +374,7 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
           if($search_value){
               $skip_rows =0;
               $search_value = escape_like_str($search_value);
-              $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+              $str_search ="(st.code ='$search_value' OR st.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
           }
           if($academic_year) $str_moreWhere .= ' AND e.academic_year =\''.$academic_year.'\'';
 

@@ -25,7 +25,7 @@
 
 	},
 	"general":{
-
+       "No data to display":"គ្មានទិន្នន័យបង្ហាញ"
 	},
 	"payment":{},
 	"appointment":{
@@ -137,6 +137,7 @@
 		"Remarks":"កំណត់សំគាល់"
 	},
 	"titles":{
+		"No data to display":"គ្មានទិន្នន័យបង្ហាញ",
          "dashboard":"ពត៌មានសង្ខេប",
 		 "New Application":"សំណើរថ្មី",
 		 "loan app list":"សំណើរឥណទានមិនទាន់សំរេច",
