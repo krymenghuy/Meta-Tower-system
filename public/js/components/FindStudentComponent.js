@@ -460,7 +460,7 @@ let GenerateInvoiceFSN = new function(){
                     <td>${d.discount ? ['%',d.discount].join(' ') : 'N/A'}</td>
                     <td>${d.special_discount ? ['%',d.special_discount].join(' ') : 'N/A'}</td>
                     <td>${d.second_child_discount ? d.second_child_discount : 'N/A'}</td>
-                    <td>${d.total ? ['$',d.total].join(' ') : 'N/A'}</td>
+                    <td class="total-item">${d.total ? ['$',d.total].join(' ') : 'N/A'}</td>
                     <td>
                         <a href="javascript:void(0)" class="btn-fee-type-delete d-none">
                             <i class="fa-regular fa-trash-can text-danger fs-5"></i>
@@ -493,6 +493,7 @@ let GenerateInvoiceFSN = new function(){
         div.html(html);
         mThis.addRow(div.find('tbody'),d,btn);
         mThis.deleteFeeRow(div.find('tbody'));
+        mThis.setTotal(div.find('tbody'));
     }
 
     this.addRow = (tbody,d, btn) => {
