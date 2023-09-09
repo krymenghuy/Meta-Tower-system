@@ -24,7 +24,7 @@
                 <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button type="button" class="btn btn-sm btn-primary">
+                <button id="dlg_inv_btn_save" type="button" class="btn btn-sm btn-primary">
                     <span class="trans-text" data-langprop="buttons.Print Now"></span>
                 </button>
             </div>

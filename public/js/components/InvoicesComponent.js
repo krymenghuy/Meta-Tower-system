@@ -280,6 +280,15 @@ let InvoiceDialog = new function(){
     this.self = $('#dlg_inv_');
 
     this.elBody = mThis.self.find('#dlg_elBody');
+    this.btnPrint = mThis.self.find('#dlg_inv_btn_save');
+    this.htmlString = null;
+
+    mThis.btnPrint.on('click',function(e){
+        e.preventDefault();
+        if(mThis.htmlString){
+            windowPrintInvoice(mThis.htmlString);
+        }
+    });
 
     this.loadFormDetails = (div,op,onFinish = null) => {
         vsapi.call(`${main_view.base_url}/api/invoice/receipt-details`,{'invoice_id': op.invoice_id},null).then(res => {
@@ -377,13 +386,33 @@ let InvoiceDialog = new function(){
                                     month: 'short',
                                     year: 'numeric'
                                 }).replace(',','') : 'N/A'}</td>
-                                <td class="text-wrap text-center align-middle">${inv.duration ? inv.duration : 'N/A'}</td>
+                                <td class="text-wrap text-center align-middle text-capitalize">${inv.duration ? inv.duration : 'N/A'}</td>
                                 <td class="align-middle">${inv.net_amount ? [cur_symbol,inv.net_amount].join(' ') : [cur_symbol,'-'].join(' ')}</td>
                             </tr>`].join('')
                         }),tbl_html ? tbl_html : ''}
                         <tr class="text-nowrap">
                             <td rowspan="5" colspan="4">
-                                <div class="w-100 h-100"></div>
+                                <div class="w-100 h-100 d-flex flex-column gap-2 px-3">
+                                    <div class="d-block">
+                                        <p>
+                                            <sup>*</sup>
+                                            <span class="text-decoration-underline">Method of payment</span>
+                                        </p>
+                                    </div>
+                                    <div class="d-flex gap-3 align-items-center">
+                                        <p class="fixed-width-p p-0 m-0">Cash</p>
+                                        <div class="box-size-invoice border rounded-3"></div>
+                                    </div>
+                                    <div class="d-flex gap-3 align-items-center">
+                                        <p class="fixed-width-p p-0 m-0">Transfer</p>
+                                        <div class="box-size-invoice border rounded-3"></div>
+                                    </div>
+                                    <div class="d-flex gap-3 align-items-center">
+                                        <p class="fixed-width-p p-0 m-0">Cheque</p>
+                                        <div class="box-size-invoice border rounded-3"></div>
+                                        <span>Bank (${('.').repeat(30)}) No (${('.').repeat(30)})</span>
+                                    </div>
+                                </div>
                             </td>
                             <td class="align-middle text-end">Total</td>
                             <td class="align-middle">${invoice.total ? [cur_symbol,invoice.total].join(' ') : [cur_symbol,'0.00'].join(' ')}</td>
@@ -452,7 +481,7 @@ let InvoiceDialog = new function(){
                     <span>${company_info.phone_number ? company_info.phone_number : 'N/A'}</span>
                 </div>
             </div>`].join('');
-
+            mThis.htmlString = html;
             div.html(html);
         }
     }
