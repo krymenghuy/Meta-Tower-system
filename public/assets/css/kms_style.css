@@ -1000,3 +1000,12 @@ li.kt-menu__section {
 .modal-custom-size .modal-body:hover{
     overflow-y: auto;
 }
+
+.box-size-invoice{
+    width:150px;
+    height:30px;
+}
+
+.fixed-width-p{
+    width:57px;
+}

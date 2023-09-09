@@ -206,6 +206,32 @@ function exportToExcel(){
     }
 }
 
+function windowPrintInvoice(html){
+    if(html){
+        let myWindow = window.open('','PRINT');
+        myWindow.document.write(`<!DOCTYPE html>
+        <html >
+            <head>
+                <title>Student Attendaces Report</title>
+                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link href="https://fonts.googleapis.com/css2?family=Moul&display=swap" rel="stylesheet">
+                <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/font-awesome/6.2.0/css/all.min.css"/>
+                <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/ksm_style.css"/>
+                <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/vsstyle.css"/>
+            </head>
+            <body>${html.replaceAll('table-responsive ','')}</body>
+        </html>`);
+        myWindow.document.close();
+        setTimeout(() => {
+            myWindow.focus();
+            myWindow.print();
+            myWindow.close();
+        },100);
+    }
+}
+
 function calculate_age(dob){
     if(!dob){
         return 0;
