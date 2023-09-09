@@ -261,10 +261,11 @@ let RequestDiscountDialog = new function(){
         d = d ? d : {};
         Validator.clearErrors(mThis.self);
         mThis.self.find('.data-input').each(function(){
-            let el = $(this);
-            let f = el.data('field');
-            if(el.is('select'))
-                el.val(d[f]).trigger('change');
+            const el = $(this);
+            const f = el.data('field');
+            if(el.is('select')){
+                f === 'type' ? el.val('percentage') : el.val(d[f]).trigger('change');
+            }
             else
                 el.val(d[f]);
         });
