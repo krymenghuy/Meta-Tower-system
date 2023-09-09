@@ -1,7 +1,7 @@
 "use strict";
-var RegistrationComponent = new function(){
+var EnrolledStudentsComponent = new function(){
     let mThis = this;
-    this.title_prop = "Registration";
+    this.title_prop = "Enrolled Students";
     this.self = $('#_main_registrationComponent');
     this.options = {};
     
@@ -854,5 +854,5 @@ let FamilyDialog = new function(){
 }
 
 window.addEventListener('DOMContentLoaded',() => {
-    RegistrationComponent.init();
+    EnrolledStudentsComponent.init();
 });

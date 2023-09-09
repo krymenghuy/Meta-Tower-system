@@ -41,16 +41,38 @@
                     <span class="kt-menu__link-text trans-text" data-langprop="menus.Dashboard"></span>
                 </a>
             </li>
-
-            <li class="kt-menu__item" aria-haspopup="true">
-                <a href="RegistrationComponent" class="menu-item kt-menu__link">
+ 
+            <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+                <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
-                        <i>
-                            <img class="icons" src="{{ asset('assets/images/icons/registration.png') }}" style="height:25px">
-                        </i>
+                        <img class="icons" src="{{ asset('assets/images/icons/fee_management.png') }}" style="height: 25px"/>
                     </span>
                     <span class="kt-menu__link-text trans-text" data-langprop="menus.Registration"></span>
+                    <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
+                <div class="kt-menu__submenu ">
+                    <span class="kt-menu__arrow"></span>
+                    <ul class="kt-menu__subnav">
+                      <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="EnrolledStudentsComponent" class="menu-item kt-menu__link">
+                               <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{asset('assets/images/icons/registration.png') }}"/>
+                                </span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Enrolled Students"></span>
+                            </a>
+                        </li>
+                        <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="OnLeaveStudentsComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{asset('assets/images/icons/registration.png') }}"/>
+                                </span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.On-leave Students"></span>
+                            </a>
+                        </li>
+                 
+                     
+                    </ul>
+                </div>
             </li>
  
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
@@ -58,7 +80,7 @@
                     <span class="kt-menu__link-icon">
                         <img class="icons" src="{{ asset('assets/images/icons/fee_management.png') }}" style="height: 25px"/>
                     </span>
-                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Fee Management"></span>
+                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Pricing and Discounts"></span>
                     <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
                 <div class="kt-menu__submenu ">
@@ -69,7 +91,7 @@
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/tuition_fee.png')}}"/>
                                 </span>
-                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Tuition Fee"></span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Tuition Fees"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
@@ -77,7 +99,7 @@
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/policy_discount.png')}}"/>
                                 </span>
-                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Policy Discount"></span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Policy Discounts"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
@@ -104,11 +126,20 @@
                     <span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
                         <li class="kt-menu__item" aria-haspopup="true">
+                            <a href="FindStudentComponent" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons" src="{{ asset('assets/images/icons/find_student.png') }}"/>
+                                </span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Find Students"></span>
+                            </a>
+                        </li>
+
+                        <li class="kt-menu__item" aria-haspopup="true">
                             <a href="PaymentPendingComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{ asset('assets/images/icons/payment_pending.png') }}"/>
                                 </span>
-                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Payment Pending"></span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Payment Review"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
@@ -116,17 +147,10 @@
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{ asset('assets/images/icons/deposit_fee.png') }}"/>
                                 </span>
-                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Deposit Fee"></span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Deposits"></span>
                             </a>
                         </li>
-                        <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="FindStudentComponent" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{ asset('assets/images/icons/find_student.png') }}"/>
-                                </span>
-                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Find Student"></span>
-                            </a>
-                        </li>
+                       
                         <li class="kt-menu__item" aria-haspopup="true">
                             <a href="InvoicesComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
@@ -171,7 +195,7 @@
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{ asset('assets/images/icons/discount_act.png') }}"/>
                                 </span>
-                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Discount"></span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Discounts"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
@@ -179,7 +203,7 @@
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{ asset('assets/images/icons/student_group.png') }}"/>
                                 </span>
-                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Group"></span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Groups"></span>
                             </a>
                         </li>
                         <!-- <li class="kt-menu__item" aria-haspopup="true">
@@ -206,7 +230,7 @@
                     <span class="kt-menu__link-icon">
                         <img class="icons" src="{{ asset('assets/images/icons/approval.png') }}"/>
                     </span>
-                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Approval"></span>
+                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Approvals"></span>
                     <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
                 <div class="kt-menu__submenu ">
@@ -217,7 +241,7 @@
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{ asset('assets/images/icons/discount.png') }}"/>
                                 </span>
-                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Discount"></span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Discounts"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
@@ -337,7 +361,7 @@
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{ asset('assets/images/icons/term.png') }}"/>
                                 </span>
-                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Term"></span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Terms"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">
@@ -345,7 +369,7 @@
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{ asset('assets/images/icons/academic_year.png') }}"/>
                                 </span>
-                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Academic Year"></span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Academic Years"></span>
                             </a>
                         </li>
                     </ul>
@@ -403,7 +427,7 @@
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{asset('assets/images/icons/program.png')}}"/>
                                 </span>
-                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Program"></span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Programs"></span>
                             </a>
                         </li>
                     </ul>

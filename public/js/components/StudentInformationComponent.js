@@ -370,7 +370,8 @@ let StudentAudioDialog = new function(){
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        const p = mThis.getDataForm();
+        const p = mThis.getDataForm(false);
+        if(!p) return;
         vsapi.call(`${main_view.base_url}/api/student/save-audio`,p,mThis.btnSave).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
@@ -408,11 +409,18 @@ let StudentAudioDialog = new function(){
         }
     }
 
-    this.getDataForm = () => {
+    this.getDataForm = (silent=false) => {
         const div = mThis.self;
+        let audio_data = div.find('.data-audio').prop('src');
+        if(!audio_data){
+            if(!silent){
+                cv_interact.warning('There is no audio file input yet');
+                return null;
+            }
+        }
         let p = {
             'student_id': mThis.options.id,
-            'base64': div.find('.data-audio').prop('src').split(',')[1]
+            'base64': audio_data.split(',')[1]
         };
         return p;
     }

@@ -154,7 +154,8 @@
                             <div class="col-lg-12 shadow-box mt-3 ps-4" id="_app_content">
                                 @include('layouts.inputBoxes')
                                 @include('layouts.dashboardComponent')
-                                @include('layouts.registrationComponent')
+                                @include('layouts.enrolledStudentsComponent')
+                                @include('layouts.onLeaveStudentsComponent')
                                 @include('layouts.tuitionFeeComponent')
                                 @include('layouts.policyDiscountComponent')
                                 @include('layouts.nonTuitionFeeComponent')
