@@ -988,3 +988,15 @@ li.kt-menu__section {
 .dlg-container-image-icon{
     display: none;
 }
+
+.modal-custom-size .modal-lg{
+    max-width:1000px;
+}
+
+.modal-custom-size .modal-body{
+    overflow: hidden;
+}
+
+.modal-custom-size .modal-body:hover{
+    overflow-y: auto;
+}

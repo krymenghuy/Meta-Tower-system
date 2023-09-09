@@ -381,9 +381,11 @@ class GeneralSettings //extends Model
     static function requestDiscountOptions($ss=null){
         $dicount_type = DB::table('discount_types')->selectRaw('name,id')->get();
         $students = DB::table('students')->selectRaw('name as student_name,id as student_id,code as student_code')->get();
+        $terms = DB::table('terms')->selectRaw('name as term_name,id')->get();
         return (object)[
             'discount_type' => $dicount_type,
-            'students' => $students
+            'students' => $students,
+            'terms' => $terms
         ];
     }
 
@@ -588,6 +590,16 @@ class GeneralSettings //extends Model
         }else if($pmt_option_id == 3){
             return 12;
         }
+    }
+
+    static function options_payment_method(){
+        return [
+            'payment_methods' => [
+                ["method" => "ABA"],
+                ["method" => "Acleda"],
+                ["method" => "Wing"]
+            ]
+        ];
     }
 
 

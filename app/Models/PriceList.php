@@ -275,8 +275,6 @@ class PriceList //extends Model
         return (object)['discount_percent' => $discount_percent,'discount_type'=>$row->discount_type,'discount'=>$row->discount];
     }
 
-
-
     /**
         * $arr [start_date','end_date','level_id','session_id'] // pmt_option_id (optional)
     */
@@ -924,17 +922,22 @@ class PriceList //extends Model
 
             $discount_info = $instance->getPolicyDiscount($pmt_option_id,$payment_info->price_list_id);
             $existsPricelist = findExists('student_pricelist',['student_id'=>$student_id,'inactive'=>0]);
-
+            $tuition_due = $payment_info->tuition_due;
             if($existsPricelist){
                 $discountPriceList = $student->getDiscount($enr->program_id,$pmt_option_id,$student_id);
                 $discount_info = $discountPriceList;
+            }else{
+                $more_discount = DB::table('payments')->where('enrollment_id',$id)->selectRaw('special_discount,second_child_discount')->first();
+                $dis = $more_discount->special_discount + $more_discount->second_child_discount;
+                $tuition_due = $payment_info->tuition_due;
+                $dis_amount = ($tuition_due * $dis)/100;
+                $tuition_due = $tuition_due - $dis_amount;
             }
-
-
+            
             $pmt_arr = [
                 'pmt_option_id'=>$pmt_option_id,
                 'tuition' => $payment_info->tuition,
-                'tuition_due' => $payment_info->tuition_due,
+                'tuition_due' => $tuition_due,
                 'status_id' => 1,
                 'program_id' => $program->program_id,
                 'level_id' => $inputs['level_id'],
@@ -942,6 +945,10 @@ class PriceList //extends Model
                 'price_list_id' => $price_list_id,
                 'policy_discount' => $discount_info->discount,
             ];
+
+            $inv = new Activity();
+            // params = enrollment_id,tuition_due,additional_discount = 0 because it has already updated in approve discount;
+            $inv->resetUnpaidInvoice($id,$tuition_due,0);
             $set_pmt_option = saveData($ss,'payments',['enrollment_id' => $enr->id],$pmt_arr,[],1);
             DB::table('enrollments')->where('student_id',$student_id)->where('branch_id',$ss->branch_id)->update([
                 "tuition_end_date" => null,

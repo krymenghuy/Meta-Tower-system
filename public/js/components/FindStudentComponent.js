@@ -476,7 +476,7 @@ let GenerateInvoiceFSN = new function(){
                         <td>${fee.discount ? ['%',fee.discount].join(' ') : 'N/A'}</td>
                         <td>${fee.special_discount ? ['%',fee.special_discount].join(' ') : 'N/A'}</td>
                         <td>${fee.second_child_discount ? fee.second_child_discount : 'N/A'}</td>
-                        <td>${fee.total ? ['$',fee.total].join(' ') : 'N/A'}</td>
+                        <td class="total-item">${fee.total ? ['$',fee.total].join(' ') : 'N/A'}</td>
                         <td>
                             <a href="javascript:void(0)" class="btn-fee-type-delete" data-id="${fee.invoice_item_id}" data-amount="${fee.amount}">
                                 <i class="fa-regular fa-trash-can text-danger fs-5"></i>

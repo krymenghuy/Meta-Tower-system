@@ -120,4 +120,14 @@ class StudentController extends Controller
         return JDV::raw($set);
     }
 
+    function getActiveStudentPriceList(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $x = new Student();
+        $set = $x->getActiveStudentPriceList($req->all(),$ss);
+        return JDV::raw($set);
+        
+    }
+
 }

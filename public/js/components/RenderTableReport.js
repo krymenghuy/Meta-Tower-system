@@ -216,3 +216,64 @@ function calculate_age(dob){
         return Math.abs(age_dt.getUTCFullYear()-1970);
     }
 }
+
+function convertCurrencyToWords(amount){
+    const units = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+    const teens = ['', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+    const tens = ['', 'ten', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+    const scales = ['', 'thousand', 'million', 'billion', 'trillion'];
+
+    function convertThreeDigitNumber(num) {
+        const digits = Array.from(String(num), Number);
+        let result = '';
+        
+        if(digits[0] !== 0){
+            result += units[digits[0]] + ' hundred ';
+        }
+        
+        if(digits[1] === 1){
+            result += teens[digits[2]] + ' ';
+        }
+        else{
+            result += tens[digits[1]] + ' ' + units[digits[2]] + ' ';
+        }
+        
+        return result.trim();
+    }
+
+    const [integerPart, decimalPart] = String(amount).split('.');
+    
+    let result = '';
+    let num = parseInt(integerPart, 10);
+    
+    if(num === 0){
+        result = 'zero';
+    }
+    else{
+        let scaleIndex = 0;
+        
+        while (num > 0) {
+            const threeDigitNum = num % 1000;
+            
+            if(threeDigitNum !== 0) {
+                result = convertThreeDigitNumber(threeDigitNum) + ' ' + scales[scaleIndex] + ' ' + result;
+            }
+            
+            num = Math.floor(num / 1000);
+            scaleIndex++;
+        }
+    }
+    
+    if(decimalPart){
+        const decimalNum = parseInt(decimalPart, 10);
+        result += 'US Dollars';
+        if(parseInt((decimalNum < 10 ? '0' + decimalNum : decimalNum)/100) != 0){
+            result += " and "+parseInt((decimalNum < 10 ? '0' + decimalNum : decimalNum)/100)+" Cents Only.";
+        }
+        else{
+            result += " Only.";
+        }
+    }
+    
+    return result.trim();
+}
