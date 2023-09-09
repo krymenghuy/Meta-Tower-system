@@ -147,7 +147,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="animation-line line--loader" id="vs_loader"></div>
+                        <div class="animation-line line--loader d-none" id="vs_loader"></div>
                     </div>
                     <div id="_p2" class="kt-content kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" id="kt_content">
                         <div id="_p1" class="row">

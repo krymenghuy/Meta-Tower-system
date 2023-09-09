@@ -17,7 +17,10 @@ var RegistrationComponent = new function(){
     this.elAcademicYear = this.self.find('#_rgs_acad_year');
     this.elTerm = this.self.find('#_rgs_term');
     this.elLevel = this.self.find('#_rgs_level');
+    this.elCampus = this.self.find('#_rgs_campus');
+    this.elSession = this.self.find('#_rgs_session');
     this.elGroup = this.self.find('#_rgs_group');
+    this.elSearchStudent = this.self.find('#_rgs_search_student');
 
     this.elPrevSchool = this.self.find('#_rgs_prev_school');
     this.lnkAddGroup = this.self.find('#_rgs_lnkAddStudentGroup');
@@ -65,21 +68,47 @@ var RegistrationComponent = new function(){
         
         mThis.lnkAddGroup.on('click',(e)=>{
             e.preventDefault();
-            const group_id = 0;
+            let group_id = null;
             const sel_level_id = mThis.elLevel.val();
             if(sel_level_id == 0 || !sel_level_id){
                 cv_interact.warning('Please select a Level or Grade');
                 return;
             }
+            if(!mThis.elAcademicYear.val()){
+                cv_interact.warning('Please select Academic year');
+                return;
+            }
+            if(!mThis.elTerm.val()){
+                cv_interact.warning('Please select Term or Semester');
+                return;
+            }
+            if(!mThis.elSession.val()){
+                cv_interact.warning('Please select Session as Half Day or Full Day');
+                return;
+            }
+
             let op = {
-                'id':group_id, 
-                'onClose':()=>{
+                'id':group_id,
+                'academic_year':mThis.elAcademicYear.val(),
+                'term_id':mThis.elTerm.val(),
+                'campus_id':mThis.elCampus.val(), /**/
+                'program_id':null, /** user select only Level to create student Group */
+                'level_id':mThis.elLevel.val(),
+                'session_id':mThis.elSession.val(), /**/
+                'onClose':(group)=>{
+                   cv_interact.success(['Student group ',group.name,' was created successfully'].join('')); 
+                   mThis.selected_options.group_id = group.id; 
                    mThis.elLevel.trigger('change');
                 }
             };
             StudentGroupDialog.show(op);
         });
       
+        mThis.elSearchStudent.on('keyup',e=>{
+          e.preventDefault();
+          mThis.studentListView.showPage(mThis.getFilterData()); 
+        });
+
         mThis.elAcademicYear.on('change',function(e){
             e.preventDefault();
             let op = {
@@ -462,7 +491,7 @@ var RegistrationComponent = new function(){
             });
 
             if(cnt == 0){
-                html =`<div class="d-flex bg-white p-3 rounded-3 align-items-center">There are no registered students</div>`;
+                html =[`<div class="d-flex bg-white p-3 rounded-3 align-items-center"><h5>`,LocaleManager.trans('No data to display'),`</h5></div>`].join('');
             }
 
             div_register_list.innerHTML = html;
@@ -674,6 +703,7 @@ var RegistrationComponent = new function(){
             if(f)
                 p[f] = el.val();
         });
+        p.search_value = mThis.elSearchStudent.val();
         return p;
     }
 

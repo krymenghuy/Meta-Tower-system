@@ -22,7 +22,7 @@
 		"Log Out": "Log Out"
 	},
 	"general":{
-			
+		"No data to display":"No Data to display"
 	},
 	"buttons": {
 		"Cancel": "Cancel",
@@ -72,6 +72,7 @@
 		"Remarks": "Remarks"
 	},
 	"titles": {
+		"No data to display":"No Data to display",
 		"dashboard": "Dashboard",
 		"loan app list": "Loan Applications",
 		"Loan App List": "Loan Applications",

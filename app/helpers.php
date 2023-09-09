@@ -23,6 +23,10 @@
     'csv'=>"text/csv"
 ];
 
+function isNumber($input){
+    return preg_match('/[^0-9]/', $input);
+}
+
 function escape_like_str($str) {
     return str_replace(['\\', '%', '_','\''], ['\\\\', '\%', '\_',''], $str);
 }
