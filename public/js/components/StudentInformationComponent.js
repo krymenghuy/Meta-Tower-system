@@ -40,12 +40,12 @@ var StudentInformationComponent = new function(){
         title: "Date of Birth",
         className: 'align-middle',
         data: (data, a, b) => {
-            let dob = data.date_of_birth ? data.date_of_birth : '';
-            return new Date(dob).toLocaleDateString('km-KH',{
+            const dob = data.date_of_birth ? new Date(data.date_of_birth).toLocaleDateString('km-KH',{
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric'
-            }).replaceAll(' ','-').replace(',','');
+            }).replace(',','') : '';
+            return dob;
         }
     },
     {

@@ -53,27 +53,26 @@ var InvoicesComponent = new function(){
             return paid_amount;
         }
     },
- 
     {
         title: "Issue Date",
         data: (data, a, b) => {
-            let issueDate = data.invoice_date ? data.invoice_date : '';
-            return new Date(issueDate).toLocaleDateString('km-KH',{
+            const issueDate = data.invoice_date ? new Date(data.invoice_date).toLocaleDateString('km-KH',{
                 'day':'numeric',
                 'month':'short',
                 'year':'numeric'
-            }).replaceAll(' ','-').replace(',','');
+            }).replace(',','') : '';
+            return issueDate;
         }
     },
     {
         title: "Pmt Date",
         data: (data, a, b) => {
-            let pmt_date = data.pmt_date ? data.pmt_date : '';
-            return new Date(pmt_date).toLocaleDateString('km-KH',{
+            const pmt_date = data.pmt_date ? new Date(data.pmt_date).toLocaleDateString('km-KH',{
                 'day':'numeric',
                 'month':'short',
                 'year':'numeric'
-            }).replaceAll(' ','-').replace(',','');
+            }).replace(',','') : '';
+            return pmt_date;
         }
     },
     {
@@ -238,7 +237,7 @@ var InvoicesComponent = new function(){
                             <p>
                                 <span class="text-primary-emphasis">Start Date</span>
                                 <span>:</span>
-                                <span class="text-capitalize">${inv.start_date ? new Date(inv.start_date).toLocaleDateString('km-KH',{'day': 'numeric','month':'short','year':'numeric'}).replaceAll(' ','-').replace(',','') : 'N/A'}</span>
+                                <span class="text-capitalize">${inv.start_date ? new Date(inv.start_date).toLocaleDateString('km-KH',{'day': 'numeric','month':'short','year':'numeric'}).replace(',','') : 'N/A'}</span>
                             </p>
                             <p>
                                 <span class="text-primary-emphasis">Date Range</span>
@@ -248,7 +247,7 @@ var InvoicesComponent = new function(){
                             <p>
                                 <span class="text-primary-emphasis">End Date</span>
                                 <span>:</span>
-                                <span class="text-capitalize">${inv.end_date ? new Date(inv.net_amount).toLocaleDateString('km-KH',{'day':'numeric','month':'short','year':'numeric'}).replaceAll(' ','-').replace(',','') : 'N/A'}</span>
+                                <span class="text-capitalize">${inv.end_date ? new Date(inv.net_amount).toLocaleDateString('km-KH',{'day':'numeric','month':'short','year':'numeric'}).replace(',','') : 'N/A'}</span>
                             </p>
                             <p>
                                 <span class="text-primary-emphasis">Description</span>
