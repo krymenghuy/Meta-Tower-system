@@ -128,8 +128,10 @@ var InvoicesComponent = new function(){
         
         mThis.tblInvoice.on('click','a.btn-inv-print',function(e){
             e.preventDefault();
-            const invoice_id = $(this).data('id');
-            alert('todo: Print invoice ID ' + invoice_id);
+            const op = {
+                'invoice_id': $(this).data('id')
+            };
+            InvoiceDialog.show(op);
         });
 
         mThis.tblInvoice.on('click','a.btn-inv-pay',function(e){
@@ -270,6 +272,24 @@ var InvoicesComponent = new function(){
             x.hide(0,function(){
                 mThis.self.hide().fadeIn(300);
             });
+        });
+    }
+}
+
+let InvoiceDialog = new function(){
+    const mThis = this;
+    this.self = $('#dlg_inv_');
+
+    this.elBody = mThis.self.find('#dlg_elBody');
+
+    this.loadFormDetails = (div, op) => {
+        vsapi.call(`${main_view.base_url}/`).then();
+    }
+
+    this.show = (options) => {
+        if(!options) options = {};
+        mThis.self.modal({
+            backdrop: 'static'
         });
     }
 }
