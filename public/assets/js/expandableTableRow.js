@@ -1,4 +1,20 @@
 "use strict";
+
+/**
+ *  This is default css class for .row-expanded for animation to hide or show expandable row
+    .row-expanded {
+        max-height: 500px;
+        opacity: 1;
+        transition: max-height 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s ease-in-out;
+        overflow: hidden;
+    }
+    .row-expanded:not(.row-expanded) {
+        max-height: 0;
+        opacity: 0;
+        transition: max-height 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s ease-in-out;
+    }
+
+ * **/
 /****
   option = {
     "content":'html content or any text',
@@ -202,8 +218,9 @@
             new_tr.innerHTML = `<tr><td colspan="100%">${that.panelHtml}</td></tr>`;
             new_tr.setAttribute('id',row_id);
             new_tr.classList.add(that.rowClass);
-            this.insertAfter(new_tr,tr);
             tr.classList.add('row-expanded');
+            this.insertAfter(new_tr,tr);
+         
             that.prev_expandable_row = new_tr;
             //that.prev_expandable_row = document.querySelector(`#${that.table_id} tr#${row_id}`);
             //that.prev_expandable_row.slideDown(300);

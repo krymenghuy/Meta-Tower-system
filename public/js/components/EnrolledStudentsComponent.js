@@ -53,12 +53,30 @@ var EnrolledStudentsComponent = new function(){
             }
         });
 
-        mThis.div_filter_form.find('.filter-field').each(function(){
-            const el = $(this);
-            el.on('change',function(e){
-                e.preventDefault();
-                mThis.studentListView.showPage(mThis.getFilterData());
-            });
+        mThis.div_filter_form.find('.filter-field').on('change',e=>{
+            const el = e.target;
+            const f = el?el.dataset.field:null;
+            mThis.studentListView.showPage(mThis.getFilterData());
+            if(f ==='academic_year'){
+               vsapi.call(`${main_view.base_url}/api/settings/options-term`,{'academic_year':el.value},false).then(res=>{
+                   const terms = res.status_code ===200? StringSanitizer.sanitizeObject(res.data):[];
+                   VSUtil.setComboItems(mThis.elFilter_term,terms,'id','term_name',true,'(All Terms)',0);
+               });  
+            }
+            else if(f==='program_id'){
+                vsapi.call(`${main_view.base_url}/api/settings/options-level`,{'program_id':el.value},null,false).then(res=>{
+                    let items = res.status_code === 200 ? res.data : [];
+                    VSUtil.setComboItems(mThis.elFilter_level,items,'id','level_name',true,'(All Grades)',0);
+                    mThis.elFilter_level.val(0).trigger('change');
+                });
+            }
+            // else if(f==='level_id'){
+            //     mThis.studentListView.showPage(mThis.getFilterData());
+            // } 
+            //else if(f !=='level_id' && f !=='program_id' ){
+            //     mThis.studentListView.showPage(mThis.getFilterData());
+            // }
+            
         });
 
         mThis.div_enroll_path.on('change','.g-filter',function(e){
@@ -121,20 +139,7 @@ var EnrolledStudentsComponent = new function(){
                 mThis.elTerm.val(mThis.selected_options.term_id).trigger('change');
             });
         });
-
-        mThis.elFilter_program.on('change',function(e){
-            vsapi.call(`${main_view.base_url}/api/settings/options-level`,{'program_id':$(this).val()},null,false).then(res=>{
-                let items = res.status_code === 200 ? res.data : [];
-                VSUtil.setComboItems(mThis.elFilter_level,items,'id','level_name',true,'(All Grades)',0);
-                mThis.elFilter_level.val(0).trigger('change');
-            });
-        });
-
-        mThis.elFilter_level.on('change',function(e){
-            e.preventDefault();
-           mThis.studentListView.showPage(mThis.getFilterData());
-        });
-
+ 
         mThis.div_input.find('#clickable_img').on('click',function(e){
             e.preventDefault();
             FileChooser.chooseFile(null,(d) => {
@@ -352,6 +357,7 @@ var EnrolledStudentsComponent = new function(){
     this.renderStudents = (div_register_list,data) => {
             let html = null;
             let cnt = 0;
+            div_register_list.style.display='none';
             (data || []).map(item => {
                 let finalized = item.enroll_finalized == 1 ? 'd-none':''; 
                 html = [html,`<div class="d-flex p-3 bg-white h-info-student mb-2">
@@ -412,13 +418,9 @@ var EnrolledStudentsComponent = new function(){
                                                 <i class="fa-solid fa-up-right-from-square fs-5"></i>
                                                 <span class="ps-2 trans-text" data-langprop="titles.Detials"></span>
                                             </a>
-                                            <a href="javascript:void(0)" class="btn-rgs-suspend border-bottom pb-2" data-id="${item.id}">
-                                                <i class="fa-solid fa-spinner fs-5"></i>
-                                                <span class="ps-2 trans-text" data-langprop="titles.Suspended"></span>
-                                            </a>
-                                            <a href="javascript:void(0)" class="btn-rgs-dropout border-bottom pb-2" data-id="${item.id}">
+                                            <a href="javascript:void(0)" class="btn-rgs-setleave border-bottom pb-2" data-id="${item.id}">
                                                 <i class="fa-regular fa-circle-stop fs-5"></i>
-                                                <span class="ps-2 trans-text" data-langprop="titles.Dropout"></span>
+                                                <span class="ps-2 trans-text" data-langprop="titles.Set Leave"></span>
                                             </a>
                                             <a href="javascript:void(0)" class="${finalized} btn-rgs-edit border-bottom py-2" data-id="${item.id}">
                                                 <i class="fa-regular fa-pen-to-square fs-5"></i>
@@ -498,7 +500,15 @@ var EnrolledStudentsComponent = new function(){
             const j_div = $(div_register_list);
             mThis.setEvents(j_div);
             LocaleManager.translateZone(j_div);
+            setTimeout(() => {
+                div_register_list.style.display = 'block';
+            }, 200); 
     }
+
+   this.clickOnClass = (target,cssClass)=>{
+      if( target.classList.contains(cssClass)) return target;
+      if(target.parentNode.classList.contains(cssClass)) return target.parentNode;
+   }
 
     this.setEvents = (container) => {
         const div = container.find('.w-options'),
@@ -562,32 +572,37 @@ var EnrolledStudentsComponent = new function(){
                 }
             });
 
-            div.on('click','a.btn-rgs-details',function(e){
+            div.on('click',e=>{
                 e.preventDefault();
+
+               let lnk = mThis.clickOnClass(e.target,'btn-rgs-details');
+               if(lnk){
+                    let op = {
+                        'id': lnk.dataset.id
+                    };
+                    mThis.loadDataPrint(op,(data) => {
+                        StudentDetailDialog.show(data);
+                    });
+                  return;
+               }
+               
+               lnk = mThis.clickOnClass(e.target,'btn-rgs-edit');
+               if(lnk){
+                    const enrollment_id = lnk.dataset.id;
+                    mThis.options.id = enrollment_id;
+
+                    mThis.prepareFormOption(enrollment_id,mThis.div_input,'data-input',(d) => {
+                        mThis.setDataForm(d.enrollment_info);
+                        mThis.div_input.fadeIn(200).siblings().hide();
+                    });
+
+                    return;
+               }
+
+               lnk = mThis.clickOnClass(e.target,'btn-rgs-delete');
+               if(lnk){
                 let op = {
-                    'id': $(this).data('id')
-                };
-                mThis.loadDataPrint(op,(data) => {
-                    StudentDetailDialog.show(data);
-                });
-            });
-
-            //Edit enrollment info
-            div.on('click','a.btn-rgs-edit',function(e){
-                e.preventDefault();
-                const enrollment_id = $(this).data('id');
-                mThis.options.id = enrollment_id;
-
-                mThis.prepareFormOption(enrollment_id,mThis.div_input,'data-input',(d) => {
-                    mThis.setDataForm(d.enrollment_info);
-                    mThis.div_input.fadeIn(200).siblings().hide();
-                });
-            });
-
-            div.on('click','a.btn-rgs-delete',function(e){
-                e.preventDefault();
-                let op = {
-                    'id': $(this).data('id')
+                    'id': lnk.dataset.id
                 };
 
                 cv_interact.confirm('Delete this enrollment?',{title: 'Delete Information', context: 'delete'},(e) => {
@@ -602,6 +617,15 @@ var EnrolledStudentsComponent = new function(){
                         });
                     }
                 });
+                return;
+               }
+
+               lnk = mThis.clickOnClass(e.target,'btn-rgs-setleave');
+               if(lnk){
+                  const id = lnk.dataset.id;
+                  alert('Set student on leave ' + id);
+               }
+
             });
         }
     }
@@ -730,11 +754,16 @@ var EnrolledStudentsComponent = new function(){
             //Set default options for Filter fields
             mThis.setFilterData(options.filter); 
             main_view.setTitle(mThis.title_prop);
-            mThis.studentListView.showPage(mThis.getFilterData());
+
             let x = mThis.self.siblings(':visible');
             x.hide(0,function(){
                 mThis.self.hide().fadeIn(200);
             });
+
+            // mThis.studentListView.showPage(mThis.getFilterData(),null,()=>{
+              
+            // });
+          
         });
     }
 }

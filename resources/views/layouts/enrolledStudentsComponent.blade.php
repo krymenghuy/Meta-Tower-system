@@ -34,7 +34,10 @@
             </button>
             <input id="_rgs_search_student" type="search" class="form-control width--search" placeholder="Search by Name or ID..."/>
         </div>
-        <div id="_reg_list_view" class="_rgs_list"></div>
+        <div class="_rgs_list">
+            <div id="_reg_list_view" class="m-2">
+            </div>
+        </div>
     </div>
     <div id="st-register--input" class="st-register--input" style="display:none">
         <div class="bg-primary rounded-top-3">

@@ -2,54 +2,147 @@
 var OnLeaveStudentsComponent = new function(){
     let mThis = this;
     this.title_prop = "On-Leave Students";
-    this.self = $('#_main_onLeaveComponent');
+    this.self = $('#_main_onLeaveStudentsComponent');
     this.options = {};
     
-    this.btnPrint = this.self.find('#_rgs_btnPrint');
-    this.div_filter_form = this.self.find('#_rgs_filters');
-    this.div_input = mThis.self.find('#st-register--input');
-    this.div_list = mThis.self.find('#st-register--list');
-    this.div_enroll_path = this.div_input.find('#_rgs_div_enrollment_path');
+    this.btnPrint = this.self.find('#_onleave_btnPrint');
+    this.div_filter_form = this.self.find('#_onleave_filters');
+    this.div_input = mThis.self.find('#st-leave--input');
+    this.div_list = mThis.self.find('#st-leave--list');
+    this.div_enroll_path = this.div_input.find('#_onleave_div_enrollment_path');
 
-    this.elFilter_program = this.div_filter_form.find('#_rgs_filter_program');
-    this.elFilter_level = this.div_filter_form.find('#_rgs_filter_level');
+    this.elFilter_program = this.div_filter_form.find('#_onleave_filter_program');
+    this.elFilter_level = this.div_filter_form.find('#_onleave_filter_level');
 
-    //this.elAcademicYear = this.self.find('#_rgs_acad_year');
-    // this.elTerm = this.self.find('#_rgs_term');
-    // this.elLevel = this.self.find('#_rgs_level');
-    // this.elCampus = this.self.find('#_rgs_campus');
-    // this.elSession = this.self.find('#_rgs_session');
-    // this.elGroup = this.self.find('#_rgs_group');
+    //this.elAcademicYear = this.self.find('#_onleave_acad_year');
+    // this.elTerm = this.self.find('#_onleave_term');
+    // this.elLevel = this.self.find('#_onleave_level');
+    // this.elCampus = this.self.find('#_onleave_campus');
+    // this.elSession = this.self.find('#_onleave_session');
+    // this.elGroup = this.self.find('#_onleave_group');
     this.elSearchStudent = this.self.find('#_onleave_search_student');
 
-    //this.elPrevSchool = this.self.find('#_rgs_prev_school');
-    //this.lnkAddGroup = this.self.find('#_rgs_lnkAddStudentGroup');
+    //this.elPrevSchool = this.self.find('#_onleave_prev_school');
+    //this.lnkAddGroup = this.self.find('#_onleave_lnkAddStudentGroup');
     
     //this.selected_options = {};
+    this.cols = [
+       {
+         "title":"ID",
+         "data":(data,index,tr)=>{
+            return ['<span class="fw-semibold">',data.student_code,'</span>'].join('');
+         }
+       },
+       {
+        "title":"Student Name",
+        "data":(data,index,tr)=>{
+           return ['<span class="">',data.name,'</span>'].join('');
+        }
+       },
+       {
+        "title":"Sex",
+        "data":"sex" 
+       },
+       {
+        "title":"Date of Birth",
+        "data":"date_of_birth"
+       },
+       {
+        "title":"Phone Number",
+        "data":(data,index,tr)=>{
+           return ['<span class="">',data.phone_number,'</span>'].join('');
+        }
+       },
+       {
+        "title":"Level",
+        "data":(data,index,tr)=>{
+           return ['<span class="">',data.level_name,'</span>'].join('');
+        }
+       },
+       {
+        "title":"Days to End",
+        "data":(data,index,tr)=>{
+           return ['<span class="">',data.dte_date,'</span>'].join('');
+        }
+       },
+       {
+          "title":"Leave Type",
+          "data":"leave_type"
+       },
+       {
+        "title":"Reason",
+        "data":(data,index,tr)=>{
+           return ['<span class="">',data.remarks,'</span>'].join('');
+        }
+       },
+       {
+        "title":"Return Info",
+        "data":(data,index,tr)=>{
+           const return_str = data.has_returned ==1? ['<span class="border rounded-5 p-1 shadow bg-success">Returned</span>'].join('') : '';
+           const return_date = data.return_date? ['<span class="d-block text-nowrap">Expected Return: ',data.return_date,'</span>'].join('') : '';  
+           return [return_date,return_str].join('');
+        }
+       },
+       {
+        "title":"Booked By",
+        "data":(data,index,tr)=>{
+           return ['<span class="d-block fw-semibold">',data.create_user,'</span>','<span class=""><small>',data.created_at,'</small></span>'].join('');
+        }
+       },
+       {
+        "title":"Authorization",
+        "data":(data,index,tr)=>{
+           let  auth_user ='Pending';
+           let auth_date =''; 
+           if(data.authorized==1){
+              auth_user= data.auth_user;
+              auth_date = data.auth_date;
+           }  
+           return ['<span class="d-block fw-semibold">',auth_user,'</span>','<span class=""><small>',auth_date,'</small></span>'].join('');
+        }
+       }
+    ];
 
     this.init = () => {
         mThis.studentListView = new ListView('_onleave_list_view',{
             'fetchApi':`${main_view.base_url}/api/leave/list-paginate`,
             'perPage':5,
-            'renderItems':(items,list_container) => {
-                mThis.renderStudents(list_container,items);
-            },
+            'columns':mThis.cols,
+            // 'renderItems':(items,list_container) => {
+            //     mThis.renderStudents(list_container,items);
+            // },
             'listContainerClass':null
         });
-         
-        mThis.div_filter_form.find('.filter-field').each(function(){
-            const el = $(this);
-            el.on('change',function(e){
-                e.preventDefault();
-                mThis.studentListView.showPage(mThis.getFilterData());
-            });
+       
+        mThis.div_filter_form.find('.filter-field').on('change',e=>{
+            mThis.studentListView.showPage(mThis.getFilterData());
+            const el = e.target;
+            const f = el?el.dataset.field:null;
+
+            if(f ==='academic_year'){
+               vsapi.call(`${main_view.base_url}/api/settings/options-term`,{'academic_year':el.value},false).then(res=>{
+                   const terms = res.status_code ===200? StringSanitizer.sanitizeObject(res.data):[];
+                   VSUtil.setComboItems(mThis.elFilter_term,terms,'id','term_name',true,'(All Terms)',0);
+               });  
+            }
+            else if(f==='program_id'){
+                vsapi.call(`${main_view.base_url}/api/settings/options-level`,{'program_id':el.value},null,false).then(res=>{
+                    let items = res.status_code === 200 ? res.data : [];
+                    VSUtil.setComboItems(mThis.elFilter_level,items,'id','level_name',true,'(All Grades)',0);
+                    mThis.elFilter_level.val(0).trigger('change');
+                });
+            } 
+
         });
 
-        mThis.div_enroll_path.on('change','.g-filter',function(e){
-            e.preventDefault();
-            mThis.loadOptions_group();
-        });
-       
+        // mThis.div_filter_form.find('.filter-field').each(function(){
+        //     const el = $(this);
+        //     el.on('change',function(e){
+        //         e.preventDefault();
+        //         mThis.studentListView.showPage(mThis.getFilterData());
+        //     });
+        // });
+ 
         mThis.elSearchStudent.on('keyup',e=>{
           e.preventDefault();
           mThis.studentListView.showPage(mThis.getFilterData()); 
@@ -67,20 +160,7 @@ var OnLeaveStudentsComponent = new function(){
         //         mThis.elTerm.val(mThis.selected_options.term_id).trigger('change');
         //     });
         // });
-
-        mThis.elFilter_program.on('change',function(e){
-            vsapi.call(`${main_view.base_url}/api/settings/options-level`,{'program_id':$(this).val()},null,false).then(res=>{
-                let items = res.status_code === 200 ? res.data : [];
-                VSUtil.setComboItems(mThis.elFilter_level,items,'id','level_name',true,'(All Grades)',0);
-                mThis.elFilter_level.val(0).trigger('change');
-            });
-        });
-
-        mThis.elFilter_level.on('change',function(e){
-            e.preventDefault();
-           mThis.studentListView.showPage(mThis.getFilterData());
-        });
- 
+  
         mThis.btnPrint.on('click',function(e){
             e.preventDefault();
             alert('Print Leave report');
@@ -91,7 +171,7 @@ var OnLeaveStudentsComponent = new function(){
         d = d ? d : {};
         mThis.options.family_code = d.family_code;
         const div = mThis.div_input,
-        div_parent = div.find('#_rgs_parent_info');
+        div_parent = div.find('#_onleave_parent_info');
         div_parent.find('.data-input').each(function(){
             const el = $(this);
             const f = el.data('field');
@@ -549,7 +629,7 @@ var OnLeaveStudentsComponent = new function(){
         });
     }
 
-    //Show Registration Component
+    //Show OnLeaveStudentsComponent
     this.show = (options) => {
         if(!options) options = {};
         mThis.prepareFormOption(null,mThis.div_list,'filter-field',() => {
