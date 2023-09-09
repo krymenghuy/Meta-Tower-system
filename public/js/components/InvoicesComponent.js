@@ -282,14 +282,50 @@ let InvoiceDialog = new function(){
 
     this.elBody = mThis.self.find('#dlg_elBody');
 
-    this.loadFormDetails = (div, op) => {
-        vsapi.call(`${main_view.base_url}/`).then();
+    this.loadFormDetails = (div,op,onFinish = null) => {
+        vsapi.call(`${main_view.base_url}/api/invoice/items`,{'invoice_id': op.invoice_id},null).then(res => {
+            if(res.status_code === 200){
+                const d = res.data;
+                mThis.prepareData(div,d);
+                if(typeof onFinish === 'function') onFinish();
+            }
+        });
+    }
+
+    this.prepareData = (div,d) => {
+        d = d ? d : {};
+        console.log(d);
+        if(d && !($.isEmptyObject(d))){
+            const html = [`<div class="d-flex align-items-center flex-column">
+                <div class="w-50 position-relative">
+                    <img class="w-100 h-100 object-fit-scale" src="${main_view.base_url}/assets/images/logo/photo_report.png" alt=""/>
+                </div>
+                <div class="d-flex align-items-center flex-column mt-2 gap-2">
+                    <h5 style="font-family: 'Moul', cursive">បង្កាន់ដៃទទួលប្រាក់សរុប</h5>
+                    <h6>Total Official Receipt</h6>
+                </div>
+            </div>
+            <div class="d-flex align-items-end w-100 flex-column">
+                <p class="pb-0 mb-1">
+                    <span class="fw-semibold">Receipt No.</span>
+                    <span class="px-2">:</span>
+                    <span></span>
+                </p>
+                <p class="pb-0 mb-1">
+                    <span class="fw-semibold">Date</span>
+                    <span class="px-2">:</span>
+                </p>
+            </div>`].join('');
+            div.html(html);
+        }
     }
 
     this.show = (options) => {
         if(!options) options = {};
-        mThis.self.modal({
-            backdrop: 'static'
+        mThis.loadFormDetails(mThis.elBody,options,() => {
+            mThis.self.modal({
+                backdrop: 'static'
+            });
         });
     }
 }
