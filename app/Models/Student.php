@@ -860,8 +860,8 @@ class Student //extends Model
             'leave_remarks' => '0|string|1,350',
             'return_remarks' => '0|string|1,350',
             'return_term_id' => '0|number|exists=terms.id',
-            'return_date' => '0|string',
-            'leave_type_id' => '1|number',
+            'return_date' => '0|date',
+            'leave_type_id'=>'number|exists=leave_types.id',
             'leave_date' => '0|string',
         ];
 

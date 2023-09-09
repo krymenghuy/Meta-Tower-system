@@ -206,6 +206,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/set-active',[InvoiceController::class,'turnInvoiceToActive']);
         Route::post('/update',[InvoiceController::class,'updateInvoice']);
         Route::post('/items',[InvoiceController::class,'getInvoiceItems']);
+        Route::post('/receipt-details',[InvoiceController::class,'getTotalReceiptDetails']);
+        
     });
 
     //begin:: EnrollmentManager

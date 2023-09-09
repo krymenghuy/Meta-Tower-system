@@ -188,7 +188,20 @@ class EnrollmentManager {
         //   }
 
           //$getEnrollment = DB::table('enrollments')->where('id',$enrollment_id)->selectRaw('session_id,school_id')->first();
+            $x = new PriceList(null,$ss);
+            $newPaymentInfo = $x->previewPendingPaymentDetails([
+                "level_id" => $level_id,
+                "academic_year" => $academic_year,
+                "session_id" => $session_id,
+                "prev_level_id" => "0",
+                "start_date" => $admission_date,
+                "months" => 6,
+                // "weeks" => $weeks,
+                // "days" => $days,
+                "pmt_option_id"=> $pmt_option_id
+            ],$enrollment_id,$ss);
           //** save or update payment table
+        //   $preview = $plist;
           if($enrollment_id){
               $en_payment_data = [
                   // 'tuition' => $tuition,
