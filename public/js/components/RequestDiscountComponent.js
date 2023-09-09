@@ -289,6 +289,9 @@ let RequestDiscountDialog = new function(){
                     case 'discount_type_id':
                         VSUtil.setComboItems(el,d.discount_type,'id','name',null,null,null);
                         break;
+                    case 'term_id':
+                        VSUtil.setComboItems(el,d.terms,'id','term_name',null,null,null);
+                        break;
                     default:
                         break;
                 }

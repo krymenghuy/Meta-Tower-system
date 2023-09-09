@@ -413,7 +413,7 @@ let InvoiceDialog = new function(){
                 <p class="fw-bold text-capitalize">
                     <sup class="fw-bold">*</sup>Remarks:
                 </p>
-                <p>${invoice.remarks ? invoice.remarks : ('_').repeat(80)}</p>
+                <p>${invoice.remarks ? invoice.remarks : ('_').repeat(85)}</p>
             </div>
             <div class="d-flex px-5 justify-content-between mt-3">
                 <div class="d-block">

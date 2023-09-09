@@ -39,6 +39,12 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label for="term_id" class="form-label trans-text" data-langprop="titles.Discount Type"></label>
+                    <div class="width-select-dialog">
+                        <select class="modal-select2 data-input" data-field="term_id"></select>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label for="amount" class="form-label trans-text" data-langprop="titles.Amount"></label>
                     <input type="number" class="form-control data-input" data-field="amount"/>
                 </div>
