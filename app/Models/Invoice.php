@@ -632,6 +632,7 @@ class Invoice //extends Model
         $terms_id = isset($d->terms_id)?$d->terms_id:null;
         $pmt_options_id = isset($d->pmt_options_id)?$d->pmt_options_id:null;
         $sessions_id = isset($d->sessions_id)?$d->sessions_id:null;
+        $enrollment_status_id = isset($d->enrollment_status_id)?$d->enrollment_status_id:null;
         $current_page =isset($d->current_page)?$d->current_page:1;
         $per_page =isset($d->per_page)?$d->per_page:10;
         if(!is_numeric($current_page)) $current_page=1;
@@ -648,11 +649,15 @@ class Invoice //extends Model
         if($sessions_id) $str_search .= ' AND e.session_id = '. $sessions_id;
         if($pmt_options_id) $str_search .= ' AND p.pmt_option_id = '. $pmt_options_id;
 
+        $str_enrollment_status = 'e.enrollment_status_id = 1';
+        if($enrollment_status_id) $str_enrollment_status = 'e.enrollment_status_id = '. $enrollment_status_id;
+
         $selectCols = 'e.id as enrollment_id,p.tuition_paid,p.tuition_due,formatDate(e.tuition_end_date) as tuition_end_date,st.id as student_id,st.file_name,p.status_id as pstatus_id,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.prev_school_id,e.status_id,e.is_new_student';
         $query = DB::table('students as st')
                 ->join('enrollments as e','e.student_id','=','st.id')
                 ->join('payments as p','p.enrollment_id','=','e.id')
                 ->join('sessions as s','s.id','=','e.session_id')
+                ->whereRaw($str_enrollment_status)
                 ->selectRaw($selectCols)
                 ->where('st.branch_id',$branch_id)
                 ->whereRaw($str_moreWhere)->whereRaw($str_search)
@@ -831,6 +836,10 @@ class Invoice //extends Model
             'invoice' => $row,
             'company_profile' => $profile
         ];
+    }
+
+    function paymentSelectOptions(){
+       return GeneralSettings::options_payment_method();
     }
 
     function getInvoiceItemsDetailsInfo($inv_id){

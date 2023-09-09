@@ -590,6 +590,16 @@ class GeneralSettings //extends Model
         }
     }
 
+    static function options_payment_method(){
+        return [
+            'payment_methods' => [
+                ["method" => "ABA"],
+                ["method" => "Acleda"],
+                ["method" => "Wing"]
+            ]
+        ];
+    }
+
 
 
     // static function optionsStudentRequest($student_id,$ss){
