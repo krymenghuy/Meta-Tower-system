@@ -140,7 +140,7 @@ class ScriptProvider
                 '/js/components/CampusComponent.js',
                 '/js/components/TermComponent.js',
                 '/js/components/AcademicYearComponent.js',
-                '/js/components/PaymentPendingComponent.js',
+                '/js/components/PaymentReviewComponent.js',
                 '/js/components/RequestDiscountComponent.js',
                 '/js/components/PromoteStudentComponent.js',
                 '/js/components/AssignStudentComponent.js',

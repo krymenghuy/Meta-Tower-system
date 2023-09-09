@@ -1,7 +1,7 @@
 "use strict";
 var DepositFeeComponent = new function(){
     let mThis = this;
-    this.title_prop = "Deposit Fee";
+    this.title_prop = "Deposits";
     this.self = $('#_main_depositFeeComponent');
 
     this.tblDepositFee = mThis.self.find('#tbl_dpf_');
