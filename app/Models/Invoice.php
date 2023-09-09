@@ -123,7 +123,7 @@ class Invoice //extends Model
                     $fee['end_date'] = $enr_info->tuition_end_date;
                     $is_tuition_fee = self::getTuitionDueByEnrollmentID($enrollment_id);
                     $getTuitionFeeType = 'tuition_type';
-                    $invoice_tuition_feetype = 'tuition_fee';
+                    $invoice_type = 'tuition_fee';
                 }
 
                 $data_rows = DB::table('other_fees')->where('academic_year',$enr_info->academic_year)->where('name',$fee['fee_type'])->selectRaw('amount,start_date,end_date,description')->get();
@@ -167,10 +167,10 @@ class Invoice //extends Model
             $inv = DB::table('invoices')->where('id',$save_inv)->update([
                 'due_amount'=>$due_amount - $doposite_amt,
                 'amount'=>$amount,
-                'invoice_type' => $invoice_tuition_feetype
+                'invoice_type' => $invoice_type
             ]);
             if($inv){
-                DB::table('invoice_items')->where('invoice_id',$save_inv)->where('fee_type',$invoice_tuition_feetype)->update([
+                DB::table('invoice_items')->where('invoice_id',$save_inv)->where('fee_type',$invoice_type)->update([
                     'net_amount' => $is_tuition_fee
                 ]);
 

@@ -382,7 +382,9 @@ let InvoiceDialog = new function(){
                             </tr>`].join('')
                         }),tbl_html ? tbl_html : ''}
                         <tr class="text-nowrap">
-                            <td rowspan="5" colspan="4"></td>
+                            <td rowspan="5" colspan="4">
+                                <div class="w-100 h-100"></div>
+                            </td>
                             <td class="align-middle text-end">Total</td>
                             <td class="align-middle">${invoice.total ? [cur_symbol,invoice.total].join(' ') : [cur_symbol,'0.00'].join(' ')}</td>
                         </tr>
@@ -407,7 +409,7 @@ let InvoiceDialog = new function(){
             </div>
             <div class="d-flex gap-2">
                 <p class="fw-bold text-capitalize pe-2">Amount in word:</p>
-                <p class="text-capitalize">${invoice.paid_amount ? convertCurrencyToWords(invoice.paid_amount) : 'N/A'}</p>
+                <p class="text-capitalize">${(invoice.paid_amount && parseInt(invoice.paid_amount) > 0) ? convertCurrencyToWords(invoice.paid_amount) : 'N/A'}</p>
             </div>
             <div class="d-flex gap-2">
                 <p class="fw-bold text-capitalize">
