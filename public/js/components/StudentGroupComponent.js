@@ -1,6 +1,9 @@
 'use strict';
 var StudentGroupComponent = new function(){
     const mThis = this;
+    this.sessions =[];
+    this.levels = [];
+    this.campuses = [];
     this.title_prop = 'Student Groups';
     this.self = $('#_main_studentGroupComponent');
     this.tblStudentGroup = mThis.self.find('#_sdg_tbl');
@@ -183,8 +186,7 @@ let StudentGroupDialog = new function(){
         vsapi.call(`${main_view.base_url}/api/student-group/save`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
-                if(typeof mThis.options.onClose === 'function')
-                    mThis.options.onClose();
+                if(typeof mThis.options.onClose === 'function') mThis.options.onClose(res.data.student_group);
             }
             else{
                 cv_interact.error(res.error_message);
@@ -212,15 +214,22 @@ let StudentGroupDialog = new function(){
             if(el.is('select')){
                 mThis.selected_options[f] = d[f];
                 el.val(d[f]).trigger('change');
-                if(d.has_member)
-                    el.attr('disabled','true');
+                if (!d.id || d.id==0){
+                    //In case of creating New Group => When there are (academic_year,term_id,campus_shortcut,level_id, session_shortcut) supplied as default => then disable SELECT to preven user from chaning it
+                    el.prop('disabled',(d[f] || d[f]>0));
+                }else{
+                    //In case of Editing Group Info
+                    el.prop('disabled',(d.has_member || d.has_member==1));
+                }
             }
             else{
-                if(d.has_attendnace_scanned && ((f == 'checkin_time') || (f == 'checkout_time')))
-                    el.attr('readonly','true');
+                const readOnly = (d.has_attendnace_scanned || d.has_attendnace_scanned==1) && ((f == 'checkin_time') || (f == 'checkout_time'));
+                el.prop('readonly',readOnly);
                 el.val(d[f]);
             }
         });
+
+        if(!d.id || d.id ==0) mThis.setGroupName();
     }
 
     mThis.elCampus.change('change',function(e){
@@ -266,6 +275,9 @@ let StudentGroupDialog = new function(){
             VSUtil.setComboItems(mThis.elAcademicYear,d.academic_years,'academic_year','academic_year',null,null,null);
             VSUtil.setComboItems(mThis.elProgram,d.programs,'id','program_name',null,null,null);
             VSUtil.setComboItems(mThis.elSession,d.sessions,'shortcut','session_name',null,null,null);
+            mThis.campuses = d.campuses;
+            mThis.sessions = d.sessions;
+            mThis.levels =d.levels;/** This levels array is used for searching for program_id when there is only level_id is provided */ 
             if(typeof onFinish === 'function') onFinish(d);
         });
    }
@@ -280,18 +292,52 @@ let StudentGroupDialog = new function(){
         mThis.elGroupName.val(g_name);
     }
  
+    this.getProgramId = (level_id) => {
+        for (const l of mThis.levels) {
+            if (l.id == level_id) {
+                return l.program_id;
+            }
+        }
+        return null;
+    }
+
+    this.getCampusShortcut = (campus_id) => {
+        for (const c of mThis.campuses) {
+            if (c.id == campus_id) {
+                return c.shortcut;
+            }
+        }
+        return null;
+    }
+
+    this.getSessionShortcut = (session_id) => {
+        for (const s of mThis.sessions) {
+            if (s.id == session_id) {
+                return s.shortcut;
+            }
+        }
+        return null;
+    }
+
     this.show = (options) => {
         if(!options) options = {};
         mThis.options = options;
 
         mThis.prepareFormOption(options.id ,(d) => {
             if(d.student_group){
+                mThis.setFormData(d.student_group);
                 mThis.elTitle.text(LocaleManager.trans('Modify Student Group','titles'));
             }
             else{
                 mThis.elTitle.text(LocaleManager.trans('New Student Group','titles'));
+                const def_op = {'academic_year':options.academic_year,'term_id':options.term_id,'campus_id':options.campus_id,'level_id':options.level_id,'session_id':options.session_id};
+                if(def_op.level_id > 0){
+                    def_op.program_id = mThis.getProgramId(def_op.level_id);
+                }
+                def_op.campus_shortcut = def_op.campus_id > 0? mThis.getCampusShortcut(def_op.campus_id):null;
+                def_op.session_shortcut = def_op.session_id > 0? mThis.getSessionShortcut(def_op.session_id):null;
+                mThis.setFormData(def_op);
             }
-            mThis.setFormData(d.student_group);
             mThis.self.modal({
                 backdrop:'static'
             });

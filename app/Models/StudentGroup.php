@@ -20,7 +20,7 @@ class StudentGroup //extends Model
     function save($arr=[],$id=null,$ss){
         $v_rule = [
             'descriptive_name' => '0|string|0-100',
-            'term_id' => '1|number|exists=terms.id',
+            'term_id' => '1|number|exists=terms.id|text=Please choose a correct term or semester',
             'campus_shortcut'=>'1|string|1-15|text=Campus shortcut is not correct',
             'level_id' => '1|number|exists=program_levels.id',
             'session_shortcut' => '1|string|1-15',
@@ -32,6 +32,7 @@ class StudentGroup //extends Model
         $res = validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
+        $term_id = $inputs['term_id'];
         $campus_id = self::getCampusId($inputs['campus_shortcut']);
         $session_id = self::getSessionId($inputs['session_shortcut']);
         $inputs['campus_id'] = $campus_id;
@@ -66,12 +67,12 @@ class StudentGroup //extends Model
         $newID = saveData($ss,'student_groups',['id' => $id],$inputs,[],1);
         if($newID && $created){
             $des_name = $inputs['descriptive_name'];
-            $serial_number = self::setGroupNumber($newID,$campus_id,$level_id,$session_id,$g_name,$des_name);
+            $serial_number = self::setGroupNumber($ss,$newID,$term_id,$campus_id,$level_id,$session_id,$g_name,$des_name);
             $g_name .='.'.$serial_number;
         }else
             $serial_number = DB::table('student_groups as g')->where('id',$newID)->take(1)->value('serial_number');
         $g_name .='.'.$serial_number;
-        return DV::depends($newID,['group_name'=>$g_name,'groups']);
+        return DV::depends($newID,['student_group'=>(object)['id'=>$newID,'name'=>$g_name],'groups']);
     }
 
     static function getLevelShortcut($level_id){
@@ -89,15 +90,20 @@ class StudentGroup //extends Model
         return DB::table('sessions as ss')->where('shortcut',$shortcut)->take(1)->value('id');
     }
 
-    static function setGroupNumber($group_id,$campus_id,$level_id,$session_id,$group_name,$des_name=null){
-      $last_id= DB::table('group_number_control AS c')->where('campus_id',$campus_id)->where('level_id',$level_id)->where('session_id',$session_id)->take(1)->value('last_id');
-      $last_id =$last_id>=0?$last_id:0;
+    static function setGroupNumber($ss,$group_id,$term_id,$campus_id,$level_id,$session_id,$group_name,$des_name=null){
+      $row= DB::table('group_number_control AS c')->where('term_id',$term_id)->where('campus_id',$campus_id)->where('level_id',$level_id)->where('session_id',$session_id)->take(1)->selectRaw('id,last_id')->get()->first();
+      $last_id = $row? $row->last_id:0;
+      $row_id = $row?$row->id:null;
       $last_id++;
       if(!$des_name) $des_name = $group_name.'.'.$last_id;
-      DB::table('student_groups')->where('id',$group_id)->update([
+      $x = DB::table('student_groups')->where('id',$group_id)->update([
         'serial_number'=>$last_id,
         'descriptive_name'=>$des_name
       ]);
+      if($x){
+        $inputs= ['term_id'=>$term_id,'campus_id'=>$campus_id,'level_id'=>$level_id,'session_id'=>$session_id,'last_id'=>$last_id];
+        saveData($ss,'group_number_control',['id'=>$row_id],$inputs,[],1,true);
+      }
       return $last_id;
     }
 
@@ -110,8 +116,7 @@ class StudentGroup //extends Model
         $program_id = isset($d->program_id)?$d->program_id:null;
         $level_id = isset($d->level_id)?$d->level_id:null;
         $session_id = isset($d->session_id)?$d->session_id:null;
-
-
+ 
         $str_wheres ='g.branch_id = '.$branch_id.' AND g.term_id ='.$term_id;
         if($level_id >0)
           $str_wheres .=' AND g.level_id ='.$level_id;
@@ -199,11 +204,13 @@ class StudentGroup //extends Model
         if(self::has_member($id)) return DV::error('Group with enrolled students cannot be deleted');
         DB::table('group_members')->where('group_id',$id)->delete();
         $x = DB::table('student_groups')->where('id',$id)->delete();
-        return DV::depends($x,['student_groups' => self::list([],$ss)]);
+        return DV::depends($x,null);
     }
 
     static function getFormOptions($id,$ss){
+       $str_branch =$ss?'branch_id ='.$ss->branch_id:'1=1'; 
        return (object)[
+         'levels'=>DB::table('program_levels as l')->whereRaw($str_branch)->selectRaw('l.id,l.program_id')->get(),
          'campuses'=>GeneralSettings::options_campus($ss),
          'terms'=>GeneralSettings::options_term(null,$ss),
          'academic_years'=>GeneralSettings::options_academic_year($ss),
