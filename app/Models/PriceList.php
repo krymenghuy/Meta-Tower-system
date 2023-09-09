@@ -945,6 +945,10 @@ class PriceList //extends Model
                 'price_list_id' => $price_list_id,
                 'policy_discount' => $discount_info->discount,
             ];
+
+            $inv = new Activity();
+            // params = enrollment_id,tuition_due,additional_discount = 0 because it has already updated in approve discount;
+            $inv->resetUnpaidInvoice($id,$tuition_due,0);
             $set_pmt_option = saveData($ss,'payments',['enrollment_id' => $enr->id],$pmt_arr,[],1);
             DB::table('enrollments')->where('student_id',$student_id)->where('branch_id',$ss->branch_id)->update([
                 "tuition_end_date" => null,
