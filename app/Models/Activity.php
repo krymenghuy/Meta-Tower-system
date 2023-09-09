@@ -579,7 +579,7 @@ class Activity //extends Model
         return DV::depends($success,['action' => 'Approved','info'=>$discountTypeInfo]);
     }
 
-    function resetUnpaidInvoice($enrollment_id,$tuition_due,$existing_discount){
+    function resetUnpaidInvoice($enrollment_id,$tuition_due,$existing_discount=0){
         $str_where = 'inv.is_paid = 0 AND inv.inactive = 0 AND paid_amount <= 0';
         $unpaidInvoice = DB::table('invoices as inv')
             ->where('inv.enrollment_id',$enrollment_id)
