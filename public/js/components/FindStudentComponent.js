@@ -101,7 +101,7 @@ var FindStudentComponent = new function(){
                                     <div class="d-flex">
                                         <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Date of Birth"></p>
                                         <p class="px-2">:</p>
-                                        <p class="text-nowrap">${new Date(item.date_of_birth).toLocaleDateString('km-KH',{'day':'numeric','month':'short','year':'numeric'}).replaceAll(' ','-').replace(',','')}</p>
+                                        <p class="text-nowrap">${item.date_of_birth ? new Date(item.date_of_birth).toLocaleDateString('km-KH',{'day':'numeric','month':'short','year':'numeric'}).replace(',','') : 'N/A'}</p>
                                     </div>
                                 </div>
                                 <div class="col">
@@ -140,7 +140,7 @@ var FindStudentComponent = new function(){
                                     <div class="d-flex">
                                         <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.End Date"></p>
                                         <p class="px-2">:</p>
-                                        <p class="text-nowrap ${cls}">${new Date(item.tuition_end_date).toLocaleDateString('km-KH',{'day':'numeric','month':'short','year':'numeric'}).replaceAll(' ','-').replace(',','')}</p>
+                                        <p class="text-nowrap ${cls}">${item.tuition_end_date ? new Date(item.tuition_end_date).toLocaleDateString('km-KH',{'day':'numeric','month':'short','year':'numeric'}).replace(',','') : 'N/A'}</p>
                                     </div>
                                 </div>
                                 <div class="col">

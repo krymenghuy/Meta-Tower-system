@@ -28,18 +28,18 @@ var StudentAttendanceComponent = new function(){
     {
         title: "Date of Birth",
         data: (data, a, b) => {
-            let dob = data.dob ? data.dob : '';
-            return new Date(dob).toLocaleDateString('km-KH',{
+            const dob = data.dob ? new Date(data.dob).toLocaleDateString('km-KH',{
                 day: 'numeric',
                 month: 'short',
                 year: 'numeric'
-            }).replaceAll(' ','-').replace(',','');
+            }).replace(',','') : '';
+            return dob;
         }
     },
     {
         title: "Sex",
         data: (data, a, b) => {
-            let sex = data.sex === 'M' ? 'Male' : 'Female';
+            const sex = data.sex === 'M' ? 'Male' : 'Female';
             return sex;
         }
     },
@@ -80,7 +80,7 @@ var StudentAttendanceComponent = new function(){
         vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
             if(res.status_code === 200){
                 let d = res.data;
-                if(!($.isEmptyObject(d))){
+                if(d && !($.isEmptyObject(d))){
                     div.find('.data-input').each(function(){
                         let el = $(this);
                         let f = el.data('field');
@@ -135,7 +135,7 @@ var StudentAttendanceComponent = new function(){
                 </div>`].join('');
             });
             
-            html = [html,`<div class="${first == 0 ? '' : 'mt-3'}"><p>${t.date} ( ${t.group_name} )</p>`,'<div class="d-flex gap-2 flex-nowrap mt-3">',inner_html,`</div>
+            html = [html,`<div class="${first == 0 ? '' : 'mt-3'}"><p>${t.date.replace('-',' ')} ( ${t.group_name} )</p>`,'<div class="d-flex gap-2 flex-nowrap mt-3">',inner_html,`</div>
                 <div class="d-flex gap-3 w-100 justify-content-end pt-3">
                     <p class="m-0">
                         <span class="pe-4">Present:</span>
