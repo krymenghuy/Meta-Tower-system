@@ -1,0 +1,183 @@
+<?php
+
+namespace App\Models;
+
+// use Illuminate\Database\Eloquent\Factories\HasFactory;
+// use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
+use App\Models\DV;
+use DB;
+
+class LeaveInfo //extends Model
+{
+    //use HasFactory;
+    
+    protected $id =null, $user_info = null;
+    function __construct($id=null,$user_info=null){
+        $this->id = $id;
+        $this->user_info = $user_info;
+    }
+
+    static function getTermInfo($enrollment_id){
+        //Supposed to be the last enrollment???
+        return DB::table('enrollments as e')->join('terms as t','t.id','=','e.term_id')->where('e.id',$enrollment_id)->take(1)->selectRaw('e.id,t.id AS term_id,t.name AS term_name,t.start_date,t.end_date,t.is_finished,e.tuition_end_date')->get()->first();
+    }
+
+    //Given a leave_type_id => decide the enrollment_status_id
+    static function decideEnrollmentStatus($leave_type_id){
+       if($leave_type_id == 1) return 2;
+       else if($leave_type_id ==2) return 2;
+    }
+    static function getLeaveType($leave_type_id){
+        return DB::table('leave_types as t')->where('id',$leave_type_id)->take(1)->value('name');
+    }
+    //$arr = ['term_id','student_id','leave_type']
+    function save($arr,$ss=null){
+        $v_rule = [
+           'enrollment_id'=>'1|number|enrollments.id', 
+           //'term_id'=>'1|number|exists=terms.id',
+           'student_id'=>'1|number|exists=students.id',
+           'enrollment_id'=>'1|number|exists=enrollments.id',
+           //'program_id'=>'1|number|exists=programs.id',
+           'leave_date'=>'0|date',
+           'return_date' => '0|date',
+           'leave_type_id'=>'number|exists=leave_types.id',
+           'leave_remarks'=>'0|string|0-350',
+           'has_returned'=>'0|number|default=0',
+           'authorized'=>'0|number|default=0'
+        ];
+
+        $res = validateObject($arr,$v_rule,true,[],$ss->lang,false,null);
+        if($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+        $enrollment_id = $inputs['enrollment_id'];
+        $leave_date = $inputs['leave_date'];
+        if(!$leave_date){
+            $leave_date = date('Y-m-d');
+            $inputs['leave_date'] = $leave_date;
+        }
+
+        $term= self::getTermInfo($enrollment_id);
+        if(!$term) return DV::error('The provided Enrollment ID is not valid');
+        $tuition_end_date = $term->tuition_end_date;
+        $days_to_tuition_enddate = diffDays($tuition_end_date,$leave_date);
+        $term_id = $term->term_id;
+        $inputs['days_to_enddate'] = $days_to_tuition_enddate;
+        $inputs['leave_term_id']=$term_id; //This is leave_term
+        //$leave_type_id = $inputs['leave_type_id'];
+        $id = saveData($ss,'leaves',$inputs,[],1,false);
+         
+        return DV::depends($id,null,'Failed to save student leave information');
+     }
+
+    function finalize($id=null,$ss=null){
+        $id = $id?$id:$this->id;
+        $ss = $ss?$ss:$this->user_info;
+        $info = DB::table('leaves')->where('id',$id)->selectRaw('id,enrollment_id,leave_type_id,leave_term_id,leave_date,return_date,has_returned')->get()->first(); 
+        if(!$info) return DV::error('Leave ID is not valid'); 
+        $enroll_info = DB::table('enrollments as e')->where('id',$info->enrollment_id)->selectRaw('id,student_id,tuition_end_date')->take(1)->get()->first();
+        if(!$enroll_info) return DV::error('Failed to retrieve the enrollment information against the provided leave information');
+        if(! \App\Models\Student::exists($enroll_info->student_id)) return DV::error('Student information unexpectedly became invalid. This student may have been deleted');
+        
+        $days_to_tuition_enddate = diffDays($enroll_info->tuition_end_date,$info->leave_date);
+        $inputs['days_to_enddate'] = $days_to_tuition_enddate;
+        $x = DB::table('leaves')->where('id',$id)->update([
+        'days_to_enddate'=>$days_to_tuition_enddate,    
+        'auth_user'=>$ss->full_name,
+        'authorized'=>1,
+        'auth_date'=>getNowTime(),
+        'auth_uid'=>$ss->user_id
+       ]);
+
+       if($x){
+            //set enrollment status id to be Dropout or Suspended
+            DB::table('enrollments')->where('id',$info->enrollment_id)->update([
+                'enrollment_status_id'=>self::decideEnrollmentStatus($info->leave_type_id)
+            ]);
+            //disabled current student's price list in table "student_pricelist", so that if this student come back to study => system will calculate price and discount as new student again
+            saveData($ss,'student_pricelist',['student_id' => $enroll_info->student_id],[
+                'inactive'=>1,
+                'remarks'=>self::getLeaveType($$info->leave_type_id)
+            ],[],1);
+
+       }
+       return DV::depends($x,null,'Failed to finalize Leave information');   
+    }
+
+    function delete($id =null){
+        $id = $id?$id:$this->id;
+        $enrollment_id = DB::table('leaves')->where('id',$id)->selectRaw('id,enrollment_id');
+        if($enrollment_id){
+              //Change enrollment status to 1 = Active, if it exists
+            $x = DB::table('enrollments')->where('id',$enrollment_id)->update([
+                'enrollment_status_id'=>1
+            ]);
+        }
+        $x = DB::table('leaves')->where('id',$id)->delete();
+        return DV::depends($x,null,'Failed to delete Leave info');
+    }
+  
+    function list_paginate($filter,$ss=null){
+        $ss = $ss?$ss:$this->user_info;
+            $branch_id = $ss->branch_id;
+            $d = (object)$filter;
+            $term_id = isset($d->term_id)?$d->term_id:null;
+            $academic_year = isset($d->academic_year)?$d->academic_year:null;
+            $campus_id = isset($d->campus_id)?$d->campus_id:null;
+            $program_id = isset($d->program_id)?$d->program_id:null;
+            $level_id = isset($d->level_id)?$d->level_id:null;
+            $session_id = isset($d->session_id)?$d->session_id:null;
+            $search_value =isset($d->search_value)?$d->search_value:null;
+  
+            $current_page =isset($d->current_page)?$d->current_page:1;
+            $per_page =isset($d->per_page)?$d->per_page:10;
+            if(!is_numeric($current_page)) $current_page=1;
+            $skip_rows = ($current_page -1) * $per_page;
+  
+            $str_leave_term ='1=1';
+            if(isNumber($term_id) && $term_id > 0) $str_leave_term ='t.term_id ='.$term_id; 
+            $str_search ="1=1";
+            $str_moreWhere="1=1";
+            if($search_value){
+                $skip_rows =0;
+                $search_value = escape_like_str($search_value);
+                $str_search ="(st.code ='$search_value' OR st.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
+            }
+            if($academic_year) $str_moreWhere .= ' AND e.academic_year =\''.$academic_year.'\'';
+  
+            if($campus_id > 0) $str_moreWhere .= ' AND e.campus_id ='.$campus_id;
+            if($session_id > 0) $str_moreWhere .= ' AND e.session_id ='.$session_id;
+            if($level_id > 0) $str_moreWhere .= ' AND e.level_id ='.$level_id;
+            else if($program_id > 0) $str_moreWhere .= ' AND e.program_id ='.$program_id;
+  
+            $selectCols = 'le.id,e.id AS enrollment_id,st.id AS student_id,le.leave_term_id,c.`name` AS campus,l.`name` AS level,e.campus_id,e.academic_year,st.code as student_code,st.name,st.name_kh,st.sex,formatDate(st.date_of_birth) AS date_of_birth,st.file_name, CASE e.is_new_student WHEN 1 THEN \'NEW\' ELSE \'Old\' END AS student_type,e.promoted';
+            $query = DB::table('leaves as le')
+            ->join('enrollments as e','e.id','=','le.enrollment_id')
+            ->join('students as st','e.student_id','=','st.id')
+                    //->join('student_groups as g','g.id','=','gm.group_id')
+                    ->join('campuses as c','c.id','=','e.campus_id')
+                    ->join('program_levels as l','l.id','=','e.level_id')
+                    ->join('sessions as s','s.id','=','e.session_id')
+                    ->join('terms as t','t.id','=','le.leave_term_id')
+                    ->selectRaw($selectCols)
+                    ->where('le.branch_id',$branch_id)
+                    ->whereRaw($str_leave_term)
+                    ->whereRaw($str_moreWhere)->whereRaw($str_search);
+                    $query->orderByRaw('e.id desc,s.id');
+            $count_query = clone $query;
+            $count = $count_query->count('st.id');
+            $rows = $query->skip($skip_rows)->take($per_page)->get();
+            foreach($rows as $row) {
+              $row->image_url=null;
+              if($row->file_name){
+                  $url = PublicStorage::getUrl($ss->branch_id,'students','image').$row->file_name;
+                  $row->image_url = validateUrl($url,null);
+              }
+                //$row->parent_info = Student::getParentInfo($row->student_id);
+                unset($row->file_name);
+            }
+  
+            return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+      }
+  
+}

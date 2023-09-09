@@ -25,7 +25,7 @@ var UserManagementComponent = new function () {
 
         let x = mThis.self.siblings(':visible');
         x.fadeOut('fast', function(){
-            mThis.self.hide().fadeIn(300);
+            mThis.self.hide().fadeIn(200);
         });
         UserListPanel.show();
     };

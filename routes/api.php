@@ -19,6 +19,7 @@ use App\Http\Controllers\PromoteStudentController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\StudentAttendanceController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\LeaveInfoController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\StudentGroupController;
 use App\Http\Controllers\TermController;
@@ -231,12 +232,20 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //api endpoint for filter options on the Find Students Component
     Route::post('/find-student/filter-options', [GeneralSettingsController::class, 'getOptions_academic_year']);
 
+    //begin::LeaveInfoController
+        Route::prefix('leave')->group(function () {
+            Route::post('/list-paginate',[LeaveInfoController::class,'getList_paginate']);
+            Route::post('/save',[LeaveInfoController::class,'saveLeave']);
+            Route::post('/finalize',[LeaveInfoController::class,'finalize']);
+            Route::post('/delete',[LeaveInfoController::class,'delete']);
+        });
+    //end::LeaveInfoController
+
     //begin::StudentController
     Route::prefix('student')->group(function () {
         //**option */
         Route::post('/form-options',[StudentController::class,'formOptions']);
         //** */
-        Route::post('/set-leave',[StudentController::class,'setStudentOnLeave']);
         Route::post('/update-info',[StudentController::class,'updateStudentInfo']);
         Route::post('/details-info',[StudentController::class,'getStudentBasicInfoDetails']);
         Route::post('/save-audio', [StudentController::class, 'saveAudioFile']);

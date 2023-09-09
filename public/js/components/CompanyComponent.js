@@ -77,7 +77,7 @@ var CompanyComponent = new function(){
 	  main_view.setTitle(mThis.title_prop);	
 	  mThis.displayCompanyInfo();	
       mThis.self.siblings(":visible").fadeOut("fast", function() {
-		mThis.self.hide().fadeIn(300);
+		mThis.self.hide().fadeIn(200);
 	  });
     }
 

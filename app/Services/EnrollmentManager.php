@@ -7,6 +7,7 @@ use App\Models\Student;
 use App\Models\Term;
 use App\Models\PublicStorage;
 use App\Models\GeneralSettings;
+use App\Models\LeaveInfo;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class EnrollmentManager {
@@ -366,8 +367,7 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
             ];
             return $res;
     }
-
-
+ 
     function list_paginate($filter,$ss=null){
       $ss = $ss?$ss:$this->user_info;
           $branch_id = $ss->branch_id;
@@ -430,28 +430,16 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
           return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    //$arr = ['term_id','student_id','leave_type']
     function setLeave($arr,$ss=null){
-       $v_rule = [
-          'term_id'=>'1|number|exists=terms.id',
-          'student_id'=>'1|number|exists=students.id',
-          'enrollment_id'=>'1|number|exists=enrollments.id',
-          //'program_id'=>'1|number|exists=programs.id',
-          'leave_date'=>'0|date',
-          'leave_type_id'=>'number|exists=leave_types.id',
-          'leave_remarks'=>'0|string|0-350',
-          'has_returned'=>'0|number|default=0'
-       ];
-       $res = validateObject($arr,$v_rule,true,[],$ss->lang,false,null);
-       if($res->error) return DV::error($res->error);
-       $inputs = $res->values;
-       $id = saveData($ss,'leaves',$inputs,[],1,false);
-       return DV::depends($id,null,'Failed to save student leave information');
+        $ss = $ss?$ss:$this->user_info;
+        $leaveInfo = new LeaveInfo(null,$ss);
+        return $leaveInfo->save($arr,$ss);
     }
 
     function deleteLeave($leave_id,$ss=null){
-       $x = DB::table('leaves as l')->where('id',$leave_id)->delete();
-       return DV::depends($x,null,'Failed to delete Leave info');
+        $ss = $ss?$ss:$this->user_info;
+        $leaveInfo = new LeaveInfo($leave_id,$ss);
+        return $leaveInfo->delete();
     }
 
     /** Finalizing enrollment means to prevent user from editing or modify enrollment, but can request for change of level, program , etc */
@@ -473,7 +461,7 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
     }
 
     function saveAdmissionInfo($arr=[],$ss=null){
-        $branch_id = $ss->branch_id;
+        //$branch_id = $ss->branch_id;
         $d = (object)$arr;
         $priceList = new PriceList();
         $pmt = [
