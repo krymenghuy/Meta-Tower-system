@@ -153,7 +153,8 @@
                                 <div class="temp_div"></div>
                                 @include('layouts.inputBoxes')
                                 @include('layouts.dashboardComponent')
-                                @include('layouts.registrationComponent')
+                                @include('layouts.enrolledStudentsComponent')
+                                @include('layouts.onLeaveStudentsComponent')
                                 @include('layouts.tuitionFeeComponent')
                                 @include('layouts.policyDiscountComponent')
                                 @include('layouts.nonTuitionFeeComponent')

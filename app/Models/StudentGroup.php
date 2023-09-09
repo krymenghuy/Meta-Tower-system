@@ -6,6 +6,7 @@ namespace App\Models;
 use DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\GeneralSettings;
+use App\Models\Term;
 use App\Security\Sanitizer;
 class StudentGroup //extends Model
 {
@@ -33,6 +34,7 @@ class StudentGroup //extends Model
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $term_id = $inputs['term_id'];
+        if(Term::isFinished($term_id)) return DV::error('Term has been finished already');
         $campus_id = self::getCampusId($inputs['campus_shortcut']);
         $session_id = self::getSessionId($inputs['session_shortcut']);
         $inputs['campus_id'] = $campus_id;

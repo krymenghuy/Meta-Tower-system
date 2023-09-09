@@ -16,7 +16,10 @@ class Term //extends Model
     static function getAcademicYear($ac_year_id){
       return DB::table('academic_years as y')->where('id',$ac_year_id)->take(1)->value('academic_year');
     }
-
+    static function isFinished($id){
+        $id = DB::table('terms as t')->where('t.id',$id)->where('is_finished',1)->take(1)->value('id');
+        return $id>0? true:false;
+    }
     function save($arr,$id=null,$ss=null){
         $ss = $ss?$ss:$this->user_info;
         $id = $id?$id:$this->id;

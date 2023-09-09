@@ -4,6 +4,7 @@ use App\Models\PriceList;
 use DB;
 use App\Models\DV;
 use App\Models\Student;
+use App\Models\Term;
 use App\Models\PublicStorage;
 use App\Models\GeneralSettings;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -74,6 +75,8 @@ class EnrollmentManager {
       $res = validateObject($arr,$v_rule,1,['email'=>$email_char,'address'=>$address_char,'photo'=>$image_char,'academic_year'=>$academic_year_char],$ss->lang,0,null);
       if($res->error) return DV::error($res->error);
       $inputs = $res->values;
+      $term_id = $inputs['term_id'];
+      if(Term::isFinished($term_id)) return DV::error('Term has been finished already');
       $parent_info = isset($arr['parent_info']) ? $arr['parent_info'] :[];
       $group_id = $inputs['group_id'];
       unset($inputs['group_id']);
@@ -94,7 +97,7 @@ class EnrollmentManager {
       $term_id = $inputs['term_id'];
       $pmt_mode = $inputs['pmt_mode'];
       $term_id = $inputs['term_id'];
-      $pmt_option_id = $inputs['pmt_option_id'];
+      //$pmt_option_id = $inputs['pmt_option_id'];
       $pmt_status = $inputs['pmt_status'];
 
       // $tuition_start_date = $inputs['tuition_start_date'];
