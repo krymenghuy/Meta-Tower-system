@@ -239,7 +239,15 @@ class GeneralSettings //extends Model
         if($level_id>0) $str_search.=' AND level_id = '.$level_id;
         if($session_id>0) $str_search.=' AND session_id = '.$session_id;
 
-        return DB::table('student_groups AS g')->whereRaw($str_search)->selectRaw('g.id,CONCAT(g.name,\'.\',g.serial_number) AS group_name,campus_id,session_id,level_id')->get();
+
+        $rows = DB::table('student_groups')->whereRaw($str_search)->selectRaw('id,name AS group_name,campus_id,session_id,level_id,descriptive_name')->get();
+        foreach($rows as $row){
+            $row->group_name = $row->group_name.'('.$row->descriptive_name.')';
+        }
+        return $rows;
+
+        //return DB::table('student_groups AS g')->whereRaw($str_search)->selectRaw('g.id,CONCAT(g.name,\'.\',g.serial_number) AS group_name,campus_id,session_id,level_id')->get();
+
     }
 
     static function saveOption_school($arr,$id, $ss){

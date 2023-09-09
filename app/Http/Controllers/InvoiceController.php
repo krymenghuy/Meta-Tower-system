@@ -86,4 +86,12 @@ class InvoiceController extends Controller
         $data = $p->getInvoiceItems($req->invoice_id);
         return JDV::result($data);
     }
+
+    function getTotalReceiptDetails(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $p = new Invoice(null,$ss);
+        $data = $p->getTotalReceiptDetails($req->all(),$ss);
+        return JDV::result($data);
+    }
 }

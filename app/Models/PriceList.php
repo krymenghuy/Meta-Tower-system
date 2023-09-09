@@ -842,7 +842,6 @@ class PriceList //extends Model
         return $row;
     }
 
-
     static function verifyPendingStudent($arr,$ss){
         $d = (object)$arr;
         $instance = new PriceList(null,$ss);

@@ -94,6 +94,7 @@ class Invoice //extends Model
                                 // "days" => $days,
                                 "pmt_option_id"=> $enr_info->pmt_option_id
                             ];
+                            
                             $newPaymentInfo = $x->previewPendingPaymentDetails($arr,$enr_info->enr_id,$ss);
                             $updateEnrollment = saveData($ss,'enrollments',['id' => $enrollment_id],[
                                 'tuition_end_date' => $newPaymentInfo->payment_info->end_date
@@ -122,13 +123,12 @@ class Invoice //extends Model
                     $fee['end_date'] = $enr_info->tuition_end_date;
                     $is_tuition_fee = self::getTuitionDueByEnrollmentID($enrollment_id);
                     $getTuitionFeeType = 'tuition_type';
-                    $invoice_type = 'tuition_fee';
+                    $invoice_tuition_feetype = 'tuition_fee';
                 }
 
                 $data_rows = DB::table('other_fees')->where('academic_year',$enr_info->academic_year)->where('name',$fee['fee_type'])->selectRaw('amount,start_date,end_date,description')->get();
                 foreach($data_rows as $row){
                     $fee['price'] = $row->amount;
-                    $fee['net_amount'] = $row->amount;
                     $fee['date_range'] = isset($row->start_date)?$row->start_date . ' to ' . $row->end_date:null;
                     $fee['description'] = $row->description;
                     $fee['net_amount'] = $row->amount;
@@ -167,11 +167,11 @@ class Invoice //extends Model
             $inv = DB::table('invoices')->where('id',$save_inv)->update([
                 'due_amount'=>$due_amount - $doposite_amt,
                 'amount'=>$amount,
-                'invoice_type' => $invoice_type
+                'invoice_type' => $invoice_tuition_feetype
             ]);
             if($inv){
-                DB::table('invoice_items')->where('invoice_id',$save_inv)->where('fee_type',$invoice_type)->update([
-                    'net_amount' => $due_amount - $doposite_amt
+                DB::table('invoice_items')->where('invoice_id',$save_inv)->where('fee_type',$invoice_tuition_feetype)->update([
+                    'net_amount' => $is_tuition_fee
                 ]);
 
                 DB::table('students as s')
@@ -395,6 +395,10 @@ class Invoice //extends Model
                         'receiver_uid' => $ss->id,
                         'receiver' => $ss->full_name
                     ],[],1);
+                    saveData($ss,'invoice_items',['invoice_id' => $inv_id],[
+                        'end_date' => $end_date,
+                        'date_range' => $start_date.' to '.$end_date
+                    ],[],0);
                     $successText ='not last level fee paid'.$getInvoiceInfo->due_amount;
                     $success +=1;
                 }else{
@@ -469,6 +473,10 @@ class Invoice //extends Model
                             'receiver_uid' => $ss->id,
                             'receiver' => $ss->full_name
                         ],[],1);
+                        saveData($ss,'invoice_items',['invoice_id' => $inv_id],[
+                            'end_date' => $end_date,
+                            'date_range' => $start_date.' to '.$end_date
+                        ],[],0);
                         $successText = 'last level tuition fee paid'.$getInvoiceInfo->due_amount;
                         $success +=1;
                     }else{
@@ -640,7 +648,7 @@ class Invoice //extends Model
         if($sessions_id) $str_search .= ' AND e.session_id = '. $sessions_id;
         if($pmt_options_id) $str_search .= ' AND p.pmt_option_id = '. $pmt_options_id;
 
-        $selectCols = 'e.id as enrollment_id,p.tuition_paid,p.tuition_due,e.tuition_end_date,st.id as student_id,st.file_name,p.status_id as pstatus_id,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.prev_school_id,e.status_id,e.is_new_student';
+        $selectCols = 'e.id as enrollment_id,p.tuition_paid,p.tuition_due,formatDate(e.tuition_end_date) as tuition_end_date,st.id as student_id,st.file_name,p.status_id as pstatus_id,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.prev_school_id,e.status_id,e.is_new_student';
         $query = DB::table('students as st')
                 ->join('enrollments as e','e.student_id','=','st.id')
                 ->join('payments as p','p.enrollment_id','=','e.id')
@@ -791,5 +799,68 @@ class Invoice //extends Model
         $row = DB::table('referals')->where('referrer_id',$referr_id)->where('is_paid',0)->selectRaw('commission,commission_type')->first();
         if(!$row) return $row=(object)['commission'=>0,'commission_type'=>'percentage'];
         return $row;
+    }
+
+    function getTotalReceiptDetails($arr,$ss=null){
+        $ss = $ss?$ss:$this->ss;
+        $branch_id = $ss->branch_id;
+        $v_rule = [
+            'invoice_id' => '1|number|exists.invoices.id',
+        ];
+        $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
+        if($res->error) return DV::error($res->error);
+        $d = (object)$res->values;
+        $selectCols = 'i.receiver,i.note,i.due_amount,i.paid_amount,s.name,s.sex,e.level_id,e.session_id,e.campus_id,formatDate(e.start_date) as start_date,formatDate(e.tuition_end_date) as tuition_end_date';
+        $row = DB::table('invoices as i')->where('i.id',$d->invoice_id)
+            ->join('students as s','i.student_id','=','s.id')
+            ->join('enrollments as e','e.id','=','i.enrollment_id')
+            ->selectRaw($selectCols)
+            ->first();
+        if($row){
+            $row->level = GeneralSettings::getLevel($row->level_id,$ss)->name;
+            $row->session = GeneralSettings::getSession($row->session_id)->name;
+            $row->campus = GeneralSettings::getCampus($row->campus_id)->name;
+            $row->total = $row->due_amount;
+            $row->remarks = $row->note;
+            $row->invoice_info = self::getInvoiceItemsDetailsInfo($d->invoice_id);
+
+            unset($row->due_amount,$row->note,$row->level_id,$row->session_id,$row->campus_id);
+        }
+        $profile = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw('address,address_kh,email,phone_number,name,name_kh')->first();
+        return (object)[
+            'invoice' => $row,
+            'company_profile' => $profile
+        ];
+    }
+
+    function getInvoiceItemsDetailsInfo($inv_id){
+        $selectCols = 'it.fee_type,it.net_amount,it.start_date,it.end_date';
+        $rows = DB::table('invoice_items as it')->where('it.invoice_id',$inv_id)->selectRaw($selectCols)->get();
+        foreach($rows as $row){
+            if($row->fee_type == 'tuition_fee'){
+                $row->duration = self::getPaymentDuration('2023-09-01','2023-10-7');
+            }
+            
+        }
+        return $rows;
+    }
+
+    function getPaymentDuration($start_date, $end_date) {
+        $start = new \DateTime($start_date);
+        $end = new \DateTime($end_date);
+
+        $interval = $start->diff($end);
+
+        $years = $interval->y;
+        $months = $interval->m;
+        $days = $interval->d;
+        
+        $daysTotal = $interval->days;
+        $weeks = floor($daysTotal / 7);
+        $remainingDays = $daysTotal % 7;
+
+        $duration = "$months months, $weeks weeks and $remainingDays days";
+
+        return $duration;
     }
 }
