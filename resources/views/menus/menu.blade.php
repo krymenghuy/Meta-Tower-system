@@ -135,7 +135,7 @@
                         </li>
 
                         <li class="kt-menu__item" aria-haspopup="true">
-                            <a href="PaymentPendingComponent" class="menu-item kt-menu__link">
+                            <a href="PaymentReviewComponent" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{ asset('assets/images/icons/payment_pending.png') }}"/>
                                 </span>

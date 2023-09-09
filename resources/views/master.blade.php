@@ -180,7 +180,7 @@
                                 @include('layouts.campusComponent')
                                 @include('layouts.termComponent')
                                 @include('layouts.academicYearComponent')
-                                @include('layouts.paymentPendingComponent')
+                                @include('layouts.paymentReviewComponent')
                                 @include('layouts.requestDiscountComponent')
                                 @include('layouts.promoteStudentComponent')
                                 @include('layouts.assignStudentComponent')

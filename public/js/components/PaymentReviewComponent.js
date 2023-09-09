@@ -1,8 +1,8 @@
 "use strict";
-var PaymentPendingComponent = new function(){
+var PaymentReviewComponent = new function(){
     let mThis = this;
-    this.title_prop = "Payment Pending";
-    this.self = $("#_main_paymentPendingComponent");
+    this.title_prop = "Payment Review";
+    this.self = $("#_main_paymentReviewComponent");
 
     this.elSearch = mThis.self.find("#_ppd_search");
 
@@ -240,5 +240,5 @@ let PaymentPendingDialog = new function(){
 };
 
 window.addEventListener("DOMContentLoaded", () => {
-    PaymentPendingComponent.init();
+    PaymentReviewComponent.init();
 });

@@ -1,4 +1,4 @@
-<div id="_main_paymentPendingComponent" class="mobile-padding p-3" style="display:none">
+<div id="_main_paymentReviewComponent" class="mobile-padding p-3" style="display:none">
     <div class="p-3 rounded-3 bg-white">
         <div class="width--search-inner">
             <select id="_ppd_search" class="modal-select2"></select>
