@@ -42,7 +42,6 @@
             <input type="hidden" id="__xsp_name" value="_csrf_115578" />
             <input type="hidden" id="__xsp_value" value="<?php echo Str::random(30); ?>" />
         </div>
-        <!-- <img id="vs_loader1" width="270" height="170" style="display:none;position:fixed;z-index:1000;top:40%;left:40%" class="vs-loader" src="{{ asset('assets/images/vslogo1.gif') }}"/> -->
         <div id="kt_header_mobile" class="kt-header-mobile kt-header-mobile--fixed">
             <div class="kt-header-mobile__logo">
                 <a href="javascript:void(0)">
@@ -150,7 +149,6 @@
                     <div id="_p2" class="kt-content kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" id="kt_content">
                         <div id="_p1" class="row">
                             <div class="col-lg-12 shadow-box mt-3 ps-4" id="_app_content">
-                                <div class="temp_div"></div>
                                 @include('layouts.inputBoxes')
                                 @include('layouts.dashboardComponent')
                                 @include('layouts.registrationComponent')
