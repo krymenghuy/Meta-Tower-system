@@ -1,5 +1,5 @@
 <div id="_main_onLeaveStudentsComponent" class="mobile-padding p-3" style="display:none">
-    <div id="st-register--list" class="st-register--list">
+    <div id="st-leave--list" class="st-register--list">
         <div class="bg-white p-4 rounded-4">
             <div id="_onleave_filters" class="row row-cols-lg-4 gy-2">
                 <div class="col">
