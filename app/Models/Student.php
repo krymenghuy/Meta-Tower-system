@@ -849,5 +849,4 @@ class Student //extends Model
         } else $row->image_url = null;
         return $row;
     }
- 
 }

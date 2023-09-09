@@ -210,6 +210,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/receipt-details',[InvoiceController::class,'getTotalReceiptDetails']);
         
     });
+    Route::post('options/payment-method',[InvoiceController::class,'paymentMethodOptions']);
 
     //begin:: EnrollmentManager
     Route::prefix('enrollment')->group(function () {

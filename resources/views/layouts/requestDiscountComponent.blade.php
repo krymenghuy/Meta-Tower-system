@@ -39,15 +39,21 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label for="term_id" class="form-label trans-text" data-langprop="titles.Term"></label>
+                    <div class="width-select-dialog">
+                        <select class="modal-select2 data-input" data-field="term_id"></select>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label for="amount" class="form-label trans-text" data-langprop="titles.Amount"></label>
                     <input type="number" class="form-control data-input" data-field="amount"/>
                 </div>
                 <div class="form-group">
                     <label for="type" class="form-label trans-text" data-langprop="titles.Type"></label>
                     <div class="width-select-dialog">
-                        <select class="modal-select2 data-input" data-field="type">
+                        <select class="modal-select2 data-input" data-field="type" disabled>
                             <option value="percentage">Percentage (%)</option>
-                            <option value="amount">Amount (%)</option>
+                            <option value="amount">Amount ($)</option>
                         </select>
                     </div>
                 </div>

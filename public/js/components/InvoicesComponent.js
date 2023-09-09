@@ -280,9 +280,18 @@ let InvoiceDialog = new function(){
     this.self = $('#dlg_inv_');
 
     this.elBody = mThis.self.find('#dlg_elBody');
+    this.btnPrint = mThis.self.find('#dlg_inv_btn_save');
+    this.htmlString = null;
+
+    mThis.btnPrint.on('click',function(e){
+        e.preventDefault();
+        if(mThis.htmlString){
+            windowPrintInvoice(mThis.htmlString);
+        }
+    });
 
     this.loadFormDetails = (div,op,onFinish = null) => {
-        vsapi.call(`${main_view.base_url}/api/invoice/items`,{'invoice_id': op.invoice_id},null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/invoice/receipt-details`,{'invoice_id': op.invoice_id},null).then(res => {
             if(res.status_code === 200){
                 const d = res.data;
                 mThis.prepareData(div,d);
@@ -293,9 +302,13 @@ let InvoiceDialog = new function(){
 
     this.prepareData = (div,d) => {
         d = d ? d : {};
-        console.log(d);
         if(d && !($.isEmptyObject(d))){
-            const html = [`<div class="d-flex align-items-center flex-column">
+            const invoice = d.invoice ? d.invoice : {},
+            company_info = d.company_profile ? d.company_profile : {},
+            cur_symbol = '$';
+            let html = null, tbl_html = null;
+
+            html = [`<div class="d-flex align-items-center flex-column">
                 <div class="w-50 position-relative">
                     <img class="w-100 h-100 object-fit-scale" src="${main_view.base_url}/assets/images/logo/photo_report.png" alt=""/>
                 </div>
@@ -308,13 +321,167 @@ let InvoiceDialog = new function(){
                 <p class="pb-0 mb-1">
                     <span class="fw-semibold">Receipt No.</span>
                     <span class="px-2">:</span>
-                    <span></span>
+                    <span>${invoice.invoice_number ? invoice.invoice_number : 'N/A'}</span>
                 </p>
                 <p class="pb-0 mb-1">
                     <span class="fw-semibold">Date</span>
                     <span class="px-2">:</span>
+                    <span>${invoice.tuition_end_date ? invoice.tuition_end_date : 'N/A'}</span>
                 </p>
+            </div>
+            <div class="d-flex align-items-center justify-content-lg-between gap-2 mt-2">
+                <p class="text-nowrap">
+                    <span>ឈ្មោះសិស្ស / Student's Name</span>
+                    <span class="px-2">:</span>
+                    <span class="fw-bold text-capitalize">${invoice.name ? invoice.name : 'N/A'}</span>
+                </p>
+                <p class="text-nowrap">
+                    <span>ភេទ / Gender</span>
+                    <span class="px-2">:</span>
+                    <span class="fw-bold text-capitalize">${invoice.sex === 'M' ? 'Male' : 'Female'}</span>
+                </p>
+                <p class="text-nowrap">
+                    <span>ថ្នាក់ / Class</span>
+                    <span class="px-2">:</span>
+                    <span class="fw-bold text-capitalize">${invoice.level ? invoice.level : 'N/A'}</span>
+                </p>
+                <p class="text-nowrap">
+                    <span>Time</span>
+                    <span class="px-2">:</span>
+                    <span class="fw-bold text-capitalize">${invoice.session ? invoice.session : 'N/A'}</span>
+                </p>
+                <p class="text-nowrap">
+                    <span>Campus</span>
+                    <span class="px-2">:</span>
+                    <span class="fw-bold text-capitalize">${invoice.campus ? invoice.campus : 'N/A'}</span>
+                </p>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr class="text-nowrap">
+                            <th rowspan="2" class="text-center align-middle">No</th>
+                            <th rowspan="2" class="text-center align-middle">Description</th>
+                            <th colspan="2" class="text-center align-middle">Payment Period</th>
+                            <th rowspan="2" class="text-center align-middle">Duration</th>
+                            <th rowspan="2" class="text-center align-middle">Amount</th>
+                        </tr>
+                        <tr>
+                            <th class="text-center align-middle">From</th>
+                            <th class="text-center align-middle">To</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tbl_html=null,invoice && invoice.invoice_info.map((inv,i) => {
+                            tbl_html = [tbl_html,`<tr class="text-nowrap">
+                                <td class="text-center align-middle">${i+1}</td>
+                                <td class="text-capitalize align-middle">${inv.fee_type ? inv.fee_type.replace('_',' ') : 'N/A'}</td>
+                                <td class="text-center align-middle">${inv.start_date ? new Date(inv.start_date).toLocaleDateString('km-KH',{
+                                    day: 'numeric',
+                                    month: 'short',
+                                    year: 'numeric'
+                                }).replace(',','') : 'N/A'}</td>
+                                <td class="text-center align-middle">${inv.end_date ? new Date(inv.end_date).toLocaleDateString('km-KH',{
+                                    day: 'numeric',
+                                    month: 'short',
+                                    year: 'numeric'
+                                }).replace(',','') : 'N/A'}</td>
+                                <td class="text-wrap text-center align-middle text-capitalize">${inv.duration ? inv.duration : 'N/A'}</td>
+                                <td class="align-middle">${inv.net_amount ? [cur_symbol,inv.net_amount].join(' ') : [cur_symbol,'-'].join(' ')}</td>
+                            </tr>`].join('')
+                        }),tbl_html ? tbl_html : ''}
+                        <tr class="text-nowrap">
+                            <td rowspan="5" colspan="4">
+                                <div class="w-100 h-100 d-flex flex-column gap-2 px-3">
+                                    <div class="d-block">
+                                        <p>
+                                            <sup>*</sup>
+                                            <span class="text-decoration-underline">Method of payment</span>
+                                        </p>
+                                    </div>
+                                    <div class="d-flex gap-3 align-items-center">
+                                        <p class="fixed-width-p p-0 m-0">Cash</p>
+                                        <div class="box-size-invoice border rounded-3"></div>
+                                    </div>
+                                    <div class="d-flex gap-3 align-items-center">
+                                        <p class="fixed-width-p p-0 m-0">Transfer</p>
+                                        <div class="box-size-invoice border rounded-3"></div>
+                                    </div>
+                                    <div class="d-flex gap-3 align-items-center">
+                                        <p class="fixed-width-p p-0 m-0">Cheque</p>
+                                        <div class="box-size-invoice border rounded-3"></div>
+                                        <span>Bank (${('.').repeat(30)}) No (${('.').repeat(30)})</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="align-middle text-end">Total</td>
+                            <td class="align-middle">${invoice.total ? [cur_symbol,invoice.total].join(' ') : [cur_symbol,'0.00'].join(' ')}</td>
+                        </tr>
+                        <tr class="text-nowrap">
+                            <td class="align-middle text-end">Test Fee Returns</td>
+                            <td class="align-middle">${invoice.test_fee ? [cur_symbol,invoice.test_fee].join(' ') : [cur_symbol,'0.00'].join(' ')}</td>
+                        </tr>
+                        <tr class="text-nowrap">
+                            <td class="align-middle text-end">Amount Due</td>
+                            <td class="align-middle">${invoice.amount_due ? [cur_symbol,invoice.amount_due].join(' ') : [cur_symbol,'0.00'].join(' ')}</td>
+                        </tr>
+                        <tr class="text-nowrap">
+                            <td class="align-middle text-end">Paid</td>
+                            <td class="align-middle">${invoice.paid_amount ? [cur_symbol,invoice.paid_amount].join(' ') : [cur_symbol,'0.00'].join(' ')}</td>
+                        </tr>
+                        <tr class="text-nowrap">
+                            <td class="align-middle text-end">Unpaid</td>
+                            <td class="align-middle">${invoice.unpaid_amount ? [cur_symbol,invoice.unpaid_amount].join(' ') : [cur_symbol,'0.00'].join(' ')}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex gap-2">
+                <p class="fw-bold text-capitalize pe-2">Amount in word:</p>
+                <p class="text-capitalize">${(invoice.paid_amount && parseInt(invoice.paid_amount) > 0) ? convertCurrencyToWords(invoice.paid_amount) : 'N/A'}</p>
+            </div>
+            <div class="d-flex gap-2">
+                <p class="fw-bold text-capitalize">
+                    <sup class="fw-bold">*</sup>Remarks:
+                </p>
+                <p>${invoice.remarks ? invoice.remarks : ('_').repeat(85)}</p>
+            </div>
+            <div class="d-flex px-5 justify-content-between mt-3">
+                <div class="d-block">
+                    <p>អ្នកទទួលប្រាក់ / Receiver</p>
+                    <p>${invoice.receiver ? invoice.receiver : ('.').repeat(40)}</p>
+                </div>
+                <div class="d-block">
+                    <p>អ្នកបង់ប្រាក់ / Payer</p>
+                    <p>${('.').repeat(40)}</p>
+                </div>
+            </div>
+            <div class="mt-2">
+                <p class="text-nowrap fw-bold">
+                    <sup class="fw-bold">***</sup>Note:
+                    All Payments cannot be returned or transferred & All payments shall only be made in school office or via bank.
+                </p>
+            </div>
+            <hr style="height:1px" class="bg-black m-0 p-0"/>
+            <div class="d-block mt-2">
+                <span class="fw-bold pe-3">អាស័យដ្នាន៖</span>
+                <span>${company_info.address ? company_info.address : 'N/A'}</span>
+            </div>
+            <div class="d-block mt-2">
+                <span class="fw-bold pe-3">Address</span>
+                <span>${company_info.address_kh ? company_info.address_kh : 'N/A'}</span>
+            </div>
+            <div class="d-flex justify-content-center gap-3 mt-3">
+                <div class="d-flex gap-2">
+                    <i class="fa-regular fa-envelope fs-5"></i>
+                    <span>${company_info.email ? company_info.email : 'N/A'}</span>
+                </div>
+                <div class="d-flex gap-2">
+                    <i class="fa-solid fa-phone fs-5"></i>
+                    <span>${company_info.phone_number ? company_info.phone_number : 'N/A'}</span>
+                </div>
             </div>`].join('');
+            mThis.htmlString = html;
             div.html(html);
         }
     }
