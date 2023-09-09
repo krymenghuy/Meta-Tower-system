@@ -389,6 +389,7 @@ class Activity //extends Model
             'amount' => '1|number|0,10',
             'type' => '1|string|choice|percentage,amount',
             'remarks' => '1|string|1,250',
+            'term_id' => '1|number|exists=terms.id',
         ];
 
         $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
@@ -405,6 +406,7 @@ class Activity //extends Model
             'remarks' => $remarks,
             'amount' => $inputs['amount'],
             'type' => $inputs['type'],
+            'term_id' => $inputs['term_id'],
             'status_id' => 1, // create request status id = 1;
         ];
 
@@ -498,8 +500,6 @@ class Activity //extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-
-
     function approveRequestDiscount($arr=[],$ss){
         $approve_info = null;
         $price_list = new PriceList(null,$ss);
@@ -522,17 +522,20 @@ class Activity //extends Model
             if($res->error) return DV::error($res->error);
             $inputs = $res->values;
             $id = $inputs['discount_id'];
-            $discountTypeInfo = DB::table('discount_request')->where('id',$id)->where('branch_id',$ss->branch_id)->selectRaw('amount,type,discount_type_id,student_id')->first();
+            $discountTypeInfo = DB::table('discount_request')->where('id',$id)->where('branch_id',$ss->branch_id)->selectRaw('amount,type,discount_type_id,student_id,term_id')->where('authorized',0)->where('status_id','<',3)->first();
+            if(!$discountTypeInfo) return DV::error('Discount might have been applied');
+            $str_term_id = 'e.term_id = '.$discountTypeInfo->term_id;
             $enrollment = DB::table('enrollments as e')->where('e.student_id',$discountTypeInfo->student_id)
-                        ->join('terms as t','t.id','=','e.term_id')
+                        ->whereRaw($str_term_id)
                         ->selectRaw('e.id')
                         ->first();
             $selectPayment = 'tuition_due';
-            $payment = DB::table('payments')->where('enrollment_id',$enrollment->id)->where('branch_id',$ss->branch_id)->where('status_id',1)->where('pmt_status','unpaid')->first();
-
-
+            $payment = DB::table('payments')->where('enrollment_id',$enrollment->id)->where('branch_id',$ss->branch_id)->where('status_id','<',3)->where('pmt_status','unpaid')->first();
+            
+            
             if($discountTypeInfo->discount_type_id == 1){
-                $discount =($payment->tuition_due * $discountTypeInfo->amount)/100;
+                $discount_perc = $discountTypeInfo->amount;
+                $discount =($payment->tuition_due * $discount_perc)/100;
                 $tuition_due = $payment->tuition_due - $discount;
                 $dis_arr_info = [
                     'special_discount' =>  $discountTypeInfo->amount,
@@ -542,8 +545,14 @@ class Activity //extends Model
                 DB::table('payments')->where('id',$enrollment->id)->update($dis_arr_info);
                 DB::table('discount_request')->where('id',$id)->update([
                     'authorized'=> 1,
-                    'status_id' => 3
+                    'status_id' => 3,
+                    'auth_uid' => $ss->id,
+                    'auth_date' => date('Y-m-d'),
+                    'auth_user' => $ss->full_name
                 ]);
+
+                ///** update unpaid invoice (reset price,discount) */
+                self::resetUnpaidInvoice($enrollment->id,$tuition_due,$discount_perc);
             }
             else{
                 $discount =($payment->tuition_due * $discountTypeInfo->amount)/100;
@@ -556,14 +565,52 @@ class Activity //extends Model
                 DB::table('payments')->where('id',$enrollment->id)->update($dis_arr_info);
                 DB::table('discount_request')->where('id',$id)->update([
                     'authorized'=> 1,
-                    'status_id' => 3
+                    'status_id' => 3,
+                    'auth_uid' => $ss->id,
+                    'auth_date' => date('Y-m-d'),
+                    'auth_user' => $ss->full_name
                 ]);
+
+                ///** update unpaid invoice (reset price,discount) */
+                self::resetUnpaidInvoice($enrollment->id,$tuition_due,$discount_perc);
             }
             $success ++;
         }
-        return DV::depends($success,['action' => 'Approved']);
+        return DV::depends($success,['action' => 'Approved','info'=>$discountTypeInfo]);
     }
 
+    function resetUnpaidInvoice($enrollment_id,$tuition_due,$existing_discount){
+        $str_where = 'inv.is_paid = 0 AND inv.inactive = 0 AND paid_amount <= 0';
+        $unpaidInvoice = DB::table('invoices as inv')
+            ->where('inv.enrollment_id',$enrollment_id)
+            ->join('invoice_items as it','it.invoice_id','=','inv.id')
+            ->whereRaw($str_where)
+            ->where('inv.invoice_type','tuition_fee')
+            ->selectRaw('inv.id,it.discount')
+            ->first();
+        if($unpaidInvoice){
+            $keep_non_tuition_price =[];
+            $non_tuitionExist = DB::table('invoice_items')->where('invoice_id',$unpaidInvoice->id)->where('fee_type','!=','tuition_fee')->selectRaw('price')->get();
+            foreach($non_tuitionExist as $p){
+                $keep_non_tuition_price[] = $p->price;
+            }
+            DB::table('invoice_items')->where('invoice_id',$unpaidInvoice->id)->where('fee_type','tuition_fee')->update([
+                'net_amount' => $tuition_due,
+                'discount' => $unpaidInvoice->discount + $existing_discount
+            ]);
+
+            //** */
+            if($non_tuitionExist){
+                $tuition_due = $tuition_due + array_sum($keep_non_tuition_price);
+            }
+            DB::table('invoices')->where('id',$unpaidInvoice->id)->update([
+                'due_amount' => $tuition_due
+            ]);
+            return true;
+        }
+        return;
+
+    }
     function rejectRequestChange($d,$ss){
         $id = isset($d->id) ? $d->id :$d->request_id;
         $remarks = isset($d->remarks)?$d->remarks:$d->remark;
@@ -631,7 +678,7 @@ class Activity //extends Model
                 ->join('discount_types as dt','dt.id','=','dr.discount_type_id')
                 ->join('students as s','s.id','=','dr.student_id')
                 ->where('dr.branch_id',$branch_id)
-                // ->where('dr.status_id','>',1)
+                ->where('dr.status_id','>',1)
                 ->selectRaw($selectCols)
                 ->whereRaw($str_moreWhere)->whereRaw($str_search);
                 // if($type){

@@ -909,4 +909,14 @@ class Student //extends Model
         // update student_pricelist -> inactive = 1;
     }
 
+    function getActiveStudentPriceList($filter,$ss=null){
+        $ss = $ss?$ss:$this->userInfo;
+        $branch_id = $ss->branch_id;
+        $rows = DB::table('student_pricelist')->where('branch_id',$branch_id)->where('inactive',0)->get();
+        return $rows;
+    }
+
+    function updateStudentPriceList(){
+    }
+
 }
