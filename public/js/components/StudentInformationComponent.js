@@ -209,7 +209,7 @@ var StudentInformationComponent = new function(){
             mThis.prepareAcademic();
             let x = mThis.self.siblings(':visible');
             x.hide(0,function(){
-                mThis.self.hide().fadeIn(300);
+                mThis.self.hide().fadeIn(200);
             });
         });
     }

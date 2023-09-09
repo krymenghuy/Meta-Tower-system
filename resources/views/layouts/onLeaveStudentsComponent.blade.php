@@ -34,7 +34,7 @@
             </button>
             <input id="_onleave_search_student" type="search" class="form-control width--search" placeholder="Search by Name or ID..."/>
         </div>
-        <div id="_onleave_list_view" class="_onleave_list"></div>
+        <div id="_onleave_list_view" class="border rounded-3 shadow"></div>
     </div>
     <div id="st-register--input" class="st-register--input" style="display:none">
         <div class="bg-primary rounded-top-3">

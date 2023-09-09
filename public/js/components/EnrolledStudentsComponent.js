@@ -157,7 +157,7 @@ var EnrolledStudentsComponent = new function(){
                 mThis.setDataForm(mThis.getFilterData());
                 mThis.getFamilyID();
                 mThis.div_input.siblings(":visible").fadeOut("fast", function(){
-                    mThis.div_input.hide().fadeIn(300);
+                    mThis.div_input.hide().fadeIn(200);
                 });
             });
         });
@@ -186,7 +186,7 @@ var EnrolledStudentsComponent = new function(){
                     if(d.login_info && d.login_info.parent_login_changed == 1){
                         cv_interact.info(['Parent login has changed to ',d.login_info.new_login_name].join(''));
                     }
-                    mThis.div_list.fadeIn(300).siblings().hide();
+                    mThis.div_list.fadeIn(200).siblings().hide();
                 }
                 else{
                     cv_interact.error(res.error_message ? res.error_message : 'May be something wrong on server side');
@@ -580,7 +580,7 @@ var EnrolledStudentsComponent = new function(){
 
                 mThis.prepareFormOption(enrollment_id,mThis.div_input,'data-input',(d) => {
                     mThis.setDataForm(d.enrollment_info);
-                    mThis.div_input.fadeIn(300).siblings().hide();
+                    mThis.div_input.fadeIn(200).siblings().hide();
                 });
             });
 
@@ -733,7 +733,7 @@ var EnrolledStudentsComponent = new function(){
             mThis.studentListView.showPage(mThis.getFilterData());
             let x = mThis.self.siblings(':visible');
             x.hide(0,function(){
-                mThis.self.hide().fadeIn(300);
+                mThis.self.hide().fadeIn(200);
             });
         });
     }
