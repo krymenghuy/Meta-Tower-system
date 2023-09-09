@@ -810,7 +810,7 @@ class Invoice //extends Model
         $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $d = (object)$res->values;
-        $selectCols = 'i.receiver,i.note,i.due_amount,i.paid_amount,s.name,s.sex,e.level_id,e.session_id,e.campus_id,formatDate(e.start_date) as start_date,formatDate(e.tuition_end_date) as tuition_end_date';
+        $selectCols = 'i.invoice_date,i.invoice_number,i.receiver,i.note,i.due_amount,i.paid_amount,s.name,s.sex,e.level_id,e.session_id,e.campus_id,formatDate(e.start_date) as start_date,formatDate(e.tuition_end_date) as tuition_end_date';
         $row = DB::table('invoices as i')->where('i.id',$d->invoice_id)
             ->join('students as s','i.student_id','=','s.id')
             ->join('enrollments as e','e.id','=','i.enrollment_id')
@@ -837,10 +837,10 @@ class Invoice //extends Model
         $selectCols = 'it.fee_type,it.net_amount,it.start_date,it.end_date';
         $rows = DB::table('invoice_items as it')->where('it.invoice_id',$inv_id)->selectRaw($selectCols)->get();
         foreach($rows as $row){
+            $row->duration=null;
             if($row->fee_type == 'tuition_fee'){
-                $row->duration = self::getPaymentDuration('2023-09-01','2023-10-7');
+                $row->duration = self::getPaymentDuration($row->start_date,$row->end_date);
             }
-            
         }
         return $rows;
     }
@@ -849,17 +849,32 @@ class Invoice //extends Model
         $start = new \DateTime($start_date);
         $end = new \DateTime($end_date);
 
+        // Calculate the interval
         $interval = $start->diff($end);
 
         $years = $interval->y;
         $months = $interval->m;
         $days = $interval->d;
-        
-        $daysTotal = $interval->days;
-        $weeks = floor($daysTotal / 7);
-        $remainingDays = $daysTotal % 7;
 
-        $duration = "$months months, $weeks weeks and $remainingDays days";
+        // Calculate total weeks and remaining days
+        $total_weeks = floor($days / 7);
+        $remaining_days = $days % 7;
+
+        $duration = '';
+        if ($years > 0) {
+            $duration .= $years . ' year' . ($years > 1 ? 's' : '') . ' ';
+        }
+        if ($months > 0) {
+            $duration .= $months . ' month' . ($months > 1 ? 's' : '') . ' ';
+        }
+        if ($total_weeks > 0) {
+            $duration .= $total_weeks . ' week' . ($total_weeks > 1 ? 's' : '') . ' ';
+        }
+        if ($remaining_days > 0) {
+            $duration .= $remaining_days . ' day' . ($remaining_days > 1 ? 's' : '') . ' ';
+        }
+ 
+        $duration = trim($duration);
 
         return $duration;
     }
