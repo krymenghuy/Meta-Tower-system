@@ -810,7 +810,7 @@ class Invoice //extends Model
         $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $d = (object)$res->values;
-        $selectCols = 'i.receiver,i.note,i.due_amount,i.paid_amount,s.name,s.sex,e.level_id,e.session_id,e.campus_id,formatDate(e.start_date) as start_date,formatDate(e.tuition_end_date) as tuition_end_date';
+        $selectCols = 'i.invoice_date,i.invoice_number,i.receiver,i.note,i.due_amount,i.paid_amount,s.name,s.sex,e.level_id,e.session_id,e.campus_id,formatDate(e.start_date) as start_date,formatDate(e.tuition_end_date) as tuition_end_date';
         $row = DB::table('invoices as i')->where('i.id',$d->invoice_id)
             ->join('students as s','i.student_id','=','s.id')
             ->join('enrollments as e','e.id','=','i.enrollment_id')
