@@ -1,11 +1,6 @@
 <div id="_main_policyDiscountComponent" class="mobile-padding p-3" style="display:none">
     <div class="d-flex flex-row justify-content-between">
        <div class="d-flex flex-row gap-2">
-            <!-- <input id="_pdl_search" type="search" class="form-control width--search-inner" placeholder="Search..."/> -->
-            <!-- <button class="btn btn-sm btn-primary" type="button">
-                <span class="trans-text" data-langprop="buttons.Filter By Year"></span>
-                <i class="fa-solid fa-caret-down ps-2"></i>
-            </button> -->
             <select class="modal-select2" id="_pol_filter_acad_year"></select>
             <select class="modal-select2" id="_pol_filter_price_list"></select>
        </div>
@@ -13,8 +8,6 @@
             <i class="fa-solid fa-plus"></i>
             <span class="trans-text" data-langprop="buttons.Add Discount"></span>
         </button>
-
-       
     </div>
     <div id="tbl_pld" class="table-responsive mt-3 p-3 border rounded-3 bg-white table-responsive-hover"></div>
 </div>

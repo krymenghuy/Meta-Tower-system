@@ -465,6 +465,15 @@ li.kt-menu__section {
     vertical-align: middle;
 }
 
+.select2-container--default .select2-selection--single .select2-selection__rendered{
+    color: #595d6e;
+    font-size: 1rem;
+    font-family: Poppins;
+    height:100% !important;
+    line-height: 28px;
+    vertical-align: middle;
+}
+
 @media screen and (max-width: 800px) {
     .div--ssp .d-bf {
         display: block !important;
