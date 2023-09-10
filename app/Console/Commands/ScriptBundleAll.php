@@ -4,11 +4,10 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\ScriptManagement\ScriptManager;
-use Symfony\Component\Console\Helper\ProgressBar;
 
 class ScriptBundleAll extends Command
 {
-    protected $signature = 'bundle:script-all';
+    protected $signature = 'bundle:script-all {--min}';
     protected $description = 'Minifies and bundles all javascript script files into one new javascript file';
 
     public function __construct()
@@ -18,7 +17,15 @@ class ScriptBundleAll extends Command
 
     public function handle()
     {
-        $bs = ScriptManager::createAllBundleFiles();
+        // Retrieve command line arguments and options
+        $bundleName = $this->argument('bundle_name');
+        $obfuscate = $this->option('ob');
+
+        // Determine the optimization option
+        $option = $obfuscate ? 'ob' : 'min';
+
+
+        $bs = ScriptManager::createAllBundleFiles($option);
         if ($bs->status === 'OK') {
             $this->info("Bundling in progress...\n");
 

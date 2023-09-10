@@ -4,7 +4,7 @@ var DepositFeeComponent = new function(){
     this.title_prop = "Deposits";
     this.self = $('#_main_depositFeeComponent');
 
-    this.tblDepositFee = mThis.self.find('#tbl_dpf_');
+    this.tblDepositFee ={};
     this.btnNew = mThis.self.find('#dpf_btn_new');
     this.elSearch = mThis.self.find('#_dpf_elSearch');
 

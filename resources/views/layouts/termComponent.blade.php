@@ -1,11 +1,14 @@
 <div id="_main_termComponent" class="mobile-padding p-3" style="display:none">
-    <div class="p-3 bg-white rounded-3">
+    <div class="d-flex flex-row p-3 bg-white rounded-3 justify-content-between">
+        <div class="d-flex gap-2">
+            <select id="_term_filter_academic_year" class="modal-select2"></select>
+        </div>
         <button id="_trm_btn_new" class="btn btn-primary btn-sm" type="button">
+            <i class="fa fa-plus"></i>
             <span class="trans-text" data-langprop="buttons.New Term"></span>
         </button>
     </div>
-    <div class="table-responsive p-3 bg-white rounded-3 mt-3">
-        <table id="_trm_tbl" class="table"></table>
+    <div id="_term_list" class="p-3 bg-white rounded-3 mt-3">
     </div>
 </div>
 

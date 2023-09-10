@@ -1,0 +1,63 @@
+'use strict';
+let FileChooser = new function(){
+    let mThis = this;
+    let id ='_file1111';
+    mThis.fileInput = null;
+    mThis.fileInput1 = {};
+    
+    this.init = ()=>{
+        let reader = new FileReader();
+
+        mThis.fileInput = document.getElementById(id);
+        if(!mThis.fileInput){
+            mThis.fileInput = document.createElement('input');
+            mThis.fileInput.type='file';
+            mThis.fileInput.setAttribute('id',id);
+            mThis.fileInput.setAttribute('accept',`image/*`);
+            mThis.fileInput.style.display ='none';
+            document.body.appendChild(mThis.fileInput);
+            mThis.fileInput1 = $(mThis.fileInput);
+        }
+      
+        mThis.fileInput1.off('change').on('change', function () {
+            let files = mThis.fileInput1.prop('files');
+            let file = files[0];
+            if (file) {
+                // if (file.type.match(/^image\/.*/)) {
+                    reader.readAsDataURL(file);
+                // } else {
+                    // cv_interact.error('The chosen image file is invalid!');
+                // }
+            }
+        });
+    
+        reader.onload = function (e) {
+            e.preventDefault();
+            let photoData = e.target.result;
+            let base64result = photoData.split(',')[1];
+    
+            let fileType = photoData.split('/')[1].split(';')[0];
+            if (fileType == 'jpeg') fileType = 'jpg';
+    
+            let p = {};
+            p.dataUrl = photoData;
+            p.photoData = base64result;
+            p.file_type = fileType;
+            p.ext = fileType;
+            mThis.fileInput1.val(null);
+            if(typeof mThis.onClose ==='function') mThis.onClose(p);
+        }
+    }
+
+    this.chooseFile =(options,onClose)=>{
+        if(!options) options ={};
+        mThis.onClose = onClose;
+        if(!options.accept) options.accept =`image/*`; 
+        mThis.fileInput1.attr('accept',options.accept);
+        mThis.fileInput1.trigger('click');
+    }
+}
+
+window.addEventListener('DOMContentLoaded',() => {
+    FileChooser.init();
+});

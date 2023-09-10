@@ -1,3 +1,4 @@
+/app/Console/Commands
 /app/ScriptManagement/obfuscate.js
 /app/ScriptManagement/obfuscate_old.js
 /app/ScriptManagement/ScriptManager1.php

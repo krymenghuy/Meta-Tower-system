@@ -16,13 +16,10 @@ let VSUtil = new function()
 		//return el? el.content:'';
 	  }
 
-	  /** Limitation=> clickOnClass check the target lement, if it contain the given class name, 
-	   * otherwise, it check the immediate parent Node, which may contain that class class. 
-	   * It does NOT check the second level parent*/
-	 this.clickOnClass = (target,cssClass)=>{
+	  this.clickOnClass =(target,cssClass)=>{
 		if(target.classList.contains(cssClass)) return target;
-	    if(target.parentNode.classList.contains(cssClass)) return target.parentNode;
-	  }
+		if(target.parentNode.classList.contains(cssClass)) return target.parentNode; 
+      }
 	   //does the same job as htmlspecialchars() PHP
 		this.escapeHtml =(str="")=>
 		{

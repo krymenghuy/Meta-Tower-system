@@ -132,7 +132,8 @@ class ListView{
 	}
 
 	// clickOnClass(target,cssClass){
-	// 	return (target.parentNode.classList.contains(cssClass) || target.classList.contains(cssClass));
+	// 	if(target.classList.contains(cssClass)) return target;
+	// 	if(target.parentNode.classList.contains(cssClass)) return target.parentNode; 
 	// }
 
 	show(filter =null,current_page=null,onFinish=null){

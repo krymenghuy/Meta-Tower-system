@@ -2,6 +2,7 @@
 namespace App\Models;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 use DB;
 
 class Campus //extends Model
@@ -26,10 +27,24 @@ class Campus //extends Model
 
     static function list($ss){
         $branch_id = $ss->branch_id;
-        $rows = DB::table('campuses as c')->selectRaw('c.name,c.shortcut,id')->where('c.branch_id',$branch_id)->get();
+        $rows = DB::table('campuses as c')->selectRaw('c.id,c.name,c.shortcut,id')->where('c.branch_id',$branch_id)->get();
         return $rows;
     }
-
+    static function list_paginate($arr,$ss){
+        $branch_id = $ss->branch_id;
+        $d = (object)$arr;
+        $current_page =isset($d->current_page)?$d->current_page:1;
+        $per_page =isset($d->per_page)?$d->per_page:10;
+        if(!is_numeric($current_page)) $current_page=1;
+        $skip_rows = ($current_page -1) * $per_page;
+    
+        $query= DB::table('campuses as c')->selectRaw('c.id,c.name,c.shortcut,id')->where('c.branch_id',$branch_id);
+        $count_query = clone  $query;
+        $count = $count_query->count('c.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
+ 
     static function details($id,$ss){
         $branch_id = $ss->branch_id;
         $row = DB::table('campuses')->where('id',$id)->selectRaw('id,name,shortcut')->where('branch_id',$branch_id)->first();

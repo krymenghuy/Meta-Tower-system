@@ -33,6 +33,13 @@ class AcademicYearController extends Controller
         return JDV::result($list);
     }
 
+    function getList_paginate(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return JDV::raw($ss);
+        $list = AcademicYear::list_paginate($req->all(),$ss);
+        return JDV::result($list);
+    }
+
     function getDetails(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;

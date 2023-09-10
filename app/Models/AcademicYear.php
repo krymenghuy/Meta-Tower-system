@@ -3,6 +3,7 @@
 namespace App\Models;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 use DB;
 class AcademicYear //extends Model
 {
@@ -62,6 +63,30 @@ class AcademicYear //extends Model
         return $rows;
     }
 
+    static function getDeleteWarning($id,$branch_id){
+       $academic_year = DB::table('academic_years as a')->where('id',$id)->take(1)->value('academic_year');
+       if(!$academic_year) return 'The academic year ID is not valid for delete operation'; 
+       $id = DB::table('enrollments as e')->where('e.branch_id',$branch_id)->where('e.academic_year',$academic_year)->take(1)->value('id');
+       return $id>0? 'Cannot delete the academic year '.$academic_year. ' because it has been used already' :null;
+    }
+
+    static function list_paginate($arr, $ss){
+        $branch_id = $ss->branch_id;
+        $d = (object)$arr;
+
+        $current_page =isset($d->current_page)?$d->current_page:1;
+        $per_page =isset($d->per_page)?$d->per_page:10;
+        if(!is_numeric($current_page)) $current_page=1;
+        $skip_rows = ($current_page -1) * $per_page;
+
+        $query = DB::table('academic_years AS a')->selectRaw('a.id,a.academic_year,formatDate(start_date) AS start_date,formatDate(end_date) AS end_date,a.update_user,formatTime(a.updated_at) AS updated_at')->where('a.branch_id',$branch_id);
+         
+        $count_query = clone  $query;
+        $count = $count_query->count('a.id');
+        $rows = $query->orderByRaw('a.start_date DESC')->skip($skip_rows)->take($per_page)->get();
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
+    
     static function details($id,$ss){
         $branch_id = $ss->branch_id;
         $row = DB::table('academic_years')->selectRaw('id,academic_year,formatDate(start_date) AS start_date,formatDate(end_date) AS end_date,remarks')->where('id',$id)->where('branch_id',$branch_id)->first();
@@ -70,6 +95,8 @@ class AcademicYear //extends Model
 
     static function delete($id,$ss){
         $branch_id = $ss->branch_id;
+        $err = self::getDeleteWarning($id,$branch_id);
+        if($err) return DV::error($err);
         $x = DB::table('academic_years')->where('id',$id)->where('branch_id',$branch_id)->delete();
         return DV::depends($x,['action' => 'Deleted','academic_years' => self::list($ss)],'Failed to delete academic year');
     }
