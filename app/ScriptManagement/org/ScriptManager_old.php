@@ -1,0 +1,451 @@
+<?php
+namespace App\ScriptManagement;
+use App\ScriptManagement\ScriptProvider;
+use App\ScriptManagement\Minifier;
+
+class ScriptManager{
+    protected static $script_path = "";
+
+    function __construct(){
+        self::$script_path = getcwd()."/js/";
+    }
+
+    function __destruct(){
+        return null;
+    }
+   
+    //remove comments from codes
+    static function removeComments( $js ) {
+		
+		// Remove a tab
+		$js = str_replace("\t", " ", $js);
+
+		// Remove comments with "// "
+		$js = preg_replace('/\n(\s+)?\/\/[^\n]*/', "", $js);	
+
+		// Remove other comments
+		$js = preg_replace("!/\*[^*]*\*+([^/][^*]*\*+)*/!", "", $js);
+		$js = preg_replace("/\/\*[^\/]*\*\//", "", $js);
+		$js = preg_replace("/\/\*\*((\r\n|\n) \*[^\n]*)+(\r\n|\n) \*\//", "", $js);		
+
+		// Remove a carriage return
+		$js = str_replace("\r", "", $js);
+
+		// Remove whitespaces
+		$js = preg_replace("/\s+\n/", "\n", $js);	
+		$js = preg_replace("/\n\s+/", "\n ", $js);
+		$js = preg_replace("/ +/", " ", $js);
+
+		return $js;
+	}
+
+    //get_file_contens from url
+    static function getFileContentFromUrl($url) {
+        $ch = curl_init();
+    
+        curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_ENCODING, 0);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST , "GET");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);  
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+    
+        $data = curl_exec($ch);
+    
+        $info = curl_getinfo($ch);
+     
+        if(curl_errno($ch)) {
+            return (object)['status'=>'Error','error_message'=>"Failed to fectch url $url.Error: ".curl_error($ch)];
+        }
+    
+        curl_close($ch);
+    
+        if ($data === FALSE) {
+            return (object)['status'=>'Error','error_message'=>"Failed to fectch url $url. Info: ".$info];
+        }
+        return (object)['content'=>$data,'error_message'=>null,'status'=>'OK'];
+    }
+
+    static function downloadUrlToFile($url, $outFileName)
+    {   
+            if(is_file($url)) {
+                copy($url, $outFileName); 
+            } else {
+               try{
+                $options = array(
+                    CURLOPT_FILE    => fopen($outFileName, 'w'),
+                    CURLOPT_TIMEOUT =>  28800, // set this to 8 hours so we dont timeout on big files
+                    CURLOPT_URL     => $url
+                    );
+    
+                    $ch = curl_init();
+                    curl_setopt_array($ch, $options);
+                    curl_exec($ch);
+                    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                    curl_close($ch);
+                    return (object)['error_message'=>null,'info'=>$httpcode];
+               }catch(Exception $e){
+                 return (object)['error_message'=>$e->getMessage()." File: ".$outFileName,'status'=>'Error'];
+               }
+            }
+    }
+
+    protected static function createFile($content=null,$file_name=null,$ext =null){
+        if (!$file_name) return (object)["status"=>"Error","error_message"=>"Error in createFile() method because parameter file_name is not supplied"];
+        if (!$content) return (object)["status"=>"Error","error_message"=>"Cannot create file $file_name.$ext with NULL content"];
+        $file_name = explode('?',$file_name)[0];
+        $dir = dirname($file_name);
+        //If file extension is Not supplied, get extention from $file_name
+        if (!$ext) $ext = pathinfo($file_name, PATHINFO_EXTENSION);
+        if (!file_exists($dir)) {
+           mkdir($dir, 0755, true); //permission
+            //$result->error = 'Storage file or folder does not exist';
+            //return $result;
+        }
+        $ext = trim($ext?$ext:"");
+        if (mb_substr($ext,0,1) !==".") $ext = ".$ext";
+        if (substr($file_name,-strlen($ext)) !==$ext) $file_name .=$ext;
+        $success = file_put_contents($file_name, $content);
+        if (!$success) return  (object)["status"=>"Error","error_message"=>"Error creating file $file_name"];
+        else return (object)['status'=>'OK','file_name'=>$file_name];
+    }
+
+    protected static function deleteFile($filePath){
+        if (file_exists($filePath)) {
+            unlink($filePath);
+            return null;
+         } else return "File not found for deleting"; 
+    }
+
+    protected static function getFileContent($fileName){
+        if (empty($fileName)) return null;   
+        if (!file_exists($fileName)) return null;
+        $fileSize = filesize($fileName);
+        if ($fileSize<=0) return null;
+        $handle = fopen($fileName, "r");
+        $contents = fread($handle, $fileSize);
+        fclose($handle);
+        return $contents;
+    }
+
+    static function is_cdn_file($path=''){
+       return (substr(trim($path),0,5) =='http:' || substr(trim($path),0,6) =='https:');
+    }
+
+    //create minified files | createMinifiedFiles()
+    static function createMinFiles($b=[]){
+        $str = "";
+        //contains last 10 chars of the latest combined script content
+        $trailing_str="";
+    
+        $res_files=[];
+        $files = isset($b['files'])?$b['files']:[];
+        $dir = getcwd();
+        $excepts = $b? (isset($b['no-minify'])?$b['no-minify']:[]) :[];
+        //NOTE that: each file path is  $dir.$f = "E:\LaravelApps\GTS/assets/material-js/jquery.min.js"
+        // then we need to add directory called "public" to it => "E:\LaravelApps\GTS/public/assets/material-js/jquery.min.js"
+        foreach($files as $f){
+          $tmp_path = $dir."/public/".$f;
+          $tmp_path = str_replace('//','/',$tmp_path);
+          //Use method "explode" in ordder to exclude question mark "?", if any, from the $path string. NOTE: "?v=2" may be used for versioning and client cache control 
+          $path = explode('?',$tmp_path)[0];
+          $last_seven_chars = substr($f, strlen($f)-7,7);
+   
+          if (in_array($f,$excepts)){
+              $content_last_char = mb_substr(trim($str), -1);
+              $new_content = null;
+              if (self::is_cdn_file($f))
+              {
+                  $res = self::getFileContentFromUrl($f);
+                  //$path = $dir."/public/js/temp/".basename($f);
+                  //$res = self::downloadUrlToFile($f,$path);
+                  //$new_content = self::getFileContent($path);
+                  if ($res->error_message) return (object)['error_message'=>$res->error_message,"content"=>null];
+                  //just remove comments from js codes
+                  if (!$res->content) return (object)['error_message'=>"Error: File $path is empty","content"=>null]; 
+                  $new_content = self::removeComments($res->content);
+              }
+              else $new_content = self::removeComments(self::getFileContent($path));
+              if (empty(trim($new_content))) return (object)['error_message'=>"Failed to fetch content from file $path","content"=>null]; 
+               $des_path = $dir."/public/dist/js/".basename($f); 
+               $res = self::createFile($new_content,$des_path,null);
+               if($res->status ==='Error') return $res; else $res_files[] = $res->file_name;
+          }else {
+              if ($last_seven_chars ==='.min.js')
+              {
+                  $content_last_char = mb_substr(trim($str), -1);
+                  $new_content =null;
+                  if (self::is_cdn_file($f))
+                  {
+                      $res = self::getFileContentFromUrl($f);
+                      if ($res->error_message) return (object)['error_message'=>$res->error_message,"content"=>null];
+                      if (!$res->content) return (object)['error_message'=>"Error: File $path is empty","content"=>null]; 
+                      $new_content = self::removeComments($res->content);
+                  }
+                  else $new_content = self::removeComments(self::getFileContent($path));
+  
+                  if (empty(trim($new_content))) return (object)['error_message'=>"Failed to fetch content from file $path","content"=>null]; 
+                  $des_path = $dir."/public/dist/js/".basename($f); 
+                  $res = self::createFile($new_content,$des_path,null);
+                  if($res->status ==='Error') return $res; else $res_files[] = $res->file_name;
+              }    
+              else{
+                  $content_last_char = mb_substr(trim($str), -1);
+                  //$str.= " ".self::minify_js(self::getFileContent($path),  ['flaggedComments' => false]);
+                  $new_content = null;
+                  if (self::is_cdn_file($f))
+                  {
+                      $res = self::getFileContentFromUrl($f);
+                      if ($res->error_message) return (object)['error_message'=>$res->error_message,"content"=>null];
+                      if (!$res->content) return (object)['error_message'=>"Error: File $path is empty","content"=>null]; 
+                      $new_content = $res->content;
+                  }
+                  else $new_content = self::getFileContent($path);
+  
+                  if (empty(trim($new_content)))  return (object)['error_message'=>"Failed to fetch content from file $path","content"=>null];
+                  $des_path = $dir."/public/dist/js/".basename($f);
+                  $new_content = Minifier::minify($new_content); 
+                  $res = self::createFile($new_content,$des_path,null);
+                  if($res->status ==='Error') return $res; else $res_files[] = $res->file_name;
+              }
+          }
+             
+        }
+        return (object)['status'=>'OK','files'=>$res_files];
+      }
+  
+
+    static function combineFileContents($b=[]){
+      $str = "";
+      //contains last 10 chars of the latest combined script content
+      $trailing_str="";
+
+      $files = isset($b['files'])?$b['files']:[];
+      $dir = getcwd();
+      $excepts = $b? (isset($b['no-minify'])?$b['no-minify']:[]) :[];
+      //NOTE that: each file path is  $dir.$f = "E:\LaravelApps\GTS/assets/material-js/jquery.min.js"
+      // then we need to add directory called "public" to it => "E:\LaravelApps\GTS/public/assets/material-js/jquery.min.js"
+      foreach($files as $f){
+        $tmp_path = $dir."/public/".$f;
+        $tmp_path = str_replace('//','/',$tmp_path);
+        //Use method "explode" in ordder to exclude question mark "?", if any, from the $path string. NOTE: "?v=2" may be used for versioning and client cache control 
+        $path = explode('?',$tmp_path)[0];
+        $last_seven_chars = substr($f, strlen($f)-7,7);
+ 
+        if (in_array($f,$excepts)){
+            $content_last_char = mb_substr(trim($str), -1);
+            $new_content = null;
+            if (self::is_cdn_file($f))
+            {
+                $res = self::getFileContentFromUrl($f);
+                //$path = $dir."/public/js/temp/".basename($f);
+                //$res = self::downloadUrlToFile($f,$path);
+                //$new_content = self::getFileContent($path);
+                if ($res->error_message) return (object)['error_message'=>$res->error_message,"content"=>null];
+                //just remove comments from js codes
+                if (!$res->content) return (object)['error_message'=>"Error: File $path is empty","content"=>null]; 
+                $new_content = self::removeComments($res->content);
+            }
+            else $new_content = self::removeComments(self::getFileContent($path));
+            if (empty(trim($new_content))) return (object)['error_message'=>"Failed to fetch content from file $path","content"=>null]; 
+            $str.= ($content_last_char==';'? " " : ";").$new_content;
+        }else {
+            if ($last_seven_chars ==='.min.js')
+            {
+                $content_last_char = mb_substr(trim($str), -1);
+                $new_content =null;
+                if (self::is_cdn_file($f))
+                {
+                    $res = self::getFileContentFromUrl($f);
+                    if ($res->error_message) return (object)['error_message'=>$res->error_message,"content"=>null];
+                    if (!$res->content) return (object)['error_message'=>"Error: File $path is empty","content"=>null]; 
+                    $new_content = self::removeComments($res->content);
+                }
+                else $new_content = self::removeComments(self::getFileContent($path));
+
+                if (empty(trim($new_content))) return (object)['error_message'=>"Failed to fetch content from file $path","content"=>null]; 
+                $str.=($content_last_char==';'? " " : ";").$new_content;
+            }    
+            else{
+                $content_last_char = mb_substr(trim($str), -1);
+                //$str.= " ".self::minify_js(self::getFileContent($path),  ['flaggedComments' => false]);
+                $new_content = null;
+                if (self::is_cdn_file($f))
+                {
+                    $res = self::getFileContentFromUrl($f);
+                    if ($res->error_message) return (object)['error_message'=>$res->error_message,"content"=>null];
+                    if (!$res->content) return (object)['error_message'=>"Error: File $path is empty","content"=>null]; 
+                    $new_content = $res->content;
+                }
+                else $new_content = self::getFileContent($path);
+
+                if (empty(trim($new_content)))  return (object)['error_message'=>"Failed to fetch content from file $path","content"=>null];
+                $str.=($content_last_char==';'? " " : ";").Minifier::minify($new_content,  ['flaggedComments' => false]);
+            }
+        }
+           
+      }
+      return (object)['content'=>$str,'error_message'=>null];
+    }
+
+    static function createBundleFileFromArray($b=[]){
+        if(!$b) return (object)["status"=>"OK","file_name"=>null];
+        if (!isset($b['output_file'])) return (object)["status"=>"OK","file_name"=>null];
+        //base_path() gives the same result both on Local and on Hosted environment. It gives Root directory
+        //always put script in public_path => "/public"
+        $dir = public_path(); // getcwd();  // physical disk path to "public"
+        //NOTE: $b['output_file'] should starts with "/" 
+
+        $single_file = isset($b['single_file'])?$b['single_file']:1;
+        if($single_file ===1){
+            $fpath = explode('?',$dir.$b['output_file'])[0];
+            if (file_exists($fpath))
+             {
+                 $err = deleteFile($fpath);
+                 if ($err) return (object)["status"=>"Error","error_message"=>$err];
+             }
+          
+            $res = self::combineFileContents($b);
+            if($res->error_message) return (object)['status'=>'Error','error_message'=>$res->error_message];
+            return self::createFile($res->content,$fpath,null);
+        }else{
+            return self::createMinFiles($b);
+        } 
+       
+    }
+
+    static function createBundleFile($bundle_name){
+       $b = ScriptProvider::bundle($bundle_name);
+       if(!$b) return (object)['status'=>'Error','error_message'=>"The script bundle named $bundle_name is not found!"];
+       return self::createBundleFileFromArray($b);
+    }
+    
+    static function createAllBundleFiles(){
+        $bs = ScriptProvider::getBundles();
+        $files = []; 
+        foreach($bs as $b){
+            $single_file = isset($b['single_file'])?$b['single_file']:1;
+            if($single_file === 1){
+                $res = self::createBundleFileFromArray($b);
+                if ($res->status ==='Error') return $res; else  $files[] = $res->file_name;
+            }else{
+                $res = self::createMinFiles($b);
+                foreach($res->files as $file) $files[]=$file; 
+            }
+        }
+        return (object)['status'=>'OK','files'=>$files];
+    }
+
+    //getPublicDirectory() return empty string on Local or Development environment.
+    //On Hosting environment, it returns "public" that is directory name.
+    //This function depends on getCWD(), which returns root directory on Hosting environment, and it returns public_path on Hosting Local environment
+    static function getPublicDirectory(){
+        $working_dir = getcwd();//public
+        $public_dir = substr($working_dir,-7);
+        $public_dir=$public_dir?$public_dir:'';
+
+        if ($public_dir ==='public\\' || $public_dir ==='\\public' || $public_dir ==='/public' || $public_dir ==='public/' ){
+          //This is local environment, so no need of "/public" for script sn css paths
+          $public_dir ="";
+        }else{
+          //This is hosting environment, so it requires "/public" for script and CSS paths
+          $public_dir ="/public";
+        }
+        return $public_dir;
+    }
+
+    //todo: createTags() will be repalced with bundleScript() that bundles and minifies all scripts into one single file
+    protected static function createTags($files =[],$attr,$version=null){
+          $ss = "";
+          //NOTE: on hosting environement => getcwd() return only Root directory and No "public" directory. Example => "/home/vectoraclouds/public_html/loan.vectoraclouds.com"
+          //NOTE on Local environment, getCWD() return public_path. Exmaple => "E:/laravelApps/LMS/public"
+          $base_url = url('/'); //base_url()
+          $public_dir = self::getPublicDirectory(); 
+          //$is_external_link is link to CDN or url lin for script of css from other server
+          foreach($files as $filePath){
+             $is_external_link = true;
+             if (substr($filePath,0,1) ==='/' || substr($filePath,0,1) ==='\\')  $is_external_link = false;
+             $url_path =$filePath;
+             if (!$is_external_link) $url_path = $base_url.$public_dir.$filePath;
+             $vers="";
+             if($version) $vers ="?v=$version";
+             if ($url_path) $ss .= "<script $attr src='$url_path$vers' type='text/javascript'></script>\n";
+          }
+          return $ss;
+    }
+
+    //create script tags by each bundle's name. Todo: bundle and minify all scripts into one file
+    //$degbugMode =1 then it does not render one combined script tag, it will create multple script tags based on orginal js files. default =1
+    static function render($bundle_name, $degbugMode=0,$version=null){
+        $b = ScriptProvider::bundle($bundle_name);
+        if(!$b) return;
+        $attr = $b?$b['attr']:"";
+        if ($degbugMode === 1){
+            $files = $b?$b['files']:[];
+            $ref = self::createTags($files,$attr,$version);
+            echo str_replace(['\n', '\r'], '', $ref);
+        }else {
+            $base_url = url('/');
+            $public_dir= self::getPublicDirectory();
+
+            $single_file = $b?$b['single_file']:1;
+            if ($single_file ===1){
+                $output_file = isset($b['output_file'])?$b['output_file']:null;
+                //$sts = explode('?',$output_file);
+                $output_file = $output_file; //$sts[0];
+                $is_external_link = true;
+                if (substr($output_file,0,1) ==='/' || substr($output_file,0,1) ==='\\') $is_external_link  = false;
+                $url_path =$output_file;
+                if (!$is_external_link) $url_path = $base_url.$public_dir.$output_file;
+                if ($url_path) {
+                    $ref =self::createTags([$url_path],$attr,$version);
+                    echo str_replace(['\n', '\r'], '', $ref);
+                }
+            }else{
+
+                //create script tag for EACH minified file
+                $files = [];
+                $bFiles = $b?$b['files']:[];
+                foreach($bFiles as $file){
+                    //$sts = explode('?',$file);
+                    $path = $file; //$sts[0];
+                    $file_name = basename($path);
+                    $fPath = $base_url.$public_dir."/dist/js/".$file_name;
+                    $files[] = $fPath;  
+                }
+
+                $ref = self::createTags($files,$attr,$version);
+                echo str_replace(['\n', '\r'], '', $ref);
+                     
+            }
+           
+        }
+
+       
+    }
+
+    //create script tags for all script .js files in a given directory's name within the  directory "/public/js"
+    static function renderFromDir($dir_name=null){
+       //$base_url = self::getBaseUrl();
+       /// getcwd() is same as public_path() on Local computer. One Cloud hosting, getCwd() = base_path() that is root directory;
+       $my_path = base_path();
+       if ($dir_name) $my_path = base_path()."/public/$dir_name";
+       //$file = basename($path);
+     
+       $files = glob("$my_path/*.js");
+       $ss = "";
+
+       foreach($files as $file){
+         $f = basename($file);
+         if ($dir_name)  $url_path = url('/')."/$dir_name/$f";
+         else  $url_path = url('/')."/$f";
+         $ss .= "<script defer src='$url_path' type='text/javascript'></script>\n";
+       }
+       //$ss .= "<script src='$my_path/myscript.js' type='text/javascript'></script>\n<script src='testsr/myscript2.js' type='text/javascript'></script>\n";
+       echo $ss;
+    }
+}

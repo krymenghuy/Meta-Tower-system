@@ -4661,7 +4661,7 @@ let KTLayout = function () {
 
             // Remember state in cookie //toggle.getState() = {'on','off'}
             let toggle_state = toggle.getState();//here
-            //Cookies.set('kt_aside_toggle_state', toggle_state);
+            Cookies.set('kt_aside_toggle_state', toggle_state);
             if (toggle_state == 'on')
                 brand_label.hide();
             else

@@ -4,7 +4,7 @@ use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AudioController;
 use App\Http\Controllers\CampusController;
-use App\Http\Controllers\DepositeController;
+use App\Http\Controllers\DepositController;
 use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\Login\GuardianLoginController;
@@ -290,12 +290,12 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //end::StudentController
 
     //begin::DepositController
-    Route::prefix('deposite')->group(function () {
-        Route::post('/save',[DepositeController::class,'save']);
-        Route::post('/details',[DepositeController::class,'getDetails']);
-        Route::post('/list',[DepositeController::class,'getList']);
-        Route::post('/delete',[DepositeController::class,'delete']);
-        Route::post('/student-info',[DepositeController::class,'getOldStudentInfo']);
+    Route::prefix('deposit')->group(function () {
+        Route::post('/save',[DepositController::class,'save']);
+        Route::post('/details',[DepositController::class,'getDetails']);
+        Route::post('/list-paginate',[DepositController::class,'getList_paginate']);
+        Route::post('/delete',[DepositController::class,'delete']);
+        Route::post('/student-info',[DepositController::class,'getOldStudentInfo']);
     });
     //end::DepositController
 
@@ -745,7 +745,7 @@ Route::post('settings/test-sql', [GeneralSettingsController::class, 'testSQL']);
 // Route::post('settings/save-lang', [UMController::class, 'saveLang']);
 Route::post('settings/payment-options',[GeneralSettingsController::class, 'paymentOptions']);
 Route::post('settings/status-options',[GeneralSettingsController::class, 'paymentStatusOptions']);
-Route::post('settings/deposite-options',[GeneralSettingsController::class, 'depositeFormOptions']);
+Route::post('settings/deposit-options',[GeneralSettingsController::class, 'depositFormOptions']);
 
 Route::post('settings/departments', [GeneralSettingsController::class, 'getDepartmentList']);
 Route::post('settings/save-department', [GeneralSettingsController::class, 'saveDepartment']);

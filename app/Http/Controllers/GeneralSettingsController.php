@@ -286,11 +286,11 @@ class GeneralSettingsController extends Controller
     return JDV::result($options);
   }
 
-  function depositeFormOptions(Request $req){
+  function depositFormOptions(Request $req){
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss); //us
 
-    $options = GeneralSettings::depositeFormOption($ss);
+    $options = GeneralSettings::depositFormOption($ss);
 
     return JDV::result($options);
   }

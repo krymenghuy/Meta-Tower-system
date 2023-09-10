@@ -7,7 +7,6 @@ class SearchData{
 
     searchDataInTr = () => {
         let elSearch = this.search, div = this.block;
-
         elSearch.on('keyup',function(e){
             e.preventDefault();
             let value = $(this).val().toLowerCase().trim();

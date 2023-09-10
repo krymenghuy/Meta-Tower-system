@@ -41,7 +41,6 @@ class ScriptManager{
         }, $input);
     }
 
-    /** This is more advanced minification and obfuscation, but resulting in file size larger than simple method using urglifyJS that result in minimal file size */
     static function obfuscateJS($filePath)
     {
         try {
@@ -52,7 +51,6 @@ class ScriptManager{
     
                 // Create a temporary JavaScript file
                 $jsFilePath = tempnam(sys_get_temp_dir(), 'script_');
-                $scriptContent = Minifier::minify($scriptContent);
                 file_put_contents($jsFilePath, $scriptContent);
             } else {
                 // It's a local file, use the provided path
@@ -100,7 +98,6 @@ class ScriptManager{
         }
     }
        
- /** This method is to same as obfuscateJS() above, but take Script Content as parameter, NOT filePath */   
 //   static function obfuscateJS($scriptContent)
 //   {
 //      //$scriptContent =  self::escapeUnicode($script);
@@ -139,46 +136,40 @@ class ScriptManager{
      * npm install terser  
      * npm install uglify-js => (this one iscurrently used)
     */
-    // static function uglifyJs($jsContent)
-    // {
-    //     // Use Terser to uglify JavaScript
-    //     $command = 'npx terser --compress --mangle';
-
-    //     $process = Process::fromShellCommandline($command);
-    //     $process->setInput($jsContent);
-    //     $process->run();
-
-    //     if (!$process->isSuccessful()) {
-    //         return (object)['status' => 'Error', 'error_message' => $process->getErrorOutput()];
-    //     }
-
-    //     return (object)['status' => 'OK', 'content' => $process->getOutput(),'error_message'=>null];
-    // }
-
-    static function uglifyJs($file_path,$temp_file=null)
+    static function uglifyJs($jsContent)
     {
-        $writeToOutput = false;
-        // Generate a unique temporary file name
-        if(!$temp_file) $temp_file = tempnam(sys_get_temp_dir(), 'uglifyjs_');
-        else $writeToOutput = true;
-    
-        // Use UglifyJS to obfuscate and minimize the JavaScript file
-        $command = 'npx uglify-js '.$file_path.' --compress --mangle --output '.$temp_file;
-        exec($command, $output, $return_var);
-    
-        if ($return_var !== 0) {
-            return (object)['status' => 'Error', 'error_message' => implode("\n", $output)];
+        // Use Terser to uglify JavaScript
+        $command = 'npx terser --compress --mangle';
+
+        $process = Process::fromShellCommandline($command);
+        $process->setInput($jsContent);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            return (object)['status' => 'Error', 'error_message' => $process->getErrorOutput()];
         }
-    
-        // Read the content of the temporary file
-        $content = file_get_contents($temp_file);
-    
-        // Delete the temporary file
-        unlink($temp_file);
-    
-        return (object)['status' => 'OK', 'content' => $content, 'error_message' => null,'output_file'=>$writeToOutput?$temp_file:null];
+
+        return (object)['status' => 'OK', 'content' => $process->getOutput()];
     }
-      
+ 
+        //     static function uglifyJsObfuscate($jsContent)
+        //     {
+        //         // Use UglifyJS to obfuscate JavaScript
+        //         $command = 'npx uglify-js --mangle';
+
+        //         $process = Process::fromShellCommandline($command);
+        //         $process->setInput($jsContent);
+        //         $process->run();
+
+        //         if (!$process->isSuccessful()) {
+        //             return (object)['status' => 'Error', 'error_message' => $process->getErrorOutput()];
+        //         }
+
+        //         return (object)['status' => 'OK', 'content' => $process->getOutput()];
+        //    }
+
+
+   
         //remove comments from codes
         static function removeComments( $js ) {
             	// Remove a tab
@@ -337,8 +328,7 @@ class ScriptManager{
         foreach ($b['files'] as $file) {
             $file = explode('?',$file)[0];
             $file_path = $base_dir . '/' . ltrim($file, '/\\');
-            //$c = self::obfuscateJS($file_path);
-            $c = self::uglifyJs($file_path);
+            $c = self::obfuscateJS($file_path);
             if($c->error_message) return (object)['status' => 'Error', 'file_name' => $file_path,'error_message'=>$c->error_message];
             // Add the local JavaScript content to the array
             $obfuscatedContents[] = $c->content;
@@ -359,8 +349,7 @@ class ScriptManager{
         foreach ($b['files'] as $file) {
             $file = explode('?',$file)[0];
             $file_path = $base_dir . '/' . ltrim($file, '/\\');
-            //$c = self::obfuscateJS($file_path);
-            $c = self::uglifyJs($file_path); 
+            $c = self::obfuscateJS($file_path); 
             if($c->error_message) return (object)['status' => 'Error', 'file_name' => $file_path,'error_message'=>$c->error_message];
             //todo: Save the obfuscated file content to specific directory
             $fileName = basename($file);

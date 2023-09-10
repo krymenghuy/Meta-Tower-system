@@ -1,5 +1,5 @@
 "use strict";
-var DepositFeeComponent = new function(){
+const DepositFeeComponent = new function(){
     let mThis = this;
     this.title_prop = "Deposits";
     this.self = $('#_main_depositFeeComponent');
@@ -8,8 +8,7 @@ var DepositFeeComponent = new function(){
     this.btnNew = mThis.self.find('#dpf_btn_new');
     this.elSearch = mThis.self.find('#_dpf_elSearch');
 
-    this.cols = [
-    {
+    this.cols = [{
         title: "Student Name",
         className: 'text-capitalize',
         data: "student_name"
@@ -24,7 +23,7 @@ var DepositFeeComponent = new function(){
     },
     {
         title: "Date of Birth",
-        data: (data, index, tr) => {
+        data: (data, a, b) => {
             let dob = data.date_of_birth ? data.date_of_birth : '';
             return new Date(dob).toLocaleDateString('km-KH',{
                 'day':'numeric',
@@ -35,7 +34,7 @@ var DepositFeeComponent = new function(){
     },
     {
         title: "Expire Date",
-        data: (data, index, tr) =>{
+        data: (data, a, b) => {
             let expire_date = data.expire_date ? data.expire_date : '';
             return new Date(expire_date).toLocaleDateString('km-KH',{
                 'day':'numeric',
@@ -47,7 +46,7 @@ var DepositFeeComponent = new function(){
     {
         title: "Amount",
         data: (data, a, b) => {
-            let cur_symbol = data.cur_symbol ? data.cur_symbol : '$', amount = data.amount ? data.amount : '0';
+            let cur_symbol = data.cur_symbol ? data.cur_symbol : '$', amount = data.amount ? data.amount : '';
             return [`${cur_symbol} ${amount}`].join('');
         }
     },
@@ -74,23 +73,18 @@ var DepositFeeComponent = new function(){
 
     this.init = () => {
 
-        mThis.depositFeeListView = new ListView('_deposit_fee_list',{
+        mThis.depositListView = new ListView('_deposit_fee_list',{
             'fetchApi':`${main_view.base_url}/api/deposit/list-paginate`,
-            'perPage':5,
-            'columns':mThis.cols,
-            // 'renderItems':(items,list_container) => {
-            //     mThis.renderStudents(list_container,items);
-            // },
-            'listContainerClass':null
+            'columns': mThis.cols,
+            'tableClass':"table header-light-blue header-uppercase",
+            'rowCreated':(data, index, tr) => {
+                tr.setAttribute('data-studentid',data.id);
+            },
+            'beforeRender':()=>{}
         });
 
-        mThis.tblDepositFee = $(mThis.depositFeeListView.getTable());
-
-        mThis.elSearch.on('keyup',e=>{
-          e.preventDefault();
-          mThis.depositFeeListView.showPage(mThis.getFilterData()); 
-        });
-
+        mThis.tblDepositFee = $(mThis.depositListView.getTable());
+ 
         mThis.btnNew.on('click',function(e){
             e.preventDefault();
             let op = {
@@ -102,54 +96,46 @@ var DepositFeeComponent = new function(){
             DepositFeeDialog.show(op);
         });
 
-        mThis.tblDepositFee.on('click',e=>{
+        mThis.tblDepositFee.on('click','a',function(e){
             e.preventDefault();
-            let lnk = VSUtil.clickOnClass(e.target,'btn-dpf-modify');
-            if(lnk){
+
+            let lnk = $(this);
+            if(lnk.hasClass('btn-dpf-modify')){
                 let op = {
-                    'id': lnk.dataset.id,
+                    'id': $(this).data('id'),
                     'onClose': () => {
-                        mThis.depositFeeListView.showPage(mThis.getFilterData());
+                        mThis.displayDepositFee();
                     }
                 };
                 DepositFeeDialog.show(op);
                 return;
-            }
-
-            lnk = VSUtil.clickOnClass(e.target,'btn-dpf-delete');
-            if(lnk){
-
+            }else if (lnl.hasClass('btn-dpf-delete')){
                 let op = {
-                    'id': lnk.dataset.id
+                    'id': $(this).data('id')
                 };
                 cv_interact.confirm('Delete this deposit?',{title: 'Delete Deposit', context: 'delete'},(e) => {
                     if(e){
-                        vsapi.call(`${main_view.base_url}/api/deposit/delete`,op,null).then(res => {
+                        vsapi.call(`${main_view.base_url}/api/deposite/delete`,op,null).then(res => {
                             if(res.status_code === 200){
-                                mThis.depositFeeListView.showPage(mThis.getFilterData());
+                                mThis.displayDepositFee();
                             }
                         });
                     }
                 });
-                return;
             }
-        });      
+           
+        });
+
     }
  
-    this.getFilterData =()=>{
-        return {'search_value':mThis.elSearch.val()};
-    }
-    
     this.show = (options) => {
         if(!options) options = {};
-        mThis.depositFeeListView.showPage(mThis.getFilterData(),null,()=>{
-            main_view.setTitle(mThis.title_prop);
-            let x = mThis.self.siblings(':visible');
-            x.hide(0,function(){
-                mThis.self.hide().fadeIn(200);
-            });
+       
+        main_view.setTitle(mThis.title_prop);
+        let x = mThis.self.siblings(':visible');
+        x.hide(0,function(){
+            mThis.self.hide().fadeIn(200);
         });
-    }
 }
 
 const DepositFeeDialog = new function(){
@@ -172,7 +158,7 @@ const DepositFeeDialog = new function(){
         e.preventDefault();
         let id = $(this).val();
         if(id > 0){
-            vsapi.call(`${main_view.base_url}/api/deposit/student-info`,{'id': id},null,false).then(res => {
+            vsapi.call(`${main_view.base_url}/api/deposite/student-info`,{'id': id},null,false).then(res => {
                 let data = {};
                 if(res.status_code === 200){
                     data = res.data;
@@ -196,7 +182,7 @@ const DepositFeeDialog = new function(){
         if(p.student_id) delete(p.id);
 
         if(ref.click){
-            vsapi.call(`${main_view.base_url}/api/deposit/save`,p,null).then(res => {
+            vsapi.call(`${main_view.base_url}/api/deposite/save`,p,null).then(res => {
                 ref.click = false;
                 if(res.status_code === 200){
                     mThis.self.modal('hide');
@@ -266,7 +252,7 @@ const DepositFeeDialog = new function(){
     }
 
     this.prepareFormOptionOld = (onFinish = null) => {
-        vsapi.call(`${main_view.base_url}/api/settings/deposit-options`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/settings/deposite-options`,null,null).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
@@ -343,7 +329,7 @@ const DepositFeeDialog = new function(){
     this.loadFormDetails = (options) => {
         mThis.self.find('.div--tab').removeClass('d-flex').hide();
         mThis.div_newStudent.show().siblings().hide();
-        vsapi.call(`${main_view.base_url}/api/deposit/details`,{'id': options.id},null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/deposite/details`,{'id': options.id},null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = res.data;

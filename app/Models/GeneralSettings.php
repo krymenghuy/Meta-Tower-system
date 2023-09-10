@@ -340,7 +340,7 @@ class GeneralSettings //extends Model
         return $rows;
     }
 
-    static function depositeFormOption($ss){
+    static function depositFormOption($ss){
         return(object)[
             'options_student' => DB::table('students')->selectRaw('name as student_name,id')->get(),
             'options_campus' => DB::table('campuses')->selectRaw('name as campus_name,id')->get(),
