@@ -25,6 +25,9 @@
         <meta name="asset_url" content="{{ asset('assets/') }}" />
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Moul&display=swap" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <?php ScriptManager::render('priority-one',1);?>
         <?php StyleManager::render('vsksm-style',1); ?> 
         <?php
@@ -42,11 +45,10 @@
             <input type="hidden" id="__xsp_name" value="_csrf_115578" />
             <input type="hidden" id="__xsp_value" value="<?php echo Str::random(30); ?>" />
         </div>
-        <img id="vs_loader1" width="270" height="170" style="display:none;position:fixed;z-index:1000;top:40%;left:40%" class="vs-loader" src="{{ asset('assets/images/vslogo1.gif') }}"/>
         <div id="kt_header_mobile" class="kt-header-mobile kt-header-mobile--fixed">
             <div class="kt-header-mobile__logo">
                 <a href="javascript:void(0)">
-                    <img alt="Logo" src="{{ asset('assets/images/logo/logo_esthederm.png') }}" />
+                    <img alt="Logo" src="{{ asset('assets/images/logo/ksm-logo.png') }}" />
                 </a>
             </div>
             <div class="kt-header-mobile__toolbar">
@@ -145,15 +147,15 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="animation-line line--loader" id="vs_loader"></div>
+                        <div class="animation-line line--loader d-none" id="vs_loader"></div>
                     </div>
                     <div id="_p2" class="kt-content kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" id="kt_content">
                         <div id="_p1" class="row">
                             <div class="col-lg-12 shadow-box mt-3 ps-4" id="_app_content">
-                                <div class="temp_div"></div>
                                 @include('layouts.inputBoxes')
                                 @include('layouts.dashboardComponent')
-                                @include('layouts.registrationComponent')
+                                @include('layouts.enrolledStudentsComponent')
+                                @include('layouts.onLeaveStudentsComponent')
                                 @include('layouts.tuitionFeeComponent')
                                 @include('layouts.policyDiscountComponent')
                                 @include('layouts.nonTuitionFeeComponent')
@@ -179,10 +181,11 @@
                                 @include('layouts.campusComponent')
                                 @include('layouts.termComponent')
                                 @include('layouts.academicYearComponent')
-                                @include('layouts.paymentPendingComponent')
+                                @include('layouts.paymentReviewComponent')
                                 @include('layouts.requestDiscountComponent')
                                 @include('layouts.promoteStudentComponent')
                                 @include('layouts.assignStudentComponent')
+                                @include('layouts.accountRequestComponent')
                             </div>
                         </div>
                     </div>

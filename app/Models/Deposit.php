@@ -4,8 +4,9 @@ namespace App\Models;
 
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 use DB;
-class Deposite //extends Model
+class Deposit //extends Model
 {
     // use HasFactory;
     static function save($arr=[],$id=null,$ss=null){
@@ -19,6 +20,7 @@ class Deposite //extends Model
             'date_of_birth' => '1|string',
             'expire_date' => '1|string',
             'note' => '0|string',
+            'authorized'=>'0|number|default =0'
         ];
 
         $res = validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
@@ -33,21 +35,43 @@ class Deposite //extends Model
 
         $inputs['status_id'] = 2; //** default 2 = authorized */
         $newID = saveData($ss,'deposite',['id' => $id],$inputs,[],1);
-        return DV::depends($newID,['action' => 'saved','campuses' => self::list($ss)]);
+        if($newID) self::authorize($newID,$ss);
+        return DV::depends($newID,null,'Failed to save deposit fee');
     }
 
-    static function list($ss){
+    static function authorize($id,$ss){
+        DB::table('deposite')->where('id',$id)->update([
+          'authorized'=>1,
+          'auth_user'=>$ss->full_name,
+          'auth_uid'=>$ss->user_id,
+          'auth_date'=>getNowTime()
+        ]);
+        return DV::success();
+    }
+    static function list_paginate($arr,$ss){
         $branch_id = $ss->branch_id;
-        $rows = DB::table('deposite as d')
+        $d = (object)$arr;
+        $term_id = isset($d->term_id)?$d->term_id:null;
+        $academic_year = isset($d->academic_year)?$d->academic_year:null;
+        //$campus_id = isset($d->campus_id)?$d->campus_id:null;
+        //$level_id = isset($d->level_id)?$d->level_id:null;
+        $search_value =isset($d->search_value)?$d->search_value:null;
+
+        $current_page =isset($d->current_page)?$d->current_page:1;
+        $per_page =isset($d->per_page)?$d->per_page:10;
+        if(!is_numeric($current_page)) $current_page=1;
+        $skip_rows = ($current_page -1) * $per_page;
+       
+        $str_status =',CASE d.authorized WHEN 1 THEN \'authorized\' ELSE \'pending\'END AS `status`';
+        $cols = 'd.id,d.deposite_amount as amount'.$str_status.',d.student_name,d.status_id,l.name as level,d.parent_phone,d.expire_date,d.date_of_birth'; 
+        $query = DB::table('deposite as d')
                 ->join('program_levels as l','l.id','=','d.level_id')
-                ->selectRaw('d.deposite_amount as amount,d.status_id,d.student_name,d.id,l.name as level,d.parent_phone,d.expire_date,d.date_of_birth')
-                ->where('d.branch_id',$branch_id)
-                ->get();
-        foreach($rows as $row){
-            $status = $row->status_id == 1 ? 'pending':'authorized';
-            $row->status = $status;
-        }
-        return $rows;
+                ->selectRaw($cols)
+                ->where('d.branch_id',$branch_id); 
+        $count_query = clone  $query;
+        $count = $count_query->count('d.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
     static function getOldStudentInfo($id,$ss){
