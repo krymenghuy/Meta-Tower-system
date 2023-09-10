@@ -4,42 +4,103 @@ var ProgramComponent = new function(){
     this.title_prop = "Program";
     this.self = $('#_main_programComponent');
 
-    this.tblProgram = mThis.self.find('#_pgm_tbl');
+    //this.tblProgram = mThis.self.find('#_pgm_tbl');
     this.btnNew = mThis.self.find('#_pgm_btn_new');
 
+    this.cols = [
+        {
+        title: "Program Name",
+        data: (data,index,tr)=>{
+            return ['<span class="fw-semibold">',data.name,'</span>'].join('');
+        }
+    },
+    {
+        title: "Previous",
+        data: (data,index,tr)=>{
+            return ['<span class="fw-semibold">',data.prev_program?data.prev_program:'None','</span>'].join('');
+        }
+    },
+  
+     {
+        title: "Description",
+        data: (data,index,tr)=>{
+            return data.description?data.description:'N/A';
+        }
+    },
+    {
+        title: "Updated",
+        data: (data,index,tr)=>{
+            return ['<span class="d-block fw-semibold">',data.update_user,'<span><span class="d-block text-left p-1 text-muted"><small>',data.updated_at,'</small></span>'].join('');
+        }
+    },
+    {
+        title: "Action",
+        data: (data, a, b) => {
+            return [`<div class="d-flex gap-2">
+                <a href="javascript:void(0)" class="btn-pgm-modify" data-id="${data.id}">
+                    <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
+                </a>
+                <a href="javascript:void(0)" class="btn-pgm-delete" data-id="${data.id}">
+                    <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                </a>
+            </div>`].join('');
+        }
+    }];
+
+
     this.init = () => {
+
+        mThis.programListView = new ListView('_program_list',{
+            'fetchApi':`${main_view.base_url}/api/program/list-paginate`,
+            'perPage':10,
+            'columns':mThis.cols,
+            // 'renderItems':(items,list_container) => {
+            //     mThis.renderStudents(list_container,items);
+            // },
+            'rowCreated':(data,index,tr)=>{
+               tr.dataset.id = data.id;
+            },
+            'listContainerClass':null
+        });
+
+        mThis.tblProgram = mThis.programListView.getTable();
+
         mThis.btnNew.on('click',function(e){
             e.preventDefault();
             let op = {
                 'id': 0,
                 'onClose': () => {
-                    mThis.displayProgram();
+                    mThis.programListView.showPage(mThis.getFilterData());
                 }
             };
             ProgramDialog.show(op);
         });
-
-        mThis.tblProgram.on('click','a.btn-pgm-modify',function(e){
+        
+        mThis.tblProgram.addEventListener('click',e=>{
             e.preventDefault();
-            let op = {
-                'id': $(this).data('id'),
-                'onClose': () => {
-                    mThis.displayProgram();
-                }
-            };
-            ProgramDialog.show(op);
-        });
+            let lnk = VSUtil.clickOnClass(e.target,'btn-pgm-modify');
+            if(lnk){
+                let op = {
+                    'id': lnk.dataset.id,
+                    'onClose': () => {
+                        mThis.programListView.showPage(mThis.getFilterData());
+                    }
+                };
+                ProgramDialog.show(op);
+                return;
+            }
 
-        mThis.tblProgram.on('click','a.btn-pgm-delete',function(e){
-            e.preventDefault();
+           //Click event for Delete program
+           lnk = VSUtil.clickOnClass(e.target,'btn-pgm-delete');
+           if(lnk){
             let op = {
-                'id': $(this).data('id')
+                'id': lnk.dataset.id
             };
             cv_interact.confirm('Delete this program?',{title: 'Delete Program', context: 'delete'},(e) => {
                 if(e){
                     vsapi.call(`${main_view.base_url}/api/program/delete`,op,null).then(res => {
                         if(res.status_code === 200){
-                            mThis.displayProgram();
+                            mThis.programListView.showPage(mThis.getFilterData());
                         }
                         else{
                             cv_interact.error(res.error_message);
@@ -47,40 +108,36 @@ var ProgramComponent = new function(){
                     });
                 }
             });
-        });
+            return;
+           }
 
-        mThis.cfg = new ExpandableRowConfig('_pgm_tbl', {
+        });
+ 
+
+        mThis.cfg = new ExpandableRowConfig(mThis.tblProgram.getAttribute('id'), {
             'dontExpandByClickingOn': ['btn-pgm-modify', 'btn-pgm-delete'],
             'onOpen': (container, detail_tr, parent_tr) => {
-                let qtr = $(parent_tr);
-                let id = qtr.data('id');
-                if(id > 0)
-                    mThis.displayProgramLevel(detail_tr, id);
+                let id = parent_tr.dataset.id;
+                if(id > 0) mThis.displayProgramLevel(container, id);
             }
         });
     }
 
-    this.displayProgramLevel = (tr, id) => {
-        let tr_id = ['_pgm_tbl_detail_',id].join('');
-        tr.setAttribute('id', tr_id);
-        let div_wrapper = $(tr).find('.expandable-row-container');
+    this.displayProgramLevel = (container, id) => {
+        //let tr_id = ['_pgm_tbl_detail_',id].join('');
+        //tr.setAttribute('id', tr_id);
+        //let div_wrapper = $(tr).find('.expandable-row-container');
         let html = null;
-
-        div_wrapper.empty();
-
+        container.innerHTML = '';
         vsapi.call(`${main_view.base_url}/api/program/levels`,{'id': id},null).then(res => {
-            let data = [];
-
-            if(res.status_code === 200){
-                data = res.data;
-            }
-
-            html = [`<div class="rounded-3 p-3 bg-white">
+            const data = res.status_code === 200? res.data:[];
+            console.log(data);  
+            html = [`<div class="rounded-3 p-2 bg-white">
                 <button data-programid="${id}" class="btn-add-level btn btn-sm btn-outline-primary btn-sm" type="button">
                     <span class="trans-text">${LocaleManager.trans('Add Level','buttons')}</span>
                 </button>
             </div>
-            <div class="table-responsive p-2">
+            <div class="table-responsive p-1">
             <table class="table tbl_pgm_level">
             <thead>
                 <tr>
@@ -88,66 +145,73 @@ var ProgramComponent = new function(){
                     <th>Action</th>
                 </tr>
             </thead>
-            <tbody></tbody>`].join('');
+            <tbody id="67434GG"></tbody>`].join('');
 
             html = [html,`</table></div>`].join('');
-            div_wrapper.html(html);
+            container.innerHTML =  html;
 
-            let tbody = div_wrapper.find('table.tbl_pgm_level > tbody');
-
-            div_wrapper.find('.btn-add-level').on('click',function(e){
+            const tbody = container.querySelector('table.tbl_pgm_level>tbody');
+            const btnNewLevel = container.querySelector('.btn-add-level');
+               
+            btnNewLevel.addEventListener('click',e=>{
                 e.preventDefault();
-                let prog_id = $(this).data('programid');
+                let prog_id = btnNewLevel.dataset.programid;
                 let op = {
-                    'id': 0,
+                    'id': null,
                     'program_id':prog_id,
                     'onClose': (levels) => {
-                        mThis.renderProgramLevels(tbody,levels);
+                        mThis.renderLevelList(tbody,levels);
                     }
                 };
                 ProgramLevelDialog.show(op);
             });
 
-            mThis.renderProgramLevels(tbody, data);
+            mThis.renderLevelList(tbody, data);
         });
     }
 
     this.setActionHandlers = (tbody) => {
-        tbody.on('click','.btn-pgm-detail-modify',function(e){
-            e.preventDefault();
-            let prog_id = $(this).data('programid');
-            let op = {
-                'id': $(this).data('id'),
-                'program_id':prog_id,
-                'onClose': (levels) => {
-                    mThis.renderProgramLevels(tbody,levels);
-                }
-            };
-            ProgramLevelDialog.show(op);
-        });
- 
-        tbody.on('click','a.btn-pgm-detail-delete',function(e){
-            e.preventDefault();
-            let x = $(this);
-            let prog_id = x.data('programid');
-            let p = {
-                'program_id':prog_id,
-                'id':x.data('id')
-            };
-            cv_interact.confirm('Delete this level?',{title: 'Delete Level', context: 'delete'},e => {
-                if(e){
-                    vsapi.call(`${main_view.base_url}/api/program-level/delete`,p,null,false).then(res => {
-                        if(res.status_code === 200){
-                            mThis.renderProgramLevels(tbody,res.data.levels)
-                        }
-                        else cv_interact.error(res.error_message);
-                    });
-                }
-            });
+
+         tbody.addEventListener('click',e=>{
+           e.preventDefault();
+           let lnk = VSUtil.clickOnClass(e.target,'btn-pgm-detail-modify');
+           if(lnk){
+                let prog_id = lnk.dataset.programid;
+                let op = {
+                    'id': lnk.dataset.id,
+                    'program_id':prog_id,
+                    'onClose': (levels) => {
+                        mThis.renderLevelList(tbody,levels);
+                    }
+                };
+                ProgramLevelDialog.show(op);
+                return;
+           }
+
+           lnk = VSUtil.clickOnClass(e.target,'btn-pgm-detail-delete');
+           if(lnk){
+                const prog_id = lnk.dataset.programid;
+                const level_id = lnk.dataset.id;
+                const p = {
+                    'program_id':prog_id,
+                    'id':level_id
+                };
+                cv_interact.confirm('Delete this level?',{title: 'Delete Level', context: 'delete'},e => {
+                    if(e){
+                        vsapi.call(`${main_view.base_url}/api/program-level/delete`,p,null,false).then(res => {
+                            if(res.status_code === 200){
+                                mThis.renderLevelList(tbody,res.data.levels)
+                            }
+                            else cv_interact.error(res.error_message);
+                        });
+                    }
+                });
+                return;
+           }
         });
     }
 
-    this.renderProgramLevels = (tbody, data) => {
+    this.renderLevelList = (tbody, data) => {
         let html = null;
         if(!data) data = [];
         data.map(level => {
@@ -165,104 +229,23 @@ var ProgramComponent = new function(){
                 </td>
             </tr>`].join('');
         });
-        tbody.html(html);
+        tbody.innerHTML =  html;
         mThis.setActionHandlers(tbody);
     }
-
-    this.displayProgram = (onFinish = null) => {
-        vsapi.call(`${main_view.base_url}/api/program/list`,null,null).then(res => {
-            let data = [];
-            if(res.status_code === 200){
-                data = res.data;
-            }
-
-            let cols = [
-                {
-                title: "Program Name",
-                data: (data,index,tr)=>{
-                    return ['<span class="fw-semibold">',data.name,'</span>'].join('');
-                }
-            },
-            {
-                title: "Previous",
-                data: (data,index,tr)=>{
-                    return ['<span class="fw-semibold">',data.prev_program?data.prev_program:'None','</span>'].join('');
-                }
-            },
-            // {
-            //     title: "Department",
-            //     data: "department"
-            // },
-             {
-                title: "Description",
-                data: (data,index,tr)=>{
-                    return data.description?data.description:'N/A';
-                }
-            },
-            {
-                title: "Updated",
-                data: (data,index,tr)=>{
-                    return ['<span class="d-block fw-semibold">',data.update_user,'<span><span class="d-block text-left p-1 text-muted"><small>',data.updated_at,'</small></span>'].join('');
-                }
-            },
-            {
-                title: "Action",
-                data: (data, a, b) => {
-                    return [`<div class="d-flex gap-2">
-                        <a href="javascript:void(0)" class="btn-pgm-modify" data-id="${data.id}">
-                            <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
-                        </a>
-                        <a href="javascript:void(0)" class="btn-pgm-delete" data-id="${data.id}">
-                            <i class="fa-regular fa-trash-can text-danger fs-5"></i>
-                        </a>
-                    </div>`].join('');
-                }
-            }];
-
-            if(mThis.table){
-                mThis.tblProgram.DataTable().clear().destroy();
-                mThis.tblProgram.empty();
-                mThis.table = null;
-            }
-
-            if(!mThis.table){
-                mThis.table = mThis.tblProgram.DataTable({
-                    searching: false,
-                    destroy: true,
-                    paging: true,
-                    ordering: false,
-                    retrieve: true,
-                    info: true,
-                    pageLength: 10,
-                    bLengthChange: false,
-                    saveState: true,
-                    processing: true,
-                    language: {
-                        loadingRecords: '&nbsp;',
-                        processing: 'Loading...',
-                        emptyTable: LocaleManager.trans('No data to display', 'datatable')
-                    },
-                    data: data,
-                    columns: cols,
-                    createdRow: function (row, data, dataIndex) {
-                        row.setAttribute('data-id',data.id);
-                    }
-                });
-            }
-
-            if(typeof onFinish === 'function') onFinish();
-        });
+ 
+    this.getFilterData = ()=>{
+        return null;
     }
 
     this.show = (options) => {
         if(!options) options = {};
-        mThis.displayProgram(() => {
+        mThis.programListView.showPage(mThis.getFilterData(),null,()=>{
             main_view.setTitle(mThis.title_prop);
             let x = mThis.self.siblings(':visible');
             x.hide(0,function(){
                 mThis.self.hide().fadeIn(200);
             });
-        });
+        }); 
     }
 }
 
@@ -361,7 +344,7 @@ let ProgramDialog = new function(){
     }
 }
 
-let ProgramLevelDialog = new function(){
+const ProgramLevelDialog = new function(){
     let mThis = this;
     this.self = $('#dlg_detail_pgm_');
     this.options = {};

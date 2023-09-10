@@ -7,7 +7,7 @@ use App\ScriptManagement\ScriptProvider;
 
 //use Illuminate\Support\Facades\File;
 /** composer require symfony/process **/
-use Symfony\Component\Process\Process; 
+//use Symfony\Component\Process\Process; 
 
 class ScriptManager{
     protected static $script_path = "";
@@ -20,20 +20,20 @@ class ScriptManager{
         return null;
     }
    
+    /** This function works but is not used yet */
+    // static function escapeUnicodeCharacters($input) {
+    //     // Regular expression pattern to match non-escaped Unicode characters
+    //     $pattern = '/(?<!\\\\)\\\\u[0-9a-fA-F]{4}/';
     
-    static function escapeUnicodeCharacters($input) {
-        // Regular expression pattern to match non-escaped Unicode characters
-        $pattern = '/(?<!\\\\)\\\\u[0-9a-fA-F]{4}/';
+    //     // Use the preg_replace_callback function to replace matches
+    //     $output = preg_replace_callback($pattern, function($matches) {
+    //         // Convert each Unicode escape sequence to the actual character
+    //         $unicode = preg_replace('/\\\\u([0-9a-fA-F]{4})/', '&#x$1;', $matches[0]);
+    //         return mb_convert_encoding($unicode, 'UTF-8', 'HTML-ENTITIES');
+    //     }, $input);
     
-        // Use the preg_replace_callback function to replace matches
-        $output = preg_replace_callback($pattern, function($matches) {
-            // Convert each Unicode escape sequence to the actual character
-            $unicode = preg_replace('/\\\\u([0-9a-fA-F]{4})/', '&#x$1;', $matches[0]);
-            return mb_convert_encoding($unicode, 'UTF-8', 'HTML-ENTITIES');
-        }, $input);
-    
-        return $output;
-    }
+    //     return $output;
+    // }
  
     static function escapeUnicode($input) {
         return preg_replace_callback('/[^\x20-\x7E]/u', function($match) {
@@ -58,6 +58,7 @@ class ScriptManager{
                 // It's a local file, use the provided path
                 if (!file_exists($filePath)) {
                     return (object) [
+                        'status'=>'Error',
                         'error_message' => 'File '.$filePath.' does not exist',
                         'content' => null,
                     ];
@@ -74,6 +75,7 @@ class ScriptManager{
             // Check for errors in the Node.js script execution
             if ($returnCode !== 0) {
                 return (object) [
+                    'status'=>'Error',
                     'error_message' => 'Failed to obfuscate JavaScript code',
                     'content' => null,
                 ];
@@ -88,12 +90,14 @@ class ScriptManager{
             }
     
             return (object) [
+                'status'=>'OK',
                 'error_message' => null,
                 'content' => $obfuscatedCode,
             ];
         } catch (\Exception $e) {
             // Handle any exceptions or errors here
             return (object) [
+                'status'=>'OK',
                 'error_message' => $e->getMessage(),
                 'content' => null,
             ];
@@ -135,11 +139,11 @@ class ScriptManager{
 //   }
  
     /**
-     * to use method uglifyJs(), we need to install nodeJS tool like  "terser" OR "uglify-js" first  
+     * to use method urglifyJS(), we need to install nodeJS tool like  "terser" OR "uglify-js" first  
      * npm install terser  
      * npm install uglify-js => (this one iscurrently used)
     */
-    // static function uglifyJs($jsContent)
+    // static function urglifyJS($jsContent)
     // {
     //     // Use Terser to uglify JavaScript
     //     $command = 'npx terser --compress --mangle';
@@ -155,15 +159,15 @@ class ScriptManager{
     //     return (object)['status' => 'OK', 'content' => $process->getOutput(),'error_message'=>null];
     // }
 
-    static function uglifyJs($file_path,$temp_file=null)
+    static function urglifyJS($file_path,$output_file=null)
     {
         $writeToOutput = false;
         // Generate a unique temporary file name
-        if(!$temp_file) $temp_file = tempnam(sys_get_temp_dir(), 'uglifyjs_');
+        if(!$output_file) $output_file = tempnam(sys_get_temp_dir(), 'urglifyJS111_');
         else $writeToOutput = true;
     
-        // Use UglifyJS to obfuscate and minimize the JavaScript file
-        $command = 'npx uglify-js '.$file_path.' --compress --mangle --output '.$temp_file;
+        // Use urglifyJS to obfuscate and minimize the JavaScript file
+        $command = 'npx uglify-js '.$file_path.' --compress --mangle --output '.$output_file;
         exec($command, $output, $return_var);
     
         if ($return_var !== 0) {
@@ -171,12 +175,12 @@ class ScriptManager{
         }
     
         // Read the content of the temporary file
-        $content = file_get_contents($temp_file);
+        $content = file_get_contents($output_file);
     
-        // Delete the temporary file
-        unlink($temp_file);
+        // Delete the temporary file if user does not intend to keep the outputFile (i.e: when the $output_file is a default outputFile)
+        if(!$writeToOutput) unlink($output_file);
     
-        return (object)['status' => 'OK', 'content' => $content, 'error_message' => null,'output_file'=>$writeToOutput?$temp_file:null];
+        return (object)['status' => 'OK', 'content' => $content, 'error_message' => null,'output_file'=>$writeToOutput?$output_file:null];
     }
       
         //remove comments from codes
@@ -300,14 +304,69 @@ class ScriptManager{
        return (substr(trim($path),0,5) =='http:' || substr(trim($path),0,6) =='https:');
     }
 
+    /** create bundle file for one bundle of files by name */
+    public static function createBundleFile($bundle_name,$option=null)
+    {
+        $bs = ScriptProvider::getBundles();
+        $b = isset($bs[$bundle_name])?$bs[$bundle_name]:null;
+        return self::createBundleFileFromArray($b,$option);
+    }
+     
+  /**
+   * Minify and/ or obfuscate script file (depending on the $option provided as "min" or "ob") and out the file in the same directory but new file name would be suffixed with ".min.js"
+  */
+  public static function minifyFile($inputFile, $option = 'min', $outputFile = null)
+  {
+    if (!in_array($option, ['min', 'ob'])) {
+        return (object) [
+            'status' => 'Error',
+            'error_message' => 'Invalid option provided',
+            'output_file' => null,
+        ];
+    }
 
-    
-    public static function createAllBundleFiles()
+    if (!$outputFile) {
+        $fileInfo = pathinfo($inputFile);
+        $outputDirectory = 'public/dist/js';
+        $outputFile = $outputDirectory . '/' . $fileInfo['filename'] . '.min.js';
+    } 
+
+    $res = null;
+
+    if ($option === 'ob') {
+        $res = self::obfuscateJS($inputFile);
+        if($res->status==='Error') return $res;
+        $f_res = self::createFile($res->content, $outputFile, 'js');
+        if($f_res->status ==='Error') return $f_res;
+        return (object) [
+            'status' => 'OK',
+            'error_message' => null,
+            'output_file' => $outputFile,
+        ];
+
+    } elseif ($option === 'min') {
+        //self::urglifyJS() will also create output file, so not need to call self::createFile() in this section
+        $res = self::urglifyJS($inputFile,$outputFile);
+        if($res->status==='Error') return $res;
+        return (object) [
+            'status' => 'OK',
+            'error_message' => null,
+            'output_file' => $outputFile,
+        ];
+    }
+ }
+
+
+  /**$option = 'min|ob'. 
+   * "min" is simple option to minify the files and usually result smaller file size, but not advanced obfuscation
+   * "ob" is deeper obfuscation where javascript, but file size can 30% or more be larger thant "--mn" option 
+  */
+    public static function createAllBundleFiles($option)
     {
         $bs = ScriptProvider::getBundles();
         $files = [];
         foreach ($bs as $b) {
-            $res = self::createBundleFileFromArray($b);
+            $res = self::createBundleFileFromArray($b,$option);
             if ($res->status === 'Error') return $res;
             else  $files[] = $res->file_name;
         }
@@ -315,15 +374,24 @@ class ScriptManager{
     }
  
 
- static function createBundleFileFromArray($b = [])
+  /**$option = 'min|ob'. 
+   * "min" is simple option to minify the files and usually result smaller file size, but not advanced obfuscation
+   * "ob" is deeper obfuscation where javascript, but file size can 30% or more be larger thant "--mn" option 
+  */
+ static function createBundleFileFromArray($b = [],$option=null)
  {
     if (!$b) {
-        return (object)["status" => "OK", "file_name" => null];
+        return (object)["status" => "Error",'error_message'=>'The bundle name is not valid', "files" => []];
     }
-    if (!isset($b['output_file'])) {
-        return (object)["status" => "OK", "file_name" => null];
-    }
+    $single_file = isset($b['single_file'])?$b['single_file']:0;
+    if(!$option) $option ='min';
 
+    if($single_file==1){
+        if (!isset($b['output_file'])) {
+            return (object)["status" => 'Error','error_message'=>'The output file is not provided in target bundle', "files" =>[]];
+        }
+    }
+    
     $base_dir = public_path(); /** base_dir is "/public" */
     // Output file path
     $outputFilePath = $base_dir . $b['output_file'];
@@ -333,12 +401,13 @@ class ScriptManager{
 
     if (isset($b['single_file']) && $b['single_file'] == 1) {
         // Bundle all files into a single obfuscated file
-
         foreach ($b['files'] as $file) {
             $file = explode('?',$file)[0];
             $file_path = $base_dir . '/' . ltrim($file, '/\\');
-            //$c = self::obfuscateJS($file_path);
-            $c = self::uglifyJs($file_path);
+            $c = null;
+            if($option =='ob')
+              $c = self::obfuscateJS($file_path);
+            else $c = self::urglifyJS($file_path);
             if($c->error_message) return (object)['status' => 'Error', 'file_name' => $file_path,'error_message'=>$c->error_message];
             // Add the local JavaScript content to the array
             $obfuscatedContents[] = $c->content;
@@ -353,21 +422,27 @@ class ScriptManager{
             return (object)['status' => 'Error', 'error_message' => $createFileResult->error_message];
         }
 
-        return (object)['status' => 'OK', 'file_name' => $outputFilePath];
+        return (object)['status' => 'OK', 'files' =>[$outputFilePath]];
     } else {
         // Process each file individually and obfuscate them
+        $files =[];
         foreach ($b['files'] as $file) {
             $file = explode('?',$file)[0];
             $file_path = $base_dir . '/' . ltrim($file, '/\\');
-            //$c = self::obfuscateJS($file_path);
-            $c = self::uglifyJs($file_path); 
+            $c = null;
+            if($option =='ob')
+              $c = self::obfuscateJS($file_path);
+            else $c = self::urglifyJS($file_path); 
             if($c->error_message) return (object)['status' => 'Error', 'file_name' => $file_path,'error_message'=>$c->error_message];
             //todo: Save the obfuscated file content to specific directory
             $fileName = basename($file);
             $outputFile = $base_dir. '/dist/js/' .$fileName;
             $createFileResult = self::createFile($c->content, $outputFile, null);
+            if($createFileResult->error_message) 
+              return $createFileResult;
+            else $files[] = $outputFile;
         }
-        return (object)['status' => 'OK', 'file_name' => null]; // Adjust this part based on bundling logic
+        return (object)['status' => 'OK', 'files' => $files]; // Adjust this part based on bundling logic
     }
  }
 

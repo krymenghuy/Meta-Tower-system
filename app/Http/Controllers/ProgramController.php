@@ -28,6 +28,15 @@ class ProgramController extends Controller
         return JDV::result($list);
     }
 
+    function getList_paginate(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+
+        $row = new Program();
+        $list = $row->list_paginate($req->all(),$ss);
+        return JDV::result($list);
+    }
+
     function get_levels_by_program(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;

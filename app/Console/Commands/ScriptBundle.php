@@ -12,14 +12,15 @@ class ScriptBundle extends Command
      *
      * @var string
      */
-    protected $signature = 'bundle:script  {bundle_name : name of the script bundle, from which to retrieve files}';
+    protected $signature = 'bundle:script {bundle_name : Name of the script bundle, from which to retrieve files} {--ob : Enable obfuscation} {--min : Enable simple minification}';
+
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Minifies and bundles javascript scripts and create one new javascript file';
-    protected $arguments =[];
+    protected $description = 'Minifies and bundles JavaScript scripts and creates one new JavaScript file';
+
     /**
      * Create a new command instance.
      *
@@ -37,18 +38,23 @@ class ScriptBundle extends Command
      */
     public function handle()
     {
-        // Retrieve a specific option...
-        //$queueName = $this->option('queue');
-        
-        // Retrieve all options...
-        //$options = $this->options();
-        
-        //$this->arguments = $this->arguments();
-        $bundle_name = $this->argument('bundle_name');
-        //$this->info($bundle_name);
-        $res= ScriptManager::createBundleFile($bundle_name);
-        if($res->status==='OK')
-         $this->info("Bundled file $res->file_name created");
-        else $this->error($res->error_message);
+        // Retrieve command line arguments and options
+        $bundleName = $this->argument('bundle_name');
+        $obfuscate = $this->option('ob');
+
+        // Determine the optimization option
+        $option = $obfuscate ? 'ob' : 'min';
+
+        // Call the ScriptManager to create the bundle file
+        $res = ScriptManager::createBundleFile($bundleName, $option);
+
+        // Handle the result
+        if ($res->status === 'OK') {
+            foreach ($res->files as $file) {
+                $this->info("Optimized file $file was created");
+            }
+        } else {
+            $this->error($res->error_message);
+        }
     }
 }

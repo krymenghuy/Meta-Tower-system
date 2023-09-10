@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 use DB;
 class Program // extends Model
 {
@@ -38,6 +39,25 @@ class Program // extends Model
         $selectRow = 'p.id,p.department_id,d.name as department,p.description,p.name,p.prev_program_id,(SELECT `name` FROM programs WHERE id = p.prev_program_id LIMIT 1) AS prev_program,formatTime(p.updated_at) AS updated_at,p.update_user,p.create_user';
         return DB::table('programs as p')->join('departments as d','p.department_id','=','d.id')->selectRaw($selectRow)->where('p.branch_id',$branch_id)->get();
  
+    }
+
+    function list_paginate($arr= [],$ss=null){
+        $ss = $ss?$ss:$this->user_info;
+        $branch_id = $ss->branch_id;
+        
+        $d = (object)$arr;
+        $current_page =isset($d->current_page)?$d->current_page:1;
+        $per_page =isset($d->per_page)?$d->per_page:10;
+        if(!is_numeric($current_page)) $current_page=1;
+        $skip_rows = ($current_page -1) * $per_page;
+ 
+        $selectRow = 'p.id,p.department_id,d.name as department,p.description,p.name,p.prev_program_id,(SELECT `name` FROM programs WHERE id = p.prev_program_id LIMIT 1) AS prev_program,formatTime(p.updated_at) AS updated_at,p.update_user,p.create_user';
+        $query = DB::table('programs as p')->join('departments as d','p.department_id','=','d.id')->selectRaw($selectRow)->where('p.branch_id',$branch_id);
+        
+        $count_query = clone  $query;
+        $count = $count_query->count('p.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
     function details($id=null,$ss=null){

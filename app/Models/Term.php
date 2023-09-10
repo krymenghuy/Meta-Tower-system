@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 use DB;
 use App\Models\GeneralSettings;
 class Term //extends Model
@@ -53,6 +54,12 @@ class Term //extends Model
         return DV::depends($newId,['action'=>$action,'terms'=>self::list(null,$ss)]);
     }
 
+    /** return warning message if the term cannot be deleted because of may reason: the term has been in use, students have enrolled*/
+    static function getDeleteWarning($id){
+      $row = DB::table('terms as t')->join('enrollments as e','e.term_id','=','t.id')->where('t.id',$id)->selectRaw('t.id,t.name as term_name')->take(1)->get()->first();
+      if($row) return 'The term '.$row->term_name. ' cannot be deleted because there are some enrolled students in it';
+      return null; 
+    }
     function list($arr=[],$ss=null){
         $ss = $ss?$ss:$this->user_info;
         $branch_id = $ss->branch_id;
@@ -65,6 +72,31 @@ class Term //extends Model
         $prev_term =  ',CASE t.prev_term_id > 0 WHEN 1 THEN (SELECT `name` FROM terms WHERE id = t.id LIMIT 1) ELSE \'NA\' END AS prev_term_name';
         $selectCols = 't.id,name,period_type,formatDate(t.start_date) AS start_date,formatDate(t.end_date) AS end_date,semester_number,ac_year_id,academic_year,formatTime(t.created_at) AS created_at,t.create_user'.$prev_term;
         return DB::table('terms AS t')->selectRaw($selectCols)->where('t.branch_id',$branch_id)->whereRaw($str_acad_year)->orderByRaw('t.start_date DESC')->get();
+    }
+
+    function list_paginate($arr=[],$ss=null){
+        $ss = $ss?$ss:$this->user_info;
+        $branch_id = $ss->branch_id;
+        $d = (object)$arr;
+
+        $current_page =isset($d->current_page)?$d->current_page:1;
+        $per_page =isset($d->per_page)?$d->per_page:10;
+        if(!is_numeric($current_page)) $current_page=1;
+        $skip_rows = ($current_page -1) * $per_page;
+
+        $academic_year = isset($d->academic_year)?$d->academic_year:null;
+        $str_acad_year='1=1';
+        if ($academic_year>0){
+            $str_acad_year = 't.academic_year =\''.$academic_year.'\'';
+        }
+        $prev_term =  ',CASE t.prev_term_id > 0 WHEN 1 THEN (SELECT `name` FROM terms WHERE id = t.id LIMIT 1) ELSE \'NA\' END AS prev_term_name';
+        $selectCols = 't.id,name,period_type,formatDate(t.start_date) AS start_date,formatDate(t.end_date) AS end_date,semester_number,ac_year_id,academic_year,formatTime(t.created_at) AS created_at,t.create_user'.$prev_term;
+        $query = DB::table('terms AS t')->selectRaw($selectCols)->where('t.branch_id',$branch_id)->whereRaw($str_acad_year);
+         
+        $count_query = clone  $query;
+        $count = $count_query->count('t.id');
+        $rows = $query->orderByRaw('t.start_date DESC')->skip($skip_rows)->take($per_page)->get();
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
     function details($id=null,$ss=null){
@@ -81,7 +113,8 @@ class Term //extends Model
         $ss = $ss?$ss:$this->user_info;
         $id = $id?$id:$this->id;
         $branch_id = $ss->branch_id;
-
+        $err = self::getDeleteWarning($id);
+        if($err) return DV::error($err);
         $x = DB::table('terms')->where('id',$id)->where('branch_id',$branch_id)->delete();
         return DV::depends($x,['action'=>'Deleted','terms'=>self::list(null,$ss)],'Failed to delete term');
     }

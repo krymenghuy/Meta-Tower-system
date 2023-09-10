@@ -303,6 +303,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::prefix('campus')->group(function () {
         Route::post('/save', [CampusController::class, 'save']);
         Route::post('/list', [CampusController::class, 'getList']);
+        Route::post('/list-paginate', [CampusController::class, 'getList_paginate']);
         Route::post('/details', [CampusController::class, 'getDetails']);
         Route::post('/delete', [CampusController::class, 'delete']);
     });
@@ -312,6 +313,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::prefix('academic-year')->group(function () {
         Route::post('/save', [AcademicYearController::class, 'save']);
         Route::post('/list', [AcademicYearController::class, 'getList']);
+        Route::post('/list-paginate', [AcademicYearController::class, 'getList_paginate']);
         Route::post('/details', [AcademicYearController::class, 'getDetails']);
         Route::post('/delete', [AcademicYearController::class, 'delete']);
         Route::post('/form-options', [AcademicYearController::class, 'getFormOptions']);
@@ -335,6 +337,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::prefix('term')->group(function () {
         Route::post('/save', [TermController::class, 'save']);
         Route::post('/list', [TermController::class, 'getList']);
+        Route::post('/list-paginate', [TermController::class, 'getList_paginate']);
         Route::post('/details', [TermController::class, 'getDetails']);
         Route::post('/delete', [TermController::class, 'delete']);
         //term/form-options
@@ -346,6 +349,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::prefix('program')->group(function(){
         Route::post('/save',[ProgramController::class,'save']);
         Route::post('/list',[ProgramController::class,'getList']);
+        Route::post('/list-paginate',[ProgramController::class,'getList_paginate']);
         Route::post('/details',[ProgramController::class,'getDetails']);
         Route::post('/delete',[ProgramController::class,'delete']);
         Route::post('/levels',[ProgramController::class,'get_levels_by_program']);

@@ -25,6 +25,14 @@ class TermController extends Controller
         return JDV::result($terms);
     }
 
+    function getList_paginate(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $term = new Term();
+        $terms = $term->list_paginate($req->all(),$ss);
+        return JDV::result($terms);
+    }
+
     function getDetails(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;

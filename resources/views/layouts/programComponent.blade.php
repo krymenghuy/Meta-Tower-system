@@ -1,11 +1,11 @@
 <div id="_main_programComponent" class="mobile-padding p-3" style="display:none">
     <div class="p-3 bg-white rounded-3">
         <button id="_pgm_btn_new" class="btn btn-primary btn-sm" type="button">
+            <i class="fa fa-plus"></i>
             <span class="trans-text" data-langprop="buttons.Add Program"></span>
         </button>
     </div>
-    <div class="table-responsive p-3 rounded-3 mt-3 bg-white table-responsive-hover">
-        <table id="_pgm_tbl" class="table"></table>
+    <div id ="_program_list" class="p-3 rounded-3 mt-3 bg-white">
     </div>
 </div>
 

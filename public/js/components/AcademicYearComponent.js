@@ -1,13 +1,61 @@
 'use strict';
 var AcademicYearComponent = new function(){
     let mThis = this;
-    this.title_prop = 'Academic Year';
+    this.title_prop = 'Academic Years';
     this.self = $('#_main_academicYearComponent');
 
-    this.tblAcademic = mThis.self.find('#_adm_tbl');
+    this.tblAcademic = {};
     this.btnNew = mThis.self.find('#_adm_btn_new');
 
+    this.cols = [{
+        title: "Academic Year",
+        data: "academic_year"
+    },
+    {
+        title: "Start Date",
+        data: "start_date"
+    },
+    {
+        title: "End Date",
+        data: "end_date"
+    },
+    {
+        title: "Updated By",
+        data: (data,index,tr)=>{
+            return ['<div class="d-flex flex-column"><span class="fw-semibold">',data.update_user,'</span><span class="text-left text-muted" style="font-size:0.9em">',data.updated_at,'</span></div>'].join('');
+        }
+    },
+    {
+        title: "Action",
+        data: (data, a, b) => {
+            return [`<div class="d-flex gap-2">
+                <a href="javascript:void(0)" class="btn-adm-modify" data-id="${data.id}">
+                    <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
+                </a>
+                <a href="javascript:void(0)" class="btn-adm-delete" data-id="${data.id}">
+                    <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                </a>
+            </div>`].join('');
+        }
+    }];
+
+    this.getFilterData =()=>{
+        return null;
+    }
+
     this.init = () => {
+        mThis.acadYearListView = new ListView('_acad_year_list',{
+            'fetchApi':`${main_view.base_url}/api/academic-year/list-paginate`,
+            'perPage':10,
+            'columns':mThis.cols,
+            // 'renderItems':(items,list_container) => {
+            //     mThis.renderStudents(list_container,items);
+            // },
+            'listContainerClass':null
+        });
+
+        mThis.tblAcademic = $(mThis.acadYearListView.getTable());
+
         mThis.btnNew.on('click',function(e){
             e.preventDefault();
             let op = {
@@ -19,112 +67,44 @@ var AcademicYearComponent = new function(){
             AcademicDialog.show(op);
         });
 
-        mThis.tblAcademic.on('click','a.btn-adm-modify',function(e){
+        mThis.tblAcademic.on('click',e=>{
             e.preventDefault();
-            let op = {
-                'id': $(this).data('id'),
-                'onClose': () => {
-                    mThis.displayAcademic();
-                }
-            };
-            AcademicDialog.show(op);
-        });
-
-        mThis.tblAcademic.on('click','a.btn-adm-delete',function(e){
-            e.preventDefault();
-            let op = {
-                'id': $(this).data('id')
-            };
-            cv_interact.confirm('Delete this academic year?',{ title: 'Delete Academic Year', context: 'delete'},(e) => {
-                if(e){
-                    vsapi.call(`${main_view.base_url}/api/academic-year/delete`,op,null).then(res => {
-                        if(res.status_code === 200){
-                            mThis.displayAcademic();
-                        }
-                    });
-                }
-            });
-        });
-    }
-
-    this.displayAcademic = (onFinish = null) => {
-        vsapi.call(`${main_view.base_url}/api/academic-year/list`,null,null).then(res => {
-            let data = {};
-            if(res.status_code === 200){
-                data = res.data;
+              //Click event for Modify Academic Year
+            let lnk = VSUtil.clickOnClass(e.target,'btn-adm-modify');
+            if(lnk){
+                let op = {
+                    'id': lnk.dataset.id,
+                    'onClose': () => {
+                        mThis.acadYearListView.showPage(mThis.getFilterData());
+                    }
+                };
+                AcademicDialog.show(op);
+                return;
             }
 
-            let cols = [{
-                title: "Academic Year",
-                data: "academic_year"
-            },
-            {
-                title: "Start Date",
-                data: "start_date"
-            },
-            {
-                title: "End Date",
-                data: "end_date"
-            },
-            {
-                title: "Updated By",
-                data: (data,index,tr)=>{
-                    return ['<div class="d-flex flex-column"><span class="fw-semibold">',data.update_user,'</span><span class="text-left text-muted" style="font-size:0.9em">',data.updated_at,'</span></div>'].join('');
-                }
-            },
-            {
-                title: "Action",
-                data: (data, a, b) => {
-                    return [`<div class="d-flex gap-2">
-                        <a href="javascript:void(0)" class="btn-adm-modify" data-id="${data.id}">
-                            <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
-                        </a>
-                        <a href="javascript:void(0)" class="btn-adm-delete" data-id="${data.id}">
-                            <i class="fa-regular fa-trash-can text-danger fs-5"></i>
-                        </a>
-                    </div>`].join('');
-                }
-            }];
-
-            if(mThis.table){
-                mThis.tblAcademic.DataTable().clear().destroy();
-                mThis.tblAcademic.empty();
-                mThis.table = null;
-            }
-
-            if(!mThis.table){
-                mThis.table = mThis.tblAcademic.DataTable({
-                    searching: false,
-                    destroy: true,
-                    paging: true,
-                    ordering: false,
-                    retrieve: true,
-                    info: true,
-                    pageLength: 10,
-                    bLengthChange: false,
-                    saveState: true,
-                    processing: true,
-                    language: {
-                        loadingRecords: '&nbsp;',
-                        processing: 'Loading...',
-                        emptyTable: LocaleManager.trans('No data to display', 'datatable')
-                    },
-                    data: data,
-                    columns: cols,
-                    createdRow: function (row, data, dataIndex) {
-                        let tr = $(row);
-                        tr.data('id', data.id);
+            //Click event for Delete Academic Year
+            lnk = VSUtil.clickOnClass(e.target,'btn-adm-delete');
+            if(lnk){
+                let op = {
+                    'id': lnk.dataset.id
+                };
+                cv_interact.confirm('Delete this academic year?',{ title: 'Delete Academic Year', context: 'delete'},(e) => {
+                    if(e){
+                        vsapi.call(`${main_view.base_url}/api/academic-year/delete`,op,null).then(res => {
+                            if(res.status_code === 200){
+                                mThis.acadYearListView.showPage(mThis.getFilterData());
+                            }else cv_interact.warning(res.error_message);
+                        });
                     }
                 });
+                return;
             }
-
-            if(typeof onFinish === 'function') onFinish();
         });
     }
-
+ 
     this.show = (options) => {
         if(!options) options = {};
-        mThis.displayAcademic(() => {
+        mThis.acadYearListView.showPage(mThis.getFilterData(),null,()=>{
             main_view.setTitle(mThis.title_prop);
             let x = mThis.self.siblings(':visible');
             x.hide(0,function(){
@@ -134,7 +114,7 @@ var AcademicYearComponent = new function(){
     }
 }
 
-let AcademicDialog = new function(){
+const AcademicDialog = new function(){
     let mThis = this;
     this.self = $('#dlg_adm_');
     this.options = {};
@@ -146,15 +126,29 @@ let AcademicDialog = new function(){
         e.preventDefault();
         let p = mThis.getDataForm();
         vsapi.call(`${main_view.base_url}/api/academic-year/save`,p,null,false).then(res => {
-            let data = {};
+            let data = res.data?res.data:{};
             if(res.status_code === 200){
-                if(typeof mThis.options.onClose ==='function')
-                    mThis.options.onClose();
+                data.id = mThis.options.id;
+                if(typeof mThis.options.onClose ==='function') mThis.options.onClose(data);
                 mThis.self.modal('hide');
             }
             else
                 cv_interact.error(res.error_message);
         });
+    });
+
+    this.self.on('show.bs.modal',e=>{
+        if(mThis.options.previousDialog) 
+          mThis.options.previousDialog.self.modal('hide'); 
+    });
+
+    this.self.on('hide.bs.modal',e=>{
+        if(mThis.options.previousDialog)
+        {
+            mThis.options.previousDialog.show(mThis.previousDialog_options); 
+            if(typeof mThis.options.onClose ==='function') mThis.options.onClose({'id':mThis.options.id});
+        }
+          
     });
 
     this.getDataForm = () => {

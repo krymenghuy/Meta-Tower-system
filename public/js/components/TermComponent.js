@@ -1,13 +1,80 @@
 'use strict';
 var TermComponent = new function () {
     let mThis = this;
-    this.title_prop = 'Term';
+    this.title_prop = 'Terms';
     this.self = $('#_main_termComponent');
+    this.elFilter_academic_year = this.self.find('#_term_filter_academic_year');
 
-    this.tblTerm = mThis.self.find('#_trm_tbl');
+    //this.tblTerm = mThis.self.find('#_trm_tbl');
     this.btnNew = mThis.self.find('#_trm_btn_new');
 
+    this.cols = [{
+        title: "Term Name",
+        data: (data, a, b) => {
+            return ['<div class="d-flex flex-column"><p class="fw-bold">', data.name, '</p>'
+                , '</div>'].join('');
+        }
+    },
+    {
+        title: "Start Date",
+        data: "start_date"
+    },
+    {
+        title: "End Date",
+        data: "end_date"
+    },
+    {
+        title: "Academic Year",
+        data: "academic_year"
+    },
+    {
+        title: "Created By",
+        data: (data, index, tr) => {
+            return ['<div class="d-flex flex-column"><p class="">', data.create_user, '</p><p class="text-left text-muted">', data.created_at, '</p></div>'].join('');
+        }
+    },
+    {
+        title: "Previous Term",
+        data: (data, index,tr) => {
+            return data.prev_term_name ? data.prev_term_name : 'NA';
+        }
+    },
+    {
+        title: "Action",
+        data: (data, a, b) => {
+            return [`<div class="d-flex gap-2">
+                <a href="javascript:void(0)" class="btn-trm-modify" data-id="${data.id}">
+                    <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
+                </a>
+                <a href="javascript:void(0)" class="btn-trm-delete" data-id="${data.id}">
+                    <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                </a>
+            </div>`].join('');
+        }
+    }];
+ 
+    this.getFilterData = ()=>{
+      return {'academic_year':mThis.elFilter_academic_year.val()};
+    }
+
     this.init = () => {
+        mThis.termListView = new ListView('_term_list',{
+            'fetchApi':`${main_view.base_url}/api/term/list-paginate`,
+            'perPage':10,
+            'columns':mThis.cols,
+            // 'renderItems':(items,list_container) => {
+            //     mThis.renderStudents(list_container,items);
+            // },
+            'listContainerClass':null
+        });
+
+        mThis.tblTerm = $(mThis.termListView.getTable());
+
+        mThis.elFilter_academic_year.on('change',e=>{
+           e.preventDefault();
+           mThis.termListView.showPage(mThis.getFilterData());
+        });
+
         mThis.btnNew.on('click', function (e) {
             e.preventDefault();
             let op = {
@@ -19,135 +86,67 @@ var TermComponent = new function () {
             TermDialog.show(op);
         });
 
-        mThis.tblTerm.on('click', 'a.btn-trm-modify', function (e) {
+        mThis.tblTerm.on('click',e=> {
             e.preventDefault();
-            let op = {
-                'id': $(this).data('id'),
-                'onClose': () => {
-                    mThis.displayTerm();
-                }
-            };
-            TermDialog.show(op);
-        });
 
-        mThis.tblTerm.on('click', 'a.btn-trm-delete', function (e) {
-            e.preventDefault();
-            let op = {
-                'id': $(this).data('id')
-            };
-            cv_interact.confirm('Delete this term?', { title: 'Delete Term', context: 'delete' }, (e) => {
-                if (e) {
-                    vsapi.call(`${main_view.base_url}/api/term/delete`, op, null).then(res => {
-                        if (res.status_code === 200) {
-                            mThis.displayTerm();
-                        }
-                    });
-                }
-            });
-        });
-    }
-
-    this.displayTerm = (onFinish = null) => {
-        vsapi.call(`${main_view.base_url}/api/term/list`, null, null).then(res => {
-            let data = [];
-            if (res.status_code === 200) {
-                data = res.data;
+             //Click event for Modify Term  lnk's class "btn-trm-modify"
+            let lnk = VSUtil.clickOnClass(e.target,'btn-trm-modify');
+            if(lnk){
+                let op = {
+                    'id': lnk.dataset.id,
+                    'onClose': () => {
+                        mThis.termListView.showPage(mThis.getFilterData()); 
+                    }
+                };
+                TermDialog.show(op);
+                return;
             }
-
-            let cols = [{
-                title: "Term Name",
-                data: (data, a, b) => {
-                    return ['<div class="d-flex flex-column"><p class="fw-bold">', data.name, '</p>'
-                        , '</div>'].join('');
-                }
-            },
-            {
-                title: "Start Date",
-                data: "start_date"
-            },
-            {
-                title: "End Date",
-                data: "end_date"
-            },
-            {
-                title: "Academic Year",
-                data: "academic_year"
-            },
-            {
-                title: "Created By",
-                data: (data, a, b) => {
-                    return ['<div class="d-flex flex-column"><p class="">', data.create_user, '</p><p class="text-left text-muted">', data.created_at, '</p></div>'].join('');
-                }
-            },
-            {
-                title: "Previous Term",
-                data: (data, a, b) => {
-                    return data.prev_term_name ? data.prev_term_name : 'NA';
-                }
-            },
-            {
-                title: "Action",
-                data: (data, a, b) => {
-                    return [`<div class="d-flex gap-2">
-                        <a href="javascript:void(0)" class="btn-trm-modify" data-id="${data.id}">
-                            <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
-                        </a>
-                        <a href="javascript:void(0)" class="btn-trm-delete" data-id="${data.id}">
-                            <i class="fa-regular fa-trash-can text-danger fs-5"></i>
-                        </a>
-                    </div>`].join('');
-                }
-            }];
-
-            if (mThis.table) {
-                mThis.tblTerm.DataTable().clear().destroy();
-                mThis.tblTerm.empty();
-                mThis.table = null;
-            }
-
-            if (!mThis.table) {
-                mThis.table = mThis.tblTerm.DataTable({
-                    searching: false,
-                    destroy: true,
-                    paging: true,
-                    ordering: false,
-                    retrieve: true,
-                    info: true,
-                    pageLength: 10,
-                    bLengthChange: false,
-                    saveState: true,
-                    processing: true,
-                    language: {
-                        'loadingRecords': '&nbsp;',
-                        'processing': 'Loading...',
-                        "emptyTable": LocaleManager.trans('No data to display', 'datatable')
-                    },
-                    data: data,
-                    columns: cols,
-                    createdRow: function (row, data, dataIndex) {
-                        let tr = $(row);
-                        tr.data('id', data.id);
+           
+            //Click event for Delete Term  lnk's class "btn-trm-delete"
+            lnk = VSUtil.clickOnClass(e.target,'btn-trm-delete');
+            if(lnk){
+                let op = {
+                    'id': lnk.dataset.id
+                };
+                cv_interact.confirm('Delete this term?', { title: 'Delete Term', context: 'delete' }, (e) => {
+                    if (e) {
+                        vsapi.call(`${main_view.base_url}/api/term/delete`, op, null).then(res => {
+                            if (res.status_code === 200) {
+                               mThis.termListView.showPage(mThis.getFilterData()); 
+                            }else cv_interact.warning(res.error_message);
+                        });
                     }
                 });
+                return;
             }
-
-            if (typeof onFinish === 'function') onFinish();
+ 
+        });
+        
+    }
+ 
+    this.prepareFormOption = (onFinish)=>{
+        vsapi.call([main_view.base_url,'/api/settings/options-academic-year'].join(''),null,false).then(res=>{
+             const yrs = res.status_code===200? res.data:[];
+             VSUtil.setComboItems(mThis.elFilter_academic_year,yrs,'academic_year','academic_year',true,'(All Years)',0);
+             onFinish();
         });
     }
 
     this.show = (options) => {
         if (!options) options = {};
-        mThis.displayTerm(() => {
-            main_view.setTitle(mThis.title_prop);
-            let x = mThis.self.siblings(':visible');
-            x.fadeOut('fast', function () {
-                mThis.self.hide().fadeIn(200);
-            });
-        });
+        mThis.prepareFormOption(()=>{
+                mThis.termListView.showPage(mThis.getFilterData(),null,()=>{
+                    main_view.setTitle(mThis.title_prop);
+                    let x = mThis.self.siblings(':visible');
+                    x.fadeOut('fast', function () {
+                        mThis.self.hide().fadeIn(200);
+                    });
+                });
+        });       
     }
 }
 
-let TermDialog = new function () {
+const TermDialog = new function () {
     let mThis = this;
     this.self = $('#dlg_trm_');
     this.options = {};
@@ -174,10 +173,11 @@ let TermDialog = new function () {
                     'previousDialog': mThis,
                     'previousDialog_options': mThis.options,
                     'onClose': (d) => {
-                        mThis.refreshOptions('academic_year', d.academic_years, d ? d.id : null);
+                        //NOTE: here we use academic_year_id in SELECT box
+                        mThis.refreshOptions('academic_year', d.academic_years, d ? d.id:null);
                     }
                 };
-                AcademicYearDoalog.show(op);
+                AcademicDialog.show(op);
                 return;
 
             } else if (action === 'edit') {
@@ -186,10 +186,11 @@ let TermDialog = new function () {
                     'previousDialog': mThis,
                     'previousDialog_options': mThis.options,
                     'onClose': (d) => {
-                        mThis.refreshOptions('academic_year', d.academic_years, d.id, d ? d.id : null);
+                         //NOTE: here we use academic_year_id in SELECT box
+                         mThis.refreshOptions('academic_year', d.academic_years, d.id, d ? d.id : null);
                     }
                 };
-                AcademicYearDoalog.show(op);
+                AcademicDialog.show(op);
                 return;
             }
             else if (action === 'delete') {
@@ -198,7 +199,7 @@ let TermDialog = new function () {
                         vsapi.call(`${main_view.base_url}/api/academic-year/delete`, { 'id': mThis.elAcademic.val() }, null, false).then(res => {
                             if (res.status_code === 200) {
                                 mThis.refreshOptions('academic_year', res.data.academic_years, null);
-                            }
+                            }else cv_interact.warning(res.error_message);
                         });
                     }
                 })
