@@ -250,47 +250,38 @@ function convertCurrencyToWords(amount){
     const tens = ['', 'ten', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
     const scales = ['', 'thousand', 'million', 'billion', 'trillion'];
 
-    function convertThreeDigitNumber(num) {
+    function convertThreeDigitNumber(num){
         const digits = Array.from(String(num), Number);
         let result = '';
-        
         if(digits[0] !== 0){
             result += units[digits[0]] + ' hundred ';
         }
-        
         if(digits[1] === 1){
             result += teens[digits[2]] + ' ';
         }
         else{
             result += tens[digits[1]] + ' ' + units[digits[2]] + ' ';
         }
-        
         return result.trim();
     }
 
     const [integerPart, decimalPart] = String(amount).split('.');
-    
     let result = '';
     let num = parseInt(integerPart, 10);
-    
     if(num === 0){
         result = 'zero';
     }
     else{
         let scaleIndex = 0;
-        
-        while (num > 0) {
+        while(num > 0){
             const threeDigitNum = num % 1000;
-            
             if(threeDigitNum !== 0) {
                 result = convertThreeDigitNumber(threeDigitNum) + ' ' + scales[scaleIndex] + ' ' + result;
             }
-            
             num = Math.floor(num / 1000);
             scaleIndex++;
         }
     }
-    
     if(decimalPart){
         const decimalNum = parseInt(decimalPart, 10);
         result += 'US Dollars';
@@ -301,6 +292,5 @@ function convertCurrencyToWords(amount){
             result += " Only.";
         }
     }
-    
     return result.trim();
 }
