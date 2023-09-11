@@ -57,15 +57,15 @@ class LeaveInfo //extends Model
         if(!$leave_date){
             $leave_date = date('Y-m-d');
         }
-
+        $leave_date = convertDate($leave_date);
       
-        $inputs['leave_date'] = convertDate($leave_date);
+        $inputs['leave_date'] = $leave_date;
         $return_date = $inputs['return_date'];
         $inputs['return_date'] = convertDate($return_date);
 
         $term= self::getTermInfo($enrollment_id);
         if(!$term) return DV::error('The provided Enrollment ID is not valid');
-
+        if($leave_date > convertDate($term->end_date)) return DV::error('Leave Date must be within the the given Term period');
         $student_id =$term->student_id;
         $inputs['student_id']=$student_id;
         if(!$term->student_id) return DV::error('The enrollment information unexpectedly does not have the student ID');
@@ -81,7 +81,7 @@ class LeaveInfo //extends Model
         if($row && $row->id > 0 && $row->authorized==1){
             return DV::error('Cannot update this Leave or Dropout Information because it has been authorized by '.$row->auth_user);
         }
-        $id = saveData($ss,'leaves',['id'=>$row?$row->id:null],$inputs,[],false);
+        $id = saveData($ss,'leaves',['id'=>$row?$row->id:null],$inputs,[],1,false);
    
         if($id > 0) $this->finalize($id,$ss); 
         return DV::depends($id,null,'Failed to save student leave information');
@@ -95,7 +95,7 @@ class LeaveInfo //extends Model
         $enroll_info = DB::table('enrollments as e')->where('id',$info->enrollment_id)->selectRaw('id,student_id,tuition_end_date')->take(1)->get()->first();
         if(!$enroll_info) return DV::error('Failed to retrieve the enrollment information against the provided leave information');
         if(! \App\Models\Student::exists($enroll_info->student_id)) return DV::error('Student information unexpectedly became invalid. This student may have been deleted');
-        if(!$enroll_info->tuition_end_date || $enroll_info->tuition_paid ==0)
+        if(!(bool)strtotime($enroll_info->tuition_end_date))
           $days_to_tuition_enddate =0;
         else 
           $days_to_tuition_enddate = diffDays($enroll_info->tuition_end_date,$info->leave_date);
@@ -117,7 +117,7 @@ class LeaveInfo //extends Model
             saveData($ss,'student_pricelist',['student_id' => $enroll_info->student_id],[
                 'inactive'=>1,
                 'remarks'=>self::getLeaveType($info->leave_type_id)
-            ],[],1);
+            ],[],1,true);
 
        }
        return DV::depends($x,null,'Failed to finalize Leave information');   
@@ -145,7 +145,7 @@ class LeaveInfo //extends Model
             $campus_id = isset($d->campus_id)?$d->campus_id:null;
             $program_id = isset($d->program_id)?$d->program_id:null;
             $level_id = isset($d->level_id)?$d->level_id:null;
-            $session_id = isset($d->session_id)?$d->session_id:null;
+            //$session_id = isset($d->session_id)?$d->session_id:null;
             $search_value =isset($d->search_value)?$d->search_value:null;
   
             $current_page =isset($d->current_page)?$d->current_page:1;
@@ -154,7 +154,7 @@ class LeaveInfo //extends Model
             $skip_rows = ($current_page -1) * $per_page;
   
             $str_leave_term ='1=1';
-            if(isNumber($term_id) && $term_id > 0) $str_leave_term ='t.term_id ='.$term_id; 
+            if($term_id > 0) $str_leave_term ='t.id ='.$term_id; 
             $str_search ="1=1";
             $str_moreWhere="1=1";
             if($search_value){
@@ -165,13 +165,14 @@ class LeaveInfo //extends Model
             if($academic_year) $str_moreWhere .= ' AND e.academic_year =\''.$academic_year.'\'';
   
             if($campus_id > 0) $str_moreWhere .= ' AND e.campus_id ='.$campus_id;
-            if($session_id > 0) $str_moreWhere .= ' AND e.session_id ='.$session_id;
+            //if($session_id > 0) $str_moreWhere .= ' AND e.session_id ='.$session_id;
             if($level_id > 0) $str_moreWhere .= ' AND e.level_id ='.$level_id;
             else if($program_id > 0) $str_moreWhere .= ' AND e.program_id ='.$program_id;
   
-            $selectCols = 'le.id,e.id AS enrollment_id,st.id AS student_id,le.leave_term_id,c.`name` AS campus,l.`name` AS level,e.campus_id,e.academic_year,st.code as student_code,st.name,st.name_kh,st.sex,formatDate(st.date_of_birth) AS date_of_birth,st.file_name, CASE e.is_new_student WHEN 1 THEN \'NEW\' ELSE \'Old\' END AS student_type,e.promoted';
+            $selectCols = 'le.id,e.id AS enrollment_id,st.id AS student_id,st.phone_number,le.days_to_enddate,le.leave_term_id,tt.`name` AS leave_type, le.leave_remarks, c.`name` AS campus,l.`name` AS level_name,e.campus_id,e.academic_year,st.code as student_code,st.name,st.name_kh,st.sex,formatDate(st.date_of_birth) AS date_of_birth,st.file_name,le.update_user,formatTime(le.updated_at) as updated_at, CASE e.is_new_student WHEN 1 THEN \'NEW\' ELSE \'Old\' END AS student_type,e.promoted,le.authorized,le.auth_user,formatTime(le.auth_date) AS auth_date';
             $query = DB::table('leaves as le')
             ->join('enrollments as e','e.id','=','le.enrollment_id')
+            ->join('leave_types as tt','tt.id','=','le.leave_type_id')
             ->join('students as st','e.student_id','=','st.id')
                     //->join('student_groups as g','g.id','=','gm.group_id')
                     ->join('campuses as c','c.id','=','e.campus_id')
@@ -179,12 +180,12 @@ class LeaveInfo //extends Model
                     ->join('sessions as s','s.id','=','e.session_id')
                     ->join('terms as t','t.id','=','le.leave_term_id')
                     ->selectRaw($selectCols)
-                    ->where('le.branch_id',$branch_id)
+                    ->where('e.branch_id',$branch_id)
                     ->whereRaw($str_leave_term)
                     ->whereRaw($str_moreWhere)->whereRaw($str_search);
-                    $query->orderByRaw('e.id desc,s.id');
+                    $query->orderByRaw('e.id DESC,st.id');
             $count_query = clone $query;
-            $count = $count_query->count('st.id');
+            $count = $count_query->count('le.id');
             $rows = $query->skip($skip_rows)->take($per_page)->get();
             foreach($rows as $row) {
               $row->image_url=null;
@@ -202,7 +203,7 @@ class LeaveInfo //extends Model
       static function details($id){
         $get_group_name = ',(SELECT g.`name` FROM student_groups AS g  INNER JOIN group_members AS gm ON gm.group_id = g.id WHERE gm.enrollment_id =e.id AND gm.student_id =e.student_id LIMIT 1) AS group_name';
         $student_info =',st.branch_id,st.id AS student_id,st.name AS student_name,st.sex,st.phone_number,st.file_name';
-        $cols = 'l.id,e.id AS enrollment_id,l.leave_term_id,l.leave_type_id,l.leave_date, l.leave_remarks,l.has_returned,return_remarks,formatDate(l.return_date) As return_date,e.level_id'.$student_info.$get_group_name.',l.update_user,formatTime(l.updated_at) As updated_at,l.authorized,l.auth_udate,formatTime(l.auth_date) AS auth_date';
+        $cols = 'l.id,e.id AS enrollment_id,l.leave_term_id,l.leave_type_id,l.leave_date, l.leave_remarks,l.has_returned,return_remarks,formatDate(l.return_date) As return_date,e.level_id'.$student_info.$get_group_name.',l.update_user,formatTime(l.updated_at) As updated_at,l.authorized,formatTime(l.auth_date) AS auth_date,formatTime(l.auth_date) AS auth_date';
         return DB::table('leaves as l')->join('enrollments AS e','e.id','=','l.enrollment_id')->join('students as st','st.id','=','e.student_id')->where('l.id',$id)->selectRaw($cols)->take(1)->get()->first();
         //if(!$row) return null;
         //$row->image_url = ($row->file_name)? PublicStorage::getUrl($row->branch_id,'students','image').$row->file_name : ''; 
@@ -212,7 +213,7 @@ class LeaveInfo //extends Model
       static function getEnrollmentInfo($enrollment_id){
         $get_leave_id = ',(select lv.id from leaves AS lv WHERE lv.enrollment_id = e.id AND lv.student_id =e.student_id LIMIT 1) leave_id';
         $get_group_name = ',(SELECT g.`name` FROM student_groups AS g  INNER JOIN group_members AS gm ON gm.group_id = g.id WHERE gm.enrollment_id =e.id AND gm.student_id =e.student_id LIMIT 1) AS group_name';
-        $row = DB::table('students AS st')->join('enrollments as e','e.student_id','=','st.id')->join('program_levels as lev','lev.id','=','e.level_id')->where('e.id',$enrollment_id)->selectRaw('st.id,st.branch_id,st.name AS student_name,st.sex,st.phone_number,e.level_id,e.session_id,e.status_id,e.enrollment_status_id,e.is_new_student,e.tuition_paid,formatDate(e.tuition_end_date) AS tuition_end_date,e.term_id AS leave_term_id,lev.`name` AS level_name,e.academic_year,st.file_name'.$get_group_name.$get_leave_id)->take(1)->get()->first();
+        $row = DB::table('students AS st')->join('enrollments as e','e.student_id','=','st.id')->join('program_levels as lev','lev.id','=','e.level_id')->where('e.id',$enrollment_id)->selectRaw('st.id,st.branch_id,st.name AS student_name,st.sex,st.phone_number,e.level_id,e.session_id,e.status_id,e.enrollment_status_id,e.is_new_student,formatDate(e.tuition_end_date) AS tuition_end_date,e.term_id AS leave_term_id,lev.`name` AS level_name,e.academic_year,st.file_name'.$get_group_name.$get_leave_id)->take(1)->get()->first();
         $row->image_url = ($row->file_name)? PublicStorage::getUrl($row->branch_id,'students','image').$row->file_name : ''; 
         return $row;   
       }

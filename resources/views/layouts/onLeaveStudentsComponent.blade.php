@@ -28,13 +28,19 @@
                 </div>
             </div>
         </div>
-        <div class="d-flex align-items-center gap-2 mt-3">
-            <button id="_onleave_btnRegister" class="btn btn-primary  " type="button">
-                <span class="trans-text" data-langprop="buttons.Register"></span>
-            </button>
-            <input id="_onleave_search_student" type="search" class="form-control width--search" placeholder="Search by Name or ID..."/>
+        <div class="d-flex align-items-center gap-2 mt-3 mb-1">
+            <div class="d-flex justify-content-between w-100">
+                    <input id="_onleave_search_student" type="search" class="form-control width--search" placeholder="Search by Name or ID"/>
+                    <div class="d-flex flex-row gap-2">
+                        <button id="_onleave_btnPrint" class="btn btn-primary" type="button">
+                            <i class="fa fa-print"></i>
+                            <span class="trans-text" data-langprop="buttons.Print"></span>
+                        </button>
+                    </div>
+            </div>
+           
         </div>
-        <div id="_onleave_list_view" class="border rounded-3 shadow"></div>
+        <div id="_onleave_list_view" class="border rounded-3 shadow bg-white p-2"></div>
     </div>
     <div id="st-register--input" class="st-register--input" style="display:none">
         <div class="bg-primary rounded-top-3">
