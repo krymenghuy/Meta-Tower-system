@@ -191,24 +191,13 @@ class EnrollmentManager {
         //   }
 
           //$getEnrollment = DB::table('enrollments')->where('id',$enrollment_id)->selectRaw('session_id,school_id')->first();
-            $x = new PriceList(null,$ss);
-            // $newPaymentInfo = $x->previewPendingPaymentDetails([
-            //     "level_id" => $level_id,
-            //     "academic_year" => $academic_year,
-            //     "session_id" => $session_id,
-            //     "prev_level_id" => "0",
-            //     "start_date" => $admission_date,
-            //     "months" => 6,
-            //     // "weeks" => $weeks,
-            //     // "days" => $days,
-            //     "pmt_option_id"=> $pmt_option_id
-            // ],$enrollment_id,$ss);
+
           //** save or update payment table
         //   $preview = $plist;
           if($enrollment_id){
+            $newPaymentInfo = null;
               $en_payment_data = [
-                  // 'tuition' => $tuition,
-                  // 'tuition_due' => $tuition_due,
+
                   'pmt_status'=> $pmt_status,
                   // 'tuition_paid' => $tuition_paid,
                   'session_id' => $session_id,
@@ -218,12 +207,32 @@ class EnrollmentManager {
               ];
               $savePaymentID = saveData($ss,'payments',['enrollment_id' => $id?$enrollment_id:null],$en_payment_data,[],1);
 
-              if($savePaymentID && !$id || $id == 0){
-                  DB::table('enrollment_payment')->insert([
-                      'enrollment_id' => $enrollment_id,
-                      'pmt_id' => $savePaymentID
-                  ]);
-              }
+                if($savePaymentID && !$id || $id == 0){
+                    DB::table('enrollment_payment')->insert([
+                        'enrollment_id' => $enrollment_id,
+                        'pmt_id' => $savePaymentID
+                    ]);
+                    $x = new PriceList(null,$ss);
+                    $newPaymentInfo = $x->previewPendingPaymentDetails([
+                        "level_id" => $level_id,
+                        // "program_id" => isset($d->program_id)?$d->program_id:null,
+                        "academic_year" => $academic_year,
+                        "session_id" => $session_id,
+                        "prev_level_id" => "0",
+                        "start_date" => convertDate($admission_date),
+                        "months" => 6,
+                        // "weeks" => $weeks,
+                        // "days" => $days,
+                        "pmt_option_id"=> 2,
+                    ],$enrollment_id,$ss);
+
+                    if($newPaymentInfo->status_code == 200){
+                        DB::table('payments')->where('id',$savePaymentID)->update([
+                            'tuition' => $newPaymentInfo->payment_info->tuition,
+                            'tuition_due' => $newPaymentInfo->payment_info->tuition_due,
+                        ]);
+                    }
+                }
           }
 
         //   if($prev_school){
@@ -267,7 +276,7 @@ class EnrollmentManager {
           ],[],1);
       }
       $enroll_path = (object)['academic_year'=>$academic_year,'campus_id'=>$campus_id,'term_id'=>$term_id,'program_id'=>$program->id,'level_id'=>$level_id,'session_id'=>$session_id];
-      return DV::depends($enrollment_id,['enrollment_path'=>$enroll_path,'login_info' =>$um_res],'Failed to save student enrollmemnt');
+      return DV::depends($enrollment_id,['enrollment_path'=>$enroll_path,'login_info' =>$um_res,'payment_info'=>$newPaymentInfo],'Failed to save student enrollmemnt');
   }
 
   static function getPrevSchool($id){
@@ -288,6 +297,7 @@ function deleteEnrollment($id=null,$ss=null){
         DB::table('payments')->where('enrollment_id',$id)->delete();
         DB::table('enrollment_payment')->where('enrollment_id',$id)->delete();
         DB::table('student_guardians')->where('student_id',$info->student_id);
+        DB::table('group_members')->where('student_id',$info->student_id)->where('enrollment_id',$id);
     }
     return DV::depends($x,null);
 }
@@ -367,7 +377,7 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
             ];
             return $res;
     }
- 
+
     function list_paginate($filter,$ss=null){
       $ss = $ss?$ss:$this->user_info;
           $branch_id = $ss->branch_id;

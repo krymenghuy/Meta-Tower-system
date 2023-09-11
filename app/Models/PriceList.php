@@ -665,9 +665,8 @@ class PriceList //extends Model
         $row = DB::table('enrollments as e')
                 ->join('students as s','s.id','=','e.student_id')
                 ->join('payments as ep','ep.enrollment_id','=','e.id')
-                // ->where('s.id',$id)
                 ->where('e.id',$id)
-                ->selectRaw('e.id as enrollment_id,e.level_id,e.session_id,e.campus_id,e.start_date,ep.pmt_option_id')
+                ->selectRaw('e.id as enrollment_id,e.level_id,e.session_id,e.campus_id,formatDate(e.start_date) as start_date,ep.pmt_option_id')
                 ->first();
         // findExists is to check req key match in table
         $exists = findExists('enrollments',['id' => $id]);
@@ -890,8 +889,8 @@ class PriceList //extends Model
         }
 
         //** create student discount if not exists */
-        $discountHistory = DB::table('student_discounts')->where('student_id',$student_id)->get();
-        $keeps = [];
+        // $discountHistory = DB::table('student_discounts')->where('student_id',$student_id)->get();
+        // $keeps = [];
         $program = GeneralSettings::getProgramByLevel($inputs['level_id'],$ss);
 
         $pmt_arr = [
@@ -933,7 +932,7 @@ class PriceList //extends Model
                 $dis_amount = ($tuition_due * $dis)/100;
                 $tuition_due = $tuition_due - $dis_amount;
             }
-            
+
             $pmt_arr = [
                 'pmt_option_id'=>$pmt_option_id,
                 'tuition' => $payment_info->tuition,
@@ -948,11 +947,11 @@ class PriceList //extends Model
 
             $inv = new Activity();
             // params = enrollment_id,tuition_due,additional_discount = 0 because it has already updated in approve discount;
-            $inv->resetUnpaidInvoice($id,$tuition_due,0);
+            $inv->resetUnpaidInvoice($id,$tuition_due,0,$payment_info->tuition);
             $set_pmt_option = saveData($ss,'payments',['enrollment_id' => $enr->id],$pmt_arr,[],1);
-            DB::table('enrollments')->where('student_id',$student_id)->where('branch_id',$ss->branch_id)->update([
-                "tuition_end_date" => null,
-            ]);
+            // DB::table('enrollments')->where('student_id',$student_id)->where('branch_id',$ss->branch_id)->update([
+            //     "tuition_end_date" => null,
+            // ]);
         }
 
         return DV::depends($id,$discount_info);

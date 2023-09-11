@@ -496,7 +496,7 @@ class GeneralSettings //extends Model
         return $rows;
     }
     static function getCampus($id){
-        return DB::table('campuses')->where('id',$id)->selectRaw('id,name,name as campus')->first();
+        return DB::table('campuses')->where('id',$id)->selectRaw('id,name,name as campus,shortcut')->first();
     }
 
     static function optionsFindVerifyPmt(){
@@ -510,7 +510,6 @@ class GeneralSettings //extends Model
 
     static function options_family($ss=null){
         $branch_id = $ss->branch_id;
-
         $familyCodes = DB::table('student_guardians')
         ->select('family_code')
         ->distinct()
@@ -593,13 +592,8 @@ class GeneralSettings //extends Model
     }
 
     static function options_payment_method(){
-        return [
-            'payment_methods' => [
-                ["method" => "ABA"],
-                ["method" => "Acleda"],
-                ["method" => "Wing"]
-            ]
-        ];
+        $rows = DB::table('payment_methods')->selectRaw('name')->get();
+        return $rows;
     }
 
 
