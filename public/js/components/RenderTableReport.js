@@ -212,7 +212,7 @@ function windowPrintInvoice(html){
         myWindow.document.write(`<!DOCTYPE html>
         <html >
             <head>
-                <title>Student Attendaces Report</title>
+                <title>Student Receipt</title>
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
                 <link rel="preconnect" href="https://fonts.googleapis.com">
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -220,6 +220,7 @@ function windowPrintInvoice(html){
                 <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/font-awesome/6.2.0/css/all.min.css"/>
                 <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/ksm_style.css"/>
                 <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/vsstyle.css"/>
+                <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/css_for_print_invoice.css"/>
             </head>
             <body>${html.replaceAll('table-responsive ','')}</body>
         </html>`);
