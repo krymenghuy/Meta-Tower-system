@@ -255,7 +255,7 @@ class MobileApi //xtends Model
 
     function getSocialMedia($ss){
         $branch_id = $ss->branch_id;
-        $rows = DB::table('social_media')->where('branch_id',$branch_id)->selectRaw('file_name,title as name,url')->get();
+        $rows = DB::table('social_media')->where('branch_id',$branch_id)->selectRaw('id,file_name,title as name,url')->get();
         foreach($rows as $row){
             if($row->file_name != null){
                 $row->image_url = PublicStorage::getUrl($branch_id,'social_media','image').$row->file_name;

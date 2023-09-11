@@ -23,7 +23,7 @@ class GuardianLoginController extends Controller
 
         $result = $this->UMModel->verifyUser($app_id, $login_name, $pwd);
         if ($result->status === 'OK') {
-            $result->user->image_url = MobileApi::getProfile($result->user->official_id,$result->user->branch_id);
+            $result->user->image_url = MobileApi::getProfile($result->user->official_id,$result->user->branch_id)->image_url;
             // $result->user->image_url = \App\Models\PublicStorage::getProfilePhoto_url($result->user->branch_id, $result->user->user_class, $result->user->official_id);
         }
 

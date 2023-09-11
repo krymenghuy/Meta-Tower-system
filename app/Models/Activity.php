@@ -531,8 +531,8 @@ class Activity //extends Model
                         ->first();
             $selectPayment = 'tuition_due';
             $payment = DB::table('payments')->where('enrollment_id',$enrollment->id)->where('branch_id',$ss->branch_id)->where('status_id','<',3)->where('pmt_status','unpaid')->first();
-            
-            
+
+
             if($discountTypeInfo->discount_type_id == 1){
                 $discount_perc = $discountTypeInfo->amount;
                 $discount =($payment->tuition_due * $discount_perc)/100;
@@ -579,7 +579,7 @@ class Activity //extends Model
         return DV::depends($success,['action' => 'Approved','info'=>$discountTypeInfo]);
     }
 
-    function resetUnpaidInvoice($enrollment_id,$tuition_due,$existing_discount=0){
+    function resetUnpaidInvoice($enrollment_id,$tuition_due,$existing_discount=0,$tuition=null){
         $str_where = 'inv.is_paid = 0 AND inv.inactive = 0 AND paid_amount <= 0';
         $unpaidInvoice = DB::table('invoices as inv')
             ->where('inv.enrollment_id',$enrollment_id)
@@ -596,7 +596,8 @@ class Activity //extends Model
             }
             DB::table('invoice_items')->where('invoice_id',$unpaidInvoice->id)->where('fee_type','tuition_fee')->update([
                 'net_amount' => $tuition_due,
-                'discount' => $unpaidInvoice->discount + $existing_discount
+                'discount' => $unpaidInvoice->discount + $existing_discount,
+                "price" => $tuition
             ]);
 
             //** */

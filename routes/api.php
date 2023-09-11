@@ -208,7 +208,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
         Route::post('/update',[InvoiceController::class,'updateInvoice']);
         Route::post('/items',[InvoiceController::class,'getInvoiceItems']);
         Route::post('/receipt-details',[InvoiceController::class,'getTotalReceiptDetails']);
-        
+
     });
     Route::post('options/payment-method',[InvoiceController::class,'paymentMethodOptions']);
 
