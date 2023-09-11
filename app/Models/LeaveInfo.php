@@ -20,7 +20,7 @@ class LeaveInfo //extends Model
 
     static function getTermInfo($enrollment_id){
         //Supposed to be the last enrollment???
-        return DB::table('enrollments as e')->join('terms as t','t.id','=','e.term_id')->where('e.id',$enrollment_id)->take(1)->selectRaw('e.id,t.id AS term_id,t.name AS term_name,t.start_date,t.end_date,t.is_finished,e.tuition_end_date')->get()->first();
+        return DB::table('enrollments as e')->join('terms as t','t.id','=','e.term_id')->where('e.id',$enrollment_id)->take(1)->selectRaw('e.id,t.id AS term_id,e.student_id,t.name AS term_name,t.start_date,t.end_date,t.is_finished,e.tuition_end_date')->get()->first();
     }
 
     //Given a leave_type_id => decide the enrollment_status_id
@@ -32,11 +32,13 @@ class LeaveInfo //extends Model
         return DB::table('leave_types as t')->where('id',$leave_type_id)->take(1)->value('name');
     }
     //$arr = ['term_id','student_id','leave_type']
-    function save($arr,$ss=null){
+    function save($arr,$id=null,$ss=null){
+        $ss = $ss?$ss:$this->user_info;
+        $id =$id?$id:$this->id;
         $v_rule = [
            'enrollment_id'=>'1|number|enrollments.id', 
            //'term_id'=>'1|number|exists=terms.id',
-           'student_id'=>'1|number|exists=students.id',
+           //'student_id'=>'1|number|exists=students.id',
            'enrollment_id'=>'1|number|exists=enrollments.id',
            //'program_id'=>'1|number|exists=programs.id',
            'leave_date'=>'0|date',
@@ -54,32 +56,49 @@ class LeaveInfo //extends Model
         $leave_date = $inputs['leave_date'];
         if(!$leave_date){
             $leave_date = date('Y-m-d');
-            $inputs['leave_date'] = $leave_date;
         }
+
+      
+        $inputs['leave_date'] = convertDate($leave_date);
+        $return_date = $inputs['return_date'];
+        $inputs['return_date'] = convertDate($return_date);
 
         $term= self::getTermInfo($enrollment_id);
         if(!$term) return DV::error('The provided Enrollment ID is not valid');
+
+        $student_id =$term->student_id;
+        $inputs['student_id']=$student_id;
+        if(!$term->student_id) return DV::error('The enrollment information unexpectedly does not have the student ID');
         $tuition_end_date = $term->tuition_end_date;
         $days_to_tuition_enddate = diffDays($tuition_end_date,$leave_date);
         $term_id = $term->term_id;
         $inputs['days_to_enddate'] = $days_to_tuition_enddate;
         $inputs['leave_term_id']=$term_id; //This is leave_term
         //$leave_type_id = $inputs['leave_type_id'];
-        $id = saveData($ss,'leaves',$inputs,[],1,false);
-         
+
+        //Use $enrollment_id to find existing Leave Information if it exists or has already been authorized
+        $row = DB::table('leaves')->where('enrollment_id',$enrollment_id)->selectRaw('id,authorized,auth_user,formatDate(leave_date) AS leave_date')->get()->first();
+        if($row && $row->id > 0 && $row->authorized==1){
+            return DV::error('Cannot update this Leave or Dropout Information because it has been authorized by '.$row->auth_user);
+        }
+        $id = saveData($ss,'leaves',['id'=>$row?$row->id:null],$inputs,[],false);
+   
+        if($id > 0) $this->finalize($id,$ss); 
         return DV::depends($id,null,'Failed to save student leave information');
      }
 
     function finalize($id=null,$ss=null){
         $id = $id?$id:$this->id;
-        $ss = $ss?$ss:$this->user_info;
+        $ss = $ss? $ss : $this->user_info;
         $info = DB::table('leaves')->where('id',$id)->selectRaw('id,enrollment_id,leave_type_id,leave_term_id,leave_date,return_date,has_returned')->get()->first(); 
         if(!$info) return DV::error('Leave ID is not valid'); 
         $enroll_info = DB::table('enrollments as e')->where('id',$info->enrollment_id)->selectRaw('id,student_id,tuition_end_date')->take(1)->get()->first();
         if(!$enroll_info) return DV::error('Failed to retrieve the enrollment information against the provided leave information');
         if(! \App\Models\Student::exists($enroll_info->student_id)) return DV::error('Student information unexpectedly became invalid. This student may have been deleted');
-        
-        $days_to_tuition_enddate = diffDays($enroll_info->tuition_end_date,$info->leave_date);
+        if(!$enroll_info->tuition_end_date || $enroll_info->tuition_paid ==0)
+          $days_to_tuition_enddate =0;
+        else 
+          $days_to_tuition_enddate = diffDays($enroll_info->tuition_end_date,$info->leave_date);
         $inputs['days_to_enddate'] = $days_to_tuition_enddate;
         $x = DB::table('leaves')->where('id',$id)->update([
         'days_to_enddate'=>$days_to_tuition_enddate,    
@@ -97,7 +116,7 @@ class LeaveInfo //extends Model
             //disabled current student's price list in table "student_pricelist", so that if this student come back to study => system will calculate price and discount as new student again
             saveData($ss,'student_pricelist',['student_id' => $enroll_info->student_id],[
                 'inactive'=>1,
-                'remarks'=>self::getLeaveType($$info->leave_type_id)
+                'remarks'=>self::getLeaveType($info->leave_type_id)
             ],[],1);
 
        }
@@ -178,6 +197,37 @@ class LeaveInfo //extends Model
             }
   
             return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+      }
+
+      static function details($id){
+        $get_group_name = ',(SELECT g.`name` FROM student_groups AS g  INNER JOIN group_members AS gm ON gm.group_id = g.id WHERE gm.enrollment_id =e.id AND gm.student_id =e.student_id LIMIT 1) AS group_name';
+        $student_info =',st.branch_id,st.id AS student_id,st.name AS student_name,st.sex,st.phone_number,st.file_name';
+        $cols = 'l.id,e.id AS enrollment_id,l.leave_term_id,l.leave_type_id,l.leave_date, l.leave_remarks,l.has_returned,formatDate(l.return_date) As return_date,e.level_id'.$student_info.$get_group_name.',l.update_user,formatTime(l.updated_at) As updated_at';
+        return DB::table('leaves as l')->join('enrollments AS e','e.id','=','l.enrollment_id')->join('students as st','st.id','=','e.student_id')->where('l.id',$id)->selectRaw($cols)->take(1)->get()->first();
+        //if(!$row) return null;
+        //$row->image_url = ($row->file_name)? PublicStorage::getUrl($row->branch_id,'students','image').$row->file_name : ''; 
+        //return $row; 
+    }
+
+      static function getEnrollmentInfo($enrollment_id){
+        $get_leave_id = ',(select lv.id from leaves AS lv WHERE lv.enrollment_id = e.id AND lv.student_id =e.student_id LIMIT 1) leave_id';
+        $get_group_name = ',(SELECT g.`name` FROM student_groups AS g  INNER JOIN group_members AS gm ON gm.group_id = g.id WHERE gm.enrollment_id =e.id AND gm.student_id =e.student_id LIMIT 1) AS group_name';
+        $row = DB::table('students AS st')->join('enrollments as e','e.student_id','=','st.id')->where('e.id',$enrollment_id)->selectRaw('st.id,st.branch_id,st.name AS student_name,st.sex,st.phone_number,e.level_id,e.session_id,e.term_id AS leave_term_id,e.academic_year,st.file_name'.$get_group_name.$get_leave_id)->take(1)->get()->first();
+        $row->image_url = ($row->file_name)? PublicStorage::getUrl($row->branch_id,'students','image').$row->file_name : ''; 
+        return $row;   
+      }
+
+      function getFormOptions($id,$enrollment_id,$ss=null){
+         $ss=$ss?$ss:$this->user_info;
+         $enroll_info = self::getEnrollmentInfo($enrollment_id);
+         if(!$id) $id = $enroll_info->leave_id;
+         return (object)[
+            'enrollment_info'=>$enroll_info,
+            'leave_info'=>self::details($id),
+            //'terms'=>GeneralSettings::options_acad_term($ss),
+            'leave_types'=>GeneralSettings::options_leave_type($ss),
+            'academic_years'=>GeneralSettings::options_academic_year($ss)
+         ];
       }
   
 }

@@ -620,10 +620,20 @@ var EnrolledStudentsComponent = new function(){
                 return;
                }
 
+               //Set Leave Dialog
                lnk = mThis.clickOnClass(e.target,'btn-rgs-setleave');
                if(lnk){
-                  const id = lnk.dataset.id;
-                  alert('Set student on leave ' + id);
+                  const enrollment_id = lnk.dataset.id;
+                  //alert('Set student on leave ' + id);
+                  const op = {
+                    'id':null,
+                    'enrollment_id':enrollment_id, //id  here is the enrollment_id
+                    'onClose':()=>{
+
+                    }
+                  };
+
+                  LeaveDialog.show(op);
                }
 
             });
@@ -882,6 +892,121 @@ let FamilyDialog = new function(){
     }
 }
 
+//begin::LeaveDialog
+const LeaveDialog = new function(){
+    let mThis = this;
+    this.self = main_view.appContent.find('#_leave_dlgLeave');
+    this.btnSave = this.self.find('#_leave_dlgLeave_btnSave');
+    this.elTitle = this.self.find('.modal-title');
+    this.elAcademicYear = this.self.find('#_leave_acad_year');
+    this.elTerm = this.self.find('#_leave_term');
+    this.elLeaveType = this.self.find('#_leave_type');
+    this.elLeaveDate = this.self.find('#_leave_date');
+    this.options = {};
+    this.selected_options = {};
+
+    this.btnSave.on('click',e=>{
+        const p = mThis.getFormData(false);
+        if(!p) return;
+        console.log(p);
+        vsapi.call(`${main_view.base_url}/api/leave/save`,p,mThis.btnSave).then(res=>{
+            if(res.status_code ===200){
+                mThis.options.onClose(); 
+                mThis.self.modal('hide');
+            }else cv_interact.warning(res.error_message);
+        });
+        
+    });
+    
+    this.elAcademicYear.on('change',e=>{
+      e.preventDefault();
+      vsapi.call(`${main_view.base_url}/api/settings/options-term`,{'academic_year':mThis.elAcademicYear.val()},null).then(res=>{
+          let terms = res.status_code ==200? StringSanitizer.sanitizeObject(res.data,null,['term_name']):[]; 
+          VSUtil.setComboItems(mThis.elTerm,terms,'id','term_name',true,'(Choose Term)',mThis.selected_options.leave_term_id);
+          mThis.elTerm.prop('disabled',mThis.elTerm.val()>0);
+      });
+    });
+
+    this.getFormData = (silent)=>{
+        let p = {};
+        let has_error = false;
+        mThis.self.find('.data-input').each(function(){
+             const el = $(this);
+             const f = el.data('field');
+             if(el.data('error') ==1){
+                has_error = true;
+                if(!silent) cv_interact.error([Validator.properCase(f),' is not correct'].join(''));
+                return false;
+             }
+           
+             p[f] = el.val();
+        });
+        p.id = mThis.options.id;
+        p.enrollment_id = mThis.options.enrollment_id;
+        return has_error? null:p;
+    }
+
+    this.setFormData = (d)=>{
+        d = d?d:{};
+        mThis.self.find('.data-input').each(function(){
+             const el = $(this);
+             const f = el.data('field');
+             if(el.is('select')){
+                 mThis.selected_options[f] = d[f]; 
+                 el.val(d[f]).trigger('change');
+             }else{
+                el.val(d[f]);
+             }
+        });
+        mThis.elAcademicYear.prop('disabled',d.academic_year && d.leave_term_id);
+        mThis.elLeaveDate.val(DateHelper.getTodayDate());
+    }
+
+    //NOTE: op = {'id','enrollent_id'} . id = leave_id
+    this.prepareFormOptions = (op,onFinish)=>{
+        vsapi.call(`${main_view.base_url}/api/leave/form-options`,op,false).then(res=>{
+            if(res.status_code ===200){
+                const d = res.data;
+                const enroll_info = d.enrollment_info? d.enrollment_info:{};
+                let leave_info = d.leave_info?d.leave_info:{};
+                leave_info.student_name = enroll_info.student_name;
+                leave_info.sex = enroll_info.sex;
+                leave_info.phone_number =enroll_info.phone_number;
+                leave_info.group_name =enroll_info.group_name;
+                leave_info.image_url = enroll_info.image_url;
+                leave_info.academic_year = enroll_info.academic_year;
+                leave_info.leave_term_id = enroll_info.leave_term_id;
+                mThis.selected_options.leave_term_id =enroll_info.leave_term_id;
+                d.leave_info = leave_info;
+
+                VSUtil.setComboItems(mThis.elAcademicYear,d.academic_years,'academic_year','academic_year',true,'(Academic Year)',0);
+                //VSUtil.setComboItems(mThis.elTerm,d.terms,'id','term_id',true,'(Choose Term)',0);
+                VSUtil.setComboItems(mThis.elLeaveType,d.leave_types,'id','leave_type',true,'(Leave Type)',null);
+                mThis.elLeaveType.val(d.leave_types[0]?d.leave_types[0].id:null).trigger('change');
+                onFinish(d);
+            }else cv_interact.warning('Failed to load form options for Leave Dialog');
+           
+        });
+    }
+
+    this.show = (options)=>{
+      mThis.options = options? options:{};
+      mThis.prepareFormOptions({'id':options.id,'enrollment_id':options.enrollment_id},(d)=>{
+        if(d.leaveInfo){
+            mThis.elTitle.text('Modify Leave Info');
+        }else{
+            mThis.elTitle.text('Set Leave Info');
+        }
+        mThis.setFormData(d.leave_info);
+        mThis.self.modal({
+          'backdrop':'static'
+        });
+      });
+     
+    }
+}
+//end::LeaveDialog
+ 
 window.addEventListener('DOMContentLoaded',() => {
     EnrolledStudentsComponent.init();
 });

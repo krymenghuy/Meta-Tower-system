@@ -4,6 +4,8 @@ let main_view = new function(){
     this.onLayoutLoad = null;
     this.elScreenTitle = $('#screen_title');
     this.base_url = $('meta[name="base_url"]').attr('content');
+    this.appContent = $('#_app_content');
+
     this.asset_url =$('meta[name="asset_url"]').attr('content'); 
     this.top_right_menus = $('#_main_top_right_menus');
     this.btnTasks = $('#_main_btn_tasks');

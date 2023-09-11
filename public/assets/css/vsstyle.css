@@ -184,14 +184,14 @@ div.dms-content-header {
 div.dms-content-body {
   width: 100%;
 }
-
+ 
 .select2-container--default,
 .select2-search--dropdown {
   min-width: 160px;
 }
 
 .select2-selection__rendered {
-  height: 30.47px !important;
+  min-height: 42px;
   padding-top: 5px !important;
 }
 
