@@ -22,7 +22,8 @@ class ProgramLevelController extends Controller
         if($ss->status_code !=200) return $ss;
 
         $row = new ProgramLevel();
-        $list = $row->list($req->program_id,$ss);
+        $prog_id = $req->program_id?$req->program_id:$req->id;
+        $list = $row->list($prog_id,$ss);
         return JDV::result($list);
     }
 

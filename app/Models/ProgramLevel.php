@@ -36,12 +36,19 @@ class ProgramLevel //extends Model
         return DV::depends($newID,['action'=>$action,'levels'=>$this->list($program_id,$ss)]);
     }
 
+    static function getDeleteWarning($id){
+       $id = DB::table('enrollments as e')->where('level_id',$id)->take(1)->value('id');
+       if($id > 0) return 'Cannot delete this level or grade because there are some students enrolled in it';
+       $id = DB::table('student_groups as g')->where('g.level_id',$id)->take(1)->value('id'); 
+       if($id > 0) return 'Cannot delete this level or grade because there are some student groups created under this level';
+       return null;
+    }
+    
     function list($program_id,$ss=null){
         $ss = $ss?$ss:$this->user_info;
         $branch_id = $ss->branch_id;
-
-        $cols = "pl.id,pl.program_id,p.name as program,pl.name,formatTime(pl.created_at) AS created_at,pl.create_user";
-
+        $get_prev_level =',CASE pl.prev_level_id > 0 WHEN 1 THEN (SELECT `name` FROM program_levels where id = pl.prev_level_id LIMIT 1) ELSE \'None\' END AS prev_level';
+        $cols = 'pl.id,pl.program_id,p.name as program,pl.name'.$get_prev_level.',formatTime(pl.updated_at) AS updated_at,pl.update_user';
        return DB::table('program_levels as pl')->join('programs as p','pl.program_id','=','p.id')->where('p.id',$program_id)->selectRaw($cols)->where('p.branch_id',$branch_id)->get();
  
     }
@@ -60,12 +67,10 @@ class ProgramLevel //extends Model
         $ss = $ss?$ss:$this->user_info;
         $id = $id?$id:$this->id;
         $branch_id = $ss->branch_id;
-
-        $exist_in_student_group = DB::table('student_groups')->where('level_id',$id)->exists();
-        if($exist_in_student_group) return DV::error('Level is in use');
-
+        
+        $err = self::getDeleteWarning($id);
+        if($err) return DV::error($err);
         $row = DB::table('program_levels')->where('id',$id)->where('branch_id',$branch_id)->delete();
-
         return DV::depends($row,['levels'=>$this->list($program_id,$ss)]);
 
     }

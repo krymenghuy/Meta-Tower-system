@@ -72,19 +72,30 @@ class Program // extends Model
 
     static function getLevelByProgram($d,$ss){
         $id = $d->id?$d->id:$d->program_id;
-        $rows = DB::table('program_levels')->where('program_id',$id)->selectRaw('id,name,program_id')->get();
+        $level = new \App\Models\ProgramLevel(null,$ss);
+        $rows = $level->list($id,$ss);
         return $rows;
+    }
+
+    static function getDeleteWarning($id){
+        //if(!isNumber($id)) $id = null;
+        if(!$id) return 'program ID is not valid';
+        $level_list = '(SELECT levels.id FROM program_levels AS levels WHERE levels.program_id ='.$id.')';
+        $id = DB::table('enrollments as e')->whereRaw('e.level_id IN '.$level_list)->take(1)->value('id');
+        if($id > 0) return 'Cannot delete this program because there are some students enrolled in it';
+        $id = DB::table('student_groups as g')->whereRaw('g.level_id IN '.$level_list)->take(1)->value('id');
+        if($id > 0) return 'Cannot delete this program because there are some student groups created under this level';
+        return null;
     }
 
     function delete($id=null,$ss=null){
         $ss = $ss?$ss:$this->user_info;
         $id = $id?$id:$this->id;
         $branch_id = $ss->branch_id;
-
-        $exists_in_levels = DB::table('program_levels')->where('program_id',$id)->exists();
-        if($exists_in_levels) return DV::error('Program is in use');
-
+        $err = self::getDeleteWarning($id); 
+        if($err) return DV::error($err); 
+        DB::table('program_levels')->where('program_id',$id)->delete();
         $row = DB::table('programs')->where('id',$id)->where('branch_id',$branch_id)->delete();
-        return DV::depends($row,['action'=>'Program Deleted','programs' => self::list($ss)]);
+        return DV::depends($row,['programs' => self::list($ss)]);
     }
 }

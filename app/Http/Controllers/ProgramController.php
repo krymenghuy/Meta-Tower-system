@@ -56,8 +56,8 @@ class ProgramController extends Controller
     function delete(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return $ss;
-
-        $row = new Program($req->id,$ss);
+        $id = $req->id?$req->id:$req->program_id;
+        $row = new Program($id,$ss);
         $delete = $row->delete();
         return JDV::raw($delete);
     }
