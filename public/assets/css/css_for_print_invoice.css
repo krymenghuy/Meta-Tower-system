@@ -1,0 +1,71 @@
+*,
+html,
+body{
+    padding:0;
+    margin:0;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    font-family: Poppins;
+}
+
+html,
+body{
+    height:fit-content;
+    width:fit-content;
+    padding:10px;
+}
+
+body table{
+    font-size:normal;
+    vertical-align: middle;
+}
+
+.width-show-total{
+    min-width:200px;
+    clear: both;
+    float: right;
+    display:block;
+    position: absolute;
+    width: fit-content;
+    height:fit-content;
+    right: 0;
+}
+
+.fs-5-1{
+    font-size:1.1rem;
+}
+
+.box-size-invoice{
+    width:150px;
+    height:30px;
+}
+
+.fixed-width-p{
+    width:57px;
+}
+
+@page{
+    size:A4;
+    margin: 0;
+}
+
+@media print{
+    html,
+    body{
+        height:fit-content;
+        width:fit-content;
+        zoom:85%;
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    body table{
+        font-size:normal;
+        vertical-align: middle;
+    }
+
+    header, footer, aside, form{
+        display: none;
+    }
+}

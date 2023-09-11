@@ -472,12 +472,12 @@ let InvoiceDialog = new function(){
                 <span>${company_info.address_kh ? company_info.address_kh : 'N/A'}</span>
             </div>
             <div class="d-flex justify-content-center gap-3 mt-3">
-                <div class="d-flex gap-2">
-                    <i class="fa-regular fa-envelope fs-5"></i>
+                <div class="d-flex gap-2 align-items-center">
+                    <i class="fa-regular fa-envelope fs-4"></i>
                     <span>${company_info.email ? company_info.email : 'N/A'}</span>
                 </div>
-                <div class="d-flex gap-2">
-                    <i class="fa-solid fa-phone fs-5"></i>
+                <div class="d-flex gap-2 align-items-center">
+                    <i class="fa-solid fa-phone fs-4"></i>
                     <span>${company_info.phone_number ? company_info.phone_number : 'N/A'}</span>
                 </div>
             </div>`].join('');
