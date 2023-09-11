@@ -4,117 +4,100 @@ var CampusComponent = new function(){
     this.title_prop = 'Campus';
     this.self = $('#_main_campusComponent');
 
-    this.tblCampus = mThis.self.find('#_cps_tbl');
+    this.tblCampus ={};
     this.btnNew = mThis.self.find('#_cps_btn_new');
 
+    this.cols = [
+        {
+        title: "Campus Name",
+        data: "name"
+    },
+    {
+        title: "Shortcut",
+        data: "shortcut"
+    },
+    {
+        title: "Action",
+        data: (data, a, b) => {
+            return [`<div class="d-flex gap-2">
+                <a href="javascript:void(0)" class="btn-cps-modify" data-id="${data.id}">
+                    <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
+                </a>
+                <a href="javascript:void(0)" class="btn-cps-delete" data-id="${data.id}">
+                    <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                </a>
+            </div>`].join('');
+        }
+    }];
+
     this.init = () => {
+
+        mThis.campusListView = new ListView('_campus_list',{
+            'fetchApi':`${main_view.base_url}/api/campus/list-paginate`,
+            'perPage':5,
+            'columns':mThis.cols,
+            // 'renderItems':(items,list_container) => {
+            //     mThis.renderStudents(list_container,items);
+            // },
+            'rowCreated':(data,index,tr)=>{
+               tr.dataset.id = data.id;
+            },
+            'listContainerClass':null
+        });
+
+        mThis.tblCampus = mThis.campusListView.getTable();
+
         mThis.btnNew.on('click',function(e){
             e.preventDefault();
             let op = {
                 'id': 0,
                 'onClose': () => {
-                    mThis.displayCampus();
+                    mThis.campusListView.showPage(null);
                 }
             };
             CampusDialog.show(op);
         });
 
-        mThis.tblCampus.on('click','a.btn-cps-modify',function(e){
+        mThis.tblCampus.addEventListener('click',e=>{
             e.preventDefault();
-            let op = {
-                'id': $(this).data('id'),
-                'onClose': () => {
-                    mThis.displayCampus();
-                }
-            };
-            CampusDialog.show(op);
-        });
 
-        mThis.tblCampus.on('click','a.btn-cps-delete',function(e){
-            e.preventDefault();
+            let lnk = VSUtil.clickOnClass(e.target,'btn-cps-modify');
+            if(lnk){
+                let op = {
+                    'id': lnk.dataset.id,
+                    'onClose': () => {
+                        mThis.campusListView.showPage(null);
+                    }
+                };
+                CampusDialog.show(op);
+                return;
+            }
+
+          lnk = VSUtil.clickOnClass(e.target,'btn-cps-delete');
+          if(lnk){
             let op = {
-                'id': $(this).data('id')
+                'id': lnk.dataset.id
             };
             cv_interact.confirm('Delete this campus?',{title: 'Delete Campus', context: 'delete'},(e) => {
                 if(e){
                     vsapi.call(`${main_view.base_url}/api/campus/delete`,op,null).then(res => {
                         if(res.status_code === 200){
-                            mThis.displayCampus();
+                            mThis.campusListView.showPage(null);
                         }
                     });
                 }
             });
+            return;
+          }
+           
         });
+
+       
     }
-
-    this.displayCampus = (onFinish = null) => {
-        vsapi.call(`${main_view.base_url}/api/campus/list`,null,null).then(res => {
-            let data = [];
-            if(res.status_code === 200){
-                data = res.data;
-            }
-
-            let cols = [
-                {
-                title: "Campus Name",
-                data: "name"
-            },
-            {
-                title: "Shortcut",
-                data: "shortcut"
-            },
-            {
-                title: "Action",
-                data: (data, a, b) => {
-                    return [`<div class="d-flex gap-2">
-                        <a href="javascript:void(0)" class="btn-cps-modify" data-id="${data.id}">
-                            <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
-                        </a>
-                        <a href="javascript:void(0)" class="btn-cps-delete" data-id="${data.id}">
-                            <i class="fa-regular fa-trash-can text-danger fs-5"></i>
-                        </a>
-                    </div>`].join('');
-                }
-            }];
-
-            if(mThis.table){
-                mThis.tblCampus.DataTable().clear().destroy();
-                mThis.tblCampus.empty();
-                mThis.table = null;
-            }
-
-            if(!mThis.table){
-                mThis.table = mThis.tblCampus.DataTable({
-                    searching: false,
-                    destroy: true,
-                    paging: true,
-                    ordering: false,
-                    retrieve: true,
-                    info: true,
-                    pageLength: 10,
-                    bLengthChange: false,
-                    saveState: true,
-                    processing: true,
-                    language: {
-                        loadingRecords: '&nbsp;',
-                        processing: 'Loading...',
-                        emptyTable: LocaleManager.trans('No data to display', 'datatable')
-                    },
-                    data: data,
-                    columns: cols,
-                    createdRow: function (row, data, dataIndex) {
-                        row.setAttribute('data-id',data.id);
-                    }
-                });
-            }
-
-            if(typeof onFinish === 'function') onFinish();
-        });
-    }
-
+ 
     this.show = (options) => {
         if(!options) options = {};
-        mThis.displayCampus(() => {
+        mThis.campusListView.showPage(null,null,()=>{
             main_view.setTitle(mThis.title_prop);
             let x = mThis.self.siblings(':visible');
             x.hide(0,function(){
@@ -124,7 +107,7 @@ var CampusComponent = new function(){
     }
 }
 
-let CampusDialog = new function(){
+const CampusDialog = new function(){
     let mThis = this;
     this.self = $('#dlg_cps_');
     this.options = {};
