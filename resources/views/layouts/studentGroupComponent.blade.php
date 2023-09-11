@@ -35,7 +35,7 @@
                     </div>
                     <div class="form-group col-lg-6">
                         <label for="name" class="form-label trans-text" data-langprop="titles.Strict Name"></label>
-                        <input id="dlg_sdg_name" type="text" data-required="false" class="form-control data-input" data-field="name" readonly placeholder="AUTO" />
+                        <input id="dlg_sdg_name" type="text" data-required="false" class="form-control data-input" data-field="name" placeholder="AUTO" readonly/>
                     </div>
                     <div class="form-group col-lg-4">
                         <label for="level_id" class="form-label trans-text" data-langprop="titles.Campus"></label>

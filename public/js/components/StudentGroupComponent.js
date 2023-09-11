@@ -214,12 +214,13 @@ let StudentGroupDialog = new function(){
             if(el.is('select')){
                 mThis.selected_options[f] = d[f];
                 el.val(d[f]).trigger('change');
-                if (!d.id || d.id==0){
+                if(!d.id || d.id == 0){
                     //In case of creating New Group => When there are (academic_year,term_id,campus_shortcut,level_id, session_shortcut) supplied as default => then disable SELECT to preven user from chaning it
-                    el.prop('disabled',(d[f] || d[f]>0));
-                }else{
+                    el.prop('disabled',(d[f] || d[f] > 0));
+                }
+                else{
                     //In case of Editing Group Info
-                    el.prop('disabled',(d.has_member || d.has_member==1));
+                    el.prop('disabled',(d.has_member || d.has_member == 1));
                 }
             }
             else{
@@ -229,7 +230,7 @@ let StudentGroupDialog = new function(){
             }
         });
 
-        if(!d.id || d.id ==0) mThis.setGroupName();
+        if(!d.id || d.id == 0) mThis.setGroupName();
     }
 
     mThis.elCampus.change('change',function(e){
@@ -277,7 +278,7 @@ let StudentGroupDialog = new function(){
             VSUtil.setComboItems(mThis.elSession,d.sessions,'shortcut','session_name',null,null,null);
             mThis.campuses = d.campuses;
             mThis.sessions = d.sessions;
-            mThis.levels =d.levels;/** This levels array is used for searching for program_id when there is only level_id is provided */ 
+            mThis.levels = d.levels;/** This levels array is used for searching for program_id when there is only level_id is provided */
             if(typeof onFinish === 'function') onFinish(d);
         });
    }
@@ -293,7 +294,7 @@ let StudentGroupDialog = new function(){
     }
  
     this.getProgramId = (level_id) => {
-        for (const l of mThis.levels) {
+        for(const l of mThis.levels) {
             if (l.id == level_id) {
                 return l.program_id;
             }
@@ -330,12 +331,12 @@ let StudentGroupDialog = new function(){
             }
             else{
                 mThis.elTitle.text(LocaleManager.trans('New Student Group','titles'));
-                const def_op = {'academic_year':options.academic_year,'term_id':options.term_id,'campus_id':options.campus_id,'level_id':options.level_id,'session_id':options.session_id};
+                const def_op = {'academic_year':options.academic_year,'term_id':options.term_id,'campus_id':options.campus_id,'level_id' : options.level_id,'session_id' : options.session_id};
                 if(def_op.level_id > 0){
                     def_op.program_id = mThis.getProgramId(def_op.level_id);
                 }
-                def_op.campus_shortcut = def_op.campus_id > 0? mThis.getCampusShortcut(def_op.campus_id):null;
-                def_op.session_shortcut = def_op.session_id > 0? mThis.getSessionShortcut(def_op.session_id):null;
+                def_op.campus_shortcut = def_op.campus_id > 0 ? mThis.getCampusShortcut(def_op.campus_id) : null;
+                def_op.session_shortcut = def_op.session_id > 0 ? mThis.getSessionShortcut(def_op.session_id) : null;
                 mThis.setFormData(def_op);
             }
             mThis.self.modal({
