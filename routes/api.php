@@ -235,6 +235,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //begin::LeaveInfoController
         Route::prefix('leave')->group(function () {
             Route::post('/list-paginate',[LeaveInfoController::class,'getList_paginate']);
+            Route::post('/form-options',[LeaveInfoController::class,'getFormOptions']);
             Route::post('/save',[LeaveInfoController::class,'saveLeave']);
             Route::post('/finalize',[LeaveInfoController::class,'finalize']);
             Route::post('/delete',[LeaveInfoController::class,'delete']);

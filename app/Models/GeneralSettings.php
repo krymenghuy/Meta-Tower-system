@@ -283,7 +283,10 @@ class GeneralSettings //extends Model
        if($academic_year > 0) $str_year ='academic_year =\''.$academic_year.'\'';
        return DB::table('terms as t')->where('t.branch_id',$branch_id)->selectRaw('t.id,t.`name` as term_name')->orderByRaw('start_date DESC')->get();
     }
-
+    static function options_leave_type($ss){
+        $branch_id = $ss->branch_id;
+        return DB::table('leave_types as t')->where('t.branch_id',$branch_id)->selectRaw('t.id,t.`name` as leave_type')->get();
+     }
     static function getGroupByStudent($student_id,$ss=null){
         $branch_id = $ss?$ss->branch_id:1;
         $row = DB::table('student_groups as sg')->join('group_members as gm','gm.group_id','=','sg.id')->where('sg.branch_id',$branch_id)->where('gm.student_id',$student_id)

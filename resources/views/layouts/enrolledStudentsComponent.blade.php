@@ -544,3 +544,64 @@
         </div>
     </div>
 </div>
+
+<div id="_leave_dlgLeave" class="modal fade" tabindex="-1" aria-labelledby="_leave_dlgLeave_title" aria-hidden="true">
+    <div class="modal-dialog vs-modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="form-group col-lg-6">
+                        <label for="student_name" class="form-label trans-text" data-langprop="titles.Student Name"></label>
+                        <div><input class="form-control data-input" data-field="student_name" readonly></div>
+                    </div>
+
+                    <div class="form-group col-lg-6">
+                        <label for="student_name" class="form-label trans-text" data-langprop="titles.Group"></label>
+                        <div><input class="form-control data-input" data-field="group_name" readonly></div>
+                    </div>
+
+                    <div class="form-group col-lg-6">
+                        <label for="academic_year" class="form-label trans-text" data-langprop="titles.Academic Year"></label>
+                        <div><select id ="_leave_acad_year" class="modal-select2 data-input" data-field="academic_year"></select></div>
+                    </div>
+                    <div class="form-group col-lg-6">
+                        <label for="leave_term_id" class="form-label trans-text" data-langprop="titles.Term"></label>
+                        <div><select id ="_leave_term" class="modal-select2 data-input" data-field="leave_term_id"></select></div>
+                    </div>
+
+                    <div class="form-group col-lg-6">
+                        <label for="leave_term_id" class="form-label trans-text" data-langprop="titles.Leave Type"></label>
+                        <div><select id="_leave_type" class="modal-select2 data-input" data-field="leave_type_id"></select></div>
+                    </div>
+
+                    <div class="form-group col-lg-6">
+                        <label for="leave_date" class="form-label trans-text" data-langprop="titles.Leave Date"></label>
+                       <div> <input id="_leave_date" data-select="datepicker" class="form-control data-input" data-field="leave_date"/></div>
+                    </div>
+
+                    <div class="form-group col-lg-6">
+                        <label for="leave_date" class="form-label trans-text" data-langprop="titles.Expected Return"></label>
+                        <input data-select="datepicker" class="form-control data-input" data-field="return_date"/>
+                    </div>
+
+                    <div class="form-group col-lg-12">
+                        <label for="leave_date" class="form-label trans-text" data-langprop="titles.Remarks"></label>
+                        <input class="form-control data-input" data-field="leave_remarks"/>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
+                    <span class="trans-text" data-langprop="buttons.Cancel"></span>
+                </button>
+                <button id="_leave_dlgLeave_btnSave" type="button" class="btn btn-primary btn-sm">
+                    <span class="trans-text" data-langprop="buttons.Save"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

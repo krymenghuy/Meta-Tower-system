@@ -9,7 +9,7 @@ var PaymentReviewComponent = new function(){
     let cur_symbol = "$";
     this.cols = [
         {
-            title: "Name Khmer",
+            title: "Khmer Name",
             className: 'text-capitalize',
             data: "name_kh",
         },
@@ -67,20 +67,25 @@ var PaymentReviewComponent = new function(){
             beforeRender: () => {},
         });
 
-        mThis.tblPaymentPending = $(mThis.itemView.getTable());
+        mThis.tblPaymentPending = mThis.itemView.getTable();
 
-        mThis.tblPaymentPending.on("click", "a.btn-ppd-modify", function (e) {
+        mThis.tblPaymentPending.addEventListener("click",function (e) {
             e.preventDefault();
-            let op = {
-                id: $(this).data("id"),
-                onClose: () => {
-                    mThis.itemView.showPage(null);
-                },
-            };
-            PaymentPendingDialog.show(op);
+            let lnk = VSUtil.clickOnClass(e.target,'btn-ppd-modify');
+            if(lnk){
+                let op = {
+                    id:lnk.dataset.id,
+                    onClose: () => {
+                        mThis.itemView.showPage(null);
+                    },
+                };
+                PaymentPendingDialog.show(op);
+                return;
+            }
+            
         });
 
-        mThis.elSearch.on("change", function (e) {
+        mThis.elSearch.on("change", function (e){
             e.preventDefault();
             let op = {
                 status_id: $(this).val(),
@@ -99,7 +104,7 @@ var PaymentReviewComponent = new function(){
         });
     };
 
-    this.show = (options) => {
+    this.show = (options) =>{
         if (!options) options = {};
         mThis.itemView.showPage(null, null, () => {
             mThis.prepareOptions();
@@ -110,6 +115,7 @@ var PaymentReviewComponent = new function(){
             });
         });
     };
+
 };
 
 let PaymentPendingDialog = new function(){
