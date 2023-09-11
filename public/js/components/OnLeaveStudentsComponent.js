@@ -62,7 +62,7 @@ var OnLeaveStudentsComponent = new function(){
        {
         "title":"Days to End",
         "data":(data,index,tr)=>{
-           return ['<span class="">',data.dte_date,'</span>'].join('');
+           return ['<span class="">',data.days_to_enddate,' days</span>'].join('');
         }
        },
        {
@@ -72,13 +72,13 @@ var OnLeaveStudentsComponent = new function(){
        {
         "title":"Reason",
         "data":(data,index,tr)=>{
-           return ['<span class="">',data.remarks,'</span>'].join('');
+           return ['<span class="">',data.leave_remarks,'</span>'].join('');
         }
        },
        {
         "title":"Return Info",
         "data":(data,index,tr)=>{
-           const return_str = data.has_returned ==1? ['<span class="border rounded-5 p-1 shadow bg-success">Returned</span>'].join('') : '';
+           const return_str = data.has_returned ==1? ['<span class="border rounded-5 p-1 shadow bg-success">Returned</span>'].join('') : data.leave_type;
            const return_date = data.return_date? ['<span class="d-block text-nowrap">Expected Return: ',data.return_date,'</span>'].join('') : '';  
            return [return_date,return_str].join('');
         }
@@ -86,15 +86,15 @@ var OnLeaveStudentsComponent = new function(){
        {
         "title":"Booked By",
         "data":(data,index,tr)=>{
-           return ['<span class="d-block fw-semibold">',data.create_user,'</span>','<span class=""><small>',data.created_at,'</small></span>'].join('');
+           return ['<span class="d-block fw-semibold">',data.update_user,'</span>','<span class=""><small>',data.updated_at,'</small></span>'].join('');
         }
        },
        {
         "title":"Authorization",
         "data":(data,index,tr)=>{
-           let  auth_user ='Pending';
+           let auth_user ='Pending';
            let auth_date =''; 
-           if(data.authorized==1){
+           if(data.authorized == 1){
               auth_user= data.auth_user;
               auth_date = data.auth_date;
            }  
@@ -115,7 +115,7 @@ var OnLeaveStudentsComponent = new function(){
         });
        
         mThis.div_filter_form.find('.filter-field').on('change',e=>{
-            mThis.studentListView.showPage(mThis.getFilterData());
+           
             const el = e.target;
             const f = el?el.dataset.field:null;
 
@@ -129,9 +129,12 @@ var OnLeaveStudentsComponent = new function(){
                 vsapi.call(`${main_view.base_url}/api/settings/options-level`,{'program_id':el.value},null,false).then(res=>{
                     let items = res.status_code === 200 ? res.data : [];
                     VSUtil.setComboItems(mThis.elFilter_level,items,'id','level_name',true,'(All Grades)',0);
-                    mThis.elFilter_level.val(0).trigger('change');
                 });
             } 
+
+            if(!mThis.disable_filter){
+                mThis.studentListView.showPage(mThis.getFilterData());
+            }
 
         });
 
@@ -617,6 +620,7 @@ var OnLeaveStudentsComponent = new function(){
     this.setFilterData =(d=null)=>{
         const use_default = !d;
         d = d ? d : {};
+        mThis.disable_filter = true;
         mThis.div_filter_form.find('.filter-field').each(function(){
             let el = $(this);
             const f = el.data('field');
@@ -627,6 +631,10 @@ var OnLeaveStudentsComponent = new function(){
             else
                 el.val(d[f]).trigger('change');
         });
+        mThis.disable_filter = false;
+        let filter = mThis.getFilterData();
+        filter.level_id = 0;
+        mThis.studentListView.show(filter);
     }
 
     //Show OnLeaveStudentsComponent

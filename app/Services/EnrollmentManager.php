@@ -386,7 +386,7 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
           $academic_year = isset($d->academic_year)?$d->academic_year:null;
           $campus_id = isset($d->campus_id)?$d->campus_id:null;
           $program_id = isset($d->program_id)?$d->program_id:null;
-          $level_id = isset($d->level_id)?$d->level_id:null;
+          $level_id = isset($d->level_id)? $d->level_id:null;
           $session_id = isset($d->session_id)?$d->session_id:null;
           $search_value =isset($d->search_value)?$d->search_value:null;
 
@@ -420,6 +420,7 @@ function deleteVerifiedEnrollment($id=null,$ss=null){
                   ->join('terms as t','t.id','=','e.term_id')
                   ->selectRaw($selectCols)
                   ->where('st.branch_id',$branch_id)
+                  ->whereRaw('enrollment_status_id=1')
                   ->where('e.term_id',$term_id)
                   ->whereRaw($str_moreWhere)->whereRaw($str_search);
                   $query->orderByRaw('e.id desc,s.id');

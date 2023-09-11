@@ -56,26 +56,31 @@ var EnrolledStudentsComponent = new function(){
         mThis.div_filter_form.find('.filter-field').on('change',e=>{
             const el = e.target;
             const f = el?el.dataset.field:null;
-            mThis.studentListView.showPage(mThis.getFilterData());
             if(f ==='academic_year'){
+ 
                vsapi.call(`${main_view.base_url}/api/settings/options-term`,{'academic_year':el.value},false).then(res=>{
                    const terms = res.status_code ===200? StringSanitizer.sanitizeObject(res.data):[];
+ 
                    VSUtil.setComboItems(mThis.elFilter_term,terms,'id','term_name',true,'(All Terms)',0);
+                   //if(!mThis.disable_filter) mThis.studentListView.showPage(mThis.getFilterData());
                });  
             }
             else if(f==='program_id'){
+ 
                 vsapi.call(`${main_view.base_url}/api/settings/options-level`,{'program_id':el.value},null,false).then(res=>{
                     let items = res.status_code === 200 ? res.data : [];
                     VSUtil.setComboItems(mThis.elFilter_level,items,'id','level_name',true,'(All Grades)',0);
-                    mThis.elFilter_level.val(0).trigger('change');
                 });
             }
-            // else if(f==='level_id'){
-            //     mThis.studentListView.showPage(mThis.getFilterData());
+            // else if(f==='term_id'){
+            //     if(!mThis.disable_filter) mThis.studentListView.showPage(mThis.getFilterData());
             // } 
             //else if(f !=='level_id' && f !=='program_id' ){
             //     mThis.studentListView.showPage(mThis.getFilterData());
             // }
+            if(!mThis.disable_filter){
+                mThis.studentListView.showPage(mThis.getFilterData());
+            }
             
         });
 
@@ -493,7 +498,7 @@ var EnrolledStudentsComponent = new function(){
             });
 
             if(cnt == 0){
-                html =[`<div class="d-flex bg-white p-3 rounded-3 align-items-center"><h5>`,LocaleManager.trans('No data to display'),`</h5></div>`].join('');
+                html =[`<div class="d-flex bg-white p-3 rounded-3 align-items-center"><h5>`,LocaleManager.trans('No data to display!'),`</h5></div>`].join('');
             }
 
             div_register_list.innerHTML = html;
@@ -629,7 +634,7 @@ var EnrolledStudentsComponent = new function(){
                     'id':null,
                     'enrollment_id':enrollment_id, //id  here is the enrollment_id
                     'onClose':()=>{
-
+                        mThis.studentListView.showPage(mThis.getFilterData());
                     }
                   };
 
@@ -744,6 +749,7 @@ var EnrolledStudentsComponent = new function(){
     //Set Filter options on Registration Form. In case of this.setFilterData(null) then the default options will be first option of every SELECT box
     this.setFilterData =(d=null)=>{
         const use_default = !d;
+        mThis.disable_filter = true;
         d = d ? d : {};
         mThis.div_filter_form.find('.filter-field').each(function(){
             let el = $(this);
@@ -755,6 +761,11 @@ var EnrolledStudentsComponent = new function(){
             else
                 el.val(d[f]).trigger('change');
         });
+
+        let filter = mThis.getFilterData();
+        filter.level_id=0;
+        mThis.studentListView.showPage(filter);
+        mThis.disable_filter = false;
     }
 
     //Show Registration Component
@@ -764,16 +775,10 @@ var EnrolledStudentsComponent = new function(){
             //Set default options for Filter fields
             mThis.setFilterData(options.filter); 
             main_view.setTitle(mThis.title_prop);
-
             let x = mThis.self.siblings(':visible');
             x.hide(0,function(){
-                mThis.self.hide().fadeIn(200);
+                mThis.self.fadeIn(200);
             });
-
-            // mThis.studentListView.showPage(mThis.getFilterData(),null,()=>{
-              
-            // });
-          
         });
     }
 }
@@ -819,7 +824,7 @@ let PrintCardDialog = new function(){
     }
 }
 
-let StudentDetailDialog = new function(){
+const StudentDetailDialog = new function(){
     const mThis = this;
     this.self = $('#dlg_rgs_detail');
     this.btnPrint = mThis.self.find('#dlg_rgs_detail_btn_print');
