@@ -33,7 +33,7 @@ var ProgramComponent = new function(){
     },
     {
         title: "Action",
-        data: (data, a, b) => {
+        data: (data, index, tr) => {
             return [`<div class="d-flex gap-2">
                 <a href="javascript:void(0)" class="btn-pgm-modify" data-id="${data.id}">
                     <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
@@ -122,7 +122,7 @@ var ProgramComponent = new function(){
         //let div_wrapper = $(tr).find('.expandable-row-container');
         let html = null;
         container.innerHTML = '';
-        vsapi.call(`${main_view.base_url}/api/program/levels`,{'id': id},null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/program-level/list`,{'id': id},null).then(res => {
             const data = res.status_code === 200 ? res.data : [];
             html = [`<div class="rounded-3 p-2 bg-white">
                 <button data-programid="${id}" class="btn-add-level btn btn-sm btn-outline-primary btn-sm" type="button">
@@ -133,11 +133,12 @@ var ProgramComponent = new function(){
             <table class="table tbl_pgm_level">
             <thead>
                 <tr>
-                    <th>Level</th>
-                    <th>Action</th>
+                    <th>${LocaleManager.trans('Level')}</th>
+                    <th>${LocaleManager.trans('Previous Level')}</th>
+                    <th>${LocaleManager.trans('Action')}</th>
                 </tr>
             </thead>
-            <tbody id="67434GG"></tbody>`].join('');
+            <tbody></tbody>`].join('');
 
             html = [html,`</table></div>`].join('');
             container.innerHTML =  html;
@@ -165,7 +166,7 @@ var ProgramComponent = new function(){
     this.setActionHandlers = (tbody) => {
         tbody.addEventListener('click',e=>{
             e.preventDefault();
-            let lnk = VSUtil.clickOnClass(e.target,'btn-pgm-detail-modify');
+            let lnk = VSUtil.clickOnClass(e.target,'btn-level-modify');
             if(lnk){
                 let prog_id = lnk.dataset.programid;
                 let op = {
@@ -179,7 +180,7 @@ var ProgramComponent = new function(){
                 return;
             }
 
-            lnk = VSUtil.clickOnClass(e.target,'btn-pgm-detail-delete');
+            lnk = VSUtil.clickOnClass(e.target,'btn-level-delete');
             if(lnk){
                 const prog_id = lnk.dataset.programid;
                 const level_id = lnk.dataset.id;
@@ -209,12 +210,13 @@ var ProgramComponent = new function(){
         data.map(level => {
             html = [html,`<tr>
                 <td>${level.name}</td>
+                <td>${level.prev_level}</td>
                 <td>
                     <div class="d-flex gap-2">
-                        <a href="javascript:void(0)" class="btn-pgm-detail-modify" data-programid ="${level.program_id}" data-id="${level.id}">
+                        <a href="javascript:void(0)" class="btn-level-modify" data-programid ="${level.program_id}" data-id="${level.id}">
                             <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
                         </a>
-                        <a href="javascript:void(0)" class="btn-pgm-detail-delete" data-programid ="${level.program_id}" data-id="${level.id}">
+                        <a href="javascript:void(0)" class="btn-level-delete" data-programid ="${level.program_id}" data-id="${level.id}">
                             <i class="fa-regular fa-trash-can text-danger fs-5"></i>
                         </a>
                     </div>

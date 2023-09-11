@@ -561,7 +561,7 @@
 
                     <div class="form-group col-lg-6">
                         <label for="student_name" class="form-label trans-text" data-langprop="titles.Group"></label>
-                        <div><input class="form-control data-input" data-field="group_name" readonly></div>
+                        <div class="d-flex flex-row"><input class="form-control data-input" data-field="level_name" readonly><input class="form-control data-input" data-field="group_name" readonly></div>
                     </div>
 
                     <div class="form-group col-lg-6">

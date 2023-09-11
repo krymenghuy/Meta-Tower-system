@@ -908,7 +908,6 @@ const LeaveDialog = new function(){
     this.btnSave.on('click',e=>{
         const p = mThis.getFormData(false);
         if(!p) return;
-        console.log(p);
         vsapi.call(`${main_view.base_url}/api/leave/save`,p,mThis.btnSave).then(res=>{
             if(res.status_code ===200){
                 mThis.options.onClose(); 
