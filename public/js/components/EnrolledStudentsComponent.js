@@ -502,9 +502,8 @@ var EnrolledStudentsComponent = new function(){
             }
 
             div_register_list.innerHTML = html;
-            const j_div = $(div_register_list);
-            mThis.setEvents(j_div);
-            LocaleManager.translateZone(j_div);
+            mThis.setEvents($(div_register_list));
+            LocaleManager.translateZone(div_register_list);
             setTimeout(() => {
                 div_register_list.style.display = 'block';
             }, 200); 
@@ -516,8 +515,8 @@ var EnrolledStudentsComponent = new function(){
    }
 
     this.setEvents = (container) => {
-        const div = container.find('.w-options'),
-        btn = container.find('button.btn--Options');
+        const div =  container.find('.w-options');
+        const btn = container.find('.btn--Options');
 
         btn.off('click').on('click',function(e){
             e.preventDefault();

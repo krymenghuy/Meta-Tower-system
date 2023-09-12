@@ -125,10 +125,10 @@ class LeaveInfo //extends Model
 
     function delete($id =null){
         $id = $id?$id:$this->id;
-        $enrollment_id = DB::table('leaves')->where('id',$id)->selectRaw('id,enrollment_id');
-        if($enrollment_id){
+        $leaveInfo = DB::table('leaves')->where('id',$id)->selectRaw('id,enrollment_id')->take(1)->get()->first();
+        if($leaveInfo){
               //Change enrollment status to 1 = Active, if it exists
-            $x = DB::table('enrollments')->where('id',$enrollment_id)->update([
+            $x = DB::table('enrollments')->where('id',$leaveInfo->enrollment_id)->update([
                 'enrollment_status_id'=>1
             ]);
         }
@@ -168,8 +168,9 @@ class LeaveInfo //extends Model
             //if($session_id > 0) $str_moreWhere .= ' AND e.session_id ='.$session_id;
             if($level_id > 0) $str_moreWhere .= ' AND e.level_id ='.$level_id;
             else if($program_id > 0) $str_moreWhere .= ' AND e.program_id ='.$program_id;
-
-            $selectCols = 'le.id,e.id AS enrollment_id,st.id AS student_id,st.phone_number,le.days_to_enddate,le.leave_term_id,tt.`name` AS leave_type, le.leave_remarks, c.`name` AS campus,l.`name` AS level_name,e.campus_id,e.academic_year,st.code as student_code,st.name,st.name_kh,st.sex,formatDate(st.date_of_birth) AS date_of_birth,st.file_name,le.update_user,formatTime(le.updated_at) as updated_at, CASE e.is_new_student WHEN 1 THEN \'NEW\' ELSE \'Old\' END AS student_type,e.promoted,le.authorized,le.auth_user,formatTime(le.auth_date) AS auth_date';
+  
+            $selectCols = 'le.id,e.id AS enrollment_id,st.id AS student_id,st.phone_number,formatDate(le.leave_date) AS leave_date,le.days_to_enddate,le.leave_term_id,tt.`name` AS leave_type, le.leave_remarks, c.`name` AS campus,l.`name` AS level_name, s.`name` as session_name,e.campus_id,e.academic_year,st.code as student_code,st.name,st.name_kh,st.sex,formatDate(st.date_of_birth) AS date_of_birth,st.file_name,le.update_user,formatTime(le.updated_at) as updated_at, CASE e.is_new_student WHEN 1 THEN \'NEW\' ELSE \'Old\' END AS student_type,e.promoted,le.authorized,le.auth_user,formatTime(le.auth_date) AS auth_date';
+ 
             $query = DB::table('leaves as le')
             ->join('enrollments as e','e.id','=','le.enrollment_id')
             ->join('leave_types as tt','tt.id','=','le.leave_type_id')

@@ -467,7 +467,7 @@ let GenerateInvoiceFSN = new function(){
                         </a>
                     </td>
                 </tr>`}
-                ${modify ? (inner_html,d && d.other_fees.map(fee => {
+                ${modify ? (inner_html,d && (d.other_fees || []).map(fee => {
                     inner_html = [inner_html,`<tr>
                         <td class="data-get" data-field="fee_type" data-value="${fee.fee_type}" data-id="${fee.invoice_item_id}">${fee.fee_type ? fee.fee_type : 'N/A'}</td>
                         <td>${fee.description ? fee.description : 'N/A'}</td>

@@ -26,91 +26,91 @@ var OnLeaveStudentsComponent = new function(){
     //this.lnkAddGroup = this.self.find('#_onleave_lnkAddStudentGroup');
     
     //this.selected_options = {};
-    this.cols = [
-       {
-         "title":"ID",
-         "data":(data,index,tr)=>{
-            return ['<span class="fw-semibold">',data.student_code,'</span>'].join('');
-         }
-       },
-       {
-        "title":"Student Name",
-        "data":(data,index,tr)=>{
-           return ['<span class="">',data.name,'</span>'].join('');
-        }
-       },
-       {
-        "title":"Sex",
-        "data":"sex" 
-       },
-       {
-        "title":"Date of Birth",
-        "data":"date_of_birth"
-       },
-       {
-        "title":"Phone Number",
-        "data":(data,index,tr)=>{
-           return ['<span class="">',data.phone_number,'</span>'].join('');
-        }
-       },
-       {
-        "title":"Level",
-        "data":(data,index,tr)=>{
-           return ['<span class="">',data.level_name,'</span>'].join('');
-        }
-       },
-       {
-        "title":"Days to End",
-        "data":(data,index,tr)=>{
-           return ['<span class="">',data.days_to_enddate,' days</span>'].join('');
-        }
-       },
-       {
-          "title":"Leave Type",
-          "data":"leave_type"
-       },
-       {
-        "title":"Reason",
-        "data":(data,index,tr)=>{
-           return ['<span class="">',data.leave_remarks,'</span>'].join('');
-        }
-       },
-       {
-        "title":"Return Info",
-        "data":(data,index,tr)=>{
-           const return_str = data.has_returned ==1? ['<span class="border rounded-5 p-1 shadow bg-success">Returned</span>'].join('') : data.leave_type;
-           const return_date = data.return_date? ['<span class="d-block text-nowrap">Expected Return: ',data.return_date,'</span>'].join('') : '';  
-           return [return_date,return_str].join('');
-        }
-       },
-       {
-        "title":"Booked By",
-        "data":(data,index,tr)=>{
-           return ['<span class="d-block fw-semibold">',data.update_user,'</span>','<span class=""><small>',data.updated_at,'</small></span>'].join('');
-        }
-       },
-       {
-        "title":"Authorization",
-        "data":(data,index,tr)=>{
-           let auth_user ='Pending';
-           let auth_date =''; 
-           if(data.authorized == 1){
-              auth_user= data.auth_user;
-              auth_date = data.auth_date;
-           }  
-           return ['<span class="d-block fw-semibold">',auth_user,'</span>','<span class=""><small>',auth_date,'</small></span>'].join('');
-        }
-       }
-    ];
+    // this.cols = [
+    //    {
+    //      "title":"ID",
+    //      "data":(data,index,tr)=>{
+    //         return ['<span class="fw-semibold">',data.student_code,'</span>'].join('');
+    //      }
+    //    },
+    //    {
+    //     "title":"Student Name",
+    //     "data":(data,index,tr)=>{
+    //        return ['<span class="">',data.name,'</span>'].join('');
+    //     }
+    //    },
+    //    {
+    //     "title":"Sex",
+    //     "data":"sex" 
+    //    },
+    //    {
+    //     "title":"Date of Birth",
+    //     "data":"date_of_birth"
+    //    },
+    //    {
+    //     "title":"Phone Number",
+    //     "data":(data,index,tr)=>{
+    //        return ['<span class="">',data.phone_number,'</span>'].join('');
+    //     }
+    //    },
+    //    {
+    //     "title":"Level",
+    //     "data":(data,index,tr)=>{
+    //        return ['<span class="">',data.level_name,'</span>'].join('');
+    //     }
+    //    },
+    //    {
+    //     "title":"Days to End",
+    //     "data":(data,index,tr)=>{
+    //        return ['<span class="">',data.days_to_enddate,' days</span>'].join('');
+    //     }
+    //    },
+    //    {
+    //       "title":"Leave Type",
+    //       "data":"leave_type"
+    //    },
+    //    {
+    //     "title":"Reason",
+    //     "data":(data,index,tr)=>{
+    //        return ['<span class="">',data.leave_remarks,'</span>'].join('');
+    //     }
+    //    },
+    //    {
+    //     "title":"Return Info",
+    //     "data":(data,index,tr)=>{
+    //        const return_str = data.has_returned ==1? ['<span class="border rounded-5 p-1 shadow bg-success">Returned</span>'].join('') : data.leave_type;
+    //        const return_date = data.return_date? ['<span class="d-block text-nowrap">Expected Return: ',data.return_date,'</span>'].join('') : '';  
+    //        return [return_date,return_str].join('');
+    //     }
+    //    },
+    //    {
+    //     "title":"Booked By",
+    //     "data":(data,index,tr)=>{
+    //        return ['<span class="d-block fw-semibold">',data.update_user,'</span>','<span class=""><small>',data.updated_at,'</small></span>'].join('');
+    //     }
+    //    },
+    //    {
+    //     "title":"Authorization",
+    //     "data":(data,index,tr)=>{
+    //        let auth_user ='Pending';
+    //        let auth_date =''; 
+    //        if(data.authorized == 1){
+    //           auth_user= data.auth_user;
+    //           auth_date = data.auth_date;
+    //        }  
+    //        return ['<span class="d-block fw-semibold">',auth_user,'</span>','<span class=""><small>',auth_date,'</small></span>'].join('');
+    //     }
+    //    }
+    // ];
 
     this.init = () => {
         mThis.studentListView = new ListView('_onleave_list_view',{
             'fetchApi':`${main_view.base_url}/api/leave/list-paginate`,
             'perPage':5,
-            'columns':mThis.cols,
-            // 'renderItems':(items,list_container) => {
-            //     mThis.renderStudents(list_container,items);
-            // },
+            //'columns':mThis.cols,
+            'renderItems':(items,list_container) => {
+                mThis.renderStudents(list_container,items);
+            },
             'listContainerClass':null
         });
        
@@ -264,139 +264,145 @@ var OnLeaveStudentsComponent = new function(){
             let html = null;
             let cnt = 0;
             (data || []).map(item => {
-                let finalized = item.enroll_finalized == 1 ? 'd-none':''; 
+                //let finalized = item.enroll_finalized == 1 ? 'd-none':''; 
+                let return_info = item.authorized == 1? null:'<span class="d-block p-2 border rounded-5 border-success">Pending</span>';
+                if(!return_info) return_info = item.has_returned ==1? '<span class="d-block p-2 border rounded-5 border-success">Returned</span>':['<span class="d-block p-2 border rounded-5 border-danger">',item.leave_type,'</span>'].join('');
+                
+                const finalize_button = `<div class="d-block position-relative" >
+                                            <button class="btn-finalize btn btn-sm glow-on-hover" type="button" data-id="${item.id}" data-status="${item.authorized}">
+                                                <span class="trans-text" data-langprop="buttons.Finalize"></span>
+                                            </button>
+                                        </div>`;
+
                 html = [html,`<div class="d-flex p-3 bg-white h-info-student mb-2">
                     <div class="div-img">
                         <img src="${item.image_url}" alt=""/>
                     </div>
                     <div class="d-block ms-3 w-100">
                         <div class="row row-cols-3 mb-0">
-                            <div class="col">
-                                <div class="d-flex">
+                            <div class="col">`,
+                                `<div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Student ID"></p>
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${item.student_code}</p>
-                                </div>
-                                <div class="d-flex">
+                                </div>`,
+                                `<div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Name"></p>
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${item.name}</p>
-                                </div>
-                                <div class="d-flex">
+                                </div>`,
+                                `<div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Sex"></p>
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${item.sex == 'M' ? 'Male':'Female'}</p>
-                                </div>
-                                <div class="d-flex">
+                                </div>`,
+                                `<div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Date of Birth"></p>
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${item.date_of_birth}</p>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Parent Name"></p>
+                                </div>`,
+                            `</div>
+                            <div class="col">`,
+                                `<div class="d-flex">
+                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Year"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.parent_info && item.parent_info.parent_name}</p>
-                                </div>
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Parent Phone"></p>
+                                    <p class="text-nowrap">${item.academic_year}</p>
+                                </div>`,
+                                `<div class="d-flex">
+                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Semester"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.parent_info && item.parent_info.phone_number}</p>
-                                </div>
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Parent Email"></p>
+                                    <p class="text-nowrap">${item.term_name}</p>
+                                </div>`,
+
+                                `<div class="d-flex">
+                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Campus"></p>
+                                <p class="px-2">:</p>
+                                <p class="text-nowrap">${item.campus}</p>
+                               </div>`,
+                                `<div class="d-flex">
+                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Grade"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.parent_info && item.parent_info.email}</p>
-                                </div>
-                            </div>
+                                    <p class="text-nowrap">`,item.level_name,`</p>
+                               </div>`,
+                           `</div>
                             <div class="col position-relative">
-                                <div class="d-flex align-items-start justify-content-end gap-2">
-                                    <button class="btn btn-sm btn-primary rounded-3 btn--gnCard" type="button" data-id="${item.id}">
-                                        <span class="text-nowrap trans-text" data-langprop="buttons.Ganerate Card"></span>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger rounded-3 btn--Options position-relative text-nowrap" type="button">
-                                        <span class="text-nowrap trans-text" data-langprop="buttons.Options"></span>
-                                        <i class="fa-solid fa-caret-down ps-2"></i>
-                                        <div class="w-options gap-2 shadow p-3 rounded-3" style="display:none">
-                                            <a href="javascript:void(0)" class="btn-rgs-details border-bottom pb-2" data-id="${item.id}">
-                                                <i class="fa-solid fa-up-right-from-square fs-5"></i>
-                                                <span class="ps-2 trans-text" data-langprop="titles.Detials"></span>
-                                            </a>
-                                            <a href="javascript:void(0)" class="btn-rgs-suspend border-bottom pb-2" data-id="${item.id}">
-                                                <i class="fa-solid fa-spinner fs-5"></i>
-                                                <span class="ps-2 trans-text" data-langprop="titles.Suspended"></span>
-                                            </a>
-                                            <a href="javascript:void(0)" class="btn-rgs-dropout border-bottom pb-2" data-id="${item.id}">
-                                                <i class="fa-regular fa-circle-stop fs-5"></i>
-                                                <span class="ps-2 trans-text" data-langprop="titles.Dropout"></span>
-                                            </a>
-                                            <a href="javascript:void(0)" class="${finalized} btn-rgs-edit border-bottom py-2" data-id="${item.id}">
-                                                <i class="fa-regular fa-pen-to-square fs-5"></i>
-                                                <span class="ps-2 trans-text" data-langprop="titles.Edit"></span>
-                                            </a>
-                                            <a href="javascript:void(0)" class="${finalized} btn-rgs-delete pt-2" data-id="${item.id}">
-                                                <i class="fa-regular fa-trash-can fs-5"></i>
-                                                <span class="ps-2 trans-text" data-langprop="titles.Delete"></span>
-                                            </a>
-                                        </div>
-                                    </button>
-                                </div>
-                                <div class="d-flex justify-content-end align-items-center h-100" role="button">
-                                    <div class="d-block position-relative">
-                                        <button class="btn-finalize btn btn-sm ${item.enroll_finalized == 1 ? 'glow-on-hover-finalized' : 'glow-on-hover'}" type="button" data-id="${item.id}" data-status="${item.enroll_finalized}">
-                                            <span class="trans-text" data-langprop="buttons.Finalize${item.enroll_finalized == 1 ? 'd':''}"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                                <div class="d-flex align-items-start justify-content-end gap-2">`,
+                                    `<button class="btn-leave-delete btn btn-sm btn-danger rounded-3 btn--gnCard" type="button" data-id="${item.id}">
+                                        <span class="text-nowrap trans-text" data-langprop="buttons.Delete"></span>
+                                    </button>`,
+                                    `<button class="btn-leave-return btn btn-sm btn-success rounded-3 btn--gnCard" type="button" data-id="${item.id}">
+                                      <span class="text-nowrap trans-text" data-langprop="buttons.Return"></span>
+                                    </button>`,
+
+                                //     `<button class="btn btn-sm btn-danger rounded-3 btn--Options position-relative text-nowrap" type="button">
+                                //         <span class="text-nowrap trans-text" data-langprop="buttons.Options"></span>
+                                //         <i class="fa-solid fa-caret-down ps-2"></i>
+                                //         <div class="w-options gap-2 shadow p-3 rounded-3" style="display:none">
+                                //             <a href="javascript:void(0)" class="btn-rgs-details border-bottom pb-2" data-id="${item.id}">
+                                //                 <i class="fa-solid fa-up-right-from-square fs-5"></i>
+                                //                 <span class="ps-2 trans-text" data-langprop="titles.Detials"></span>
+                                //             </a>
+                                //             <a href="javascript:void(0)" class="btn-rgs-suspend border-bottom pb-2" data-id="${item.id}">
+                                //                 <i class="fa-solid fa-spinner fs-5"></i>
+                                //                 <span class="ps-2 trans-text" data-langprop="titles.Suspended"></span>
+                                //             </a>
+                                //             <a href="javascript:void(0)" class="btn-rgs-dropout border-bottom pb-2" data-id="${item.id}">
+                                //                 <i class="fa-regular fa-circle-stop fs-5"></i>
+                                //                 <span class="ps-2 trans-text" data-langprop="titles.Dropout"></span>
+                                //             </a>
+                                //             <a href="javascript:void(0)" class="${finalized} btn-rgs-edit border-bottom py-2" data-id="${item.id}">
+                                //                 <i class="fa-regular fa-pen-to-square fs-5"></i>
+                                //                 <span class="ps-2 trans-text" data-langprop="titles.Edit"></span>
+                                //             </a>
+                                //             <a href="javascript:void(0)" class="${finalized} btn-rgs-delete pt-2" data-id="${item.id}">
+                                //                 <i class="fa-regular fa-trash-can fs-5"></i>
+                                //                 <span class="ps-2 trans-text" data-langprop="titles.Delete"></span>
+                                //             </a>
+                                //         </div>
+                                //     </button>`,
+                                 `</div>`,
+                                `<div class="d-flex justify-content-end align-items-center h-100" role="button">
+                                   ${item.authorized == 1? '':finalize_button}
+                                </div>`,
+                            `</div>
                         </div>
                         <hr class="bg-dark m-1 p-0"/>
                         <div class="row row-cols-5 mt-2">
                             <div class="col">
                                 <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Academic Year"></p>
+                                    <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Leave Type"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.academic_year}</p>
+                                    <p class="text-nowrap">${item.leave_type}</p>
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Campus"></p>
+                                    <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Leave Date"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.campus}</p>
+                                    <p class="text-nowrap">${item.leave_date}</p>
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Grade"></p>
+                                    <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.DTE"></p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.level}</p>
+                                    <p class="text-nowrap">`,item.days_to_enddate,` days (`,item.tuition_end_date?item.tuition_end_date:'NA',`)`,`</p>
                                 </div>
                             </div>
                             <div class="col">
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Session"></p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.session}</p>
+                                <div class="d-flex">${return_info}</div>
+                            </div>`,
+                        `</div>
+                        <div class="row row-col-5 mt-2">
+                                <div class="col">
+                                        <div class="d-flex">
+                                                <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Reason"></p>
+                                                <p class="px-2">:</p>
+                                                <p class="text-nowrap">${item.leave_remarks}</p>
+                                            </div>
+                                        </div>
                                 </div>
-                            </div>
-                            <div class="col">
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Group"></p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.group_name ? item.group_name:'(Group)'}</p>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Student Type"></p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${item.student_type}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                       </div>
                 </div>`].join('');
                 cnt++;
             });
@@ -406,113 +412,138 @@ var OnLeaveStudentsComponent = new function(){
             }
 
             div_register_list.innerHTML = html;
-            const j_div = $(div_register_list);
-            mThis.setEvents(j_div);
-            LocaleManager.translateZone(j_div);
+            mThis.setEvents(div_register_list);
+            LocaleManager.translateZone(div_register_list,{'jQuery':true,'hide':true});
     }
 
     this.setEvents = (container) => {
-        const div = container.find('.w-options'),
-        btn = container.find('button.btn--Options');
+        // const div = container.querySelector('.w-options'),
+        // btn = container.querySelector('button.btn--Options');
 
-        btn.off('click').on('click',function(e){
-            e.preventDefault();
-            $(this).find('.w-options').toggle('fast');
-        });
+        // btn.addEventListener.on('click',e=>{
+        //     e.preventDefault();
+        //     e.target.querySelector('.w-options').toggle('fast');
+        // });
 
-        container.find('button.btn--gnCard').on('click',function(e){
-            e.preventDefault();
-            let op = {
-                'id': $(this).data('id')
-            };
-           alert('supposed print card here');
-        });
-
-        container.off('click').on('click','button.btn-finalize',function(e){
-            e.preventDefault();
-            let op = {
-                'enrollment_id': $(this).data('id')
-            };
-            if($(this).data('status') == 1){
-                cv_interact.warning('This registration is already finalized!');
-            }
-            else{
-                cv_interact.confirm('After finalizing registration, you will not be able to edit or modify it directly. Do you wish to proceed now?',{
-                    title: 'Finalize Registration',
-                    context: 'OK'
-                },(e) => {
-                    if(e){
-                        vsapi.call(`${main_view.base_url}/api/enrollment/finalize`,op,null).then(res => {
-                            if(res.status_code === 200){
-                                mThis.studentListView.showPage(mThis.getFilterData());
-                                cv_interact.success('Registration has been finalized!');
-                            }
-                            else{
-                                cv_interact.error(res.error_message);
-                            }
-                        });
-                    }
-                });
-            }
-        });
-
-        if(div.length != 0){
-            let prev_div = null;
-            $(document).off('click').on('mouseup',function(e){
+        // container.find('button.btn--gnCard').on('click',function(e){
+        //     e.preventDefault();
+        //     let op = {
+        //         'id': $(this).data('id')
+        //     };
+        //    alert('supposed print card here');
+        // });
+        const btnFinalize = container.querySelector('.btn-finalize');
+        if(btnFinalize){
+            btnFinalize.addEventListener('click',e=>{
                 e.preventDefault();
-                if((!div.is(e.target) && div.has(e.target).length === 0) && prev_div){
-                    prev_div.hide('fast');
+                let op = {
+                    'id': btnFinalize.dataset.id
+                };
+
+                if(btnFinalize.dataset.authorized == 1){
+                    cv_interact.warning('This Leave Information is already finalized!');
                 }
                 else{
-                    if((!div.is(e.target) && div.has(e.target).length === 0) && (!btn.is(e.target) && btn.has(e.target).length === 0)){
-                        prev_div = div;
-                        div.hide('fast');
-                    }
+                    cv_interact.confirm('You are about to set the student on Leave as "dropout". Do you wish to proceed now?',{
+                        title: 'Finalize Leave',
+                        context: 'OK'
+                    },(e) => {
+                        if(e){
+                            vsapi.call(`${main_view.base_url}/api/leave/finalize`,op,null).then(res => {
+                                if(res.status_code === 200){
+                                    mThis.studentListView.showPage(mThis.getFilterData());
+                                    cv_interact.success('Leave Status has been finalized!');
+                                }
+                                else{
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                        }
+                    });
                 }
             });
-
-            div.on('click','a.btn-rgs-details',function(e){
-                e.preventDefault();
-                let op = {
-                    'id': $(this).data('id')
-                };
-                mThis.loadDataPrint(op,(data) => {
-                    LeaveDetailDialog.show(data);
-                });
-            });
-
-            //Edit enrollment info
-            div.on('click','a.btn-rgs-edit',function(e){
-                e.preventDefault();
-                const enrollment_id = $(this).data('id');
-                mThis.options.id = enrollment_id;
-
-                mThis.prepareFormOption(enrollment_id,mThis.div_input,'data-input',(d) => {
-                    mThis.setDataForm(d.enrollment_info);
-                    mThis.div_input.fadeIn(200).siblings().hide();
-                });
-            });
-
-            div.on('click','a.btn-rgs-delete',function(e){
-                e.preventDefault();
-                let op = {
-                    'id': $(this).data('id')
-                };
-
-                cv_interact.confirm('Delete this enrollment?',{title: 'Delete Information', context: 'delete'},(e) => {
-                    if(e){
-                        vsapi.call(`${main_view.base_url}/api/enrollment/delete`,op,null).then(res => {
-                            if(res.status_code === 200){
-                                mThis.studentListView.showPage(mThis.getFilterData());
-                            }
-                            else{
-                                cv_interact.error(res.error_message);
-                            }
-                        });
-                    }
-                });
-            });
         }
+
+
+        let btn = container.querySelector('.btn-leave-delete');
+        if(btn){
+             btn.addEventListener('click',e=>{
+                e.preventDefault();
+                const id = btn.dataset.id;
+                cv_interact.confirm('Delete this Leave Request?',{'context':'delete','title':'Delete Leave'},e=>{
+                    if(e){
+                        vsapi.call(`${main_view.base_url}/api/leave/delete`,{'id':id},false).then(res=>{
+                            if(res.status_code===200){
+                                 mThis.studentListView.showPage(mThis.getFilterData());
+                            }
+                        }); 
+                    }
+                })
+               
+             });
+        }
+        
+        btn = container.querySelector('.btn-leave-return');
+        if(btn){
+             btn.addEventListener('click',e=>{
+                e.preventDefault();
+                const id = btn.dataset.id;
+                alert('return ' + id);
+                vsapi.call(`${main_view.base_url}/api/leave/save-return`,{'id':id},false).then(res=>{
+                    if(res.status_code === 200){
+                        mThis.studentListView.showPage(mThis.getFilterData());
+                    }
+                });  
+             });
+        }
+        
+        // if(div.length != 0){
+        //     // let prev_div = null;
+        //     // $(document).off('click').on('mouseup',function(e){
+        //     //     e.preventDefault();
+        //     //     if((!div.is(e.target) && div.has(e.target).length === 0) && prev_div){
+        //     //         prev_div.hide('fast');
+        //     //     }
+        //     //     else{
+        //     //         if((!div.is(e.target) && div.has(e.target).length === 0) && (!btn.is(e.target) && btn.has(e.target).length === 0)){
+        //     //             prev_div = div;
+        //     //             div.hide('fast');
+        //     //         }
+        //     //     }
+        //     // });
+ 
+        //     // //Edit enrollment info
+        //     // div.on('click','a.btn-rgs-edit',function(e){
+        //     //     e.preventDefault();
+        //     //     const enrollment_id = $(this).data('id');
+        //     //     mThis.options.id = enrollment_id;
+
+        //     //     mThis.prepareFormOption(enrollment_id,mThis.div_input,'data-input',(d) => {
+        //     //         mThis.setDataForm(d.enrollment_info);
+        //     //         mThis.div_input.fadeIn(200).siblings().hide();
+        //     //     });
+        //     // });
+
+        //     // div.on('click','a.btn-rgs-delete',function(e){
+        //     //     e.preventDefault();
+        //     //     let op = {
+        //     //         'id': $(this).data('id')
+        //     //     };
+
+        //     //     cv_interact.confirm('Delete this enrollment?',{title: 'Delete Information', context: 'delete'},(e) => {
+        //     //         if(e){
+        //     //             vsapi.call(`${main_view.base_url}/api/enrollment/delete`,op,null).then(res => {
+        //     //                 if(res.status_code === 200){
+        //     //                     mThis.studentListView.showPage(mThis.getFilterData());
+        //     //                 }
+        //     //                 else{
+        //     //                     cv_interact.error(res.error_message);
+        //     //                 }
+        //     //             });
+        //     //         }
+        //     //     });
+        //     // });
+        // }
     }
 
     this.loadDataPrint = (op, onFinish) => {
@@ -642,9 +673,8 @@ var OnLeaveStudentsComponent = new function(){
         if(!options) options = {};
         mThis.prepareFormOption(null,mThis.div_list,'filter-field',() => {
             //Set default options for Filter fields
-            mThis.setFilterData(options.filter); 
+            mThis.setFilterData(options.filter);  //set filterData() will also refresh the student list
             main_view.setTitle(mThis.title_prop);
-            mThis.studentListView.showPage(mThis.getFilterData());
             let x = mThis.self.siblings(':visible');
             x.hide(0,function(){
                 mThis.self.hide().fadeIn(200);
