@@ -1666,7 +1666,9 @@ function readFileContent($fileName=null)
         return file_exists($localFilePath) && getimagesize($localFilePath);
     }
     function validateUrl($url,$otherWise=null) {
+        // return $url;
         if(!$url) return null;
+        $url = filter_var($url, FILTER_SANITIZE_URL);
         $localFilePath = $_SERVER['DOCUMENT_ROOT'] . parse_url($url, PHP_URL_PATH);
         $exists = file_exists($localFilePath) && getimagesize($localFilePath);
         return $exists?$url:$otherWise;
