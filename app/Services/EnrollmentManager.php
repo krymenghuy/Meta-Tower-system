@@ -263,7 +263,7 @@ class EnrollmentManager {
             $p_info = Student::saveParentInfo($parent_info,$student_id,$ss);
         }
 
-        $um_res = Student::saveParentInfo($parent_info,$student_id,$ss);
+        // $um_res = Student::saveParentInfo($parent_info,$student_id,$ss);
 
           // add student to group
           $g_id = DB::table('group_members')->where('enrollment_id',$enrollment_id)->take(1)->value('id');
@@ -276,7 +276,7 @@ class EnrollmentManager {
           ],[],1);
       }
       $enroll_path = (object)['academic_year'=>$academic_year,'campus_id'=>$campus_id,'term_id'=>$term_id,'program_id'=>$program->id,'level_id'=>$level_id,'session_id'=>$session_id];
-      return DV::depends($enrollment_id,['enrollment_path'=>$enroll_path,'login_info' =>$um_res,'payment_info'=>$newPaymentInfo],'Failed to save student enrollmemnt');
+      return DV::depends($enrollment_id,['enrollment_path'=>$enroll_path,'payment_info'=>$newPaymentInfo],'Failed to save student enrollmemnt');
   }
 
   static function getPrevSchool($id){

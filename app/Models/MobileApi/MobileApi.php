@@ -46,12 +46,17 @@ class MobileApi //xtends Model
         return DV::success();
     }
 
-    static function getProfile($id,$branch_id){
+    static function getProfile($id,$branch_id=null){
         $row = DB::table('guardians')->where('id',$id)->selectRaw('file_name')->first();
-        if(isset($row->file_name)==null) return (object)['image_url' => null];
-        $row->image_url = PublicStorage::getUrl($branch_id,'guardians','image').$row->file_name;
-        unset($row->file_name);
-        return $row->image_url;
+        if($row){
+            if ($row->file_name == null) {
+                $row = (object)['image_url' => null];
+            } else {
+                $row->image_url = PublicStorage::getUrl($branch_id, 'guardians', 'image').$row->file_name;
+            }
+        }
+
+        return $row;
     }
 
     function attendanceList($filter){
@@ -88,6 +93,7 @@ class MobileApi //xtends Model
         $res =(object)[
             'banner' => $banner,
             'children' => $children,
+            'profile' => self::getProfile($ss->id,$ss->branch_id)
         ];
         return $res;
     }
@@ -114,7 +120,7 @@ class MobileApi //xtends Model
 
         $res = validateObject($arr,$v_rule,false,[],$ss->lang,false,null);
 
-        if($res->error) return JDV::error($res->error);
+        if($res->error) return DV::error($res->error);
 
         $inputs = $res->values;
         $d = (object)$inputs;

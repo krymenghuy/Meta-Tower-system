@@ -61,13 +61,13 @@ class Deposit //extends Model
         $per_page =isset($d->per_page)?$d->per_page:10;
         if(!is_numeric($current_page)) $current_page=1;
         $skip_rows = ($current_page -1) * $per_page;
-       
+
         $str_status =',CASE d.authorized WHEN 1 THEN \'authorized\' ELSE \'pending\'END AS `status`';
-        $cols = 'd.id,d.deposite_amount as amount'.$str_status.',d.student_name,d.status_id,l.name as level,d.parent_phone,d.expire_date,d.date_of_birth'; 
+        $cols = 'd.id,d.deposite_amount as amount'.$str_status.',d.student_name,d.status_id,l.name as level,d.parent_phone,d.expire_date,d.date_of_birth';
         $query = DB::table('deposite as d')
                 ->join('program_levels as l','l.id','=','d.level_id')
                 ->selectRaw($cols)
-                ->where('d.branch_id',$branch_id); 
+                ->where('d.branch_id',$branch_id);
         $count_query = clone  $query;
         $count = $count_query->count('d.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -77,6 +77,7 @@ class Deposit //extends Model
     static function getOldStudentInfo($id,$ss){
         $row = DB::table('students as s')
                 ->join('enrollments as e','e.student_id','=','s.id')
+                ->where('s.id',$id)
                 ->selectRaw('s.id as student_id,s.name as student_name,e.campus_id,e.level_id,e.session_id,s.date_of_birth')
                 ->get()->first();
         $row->parent_phone = self::getParentPhone($id);
