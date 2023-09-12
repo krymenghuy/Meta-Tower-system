@@ -741,6 +741,7 @@ class Invoice //extends Model
                     "invoice_id" => $id,
                     "fee_type" => $ins_info['fee_type'],
                     'price' => $other_fee->amount,
+                    'net_amount' => $other_fee->amount,
                     'description' => $other_fee->description
                 ];
                 $inv_item_id = isset($ins_info['invoice_item_id'])?$ins_info['invoice_item_id']:null;
