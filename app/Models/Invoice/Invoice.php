@@ -80,7 +80,7 @@ class Invoice
     $inputs = $res->values;
 
     /** Always use today date for Issue date **/
-    //if(!(bool)strtotime($inputs['issue_date'])) 
+    //if(!(bool)strtotime($inputs['issue_date']))
     $inputs['issue_date'] = getNowTime();
 
     $inputs['issue_date'] = convertDate($inputs['issue_date']);
@@ -99,7 +99,7 @@ class Invoice
     if (empty($inputs['billing_address'])) $inputs['billing_address'] = isset($customer->billing_address) ? $customer->billing_address : $customer->address;
     if (empty($inputs['customer_email'])) $inputs['customer_email'] = $customer->email;
 
-    //On Update or Create => $items array contains both "products" and "services"  
+    //On Update or Create => $items array contains both "products" and "services"
     $items = $inputs['items'];
     unset($inputs['items']);
     $inputs['signer_name'] = InvoiceSettings::signer_name($branch_id);
@@ -175,7 +175,7 @@ class Invoice
     if (empty($inputs['customer_phone'])) $inputs['customer_phone'] = $customer->phone_number;
     if (empty($inputs['billing_address'])) $inputs['billing_address'] = $customer->billing_address;
     if (empty($inputs['customer_email'])) $inputs['customer_email'] = $customer->email;
-    //On Update or Create => $items array contains both "products" and "services"  
+    //On Update or Create => $items array contains both "products" and "services"
     $items = $inputs['items'];
     unset($inputs['items']);
     $discount = $inputs['discount'];
@@ -208,7 +208,7 @@ class Invoice
     foreach ($rows as $row) $invoice = $row;
     $discount_amount = 0;
     $discount_percent = 0;
-    if ($invoice) {
+    if ($invoice){
       //IMPORTANT NOTE: $invoice->amount is the invoice's amount, excluding tax. It is used as base for overall invoice's discount calculation
       $amount = $invoice->amount;
       if ($discount_type === 'percentage' || $discount_type === 'percent') {
@@ -345,8 +345,8 @@ class Invoice
         //      $discount_type ='percentage';
         //      $discount = $discount_percent;
 
-        //   } 
-        // } 
+        //   }
+        // }
 
         //if discount_percent is supplied => then we user discount as percentage, otherwise, use disocunt in currency amount
         $tax_rate = isset($x->tax_rate) ? $x->tax_rate : $itemInfo->sales_tax_rate;
@@ -420,7 +420,7 @@ class Invoice
 
   // static function details($id=null,$ss=null){
   //     ////if (!$ss) $ss = $this->getUserInfo();
-  //     ////if(!$id) $id = $this->getInvoiceId(); 
+  //     ////if(!$id) $id = $this->getInvoiceId();
   //     $branch_id = $ss->branch_id;
   //     $cols = ['invoice_class','v.id','ref_number','exchange_rate',DB::raw('formatDate(v.issue_date) AS issue_date'),DB::raw('formatDate(v.due_date) as due_date'),'customer_id','v.customer_phone','v.customer_email',DB::raw('NULL AS customer_tax_number'),'terms','v.billing_address','v.amount','v.discount_percent','v.discount_amount','discount_type','v.total_cost','signer_name','v.currency_code','v.exchange_rate','v.amount_due','v.tax_amount','v.tax_rate',DB::raw("(SELECT SUM(IFNULL(amount,0)) FROM invoice_payments WHERE invoice_id =v.id) AS amount_paid"),'v.pmt_bank_name','v.pmt_account_number','v.pmt_account_name','v.description','v.invoice_notes'];
   //     $rows =DB::table('invoices as v')->where('v.id',$id)->where('v.branch_id',$branch_id)->select($cols)->take(1)->get();
@@ -434,7 +434,7 @@ class Invoice
   static function details($id, $ss)
   {
     ////if (!$ss) $ss = $this->getUserInfo();
-    ////if(!$id) $id = $this->getInvoiceId(); 
+    ////if(!$id) $id = $this->getInvoiceId();
     $branch_id = $ss->branch_id;
     $customer_table = InvoiceSettings::$customer_table;
     $cols = ['invoice_class', 'v.id', 'ref_number', 'exchange_rate', DB::raw("(select code from $customer_table where id =v.customer_id LIMIT 1) AS customer_code"), DB::raw('formatDate(v.issue_date) AS issue_date'), DB::raw('formatDate(v.due_date) as due_date'), 'customer_id', 'v.customer_phone', 'v.customer_email', DB::raw('NULL AS customer_tax_number'), 'terms', 'v.billing_address', 'v.amount', 'v.discount_percent', 'v.discount_amount', 'discount_type', 'v.total_cost', 'signer_name', 'v.currency_code', 'v.exchange_rate', 'v.amount_due', 'v.tax_amount', 'v.tax_rate', DB::raw("(SELECT SUM(IFNULL(amount,0)) FROM invoice_payments WHERE invoice_id =v.id) AS amount_paid"), 'v.pmt_bank_name', 'v.pmt_account_number', 'v.pmt_account_name', 'v.description', 'v.invoice_notes'];
@@ -500,7 +500,7 @@ class Invoice
     /** customers or patients table **/
     $branch_id = $ss->branch_id;
     $search_value = isset($d['search_value']) ? $d['search_value'] : null;
-     
+
     $str_search = "1=1";
     if ($search_value) {
       $search_value = escape_like_str($search_value);
@@ -508,8 +508,8 @@ class Invoice
     }
     $cols = ['v.id', DB::raw('formatDate(v.issue_date) as issue_date'), DB::raw('formatDate(v.due_date) as due_date'), 'v.ref_number', 'v.description', 'v.customer_id', DB::raw("CONCAT(p.last_name,' ',p.first_name) as customer_name"), 'p.phone_number as customer_phone', 'p.email as customer_email', 'c.billing_address', 'v.currency_code', 'v.amount', 'v.discount_amount', 'v.discount_percent', 'v.amount_due', 'v.amount_paid'];
     return DB::table("invoices AS v")->join($customer_table . " as c", 'c.id', '=', 'v.customer_id')->join('persons as p', 'p.id', '=', 'c.person_id')->where('v.branch_id', $branch_id)->whereRaw($str_search)->select($cols)->orderBy("v.id", "DESC")->get();
-    
-    //$rows = DB::table("invoices AS v")->join('customers as c','c.id','=','v.customer_id')->where('v.branch_id',$branch_id)->select($cols)->orderBy("v.id", "DESC")->get(); 
+
+    //$rows = DB::table("invoices AS v")->join('customers as c','c.id','=','v.customer_id')->where('v.branch_id',$branch_id)->select($cols)->orderBy("v.id", "DESC")->get();
   }
 
   static function list_perginate($d, $ss)
@@ -532,9 +532,9 @@ class Invoice
     $cols = ['v.id', DB::raw('formatDate(v.issue_date) as issue_date'), DB::raw('formatDate(v.due_date) as due_date'), 'v.ref_number', 'v.description', 'v.customer_id', DB::raw("CONCAT(p.last_name,' ',p.first_name) as customer_name"), 'p.phone_number as customer_phone', 'p.email as customer_email', 'c.billing_address', 'v.currency_code', 'v.amount', 'v.discount_amount', 'v.discount_percent', 'v.amount_due', 'v.amount_paid'];
     $query = DB::table("invoices AS v")->join($customer_table . " as c", 'c.id', '=', 'v.customer_id')->join('persons as p', 'p.id', '=', 'c.person_id')->where('v.branch_id', $branch_id)->whereRaw($str_search)->select($cols)->orderBy("v.id", "DESC");
     $count = $query->count('v.id');
-    
+
     $rows = $query->skip($skip_rows)->take($per_page)->get();
-    //$rows = DB::table("invoices AS v")->join('customers as c','c.id','=','v.customer_id')->where('v.branch_id',$branch_id)->select($cols)->orderBy("v.id", "DESC")->get(); 
+    //$rows = DB::table("invoices AS v")->join('customers as c','c.id','=','v.customer_id')->where('v.branch_id',$branch_id)->select($cols)->orderBy("v.id", "DESC")->get();
     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
   }
 
@@ -632,7 +632,7 @@ class Invoice
   function updateAmountPaid($id = 0)
   {
     DB::statement(DB::raw("UPDATE invoices set amount_paid = (select SUM(amount) FROM invoice_payments WHERE invoice_id = $id),
-     tax_amount = (select SUM(IFNULL(tax_amount,0)) FROM invoice_payments WHERE invoice_id =$id) 
+     tax_amount = (select SUM(IFNULL(tax_amount,0)) FROM invoice_payments WHERE invoice_id =$id)
      where id =$id"));
     return true;
   }

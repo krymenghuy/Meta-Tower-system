@@ -9,6 +9,7 @@ use App\Models\StudentAttendance;
 use App\Models\Notifier;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
+use App\Models\UM;
 use DB;
 use Illuminate\Support\Facades\Hash;
 class MobileApi //xtends Model
@@ -278,5 +279,60 @@ class MobileApi //xtends Model
             $row->late_fee = 0;
         }
         return $row;
+    }
+
+    function register($arr){
+        //** */
+        $ss = (object)['user_id'=>1,'branch_id'=>1,'lang'=>'en','full_name'=>'admin','user_class'=>'admin'];
+        $v_rule = [
+            'login_name' => '1|string',
+            'password' => '1|string',
+            'phone_number' => '1|number',
+            'email' => '0|email',
+            'name' => '1|string',
+            'sex' => '1|choice|F,M',
+        ];
+
+        $res = validateObject($arr,$v_rule,false,[],'en',0,null);
+        if($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+        $d = (object)$inputs;
+        if(strlen($inputs['password']) > 20 || strlen($inputs['password']) < 6) return DV::error('password must be between 6 and 20');
+        $um = new UM();
+        $guardian = [
+            'name' => $d->name,
+            'phone_number' => $d->phone_number,
+            'email' => $d->email,
+            'sex' => $d->sex,
+            'role' => $d->sex == 'F' ? 'mother':'father'
+        ];
+        $newGuardian = saveData($ss,'guardians',['id' => null,],$guardian,[],1);
+        if($newGuardian>0){
+            $official_id = $newGuardian;
+            $um_arr= [
+                'login_name' =>$d->login_name,
+                'user_class' => 'parent',
+                'role_id' => '16',
+                'email' => $d->email,
+                'password' => $d->password,
+                'full_name' => $d->name,
+                "official_id" => $official_id,
+            ];
+            $x = $um->saveUser($um_arr,$ss);
+            if($x->status != 'OK') return DV::error($x->error_message);
+            return DV::success(['message' => 'Registration successful']);
+        }
+        return DV::error('Something went wrong with the registration');
+
+    }
+
+    function deleteAccount($ss){
+        DB::table('guardians')->where('id',$ss->official_id)->delete();
+        DB::table('um_users')->where('official_id',$ss->official_id)->delete();
+        return DV::success(['message'=>'Account deleted!','dd'=>$ss->official_id]);
+    }
+
+    function isShow(){
+        return DV::result((object)['isShow'=>1]);
     }
 }

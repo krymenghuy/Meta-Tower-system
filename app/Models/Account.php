@@ -19,14 +19,14 @@ class Account extends Model
     static function lead_id($account_id=0){
         $rows = DB::table('accounts as acc')->where('acc.id',$lead_id)->selectRaw("acc.lead_id")->limit(1)->get();
         foreach($rows as $row) return $row->lead_id;
-        return null; 
+        return null;
      }
 
      function getAccountProps($account_id=0,$cols){
         $cols ="acc.id,acc.lead_type,acc.acc.lead_id";
         $rows = DB::table('accounts as acc')->where('acc.id',$lead_id)->selectRaw($cols)->limit(1)->get();
         foreach($rows as $row) return $row;
-        return null; 
+        return null;
      }
 
      function getComboItems_country(){
@@ -43,13 +43,13 @@ class Account extends Model
         $data->positions = $this->getComboItems_position();
         $data->emp_organizations = $this->getComboItems_org();
         $data->industries = $this->getComboItems_industry();
-   
+
         $data->cities =DB::table('loc_cities AS c')->selectRaw("c.id,c.name AS city_name")->get();
         $data->occupations =DB::table('occupations AS c')->selectRaw("c.id,c.name AS occupation")->get();
-        
+
         return $data;
       }
-  
+
       function getComboItems_position(){
         //$ss = getSessionInfo($d);
         //if(!$ss) return '#350'; //user not authenticated
@@ -77,12 +77,12 @@ class Account extends Model
         return  DB::table('industries as i')->whereRaw('IFNULL(inactive,0) =0')->selectRaw("i.id,i.name as industry")->get();
     }
 
-    
+
      //getAccountList()
      function list($d){
         $ss = UM::getUserInfoByToken($d,-1);
         if($ss->status_code !=200) return DV::emptyResult($ss->status_code,null);
-        
+
         $branch_id = $ss->branch_id;
         $rows = DB::table('accounts as a')->where('branch_id',$branch_id)->selectRaw("a.id,a.name,a.email,a.phone_number,a.lead_type,a.lead_id")->get();
         return $rows;
