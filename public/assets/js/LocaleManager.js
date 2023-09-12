@@ -122,7 +122,7 @@
       //Execute loadLang() function on Page load on default langauge   
       this.loadLang(mThis.currentLanguage.code);
 
-            this.translateZone = (div_id = null,options={"lang":null,"hide":false,"loaderClass":""},onFinish = null)=>{
+            this.translateZone = (div_id = null,options={"isJquery":false,"lang":null,"hide":false,"loaderClass":""},onFinish = null)=>{
                 translateZone_internal(div_id,options,onFinish);
                 // if(!options) options = {"lang":mThis.currentLanguage.code,"hide":false,"loaderClass":""};
                 // //if langauge content is being loaded => then wait 3 milisecond
@@ -134,17 +134,20 @@
             
             /** options = {'lang':"kh",'hide':true,"loaderClass":"loading"} 
              * **/
-            function translateZone_internal (div_id = null,options={"lang":null,"hide":false},onFinish = null){
+            function translateZone_internal (div_id = null,options={"isJquery":false,"lang":null,"hide":false},onFinish = null){
                 if(!options) options = {"lang":mThis.currentLanguage.code,"hide":false,"loaderClass":"loading"};
                 let lang = options.lang;
                 let div = null;
                 let loader = null;
-                if (Object.prototype.toString.call(div_id) === '[object String]'){
-                  div = $(`#${div_id}`);
+
+                if (Object.prototype.toString.call(div_id) === '[object String]') {
+                    div = document.querySelector(`#${div_id}`);
+                } else if (options.isJquery || div_id instanceof jQuery) {
+                    div = div_id[0]; // Convert jQuery to JavaScript object
                 }else div = div_id;
-  
+
                 if(options.hide){
-                    div.hide();
+                    div.style.display ='none';
                     if(options.loaderClass){
                         loader = div.find(`.${options.loaderClass}`);
                         loader.show();
@@ -154,21 +157,22 @@
                             //alert('need loading');
                             mThis.loadLang(lang, content=>{
                                 mThis.langContent = content;
-                                div.find('.trans-text').each(function(){
-                                    let el = $(this);
-                                    let f = el.data('langprop');
-                                  
-                                    let parts = (f+'').split('.');
-                                    let section = parts[0];
-                                    let field = parts[1];
-                                    let sectionContent = content[section];
-                                    //console.error('LOADED ' + JSON.stringify(sectionContent));
-                                    if (field === '{text}') field = (el.text() || 'undefined').toLowerCase(); // or .val()???
-                                    let text = sectionContent?sectionContent[field]:`${section} unknown text`;
-                                    //console.error(`${section}.${field} | ${text}`);
-                                    el.text(text?text:field);
+                                div.querySelectorAll('.trans-text').forEach(el =>{
+                                    let f = el.dataset?el.dataset.langprop:null;
+                                    if(f){
+                                        let parts = (f+'').split('.');
+                                        let section = parts[0];
+                                        let field = parts[1];
+                                        let sectionContent = content[section];
+                                        //console.error('LOADED ' + JSON.stringify(sectionContent));
+                                        if (field === '{text}') field = (el.text() || 'undefined').toLowerCase(); // or .val()???
+                                        let text = sectionContent?sectionContent[field]:`${section} unknown text`;
+                                        //console.error(`${section}.${field} | ${text}`);
+                                        el.textContent = text?text:field;
+                                    }
+                                   
                                 });
-                                  if(options.hide) div.show();
+                                  if(options.hide) div.style.display='block';
                                   if(loader) loader.hide();
                                   if(typeof onFinish==='function') onFinish();
                                 //  //Call to callbacks's handlers() for langaugeChange events to refresh other dynamic element's lang such as dataTable language
@@ -180,19 +184,22 @@
                         }else {
 
                             let b = mThis.langContents[lang];
-                            div.find('.trans-text').each(function(){
-                                let el = $(this);
-                                let f = el.data('langprop');
-                                let parts = (f+'').split('.');
-                                let section = parts[0];
-                                let field = parts[1];
-                               
-                                let sectionContent = b?b[section]:null;
-                                if (field === '{text}') field = (el.text() || 'undefined').toLowerCase(); // or .val()???
-                                let text = sectionContent?sectionContent[field]:`${section} unknown text`; 
-                                el.text(text?text:field);
+                            div.querySelectorAll('.trans-text').forEach(el=>{
+                                let f = el.dataset?el.dataset.langprop:null;
+                                console.log(f);
+                                if(f){
+                                    let parts = (f+'').split('.');
+                                    let section = parts[0];
+                                    let field = parts[1];
+                                   
+                                    let sectionContent = b?b[section]:null;
+                                    if (field === '{text}') field = (el.text() || 'undefined').toLowerCase(); // or .val()???
+                                    let text = sectionContent?sectionContent[field]:`${section} unknown text`; 
+                                    el.textContent = text?text:field;
+                                }
                             });
-                            if(options.hide) div.show();
+
+                            if(options.hide) div.style.display='block';
                             if(loader) loader.hide();
                             
                             if(typeof onFinish==='function') onFinish(); 

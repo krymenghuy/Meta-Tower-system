@@ -238,7 +238,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
             Route::post('/form-options',[LeaveInfoController::class,'getFormOptions']);
             Route::post('/save',[LeaveInfoController::class,'saveLeave']);
             Route::post('/finalize',[LeaveInfoController::class,'finalize']);
-            Route::post('/delete',[LeaveInfoController::class,'delete']);
+            Route::post('/delete',[LeaveInfoController::class,'deleteLeave']);
         });
     //end::LeaveInfoController
 
