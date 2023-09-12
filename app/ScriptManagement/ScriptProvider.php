@@ -34,7 +34,7 @@ class ScriptProvider
             'output_file' => '/dist/js/ksm.primary.js?v=1',
             'files' => [
                 '/assets/material-js/jquery.min.js',
-                '/assets/plugins/chart.js/Chart.js'
+                'https://cdn.jsdelivr.net/npm/chart.js',
             ]
         ],
         'primary-async' => [
@@ -45,16 +45,6 @@ class ScriptProvider
                 '/js/components/AuthManager.js'
             ]
         ],
-        // 'pdfmake' => [
-        //     'attr' => 'defer',
-        //     'single_file' => 0, /* original 0*/
-        //     'output_file' => '/dist/js/vs.pdfmake.js',
-        //     'minify' => 0,
-        //     'files' => [
-        //         '/assets/js/pdfmake.min.js',
-        //         '/assets/js/vfs_fonts.js',
-        //     ]
-        // ],
         'primary-defer' => [
             'attr' => 'defer',
             'single_file' => 1,
@@ -62,13 +52,10 @@ class ScriptProvider
             'files' => [
                 '/assets/js/string_san.js',
                 '/assets/js/vsutil.js',
-                //'/assets/js/vsdom.js',
                 '/assets/js/sweetalert2.all.min.js',
                 '/assets/js/sweetalert2.toast.js',
-                //'/assets/js/ItemsView.js',
                 '/assets/js/ExchangeManager.js',
                 '/assets/js/expandableTableRow.js',
-                //'/assets/js/Popper.js',
                 '/assets/vendors/general/popper.js/dist/umd/popper.js',
                 '/assets/material-js/bootstrap.min.js',
                 '/assets/js/validator.js',
@@ -76,17 +63,11 @@ class ScriptProvider
                 '/assets/js/datehelper.js',
                 '/assets/js/date.js',
                 '/assets/js/jquery.datepicker2.js',
-                //'/assets/js/xlsx/xlsx.full.min.js',
-                //'/assets/vendors/general/js-cookie/src/js.cookie.js',
-                //'/assets/vendors/general/moment/min/moment.min.js',
-                //'/assets/vendors/general/perfect-scrollbar/dist/perfect-scrollbar.js',
-                //'/assets/vendors/general/sticky-js/dist/sticky.min.js',
                 '/assets/js/select2.min.js',
                 '/assets/js/initializeSelect2.js',
                 '/assets/js/toastr.min.js',
                 '/assets/js/init.toastr.js',
                 '/assets/js/demo1/scripts.bundle.js',
-                //'/assets/js/datatables.bundle.min.js',
                 '/assets/js/browsercontrol.js'
             ],
             'no-minify' => [
@@ -104,14 +85,12 @@ class ScriptProvider
                 '/js/components/RenderTableReport.js',
                 '/assets/js/formUtils.js',
                 '/js/layout/main.js?v=1',
-                //'/js/components/PDFReport.js',
                 '/js/components/FileChooser.js',
                 '/js/components/ImageHelper.js',
                 '/js/components/ListView.js',
                 '/js/components/UnauthComponent.js',
                 '/js/components/OptionEditor.js',
                 '/js/components/DashboardComponent.js',
-                //'/js/components/PersonDialog.js',
                 '/js/components/InvoicesComponent.js?v=2',
                 '/js/components/ReportCenterComponent.js',
                 '/js/components/InputBoxes.js',

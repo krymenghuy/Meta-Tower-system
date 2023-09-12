@@ -274,20 +274,36 @@ li.kt-menu__section {
     border-radius: 8px;
 }
 
-.bg--icon-wallet {
+.bg--icon-unpaid-student-count{
     background-color: #e9443538;
 }
 
-.bg--icon-bf {
-    background-color: #FDF0CC;
+.bg--icon-new-student-invoices{
+    background-color: #EB1E8122;
 }
 
-.bg--icon-pd {
-    background-color: #CAE1F7;
+.bg--icon-total-invoices-in-month{
+    background-color: #001C7E22;
 }
 
-.bg--icon-cash {
-    background-color: #00d22e33;
+.bg--icon-special-discount-pending{
+    background-color: #74747422;
+}
+
+.bg--icon-total-student{
+    background-color:#1329ea22;
+}
+
+.bg--icon-average-new-student{
+    background-color:#04A5FF22;
+}
+
+.bg--icon-new-enrollments{
+    background-color: #EEAC0022;
+}
+
+.bg--icon-special-discount{
+    background-color:#FFDE2F22;
 }
 
 .h-md-card {
