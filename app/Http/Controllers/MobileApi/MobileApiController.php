@@ -69,4 +69,20 @@ class MobileApiController extends Controller
         $inv = $d->childLatestInvoice($req->student_id,$ss);
         return JDV::result($inv);
     }
+
+    function registerApp(Request $req){
+        // $ss = UM::getUserInfoByToken($req,-1);
+        // if($ss->status_code !=200) return $ss;
+        $d = new MobileApi();
+        $reg = $d->register($req->all());
+        return JDV::result($reg);
+    }
+
+    function deleteAccount(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return $ss;
+        $d = new MobileApi();
+        $delete = $d->deleteAccount($ss);
+        return JDV::result($delete);
+    }
 }
