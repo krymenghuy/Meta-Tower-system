@@ -82,6 +82,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('auth/login', [LoginController::class, 'apiLogin']);
 Route::post('/auth/guardian/login',[GuardianLoginController::class,'guardianLogin']);
+Route::post('/auth/guardian/register',[MobileApiController::class,'registerApp']);
+Route::post('/auth/guardian/delete-account',[MobileApiController::class,'deleteAccount']);
 Route::post('/auth/guardian/profile',[GuardianLoginController::class,'getGuardianProfile']);
 Route::post('/auth/guardian/change-password',[GuardianLoginController::class, 'changePasswords']);
 Route::post('/auth/guardian/change-profile',[GuardianLoginController::class, 'changeProfile']);
