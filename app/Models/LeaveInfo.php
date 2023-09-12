@@ -36,7 +36,6 @@ class LeaveInfo //extends Model
         $ss = $ss?$ss:$this->user_info;
         $id =$id?$id:$this->id;
         $v_rule = [
-           'enrollment_id'=>'1|number|enrollments.id',
            //'term_id'=>'1|number|exists=terms.id',
            //'student_id'=>'1|number|exists=students.id',
            'enrollment_id'=>'1|number|exists=enrollments.id',
@@ -168,9 +167,9 @@ class LeaveInfo //extends Model
             //if($session_id > 0) $str_moreWhere .= ' AND e.session_id ='.$session_id;
             if($level_id > 0) $str_moreWhere .= ' AND e.level_id ='.$level_id;
             else if($program_id > 0) $str_moreWhere .= ' AND e.program_id ='.$program_id;
-  
+
             $selectCols = 'le.id,e.id AS enrollment_id,st.id AS student_id,st.phone_number,formatDate(le.leave_date) AS leave_date,le.days_to_enddate,le.leave_term_id,tt.`name` AS leave_type, le.leave_remarks, c.`name` AS campus,l.`name` AS level_name, s.`name` as session_name,e.campus_id,e.academic_year,st.code as student_code,st.name,st.name_kh,st.sex,formatDate(st.date_of_birth) AS date_of_birth,st.file_name,le.update_user,formatTime(le.updated_at) as updated_at, CASE e.is_new_student WHEN 1 THEN \'NEW\' ELSE \'Old\' END AS student_type,e.promoted,le.authorized,le.auth_user,formatTime(le.auth_date) AS auth_date';
- 
+
             $query = DB::table('leaves as le')
             ->join('enrollments as e','e.id','=','le.enrollment_id')
             ->join('leave_types as tt','tt.id','=','le.leave_type_id')
@@ -214,7 +213,7 @@ class LeaveInfo //extends Model
       static function getEnrollmentInfo($enrollment_id){
         $get_leave_id = ',(select lv.id from leaves AS lv WHERE lv.enrollment_id = e.id AND lv.student_id =e.student_id LIMIT 1) leave_id';
         $get_group_name = ',(SELECT g.`name` FROM student_groups AS g  INNER JOIN group_members AS gm ON gm.group_id = g.id WHERE gm.enrollment_id =e.id AND gm.student_id =e.student_id LIMIT 1) AS group_name';
-        $row = DB::table('students AS st')->join('enrollments as e','e.student_id','=','st.id')->join('program_levels as lev','lev.id','=','e.level_id')->where('e.id',$enrollment_id)->selectRaw('st.id,st.branch_id,st.name AS student_name,st.sex,st.phone_number,e.level_id,e.session_id,e.status_id,e.enrollment_status_id,e.is_new_student,formatDate(e.tuition_end_date) AS tuition_end_date,e.term_id AS leave_term_id,lev.`name` AS level_name,e.academic_year,st.file_name'.$get_group_name.$get_leave_id)->take(1)->get()->first();
+        $row = DB::table('students AS st')->join('enrollments as e','e.student_id','=','st.id')->join('program_levels as lev','lev.id','=','e.level_id')->where('e.id',$enrollment_id)->selectRaw('st.file_name,st.id,st.branch_id,st.name AS student_name,st.sex,st.phone_number,e.level_id,e.session_id,e.status_id,e.enrollment_status_id,e.is_new_student,formatDate(e.tuition_end_date) AS tuition_end_date,e.term_id AS leave_term_id,lev.`name` AS level_name,e.academic_year,st.file_name'.$get_group_name.$get_leave_id)->take(1)->get()->first();
         $row->image_url = ($row->file_name)? PublicStorage::getUrl($row->branch_id,'students','image').$row->file_name : '';
         return $row;
       }
