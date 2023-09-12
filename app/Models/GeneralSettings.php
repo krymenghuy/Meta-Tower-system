@@ -357,9 +357,6 @@ class GeneralSettings //extends Model
     static function otherFeeFormOption($d,$ss){
             $rows = DB::table('other_fees')
                 ->where('branch_id',$ss->branch_id);
-                if($d->academic_year){
-                    $rows->where('academic_year',$d->academic_year);
-                }
             $list = $rows->selectRaw('name,id,academic_year')->get();
             return $list;
 
