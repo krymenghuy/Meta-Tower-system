@@ -126,7 +126,7 @@ class Invoice //extends Model
                     $invoice_type = 'tuition_fee';
                 }
 
-                $data_rows = DB::table('other_fees')->where('academic_year',$enr_info->academic_year)->where('name',$fee['fee_type'])->selectRaw('amount,start_date,end_date,description')->get();
+                $data_rows = DB::table('other_fees')->where('name',$fee['fee_type'])->selectRaw('amount,start_date,end_date,description')->get();
                 foreach($data_rows as $row){
                     $fee['price'] = $row->amount;
                     $fee['date_range'] = isset($row->start_date)?$row->start_date . ' to ' . $row->end_date:null;
