@@ -488,6 +488,7 @@ li.kt-menu__section {
     height:100% !important;
     line-height: 28px;
     vertical-align: middle;
+    text-transform: capitalize;
 }
 
 @media screen and (max-width: 800px) {
@@ -931,6 +932,10 @@ li.kt-menu__section {
 .glow-on-hover-finalized:before,
 .glow-on-hover:before {
     opacity: 1;
+}
+
+.select2-results .select2-results__options{
+    text-transform: capitalize;
 }
 
 .glow-on-hover-finalized:after,
