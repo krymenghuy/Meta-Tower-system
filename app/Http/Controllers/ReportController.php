@@ -91,4 +91,11 @@ class ReportController extends Controller
     return JDV::result($rpt->getFamilyListReport($req->all(),$ss));
   }
 
+  function optionsTerm(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code != 200) return $ss;
+    $x = new Report();
+    return JDV::result($x->optionsTerm($req->academic_year,$ss));
+  }
+
 }
