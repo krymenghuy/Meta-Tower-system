@@ -145,6 +145,9 @@ var InvoicesComponent = new function(){
                         if(res.status_code === 200){
                             mThis.itemView.showPage(null);
                         }
+                        else{
+                            cv_interact.error(res.error_message);
+                        }
                     });
                 }
             });

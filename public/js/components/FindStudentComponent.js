@@ -385,7 +385,7 @@ let GenerateInvoiceFSN = new function(){
             const current = new Date();
             const format = new Intl.DateTimeFormat('en-US',{
                 day: 'numeric',
-                month: 'long',
+                month: 'short',
                 year: 'numeric'
             }).format(current);
 
@@ -396,8 +396,10 @@ let GenerateInvoiceFSN = new function(){
                     el.text(format);
                 else if(f === 'due_date')
                     el.val(data[f]);
+                else if(f === 'deposite_amount' || f === 'total')
+                    el.text(data[f] ? '$ '+data[f] : '');
                 else
-                    f == 'invoice_number' ? el.text(data[f]) : el.text(data[f] ? '$ '+data[f] : '');
+                    el.text(data[f]);
             });
 
             let tab = mThis.self.find('a.btn-tuition-fee');

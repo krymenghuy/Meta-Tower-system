@@ -5,59 +5,67 @@ var PolicyDiscountComponent = new function(){
     this.self = $('#_main_policyDiscountComponent');
 
     this.btnAdd = mThis.self.find('#pld_btn_add');
-    //this.elSearch = mThis.self.find('#_pdl_search');
     this.elFilter_academic_year = this.self.find('#_pol_filter_acad_year');
     this.elFilter_price_list = this.self.find('#_pol_filter_price_list');
 
     this.cols = [{
         title: "Price List",
-        data: (data,index,tr)=>{
-            return ['<span class="fw-semibold">',data.price_list_name,'</span>'].join('');
+        className: 'align-middle',
+        data: (data, index, tr)=>{
+            return ['<span class="text-capitalize fw-semibold">',data.price_list_name,'</span>'].join('');
         }
     },
     {
         title: "Date Range",
-        data: (data,index,tr)=>{
+        className: 'align-middle',
+        data: (data, index, tr)=>{
             return ['<span class="border rounded-3 p-2">',data.start_date,'</span>',' to ','<span class="border rounded-3 p-2">',data.end_date,'</span>'].join('');
         }
     },
     {
         title: "Academic Year",
+        className: 'align-middle',
         data: "academic_year"
     },
     {
         title: "Payment Option",
+        className: 'align-middle',
         data: "pmt_option"
     },
     {
         title: "Session",
+        className: 'align-middle',
         data: "session"
     },
     {
         title: "Discount",
+        className: 'align-middle',
         data: (data, a, b) => {
-            let discount = data.discount ? data.discount : '';
-            let discount_type = data.discount_type == 'percentage' ? '%' : '$';
+            const discount = data.discount ? data.discount : '';
+            const discount_type = data.discount_type == 'percentage' ? '%' : '$';
             return [discount,discount_type].join(' ');
         }
     },
     {
         title: "Updated By",
+        className: 'align-middle',
         data: (data, a, b) => {
-            return [`<p class="pb-0 mb-0">`,data.update_user,`</p>
+            return [`<p class="text-capitalize pb-0 mb-0">`,data.update_user,`</p>
             <p class="pb-0 mb-0"><small>`,data.updated_at,`</small></p>`].join('');
         }
     },
     {
         title: "Authorization",
+        className: 'align-middle',
         data: (data, index, tr) => {
-            let auth_info = data.authorized==1? [`<p class="d-block pb-0 mb-0">`,data.auth_user?data.auth_user:data.update_user,`</p>
-            <p class="d-block pb-0 mb-0"><small>${data.auth_date}</small></p>`].join('') : '<span class="text-warning p-1">Pending</span>';
+            const auth_info = data.authorized == 1 ? [`<p class="text-capitalize d-block pb-0 mb-0">`,data.auth_user ? data.auth_user : data.update_user,`</p>
+            <p class="d-block pb-0 mb-0"><small>${data.auth_date}</small></p>`].join('') : '<span class="text-capitalize text-warning p-1">Pending</span>';
             return auth_info;
         }
     },
     {
         title: "Action",
+        className: 'align-middle',
         data: (data, a, b) => {
             return [`<div class="d-flex gap-2">
                 <a href="javascript:void(0)" class="btn-pld-modify" data-id="${data.id}">
@@ -71,7 +79,11 @@ var PolicyDiscountComponent = new function(){
     }];
 
     this.getFilterData = ()=>{
-        return {'academic_year':mThis.elFilter_academic_year.val(),'price_list_id':mThis.elFilter_price_list.val(),'search_value':null};
+        return {
+            'academic_year':mThis.elFilter_academic_year.val(),
+            'price_list_id':mThis.elFilter_price_list.val(),
+            'search_value':null
+        };
     }
 
     this.init = () => {
@@ -136,29 +148,21 @@ var PolicyDiscountComponent = new function(){
             vsapi.call(`${main_view.base_url}/api/price-list/select-options`,{'academic_year':e.target.value},null).then(res=>{
                 const items = StringSanitizer.sanitizeObject(res.data);
                 VSUtil.setComboItems(mThis.elFilter_price_list,items,'id','price_list_name',true,'(All Price Lists)',0);
-                //mThis.elFilter_price_list.val(0).trigger('change');
                 mThis.itemView.showPage(mThis.getFilterData());
             });
         });
-
-        // mThis.elSearch.on('keyup',function(e){
-        //     e.preventDefault();
-        //     if(e.keyCode === 13)
-        //         mThis.itemView.showPage({'search_value': $(this).val()});
-        // });
-
-        //new SearchData(mThis.elSearch,mThis.tblPolicyDiscount);
     }
 
     this.prepareFormOptions = (onFinish)=>{
-     vsapi.call(`${main_view.base_url}/api/settings/options-academic-year`,null,false).then(res=>{
-        if(res.status_code===200){
-            const items = StringSanitizer.sanitizeObject(res.data);
-            VSUtil.setComboItems(mThis.elFilter_academic_year,items,'academic_year','academic_year',true,'(All Years)',0);
-            onFinish();
-        }else cv_interact.error('Failed to load Price List options');
-        
-     });
+        vsapi.call(`${main_view.base_url}/api/settings/options-academic-year`,null,false).then(res=>{
+            if(res.status_code===200){
+                const items = StringSanitizer.sanitizeObject(res.data);
+                VSUtil.setComboItems(mThis.elFilter_academic_year,items,'academic_year','academic_year',true,'(All Years)',0);
+                onFinish();
+            }
+            else
+                cv_interact.error('Failed to load Price List options');
+        });
     }
     this.show = (options) => {
         if(!options) options = {};
@@ -262,12 +266,10 @@ let PolicyDiscountOutsideDialog = new function(){
         mThis.prepareFormOptions(() => {
             if(options.id > 0){
                 mThis.elTitle.text(LocaleManager.trans('Edit Policy Discount','titles'));
-                //mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please check discount type before editing','titles'));
                 mThis.loadDataEdit(options);
             }
             else{
                 mThis.elTitle.text(LocaleManager.trans('Add Policy Discount','titles'));
-                //mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input discount type details','titles'));
                 mThis.setDataForm(null);
             }
 

@@ -21,26 +21,26 @@ var PaymentReviewComponent = new function(){
         {
             title: "Tuition",
             data: (data, a, b) => {
-                return [cur_symbol, data.tuition].join(" ");
+                return data.tuition ? [cur_symbol, data.tuition].join(' ') : '';
             },
         },
         {
             title: "Tuition Due",
             data: (data, a, b) => {
-                return [cur_symbol, data.tuition_due].join(" ");
+                return data.tuition_due ? [cur_symbol, data.tuition_due].join(' ') : '';
             },
         },
         {
             title: "Tuition Paid",
             data: (data, a, b) => {
-                return [cur_symbol, data.tuition_paid].join(" ");
+                return data.tuition_paid ? [cur_symbol, data.tuition_paid].join(' ') : '';
             },
         },
         {
             title: "Status",
             data: (data, a, b) => {
-                let cls = data.status === "pending" ? "bg-danger" : data.status === "verified" ? "bg-info" : data.status === 'expired' ? "bg-danger" : "bg-success";
-                return [`<span class="p-2 ${cls} text-white rounded-3 text-capitalize"> ${data.status}</span>`].join('');
+                const cls = data.status.toLowerCase() === "pending" ? "bg-danger" : data.status.toLowerCase() === "verified" ? "bg-info" : data.status.toLowerCase() === 'expired' ? "bg-danger" : data.status.toLowerCase() === 'surcharge' ? "bg-warning" : "bg-success";
+                return [`<span class="p-2 ${cls} text-white rounded-3 text-capitalize">${data.status}</span>`].join('');
             },
         },
         {
