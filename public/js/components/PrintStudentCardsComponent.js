@@ -2,7 +2,7 @@
 var PrintStudentCardsComponent = new function(){
     let mThis = this;
     this.title_prop = "Print Student Cards";
-    this.self = $('#_main_printStudentCardComponent');
+    this.self = main_view.appContent.children('#_main_printStudentCardComponent');
 
     this.containerFilter = mThis.self.find('#container_psc_filter');
 

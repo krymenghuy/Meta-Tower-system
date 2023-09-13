@@ -2,7 +2,7 @@
 var OnLeaveStudentsComponent = new function(){
     let mThis = this;
     this.title_prop = "On-Leave Students";
-    this.self = $('#_main_onLeaveStudentsComponent');
+    this.self = main_view.appContent.children('#_main_onLeaveStudentsComponent');
     this.options = {};
     
     this.btnPrint = this.self.find('#_onleave_btnPrint');
@@ -364,8 +364,8 @@ var OnLeaveStudentsComponent = new function(){
                                 `<div class="d-flex justify-content-end align-items-center h-100" role="button">
                                    ${item.authorized == 1? '':finalize_button}
                                 </div>`,
-                            `</div>
-                        </div>
+                            `</div>`,
+                        `</div>
                         <hr class="bg-dark m-1 p-0"/>
                         <div class="row row-cols-5 mt-2">
                             <div class="col">
@@ -393,15 +393,15 @@ var OnLeaveStudentsComponent = new function(){
                                 <div class="d-flex">${return_info}</div>
                             </div>`,
                         `</div>
-                        <div class="row row-col-5 mt-2">
+                           <div class="row row-col-5 mt-2">
                                 <div class="col">
-                                        <div class="d-flex">
-                                                <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Reason"></p>
-                                                <p class="px-2">:</p>
-                                                <p class="text-nowrap">${item.leave_remarks}</p>
-                                            </div>
-                                        </div>
+                                    <div class="d-flex">
+                                        <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Reason"></p>
+                                        <p class="px-2">:</p>
+                                        <p class="text-nowrap">${item.leave_remarks}</p>
+                                    </div>
                                 </div>
+                            </div>
                        </div>
                 </div>`].join('');
                 cnt++;

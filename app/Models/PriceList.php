@@ -668,51 +668,70 @@ class PriceList //extends Model
         }
     }
 
-    static function pendingPayment($filter=[],$ss){
+    /**
+     * pendingPayment() or tuitionReviewList() returns list of tuition payments that can be "pending" or "verified", "paid", "expired" tuitions
+     * */  
+    static function tuitionReviewList($filter=[],$ss){
         $branch_id = $ss->branch_id;
-        $search_value =isset($filter['search_value'])?$filter['search_value']:null;
-        $current_page =isset($filter['current_page'])?$filter['current_page']:1;
-        $pmt_status = isset($filter['pmt_status'])?$filter['pmt_status']:null;
-        $per_page =isset($filter['per_page'])?$filter['per_page']:10;
+        $d = (object)$filter;
+      
+        $current_page =isset($d->current_page)?$d->current_page:1;
+        $per_page =isset($d->per_page)?$d->per_page:10;
         if(!is_numeric($current_page)) $current_page=1;
-        $status_id = isset($filter['status_id'])?$filter['status_id']:null;
         $skip_rows = ($current_page -1) * $per_page;
 
-        $str_search ="1=1";
-        $str_moreWhere="1=1";
+        //Search filter
+        $search_value =isset($d->search_value)?$d->search_value:null;
+        $status_id = isset($d->status_id)?$d->status_id:null;
+        $term_id = isset($d->term_id)?$d->term_id:null;
+        $campus_id = isset($d->campus_id)?$d->campus_id:null;
+        //$academic_year = isset($d->academic_year)?$d->academic_year:null;
+
+        $str_search ='1=1';
+        $str_moreWhere = $term_id>0? ' e.term_id ='.$term_id : '1=1';
+        if($campus_id > 0) $str_moreWhere .= ' AND e.campus_id ='.$campus_id;
+
         if($search_value){
             $skip_rows =0;
             $search_value = escape_like_str($search_value);
             $str_search ="(i.code ='$search_value' OR i.name LIKE '%$search_value%' OR g.name LIKE '%$search_value%')";
         }
-        $selectCols = 'e.id as enrollment_id,s.id,e.status_id,st.name as status,s.name,s.name_kh,ep.tuition,ep.tuition_due,ep.tuition_paid,e.tuition_end_date';
+        $selectCols = 'e.id,s.id AS student_id,t.`name` as term_name,lev.`name` AS level_name, e.is_new_student, formatDate(e.start_date) As start_date,e.status_id,st.name as status,s.name,s.name_kh,ep.tuition,ep.tuition_due,ep.tuition_paid,\'USD\' AS currency_code,e.tuition_end_date';
         $query = DB::table('payments as ep')
                 ->join('enrollments as e','e.id','=','ep.enrollment_id')
+                ->join('program_levels as lev','lev.id','=','e.level_id')
                 ->join('students as s','s.id','=','e.student_id')
                 ->join('terms as t','t.id','=','e.term_id')
                 ->join('pmt_status as st','st.id','=','e.status_id')
                 ->selectRaw($selectCols)
-                ->where('ep.branch_id',$branch_id)
+                ->where('e.branch_id',$branch_id)
+                ->whereRaw($str_search)
+                ->whereRaw($str_moreWhere)
                 ->where('enroll_finalized',1);
-                if ($status_id !== null && strtolower($status_id) != '4') {
-                    $query->where('e.status_id',$status_id);
-                }
+
+                // if ($status_id !== null && strtolower($status_id) != '4') {
+                //     $query->where('e.status_id',$status_id);
+                // }
                 // ->whereRaw($str_moreWhere)->whereRaw($str_search);
+
         $count_query = clone $query;
         $count = $count_query->count('ep.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
+
+        $today = date('Y-m-d');
         foreach ($rows as $row) {
             $tuition_end_date = convertDate($row->tuition_end_date);
             $row->pmt_status = 'unpaid';
             if($tuition_end_date){
-                if($tuition_end_date > date('Y-m-d') && $row->status_id == 3){
+                if($tuition_end_date > $today && $row->status_id == 3){
                     $row->status = 'paid';
                 }
-                else if($tuition_end_date < date('Y-m-d') && $row->status_id == 3){
+                else if($tuition_end_date < $today && $row->status_id == 3){
                     $row->status = 'expired';
                 }
                 // if($tuition_end_date > date('Y-m-d') && $row->status_id <=2) $row->status = 'unpaid';
             }
+            $row->tuition_end_date = date( $tuition_end_date, strtotime( $tuition_end_date));
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
@@ -777,7 +796,7 @@ class PriceList //extends Model
             return $this->preview_new_student($arr,$id,$ss);
         }
     }
-
+  
     //* for preview like calculator function
     function preview_old_student($arr=[],$id=null,$ss){
         $d = (object)$arr;
@@ -1291,4 +1310,83 @@ class PriceList //extends Model
     //     return DB::table('invoice_items AS i')->where('invoice_id',$invoice_id)->selectRaw('i.id,i.invoice_id,i.fee_type,i.description,i.qty,i.price,i.date_range,i.discount,i.discount_amount,i.discount_percent,i.discount_type,i.net_amount,i.start_date,i.end_date')->get();
     // }
 
+    static function getOriginalPriceListInfo($enrollment_id){
+        return DB::table('student_pricelist AS sl')->join('price_list AS pl','pl.id','=','sl.price_list_id')->where('sl.enrollment_id',$enrollment_id)->whereRaw('IFNULL(sl.inactive,0)=0')->selectRaw('pl.id,pl.`name`,pl.start_date,pl.end_date')->get()->first();
+    }
+
+    /**
+     * For existing student, give a enrollment_id
+     * User must provide @pmt_option_id in order to preview or calculate payment amount
+     * parameters @program_id and @session_id are optional. their values can be derived from @enrollment_id
+     * This function is called when user preview or calculate Tuition fee by providing enrollment_id, pmt_Option_id, session_id
+    */
+    function getStudentDiscountInfo($pmt_option_id,$enrollment_id,$program_id=null,$session_id=null){
+        $e = DB::table('enrollments as e')->where('e.id',$enrollment_id)->take(1)->selectRaw('e.campus_id,e.program_id,e.student_id,e.level_id,e.session_id')->get()->first();
+        if(!$e) return DV::error('Failed to retrieve enrollment information based on the given enrollment ID');
+        if(!$e->program_id) return DV::error('Enrollment record does not contains valid program ID');
+        if(!$e->level_id) return DV::error('Enrollment record does not contains valid level ID');
+        $pmt_option_id = $pmt_option_id?$pmt_option_id:$e->pmt_option_id;
+        $session_id = $session_id?$session_id:$e->session_id;
+        $program_id = $program_id?$program_id:$e->program_id;
+        $row = DB::table('student_discounts AS d')->where('d.student_id',$e->student_id)->where('d.program_id',$program_id)->where('d.pmt_option_id',$pmt_option_id)->where('d.session_id',$session_id)->selectRaw('d.id,d.policy_discount,d.special_discount,d.other_discount')->get()->first();  
+        
+        $price_list = DB::table('student_pricelist as sl')->join('price_list As l','l.id','=','sl.price_list_id')->where('sl.student_id',$e->student_id)->where('enrollment_id',$enrollment_id)->whereRaw('IFNULL(sl.inactive,0) =0')->selectRaw('l.id AS price_list_id,l.name as price_list_name,l.academic_year,formatDate(l.start_date) AS start_date,formatDate(l.end_date) AS end_date')->take(1)->get()->first();
+        $pl_name = null;
+        $cur ='USD';
+        $monthly_tuition = 0 ;
+        if($price_list){
+           $pl_name = $price_list->price_list_name;
+           $pl_id = $price_list->price_list_id;
+           $pl_item = DB::table('price_list_items as i')->where('price_list_id',$pl_id)->where('program_id',$program_id)->where('session_id',$session_id)->selectRaw('i.price,i.currency_code')->take(1)->get()->first();
+           if($pl_item){
+            $monthly_tuition = $pl_item->price;
+            $cur = $pl_item->currency_code;
+           }
+        }
+        return (object)[
+             'student_id'=>$row? $row->student_id:null,
+             'price_list_info'=>$price_list,
+             'price_list_name'=>$pl_name,
+             'monthly_tuition'=>$monthly_tuition,
+             'currency_code'=>$cur,
+             'program_id'=>$program_id,
+             'session_id'=>$session_id,
+             'pmt_option_id'=>$pmt_option_id,
+             'special_discount'=>$row?$row->special_discount:0,
+             'policy_discount'=>$row?$row->policy_discount:0,
+             'other_discount'=>$row?$row->other_discount:0,
+             'discount_type'=>'percentage'
+        ];
+    }
+
+    static function getEnrollmentInfo($enrollment_id){
+        $cols = 'e.id,e.level_id,e.campus_id,e.session_id,e.student_id,st.name as student_name,e.is_new_student';
+        $row = DB::table('enrollments as e')->join('students as st','st.id','=','e.student_id')->where('e.id',$enrollment_id)->selectRaw($cols)->get()->first();
+        if(!$row) return null;
+        if($row->is_new_student !==1) {
+            $row->price_list = self::getOriginalPriceListInfo($row->id);
+        }
+        else $row->price_list= null;
+        return $row;  
+    }
+
+    function getPaymentPreviewOptions($enrollment_id,$ss=null){
+        $ss = $ss?$ss:$this->user_info;
+        $enroll_info = null;
+        if($enrollment_id > 0) $enroll_info = self::getEnrollmentInfo($enrollment_id);
+        return  (object)[
+            'enrollment_info'=>$enroll_info,
+            'price_lists'=>GeneralSettings::options_price_list(null,$ss),
+            'sessions' => GeneralSettings::options_session($ss),
+            'pmt_options' => GeneralSettings::options_pmt($ss),
+            'pmt_statuses'=>GeneralSettings::options_pmt_status($ss),
+            'programs' => GeneralSettings::options_program($ss),
+            'levels' => GeneralSettings::options_level(null,$ss),
+            'campuses' => GeneralSettings::options_campus($ss),
+            'academic_year' => GeneralSettings::options_academic_year($ss),
+            'terms' => GeneralSettings::options_term(null,$ss),
+            'groups' => GeneralSettings::options_group(null,[]),
+            'discount_type' => DB::table('discount_types')->selectRaw('name,id')->get()
+        ];
+    }
 }

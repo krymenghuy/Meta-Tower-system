@@ -2,7 +2,7 @@
 var AccountRequestComponent = new function(){
     const mThis = this;
     this.title_prop = 'Account Request';
-    this.self = $('#_main_accountRequestComponent');
+    this.self = main_view.appContent.children('#_main_accountRequestComponent');
 
     this.btnNew = mThis.self.find('#_arq_btn_new');
 

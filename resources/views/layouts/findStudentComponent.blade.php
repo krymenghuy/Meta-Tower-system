@@ -1,5 +1,5 @@
 <div id="_main_findStudentComponent" class="mobile-padding p-3" style="display:none">
-    <div id="div--ssp" class="div--ssp">
+    <!-- <div id="div--ssp" class="div--ssp">
         <div class="d-flex align-items-center justify-content-center bg-white rounded-4 p-3">
             <div class="d-block">
                 <h2 class="trans-text text-primary text-center" data-langprop="titles.Search Student"></h2>
@@ -16,16 +16,20 @@
             <b class="trans-text fs-5" data-langprop="titles.Note"></b>
             <textarea class="form-control data-text" data-field="note"></textarea>
         </div>
-    </div>
-    <div id="div--fsd" class="div--fsd" style="display:none">
+    </div> -->
+    <div id="div--fsd" class="div--fsd">
         <div class="d-flex gap-2">
-            <input type="search" class="form-control width--search-inner data-input" data-field="search_value" placeholder="Search by Name or ID..."/>
+            <input id="_fns_search" type="search" class="form-control width--search-inner data-input" data-field="search_value" placeholder="Search student"/>
+            <button id="_fns_btnFind" class="btn btn-success btn-sm text-nowrap" type="button">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span class="trans-text" data-langprop="buttons.Find"></span>
+            </button>
             <button id="_fns_btn_filter" class="btn btn-primary btn-sm text-nowrap" type="button">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <span class="trans-text" data-langprop="buttons.Find"></span>
+            <i class="fa-solid fa-magnifying-glass"></i>
+                <span class="trans-text" data-langprop="buttons.Filter"></span>
             </button>
         </div>
-        <div id="_fns_list" class="fns-set-overflow d-flex gap-2 flex-column p-3 mt-3"></div>
+        <div id="_fns_student_list" class="fns-set-overflow p-3 mt-3"></div>
     </div>
 </div>
 
@@ -115,6 +119,57 @@
                 </button>
                 <button id="dlg_fns_btn_save" class="btn btn-primary btn-sm btn-animate" type="button">
                     <span class="trans-text" data-langprop="buttons.Generate"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="_dlgStudentDiscount" class="modal fade" tabindex="-1" aria-labelledby="_dlgStudentDiscount_title" aria-hidden="true">
+    <div class="modal-dialog vs-modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="form-group col-lg-6">
+                        <label for="student_name" class="form-label trans-text" data-langprop="titles.Student Name"></label>
+                        <div><input class="form-control data-input" data-field="student_name" readonly></div>
+                    </div>
+
+                    <div class="form-group col-lg-6">
+                        <label for="level_name" class="form-label trans-text" data-langprop="titles.Price List"></label>
+                        <div class="d-flex flex-row gap-1"><input class="form-control data-input" data-field="price_list_name" readonly /><input class="form-control data-input" data-field="admission_date" readonly></div>
+                    </div>
+
+                    <div class="form-group col-lg-6">
+                        <label for="policy_discount" class="form-label trans-text" data-langprop="titles.Policy Discount"></label>
+                        <div><input class="form-control data-input" data-field="policy_discount"></div>
+                    </div>
+                    <div class="form-group col-lg-6">
+                        <label for="special_discount" class="form-label trans-text" data-langprop="titles.Special Discount"></label>
+                        <div><input class="form-control data-input" data-field="special_discount" /></div>
+                    </div>
+
+                    <div class="form-group col-lg-6">
+                        <label for="other_discount" class="form-label trans-text" data-langprop="titles.Other Discount"></label>
+                        <div><input class="form-control data-input" data-field="other_discount" /></div>
+                    </div>
+
+                    <div class="form-group col-lg-12">
+                        <label for="remarks" class="form-label trans-text" data-langprop="titles.Remarks"></label>
+                        <input class="form-control data-input" data-field="remarks"/>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
+                    <span class="trans-text" data-langprop="buttons.Cancel"></span>
+                </button>
+                <button id="_dlgStudentDiscount_btnSave" type="button" class="btn btn-primary btn-sm">
+                    <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>
         </div>
