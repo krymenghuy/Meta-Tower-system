@@ -277,7 +277,7 @@ class GeneralSettings //extends Model
         $branch_id = $ss->branch_id;
         return DB::table('terms as t')->where('t.branch_id',$branch_id)->selectRaw('t.id,CONCAT(t.academic_year,\' \',t.name) AS term_name')->orderByRaw('start_date DESC')->get();
     }
-    static function options_term($academic_year,$ss){
+    static function options_term($academic_year=null,$ss){
        $branch_id = $ss->branch_id;
        $str_year ='1=1';
        if($academic_year > 0) $str_year ='academic_year =\''.$academic_year.'\'';
