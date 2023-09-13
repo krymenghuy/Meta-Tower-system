@@ -17,6 +17,12 @@ class Report //extends Model
     //     parent::__construct($attributes);
     //     $this->companyModel = new CompanyProfile();
     // }
+    protected $id=null,$ss=null;
+
+    function __construct($id=null,$ss=null){
+        $this->ss = $ss;
+        $this->id = $id;
+    }
 
     static function list($ss){
         return DB::select("SELECT id, `name`, `hidden`,code,category,rpt.module_id,rpt.description,rpt.params,rpt.display_order,rpt.hidden FROM reports AS rpt WHERE IFNULL(rpt.hidden,0) = 0 ORDER BY rpt.category,rpt.display_order ASC");
@@ -99,6 +105,7 @@ class Report //extends Model
         $header_list = ['Name','Name Kh','Sex','Term','Session','Program','Family ID'];
         $headers = $this->createHeader('name',$header_list);
         return (object)[
+            'form' => 'simple',
             'headers' => $headers,
             'list' => $studentList
         ];
@@ -177,6 +184,7 @@ class Report //extends Model
             'end_date' => $endDate,
             'short_month_name' => $is_shortMonthName,
         ];
+        $row->form = 'customize';
         $row->program = GeneralSettings::getProgramByLevel($row->level_id,$ss)->name;
         $row->campus = GeneralSettings::getCampus($row->campus_id)->name;
         $row->level = GeneralSettings::getLevel($row->level_id,$ss)->name;

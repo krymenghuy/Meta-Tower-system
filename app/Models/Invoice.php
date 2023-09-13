@@ -321,7 +321,7 @@ class Invoice //extends Model
             "session_id" => $row->session_id,
             // "prev_level_id" => "0",
             "start_date" => convertDate($row->start_date),
-            "months" => $months,
+            "months" => 9,//$months,
             "student_id" => $student_id,
             "pmt_option_id"=> $row->pmt_option_id
         ];

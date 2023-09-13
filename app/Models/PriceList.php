@@ -372,9 +372,9 @@ class PriceList //extends Model
                     'academic_year' => $d->academic_year,
                 ]);
                 $weekly_tuition_due = $total_weekly_Fee->tuition_due;
-                $minus_weekly_fee = $total_weekly_Fee->weekly_fee;
                 $base_amount = $price * ($d->months-1); //** minus 1 = first is not a full */
                 $original_price = $price * $month;
+                $minus_weekly_fee = $original_price - $total_weekly_Fee->weekly_fee;
 
                 $note = 'Tuition('.$original_price.') - '.$minus_weekly_fee.' because start_date is not the first of the month';
             }else{
@@ -442,8 +442,11 @@ class PriceList //extends Model
                     $endingInfo = findFutureMonths($d->start_date,$d->months-1);//** */
                     $end_date =$endingInfo->end_date;
                     $tuition = $base_amount + $monthly_tuition_due + $weekly_tuition_due;
-                    $minus_weekly_fee = $total_weekly_Fee->weekly_fee;
-                    $note = 'Tuition due('.$tuition.') - '.$minus_weekly_fee.' because start_date is not the first of the month';
+                    // $minus_weekly_fee = $total_weekly_Fee->weekly_fee;
+                    // $note = 'Tuition due('.$tuition.') - '.$minus_weekly_fee.' because start_date is not the first of the month';
+                    $original_price = $price * $months;
+                    $minus_weekly_fee = $original_price - $total_tuition_due;
+                    $note = 'Tuition('.$original_price.') - '.$minus_weekly_fee.' because start_date is not the first of the month';
             }
             //** if not the first day of months as semester payment  and months greater than 6 */
             else if($current_day != 1 && $d->months > 6){
@@ -471,9 +474,10 @@ class PriceList //extends Model
                 $total_tuition_due = $after_discount + $weekly_tuition_due;
                 $tuition = $semester_tuition + $pay_month + $total_weekly_Fee->tuition_due;
                 $monthly_tuition_due = 0;//**************** */
-                $minus_weekly_fee = $total_weekly_Fee->weekly_fee;
 
-                $note = 'Tuition due('. $tuition .') - '.$minus_weekly_fee.' because start_date is not the first of the month';
+                $original_price = $price * $months;
+                $minus_weekly_fee = $original_price - $total_tuition_due;
+                $note = 'Tuition('.$original_price.') - '.$minus_weekly_fee.' because start_date is not the first of the month 1';
 
             }else {
                 $week ="full month no week count";
@@ -512,10 +516,12 @@ class PriceList //extends Model
                 $total_tuition_due = ($tuition - $discount_amt) + $total_weekly_Fee->tuition_due;
                 // return $discount_info;
                 $monthly_tuition_due = 0;//**************** */
-                $after_discount = $tuition - $discount_amt;
-                $minus_weekly_fee = $total_weekly_Fee->weekly_fee;
 
-                $note = 'Tuition due('.$tuition.') minus '.$minus_weekly_fee.' because start_date is not the first of the month';
+                //** note */
+                $after_discount = $tuition - $discount_amt;
+                $original_price = $price * $annual;
+                $minus_weekly_fee = $original_price - $total_tuition_due;
+                $note = 'Tuition('.$original_price.') - '.$minus_weekly_fee.' because start_date is not the first of the month';
 
             }else if($current_day != 1 && $d->months >12){
                 $annual = 12-1;
@@ -542,9 +548,12 @@ class PriceList //extends Model
                 $weekly_tuition_due = $total_weekly_Fee->tuition_due;
                 $after_discount = $tuition - $discount_amt;
                 $monthly_tuition_due = 0;//**************** */
-                $minus_weekly_fee = $total_weekly_Fee->weekly_fee;
 
-                $note = 'Tuition due('.$tuition.') minus '.$minus_weekly_fee.' because start_date is not the first of the month';
+                //** note */
+                $after_discount = $tuition - $discount_amt;
+                $original_price = $price * $annual;
+                $minus_weekly_fee = $original_price - $total_tuition_due;
+                $note = 'Tuition('.$original_price.') - '.$minus_weekly_fee.' because start_date is not the first of the month';
             }else{
                 // $annual_tuition = $d->months * $price;
                 $tuition = $d->months * $price;
@@ -685,7 +694,7 @@ class PriceList //extends Model
                 else if($tuition_end_date < date('Y-m-d') && $row->status_id == 3){
                     $row->status = 'expired';
                 }
-                else $row->status = 'unpaid';
+                // if($tuition_end_date > date('Y-m-d') && $row->status_id <=2) $row->status = 'unpaid';
             }
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -979,9 +988,9 @@ class PriceList //extends Model
             // params = enrollment_id,tuition_due,additional_discount = 0 because it has already updated in approve discount;
             $inv->resetUnpaidInvoice($id,$tuition_due,0,$payment_info->tuition);
             $set_pmt_option = saveData($ss,'payments',['enrollment_id' => $enr->id],$pmt_arr,[],1);
-            // DB::table('enrollments')->where('student_id',$student_id)->where('branch_id',$ss->branch_id)->update([
-            //     "tuition_end_date" => '',
-            // ]);
+            DB::table('enrollments')->where('student_id',$student_id)->where('branch_id',$ss->branch_id)->update([
+                "tuition_end_date" => findFutureMonths(convertDate($inputs['start_date']),$months)->end_date,
+            ]);
         }
 
         return DV::depends($id,$preview);
