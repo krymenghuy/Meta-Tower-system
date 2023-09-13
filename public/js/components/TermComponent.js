@@ -3,44 +3,49 @@ var TermComponent = new function () {
     let mThis = this;
     this.title_prop = 'Terms';
     this.self = $('#_main_termComponent');
-    this.elFilter_academic_year = this.self.find('#_term_filter_academic_year');
 
-    //this.tblTerm = mThis.self.find('#_trm_tbl');
+    this.elFilter_academic_year = mThis.self.find('#_term_filter_academic_year');
     this.btnNew = mThis.self.find('#_trm_btn_new');
 
     this.cols = [{
         title: "Term Name",
+        className: 'align-middle',
         data: (data, a, b) => {
-            return ['<div class="d-flex flex-column"><p class="fw-bold">', data.name, '</p>'
-                , '</div>'].join('');
+            return ['<div class="text-capitalize d-flex flex-column"><p class="fw-bold p-0 m-0">',data.name,'</p></div>'].join('');
         }
     },
     {
         title: "Start Date",
+        className: 'align-middle',
         data: "start_date"
     },
     {
         title: "End Date",
+        className: 'align-middle',
         data: "end_date"
     },
     {
         title: "Academic Year",
+        className: 'align-middle',
         data: "academic_year"
     },
     {
         title: "Created By",
+        className: 'align-middle',
         data: (data, index, tr) => {
-            return ['<div class="d-flex flex-column"><p class="">', data.create_user, '</p><p class="text-left text-muted">', data.created_at, '</p></div>'].join('');
+            return ['<div class="d-flex flex-column"><p class="text-capitalize pb-0 mb-0">',data.create_user,'</p><small class="text-left text-muted">',data.created_at,'</small></div>'].join('');
         }
     },
     {
         title: "Previous Term",
+        className: 'align-middle',
         data: (data, index,tr) => {
             return data.prev_term_name ? data.prev_term_name : 'NA';
         }
     },
     {
         title: "Action",
+        className: 'align-middle',
         data: (data, a, b) => {
             return [`<div class="d-flex gap-2">
                 <a href="javascript:void(0)" class="btn-trm-modify" data-id="${data.id}">

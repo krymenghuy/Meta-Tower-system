@@ -9,24 +9,29 @@ var AcademicYearComponent = new function(){
 
     this.cols = [{
         title: "Academic Year",
+        className: 'align-middle',
         data: "academic_year"
     },
     {
         title: "Start Date",
+        className: 'align-middle',
         data: "start_date"
     },
     {
         title: "End Date",
+        className: 'align-middle',
         data: "end_date"
     },
     {
         title: "Updated By",
-        data: (data,index,tr)=>{
-            return ['<div class="d-flex flex-column"><span class="fw-semibold">',data.update_user,'</span><span class="text-left text-muted" style="font-size:0.9em">',data.updated_at,'</span></div>'].join('');
+        className: 'align-middle',
+        data: (data, index, tr)=>{
+            return ['<div class="d-flex flex-column"><span class="text-capitalize fw-semibold">',data.update_user,'</span><span class="text-left text-muted" style="font-size:0.9em">',data.updated_at,'</span></div>'].join('');
         }
     },
     {
         title: "Action",
+        className: 'align-middle',
         data: (data, a, b) => {
             return [`<div class="d-flex gap-2">
                 <a href="javascript:void(0)" class="btn-adm-modify" data-id="${data.id}">
@@ -39,7 +44,7 @@ var AcademicYearComponent = new function(){
         }
     }];
 
-    this.getFilterData =()=>{
+    this.getFilterData = () => {
         return null;
     }
 
@@ -61,15 +66,15 @@ var AcademicYearComponent = new function(){
             let op = {
                 'id': 0,
                 'onClose': () => {
-                    mThis.displayAcademic();
+                    mThis.acadYearListView.showPage(mThis.getFilterData());
                 }
             };
             AcademicDialog.show(op);
         });
 
-        mThis.tblAcademic.on('click',e=>{
+        mThis.tblAcademic.on('click',(e) => {
             e.preventDefault();
-              //Click event for Modify Academic Year
+            //Click event for Modify Academic Year
             let lnk = VSUtil.clickOnClass(e.target,'btn-adm-modify');
             if(lnk){
                 let op = {
@@ -93,7 +98,9 @@ var AcademicYearComponent = new function(){
                         vsapi.call(`${main_view.base_url}/api/academic-year/delete`,op,null).then(res => {
                             if(res.status_code === 200){
                                 mThis.acadYearListView.showPage(mThis.getFilterData());
-                            }else cv_interact.warning(res.error_message);
+                            }
+                            else 
+                                cv_interact.warning(res.error_message);
                         });
                     }
                 });
@@ -124,12 +131,13 @@ const AcademicDialog = new function(){
 
     this.btnSave.on('click',(e) => {
         e.preventDefault();
-        let p = mThis.getDataForm();
+        const p = mThis.getDataForm();
         vsapi.call(`${main_view.base_url}/api/academic-year/save`,p,null,false).then(res => {
             let data = res.data?res.data:{};
             if(res.status_code === 200){
                 data.id = mThis.options.id;
-                if(typeof mThis.options.onClose ==='function') mThis.options.onClose(data);
+                if(typeof mThis.options.onClose ==='function')
+                    mThis.options.onClose(data);
                 mThis.self.modal('hide');
             }
             else
@@ -137,18 +145,19 @@ const AcademicDialog = new function(){
         });
     });
 
-    this.self.on('show.bs.modal',e=>{
+    this.self.on('show.bs.modal',(e) => {
+        e.preventDefault();
         if(mThis.options.previousDialog) 
-          mThis.options.previousDialog.self.modal('hide'); 
+            mThis.options.previousDialog.self.modal('hide');
     });
 
-    this.self.on('hide.bs.modal',e=>{
-        if(mThis.options.previousDialog)
-        {
+    this.self.on('hide.bs.modal',(e) => {
+        e.preventDefault();
+        if(mThis.options.previousDialog){
             mThis.options.previousDialog.show(mThis.previousDialog_options); 
-            if(typeof mThis.options.onClose ==='function') mThis.options.onClose({'id':mThis.options.id});
+            if(typeof mThis.options.onClose ==='function')
+                mThis.options.onClose({'id':mThis.options.id});
         }
-          
     });
 
     this.getDataForm = () => {
@@ -156,8 +165,8 @@ const AcademicDialog = new function(){
             'id': mThis.options.id
         };
         mThis.self.find('.data-input').each(function(){
-            let el = $(this);
-            let f = el.data('field');
+            const el = $(this);
+            const f = el.data('field');
             p[f] = el.val();
         });
         return p;
@@ -166,8 +175,8 @@ const AcademicDialog = new function(){
     this.setDataForm = (d) => {
         d = d ? d : {};
         mThis.self.find('.data-input').each(function(){
-            let el = $(this);
-            let f = el.data('field');
+            const el = $(this);
+            const f = el.data('field');
             el.val(d[f]);
         });
     }

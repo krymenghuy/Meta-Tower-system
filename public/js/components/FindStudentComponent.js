@@ -474,7 +474,7 @@ let GenerateInvoiceFSN = new function(){
                         <td class="data-get" data-field="fee_type" data-value="${fee.fee_type}" data-id="${fee.invoice_item_id}">${fee.fee_type ? fee.fee_type : 'N/A'}</td>
                         <td>${fee.description ? fee.description : 'N/A'}</td>
                         <td>${fee.date_range ? fee.date_range : 'N/A'}</td>
-                        <td>${fee.amount ? ['$',fee.amount].join(' ') : 'N/A'}</td>
+                        <td>${fee.tuition ? ['$',fee.tuition].join(' ') : 'N/A'}</td>
                         <td>${fee.discount ? ['%',fee.discount].join(' ') : 'N/A'}</td>
                         <td>${fee.special_discount ? ['%',fee.special_discount].join(' ') : 'N/A'}</td>
                         <td>${fee.second_child_discount ? fee.second_child_discount : 'N/A'}</td>
