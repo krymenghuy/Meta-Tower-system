@@ -11,55 +11,60 @@ var DepositFeeComponent = new function(){
     this.cols = [
     {
         title: "Student Name",
-        className: 'text-capitalize',
+        className: 'align-middle text-capitalize',
         data: "student_name"
     },
     {
         title: "Class",
+        className: 'align-middle text-capitalize',
         data: "level"
     },
     {
         title: "Parent Phone",
+        className: 'align-middle text-capitalize',
         data: "parent_phone"
     },
     {
         title: "Date of Birth",
+        className: 'align-middle text-capitalize',
         data: (data, index, tr) => {
-            let dob = data.date_of_birth ? data.date_of_birth : '';
-            return new Date(dob).toLocaleDateString('km-KH',{
+            return data.date_of_birth ? new Date(data.date_of_birth).toLocaleDateString('km-KH',{
                 'day':'numeric',
                 'month':'short',
                 'year':'numeric'
-            }).replaceAll(' ','-').replace(',','');
+            }).replace(',','') : '';
         }
     },
     {
         title: "Expire Date",
-        data: (data, index, tr) =>{
-            let expire_date = data.expire_date ? data.expire_date : '';
-            return new Date(expire_date).toLocaleDateString('km-KH',{
+        className: 'align-middle text-capitalize',
+        data: (data, index, tr) => {
+            return data.expire_date ? new Date(data.expire_date).toLocaleDateString('km-KH',{
                 'day':'numeric',
                 'month':'short',
                 'year':'numeric'
-            }).replaceAll(' ','-').replace(',','');
+            }).replace(',','') : '';
         }
     },
     {
         title: "Amount",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
-            let cur_symbol = data.cur_symbol ? data.cur_symbol : '$', amount = data.amount ? data.amount : '0';
-            return [`${cur_symbol} ${amount}`].join('');
+            const cur_symbol = data.cur_symbol ? data.cur_symbol : '$', amount = data.amount ? data.amount : '0';
+            return [cur_symbol, amount].join(' ');
         }
     },
     {
         title: "Status",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
-            let status = data.status ? data.status : '';
+            const status = data.status ? data.status : '';
             return [`<span class="p-2 bg-success rounded-3 text-white text-capitalize">${status}</span>`].join('');
         }
     },
     {
         title: "Action",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
             return [`<div class="d-flex gap-2">
                 <a href="javascript:void(0)" class="btn-dpf-modify" data-id="${data.id}">
@@ -73,7 +78,6 @@ var DepositFeeComponent = new function(){
     }];
 
     this.init = () => {
-
         mThis.depositFeeListView = new ListView('_deposit_fee_list',{
             'fetchApi':`${main_view.base_url}/api/deposit/list-paginate`,
             'perPage':5,
@@ -86,9 +90,9 @@ var DepositFeeComponent = new function(){
 
         mThis.tblDepositFee = $(mThis.depositFeeListView.getTable());
 
-        mThis.elSearch.on('keyup',e=>{
-          e.preventDefault();
-          mThis.depositFeeListView.showPage(mThis.getFilterData()); 
+        mThis.elSearch.on('keyup',(e) => {
+            e.preventDefault();
+            mThis.depositFeeListView.showPage(mThis.getFilterData()); 
         });
 
         mThis.btnNew.on('click',function(e){
@@ -102,7 +106,7 @@ var DepositFeeComponent = new function(){
             DepositFeeDialog.show(op);
         });
 
-        mThis.tblDepositFee.on('click',e=>{
+        mThis.tblDepositFee.on('click',(e) => {
             e.preventDefault();
             let lnk = VSUtil.clickOnClass(e.target,'btn-dpf-modify');
             if(lnk){
@@ -153,7 +157,7 @@ var DepositFeeComponent = new function(){
 }
 
 const DepositFeeDialog = new function(){
-    let mThis = this;
+    const mThis = this;
     this.self = $('#dlg_dpf');
     this.options = {};
     let ref = {

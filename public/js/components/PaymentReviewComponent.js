@@ -1,6 +1,6 @@
 "use strict";
 var PaymentReviewComponent = new function(){
-    let mThis = this;
+    const mThis = this;
     this.title_prop = "Tuition Payments";
     this.self = main_view.appContent.children("#_main_paymentReviewComponent");
 
@@ -9,11 +9,11 @@ var PaymentReviewComponent = new function(){
     this.elFilter_status = this.filter_form.find("#_ppd_filter_status");
     this.elFilter_term = this.filter_form.find('#_ppd_filter_term');
     
-    let cur_symbol = "$";
+    const cur_symbol = "$";
     this.cols = [
         {
             title: "Name",
-            className: 'text-capitalize',
+            className: 'align-middle text-capitalize',
             data: (data,index,tr)=>{
                 const new_student = data.is_new_student ==1? ['<span class="p-1 border rounded-5 border-warning">New</span>'].join(''): ['<span class="p-1 border rounded-5 border-warning">Old</span>'].join('');
                 return ['<span class="fw-bold d-block p-1 mb-1">',data.name,'</span>',new_student].join('');
@@ -21,31 +21,35 @@ var PaymentReviewComponent = new function(){
         },
         {
             title: "Grade",
-            className: '',
+            className: 'align-middle text-capitalize',
             data: (data,index,tr)=>{
                 return ['<span class="d-block p-1">',data.level_name,'</span>'].join('');
             },
         },
         {
             title: "Tuition",
+            className: 'align-middle text-capitalize',
             data: (data, a, b) => {
                 return data.tuition ? [cur_symbol, data.tuition].join(' ') : '';
             },
         },
         {
             title: "Tuition Due",
+            className: 'align-middle text-capitalize',
             data: (data, a, b) => {
                 return data.tuition_due ? [cur_symbol, data.tuition_due].join(' ') : '';
             },
         },
         {
             title: "Tuition Paid",
+            className: 'align-middle text-capitalize',
             data: (data, a, b) => {
                 return data.tuition_paid ? [cur_symbol, data.tuition_paid].join(' ') : '';
             },
         },
         {
             title: "Status",
+            className: 'align-middle text-capitalize',
             data: (data, a, b) => {
                 const cls = data.status.toLowerCase() === "pending" ? "bg-danger" : data.status.toLowerCase() === "verified" ? "bg-info" : data.status.toLowerCase() === 'expired' ? "bg-danger" : data.status.toLowerCase() === 'surcharge' ? "bg-warning" : "bg-success";
                 return [`<span class="p-2 ${cls} text-white rounded-3 text-capitalize">${data.status}</span>`].join('');
@@ -53,8 +57,9 @@ var PaymentReviewComponent = new function(){
         },
         {
             title: "Action",
+            className: 'align-middle text-capitalize',
             data: (data, a, b) => {
-                let cls = data.status === "paid" ? "d-none" : "";
+                const cls = data.status.toLowerCase() === "paid" ? "d-none" : "";
                 return [`<div class="d-flex gap-2">
                     <a href="javascript:void(0)" class="btn-calculate-fee btn btn-sm btn-success ${cls} trans-text" data-langprop="titles.Calculate Tuition" data-isnewstudent="${data.is_new_student}" data-id="${data.id}">
                          Calculate Tuition
@@ -94,8 +99,8 @@ var PaymentReviewComponent = new function(){
             
         });
 
-        mThis.filter_form.on('change','.filter-field',e=>{
-           //const el = e.target;
+        mThis.filter_form.on('change','.filter-field',(e)=>{
+            e.preventDefault();
            if(!mThis.disable_filter) mThis.studentListView.showPage(mThis.getFilterData());
         });
     };
@@ -135,11 +140,10 @@ var PaymentReviewComponent = new function(){
             });
         });
     };
-
 };
 
 const TuitionCalculateDialog = new function(){
-    let mThis = this;
+    const mThis = this;
     this.self = main_view.appContent.find("#dlg_ppd_");
     this.options = {};
     let ref = {
@@ -179,24 +183,11 @@ const TuitionCalculateDialog = new function(){
                  $(this).remove();
             });
         }
-
-        // vsapi.call(`${main_view.base_url}/api/settings/payment-options`,op,null,false).then((res) => {
-        //     if(res.status_code === 200){
-        //         console.log(res.data);
-        //         let div = mThis.modalBody.children().last();
-        //         div.after([`<div class="form-group">
-        //             <label for="${res.data.name}" class="form-label text-capitalize">${res.data.name}</label>
-        //             <input type="number" class="form-control data-input" data-field="${res.data.name}"/>
-        //         </div>`].join(''));
-        //         if(div.length > 0)
-        //             div.remove();
-        //     }
-        // });
     });
 
     mThis.btnSave.on("click", function(e){
         e.preventDefault();
-        let p = mThis.getDataForm();
+        const p = mThis.getDataForm();
         if(ref.click){
             vsapi.call(`${main_view.base_url}/api/price-list/update/pending-payment`,p,null).then((res) => {
                 ref.click = false;
@@ -242,9 +233,7 @@ const TuitionCalculateDialog = new function(){
                      if(f === 'price_list_name'){
                        el.text(data[f]?data[f]:'Not Found!');
                      }else{
-                        //if(data.discount_type =='percentage') 
                         el.text([data[f]?data[f]:0,'%'].join(''));
-                        //else el.html([data[f]?data[f]:0,' <span><small>',data.currency_code,'</small></span>'].join(''));
                      }
                     
                  });
@@ -258,8 +247,8 @@ const TuitionCalculateDialog = new function(){
         };
 
         mThis.self.find(".data-input").each(function () {
-            let el = $(this);
-            let f = el.data("field");
+            const el = $(this);
+            const f = el.data("field");
             p[f] = el.val();
         });
         return p;
@@ -268,8 +257,8 @@ const TuitionCalculateDialog = new function(){
     this.setDataForm = (d) => {
         d = d ? d : {};
         mThis.self.find(".data-input").each(function () {
-            let el = $(this);
-            let f = el.data("field");
+            const el = $(this);
+            const f = el.data("field");
             if(el.is("select"))
                 el.val(d[f]).trigger("change");
             else
@@ -281,8 +270,8 @@ const TuitionCalculateDialog = new function(){
         vsapi.call(`${main_view.base_url}/api/tuition-review/form-options`,{'id':id},null).then(res => {
             const d =res.status_code === 200? res.data: {};
             mThis.self.find(".data-input").each(function () {
-                let el = $(this);
-                let f = el.data("field");
+                const el = $(this);
+                const f = el.data("field");
                 switch (f) {
                     case "pmt_option_id":
                         VSUtil.setComboItems(el,d.pmt_options,"id","pmt_option",null,null,null);
@@ -305,16 +294,6 @@ const TuitionCalculateDialog = new function(){
         if(e) mThis.startDatePanel.show();
         else mThis.startDatePanel.hide();
     }
-
-    // this.loadFormDetails = (options) => {
-    //     vsapi.call(`${main_view.base_url}/api/price-list/pending-payment/details`,{ id: options.id },null).then((res) => {
-    //         let data = {};
-    //         if(res.status_code === 200){
-    //             data = res.data;
-    //         }
-    //         mThis.setDataForm(data);
-    //     });
-    // };
  
     /** @options = {id,is_new_student,level_id,session}*/
     this.show = (options) => {
@@ -330,13 +309,6 @@ const TuitionCalculateDialog = new function(){
         mThis.showDiscountInfo({'is_new_student':1});
 
         mThis.prepareFormOption(options.id,(d) => {
-            //mThis.loadFormDetails(options);
-            // if(d.studentInfo){
-                
-            // }else{
-
-            // }
-            //mThis.setDataForm(d.enrollment_info);
             mThis.self.modal({
                 backdrop: "static",
             });

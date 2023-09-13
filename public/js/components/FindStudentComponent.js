@@ -437,7 +437,6 @@ let GenerateInvoiceFSN = new function(){
             if(res.status_code === 200){
                 data = res.data;
             }
-            console.log(data);
 
             const current = new Date();
             const format = new Intl.DateTimeFormat('en-US',{
