@@ -88,14 +88,29 @@ class Report //extends Model
     $get_group_name =',(SELECT g.name FROM group_members AS gm INNER JOIN student_groups AS g ON g.id = gm.group_id WHERE gm.enrollment_id = e.id LIMIT 1) AS group_name';
     $cols ='e.id,st.id AS student_id,t.id AS term_id,st.name AS `student_name`, st.name_kh AS student_name_kh,st.code as student_code,st.sex,st.phone_number,(SELECT family_code FROM student_guardians WHERE student_id = st.id LIMIT 1) AS family_code'
     .',p.id AS program_id, l.id AS level_id,e.session_id,e.campus_id,t.`name` AS term_name, c.`name` AS campus_name,p.`name` AS program_name,l.`name` AS level_name'.$get_group_name.',formatDate(e.start_date) AS start_date, formatDate(e.tuition_end_date) AS tuition_end_date,e.status_id as pmt_status_id,e.enrollment_status_id,e.is_new_student';
-    return DB::table('enrollments as e')
+
+    $studentList = DB::table('enrollments as e')
     ->join('students as st','st.id','=','e.student_id')
     ->join('terms as t','t.id','=','e.term_id')
     ->join('program_levels as l','l.id','=','e.level_id')
     ->join('sessions AS ss','ss.id','=','e.session_id')
     ->join('campuses AS c','c.id','=','e.campus_id')
     ->join('programs AS p','p.id','=','l.program_id')->whereRaw($str_where)->selectRaw($cols)->orderByRaw('e.id DESC,st.id')->get();
+    $header_list = ['Name','Name Kh','Sex','Term','Session','Program','Family ID'];
+    $headers = $this->createHeader('name',$header_list);
+    return (object)[
+        'headers' => $headers,
+        'list' => $studentList
+    ];
   }
+
+  function createHeader($key_name, $arr) {
+    $result = [];
+    foreach ($arr as $d) {
+        $result[] = [$key_name => $d];
+    }
+    return $result;
+}
 
   /**
    * return list of invoice payments (date to date)
