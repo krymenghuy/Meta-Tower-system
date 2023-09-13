@@ -24,6 +24,11 @@ var FindStudentComponent = new function(){
             'listContainerClass':null
         });
  
+        mThis.elSearchStudent.on('keyup',e=>{
+            e.preventDefault();
+            mThis.studentListView.showPage(mThis.getFilterData());
+        });
+
         mThis.btnFind.on('click',function(e){
             e.preventDefault();
             let p = mThis.getDataForm(mThis.div_filter);
