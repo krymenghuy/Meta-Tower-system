@@ -63,7 +63,7 @@ class Deposit //extends Model
         $skip_rows = ($current_page -1) * $per_page;
 
         $str_status =',CASE d.authorized WHEN 1 THEN \'authorized\' ELSE \'pending\'END AS `status`';
-        $cols = 'd.id,d.deposite_amount as amount'.$str_status.',d.student_name,d.status_id,l.name as level,d.parent_phone,d.expire_date,d.date_of_birth';
+        $cols = 'd.id,d.deposite_amount as amount'.$str_status.',d.student_name,d.status_id,l.name as level,d.parent_phone,d.expire_date,formatDate(d.date_of_birth) as date_of_birth';
         $query = DB::table('deposite as d')
                 ->join('program_levels as l','l.id','=','d.level_id')
                 ->selectRaw($cols)

@@ -264,13 +264,13 @@ class Invoice //extends Model
         $invItemID = isset($d->inv_item_id)?$d->inv_item_id:null;
         $campus = new Campus();
         $q = DB::table('students as s')
-                // ->where('s.id',$id)
+                ->where('e.id',$id)
                 ->join('enrollments as e','e.student_id','=','s.id')
                 ->join('payments as p','p.enrollment_id','=','e.id')
-                ->selectRaw('s.id as student_id,p.second_child_discount,p.special_discount,e.academic_year,p.tuition_due,p.policy_discount,e.start_date,e.tuition_end_date,p.tuition,s.code as student_code,s.name as student_name,e.campus_id,e.level_id,e.status_id');
-                if($id){
-                    $q->where('e.id',$id);
-                }
+                ->selectRaw('e.session_id,p.pmt_option_id,s.id as student_id,p.second_child_discount,p.special_discount,e.academic_year,p.tuition_due,p.policy_discount,e.start_date,e.tuition_end_date,p.tuition,s.code as student_code,s.name as student_name,e.campus_id,e.level_id,e.status_id');
+                // if($id){
+                //     $q->where('e.id',$id);
+                // }
         $row = $q->get()->first();
         if(!$row) return DV::error('Not Found');
         $tuition_end_date = convertDate($row->tuition_end_date);
@@ -292,8 +292,10 @@ class Invoice //extends Model
         $row->discount = $row->policy_discount;
         $row->level = Student::getProgramLevel($row->level_id);
         $row->amount = $row->tuition;
+
         $row->deposite_amount = self::studentDeposite($student_id);
         $row->total = $row->tuition_due;
+
         // minus deposite amount if matching student
         if($row->deposite_amount>0) $row->total = $row->tuition_due - $row->deposite_amount;
 
@@ -305,11 +307,30 @@ class Invoice //extends Model
         }
         $row->other_fees = self::getOtherFeeTypes($student_id,$invoice_number);
         unset($row->tuition);
-        unset($row->tuition_due);
+        // unset($row->tuition_due);
         unset($row->policy_discount);
 
         $row->referal = self::getReferrerCommission($student_id,$ss);
 
+        $instance = new PriceList(null,$ss);
+        $months = isset($d->months)?$d->months:GeneralSettings::getPmtOptionMonths($row->pmt_option_id);
+        $pmt_arr = [
+            "level_id" => $row->level_id,
+            // "program_id" => 1,
+            "academic_year" => $row->academic_year,
+            "session_id" => $row->session_id,
+            // "prev_level_id" => "0",
+            "start_date" => convertDate($row->start_date),
+            "months" => $months,
+            "student_id" => $student_id,
+            "pmt_option_id"=> $row->pmt_option_id
+        ];
+
+        $preview = $instance->previewPendingPaymentDetails($pmt_arr,$id,$ss);
+        if($preview->status_code !=200) return DV::error($preview->error_message);
+        $pinfo = $preview->payment_info;
+        $row->weekly_tuition_due = $pinfo->weekly_tuition_due;
+        $row->description = $pinfo->note;
         return $row;
     }
 
