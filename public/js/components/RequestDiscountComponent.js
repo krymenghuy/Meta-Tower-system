@@ -17,75 +17,84 @@ var RequestDiscountComponent = new function(){
     },
     {
         title: "Image",
+        className: 'align-middle',
         data: (data, a, b) => {
-            let image = data.image_url ? data.image_url : '';
+            const image = data.image_url ? data.image_url : '';
             return [`<img class="image-student-tbl" src="${image}" alt=""/>`].join('');
         }
     },
     {
         title: "Student ID",
+        className: 'align-middle text-capitalize',
         data: "code"
     },
     {
         title: "Full Name",
-        className: 'text-capitalize',
+        className: 'align-middle text-capitalize',
         data: "name"
     },
     {
         title: "Full Name (KH)",
-        className: 'text-capitalize',
+        className: 'align-middle text-capitalize',
         data: "name_kh"
     },
     {
         title: "Sex",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
-            let sex = data.sex === 'M' ? 'Male' : 'Female';
+            const sex = data.sex === 'M' ? 'Male' : 'Female';
             return sex;
         }
     },
     {
         title: "Date of Birth",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
             let dob = data.date_of_birth ? data.date_of_birth : '';
             return new Date(dob).toLocaleDateString('km-KH',{
                 'day':'numeric',
                 'month':'short',
                 'year':'numeric'
-            }).replaceAll(' ','-').replace(',','');
+            }).replace(',','');
         }
     },
     {
         title: "Discount",
+        className: 'text-capitalize align-middle',
         data: (data, a, b) => {
-            let discount_type = data.type === 'amount' ? '$':'%';
-            let amount = data.amount ? data.amount : 'N/A';
+            const discount_type = data.type === 'amount' ? '$':'%';
+            const amount = data.amount ? data.amount : 'N/A';
             return [`${amount} ${data.amount ? discount_type : ''}`].join('');
         }
     },
     {
         title: "Status",
+        className: 'text-capitalize align-middle',
         data: (data, a, b) => {
             return [`${data.status ? `<span class="text-capitalize p-2 bg-warning text-white rounded-3">${data.status}</span>`:''}`].join('');
         }
     },
     {
         title: "Created By",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
-            let update_user = data.update_user ? data.update_user : '',updated_at = data.updated_at ? data.updated_at : '';
+            let update_user = data.update_user ? data.update_user : '';
             return [`<p class="pb-0 mb-1 text-capitalize">${update_user}</p>
-            <small>${new Date(updated_at).toLocaleDateString('km-KH',{
+            <small>${data.updated_at ? new Date(data.updated_at).toLocaleDateString('km-KH',{
                 'day':'numeric',
                 'month':'short',
                 'year':'numeric'
-            }).replaceAll(' ','-').replace(',','')}</small>`].join('');
+            }).replace(',','') : ''}</small>`].join('');
         }
     },
     {
         title: "Remark",
+        className: 'align-middle text-capitalize',
         data: "remarks"
     },
     {
         title: "Action",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
             return [`<div class="d-flex gap-2">
                 <a href="javascript:void(0)" class="btn-rqdc-send" data-id="${data.id}">

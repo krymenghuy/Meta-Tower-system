@@ -8,21 +8,32 @@ var ReportCenterComponent = new function(){
     this.init = () => {}
 
     this.filter_fields = [{
-        'type':'select',
-        'api_fetch':`${main_view.base_url}/api/student/options-group`,
-        'api_params':{},
-        'name':'group_id',
-        'value_field':'id',
-        'text_field':'name',
-        'required': 'true'
+        'type': 'select',
+        'api_fetch': `${main_view.base_url}/api/form-option`,
+        'api_params': {},
+        'name': 'group_id',
+        'value_field': 'id',
+        'text_field': 'name',
+        'required': 'true',
+        'dot_object': 'groups'
+    },
+    {
+        'type': 'select',
+        'api_fetch': `${main_view.base_url}/api/form-option`,
+        'api_params': {},
+        'name': 'term_id',
+        'value_field': 'id',
+        'text_field': 'term',
+        'required': 'true',
+        'dot_object': 'terms'
+    },
+    {
+        'type': 'date',
+        'name': 'start_date'
     },
     {
         'type':'date',
-        'name':'start_date',
-    },
-    {
-        'type':'date',
-        'name':'end_date',
+        'name':'end_date'
     }];
 
     this.displayMainOptions = (onFinish = null) => {
@@ -122,10 +133,10 @@ var ReportCenterComponent = new function(){
         let html = null, inner_html = null;
         if(p.param){
             p.param.map(item => {
-                let title = item.replace('_id','').split('_').join(' ');
+                const title = item.replace('_id','').split('_').join(' ');
                 mThis.filter_fields.map(f => {
                     if(f.type === 'select' && f.name === item){
-                        let id = ['select_',f.name].join('');
+                        const id = ['select_',f.name].join('');
                         inner_html = [inner_html, `<div class="col-lg-6">
                             <div class="form-group">
                                 <label for="${item}" class="form-label text-capitalize trans-text" data-langprop="titles.${title}"></label>
@@ -134,7 +145,7 @@ var ReportCenterComponent = new function(){
                                 </div>
                             </div>
                         </div>`].join('');
-                        mThis.getDataOption(f.api_fetch, f.api_params, f.value_field, f.text_field, f.required,id);
+                        mThis.getDataOption(f.api_fetch, f.api_params, f.value_field, f.text_field, f.required, f.dot_object, f.form, id);
                     }
                     else if(f.type === 'date' && f.name === item){
                         inner_html = [inner_html, `<div class="col-lg-6">
@@ -177,7 +188,7 @@ var ReportCenterComponent = new function(){
         LocaleManager.translateZone('_rpt_input_filter');
     }
 
-    this.getDataOption = (api, param, value, text, required, id) => {
+    this.getDataOption = (api, param, value, text, required, dot_object, form, id) => {
         mThis.options.params = mThis.options.params ? mThis.options.params : [];
         mThis.options.params.push({
             'api': api,
@@ -185,6 +196,8 @@ var ReportCenterComponent = new function(){
             'value': value,
             'text': text,
             'required': required,
+            'dot_object': dot_object,
+            'form': form,
             'dom_id': id
         });
     }
@@ -195,26 +208,33 @@ var ReportCenterComponent = new function(){
             vsapi.call(item.api, item.param, null, false).then(res => {
                 if(res.status_code === 200){
                     data = res.data;
-                    let el = div.find(`#${item.dom_id}`);
-                    el.attr('data-required',item.required);
+                    item.dot_object ? data = data[`${item.dot_object}`] : data = data;
+                    const el = div.find(`#${item.dom_id}`);
+                    item.required ? el.attr('data-required',item.required) : false;
+                    item.form ? el.attr('data-form',item.form) : false;
                     VSUtil.setComboItems(el, data, item.value, item.text, null, null, null);
                 }
             });
         });
     }
 
+    this.getApiRun = (end_point) => {}
+
     this.runReport = (div) => {
         div.find('#_rpt_btn_report').on('click',function(e){
             e.preventDefault();
             let p = {};
             div.find('.data-input').each(function(){
-                let el = $(this);
-                let f = el.data('field');
+                const el = $(this);
+                const f = el.data('field');
                 if(el.data('required')){
                     p['required'] = {
                         'text': [mThis.capitalize(f.replaceAll('_id','')),'cannot empty!'].join(' '),
                         'value': el.val()
                     };
+                }
+                if(el.data('form') == 'simple'){
+                    p['simple'] = true;
                 }
                 p[f] = el.val();
             });
@@ -231,13 +251,18 @@ var ReportCenterComponent = new function(){
     this.capitalize = (str, lower = false) => (lower ? str.toLowerCase() : str).replace(/(?:^|\s|["'([{])+\S/g, match => match.toUpperCase());
 
     this.getDataTable = (div, p) => {
-        vsapi.call(`${main_view.base_url}/api/reports/enrollment/attendance/list`,p,null,false).then(res => {
-            let data = {};
-            if(res.status_code === 200){
-                data = res.data;
-            }
-            renderTable(div.find('#_rpt_table'), data);
-        });
+        if(p.form == 'simple'){
+            console.log('call api');
+        }
+        else{
+            vsapi.call(`${main_view.base_url}/api/reports/enrollment/attendance/list`,p,null,false).then(res => {
+                let data = {};
+                if(res.status_code === 200){
+                    data = res.data;
+                }
+                renderTable(div.find('#_rpt_table'), data);
+            });
+        }
     }
 
     this.getValueWhenClick = (div) => {

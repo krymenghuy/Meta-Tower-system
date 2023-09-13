@@ -412,11 +412,11 @@ let GenerateInvoiceFSN = new function(){
         }
     });
 
-    this.setTotal = (tbody) => {
+    this.setTotal = (tbody,def_value=0) => {
         const div = mThis.self, span_total = div.find('#inv_total');
-        let total = 0;
+        let total = def_value;
         tbody.find('.total-item').each(function(){
-            let el = $(this);
+            const el = $(this);
             let total_item = el.text().replace('$ ','');
             total_item = parseInt(total_item);
             total += total_item;
@@ -437,11 +437,12 @@ let GenerateInvoiceFSN = new function(){
             if(res.status_code === 200){
                 data = res.data;
             }
+            console.log(data);
 
             const current = new Date();
             const format = new Intl.DateTimeFormat('en-US',{
                 day: 'numeric',
-                month: 'long',
+                month: 'short',
                 year: 'numeric'
             }).format(current);
 
@@ -452,6 +453,8 @@ let GenerateInvoiceFSN = new function(){
                     el.text(format);
                 else if(f === 'due_date')
                     el.val(data[f]);
+                else if(f === 'deposite_amount' || f === 'total')
+                    el.text(data[f] ? '$ '+data[f] : '');
                 else
                     el.text(data[f]);
             });
@@ -459,7 +462,7 @@ let GenerateInvoiceFSN = new function(){
             let tab = mThis.self.find('a.btn-tuition-fee');
             tab.off('click').on('click',function(e){
                 e.preventDefault();
-                let name = $(this).data('view');
+                const name = $(this).data('view');
                 switch(name){
                     case 'ttn-fee':
                         $(this).addClass('ttn-fee').siblings().removeClass('n-ttn-fee');
@@ -492,8 +495,8 @@ let GenerateInvoiceFSN = new function(){
 
     this.prepareTable = (div, d, name=false, modify=false) => {
         d = d ? d : [];
-        let btn = [d.fee_type,'btn'].join('_');
-        let fee_type = d.fee_type ? d.fee_type.replace('_',' ') : 'N/A';
+        const btn = [d.fee_type,'btn'].join('_');
+        const fee_type = d.fee_type ? d.fee_type.replace('_',' ') : 'N/A';
         let inner_html = '';
 
         let html = [`<table class="table">
@@ -509,14 +512,14 @@ let GenerateInvoiceFSN = new function(){
             </thead>
             <tbody>
                 ${name || (d.pmt_status === 'paid') ? '': `<tr>
-                    <td class="text-capitalize data-get" data-field="fee_type" data-value="${d.fee_type}">${fee_type}</td>
+                    <td class="text-nowrap text-capitalize data-get" data-field="fee_type" data-value="${d.fee_type}">${fee_type}</td>
                     <td>${d.description ? d.description : 'N/A'}</td>
                     <td>${d.date_range ? d.date_range : 'N/A'}</td>
-                    <td>${d.amount ? ['$',d.amount].join(' ') : 'N/A'}</td>
-                    <td>${d.discount ? ['%',d.discount].join(' ') : 'N/A'}</td>
-                    <td>${d.special_discount ? ['%',d.special_discount].join(' ') : 'N/A'}</td>
-                    <td>${d.second_child_discount ? d.second_child_discount : 'N/A'}</td>
-                    <td class="total-item">${d.total ? ['$',d.total].join(' ') : 'N/A'}</td>
+                    <td class="text-nowrap">${d.tuition ? ['$',d.tuition].join(' ') : 'N/A'}</td>
+                    <td class="text-nowrap">${d.discount ? ['%',d.discount].join(' ') : 'N/A'}</td>
+                    <td class="text-nowrap">${d.special_discount ? ['%',d.special_discount].join(' ') : 'N/A'}</td>
+                    <td class="text-nowrap">${d.second_child_discount ? d.second_child_discount : 'N/A'}</td>
+                    <td class="text-nowrap">${d.amount ? ['$',d.amount].join(' ') : 'N/A'}</td>
                     <td>
                         <a href="javascript:void(0)" class="btn-fee-type-delete d-none">
                             <i class="fa-regular fa-trash-can text-danger fs-5"></i>
@@ -525,14 +528,14 @@ let GenerateInvoiceFSN = new function(){
                 </tr>`}
                 ${modify ? (inner_html,d && (d.other_fees || []).map(fee => {
                     inner_html = [inner_html,`<tr>
-                        <td class="data-get" data-field="fee_type" data-value="${fee.fee_type}" data-id="${fee.invoice_item_id}">${fee.fee_type ? fee.fee_type : 'N/A'}</td>
+                        <td class="data-get text-nowrap" data-field="fee_type" data-value="${fee.fee_type}" data-id="${fee.invoice_item_id}">${fee.fee_type ? fee.fee_type : 'N/A'}</td>
                         <td>${fee.description ? fee.description : 'N/A'}</td>
                         <td>${fee.date_range ? fee.date_range : 'N/A'}</td>
-                        <td>${fee.amount ? ['$',fee.amount].join(' ') : 'N/A'}</td>
-                        <td>${fee.discount ? ['%',fee.discount].join(' ') : 'N/A'}</td>
-                        <td>${fee.special_discount ? ['%',fee.special_discount].join(' ') : 'N/A'}</td>
-                        <td>${fee.second_child_discount ? fee.second_child_discount : 'N/A'}</td>
-                        <td class="total-item">${fee.total ? ['$',fee.total].join(' ') : 'N/A'}</td>
+                        <td class="text-nowrap">${fee.tuition ? ['$',fee.tuition].join(' ') : 'N/A'}</td>
+                        <td class="text-nowrap">${fee.discount ? ['%',fee.discount].join(' ') : 'N/A'}</td>
+                        <td class="text-nowrap">${fee.special_discount ? ['%',fee.special_discount].join(' ') : 'N/A'}</td>
+                        <td class="text-nowrap">${fee.second_child_discount ? fee.second_child_discount : 'N/A'}</td>
+                        <td class="total-item text-nowrap">${fee.total ? ['$',fee.total].join(' ') : 'N/A'}</td>
                         <td>
                             <a href="javascript:void(0)" class="btn-fee-type-delete" data-id="${fee.invoice_item_id}" data-amount="${fee.amount}">
                                 <i class="fa-regular fa-trash-can text-danger fs-5"></i>
@@ -547,19 +550,19 @@ let GenerateInvoiceFSN = new function(){
         </div>`].join('');
 
         div.html(html);
-        mThis.addRow(div.find('tbody'),d,btn);
-        mThis.deleteFeeRow(div.find('tbody'));
-        mThis.setTotal(div.find('tbody'));
+        mThis.addRow(div.find('tbody'),d,btn,d.total);
+        mThis.deleteFeeRow(div.find('tbody'),d.total);
+        mThis.setTotal(div.find('tbody'),d.total);
     }
 
-    this.addRow = (tbody,d, btn) => {
+    this.addRow = (tbody,d, btn, total=0) => {
         let html=null, option=null;
         vsapi.call(`${main_view.base_url}/api/option/other-fee`,{'academic_year': d.academic_year}).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
             }
-            let select=[btn,'select'].join('_');
+            const select = [btn,'select'].join('_');
             
             html = [`<tr>
                 <td colspan="9">
@@ -580,14 +583,14 @@ let GenerateInvoiceFSN = new function(){
                 if(((value == null) || (value == '')) && (value !== undefined))
                     cv_interact.warning('Select an option before add!');
                 else{
-                    mThis.displayFeeAsRow(tbody, select);
-                    mThis.deleteFeeRow(tbody);
+                    mThis.displayFeeAsRow(tbody, select, total);
+                    mThis.deleteFeeRow(tbody,total);
                 }
             });
         });
     }
 
-    this.displayFeeAsRow = (tbody, select) => {
+    this.displayFeeAsRow = (tbody, select, total=0) => {
         tbody.find(`#${select}`).off('change').on('change',function(e){
             e.preventDefault();
             let tr = $(this).closest('tr');
@@ -609,13 +612,13 @@ let GenerateInvoiceFSN = new function(){
                         <i class="fa-regular fa-trash-can text-danger fs-5"></i>
                     </a>
                 </td>`].join(''));
-                mThis.deleteFeeRow(tbody);
-                mThis.setTotal(tbody);
+                mThis.deleteFeeRow(tbody,total);
+                mThis.setTotal(tbody,total);
             });
         });
     }
 
-    this.deleteFeeRow = (tbody) => {
+    this.deleteFeeRow = (tbody,total=0) => {
         tbody.find('.btn-fee-type-delete').off('click').on('click',function(e){
             e.preventDefault();
             let op = {
@@ -629,7 +632,7 @@ let GenerateInvoiceFSN = new function(){
                         mThis.options.fee_item.push(op);
                     }
                     $(this).closest('tr').remove();
-                    mThis.setTotal(tbody);
+                    mThis.setTotal(tbody,total);
                 }
             });
         });
@@ -692,7 +695,6 @@ let GenerateInvoiceFSN = new function(){
         mThis.loadFormDetails(mThis.tblInvoice, options, () => {
             mThis.elTitle.text(LocaleManager.trans('Generate Invoice','titles'));
             mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please select item details','titles'));
-
             mThis.self.modal({
                 backdrop: 'static'
             });

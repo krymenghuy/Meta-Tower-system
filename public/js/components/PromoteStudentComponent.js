@@ -19,52 +19,69 @@ var PromoteStudentComponent = new function(){
     },
     {
         title: "Student ID",
+        className: 'text-capitalize align-middle',
         data: "code"
     },
     {
         title: "Full Name",
+        className: 'text-capitalize align-middle',
         data: "name"
     },
     {
         title: "Full Name (KH)",
+        className: 'text-capitalize align-middle',
         data: "name_kh"
     },
     {
         title: "Age",
+        className: 'text-capitalize align-middle',
         data: "age"
     },
     {
         title: "Date of Birth",
-        data: "dob"
+        className: 'align-middle',
+        data: (data, a, b) => {
+            return data.dob ? new Date(data.dob).toLocaleDateString('km-KH',{
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            }).replace(',','') : '';
+        }
     },
     {
         title: "Sex",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
-            let sex = data.sex === 'M' ? 'Male' : 'Female';
+            const sex = data.sex === 'M' ? 'Male' : 'Female';
             return sex;
         }
     },
     {
         title: "Level",
+        className: 'align-middle text-capitalize',
         data: "level"
     },
     {
         title: "Session",
+        className: 'align-middle text-capitalize',
         data: "session"
     },
     {
         title: "Campus",
+        className: 'align-middle text-capitalize',
         data: "campus"
     },
     {
         title: "Status",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
-            let cls = data.status === 'pending' ? 'bg-warning' : 'bg-success';
+            const cls = data.status === 'pending' ? 'bg-warning' : 'bg-success';
             return [`<span class="text-capitalize p-2 rounded-3 text-white ${cls}">${data.status}</span>`].join('');
         }
     },
     {
         title: "Action",
+        className: 'align-middle',
         data: (data, a, b) => {
             return [`<div class="d-flex gap-2">
                 <a href="javascript:void(0)" class="btn-pms-verify" data-id="${data.enrollment_id}">
