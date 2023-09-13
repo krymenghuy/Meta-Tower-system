@@ -297,7 +297,7 @@ function deleteEnrollment($id=null,$ss=null){
         DB::table('payments')->where('enrollment_id',$id)->delete();
         DB::table('enrollment_payment')->where('enrollment_id',$id)->delete();
         DB::table('student_guardians')->where('student_id',$info->student_id);
-        DB::table('group_members')->where('student_id',$info->student_id)->where('enrollment_id',$id);
+        DB::table('group_members')->where('student_id',$info->student_id)->delete();
     }
     return DV::depends($x,null);
 }

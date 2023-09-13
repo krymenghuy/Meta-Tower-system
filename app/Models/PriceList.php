@@ -364,6 +364,7 @@ class PriceList //extends Model
             $price_list_id = $monthly_fee_info->price_list_id;
             $monthly_tuition_due = 0;
             if($current_day != 1 && $d->months == 3){
+                $terms = 3;
                 $total_weekly_Fee = self::getWeeklyTuitionDue([
                     'start_date' => $d->start_date,
                     'level_id' => $d->level_id,
@@ -373,10 +374,8 @@ class PriceList //extends Model
                 ]);
                 $weekly_tuition_due = $total_weekly_Fee->tuition_due;
                 $base_amount = $price * ($d->months-1); //** minus 1 = first is not a full */
-                $original_price = $price * $month;
-                $minus_weekly_fee = $original_price - $total_weekly_Fee->weekly_fee;
+                $original_price = $price * $terms;
 
-                $note = 'Tuition('.$original_price.') - '.$minus_weekly_fee.' because start_date is not the first of the month';
             }else{
                 $term = 3;
                 $pay_month = 0;
@@ -406,7 +405,12 @@ class PriceList //extends Model
             $term_tuition_due = $base_amount - $discount_amt;
             $total_tuition_due = $term_tuition_due + $weekly_tuition_due + $monthly_tuition_due;
             $tuition = $monthly_tuition_due + $base_amount + $weekly_tuition_due;
-            return (object)['note'=>$note,'price_list_id' => $monthly_fee_info->price_list_id,'end_date' => $end_date,'tuition'=>$tuition,'tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'discount'=>$discount_info,'weekly_tuition'=>$weekly_tuition_due,'monthly_tuition'=>$monthly_tuition_due,'status_code' => 200,'error_message' =>null];
+
+           if(isset($original_price) && !isset($d->is_pricelist)){
+                $minus_weekly_fee = $original_price - $total_tuition_due;
+                $note = 'Tuition('.$original_price.') - '.$minus_weekly_fee.' because Start Date is not the first day of the month.';
+           }
+            return (object)['note'=>$note,'price_list_id' => $monthly_fee_info->price_list_id,'end_date' => $end_date,'tuition'=>$tuition,'tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'discount'=>$discount_info,'weekly_tuition_due'=>$weekly_tuition_due,'monthly_tuition'=>$monthly_tuition_due,'status_code' => 200,'error_message' =>null];
         }
         //** Semester Payment Processing */
         else if($d->months <12){
@@ -443,10 +447,13 @@ class PriceList //extends Model
                     $end_date =$endingInfo->end_date;
                     $tuition = $base_amount + $monthly_tuition_due + $weekly_tuition_due;
                     // $minus_weekly_fee = $total_weekly_Fee->weekly_fee;
-                    // $note = 'Tuition due('.$tuition.') - '.$minus_weekly_fee.' because start_date is not the first of the month';
+                    // $note = 'Tuition due('.$tuition.') - '.$minus_weekly_fee.' because Start Date is not the first day of the month.';
                     $original_price = $price * $months;
                     $minus_weekly_fee = $original_price - $total_tuition_due;
-                    $note = 'Tuition('.$original_price.') - '.$minus_weekly_fee.' because start_date is not the first of the month';
+                    if(!isset($d->is_pricelist)){
+                        $note = 'Tuition('.$original_price.') - '.$minus_weekly_fee.' because Start Date is not the first day of the month.';
+                    }
+
             }
             //** if not the first day of months as semester payment  and months greater than 6 */
             else if($current_day != 1 && $d->months > 6){
@@ -477,7 +484,9 @@ class PriceList //extends Model
 
                 $original_price = $price * $months;
                 $minus_weekly_fee = $original_price - $total_tuition_due;
-                $note = 'Tuition('.$original_price.') - '.$minus_weekly_fee.' because start_date is not the first of the month 1';
+                if(!isset($d->is_pricelist)){
+                    $note = 'Tuition('.$original_price.') - '.$minus_weekly_fee.' because Start Date is not the first day of the month.';
+                }
 
             }else {
                 $week ="full month no week count";
@@ -498,7 +507,8 @@ class PriceList //extends Model
             $total_tuition_due = 0;
             $discount_amt = 0;
             if($current_day != 1 && $d->months == 12){
-                $annual = 12-1; //* because the first month is not a full month
+                $annual = 12; //* because the first month is not a full month
+                $pay_month = 12-1;
 
                 $total_weekly_Fee = self::getWeeklyTuitionDue([
                     'start_date' => $d->start_date,
@@ -508,24 +518,29 @@ class PriceList //extends Model
                     'academic_year' => $d->academic_year,
                 ]);
                 // $annual_tuition = $price * $annual;
-                $tuition = $price * $annual;
+                $pay_month = $price * $pay_month;
                 $endinfInfo = findFutureMonths($d->start_date,$d->months-1);//**  */
                 $end_date =$endinfInfo->end_date;
-                $discount_amt = $tuition * $discount_info->discount / 100;
+                $discount_amt = $pay_month * $discount_info->discount / 100;
                 $weekly_tuition_due = $total_weekly_Fee->tuition_due;
-                $total_tuition_due = ($tuition - $discount_amt) + $total_weekly_Fee->tuition_due;
+                $total_tuition_due = ($pay_month - $discount_amt) + $total_weekly_Fee->tuition_due;
                 // return $discount_info;
                 $monthly_tuition_due = 0;//**************** */
 
                 //** note */
-                $after_discount = $tuition - $discount_amt;
+                $after_discount = $pay_month - $discount_amt;
                 $original_price = $price * $annual;
+                $tuition = $original_price;
                 $minus_weekly_fee = $original_price - $total_tuition_due;
-                $note = 'Tuition('.$original_price.') - '.$minus_weekly_fee.' because start_date is not the first of the month';
+                if(!isset($d->is_pricelist)){
+                    $note = 'Tuition('.$original_price.') - '.$minus_weekly_fee.' because Start Date is not the first day of the month.';
+                }
+                //     $note = 'Tuition('.$original_price.') because Start Date is not the first day of the month.';
+                // }
 
             }else if($current_day != 1 && $d->months >12){
                 $annual = 12-1;
-                $pay_month = $d->months - $annual;
+                $pay_month = 12 - $annual;
                 $endinfInfo = findFutureMonths($d->start_date,$d->months-1);//**  */
                 $end_date =$endinfInfo->end_date;
                 // $price_list_id = $monthly_fee_info->price_list_id;
@@ -553,7 +568,9 @@ class PriceList //extends Model
                 $after_discount = $tuition - $discount_amt;
                 $original_price = $price * $annual;
                 $minus_weekly_fee = $original_price - $total_tuition_due;
-                $note = 'Tuition('.$original_price.') - '.$minus_weekly_fee.' because start_date is not the first of the month';
+                if(!isset($d->is_pricelist)){
+                    $note = 'Tuition('.$original_price.') - '.$minus_weekly_fee.' because Start Date is not the first day of the month.';
+                }
             }else{
                 // $annual_tuition = $d->months * $price;
                 $tuition = $d->months * $price;
@@ -726,6 +743,7 @@ class PriceList //extends Model
         $is_old_student = $org_price_list>0;
         $d = (object)$arr;
         $student_id =isset($d->student_id)?$d->student_id:DB::table('enrollments')->where('id',$id)->take(1)->value('student_id');
+        $program_id = GeneralSettings::getProgramByLevel($d->level_id,$ss)->program_id;
         $str_pmt_option_id='1=1';
         if(isset($d->pmt_option_id)){
             $str_pmt_option_id = 'pmt_option_id = '.$d->pmt_option_id;
@@ -734,12 +752,13 @@ class PriceList //extends Model
             // $priceList = DB::table('student_pricelist')->where('inactive',0)->where('student_id',$student_id)->first();
             $studentDiscount = DB::table('student_discounts')->where('student_id',$student_id)
                 ->whereRaw($str_pmt_option_id)
+                ->where('session_id',$d->session_id)
+                ->where('program_id',$program_id)
                 ->selectRaw('policy_discount,student_id,pmt_option_id,price_list_id,special_discount,other_discount,program_id')
                 ->get()->first();
             $discount = $studentDiscount->policy_discount + $studentDiscount->special_discount + $studentDiscount->other_discount;
 
             $old = [
-                // "level_id" => $d->level_id,
                 "program_id" => $studentDiscount->program_id,
                 "academic_year" => isset($d->academic_year) ? $d->academic_year:null,
                 "session_id" => $d->session_id,
@@ -748,6 +767,7 @@ class PriceList //extends Model
                 "months" => GeneralSettings::getPmtOptionMonths($studentDiscount->pmt_option_id),
 
                 //** original_discount from student_discount return as object to replace discount if old student */
+                //** can be customize */
                 'original_discount' => (object)['discount' => $discount,'discount_percent' => $studentDiscount->policy_discount],
                 "pmt_option_id"=> $studentDiscount->pmt_option_id
             ];
@@ -803,6 +823,7 @@ class PriceList //extends Model
             'discount' => $d->original_discount,
             "pmt_option_id"=> $pmt_option_id,
             "price_list_id" => isset($d->price_list_id)?$d->price_list_id:null,
+            'is_pricelist' => 1,
         ];
         $priceListInfo =$this->payment_processing($arr,$ss);
         if($priceListInfo->status_code !=200) return DV::error($priceListInfo->error_message);
@@ -942,6 +963,7 @@ class PriceList //extends Model
             "months" => $months,
             "weeks" => $weeks,
             "days" => $days,
+            //** if old pricelist payment found and is active */
             "student_id" => $student_id,
             "pmt_option_id"=> $pmt_option_id
         ];
