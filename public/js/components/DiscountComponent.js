@@ -8,6 +8,7 @@ var DiscountComponent = new function(){
 
     this.cols = [{
         title: "Image",
+        className: 'align-middle',
         data: (data, a, b) => {
             let image = data.image_url ? data.image_url : '';
             return [`<img class="image-student-tbl" src="${image}" alt=""/>`].join('');
@@ -15,61 +16,69 @@ var DiscountComponent = new function(){
     },
     {
         title: "Student Code",
+        className: 'align-middle text-capitalize',
         data: "code"
     },
     {
         title: "Full Name",
-        className: "text-capitalize",
+        className: "align-middle text-capitalize",
         data: "name"
     },
     {
         title: "Full Name (KH)",
-        className: 'text-capitalize',
+        className: 'align-middle text-capitalize',
         data: "name_kh"
     },
     {
         title: "Sex",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
             return [`<span>${data.sex === 'M' ? 'Male' : 'Female'}</span>`].join('');
         }
     },
     {
         title: "Date of Birth",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
             let dob = data.date_of_birth ? data.date_of_birth : '';
             return new Date(dob).toLocaleDateString('km-KH',{
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric'
-            }).replaceAll(' ','-').replace(',','');
+            }).replace(',','');
         }
     },
     {
         title: "Amount",
+        className: 'text-capitalize align-middle',
         data: (data, a, b) => {
-            let discount = '%';
+            const discount = '%';
             return [data.amount,discount].join(' ');
         }
     },
     {
         title: "Discount Type",
+        className: 'text-capitalize align-middle',
         data: "discount_type"
     },
     {
         title: "Remark",
+        className: 'align-middle text-capitalize',
         data: "remarks"
     },
     {
         title: "Status",
+        className: 'text-capitalize align-middle',
         data: (data, a, b) => {
-            let cls = data.status === 'pending' ? 'bg-warning' : data.status === 'approved' ? 'bg-success' : 'bg-info';
+            const cls = data.status === 'pending' ? 'bg-warning' : data.status === 'approved' ? 'bg-success' : 'bg-info';
             return [`<span class="text-capitalize p-2 ${cls} rounded-3 text-white">${data.status}</span>`].join('');
         }
     },
     {
         title: "Action",
+        className: 'align-middle',
         data: (data, a, b) => {
-            let cls = data.status === 'pending' ? '' : data.status === 'approved' ? 'd-none' : '',cls_reject = data.status === 'rejected' ? 'd-none' : '';
+            const cls = data.status === 'pending' ? '' : data.status === 'approved' ? 'd-none' : '',cls_reject = data.status === 'rejected' ? 'd-none' : '';
             return [`<div class="d-flex gap-2">
                 <a href="javascript:void(0)" class="btn-dns-approve ${cls}" data-id="${data.id}">
                     <i class="fa-regular fa-circle-check fs-5 text-success"></i>

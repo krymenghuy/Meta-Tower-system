@@ -10,86 +10,96 @@ var AactivitiesComponent = new function(){
 
     this.cols = [{
         title: "Image",
+        className: 'align-middle',
         data: (data, a, b) => {
-            let image = data.image_url ? data.image_url : '';
+            const image = data.image_url ? data.image_url : '';
             return [`<img class="image-student-tbl" src="${image}" alt=""/>`].join('');
         }
     },
     {
         title: "Student ID",
+        className: 'text-capitalize align-middle',
         data: "student_code"
     },
     {
         title: "Full Name",
-        className: 'Full-Name text-capitalize',
+        className: 'Full-Name text-capitalize align-middle',
         data: "student_name"
     },
     {
         title: "Full Name (KH)",
-        className: 'text-capitalize',
+        className: 'text-capitalize align-middle',
         data: "name_kh"
     },
     {
         title: "Sex",
+        className: 'text-capitalize align-middle',
         data: (data, a, b) => {
-            let sex = data.sex === 'M' ? 'Male':'Female';
+            const sex = data.sex === 'M' ? 'Male':'Female';
             return sex;
         }
     },
     {
         title: "Date of Birth",
+        className: 'text-capitalize align-middle',
         data: (data, a, b) => {
             let dob = data.date_of_birth ? data.date_of_birth : '';
             return new Date(dob).toLocaleDateString('km-KH',{
                 day: 'numeric',
                 month: 'short',
                 year: 'numeric'
-            }).replaceAll(' ','-').replace(',','');
+            }).replace(',','');
         }
     },
     {
         title: "Approved By",
+        className: 'align-middle',
         data: (data, a, b) => {
-            let auth_user = data.auth_user ? data.auth_user : '', date = data.auth_date ? data.auth_date : '';
-            return [`<p class="pb-0 mb-1">${auth_user}</p>
+            const auth_user = data.auth_user ? data.auth_user : '', date = data.auth_date ? data.auth_date : '';
+            return [`<p class="text-capitalize pb-0 mb-1">${auth_user}</p>
             <small>${date}</small>`].join('');
         }
     },
     {
         title: "Cancelled By",
+        className: 'align-middle',
         data: (data, a, b) => {
-            let reject_by = data.reject_by ? data.reject_by : '', date = data.reject_date ? data.reject_date : '';
-            return [`<p class="pb-0 mb-1">${reject_by}</p>
+            const reject_by = data.reject_by ? data.reject_by : '', date = data.reject_date ? data.reject_date : '';
+            return [`<p class="text-capitalize pb-0 mb-1">${reject_by}</p>
             <small>${date}</small>`].join('');
         }
     },
     {
         title: "Admission Date",
+        className: 'text-capitalize align-middle',
         data: (data, a, b) => {
             let admission_date = data.admission_date ? data.admission_date : '';
             return new Date(admission_date).toLocaleDateString('km-KH',{
                 day: 'numeric',
                 month:'short',
                 year: 'numeric'
-            }).replaceAll(' ','-').replace(',','');
+            }).replace(',','');
         }
     },
     {
         title: "School",
+        className: 'text-capitalize align-middle',
         data: "school"
     },
     {
         title: "Status",
+        className: 'align-middle',
         data: (data, a, b) => {
-            let cls = data.status === 'pending' ? 'bg-warning' : data.status === 'approved' ? 'bg-success' : 'bg-info';
+            const cls = data.status === 'pending' ? 'bg-warning' : data.status === 'approved' ? 'bg-success' : 'bg-info';
             return [`<span class="p-2 ${cls} text-white rounded-3 text-capitalize">${data.status}</span>`].join('');
         }
     },
     {
         title: "Action",
+        className: 'align-middle',
         data: (data, a, b) => {
-            let cls = data.status === 'pending' ? '' : data.status === 'rejected' ? '' : 'd-none';
-            let rejected_cls = data.status === 'rejected' ? 'd-none' : '';
+            const cls = data.status === 'pending' ? '' : data.status === 'rejected' ? '' : 'd-none';
+            const rejected_cls = data.status === 'rejected' ? 'd-none' : '';
             return [`<div class="d-flex gap-2">
                 <a href="javascript:void(0)" class="btn-aavt-approval ${cls}" data-requestid="${data.request_id}" data-studentid="${data.student_id}" data-request_typeid="${data.request_type_id}" data-requestname="${data.request_name}" data-from="${data.request_change.from_id}" data-to="${data.request_change.to_id}">
                     <i class="fa-regular fa-circle-check fs-5 text-success"></i>

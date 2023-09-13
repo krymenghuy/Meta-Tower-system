@@ -11,35 +11,41 @@ var NonTuitionFeeComponent = new function(){
 
     this.cols = [{
         title: "Fee Type",
-        data: (data,index,tr)=>{
+        className: 'align-middle',
+        data: (data, index, tr)=>{
             return [`<span class="text-capitalize fw-semibold">`,data.name,`</span>`].join('');
         }
     },
     {
         title: "Program",
-        data:  (data,index,tr)=>{
+        className: 'align-middle',
+        data:  (data, index, tr)=>{
             return [`<span class="text-capitalize">`,data.program_name ? data.program_name : 'NA',`</span>`].join('');
         }
     },
     {
         title: "Amount",
+        className: 'align-middle',
         data: (data, a, b) => {
-            let amount = data.amount ? data.amount : '', currency_code = data.currency_code ? data.currency_code : '';
+            const amount = data.amount ? data.amount : '', currency_code = data.currency_code ? data.currency_code : '';
             return ['<span class="d-block fw-semibold">',amount,currency_code,'</span><span class="text-capitalize text-primary text-left">',data.amount_input_mode,'</span>'].join(' ');
         }
     },
     {
         title: "Academic Year",
+        className: 'align-middle',
         data: "academic_year"
     },
     {
         title: "Description",
+        className: 'align-middle',
         data: (data, index, tr)=>{
             return data.description ? data.description : 'NA';
         }
     },
     {
         title: "Last Updated",
+        className: 'align-middle',
         data: (data, a, b) => {
             return [`<p class="text-capitalize pb-0 mb-0">`,data.update_user,`</p>
             <p class="pb-0 mb-0"><small>`,data.updated_at,`</small></p>`].join('');
@@ -47,6 +53,7 @@ var NonTuitionFeeComponent = new function(){
     },
     {
         title: "Authorization",
+        className: 'align-middle',
         data: (data, a, b) => {
             const user = data.authorized == 1 ? data.auth_user : '';
             const date = data.authorized == 1 ? data.auth_date : '';
@@ -56,6 +63,7 @@ var NonTuitionFeeComponent = new function(){
     },
     {
         title: "Action",
+        className: 'align-middle',
         data: (data, a, b) => {
             return [`<div class="d-flex gap-2">
                 <a href="javascript:void(0)" class="btn-ntf-modify" data-id="${data.id}">
@@ -129,7 +137,9 @@ var NonTuitionFeeComponent = new function(){
     }
  
     this.getFilterData = ()=>{
-        return {'search_value':mThis.elSearch.val()};
+        return {
+            'search_value':mThis.elSearch.val()
+        };
     }
 
     this.show = (options) => {
