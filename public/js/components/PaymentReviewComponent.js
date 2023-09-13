@@ -1,43 +1,47 @@
 "use strict";
 var PaymentReviewComponent = new function(){
-    let mThis = this;
+    const mThis = this;
     this.title_prop = "Payment Review";
     this.self = $("#_main_paymentReviewComponent");
 
     this.elSearch = mThis.self.find("#_ppd_search");
 
-    let cur_symbol = "$";
+    const cur_symbol = "$";
     this.cols = [
         {
             title: "Khmer Name",
-            className: 'text-capitalize',
+            className: 'align-middle text-capitalize',
             data: "name_kh",
         },
         {
             title: "Name",
-            className: 'text-capitalize',
+            className: 'align-middle text-capitalize',
             data: "name",
         },
         {
             title: "Tuition",
+            className: 'align-middle text-capitalize',
             data: (data, a, b) => {
                 return data.tuition ? [cur_symbol, data.tuition].join(' ') : '';
             },
         },
         {
             title: "Tuition Due",
+            className: 'align-middle text-capitalize',
             data: (data, a, b) => {
                 return data.tuition_due ? [cur_symbol, data.tuition_due].join(' ') : '';
             },
         },
         {
             title: "Tuition Paid",
+            className: 'align-middle text-capitalize',
             data: (data, a, b) => {
                 return data.tuition_paid ? [cur_symbol, data.tuition_paid].join(' ') : '';
             },
         },
         {
             title: "Status",
+            className: 'align-middle text-capitalize',
             data: (data, a, b) => {
                 const cls = data.status.toLowerCase() === "pending" ? "bg-danger" : data.status.toLowerCase() === "verified" ? "bg-info" : data.status.toLowerCase() === 'expired' ? "bg-danger" : data.status.toLowerCase() === 'surcharge' ? "bg-warning" : "bg-success";
                 return [`<span class="p-2 ${cls} text-white rounded-3 text-capitalize">${data.status}</span>`].join('');
@@ -45,8 +49,9 @@ var PaymentReviewComponent = new function(){
         },
         {
             title: "Action",
+            className: 'align-middle text-capitalize',
             data: (data, a, b) => {
-                let cls = data.status === "paid" ? "d-none" : "";
+                const cls = data.status.toLowerCase() === "paid" ? "d-none" : "";
                 return [`<div class="d-flex gap-2">
                     <a href="javascript:void(0)" class="btn-ppd-modify ${cls}" data-id="${data.enrollment_id}">
                         <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
@@ -118,8 +123,8 @@ var PaymentReviewComponent = new function(){
 
 };
 
-let PaymentPendingDialog = new function(){
-    let mThis = this;
+const PaymentPendingDialog = new function(){
+    const mThis = this;
     this.self = $("#dlg_ppd_");
     this.options = {};
     let ref = {
@@ -150,7 +155,7 @@ let PaymentPendingDialog = new function(){
 
     mThis.btnSave.on("click", function(e){
         e.preventDefault();
-        let p = mThis.getDataForm();
+        const p = mThis.getDataForm();
         if(ref.click){
             vsapi.call(`${main_view.base_url}/api/price-list/update/pending-payment`,p,null).then((res) => {
                 ref.click = false;
@@ -174,8 +179,8 @@ let PaymentPendingDialog = new function(){
         };
 
         mThis.self.find(".data-input").each(function () {
-            let el = $(this);
-            let f = el.data("field");
+            const el = $(this);
+            const f = el.data("field");
             p[f] = el.val();
         });
         return p;
@@ -184,8 +189,8 @@ let PaymentPendingDialog = new function(){
     this.setDataForm = (d) => {
         d = d ? d : {};
         mThis.self.find(".data-input").each(function () {
-            let el = $(this);
-            let f = el.data("field");
+            const el = $(this);
+            const f = el.data("field");
             if(el.is("select"))
                 el.val(d[f]).trigger("change");
             else
@@ -200,8 +205,8 @@ let PaymentPendingDialog = new function(){
                 d = res.data;
             }
             mThis.self.find(".data-input").each(function () {
-                let el = $(this);
-                let f = el.data("field");
+                const el = $(this);
+                const f = el.data("field");
                 switch (f) {
                     case "pmt_option_id":
                         VSUtil.setComboItems(el,d.pmt_options,"id","name",null,null,null);

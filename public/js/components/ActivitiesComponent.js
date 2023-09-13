@@ -13,13 +13,14 @@ var ActivitiesComponent = new function(){
 
     this.cols = [{
         title: 'Check',
-        className: 'position-relative text-center',
+        className: 'position-relative text-center align-middle',
         data: () => {
-            return [`<input type="checkbox" class="form-check-input"/>`].join('');
+            return [`<input type="checkbox" class="form-check-input position-relative"/>`].join('');
         }
     },
     {
         title: "Image",
+        className: 'align-middle',
         data: (data, a, b) => {
             let image = data.image_url ? data.image_url : '';
             return [`<img class="image-student-tbl" src="${image}" alt=""/>`].join('');
@@ -27,25 +28,27 @@ var ActivitiesComponent = new function(){
     },
     {
         title: "School",
-        className: "text-capitalize",
+        className: "align-middle text-capitalize text-nowrap",
         data: "school"
     },
     {
         title: "Student ID",
+        className: 'align-middle text-capitalize',
         data: "student_code"
     },
     {
         title: "Full Name",
-        className: "text-capitalize",
+        className: "align-middle text-capitalize",
         data: "student_name"
     },
     {
         title: "Full Name (KH)",
-        className: "text-capitalize",
+        className: "align-middle text-capitalize",
         data: "name_kh"
     },
     {
         title: "Sex",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
             let sex = data.sex === 'M' ? 'Male' : 'Female';
             return sex;
@@ -53,46 +56,51 @@ var ActivitiesComponent = new function(){
     },
     {
         title: "Date of Birth",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
-            let dob = data.date_of_birth ? data.date_of_birth : '';
-            return new Date(dob).toLocaleDateString('km-KH',{
+            return data.date_of_birth ? new Date(data.date_of_birth).toLocaleDateString('km-KH',{
                 'day':'numeric',
                 'month':'short',
                 'year': 'numeric'
-            }).replaceAll(' ','-').replace(',','');
+            }).replace(',','') : '';
         }
     },
     {
         title: "Admission Date",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
-            let admission_date = data.admission_date ? data.admission_date : '';
-            return new Date(admission_date).toLocaleDateString('km-KH',{
+            return data.admission_date ? new Date(data.admission_date).toLocaleDateString('km-KH',{
                 'day':'numeric',
                 'month':'short',
                 'year': 'numeric'
-            }).replaceAll(' ','-').replace(',','');
+            }).replace(',','') : '';
         }
     },
     {
         title: "Session",
+        className: 'align-middle text-capitalize',
         data: "session"
     },
     {
         title: "Class",
+        className: 'text-capitalize align-middle',
         data: "level"
     },
     {
         title: "Family ID",
+        className: 'text-capitalize align-middle',
         data: "family_id"
     },
     {
         title: "Status",
+        className: 'text-capitalize align-middle',
         data: (data, a, b) => {
             return [`<span class="p-2 bg-warning text-white rounded-3 text-capitalize">${data.status}</span>`].join('');
         }
     },
     {
         title: "Action",
+        className: 'text-capitalize align-middle',
         data: (data, a, b) => {
             return [`<div class="d-flex gap-2 ${data.status === 'pending' ? '':'d-none'}">
                 <a href="javascript:void(0)" class="btn-att-send" data-requestid="${data.request_id}">

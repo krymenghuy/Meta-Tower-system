@@ -10,9 +10,9 @@ var RequestDiscountComponent = new function(){
 
     this.cols = [{
         title: "Check",
-        className: "position-relative text-center",
+        className: "position-relative text-center align-middle",
         data: () => {
-            return [`<input type="checkbox" class="form-check-input"/>`].join('');
+            return [`<input type="checkbox" class="form-check-input position-relative"/>`].join('');
         }
     },
     {

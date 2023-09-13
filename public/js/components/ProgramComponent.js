@@ -7,32 +7,37 @@ var ProgramComponent = new function(){
     this.btnNew = mThis.self.find('#_pgm_btn_new');
 
     this.cols = [
-        {
+    {
         title: "Program Name",
-        data: (data,index,tr)=>{
+        className: 'align-middle text-capitalize',
+        data: (data, index, tr)=>{
             return ['<span class="fw-semibold">',data.name,'</span>'].join('');
         }
     },
     {
         title: "Previous",
-        data: (data,index,tr)=>{
+        className: 'align-middle text-capitalize',
+        data: (data, index, tr)=>{
             return ['<span class="fw-semibold">',data.prev_program ? data.prev_program : 'None','</span>'].join('');
         }
     },
     {
         title: "Description",
+        className: 'align-middle text-capitalize',
         data: (data, index, tr)=>{
             return data.description ? data.description : 'N/A';
         }
     },
     {
         title: "Updated",
+        className: 'align-middle text-capitalize',
         data: (data,index,tr)=>{
             return ['<span class="d-block fw-semibold">',data.update_user,'<span><span class="d-block text-left p-1 text-muted"><small>',data.updated_at,'</small></span>'].join('');
         }
     },
     {
         title: "Action",
+        className: 'align-middle text-capitalize',
         data: (data, index, tr) => {
             return [`<div class="d-flex gap-2">
                 <a href="javascript:void(0)" class="btn-pgm-modify" data-id="${data.id}">
@@ -110,7 +115,7 @@ var ProgramComponent = new function(){
         mThis.cfg = new ExpandableRowConfig(mThis.tblProgram.getAttribute('id'), {
             'dontExpandByClickingOn': ['btn-pgm-modify', 'btn-pgm-delete'],
             'onOpen': (container, detail_tr, parent_tr) => {
-                let id = parent_tr.dataset.id;
+                const id = parent_tr.dataset.id;
                 if(id > 0) mThis.displayProgramLevel(container, id);
             }
         });
@@ -244,7 +249,7 @@ var ProgramComponent = new function(){
 }
 
 const ProgramDialog = new function(){
-    let mThis = this;
+    const mThis = this;
     this.self = $('#dlg_pgm_');
     this.options = {};
 
@@ -254,7 +259,7 @@ const ProgramDialog = new function(){
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        let p = mThis.getDataForm(false);
+        const p = mThis.getDataForm(false);
         if(!p) return;
         vsapi.call(`${main_view.base_url}/api/program/save`,p,null).then(res => {
             if(res.status_code === 200){
@@ -275,8 +280,8 @@ const ProgramDialog = new function(){
         };
         let has_error = false;
         mThis.self.find('.data-input').each(function(){
-            let el = $(this);
-            let f = el.data('field');
+            const el = $(this);
+            const f = el.data('field');
             if(el.data('error')==1){
                 if(!silent) cv_interact.warning([Validator.properCase(f),' is not correct'].join(''));
                 has_error = true;
@@ -284,15 +289,15 @@ const ProgramDialog = new function(){
             }
             p[f] = el.val();
         });
-        return has_error? null : p;
+        return has_error ? null : p;
     }
 
     this.setDataForm = (d) => {
         d = d ? d : {};
         Validator.clearErrors(mThis.self);
         mThis.self.find('.data-input').each(function(){
-            let el = $(this);
-            let f = el.data('field');
+            const el = $(this);
+            const f = el.data('field');
             el.val(d[f]);
         });
     }
@@ -340,7 +345,7 @@ const ProgramDialog = new function(){
 }
 
 const ProgramLevelDialog = new function(){
-    let mThis = this;
+    const mThis = this;
     this.self = $('#dlg_detail_pgm_');
     this.options = {};
 
@@ -349,7 +354,7 @@ const ProgramLevelDialog = new function(){
     this.elLevel = mThis.self.find('#dlg_detail_pgm_level');
     
     this.btnSave.on('click',function(){
-        let p =mThis.getDataForm(false);
+        const p = mThis.getDataForm(false);
         if(!p) return;
         vsapi.call(`${main_view.base_url}/api/program-level/save`,p,null,false).then(res=>{
             if(res.status_code === 200){
@@ -367,26 +372,26 @@ const ProgramLevelDialog = new function(){
             'id': mThis.options.id,
             'program_id':mThis.options.program_id
         };
-         let has_error = false;
+        let has_error = false;
         mThis.self.find('.data-input').each(function(){
-            let el = $(this);
-            let f = el.data('field');
-            if(el.data('error')==1){
+            const el = $(this);
+            const f = el.data('field');
+            if(el.data('error') == 1){
                 if(!silent) cv_interact.warning([Validator.properCase(f),' is not correct'].join(''));
-                has_error =true;
+                has_error = true;
                 return false;
             }
             p[f] = el.val();
         });
-        return has_error? null: p;
+        return has_error ? null : p;
     }
 
     this.setDataForm = (d) => {
         d = d ? d : {};
         Validator.clearErrors(mThis.self);
         mThis.self.find('.data-input').each(function(){
-            let el = $(this);
-            let f = el.data('field');
+            const el = $(this);
+            const f = el.data('field');
             el.val(d[f]);
         });
     }
