@@ -134,7 +134,7 @@ var DashboardComponent = new function (){
     </div>
     <div class="row gy-2 mt-2">
       <div class="col-lg-8">
-        <div class="h-100 bg-white rounded-3 p-3">
+        <div class="h-100 bg-white rounded-3 p-3 chart-container">
           <canvas id="_dash_line_chart"></canvas>
         </div>
       </div>
@@ -152,15 +152,23 @@ var DashboardComponent = new function (){
     data = data ? data : [];
     const lineChart = div.find('#_dash_line_chart'),
     pieChart = div.find('#_dash_pie_chart');
-    let dataSet = [];
+    let dataLineChart = [],
+    dataPieChart = [];
 
     data.map(d => {
-      dataSet.push({
+      dataLineChart.push({
         label: d.program_name,
         data: d.data_program,
         fill: false,
         borderColor: d.color,
         tension: 0.1
+      });
+
+      dataPieChart.push({
+        label: d.program_name,
+        data: d.data_program,
+        backgroundColor:['#6AD500','#DB1717','#432AE3'],
+        hoverOffset: 4
       });
     });
 
@@ -168,22 +176,34 @@ var DashboardComponent = new function (){
       type: 'line',
       data: {
         labels: ['January','February','March','April','May','June','July','August','September','October','November','December'],
-        datasets:dataSet
+        datasets: dataLineChart
       },
-      options:{
-        legend:{
-          display:true,
-          position: 'top',
-          align: 'right'
-        }
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        onResize: () => {
+          lineChart.width('100%'),
+          lineChart.height('100%');
+        },
+        responsive: true
       }
     });
 
     new Chart(pieChart,{
       type: 'pie',
       data: {
-        labels: ['January','February','March','April','May','June','July','August','September','October','November','December'],
-        datasets:dataSet
+        labels: dataPieChart.label,
+        datasets: dataPieChart
+      },
+      options:{
+        onResize: () => {
+          pieChart.width('100%'),
+          pieChart.height('100%');
+        },
+        responsive: true
       }
     });
   }
@@ -191,7 +211,7 @@ var DashboardComponent = new function (){
   this.loadDashBoardData = (onFinish = null) => {
     const data = [{
       'program_name': 'Program 1',
-      'data_program': [74,64,62,55,74,74,74],
+      'data_program': [74, 64, 62, 55, 75, 78, 84],
       'color': '#6AD500'
     }];
     if(typeof onFinish === 'function') onFinish(data);
