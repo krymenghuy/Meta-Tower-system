@@ -432,6 +432,7 @@ let GenerateInvoiceFSN = new function(){
             if(res.status_code === 200){
                 data = res.data;
             }
+            console.log(data);
 
             const current = new Date();
             const format = new Intl.DateTimeFormat('en-US',{
@@ -506,14 +507,14 @@ let GenerateInvoiceFSN = new function(){
             </thead>
             <tbody>
                 ${name || (d.pmt_status === 'paid') ? '': `<tr>
-                    <td class="text-capitalize data-get" data-field="fee_type" data-value="${d.fee_type}">${fee_type}</td>
+                    <td class="text-nowrap text-capitalize data-get" data-field="fee_type" data-value="${d.fee_type}">${fee_type}</td>
                     <td>${d.description ? d.description : 'N/A'}</td>
                     <td>${d.date_range ? d.date_range : 'N/A'}</td>
-                    <td>${d.amount ? ['$',d.amount].join(' ') : 'N/A'}</td>
-                    <td>${d.discount ? ['%',d.discount].join(' ') : 'N/A'}</td>
-                    <td>${d.special_discount ? ['%',d.special_discount].join(' ') : 'N/A'}</td>
-                    <td>${d.second_child_discount ? d.second_child_discount : 'N/A'}</td>
-                    <td>${d.amount ? ['$',d.amount].join(' ') : 'N/A'}</td>
+                    <td class="text-nowrap">${d.tuition ? ['$',d.tuition].join(' ') : 'N/A'}</td>
+                    <td class="text-nowrap">${d.discount ? ['%',d.discount].join(' ') : 'N/A'}</td>
+                    <td class="text-nowrap">${d.special_discount ? ['%',d.special_discount].join(' ') : 'N/A'}</td>
+                    <td class="text-nowrap">${d.second_child_discount ? d.second_child_discount : 'N/A'}</td>
+                    <td class="text-nowrap">${d.amount ? ['$',d.amount].join(' ') : 'N/A'}</td>
                     <td>
                         <a href="javascript:void(0)" class="btn-fee-type-delete d-none">
                             <i class="fa-regular fa-trash-can text-danger fs-5"></i>
@@ -522,14 +523,14 @@ let GenerateInvoiceFSN = new function(){
                 </tr>`}
                 ${modify ? (inner_html,d && (d.other_fees || []).map(fee => {
                     inner_html = [inner_html,`<tr>
-                        <td class="data-get" data-field="fee_type" data-value="${fee.fee_type}" data-id="${fee.invoice_item_id}">${fee.fee_type ? fee.fee_type : 'N/A'}</td>
+                        <td class="data-get text-nowrap" data-field="fee_type" data-value="${fee.fee_type}" data-id="${fee.invoice_item_id}">${fee.fee_type ? fee.fee_type : 'N/A'}</td>
                         <td>${fee.description ? fee.description : 'N/A'}</td>
                         <td>${fee.date_range ? fee.date_range : 'N/A'}</td>
-                        <td>${fee.tuition ? ['$',fee.tuition].join(' ') : 'N/A'}</td>
-                        <td>${fee.discount ? ['%',fee.discount].join(' ') : 'N/A'}</td>
-                        <td>${fee.special_discount ? ['%',fee.special_discount].join(' ') : 'N/A'}</td>
-                        <td>${fee.second_child_discount ? fee.second_child_discount : 'N/A'}</td>
-                        <td class="total-item">${fee.total ? ['$',fee.total].join(' ') : 'N/A'}</td>
+                        <td class="text-nowrap">${fee.tuition ? ['$',fee.tuition].join(' ') : 'N/A'}</td>
+                        <td class="text-nowrap">${fee.discount ? ['%',fee.discount].join(' ') : 'N/A'}</td>
+                        <td class="text-nowrap">${fee.special_discount ? ['%',fee.special_discount].join(' ') : 'N/A'}</td>
+                        <td class="text-nowrap">${fee.second_child_discount ? fee.second_child_discount : 'N/A'}</td>
+                        <td class="total-item text-nowrap">${fee.total ? ['$',fee.total].join(' ') : 'N/A'}</td>
                         <td>
                             <a href="javascript:void(0)" class="btn-fee-type-delete" data-id="${fee.invoice_item_id}" data-amount="${fee.amount}">
                                 <i class="fa-regular fa-trash-can text-danger fs-5"></i>
