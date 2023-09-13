@@ -222,9 +222,13 @@ class GeneralSettings //extends Model
 
     //payment options
     static function options_pmt($ss=null){
-        return DB::table('pmt_options')->selectRaw('name,id')->limit(3)->orderBy('id','asc')->get();
+        //colum name "name" and "pmt_status" are used in some palces on front end
+        return DB::table('pmt_options')->selectRaw('name,name as pmt_option,id')->orderBy('id','asc')->get();
     }
 
+    static function options_pmt_status($ss=null){
+        return DB::table('pmt_status')->selectRaw('id,name AS pmt_status')->limit(3)->orderBy('id','asc')->get();
+    }
     static function options_school($ss=null){
         return DB::table('schools')->selectRaw('name,id')->get();
     }
@@ -235,12 +239,13 @@ class GeneralSettings //extends Model
         $level_id = isset($d->level_id) ? $d->level_id :null;
         $session_id = isset($d->session_id) ? $d->session_id :null;
         $str_search ="term_id = $term_id";
+        if (!$term_id) return [];  
+
         if($campus_id>0) $str_search.=' AND campus_id = '.$campus_id;
         if($level_id>0) $str_search.=' AND level_id = '.$level_id;
         if($session_id>0) $str_search.=' AND session_id = '.$session_id;
-
-
-        $rows = DB::table('student_groups')->whereRaw($str_search)->selectRaw('id,name AS group_name,campus_id,session_id,level_id,descriptive_name')->get();
+      
+        $rows = DB::table('student_groups AS g')->whereRaw($str_search)->selectRaw('g.id,g.name AS group_name,g.campus_id,g.session_id,g.level_id,descriptive_name')->get();
         foreach($rows as $row){
             $row->group_name = $row->group_name.'('.$row->descriptive_name.')';
         }

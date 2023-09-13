@@ -2,7 +2,7 @@
 var ManageAccountComponent = new function(){
     let mThis = this;
     this.title_prop = "Manage Account";
-    this.self = $('#_main_manageAccountComponent');
+    this.self = main_view.appContent.children('#_main_manageAccountComponent');
 
     this.cols = [{
         title: "Name",

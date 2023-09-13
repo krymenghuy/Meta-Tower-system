@@ -560,8 +560,8 @@
                     </div>
 
                     <div class="form-group col-lg-6">
-                        <label for="student_name" class="form-label trans-text" data-langprop="titles.Group"></label>
-                        <div class="d-flex flex-row"><input class="form-control data-input" data-field="level_name" readonly><input class="form-control data-input" data-field="group_name" readonly></div>
+                        <label for="level_name" class="form-label trans-text" data-langprop="titles.Group"></label>
+                        <div class="d-flex flex-row gap-1"><input class="form-control data-input" data-field="level_name" readonly /><input class="form-control data-input" data-field="group_name" readonly></div>
                     </div>
 
                     <div class="form-group col-lg-6">

@@ -2,7 +2,7 @@
 var AactivitiesComponent = new function(){
     let mThis = this;
     this.title_prop = "Activities";
-    this.self = $('#_main_aActivitiesComponent');
+    this.self = main_view.appContent.children('#_main_aActivitiesComponent');
 
     this.containerFilter = mThis.self.find('#container_aavt_filter');
 

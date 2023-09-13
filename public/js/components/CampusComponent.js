@@ -2,7 +2,7 @@
 var CampusComponent = new function(){
     let mThis = this;
     this.title_prop = 'Campus';
-    this.self = $('#_main_campusComponent');
+    this.self = main_view.appContent.children('#_main_campusComponent');
 
     this.tblCampus ={};
     this.btnNew = mThis.self.find('#_cps_btn_new');

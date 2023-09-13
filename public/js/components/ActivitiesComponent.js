@@ -2,7 +2,7 @@
 var ActivitiesComponent = new function(){
     let mThis = this;
     this.title_prop = "Activities";
-    this.self = $('#_main_activitiesComponent');
+    this.self = main_view.appContent.children('#_main_activitiesComponent');
 
     this.panelActivities = mThis.self.find('#div_att_hasList');
     this.tblActivities = mThis.panelActivities.find('#div_att_list');

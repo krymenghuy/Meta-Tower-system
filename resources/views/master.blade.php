@@ -69,7 +69,13 @@
                     <div id="kt_header" class="kt-header kt-grid__item kt-header--fixed">
                         <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper" style="padding:10px">
                             <div class="d-flex">
+                               
                                 <div id="_main_top_right_menus" class="mainview-top-right">
+                                        <div class="show--title flex-grow-1">
+                                            <div class="screen-info">
+                                                <h5 class="screen-title mb-0 trans-text" data-langprop="titles.dashboard" style="text-transform:uppercase" id="screen_title">Dashboard</h5>
+                                            </div>
+                                        </div>
                                     <div class="form-inline">
                                         <div class="dropdown choose--language">
                                             <button id="_main_btn_lang" class="btn-dropdown main-menu-button align--language" data-menu="lang">
@@ -141,17 +147,18 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="show--title">
+                            <!-- <div class="show--title">
                                 <div class="screen-info">
                                     <h5 class="screen-title mb-0 trans-text" data-langprop="titles.dashboard" style="text-transform:uppercase" id="screen_title">Dashboard</h5>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="animation-line line--loader d-none" id="vs_loader"></div>
                     </div>
-                    <div id="_p2" class="kt-content kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" id="kt_content">
+                    <!--Removed class "kt-content" from this DIV -->
+                    <div id="_p2" class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" id="kt_content" style="margin-top:-15px">
                         <div id="_p1" class="row">
-                            <div class="col-lg-12 shadow-box mt-3 ps-4" id="_app_content">
+                            <div class="col-lg-12 shadow-box ps-4" id="_app_content">
                                 @include('layouts.inputBoxes')
                                 @include('layouts.dashboardComponent')
                                 @include('layouts.enrolledStudentsComponent')

@@ -2,7 +2,7 @@
 var StudentInformationComponent = new function(){
     let mThis = this;
     this.title_prop = "Student Information";
-    this.self = $('#_main_studentInformationComponent');
+    this.self = main_view.appContent.children('#_main_studentInformationComponent');
 
     this.elSearch = mThis.self.find('#el_sin_search');
     this.elFilter = mThis.self.find('#el_sin_filter');

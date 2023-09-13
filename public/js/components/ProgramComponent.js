@@ -2,7 +2,7 @@
 var ProgramComponent = new function(){
     let mThis = this;
     this.title_prop = "Program";
-    this.self = $('#_main_programComponent');
+    this.self = main_view.appContent.children('#_main_programComponent');
 
     this.btnNew = mThis.self.find('#_pgm_btn_new');
 

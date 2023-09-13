@@ -2,7 +2,7 @@
 var DiscountComponent = new function(){
     let mThis = this;
     this.title_prop = "Discount";
-    this.self = $('#_main_discountComponent');
+    this.self = main_view.appContent.children('#_main_discountComponent');
 
     this.elFilterContainer = mThis.self.find('#el_dsn_container');
 

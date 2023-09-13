@@ -2,7 +2,7 @@
 var StudentAttendanceComponent = new function(){
     let mThis = this;
     this.title_prop = "Student Attendance";
-    this.self = $('#_main_studentAttendanceComponent');
+    this.self = main_view.appContent.children('#_main_studentAttendanceComponent');
 
     this.elSearch = mThis.self.find('#el_san_search');
     this.containerFilter = mThis.self.find('#container_san_filter');

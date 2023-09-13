@@ -2,7 +2,7 @@
 var TuitionFeeComponent = new function(){
     let mThis = this;
     this.title_prop = "Tuition Fee";
-    this.self = $('#_main_tuitionFeeComponent');
+    this.self = main_view.appContent.children('#_main_tuitionFeeComponent');
     
     this.btnAdd = mThis.self.find('#ttf_btn_add');
     this.btnFind = this.self.find('#ttf_btn_find');

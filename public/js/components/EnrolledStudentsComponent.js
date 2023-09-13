@@ -2,7 +2,7 @@
 var EnrolledStudentsComponent = new function(){
     let mThis = this;
     this.title_prop = "Enrolled Students";
-    this.self = $('#_main_registrationComponent');
+    this.self = main_view.appContent.children('#_main_registrationComponent');
     this.options = {};
     
     this.btnRegister = this.self.find('#_rgs_btnRegister');
@@ -365,7 +365,7 @@ var EnrolledStudentsComponent = new function(){
             div_register_list.style.display='none';
             (data || []).map(item => {
                 let finalized = item.enroll_finalized == 1 ? 'd-none':''; 
-                html = [html,`<div class="d-flex p-3 bg-white h-info-student mb-2">
+                html = [html,`<div class="d-flex p-3 bg-white h-info-student mb-4">
                     <div class="div-img">
                         <img src="${item.image_url}" alt=""/>
                     </div>
@@ -423,7 +423,7 @@ var EnrolledStudentsComponent = new function(){
                                                 <i class="fa-solid fa-up-right-from-square fs-5"></i>
                                                 <span class="ps-2 trans-text" data-langprop="titles.Detials"></span>
                                             </a>
-                                            <a href="javascript:void(0)" class="btn-rgs-setleave border-bottom pb-2" data-id="${item.id}">
+                                            <a href="javascript:void(0)" class="btn-rgs-setleave border-bottom pb-2" data-id="${item.id}" data-finalized="${item.enroll_finalized}">
                                                 <i class="fa-regular fa-circle-stop fs-5"></i>
                                                 <span class="ps-2 trans-text" data-langprop="titles.Set Leave"></span>
                                             </a>
@@ -535,10 +535,11 @@ var EnrolledStudentsComponent = new function(){
 
         container.off('click').on('click','button.btn-finalize',function(e){
             e.preventDefault();
+            const is_finalized = $(this).data('status');
             let op = {
                 'enrollment_id': $(this).data('id')
             };
-            if($(this).data('status') == 1){
+            if(is_finalized == 1){
                 cv_interact.warning('This registration is already finalized!');
             }
             else{
@@ -628,7 +629,12 @@ var EnrolledStudentsComponent = new function(){
                lnk = mThis.clickOnClass(e.target,'btn-rgs-setleave');
                if(lnk){
                   const enrollment_id = lnk.dataset.id;
+                  const is_finalized = lnk.dataset.finalized;
                   //alert('Set student on leave ' + id);
+                  if(is_finalized !=1){
+                    cv_interact.warning('This enrollment is not yet finalized!');
+                    return;
+                  }
                   const op = {
                     'id':null,
                     'enrollment_id':enrollment_id, //id  here is the enrollment_id
@@ -979,6 +985,7 @@ const LeaveDialog = new function(){
                 leave_info.image_url = enroll_info.image_url;
                 leave_info.academic_year = enroll_info.academic_year;
                 leave_info.leave_term_id = enroll_info.leave_term_id;
+                leave_info.level_name = enroll_info.level_name;
                 mThis.selected_options.leave_term_id =enroll_info.leave_term_id;
                 d.leave_info = leave_info;
 

@@ -2,7 +2,7 @@
 var IdCardSettingsComponent = new function(){
     let mThis = this;
     this.title_prop = "ID Card Settings";
-    this.self = $('#_main_idCardSettingsComponent');
+    this.self = main_view.appContent.children('#_main_idCardSettingsComponent');
 
     this.tblIdCardSettings = mThis.self.find('.panel-card-student');
     this.containerFilter = mThis.self.find('#container_ics_filter');

@@ -48,10 +48,12 @@ li.kt-menu__section {
 }
 
 .menu-selected {
-    background-color: #CAE1F7;
-    color: #0E75D9 !important;
+    background-color: #4825b8;
+   
 }
-
+a.menu-selected .kt-menu__link-text{
+    color: #fffcfc;
+}
 .icons{
     filter: invert(53%) sepia(46%) saturate(7477%) hue-rotate(219deg) brightness(90%) contrast(91%);
 }
@@ -514,7 +516,7 @@ li.kt-menu__section {
 
 [aria-labelledby="dlg_dpf_title"] .div--tab .div--tab-inner {
     background-color: #fff;
-    border-color: #80808063;
+    border-color: #11569963;
     border-radius: 5px 5px 0 0;
     border-style: solid;
     border-bottom: 0;

@@ -2,7 +2,7 @@
 var AcademicYearComponent = new function(){
     let mThis = this;
     this.title_prop = 'Academic Years';
-    this.self = $('#_main_academicYearComponent');
+    this.self = main_view.appContent.children('#_main_academicYearComponent');
 
     this.tblAcademic = {};
     this.btnNew = mThis.self.find('#_adm_btn_new');

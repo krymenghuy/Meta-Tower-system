@@ -2,7 +2,7 @@
 var DepositFeeComponent = new function(){
     let mThis = this;
     this.title_prop = "Deposits";
-    this.self = $('#_main_depositFeeComponent');
+    this.self = main_view.appContent.children('#_main_depositFeeComponent');
 
     this.tblDepositFee ={};
     this.btnNew = mThis.self.find('#dpf_btn_new');
@@ -364,12 +364,12 @@ const DepositFeeDialog = new function(){
         mThis.prepareFormOptionNew(() => {
             if(options.id > 0){
                 mThis.elTitle.text(LocaleManager.trans('Modify Deposit','titles'));
-                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input deposit details','titles'));
+                //mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input deposit details','titles'));
                 mThis.loadFormDetails(options);
             }
             else{
                 mThis.elTitle.text(LocaleManager.trans('New Deposit','titles'));
-                mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input deposit details','titles'));
+                //mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input deposit details','titles'));
                 mThis.self.find('.div--tab').addClass('d-flex').show();
                 mThis.setDataForm(null,mThis.div_newStudent);
                 mThis.setDataForm(null,mThis.div_oldStudent);

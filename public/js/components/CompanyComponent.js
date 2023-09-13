@@ -3,7 +3,7 @@ var CompanyComponent = new function(){
     let mThis = this;
 	this.title_prop = "Company Profile";
     this.base_url = $('#__base_url').val();
-    this.self = $('#_main_companyComponent');
+    this.self = main_view.appContent.children('#_main_companyComponent');
     this.btnSave = this.self.find('#_main_comp_btnSaveProfile');
 
 	this.imgLogo = this.self.find('#com_imgLogo');

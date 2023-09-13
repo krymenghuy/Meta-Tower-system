@@ -5,7 +5,7 @@ var StudentGroupComponent = new function(){
     this.levels = [];
     this.campuses = [];
     this.title_prop = 'Student Groups';
-    this.self = $('#_main_studentGroupComponent');
+    this.self = main_view.appContent.children('#_main_studentGroupComponent');
     this.tblStudentGroup = mThis.self.find('#_sdg_tbl');
     this.btnNew = mThis.self.find('#_sdg_btn_new');
   
