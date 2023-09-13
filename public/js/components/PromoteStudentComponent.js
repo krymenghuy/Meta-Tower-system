@@ -2,7 +2,7 @@
 var PromoteStudentComponent = new function(){
     let mThis = this;
     this.title_prop = 'Promote';
-    this.self = $('#_main_promoteStudentComponent');
+    this.self = main_view.appContent.children('#_main_promoteStudentComponent');
 
     this.btnNew = mThis.self.find('#_pms_btn_new');
     this.btnVerify = mThis.self.find('#_pmt_btn_verify');

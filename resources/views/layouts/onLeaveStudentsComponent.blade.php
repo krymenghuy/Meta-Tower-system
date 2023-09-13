@@ -40,7 +40,7 @@
             </div>
            
         </div>
-        <div id="_onleave_list_view" class="border rounded-3 shadow bg-white p-2"></div>
+        <div id="_onleave_list_view" class="border rounded-3 shadow p-2"></div>
     </div>
     <div id="st-register--input" class="st-register--input" style="display:none">
         <div class="bg-primary rounded-top-3">

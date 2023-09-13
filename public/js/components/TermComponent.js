@@ -2,7 +2,7 @@
 var TermComponent = new function () {
     let mThis = this;
     this.title_prop = 'Terms';
-    this.self = $('#_main_termComponent');
+    this.self = main_view.appContent.children('#_main_termComponent');
     this.elFilter_academic_year = this.self.find('#_term_filter_academic_year');
 
     //this.tblTerm = mThis.self.find('#_trm_tbl');

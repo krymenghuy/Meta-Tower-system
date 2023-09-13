@@ -2,7 +2,7 @@
 var PolicyDiscountComponent = new function(){
     let mThis = this;
     this.title_prop = "Policy Discount";
-    this.self = $('#_main_policyDiscountComponent');
+    this.self = main_view.appContent.children('#_main_policyDiscountComponent');
 
     this.btnAdd = mThis.self.find('#pld_btn_add');
     //this.elSearch = mThis.self.find('#_pdl_search');

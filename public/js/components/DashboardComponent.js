@@ -2,7 +2,7 @@
 var DashboardComponent = new function (){
   let mThis = this;
   this.title_prop = "Dashboard";
-  this.self = $('#_main_dashboardComponent');
+  this.self = main_view.appContent.children('#_main_dashboardComponent');
 
   this.init = () => {}
 

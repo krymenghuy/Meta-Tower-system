@@ -3,7 +3,7 @@ var NonTuitionFeeComponent = new function(){
     let mThis = this;
     this.currency_code ='USD';
     this.title_prop = "Non-tuition Fee";
-    this.self = $('#_main_nonTuitionFeeComponent');
+    this.self = main_view.appContent.children('#_main_nonTuitionFeeComponent');
 
     this.tblNonTuitionFee = mThis.self.find('#tbl_ntf');
     this.btnAdd = mThis.self.find('#ntf_btn_add');

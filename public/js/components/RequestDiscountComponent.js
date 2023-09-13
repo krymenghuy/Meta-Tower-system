@@ -2,7 +2,7 @@
 var RequestDiscountComponent = new function(){
     let mThis = this;
     this.title_prop = 'Request Discount';
-    this.self = $('#_main_requestDiscountComponent');
+    this.self = main_view.appContent.children('#_main_requestDiscountComponent');
 
     this.btnNew = mThis.self.find('#_rqdc_btn_new');
     this.btnRequest = mThis.self.find('#_rqdc_send_request');

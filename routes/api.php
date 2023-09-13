@@ -557,6 +557,13 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
 
     //begin::PriceListController
+   
+    Route::post('tuition-review/form-options', [PriceListController::class, 'getPreviewPaymentOptions']);
+    //payment review
+    Route::post('tuition-review/list-paginate',[PriceListController::class,'getTuitionReviewList']);
+    //Return discount information for Old student only
+    Route::post('tuition-review/student-discount',[PriceListController::class,'getStudentDiscountInfo']);
+
     Route::post('price-list/select-options', [GeneralSettingsController::class, 'getOptions_price_list']);
     Route::post('price-list/options', [GeneralSettingsController::class, 'getOptions_price_list']);
     Route::post('price-list/list-paginate', [PriceListController::class, 'getPriceList_paginate']);
@@ -567,8 +574,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('price-list/save-item', [PriceListController::class, 'saveItem']);
     Route::post('price-list/delete-item', [PriceListController::class, 'deleteItem']);
     Route::post('price-list/item-details', [PriceListController::class, 'getPriceListItemDetails']);
-
-    Route::post('price-list/pending/payment',[PriceListController::class,'getPendingPayment']);
+ 
     Route::post('price-list/preview/pending-payment',[PriceListController::class,'previewPendingPaymentDetails']);
     Route::post('price-list/update/pending-payment',[PriceListController::class,'updatePendingPayment']);
     Route::post('price-list/pending-payment/details',[PriceListController::class,'getStudentPendingPaymentDetails']);

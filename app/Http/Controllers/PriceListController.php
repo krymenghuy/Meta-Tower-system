@@ -25,6 +25,14 @@ class PriceListController extends Controller
         return JDV::raw($p->save($req->all()));
     }
 
+    function getStudentDiscountInfo(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $p = new PriceList(null,$ss);
+        //params = {pmt_option_id,enrollment_id,program_id,session_id}
+        return JDV::result($p->getStudentDiscountInfo($req->pmt_option_id,$req->enrollment_id,$req->program_id,$req->session_id));
+    }
+    
     function deletePriceList(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
@@ -84,12 +92,13 @@ class PriceListController extends Controller
         return JDV::result($fee);
     }
 
-    function getPendingPayment(Request $req){
+    //getPendingPayment()
+    function getTuitionReviewList(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
 
-        $pending = PriceList::pendingPayment($req->all(),$ss);
-        return JDV::result($pending);
+        $rows = PriceList::tuitionReviewList($req->all(),$ss);
+        return JDV::result($rows);
     }
 
     function previewPendingPaymentDetails(Request $req){
@@ -99,6 +108,15 @@ class PriceListController extends Controller
         $row = new PriceList($req->id,$ss);
         $preview = $row->previewPendingPaymentDetails($req->all(),$req->id,$ss);
         return JDV::result($preview);
+    }
+ 
+    function getPreviewPaymentOptions(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $list = new PriceList(null,$ss);
+        $id = $req->id ? $req->id:$req->enrollment_id;
+        $data = $list->getPaymentPreviewOptions($id,$ss);
+        return JDV::result($data);
     }
 
     function updatePendingPayment(Request $req){

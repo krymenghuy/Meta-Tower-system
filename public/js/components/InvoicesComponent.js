@@ -2,7 +2,7 @@
 var InvoicesComponent = new function(){
     let mThis = this;
     this.title_prop = "Invoices";
-    this.self = $('#_main_invoicesComponent');
+    this.self = main_view.appContent.children('#_main_invoicesComponent');
 
     this.currency_symbol = '$';
 

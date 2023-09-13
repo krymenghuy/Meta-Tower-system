@@ -100,7 +100,7 @@
                                 <span class="kt-menu__link-icon">
                                     <img class="icons" src="{{ asset('assets/images/icons/payment_pending.png') }}"/>
                                 </span>
-                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Payment Review"></span>
+                                <span class="kt-menu__link-text trans-text" data-langprop="menus.Tuition Payments"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true">

@@ -2,7 +2,7 @@
 var ReportCenterComponent = new function(){
     let mThis = this;
     this.title_prop = "Report Center";
-    this.self = $('#_main_reportCenterComponent');
+    this.self = main_view.appContent.children('#_main_reportCenterComponent');
     this.options = {};
 
     this.init = () => {}
