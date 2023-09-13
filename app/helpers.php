@@ -1744,6 +1744,18 @@ function readFileContent($fileName=null)
         return (object)['end_date' => $date];
     }
 
+    function dateDiffMonths($startDate, $endDate) {
+
+        $startDateTime = new DateTime($startDate);
+        $endDateTime = new DateTime($endDate);
+
+
+        $interval = $startDateTime->diff($endDateTime);
+        $months = $interval->y * 12 + $interval->m;
+
+        return $months;
+    }
+
     function isExists($table,$pk,$checkCol,$inputValue){
         $exists = DB::table($table)->where($pk)->selectRaw($checkCol)->first();
         if($exists && $exists->$checkCol != $inputValue){
