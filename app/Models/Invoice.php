@@ -291,7 +291,7 @@ class Invoice //extends Model
         $row->date_range = $row->start_date.' to '.$row->tuition_end_date;
         $row->discount = $row->policy_discount;
         $row->level = Student::getProgramLevel($row->level_id);
-        $row->amount = $row->tuition;
+        $row->amount = $row->tuition_due;
 
         $row->deposite_amount = self::studentDeposite($student_id);
         $row->total = $row->tuition_due;
@@ -306,7 +306,6 @@ class Invoice //extends Model
             $row->invoice_id = $invoice_id->id;
         }
         $row->other_fees = self::getOtherFeeTypes($student_id,$invoice_number);
-        unset($row->tuition);
         // unset($row->tuition_due);
         unset($row->policy_discount);
 
@@ -404,13 +403,13 @@ class Invoice //extends Model
 
             $payment_processing = $this->schoolFeePaymentProcessing($enrollment_id,$inv_id,$pmt_arr,$ss);
 
+
             //** save student pricelist and student discount with 3 options */
 
             $savePaymentHistory = null;
 
             $existsStudentPriceList = findExists('student_pricelist',['student_id'=>$row->student_id,'inactive'=>0]);
             if(!$existsStudentPriceList){
-
                 $student = new Student(null,$ss);
                 $months=0;
                 if($pmt_option_id == 1){
@@ -452,28 +451,36 @@ class Invoice //extends Model
                 'auth_user' => $ss->full_name
             ]);
 
-            if($save_receipt = 1){
+            if($save_receipt){
+                $receipt_amt=null;
                 $campus = GeneralSettings::getCampus($row->campus_id)->shortcut;
                 $issue_date = date('Y-m-d');
+                $track_amt = [];
                 self::setReceiptNumber($campus,$ss->branch_id,$save_receipt,'no-tax',$issue_date,5);
 
                 foreach($payment_info as $info){
 
                     $v_rule = [
                         'payment_method_id' => '1|number|exists=payment_methods.id',
-                        'exchange_reate' => '0|number',
+                        'exchange_rate' => '0|number',
                         'currency_code' => '0|choice|USD,KHR|default=USD',
+                        "amount" => '0|number',
                     ];
 
                     $res = validateObject($info,$v_rule,1,[],$ss->lang,0,null);
-                    if($res->error) return DV::error($res->error);
-                    $d = $res->values;
+                    if($res->error) $receipt_amt = $res->error;//return DV::error($res->error);
+                    $inputs = $res->values;
                     $inputs['invoice_id'] = $inv_id;
                     $inputs['receipt_id'] = $save_receipt;
 
-                    // $keeper[]=$inputs;
+                    $track_amt[] = $inputs['amount'];
 
                     $receipt_amt = saveData($ss,'receipt_amount',['id' => null],$inputs,[],1);
+                }
+
+                if(array_sum($track_amt)>$row->tuition_due){
+                    DB::rollback();
+                    return DV::error('Payment method amount must be lower or equal to Tuition Due.');
                 }
 
             }
@@ -486,8 +493,8 @@ class Invoice //extends Model
             // Something went wrong, so rollback the transaction
             DB::rollback();
 
-            // Log or handle the error, and return an error response
-            return ['success' => false, 'error' => $e->getMessage()];
+
+            return DV::error('savePaymentHistory =>'.$savePaymentHistory . ','.'save_receipt =>'.$save_receipt.','.'receipt_amt => '.$receipt_amt );
         }
 
 
@@ -563,7 +570,7 @@ class Invoice //extends Model
 
         //         $v_rule = [
         //             'payment_method_id' => '1|number|exists=payment_methods.id',
-        //             'exchange_reate' => '0|number',
+        //             'exchange_rete' => '0|number',
         //             'currency_code' => '0|choice|USD,KHR|default=USD',
         //         ];
 
@@ -694,7 +701,7 @@ class Invoice //extends Model
             ->join('deposite as d', DB::raw('LOWER(d.student_name)'), '=', DB::raw('LOWER(s.name)'))
             ->where('s.date_of_birth', '=', DB::raw('d.date_of_birth'))
             ->where('s.id', $id)
-            ->where('d.is_used', 0)
+            ->where('d.is_used',0)
             ->selectRaw('s.name, d.deposite_amount')
             ->get()
             ->first();
