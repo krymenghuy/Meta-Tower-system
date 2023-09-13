@@ -1329,6 +1329,7 @@ class PriceList //extends Model
         $pmt_option_id = $pmt_option_id?$pmt_option_id:$e->pmt_option_id;
         $session_id = $session_id?$session_id:$e->session_id;
         $program_id = $program_id?$program_id:$e->program_id;
+      
         $row = DB::table('student_discounts AS d')->where('d.student_id',$e->student_id)->where('d.program_id',$program_id)->where('d.pmt_option_id',$pmt_option_id)->where('d.session_id',$session_id)->selectRaw('d.id,d.policy_discount,d.special_discount,d.other_discount,d.student_id')->get()->first();
 
         $price_list = DB::table('student_pricelist as sl')->join('price_list As l','l.id','=','sl.price_list_id')->where('sl.student_id',$e->student_id)->where('enrollment_id',$enrollment_id)->whereRaw('IFNULL(sl.inactive,0) =0')->selectRaw('l.id AS price_list_id,l.name as price_list_name,l.academic_year,formatDate(l.start_date) AS start_date,formatDate(l.end_date) AS end_date')->take(1)->get()->first();

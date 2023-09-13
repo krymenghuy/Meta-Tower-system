@@ -8,6 +8,7 @@ var InvoicesComponent = new function(){
 
     this.cols = [{
         title: "Invoice Number",
+        className: 'align-middle text-capitalize',
         data: (data, index, tr) => {
             return [`<div class="d-flex flex-column">
                 <a href="javascript:void(0)" class="btn-inv-print" data-id="${data.id}">${data.invoice_number}</a>
@@ -17,6 +18,7 @@ var InvoicesComponent = new function(){
     },
     {
         title: "Student",
+        className: 'align-middle text-capitalize',
         data: (data, index, tr) => {
             return [`<div class="d-flex flex-column">
                 <a href="javascript:void(0)" class="lnk-print-invoice" data-id="${data.id}">
@@ -28,6 +30,7 @@ var InvoicesComponent = new function(){
     },
     {
         title: "Program",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
             return [`<p class="pb-0 mb-1">${data.program}</p>
             <small class="text-center">(${data.session})</small>`].join('');
@@ -35,26 +38,30 @@ var InvoicesComponent = new function(){
     },
     {
         title: "Level",
+        className: 'align-middle text-capitalize',
         data: "level"
     },  
     {
         title: "Due",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
             const cur =  data.currency_symbol ? data.currency_symbol : mThis.currency_symbol;
-            let due_amount = data.due_amount ? [cur,data.due_amount].join(' ') : 'NA';
+            const due_amount = data.due_amount ? [cur,data.due_amount].join(' ') : 'NA';
             return due_amount;
         }
     },
     {
         title: "Paid",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
             const cur =  data.currency_symbol?data.currency_symbol:mThis.currency_symbol;
-            let paid_amount = data.paid_amount ? [cur,data.paid_amount].join('') : 'NA';
+            const paid_amount = data.paid_amount ? [cur,data.paid_amount].join(' ') : 'NA';
             return paid_amount;
         }
     },
     {
         title: "Issue Date",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
             const issueDate = data.invoice_date ? new Date(data.invoice_date).toLocaleDateString('km-KH',{
                 'day':'numeric',
@@ -66,6 +73,7 @@ var InvoicesComponent = new function(){
     },
     {
         title: "Pmt Date",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
             const pmt_date = data.pmt_date ? new Date(data.pmt_date).toLocaleDateString('km-KH',{
                 'day':'numeric',
@@ -77,13 +85,15 @@ var InvoicesComponent = new function(){
     },
     {
         title: "Status",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
-            let bg = data.status === 'unpaid' ? 'bg-danger' : 'bg-success';
+            const bg = data.status === 'unpaid' ? 'bg-danger' : 'bg-success';
             return [`<span class="p-2 rounded-3 text-white text-capitalize ${bg}">${data.status}</span>`].join('');
         }
     },
     {
         title: "Last Updated",
+        className: 'align-middle text-capitalize',
         data: (data, index, tr)=>{
             return [`<div class="d-flex flex-column">
                 <span class="fw-semibold">${data.update_user}</span>
@@ -93,13 +103,15 @@ var InvoicesComponent = new function(){
     },
     {
         title: "Action",
+        className: 'align-middle text-capitalize',
         data: (data, a, b) => {
-            let cls = data.status === 'unpaid' ? 'd-block':'d-none'; 
+            console.log(data);
+            const cls = data.status === 'unpaid' ? 'd-block':'d-none'; 
             return [`<div class="d-flex gap-2">
                 <a href="javascript:void(0)" class="btn-inv-pay ${cls}" data-enrollmentid="${data.enrollment_id}" data-id="${data.id}">
                     <i class="fa-solid fa-hand-holding-dollar text-success fs-5"></i>
                 </a>
-                <a href="javascript:void(0)" class="btn-inv-modify ${cls}" data-id="${data.id}" data-studentid="${data.student_id}" data-invoice="${data.invoice_number}">
+                <a href="javascript:void(0)" class="btn-inv-modify ${cls}" data-id="${data.id}" data-enrollmentid="${data.enrollment_id}" data-invoice="${data.invoice_number}">
                     <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
                 </a>
                 <a href="javascript:void(0)" class="btn-inv-delete ${cls}" data-id="${data.id}">
@@ -156,7 +168,7 @@ var InvoicesComponent = new function(){
         mThis.tblInvoice.on('click','a.btn-inv-modify',function(e){
             e.preventDefault();
             let op = {
-                'id': $(this).data('studentid'),
+                'id': $(this).data('enrollmentid'),
                 'invoice_id': $(this).data('id'),
                 'invoice_number': $(this).data('invoice'),
                 'action':'modify',

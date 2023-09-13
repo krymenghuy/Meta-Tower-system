@@ -8,7 +8,6 @@ var FindStudentComponent = new function(){
     this.div_list = mThis.self.find('#div--fsd');
     this.btnFind = mThis.self.find('#_fns_btnFind');
     this.btnFilter = mThis.self.find('#_fns_btn_filter');
-    //this.panelStudentList = mThis.div_list.find('#_fns_list');
     this.elSearchStudent = this.self.find('#_fns_search');
     this.studentListView = null;
 
@@ -24,6 +23,11 @@ var FindStudentComponent = new function(){
             'listContainerClass':null
         });
  
+        mThis.elSearchStudent.on('keyup',e=>{
+            e.preventDefault();
+            mThis.studentListView.showPage(mThis.getFilterData());
+        });
+
         mThis.btnFind.on('click',function(e){
             e.preventDefault();
             let p = mThis.getDataForm(mThis.div_filter);
@@ -34,22 +38,8 @@ var FindStudentComponent = new function(){
             e.preventDefault();
             let p = mThis.getDataForm(mThis.div_list);
             mThis.studentListView.showPage(mThis.getFilterData());
-            //mThis.createFilter(e);
         });
     }
-
-    // this.createFilter = (e) => {
-    //     let op = {
-    //         select: 4,
-    //         label: ['Academic Year','Term','Option','Session'],
-    //         field: ['academic_year','terms_id','pmt_options_id','sessions_id'],
-    //         end_point: `${main_view.base_url}/api/student/form-options`
-    //     };
-        
-    //     DialogFilter(e,op,null,(d) => {
-    //         mThis.filterStudent(d);
-    //     });
-    // }
 
     this.getFilterData = ()=>{
         return {'search_value':mThis.elSearchStudent.val()};
@@ -82,9 +72,7 @@ var FindStudentComponent = new function(){
     this.createCard_html = (item )=>{
         if(!item) item = {};
             const cls = item.pmt_status === 'paid' ? 'text-success' : item.pmt_status === 'unpaid' ? 'text-dark' : 'text-danger';
-            const html = [
-              //`<div class="d-flex p-3 bg-white h-info-student">`,
-                `<div class="div-img">
+            const html = [`<div class="div-img">
                     <img src="${item.image_url}" alt=""/>
                 </div>
                 <div class="d-block ms-3 w-100">
@@ -214,9 +202,7 @@ var FindStudentComponent = new function(){
                             </div>
                         </div>
                     </div>
-                </div>`,
-             // `</div>`
-           ].join('');
+                </div>`].join('');
 
             const div = document.createElement('div');
             div.innerHTML = html;
@@ -236,7 +222,7 @@ var FindStudentComponent = new function(){
         LocaleManager.translateZone(container);
            
         //Force one time convesion from htm element "container" to jquery mThis.jquery_container;
-        if(cnt ===0){
+        if(cnt === 0){
             container.innerHTML = [`<div class="d-flex p-3 border rounded-3 shadow"><h4>There is where you can search for students in preparation to generate invoices</h4></div>`].join('');
             return;
         }
@@ -289,8 +275,8 @@ var FindStudentComponent = new function(){
                     const student_id = lnk.dataset.studentid;
                     const enrollment_id = lnk.dataset.id;
                     let op = {
-                         'student_id':student_id,
-                         'enrollment_id':enrollment_id
+                        'student_id':student_id,
+                        'enrollment_id':enrollment_id
                     };
 
                     StudentDiscountDialog.show(op);
@@ -326,11 +312,9 @@ var FindStudentComponent = new function(){
                             });
                         }
                     });
-
                     return;
                 }
             });
-
         }
     }
 
@@ -425,14 +409,16 @@ let GenerateInvoiceFSN = new function(){
         let op = {
             'id': options.id
         };
-        if(options.action === 'modify')
+        if(options.action === 'modify'){
             op.invoice_number = options.invoice_number;
+            op.inv_id = options.invoice_id;
+        }
+        console.log(op);
         vsapi.call(`${main_view.base_url}/api/student/generate-invoice/details`,op,null).then(res => {
             let data = {};
             if(res.status_code === 200){
                 data = res.data;
             }
-            console.log(data);
 
             const current = new Date();
             const format = new Intl.DateTimeFormat('en-US',{
@@ -454,7 +440,7 @@ let GenerateInvoiceFSN = new function(){
                     el.text(data[f]);
             });
 
-            let tab = mThis.self.find('a.btn-tuition-fee');
+            const tab = mThis.self.find('a.btn-tuition-fee');
             tab.off('click').on('click',function(e){
                 e.preventDefault();
                 const name = $(this).data('view');
