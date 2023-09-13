@@ -670,11 +670,11 @@ class PriceList //extends Model
 
     /**
      * pendingPayment() or tuitionReviewList() returns list of tuition payments that can be "pending" or "verified", "paid", "expired" tuitions
-     * */  
+     * */
     static function tuitionReviewList($filter=[],$ss){
         $branch_id = $ss->branch_id;
         $d = (object)$filter;
-      
+
         $current_page =isset($d->current_page)?$d->current_page:1;
         $per_page =isset($d->per_page)?$d->per_page:10;
         if(!is_numeric($current_page)) $current_page=1;
@@ -796,7 +796,7 @@ class PriceList //extends Model
             return $this->preview_new_student($arr,$id,$ss);
         }
     }
-  
+
     //* for preview like calculator function
     function preview_old_student($arr=[],$id=null,$ss){
         $d = (object)$arr;
@@ -1295,6 +1295,7 @@ class PriceList //extends Model
        ->select('s.price_list_id')
        ->join('enrollments as e', 's.student_id', '=', 'e.student_id')
        ->where('e.id', $enrollment_id)
+       ->whereRaw('ifnull(s.inactive,0) = 0')
        ->limit(1)
        ->get()->first();
        if(!$row) return false;
@@ -1328,8 +1329,9 @@ class PriceList //extends Model
         $pmt_option_id = $pmt_option_id?$pmt_option_id:$e->pmt_option_id;
         $session_id = $session_id?$session_id:$e->session_id;
         $program_id = $program_id?$program_id:$e->program_id;
-        $row = DB::table('student_discounts AS d')->where('d.student_id',$e->student_id)->where('d.program_id',$program_id)->where('d.pmt_option_id',$pmt_option_id)->where('d.session_id',$session_id)->selectRaw('d.id,d.policy_discount,d.special_discount,d.other_discount,d.student_id')->get()->first();  
-        
+      
+        $row = DB::table('student_discounts AS d')->where('d.student_id',$e->student_id)->where('d.program_id',$program_id)->where('d.pmt_option_id',$pmt_option_id)->where('d.session_id',$session_id)->selectRaw('d.id,d.policy_discount,d.special_discount,d.other_discount,d.student_id')->get()->first();
+
         $price_list = DB::table('student_pricelist as sl')->join('price_list As l','l.id','=','sl.price_list_id')->where('sl.student_id',$e->student_id)->where('enrollment_id',$enrollment_id)->whereRaw('IFNULL(sl.inactive,0) =0')->selectRaw('l.id AS price_list_id,l.name as price_list_name,l.academic_year,formatDate(l.start_date) AS start_date,formatDate(l.end_date) AS end_date')->take(1)->get()->first();
         $pl_name = null;
         $cur ='USD';
@@ -1367,7 +1369,7 @@ class PriceList //extends Model
             $row->price_list = self::getOriginalPriceListInfo($row->id);
         }
         else $row->price_list= null;
-        return $row;  
+        return $row;
     }
 
     function getPaymentPreviewOptions($enrollment_id,$ss=null){
