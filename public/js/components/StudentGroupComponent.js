@@ -14,46 +14,52 @@ var StudentGroupComponent = new function(){
     this.elFilter_session = this.self.find('#_sdg_filter_session');
 
     this.cols = [{
-            title: "Group Name",
-            data: (data, index, tr) => {
-                if(data.name == data.descriptive_name) data.name = '';
-                if(!data.descriptive_name) data.descriptive_name = data.name;
-                return ['<div class="d-flex flex-column"><span class="fw-semibold">',data.descriptive_name,'</span><span class="text-left text-muted">',data.name,'</span></div>'].join('');
-            }
-        },
-        {
-            title: "Session",
-            data: "session_name"
-        },
-        {
-            title: "Program",
-            data: (data, index, tr) =>{
-                return ['<div class="d-flex flex-column"><span class="fw-semibold">',data.program_name,'</span><span class="text-left">',data.level_name,'</span></div>'].join('');
-            }
-        },
-        {
-            title: "Students",
-            data: "student_count"
-        },
-        {
-            title: "Remarks",
-            data: (data, index, tr) => {
-                return data.remarks ? data.remarks : 'No Remarks';
-            }
-        },
-        {
-            title: "Action",
-            data: (data, index, tr) => {
-                return [`<div class="d-flex gap-2">
-                    <a href="javascript:void(0)" class="btn-sdg-modify" data-id="${data.id}">
-                        <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
-                    </a>
-                    <a href="javascript:void(0)" class="btn-sdg-delete" data-id="${data.id}">
-                        <i class="fa-regular fa-trash-can text-danger fs-5"></i>
-                    </a>
-                </div>`].join('');
-            }
-        }];
+        title: "Group Name",
+        className: 'align-middle text-capitalize',
+        data: (data, index, tr) => {
+            if(data.name == data.descriptive_name) data.name = '';
+            if(!data.descriptive_name) data.descriptive_name = data.name;
+            return ['<div class="d-flex flex-column"><span class="fw-semibold">',data.descriptive_name,'</span><span class="text-left text-muted">',data.name,'</span></div>'].join('');
+        }
+    },
+    {
+        title: "Session",
+        className: 'align-middle text-capitalize',
+        data: "session_name"
+    },
+    {
+        title: "Program",
+        className: 'text-capitalize align-middle',
+        data: (data, index, tr) =>{
+            return ['<div class="d-flex flex-column"><span class="fw-semibold">',data.program_name,'</span><small class="text-left">',data.level_name,'</small></div>'].join('');
+        }
+    },
+    {
+        title: "Students",
+        className: 'align-middle text-capitalize',
+        data: "student_count"
+    },
+    {
+        title: "Remarks",
+        className: 'text-capitalize align-middle',
+        data: (data, index, tr) => {
+            return data.remarks ? data.remarks : 'No Remarks';
+        }
+    },
+    {
+        title: "Action",
+        className: 'text-capitalize align-middle',
+        data: (data, index, tr) => {
+            return [`<div class="d-flex gap-2">
+                <a href="javascript:void(0)" class="btn-sdg-modify" data-id="${data.id}">
+                    <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
+                </a>
+                <a href="javascript:void(0)" class="btn-sdg-delete" data-id="${data.id}">
+                    <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                </a>
+            </div>`].join('');
+        }
+    }];
 
     this.getFilterData = () => {
         return {

@@ -11,52 +11,59 @@ var NonTuitionFeeComponent = new function(){
 
     this.cols = [{
         title: "Fee Type",
-        data: (data,index,tr)=>{
-            return [`<span class="fw-semibold">`,data.name,`</span>`].join('');
+        className: 'align-middle',
+        data: (data, index, tr)=>{
+            return [`<span class="text-capitalize fw-semibold">`,data.name,`</span>`].join('');
         }
     },
     {
         title: "Program",
-        data:  (data,index,tr)=>{
-            return [`<span class="">`,data.program_name?data.program_name:'NA',`</span>`].join('');
+        className: 'align-middle',
+        data:  (data, index, tr)=>{
+            return [`<span class="text-capitalize">`,data.program_name ? data.program_name : 'NA',`</span>`].join('');
         }
     },
     {
         title: "Amount",
+        className: 'align-middle',
         data: (data, a, b) => {
-            let amount = data.amount ? data.amount : '', currency_code = data.currency_code ? data.currency_code : '';
-            return ['<span class="d-block fw-semibold">',amount,currency_code,'</span></span class="text-primary text-left">',data.amount_input_mode,'</span>'].join(' ');
+            const amount = data.amount ? data.amount : '', currency_code = data.currency_code ? data.currency_code : '';
+            return ['<span class="d-block fw-semibold">',amount,currency_code,'</span><span class="text-capitalize text-primary text-left">',data.amount_input_mode,'</span>'].join(' ');
         }
     },
     {
         title: "Academic Year",
+        className: 'align-middle',
         data: "academic_year"
     },
     {
         title: "Description",
-        data: (data,index,tr)=>{
-            return data.description?data.description:'NA';
+        className: 'align-middle',
+        data: (data, index, tr)=>{
+            return data.description ? data.description : 'NA';
         }
     },
     {
         title: "Last Updated",
+        className: 'align-middle',
         data: (data, a, b) => {
-            //let user = data.update_user ? data.update_user : '', date = data.updated_at ? data.updated_at : '';
-            return [`<p class="pb-0 mb-0">`,data.update_user,`</p>
+            return [`<p class="text-capitalize pb-0 mb-0">`,data.update_user,`</p>
             <p class="pb-0 mb-0"><small>`,data.updated_at,`</small></p>`].join('');
         }
     },
     {
         title: "Authorization",
+        className: 'align-middle',
         data: (data, a, b) => {
-            let user = data.authorized ==1? data.auth_user: '';
-            let date = data.authorized ==1? data.auth_date : '';
-            return [`<p class="pb-0 mb-0">`,user,`</p>
+            const user = data.authorized == 1 ? data.auth_user : '';
+            const date = data.authorized == 1 ? data.auth_date : '';
+            return [`<p class="text-capitalize pb-0 mb-0">`,user,`</p>
             <p class="pb-0 mb-0"><small>`,date,`</small></p>`].join('');
         }
     },
     {
         title: "Action",
+        className: 'align-middle',
         data: (data, a, b) => {
             return [`<div class="d-flex gap-2">
                 <a href="javascript:void(0)" class="btn-ntf-modify" data-id="${data.id}">
@@ -70,7 +77,6 @@ var NonTuitionFeeComponent = new function(){
     }];
 
     this.init = () => {
-
         mThis.feeListView = new ListView('_ntf_list',{
             'fetchApi':`${main_view.base_url}/api/other-fee/list-paginate`,
             'columns':mThis.cols,
@@ -78,7 +84,7 @@ var NonTuitionFeeComponent = new function(){
             'rowCreated':(data, index, tr) => {
                 tr.dataset.id = data.id;
             },
-            'beforeRender':()=>{}
+            'beforeRender':() => {}
         });
 
         mThis.tblNonTuitionFee = $(mThis.feeListView.getTable());
@@ -128,12 +134,12 @@ var NonTuitionFeeComponent = new function(){
                 }
             });
         });
-
-        //new SearchData(mThis.elSearch,mThis.tblNonTuitionFee);
     }
  
     this.getFilterData = ()=>{
-        return {'search_value':mThis.elSearch.val()};
+        return {
+            'search_value':mThis.elSearch.val()
+        };
     }
 
     this.show = (options) => {
@@ -158,7 +164,6 @@ let NonTuitionFeeOutsideDialog = new function(){
     this.elTitle = mThis.self.find('.modal-title');
     this.btnSave = mThis.self.find('#dlg_ntf_btn_save');
     this.elProgram = mThis.self.find('#dlg_ntf_program');
-    //this.elAcademic = mThis.self.find('#dlg_ntf_academic');
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
@@ -186,8 +191,8 @@ let NonTuitionFeeOutsideDialog = new function(){
         };
 
         mThis.self.find('.data-input').each(function(){
-            let el = $(this);
-            let f = el.data('field');
+            const el = $(this);
+            const f = el.data('field');
             p[f] = el.val();
         });
         return p;
@@ -195,11 +200,11 @@ let NonTuitionFeeOutsideDialog = new function(){
 
     this.setDataForm = (d) => {
         d = d ? d : {};
-        d.currency_code = d.currency_code?d.currency_code: NonTuitionFeeComponent.currency_code;
-        d.amount_input_mode?d.amount_input_mode:'auto';
+        d.currency_code = d.currency_code ? d.currency_code : NonTuitionFeeComponent.currency_code;
+        d.amount_input_mode ? d.amount_input_mode : 'auto';
         mThis.self.find('.data-input').each(function(){
-            let el = $(this);
-            let f = el.data('field');
+            const el = $(this);
+            const f = el.data('field');
             if(el.is('select'))
                 el.val(d[f]).trigger('change');
             else
@@ -224,7 +229,6 @@ let NonTuitionFeeOutsideDialog = new function(){
                 d = res.data;
             }
             VSUtil.setComboItems(mThis.elProgram,d.programs,'id','program_name',true,'None',0);
-            //VSUtil.setComboItems(mThis.elAcademic,d.academic_year,'academic_year','academic_year',null,null,null);
             if(typeof onFinish === 'function') onFinish();
         });
     }
@@ -236,12 +240,10 @@ let NonTuitionFeeOutsideDialog = new function(){
         mThis.prepareFormOption(() => {
             if(options.id > 0){
                 mThis.elTitle.text(LocaleManager.trans('Modify Fee Item','titles'));
-                //mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please check fee type details before editing','titles'));
                 mThis.loadDataEdit(options);
             }
             else{
                 mThis.elTitle.text(LocaleManager.trans('Add Fee Item','titles'));
-                //mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input fee type details','titles'));
                 mThis.setDataForm(null);
             }
 

@@ -321,10 +321,14 @@ class PriceList //extends Model
         $price = $monthly_fee_info->price;
         $price_list_id = $monthly_fee_info->price_list_id;
         $discount_info = $this->getPolicyDiscount($pmt_option,$price_list_id);
+
+
+        $note =null;
         if(isset($d->discount)){
             $discount_info = $d->discount;
         }
 
+        //** weekly payment processing */
         if($d->months<3){
             $weekly_tuition_due = null;
 
@@ -347,8 +351,12 @@ class PriceList //extends Model
                 $total_tuition_due = $monthly_fee * $d->months;
             }
 
-            return (object)['price_list_id' => $monthly_fee_info->price_list_id,'first_month_end_date'=>$last_day_in_month,'tuition' => $total_tuition_due,'tuition_due'=>$total_tuition_due,'status_code' => 200,'error_message' =>null];
-        }else if($d->months < 6){
+            $note = 'Weekly fee';
+
+            return (object)['note'=>$note,'price_list_id' => $monthly_fee_info->price_list_id,'first_month_end_date'=>$last_day_in_month,'tuition' => $total_tuition_due,'tuition_due'=>$total_tuition_due,'status_code' => 200,'error_message' =>null];
+        }
+        //** Term payment processing */
+        else if($d->months < 6){
             $endingInfo = findFutureMonths($d->start_date,$d->months-1); //** */
             $end_date =$endingInfo->end_date;
             $weekly_tuition_due = 0;
@@ -356,6 +364,7 @@ class PriceList //extends Model
             $price_list_id = $monthly_fee_info->price_list_id;
             $monthly_tuition_due = 0;
             if($current_day != 1 && $d->months == 3){
+                $terms = 3;
                 $total_weekly_Fee = self::getWeeklyTuitionDue([
                     'start_date' => $d->start_date,
                     'level_id' => $d->level_id,
@@ -365,6 +374,8 @@ class PriceList //extends Model
                 ]);
                 $weekly_tuition_due = $total_weekly_Fee->tuition_due;
                 $base_amount = $price * ($d->months-1); //** minus 1 = first is not a full */
+                $original_price = $price * $terms;
+
             }else{
                 $term = 3;
                 $pay_month = 0;
@@ -394,8 +405,15 @@ class PriceList //extends Model
             $term_tuition_due = $base_amount - $discount_amt;
             $total_tuition_due = $term_tuition_due + $weekly_tuition_due + $monthly_tuition_due;
             $tuition = $monthly_tuition_due + $base_amount + $weekly_tuition_due;
-            return (object)['price_list_id' => $monthly_fee_info->price_list_id,'end_date' => $end_date,'tuition'=>$tuition,'tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'discount'=>$discount_info,'weekly_tuition'=>$weekly_tuition_due,'monthly_tuition'=>$monthly_tuition_due,'status_code' => 200,'error_message' =>null];
-        }else if($d->months <12){
+
+           if(isset($original_price) && !isset($d->is_pricelist)){
+                $minus_weekly_fee = $original_price - $total_tuition_due;
+                $note = 'Tuition('.$original_price.') - '.$minus_weekly_fee.' because Start Date is not the first day of the month.';
+           }
+            return (object)['note'=>$note,'price_list_id' => $monthly_fee_info->price_list_id,'end_date' => $end_date,'tuition'=>$tuition,'tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'discount'=>$discount_info,'weekly_tuition_due'=>$weekly_tuition_due,'monthly_tuition'=>$monthly_tuition_due,'status_code' => 200,'error_message' =>null];
+        }
+        //** Semester Payment Processing */
+        else if($d->months <12){
             $weekly_tuition_due = 0;
             $months = isset($d->months) ? $d->months :6;
             $base_amount = 0;//** base amount equal to term (3months) */
@@ -403,6 +421,8 @@ class PriceList //extends Model
             // $discount_info = $this->getPolicyDiscount($pmt_option,$price_list_id);
             $monthly_tuition_due = 0;
             $tuition = 0;
+
+            //** not the first day of months as semester payment  and months equal 6 */
             if($current_day != 1 && $d->months == 6){
                 $term = 3;
                 $pay_month = $months - 1;
@@ -426,8 +446,17 @@ class PriceList //extends Model
                     $endingInfo = findFutureMonths($d->start_date,$d->months-1);//** */
                     $end_date =$endingInfo->end_date;
                     $tuition = $base_amount + $monthly_tuition_due + $weekly_tuition_due;
+                    // $minus_weekly_fee = $total_weekly_Fee->weekly_fee;
+                    // $note = 'Tuition due('.$tuition.') - '.$minus_weekly_fee.' because Start Date is not the first day of the month.';
+                    $original_price = $price * $months;
+                    $minus_weekly_fee = $original_price - $total_tuition_due;
+                    if(!isset($d->is_pricelist)){
+                        $note = 'Tuition('.$original_price.') - '.$minus_weekly_fee.' because Start Date is not the first day of the month.';
+                    }
 
-            }else if($current_day != 1 && $d->months > 6){
+            }
+            //** if not the first day of months as semester payment  and months greater than 6 */
+            else if($current_day != 1 && $d->months > 6){
                 $semester = 6-1; //* minus one because of the first months is not start on first
                 $pay_month = $d->months - $semester;
 
@@ -452,6 +481,13 @@ class PriceList //extends Model
                 $total_tuition_due = $after_discount + $weekly_tuition_due;
                 $tuition = $semester_tuition + $pay_month + $total_weekly_Fee->tuition_due;
                 $monthly_tuition_due = 0;//**************** */
+
+                $original_price = $price * $months;
+                $minus_weekly_fee = $original_price - $total_tuition_due;
+                if(!isset($d->is_pricelist)){
+                    $note = 'Tuition('.$original_price.') - '.$minus_weekly_fee.' because Start Date is not the first day of the month.';
+                }
+
             }else {
                 $week ="full month no week count";
                 $semester_tuition = $d->months * $price;
@@ -464,14 +500,15 @@ class PriceList //extends Model
                 $monthly_tuition_due = 0;//**************** */
             }
 
-            return (object)['price_list_id' => $monthly_fee_info->price_list_id,'end_date'=> $end_date,'tuition'=>$tuition,'tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'weekly_tuition_due' => $weekly_tuition_due,'weeks' => $week,'monthly_tuition_due' => $monthly_tuition_due,'discount'=>$discount_info,'after_discount' => $after_discount,'discount_amount' => $discount_amt,'status_code' => 200,'error_message' =>null];
+            return (object)['note'=>$note,'price_list_id' => $monthly_fee_info->price_list_id,'end_date'=> $end_date,'tuition'=>$tuition,'tuition_due'=>$total_tuition_due,'term_tuition_due' => $base_amount,'weekly_tuition_due' => $weekly_tuition_due,'weeks' => $week,'monthly_tuition_due' => $monthly_tuition_due,'discount'=>$discount_info,'after_discount' => $after_discount,'discount_amount' => $discount_amt,'status_code' => 200,'error_message' =>null];
         }else{
             // $price_list_id = $monthly_fee_info->price_list_id;
             // $discount_info = $this->getPolicyDiscount($pmt_option,$price_list_id);
             $total_tuition_due = 0;
             $discount_amt = 0;
             if($current_day != 1 && $d->months == 12){
-                $annual = 12-1; //* because the first month is not a full month
+                $annual = 12; //* because the first month is not a full month
+                $pay_month = 12-1;
 
                 $total_weekly_Fee = self::getWeeklyTuitionDue([
                     'start_date' => $d->start_date,
@@ -481,18 +518,29 @@ class PriceList //extends Model
                     'academic_year' => $d->academic_year,
                 ]);
                 // $annual_tuition = $price * $annual;
-                $tuition = $price * $annual;
+                $pay_month = $price * $pay_month;
                 $endinfInfo = findFutureMonths($d->start_date,$d->months-1);//**  */
                 $end_date =$endinfInfo->end_date;
-                $discount_amt = $tuition * $discount_info->discount / 100;
+                $discount_amt = $pay_month * $discount_info->discount / 100;
                 $weekly_tuition_due = $total_weekly_Fee->tuition_due;
-                $total_tuition_due = ($tuition - $discount_amt) + $total_weekly_Fee->tuition_due;
+                $total_tuition_due = ($pay_month - $discount_amt) + $total_weekly_Fee->tuition_due;
                 // return $discount_info;
                 $monthly_tuition_due = 0;//**************** */
-                $after_discount = $tuition - $discount_amt;
+
+                //** note */
+                $after_discount = $pay_month - $discount_amt;
+                $original_price = $price * $annual;
+                $tuition = $original_price;
+                $minus_weekly_fee = $original_price - $total_tuition_due;
+                if(!isset($d->is_pricelist)){
+                    $note = 'Tuition('.$original_price.') - '.$minus_weekly_fee.' because Start Date is not the first day of the month.';
+                }
+                //     $note = 'Tuition('.$original_price.') because Start Date is not the first day of the month.';
+                // }
+
             }else if($current_day != 1 && $d->months >12){
                 $annual = 12-1;
-                $pay_month = $d->months - $annual;
+                $pay_month = 12 - $annual;
                 $endinfInfo = findFutureMonths($d->start_date,$d->months-1);//**  */
                 $end_date =$endinfInfo->end_date;
                 // $price_list_id = $monthly_fee_info->price_list_id;
@@ -515,6 +563,14 @@ class PriceList //extends Model
                 $weekly_tuition_due = $total_weekly_Fee->tuition_due;
                 $after_discount = $tuition - $discount_amt;
                 $monthly_tuition_due = 0;//**************** */
+
+                //** note */
+                $after_discount = $tuition - $discount_amt;
+                $original_price = $price * $annual;
+                $minus_weekly_fee = $original_price - $total_tuition_due;
+                if(!isset($d->is_pricelist)){
+                    $note = 'Tuition('.$original_price.') - '.$minus_weekly_fee.' because Start Date is not the first day of the month.';
+                }
             }else{
                 // $annual_tuition = $d->months * $price;
                 $tuition = $d->months * $price;
@@ -529,8 +585,7 @@ class PriceList //extends Model
                 $monthly_tuition_due = 0;
             }
 
-            return (object)['price_list_id' => $monthly_fee_info->price_list_id,'end_date'=> $end_date,'tuition'=>$tuition,'tuition_due'=>$total_tuition_due,'weekly_tuition_due' => $weekly_tuition_due,'weeks' => $week,'monthly_tuition_due' => $monthly_tuition_due,'discount'=>$discount_info,'after_discount' => $after_discount,'discount_amount' => $discount_amt,'status_code' => 200,'error_message' =>null];
-            // return (object)['price_list_id' => $monthly_fee_info->price_list_id,'end_date'=>$end_date,'tuition_due' => $total_tuition_due,'discount_amount' => $discount_amt,'status_code' => 200,'error_message' =>null];//,'weekly_tuition'=>$total_weekly_Fee->tuition_due
+            return (object)['note'=>$note,'price_list_id' => $monthly_fee_info->price_list_id,'end_date'=> $end_date,'tuition'=>$tuition,'tuition_due'=>$total_tuition_due,'weekly_tuition_due' => $weekly_tuition_due,'weeks' => $week,'monthly_tuition_due' => $monthly_tuition_due,'discount'=>$discount_info,'after_discount' => $after_discount,'discount_amount' => $discount_amt,'status_code' => 200,'error_message' =>null];
         }
     }
 
@@ -544,7 +599,8 @@ class PriceList //extends Model
         $x = $weekly_fee * $d->weeks;
         $days = $d->weeks * 7;
         $end_date = dateAdd('day',$days,$d->start_date);
-        return (object)['price_list_id'=>$monthly_fee_info->price_list_id,'end_date' => $end_date,'tuition'=>$x,'tuition_due'=> $x==0?$weekly_fee:$x,'status_code' => 200,'error_message' =>null];
+        // return (object)['price_list_id'=>$monthly_fee_info->price_list_id,'end_date' => $end_date,'tuition'=>$x,'tuition_due'=> $x==0?$weekly_fee:$x,'status_code' => 200,'error_message' =>null];
+        return (object)['price_list_id'=>$monthly_fee_info->price_list_id,'end_date' => $end_date,'weekly_fee'=>$x,'tuition_due'=> $x==0?$weekly_fee:$x,'status_code' => 200,'error_message' =>null,''];
     }
 
     /**
@@ -673,7 +729,7 @@ class PriceList //extends Model
                 else if($tuition_end_date < $today && $row->status_id == 3){
                     $row->status = 'expired';
                 }
-                else $row->status = 'unpaid';
+                // if($tuition_end_date > date('Y-m-d') && $row->status_id <=2) $row->status = 'unpaid';
             }
             $row->tuition_end_date = date( $tuition_end_date, strtotime( $tuition_end_date));
         }
@@ -706,6 +762,7 @@ class PriceList //extends Model
         $is_old_student = $org_price_list>0;
         $d = (object)$arr;
         $student_id =isset($d->student_id)?$d->student_id:DB::table('enrollments')->where('id',$id)->take(1)->value('student_id');
+        $program_id = GeneralSettings::getProgramByLevel($d->level_id,$ss)->program_id;
         $str_pmt_option_id='1=1';
         if(isset($d->pmt_option_id)){
             $str_pmt_option_id = 'pmt_option_id = '.$d->pmt_option_id;
@@ -714,12 +771,13 @@ class PriceList //extends Model
             // $priceList = DB::table('student_pricelist')->where('inactive',0)->where('student_id',$student_id)->first();
             $studentDiscount = DB::table('student_discounts')->where('student_id',$student_id)
                 ->whereRaw($str_pmt_option_id)
+                ->where('session_id',$d->session_id)
+                ->where('program_id',$program_id)
                 ->selectRaw('policy_discount,student_id,pmt_option_id,price_list_id,special_discount,other_discount,program_id')
                 ->get()->first();
             $discount = $studentDiscount->policy_discount + $studentDiscount->special_discount + $studentDiscount->other_discount;
 
             $old = [
-                // "level_id" => $d->level_id,
                 "program_id" => $studentDiscount->program_id,
                 "academic_year" => isset($d->academic_year) ? $d->academic_year:null,
                 "session_id" => $d->session_id,
@@ -728,6 +786,7 @@ class PriceList //extends Model
                 "months" => GeneralSettings::getPmtOptionMonths($studentDiscount->pmt_option_id),
 
                 //** original_discount from student_discount return as object to replace discount if old student */
+                //** can be customize */
                 'original_discount' => (object)['discount' => $discount,'discount_percent' => $studentDiscount->policy_discount],
                 "pmt_option_id"=> $studentDiscount->pmt_option_id
             ];
@@ -783,6 +842,7 @@ class PriceList //extends Model
             'discount' => $d->original_discount,
             "pmt_option_id"=> $pmt_option_id,
             "price_list_id" => isset($d->price_list_id)?$d->price_list_id:null,
+            'is_pricelist' => 1,
         ];
         $priceListInfo =$this->payment_processing($arr,$ss);
         if($priceListInfo->status_code !=200) return DV::error($priceListInfo->error_message);
@@ -922,6 +982,7 @@ class PriceList //extends Model
             "months" => $months,
             "weeks" => $weeks,
             "days" => $days,
+            //** if old pricelist payment found and is active */
             "student_id" => $student_id,
             "pmt_option_id"=> $pmt_option_id
         ];
@@ -968,12 +1029,12 @@ class PriceList //extends Model
             // params = enrollment_id,tuition_due,additional_discount = 0 because it has already updated in approve discount;
             $inv->resetUnpaidInvoice($id,$tuition_due,0,$payment_info->tuition);
             $set_pmt_option = saveData($ss,'payments',['enrollment_id' => $enr->id],$pmt_arr,[],1);
-            // DB::table('enrollments')->where('student_id',$student_id)->where('branch_id',$ss->branch_id)->update([
-            //     "tuition_end_date" => null,
-            // ]);
+            DB::table('enrollments')->where('student_id',$student_id)->where('branch_id',$ss->branch_id)->update([
+                "tuition_end_date" => findFutureMonths(convertDate($inputs['start_date']),$months)->end_date,
+            ]);
         }
 
-        return DV::depends($id,$discount_info);
+        return DV::depends($id,$preview);
     }
 
     static function getProgramByLevel($id,$ss){
@@ -984,291 +1045,7 @@ class PriceList //extends Model
                 ->get()->first();
     }
 
-    function saveStudentDiscounts($inputs){
-        // $rows = DB::table('pmt_options')->selectRaw('id,name')->limit(3)->orderBy('id','asc')->get();
-        // foreach($rows as $row){
-        //     if($row->id == 1){
-        //         $pmt_arr = [
-        //             "level_id" => $inputs['level_id'],
-        //             "academic_year" => $enr->academic_year,
-        //             "session_id" => $inputs['session_id'],
-        //             "start_date" => $inputs['start_date'],
-        //             "months" => $months,
-        //             "weeks" => $weeks,
-        //             "days" => $days,
-        //             "pmt_option_id"=> 1
-        //         ];
 
-        //         $preview = $instance->previewPendingPaymentDetails($pmt_arr,$id,$ss);
-        //         $payment_info = $preview->payment_info;
-        //         // saveData($ss,'student_discounts',['id'=>null],[]);
-        //         // return $payment_info;
-        //     } elseif($row->id == 2){
-        //         $pmt_arr = [
-        //             "level_id" => $inputs['level_id'],
-        //             "academic_year" => $enr->academic_year,
-        //             "session_id" => $inputs['session_id'],
-        //             "start_date" => $inputs['start_date'],
-        //             "months" => $months,
-        //             "weeks" => $weeks,
-        //             "days" => $days,
-        //             "pmt_option_id"=> 1
-        //         ];
-        //         $preview = $instance->previewPendingPaymentDetails($pmt_arr,$id,$ss);
-        //         $payment_info = $preview->payment_info;
-        //         // saveData($ss,'student_discounts',['id'=>null],[]);
-        //         // return $payment_info;
-        //     }elseif ($row->id == 3) {
-        //         $pmt_arr = [
-        //             "level_id" => $inputs['level_id'],
-        //             "academic_year" => $enr->academic_year,
-        //             "session_id" => $inputs['session_id'],
-        //             "start_date" => $inputs['start_date'],
-        //             "months" => $months,
-        //             "pmt_option_id"=> 3
-        //         ];
-        //         $preview = $instance->previewPendingPaymentDetails($pmt_arr,$id,$ss);
-        //         $payment_info = $preview->payment_info;
-        //         saveData($ss,'student_discounts',['id'=>null],[]);
-        //     }
-        // }
-    }
-
-
-    /** getInvoiceList() */
-    // static function studentInvoice($filter=[],$ss){
-    //     $branch_id = $ss->branch_id;
-    //     $d = (object)$filter;
-    //     $academic_year = isset($d->academic_year) ? $d->academic_year:null;
-    //     $search_value =isset($d->search_value)?$d->search_value:null;
-    //     $campus_id =isset($d->campus_id)?$d->campus_id:null;
-    //     $current_page =isset($d->current_page)?$d->current_page:1;
-    //     $per_page =isset($d->per_page)?$d->per_page:10;
-    //     if(!is_numeric($current_page)) $current_page=1;
-    //     $skip_rows = ($current_page -1) * $per_page;
-
-    //     $str_search ="1=1";
-    //     $str_moreWhere="1=1";
-    //     if($search_value){
-    //         $skip_rows = 0;
-    //         $search_value = escape_like_str($search_value);
-    //         $str_search ='(st.code =\''.$search_value.'\' OR st.name LIKE \'%'.$search_value.'%\')';
-    //     }
-    //     if($campus_id > 0)  $str_search .=' AND e.campus_id ='.$campus_id;
-    //     $get_level = ',(SELECT l.`name` FROM program_levels AS l WHERE l.id = e.level_id LIMIT 1) AS level';
-    //     $selectCols = 'e.id as enrollment_id,s.id as student_id,inv.invoice_type,inv.due_amount,inv.paid_amount,inv.is_paid,inv.id,e.session_id,s.code as student_code,formatDate(inv.invoice_date) AS invoice_date,e.program_id,m.name AS program,e.level_id,s.name as student_name,p.status_id as pstatus_id,e.academic_year'.$get_level.',e.start_date,formatDate(e.tuition_end_date) AS tuition_end_date,formatDate(inv.due_date) AS due_date,inv.invoice_number,inv.amount,inv.update_user,formatDate(inv.pmt_date) AS pmt_date,formatTime(inv.updated_at) AS updated_at';
-    //     $query = DB::table('invoices as inv')
-    //             ->join('students as s','s.id','=','inv.student_id')
-    //             ->join('enrollments as e','e.id','=','inv.enrollment_id')
-    //             ->join('programs as m','m.id','=','e.program_id')
-    //             ->join('terms as t','e.term_id','=','t.id')
-    //             ->join('payments as p','p.enrollment_id','=','e.id')
-    //             ->selectRaw($selectCols)
-    //             ->where('inv.branch_id',$branch_id)
-    //             // ->where('e.status_id',2)
-    //             ->whereRaw($str_moreWhere)->whereRaw($str_search)
-    //             ->orderBy('inv.id','desc');
-    //             if($academic_year){
-    //                 $query->where('e.academic_year',$academic_year);
-    //             }
-    //     $count_query = clone $query;
-    //     $count = $count_query->count('inv.id');
-    //     $rows = $query->skip($skip_rows)->take($per_page)->get();
-
-    //     $session_list =  DB::table('sessions')->where('branch_id',$branch_id)->selectRaw('id,name')->get();
-    //     foreach($rows as $row) {
-    //         //$row->level = Student::getProgramLevel($row->level_id);
-    //         $row->status = $row->is_paid == 1? 'paid' : 'unpaid';
-    //         //$row->program = $program->details($row->program_id,$ss)->name;
-    //         $this_session = $session_list->filter(function ($c) use($row) {
-    //             return $c->id === $row->session_id;
-    //         })->first();
-
-    //         $row->session = $this_session? $this_session->name:'NA';
-    //         unset($row->session_id);
-    //         unset($row->paid);
-
-    //     }
-
-    //     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-    // }
-
-    // static function studentDeposite($id){
-    //     $matchedStudents =DB::table('students as s')
-    //         ->join('deposite as d', 's.name', '=', 'd.student_name')
-    //         ->where('s.date_of_birth', '=', DB::raw('d.date_of_birth'))
-    //         ->where('s.id',$id)
-    //         ->where('d.is_used',0)
-    //         ->selectRaw('s.name,d.deposite_amount') // Select columns from the students table
-    //         ->get()->first();
-    //     if(!$matchedStudents) return 0;
-    //     return $matchedStudents->deposite_amount;
-    // }
-
-    // static function getTuitionEndDate($student_id){
-    //     $row = DB::table('enrollments')->where('student_id',$student_id)->selectRaw('tuition_end_date')->first();
-    //     if(!$row)return (object)['tuition_end_date' => null];
-    //     return $row->tuition_end_date;
-    // }
-
-    // static function findStudent($filter=[],$ss){
-    //     $campus = new Campus();
-    //     $branch_id = $ss->branch_id;
-    //     $d = (object)$filter;
-    //     $academic_year = isset($d->academic_year) ? $d->academic_year:null;
-    //     $search_value =isset($d->search_value)?$d->search_value:null;
-    //     $current_page =isset($d->current_page)?$d->current_page:1;
-    //     $per_page =isset($d->per_page)?$d->per_page:10;
-    //     if(!is_numeric($current_page)) $current_page=1;
-    //     $skip_rows = ($current_page -1) * $per_page;
-
-    //     $str_search ="1=1";
-    //     $str_moreWhere="1=1";
-    //     if($search_value){
-    //         $skip_rows =0;
-    //         $search_value = escape_like_str($search_value);
-    //         $str_search ="(st.code ='$search_value' OR st.name LIKE '%$search_value%')";
-    //     }
-
-    //     $selectCols = 'e.id as enrollment_id,p.tuition_paid,p.tuition_due,e.tuition_end_date,st.id as student_id,st.file_name,p.status_id as pstatus_id,s.name as session,e.level_id,e.campus_id,e.academic_year,st.id,st.code as student_code,st.name,st.sex,st.date_of_birth,st.file_name,e.prev_school_id,e.status_id';
-    //     $query = DB::table('students as st')
-    //             ->join('enrollments as e','e.student_id','=','st.id')
-    //             ->join('payments as p','p.enrollment_id','=','e.id')
-    //             ->join('sessions as s','s.id','=','e.session_id')
-    //             ->selectRaw($selectCols)
-    //             ->where('st.branch_id',$branch_id)
-    //             ->whereRaw($str_moreWhere)->whereRaw($str_search)
-    //             ->where('p.status_id','!=','NULL') //* for paid and unpaid
-    //             ->where('e.status_id','!=',1) //* for verified up to paid
-    //             ->orderBy('id','desc');
-    //             if($academic_year){
-    //                 $query->where('academic_year',$academic_year);
-    //             }
-    //     $count_query = clone $query;
-    //     $count = $count_query->count('st.id');
-    //     $rows = $query->skip($skip_rows)->take($per_page)->get();
-    //     foreach($rows as $row) {
-
-    //         $status = rand(0,1)?'New':'Old';
-    //         $status = 'New';
-    //         $row->image_url = PublicStorage::getUrl($branch_id,'students','image').$row->file_name;
-    //         $row->parent_info = Student::getParentInfo($row->student_id);
-    //         unset($row->file_name);
-    //         $row->campus = $campus->details($row->campus_id,$ss)->name;
-    //         $row->level = Student::getProgramLevel($row->level_id);
-    //         $row->student_type = $status;
-    //         // $row->status = $row->pstatus_id == 1? 'unpaid' : 'paid';
-    //         $row->previous_school = Student::getPrevSchool($row->prev_school_id)->name;
-    //         $tuition_end_date = convertDate($row->tuition_end_date);
-    //         $row->pmt_status = 'unpaid';
-    //         if($tuition_end_date){
-    //             if($tuition_end_date > date('Y-m-d') && $row->status_id == 3){
-    //                 $row->pmt_status = 'paid';
-    //             }
-    //             else if($tuition_end_date < date('Y-m-d') && $row->status_id == 3){
-    //                 $row->pmt_status = 'expired';
-    //             }
-    //             else $row->pmt_status = 'unpaid';
-    //         }
-    //         // unset($row->pstatus_id);
-    //     }
-
-    //     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-    // }
-
-
-    //static function generateInvoiceDetails($arr,$ss){
-    //     $d = (object)$arr;
-    //     $id = isset($d->id)?$d->id:null;
-    //     $invItemID = isset($d->inv_item_id)?$d->inv_item_id:null;
-    //     $campus = new Campus();
-    //     $q = DB::table('students as s')
-    //             // ->where('s.id',$id)
-    //             ->join('enrollments as e','e.student_id','=','s.id')
-    //             ->join('payments as p','p.enrollment_id','=','e.id')
-    //             ->selectRaw('s.id as student_id,p.second_child_discount,p.special_discount,e.academic_year,p.tuition_due,p.policy_discount,e.start_date,e.tuition_end_date,p.tuition,s.code as student_code,s.name as student_name,e.campus_id,e.level_id,e.status_id');
-    //             if($id){
-    //                 $q->where('e.id',$id);
-    //             }
-    //     $row = $q->get()->first();
-    //     if(!$row) return DV::error('Not Found');
-    //     $tuition_end_date = convertDate($row->tuition_end_date);
-    //     $row->pmt_status = 'Unpaid';
-    //     if($tuition_end_date){
-    //         if($tuition_end_date > date('Y-m-d') && $row->status_id == 3){
-    //             $row->pmt_status = 'paid';
-    //         }
-    //         else if($tuition_end_date < date('Y-m-d') && $row->status_id == 3){
-    //             $row->pmt_status = 'expired';
-    //         }
-    //         else $row->pmt_status = 'unpaid';
-    //     }
-    //     $student_id = $row->student_id;
-    //     $invoice_id = self::getInvoiceInfo($student_id);
-    //     $invoice_number =isset( $d->invoice_number)?$d->invoice_number:null;
-    //     $row->campus = $campus->details($row->campus_id,$ss)->name;
-    //     $row->date_range = $row->start_date.' to '.$row->tuition_end_date;
-    //     $row->discount = $row->policy_discount;
-    //     $row->level = Student::getProgramLevel($row->level_id);
-    //     $row->amount = $row->tuition;
-    //     $row->total = $row->tuition_due;
-    //     $row->fee_type = 'tuition_fee';
-    //     $row->due_date = self::getInvoiceInfo($student_id)->due_date;
-    //     $row->invoice_number = self::getInvoiceInfo($student_id)->invoice_number;
-    //     if($invoice_id){
-    //         $row->invoice_id = $invoice_id->id;
-    //     }
-    //     $row->other_fees = self::getOtherFeeTypes($student_id,$invoice_number);
-    //     unset($row->tuition);
-    //     unset($row->tuition_due);
-    //     unset($row->policy_discount);
-    //     $row->deposite_amount = self::studentDeposite($student_id);
-
-    //     return $row;
-    // }
-
-    // static function getInvoiceInfo($student_id){
-    //     $row = DB::table('invoices as i')->where('i.student_id',$student_id)
-    //             ->join('invoice_items as it','it.invoice_id','=','i.id')
-    //             ->selectRaw('i.due_date,i.invoice_number,i.id')
-    //             ->first();
-
-    //     if(!$row) return (object)['due_date'=>null, 'invoice_number'=>null,'id'=>null];
-
-    //     return $row;
-    // }
-
-    // static function updateInvoice($arr,$ss){
-    //     $d = (object)$arr;
-    //     $branch_id = $ss->branch_id;
-    //     if(!isset($d->id)) return DV::error('ID is required');
-    //     $id = $d->id;
-    //     if(!is_numeric($id)) return DV::error('ID must be a number');
-    //     $exists_invoice = DB::table('invoices')->where('id',$id)->where('branch_id',$branch_id)->selectRaw('student_id')->first();
-    //     if(!$exists_invoice) return DV::error('ID does not exist');
-    //     //$due_date = isset($d->due_date)?$d->due_date:null;
-    //     $insert_info = isset($d->insert_info)?$d->insert_info:null;
-    //     $delete_info = isset($d->delete_info)?$d->delete_info:null;
-    //     $keeper = [];
-    //     foreach($insert_info as $ins_info){
-    //         $other_fee = DB::table('other_fees')->where('name',$ins_info['fee_type'])->selectRaw('name,amount,description')->first();
-    //         $updateOrInsert = [
-    //             "invoice_id" => $id,
-    //             "fee_type" => $ins_info['fee_type'],
-    //             'price' => $other_fee->amount,
-    //             'description' => $other_fee->description
-    //         ];
-    //         $inv_item_id = isset($ins_info['invoice_item_id'])?$ins_info['invoice_item_id']:null;
-    //         $newID = saveData($ss,'invoice_items',['id'=>$inv_item_id],$updateOrInsert);
-    //     }
-
-    //     if(isset($delete_info)){
-    //         foreach($delete_info as $del_info){
-    //             DB::table('invoice_items')->where('id',$del_info['invoice_item_id'])->delete();
-    //         }
-    //     }
-    //     return $keeper;
-    // }
 
     static function getOtherFeeTypes($id,$inv_number){
         $rows = DB::table('invoices as i')->where('student_id',$id)
@@ -1278,392 +1055,6 @@ class PriceList //extends Model
                 ->selectRaw('it.id as invoice_item_id,it.fee_type,it.price as amount,it.description,price as total')->get();
         return $rows;
     }
-
-
-      /**
-       * $doc_class is invlice line. It is invoice line based on which to issue invoice for different Tax processing or tax treatment
-      */
-        // static function setInvoiceNumber($branch_id, $invoice_id = 0, $doc_class = null, $issue_date = null, $len = 5, $onSuccess = null)
-        // {
-        //     if (!$len) $len = 5;
-        //     $def_prefix = "V";
-        //     $table_name = "invoice_code_control";
-        //     $target_table = "invoices";
-        //     $target_column = "invoice_number";
-        //     $com_branch_id = null;
-        //     $str_company_branch='1=1';
-        //     if($com_branch_id > 0) $str_company_branch ='com_branch_id ='.$com_branch_id;
-        //     if (!$invoice_id) return null;
-
-        //     //if ($def_prefix) $where_branch .=" AND prefix ='$def_prefix'";
-        //     $year = date('Y', strtotime($issue_date));
-        //     $row = DB::table($table_name . " as c")->where('branch_id', $branch_id)->where('c.issue_year', $year)->where('c.doc_class', $doc_class)->whereRaw($str_company_branch)->selectRaw("last_id,prefix")->take(1)->get()->first();
-
-        //     $next_num = 0;
-        //     $prefix = null;
-        //         if ($row){
-        //             $next_num = $row->last_id;
-        //             $prefix = $row->prefix;
-        //         }
-        //         if (!$prefix) $prefix = $def_prefix;
-        //         if (!$prefix) $prefix = "I";
-        //         $next_num++;
-        //         //example invoice number => I12023-00003
-        //         $new_code = $prefix . $branch_id . $year . "-" . formatNumber($next_num, $len);
-
-        //         $x = DB::table($target_table)->where('id', $invoice_id)->update([$target_column => $new_code]);
-        //         if ($x || $x === 1) {
-        //         $updated = DB::table($table_name)->where('branch_id', $branch_id)->where('issue_year', $year)->where('doc_class', $doc_class)->whereRaw($str_company_branch)->update(['last_id' => $next_num]);
-        //         if (!$updated) DB::table($table_name)->insert(['branch_id' => $branch_id, 'com_branch_id' => $com_branch_id, 'doc_class' => $doc_class, 'issue_year' => $year, 'prefix' => $prefix, 'last_id' => $next_num]);
-        //         if ($onSuccess) $onSuccess();
-        //         return (object)['status_code' => 200, 'status' => 'OK', 'code' => $new_code];
-        //     }
-        //     return null;
-        // }
-
-    // static function
-    // static function generateInvoice($arr=[],$ss){
-    //     $v_rule = [
-    //         'due_date' => '1|string',
-    //         // 'student_id' => '0|number|exists=students.id',
-    //         'enrollment_id' => '1|number|exists=enrollments.id',
-    //         'qty' => '0|number',
-    //         'fee_types' => '0|array',
-    //         'note' => '0|string|1,300',
-    //         'invoice_id' => '0|number|exists=invoices.id',
-    //     ];
-    //     $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
-    //     if($res->error) return DV::error($res->error);
-    //     $inputs = $res->values;
-    //     $inv_id = $inputs['invoice_id'];
-    //     unset($inputs['invoice_id']);
-    //     // $student_id = $inputs['student_id'];
-    //     $enrollment_id = $inputs['enrollment_id'];
-    //     // unset($inputs['enrollment_id']);
-    //     // $student = DB::table('students')->where('branch_id',$ss->branch_id)->where('id',$student_id)->selectRaw('id')->first();
-    //     $enr_info = DB::table('enrollments as e')->where('e.id',$enrollment_id)
-    //                 ->join('payments as p','p.enrollment_id','=','e.id')
-    //                 ->selectRaw('e.id as enr_id,p.tuition,e.start_date,e.tuition_end_date,e.academic_year,p.policy_discount,e.status_id,e.student_id')
-    //                 ->first();
-    //     $tuition_end_date = convertDate($enr_info->tuition_end_date);
-    //     $enr_info->pmt_status = 'Unpaid';
-    //     $inputs['student_id'] = $enr_info->student_id;
-    //     $inputs['due_date'] = convertDate($inputs['due_date']);
-    //     $qty = $inputs['qty'];
-    //     unset($inputs['qty']);
-    //     $fee_types = $inputs['fee_types'];
-    //     $issue_date = date('Y-m-d');
-
-    //     unset($inputs['fee_types']);
-    //     $inputs['invoice_date'] =  $issue_date;
-    //     $keep_amount = [];
-    //     $amount = 0;
-    //     //$last_id = DB::table('invoices')->selectRaw('id')->orderBy('id','desc')->first();
-    //     $is_tuition_fee = 0;
-    //     $getTuitionFeeType = null;
-    //     $invoice_type = 'non_tuition_fee';
-    //     $save_inv = saveData($ss,'invoices',["id" => $inv_id],$inputs,[],1);
-    //     if($save_inv){
-    //         self::setInvoiceNumber($ss->branch_id,$save_inv,'no-tax',$issue_date,5);
-    //         foreach($fee_types as $fee){
-    //             // $not_nontutition = DB::table('other_fees')->where('academic_year',$enr_info->academic_year)->where('name',$fee['fee_type'])->exists();
-    //             $fee['invoice_id'] = $save_inv;
-    //             $fee['qty'] = $qty || 1;
-
-    //             if(strtolower($fee['fee_type']) == 'tuition_fee'){
-    //                 if($tuition_end_date){
-    //                     if($tuition_end_date > date('Y-m-d') && $enr_info->status_id == 3){
-    //                         $row->pmt_status = 'paid';
-    //                         return DV::error('Tuition Fee is paid');
-    //                     }
-    //                     else if($tuition_end_date < date('Y-m-d') && $enr_info->status_id == 3){
-    //                         $row->pmt_status = 'expired';
-    //                         return DV::error('Tuition Fee is expired');
-    //                     }
-    //                     // else $row->pmt_status = 'unpaid';
-    //                 }
-    //                 // if($tuition_end_date){
-    //                 //     if($tuition_end_date > date('Y-m-d')){
-    //                 //         $enr_info->pmt_status = 'paid';
-    //                 //         return DV::error('Tuition Fee is paid');
-    //                 //     }else $enr_info->pmt_status = 'expired';
-    //                 // }
-    //                 $fee['price'] = $enr_info->tuition;
-    //                 $fee['date_range'] = date('d M Y',strtotime($enr_info->start_date)) . ' to ' . date('d M Y',strtotime($enr_info->tuition_end_date));
-    //                 $fee['fee_type'] = 'tuition_fee';
-    //                 $fee['discount'] = $enr_info->policy_discount;
-    //                 $fee['start_date'] = $enr_info->start_date;
-    //                 $fee['end_date'] = $enr_info->tuition_end_date;
-    //                 $is_tuition_fee = self::getTuitionDueByStudent($enr_info->student_id);
-    //                 $getTuitionFeeType = 'tuition_type';
-    //                 $invoice_type = 'tuition_fee';
-    //             }
-
-    //             $data_rows = DB::table('other_fees')->where('academic_year',$enr_info->academic_year)->where('name',$fee['fee_type'])->selectRaw('amount,start_date,end_date,description')->get();
-    //             foreach($data_rows as $row){
-    //                 $fee['price'] = $row->amount;
-    //                 $fee['date_range'] = isset($row->start_date)?$row->start_date . ' to ' . $row->end_date:null;
-    //                 $fee['description'] = $row->description;
-    //                 $keep_amount[] = $row->amount;
-    //             }
-    //             $invoice_items = saveData($ss,'invoice_items',["id"=>isset($fee["id"])?$fee["id"]:null],$fee,[],1);
-    //         }
-    //         if($getTuitionFeeType){
-    //             $amount = array_sum($keep_amount) + $enr_info->tuition;
-    //         }else{
-    //             $amount = array_sum($keep_amount);
-    //         }
-
-
-    //         $matchedStudents = DB::table('students as s')
-    //                 ->join('deposite as d', 's.name', '=', 'd.student_name')
-    //                 ->where('s.date_of_birth', '=', DB::raw('d.date_of_birth'))
-    //                 ->selectRaw('s.name,d.deposite_amount') // Select columns from the students table
-    //                 ->where('d.is_used',0)
-    //                 ->get()->first();
-    //         $doposite_amt = 0;
-    //         if($matchedStudents && $getTuitionFeeType){
-    //             $doposite_amt = $matchedStudents->deposite_amount;
-    //         }
-
-    //         $due_amount = $is_tuition_fee + array_sum($keep_amount);
-
-    //         $inv = DB::table('invoices')->where('id',$save_inv)->update([
-    //             'due_amount'=>$due_amount - $doposite_amt,
-    //             'amount'=>$amount,
-    //             'invoice_type' => $invoice_type
-    //         ]);
-    //         if($inv){
-    //             DB::table('students as s')
-    //                 ->join('deposite as d', 's.name', '=', 'd.student_name')
-    //                 ->where('s.date_of_birth', '=', DB::raw('d.date_of_birth'))
-    //                 ->update([
-    //                         'is_used' => 1
-    //                 ]);
-    //         }
-    //         // saveData($ss,'payments',['enrollment_id' => $enr_info->enr_id],['tuition_due' => $due_amount]);
-    //     }
-    //     return DV::depends($save_inv,['action'=>'Generated']);
-    // }
-
-    // static function getTuitionDueByStudent($student_id){
-    //     $row = DB::table('enrollments as e')->where('e.student_id',$student_id)
-    //     ->join('payments as p','p.enrollment_id','=','e.id')
-    //     ->selectRaw('p.tuition_due')
-    //     ->get()->first();
-    //     return $row->tuition_due;
-    // }
-
-    // static function getRelatedInvoice($student_id,$inv_num){
-    //     $row = DB::table('invoices as i')->where('student_id',$student_id)
-    //             ->where('i.invoice_number',$inv_num)
-    //             ->join('invoice_items as it','i.id','=','it.invoice_id')
-    //             ->selectRaw('i.invoice_number,i.invoice_type,i.due_amount')
-    //             ->get()->first();
-    //     if(!$row) return $row=null;
-    //     return $row;
-    // }
-
-
-    /**
-     *Given an existing invoice => pay by student and invoice number
-     **/
-    // static function schoolFeePay($arr,$ss){
-    //     $instance = new PriceList(null,$ss);
-    //     $d = (object)$arr;
-    //     $student_id = isset($d->student_id) ? $d->student_id : $d->id;
-    //     $invoice_number = $d->invoice_number;
-    //     $getInvoiceInfo = self::getRelatedInvoice($student_id,$invoice_number);
-    //     $row = DB::table('students as s')
-    //             ->where('s.id',$student_id)
-    //             ->join('enrollments as e','e.student_id','=','s.id')
-    //             ->join('payments as p','p.enrollment_id','=','e.id')
-    //             ->selectRaw('p.tuition_due,e.id as enr_id,e.start_date,e.term_id,e.program_id,e.level_id,e.session_id,e.campus_id,p.pmt_option_id,e.academic_year')
-    //             ->get()->first();
-    //     $current_level = self::getCurrentLevel($row->level_id,$ss);
-    //     $last_level = DB::table('program_levels')->where('program_id',$current_level->program_id)->selectRaw('id,name')->orderBy('id','desc')->first();
-    //     $current_program = self::getProgramByLevel($row->level_id,$ss);
-    //     $next_program = self::getNextProgram($current_program->program_id,$ss);
-    //     $next_level = self::getNextLevel($row->level_id,$ss);
-    //     $pmt_option_id = $row->pmt_option_id;
-    //     $next_payment_info = null;
-    //     $current_payment_info=null;
-    //     $pre_enr = null;
-    //     if($current_level->id != $last_level->id){
-    //         $current_payment_info = $instance->getMonthlyFee([
-    //                 'academic_year' => $row->academic_year,
-    //                 'level_id' => $row->level_id,
-    //                 'session_id' => $row->session_id,
-    //                 'start_date' => $row->start_date,
-    //             ]);
-
-    //         if($current_payment_info){
-    //             $pre_enr = [
-    //                 'term_id' => $row->term_id,
-    //                 'student_id' => $student_id,
-    //                 'level_id' => $row->level_id,
-    //                 'session_id' => $row->session_id,
-    //                 'campus_id' => $row->campus_id,
-    //                 'tuition_due' => $row->tuition_due,
-    //                 'price_list_id' => $current_payment_info->price_list_id
-    //             ];
-
-    //             saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
-    //             saveData($ss,'enrollments',['id' => $row->enr_id],[
-    //                 'status_id' => 3,//* paid
-    //             ],[],1);
-
-    //             if($getInvoiceInfo->invoice_type == 'tuition_fee'){
-    //                 saveData($ss,'payments',['enrollment_id' => $row->enr_id],[
-    //                     'pmt_status'=>'paid',
-    //                     'status_id' => 2, //* 'paid'
-    //                     'tuition_paid' => $row->tuition_due,
-    //                 ],[],1);
-    //                 saveData($ss,'invoices',['student_id' => $student_id,'invoice_number'=>$invoice_number],[
-    //                     'is_paid' => 1,//* paid
-    //                     'paid_amount' => $getInvoiceInfo->due_amount,
-    //                     'pmt_date' => date('Y-m-d H:i:s')
-    //                 ],[],1);
-    //             }else{
-    //                 saveData($ss,'invoices',['student_id' => $student_id,'invoice_number'=>$invoice_number],[
-    //                     'is_paid' => 1,//* paid
-    //                     'paid_amount' => $getInvoiceInfo->due_amount,
-    //                     'pmt_date' => date('Y-m-d H:i:s')
-    //                 ],[],1);
-    //             }
-
-    //         }
-    //         if(isset($current_payment_info->status) == 'Error') return DV::error($current_payment_info->error_message);
-
-    //         $next_payment_info = $instance->getMonthlyFee([
-    //             'academic_year' => $row->academic_year,
-    //             'level_id' => $next_level->id,
-    //             'session_id' => $row->session_id,
-    //             'start_date' => $row->start_date,
-    //         ]);
-    //         if($next_payment_info){
-    //             $pre_enr = [
-    //                 'term_id' => null,
-    //                 'student_id' => $student_id,
-    //                 'level_id' => $next_level->id,
-    //                 'session_id' => $row->session_id,
-    //                 'campus_id' => $row->campus_id,
-    //                 'tuition_due' => $next_payment_info->price,
-    //                 'price_list_id' => $next_payment_info->price_list_id
-    //             ];
-    //             saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
-    //         }
-
-    //     }
-    //     if($last_level->id == $current_level->id){
-
-    //         $current_payment_info = $instance->getMonthlyFee([
-    //             'academic_year' => $row->academic_year,
-    //             'level_id' => $row->level_id,
-    //             'session_id' => $row->session_id,
-    //             'start_date' => $row->start_date,
-
-    //         ]);
-
-    //         if(isset($current_payment_info->status) == 'Error') return DV::error($current_payment_info->error_message);
-    //         if($current_payment_info){
-    //             $pre_enr = [
-    //                 'term_id' => $row->term_id,
-    //                 'student_id' => $student_id,
-    //                 'level_id' => $row->level_id,
-    //                 'session_id' => $row->session_id,
-    //                 'campus_id' => $row->campus_id,
-    //                 'tuition_due' => $row->tuition_due,
-    //                 'price_list_id' => $current_payment_info->price_list_id
-    //             ];
-
-    //             saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
-    //             saveData($ss,'enrollments',['id' => $row->enr_id],[
-    //                 'status_id' => 3,//* paid
-    //             ],[],1);
-    //             if($getInvoiceInfo){
-    //                 if($getInvoiceInfo->invoice_type == 'tuition_fee'){
-    //                     saveData($ss,'payments',['enrollment_id' => $row->enr_id],[
-    //                         'pmt_status'=>'paid',
-    //                         'status_id' => 2, //* 'paid'
-    //                         'tuition_paid' => $row->tuition_due,
-    //                     ],[],1);
-    //                     saveData($ss,'invoices',['student_id' => $student_id,'invoice_number'=>$d->invoice_number],[
-    //                         'is_paid' => 1,//* paid
-    //                         'paid_amount' => $getInvoiceInfo->due_amount
-    //                     ],[],1);
-    //                 }else{
-    //                     saveData($ss,'invoices',['student_id' => $student_id,'invoice_number'=>$d->invoice_number],[
-    //                         'is_paid' => 1,//* paid
-    //                         'paid_amount' => $getInvoiceInfo->due_amount
-    //                     ],[],1);
-    //                 }
-    //             }
-
-    //         }
-
-    //         if($next_level){
-    //             $next_payment_info = $instance->getMonthlyFee([
-    //                 'academic_year' => $row->academic_year,
-    //                 'level_id' => $next_level->id,
-    //                 'session_id' => $row->session_id,
-    //                 'start_date' => $row->start_date,
-    //             ]);
-
-    //             if($next_payment_info){
-    //                 $pre_enr = [
-    //                     'term_id' => null,
-    //                     'student_id' => $student_id,
-    //                     'level_id' => $next_level->id,
-    //                     'session_id' => $row->session_id,
-    //                     'campus_id' => $row->campus_id,
-    //                     'tuition_due' => $next_payment_info->price,
-    //                     'price_list_id' => $next_payment_info->price_list_id
-    //                 ];
-    //                 saveData($ss,'pre_enrollments',[],$pre_enr,[],1);
-    //             }
-
-    //         }
-    //     }
-
-    //     return [
-    //         'enrollment'=>$pre_enr,
-    //         'current_payment_info' => $current_payment_info,
-    //         'next_payment_info' =>$next_payment_info,
-    //         'last_level_next_level' =>$next_level
-    //     ];
-
-    // }
-
-
-    // static function reviveInActiveInvoice($d,$ss){
-    //     $id = $d->id;
-    //     $purpose = $d->purpose;
-
-    //     $revive = DB::table('invoices')->where('id',$id)
-    //             ->where('branch_id',$ss->branch_id)
-    //             ->where('inactive',1)
-    //             ->update([
-    //                 'inactive' => 0,
-    //                 'purpose' => $purpose,
-    //             ]);
-    //     if(!$revive) return DV::error('Could not find invoice to revive');
-    //     return DV::depends($revive,['action' => 'Invoices is active now']);
-    // }
-
-    // static function deleteInvoice($d,$ss){ //** update invoice to inactive  */
-    //     $id = $d->id;
-    //     $purpose = isset($d->purpose)?$d->purpose:$d->remarks;
-    //     $delete = DB::table('invoices')->where('id',$id)->update([
-    //         'inactive' => 1,
-    //         'purpose' => $purpose
-    //     ]);
-    //     $inactive = DB::table('invoices')->where('id',$id)->where('branch_id',$ss->branch_id)->take(1)->value('inactive');
-    //     if($inactive == 1){
-    //         $delete = DB::table('invoices')->where('id',$id)->where('branch_id',$ss->branch_id)->delete();
-    //     }
-    //     return DV::depends($delete,['action'=>'Deleted','status'=>'Status change to in active']);
-    // }
 
     static function getPaymentInfo($enr_id,$ss){
         return DB::table('payments')->where('enrollment_id',$enr_id)

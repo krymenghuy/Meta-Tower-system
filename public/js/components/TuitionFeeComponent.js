@@ -11,52 +11,60 @@ var TuitionFeeComponent = new function(){
 
     this.cols = [{
         title: "Price List",
+        className: 'text-capitalize align-middle',
         data: "name"
     },
     {
         title: "Date Range",
-        data:(data,index,tr)=>{
+        className: 'align-middle',
+        data:(data, index, tr)=>{
             return [`<span class="border rounded-3 p-2">`,data.start_date,'</span> to <span class="border rounded-3 p-2">',data.end_date,'<span>'].join('');
         }
     },
     {
         title: "Applied To",
-        data: (data,index,tr)=>{
-            const cls_class = data.use_case_count>0? 'text-danger':'text-muted'; 
+        className: 'align-middle',
+        data: (data, index, tr)=>{
+            const cls_class = data.use_case_count > 0 ? 'text-danger' : 'text-muted';
             return [`<span class="`,cls_class,`">`,data.use_case_count,` students</span>`].join('');
         }
     },
     {
         title: "Academic Year",
+        className: 'align-middle',
         data: "academic_year"
     },
     {
         title: "Description",
-        data: (data,index,tr)=>{
-            return data.description?data.description:'NA';
+        className: 'align-middle',
+        data: (data, index, tr)=>{
+            return data.description ? data.description : 'NA';
         }
     },
     {
         title: "Created By",
+        className: 'align-middle',
         data: (data, index, tr) => {
-            let user = data.update_user ? data.update_user : '';
-            let date = data.updated_at ? data.updated_at : '';
-            return [`<p class="pb-0 mb-0">${user}</p>
+            const user = data.update_user ? data.update_user : '';
+            const date = data.updated_at ? data.updated_at : '';
+            return [`<p class="text-capitalize pb-0 mb-0">${user}</p>
             <p class="pb-0 mb-0"><small>${date}</small></p>`].join('');
         }
     },
     {
         title: "Authorization",
+        className: 'align-middle',
         data: (data, index, tr) => {
-            let user = data.authorized ==1? data.auth_user:null;
-            if(data.authorized ==1 && !user) user = data.update_user;
-            let date = data.authorized ==1? data.auth_date:null;
-            return [`<p class="pb-0 mb-0">`,user?user:'Unknown',`</p>
+            const user = data.authorized == 1 ? data.auth_user : null;
+            if(data.authorized == 1 && !user) user = data.update_user;
+            const date = data.authorized == 1 ? data.auth_date : null;
+            return [`<p class="text-capitalize pb-0 mb-0">`,user ? user : 'Unknown',`</p>
             <p class="pb-0 mb-0"><small>`,date,`</small></p>`].join('');
         }
     },
     {
         title: "Action",
+        className: "align-middle",
         data: (data, a, b) => {
             return [`<div class="d-flex gap-2">
                 <a href="javascript:void(0)" class="btn-ttf-modify" data-id="${data.id}">
@@ -126,8 +134,8 @@ var TuitionFeeComponent = new function(){
         this.cfg = new ExpandableRowConfig('_ttf_tbl_table',{
             'dontExpandByClickingOn': ['btn-ttf-modify', 'btn-ttf-delete'],
             'onOpen': (container, detail_tr, parent_tr) => {
-                let qtr = $(parent_tr);
-                let id = qtr.data('id');
+                const qtr = $(parent_tr);
+                const id = qtr.data('id');
                 if(id > 0)
                     mThis.displayPriceListItem(detail_tr, id);
             }
@@ -143,13 +151,13 @@ var TuitionFeeComponent = new function(){
     }
 
     this.displayPriceListItem = (tr, id) => {
-        let wrapper_id = ['tbl_ttf_item',id].join('_');
-        let div_wrapper = $(tr).find('.expandable-row-container');
+        const wrapper_id = ['tbl_ttf_item',id].join('_');
+        const div_wrapper = $(tr).find('.expandable-row-container');
         div_wrapper.attr('id',wrapper_id);
 
         div_wrapper.empty();
         let html = null;
-        let btn_id = [wrapper_id,'btn',id].join('_');
+        const btn_id = [wrapper_id,'btn',id].join('_');
 
         vsapi.call(`${main_view.base_url}/api/price-list/items`,{'id': id},null).then(res => {
             let data = [];
@@ -254,11 +262,13 @@ var TuitionFeeComponent = new function(){
         mThis.itemView.showPage({'academic_year':mThis.elFilter_academic_year.value,'search_value':mThis.elSearch.val()});
     });
 
-    this.btnFind.on('click',e=>{
+    this.btnFind.on('click',(e) => {
+        e.preventDefault();
         mThis.itemView.showPage({'academic_year':mThis.elFilter_academic_year.val(),'search_value':mThis.elSearch.val()});
     });
 
     this.elFilter_academic_year.on('change',(e)=>{
+        e.preventDefault();
         mThis.itemView.showPage({'academic_year':e.target.value,'search_value':mThis.elSearch.val()});
     });
 
@@ -284,7 +294,7 @@ var TuitionFeeComponent = new function(){
 }
 
 let TuitionFeeOutsideDialog = new function(){
-    let mThis = this;
+    const mThis = this;
     this.self = $('#dlg_ttf');
     this.options = {};
 
@@ -294,7 +304,7 @@ let TuitionFeeOutsideDialog = new function(){
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
-        let p = mThis.getDataForm();
+        const p = mThis.getDataForm();
         vsapi.call(`${main_view.base_url}/api/price-list/save`,p,null).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
@@ -312,8 +322,8 @@ let TuitionFeeOutsideDialog = new function(){
             'id': mThis.options.id
         };
         mThis.self.find('.data-input').each(function(){
-            let el = $(this);
-            let f = el.data('field');
+            const el = $(this);
+            const f = el.data('field');
             p[f] = el.val();
         });
         return p;
@@ -324,8 +334,8 @@ let TuitionFeeOutsideDialog = new function(){
         //Clear error signs
         Validator.clearErrors(mThis.self.find('.modal-body'));
         mThis.self.find('.data-input').each(function(){
-            let el = $(this);
-            let f = el.data('field');
+            const el = $(this);
+            const f = el.data('field');
             el.val(d[f]);
         });
     }
@@ -358,12 +368,10 @@ let TuitionFeeOutsideDialog = new function(){
         mThis.prepareFormOption(() => {
             if(options.id > 0){
                 mThis.elTitle.text(LocaleManager.trans('Edit Price List','titles'));
-                //mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please check item details before editing','titles'));
                 mThis.loadDataEdit(options);
             }
             else{
                 mThis.elTitle.text(LocaleManager.trans('Add Price List','titles'));
-                //mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input tuition fee details','titles'));
                 mThis.setDataForm(null);
             }
     
@@ -414,8 +422,8 @@ let PriceItemDialog = new function(){
             'list_id': mThis.options.list_id
         };
         mThis.self.find('.data-input').each(function(){
-            let el = $(this);
-            let f = el.data('field');
+            const el = $(this);
+            const f = el.data('field');
             p[f] = el.val();
         });
         return p;
@@ -424,8 +432,8 @@ let PriceItemDialog = new function(){
     this.setDataForm = (d) => {
         d = d ? d : {};
         mThis.self.find('.data-input').each(function(){
-            let el = $(this);
-            let f = el.data('field');
+            const el = $(this);
+            const f = el.data('field');
             if(el.is('select'))
                 el.val(d[f]).trigger('change');
             else
@@ -462,12 +470,10 @@ let PriceItemDialog = new function(){
         mThis.prepareFormOption(() => {
             if(options.id > 0){
                 mThis.elTitle.text(LocaleManager.trans('Edit Pricing Option','titles'));
-                //mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please check item details before editing','titles'));
                 mThis.loadDataEdit(options);
             }
             else{
                 mThis.elTitle.text(LocaleManager.trans('New Pricing Option','titles'));
-                //mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please input item details','titles'));
                 mThis.setDataForm(null);
             }
 

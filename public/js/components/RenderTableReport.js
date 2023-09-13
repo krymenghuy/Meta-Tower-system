@@ -107,7 +107,7 @@ function renderTable(div, data){
                             attendance.permission=null,
                             attendance.present=null,
                             tbl && tbl.daily_attendance && tbl.daily_attendance.map(at => {
-                            let cls = ((at.absent == 0) && (at.permission == 0) && (at.present == 0)) ? 'bg-danger-subtle' : 'align-middle text-center';
+                            const cls = ((at.absent == 0) && (at.permission == 0) && (at.present == 0)) ? 'bg-danger-subtle' : 'align-middle text-center';
 
                             attendance.absent = [attendance.absent,`<td class="${cls}">${at.absent == 0 ? '' : at.absent}</td>`].join('');
 
@@ -150,6 +150,26 @@ function renderTable(div, data){
         div.closest('.main-container').find('#_rpt_container').toggle('slow');
         HtmlString = html;
     }
+}
+
+function jsonToTable(div,d){
+    d = d ? d : {};
+    let header = null, body = null;
+    const thead = d.headers ? d.headers : [], tbody = d.list ? d.list : [];
+    const html = [`<div class="table-responsive mt-3 p-3 bg-white table-responsive-hover">
+        <thead>
+            <tr>
+                ${header=null,thead.map(title => {
+                    header = [header,`<th class="text-nowrap text-capitalize">${title ? title : ''}</th>`].join('');
+                }),header ? header : ''}
+            </tr>
+        </thead>
+        <tbody>
+            ${body=null,tbody.map(data => {
+                body = [body,`<tr></tr>`].join('');
+            }),body ? body : ''}
+        </tbody>
+    </div>`].join('');
 }
 
 function windowPrint(){
