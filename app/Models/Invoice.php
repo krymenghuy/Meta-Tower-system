@@ -313,7 +313,7 @@ class Invoice //extends Model
         $row->referal = self::getReferrerCommission($student_id,$ss);
 
         $instance = new PriceList(null,$ss);
-        $months = isset($d->months)?$d->months:GeneralSettings::getPmtOptionMonths($row->pmt_option_id);
+        $months = dateDiffMonths($row->start_date,$tuition_end_date);//;:GeneralSettings::getPmtOptionMonths($row->pmt_option_id);
         $pmt_arr = [
             "level_id" => $row->level_id,
             // "program_id" => 1,
@@ -321,7 +321,7 @@ class Invoice //extends Model
             "session_id" => $row->session_id,
             // "prev_level_id" => "0",
             "start_date" => convertDate($row->start_date),
-            "months" => 9,//$months,
+            "months" => $months,
             "student_id" => $student_id,
             "pmt_option_id"=> $row->pmt_option_id
         ];
