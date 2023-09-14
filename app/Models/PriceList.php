@@ -763,6 +763,9 @@ class PriceList //extends Model
         $d = (object)$arr;
         $student_id =isset($d->student_id)?$d->student_id:DB::table('enrollments')->where('id',$id)->take(1)->value('student_id');
         $program_id = GeneralSettings::getProgramByLevel($d->level_id,$ss)->program_id;
+        // if($program_id){
+        //     $program_id->program_id;
+        // }
         $str_pmt_option_id='1=1';
         if(isset($d->pmt_option_id)){
             $str_pmt_option_id = 'pmt_option_id = '.$d->pmt_option_id;
@@ -1064,6 +1067,7 @@ class PriceList //extends Model
 
     static function previewRequestPayment($arr=[],$ss){
         $v_rule = [
+            'enrollment_id' => '1|number|exists=enrollments.id',
             'student_id' => '1|number|exists=students.id',
             'request_type_id' => '1|number|exists=request_types.id',
             'to_level_id' => '0|number|exists=program_levels.id',
@@ -1078,10 +1082,14 @@ class PriceList //extends Model
         $student_id = $d->student_id;
         $return_fee = 0;
         $surcharge = 0;
-        $payment_info = DB::table('enrollments as e')->where('e.student_id',$student_id)->join('payments as p','p.enrollment_id','=','e.id')->join('terms as t','t.id','=','e.term_id')->selectRaw('e.id as enr_id,p.tuition_paid,e.tuition_end_date,e.start_date,e.session_id,e.level_id,e.campus_id,e.academic_year')->get()->first();
+
+        $enrollment_id = $inputs['enrollment_id'];
+        // unset($inputs['enrollment_id']);
+        $payment_info = DB::table('enrollments as e')->where('e.id',$enrollment_id)->where('e.student_id',$student_id)->join('payments as p','p.enrollment_id','=','e.id')->join('terms as t','t.id','=','e.term_id')->selectRaw('e.id as enr_id,p.tuition_paid,e.tuition_end_date,e.start_date,e.session_id,e.level_id,e.campus_id,e.academic_year')->get()->first();
         $start_date = isset($d->start_date) ? $d->start_date :$payment_info->start_date;
         $studied_days = date('d') - date('d',strtotime($start_date));
         $academic_year = isset($d->academic_year)?$d->academic_year:$payment_info->academic_year;
+        $level_id = isset($d->to_level_id)?$d->to_level_id:$payment_info->level_id;
         if($d->request_type_id == 1){
 
             $end_date = $payment_info->tuition_end_date;
@@ -1093,13 +1101,14 @@ class PriceList //extends Model
             $fee_left = $payment_info->tuition_paid - $deduct_day_fee;
 
             $level_pmt_arr = [
-                'student_id' => $d->student_id,
+                'student_id' => $student_id,
+                'enrollment_id' => $enrollment_id,
                 'start_date' => $start_date,
                 'session_id' => $payment_info->session_id,
-                'level_id' => $d->to_level_id,
+                'level_id' => $level_id,
                 'academic_year' => $academic_year,
             ];
-            $new_level_fee = self::findLevelPayFee($level_pmt_arr,$ss);
+            $new_level_fee = self::findLevelPayFee($level_pmt_arr,$enrollment_id,$ss);
             $amount = $new_level_fee - $fee_left;
             if($amount>0){
                 $surcharge = $amount;
@@ -1121,13 +1130,15 @@ class PriceList //extends Model
 
 
             $arr_new_fee = [
-                'student_id' => $d->student_id,
-                'session_id' => $d->to_session_id,
+                'student_id' => $student_id,
+                'enrollment_id' => $enrollment_id,
                 'start_date' => $start_date,
+                'session_id' => $payment_info->session_id,
+                'level_id' => $level_id,
                 'academic_year' => $academic_year,
             ];
 
-            $new_fee = self::findLevelPayFee($arr_new_fee,$ss);
+            $new_fee = self::findLevelPayFee($arr_new_fee,$enrollment_id,$ss);
             $amount = $new_fee - $fee_left;
             if($amount>0){
                 $surcharge = $amount;
@@ -1223,7 +1234,7 @@ class PriceList //extends Model
                 'start_date' => $start_date,
             ];
 
-            $new_fee = self::findLevelPayFee($arr_new_fee,$ss);
+            $new_fee = self::findLevelPayFee($arr_new_fee,$enr,$ss);
             $amount = $new_fee - $fee_left;
             if($amount>0){
                 $surcharge = $amount;
@@ -1281,10 +1292,10 @@ class PriceList //extends Model
     }
 
     // session_id , level_id, pmt_option_id, start_date
-    static function findLevelPayFee($arr,$ss){
+    static function findLevelPayFee($arr,$id,$ss){
         $d = (object)$arr;
         $instance = new PriceList(null,$ss);
-        $row = $instance->previewPendingPaymentDetails($arr,$d->student_id,$ss);
+        $row = $instance->previewPendingPaymentDetails($arr,$id,$ss);
         return $row->payment_info->tuition_due;
     }
 
@@ -1329,7 +1340,7 @@ class PriceList //extends Model
         $pmt_option_id = $pmt_option_id?$pmt_option_id:$e->pmt_option_id;
         $session_id = $session_id?$session_id:$e->session_id;
         $program_id = $program_id?$program_id:$e->program_id;
-      
+
         $row = DB::table('student_discounts AS d')->where('d.student_id',$e->student_id)->where('d.program_id',$program_id)->where('d.pmt_option_id',$pmt_option_id)->where('d.session_id',$session_id)->selectRaw('d.id,d.policy_discount,d.special_discount,d.other_discount,d.student_id')->get()->first();
 
         $price_list = DB::table('student_pricelist as sl')->join('price_list As l','l.id','=','sl.price_list_id')->where('sl.student_id',$e->student_id)->where('enrollment_id',$enrollment_id)->whereRaw('IFNULL(sl.inactive,0) =0')->selectRaw('l.id AS price_list_id,l.name as price_list_name,l.academic_year,formatDate(l.start_date) AS start_date,formatDate(l.end_date) AS end_date')->take(1)->get()->first();

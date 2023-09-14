@@ -183,7 +183,7 @@ class Activity //extends Model
             $search_value = escape_like_str($search_value);
             $str_search ="(s.name LIKE '%$search_value%' OR s.code = '$search_value')";
         }
-        $selectCols = 'formatTime(r.updated_at) as updated_at,r.update_user,r.auth_date as date,r.auth_user,rc.request_name,r.status_id,e.campus_id,s.id as student_id,r.id as request_id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id,r.request_type_id,r.authorized';
+        $selectCols = 'e.id as enrollment_id,formatTime(r.updated_at) as updated_at,r.update_user,r.auth_date as date,r.auth_user,rc.request_name,r.status_id,e.campus_id,s.id as student_id,r.id as request_id,s.file_name,s.name as student_name,s.code as student_code,s.name_kh,s.sex,s.date_of_birth,e.start_date as admission_date,e.session_id,r.request_type_id,r.authorized';
         $query = DB::table('students as s')
                 ->join('requests as r','r.student_id','=','s.id')
                 ->join('request_changes as rc','r.id','=','rc.request_id')
