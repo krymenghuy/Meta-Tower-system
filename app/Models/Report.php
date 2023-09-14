@@ -607,7 +607,6 @@ class Report //extends Model
         foreach($rows as $row){
             //** get invoice items */
             $itemDetails = self::getInvoiceItemDetails($row->id,$branch_id);
-            $row->school_fee = $itemDetails->tuition_fee;
             $row->total = $itemDetails->total;
             $row->items = $itemDetails->data;
         }
@@ -638,31 +637,30 @@ class Report //extends Model
     function getInvoiceItemDetails($inv_id,$branch_id){
         $tuition_amt=0;
         $total=[];
-        $rows = DB::table('invoice_items')->where('invoice_id',$inv_id)->where('branch_id',$branch_id)->get();
+        $selectCols = 'price,fee_type,invoice_id,date_range,discount,net_amount,start_date,end_date';
+        $rows = DB::table('invoice_items')->where('invoice_id',$inv_id)->where('branch_id',$branch_id)->selectRaw($selectCols)->get();
         $fee_types = DB::table('fee_types')->selectRaw('name')->where('id','>=',20)->get();
         $all_type =[];
         foreach($fee_types as $type){
            $all_type[] = $type->name;
         }
-
         foreach($rows as $row){
-            if(in_array($row->fee_type,$all_type)){
-                $row->d = 'sdfsd';
-                $row->{$row->fee_type} = 'asdfsfda';
-            }
+            $fee_type = self::stringToKeyCase($row->fee_type);
+            $row->$fee_type = $row->net_amount;
 
             if($row->fee_type == 'tuition_fee'){
                 $tuition_amt = $row->net_amount;
                 $discount = $row->discount;
             }
             $total[] = $row->net_amount;
+            $row->period = dateDiffMonths($row->start_date, $row->end_date);
         }
         $sum_amt = array_sum($total);
 
-        return (object)['tuition_fee'=>$tuition_amt,'discount'=>$discount,'data'=>$rows,'total'=>$sum_amt];
+        return (object)['discount'=>$discount,'data'=>$rows,'total'=>$sum_amt];
     }
 
-    function stringToKeyCase($cnvtString='Can be array') {
+    function stringToKeyCase($cnvtString='Can be array'){
        if(is_array($cnvtString)){
             $result = [];
             $array[] = $cnvtString;

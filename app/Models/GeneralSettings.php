@@ -488,7 +488,6 @@ class GeneralSettings //extends Model
 
     static function optionsGroup($ss=null,$level_id=null,$campus_id=null){
         $branch_id = $ss->branch_id;
-
         $search = '1=1';
         if($level_id){
             $search = "level_id = '$level_id' AND campus_id = '$campus_id'";
