@@ -557,7 +557,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
 
 
     //begin::PriceListController
-   
+
     Route::post('tuition-review/form-options', [PriceListController::class, 'getPreviewPaymentOptions']);
     //payment review
     Route::post('tuition-review/list-paginate',[PriceListController::class,'getTuitionReviewList']);
@@ -574,7 +574,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('price-list/save-item', [PriceListController::class, 'saveItem']);
     Route::post('price-list/delete-item', [PriceListController::class, 'deleteItem']);
     Route::post('price-list/item-details', [PriceListController::class, 'getPriceListItemDetails']);
- 
+
     Route::post('price-list/preview/pending-payment',[PriceListController::class,'previewPendingPaymentDetails']);
     Route::post('price-list/update/pending-payment',[PriceListController::class,'updatePendingPayment']);
     Route::post('price-list/pending-payment/details',[PriceListController::class,'getStudentPendingPaymentDetails']);
@@ -602,6 +602,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
       Route::post('other-fee/delete', [OtherFeeController::class, 'deleteOtherFee']);
       Route::post('other-fee/save', [OtherFeeController::class, 'saveOtherFee']);
       Route::post('other-fee/details', [OtherFeeController::class, 'getDetails']);
+      Route::post('other-fee/options-fee-type',[OtherFeeController::class,'optionsFeeType']);
       // Route::post('other-fee/items', [PolicyDiscountController::class, 'getDiscountItems']);
       // Route::post('other-fee/save-item', [PolicyDiscountController::class, 'saveItem']);
       // Route::post('other-fee/delete-item', [PolicyDiscountController::class, 'deleteItem']);
@@ -623,6 +624,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('finance/expired-students',[ReportController::class,'getExpiredStudents']);
     Route::post('finance/students-with-sepcial-discount',[ReportController::class,'getStudentsWithSpecialDiscount']);
     Route::post('finance/student-counts-by-pmt-option',[ReportController::class,'countStudentsByPmtOptions']);
+    Route::post('finance/daily-cash-list',[ReportController::class,'getDailyCashList']);
 
     Route::post('enrollment/student-referrers',[ReportController::class,'getStudentReferers']);
     // Route::post('enrollment/family-list',[ReportController::class,'getFamilyList']);
@@ -633,6 +635,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('enrollment/student-list',[ReportController::class,'getStudentList']);
     Route::post('enrollment/dropout-students',[ReportController::class,'getDropoutStudents']);
     Route::post('enrollment/new-students',[ReportController::class,'getNewStudents']);
+
 
     //** */
     Route::post('enrollment/student-info',[ReportController::class,'getStudentInfoList']);

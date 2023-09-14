@@ -99,6 +99,7 @@ class Invoice //extends Model
                             $updateEnrollment = saveData($ss,'enrollments',['id' => $enrollment_id],[
                                 'tuition_end_date' => $newPaymentInfo->payment_info->end_date
                             ],[],1);
+
                             $updatePayment = saveData($ss,'enrollments',['id' => null],[
                                 'tuition_end_date' => $newPaymentInfo->payment_info->end_date
                             ],[],1);
@@ -109,12 +110,7 @@ class Invoice //extends Model
                         }
                         // else $row->pmt_status = 'unpaid';
                     }
-                    // if($tuition_end_date){
-                    //     if($tuition_end_date > date('Y-m-d')){
-                    //         $enr_info->pmt_status = 'paid';
-                    //         return DV::error('Tuition Fee is paid');
-                    //     }else $enr_info->pmt_status = 'expired';
-                    // }
+
                     $fee['price'] = $enr_info->tuition;
                     $fee['date_range'] = $enr_info->start_date .' to '. ($enr_info->tuition_end_date !=null ?$enr_info->tuition_end_date:'N/A');//date('d M Y',strtotime($enr_info->start_date)) . ' to ' . $enr_info->tuition_end_date ? date('d M Y',strtotime($enr_info->tuition_end_date)) : null;
                     $fee['fee_type'] = 'tuition_fee';
@@ -127,12 +123,15 @@ class Invoice //extends Model
                     $invoice_type = 'tuition_fee';
                 }
 
-                $data_rows = DB::table('other_fees')->where('name',$fee['fee_type'])->selectRaw('amount,start_date,end_date,description')->get();
+                $data_rows = DB::table('other_fees')->where('name',$fee['fee_type'])->selectRaw('amount,start_date,end_date,description,fee_type_id')->get();
                 foreach($data_rows as $row){
                     $fee['price'] = $row->amount;
                     $fee['date_range'] = isset($row->start_date)?$row->start_date . ' to ' . $row->end_date:null;
                     $fee['description'] = $row->description;
                     $fee['net_amount'] = $row->amount;
+                    $fee['start_date'] = $row->start_date;
+                    $fee['end_date'] = $row->end_date;
+                    $fee['fee_type_id'] = $row->fee_type_id;
                     $keep_amount[] = $row->amount;
                 }
                 $invoice_items = saveData($ss,'invoice_items',["id"=>isset($fee["id"])?$fee["id"]:null],$fee,[],1);
@@ -144,21 +143,10 @@ class Invoice //extends Model
                 $amount = array_sum($keep_amount);
             }
 
-            // $matchedStudents = self::studentDeposite($enr_info->student_id);
-
-            // $referrer = DB::table('referals')->where('student_id',$enr_info->student_id)->where('is_paid',0)->first();
-            // $referrer_comission = 0;
             $doposite_amt = 0;
-            // if($referrer || $matchedStudents && $getTuitionFeeType){
-            //     $doposite_amt = $matchedStudents->deposite_amount;
-            //     $referrer_comission = $referrer->commission;
-            // }
 
             $due_amount = $tuition_fee_amt + array_sum($keep_amount);
-            // if($referrer_comission>0){
-            //     $dis = ($due_amount * $referrer_comission / 100);
-            //     $due_amount = $due_amount - $dis;
-            // }
+
 
             $inv = DB::table('invoices')->where('id',$save_inv)->update([
                 'due_amount'=>$due_amount - $doposite_amt,
