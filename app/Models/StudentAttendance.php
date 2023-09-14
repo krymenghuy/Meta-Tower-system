@@ -7,6 +7,7 @@ namespace App\Models;
 use DateTime;
 use DB;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Models\Notifier;
 class StudentAttendance //extends Model
 {
     // use HasFactory;
@@ -184,37 +185,36 @@ class StudentAttendance //extends Model
         $current_date = $inputs['current_date'];//convertDate($inputs['present']);
         $present_time = isset($arr['present_time'])?$arr['present_time']: date('H:i');
         $group = null;
-
-
+ 
         $group_in = DB::table('student_groups as sg')
         ->join('group_members as gm','sg.id','=','gm.group_id')->where('gm.student_id',$student_id)
-        ->where('gm.inactive',0)
+        ->whereRaw('IFNULL(gm.inactive,0)=0')
         ->whereBetween(DB::raw('TIME(sg.checkin_time)'), [
             date('H:i', strtotime("$present_time - $mins minutes")),
             date('H:i', strtotime("$present_time + $mins minutes")),
         ])
         ->orderByRaw("ABS(TIME_TO_SEC(TIME(checkin_time)) - TIME_TO_SEC(?))", [$present_time])
-        ->selectRaw('sg.id,sg.checkin_time,sg.checkout_time,sg.term_id')
+        ->selectRaw('gm.enrollment_id,sg.id,sg.checkin_time,sg.checkout_time,sg.term_id')
         ->first();
 
         $group_out = DB::table('student_groups as sg')
         ->join('group_members as gm','sg.id','=','gm.group_id')->where('gm.student_id',$student_id)
-        ->where('gm.inactive',0)
+        ->whereRaw('IFNULL(gm.inactive,0)=0')
         ->whereBetween(DB::raw('TIME(checkout_time)'), [
             date('H:i', strtotime("$present_time -$mins minutes")),
             date('H:i', strtotime("$present_time +$mins minutes")),
         ])->orderByRaw("ABS(TIME_TO_SEC(TIME(checkout_time)) - TIME_TO_SEC(?))", [$present_time])
-        ->selectRaw('sg.id,sg.checkin_time,sg.checkout_time,sg.term_id')
+        ->selectRaw('gm.enrollment_id,sg.id,sg.checkin_time,sg.checkout_time,sg.term_id')
         ->first();
 
         $todayYear = $current_date ? date('Y',strtotime($current_date)):date('Y');
         $todayMonth= $current_date ? date('m',strtotime($current_date)):date('m');
         $todayDay = $current_date ? date('d',strtotime($current_date)):date('d');
 
-        $strsearch_date = "YEAR(session_date) = '$todayYear' AND MONTH(session_date) = '$todayMonth' AND DAY(session_date) = '$todayDay'";
+        $strsearch_date = 'YEAR(session_date) = '.($todayYear?$todayYear:0).' AND MONTH(session_date) = '.($todayMonth?$todayMonth:0).' AND DAY(session_date) = '. ($todayDay?$todayDay:0);
 
         // Check if a record with the specified date exists
-        $existDate = DB::table('student_attendances')->whereRaw($strsearch_date)->where('is_finished',0)->exists();
+        $existDate = DB::table('student_attendances')->whereRaw($strsearch_date)->whereRaw('IFNULL(is_finished,0)=0')->selectRaw('id')->exists();
 
         if(!$existDate){
             $group = $group_in;
@@ -222,16 +222,19 @@ class StudentAttendance //extends Model
         else{
             $group = $group_out;
         }
-
         if(!$group)return DV::error('Student does not exist in group');
-        $enr_info = DB::table('enrollments as e')->where('e.student_id',$student_id)->where('e.term_id',$group->term_id)->where('e.status_id','>=',3)->selectRaw('e.id,e.tuition_end_date,e.student_id,e.level_id,e.session_id,e.start_date')->first();
+        $enr_info = DB::table('enrollments as e')->where('e.id',$group->enrollment_id)->where('e.term_id',$group->term_id)->selectRaw('e.id,e.status_id,e.tuition_end_date,e.student_id,e.level_id,e.session_id,e.start_date')->first();
 
         $scan_status = null;
         if(!$enr_info){
             return  DV::error('Student might not enroll or exist in group yet');
         }
-        if($enr_info->tuition_end_date < $current_date){
-            return DV::error('Student enrollment is not available or expired');
+
+        if($enr_info->status_id <3){
+            return DV::error('It seems that the student did not pay tuition yet');
+        }
+        else if($enr_info->tuition_end_date < $current_date){
+            return DV::error('Tuition payment expired');
         }
 
 
@@ -273,7 +276,7 @@ class StudentAttendance //extends Model
             $is_finished = 0;
 
         }else if($is_finished == 0 ){
-            $scan_status = 'out'; // check in;
+            $scan_status = 'out'; // check out;
             $status = $this->checkOutStatus($check_out,$present_time);
             $earliness = abs($status->early);
             $lateness = $status->late;
@@ -318,8 +321,9 @@ class StudentAttendance //extends Model
         }else{
             DB::table('student_attendances')->insert($arr_attenance);
         }
-
-
+  
+        $d = (object)['branch_id' => $ss->branch_id,'sender_id' =>$ss->official_id,'scan_status'=>$scan_status,'student_id'=>$student_id,'persist'=>0];
+        Notifier::notify_admin('attendance_scanned', $d);
         // $test = [
         //     'session_date' => getNowTime(),
         //     'diff_time' => $status,

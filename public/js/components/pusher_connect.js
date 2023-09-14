@@ -130,10 +130,11 @@ var PusherClient = new function () {
   });
 
     // Pusher event handler for 'student_scan_out'
-   mThis.pusher_channel.bind('student_scan_out', function (data) {
+   mThis.pusher_channel.bind('attendance_scanned', function (data) {
     const d = data.data;
+    alert(JSON.stringify(d));
     // Remove the student from the audio queue based on student_id
-    mThis.audioQueue = mThis.audioQueue.filter(item => item.student_id !== d.student_id);
+    if(d.scan_status ==='out') mThis.audioQueue = mThis.audioQueue.filter(item => item.student_id !== d.student_id);
   });
 
     //end::Channel subscription
