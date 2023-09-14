@@ -1043,3 +1043,8 @@ a.menu-selected .kt-menu__link-text{
 .overflow-hover-auto:hover{
     overflow:auto;
 }
+
+.height-logo-report{
+    height: -webkit-fill-available;
+    max-height: 100px;
+}

@@ -161,8 +161,8 @@ function jsonToTable(div,d){
     let header = null, body = null, tr = null;
     const thead = d.header ? d.header : [], tbody = d.list ? d.list : [], company_info = d.company_profile ? d.company_profile : {};
     const html = [`<div class="d-block position-relative">
-        <div class="w-25 float-start position-absolute">
-            <img class="w-100 h-100 object-fit-scale" src="${d.logo_url ? d.logo_url : ''}" alt=""/>
+        <div class="height-logo-report position-absolute float-start">
+            <img class="w-100 h-100 object-fit-scale" src="${company_info.logo_url ? company_info.logo_url : ''}" alt=""/>
         </div>
         <div class="d-flex flex-column gap-2">
             <h4 class="text-center text-uppercase"></h4>
