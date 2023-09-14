@@ -139,7 +139,8 @@ var InvoicesComponent = new function(){
         mThis.tblInvoice.on('click','a.btn-inv-print',function(e){
             e.preventDefault();
             const op = {
-                'invoice_id': $(this).data('id')
+                'invoice_id': $(this).data('id'),
+                'action':'gen_invoice'
             };
             InvoiceDialog.show(op);
         });
@@ -148,20 +149,22 @@ var InvoicesComponent = new function(){
             e.preventDefault();
             let op = {
                 'enrollment_id': $(this).data('enrollmentid'),
-                'inv_id': $(this).data('id')
+                'inv_id': $(this).data('id'),
+                'action':'recieve'
             };
-            cv_interact.confirm('Recieve Payment?',{title: 'Pay', context: 'OK'},(e) => {
-                if(e){
-                    vsapi.call(`${main_view.base_url}/api/student/school-fee/pay`,op,null).then(res => {
-                        if(res.status_code === 200){
-                            mThis.itemView.showPage(null);
-                        }
-                        else{
-                            cv_interact.error(res.error_message);
-                        }
-                    });
-                }
-            });
+            InvoiceDialog.show(op);
+            // cv_interact.confirm('Recieve Payment?',{title: 'Pay', context: 'OK'},(e) => {
+            //     if(e){
+            //         vsapi.call(`${main_view.base_url}/api/student/school-fee/pay`,op,null).then(res => {
+            //             if(res.status_code === 200){
+            //                 mThis.itemView.showPage(null);
+            //             }
+            //             else{
+            //                 cv_interact.error(res.error_message);
+            //             }
+            //         });
+            //     }
+            // });
         });
 
         mThis.tblInvoice.on('click','a.btn-inv-modify',function(e){
@@ -218,7 +221,7 @@ var InvoicesComponent = new function(){
 
             if(d && d.length > 0){
                 d.map(inv => {
-                    let cur_symbol = '$';
+                    const cur_symbol = '$';
                     html = [html,`<div class="d-flex w-50 rounded-3 bg-light gap-2 min-width-box-enroll">
                         <div class="w-50 p-3 text-nowrap">
                             <p>
@@ -289,7 +292,7 @@ var InvoicesComponent = new function(){
     }
 }
 
-let InvoiceDialog = new function(){
+const InvoiceDialog = new function(){
     const mThis = this;
     this.self = $('#dlg_inv_');
 
@@ -305,13 +308,41 @@ let InvoiceDialog = new function(){
     });
 
     this.loadFormDetails = (div,op,onFinish = null) => {
-        vsapi.call(`${main_view.base_url}/api/invoice/receipt-details`,{'invoice_id': op.invoice_id},null).then(res => {
-            if(res.status_code === 200){
-                const d = res.data;
-                mThis.prepareData(div,d);
-                if(typeof onFinish === 'function') onFinish();
-            }
-        });
+        if(op.action === 'recieve'){
+            div.empty();
+            const modal = div.closest('.modal');
+            modal.removeClass('modal-custom-size');
+            const modal_dialog = modal.find('.modal-dialog');
+            modal_dialog.removeClass(['modal-lg','modal-dialog-scrollable']);
+            // vsapi.call(`${main_view.base_url}/`).then(res => {
+                // if(res.status_code === 200){
+                    // const d = res.data;
+                    // console.log(d);
+                    if(typeof onFinish === 'function') onFinish();
+                // }
+            // });
+        }
+        else{
+            div.empty();
+            const modal = div.closest('.modal');
+            modal.addClass('modal-custom-size');
+            const modal_dialog = modal.find('.modal-dialog');
+            modal_dialog.addClass(['modal-lg','modal-dialog-scrollable']);
+            vsapi.call(`${main_view.base_url}/api/invoice/receipt-details`,{'invoice_id': op.invoice_id},null).then(res => {
+                if(res.status_code === 200){
+                    const d = res.data;
+                    mThis.prepareData(div,d);
+                    if(typeof onFinish === 'function') onFinish();
+                }
+            });
+        }
+    }
+
+    this.preparePayment = (div,d) => {
+        d = d ? d : {};
+        if(d && !($.isEmptyObject(d))){
+
+        }
     }
 
     this.prepareData = (div,d) => {
