@@ -16,7 +16,7 @@ var FindStudentComponent = new function(){
 
         mThis.studentListView = new ListView('_fns_student_list',{
             'fetchApi':`${main_view.base_url}/api/student/find`,
-            'perPage':5,
+            'perPage':3,
             'renderItems':(items,list_container) => {
                 list_container.inner_html = '';
                 mThis.renderStudents(list_container,items);
@@ -225,7 +225,7 @@ var FindStudentComponent = new function(){
 
             const div = document.createElement('div');
             div.innerHTML = html;
-            div.classList.add('d-flex', 'p-3', 'bg-white', 'h-info-student');
+            div.classList.add('d-flex', 'p-3', 'bg-white', 'mb-3','h-info-student');
             return div;
     } 
 
@@ -256,7 +256,8 @@ var FindStudentComponent = new function(){
         const div = div_con.find('.w-options');
         const btn = div_con.find('.btn--Options');
         div_con.css('max-height',(window.innerHeight - 250)+'px');
-
+        div_con.css('overflow','hidden');
+        
         btn.off('click').on('click',function(e){
             e.preventDefault();
             $(this).find('.w-options').toggle('fast');

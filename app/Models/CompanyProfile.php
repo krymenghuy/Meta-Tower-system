@@ -106,8 +106,8 @@ class CompanyProfile //extends Model
 
   function getLogoUrl($ss=null)
   {
-    $ss = $ss?$ss:$this->getUserInfo();
-    return self::logoUrl($ss);
+     $ss = $ss?$ss:$this->getUserInfo();
+     return self::logoUrl($ss);
   }
    
   static function deleteLogo($ss)
