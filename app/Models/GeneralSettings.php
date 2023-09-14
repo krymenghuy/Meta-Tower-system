@@ -590,6 +590,8 @@ class GeneralSettings //extends Model
         return $rows;
     }
 
+
+
     static function getPmtOptionMonths($pmt_option_id){
         if($pmt_option_id == 1){
             return 3;
@@ -601,8 +603,14 @@ class GeneralSettings //extends Model
     }
 
     static function options_payment_method(){
-        $rows = DB::table('payment_methods')->selectRaw('name')->get();
+        $rows = DB::table('payment_methods')->selectRaw('name,id')->get();
         return $rows;
+    }
+
+    static function options_form_payment_method(){
+        return (object)[
+
+        ];
     }
 
 
