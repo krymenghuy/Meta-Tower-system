@@ -103,10 +103,10 @@ class Report //extends Model
         ->join('campuses AS c','c.id','=','e.campus_id')
         ->join('programs AS p','p.id','=','l.program_id')->whereRaw($str_where)->selectRaw($cols)->orderByRaw('e.id DESC,st.id')->get();
         $header_list = ['Name','Name Kh','Sex','Term','Session','Program','Family ID'];
-        $headers = $this->createHeader('name',$header_list);
+        // $headers = $this->createHeader('name',$header_list);
         return (object)[
             'form' => 'simple',
-            'headers' => $headers,
+            'headers' => $header_list,
             'list' => $studentList
         ];
     }
