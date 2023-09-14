@@ -715,7 +715,7 @@ const StudentDiscountDialog = new function(){
     this.show = (options=null)=>{
         options = options?options:{};
 
-        mThis.prepareFormOption(d => {
+        mThis.prepareFormOption(() => {
             mThis.self.modal({
                 'backdrop':'static'
             });
