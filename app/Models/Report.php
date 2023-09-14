@@ -608,6 +608,7 @@ class Report //extends Model
             //** get invoice items */
             $itemDetails = self::getInvoiceItemDetails($row->id,$branch_id);
             $row->school_fee = $itemDetails->tuition_fee;
+            $row->total = $itemDetails->total;
             $row->items = $itemDetails->data;
         }
 
@@ -622,7 +623,6 @@ class Report //extends Model
             array_push($keys,$this->stringToKeyCase($type->name));
         }
         $key_props = $this->createKeyValue('key',$keys);
-
         $headers = $this->createMulKeyValue('name',$header_list,$key_props);
         //**---- */
 
@@ -639,7 +639,17 @@ class Report //extends Model
         $tuition_amt=0;
         $total=[];
         $rows = DB::table('invoice_items')->where('invoice_id',$inv_id)->where('branch_id',$branch_id)->get();
+        $fee_types = DB::table('fee_types')->selectRaw('name')->where('id','>=',20)->get();
+        $all_type =[];
+        foreach($fee_types as $type){
+           $all_type[] = $type->name;
+        }
+
         foreach($rows as $row){
+            if(in_array($row->fee_type,$all_type)){
+                $row->d = 'sdfsd';
+            }
+
             if($row->fee_type == 'tuition_fee'){
                 $tuition_amt = $row->net_amount;
                 $discount = $row->discount;
