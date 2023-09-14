@@ -138,38 +138,46 @@ function renderTable(div, data){
                 </table>
             </div>`].join('');
         });
-
         div.html(html);
-        let zoom = 100;
-        div.find('table.table').on('wheel',function(e){
-            if(e.originalEvent.shiftKey){
-                e.originalEvent.deltaY > 0 ? zoom -= 0.5 : zoom += 0.5;
-                $(this).css('zoom',zoom+'%');
-            }
-        });
-        div.closest('.main-container').find('#_rpt_container').toggle('slow');
+        togglePanelTable(div);
         HtmlString = html;
     }
 }
 
+function togglePanelTable(div){
+    let zoom = 100;
+    div.find('table.table').on('wheel',function(e){
+        if(e.originalEvent.shiftKey){
+            e.originalEvent.deltaY > 0 ? zoom -= 0.5 : zoom += 0.5;
+            $(this).css('zoom',zoom+'%');
+        }
+    });
+    div.closest('.main-container').find('#_rpt_container').toggle('slow');
+}
+
 function jsonToTable(div,d){
     d = d ? d : {};
+    console.log(d);
     let header = null, body = null;
-    const thead = d.headers ? d.headers : [], tbody = d.list ? d.list : [];
+    const thead = d.header ? d.header : [], tbody = d.list ? d.list : [];
     const html = [`<div class="table-responsive mt-3 p-3 bg-white table-responsive-hover">
-        <thead>
-            <tr>
-                ${header=null,thead.map(title => {
-                    header = [header,`<th class="text-nowrap text-capitalize">${title ? title : ''}</th>`].join('');
-                }),header ? header : ''}
-            </tr>
-        </thead>
-        <tbody>
-            ${body=null,tbody.map(data => {
-                body = [body,`<tr></tr>`].join('');
-            }),body ? body : ''}
-        </tbody>
+        <table class="table">
+            <thead>
+                <tr>
+                    ${header=null,thead.map(t => {
+                        header = [header,`<th class="text-nowrap text-capitalize">${t.name ? t.name : ''}</th>`].join('');
+                    }),header ? header : ''}
+                </tr>
+            </thead>
+            <tbody>
+                ${body=null,tbody.map((d,index) => {
+                    body = [body,`<tr>${d[index]}</tr>`].join('');
+                }),body ? body : ''}
+            </tbody>
+        </table>
     </div>`].join('');
+    div.html(html);
+    togglePanelTable(div);
 }
 
 function windowPrint(){

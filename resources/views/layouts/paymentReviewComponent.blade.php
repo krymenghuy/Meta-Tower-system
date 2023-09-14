@@ -4,9 +4,6 @@
             <select id="_ppd_filter_term" class="modal-select2 filter-field" data-field="term_id"></select>
             <select id="_ppd_filter_campus" class="modal-select2 filter-field" data-field="campus_id"></select>
             <select id="_ppd_filter_status" class="modal-select2 filter-field" data-field="status_id"></select>
-            <!-- <div class="width--search-inner">
-               
-            </div> -->
         </div>
     </div>
     <div id="_ppd_tbl" class="table-responsive p-3 bg-white rounded-3 mt-3 table-responsive-hover"></div>

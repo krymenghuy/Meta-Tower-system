@@ -22,6 +22,7 @@ body {
   transition: max-height 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s ease-in-out;
   overflow: hidden;
 }
+
 .row-expanded:not(.row-expanded) {
   max-height: 0;
   opacity: 0;
@@ -73,6 +74,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   right: 0;
   top: 0;
   width: auto;
+}
+
+.kt-aside__brand{
+  height: unset !important;
 }
 
 @media (max-width: 1024px) {

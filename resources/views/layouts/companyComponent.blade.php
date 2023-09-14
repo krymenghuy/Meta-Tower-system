@@ -11,17 +11,17 @@
         <div class="row">
             <div class="col-lg-3">
                 <div class="d-flex flex-column">
-                    <div class="w-100 border rounded-3" style="height:160px;overflow:hidden">
-                        <img id="com_imgLogo" class="data-input thumnail" style="width:100%;max-height:160px" class="data-input" data-field="logo" alt="Logo"/>
-                    </div> 
-                    <div class="d-flex flex-row gap-2 mt-1">
-                        <button id="com_btnChooseLogo" class="btn btn-sm btn-default">
+                    <div class="w-100 border rounded-3 p-1" style="height:160px">
+                        <img id="com_imgLogo" class="data-input object-fit-scale w-100 h-100" data-field="logo" alt="Logo"/>
+                    </div>
+                    <div class="d-flex flex-row gap-2 mt-2">
+                        <button id="com_btnChooseLogo" class="btn btn-sm btn-primary">
                             <i class="fa fa-image"></i>
-                            Choose
+                            <span class="trans-text" data-langprop="buttons.Choose"></span>
                         </button>
-                        <button id="com_btnDeleteLogo" class="btn btn-sm btn-default btn-secondary">
+                        <button id="com_btnDeleteLogo" class="btn btn-sm btn-warning">
                             <i class="fa fa-tiems text-danger"></i>
-                            Delete
+                            <span class="trans-text" data-langprop="buttons.Delete"></span>
                         </button>
                     </div>
                 </div>
@@ -29,48 +29,48 @@
             <div class="col-lg-9">
                 <div class="row">
                     <div class="form-group col-lg-12">
-                        <label class="control-label text-text" data-langprop="titles.Company Name (khmer)">Company Name (Khmer)</label>
-                        <div><input type="text" class="form-control data-input" data-field="name_kh"></div>
+                        <label class="control-label trans-text" data-langprop="titles.Company Name (khmer)"></label>
+                        <input type="text" class="form-control data-input" data-field="name_kh"/>
                     </div>
                     <div class="form-group col-lg-12">
-                        <label class="control-label trans-text" data-langprop="titles.Company Name (English)">Company Name (English)</label>
-                        <div><input type="text" class="form-control data-input" data-field="name"></div>
+                        <label class="control-label trans-text" data-langprop="titles.Company Name (English)"></label>
+                        <input type="text" class="form-control data-input" data-field="name"/>
                     </div>
                 </div>
             </div>
         </div>
         <div class="row mt-3">
             <div class="form-group col-lg-12">
-                <label class="control-label">Address (Khmer)</label>
+                <label class="control-label trans-text" data-langprop="titles.Address (Khmer)"></label>
                 <textarea type="text" class="form-control data-input" data-field="address_kh"></textarea>
             </div>
             <div class="form-group col-lg-12">
-                <label class="control-label">Address (Latin)</label>
+                <label class="control-label trans-text" data-langprop="titles.Address (Latin)"></label>
                 <textarea type="text" class="form-control data-input" data-field="address"></textarea>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-3">
-                <label class="control-label">Email</label>
+                <label class="control-label trans-text" data-langprop="titles.Email"></label>
                 <input type="text" class="form-control data-input" data-field="email">
             </div>
             <div class="col-lg-3">
-                <label class="control-label">Phone Number</label>
+                <label class="control-label trans-text" data-langprop="titles.Phone Number"></label>
                 <input type="text" class="form-control data-input" data-field="phone_number">
             </div>
             <div class="col-lg-3">
-                <label class="control-label">Contact Pereson Name</label>
+                <label class="control-label trans-text" data-langprop="titles.Contact Pereson Name"></label>
                 <input type="text" class="form-control data-input" data-field="first_cp_name">
             </div>
             <div class="col-lg-3">
-                <label class="control-label">contact person Phone</label>
+                <label class="control-label text-capitalize trans-text" data-langprop="titles.contact person Phone"></label>
                 <input type="text" class="form-control data-input" data-field="first_cp_phone">
             </div>
         </div>
         <div class="d-flex align-items-center mt-2">
-            <button id="_main_comp_btnSaveProfile" type="button" class="btn btn-success">
+            <button id="_main_comp_btnSaveProfile" type="button" class="btn btn-sm btn-success">
                 <i class="la la-save"></i>
-                <span>Save Changes</span>
+                <span class="trans-text" data-langprop="buttons.Save Changes"></span>
             </button>
         </div>
     </div>

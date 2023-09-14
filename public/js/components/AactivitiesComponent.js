@@ -3,7 +3,6 @@ var AactivitiesComponent = new function(){
     let mThis = this;
     this.title_prop = "Activities";
     this.self = main_view.appContent.children('#_main_aActivitiesComponent');
-
     this.containerFilter = mThis.self.find('#container_aavt_filter');
 
     this.data_request = [];
@@ -161,9 +160,6 @@ var AactivitiesComponent = new function(){
                 input: 'textarea',
                 inputLabel: 'Why You Reject This Request?',
                 inputPlaceholder: 'Type your reasons here...',
-                inputAttributes: {
-                    'aria-label': 'Type your reasons here'
-                },
                 showCancelButton: true,
                 inputValidator: (value) => {
                     if(!value){
@@ -203,7 +199,7 @@ var AactivitiesComponent = new function(){
         mThis.cfg = new ExpandableRowConfig('tbl__aavt_table', {
             'dontExpandByClickingOn': ['btn-aavt-approval', 'btn-aavt-reject','btn-aavt-delete'],
             'onOpen': (container, detail_tr, parent_tr) => {
-                let qtr = $(parent_tr);
+                const qtr = $(parent_tr);
                 let op = {
                     'student_id': qtr.data('studentid'),
                     'request_type_id': qtr.data('request_typeid'),
@@ -216,14 +212,14 @@ var AactivitiesComponent = new function(){
     }
 
     this.prepareOption = (onFinish = null) => {
-        let div = mThis.containerFilter;
+        const div = mThis.containerFilter;
         vsapi.call(`${main_view.base_url}/api/form-option`,null,null,false).then(res => {
             if(res.status_code === 200){
                 let d = res.data;
                 if(d && !($.isEmptyObject(d))){
                     div.find('.data-input').each(function(){
-                        let el = $(this);
-                        let f = el.data('field');
+                        const el = $(this);
+                        const f = el.data('field');
                         switch(f){
                             case 'discount_type':
                                 VSUtil.setComboItems(el,d.discount_type,'id','name',null,null,null);
@@ -242,7 +238,7 @@ var AactivitiesComponent = new function(){
     }
 
     this.displayApprovalActivityDetails = (tr, op) => {
-        let div_wrapper = $(tr).find('.expandable-row-container');
+        const div_wrapper = $(tr).find('.expandable-row-container');
 
         let html = null, inner_html = null, cur_symbol = '$';
         div_wrapper.empty();
@@ -340,8 +336,8 @@ var AactivitiesComponent = new function(){
     }
 }
 
-let ApprovalDialog = new function(){
-    let mThis = this;
+const ApprovalDialog = new function(){
+    const mThis = this;
     this.self = $('#dlg_aact_');
     this.options = {};
 
@@ -417,8 +413,8 @@ let ApprovalDialog = new function(){
                 d = res.data;
             }
             body.find('.data-input').each(function(){
-                let el = $(this);
-                let f = el.data('field');
+                const el = $(this);
+                const f = el.data('field');
                 switch(f){
                     case 'from_level_id':
                         VSUtil.setComboItems(el,d.level_options,'id','level',null,null,data.from_id);

@@ -14,15 +14,15 @@ var PaymentReviewComponent = new function(){
         {
             title: "Name",
             className: 'align-middle text-capitalize',
-            data: (data,index,tr)=>{
-                const new_student = data.is_new_student ==1? ['<span class="p-1 border rounded-5 border-warning">New</span>'].join(''): ['<span class="p-1 border rounded-5 border-warning">Old</span>'].join('');
+            data: (data, index, tr) => {
+                const new_student = data.is_new_student == 1 ? ['<span class="p-1 border rounded-5 border-warning">New</span>'].join(''): ['<span class="p-1 border rounded-5 border-warning">Old</span>'].join('');
                 return ['<span class="fw-bold d-block p-1 mb-1">',data.name,'</span>',new_student].join('');
             },
         },
         {
             title: "Grade",
             className: 'align-middle text-capitalize',
-            data: (data,index,tr)=>{
+            data: (data, index, tr) => {
                 return ['<span class="d-block p-1">',data.level_name,'</span>'].join('');
             },
         },
@@ -62,7 +62,7 @@ var PaymentReviewComponent = new function(){
                 const cls = data.status.toLowerCase() === "paid" ? "d-none" : "";
                 return [`<div class="d-flex gap-2">
                     <a href="javascript:void(0)" class="btn-calculate-fee btn btn-sm btn-success ${cls} trans-text" data-langprop="titles.Calculate Tuition" data-isnewstudent="${data.is_new_student}" data-id="${data.id}">
-                         Calculate Tuition
+                        Calculate Tuition
                     </a>
                 </div>`].join('');
             },
@@ -87,8 +87,8 @@ var PaymentReviewComponent = new function(){
             let lnk = VSUtil.clickOnClass(e.target,'btn-calculate-fee');
             if(lnk){
                 let op = {
-                    id:lnk.dataset.id,
-                    is_new_student:lnk.dataset.isnewstudent, 
+                    id: lnk.dataset.id,
+                    is_new_student: lnk.dataset.isnewstudent,
                     onClose: () => {
                         mThis.studentListView.showPage(mThis.getFilterData());
                     },
@@ -118,8 +118,7 @@ var PaymentReviewComponent = new function(){
     this.prepareOptions = (onFinish) => {
         mThis.disable_filter = true;
         vsapi.call(`${main_view.base_url}/api/tuition-review/form-options`,null,null).then((res) => {
-            let d = res.status_code === 200? res.data: {};
-            console.log(d);
+            let d = res.status_code === 200 ? res.data : {};
             VSUtil.setComboItems(mThis.elFilter_term,d.terms,"id","term_name",null,null,d.terms[0].id);
             VSUtil.setComboItems(mThis.elFilter_status,d.pmt_statuses,"id","pmt_status",null,null,1);
             VSUtil.setComboItems(mThis.elFilter_campus,d.campuses,"id","campus_name",null,null,d.campuses[0]?d.campuses[0].id:null);
@@ -164,23 +163,22 @@ const TuitionCalculateDialog = new function(){
         const pmt_option_id = el.value;
 
         if(pmt_option_id > 3){
-           const sel_option = el.options[el.selectedIndex];  
-           mThis.modalBody.find('div.custom-pmt-field').each(function(){
-            $(this).remove();
-           });
+            const sel_option = el.options[el.selectedIndex];  
+            mThis.modalBody.find('div.custom-pmt-field').each(function(){
+                $(this).remove();
+            });
 
-           if(sel_option){ 
+            if(sel_option){ 
                 const f_name = sel_option.text;
                 mThis.modalBody.append([`<div class="form-group custom-pmt-field">
                     <label for="${f_name}" class="form-label text-capitalize">${f_name}</label>
                     <div><input type="number" class="form-control pmt-period" /></div>
                 </div>`].join(''));
-           }; 
-          
-        }else {
-            //alert( mThis.modalBody.find('div.customer-pmt-field').length);
+            };
+        }
+        else{
             mThis.modalBody.find('div.custom-pmt-field').each(function(){
-                 $(this).remove();
+                $(this).remove();
             });
         }
     });
@@ -205,42 +203,40 @@ const TuitionCalculateDialog = new function(){
         }
     });
   
-    mThis.modalBody.on('change','.pmt-factor',e=>{
-        const el = e.target;
+    mThis.modalBody.on('change','.pmt-factor',(e) => {
+        e.preventDefault();
         let op = mThis.getDataForm();
         op.is_new_student = mThis.options.is_new_student;
         op.enrollment_id = mThis.options.id;
         mThis.showDiscountInfo(op);
     });
 
-
     /** Show discount info for old student only 
     * params {'is_new_student','pmt_option_id','enrollment_id','session_id','level_id',[program_id]}
     */
-        this.showDiscountInfo = (d)=>{
-            d= d?d:{};
-            if (d.is_new_student==1 || d.is_new_student==true){
-              mThis.discountPanel.hide();
-              mThis.showStartDate(true);
-              return;
-            }
-            mThis.showStartDate(false);
-            vsapi.call(`${main_view.base_url}/api/tuition-review/student-discount`,d,null,false).then(res=>{
-                 let data = (res.status_code === 200)? res.data: {};
-                 mThis.discountPanel.find('.discount-field').each(function(){
-                     const el = $(this);
-                     const f = el.data('field');
-                     if(f === 'price_list_name'){
-                       el.text(data[f]?data[f]:'Not Found!');
-                     }else{
-                        el.text([data[f]?data[f]:0,'%'].join(''));
-                     }
-                    
-                 });
-                 mThis.discountPanel.show();
+    this.showDiscountInfo = (d)=>{
+        d = d ? d : {};
+        if(d.is_new_student == 1 || d.is_new_student == true){
+            mThis.discountPanel.hide();
+            mThis.showStartDate(true);
+            return;
+        }
+        mThis.showStartDate(false);
+        vsapi.call(`${main_view.base_url}/api/tuition-review/student-discount`,d,null,false).then(res=>{
+            let data = (res.status_code === 200)? res.data: {};
+            mThis.discountPanel.find('.discount-field').each(function(){
+                const el = $(this);
+                const f = el.data('field');
+                if(f === 'price_list_name'){
+                    el.text(data[f] ? data[f] : 'Not Found!');
+                }
+                else{
+                    el.text([data[f] ? data[f]: 0,'%'].join(''));
+                }
             });
-            
-         }
+            mThis.discountPanel.show();
+        });
+    }
     this.getDataForm = () => {
         let p = {
             id: mThis.options.id,
@@ -268,11 +264,11 @@ const TuitionCalculateDialog = new function(){
 
     this.prepareFormOption = (id,onFinish = null) => {
         vsapi.call(`${main_view.base_url}/api/tuition-review/form-options`,{'id':id},null).then(res => {
-            const d =res.status_code === 200? res.data: {};
+            const d =res.status_code === 200 ? res.data: {};
             mThis.self.find(".data-input").each(function () {
                 const el = $(this);
                 const f = el.data("field");
-                switch (f) {
+                switch(f){
                     case "pmt_option_id":
                         VSUtil.setComboItems(el,d.pmt_options,"id","pmt_option",null,null,null);
                         break;

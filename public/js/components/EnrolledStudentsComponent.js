@@ -53,35 +53,25 @@ var EnrolledStudentsComponent = new function(){
             }
         });
 
-        mThis.div_filter_form.find('.filter-field').on('change',e=>{
+        mThis.div_filter_form.find('.filter-field').on('change',(e) => {
+            e.preventDefault();
             const el = e.target;
-            const f = el?el.dataset.field:null;
-            if(f ==='academic_year'){
- 
-               vsapi.call(`${main_view.base_url}/api/settings/options-term`,{'academic_year':el.value},false).then(res=>{
-                   const terms = res.status_code ===200? StringSanitizer.sanitizeObject(res.data):[];
- 
-                   VSUtil.setComboItems(mThis.elFilter_term,terms,'id','term_name',true,'(All Terms)',0);
-                   //if(!mThis.disable_filter) mThis.studentListView.showPage(mThis.getFilterData());
-               });  
+            const f = el ? el.dataset.field : null;
+            if(f === 'academic_year'){
+                vsapi.call(`${main_view.base_url}/api/settings/options-term`,{'academic_year':el.value},false).then(res=>{
+                    const terms = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data) : [];
+                    VSUtil.setComboItems(mThis.elFilter_term,terms,'id','term_name',true,'(All Terms)',0);
+                });
             }
             else if(f==='program_id'){
- 
                 vsapi.call(`${main_view.base_url}/api/settings/options-level`,{'program_id':el.value},null,false).then(res=>{
                     let items = res.status_code === 200 ? res.data : [];
                     VSUtil.setComboItems(mThis.elFilter_level,items,'id','level_name',true,'(All Grades)',0);
                 });
             }
-            // else if(f==='term_id'){
-            //     if(!mThis.disable_filter) mThis.studentListView.showPage(mThis.getFilterData());
-            // } 
-            //else if(f !=='level_id' && f !=='program_id' ){
-            //     mThis.studentListView.showPage(mThis.getFilterData());
-            // }
             if(!mThis.disable_filter){
                 mThis.studentListView.showPage(mThis.getFilterData());
             }
-            
         });
 
         mThis.div_enroll_path.on('change','.g-filter',function(e){
@@ -362,10 +352,10 @@ var EnrolledStudentsComponent = new function(){
     this.renderStudents = (div_register_list,data) => {
             let html = null;
             let cnt = 0;
-            div_register_list.style.display='none';
+            div_register_list.style.display = 'none';
             (data || []).map(item => {
                 let finalized = item.enroll_finalized == 1 ? 'd-none':''; 
-                html = [html,`<div class="d-flex p-3 bg-white h-info-student mb-4">
+                html = [html,`<div class="d-flex p-3 bg-white h-info-student mb-2">
                     <div class="div-img">
                         <img src="${item.image_url}" alt=""/>
                     </div>
@@ -506,7 +496,13 @@ var EnrolledStudentsComponent = new function(){
             LocaleManager.translateZone(div_register_list);
             setTimeout(() => {
                 div_register_list.style.display = 'block';
-            }, 200); 
+            }, 200);
+            const parent = div_register_list.closest('._rgs_list');
+            parent.style.maxHeight = (window.innerHeight - 280)+'px';
+            window.addEventListener('resize',(e) => {
+                e.preventDefault();
+                parent.style.maxHeight = (window.innerHeight - 280)+'px';
+            });
     }
 
    this.clickOnClass = (target,cssClass)=>{

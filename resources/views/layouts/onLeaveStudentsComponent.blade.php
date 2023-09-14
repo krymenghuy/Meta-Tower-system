@@ -1,12 +1,11 @@
 <div id="_main_onLeaveStudentsComponent" class="mobile-padding p-3" style="display:none">
     <div id="st-leave--list" class="st-register--list">
-        <div class="bg-white p-4 rounded-4">
+        <div class="bg-white p-3 rounded-3">
             <div id="_onleave_filters" class="row row-cols-lg-4 gy-2">
                 <div class="col">
                     <label for="academic_year" class="form-label trans-text" data-langprop="titles.Term"></label>
                     <div class="width-select-dialog">
-                        <select id="_onleave_filter_term" class="modal-select2 data-select filter-field"
-                            data-field="term_id"></select>
+                        <select id="_onleave_filter_term" class="modal-select2 data-select filter-field" data-field="term_id"></select>
                     </div>
                 </div>
                 <div class="col">
@@ -44,9 +43,7 @@
                 </div>
             </div>
         </div>
-
-        <div id="_onleave_list_view" class="border rounded-3 shadow p-2"></div>
-
+        <div id="_onleave_list_view" class="border bg-white mt-3 rounded-3 shadow p-2"></div>
     </div>
     <div id="st-register--input" class="st-register--input" style="display:none">
         <div class="bg-primary rounded-top-3">

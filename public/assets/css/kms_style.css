@@ -573,8 +573,11 @@ a.menu-selected .kt-menu__link-text{
     flex-direction: column;
     gap: 0.5rem;
     margin-top:1rem;
-    overflow-y: auto;
-    max-height:60vh;
+    overflow-y: hidden;
+}
+
+._rgs_list:hover{
+    overflow: auto;
 }
 
 .custom-modal .modal-header{
@@ -1031,4 +1034,12 @@ a.menu-selected .kt-menu__link-text{
 
 .fixed-width-p{
     width:57px;
+}
+
+.overflow-hover-auto{
+    overflow: hidden;
+}
+
+.overflow-hover-auto:hover{
+    overflow:auto;
 }
