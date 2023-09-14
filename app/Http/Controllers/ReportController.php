@@ -98,4 +98,11 @@ class ReportController extends Controller
     return JDV::result($x->optionsTerm($req->academic_year,$ss));
   }
 
+  function getDailyCashList(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code != 200) return $ss;
+    $report = new Report();
+    return JDV::result($report->getDailyCash($req->all(),$ss));
+  }
+
 }

@@ -24,6 +24,12 @@ class Report //extends Model
         $this->id = $id;
     }
 
+    function getCampanyInfo($ss){
+        $x = new CompanyProfile($ss);
+        $p = $x->getDetails($ss);
+        return $p;
+    }
+
     static function list($ss){
         return DB::select("SELECT id, `name`, `hidden`,code,category,rpt.module_id,rpt.description,rpt.params,rpt.display_order,rpt.hidden FROM reports AS rpt WHERE IFNULL(rpt.hidden,0) = 0 ORDER BY rpt.category,rpt.display_order ASC");
     }
@@ -103,19 +109,41 @@ class Report //extends Model
         ->join('campuses AS c','c.id','=','e.campus_id')
         ->join('programs AS p','p.id','=','l.program_id')->whereRaw($str_where)->selectRaw($cols)->orderByRaw('e.id DESC,st.id')->get();
         $header_list = ['Name','Name Kh','Sex','Term','Session','Program','Family ID'];
-        // $headers = $this->createHeader('name',$header_list);
+        $keys = ['name','name_kh','sex'];
+        $key_props = $this->createKeyValue('key',$keys);
+        $headers = $this->createMulKeyValue('name',$header_list,$key_props);
+
         return (object)[
             'form' => 'simple',
-            'headers' => $header_list,
+            'headers' => $headers,
             'list' => $studentList
         ];
     }
 
-    function createHeader($key_name, $arr) {
+    function createKeyValue($key_name,$arr){
         $result = [];
         foreach ($arr as $d) {
             $result[] = [$key_name => $d];
         }
+        return $result;
+    }
+
+    function createMulKeyValue($key_name, $arr, $bonus_data=null) {
+        $result = [];
+        $count = count($arr);
+
+        foreach ($arr as $index => $header) {
+            $headerData = [$key_name => $header];
+
+            if (isset($bonus_data[$index])) {
+                foreach ($bonus_data[$index] as $bonus_key => $bonus_value) {
+                    $headerData[$bonus_key] = $bonus_value;
+                }
+            }
+
+            $result[] = $headerData;
+        }
+
         return $result;
     }
 
@@ -562,5 +590,80 @@ class Report //extends Model
     }
 
   //** end family list report */
+
+
+  //** daily cash */
+
+    function getDailyCash($filter,$ss){
+        $selectInvoice='i.invoice_number,i.id,i.pmt_date';
+        $str_search = '1=1';
+        $str_d = (object)$filter;
+        $branch_id = $ss->branch_id;
+        $receiver = isset($str_d->receiver) ? $str_d->receiver :null;
+        $receiver_id = isset($str_d->receiver_id) ? $str_d->receiver_id :null;
+        if($receiver) $str_search = 'i.receiver = ' . $receiver;
+        if($receiver_id) $str_search .= 'OR i.receiver_uid = ' . $receiver_id;
+        $rows = DB::table('invoices as i')->join('receipts as r','r.invoice_id','=','i.id')->join('students as s','s.id','=','i.student_id')->selectRaw($selectInvoice.',s.name,s.sex,r.receipt_number')->where('i.branch_id',$branch_id)->whereRaw($str_search)->get();
+        foreach($rows as $row){
+            //** get invoice items */
+            $itemDetails = self::getInvoiceItemDetails($row->id,$branch_id);
+            $row->school_fee = $itemDetails->tuition_fee;
+            $row->items = $itemDetails->data;
+        }
+
+        //** create table headers and keys */
+        $header_list = ['Date','Receipt No.','Student Name','Sex','Dis.','Period','School Fee'];
+        $fee_types = DB::table('fee_types')->selectRaw('name')->where('id','>=',20)->get();
+        $keys = ['pmt_date','receipt_number','name','sex','discount','period','tuition_fee'];
+        foreach($fee_types as $type){
+            //** push header name value into array */
+            array_push($header_list,$type->name);
+            //** push key value into array */
+            array_push($keys,$this->stringToKeyCase($type->name));
+        }
+        $key_props = $this->createKeyValue('key',$keys);
+
+        $headers = $this->createMulKeyValue('name',$header_list,$key_props);
+        //**---- */
+
+        return (object)[
+            'form' => 'simple',
+            'header' => $headers,
+            'list' => $rows,
+            'company_profile' => $this->getCampanyInfo($ss)
+
+        ];
+    }
+
+    function getInvoiceItemDetails($inv_id,$branch_id){
+        $tuition_amt=0;
+        $total=[];
+        $rows = DB::table('invoice_items')->where('invoice_id',$inv_id)->where('branch_id',$branch_id)->get();
+        foreach($rows as $row){
+            if($row->fee_type == 'tuition_fee'){
+                $tuition_amt = $row->net_amount;
+                $discount = $row->discount;
+            }
+            $total[] = $row->net_amount;
+        }
+        $sum_amt = array_sum($total);
+
+        return (object)['tuition_fee'=>$tuition_amt,'discount'=>$discount,'data'=>$rows,'total'=>$sum_amt];
+    }
+
+    function stringToKeyCase($cnvtString='Can be array') {
+       if(is_array($cnvtString)){
+            $result = [];
+            $array[] = $cnvtString;
+            foreach ($array as $string) {
+                $convertedString = strtolower(str_replace(' ', '_', $string));
+                $result[] = $convertedString;
+            }
+
+            return $result;
+       }
+        return strtolower(str_replace(' ', '_', $cnvtString));
+    }
+
 
 }

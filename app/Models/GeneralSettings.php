@@ -181,6 +181,10 @@ class GeneralSettings //extends Model
         if(!$row) return $row=null;
         return $row;
     }
+
+    static function options_fee_type(){
+        return DB::table('fee_types')->selectRaw('name,id')->get();
+    }
     static function options_session($ss){
       return DB::table('sessions as ss')->where('branch_id',$ss->branch_id)->selectRaw('id,name as session_name,shortcut')->get();
     }
@@ -239,12 +243,12 @@ class GeneralSettings //extends Model
         $level_id = isset($d->level_id) ? $d->level_id :null;
         $session_id = isset($d->session_id) ? $d->session_id :null;
         $str_search ="term_id = $term_id";
-        if (!$term_id) return [];  
+        if (!$term_id) return [];
 
         if($campus_id>0) $str_search.=' AND campus_id = '.$campus_id;
         if($level_id>0) $str_search.=' AND level_id = '.$level_id;
         if($session_id>0) $str_search.=' AND session_id = '.$session_id;
-      
+
         $rows = DB::table('student_groups AS g')->whereRaw($str_search)->selectRaw('g.id,g.name AS group_name,g.campus_id,g.session_id,g.level_id,descriptive_name')->get();
         foreach($rows as $row){
             $row->group_name = $row->group_name.'('.$row->descriptive_name.')';

@@ -13,8 +13,8 @@ class OtherFee //extends Model
     //use HasFactory;
     protected $id = null, $user_info = null,$currency_code = 'USD';
     function __construct($id=null,$user_info= null){
-      $this->id = $id;
-      $this->user_info = $user_info;
+        $this->id = $id;
+        $this->user_info = $user_info;
     }
 
     function save($arr=[],$id=null,$ss=null){
@@ -23,17 +23,18 @@ class OtherFee //extends Model
         //$branch_id = $ss->branch_id;
         $v_rule = [
             'program_id'=>'0|number|exists=programs.id|text=The provided program does not exist',
-            'name'=>'1|string|1-200',
+            'name'=>'1|string',
+            'fee_type_id' => '1|number|exists=fee_types.id',
             'description'=>'0|string|250',
             'amount_input_mode'=>'1|choice|manual,auto|default=auto',
             //'will_expire'=>'0|number|choice|0,1',
-            // 'start_date'=>'0|date',
-            // 'end_date'=>'0|date',
+            'start_date'=>'0|date',
+            'end_date'=>'0|date',
             //'academic_year'=>'0|string|1,25',
             'amount'=>'0|number|default=0',
             'currency_code' => '0|string|default='.$this->currency_code
         ];
-      
+
         $unique = null;//[$branch_id.'|other_fees|name|id=id'];
         $res = validateObject($arr,$v_rule,true,['academic_year'=>['-']],$ss->lang,false,$unique);
         if($res->error) return Dv::error($res->error);
@@ -93,7 +94,7 @@ class OtherFee //extends Model
         $count_query = clone $query;
         $count = $count_query->count('f.id');
         $rows = $query->skip($skip_rows)->take($per_page)->orderByRaw('f.id DESC')->get();
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);  
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
     function getProgram($id){
@@ -104,6 +105,10 @@ class OtherFee //extends Model
         return null;
     }
 
+
+    function optionsFeeType(){
+        return GeneralSettings::options_fee_type();
+    }
 
 
     function getDetails($id=null,$ss=null){
