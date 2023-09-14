@@ -159,8 +159,17 @@ function jsonToTable(div,d){
     d = d ? d : {};
     console.log(d);
     let header = null, body = null, tr = null;
-    const thead = d.header ? d.header : [], tbody = d.list ? d.list : [];
-    const html = [`<div class="table-responsive mt-3 p-3 bg-white table-responsive-hover">
+    const thead = d.header ? d.header : [], tbody = d.list ? d.list : [], company_info = d.company_profile ? d.company_profile : {};
+    const html = [`<div class="d-block position-relative">
+        <div class="w-25 float-start position-absolute">
+            <img class="w-100 h-100 object-fit-scale" src="${d.logo_url ? d.logo_url : ''}" alt=""/>
+        </div>
+        <div class="d-flex flex-column gap-2">
+            <h4 class="text-center text-uppercase"></h4>
+            <p class="text-center w-100 fs-5-1"></p>
+        </div>
+    </div>
+    <div class="table-responsive mt-3 p-3 bg-white table-responsive-hover">
         <table class="table">
             <thead>
                 <tr>
