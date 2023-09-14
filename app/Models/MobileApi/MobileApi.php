@@ -75,13 +75,8 @@ class MobileApi //xtends Model
             unset($row->file_name);
         }
 
-        $children = DB::table('students as s')
-                ->join('student_guardians as sg','sg.student_id','=','s.id')
-                ->join('guardians as g','g.id','=','sg.guardian_id')
-                ->where('g.id',$ss->official_id)
-                ->distinct()
-                ->selectRaw('s.name,s.id as student_id,date_of_birth,s.phone_number,s.name_kh,s.file_name')
-                ->get();
+        $children = $this->children($ss);
+
         foreach($children as $child){
             $child->image_url = PublicStorage::getUrl($branch_id,'students','image').$child->file_name;
             $class = $this->getStudentLatestEnrollment($child->student_id,$ss);
@@ -93,9 +88,22 @@ class MobileApi //xtends Model
         $res =(object)[
             'banner' => $banner,
             'children' => $children,
-            'profile' => self::getProfile($ss->id,$ss->branch_id)
+            'profile' => self::getProfile($ss->id,$ss->branch_id),
+            'social_media' => $this->getSocialMedia($ss),
+            'payments' => $this->getChildrenInvoices(null,$ss)
         ];
         return $res;
+    }
+
+    function children($ss){
+        $children = DB::table('students as s')
+                ->join('student_guardians as sg','sg.student_id','=','s.id')
+                ->join('guardians as g','g.id','=','sg.guardian_id')
+                ->where('g.id',$ss->official_id)
+                ->distinct()
+                ->selectRaw('s.name,s.id as student_id,date_of_birth,s.phone_number,s.name_kh,s.file_name')
+                ->get();
+        return $children;
     }
 
     function guardianProfile($ss){
@@ -170,9 +178,9 @@ class MobileApi //xtends Model
 
 
     // get Student Invoices
-    function getChildrenInvoices($arr = [], $ss) {
+    function getChildrenInvoices($arr=null, $ss) {
 
-        $tmps = $this->homePage($ss)->children;
+        $tmps = $this->children($ss);
 
         $childrenID = [];
 
