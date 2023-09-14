@@ -158,7 +158,7 @@ function togglePanelTable(div){
 function jsonToTable(div,d){
     d = d ? d : {};
     console.log(d);
-    let header = null, body = null;
+    let header = null, body = null, tr = null;
     const thead = d.header ? d.header : [], tbody = d.list ? d.list : [];
     const html = [`<div class="table-responsive mt-3 p-3 bg-white table-responsive-hover">
         <table class="table">
@@ -170,8 +170,12 @@ function jsonToTable(div,d){
                 </tr>
             </thead>
             <tbody>
-                ${body=null,tbody.map((d,index) => {
-                    body = [body,`<tr>${d[index]}</tr>`].join('');
+                ${body=null,
+                    tr=null,
+                tbody.map((d) => {
+                    body = [body,`<tr>${thead.map(k => {
+                        tr = [tr,`<td>${d[k.key]}</td>`].join('');
+                    }),tr ? tr : ''}</tr>`].join('');
                 }),body ? body : ''}
             </tbody>
         </table>
