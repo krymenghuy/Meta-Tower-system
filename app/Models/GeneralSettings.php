@@ -420,7 +420,7 @@ class GeneralSettings //extends Model
         }
     }
 
-    static function optionsStudentList($id){
+    static function optionsStudentList($id=null){
         $rows = DB::table('students')->selectRaw('name as student_name,id as student_id')->get();
         return $rows;
     }
@@ -604,7 +604,10 @@ class GeneralSettings //extends Model
 
     static function options_payment_method(){
         $rows = DB::table('payment_methods')->selectRaw('name,id')->get();
-        return $rows;
+        return (object)[
+            'students' => self::optionsStudentList(),
+            'methods' => $rows,
+        ];
     }
 
     static function options_form_payment_method(){
