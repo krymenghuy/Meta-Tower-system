@@ -1082,7 +1082,8 @@ class PriceList //extends Model
         $return_fee = 0;
         $surcharge = 0;
 
-        $requestChange = Db::table('requests as r')->join('request_changes as rc','rc.request_id','=','r.id')->where('r.student_id',$student_id)->where('r.authorized',0)->where('r.status_id',2)->selectRaw('rc.enrollment_id')->first();
+        $requestChange = DB::table('requests as r')->join('request_changes as rc','rc.request_id','=','r.id')->where('r.student_id',$student_id)->where('r.authorized',0)->where('r.status_id',2)->selectRaw('rc.enrollment_id')->first();
+        if(!$requestChange) return DV::error('Request not found');
         $enrollment_id = $requestChange->enrollment_id;
         // unset($inputs['enrollment_id']);
         $payment_info = DB::table('enrollments as e')->where('e.id',$enrollment_id)->where('e.student_id',$student_id)->join('payments as p','p.enrollment_id','=','e.id')->join('terms as t','t.id','=','e.term_id')->selectRaw('e.id as enr_id,p.tuition_paid,e.tuition_end_date,e.start_date,e.session_id,e.level_id,e.campus_id,e.academic_year')->get()->first();

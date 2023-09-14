@@ -648,6 +648,7 @@ class Report //extends Model
         foreach($rows as $row){
             if(in_array($row->fee_type,$all_type)){
                 $row->d = 'sdfsd';
+                $row->{$row->fee_type} = 'asdfsfda';
             }
 
             if($row->fee_type == 'tuition_fee'){
