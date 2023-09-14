@@ -23,10 +23,15 @@ class LeaveInfo //extends Model
         return DB::table('enrollments as e')->join('terms as t','t.id','=','e.term_id')->where('e.id',$enrollment_id)->take(1)->selectRaw('e.id,t.id AS term_id,e.student_id,e.enroll_finalized,t.name AS term_name,t.start_date,t.end_date,t.is_finished,e.tuition_end_date')->get()->first();
     }
 
-    //Given a leave_type_id => decide the enrollment_status_id
+    /** 
+     * Given a leave_type_id => decide the enrollment_status_id
+     * leave_type =2 => "Dropout" and enrollment_status_id =2
+     * leave_type =3 => "suspended" and enrollment_status_id =3
+     * There is no leave_type_id =1 
+     */
     static function decideEnrollmentStatus($leave_type_id){
-       if($leave_type_id == 1) return 2;
-       else if($leave_type_id ==2) return 2;
+       if($leave_type_id == 2) return 2;
+       else if($leave_type_id ==3) return 3;
     }
     static function getLeaveType($leave_type_id){
         return DB::table('leave_types as t')->where('id',$leave_type_id)->take(1)->value('name');
@@ -114,12 +119,17 @@ class LeaveInfo //extends Model
             DB::table('enrollments')->where('id',$info->enrollment_id)->update([
                 'enrollment_status_id'=>self::decideEnrollmentStatus($info->leave_type_id)
             ]);
+            
             //disabled current student's price list in table "student_pricelist", so that if this student come back to study => system will calculate price and discount as new student again
-            saveData($ss,'student_pricelist',['student_id' => $enroll_info->student_id],[
-                'inactive'=>1,
-                'remarks'=>self::getLeaveType($info->leave_type_id)
-            ],[],1,true);
-
+            //leave_type_id =3 (Susspended) => This is special permission to go on leave. For example, student have health problem and leave for 2 months
+            if($info->leave_type_id !=3){
+                saveData($ss,'student_pricelist',['student_id' => $enroll_info->student_id,'inactive'=>0],[
+                    'inactive'=>1,
+                    'remarks'=>self::getLeaveType($info->leave_type_id)
+                ],[],1,true);
+            }else{
+                saveData($ss,'student_pricelist',['id'=>$enroll_info->student_id,'inactive'=>0],['remarks'=>'Suspended, but price_list is kept the same'],[],1,false);
+            }
        }
        return DV::depends($x,null,'Failed to finalize Leave information');
     }

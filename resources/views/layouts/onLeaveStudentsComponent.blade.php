@@ -48,7 +48,8 @@
         <div id="_onleave_list_view" class="border rounded-3 shadow p-2"></div>
 
     </div>
-    <div id="st-register--input" class="st-register--input" style="display:none">
+
+    <!-- <div id="st-register--input" class="st-register--input" style="display:none">
         <div class="bg-primary rounded-top-3">
             <div class="py-2 px-3">
                 <i id="back--rgs" class="fa-solid fa-arrow-left-long fs-3 text-white" role="button"></i>
@@ -289,7 +290,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 </div>
 
 <div id="dlg_rgs_card" class="modal fade" tabindex="-1" aria-labelledby="dlg_rgs_card_title" aria-hidden="true">
