@@ -342,8 +342,8 @@ var FindStudentComponent = new function(){
     }
 }
 
-let GenerateInvoiceFSN = new function(){
-    let mThis = this;
+const GenerateInvoiceFSN = new function(){
+    const mThis = this;
     this.self = $('#dlg_fns_');
     this.options = {};
     let ref = {
@@ -431,8 +431,8 @@ let GenerateInvoiceFSN = new function(){
             }).format(current);
 
             mThis.self.find('.data-invoice').each(function(){
-                let el = $(this);
-                let f = el.data('field');
+                const el = $(this);
+                const f = el.data('field');
                 if(f === 'inv_date')
                     el.text(format);
                 else if(f === 'due_date')
@@ -577,7 +577,7 @@ let GenerateInvoiceFSN = new function(){
     this.displayFeeAsRow = (tbody, select, total=0) => {
         tbody.find(`#${select}`).off('change').on('change',function(e){
             e.preventDefault();
-            let tr = $(this).closest('tr');
+            const tr = $(this).closest('tr');
             vsapi.call(`${main_view.base_url}/api/option/other-fee-info`,{'name': $(this).val()},null,false).then(res => {
                 let d = {};
                 if(res.status_code === 200){
@@ -629,15 +629,15 @@ let GenerateInvoiceFSN = new function(){
         };
 
         mThis.self.find('.data-input').each(function(){
-            let el = $(this);
-            let f = el.data('field');
+            const el = $(this);
+            const f = el.data('field');
             d[f] = el.val();
         });
 
         mThis.self.find('.data-get').each(function(){
             let p = {};
-            let el = $(this);
-            let f = el.data('field');
+            const el = $(this);
+            const f = el.data('field');
             p[f] = el.data('value');
             d.fee_types.push(p);
         });
@@ -653,15 +653,15 @@ let GenerateInvoiceFSN = new function(){
         };
 
         mThis.self.find('.data-input').each(function(){
-            let el = $(this);
-            let f = el.data('field');
+            const el = $(this);
+            const f = el.data('field');
             p[f] = el.val();
         });
 
         mThis.self.find('.data-get').each(function(){
             let d = {};
-            let el = $(this);
-            let f = el.data('field');
+            const el = $(this);
+            const f = el.data('field');
             d[f] = el.data('value');
             if(el.data('id')){
                 d['invoice_item_id'] = el.data('id')
@@ -691,13 +691,16 @@ const StudentDiscountDialog = new function(){
     this.self = main_view.appContent.find('#_dlgStudentDiscount');
     this.btnSave = this.self.find('#_dlgStudentDiscount_btnSave');
 
-    this.btnSave.on('click',e => {
-        let p = mThis.getFormData(false);
-        if(!p) return; 
+    this.btnSave.on('click',(e) => {
+        e.preventDefault();
+        const p = mThis.getFormData(false);
+        if(!p) return;
         vsapi.call(`${main_view.base_url}/api/price-list/save-student-discount`,p,null).then(res=>{
             if(res.status_code ===200){
                if (typeof mThis.options.onClose ==='function') mThis.options.onClose(); 
-            }else cv_interact.warning(res.error_message);
+            }
+            else 
+                cv_interact.warning(res.error_message);
         });
     });
 
@@ -713,8 +716,7 @@ const StudentDiscountDialog = new function(){
     }
 
     this.show = (options=null)=>{
-        options = options?options:{};
-
+        options = options ? options:{};
         mThis.prepareFormOption(() => {
             mThis.self.modal({
                 'backdrop':'static'

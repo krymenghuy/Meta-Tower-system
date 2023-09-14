@@ -76,6 +76,12 @@
                 <hr class="height-line"/>
                 <div class="d-flex justify-content-end">
                     <div class="d-flex flex-column gap-3">
+                        <div class="d-flex gap-2 align-items-center select2-invoice">
+                            <p class="p-0 m-0 text-nowrap">Deduct Referral Fee</p>
+                            <select class="modal-select2 data-invoice" data-field="referrer_id"></select>
+                            <span>:</span>
+                            <input type="number" class="data-invoice form-control form-control-sm" data-field="commission"/>
+                        </div>
                         <p class="pb-0 mb-1 ps-0">
                             <span class="width-invoice-text">Deduct Deposite</span>
                             <span class="px-2">:</span>
@@ -125,7 +131,6 @@
                         <label for="level_name" class="form-label trans-text" data-langprop="titles.Price List"></label>
                         <div class="d-flex flex-row gap-1"><input class="form-control data-input" data-field="price_list_name" readonly /><input class="form-control data-input" data-field="admission_date" readonly></div>
                     </div>
-
                     <div class="form-group col-lg-6">
                         <label for="policy_discount" class="form-label trans-text" data-langprop="titles.Policy Discount"></label>
                         <div><input class="form-control data-input" data-field="policy_discount"></div>

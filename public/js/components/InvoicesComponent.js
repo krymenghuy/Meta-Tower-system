@@ -314,6 +314,8 @@ const InvoiceDialog = new function(){
             modal.removeClass('modal-custom-size');
             const modal_dialog = modal.find('.modal-dialog');
             modal_dialog.removeClass(['modal-lg','modal-dialog-scrollable']);
+            delete(op.action);
+
             // vsapi.call(`${main_view.base_url}/`).then(res => {
                 // if(res.status_code === 200){
                     // const d = res.data;
@@ -328,6 +330,8 @@ const InvoiceDialog = new function(){
             modal.addClass('modal-custom-size');
             const modal_dialog = modal.find('.modal-dialog');
             modal_dialog.addClass(['modal-lg','modal-dialog-scrollable']);
+            delete(op.action);
+
             vsapi.call(`${main_view.base_url}/api/invoice/receipt-details`,{'invoice_id': op.invoice_id},null).then(res => {
                 if(res.status_code === 200){
                     const d = res.data;
@@ -341,7 +345,6 @@ const InvoiceDialog = new function(){
     this.preparePayment = (div,d) => {
         d = d ? d : {};
         if(d && !($.isEmptyObject(d))){
-
         }
     }
 
