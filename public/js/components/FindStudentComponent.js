@@ -14,7 +14,7 @@ var FindStudentComponent = new function(){
     this.init = () => {
         mThis.studentListView = new ListView('_fns_student_list',{
             'fetchApi':`${main_view.base_url}/api/student/find`,
-            'perPage':5,
+            'perPage':3,
             'renderItems':(items,list_container) => {
                 list_container.inner_html = '';
                 mThis.renderStudents(list_container,items);

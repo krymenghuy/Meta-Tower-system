@@ -11,8 +11,9 @@
                 <span class="trans-text" data-langprop="buttons.Filter"></span>
             </button>
         </div>
-        <div id="_fns_student_list" class="fns-set-overflow p-3 mt-3"></div>
+        <div id="_fns_student_list" class="p-3 mt-3 fns-set-overflow"></div>
     </div>
+   
 </div>
 
 <div id="dlg_fns_" class="modal fade" tabindex="-1" aria-labelledby="dlg_fns_title" aria-hidden="true">

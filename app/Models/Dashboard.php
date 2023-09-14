@@ -2,88 +2,81 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Session;
+//use Illuminate\Database\Eloquent\Factories\HasFactory;
+//use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use App\Models\UM;
 use DB;
-class Dashboard extends Model
+class Dashboard //extends Model
 {
-    use HasFactory;
-     
-    //return all data for whole databoard (Student Loan System)
-    function getDashboardData($d){
-        $ss = UM::getUserInfoByToken($d,500);
-        if($ss->status_code !=200) return DV::emptyResult($ss->status_code,null);
-        
-        $branch_id = $ss->branch_id;
-        $months_ago = -12;
-        $start_date = Carbon::now()->addMonths($months_ago);  
-        $start_date  = convertDate($start_date);
-        //$cols = "l.id,l.status_id,l.code as loan_code, IFNULL(l.principal,0) AS principal, IFNULL(l.discount_principal,0) AS discount_principal,l.principal -  IFNULL(l.discount_principal,0) AS net_principal, IFNULL(l.penalty_fee,0) as penalty_fee, IFNULL(l.interest_paid,0) as interest_paid, l.principal_paid,IFNULL(interest_due,0) as interest_due, IFNULL(penalty_due,0) as penalty_due";
-        //$rows = DB::table('loans as l')->join('persons as p','p.id','=','l.borrower_id')->where('l.branch_id',$branch_id)->whereRaw("IFNULL(l.inactive,0) = 0 AND DATE(l.auth_date) >='$start_date'")->selectRaw($cols)->get();
-        //$x = $this->getSummary_data($rows);
-
-        $borrower_count =0;
-        //$rows1 = DB::table('loans as l')->join('persons as b','b.id','=','l.borrower_id')->where('l.branch_id',$branch_id)->whereRaw("DATE(l.auth_date) >='$start_date'")->selectRaw("COUNT(DISTINCT l.borrower_id) as cnt")->get(); 
-        //foreach($rows1 as $row) $borrower_count = $row->cnt;
-        //$x->borrower_count = $borrower_count;
-
-        $finished_loan_count =0;
-        //$rows1 = DB::table('loans as l')->join('persons as b','b.id','=','l.borrower_id')->where('l.branch_id',$branch_id)->whereRaw("DATE(l.auth_date) >='$start_date' AND l.status_id =2")->selectRaw("COUNT(l.id) as cnt")->get(); 
-        //foreach($rows1 as $row) $finished_loan_count = $row->cnt;
-        //$x->finished_loan_count = $finished_loan_count;
-
-        return (object)[
-                'summary'=>(object)['borrower_count'=>0,'finished_loan_count'=>0],
-                //'barchart_data'=>$this->getBarchart_data($branch_id),
-                //'piechart_data'=>$this->getPiechart_data1($branch_id),
-                //'table_data_monthly'=>$this->getTableData_monthly($branch_id),
-                //'table_data_daily'=>$this->getTableData_apps($branch_id),
-                //'table_data_apps'=>$this->getTableData_apps($branch_id)
-        ];  
-    } 
-
-    //Get count, and total
-    function getSummary_data($rows){
-        $principal = 0;
-        $principal_paid = 0;
-        $discount_principal= 0;
-        $interest_paid =0;
-        $earnings =0;
-        $total_penalty =0;
-        $other_due = 0;
-
-        foreach($rows as $row){
-            $principal += $row->principal;
-            $principal_paid += $row->principal_paid;
-            $discount_principal += $row->discount_principal; 
-            $interest_paid += $row->interest_paid;
-            $total_penalty += $row->penalty_fee;
-            $other_due += $row->interest_due + $row->penalty_due;
-            $earnings += $row->interest_paid + $row->penalty_fee;
-        }
-       
-        $paid_percent = 0;
-        $net_principal =$principal - $discount_principal;
-        $paid_percent = number_format($principal_paid *100 / $net_principal,2);
-       return (object)[
-           'principal'=>$principal,
-           'discount_principal'=>number_format($discount_principal,2),
-           'net_principal'=>$net_principal,
-           'principal_paid_percent'=>$paid_percent,
-           'principal_paid'=>number_format($principal_paid,2),
-           'interest_paid'=>number_format($interest_paid,2),
-           'earnings'=>number_format($earnings,2),
-           'other_due'=>$other_due,
-           'total_penalty'=>number_format($total_penalty,2),
-           'card_period'=>'Since last 12 months',
-           'currency'=>'USD'
-
-       ];
-    }   
+    //use HasFactory;
    
+    protected $id =null,$userInfo = null;
+
+    function __construct($id=null,$userInfo=null){
+      $this->id = $id;
+      $this->userInfo = $userInfo;
+    }
+
+    //return all data for whole databoard (Student Loan System)
+    function getDashboardData($arr=[],$ss=null){
+        return (object)[
+             'cards'=>[],
+             'line_chart'=>[],
+             'pie_charts'=>[],
+             'table'=>[]
+        ];
+    } 
+ 
+   static function card_total_students($ss){
+     $branch_id = $ss->branch_id;
+     $query = DB::table('students as st')->whereRaw('st.branch_id',$branch_id)->selectRaw('id');
+     $count = $query->count('st.id');
+     return (object)[
+        'count'=>$count,
+        'title'=>'Total Student',
+        'subTitle'=>''
+     ]; 
+   }
+
+   static function card_avg_new_students($ss){
+        //Average new students over the last 24 terms;
+        $terms = 24;
+        $branch_id = $ss->branch_id;
+        $query = DB::table('enrollments as e')->whereRaw('e.branch_id',$branch_id)->whereRaw('e.is_new_student =1')->selectRaw('e.term_id,COUNT(DISTINCT e.student_id) AS cnt')->groupByRaw('e.term_id');
+        $rows = $query->take($terms)->get();
+ 
+        $avg_cnt= 0;
+        $total =0;
+        $cnt =0;
+        foreach($rows as $row){
+            $total += $row->cnt;
+            $cnt++;
+        }
+        if(!$cnt) $cnt=1;
+        $avg_cnt = $total/$cnt;
+          
+        return (object)[
+        'count'=>$avg_cnt,
+        'title'=>'Average New Enrollments',
+        'subTitle'=>'Last '.$terms.' semesters'
+        ];
+  }
+
+  static function new_students($ss){
+    //Average new students over the last 24 terms;
+    $last_months = 6;
+    $branch_id = $ss->branch_id;
+    $start_date = Carbon::now()->addDay(-$last_months);
+    $str_where ='is_new_student =1 AND e.enroll_finalized =1 AND e.enrollment_status_id =1 and DATE(start_date) >=\''.$start_date.'\''; 
+    $query = DB::table('enrollments as e')->whereRaw('e.branch_id',$branch_id)->whereRaw($str_where)->selectRaw('e.student_id');
+    $count = $query->distinct()->count('e.student_id');
+        return (object)[
+            'count'=>$count,
+            'title'=>'New Students',
+            'subTitle'=>'Last '.$last_months.' months'
+        ];
+ }
     //return data for PolarArea chart or Pie chart
     function getPiechart_data1($branch_id){
         $sql ="SELECT COUNT(c.id) AS cnt, SUM(IFNULL(c.net_amount,0)) AS amount, c.pmt_method_id, m.`name` as pmt_method from loan_collections as c INNER JOIN custom_pipeline_stages AS m ON m.id = c.pmt_method_id WHERE IFNULL(c.inactive,0) = 0 AND c.branch_id ='$branch_id' AND c.pmt_type ='installment' GROUP BY pmt_method_id, m.name";
