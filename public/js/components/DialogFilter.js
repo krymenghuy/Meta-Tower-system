@@ -19,7 +19,7 @@ function DialogFilter(btn,op={
         }
     }
 
-    let div = document.createElement('div');
+    const div = document.createElement('div');
     div.classList.add('bg-white','d-flex','flex-column','position-absolute','shadow','p-3','rounded-3');
     div.setAttribute('style',`top: ${pos.top+pos.height}px; left: ${pos.left}px; z-index: 99`);
     div.setAttribute('id','_dlg_filter_danymic');

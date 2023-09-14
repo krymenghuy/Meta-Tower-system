@@ -178,7 +178,7 @@ var ReportCenterComponent = new function(){
         </div>`].join('');
 
         div.html(html);
-        mThis.runReport(div);
+        mThis.runReport(div,p.code);
         mThis.renderSelect(div);
 
         div.find("[data-select='datepicker']").each(function(){
@@ -218,9 +218,7 @@ var ReportCenterComponent = new function(){
         });
     }
 
-    this.getApiRun = (end_point) => {}
-
-    this.runReport = (div) => {
+    this.runReport = (div,code) => {
         div.find('#_rpt_btn_report').on('click',function(e){
             e.preventDefault();
             let p = {};
@@ -237,6 +235,7 @@ var ReportCenterComponent = new function(){
                     p['simple'] = true;
                 }
                 p[f] = el.val();
+                p.code = code;
             });
 
             if(p.required && !(p.required.value) && p.required.text){
@@ -251,16 +250,30 @@ var ReportCenterComponent = new function(){
     this.capitalize = (str, lower = false) => (lower ? str.toLowerCase() : str).replace(/(?:^|\s|["'([{])+\S/g, match => match.toUpperCase());
 
     this.getDataTable = (div, p) => {
-        if(p.form == 'simple'){
-            console.log('call api');
+        let end_point = null;
+        switch(p.code){
+            case 'student_attendance':
+                end_point = 'api/reports/enrollment/attendance/list';
+                break;
+            case 'student_list':
+                end_point = 'api/reports/finance/daily-cash-list';
+                break;
+            default:
+                end_point = null;
+                break;
         }
-        else{
-            vsapi.call(`${main_view.base_url}/api/reports/enrollment/attendance/list`,p,null,false).then(res => {
-                let data = {};
+        if(end_point){
+            vsapi.call(`${main_view.base_url}/${end_point}`,p,null,false).then(res => {
+                let d = {};
                 if(res.status_code === 200){
-                    data = res.data;
+                    d = res.data;
                 }
-                renderTable(div.find('#_rpt_table'), data);
+                if(d.form === 'simple'){
+                    jsonToTable(div.find('#_rpt_table'),d);
+                }
+                else{
+                    renderTable(div.find('#_rpt_table'),d);
+                }
             });
         }
     }

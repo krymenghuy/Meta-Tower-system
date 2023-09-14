@@ -1,37 +1,18 @@
 <div id="_main_findStudentComponent" class="mobile-padding p-3" style="display:none">
-    <!-- <div id="div--ssp" class="div--ssp">
-        <div class="d-flex align-items-center justify-content-center bg-white rounded-4 p-3">
-            <div class="d-block">
-                <h2 class="trans-text text-primary text-center" data-langprop="titles.Search Student"></h2>
-                <div class="d-bf d-flex aling-items-center mt-5 gap-2">
-                    <input type="search" class="form-control data-input width--search-inner" data-field="search_value" placeholder="Search by Name or ID..."/>
-                    <button id="btn--find" class="btn btn-primary btn--find text-nowrap" type="button">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <span class="trans-text" data-langprop="buttons.Find"></span>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="mt-4 p-3">
-            <b class="trans-text fs-5" data-langprop="titles.Note"></b>
-            <textarea class="form-control data-text" data-field="note"></textarea>
-        </div>
-    </div> -->
     <div id="div--fsd" class="div--fsd">
         <div class="d-flex gap-2">
             <input id="_fns_search" type="search" class="form-control width--search-inner data-input" data-field="search_value" placeholder="Search student"/>
             <button id="_fns_btnFind" class="btn btn-success btn-sm text-nowrap" type="button">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <span class="trans-text" data-langprop="buttons.Find"></span>
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span class="trans-text" data-langprop="buttons.Find"></span>
             </button>
             <button id="_fns_btn_filter" class="btn btn-primary btn-sm text-nowrap" type="button">
-            <i class="fa-solid fa-magnifying-glass"></i>
+                <i class="fa-solid fa-filter"></i>
                 <span class="trans-text" data-langprop="buttons.Filter"></span>
             </button>
         </div>
         <div id="_fns_student_list" class="p-3 mt-3 fns-set-overflow"></div>
     </div>
-   
 </div>
 
 <div id="dlg_fns_" class="modal fade" tabindex="-1" aria-labelledby="dlg_fns_title" aria-hidden="true">

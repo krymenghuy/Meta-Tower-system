@@ -1,6 +1,6 @@
 <div class="kt-aside-menu-wrapper kt-grid__item kt-grid__item--fluid" id="kt_aside_menu_wrapper">
     <div id="kt_aside_menu" class="kt-aside-menu" data-ktmenu-vertical="1" data-ktmenu-scroll="1" data-ktmenu-dropdown-timeout="500">
-        <div class="kt-aside__brand kt-grid__item py-2 pt-4" id="kt_aside_brand">
+        <div class="kt-aside__brand kt-grid__item" id="kt_aside_brand">
             <div class="kt-aside__brand-logo">
                 <img src="{{ asset('assets/images/logo/ksm-logo.png') }}" alt="" class="img-logo"/>
             </div>

@@ -105,7 +105,6 @@ var InvoicesComponent = new function(){
         title: "Action",
         className: 'align-middle text-capitalize',
         data: (data, a, b) => {
-            console.log(data);
             const cls = data.status === 'unpaid' ? 'd-block':'d-none'; 
             return [`<div class="d-flex gap-2">
                 <a href="javascript:void(0)" class="btn-inv-pay ${cls}" data-enrollmentid="${data.enrollment_id}" data-id="${data.id}">

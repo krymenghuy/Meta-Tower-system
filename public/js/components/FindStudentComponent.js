@@ -12,7 +12,6 @@ var FindStudentComponent = new function(){
     this.studentListView = null;
 
     this.init = () => {
-
         mThis.studentListView = new ListView('_fns_student_list',{
             'fetchApi':`${main_view.base_url}/api/student/find`,
             'perPage':3,
@@ -23,7 +22,7 @@ var FindStudentComponent = new function(){
             'listContainerClass':null
         });
  
-        mThis.elSearchStudent.on('keyup',e=>{
+        mThis.elSearchStudent.on('keyup',(e) => {
             e.preventDefault();
             mThis.studentListView.showPage(mThis.getFilterData());
         });
@@ -42,16 +41,18 @@ var FindStudentComponent = new function(){
     }
 
     this.getFilterData = ()=>{
-        return {'search_value':mThis.elSearchStudent.val()};
+        return {
+            'search_value':mThis.elSearchStudent.val()
+        };
     }
 
     this.filterStudent = (div) => {
         let p = {};
         $(div).find('.data-filter').each(function(){
-            let el = $(this);
+            const el = $(this);
             el.on('change',function(e){
                 e.preventDefault();
-                let f = el.data('field');
+                const f = el.data('field');
                 p[f] = el.val();
                 mThis.displayStudentList(p);
             });
@@ -61,17 +62,17 @@ var FindStudentComponent = new function(){
     this.getDataForm = (div) => {
         let p = {};
         div.find('.data-input').each(function(){
-            let el = $(this);
-            let f = el.data('field');
+            const el = $(this);
+            const f = el.data('field');
             p[f] = el.val();
         });
         return p;
     }
 
     //Create on row or one Card to display one found student
-    this.createCard_html = (item )=>{
+    this.createCard_html = (item) => {
         if(!item) item = {};
-            const cls = item.pmt_status === 'paid' ? 'text-success' : item.pmt_status === 'unpaid' ? 'text-dark' : 'text-danger';
+            const cls = item.pmt_status.toLowerCase() === 'paid' ? 'text-success' : item.pmt_status.toLowerCase() === 'unpaid' ? 'text-dark' : 'text-danger';
             const html = [`<div class="div-img">
                     <img src="${item.image_url}" alt=""/>
                 </div>
@@ -203,10 +204,9 @@ var FindStudentComponent = new function(){
                         </div>
                     </div>
                 </div>`].join('');
-
             const div = document.createElement('div');
             div.innerHTML = html;
-            div.classList.add('d-flex', 'p-3', 'bg-white', 'mb-3','h-info-student');
+            div.classList.add('d-flex','p-3','bg-white','mt-2','h-info-student');
             return div;
     } 
 
@@ -215,12 +215,12 @@ var FindStudentComponent = new function(){
         let cnt = 0;
         container.innerHTML = '';
         (data || []).map(item =>{
-            item.cur_symbol = item.cur_symbol? item.cur_symbol:cur_symbol;
+            item.cur_symbol = item.cur_symbol ? item.cur_symbol : cur_symbol;
             container.appendChild(mThis.createCard_html(item));
             cnt++;
         });
         LocaleManager.translateZone(container);
-           
+        
         //Force one time convesion from htm element "container" to jquery mThis.jquery_container;
         if(cnt === 0){
             container.innerHTML = [`<div class="d-flex p-3 border rounded-3 shadow"><h4>There is where you can search for students in preparation to generate invoices</h4></div>`].join('');
@@ -236,9 +236,12 @@ var FindStudentComponent = new function(){
     this.setEvents = (div_con) => {
         const div = div_con.find('.w-options');
         const btn = div_con.find('.btn--Options');
-        div_con.css('max-height',(window.innerHeight - 250)+'px');
-        div_con.css('overflow','hidden');
-        
+        div_con.css('max-height',(window.innerHeight - 250)+'px').addClass('overflow-hover-auto');
+        $(window).on('resize',function(e){
+            e.preventDefault();
+            div_con.css('max-height',(window.innerHeight - 250)+'px');
+        });
+
         btn.off('click').on('click',function(e){
             e.preventDefault();
             $(this).find('.w-options').toggle('fast');
@@ -321,7 +324,7 @@ var FindStudentComponent = new function(){
 
     this.loadFormDetails = (op, onFinish = null) => {
         vsapi.call(`${main_view.base_url}/api/enrollment/details`,op,null,null).then(res => {
-            const data = res.status_code === 200? res.data:{};
+            const data = res.status_code === 200 ? res.data : {};
             if(typeof onFinish === 'function') onFinish(data);
         });
     }
@@ -414,7 +417,6 @@ let GenerateInvoiceFSN = new function(){
             op.invoice_number = options.invoice_number;
             op.inv_id = options.invoice_id;
         }
-        console.log(op);
         vsapi.call(`${main_view.base_url}/api/student/generate-invoice/details`,op,null).then(res => {
             let data = {};
             if(res.status_code === 200){
