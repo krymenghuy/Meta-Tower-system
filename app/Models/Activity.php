@@ -41,8 +41,11 @@ class Activity //extends Model
         unset($inputs['level_id']);
         unset($inputs['request_type_id']);
         $studentInfo = $this->getStudentInfo($inputs['student_id'],$ss);
-        $enrollment_id =isset($inputs['enrollment_id'])?$inputs['enrollment_id']:$studentInfo->enrollment_id;
-        $enrollment = DB::table('enrollments')->where('id',$enrollment_id)->selectRaw('id,term_id')->first();
+        $str_req = '1=1';
+        if($inputs['from_level_id']) $str_req = 'level_id = '.$inputs['from_level_id'];
+        if($inputs['from_session_id']) $str_req = 'level_id = '.$inputs['from_session_id'];
+        if($inputs['from_campus_id']) $str_req = 'level_id = '.$inputs['from_campus_id'];
+        $enrollment = DB::table('enrollments')->where('student_id',$inputs['student_id'])->whereRaw($str_req)->orderBy('id','desc')->selectRaw('id,term_id')->first();
         $term_id = $enrollment->term_id;
 
         $from_id = null;

@@ -597,40 +597,59 @@ class Report //extends Model
     function getDailyCash($filter,$ss){
         $selectInvoice='i.invoice_number,i.id,i.pmt_date';
         $str_search = '1=1';
-        $str_d = (object)$filter;
+        $d = (object)$filter;
         $branch_id = $ss->branch_id;
-        $receiver = isset($str_d->receiver) ? $str_d->receiver :null;
-        $receiver_id = isset($str_d->receiver_id) ? $str_d->receiver_id :null;
-        if($receiver) $str_search = 'i.receiver = ' . $receiver;
-        if($receiver_id) $str_search .= 'OR i.receiver_uid = ' . $receiver_id;
-        $rows = DB::table('invoices as i')->join('receipts as r','r.invoice_id','=','i.id')->join('students as s','s.id','=','i.student_id')->selectRaw($selectInvoice.',s.name,s.sex,r.receipt_number')->where('i.branch_id',$branch_id)->whereRaw($str_search)->get();
+        $receiver = isset($d->receiver) ? $d->receiver :null;
+        $receiver_id = isset($d->receiver_id) ? $d->receiver_id :null;
+
+        $start_date = isset($d->start_date) ? $d->start_date :null;
+        $end_date = isset($d->end_date) ? $d->end_date :null;
+
+        $str_between_date = '1=1';
+        if($start_date && $end_date) $str_between_date = 'DATE(i.pmt_date) >= \'' . $start_date . '\' AND DATE(i.pmt_date) <= \'' . $end_date . '\'';
+
+        if($receiver) $str_search = 'i.receiver LIKE %' . $receiver.'%';
+        if($receiver_id) $str_search .= ' AND i.receiver_uid = ' . $receiver_id;
+        $rows = DB::table('invoices as i')->join('receipts as r','r.invoice_id','=','i.id')
+            ->join('students as s','s.id','=','i.student_id')
+            ->join('enrollments as e','e.student_id','=','s.id')
+            ->selectRaw($selectInvoice.',s.name,s.sex,r.receipt_number,e.campus_id')
+            ->whereRaw($str_between_date)
+            ->where('i.branch_id',$branch_id)->whereRaw($str_search)->get();
+        if(!isset($rows[0])) return DV::error('Could not find invoice');
+        $campuses = [];
         foreach($rows as $row){
             //** get invoice items */
             $itemDetails = self::getInvoiceItemDetails($row->id,$branch_id);
             $row->total = $itemDetails->total;
             $row->items = $itemDetails->data;
+            $row->campus = GeneralSettings::getCampus($row->campus_id)->shortcut;
+            if (!in_array($row->campus, $campuses)) {
+                $campuses[] = $row->campus;
+            }
+            unset($row->campus,$row->campus_id);
         }
 
         //** create table headers and keys */
         $header_list = ['Date','Receipt No.','Student Name','Sex','Dis.','Period','School Fee'];
         $fee_types = DB::table('fee_types')->selectRaw('name')->where('id','>=',20)->get();
-        $keys = ['pmt_date','receipt_number','name','sex','discount','period','tuition_fee'];
+        $key_list = ['pmt_date','receipt_number','name','sex','discount','period','tuition_fee'];
         foreach($fee_types as $type){
             //** push header name value into array */
             array_push($header_list,$type->name);
             //** push key value into array */
-            array_push($keys,$this->stringToKeyCase($type->name));
+            array_push($key_list,$this->stringToKeyCase($type->name));
         }
-        $key_props = $this->createKeyValue('key',$keys);
+        $key_props = $this->createKeyValue('key',$key_list);
         $headers = $this->createMulKeyValue('name',$header_list,$key_props);
         //**---- */
 
         return (object)[
+            'title' => 'Daily Cash Collection Report (' . implode(', ', $campuses) . ')',
             'form' => 'simple',
             'header' => $headers,
             'list' => $rows,
             'company_profile' => $this->getCampanyInfo($ss)
-
         ];
     }
 
@@ -660,19 +679,47 @@ class Report //extends Model
         return (object)['discount'=>$discount,'data'=>$rows,'total'=>$sum_amt];
     }
 
-    function stringToKeyCase($cnvtString='Can be array'){
-       if(is_array($cnvtString)){
-            $result = [];
-            $array[] = $cnvtString;
-            foreach ($array as $string) {
-                $convertedString = strtolower(str_replace(' ', '_', $string));
-                $result[] = $convertedString;
-            }
 
+
+    //** monthly cash */
+    function getMonthlyCash($arr,$ss){
+        $branch_id = $ss->branch_id;
+        $key_list = DB::table('fee_types')->where('id','>=',20)->pluck('name')->toArray();
+        $keys = $this->stringToKeyCase($key_list);
+        $headers = $this->createMulKeyValue('name',$key_list,$this->createKeyValue('key',$keys));
+        $rows = DB::table('invoices')->get();
+        foreach($rows as $row){
+            $item = $this->getInvoiceItemDetails($row->id,$branch_id);
+            $row->items = $item->data;
+        }
+        return (object)[
+            'headers'=>$headers,
+            'list' => $rows
+        ];
+    }
+
+
+
+    function stringToKeyCase($cnvtString,$bonus_string=null,$front=1){
+        $bonus_string = strtolower($bonus_string);
+        if (is_array($cnvtString)) {
+
+            $result = [];
+            foreach ($cnvtString as $string) {
+                $convertedString = strtolower(str_replace(' ', '_', $string));
+                if ($bonus_string) {
+                    $result[] = $front == 1 ? $bonus_string . '_' . $convertedString:$convertedString.'_'.$bonus_string;
+                } else {
+                    $result[] = $convertedString;
+                }
+            }
             return $result;
-       }
+        }
         return strtolower(str_replace(' ', '_', $cnvtString));
     }
 
 
+    function getDepositeFee($student_id){
+        DB::table('deposites')->where('student_id',$student_id)->selectRaw('')->first();
+    }
 }

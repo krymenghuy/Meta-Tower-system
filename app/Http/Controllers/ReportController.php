@@ -104,5 +104,11 @@ class ReportController extends Controller
     $report = new Report();
     return JDV::result($report->getDailyCash($req->all(),$ss));
   }
+  function getMonthlyCashList(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code != 200) return $ss;
+    $report = new Report();
+    return JDV::result($report->getMonthlyCash($req->all(),$ss));
+  }
 
 }
