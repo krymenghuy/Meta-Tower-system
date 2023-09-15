@@ -1769,6 +1769,9 @@ function readFileContent($fileName=null)
         return Config::get('app.fcm_topic_prefix').$user_class;  //return "vsdev".$user_class;
     }
 
+    function getServerKey(){
+        return Config::get('app.fcm_server_key');
+    }
     function findExists($table,$findKeys){
         $find = DB::table($table)->where($findKeys)->exists();
         if($find) return true;
