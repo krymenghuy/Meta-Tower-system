@@ -978,16 +978,16 @@ class Invoice //extends Model
         return $rows;
     }
 
-    function getReferrerCommission($referr_id,$ss){
+    function getReferrerCommission($student_id,$ss){
         $branch_id = $ss->branch_id;
-        $row = DB::table('referals as r')->where('r.student_id',$referr_id)->join('students as s','r.referrer_id','=','s.id')->where('r.is_paid',0)->selectRaw('s.name,s.id as referrer_id,r.commission,r.commission_type')->first();
+        $row = DB::table('referals as r')->where('r.referrer_id',$student_id)->join('students as s','r.referrer_id','=','s.id')->where('r.is_paid',0)->selectRaw('s.name,s.id as referrer_id,r.commission,r.commission_type')->first();
         if(!$row) return $row=(object)['commission'=>0,'commission_type'=>'percentage'];
         return $row;
     }
 
-    static function getCommission($student_id){
-        return DB::table('referals as r')->where('r.referrer_id',$student_id)->where('r.is_paid',0)->selectRaw('r.commission,r.commission_type')->first();
-    }
+    // static function getCommission($student_id){
+    //     return DB::table('referals as r')->where('r.referrer_id',$student_id)->where('r.is_paid',0)->selectRaw('r.commission,r.commission_type')->first();
+    // }
 
     function getTotalReceiptDetails($arr,$ss=null){
         $ss = $ss?$ss:$this->ss;
