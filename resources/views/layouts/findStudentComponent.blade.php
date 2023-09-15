@@ -77,7 +77,7 @@
                 <div class="d-flex justify-content-end">
                     <div class="d-flex flex-column gap-3">
                         <div class="d-flex gap-2 align-items-center select2-invoice">
-                            <p class="p-0 m-0 text-nowrap">Deduct Referral Fee</p>
+                            <p class="p-0 m-0 text-nowrap">Referral Fee</p>
                             <select id="el_fns_referrer" class="modal-select2 data-input data-invoice" data-field="referrer_id"></select>
                             <span>:</span>
                             <div class="input-group input-group-sm flex-nowrap">
@@ -85,6 +85,11 @@
                                 <span class="input-group-text fs-5-1">%</span>
                             </div>
                         </div>
+                        <p class="pb-0 mb-1 ps-0">
+                            <span class="width-invoice-text">Deduct Referral Fee</span>
+                            <span class="px-2">:</span>
+                            <span class="data-invoice" data-field="deduct_referral_fee"></span>
+                        </p>
                         <p class="pb-0 mb-1 ps-0">
                             <span class="width-invoice-text">Deduct Deposite</span>
                             <span class="px-2">:</span>
