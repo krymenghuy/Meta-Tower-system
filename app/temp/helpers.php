@@ -951,13 +951,13 @@ function readFileContent($fileName=null)
     //return public url
     function getStorageUrl(){
       return url('').Config::get('app.storage_dir'); //"/uploads/companies/";
-    } 
+    }
 
-    //To upport misspelling version   
+    //To upport misspelling version
     function getAdminAppId(){
         return Config::get('app.app_id');
     }
-    
+
     function thisAppId()
     {
       return Config::get('app.app_id');
@@ -977,7 +977,7 @@ function readFileContent($fileName=null)
     }
 
     function getServerKey(){
-        return Config::get('app.fcm_server_key'); 
+        return Config::get('app.fcm_server_key');
         //return "AAAAsd6RSXs:APA91bH79xi7hY-x1HIpHmwK0GiMq53MVdEc0ruVQt6r60Et8Ww6c1RP1YGs0_Sx_RCUDHvmfI1-Sa4v5KBIVwGha6AC_Q0410CIrwXdJ3KaPx_4c0ftVbfW8FplfJiW52kLbD21WIZT";
     }
 
