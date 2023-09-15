@@ -8,7 +8,7 @@ use App\Models\JDV;
 
 class NotificationController extends Controller
 {
-   
+
     function getNotificationListByUser(Request $req){
        $ss = UM::getUserInfoByToken($req,-1);
        if($ss !==200) return JDV::raw($ss);
@@ -28,16 +28,17 @@ class NotificationController extends Controller
                 'persist'=>1,
                 'data'=>[],
                 'title'=>$req->title?$req->title:'Test Title',
-                'message'=>$req->message?$req->message:'Test message from Admin' 
-            ],
-            [
-                'user_class'=>'student',
-                'target_user_id'=>$req->official_id,
-                'persist'=>1,
-                'data'=>[],
-                'title'=>'Test Title',
-                'message'=>'Message to students' 
+                'message'=>$req->message?$req->message:'Test message from Admin'
             ]
+            // ,
+            // [
+            //     'user_class'=>'student',
+            //     'target_user_id'=>$req->official_id,
+            //     'persist'=>1,
+            //     'data'=>[],
+            //     'title'=>'Test Title',
+            //     'message'=>'Message to students'
+            // ]
         ];
 
         $res= Notifier::notify_mobile(1,$cdata);
