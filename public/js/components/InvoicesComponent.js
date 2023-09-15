@@ -394,6 +394,13 @@ const InvoiceDialog = new function(){
                         <input type="number" class="form-control data-input rounded-start-0 border-start-0" data-field="no" readonly/>
                     </div>
                 </div>
+            </div>
+            <div class="form-group">
+                <label for="exchange_rate" class="form-label trans-text" data-langprop="titles.Exchange Rate"></label>
+                <div class="input-group flex-nowrap">
+                    <span class="input-group-text">៛</span>
+                    <input type="number" class="form-control data-input" data-field="exchange_rate"/>
+                </div>
             </div>`].join('');
             div.html(html);
             LocaleManager.translateZone(div);
