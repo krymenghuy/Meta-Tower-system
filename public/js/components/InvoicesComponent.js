@@ -312,8 +312,8 @@ const InvoiceDialog = new function(){
             mThis.btnPrint.on('click',function(e){
                 e.preventDefault();
                 if(mThis.htmlString){
-                    windowPrintInvoice(mThis.htmlString);
                     mThis.self.modal('hide');
+                    windowPrintInvoice(mThis.htmlString);
                 }
             });
         }
@@ -327,7 +327,7 @@ const InvoiceDialog = new function(){
         div.find('.data-input').each(function(){
             const el = $(this);
             const f = el.data('field');
-            p[f] = el.val();
+            p[f] = el.val() ? el.val() : null;
         });
         p.payment_info = [
             {
@@ -338,7 +338,7 @@ const InvoiceDialog = new function(){
         ];
         ['payment_method_id','exchange_rate','amount'].map(key => {
             delete p[key];
-        })
+        });
         return p;
     }
 
