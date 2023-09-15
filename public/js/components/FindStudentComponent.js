@@ -156,7 +156,7 @@ var FindStudentComponent = new function(){
                                           <i class="fa-solid fa-up-right-from-square fs-5"></i>
                                           <span class="ps-2 trans-text" data-langprop="titles.Set Discount"></span>
                                        </a>
-                                        <a href="javascript:void(0)" class="btn-fns-delete pt-2" data-id="${item.enrollment_id}">
+                                        <a href="javascript:void(0)" class="btn-fns-delete" data-id="${item.enrollment_id}">
                                             <i class="fa-regular fa-trash-can fs-5"></i>
                                             <span class="ps-2 trans-text" data-langprop="titles.Delete"></span>
                                         </a>
@@ -409,7 +409,7 @@ const GenerateInvoiceFSN = new function(){
         })].join(' '));
     }
 
-    this.loadFormDetails = (div,options,onFinish = null) => {
+    this.loadFormDetails = (div,options,onFinish=null) => {
         let op = {
             'id': options.id
         };
@@ -437,6 +437,8 @@ const GenerateInvoiceFSN = new function(){
                     el.text(format);
                 else if(f === 'due_date')
                     el.val(data[f]);
+                else if(f === 'referrer_id' || f === 'commission')
+                    el.is('select') ? el.val(data['referal'][f]).trigger('change') : el.val(data['referal'][f]);
                 else if(f === 'deposite_amount' || f === 'total')
                     el.text(data[f] ? '$ '+data[f] : '');
                 else
@@ -472,19 +474,21 @@ const GenerateInvoiceFSN = new function(){
                 tab.first().show();
                 tab.first().trigger('click');
             }
-
-            mThis.prepareReferralFee(div,onFinish());
+            if(typeof onFinish === 'function') onFinish();
         });
     }
 
-    this.prepareReferralFee = (div,onFinish) => {
+    this.prepareReferralFee = (div,options,onFinish = null) => {
         const modal_body = div.closest('.modal-body');
         vsapi.call(`${main_view.base_url}/api/options/payment-method`,null,false).then(res => {
             if(res.status_code === 200){
                 const d = res.data.students;
                 const el = modal_body.find('#el_fns_referrer');
                 VSUtil.setComboItems(el,d,'student_id','student_name',null,null,null);
-                if(typeof onFinish === 'function') onFinish();
+                if(typeof onFinish === 'function'){
+                    mThis.loadFormDetails(div,options);
+                    onFinish();
+                }
             }
         });
     }
@@ -687,7 +691,7 @@ const GenerateInvoiceFSN = new function(){
         if(!options) options = {};
         mThis.options = options;
 
-        mThis.loadFormDetails(mThis.tblInvoice, options, () => {
+        mThis.prepareReferralFee(mThis.tblInvoice, options, () => {
             mThis.elTitle.text(LocaleManager.trans('Generate Invoice','titles'));
             mThis.elTitle.siblings('.modal-title--sm').text(LocaleManager.trans('Please select item details','titles'));
             mThis.self.modal({
