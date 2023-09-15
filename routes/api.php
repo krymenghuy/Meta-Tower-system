@@ -747,6 +747,9 @@ Route::post('getComboItems_price_list', [SystemSettingController::class, 'getCom
 
 Route::post('pending-requests', [NotificationController::class, 'getPendingRequests']);
 Route::post('notifications', [NotificationController::class, 'getNotificationListByUser']);
+//test sending notification to mobile
+Route::post('notification/mobile/send', [NotificationController::class, 'sendToMobile']);
+
 Route::post('person/save', [PersonController::class, 'savePersonInfo']);
 //Route::post('person/find', [PersonController::class, 'findPersons']);
 Route::post('person/info', [PersonController::class, 'getPersonInfo']);

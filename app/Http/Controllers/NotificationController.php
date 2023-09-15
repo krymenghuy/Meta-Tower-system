@@ -19,4 +19,27 @@ class NotificationController extends Controller
     function getPendingRequests(Request $req){
         return JDV::result([]);
     }
+
+    function sendToMobile(Request $req){
+        $cdata = [
+            [
+                'user_class'=>'parent',
+                'target_user_id'=>33,
+                'persist'=>1,
+                'data'=>[],
+                'title'=>$req->title?$req->title:'Test Title',
+                'message'=>$req->message?$req->message:'Test message from Admin' 
+            ],
+            [
+                'user_class'=>'student',
+                'target_user_id'=>35,
+                'persist'=>1,
+                'data'=>[],
+                'title'=>'Test Title',
+                'message'=>'Message to students' 
+            ]
+        ];
+
+        return Notifier::notify_mobile(1,$cdata);
+    }
 }

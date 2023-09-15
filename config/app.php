@@ -124,6 +124,9 @@ return [
 
     
     'fcm_topic_prefix' => env('FCM_TOPIC_PREFIX','vsksmkidsworld'),
+    'fcm_server_key' => env('FCM_SERVER_KEY',null),
+    'fcm_sender_id' => env('FCM_SENDER_ID',null),
+    
     /* App Id used by Vectorasoft Dev Team */
     'app_id' => env('APP_ID','DXM20FKAEFC711EH2E7C9801A7BZD311'),
     'customer_app_id'=> env('CUSTOMER_APP_ID','ZAM20FKAEFC722EH2E7M9801B7BZD899'),
