@@ -24,7 +24,7 @@ class NotificationController extends Controller
         $cdata = [
             [
                 'user_class'=>'parent',
-                'target_user_id'=>33,
+                'target_user_id'=>$req->official_id,
                 'persist'=>1,
                 'data'=>[],
                 'title'=>$req->title?$req->title:'Test Title',
@@ -32,7 +32,7 @@ class NotificationController extends Controller
             ],
             [
                 'user_class'=>'student',
-                'target_user_id'=>35,
+                'target_user_id'=>$req->official_id,
                 'persist'=>1,
                 'data'=>[],
                 'title'=>'Test Title',
@@ -40,6 +40,7 @@ class NotificationController extends Controller
             ]
         ];
 
-        return Notifier::notify_mobile(1,$cdata);
+        $res= Notifier::notify_mobile(1,$cdata);
+        return JDV::raw($res);
     }
 }

@@ -172,7 +172,7 @@ static function notify_mobile($branch_id,$data=[]){
           //}
       $i++;
   }while($c);
-  return null;
+  return DV::success(['topic'=>$str_topic,'server_key'=>getServerKey()]);
   // $x = json_decode($res);
   // $x->topic = $str_topic;
   // return $x;
