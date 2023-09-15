@@ -683,39 +683,75 @@ class Report //extends Model
 
     //** monthly cash */
     function getMonthlyCash($arr,$ss){
+        $d = (object)$arr;
         $branch_id = $ss->branch_id;
-        $key_list = DB::table('fee_types')->where('id','>=',20)->pluck('name')->toArray();
-        $keys = $this->stringToKeyCase($key_list);
-        $headers = $this->createMulKeyValue('name',$key_list,$this->createKeyValue('key',$keys));
-        $rows = DB::table('invoices')->get();
-        foreach($rows as $row){
-            $item = $this->getInvoiceItemDetails($row->id,$branch_id);
-            $row->items = $item->data;
-        }
-        return (object)[
-            'headers'=>$headers,
-            'list' => $rows
-        ];
+        // $key_list = DB::table('fee_types')->pluck('name')->toArray();
+        // $keys = $this->stringToKeyCase($key_list);
+        // $headers = $this->createMulKeyValue('name',$key_list,$this->createKeyValue('key',$keys));
+        // $rows = DB::table('invoices')->selectRaw('pmt_date,id')->get();
+        // foreach($rows as $row){
+        //     $item = $this->getInvoiceItemDetails($row->id,$branch_id);
+        //     $row->items = $item->data;
+        // }
+
+        $i=0;
+        $str_date = '1=1';
+        $start_date = isset($d->start_date) ? $d->start_date:date('Y-m-d');
+        $end_date = isset($d->end_date) ? $d->end_date:date('Y-m-d');
+        if($start_date && $end_date) {
+            $str_date = "i.pmt_date BETWEEN '$start_date' AND '$end_date'";
+       }
+       $rows = DB::table('invoices as i')->selectRaw('i.pmt_date,i.id')->whereRaw($str_date)->get();
+       return $rows;
+    }
+    function getFilterMonthlyCash($arr,$ss){
+        $d = (object)$arr;
+        $branch_id = $ss->branch_id;
+        $month = isset($d->month)?$d->month:date('m');
+        $year = isset($d->year)?$d->year:date('Y');
+
+        $days = days_in_month($month,$year);
+        $i=0;
+        $monthlyCashList =[];
+        $rows = DB::table('invoices as i')->whereMonth('i.pmt_date',$month)->whereYear('i.pmt_date',$year)->selectRaw('i.invoice_number')->get();
+        do{
+            $i++;
+            $x = 1;//$this->getAttendanceInfo($rows,$i,$month,$year,$student_id);
+            $monthlyCashList[] = $x;
+        }while ($i<$days);
     }
 
 
 
     function stringToKeyCase($cnvtString,$bonus_string=null,$front=1){
-        $bonus_string = strtolower($bonus_string);
+
+        $removeSpecialChars = function ($str) {
+            return preg_replace('/[^a-zA-Z0-9\s]/', '', $str);
+        };
+        $bonus_string = $removeSpecialChars(strtolower($bonus_string));
         if (is_array($cnvtString)) {
 
             $result = [];
             foreach ($cnvtString as $string) {
+                $string = $removeSpecialChars($string);
                 $convertedString = strtolower(str_replace(' ', '_', $string));
+
                 if ($bonus_string) {
-                    $result[] = $front == 1 ? $bonus_string . '_' . $convertedString:$convertedString.'_'.$bonus_string;
+                    $result[] = $front == 1 ? $bonus_string . '_' . $convertedString : $convertedString . '_' . $bonus_string;
                 } else {
                     $result[] = $convertedString;
                 }
             }
             return $result;
         }
-        return strtolower(str_replace(' ', '_', $cnvtString));
+        $cnvtString = $removeSpecialChars($cnvtString);
+        $convertedString = strtolower(str_replace(' ', '_', $cnvtString));
+
+        if ($bonus_string) {
+            return $front == 1 ? $bonus_string . '_' . $convertedString : $convertedString . '_' . $bonus_string;
+        }
+        return $convertedString;
+
     }
 
 

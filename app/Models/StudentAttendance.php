@@ -185,7 +185,7 @@ class StudentAttendance //extends Model
         $current_date = $inputs['current_date'];//convertDate($inputs['present']);
         $present_time = isset($arr['present_time'])?$arr['present_time']: date('H:i');
         $group = null;
- 
+
         $group_in = DB::table('student_groups as sg')
         ->join('group_members as gm','sg.id','=','gm.group_id')->where('gm.student_id',$student_id)
         ->whereRaw('IFNULL(gm.inactive,0)=0')
@@ -321,7 +321,7 @@ class StudentAttendance //extends Model
         }else{
             DB::table('student_attendances')->insert($arr_attenance);
         }
-  
+
         $d = (object)['branch_id' => $ss->branch_id,'sender_id' =>$ss->official_id,'scan_status'=>$scan_status,'student_id'=>$student_id,'persist'=>0];
         Notifier::notify_admin('attendance_scanned', $d);
         // $test = [
@@ -627,7 +627,6 @@ class StudentAttendance //extends Model
         $rows = DB::table('student_attendances')->whereMonth('session_date',$month)->whereYear('session_date',$year)->where('student_id',$student_id)->selectRaw('remarks,id as attendance_id,student_id,group_id,session_date,DAY(session_date) as day,status_id,in_remarks,out_remarks,checkin_time,checkout_time')->get();
         foreach($rows as $row){
             $row->level_id = DB::table('student_groups')->where('id',$row->group_id)->first()->level_id;
-
         }
         do{
             $i++;

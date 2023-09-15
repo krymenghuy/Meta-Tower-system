@@ -299,6 +299,18 @@ class Invoice //extends Model
 
         $row->referal = self::getReferrerCommission($student_id,$ss);
 
+        //** referral deduction */
+        $row->deduct_referral_fee = null;
+        $deduct_referral_fee = self::getSelfCommission($student_id);
+
+        if($deduct_referral_fee){
+            $row->deduct_referral_fee = $deduct_referral_fee->commission;
+            if($deduct_referral_fee->commission_type == 'percentage'){
+                $x = ($row->total * $deduct_referral_fee->commission)/100;
+                $row->total = $row->total - $x;
+            }else $row->total = $row->total - $deduct_referral_fee->commission;
+        }
+
         $instance = new PriceList(null,$ss);
         $months = dateDiffMonths($row->start_date,$tuition_end_date);//;:GeneralSettings::getPmtOptionMonths($row->pmt_option_id);
         $pmt_arr = [
@@ -980,14 +992,15 @@ class Invoice //extends Model
 
     function getReferrerCommission($student_id,$ss){
         $branch_id = $ss->branch_id;
-        $row = DB::table('referals as r')->where('r.referrer_id',$student_id)->join('students as s','r.referrer_id','=','s.id')->where('r.is_paid',0)->selectRaw('s.name,s.id as referrer_id,r.commission,r.commission_type')->first();
+        $row = DB::table('referals as r')->where('r.student_id',$student_id)->join('students as s','r.referrer_id','=','s.id')->where('r.is_paid',0)->selectRaw('s.name,s.id as referrer_id,r.commission,r.commission_type')->first();
         if(!$row) return $row=(object)['commission'=>0,'commission_type'=>'percentage'];
         return $row;
     }
 
-    // static function getCommission($student_id){
-    //     return DB::table('referals as r')->where('r.referrer_id',$student_id)->where('r.is_paid',0)->selectRaw('r.commission,r.commission_type')->first();
-    // }
+    static function getSelfCommission($student_id){
+        return DB::table('referals as r')->where('r.referrer_id',$student_id)->where('r.is_paid',0)->selectRaw('r.commission,r.commission_type')->first();
+
+    }
 
     function getTotalReceiptDetails($arr,$ss=null){
         $ss = $ss?$ss:$this->ss;
