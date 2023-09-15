@@ -153,7 +153,7 @@ var ActivitiesComponent = new function(){
             };
             cv_interact.confirm('Delete this request?',{title: 'Delete Request', context: 'delete'},(e) => {
                 if(e){
-                    window.vsapi.call(`${main_view.base_url}/api/activity/request-change/delete`,op,null).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/activity/request-change/delete`,op,null).then(res => {
                         if(res.status_code === 200){
                             mThis.itemView.showPage(null);
                         }

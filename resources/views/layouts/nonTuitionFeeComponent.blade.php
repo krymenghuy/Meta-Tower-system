@@ -1,20 +1,17 @@
 <div id="_main_nonTuitionFeeComponent" class="mobile-padding p-3" style="display:none">
     <div class="d-flex flex-row justify-content-between">
         <div class="d-flex gap-2">
-                <input type="search" id="el_ntf_search" class="form-control width--search-inner" placeholder="Search"/>
-                <button class="btn btn-sm btn-primary" type="button">
-                    <span class="trans-text" data-langprop="buttons.Find"></span>
-                    <!-- <i class="fa-solid fa-caret-down ps-2"></i> -->
-                </button>
+            <input type="search" id="el_ntf_search" class="form-control width--search-inner" placeholder="Search"/>
+            <button class="btn btn-sm btn-primary" type="button">
+                <span class="trans-text" data-langprop="buttons.Find"></span>
+            </button>
         </div>
         <button id="ntf_btn_add" class="btn btn-sm btn-primary" type="button">
             <i class="fa-solid fa-plus"></i>
             <span class="trans-text" data-langprop="buttons.Add Invoice Item"></span>
         </button>
     </div>
-    <div id="_ntf_list" class="mt-3 p-3 border rounded-3 bg-white shadow">
-      
-    </div>
+    <div id="_ntf_list" class="mt-3 p-3 border rounded-3 bg-white shadow"></div>
 </div>
 
 <div id="dlg_ntf" class="modal fade" tabindex="-1" aria-labelledby="dlg_ntf_title" aria-hidden="true">
@@ -41,10 +38,10 @@
                     <div class="col">
                         <div class="form-group">
                             <label for="amount" class="form-label trans-text" data-langprop="titles.Amount"></label>
-                             <div class="d-flex flex-row">
-                                 <input type="number" class="form-control data-input" data-field="amount"/>
-                                 <span class="border rounded-1 p-2">USD</span>
-                             </div>
+                            <div class="input-group flex-nowrap">
+                                <input type="number" class="form-control data-input" data-field="amount"/>
+                                <span class="input-group-text">USD</span>
+                            </div>
                         </div>
                     </div>
                     
