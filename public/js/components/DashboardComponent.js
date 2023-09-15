@@ -134,13 +134,19 @@ var DashboardComponent = new function (){
     </div>
     <div class="row gy-2 mt-2">
       <div class="col-lg-8">
-        <div class="h-100 bg-white rounded-3 p-3 chart-container">
-          <canvas id="_dash_line_chart"></canvas>
+        <div class="h-100 bg-white rounded-3 p-3">
+          <p class="fw-semibold fs-5 text-capitalize">Cash payment by month of program</p>
+          <div class="chart-container">
+            <canvas id="_dash_line_chart"></canvas>
+          </div>
         </div>
       </div>
       <div class="col-lg-4">
         <div class="h-100 bg-white rounded-3 p-3">
-          <canvas id="_dash_pie_chart"></canvas>
+          <p class="fw-semibold fs-5 text-capitalize">Student count by program</p>
+          <div class="chart-container">
+            <canvas id="_dash_pie_chart"></canvas>
+          </div>
         </div>
       </div>
     </div>`].join('');

@@ -1,6 +1,6 @@
 "use strict";
 var EnrolledStudentsComponent = new function(){
-    let mThis = this;
+    const mThis = this;
     this.title_prop = "Enrolled Students";
     this.self = main_view.appContent.children('#_main_registrationComponent');
     this.options = {};
@@ -63,7 +63,7 @@ var EnrolledStudentsComponent = new function(){
                     VSUtil.setComboItems(mThis.elFilter_term,terms,'id','term_name',true,'(All Terms)',0);
                 });
             }
-            else if(f==='program_id'){
+            else if(f === 'program_id'){
                 vsapi.call(`${main_view.base_url}/api/settings/options-level`,{'program_id':el.value},null,false).then(res=>{
                     let items = res.status_code === 200 ? res.data : [];
                     VSUtil.setComboItems(mThis.elFilter_level,items,'id','level_name',true,'(All Grades)',0);
@@ -108,7 +108,7 @@ var EnrolledStudentsComponent = new function(){
                 'program_id':null, /** user select only Level to create student Group */
                 'level_id':mThis.elLevel.val(),
                 'session_id':mThis.elSession.val(), /**/
-                'onClose':(group)=>{
+                'onClose':(group) => {
                    cv_interact.success(['Student group ',group.name,' was created successfully'].join('')); 
                    mThis.selected_options.group_id = group.id; 
                    mThis.elLevel.trigger('change');
@@ -117,9 +117,9 @@ var EnrolledStudentsComponent = new function(){
             StudentGroupDialog.show(op);
         });
       
-        mThis.elSearchStudent.on('keyup',e=>{
-          e.preventDefault();
-          mThis.studentListView.showPage(mThis.getFilterData()); 
+        mThis.elSearchStudent.on('keyup',(e) => {
+            e.preventDefault();
+            mThis.studentListView.showPage(mThis.getFilterData());
         });
 
         mThis.elAcademicYear.on('change',function(e){

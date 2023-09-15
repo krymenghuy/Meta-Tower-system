@@ -666,7 +666,7 @@ const InvoiceDialog = new function(){
     this.show = (options) => {
         if(!options) options = {};
         let title = null, btn_name = null;
-        options.action === 'recieve' ? (title = 'Reviece Payment',btn_name = 'Verify Now') : (title = 'Preview Invoice',btn_name = 'Print Now');
+        options.action === 'recieve' ? (title = 'Reviece Payment',btn_name = 'Verify Now') : (title = 'Preview Receipt',btn_name = 'Print Now');
         if(title){
             mThis.elTitle.text(LocaleManager.trans(title,'titles'));
             mThis.btnPrint.children().text(LocaleManager.trans(btn_name,'titles'));

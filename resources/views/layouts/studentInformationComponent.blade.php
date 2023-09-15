@@ -110,7 +110,7 @@
                         <p class="p-0 m-0">
                             <span class="trans-text" data-langprop="titles.Student Name"></span>
                             <span class="px-3">:</span>
-                            <span class="data-input" data-field="name"></span>
+                            <span class="data-input text-capitalize" data-field="name"></span>
                         </p>
                     </div>
                 </div>
