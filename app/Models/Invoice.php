@@ -683,6 +683,7 @@ class Invoice //extends Model
         }
     }
 
+
     static function studentDeposite($id=null){
         // $exists = findExists('deposite',['student_id'=>$id]);
         $matchedStudents = DB::table('students as s')
@@ -979,9 +980,13 @@ class Invoice //extends Model
 
     function getReferrerCommission($referr_id,$ss){
         $branch_id = $ss->branch_id;
-        $row = DB::table('referals')->where('referrer_id',$referr_id)->where('is_paid',0)->selectRaw('commission,commission_type')->first();
+        $row = DB::table('referals as r')->where('r.student_id',$referr_id)->join('students as s','r.referrer_id','=','s.id')->where('r.is_paid',0)->selectRaw('s.name,s.id as referrer_id,r.commission,r.commission_type')->first();
         if(!$row) return $row=(object)['commission'=>0,'commission_type'=>'percentage'];
         return $row;
+    }
+
+    static function getCommission($student_id){
+        return DB::table('referals as r')->where('r.referrer_id',$student_id)->where('r.is_paid',0)->selectRaw('r.commission,r.commission_type')->first();
     }
 
     function getTotalReceiptDetails($arr,$ss=null){

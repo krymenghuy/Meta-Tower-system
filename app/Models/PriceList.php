@@ -1072,6 +1072,7 @@ class PriceList //extends Model
             'to_level_id' => '0|number|exists=program_levels.id',
             'to_session_id' => '0|number|exists=sessions.id',
             'start_date' => '0|string',
+            'request_id' => '1|number|exists=requests.id',
             'academic_year' => '0|string',
         ];
         $res = validateObject($arr,$v_rule,1,['academic_year'=>['-']],$ss->lang,0,null);
@@ -1082,12 +1083,13 @@ class PriceList //extends Model
         $return_fee = 0;
         $surcharge = 0;
 
-        $requestChange = DB::table('requests as r')->join('request_changes as rc','rc.request_id','=','r.id')->where('r.student_id',$student_id)->where('r.authorized',0)->where('r.status_id',2)->selectRaw('rc.enrollment_id')->first();
+        $requestChange = DB::table('requests as r')->where('r.id',$d->request_id)->join('request_changes as rc','rc.request_id','=','r.id')->where('r.student_id',$student_id)->where('r.authorized',0)->where('r.status_id',2)->selectRaw('rc.enrollment_id,r.term_id')->first();
         if(!$requestChange) return DV::error('Request not found');
         $enrollment_id = $requestChange->enrollment_id;
-        // unset($inputs['enrollment_id']);
-        $payment_info = DB::table('enrollments as e')->where('e.id',$enrollment_id)->where('e.student_id',$student_id)->join('payments as p','p.enrollment_id','=','e.id')->join('terms as t','t.id','=','e.term_id')->selectRaw('e.id as enr_id,p.tuition_paid,e.tuition_end_date,e.start_date,e.session_id,e.level_id,e.campus_id,e.academic_year')->get()->first();
-        $start_date = isset($d->start_date) ? $d->start_date :$payment_info->start_date;
+
+        $payment_info = DB::table('enrollments as e')->where('e.id',$enrollment_id)->where('e.student_id',$student_id)->join('payments as p','p.enrollment_id','=','e.id')->where('e.term_id',$requestChange->term_id)->selectRaw('e.id as enr_id,p.tuition_paid,e.tuition_end_date,e.start_date,e.session_id,e.level_id,e.campus_id,e.academic_year')->get()->first();
+
+        $start_date = isset($d->start_date) ? $d->start_date : convertDate($payment_info->start_date);
         $studied_days = date('d') - date('d',strtotime($start_date));
         $academic_year = isset($d->academic_year)?$d->academic_year:$payment_info->academic_year;
         $level_id = isset($d->to_level_id)?$d->to_level_id:$payment_info->level_id;
