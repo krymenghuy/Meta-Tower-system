@@ -150,21 +150,12 @@ var InvoicesComponent = new function(){
             let op = {
                 'enrollment_id': $(this).data('enrollmentid'),
                 'inv_id': $(this).data('id'),
-                'action':'recieve'
+                'action':'recieve',
+                'onClose': () => {
+                    mThis.itemView.showPage(null);
+                }
             };
             InvoiceDialog.show(op);
-            // cv_interact.confirm('Recieve Payment?',{title: 'Pay', context: 'OK'},(e) => {
-            //     if(e){
-            //         vsapi.call(`${main_view.base_url}/api/student/school-fee/pay`,op,null).then(res => {
-            //             if(res.status_code === 200){
-            //                 mThis.itemView.showPage(null);
-            //             }
-            //             else{
-            //                 cv_interact.error(res.error_message);
-            //             }
-            //         });
-            //     }
-            // });
         });
 
         mThis.tblInvoice.on('click','a.btn-inv-modify',function(e){
@@ -301,14 +292,58 @@ const InvoiceDialog = new function(){
     this.elTitle = mThis.self.find('.modal-title');
     this.htmlString = null;
 
-    mThis.btnPrint.on('click',function(e){
-        e.preventDefault();
-        if(mThis.htmlString){
-            windowPrintInvoice(mThis.htmlString);
+    this.controlButton = (div,op) => {
+        if(op.action === 'recieve'){
+            mThis.btnPrint.on('click',function(e){
+                e.preventDefault();
+                const p = mThis.getDataForm(div,op);
+                vsapi.call(`${main_view.base_url}/api/student/school-fee/pay`,p,null).then(res => {
+                    if(res.status_code === 200){
+                        mThis.self.modal('hide');
+                        if(op.onClose === 'function') op.onClose();
+                    }
+                    else{
+                        cv_interact.error(res.error_message);
+                    }
+                });
+            });
         }
-    });
+        else{
+            mThis.btnPrint.on('click',function(e){
+                e.preventDefault();
+                if(mThis.htmlString){
+                    windowPrintInvoice(mThis.htmlString);
+                    mThis.self.modal('hide');
+                }
+            });
+        }
+    }
+
+    this.getDataForm = (div,op) => {
+        let p = {
+            'enrollment_id': op.enrollment_id,
+            'inv_id': op.inv_id
+        };
+        div.find('.data-input').each(function(){
+            const el = $(this);
+            const f = el.data('field');
+            p[f] = el.val();
+        });
+        p.payment_info = [
+            {
+                'payment_method_id': p.payment_method_id,
+                'exchange_rate': p.exchange_rate,
+                'amount': p.amount
+            }
+        ];
+        ['payment_method_id','exchange_rate','amount'].map(key => {
+            delete p[key];
+        })
+        return p;
+    }
 
     this.loadFormDetails = (div,op,onFinish = null) => {
+        mThis.controlButton(div,op);
         if(op.action === 'recieve'){
             div.empty();
             const modal = div.closest('.modal');
@@ -365,15 +400,15 @@ const InvoiceDialog = new function(){
                         </div>
                     </div>
                     <div class="w-50">
-                        <label for="by" class="form-label trans-text" data-langprop="titles.By"></label>
-                        <input type="text" class="form-control data-input rounded-start-0 border-start-0" data-field="by"/>
+                        <label for="by" class="form-label trans-text" data-langprop="titles.Cheque Number"></label>
+                        <input type="text" class="form-control data-input rounded-start-0 border-start-0" data-field="cheque_number"/>
                     </div>
                 </div>
             </div>
             <div class="form-group">
                 <label for="bank" class="form-label trans-text" data-langprop="titles.Bank"></label>
                 <div class="width-select-dialog">
-                    <select class="modal-select2">
+                    <select class="modal-select2 data-input" data-field="payment_method_id">
                         ${html_option=null,options.map(op => {
                             html_option = [html_option,`<option value="${op.id}">${op.name}</option>`].join('')
                         }),html_option+'<option selected></option>'}
@@ -383,22 +418,22 @@ const InvoiceDialog = new function(){
             <div class="form-group">
                 <div class="d-flex">
                     <div class="target-change w-50">
-                        <label for="cheque" class="form-label trans-text" data-langprop="titles.Cheque"></label>
+                        <label for="amount" class="form-label trans-text" data-langprop="titles.Amount"></label>
                         <div class="input-group flex-nowrap">
                             <span class="input-group-text">$</span>
-                            <input type="number" class="form-control data-input rounded-end-0" data-field="cheque" readonly/>
+                            <input type="number" class="form-control data-input rounded-end-0" data-field="amount" readonly/>
                         </div>
                     </div>
                     <div class="w-50">
-                        <label for="no" class="form-label trans-text" data-langprop="titles.No"></label>
-                        <input type="number" class="form-control data-input rounded-start-0 border-start-0" data-field="no" readonly/>
+                        <label for="card_number" class="form-label trans-text" data-langprop="titles.Card Number"></label>
+                        <input type="number" class="form-control data-input rounded-start-0 border-start-0" data-field="card_number" readonly/>
                     </div>
                 </div>
             </div>
             <div class="form-group">
                 <label for="exchange_rate" class="form-label trans-text" data-langprop="titles.Exchange Rate"></label>
                 <div class="input-group flex-nowrap">
-                    <span class="input-group-text">៛</span>
+                    <span class="input-group-text fs-5 py-0">៛</span>
                     <input type="number" class="form-control data-input" data-field="exchange_rate"/>
                 </div>
             </div>`].join('');
@@ -420,7 +455,7 @@ const InvoiceDialog = new function(){
                 nextEl.find('.data-input').each(function(){
                     const el = $(this);
                     const f = el.data('field');
-                    if(f === 'cheque'){
+                    if(f === 'amount'){
                         const title = select.find('option:selected').text();
                         el.closest('.target-change').find('label').text(title ? title : 'Cheque');
                     }
@@ -431,7 +466,7 @@ const InvoiceDialog = new function(){
                 nextEl.find('.data-input').each(function(){
                     const el = $(this);
                     const f = el.data('field');
-                    if(f === 'cheque'){
+                    if(f === 'amount'){
                         const title = select.find('option:selected').text();
                         el.closest('.target-change').find('label').text(title ? title : 'Cheque');
                     }
