@@ -312,8 +312,8 @@ const InvoiceDialog = new function(){
             mThis.btnPrint.on('click',function(e){
                 e.preventDefault();
                 if(mThis.htmlString){
-                    windowPrintInvoice(mThis.htmlString);
                     mThis.self.modal('hide');
+                    windowPrintInvoice(mThis.htmlString);
                 }
             });
         }
@@ -327,7 +327,7 @@ const InvoiceDialog = new function(){
         div.find('.data-input').each(function(){
             const el = $(this);
             const f = el.data('field');
-            p[f] = el.val();
+            p[f] = el.val() ? el.val() : null;
         });
         p.payment_info = [
             {
@@ -338,7 +338,7 @@ const InvoiceDialog = new function(){
         ];
         ['payment_method_id','exchange_rate','amount'].map(key => {
             delete p[key];
-        })
+        });
         return p;
     }
 
@@ -666,7 +666,7 @@ const InvoiceDialog = new function(){
     this.show = (options) => {
         if(!options) options = {};
         let title = null, btn_name = null;
-        options.action === 'recieve' ? (title = 'Reviece Payment',btn_name = 'Verify Now') : (title = 'Preview Invoice',btn_name = 'Print Now');
+        options.action === 'recieve' ? (title = 'Reviece Payment',btn_name = 'Verify Now') : (title = 'Preview Receipt',btn_name = 'Print Now');
         if(title){
             mThis.elTitle.text(LocaleManager.trans(title,'titles'));
             mThis.btnPrint.children().text(LocaleManager.trans(btn_name,'titles'));
