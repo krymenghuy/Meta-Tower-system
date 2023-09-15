@@ -631,6 +631,8 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('finance/student-counts-by-pmt-option',[ReportController::class,'countStudentsByPmtOptions']);
     Route::post('finance/daily-cash-list',[ReportController::class,'getDailyCashList']);
     Route::post('finance/monthly-cash-list',[ReportController::class,'getMonthlyCashList']);
+    Route::post('finance/referral-fee-list',[ReportController::class,'getReferralFeeList']);
+
 
     Route::post('enrollment/student-referrers',[ReportController::class,'getStudentReferers']);
     // Route::post('enrollment/family-list',[ReportController::class,'getFamilyList']);

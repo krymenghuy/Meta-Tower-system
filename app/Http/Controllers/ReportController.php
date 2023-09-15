@@ -111,4 +111,11 @@ class ReportController extends Controller
     return JDV::result($report->getMonthlyCash($req->all(),$ss));
   }
 
+
+  function getReferralFeeList(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code != 200) return $ss;
+    $report = new Report();
+    return JDV::result($report->getReferralFeeList($req->all(),$ss));
+  }
 }

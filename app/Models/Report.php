@@ -613,7 +613,7 @@ class Report //extends Model
         $rows = DB::table('invoices as i')->join('receipts as r','r.invoice_id','=','i.id')
             ->join('students as s','s.id','=','i.student_id')
             ->join('enrollments as e','e.student_id','=','s.id')
-            ->selectRaw($selectInvoice.',s.name,s.sex,r.receipt_number,e.campus_id')
+            ->selectRaw($selectInvoice.',s.id as student_id,s.name,s.sex,r.receipt_number,e.campus_id')
             ->whereRaw($str_between_date)
             ->where('i.branch_id',$branch_id)->whereRaw($str_search)->get();
         if(!isset($rows[0])) return DV::error('Could not find invoice');
@@ -623,6 +623,7 @@ class Report //extends Model
             $itemDetails = self::getInvoiceItemDetails($row->id,$branch_id);
             $row->total = $itemDetails->total;
             $row->items = $itemDetails->data;
+            $row->deposite = self::getDepositeFee($row->student_id);
             $row->campus = GeneralSettings::getCampus($row->campus_id)->shortcut;
             if (!in_array($row->campus, $campuses)) {
                 $campuses[] = $row->campus;
@@ -659,10 +660,10 @@ class Report //extends Model
         $selectCols = 'price,fee_type,invoice_id,date_range,discount,net_amount,start_date,end_date';
         $rows = DB::table('invoice_items')->where('invoice_id',$inv_id)->where('branch_id',$branch_id)->selectRaw($selectCols)->get();
         $fee_types = DB::table('fee_types')->selectRaw('name')->where('id','>=',20)->get();
-        $all_type =[];
-        foreach($fee_types as $type){
-           $all_type[] = $type->name;
-        }
+        // $all_type =[];
+        // foreach($fee_types as $type){
+        //    $all_type[] = $type->name;
+        // }
         foreach($rows as $row){
             $fee_type = self::stringToKeyCase($row->fee_type);
             $row->$fee_type = $row->net_amount;
@@ -685,48 +686,52 @@ class Report //extends Model
     function getMonthlyCash($arr,$ss){
         $d = (object)$arr;
         $branch_id = $ss->branch_id;
-        // $key_list = DB::table('fee_types')->pluck('name')->toArray();
-        // $keys = $this->stringToKeyCase($key_list);
-        // $headers = $this->createMulKeyValue('name',$key_list,$this->createKeyValue('key',$keys));
-        // $rows = DB::table('invoices')->selectRaw('pmt_date,id')->get();
-        // foreach($rows as $row){
-        //     $item = $this->getInvoiceItemDetails($row->id,$branch_id);
-        //     $row->items = $item->data;
-        // }
-
-        $i=0;
+        $key_list = DB::table('fee_types')->pluck('name')->toArray();
+        $key_list =array_merge($key_list,['Total','Remark']);
+        $keys = $this->stringToKeyCase($key_list);
+        $headers = $this->createMulKeyValue('name',$key_list,$this->createKeyValue('key',$keys));
         $str_date = '1=1';
-        $start_date = isset($d->start_date) ? $d->start_date:date('Y-m-d');
-        $end_date = isset($d->end_date) ? $d->end_date:date('Y-m-d');
+        $start_date = isset($d->start_date) ? date('Y-m-d',strtotime($d->start_date)):date('Y-m-d');
+        $end_date = isset($d->end_date) ?date('Y-m-d',strtotime($d->end_date)):date('Y-m-d');
         if($start_date && $end_date) {
-            $str_date = "i.pmt_date BETWEEN '$start_date' AND '$end_date'";
-       }
-       $rows = DB::table('invoices as i')->selectRaw('i.pmt_date,i.id')->whereRaw($str_date)->get();
-       return $rows;
+            $str_date = "DATE(i.pmt_date) BETWEEN '$start_date' AND '$end_date'";
+        }
+        $rows = DB::table('invoices as i')->whereRaw($str_date)->selectRaw('i.pmt_date,i.id')->get();
+        foreach($rows as $row){
+            $item = $this->getInvoiceItemDetails($row->id,$branch_id);
+            $row->total = $item->total;
+            $row->items = $item->data;
+        }
+        return (object)[
+            'headers'=>$headers,
+            'list'=>$rows,
+            'company_profiles'=>self::getCampanyInfo($ss)
+        ];
     }
-    function getFilterMonthlyCash($arr,$ss){
-        $d = (object)$arr;
-        $branch_id = $ss->branch_id;
-        $month = isset($d->month)?$d->month:date('m');
-        $year = isset($d->year)?$d->year:date('Y');
+    // function getFilterMonthlyCash($arr,$ss){
+    //     $d = (object)$arr;
+    //     $branch_id = $ss->branch_id;
+    //     $month = isset($d->month)?$d->month:date('m');
+    //     $year = isset($d->year)?$d->year:date('Y');
 
-        $days = days_in_month($month,$year);
-        $i=0;
-        $monthlyCashList =[];
-        $rows = DB::table('invoices as i')->whereMonth('i.pmt_date',$month)->whereYear('i.pmt_date',$year)->selectRaw('i.invoice_number')->get();
-        do{
-            $i++;
-            $x = 1;//$this->getAttendanceInfo($rows,$i,$month,$year,$student_id);
-            $monthlyCashList[] = $x;
-        }while ($i<$days);
-    }
+    //     $days = days_in_month($month,$year);
+    //     $i=0;
+    //     $monthlyCashList =[];
+    //     $rows = DB::table('invoices as i')->whereMonth('i.pmt_date',$month)->whereYear('i.pmt_date',$year)->selectRaw('i.invoice_number')->get();
+    //     do{
+    //         $i++;
+    //         $x = 1;//$this->getAttendanceInfo($rows,$i,$month,$year,$student_id);
+    //         $monthlyCashList[] = $x;
+    //     }while ($i<$days);
+    // }
 
 
 
     function stringToKeyCase($cnvtString,$bonus_string=null,$front=1){
 
         $removeSpecialChars = function ($str) {
-            return preg_replace('/[^a-zA-Z0-9\s]/', '', $str);
+            $pattern = '/[^a-zA-Z0-9\s' . preg_quote('_', '/') . ']/u';
+            return preg_replace($pattern, '', $str);
         };
         $bonus_string = $removeSpecialChars(strtolower($bonus_string));
         if (is_array($cnvtString)) {
@@ -754,8 +759,33 @@ class Report //extends Model
 
     }
 
+    //** referral */
+
+    function getReferralFeeList($arr,$ss){
+        $d = (object)$arr;
+        $selectCols = 's.name,r.commission as referral_fee,r.referrer_id,r.student_id';
+        $str_search = '1=1';
+        $campus_id = isset($d->campus_id) ? $d->campus_id :null;
+        $rows = DB::table('referals as r')
+            ->join('students as s','s.id','=','r.student_id')
+            ->join('enrollments as e','e.student_id','=','s.id')
+            ->whereRaw($str_search)
+            ->where('r.is_paid',1)
+            ->selectRaw($selectCols)->get();
+        foreach($rows as $row){
+            $recommender = DB::table('students')->where('id', $row->referrer_id)->selectRaw('name,code as student_id,formatDate(created_at) as receiving_date')->first();
+            $recommender->referral_fee = $row->referral_fee;
+            $row->recommender = $recommender;
+            unset($row->referral_fee);
+        }
+        return (object)[
+            'list' => $rows,
+            'form' => 'simple',
+            'company_profile' => self::getCampanyInfo($ss)
+        ];
+    }
 
     function getDepositeFee($student_id){
-        DB::table('deposites')->where('student_id',$student_id)->selectRaw('')->first();
+       return Invoice::studentDeposite($student_id,$used = 1);
     }
 }
