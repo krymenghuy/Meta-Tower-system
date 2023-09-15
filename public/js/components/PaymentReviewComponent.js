@@ -15,7 +15,7 @@ var PaymentReviewComponent = new function(){
             title: "Name",
             className: 'align-middle text-capitalize',
             data: (data, index, tr) => {
-                const new_student = data.is_new_student == 1 ? ['<span class="p-1 border rounded-5 border-warning">New</span>'].join(''): ['<span class="p-1 border rounded-5 border-warning">Old</span>'].join('');
+                const new_student = data.is_new_student == 1 ? ['<span class="p-1 border rounded-5 border-warning">New</span>'].join(''): ['<span class="p-1 border rounded-4 border-warning">Old</span>'].join('');
                 return ['<span class="fw-bold d-block p-1 mb-1">',data.name,'</span>',new_student].join('');
             },
         },
@@ -96,12 +96,11 @@ var PaymentReviewComponent = new function(){
                 TuitionCalculateDialog.show(op);
                 return;
             }
-            
         });
 
         mThis.filter_form.on('change','.filter-field',(e)=>{
             e.preventDefault();
-           if(!mThis.disable_filter) mThis.studentListView.showPage(mThis.getFilterData());
+            if(!mThis.disable_filter) mThis.studentListView.showPage(mThis.getFilterData());
         });
     };
 
@@ -109,7 +108,7 @@ var PaymentReviewComponent = new function(){
         let p = {};
         mThis.filter_form.find('.filter-field').each(function(){
             const el = $(this);
-            let f = el.data('field');
+            const f = el.data('field');
             p[f] = el.val();
         });
         return p;
@@ -118,10 +117,10 @@ var PaymentReviewComponent = new function(){
     this.prepareOptions = (onFinish) => {
         mThis.disable_filter = true;
         vsapi.call(`${main_view.base_url}/api/tuition-review/form-options`,null,null).then((res) => {
-            let d = res.status_code === 200 ? res.data : {};
+            const d = res.status_code === 200 ? res.data : {};
             VSUtil.setComboItems(mThis.elFilter_term,d.terms,"id","term_name",null,null,d.terms[0].id);
             VSUtil.setComboItems(mThis.elFilter_status,d.pmt_statuses,"id","pmt_status",null,null,1);
-            VSUtil.setComboItems(mThis.elFilter_campus,d.campuses,"id","campus_name",null,null,d.campuses[0]?d.campuses[0].id:null);
+            VSUtil.setComboItems(mThis.elFilter_campus,d.campuses,"id","campus_name",null,null,d.campuses[0] ? d.campuses[0].id : null);
             mThis.disable_filter = false;
             onFinish();
         });
@@ -265,7 +264,7 @@ const TuitionCalculateDialog = new function(){
     this.prepareFormOption = (id,onFinish = null) => {
         vsapi.call(`${main_view.base_url}/api/tuition-review/form-options`,{'id':id},null).then(res => {
             const d =res.status_code === 200 ? res.data: {};
-            mThis.self.find(".data-input").each(function () {
+            mThis.self.find(".data-input").each(function(){
                 const el = $(this);
                 const f = el.data("field");
                 switch(f){

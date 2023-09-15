@@ -25,9 +25,11 @@
                 <button class="btn-close" type="button" aria-label="Close" data-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div style="display:none"> <select class="data-input" data-field="currency_code" disabled>
-                    <option value="USD" selected>USD</option>
-               </select></div>
+                <div style="display:none">
+                    <select class="data-input" data-field="currency_code" disabled>
+                        <option value="USD" selected>USD</option>
+                    </select>
+                </div>
                 <div class="row row-cols-lg-2 gy-2">
                     <div class="col">
                         <div class="form-group">
@@ -44,10 +46,8 @@
                             </div>
                         </div>
                     </div>
-                    
                 </div>
                 <div class="row row-cols-lg-2 gy-2">
-
                   <div class="col">
                         <div class="form-group">
                             <label for="amount_input_mode" class="form-label trans-text" data-langprop="titles.Input Mode"></label>
@@ -59,7 +59,6 @@
                             </div>
                         </div>
                     </div>
- 
                     <div class="col">
                         <div class="form-group">
                             <label for="program_id" class="form-label trans-text" data-langprop="titles.Program"></label>
@@ -68,8 +67,6 @@
                             </div>
                         </div>
                     </div>
-
-               
                 </div>
                 <div class="row row-cols-lg-2 gy-2">
                     <div class="col">
