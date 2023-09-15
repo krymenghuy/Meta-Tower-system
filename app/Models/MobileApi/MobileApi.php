@@ -93,7 +93,7 @@ class MobileApi //xtends Model
         $res =(object)[
             'banner' => $banner,
             'children' => $children,
-            'profile' => self::getProfile($ss->id,$ss->branch_id),
+            'profile' => self::getProfile($ss),
             'social_media' => $this->getSocialMedia($ss),
             'payments' => $this->getChildrenInvoices(null,$ss)
         ];
