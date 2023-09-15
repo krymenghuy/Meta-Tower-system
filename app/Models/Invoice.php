@@ -491,6 +491,16 @@ class Invoice //extends Model
                 ],[],1);
             }
 
+            if($cheque){
+                $receipt_amt = saveData($ss,'receipt_amount',['id' => null],[
+                    'payment_method_id' => 2,// cheque method
+                    'amount' => $cheque,
+                    'exchange_rate' => $exchange_rate,
+                    'currency_code' => $currency_code,
+                    'cheque_number' => $cheque_number
+                ],[],1);
+            }
+
 
             if($save_receipt){
                 $receipt_amt=null;
@@ -500,7 +510,6 @@ class Invoice //extends Model
                 self::setReceiptNumber($campus,$ss->branch_id,$save_receipt,'no-tax',$issue_date,5);
 
                 foreach($payment_info as $info){
-
                     $v_rule = [
                         'payment_method_id' => '1|number|exists=payment_methods.id',
                         "amount" => '0|number',
@@ -522,7 +531,7 @@ class Invoice //extends Model
                 $total_receive_amt = $cheque + $cash + array_sum($track_amt);
                 if($total_receive_amt){
                     DB::rollback();
-                    return DV::error('Payment method amount must be lower or equal to Tuition Due.');
+                    return DV::error('Sum of payment must be lower or equal to Tuition Due.');
                 }
 
             }
@@ -534,8 +543,6 @@ class Invoice //extends Model
         } catch (\Exception $e) {
             // Something went wrong, so rollback the transaction
             DB::rollback();
-
-
             return DV::error('savePaymentHistory =>'.$savePaymentHistory . ','.'save_receipt =>'.$save_receipt.','.'receipt_amt => '.$receipt_amt );
         }
 
