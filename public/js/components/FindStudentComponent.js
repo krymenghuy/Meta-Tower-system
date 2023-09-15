@@ -153,9 +153,9 @@ var FindStudentComponent = new function(){
                                             <span class="ps-2 trans-text" data-langprop="titles.Detials"></span>
                                         </a>
                                         <a href="javascript:void(0)" class="btn-fns-discount border-bottom pb-2" data-studentid="${item.student_id}" data-id="${item.enrollment_id}">
-                                          <i class="fa-solid fa-up-right-from-square fs-5"></i>
-                                          <span class="ps-2 trans-text" data-langprop="titles.Set Discount"></span>
-                                       </a>
+                                            <i class="fa-solid fa-tags fs-5"></i>
+                                            <span class="ps-2 trans-text" data-langprop="titles.Set Discount"></span>
+                                        </a>
                                         <a href="javascript:void(0)" class="btn-fns-delete" data-id="${item.enrollment_id}">
                                             <i class="fa-regular fa-trash-can fs-5"></i>
                                             <span class="ps-2 trans-text" data-langprop="titles.Delete"></span>
@@ -360,23 +360,25 @@ const GenerateInvoiceFSN = new function(){
         if(ref.click){
             if(mThis.options.action === 'modify'){
                 p = mThis.getDataFormUpdate();
-                // vsapi.call(`${main_view.base_url}/api/student/invoice-update`,p,null).then(res => {
-                //     ref.click = false;
-                //     if(res.status_code === 200){
-                //         mThis.self.modal('hide');
-                //         if(typeof mThis.options.onClose === 'function')
-                //             mThis.options.onClose();
-                //         cv_interact.success('Invoice Updated Successfully!');
-                //         ref.click = true;
-                //     }
-                //     else{
-                //         cv_interact.error(res.error_message);
-                //         ref.click = true;
-                //     }
-                // });
+                p.commision_type = 'percentage';
+                vsapi.call(`${main_view.base_url}/api/student/invoice-update`,p,null).then(res => {
+                    ref.click = false;
+                    if(res.status_code === 200){
+                        mThis.self.modal('hide');
+                        if(typeof mThis.options.onClose === 'function')
+                            mThis.options.onClose();
+                        cv_interact.success('Invoice Updated Successfully!');
+                        ref.click = true;
+                    }
+                    else{
+                        cv_interact.error(res.error_message);
+                        ref.click = true;
+                    }
+                });
             }
             else{
                 p = mThis.getDataForm();
+                p.commision_type = 'percentage';
                 vsapi.call(`${main_view.base_url}/api/student/generate-invoice`,p,null).then(res => {
                     ref.click = false;
                     if(res.status_code === 200){
@@ -441,6 +443,8 @@ const GenerateInvoiceFSN = new function(){
                     el.is('select') ? el.val(data['referal'][f]).trigger('change') : el.val(data['referal'][f]);
                 else if(f === 'deposite_amount' || f === 'total')
                     el.text(data[f] ? '$ '+data[f] : '');
+                else if(f === 'deduct_referral_fee')
+                    el.text(data[f] ? data[f]+' %' : '0');
                 else
                     el.text(data[f]);
             });
@@ -720,7 +724,7 @@ const StudentDiscountDialog = new function(){
     });
 
     this.prepareFormOption = (id,onFinish)=>{
-        onFinish();
+        if(typeof onFinish === 'function') onFinish();
         return;
         let p = {'id':id};
         vsapi.call(`${main_view.base_url}/api/student-price-list/form-options`,p,false).then(res=>{
