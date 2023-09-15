@@ -298,6 +298,7 @@ const InvoiceDialog = new function(){
 
     this.elBody = mThis.self.find('#dlg_elBody');
     this.btnPrint = mThis.self.find('#dlg_inv_btn_save');
+    this.elTitle = mThis.self.find('.modal-title');
     this.htmlString = null;
 
     mThis.btnPrint.on('click',function(e){
@@ -316,13 +317,13 @@ const InvoiceDialog = new function(){
             modal_dialog.removeClass(['modal-lg','modal-dialog-scrollable']);
             delete(op.action);
 
-            // vsapi.call(`${main_view.base_url}/`).then(res => {
-                // if(res.status_code === 200){
-                    // const d = res.data;
-                    // console.log(d);
+            vsapi.call(`${main_view.base_url}/api/options/payment-method`).then(res => {
+                if(res.status_code === 200){
+                    const d = res.data;
+                    mThis.preparePayment(div,d);
                     if(typeof onFinish === 'function') onFinish();
-                // }
-            // });
+                }
+            });
         }
         else{
             div.empty();
@@ -344,8 +345,83 @@ const InvoiceDialog = new function(){
 
     this.preparePayment = (div,d) => {
         d = d ? d : {};
+        const options = d.methods ? d.methods : [];
+        let html_option = null;
         if(d && !($.isEmptyObject(d))){
+            const html = [`<div class="form-group">
+                <label for="cash" class="form-label trans-text" data-langprop="titles.Cash"></label>
+                <div class="input-group flex-nowrap">
+                    <span class="input-group-text">$</span>
+                    <input type="number" class="form-control data-input" data-field="cash"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="d-flex">
+                    <div class="w-50">
+                        <label for="transfer" class="form-label trans-text" data-langprop="titles.Transfer"></label>
+                        <div class="input-group flex-nowarp">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control data-input rounded-end-0" data-field="transfer"/>
+                        </div>
+                    </div>
+                    <div class="w-50">
+                        <label for="by" class="form-label trans-text" data-langprop="titles.By"></label>
+                        <input type="text" class="form-control data-input rounded-start-0 border-start-0" data-field="by"/>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="bank" class="form-label trans-text" data-langprop="titles.Bank"></label>
+                <div class="width-select-dialog">
+                    <select class="modal-select2">
+                        ${html_option=null,options.map(op => {
+                            html_option = [html_option,`<option value="${op.id}">${op.name}</option>`].join('')
+                        }),html_option+'<option selected></option>'}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="d-flex">
+                    <div class="w-50">
+                        <label for="cheque" class="form-label trans-text" data-langprop="titles.Cheque"></label>
+                        <div class="input-group flex-nowrap">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control data-input rounded-end-0" data-field="cheque" readonly/>
+                        </div>
+                    </div>
+                    <div class="w-50">
+                        <label for="no" class="form-label trans-text" data-langprop="titles.No."></label>
+                        <input type="number" class="form-control data-input rounded-start-0 border-start-0" data-field="no" readonly/>
+                    </div>
+                </div>
+            </div>`].join('');
+            div.html(html);
+            LocaleManager.translateZone(div);
+            div.find('select.modal-select2').select2();
+            mThis.checkHasBank(div);
         }
+    }
+
+    this.checkHasBank = (div) => {
+        const select = div.find('select.modal-select2'),
+        parent = select.closest('.form-group');
+        select.on('change',function(e){
+            e.preventDefault();
+            const value = $(this).val();
+            const nextEl = parent.next();
+            if(value){
+                nextEl.find('.data-input').each(function(){
+                    const el = $(this);
+                    el.attr('readonly',false);
+                });
+            }
+            else{
+                nextEl.find('.data-input').each(function(){
+                    const el = $(this);
+                    el.attr('readonly',true);
+                });
+            }
+        });
     }
 
     this.prepareData = (div,d) => {
@@ -536,6 +612,12 @@ const InvoiceDialog = new function(){
 
     this.show = (options) => {
         if(!options) options = {};
+        let title = null, btn_name = null;
+        options.action === 'recieve' ? (title = 'Reviece Payment',btn_name = 'Verify Now') : (title = 'Preview Invoice',btn_name = 'Print Now');
+        if(title){
+            mThis.elTitle.text(LocaleManager.trans(title,'titles'));
+            mThis.btnPrint.children().text(LocaleManager.trans(btn_name,'titles'));
+        }
         mThis.loadFormDetails(mThis.elBody,options,() => {
             mThis.self.modal({
                 backdrop: 'static'
