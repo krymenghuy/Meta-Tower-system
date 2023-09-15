@@ -358,10 +358,10 @@ const InvoiceDialog = new function(){
             <div class="form-group">
                 <div class="d-flex">
                     <div class="w-50">
-                        <label for="transfer" class="form-label trans-text" data-langprop="titles.Transfer"></label>
+                        <label for="cheque" class="form-label trans-text" data-langprop="titles.Cheque"></label>
                         <div class="input-group flex-nowarp">
                             <span class="input-group-text">$</span>
-                            <input type="number" class="form-control data-input rounded-end-0" data-field="transfer"/>
+                            <input type="number" class="form-control data-input rounded-end-0" data-field="cheque"/>
                         </div>
                     </div>
                     <div class="w-50">
@@ -382,7 +382,7 @@ const InvoiceDialog = new function(){
             </div>
             <div class="form-group">
                 <div class="d-flex">
-                    <div class="w-50">
+                    <div class="target-change w-50">
                         <label for="cheque" class="form-label trans-text" data-langprop="titles.Cheque"></label>
                         <div class="input-group flex-nowrap">
                             <span class="input-group-text">$</span>
@@ -390,9 +390,16 @@ const InvoiceDialog = new function(){
                         </div>
                     </div>
                     <div class="w-50">
-                        <label for="no" class="form-label trans-text" data-langprop="titles.No."></label>
+                        <label for="no" class="form-label trans-text" data-langprop="titles.No"></label>
                         <input type="number" class="form-control data-input rounded-start-0 border-start-0" data-field="no" readonly/>
                     </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="exchange_rate" class="form-label trans-text" data-langprop="titles.Exchange Rate"></label>
+                <div class="input-group flex-nowrap">
+                    <span class="input-group-text">៛</span>
+                    <input type="number" class="form-control data-input" data-field="exchange_rate"/>
                 </div>
             </div>`].join('');
             div.html(html);
@@ -412,16 +419,27 @@ const InvoiceDialog = new function(){
             if(value){
                 nextEl.find('.data-input').each(function(){
                     const el = $(this);
+                    const f = el.data('field');
+                    if(f === 'cheque'){
+                        const title = select.find('option:selected').text();
+                        el.closest('.target-change').find('label').text(title ? title : 'Cheque');
+                    }
                     el.attr('readonly',false);
                 });
             }
             else{
                 nextEl.find('.data-input').each(function(){
                     const el = $(this);
+                    const f = el.data('field');
+                    if(f === 'cheque'){
+                        const title = select.find('option:selected').text();
+                        el.closest('.target-change').find('label').text(title ? title : 'Cheque');
+                    }
                     el.attr('readonly',true);
                 });
             }
         });
+        LocaleManager.translateZone(div);
     }
 
     this.prepareData = (div,d) => {
