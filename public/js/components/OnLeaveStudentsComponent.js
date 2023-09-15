@@ -488,12 +488,14 @@ var OnLeaveStudentsComponent = new function(){
              btn.addEventListener('click',e=>{
                 e.preventDefault();
                 const id = btn.dataset.id;
-                alert('return ' + id);
-                vsapi.call(`${main_view.base_url}/api/leave/save-return`,{'id':id},false).then(res=>{
-                    if(res.status_code === 200){
-                        mThis.studentListView.showPage(mThis.getFilterData());
+                //alert('return ' + id);
+                let op = {
+                    'id':id,
+                    'onClose':()=>{
+                       mThis.studentListView.showPage(mThis.getFilterData()); 
                     }
-                });  
+                }
+                ReturnDialog.show(op); 
              });
         }
         
@@ -717,7 +719,191 @@ let LeaveDetailDialog = new function(){
         });
     }
 }
+
+const ReturnDialog = new function(){
+   let mThis = this;
+   this.self = main_view.appContent.children('#_leave_dlgReturn');
+   this.btnSave = this.self.find('#_leave_dlgReturn_btnSave');
+
+   this.elPrevSchool = this.self.find('#_leave_comeback_prev_school');
+   this.elAcademicYear = this.self.find('#_leave_comeback_year');
+   this.elTerm = this.self.find('#_leave_comeback_term');
+   this.elCampus = this.self.find('#_leave_comeback_campus');
+   this.elSession = this.self.find('#_leave_comeback_session');
+   this.elLevel = this.self.find('#_leave_comeback_level');
+   this.elGroup = this.self.find('#_leave_comeback_group');
+   this.lnkAddGroup = this.self.find('#_leave_lnkAddGroup');
+
+   this.selected_options = {};
+   this.options = {};
+
+   this.prev_school_label = new OptionEditor('_leave_prev_school_label',{
+        "selectElement":mThis.elPrevSchool,
+        'label':"Previous School",
+        "buttons":['add','delete','edit'],
+        "value_field":"id",
+        "text_field":"name",
+        "dataprop":"schools",
+        "langprop":"titles",
+        "apiSave":{
+        "endpoint":`${main_view.base_url}/api/settings/school/save`
+        },
+        "apiDelete":{
+        "endpoint":`${main_view.base_url}/api/settings/school/delete`
+        }
+  });
+
+  mThis.lnkAddGroup.on('click',(e)=>{
+        e.preventDefault();
+        let group_id = null;
+        const sel_level_id = mThis.elLevel.val();
+        if(sel_level_id == 0 || !sel_level_id){
+            cv_interact.warning('Please select a Level or Grade');
+            return;
+        }
+        if(!mThis.elAcademicYear.val()){
+            cv_interact.warning('Please select Academic year');
+            return;
+        }
+        if(!mThis.elTerm.val()){
+            cv_interact.warning('Please select Term or Semester');
+            return;
+        }
+        if(!mThis.elSession.val()){
+            cv_interact.warning('Please select Session as Half Day or Full Day');
+            return;
+        }
+
+        const c_op = mThis.options;
+        c_op.default_data = mThis.getFormData();
+
+        let op = {
+                'id':group_id,
+                'academic_year':mThis.elAcademicYear.val(),
+                'term_id':mThis.elTerm.val(),
+                'campus_id':mThis.elCampus.val(), /**/
+                'program_id':null, /** user select only Level to create student Group */
+                'level_id':mThis.elLevel.val(),
+                'session_id':mThis.elSession.val(), /**/
+                'previousDialog':mThis,
+                'previousDialogOptions':c_op,
+                'onClose':(group)=>{
+                cv_interact.success(['Student group ',group.name,' was created successfully'].join('')); 
+                alert(group.id);
+                mThis.selected_options.group_id = group.id; 
+                mThis.elLevel.trigger('change');
+            }
+        };
+        StudentGroupDialog.show(op);
+  });
+
+   this.btnSave.on('click',e=>{
+       let p = mThis.getFormData(false);
+       if(!p) return;
+       //save-return |return/save
+       console.log(p);
+       vsapi.call(`${main_view.base_url}/api/leave/comeback/save`,p,null,false).then(res=>{
+           if(res.status_code ===200){
+               cv_interact.success('Student has now returned to school');
+               mThis.options.onClose();
+               mThis.self.modal('hide');
+           }else cv_interact.warning(res.error_message);  
+       });
+
+   });
  
+   this.elAcademicYear.on('change',e=>{
+        vsapi.call(`${main_view.base_url}/api/settings/options-term`,{'academic_year':mThis.elAcademicYear.val()},null).then(res=>{
+              const items = res.status_code ===200? res.data:[];
+              const def_term_id = mThis.selected_options.term_id? mThis.selected_options.term_id : (items[0]?items[0].id:null);
+              VSUtil.setComboItems(mThis.elTerm,items,'id','term_name',null,null,def_term_id);
+        });
+
+   });
+
+   this.self.on('change','.group-filter',e=>{
+      e.preventDefault();
+      mThis.loadOptions_group();
+   });
+
+   this.getEnrollmentPath = ()=>{
+        let p = {};
+        mThis.self.find('select.group-filter').each(function(){
+            const el = $(this);  
+            const f = el.data('field');
+            p[f] = el.val();
+        });
+        p.term_id = p.term_id? p.term_id: p.return_term_id;
+        return p;
+   }
+
+   this.loadOptions_group = ()=>{
+        //mThis.getEnrollmentPath() will return the selected op such as  {'academic_year','term_id','level_id','session_id'}
+        const op = mThis.getEnrollmentPath();
+        vsapi.call(`${main_view.base_url}/api/settings/options-group`,op,null,false).then(res=>{
+            let items = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data,null,['group_name']):[];
+            VSUtil.setComboItems(mThis.elGroup,items,'id','group_name',true,'(Choose Group)',mThis.selected_options.group_id);
+        });
+  }
+  
+   this.prepareFormOptions = (onFinish)=>{
+      vsapi.call(`${main_view.base_url}/api/leave/comeback/form-options`,null,null).then(res=>{
+          let d = res.status_code ===200? res.data : {};
+          VSUtil.setComboItems(mThis.elPrevSchool,d.schools,'id','name',true,'None',0);
+          VSUtil.setComboItems(mThis.elAcademicYear,d.academic_years,'academic_year','academic_year',null,null,null);
+          VSUtil.setComboItems(mThis.elCampus,d.campuses,'id','campus_name',null,null,null);
+          VSUtil.setComboItems(mThis.elLevel,d.levels,'id','level_name',null,null,null);
+          VSUtil.setComboItems(mThis.elSession,d.sessions,'id','session_name',null,null,null);
+          onFinish();
+      });
+   }
+
+   this.getFormData = (slient = false)=>{
+      let p = {};
+      let has_error = false;
+      mThis.self.find('.data-input').each(function(){
+          const el = $(this);
+          const f = el.data('field');
+          if(el.data('error') ==1){
+            has_error = true;
+            if(!silent) cv_interact.error([f,' is not correct']);
+            return false;
+          }
+          p[f] = el.val();
+      });
+      //LeaveId
+      p.id = mThis.options.id;
+      return has_error? null:p;
+   }
+
+   this.setFormData = (d)=>{
+     d =d?d:{};
+     mThis.self.find('.data-input').each(function(){
+        const el = $(this);
+        const f = el.data('field');
+        if(f){
+            mThis.selected_options[f] = d[f];
+            if(el.is('select')) 
+              el.val(d[f]).trigger('change');
+            else el.val(d[f]);
+        }
+     });
+   }
+
+   this.show = (options)=>{
+      options = options? options:{};
+      mThis.prepareFormOptions(()=>{
+        //NOTE options.default_data is {academic_year,term_id,campus_id,level_id,session_id,group_id}
+        mThis.setFormData(options.default_data);
+        mThis.self.modal({
+            backdrop:'static'
+          });
+      });
+     
+   }
+
+}
+
 window.addEventListener('DOMContentLoaded',() => {
     OnLeaveStudentsComponent.init();
 });

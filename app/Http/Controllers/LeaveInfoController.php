@@ -16,6 +16,14 @@ class LeaveInfoController extends Controller
         return JDV::result($leave->getFormOptions($req->id,$req->enrollment_id));
     }
 
+    function getFormOptions_come_back(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $leave = new LeaveInfo(null,$ss);
+        return JDV::result($leave->getFormOptions_come_back($ss));
+    }
+
+    
     function getList_paginate(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
@@ -29,6 +37,14 @@ class LeaveInfoController extends Controller
         $id = $req->id?$req->id:$req->leave_id;
         $leave = new LeaveInfo($id,$ss);
         return JDV::raw($leave->save($req->all(),$id));
+    }
+
+    function saveReturn(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $id = $req->id?$req->id:$req->leave_id;
+        $leave = new LeaveInfo($id,$ss);
+        return JDV::raw($leave->saveReturn($req->all()));
     }
 
     function finalize(Request $req){

@@ -36,10 +36,10 @@
                 <input id="_onleave_search_student" type="search" class="form-control width--search"
                     placeholder="Search by Name or ID" />
                 <div class="d-flex flex-row gap-2">
-                    <button id="_onleave_btnPrint" class="btn btn-primary" type="button">
+                    <!-- <button id="_onleave_btnPrint" class="btn btn-primary" type="button">
                         <i class="fa fa-print"></i>
                         <span class="trans-text" data-langprop="buttons.Print"></span>
-                    </button>
+                    </button> -->
                 </div>
             </div>
         </div>
@@ -47,7 +47,7 @@
     </div>
 </div>
 
-<div id="dlg_rgs_card" class="modal fade" tabindex="-1" aria-labelledby="dlg_rgs_card_title" aria-hidden="true">
+<!-- <div id="dlg_rgs_card" class="modal fade" tabindex="-1" aria-labelledby="dlg_rgs_card_title" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered custom-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -146,208 +146,76 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
-<div id="dlg_rgs_detail" class="modal fade" tabindex="-1" aria-labelledby="dlg_rgs_detail_title" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered custom-modal">
+<div id="_leave_dlgReturn" class="modal fade" tabindex="-1" aria-labelledby="_leave_dlgReturn_title" aria-hidden="true">
+    <div class="modal-dialog modal-lg vs-modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title trans-text" data-langprop="titles.Come Back"></h4>
                 <button class="btn-close" type="button" aria-label="Close" data-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p class="fs-5 fw-bold text-primary trans-text" data-langprop="titles.Student Information"></p>
-                <div class="row gy-2">
-                    <div class="col-md-8">
-                        <p class="mb-1">
-                            <span class="trans-text align-info-student" data-langprop="titles.Student Name"></span>
-                            <span class="px-2">:</span>
-                            <strong>
-                                <span class="data-show" data-field="name"></span>
-                            </strong>
-                        </p>
-                        <p class="mb-1">
-                            <span class="trans-text align-info-student" data-langprop="titles.Sex"></span>
-                            <span class="px-2">:</span>
-                            <strong>
-                                <span class="data-show" data-field="sex"></span>
-                            </strong>
-                        </p>
-                        <p class="mb-1">
-                            <span class="trans-text align-info-student" data-langprop="titles.Date of Birth"></span>
-                            <span class="px-2">:</span>
-                            <strong>
-                                <span class="data-show" data-field="date_of_birth" data-ffield="Date of birth"></span>
-                            </strong>
-                        </p>
-                        <p class="mb-1">
-                            <span class="trans-text align-info-student" data-langprop="titles.Phone Number"></span>
-                            <span class="px-2">:</span>
-                            <strong>
-                                <span class="data-show" data-field="phone_number"></span>
-                            </strong>
-                        </p>
-                        <p class="mb-1">
-                            <span class="trans-text align-info-student" data-langprop="titles.Email"></span>
-                            <span class="px-2">:</span>
-                            <strong>
-                                <span class="data-show" data-field="email"></span>
-                            </strong>
-                        </p>
+                 <div class="row">
+                     <div class="form-group col-lg-6">
+                        <label for="return_date" class="simple-label trans-text" data-langprop="titles.Return Date"></label>
+                        <div><input data-required="1" data-select="datepicker" class="form-control data-input" data-field="return_date"></div> 
                     </div>
-                    <div class="col-md-4">
-                        <div class="container-image-student">
-                            <img class="data-show" alt="" data-field="image_url" />
-                        </div>
+                    <div class="form-group col-lg-6 mt-3">
+                        <div id="_leave_prev_school_label" class="mt-2 mb-1"></div>
+                        <div><select data-required="0" id="_leave_comeback_prev_school" class="modal-select2 data-input" data-field="prev_school_id"></select></div>
                     </div>
-                </div>
-                <p class="mb-1">
-                    <span class="trans-text align-info-student" data-langprop="titles.Home Address"></span>
-                    <span class="px-2">:</span>
-                    <strong>
-                        <span class="data-show" data-field="address"></span>
-                    </strong>
-                </p>
-                <hr class="line-bottom" />
-                <p class="fs-5 fw-bold text-primary trans-text" data-langprop="titles.Academic Information"></p>
-                <div class="d-block">
-                    <p class="mb-1">
-                        <span class="trans-text align-info-student" data-langprop="titles.Student ID"></span>
-                        <span class="px-2">:</span>
-                        <strong>
-                            <span class="data-show" data-field="student_code"></span>
-                        </strong>
-                    </p>
-                    <p class="mb-1">
-                        <span class="trans-text align-info-student" data-langprop="titles.Class"></span>
-                        <span class="px-2">:</span>
-                        <strong>
-                            <span class="data-show" data-field="level"></span>
-                        </strong>
-                    </p>
-                    <p class="mb-1">
-                        <span class="trans-text align-info-student" data-langprop="titles.Previous School"></span>
-                        <span class="px-2">:</span>
-                        <strong>
-                            <span class="data-show" data-field="prev_school_name"></span>
-                        </strong>
-                    </p>
-                    <p class="mb-1">
-                        <span class="trans-text align-info-student" data-langprop="titles.Campus"></span>
-                        <span class="px-2">:</span>
-                        <strong>
-                            <span class="data-show" data-field="campus"></span>
-                        </strong>
-                    </p>
-                    <p class="mb-1">
-                        <span class="trans-text align-info-student" data-langprop="titles.Session"></span>
-                        <span class="px-2">:</span>
-                        <strong>
-                            <span class="data-show" data-field="session"></span>
-                        </strong>
-                    </p>
-                </div>
-                <hr class="line-bottom" />
-                <p class="fs-5 fw-bold text-primary trans-text" data-langprop="titles.Parent Information"></p>
-                <div class="d-block">
-                    <p class="mb-1">
-                        <span class="trans-text align-info-student" data-langprop="titles.Father Name"></span>
-                        <span class="px-2">:</span>
-                        <strong>
-                            <span class="data-show" data-field="father_name"></span>
-                        </strong>
-                    </p>
-                    <p class="mb-1">
-                        <span class="trans-text align-info-student" data-langprop="titles.Mother Name"></span>
-                        <span class="px-2">:</span>
-                        <strong>
-                            <span class="data-show" data-field="mother_name"></span>
-                        </strong>
-                    </p>
-                    <p class="mb-1">
-                        <span class="trans-text align-info-student" data-langprop="titles.Father Email"></span>
-                        <span class="px-2">:</span>
-                        <strong>
-                            <span class="data-show" data-field="father_email"></span>
-                        </strong>
-                    </p>
-                    <p class="mb-1">
-                        <span class="trans-text align-info-student" data-langprop="titles.Mother Email"></span>
-                        <span class="px-2">:</span>
-                        <strong>
-                            <span class="data-show" data-field="mother_email"></span>
-                        </strong>
-                    </p>
-                    <p class="mb-1">
-                        <span class="trans-text align-info-student" data-langprop="titles.Father Phone"></span>
-                        <span class="px-2">:</span>
-                        <strong>
-                            <span class="data-show" data-field="father_phone"></span>
-                        </strong>
-                    </p>
-                    <p class="mb-1">
-                        <span class="trans-text align-info-student" data-langprop="titles.Mother Phone"></span>
-                        <span class="px-2">:</span>
-                        <strong>
-                            <span class="data-show" data-field="mother_phone"></span>
-                        </strong>
-                    </p>
-                    <p class="mb-1">
-                        <span class="trans-text align-info-student" data-langprop="titles.Father ID Card"></span>
-                        <span class="px-2">:</span>
-                        <strong>
-                            <span class="data-show" data-field="father_nid"></span>
-                        </strong>
-                    </p>
-                    <p class="mb-1">
-                        <span class="trans-text align-info-student" data-langprop="titles.Mother ID Card"></span>
-                        <span class="px-2">:</span>
-                        <strong>
-                            <span class="data-show" data-field="mother_nid"></span>
-                        </strong>
-                    </p>
-                    <p class="mb-1">
-                        <span class="trans-text align-info-student" data-langprop="titles.Religion"></span>
-                        <span class="px-2">:</span>
-                        <strong>
-                            <span class="data-show" data-field="religion"></span>
-                        </strong>
-                    </p>
-                    <p class="mb-1">
-                        <span class="trans-text align-info-student" data-langprop="titles.Address"></span>
-                        <span class="px-2">:</span>
-                        <strong>
-                            <span class="data-show" data-field="mother_address"></span>
-                        </strong>
-                    </p>
-                </div>
+
+                    <div class="form-group col-lg-6">
+                        <label for="academic_year" class="simple-label trans-text" data-langprop="titles.Academic Year"></label>
+                        <div><select id="_leave_comeback_year" class="modal-select2 data-input" data-field="academic_year"></select></div> 
+                    </div>
+
+                    <div class="form-group col-lg-6">
+                        <label for="return_term_id" class="simple-label trans-text" data-langprop="titles.Semester"></label>
+                        <div><select data-required="1" id="_leave_comeback_term" class="modal-select2 data-input group-filter" data-field="return_term_id"></select></div>
+                    </div>
+
+                    <!-- <div class="form-group col-lg-6">
+                        <label for="program_id" class="simple-label trans-text" data-langprop="titles.Program"></label>
+                        <div><select id="_leave_comeback_program" class="modal-select2 data-input" data-field="program_id"></select></div> 
+                    </div> -->
+
+                    <div class="form-group col-lg-6">
+                        <label for="campus_id" class="simple-label trans-text" data-langprop="titles.Campus"></label>
+                        <div><select data-required="1" id="_leave_comeback_campus" class="modal-select2 data-input group-filter" data-field="campus_id"></select></div> 
+                    </div>
+ 
+                    <div class="form-group col-lg-6">
+                        <label for="level_id" class="simple-label trans-text" data-langprop="titles.Grade"></label>
+                        <div><select data-required="1" id="_leave_comeback_level" class="modal-select2 data-input group-filter" data-field="level_id"></select></div>
+                    </div>
+
+                    <div class="form-group col-lg-6">
+                        <label for="session_id" class="simple-label trans-text" data-langprop="titles.Session"></label>
+                        <div><select data-required="1" id="_leave_comeback_session" class="modal-select2 data-input group-filter" data-field="session_id"></select></div>
+                    </div>
+
+                    <div class="form-group col-lg-6">
+                        <div class="d-flex flex-row gap-2 mt-4 mb-1"> <span class="trans-text" data-langprop="titles.Group"></span><a href="#" id="_leave_lnkAddGroup"><i class="fa fa-plus-circle text-success"></i></a></div>
+                        <div><select data-required="1" id = "_leave_comeback_group" class="modal-select2 data-input" data-field="group_id"></select></div> 
+                    </div>
+
+                    <div class="form-group col-lg-12">
+                        <label for="return_date" class="simple-label trans-text" data-langprop="titles.Remarks"></label>
+                        <div><input class="form-control data-input" data-field="remarks"></div> 
+                    </div>
+                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-sm btn-secondary" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
-                <button id="dlg_rgs_detail_btn_print" class="btn btn-sm btn-primary" type="button">
-                    <span class="trans-text" data-langprop="buttons.Print Now"></span>
+                <button id="_leave_dlgReturn_btnSave" class="btn btn-sm btn-primary" type="button">
+                    <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>
         </div>
     </div>
 </div>
-
-<div class="modal fade" id="dlg_rgs_family_" tabindex="-1" aria-labelledby="dlg_rgs_family_title" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title trans-text" data-langprop="titles.Choose Family ID"></h5>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="family_id" class="form-label trans-text" data-langprop="titles.Family ID"></label>
-                    <div class="width-select-dialog">
-                        <select class="modal-select2 data-input" data-field="family_code"></select>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+ 

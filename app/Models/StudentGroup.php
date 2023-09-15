@@ -72,8 +72,11 @@ class StudentGroup //extends Model
             $serial_number = self::setGroupNumber($ss,$newID,$term_id,$campus_id,$level_id,$session_id,$g_name,$des_name);
             $g_name .='.'.$serial_number;
         }else
-            $serial_number = DB::table('student_groups as g')->where('id',$newID)->take(1)->value('serial_number');
-        $g_name .='.'.$serial_number;
+        {
+                $serial_number = DB::table('student_groups as g')->where('id',$newID)->take(1)->value('serial_number');
+                $g_name .='.'.$serial_number;
+        }
+      
         return DV::depends($newID,['student_group'=>(object)['id'=>$newID,'name'=>$g_name],'groups']);
     }
 
