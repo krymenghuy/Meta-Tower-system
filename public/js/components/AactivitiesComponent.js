@@ -468,7 +468,7 @@ const ApprovalDialog = new function(){
                                     <span>:</span>
                                     <span>${key === 'academic_year' ? '':'$'} ${data[key]}</span>
                                 </div>`].join('');
-                            }),inner_html ? inner_html : ''}
+                            }),inner_html ? inner_html : `<div class="text-capitalize text-muted d-flex align-items-center justify-content-center h-100 fs-4">failed to load data</div>`}
                         </div>
                     </div>`].join('');
                     div.html(html);
