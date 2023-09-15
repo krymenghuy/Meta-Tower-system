@@ -1054,30 +1054,6 @@ a.menu-selected .kt-menu__link-text{
     padding: 0.5rem 1rem !important;
 }
 
-.select2-invoice .select2-container--default .select2-selection--single{
-    border:none;
-    outline:none;
-}
-
-.select2-invoice:hover .select2-container--default .select2-selection--single{
-    border:1px solid #80808088;
-    outline:none;
-}
-
-.select2-invoice .select2-container--default .select2-selection--single .select2-selection__arrow:before{
-    display: none;
-}
-
-.select2-invoice:hover .select2-container--default .select2-selection--single .select2-selection__arrow:before{
-    display: block;
-}
-
-.select2-invoice .form-control-sm{
-    border:none;
-    outline:none;
-}
-
-.select2-invoice:hover .form-control-sm{
-    border:1px solid #80808088;
-    outline:none;
+.select2-invoice .select2-container--default .select2-selection--single .select2-selection__rendered{
+    line-height: 1.5;
 }

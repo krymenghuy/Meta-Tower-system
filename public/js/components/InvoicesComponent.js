@@ -264,7 +264,7 @@ var InvoicesComponent = new function(){
                             <p>
                                 <span class="text-primary-emphasis">End Date</span>
                                 <span>:</span>
-                                <span class="text-capitalize">${inv.end_date ? new Date(inv.net_amount).toLocaleDateString('km-KH',{'day':'numeric','month':'short','year':'numeric'}).replace(',','') : 'N/A'}</span>
+                                <span class="text-capitalize">${inv.end_date ? new Date(inv.end_date).toLocaleDateString('km-KH',{'day':'numeric','month':'short','year':'numeric'}).replace(',','') : 'N/A'}</span>
                             </p>
                             <p>
                                 <span class="text-primary-emphasis">Description</span>
