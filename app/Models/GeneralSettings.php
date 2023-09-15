@@ -248,11 +248,8 @@ class GeneralSettings //extends Model
         if($campus_id>0) $str_search.=' AND campus_id = '.$campus_id;
         if($level_id>0) $str_search.=' AND level_id = '.$level_id;
         if($session_id>0) $str_search.=' AND session_id = '.$session_id;
-
-        $rows = DB::table('student_groups AS g')->whereRaw($str_search)->selectRaw('g.id,g.name AS group_name,g.campus_id,g.session_id,g.level_id,descriptive_name')->get();
-        foreach($rows as $row){
-            $row->group_name = $row->group_name.'('.$row->descriptive_name.')';
-        }
+      
+        $rows = DB::table('student_groups AS g')->join('terms as t','t.id','=','g.term_id')->whereRaw($str_search)->selectRaw('g.id,CONCAT(g.name,\'.\',g.serial_number,\' (\',t.`name`,\')\') AS group_name,g.campus_id,g.session_id,g.level_id,descriptive_name')->get();
         return $rows;
 
         //return DB::table('student_groups AS g')->whereRaw($str_search)->selectRaw('g.id,CONCAT(g.name,\'.\',g.serial_number) AS group_name,campus_id,session_id,level_id')->get();

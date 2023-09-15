@@ -11,6 +11,7 @@ use App\Models\Notifier;
 // use Illuminate\Database\Eloquent\Model;
 use App\Models\UM;
 use DB;
+use Config;
 use Illuminate\Support\Facades\Hash;
 class MobileApi //xtends Model
 {
@@ -46,16 +47,20 @@ class MobileApi //xtends Model
         return DV::success();
     }
 
-    static function getProfile($id,$branch_id=null){
-        $row = DB::table('guardians')->where('id',$id)->selectRaw('file_name')->first();
+    static function getProfile($user){
+        $official_id = $user->official_id;
+        $branch_id = $user->branch_id;
+        $user_class = $user->user_class;
+        $row = DB::table('guardians')->where('id',$official_id)->selectRaw('file_name')->first();
         if($row){
             if ($row->file_name == null) {
-                $row = (object)['image_url' => null];
+                $row = (object)['image_url' =>''];
             } else {
                 $row->image_url = PublicStorage::getUrl($branch_id, 'guardians', 'image').$row->file_name;
+                $row->notif_public_topic = $branch_id.topic_prefix($user_class)."public" ;
+                $row->notif_private_topic = $branch_id.topic_prefix($user_class)."private".$official_id;
             }
         }
-
         return $row;
     }
 

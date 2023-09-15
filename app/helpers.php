@@ -1765,6 +1765,10 @@ function readFileContent($fileName=null)
         return false;
     }
 
+    function topic_prefix($user_class){
+        return Config::get('app.fcm_topic_prefix').$user_class;  //return "vsdev".$user_class;
+    }
+
     function findExists($table,$findKeys){
         $find = DB::table($table)->where($findKeys)->exists();
         if($find) return true;

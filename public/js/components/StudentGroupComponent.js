@@ -243,7 +243,7 @@ let StudentGroupDialog = new function(){
         e.preventDefault();
         mThis.setGroupName();
     });
-
+ 
     mThis.elProgram.on('change',function(e){
         e.preventDefault();
         vsapi.call(`${main_view.base_url}/api/settings/options-level`,{'program_id':mThis.elProgram.val()},null,false).then(res => {
@@ -325,6 +325,14 @@ let StudentGroupDialog = new function(){
         }
         return null;
     }
+
+    this.self.on('show.bs.modal',e=>{
+       if(mThis.options.previousDialog) mThis.options.previousDialog.self.modal('hide');
+    });
+
+    this.self.on('hide.bs.modal',e=>{
+        if(mThis.options.previousDialog) mThis.options.previousDialog.show(mThis.options.previousDialogOptions);
+    });
 
     this.show = (options) => {
         if(!options) options = {};

@@ -950,12 +950,11 @@ class UM
          $user_id = null;
          //NOTE: $login_name = {loginName, PhoneNumber,email}
         if(empty($login_name)) return DV::error("User name is not valid",$lang,400);
-        $rows = DB::table('um_users AS u')->selectRaw('u.lang,u.id,u.user_class,u.official_id,u.official_code,u.hpwd,u.login_name, u.branch_id, u.full_name, u.status, u.is_locked,u.email,u.phone_number,u.otp_code')->where('u.login_name',$login_name)->where('u.app_id',$app_id)->take(1)->get();
+        $row = DB::table('um_users AS u')->selectRaw('u.lang,u.id,u.user_class,u.official_id,u.official_code,u.hpwd,u.login_name, u.branch_id, u.full_name, u.status, u.is_locked,u.email,u.phone_number,u.otp_code')->where('u.login_name',$login_name)->where('u.app_id',$app_id)->take(1)->get()->first();
 
-        if(count($rows) <= 0) return DV::error("User name is not correct or does not have access to this application",$lang,400);
+        if(!$row) return DV::error("User name is not correct or does not have access to this application",$lang,400);
 
        //begin:: Check if the user is LOCKED OUT or DISABLED
-        foreach($rows as $row){
             $user_id = $row->id;
             if($row->is_locked===1 || $row->is_locked ===true) return DV::error("Your account has been locked out.",$lang,400);
             if(trim(strtolower($row->status)) != 'active') return DV::error("Your account has been disabled",$lang,400);
@@ -986,7 +985,6 @@ class UM
                   else return DV::error($sess->error_message,$lang,400);
             } else return DV::error('Password is not correct!',$lang,401);
 
-        }
        //end:: Check if the user is LOCKED OUT or DISABLED
          return DV::error('Login name is not correct!',$lang,401);
 
