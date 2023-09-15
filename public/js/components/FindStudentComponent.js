@@ -360,20 +360,20 @@ const GenerateInvoiceFSN = new function(){
         if(ref.click){
             if(mThis.options.action === 'modify'){
                 p = mThis.getDataFormUpdate();
-                vsapi.call(`${main_view.base_url}/api/student/invoice-update`,p,null).then(res => {
-                    ref.click = false;
-                    if(res.status_code === 200){
-                        mThis.self.modal('hide');
-                        if(typeof mThis.options.onClose === 'function')
-                            mThis.options.onClose();
-                        cv_interact.success('Invoice Updated Successfully!');
-                        ref.click = true;
-                    }
-                    else{
-                        cv_interact.error(res.error_message);
-                        ref.click = true;
-                    }
-                });
+                // vsapi.call(`${main_view.base_url}/api/student/invoice-update`,p,null).then(res => {
+                //     ref.click = false;
+                //     if(res.status_code === 200){
+                //         mThis.self.modal('hide');
+                //         if(typeof mThis.options.onClose === 'function')
+                //             mThis.options.onClose();
+                //         cv_interact.success('Invoice Updated Successfully!');
+                //         ref.click = true;
+                //     }
+                //     else{
+                //         cv_interact.error(res.error_message);
+                //         ref.click = true;
+                //     }
+                // });
             }
             else{
                 p = mThis.getDataForm();
@@ -473,7 +473,19 @@ const GenerateInvoiceFSN = new function(){
                 tab.first().trigger('click');
             }
 
-            if(typeof onFinish === 'function') onFinish();
+            mThis.prepareReferralFee(div,onFinish());
+        });
+    }
+
+    this.prepareReferralFee = (div,onFinish) => {
+        const modal_body = div.closest('.modal-body');
+        vsapi.call(`${main_view.base_url}/api/options/payment-method`,null,false).then(res => {
+            if(res.status_code === 200){
+                const d = res.data.students;
+                const el = modal_body.find('#el_fns_referrer');
+                VSUtil.setComboItems(el,d,'student_id','student_name',null,null,null);
+                if(typeof onFinish === 'function') onFinish();
+            }
         });
     }
 
@@ -560,7 +572,7 @@ const GenerateInvoiceFSN = new function(){
 
             tbody.closest('.table-responsive').find(`#${btn}`).off('click').on('click',function(e){
                 e.preventDefault();
-                let value = tbody.find(`#${select}`).val();
+                const value = tbody.find(`#${select}`).val();
                 if(value === undefined)
                     tbody.append(html);
 
@@ -668,7 +680,6 @@ const GenerateInvoiceFSN = new function(){
             }
             p.insert_info.push(d);
         });
-
         return p;
     }
 
