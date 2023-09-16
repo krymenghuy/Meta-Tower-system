@@ -8,7 +8,7 @@
         </div>
         <button id="ntf_btn_add" class="btn btn-sm btn-primary" type="button">
             <i class="fa-solid fa-plus"></i>
-            <span class="trans-text" data-langprop="buttons.Add Invoice Item"></span>
+            <span class="trans-text" data-langprop="buttons.Add Fee"></span>
         </button>
     </div>
     <div id="_ntf_list" class="mt-3 p-3 border rounded-3 bg-white shadow"></div>
@@ -30,11 +30,34 @@
                         <option value="USD" selected>USD</option>
                     </select>
                 </div>
+
                 <div class="row row-cols-lg-2 gy-2">
                     <div class="col">
                         <div class="form-group">
-                            <label for="fee_type" class="form-label trans-text" data-langprop="titles.Fee Type"></label>
-                            <input type="text" class="form-control data-input" data-field="name"/>
+                            <label for="fee_type" class="form-label trans-text" data-langprop="titles.Category"></label>
+                            <select id="_ntf_category" class="modal-select2 data-input" data-field="fee_type_id"></select>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="amount" class="form-label trans-text" data-langprop="titles.Fee Name"></label>
+                            <div class="input-group flex-nowrap">
+                                <input type="text" class="form-control data-input" data-field="name"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row row-cols-lg-2 gy-2">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="fee_type" class="form-label trans-text" data-langprop="titles.Charge As"></label>
+                            <select id ="_ntf_charge_as" type="text" class="modal-select2 data-input" data-field="charge_as">
+                                <option value="one_time">One Time</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="yearly">Yearly</option>
+                            </select>
                         </div>
                     </div>
                     <div class="col">
@@ -52,7 +75,7 @@
                         <div class="form-group">
                             <label for="amount_input_mode" class="form-label trans-text" data-langprop="titles.Input Mode"></label>
                             <div class="width-select-dialog">
-                                <select class="modal-select2 data-input" data-field="amount_input_mode">
+                                <select id="_ntf_input_mode" class="modal-select2 data-input" data-field="amount_input_mode">
                                     <option value="auto">Auto</option>
                                     <option value="manual">Manual</option>
                                 </select>
