@@ -602,8 +602,8 @@ class Report //extends Model
         $receiver = isset($d->receiver) ? $d->receiver :null;
         $receiver_id = isset($d->receiver_id) ? $d->receiver_id :null;
 
-        $start_date = isset($d->start_date) ? $d->start_date :null;
-        $end_date = isset($d->end_date) ? $d->end_date :null;
+        $start_date = isset($d->start_date)?convertDate($d->start_date):null;
+        $end_date = isset($d->end_date)?convertDate($d->end_date):null;
 
         $str_between_date = '1=1';
         if($start_date && $end_date) $str_between_date = 'DATE(i.pmt_date) >= \'' . $start_date . '\' AND DATE(i.pmt_date) <= \'' . $end_date . '\'';
@@ -660,6 +660,7 @@ class Report //extends Model
         $selectCols = 'price,fee_type,invoice_id,date_range,discount,net_amount,start_date,end_date';
         $rows = DB::table('invoice_items')->where('invoice_id',$inv_id)->where('branch_id',$branch_id)->selectRaw($selectCols)->get();
         $fee_types = DB::table('fee_types')->selectRaw('name')->where('id','>=',20)->get();
+        $discount=0;
         // $all_type =[];
         // foreach($fee_types as $type){
         //    $all_type[] = $type->name;
@@ -691,8 +692,8 @@ class Report //extends Model
         $keys = $this->stringToKeyCase($key_list);
         $headers = $this->createMulKeyValue('name',$key_list,$this->createKeyValue('key',$keys));
         $str_date = '1=1';
-        $start_date = isset($d->start_date) ? date('Y-m-d',strtotime($d->start_date)):date('Y-m-d');
-        $end_date = isset($d->end_date) ?date('Y-m-d',strtotime($d->end_date)):date('Y-m-d');
+        $start_date = isset($d->start_date)?convertDate($d->start_date):null;
+        $end_date = isset($d->end_date)?convertDate($d->end_date):null;
         if($start_date && $end_date) {
             $str_date = "DATE(i.pmt_date) BETWEEN '$start_date' AND '$end_date'";
         }
@@ -727,7 +728,7 @@ class Report //extends Model
 
 
 
-    function stringToKeyCase($cnvtString,$bonus_string=null,$front=1){
+    static function stringToKeyCase($cnvtString,$bonus_string=null,$front=1){
 
         $removeSpecialChars = function ($str) {
             $pattern = '/[^a-zA-Z0-9\s' . preg_quote('_', '/') . ']/u';
@@ -764,23 +765,77 @@ class Report //extends Model
     function getReferralFeeList($arr,$ss){
         $d = (object)$arr;
         $selectCols = 's.name,r.commission as referral_fee,r.referrer_id,r.student_id';
-        $str_search = '1=1';
+        $is_paid = isset($d->is_paid)?$d->is_paid:1;
         $campus_id = isset($d->campus_id) ? $d->campus_id :null;
+        $start_date = isset($d->start_date)?convertDate($d->start_date):null;
+        $end_date = isset($d->end_date)?convertDate($d->end_date):null;
+        $str_search = 'r.is_paid = '.$is_paid;
+        $str_date = '1=1';
+        if($start_date && $end_date) $str_date = 'DATE(r.created_at) >= \''.$start_date.'\' AND DATE(r.created_at) <= \''.$end_date.'\'';
         $rows = DB::table('referals as r')
             ->join('students as s','s.id','=','r.student_id')
             ->join('enrollments as e','e.student_id','=','s.id')
             ->whereRaw($str_search)
-            ->where('r.is_paid',1)
+            ->whereRaw($str_date)
             ->selectRaw($selectCols)->get();
         foreach($rows as $row){
-            $recommender = DB::table('students')->where('id', $row->referrer_id)->selectRaw('name,code as student_id,formatDate(created_at) as receiving_date')->first();
+            $recommender = DB::table('students as s')->where('s.id', $row->referrer_id)->join('referals as rf','rf.referrer_id','=','s.id')->selectRaw('s.name,s.code as student_id,formatDate(rf.created_at) as receiving_date')->first();
             $recommender->referral_fee = $row->referral_fee;
             $row->recommender = $recommender;
             unset($row->referral_fee);
         }
         return (object)[
             'list' => $rows,
-            'form' => 'simple',
+            'form' => 'customize',
+            'company_profile' => self::getCampanyInfo($ss)
+        ];
+    }
+
+    function getNonTuitionFee($filter,$ss){
+        $d = (object)$filter;
+        $fee_type_id = isset($d->fee_type_id) ? $d->fee_type_id:null;
+        $selectInvoiceItems = ',ivt.id,ivt.fee_type';
+        $is_paid = isset($d->is_paid) ? $d->is_paid:null;
+        $campus_id = isset($d->campus_id) ? $d->campus_id:null;
+        $start_date = isset($d->start_date) ? $d->start_date:null;
+        $end_date = isset($d->end_date) ? $d->end_date:null;
+        $selectInvoiceReceipt = 'i.id as invoice_id,formatDate(i.pmt_date) as payment_date,i.invoice_date';
+        if(!$fee_type_id) return DV::error('Fee type must be selected');
+        //** */
+        $str_search = 'ivt.fee_type_id = '.$fee_type_id;
+        if($campus_id) $str_search .=' AND e.campus_id = '.$campus_id;
+        if($is_paid) $str_search .= ' AND i.is_paid = '. $is_paid;
+        //** */
+        $str_date = '1=1';
+        if($start_date && $end_date) $str_date = 'DATE(i.invoice_date) >= \'' .$start_date. '\' AND DATE(i.invoice_date) <= \''.$end_date.'\'';
+        $campuses =[];
+
+        $rows = DB::table('invoices as i')
+                ->join('enrollments as e','e.id','=','i.enrollment_id')
+                ->join('receipts as r','r.invoice_id','=','i.id')
+                ->join('invoice_items as ivt','ivt.invoice_id','=','i.id')
+                ->join('students as s','s.id','=','i.student_id')
+                ->where('ivt.fee_type','<>','tuition_fee')
+                ->where('i.is_paid',1)->whereRaw($str_search)
+                ->whereRaw($str_date)
+                ->selectRaw($selectInvoiceReceipt.$selectInvoiceItems.',e.campus_id,e.level_id,s.code as student_coce,s.sex,s.name,formatDate(s.admission_date) as admission_date,formatDate(s.date_of_birth) as dob,e.session_id')
+                ->get();
+        foreach($rows as $row){
+            $row->campus = GeneralSettings::getCampus($row->campus_id)->name;
+            if (!in_array($row->campus, $campuses)) {
+                $campuses[] = $row->campus;
+            }
+            unset($row->campus,$row->campus_id);
+        }
+        $fee_type = 'N/A';
+        if(isset($rows[0])){
+            $row->fee_type;
+        }
+        $title = $fee_type.' Fee Report For (' . implode(',',$campuses).')';
+        return (object)[
+            'title' => $title,
+            'list' => $rows,
+            'form' => 'customize',
             'company_profile' => self::getCampanyInfo($ss)
         ];
     }
@@ -789,3 +844,7 @@ class Report //extends Model
        return Invoice::studentDeposite($student_id,$used = 1);
     }
 }
+
+
+
+// 'DATE(i.pmt_date) >= \'' . $start_date . '\' AND DATE(i.pmt_date) <= \'' . $end_date . '\'';

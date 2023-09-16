@@ -101,7 +101,7 @@ class Notifier extends Model
 
     //     }
     // }
- 
+
 
 /***
  notify_mobile() takes @data as param:

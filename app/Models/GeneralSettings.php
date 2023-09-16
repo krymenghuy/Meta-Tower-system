@@ -248,7 +248,7 @@ class GeneralSettings //extends Model
         if($campus_id>0) $str_search.=' AND campus_id = '.$campus_id;
         if($level_id>0) $str_search.=' AND level_id = '.$level_id;
         if($session_id>0) $str_search.=' AND session_id = '.$session_id;
-      
+
         $rows = DB::table('student_groups AS g')->join('terms as t','t.id','=','g.term_id')->whereRaw($str_search)->selectRaw('g.id,CONCAT(g.name,\'.\',g.serial_number,\' (\',t.`name`,\')\') AS group_name,g.campus_id,g.session_id,g.level_id,descriptive_name')->get();
         return $rows;
 
@@ -584,6 +584,13 @@ class GeneralSettings //extends Model
             }
         }
         return $rows;
+    }
+
+    static function optionsChargeType(){
+        $cnt = new Report();
+        $types = ['weekly','monthly','yearly'];
+        $x = $cnt->createMulKeyValue('name',$types);
+        return $x;
     }
 
 

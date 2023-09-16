@@ -139,7 +139,6 @@ class ActivityController extends Controller
         return JDV::result($delete->approvalDiscountListPaginate($req->all(),$ss));
     }
 
-
     function rejectRequestChange(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code != 200) return $ss;
@@ -147,7 +146,6 @@ class ActivityController extends Controller
         $delete = new Activity(null,$ss);
         return JDV::raw($delete->rejectRequestChange($req,$ss));
     }
-
 
     function rejectRequestDiscount(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);

@@ -237,7 +237,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //begin::LeaveInfoController
         Route::prefix('leave')->group(function () {
             Route::post('/list-paginate',[LeaveInfoController::class,'getList_paginate']);
-            Route::post('/form-options',[LeaveInfoController::class,'getFormOptions']);  
+            Route::post('/form-options',[LeaveInfoController::class,'getFormOptions']);
             Route::post('/save',[LeaveInfoController::class,'saveLeave']);
             Route::post('/finalize',[LeaveInfoController::class,'finalize']);
             Route::post('/delete',[LeaveInfoController::class,'deleteLeave']);
@@ -632,6 +632,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     Route::post('finance/daily-cash-list',[ReportController::class,'getDailyCashList']);
     Route::post('finance/monthly-cash-list',[ReportController::class,'getMonthlyCashList']);
     Route::post('finance/referral-fee-list',[ReportController::class,'getReferralFeeList']);
+    Route::post('finance/non-tuition-fee-list',[ReportController::class,'getNonTuitionFeeList']);
 
 
     Route::post('enrollment/student-referrers',[ReportController::class,'getStudentReferers']);
