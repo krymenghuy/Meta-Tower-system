@@ -482,7 +482,7 @@ const InvoiceDialog = new function(){
         else if(!(amountSecond.val()) && (amountThird.val() > 0)){
             amountFirst.val((amount - parseFloat(amountThird.val())));
         }
-        else if(!(amountSecond.val()) && !(amountThird.val())){
+        else{
             amountFirst.val(amount);
         }
     }
