@@ -110,7 +110,7 @@ class Notifier extends Model
     ['user_class','target_user_id','title','message','data','persist']
   ]
 
-  notify_mobile() is to send notifications to one or more apps based on the given param @data = array()
+notify_mobile() is to send notifications to one or more apps based on the given param @data = array()
 ***/
 static function notify_mobile($branch_id,$data=[]){
   $i=0;
@@ -134,7 +134,7 @@ static function notify_mobile($branch_id,$data=[]){
           $notification = [
               //"condition"=>" 'private' in topics",
               'topic'=>$str_topic,
-              'title' => isset($c->title)?$c->title:'DMS',
+              'title' => isset($c->title)?$c->title:'KSM',
               //'body' =>$c->message."($str_topic)", //message body
               'body' =>$c->message." ($str_topic)",
               //'android_channel_id' => isset($d->channelId)?$d->channelId:null,
@@ -154,7 +154,7 @@ static function notify_mobile($branch_id,$data=[]){
           $res = self::fcm_send($str_topic,$notification,$custom_data);
           //if(isset($res->message_id) && $res->message_id) $succeeded =1;
 
-          //if($persist ==1 || $persist==true){
+          if($persist ==1 || $persist==true){
               $expiry_time = Carbon::now()->addDay(2);
               //Save notification in db table
               DB::table('notifications')->insert(array(
@@ -163,84 +163,21 @@ static function notify_mobile($branch_id,$data=[]){
                 "user_class"=>$user_class,
                 'user_id'=>$target_user_id,
                 'branch_id'=>$branch_id,
-                'title'=>isset($c->title)?$c->title:'DMS',
+                'title'=>isset($c->title)?$c->title:'KSM',
                 'message'=>isset($c->message)?$c->message:'',
                 'image_url'=>$image_url,
                 'expiry_time'=>$expiry_time,
                 'create_date'=>getNowTime()
               ));
-          //}
+          }
       $i++;
   }while($c);
-  return DV::success(['topic'=>$str_topic,'server_key'=>getServerKey()]);
+  return $res ; //DV::success(['topic'=>$str_topic,'server_key'=>getServerKey()]);
   // $x = json_decode($res);
   // $x->topic = $str_topic;
   // return $x;
 }
-
-    //Admin or (Web) to Merchant or Driver (Mobile apps) (target_user_id ="*" => target all user of the @user_class)
-    //@event = {'name','title','message',image_url}
-    //@payload is optional param that stores data holding extra information
-    //$target_user_id ="*" => the notification is for all users of the given @user_class
-    static function notify_app_users($branch_id,$user_class,$target_user_id,$event,$payload=null){
-          //$branch_id = $ss->branch_id;
-          $app_id = null;
-          $event_name = $event->name;
-          $title = $event->title;
-          $message = $event->message;
-          $image_url = isset($event->image_url)?$event->image_url:null;
-
-          if ($target_user_id ==="*") $target_user_id = null;
-
-          if($user_class ==='merchant') $app_id = getMerchantAppId();
-          else if ($user_class ==='driver') $app_id = getDriverAppId();
-
-          if(!$app_id) return DV::error('user_class or app_id is not correct');
-
-          $expiry_time = Carbon::now()->addDay(2);
-
-          //$dataBuilder = new PayloadDataBuilder();
-          //$dataBuilder->addData([ 'data' => $payload]);
-
-          $notificationBuilder = new PayloadNotificationBuilder($title);
-          $notificationBuilder->setBody($message)
-                              ->setSound('default')
-                              ->setIcon($image_url);
-                              //->setTimeToLive(60*20);
-          $notification = $notificationBuilder->build();
-          $notification->image = $image_url;
-          $topic = new Topics();
-
-          //use $target_user_id as topic_name to be broadasted through google FCM to Mobile App
-          //$topic_name =$target_user_id;
-          $topic->topic($target_user_id?$target_user_id:"*");
-          $topicResponse = FCM::sendToTopic($topic, null, $notification,null);
-
-          $topicResponse->isSuccess();
-          $topicResponse->shouldRetry();
-          $status = $topicResponse->error();
-
-          //if ($status == 1){
-
-                //Save notification in db table
-                if(!is_numeric($target_user_id)) $target_user_id = null;
-                DB::table('notifications')->insert(array(
-                  'app_id'=>$app_id,
-                  'branch_id'=>$branch_id,
-                  'user_class'=>$user_class,
-                  'message'=>$message,
-                  'title'=>$title,
-                  'image_url'=>$image_url,
-                  'user_id'=>$target_user_id,
-                  'expiry_time'=>$expiry_time,
-                  'is_read'=>0,
-                  'create_date'=>getNowTime()
-                ));
-                //return $status;
-          //}
-          return DV::success(["notification_status"=>$status]);
-    }
-
+ 
     static function getUnreadCount_admin($d=null){
         return 0;
     }
@@ -266,13 +203,14 @@ static function notify_mobile($branch_id,$data=[]){
     }
 
     //$notification = ['title','body','icon'=>null,'sound'=>'default']
-    static function fcm_send($topic_name,$notification=[],$custom_data=array()) {
+    static function fcm_send($topic_name,$notification=[],$custom_data=[]) {
       //$apiKey = 'AIzaSyD5hjn0SeDJTHasyISJhnXIRVrj-0ZUdRU';
-      //get server_key for broexpress system. defined in Helpers.php
       $apiKey =getServerKey();
-      //if(!is_array($custom_data)) $custom_data = (array)$custom_data;
-      $fields = array('to' => '/topics/'.$topic_name, 'notification' => $notification, 'data'=>$custom_data);
-      $headers = array('Authorization: key='.$apiKey, 'Content-Type: application/json', 'priority' => 10);
+      //if(!is_array($custom_data)) $custom_data =  (array)$custom_data;
+      $custom_data = (object)$custom_data; /*  $custom_data MUST be an object in for notification to work */
+      $fields = ['to' => '/topics/'.$topic_name, 'notification' => $notification,'data'=>$custom_data];
+       
+      $headers = ['Authorization: key='.$apiKey, 'Content-Type: application/json', 'priority' => 10];
 
       $url = 'https://fcm.googleapis.com/fcm/send';
 

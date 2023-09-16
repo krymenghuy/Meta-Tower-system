@@ -174,9 +174,10 @@ var EnrolledStudentsComponent = new function(){
 
         mThis.div_input.on('click','button#btn--save',function(e){
             e.preventDefault();
+            const btnSave = $(this);
             let p = mThis.getDataForm(mThis.div_input, 'data-input');
             p = mThis.prepareData(p);
-            vsapi.call(`${main_view.base_url}/api/enrollment/save`,p,null).then(res => {
+            vsapi.call(`${main_view.base_url}/api/enrollment/save`,p,btnSave).then(res => {
                 if(res.status_code === 200){
                     mThis.options.photo = null;
                     const d = res.data;
@@ -287,7 +288,7 @@ var EnrolledStudentsComponent = new function(){
     }
    
     /** return enrollment path such as {'academic_year','term_id','level_id','session_id','group_id'} 
-     * This enrollment path will be used as filter data when user closes the mThis.div_input, which is the Register Form for new student
+     *  This enrollment path will be used as filter data when user closes the mThis.div_input, which is the Register Form for new student
     */
     this.getEnrollmentPath = ()=>{
         let p = {};
