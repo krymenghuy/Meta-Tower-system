@@ -44,4 +44,6 @@ class NotificationController extends Controller
         $res= Notifier::notify_mobile(1,$cdata);
         return JDV::raw($res);
     }
+
+    function sendChildInvoice(){}
 }

@@ -118,4 +118,11 @@ class ReportController extends Controller
     $report = new Report();
     return JDV::result($report->getReferralFeeList($req->all(),$ss));
   }
+
+  function getNonTuitionFeeList(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code != 200) return $ss;
+    $report = new Report();
+    return JDV::result($report->getNonTuitionFee($req->all(),$ss));
+  }
 }

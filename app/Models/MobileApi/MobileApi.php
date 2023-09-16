@@ -258,7 +258,7 @@ class MobileApi //xtends Model
             $row->campus = GeneralSettings::getCampus($row->campus_id)->name;
             $row->session = GeneralSettings::getSession($row->session_id)->name;
             $row->pmt_status = 'unpaid';
-            if(isset($tuition_end_date)){
+            if(isset($tuition_end_date) !=null){
                 if($tuition_end_date > date('Y-m-d') && $row->status_id == 3){
                     $row->pmt_status = 'paid';
                 }
@@ -266,7 +266,7 @@ class MobileApi //xtends Model
                     $row->pmt_status = 'expired';
                 }
                 else $row->pmt_status = 'unpaid';
-            }
+            }else $row->tuition_end_date = 'N/A';
         }
         return $rows;
     }
@@ -285,16 +285,26 @@ class MobileApi //xtends Model
     }
 
     function childLatestInvoice($childID,$ss){
-        $selectCols = 's.name,i.due_amount,i.paid_amount,i.pmt_date as payment_date,i.is_paid,i.id,i.currency_code';
-        $row = DB::table('invoices as i')->join('students as s','s.id','=','i.student_id')->where('i.student_id',$childID)->where('i.invoice_type','tuition_fee')->selectRaw($selectCols)->orderBy('i.id','desc')->limit(1)->first();
+        $selectCols = 's.name,i.due_amount,i.paid_amount,i.pmt_date,formatDate(i.pmt_date) as payment_date,i.is_paid,i.id as invoice_id,i.currency_code,e.tuition_end_date,r.receipt_number';
+        $row = DB::table('invoices as i')
+            ->join('receipts as r','r.invoice_id','i.id')
+            ->join('receipt_amount as ra','ra.invoice_id','=','r.id')
+            ->join('enrollments as e','e.id','=','i.id')
+            ->join('students as s','s.id','=','i.student_id')
+            ->where('i.student_id',$childID)
+            ->where('i.invoice_type','tuition_fee')
+            ->selectRaw($selectCols)->orderBy('i.id','desc')->limit(1)->first();
         if($row){
             $row->status_text = "unpaid";
-            if($row->is_paid ==1 ){
+            if($row->is_paid == 1 ){
                 $row->status_text = "paid";
             }
-            $row->discount = DB::table('invoice_items')->where('fee_type','tuition_fee')->where('invoice_id',$row->id)->first()->discount;
+            $row->discount = DB::table('invoice_items')->where('fee_type','tuition_fee')->where('invoice_id',$row->invoice_id)->first()->discount;
             $row->discount_type = 'percentage';
             $row->late_fee = 0;
+            // $row->receipt = self::getInvoiceReceipt($row->invoice_id);
+            $row->period = dateDiffMonths($row->pmt_date,$row->tuition_end_date);
+            unset($row->pmt_date,$row->tuition_end_date);
         }
         return $row;
     }
@@ -352,5 +362,12 @@ class MobileApi //xtends Model
 
     function isShow(){
         return DV::result((object)['isShow'=>1]);
+    }
+
+
+    function getInvoiceReceipt($inv_id){
+        $row = DB::table('receipts as r')->where('r.invoice_id',$inv_id)->join('receipt_amount as ra','r.id','=','ra.receipt_id')->selectRaw('r.receipt_amount')->get()->first();
+        if(!$row) return null;
+        return $row;
     }
 }

@@ -169,7 +169,7 @@ class StudentAttendance //extends Model
 
     function scanAttendance($arr=[],$ss=null){
         $ss = $ss?$ss:$this->ss;
-        $mins = 15; // for find class start and end time which > between < mins
+        $mins = 30; // for find class start and end time which > between < mins
         $v_rule = [
             'student_id' => '1|number|exists=students.id',
             'remarks' => '0|string|1,150'

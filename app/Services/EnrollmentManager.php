@@ -147,6 +147,7 @@ class EnrollmentManager {
       $isFinalized = 1;
       $finalized = DB::table('enrollments')->where('student_id',$student_id)->where('enroll_finalized',$isFinalized)->first();
       if($finalized) return DV::error('Enrollment has already been finalized, Cannot edit the enrollment information');
+    //   $inputs['admission_date'] = $admission_date;
       $student_id = saveData($ss,'students',['id' =>$student_id],$inputs,[],1,1);
 
       if($student_id > 0){

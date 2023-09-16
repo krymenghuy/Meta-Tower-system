@@ -1777,4 +1777,17 @@ function readFileContent($fileName=null)
         if($find) return true;
         return false;
     }
+
+    function getEndDate($startDate, $numMonths) {
+
+        $startDate = new DateTime($startDate);
+
+        $endDate = clone $startDate;
+
+        $endDate->add(new DateInterval("P{$numMonths}M"));
+
+        $endDateStr = $endDate->format('Y-m-d');
+
+        return $endDateStr;
+    }
 ?>

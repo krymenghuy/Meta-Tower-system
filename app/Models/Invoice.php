@@ -58,6 +58,8 @@ class Invoice //extends Model
         $invoiceItemID =[];
         $amount = 0;
         //$last_id = DB::table('invoices')->selectRaw('id')->orderBy('id','desc')->first();
+        $start_date = convertDate($enr_info->start_date);
+        if($start_date < date('Y-m-d')) $start_date = date('Y-m-d');
         $tuition_fee_amt = 0;
         $getTuitionFeeType = null;
         $invoice_type = 'non_tuition_fee';
@@ -114,11 +116,11 @@ class Invoice //extends Model
                     }
 
                     $fee['price'] = $enr_info->tuition;
-                    $fee['date_range'] = $enr_info->start_date .' to '. ($enr_info->tuition_end_date !=null ?$enr_info->tuition_end_date:'N/A');//date('d M Y',strtotime($enr_info->start_date)) . ' to ' . $enr_info->tuition_end_date ? date('d M Y',strtotime($enr_info->tuition_end_date)) : null;
+                    $fee['date_range'] = $start_date .' to '. ($enr_info->tuition_end_date !=null ?$enr_info->tuition_end_date:'N/A');//date('d M Y',strtotime($enr_info->start_date)) . ' to ' . $enr_info->tuition_end_date ? date('d M Y',strtotime($enr_info->tuition_end_date)) : null;
                     $fee['fee_type'] = 'tuition_fee';
                     $fee['discount'] = $enr_info->policy_discount;
                     $fee['discount_type'] = 'percentage';
-                    $fee['start_date'] = $enr_info->start_date;
+                    $fee['start_date'] = $start_date;
                     $fee['end_date'] = $enr_info->tuition_end_date;
                     $tuition_fee_amt = self::getTuitionDueByEnrollmentID($enrollment_id);
                     $getTuitionFeeType = 'tuition_type';
@@ -127,12 +129,14 @@ class Invoice //extends Model
 
                 $data_rows = DB::table('other_fees')->where('name',$fee['fee_type'])->selectRaw('amount,start_date,end_date,description,fee_type_id')->get();
                 foreach($data_rows as $row){
+                    $months = isset($fee['months'])?$fee['months']:null;
+                    $cal_end_date = getEndDate($start_date,$months);
                     $fee['price'] = $row->amount;
-                    $fee['date_range'] = isset($row->start_date)?$row->start_date . ' to ' . $row->end_date:null;
+                    $fee['date_range'] = isset($start_date)?$start_date . ' to ' . $row->end_date:null;
                     $fee['description'] = $row->description;
                     $fee['net_amount'] = $row->amount;
-                    $fee['start_date'] = $row->start_date;
-                    $fee['end_date'] = $row->end_date;
+                    $fee['start_date'] = $start_date;
+                    $fee['end_date'] = $cal_end_date;
                     $fee['fee_type_id'] = $row->fee_type_id;
                     $keep_amount[] = $row->amount;
                 }
@@ -360,13 +364,14 @@ class Invoice //extends Model
         $enrollment_id = $d->enrollment_id;
         $inv_id =$d->inv_id;
 
-        $payment_info = $inputs['payment_info'];
+        $payment_info = isset($d->parent_info) ? $d->payment_info:null;
         $cheque = isset($d->cheque) ? $d->cheque :null;
         $cash = isset($d->cash) ? $d->cash :null;
         $cheque_number = isset($d->cheque_number) ? $d->cheque_number:null;
         $currency_code = $d->currency_code;
         $exchange_rate = isset($d->exchange_rate) ? $d->exchange_rate :null;
-        if($cash){
+
+        if($cheque){
             if(!$cheque_number) return DV::error('Cheque number must be provided');
         }
 
@@ -380,8 +385,6 @@ class Invoice //extends Model
                 ->get()->first();
         $current_level = GeneralSettings::getLevel($row->level_id,$ss);
 
-        if($getInvoiceInfo->is_paid == 1) return DV::error('Invoice is already paid');
-
         $last_level = DB::table('program_levels')->where('program_id',$current_level->program_id)->selectRaw('id,name')->orderBy('id','desc')->first();
 
         $next_level = GeneralSettings::getNextLevelByCurrentLevel($row->level_id,$ss);
@@ -394,7 +397,6 @@ class Invoice //extends Model
         $end_date =$endingInfo->end_date;
         $tuition_due = $row->tuition_due;
 
-        //** add commission to student (Referal Fee (%)) */
         // if($referrer->commission>0){
         //     $x = ($tuition_due * $referrer->commission /100);
         //     $tuition_due = $tuition_due - $x;
@@ -402,22 +404,14 @@ class Invoice //extends Model
         //         'is_paid' => 1
         //     ]);
         // }
-        $deduct_referral_fee = self::getSelfCommission($row->student_id);
 
-        if($deduct_referral_fee){
-            $row->deduct_referral_fee = $deduct_referral_fee->commission;
-            if($deduct_referral_fee->commission_type == 'percentage'){
-                $x = ($tuition_due * $deduct_referral_fee->commission)/100;
-                $tuition_due = $tuition_due - $x;
-                DB::table('referals')->where('referrer_id',$row->student_id)->update([
-                    'is_paid' => 1
-                ]);
-            }else $row->total = $tuition_due - $deduct_referral_fee->commission;
-        }
+
+        if($getInvoiceInfo->is_paid == 1) return DV::error('Invoice is already paid');
 
         DB::beginTransaction();
 
         try {
+
              //**  payemnt processing */
             $pmt_arr = [
                 "academic_year" => $row->academic_year,
@@ -509,42 +503,59 @@ class Invoice //extends Model
                 $track_amt = [];
                 self::setReceiptNumber($campus,$ss->branch_id,$save_receipt,'no-tax',$issue_date,5);
 
-                foreach($payment_info as $info){
-                    $v_rule = [
-                        'payment_method_id' => '1|number|exists=payment_methods.id',
-                        "amount" => '0|number',
-                    ];
+                if($payment_info){
+                    foreach($payment_info as $info){
+                        $v_rule = [
+                            'payment_method_id' => '1|number|exists=payment_methods.id',
+                            "amount" => '0|number',
+                        ];
 
-                    $res = validateObject($info,$v_rule,1,[],$ss->lang,0,null);
-                    if($res->error) $receipt_amt = $res->error;//return DV::error($res->error);
-                    $inputs = $res->values;
-                    $inputs['invoice_id'] = $inv_id;
-                    $inputs['receipt_id'] = $save_receipt;
-                    $inputs['currency_code'] = $currency_code;
-                    $inputs['exchange_rate'] = $exchange_rate;
+                        $res = validateObject($info,$v_rule,1,[],$ss->lang,0,null);
+                        if($res->error) $receipt_amt = $res->error;//return DV::error($res->error);
+                        $inputs = $res->values;
+                        $inputs['invoice_id'] = $inv_id;
+                        $inputs['receipt_id'] = $save_receipt;
+                        $inputs['currency_code'] = $currency_code;
+                        $inputs['exchange_rate'] = $exchange_rate;
 
-                    $track_amt[] = $inputs['amount'];
+                        $track_amt[] = $inputs['amount'];
 
-                    $receipt_amt = saveData($ss,'receipt_amount',['id' => null],$inputs,[],1);
+                        $receipt_amt = saveData($ss,'receipt_amount',['id' => null],$inputs,[],1);
+                    }
                 }
 
                 $total_receive_amt = $cheque + $cash + array_sum($track_amt);
-                if($total_receive_amt){
+                if($total_receive_amt != $tuition_due){
                     DB::rollback();
-                    return DV::error('Sum of payment must be lower or equal to Tuition Due.');
+                    return DV::error('Sum of payment must be equal to Tuition Due.');
+                }
+
+
+                //** add commission to student (Referal Fee (%)) */
+                $deduct_referral_fee = self::getSelfCommission($row->student_id);
+                if($deduct_referral_fee){
+                    $row->deduct_referral_fee = $deduct_referral_fee->commission;
+                    if($deduct_referral_fee->commission_type == 'percentage'){
+                        $x = ($tuition_due * $deduct_referral_fee->commission)/100;
+                        $tuition_due = $tuition_due - $x;
+                        DB::table('referals')->where('referrer_id',$row->student_id)->update([
+                            'is_paid' => 1
+                        ]);
+                    }else $row->total = $tuition_due - $deduct_referral_fee->commission;
                 }
 
             }
-
             // If everything is successful, commit the transaction
             DB::commit();
 
-            return DV::depends($payment_processing=1,['earliestEnrollment' => $savePaymentHistory,'receipt_id'=>$save_receipt]);
+            return DV::depends($payment_processing,['earliestEnrollment' => $savePaymentHistory,'receipt_id'=>$save_receipt]);
         } catch (\Exception $e) {
             // Something went wrong, so rollback the transaction
             DB::rollback();
             return DV::error('savePaymentHistory =>'.$savePaymentHistory . ','.'save_receipt =>'.$save_receipt.','.'receipt_amt => '.$receipt_amt );
         }
+
+
 
 
         //**  payemnt processing */
