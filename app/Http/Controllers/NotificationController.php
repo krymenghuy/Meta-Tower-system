@@ -25,8 +25,8 @@ class NotificationController extends Controller
             [
                 'user_class'=>'parent',
                 'target_user_id'=>$req->official_id,
-                'persist'=>1,
-                'data'=>[],
+                //'persist'=>1,
+                'data'=>['invoice_id'=>101,'amount'=>350],
                 'title'=>$req->title?$req->title:'Test Title',
                 'message'=>$req->message?$req->message:'Test message from Admin'
             ]

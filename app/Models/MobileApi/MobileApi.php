@@ -52,7 +52,7 @@ class MobileApi //xtends Model
         $branch_id = $user->branch_id;
         $user_class = $user->user_class;
         $row = DB::table('guardians')->where('id',$official_id)->selectRaw('file_name')->first();
-        if($row){
+        if(!$row) return null;
             if ($row->file_name == null) {
                 $row = (object)['image_url' =>''];
             } else {
@@ -60,7 +60,6 @@ class MobileApi //xtends Model
                 $row->notif_public_topic = $branch_id.topic_prefix($user_class)."public" ;
                 $row->notif_private_topic = $branch_id.topic_prefix($user_class)."private".$official_id;
             }
-        }
         return $row;
     }
 
