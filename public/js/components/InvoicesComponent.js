@@ -147,9 +147,11 @@ var InvoicesComponent = new function(){
 
         mThis.tblInvoice.on('click','a.btn-inv-pay',function(e){
             e.preventDefault();
+            const tr = $(this).closest('tr');
             let op = {
                 'enrollment_id': $(this).data('enrollmentid'),
                 'inv_id': $(this).data('id'),
+                'due_amount': tr.find('.Due').text().replace('$ ',''),
                 'action':'recieve',
                 'onClose': () => {
                     mThis.itemView.showPage(null);
@@ -356,6 +358,8 @@ const InvoiceDialog = new function(){
                 if(res.status_code === 200){
                     const d = res.data;
                     mThis.preparePayment(div,d);
+                    mThis.setDueAmount(div,op);
+                    mThis.calculateDueAmount(div,op);
                     if(typeof onFinish === 'function') onFinish();
                 }
             });
@@ -384,10 +388,17 @@ const InvoiceDialog = new function(){
         let html_option = null;
         if(d && !($.isEmptyObject(d))){
             const html = [`<div class="form-group">
+                <label for="due_amount" class="form-label trans-text" data-langprop="titles.Due Amount"></label>
+                <div class="input-group flex-nowrap">
+                    <span class="input-group-text">$</span>
+                    <input type="number" class="form-control data-amount" readonly/>
+                </div>
+            </div>
+            <div class="form-group">
                 <label for="cash" class="form-label trans-text" data-langprop="titles.Cash"></label>
                 <div class="input-group flex-nowrap">
                     <span class="input-group-text">$</span>
-                    <input type="number" class="form-control data-input" data-field="cash"/>
+                    <input type="number" id="amount_first" class="form-control data-input data-calculate" data-field="cash"/>
                 </div>
             </div>
             <div class="form-group">
@@ -396,7 +407,7 @@ const InvoiceDialog = new function(){
                         <label for="cheque" class="form-label trans-text" data-langprop="titles.Cheque"></label>
                         <div class="input-group flex-nowarp">
                             <span class="input-group-text">$</span>
-                            <input type="number" class="form-control data-input rounded-end-0" data-field="cheque"/>
+                            <input type="number" id="amount_second" class="form-control data-input data-calculate rounded-end-0" data-field="cheque"/>
                         </div>
                     </div>
                     <div class="w-50">
@@ -421,7 +432,7 @@ const InvoiceDialog = new function(){
                         <label for="amount" class="form-label trans-text" data-langprop="titles.Amount"></label>
                         <div class="input-group flex-nowrap">
                             <span class="input-group-text">$</span>
-                            <input type="number" class="form-control data-input rounded-end-0" data-field="amount" readonly/>
+                            <input type="number" id="amount_third" class="form-control data-input data-calculate rounded-end-0" data-field="amount" readonly/>
                         </div>
                     </div>
                     <div class="w-50">
@@ -442,6 +453,50 @@ const InvoiceDialog = new function(){
             div.find('select.modal-select2').select2();
             mThis.checkHasBank(div);
         }
+    }
+
+    this.calculateDueAmount = (div,op) => {
+        const due_amount = op.due_amount ? op.due_amount : 0;
+        const elWillChange = div.find('.data-calculate');
+        if(due_amount > 0){
+            elWillChange.on('input',function(e){
+                e.preventDefault();
+                mThis.checkElement(div,due_amount);
+                mThis.checkSumTotal($(this),elWillChange);
+            });
+        }
+    }
+
+    this.checkElement = (div,total_amount) => {
+        let amount = total_amount ? total_amount : 0;
+        const amountFirst = div.find('#amount_first'),
+        amountSecond = div.find('#amount_second'),
+        amountThird = div.find('#amount_third');
+
+        if((amountSecond.val() > 0) && !(amountThird.val())){
+            amountFirst.val((amount - parseFloat(amountSecond.val())));
+        }
+        else if((amountSecond.val() > 0) && (amountThird.val() > 0)){
+            amountFirst.val((amount - parseFloat(amountSecond.val()) - parseFloat(amountThird.val())));
+        }
+        else if(!(amountSecond.val()) && (amountThird.val() > 0)){
+            amountFirst.val((amount - parseFloat(amountThird.val())));
+        }
+        else{
+            amountFirst.val(amount);
+        }
+    }
+
+    this.checkSumTotal = (element,elements) => {
+        elements.each(function(){
+            const el = $(this);
+            const value = el.val();
+            if(parseFloat(value) < 0){
+                const title = el.closest('.form-group').find('label').eq(0).text();
+                element.val(''), el.val('');
+                cv_interact.warning(title+' Incorrect!');
+            }
+        });
     }
 
     this.checkHasBank = (div) => {
@@ -470,7 +525,7 @@ const InvoiceDialog = new function(){
                         const title = select.find('option:selected').text();
                         el.closest('.target-change').find('label').text(title ? title : 'Cheque');
                     }
-                    el.attr('readonly',true);
+                    el.attr('readonly',true).val('').trigger('input');
                 });
             }
         });
@@ -661,6 +716,23 @@ const InvoiceDialog = new function(){
             mThis.htmlString = html;
             div.html(html);
         }
+    }
+
+    this.setDueAmount = (div,op) => {
+        const elAmount = div.find('.data-amount');
+        elAmount.val(op.due_amount ? op.due_amount : '');
+        const elCash = elAmount.closest('.form-group').next();
+        elCash.find('.data-input').val(op.due_amount ? op.due_amount : '');
+        const elContainCheque = elCash.next(),
+        elParent = elContainCheque.children(),
+        elCheque = elParent.children().eq(0).find('.data-input'),
+        elChequeNumber = elParent.children().eq(1).find('.data-input');
+        elCheque.val() > 0 ? elChequeNumber.attr('readonly',false) : elChequeNumber.attr('readonly',true);
+        elCheque.on('change',function(e){
+            e.preventDefault();
+            const value = $(this).val();
+            value > 0 ? elChequeNumber.attr('readonly',false) : elChequeNumber.attr('readonly',true);
+        });
     }
 
     this.show = (options) => {
