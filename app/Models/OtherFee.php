@@ -16,6 +16,14 @@ class OtherFee //extends Model
         $this->id = $id;
         $this->user_info = $user_info;
     }
+ 
+    function getFormOptions($ss=null){
+        $ss =$ss?$ss:$this->user_info;
+       return (object)[
+            'fee_types' => GeneralSettings::options_fee_type($ss),
+            'programs' => GeneralSettings::options_program($ss)
+        ];
+    }
 
     function save($arr=[],$id=null,$ss=null){
         $ss =$ss?$ss:$this->user_info;
@@ -25,6 +33,7 @@ class OtherFee //extends Model
             'program_id'=>'0|number|exists=programs.id|text=The provided program does not exist',
             'name'=>'1|string',
             'fee_type_id' => '1|number|exists=fee_types.id',
+            'charge_as'=>'1|choice|one_time,daily,weekly,monthly,yearly',
             'description'=>'0|string|250',
             'amount_input_mode'=>'1|choice|manual,auto|default=auto',
             //'will_expire'=>'0|number|choice|0,1',
@@ -39,6 +48,8 @@ class OtherFee //extends Model
         $res = validateObject($arr,$v_rule,true,['academic_year'=>['-']],$ss->lang,false,$unique);
         if($res->error) return Dv::error($res->error);
         $inputs =$res->values;
+        $fee_type_id = $inputs['fee_type_id'];
+        if ($fee_type_id ==1) return DV::error('Fee Type ID 1 is reserved for Tuition Fee, so it cannot be used');
         $inputs['will_expire'] = isset($inputs['will_expire']) ? $inputs['will_expire'] : 0;
         $newID = saveData($ss,'other_fees',['id'=>$id],$inputs,[],1,false);
         if($newID) self::authorize($newID,$ss);
@@ -62,8 +73,8 @@ class OtherFee //extends Model
 
     function getList($ss=null){
         $ss =$ss?$ss:$this->user_info;
-       $cols ='f.id,f.academic_year,f.amount,f.currency_code,f.name,f.description,f.create_user,f.created_at,f.program_id';
-       $rows = DB::table('other_fees as f')->where('branch_id',$ss->branch_id)
+       $cols ='f.id,t.id AS fee_type_id,t.name AS fee_type,f.charge_as,f.academic_year,f.amount,f.currency_code,f.name,f.description,f.create_user,f.created_at,f.program_id';
+       $rows = DB::table('other_fees as f')->join('fee_types as t','t.id','=','f.fee_type_id')->where('f.branch_id',$ss->branch_id)
                 ->selectRaw($cols)->get();
         foreach($rows as $row){
             $row->program_name = $this->getProgram($row->program_id);
@@ -89,8 +100,8 @@ class OtherFee //extends Model
             $str_search ="(f.name LIKE '%$search_value%' OR f.description LIKE '%$search_value%')";
         }
         $get_program =',(SELECT `name` FROM programs as p where id = f.program_id LIMIT 1) AS program_name';
-        $cols ='f.id,f.academic_year'.$get_program.',f.amount,f.currency_code,f.name,f.description,formatTime(f.updated_at) AS updated_at,f.update_user,f.authorized,f.auth_user,formatTime(f.auth_date) auth_date,f.program_id,f.amount_input_mode';
-        $query = DB::table('other_fees as f')->where('f.branch_id',$branch_id)->whereRaw($str_search)->selectRaw($cols);
+        $cols ='f.id,t.`name` AS fee_type'.$get_program.',f.amount,f.currency_code,f.name,f.description,formatTime(f.updated_at) AS updated_at,f.update_user,f.authorized,f.auth_user,formatTime(f.auth_date) auth_date,f.program_id,f.amount_input_mode,f.charge_as';
+        $query = DB::table('other_fees as f')->join('fee_types as t','t.id','=','f.fee_type_id')->where('f.branch_id',$branch_id)->whereRaw($str_search)->selectRaw($cols);
         $count_query = clone $query;
         $count = $count_query->count('f.id');
         $rows = $query->skip($skip_rows)->take($per_page)->orderByRaw('f.id DESC')->get();
@@ -114,8 +125,8 @@ class OtherFee //extends Model
     function getDetails($id=null,$ss=null){
         $ss =$ss?$ss:$this->user_info;
         $id =$id?$id:$this->id;
-       $cols ='f.id,f.amount,f.academic_year,f.program_id,f.currency_code,f.name,f.description,f.amount_input_mode,f.update_user,formatTime(f.updated_at) AS updated_at';
-       return DB::table('other_fees as f')->where('branch_id',$ss->branch_id)->where('f.id',$id)
+       $cols ='f.id,f.amount,t.id AS fee_type_id,f.charge_as,f.program_id,f.currency_code,f.`name`,f.description,f.amount_input_mode,f.update_user,formatTime(f.updated_at) AS updated_at';
+       return DB::table('other_fees as f')->join('fee_types as t','t.id','=','f.fee_type_id')->where('f.branch_id',$ss->branch_id)->where('f.id',$id)
             ->selectRaw($cols)->get()->first();
     }
 }

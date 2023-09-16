@@ -602,6 +602,7 @@ Route::group(['middleware' => 'throttle:200,1'], function () {
     //End::PolicyDiscountController
 
       //begin::OtherFeeController
+      Route::post('other-fee/form-options',[OtherFeeController::class,'getFormOptions']);
       Route::post('other-fee/list', [OtherFeeController::class, 'getList']);
       Route::post('other-fee/list-paginate', [OtherFeeController::class, 'getList_paginate']);
       Route::post('other-fee/delete', [OtherFeeController::class, 'deleteOtherFee']);

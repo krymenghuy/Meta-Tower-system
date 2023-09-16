@@ -2,28 +2,30 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use App\Events\MessageReceived;
-use App\Events\order_image_created;
-use App\Events\order_image_deleted;
+// use Illuminate\Database\Eloquent\Factories\HasFactory;
+// use Illuminate\Database\Eloquent\Model;
+// use App\Events\MessageReceived;
+// use App\Events\order_image_created;
+// use App\Events\order_image_deleted;
 
-use LaravelFCM\Facades\FCM;
-use LaravelFCM\Message\OptionsBuilder;
-use LaravelFCM\Message\PayloadDataBuilder;
-use LaravelFCM\Message\PayloadNotificationBuilder;
-use LaravelFCM\Message\Topics;
+// use LaravelFCM\Facades\FCM;
+// use LaravelFCM\Message\OptionsBuilder;
+// use LaravelFCM\Message\PayloadDataBuilder;
+// use LaravelFCM\Message\PayloadNotificationBuilder;
+// use LaravelFCM\Message\Topics;
 use App\Models\DV;
 use Carbon\Carbon;
 use DB;
 
-class Notifier extends Model
+class Notifier //extends Model
 {
-    use HasFactory;
+    //use HasFactory;
 
     //$d = {branch_id,user_id or sender_id, and other props such as "img", ...}
     static function notify_admin($event_name, $cdata){
+      $admin_user_class ='admin';
       $data =(object)$cdata;
+      $branch_id = $cdata->branch_id;
       //If "persist" is not specified then save the notification to database
       $data->persist = isset($data->persist)?$data->persist:0;
       if (!isset($data->sender_id)) $data->sender_id = isset($data->user_id)?$data->user_id:null;
@@ -57,14 +59,18 @@ class Notifier extends Model
       }catch (\Exception $e){
           return $e->getMessage();
       }
-        if($succeeded && $data->persist ==1) self::saveNotification_admin($data->branch_id,$data);
+        if($succeeded && $data->persist ==1) {
+          $ss = (object)['branch_id'=>$branch_id,'user_class'=>$admin_user_class];
+          self::saveNotification_admin($ss,$data);
+        }
         return null;
     }
 
     //$d = {title,message,image_url}
-    static function saveNotification_admin($branch_id,$d){
-      $app_id = 'DFB15FKAEEC611EG2E7C9801A7CXD1HK';
-      $user_class='admin_support';
+    static function saveNotification_admin($userInfo,$d){
+      $branch_id = $userInfo->branch_id;
+      $user_class=$userInfo->user_class;
+      $app_id = getAppIdByUserClass($user_class);
       $target_user_id =0;
       $expiry_time = convertDate(Carbon::now()->addDay(2));
       $message = mb_convert_encoding($d->message, 'UTF-8');
@@ -81,7 +87,7 @@ class Notifier extends Model
         'create_date'=>getNowTime()
       ]);
   }
-
+  
     // static function notify_relevant($event_name){
     //     switch($event_name){
     //       case 'driver_acccepted_order':{
@@ -287,7 +293,5 @@ static function notify_mobile($branch_id,$data=[]){
       foreach($rows as $row) return $row->cnt;
       return 0;
      }
-
-
 
 }

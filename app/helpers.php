@@ -1772,6 +1772,7 @@ function readFileContent($fileName=null)
     function getServerKey(){
         return Config::get('app.fcm_server_key');
     }
+    
     function findExists($table,$findKeys){
         $find = DB::table($table)->where($findKeys)->exists();
         if($find) return true;

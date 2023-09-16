@@ -8,6 +8,13 @@ use App\Models\JDV;
 use App\Models\OtherFee;
 class OtherFeeController extends Controller
 {
+    function getFormOptions(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $p = new OtherFee(null,$ss);
+        return JDV::result($p->getFormOptions());
+    }
+
     function getList(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);

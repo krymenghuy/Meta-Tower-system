@@ -2,7 +2,7 @@
 var NonTuitionFeeComponent = new function(){
     let mThis = this;
     this.currency_code ='USD';
-    this.title_prop = "Non-tuition Fee";
+    this.title_prop = "Non-tuition Fees";
     this.self = main_view.appContent.children('#_main_nonTuitionFeeComponent');
 
     this.tblNonTuitionFee = mThis.self.find('#tbl_ntf');
@@ -32,9 +32,11 @@ var NonTuitionFeeComponent = new function(){
         }
     },
     {
-        title: "Academic Year",
+        title: "Charge As",
         className: 'align-middle',
-        data: "academic_year"
+        data: (data,index,tr)=>{
+            return data.charge_as;
+        }
     },
     {
         title: "Description",
@@ -155,7 +157,11 @@ var NonTuitionFeeComponent = new function(){
 
 let NonTuitionFeeOutsideDialog = new function(){
     let mThis = this;
-    this.self = $('#dlg_ntf');
+    this.self = main_view.appContent.children('#dlg_ntf');
+    this.elChargeAs = this.self.find('#_ntf_charge_as');
+    this.elCategory = this.self.find('#_ntf_category');
+    this.elInputMode = this.self.find('#_ntf_input_mode');
+    
     this.options = {};
     let ref = {
         click: true
@@ -164,6 +170,14 @@ let NonTuitionFeeOutsideDialog = new function(){
     this.elTitle = mThis.self.find('.modal-title');
     this.btnSave = mThis.self.find('#dlg_ntf_btn_save');
     this.elProgram = mThis.self.find('#dlg_ntf_program');
+ 
+    this.elChargeAs.on('change',function(e){
+      e.preventDefault();
+      let charge_as = $(this).val();
+      const disabled = charge_as !=='one_time';
+      mThis.elInputMode.prop('disabled',disabled)
+      if(disabled) mThis.elInputMode.val('auto').trigger('change');
+    });
 
     mThis.btnSave.on('click',function(e){
         e.preventDefault();
@@ -223,11 +237,12 @@ let NonTuitionFeeOutsideDialog = new function(){
     }
 
     this.prepareFormOption = (onFinish = null) => {
-        vsapi.call(`${main_view.base_url}/api/form-option`,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/api/other-fee/form-options`,null,null).then(res => {
             let d = {};
             if(res.status_code === 200){
                 d = res.data;
             }
+            VSUtil.setComboItems(mThis.elCategory,d.fee_types,'id','fee_type',null,null,null);
             VSUtil.setComboItems(mThis.elProgram,d.programs,'id','program_name',true,'None',0);
             if(typeof onFinish === 'function') onFinish();
         });

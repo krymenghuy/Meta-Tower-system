@@ -183,7 +183,7 @@ class GeneralSettings //extends Model
     }
 
     static function options_fee_type(){
-        return DB::table('fee_types')->selectRaw('name,id')->get();
+        return DB::table('fee_types')->selectRaw('name,name as fee_type,id')->get();
     }
     static function options_session($ss){
       return DB::table('sessions as ss')->where('branch_id',$ss->branch_id)->selectRaw('id,name as session_name,shortcut')->get();
@@ -203,7 +203,7 @@ class GeneralSettings //extends Model
         // $branch_id = $ss->branch_id;
         return DB::table('programs as p')->join('program_levels as pl','p.id','=','pl.program_id')->where('pl.id',$level_id)->selectRaw('p.name as program,p.id as program_id,p.id,p.name')->first();
     }
-
+ 
     static function options_program($ss){
         $branch_id = $ss?$ss->branch_id:null;
         $str_where ='';

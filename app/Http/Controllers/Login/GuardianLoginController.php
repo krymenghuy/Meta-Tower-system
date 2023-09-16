@@ -28,10 +28,9 @@ class GuardianLoginController extends Controller
                 $result->user->image_url =$p->image_url;
                 $result->notif_public_topic =$p->notif_public_topic;
                 $result->notif_private_topic=$p->notif_private_topic;
-            }
+            }else return JDV::error('This login name does not have a corresponding parent profile information');
             // $result->user->image_url = \App\Models\PublicStorage::getProfilePhoto_url($result->user->branch_id, $result->user->user_class, $result->user->official_id);
         }
-
         return $result;
     }
 

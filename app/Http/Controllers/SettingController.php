@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 
 class SettingController extends Controller
 {
-    //
     function select_options(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
