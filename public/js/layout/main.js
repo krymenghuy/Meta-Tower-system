@@ -1,66 +1,64 @@
 'use strict';
 let main_view = new function(){
     let mThis = this;
+    this.apiCluster = 'menus';
     this.onLayoutLoad = null;
-    this.elScreenTitle = $('#screen_title');
-    this.base_url = $('meta[name="base_url"]').attr('content');
-    this.appContent = $('#_app_content');
+    this.elScreenTitle = document.querySelector('#screen_title');
+    this.elScreenTitle_mobile =  document.querySelector('#mobile_screen_title');
 
-    this.asset_url =$('meta[name="asset_url"]').attr('content'); 
-    this.top_right_menus = $('#_main_top_right_menus');
-    this.btnTasks = $('#_main_btn_tasks');
-    this.btnLang = $('#_main_btn_lang');
-    this.btnUser = $('#_main_btn_user');
-    this.btnNotif = $('#_main_btn_notif');
-  
-    this.branch_id = $('meta[name="sess_branch_id"]').attr('content');
-    this.user_id = $('meta[name="sess_user_id"]').attr('content'); 
-    
+    this.base_url = document.querySelector('meta[name="base_url"]').getAttribute('content'); //$('#__base_url').val();
+    this.asset_url =document.querySelector('meta[name="asset_url"]').getAttribute('content'); 
+    this.branch_id = document.querySelector('meta[name="sess_branch_id"]').getAttribute('content');
+    this.user_id = document.querySelector('meta[name="sess_user_id"]').getAttribute('content'); 
+
+    this.appContent = $(document.querySelector('#_app_content'));
+    //this.dialogs = this.appContent.find('#_main_dialogs');
+ 
+    this.top_right_menus = $(document.querySelector('#_main_top_right_menus'));
+    this.btnTasks = this.top_right_menus.find('#_main_btn_tasks');
+    this.btnLang = this.top_right_menus.find('#_main_btn_lang');
+    this.btnUser = this.top_right_menus.find('#_main_btn_user');
+    this.btnNotif = this.top_right_menus.find('#_main_btn_notif');
+     
     this.current_view_name = '';
     this.pusher_channel = {};
-     
-    this.clickOnClass = (target,cssClass)=>{
-        let c = [];
-        if(target.parentNode){
-            c = target.parentNode.classList?target.parentNode.classList:[];
-            if(c.contains(cssClass))
-            {
-              return target.parentNode;
-            }
-        }else{
-            c = target.classList?target.classList:[];
-            if(c.contains(cssClass)){
-                return target; 
-             }
-        }
-        return null; 
-        //return (target.parentNode.classList.contains(cssClass) || target.classList.contains(cssClass));
-    }
-     
-   //begin:: process side menus click
-    let side_menus = document.querySelector('#kt_aside_menu_wrapper');
-        side_menus.querySelectorAll('a.menu-item').forEach(lnk=>{
-            lnk.addEventListener('click',e=>{
-                e.preventDefault();
-                let href = lnk.getAttribute("href");
-                let comp = window[href];
-                comp.show(null);
-            });
-        });
-    //end::side menus click handlers
     
-    this.mnuLogout = $('#_main_lnkLogout');
-    
-    this.mnuLogout1 = $('#_main_mnu_logout');
-    this.mnuAbout1 = $('#_main_mnu_about');
+    this.MULTI_WAREHOUSE_OP =0;
+    this.DEF_TO_WAREHOUSE_ID =1;
+    this.DEF_WAREHOUSE_ID =1;
 
-    this.mnuManageBrandImages_mobile = $('#_main_lnkManageBrandImages_mobile');
-    this.mnuPromotions_mobile = $('#_main_lnkPromotions');
+    // this.clickOnClass = (target,cssClass)=>{
+    //     let c = [];
+    //     if(target.parentNode){
+    //         c = target.parentNode.classList?target.parentNode.classList:[];
+    //         if(c.contains(cssClass))
+    //         {
+    //           return target.parentNode;
+    //         }
+    //     }else{
+    //         c = target.classList?target.classList:[];
+    //         if(c.contains(cssClass)){
+    //             return target; 
+    //          }
+    //     }
+    //     return null; 
+    //     //return (target.parentNode.classList.contains(cssClass) || target.classList.contains(cssClass));
+    // }
+ 
+   //BEGIN:: process side menus click using VSRoute
+      this.side_menus = document.querySelector('#kt_aside_menu_wrapper');
+      VSRoute.init(this.side_menus.querySelectorAll('a.menu-item'),"DashboardComponent");
+    //END:: process side menus click using VSRoute
+
+    this.mnuLogout1 = this.top_right_menus.find('#_main_mnu_logout')[0];
+    this.mnuAbout1 = this.top_right_menus.find('#_main_mnu_about')[0];
+    this.mnuLogout = this.side_menus.querySelector('#_main_lnkLogout');
 
     if (!this.branch_id || !this.user_id){
         console.error('branch_id (company_id) and user_id are not found! => so Notifications will not work!');
     }
-    this.backend_channel_name = ['vsksm.backend.',this.branch_id].join('');
+    /** Toto: load "mThis.backend_channel_name" and other environment's vairables from backend's env directly */
+    this.backend_channel_name = ['dms.backend.',this.branch_id].join('');
   
     this.getEncryptData = (qstring,onFinish)=>{
         let p = {'data':qstring};
@@ -86,38 +84,62 @@ let main_view = new function(){
             e.preventDefault();
             if(mThis.prev_shown_dropdown_menus) mThis.prev_shown_dropdown_menus.removeClass('show');
             let div =  $(this).parent().find('.dropdown-menu');
-            let menu_name = ($(this).data('menu')+'').toLowerCase(); 
+            //let menu_name = ($(this).data('menu')+'').toLowerCase(); 
             div.addClass('show');
             mThis.prev_shown_dropdown_menus = div;
         });
-
         
+        // document.onclick =    (e) => {
+        //     let x = document.querySelector('body div.dropdown-menu');
+        //     let container = x.parentElement;
+          
+        //     if (container) {
+        //       if (!container.contains(e.target) && container !== e.target) {
+        //         x.classList.remove('show');
+        //       }
+        //     }
+          
+        //     e.stopPropagation();
+        //   };
+
+        // document.onclick =  (e)=> {
+        //     if (e.target.classList.contains('dropdown-item')) {
+        //       e.target.closest('.dropdown-menu').remove('show');
+        //     }
+        // };
+ 
         $(document).on('click', function (e) {
-            let x = $(this).find('body div.dropdown-menu');
-            let container = x.parent();
-            if (container) {
-                if (!container.is(e.target) && container.has(e.target).length === 0) {
-                    x.removeClass('show');
+                let x = $(this).find('body div.dropdown-menu');
+                let container = x.parent();
+                if (container) {
+                    if (!container.is(e.target) && container.has(e.target).length === 0) {
+                        x.removeClass('show');
+                    }
                 }
-            }
-            e.stopPropagation();
-        });
+                e.stopPropagation();
+            });
 
         $(document).on('click', '.dropdown-item', function (e) {
             $(this).parent().removeClass('show');
         });
         
-        this.mnuLogout.on('click',(e)=>{
-            cv_interact.confirm("Do you want to log out?",{"title":"M-Clinic System","confirmButtonText":"Log Out","cancelButtonText":"No, I stay in","context":"delete","translate":true},(e)=>{
+ 
+        this.mnuLogout.onclick = e => {
+            cv_interact.confirm("Do you want to log out?",{"title":"DMS System","confirmButtonText":"Log Out","cancelButtonText":"No, I stay in","context":"delete","translate":true},(e)=>{
                 if(e){
                     mThis.logOut();
                 }
             });
-        });
+        };
 
-        this.mnuLogout1.on('click',(e)=>{
-            mThis.mnuLogout.trigger('click');
-        });
+        this.mnuLogout1.onclick =  e=>{
+            e.preventDefault();
+            cv_interact.confirm("Do you want to log out?",{"title":"DMS System","confirmButtonText":"Log Out","cancelButtonText":"No, I stay in","context":"delete","translate":true},(e)=>{
+                if(e){
+                    mThis.logOut();
+                }
+            });
+        };
        
         if (typeof mThis.onLayoutLoad ==='function') mThis.onLayoutLoad();
     }
@@ -128,7 +150,7 @@ let main_view = new function(){
     }
     
     this.setLangMenu = (lang)=>{
-        let lnkName = $('#_main_lang_name');
+        let lnkName = mThis.top_right_menus.find('#_main_lang_name');
         let lang_name = LocaleManager.langs[lang].name;
         let icon_image = LocaleManager.langs[lang].icon_image;
 
@@ -140,12 +162,23 @@ let main_view = new function(){
         LocaleManager.lang = lang;
     }
 
-    this.addNotificationItem = (notif,update_count=true)=>{
-        let div = mThis.top_right_menus.find('.main-notif-panel');
-        div.prepend(`<div class="main-notif-item"><span class="notif-title">${notif.title}</span><span class="notif-text">${notif.message}</span></div>`);
-        if(update_count) mThis.incrementNotificationCount();
-    }
-         
+    this.addNotificationItem = (notif, update_count = true) => {
+        if(!notif || !notif.message) return;
+        let div = mThis.top_right_menus.find('.main-notif-panel')[0];
+        let emptyItems = div.querySelectorAll('.empty-item');
+        emptyItems.forEach(item => item.remove());
+        let newDiv = document.createElement('div');
+        newDiv.classList.add('main-notif-item');
+        let title = notif.title?notif.title:'General';
+        if(['na','n/a'].indexOf(title.toLowerCase()) >=0 ) title = 'General';
+        newDiv.innerHTML = `<span class="notif-title">${(title)}</span><span class="notif-text">${notif.message}</span>`;
+        div.insertBefore(newDiv, div.firstChild);
+    
+        if (update_count) {
+            mThis.incrementNotificationCount();
+        }
+    };
+          
     this.changeRequestStatus = (d) => {
         d.request_id =d.request_id?d.request_id:d.id;
         d.request_completed =d.request_completed?d.request_completed:d.completed;
@@ -173,9 +206,11 @@ let main_view = new function(){
     }
 
     this.setTitle = (title_prop=null)=>{
-        let title = LocaleManager.trans(title_prop,'titles');
-        mThis.elScreenTitle.html(title);
-        mThis.elScreenTitle.data('langprop',`titles.${title_prop}`);
+        const title = LocaleManager.trans(title_prop,'titles');
+        mThis.elScreenTitle.textContent = title;
+        mThis.elScreenTitle_mobile.textContent = title;
+        mThis.elScreenTitle.dataset.langprop = `titles.${title_prop}`;
+        mThis.elScreenTitle_mobile.dataset.langprop = `titles.${title_prop}`;
     }
 
     this.deleteAllCookies = () => {
@@ -227,7 +262,8 @@ let main_view = new function(){
                 let d = res.data;
                 if(d) {
                     let items = d.items;
-                    mThis.btnNotif.text(d.unread_count);
+                    const notifCount = mThis.btnNotif.find('span.number--notification');
+                    notifCount.text(d.unread_count);
                     if(items){
                         let c;
                         do{
@@ -241,8 +277,8 @@ let main_view = new function(){
             }
             
             if(i==0){
-                let empty_item =`<div class="main-notif-item"><span class="notif-text">No Notifications!</span></div>`;
-                mThis.top_right_menus.find('div.main-notif-panel').append(empty_item);;
+                let empty_item =`<div class="main-notif-item empty-item"><span class="p-1 text-muted text-center">No Notifications</span></div>`;
+                mThis.top_right_menus.find('div.main-notif-panel').html(empty_item);
             }
         });
     };
@@ -252,7 +288,7 @@ let main_view = new function(){
     }
 
     this.setNotificationCount = (c)=>{
-        mThis.btnNotif.data('count',c).text(c);
+        mThis.btnNotif.data('count',c).find('.number--notification').text(c);
     }
 
     this.displayTasks =()=> {
@@ -287,19 +323,23 @@ let main_view = new function(){
     };
 
     mThis.updateNotificationCount = ()=>{
-        vsapi.call(`${mThis.base_url}/api/unread-count`,null).then((res)=>{
+        vsapi.call(`${mThis.base_url}/api/unread-count`,null,false).then((res)=>{
             if(res.status_code ===200){
                 let d = res.data;
-                if(d>0) mThis.btnNotif.text(d); else mThis.btnNotif.text(0); 
+                const span = mThis.btnNotif.find('.number--notification');
+                if(d > 0) span.text(d); else span.text(0); 
+                if(d > 0) mThis.btnNotif.data('count',d); else mThis.btnNotif.data('count',0); 
             }
         });
     }
     
     mThis.incrementNotificationCount = ()=>{
+        const notifCount_span = mThis.btnNotif.find('span.number--notification');
         let d = mThis.btnNotif.data('count');
         d = d>=0?d:0;
         d++;
-        mThis.btnNotif.text(d).data('count',d);         
+        notifCount_span.text(d);
+        mThis.btnNotif.data('count',d);         
     }
 
     mThis.incrementTaskCount = ()=>{
@@ -313,12 +353,11 @@ let main_view = new function(){
 main_view.init();
 
 window.addEventListener('DOMContentLoaded',function(){
-    LocaleManager.translateZone('_app_content');
-    DashboardComponent.show(null);
+    LocaleManager.translateZone(main_view.appContent);
     main_view.setLangMenu(LocaleManager.currentLanguage.code);
 });
 
-let input = document.getElementsByTagName("input");
+const input = document.getElementsByTagName("input");
 for(let i=0; i < input.length; i++){
     input[i].onselect = function(e){
         e.preventDefault();
@@ -334,6 +373,6 @@ for(let i=0; i < input.length; i++){
 // }
 
 // document.onkeydown = function(e){
-//     if(window.event.keyCode == 123 ||  e.button==2)    
+//     if(window.event.keyCode == 123 ||  e.button == 2)    
 //         return false;
 // }

@@ -14,7 +14,7 @@
     <head>
         <base href="../">
         <meta charset="utf-8" />
-        <title>Kids World School</title>
+        <title>JTO</title>
         <link type="images/png" rel="icon" href="{{ asset('assets/images/logo/logo.png') }}"/>
         <meta name="description" content="Updates and statistics">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
@@ -52,12 +52,15 @@
                 </a>
             </div>
             <div class="kt-header-mobile__toolbar">
-                <button class="kt-header-mobile__toggler kt-header-mobile__toggler--left" id="kt_aside_mobile_toggler">
+               <button class="kt-header-mobile__toggler kt-header-mobile__toggler--left" id="kt_aside_mobile_toggler">
                     <span class="text-primary"></span>
                 </button>
                 <button class="kt-header-mobile__topbar-toggler" id="kt_header_mobile_topbar_toggler">
                     <i class="flaticon-more"></i>
                 </button>
+                <div class="d-flex flex-row justify-content-center w-100 shadow rounded-5 mb-2 mt-1">
+                    <h4 id="mobile_screen_title" class="trans-text mobile-screen-title p-1"></h4>
+                </div>
             </div>
         </div>
         <div class="kt-grid kt-grid--hor kt-grid--root">
@@ -132,7 +135,7 @@
                                                     <span class="user-menu-item">
                                                         <a id="_main_mnu_about" class="dropdown-item" href="javascript:void(0)">
                                                             <i class="fas fa-cog"></i>
-                                                            About KSM
+                                                            About JTO
                                                         </a>
                                                     </span>
                                                     <span class="user-menu-item">
@@ -159,40 +162,33 @@
                     <div id="_p2" class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" id="kt_content" style="margin-top:-15px">
                         <div id="_p1" class="row">
                             <div class="col-lg-12 shadow-box ps-4" id="_app_content">
-                                @include('layouts.inputBoxes')
-                                @include('layouts.dashboardComponent')
-                                @include('layouts.enrolledStudentsComponent')
-                                @include('layouts.onLeaveStudentsComponent')
-                                @include('layouts.tuitionFeeComponent')
-                                @include('layouts.policyDiscountComponent')
-                                @include('layouts.nonTuitionFeeComponent')
-                                @include('layouts.depositFeeComponent')
-                                @include('layouts.findStudentComponent')
-                                @include('layouts.invoicesComponent')
-                                @include('layouts.studentInformationComponent')
-                                @include('layouts.activitiesComponent')
-                                @include('layouts.discountComponent')
-                                @include('layouts.aActivitiesComponent')
-                                @include('layouts.manageAccountComponent')
-                                @include('layouts.printStudentCardsComponent')
-                                @include('layouts.idCardSettingsComponent')
-                                @include('layouts.studentAttendanceComponent')
-                                @include('layouts.studentAttendanceReportComponent')
-                                @include('layouts.reportCenterComponent')
+                            @include('layouts.dashboardComponent')
+                                @include('layouts.orderImagesComponent')
+                                @include('layouts.pickupListComponent')
+                                @include('layouts.packageListComponent')
+                                @include('layouts.completedPackageListComponent')
+                                @include('layouts.tripListComponent')
                                 @include('layouts.companyComponent')
-                                @include('layouts.locationComponent')
+                                @include('layouts.generalSettingsComponent')
+                                @include('layouts.driverPaymentComponent')
+                                @include('layouts.senderPaymentComponent')
+                                @include('layouts.merchantBalancesComponent')
+                                @include('layouts.driverBalancesComponent')
+                                @include('layouts.driverListComponent')
+                                @include('layouts.salesAgentsComponent')
+                                @include('layouts.senderListComponent')
                                 @include('layouts.um.userManagementComponent')
                                 @include('layouts.um.roleManagementComponent')
-                                @include('layouts.programComponent')
-                                @include('layouts.studentGroupComponent')
-                                @include('layouts.campusComponent')
-                                @include('layouts.termComponent')
-                                @include('layouts.academicYearComponent')
-                                @include('layouts.paymentReviewComponent')
-                                @include('layouts.requestDiscountComponent')
-                                @include('layouts.promoteStudentComponent')
-                                @include('layouts.assignStudentComponent')
-                                @include('layouts.accountRequestComponent')
+                                @include('layouts.locationComponent')
+                                @include('layouts.mobileBrandImagesComponent')
+                                @include('layouts.promotionComponent')
+                                @include('layouts.deliveryZoneComponent')
+                                @include('layouts.priceSettingsComponent')
+                                @include('layouts.exchangeRatesComponent')
+                                @include('layouts.productCategoriesComponent')
+                                @include('layouts.remarksComponent')
+                                @include('layouts.reportCenterComponent')
+                                <input type="hidden" id="defaultComponent" value="<?php echo $defaultComponent; ?>"/>
                             </div>
                         </div>
                     </div>

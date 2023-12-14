@@ -133,5 +133,16 @@ class LocationController extends Controller
     $district_id = $req->district_id?$req->district_id:-1;
     return JDV::result(\App\Models\GeneralSettings::options_commune($district_id,$ss));
   }
-  
+
+  function getZoneItems(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return $ss; //user not authenticated
+    return JDV::result(\App\Models\DeliveryZone::list($ss));
+  }
+  function getComboItems_zone(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !=200) return $ss; //user not authenticated
+    return JDV::result(\App\Models\GeneralSettings::options_zone($ss));
+  }
+
 }

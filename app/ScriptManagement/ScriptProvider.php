@@ -1,152 +1,150 @@
 <?php
-
 namespace App\ScriptManagement;
-
-class ScriptProvider
-{
-    //base in base_path()/public directory
-    /***
+    class ScriptProvider{
+         //base in base_path()/public directory
+         /***
           /assets/js
           /js/components 
-     ***/
-    protected static $bundles = [
-        'primary-loader' => [
-            'attr' => 'async',
-            'single_file' => 1,
-            'output_file' => '/dist/js/primary-loader.js',
-            'files' => [
-                '/js/components/loader.js'       
-            ]
-        ],
-        'priority-one' => [
-            'attr' => '',
-            'single_file' => 1,
-            'output_file' => '/dist/js/ksm.priority-one.min.js',
-            'files' => [
-                '/assets/js/vsapi.js',
-                '/assets/js/LocaleManager.js',
-                '/assets/js/priority-load.js'
-            ]
-        ],
-        'primary' => [
-            'attr' => null,
-            'single_file' => 1,
-            'output_file' => '/dist/js/ksm.primary.js?v=1',
-            'files' => [
-                '/assets/material-js/jquery.min.js',
-                'https://cdn.jsdelivr.net/npm/chart.js',
-            ]
-        ],
-        'primary-async' => [
-            'attr' => 'async',
-            'single_file' => 1,
-            'output_file' => '/dist/js/ksm.primary-async.js',
-            'files' => [
-                '/js/components/AuthManager.js'
-            ]
-        ],
-        'primary-defer' => [
-            'attr' => 'defer',
-            'single_file' => 1,
-            'output_file' => '/dist/js/ksm.primary-defer.js',
-            'files' => [
-                '/assets/js/string_san.js',
-                '/assets/js/vsutil.js',
-                '/assets/js/sweetalert2.all.min.js',
-                '/assets/js/sweetalert2.toast.js',
-                '/assets/js/ExchangeManager.js',
-                '/assets/js/expandableTableRow.js',
-                '/assets/vendors/general/popper.js/dist/umd/popper.js',
-                '/assets/material-js/bootstrap.min.js',
-                '/assets/js/validator.js',
-                '/assets/js/cv_interact.js',
-                '/assets/js/datehelper.js',
-                '/assets/js/date.js',
-                '/assets/js/jquery.datepicker2.js',
-                '/assets/js/select2.min.js',
-                '/assets/js/initializeSelect2.js',
-                '/assets/js/toastr.min.js',
-                '/assets/js/init.toastr.js',
-                '/assets/js/demo1/scripts.bundle.js',
-                '/assets/js/browsercontrol.js'
+         ***/
+         protected static $bundles = [
+            'primary-loader'=>[
+                'attr'=>'async',
+                'single_file'=>1,
+                'output_file'=>'/dist/js/primary-loader.js?v=2',
+                'files'=>[
+                    '/js/components/loader.js'
+                ]
             ],
-            'no-minify' => [
-                '/assets/js/crypto-js.js',
-                '/assets/js/ckeditor.js',
-            ]
-        ],
-        'components' => [
-            'attr' => 'defer',
-            'single_file' => 1,
-            'output_file' => '/dist/js/ksm.components.js',
-            'files' => [
-                '/js/components/SearchData.js',
-                '/js/components/DialogFilter.js',
-                '/js/components/RenderTableReport.js',
-                '/assets/js/formUtils.js',
-                '/js/layout/main.js?v=1',
-                '/js/components/FileChooser.js',
-                '/js/components/ImageHelper.js',
-                '/js/components/ListView.js',
-                '/js/components/UnauthComponent.js',
-                '/js/components/OptionEditor.js',
-                '/js/components/DashboardComponent.js',
-                '/js/components/InvoicesComponent.js?v=2',
-                '/js/components/ReportCenterComponent.js',
-                '/js/components/InputBoxes.js',
-                '/js/components/CompanyComponent.js?v=1',
-                '/js/components/LocationComponent.js',
-                '/js/components/EnrolledStudentsComponent.js',
-                '/js/components/OnLeaveStudentsComponent.js',
-                '/js/components/TuitionFeeComponent.js',
-                '/js/components/PolicyDiscountComponent.js',
-                '/js/components/NonTuitionFeeComponent.js',
-                '/js/components/DepositFeeComponent.js',
-                '/js/components/FindStudentComponent.js',
-                '/js/components/StudentInformationComponent.js',
-                '/js/components/ActivitiesComponent.js',
-                '/js/components/DiscountComponent.js',
-                '/js/components/AactivitiesComponent.js',
-                '/js/components/ManageAccountComponent.js',
-                '/js/components/PrintStudentCardsComponent.js',
-                '/js/components/IdCardSettingsComponent.js',
-                '/js/components/StudentAttendanceComponent.js',
-                '/js/components/StudentAttendanceReportComponent.js',
-                '/js/components/UserManagementComponent.js',
-                '/js/components/RoleManagementComponent.js',
-                '/js/components/ProgramComponent.js',
-                '/js/components/StudentGroupComponent.js',
-                '/js/components/CampusComponent.js',
-                '/js/components/TermComponent.js',
-                '/js/components/AcademicYearComponent.js',
-                '/js/components/PaymentReviewComponent.js',
-                '/js/components/RequestDiscountComponent.js',
-                '/js/components/PromoteStudentComponent.js',
-                '/js/components/AssignStudentComponent.js',
-                '/js/components/AccountRequestComponent.js',
-                'assets/js/pusher/pusher.min.js',
-                '/js/components/pusher_connect.js'
-            ]
-        ],
-        'report-scripts' => [
-            'attr' => 'defer',
-            'single_file' => 1,
-            'output_file' => '/dist/js/report-scripts.js',
-            'files' => [
-                '/assets/material-js/jquery.min.js',
-                '/assets/material-js/bootstrap.min.js'
-            ]
-        ]
-    ];
+            'priority-one'=>[
+                'attr'=>null,
+                'single_file'=>1,
+                'output_file'=>'/dist/js/priority-one.min.js?v=13',
+                'files'=>[
+                    '/assets/js/LocaleManager.js',
+                    '/assets/js/vsapi.js',
+                    '/assets/js/priority-load.js',
+                ]
+            ],
+            'primary'=>[
+                'attr'=>null,
+                'single_file'=>1,
+                'output_file'=>'/dist/js/dms.primary.js?v=2',
+                'files'=>[
+                    '/assets/material-js/jquery.min.js',
+                    '/assets/js/Chart/Chart.js',
+                ]
+            ],
+           'pdfmake'=>[
+                'attr'=>'defer',
+                'single_file'=>0,
+                'minify'=>0,
+                'output_file'=>'/dist/js/vs.pdfmake.js',
+                'files'=>[
+                    '/assets/js/pdfmake.min.js',
+                    '/assets/js/vfs_fonts.js'
+                ]
+           ],
+           'primary-defer'=>[
+                'attr'=>'defer',
+                'single_file'=>1,
+                'output_file'=>'/dist/js/dms.primary-defer.js?v=53',
+                'files'=>[
+                    '/assets/js/string_san.js',
+                    '/assets/js/vsutil.js',
+                    '/assets/js/sweetalert2.all.min.js',
+                    '/assets/js/sweetalert2.toast.js',
+                    '/assets/js/ExchangeManager.js',
+                    '/assets/js/expandableTableRow.js',
+                    '/assets/vendors/general/popper.js/dist/umd/popper.js',
+                    '/assets/material-js/bootstrap.min.js',
+                    '/assets/js/validator.js',
+                    '/assets/js/cv_interact.js',
+                    '/assets/js/datehelper.js',
+                    '/assets/js/date.js',
+                    '/assets/js/jquery.datepicker2.js',
+                    '/assets/js/select2.min.js',
+                    '/assets/js/initializeSelect2.js',
+                    '/assets/js/toastr.min.js',
+                    '/assets/js/init.toastr.js',
+                    '/assets/js/demo1/scripts.bundle.js',
+                    '/assets/js/datatables.bundle.min.js',/** to be removed soon */
+                    '/assets/js/browsercontrol.js'
+                ]
+                ,'no-minify'=>[
+                    '/assets/js/crypto-js.js', 
+                ]
+                ],
+               'components'=>[
+                    'attr'=>'defer',
+                    'single_file'=>1,
+                    'output_file'=>'/dist/js/dms.components.js?v=202',
+                    'files'=>[
+                        '/assets/js/VSRoute.js',
+                        '/js/layout/main.js?v=1',
+                        '/assets/js/formUtils.js',
+                        '/js/components/dms.utils.js',
+                        '/js/components/DialogFilter.js',
+                        //'/js/components/UnauthComponent.js',
+                        '/js/components/PDFReport.js',
+                        //'/js/components/ImageBox.js',
+                        '/js/components/ImageHelper.js',
+                        '/js/components/FileChooser.js',
+                        '/js/components/ListView.js',
+                        'js/components/DashboardComponent.js',
+                        '/js/components/CompanyComponent.js',
+                        '/js/components/CompletedPackageListComponent.js',
+                        'js/components/DeliveryPriceComponent.js',
+                        'js/components/DeliveryZoneComponent.js',
+                        'js/components/DriverListComponent.js?v=1',
+                        'js/components/DriverPaymentComponent.js',
+                        'js/components/MerchantBalancesCompoment.js',
+                        'js/components/DriverBalancesCompoment.js',
+                        'js/components/ExchangeRatesComponent.js',
+                        'js/components/GeneralSettingsComponent.js',
+                        'js/components/InputBoxes.js',
+                        'js/components/LocationComponent.js?v=1',
+                        'js/components/MobileBrandImagesComponent.js',
+                        'js/components/PackageListComponent.js',
+                        'js/components/FindPersonDialog.js',
+                        'js/components/PickupListComponent.js',
+                        'js/components/MagicEntryUtil.js',
+                        'js/components/MagicEntryDialog.js',
+                        'js/components/PriceSettingsComponent.js',
+                        'js/components/ProductCategoriesComponent.js',
+                        'js/components/RemarksComponent.js',
+                        'js/components/OrderImagesComponent.js',
+                        'js/components/PromotionComponent.js',
+                        'js/components/ReportCenterComponent.js',
+                        'js/components/SalesAgentsComponent.js',
+                        'js/components/SenderListComponent.js?v=1',
+                        'js/components/SenderPaymentComponent.js',
+                        'js/components/TripListComponent.js',
+                        'js/components/RoleManagementComponent.js',
+                        'js/components/UserManagementComponent.js',
+                        'assets/js/pusher/pusher.min.js',
+                        '/js/components/pusher_client_houxpress.js',
+                        //'/js/components/pusher_client_dms.js'
+                    ]
 
-    static function bundle($bundle_name = null)
-    {
-        if (!$bundle_name) return [];
-        return isset(self::$bundles[$bundle_name]) ? self::$bundles[$bundle_name] : [];
-    }
+                    ],
+                    'report-scripts'=>[
+                        'attr'=>'defer',
+                        'single_file'=>1,
+                        'output_file'=>'/dist/js/report-scripts.js',
+                        'files'=>[
+                            '/assets/material-js/jquery.min.js',
+                            '/assets/material-js/bootstrap.min.js'
+                        ]
+                    ]
+         ];
 
-    static function getBundles()
-    {
-        return self::$bundles;
+         static function bundle($bundle_name=null){
+            if(!$bundle_name) return [];
+             return isset(self::$bundles[$bundle_name])?self::$bundles[$bundle_name]:[];
+         }
+
+        static function getBundles(){
+            return self::$bundles;
+        }
     }
-}
+?>

@@ -56,7 +56,7 @@
         }
          
           //load langauge from json file from server through api
-          this.loadLang = (lang, onFinish=null)=>{
+          this.loadLang = async (lang, onFinish=null)=>{
             //if lang is not specified => use default language set within class "LocaleManager"    
             //lang =lang?lang:mThis.lang; 
             if(!lang) lang="en";
@@ -85,14 +85,9 @@
             
             //console.log('Fresh loaded lang content =' +lang );
             //console.log(JSON.stringify(langContent));
-            fetch([mThis.base_url,'/api/settings/lang?',params].join(''))
-            .then(response =>response.json())
-            .then(res =>{
-                //res.data | res.status_code ===200?
-                if(res instanceof Error || res.status ==='Error'){
-                     console.error(JSON.stringify(res));
-                     return;
-                }
+            const response = await fetch([mThis.base_url,'/api/settings/lang?',params].join(''));
+            if(response.ok){
+                const res =await response.json();
                 if(!res.data) alert('Language data not found! This is usually caused by missing language files');
                             let b = {};
                             console.log('fresh load lang =>' + lang);
@@ -111,12 +106,12 @@
                             
                             mThis.langs[lang].is_loading =false;
                             //mThis.langs[lang].start_time =null;
-                            if (typeof onFinish==='function') onFinish(mThis.langContent);
-            })
-            .catch(error =>{
+                            if (typeof onFinish === 'function') onFinish(mThis.langContent);
+            }else{
                 mThis.langs[lang].is_loading = false; 
-                console.error(['Error at LocaleManager.loadLang(). System reported error: ',error].join(''));
-            });
+                console.error(['Error at LocaleManager.loadLang(). System reported error: ',JSON.stringify(response.status)].join(''));
+            }
+ 
       }
 
       //Execute loadLang() function on Page load on default langauge   
@@ -186,7 +181,6 @@
                             let b = mThis.langContents[lang];
                             div.querySelectorAll('.trans-text').forEach(el=>{
                                 let f = el.dataset?el.dataset.langprop:null;
-                                console.log(f);
                                 if(f){
                                     let parts = (f+'').split('.');
                                     let section = parts[0];

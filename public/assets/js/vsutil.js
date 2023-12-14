@@ -3,7 +3,6 @@
 //####BEGIN::Start of CommonLib common class that contains all commonly used  functions
 let VSUtil = new function()
 {
-	
 	  this.base_url = ()=>{
 		 //let el = document.querySelector('meta[name="base_url"]');
 		 //return el? el.textContent:'';
@@ -16,10 +15,33 @@ let VSUtil = new function()
 		//return el? el.content:'';
 	  }
 
-	  this.clickOnClass =(target,cssClass)=>{
-		if(target.classList.contains(cssClass)) return target;
-		if(target.parentNode.classList.contains(cssClass)) return target.parentNode; 
-      }
+	  this.closestLimited = (element, selector, maxLevels=10) =>{
+		if(!selector || !element) return null;
+        let currentElement = element;
+		
+        for (let i = 0; i < maxLevels; i++) {
+            if (currentElement.matches(selector)) {
+                return currentElement;
+            }
+            currentElement = currentElement.parentElement;
+            if (!currentElement) {
+                break;  // Reached the root of the document
+            }
+        }
+        return null;  // No matching ancestor within the specified number of levels
+    }
+  
+	//used to be clickOnClass
+	this.getElementByClass = (target, cssClass) => {
+		if (!target || !cssClass) return null; // Added a check for valid input parameters
+		if (target.classList && target.classList.contains(cssClass)) return target;
+		let parent = target.parentNode;
+		while (parent && parent.classList) {
+			if (parent.classList.contains(cssClass)) return parent;
+			parent = parent.parentNode;
+		}
+		return target.closest && target.closest('.' + cssClass);
+	}	
 	   //does the same job as htmlspecialchars() PHP
 		this.escapeHtml =(str="")=>
 		{
@@ -56,25 +78,30 @@ let VSUtil = new function()
 		   <span class="dialog-error-text"></span>
 		</div> 
 	  ***/
-	 // @param show_time = 5000 (5 seconds) by detault 
-	  this.showDialogError =(dialog_id, error_message=null,timeout = 4000)=>{
-		 if((error_message+'')==='') return;
-		 if(timeout==0 || !timeout) timeout =4000;
-         let dialog = document.getElementById(dialog_id);
-		 if(dialog) {
-			let div = dialog.querySelector('.dialog-error');
-			if(div){
-				    div.style.display='block';
-				    div.classList.add('dialog-error-animation');  
-					let span = div.querySelector('.dialog-error-text');
-					span.textContent = error_message;
-					if(!span) alert(error_message);
-					setTimeout(() => {
-						div.classList.remove('dialog-error-animation');
-						div.style.display='none';
-					}, timeout);
-			}else alert(error_message);
-		}else return false;
+	// //  // @param show_time = 5000 (5 seconds) by detault 
+	//   this.showDialogError =(dialog_id, error_message=null,timeout = 4000)=>{
+	// 	 if((error_message+'')==='') return;
+	// 	 if(timeout==0 || !timeout) timeout =4000;
+    //      let dialog = document.getElementById(dialog_id);
+	// 	 if(dialog) {
+	// 		let div = dialog.querySelector('.dialog-error');
+	// 		if(div){
+	// 			    div.style.display='block';
+	// 			    div.classList.add('dialog-error-animation');  
+	// 				let span = div.querySelector('.dialog-error-text');
+	// 				span.textContent = error_message;
+	// 				if(!span) alert(error_message);
+	// 				setTimeout(() => {
+	// 					div.classList.remove('dialog-error-animation');
+	// 					div.style.display='none';
+	// 				}, timeout);
+	// 		}else alert(error_message);
+	// 	}else return false;
+	//   }
+	 
+	  this.properCase = (inputString)=>{
+		inputString = inputString || '';
+		return [inputString.charAt(0).toUpperCase(), inputString.slice(1)].join('');
 	  }
 
 	  this.hideDialogError =(dialog_id=null)=>{
@@ -204,34 +231,49 @@ let VSUtil = new function()
 		return (this.treatAsUTC(endDate) - this.treatAsUTC(startDate)) / millisecondsPerDay;
 	 }
 	 
-	 this.setComboItems = (cb=null,items=[],value_prop='id', text_prop='text', add_empty_item=false,first_option_text=null,default_value=null)=>
-	 {
-		 if (!cb || cb.length <=0) 
-		 {
-			   
-			 alert('CommonLib.setComboItems() => The Select box object specified is null or invalid');
-			 throw 'Select box is NULL or invalid. FYI: value_prop= ' + value_prop + '  text_prop = ' + text_prop + '   items: ' + JSON.stringify(items);
-			 return false;
-		 }
-		 cb.empty();
-		 if (!first_option_text) first_option_text ='<All>';
-		 if (add_empty_item == true) cb.append($('<option/>').val(0).text(first_option_text));
-		  let i=0, c;
-				  do{
-					  c = items[i];
-					  if(!c) break;
-					  cb.append($('<option/>').val(c[value_prop]).text(c[text_prop]));
-					  i++;
-				  }while(c);
-				  
-				   cb.val(default_value);
-				   if (!cb.val()){
-						cb.append($('<option/>').val(default_value).text(default_value)).val(default_value);
-				   }
-				   
-		  return true;
-	 };
-	 
+	 this.setComboItems = (select_box = null, items = [], value_prop = 'id', text_prop = 'text', add_empty_item = false, first_option_text = null, default_value = null) => {
+		// Convert jQuery object to vanilla DOM element if necessary
+		let cb = null;
+		if (select_box instanceof jQuery) {
+		  cb = select_box[0];
+		} else {
+		  cb = select_box;
+		}
+	  
+		// Check if cb is a valid DOM element
+		if (!(cb instanceof Element)) {
+		  alert('CommonLib.setComboItems() => The Select box object specified is null or invalid');
+		  throw 'Select box is NULL or invalid. FYI: value_prop= ' + value_prop + '  text_prop = ' + text_prop + '   items: ' + JSON.stringify(items);
+		}
+	  
+		cb.innerHTML = '';
+		if (!first_option_text) first_option_text = '<All>';
+		if (add_empty_item === true) {
+		  cb.appendChild(new Option(first_option_text, 0));
+		}
+	  
+		let i = 0, c = null;
+		do {
+		  c = items[i];
+		  if (!c) break;
+		  let val =c[value_prop];
+		  if(val==null || val===undefined) val ="";
+		  cb.appendChild(new Option(c[text_prop], val));
+		  i++;
+		} while (c);
+	  
+		if(default_value !==null && default_value !=='undefined'){
+			cb.value = default_value;
+			const event = new Event('change',{bubbles:true});
+			cb.dispatchEvent(event);
+		}
+		// if (!cb.value) {
+		//   cb.appendChild(new Option(default_value?default_value:'None',default_value));
+		//   cb.value = default_value;
+		// }
+		return true;
+	  }
+  	 
 	/** find data in the specified dataStore (usually dataSore object is created locally inside a specific class). Find by specified key_name and key_value then returns the found data, otherwise returns NULL **/	
    this.findData_local = (dataStores, key_value)=>
    {

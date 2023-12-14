@@ -38,22 +38,82 @@ body table{
 .box-size-invoice{
     width:150px;
     height:30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.box-size-invoice::before{
+    content: '$';
+    padding-right:5px;
+    color:#628d1e;
 }
 
 .fixed-width-p{
     width:57px;
 }
 
+.set-min-size-logo{
+    min-width: 100px;
+    min-height: 100px;
+}
+
+.set-style-as-watermark p{
+    margin:0;
+    padding:0;
+    opacity: 0.05;
+}
+
+.set-style-as-watermark p:first-child{
+    font-size: calc(6rem + 0.2vw);
+    transform: rotate(-45deg) translate(-30%,-10%);
+}
+
+.set-style-as-watermark p:last-child{
+    font-size:calc(2rem + 0.2vw);
+    transform: rotate(-45deg);
+}
+
+.set-width-print{
+    width:100%;
+    height:100%;
+}
+
+.set-width-print > div{
+    width:100%;
+    height:100%;
+}
+
+.max-height-logo-receipt{
+    height: 150px;
+    width: 25%;
+}
+
+.set-transform-to-align{
+    transform: translateX(-15%);
+}
+
+.set-font-size-receipt-student{
+    font-size: 1em;
+}
+
+.set-font-to-kh{
+    font-family: 'Khmer OS Battambang';
+}
+
+.margin-float{
+    margin-top: -6%;
+}
+
 @page{
-    size:A4;
     margin: 0;
 }
 
 @media print{
     html,
     body{
-        height:fit-content;
-        width:fit-content;
+        height:100%;
+        width:100%;
         zoom:85%;
         -webkit-print-color-adjust: exact !important;
         color-adjust: exact !important;
@@ -63,6 +123,84 @@ body table{
     body table{
         font-size:normal;
         vertical-align: middle;
+    }
+
+    .box-size-invoice{
+        width:150px;
+        height:30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .box-size-invoice::before{
+        content: '$';
+        padding-right:5px;
+        color:#628d1e;
+    }
+    
+    .fixed-width-p{
+        width:57px;
+    }
+
+    .set-min-size-logo{
+        min-width: 100px;
+        min-height: 100px;
+    }
+    
+    .set-style-as-watermark p{
+        margin:0;
+        padding:0;
+        opacity: 0.05;
+    }
+    
+    .set-style-as-watermark p:first-child{
+        font-size: calc(6rem + 0.2vw);
+        transform: rotate(-45deg) translate(-30%,-10%);
+    }
+    
+    .set-style-as-watermark p:last-child{
+        font-size: calc(2rem + 0.2vw);
+        transform: rotate(-45deg);
+    }
+
+    .set-width-print{
+        width:100%;
+        height:100%;
+    }
+
+    .set-width-print > div{
+        width:100%;
+        height:100%;
+    }
+
+    .set-zoom-tbl{
+        zoom: 80%;
+    }
+
+    .max-height-logo-receipt{
+        height: 150px;
+        width: 25%;
+    }
+    
+    .set-transform-to-align{
+        transform: translateX(-15%);
+    }
+
+    .set-font-size-receipt-student{
+        font-size: 1em;
+    }
+
+    .set-font-to-kh{
+        font-family: 'Khmer OS Battambang';
+    }
+
+    .margin-float{
+        margin-top: -6%;
+    }
+
+    @page{
+        margin:10px;
     }
 
     header, footer, aside, form{

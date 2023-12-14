@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Vectorasoft KSM'),
+    'name' => env('APP_NAME', 'DMS'),
 
     /*
     |--------------------------------------------------------------------------
@@ -120,26 +120,34 @@ return [
     */
 
     'key' => env('APP_KEY'),
+
     'cipher' => 'AES-256-CBC',
 
-    
-    'fcm_topic_prefix' => env('FCM_TOPIC_PREFIX','vsksmkidsworld'),
-    'fcm_server_key' => env('FCM_SERVER_KEY',null),
-    'fcm_sender_id' => env('FCM_SENDER_ID',null),
-    
-    /* App Id used by Vectorasoft Dev Team */
-    'app_id' => env('APP_ID','DXM20FKAEFC711EH2E7C9801A7BZD311'),
-    'customer_app_id'=> env('CUSTOMER_APP_ID','ZAM20FKAEFC722EH2E7M9801B7BZD899'),
-    'pusher_channel_prefix'=>env('PUSHER_CHANNEL_PREFIX','vsksmkidsworld.'),
-    'storage_dir'=>env('STORAGE_DIR','/uploads/companies/'),
-    'cookie_name'=>env('COOKIE_NAME'),
-
+    /*
+      the following are specific variables for DMS system.
+    */
+   'app_id'=>env('APP_ID','DFB15FKAEEC611EG2E7C9801A7CXD1HK'),
+   'merchant_app_id'=>env('MERCHANT_APP_ID','38DC051E122D11EC89909801A7B0D1FCH'),
+   'driver_app_id'=>env('DRIVER_APP_ID','584C7FF2122D11EC89909801A8B0D7XKD'),
+   'cookie_name'=>env('COOKIE_NAME','da337_acctk_1298XA'),
+   'allowed_image_types'=>[
+      'pdf','heif','png','jpg','jpeg','gif'
+   ],
+   'storage_dir'=>'/uploads/companies/',
+   'fcm_topic_prefix'=>env('FCM_TOPIC_PREFIX','dms'),
+   'fcm_server_key'=>env('FCM_SERVER_KEY',null),
+   
     /* FOR PUSHER USER AUTHENTICATION => Private Channel */
     'pusher_app_key'=>env('PUSHER_APP_KEY',null),
     'pusher_app_secret'=>env('PUSHER_APP_SECRET',null),
     'pusher_app_id'=>env('PUSHER_APP_ID',null),
     'pusher_app_cluster'=>env('PUSHER_APP_CLUSTER',null),
-
+    'pusher_channel_prefix'=>env('PUSHER_CHANNEL_PREFIX','dms.'),
+    'plasgate_sms_sender_name'=>'houexpress',
+    'plasgate_sms_password'=>'Hou$$168',
+    'plasgate_sms_user'=>'neat.houexpress@gmail.com',
+    'plasgate_private_key'=>'uKn0hCJn-x0KdAcbcKNLqGABK-p50ButFKsOETI3EObfrvJjzsEfCAnNAOcDambOmjAFHK920-uh72lMXMqGog',
+    'plasgate_sms_secret'=>'$5$rounds=535000$4QMBtMcrmPOeqsid$pcY96iwyIwixlFdJZFcQgpa8gmzK3LDT6YRAD19bwg2',  
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers
@@ -152,11 +160,9 @@ return [
     */
 
     'providers' => [
-
         /*
          * Laravel Framework Service Providers...
          */
-        Opt\ChapProvider::class,
         Illuminate\Auth\AuthServiceProvider::class,
         Illuminate\Broadcasting\BroadcastServiceProvider::class,
         Illuminate\Bus\BusServiceProvider::class,
@@ -185,7 +191,7 @@ return [
          */
 
         Collective\Html\HtmlServiceProvider::class,
-        Intervention\Image\ImageServiceProvider::class,
+        // Intervention\Image\ImageServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -248,20 +254,18 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
         'Image' => Intervention\Image\Facades\Image::class,
         'DNS1D' => Milon\Barcode\Facades\DNS1DFacade::class,
         'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class,
-        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        //'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Localization'=> App\Locales\LocaleManager::class,
         'LangContentProvider'=>App\Locales\LangContentProvider::class,
         'Sanitizer'=>App\Security\Sanitizer::class,
         'PHPCrypto'=>App\Security\PHPCrypto::class,
         'SQLDB'=>App\DB\SQLDB::class,
         'ScriptManager'=>App\ScriptManagement\ScriptManager::class,
-        'StyleManager'=>App\StyleManagement\StyleManager::class,
-    ],
-
+        'StyleManager'=>App\StyleManagement\StyleManager::class
+    ]
 ];

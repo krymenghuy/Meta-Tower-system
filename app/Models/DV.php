@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+//use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
 use Localization;
 
 //DV is the Data Valiator class
 class DV
 {
-    use HasFactory;
+    //use HasFactory;
 
    static function isEmail($e){
      return filter_var($e, FILTER_VALIDATE_EMAIL);
@@ -23,36 +23,36 @@ class DV
 
    static function getFriendlyName($col, $context){
        if($context=='academic_program'){
-                if($col=='name') 
+                if($col=='name')
                 return "Program name";
-                else if($col =='major_name') 
+                else if($col =='major_name')
                 return 'Major';
-                else if($col =='degree_name') 
+                else if($col =='degree_name')
                 return 'Degree name';
-                else return $col;        
+                else return $col;
        } else if($context =='person'){
-                if($col=='name') 
+                if($col=='name')
                     return "Name";
-                else if($col =='first_name' || $col =='first_name_kh') 
+                else if($col =='first_name' || $col =='first_name_kh')
                     return 'First name';
-                else if($col =='last_name' || $col =='last_name_kh') 
+                else if($col =='last_name' || $col =='last_name_kh')
                    return 'Last name';
-                else if($col =='phone_number') 
+                else if($col =='phone_number')
                    return 'Phone number';
-                else if($col =='email') 
-                   return 'Email';  
-                else if($col =='adr_commune_id') 
-                   return 'Address'; 
-                else if($col =='adr_city_id') 
-                   return 'Address';   
-                else if($col =='adr_district_id') 
-                   return 'Address';        
-                else return $col; 
-       } 
-       else{
-          return $col;    
+                else if($col =='email')
+                   return 'Email';
+                else if($col =='adr_commune_id')
+                   return 'Address';
+                else if($col =='adr_city_id')
+                   return 'Address';
+                else if($col =='adr_district_id')
+                   return 'Address';
+                else return $col;
        }
-        
+       else{
+          return $col;
+       }
+
    }
 
     //return error_message if any, otherwise returns NULL
@@ -69,10 +69,10 @@ class DV
             $inputs[$field] = $val;
         }
         return (object)['inputs'=>$inputs,'error'=>null];
-    } 
+    }
 
     //Check $id. If it is positive then return success([id=>$id]), otherwise return DV::error($error_message)
-    static function depends($id,$obj=null,$error_message="Something went wrong in saving data"){
+    static function depends($id,$obj=null,$error_message="Something went wrong...!"){
        if(!$id) return self::error($error_message);
        else return self::result($obj);
     }
@@ -92,14 +92,14 @@ class DV
         case 403:{
             $err_message = $error_message?$err_message:"Permission required";
             return (object)['status'=>'Error','status_code'=>403,'error_message'=>Localization::translate($lang,$error_message),'data'=>$def_result];
-        } 
+        }
         default:
         {
             return (object)['status'=>'OK','status_code'=>200,'data'=>$def_result];
         }
 
-       }  
-  
+       }
+
     }
 
     //return error object. default status code is 405 for Data Validation error;
@@ -108,7 +108,7 @@ class DV
         if(!$status_code) $status_code=0;
         if($status_code===200) $status_code =405;// Status_code cannot be 200 for error
         $err_message=$err_message?$err_message:"The data input is not correct!";
-        return (object)['error_message'=>Localization::translate($lang,$err_message,'validation'),'status'=>'Error','status_code'=>$status_code,"error_code"=>$err_code]; 
+        return (object)['error_message'=>Localization::translate($lang,$err_message,'validation'),'status'=>'Error','status_code'=>$status_code,"error_code"=>$err_code];
         //if $createLogFile ==true then todo: create log file to store error message
     }
 
@@ -122,7 +122,7 @@ class DV
     //    }
     //     return (object)['status'=>'OK','error_message'=>null];
     // }
-  
+
     //DV::result($rows) returns SELECT or query result ready to be encoded as JSON straight to be sent to Browser
     //JDV::result() and DV::result() return query results inhabited under "data" property. Example $res->data = [... query result ...]
     static function result($rows=[]){
@@ -130,8 +130,8 @@ class DV
       $data = (object)['status_code'=>200,'status'=>'OK','data'=>$rows];
       return $data;
     }
-     
-    //NOTE that JDV::success() and DV::success(['a'=>v]) returns result as object $res without "data" property that extends the additional properties. The reason is that DV::success() is used internally 
+
+    //NOTE that JDV::success() and DV::success(['a'=>v]) returns result as object $res without "data" property that extends the additional properties. The reason is that DV::success() is used internally
     static function success($arrs =[],$status_code=null){
         //default status_code for create, update, delete is "200"
         $status_code = $status_code?$status_code:200;

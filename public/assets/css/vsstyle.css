@@ -16,6 +16,11 @@ body {
   }
 }
 
+tr.row-selected td {
+  background-color: #3f3cc6;
+  color: #fff;
+}
+
 .row-expanded {
   max-height: 500px;
   opacity: 1;
@@ -76,7 +81,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   width: auto;
 }
 
-.kt-aside__brand{
+.kt-aside__brand {
   height: unset !important;
 }
 
@@ -189,7 +194,7 @@ div.dms-content-header {
 div.dms-content-body {
   width: 100%;
 }
- 
+
 .select2-container--default,
 .select2-search--dropdown {
   min-width: 160px;
@@ -266,23 +271,17 @@ tr.detail-row td {
   border-top: none !important;
 }
 
+table.header-uppercase > thead > tr > th{
+  text-transform: uppercase;
+}
+
 .combo-box-strong {
   background-color: #F5F8FD;
 }
 
 .kt-menu__link-text {
   font-size: 1.05em !important;
-  color:#0f00af;
-}
-span.simple-label,
-label.simple-label {
-  font-family: 'Robotto', 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
-  margin-top: 10px;
-  font-size: 1em;
-  padding: 3px;
-  color: #72878f;
-  font-weight: normal;
-  display: block;
+  color: #0f00af;
 }
 
 .error_text {
@@ -335,7 +334,7 @@ label.simple-label {
   }
 }
 
-.btn-working{
+.btn-working {
   pointer-events: none;
   position: relative;
   text-decoration: none;
@@ -347,30 +346,44 @@ label.simple-label {
   cursor: pointer !important;
 }
 
-.btn-working::before{
+.btn-working::before {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
   width: 400%;
   height: 100%;
-  background: linear-gradient(115deg,#4fcf70,#fad648,#a767e5,#12bcfe,#44ce7b);
+  background: linear-gradient(115deg, #4fcf70, #fad648, #a767e5, #12bcfe, #44ce7b);
   background-size: 25% 100%;
+  -webkit-animation: an-at-keyframe-css-at-rule-that-translates-via-the-transform-property-the-background-by-negative-25-percent-of-its-width-so-that-it-gives-a-nice-border-animation_-We-use-the-translate-property-to-have-a-nice-transition-so-it_s-not-a-jerk-of-a-start-or-stop .75s linear infinite;
+  -moz-animation: an-at-keyframe-css-at-rule-that-translates-via-the-transform-property-the-background-by-negative-25-percent-of-its-width-so-that-it-gives-a-nice-border-animation_-We-use-the-translate-property-to-have-a-nice-transition-so-it_s-not-a-jerk-of-a-start-or-stop .75s linear infinite;
   animation: an-at-keyframe-css-at-rule-that-translates-via-the-transform-property-the-background-by-negative-25-percent-of-its-width-so-that-it-gives-a-nice-border-animation_-We-use-the-translate-property-to-have-a-nice-transition-so-it_s-not-a-jerk-of-a-start-or-stop .75s linear infinite;
   animation-play-state: paused;
+  -webkit-animation-play-state: paused;
+  -moz-animation-play-state: paused;
   translate: -5% 0%;
+  -webkit-transition: -5% 0%;
+  -moz-transition: -5% 0%;
   transition: translate 0.25s ease-out;
+  -webkit-transition: translate 0.25s ease-out;
+  -moz-transition: traslate 0.25s ease-out;
 }
 
 .btn-working:before {
   animation-play-state: running;
+  -webkit-animation-play-state: running;
+  -moz-animation-play-state: running;
   transition-duration: 0.75s;
+  -webkit-transition-duration: 0.75s;
+  -moz-transition-duration: 0.75s;
   translate: 0% 0%;
 }
 
 @keyframes an-at-keyframe-css-at-rule-that-translates-via-the-transform-property-the-background-by-negative-25-percent-of-its-width-so-that-it-gives-a-nice-border-animation_-We-use-the-translate-property-to-have-a-nice-transition-so-it_s-not-a-jerk-of-a-start-or-stop {
-  to{
+  to {
     transform: translateX(-25%);
+    -webkit-transform: translate(-25%);
+    -moz-transform: translate(-25%);
   }
 }
 
@@ -384,12 +397,12 @@ label.simple-label {
   height: 100%;
 }
 
-.img-logo{
+.img-logo {
   max-width: 85px;
 }
 
-.kt-aside__brand .kt-aside__brand-logo{
+.kt-aside__brand .kt-aside__brand-logo {
   display: flex;
   justify-content: center;
-  width:100%;
+  width: 100%;
 }

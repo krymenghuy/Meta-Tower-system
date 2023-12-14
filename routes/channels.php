@@ -17,10 +17,10 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
  
-//backend's channel broadcasting to fontend view
-Broadcast::channel(channel_prefix().'backend.{branch_id}', function ($data,$branch_id) {
+//backend's channel broadcasting to font end view
+Broadcast::channel('backend.{branch_id}', function ($data,$branch_id) {
     //if ($branch_id <=0 || $user_id <=0) return false;
-    return ($data->branch_id == $branch_id);
+    return ($data->branch_id === $branch_id); 
     //return true;
 });
 

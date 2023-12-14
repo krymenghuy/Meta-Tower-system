@@ -5,47 +5,36 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\MobileAppSettings;
-use Session;
-
+use App\Models\UM;
+use App\Models\JDV;
+  
 class MobileAppSettingsController extends Controller
 {
-    protected $mobileAppSettingsModel;
-    public function __construct()
-    {
-        $this->mobileAppSettingsModel = new MobileAppSettings(); 
-    }
-
+     
     //saveBrandIamge, saveBrandPhoto
     //$d = {app_name, 'file_type','photo_data'}
-    function saveBrandImage(Request $request){
-        $r = $this->mobileAppSettingsModel->saveBrandImage($request);
-        if($r =='#350') 
-          return makeJsonResponse($r,350); // user not authenticated
-        else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-        return makeJsonResponse($r);
-    }
-    function deleteBrandImage(Request $request){
-        $r = $this->mobileAppSettingsModel->deleteBrandImage($request);
-        if($r =='#350') 
-          return makeJsonResponse($r,350); // user not authenticated
-        else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-        return makeJsonResponse($r);
-    }
-     
-    function getContactInfo(Request $request){
-        $r = $this->mobileAppSettingsModel->getContactInfo($request);
-        if($r =='#350') 
-          return makeJsonResponse($r,350); // user not authenticated
-        else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-        return makeJsonResponse($r);
+    function saveBrandImage(Request $req){
+       $ss = UM::getUserInfoByToken($req,-1);
+       if($ss->status_code !==200) return JDV::raw($ss);
+       $app_id = UM::getAppIdByUserClass($req->user_class); 
+       $res = MobileAppSettings::saveBrandImage($req->all(),$app_id,$ss);
+       return JDV::raw($res);
     }
 
+    function deleteBrandImage(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      $app_id = UM::getAppIdByUserClass($req->user_class);
+      $res = MobileAppSettings::deleteBrandImage($req->id,$app_id,$ss);
+      return JDV::raw($res);
+    }
+    
     //getBrandImages
-    function getMobileBrandImages(Request $request){
-        $r = $this->mobileAppSettingsModel->getMobileBrandImages($request);
-        if($r =='#350') 
-          return makeJsonResponse($r,350); // user not authenticated
-        else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-        return makeJsonResponse($r);
+    function getBrandImages(Request $req){
+      //$ss = UM::getUserInfoByToken($req,-1);
+      //if($ss->status_code !==200) return JDV::raw($ss);
+      $ss = (object)['branch_id'=>1];
+      $app_id = UM::getAppIdByUserClass($req->user_class); 
+       return JDV::result(MobileAppSettings::getBrandImages($app_id));
     }
 }

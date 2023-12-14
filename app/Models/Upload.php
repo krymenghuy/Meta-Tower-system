@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Session;
 use DB;
 use UM;
+use Sanitizer;
 use Carbon\Carbon;
 use App\Models\PublicStorage;
 use App\Models\PrivateStorage;

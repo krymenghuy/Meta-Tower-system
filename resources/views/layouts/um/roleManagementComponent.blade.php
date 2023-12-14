@@ -6,22 +6,24 @@
     font-weight: bold;
   }
 
-  table#_um_tblRoles .row-selected {
-    background-color: #D6EAF8;
-  }
-
   table#_um_tblRoles td {
-    vertical-align: middle;
+    vertical-align: 'middle';
+    border-top: none;
+    border-bottom: 1px solid #D7DBDB;
   }
-
-  table#_um_addprn_tblPrns > thead th {
+  tr.user-found td{
+    color:green !important;
+  }
+  table#_um_addprn_tblPrns>thead th {
     font-size: 1em;
     font-weight: normal;
     text-transform: uppercase;
   }
 
   .prn_btn_action {
-    width: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .tr-allowed td.prn-name {
@@ -41,116 +43,127 @@
   }
 </style>
 
-<div id="_um_roleManagementComponent" class="mobile-padding bg-white p-3 rounded-3" style="display:none">
+<div id="_um_roleManagementComponent" style="width:auto;display:none;margin:15px 15px 15px">
   <div id="_um_roleListPanel" style="display:none">
     <div class="row">
       <div class="col-lg-4">
-        <div>
-          <span style="font-size:0.9em;font-weight:bold;padding:2px;color:grey">AVAILABLE ROLES</span>
+        <div class="bg-white p-3 rounded-top-3">
+          <span class="fs-bold p-1 text-body-secondary">AVAILABLE ROLES</span>
           <a href="javascript:void(0)" id="_um_lnkNewRole">
-            <i class="fa fa-plus-circle" style="color:green"></i>
+            <i class="fa fa-plus-circle text-success fs-5"></i>
           </a>
         </div>
-        <div class="table_wrapper border-style1 border rounded-3 mt-2" style="height:40vw">
-          <table id="_um_tblRoles" class="table">
-            <tbody id="_um_tblRoles_body"></tbody>
-          </table>
+        <div class="d-flex flex-column p-3 bg-white rounded-bottom-3" style="height:40vw">
+          <div class="d-flex flex-row gap-2">
+             <input id="_um_search_user_role" type="text" class="form-control" placeholder="Search user or role">
+          </div>
+          <div class="d-flex table-responsive-hover mt-2">
+            <table id="_um_tblRoles" class="table">
+                <tbody id="_um_tblRoles_body"></tbody>
+              </table>
+          </div>
         </div>
       </div>
       <div class="col-lg-8">
         <div class="tab-view" id="_um_roleTabView">
-          <div class="tab-header d-flex align-items-center gap-2">
-            <a style="color:#000;" href="javascript:void(0)" class="tab-button dark-text" data-viewname="users" id="_um_roletab_button_users" data-target="tab_panel_users">USERS</a>
-            <a style="color:#000;" href="javascript:void(0)" class="tab-button dark-text" data-viewname="modules" id="_um_roletab_button_modules" data-target="tab_panel_modules">MODULES</a>
-            <a style="color:#000;" href="javascript:void(0)" class="tab-button dark-text" data-viewname="permissions" id="_um_roletab_button_prns" data-target="tab_panel_prns">PERMISSIONS</a>
+          <div class="tab-header gap-2 set-parent-active">
+            <a href="javascript:void(0)" class="tab-button" data-viewname="users" id="_um_roletab_button_users" data-target="tab_panel_users">
+              <span class="bg-white p-2 rounded-3">USERS</span>
+            </a>
+            <a href="javascript:void(0)" class="tab-button" data-viewname="modules" id="_um_roletab_button_modules" data-target="tab_panel_modules">
+              <span class="bg-white p-2 rounded-3">MODULES</span>
+            </a>
+            <a href="javascript:void(0)" class="tab-button" data-viewname="permissions" id="_um_roletab_button_prns" data-target="tab_panel_prns">
+              <span class="bg-white rounded-3 p-2">PERMISSIONS</span>
+            </a>
           </div>
           <div class="tab-body">
-            <div class="tab-panel border-style1" data-viewname="users" id="_um_tab_panel_users" style="height:40vw;padding:15px">
-              <span style="color:grey;font-weight:bold;font-size:1em;margin-top:10px" id="_um_roletab_users_text">
-                Members of the selected role
-              </span>
+            <div class="tab-panel border-style1 p-3 bg-white mt-4 rounded-3" data-viewname="users" id="_um_tab_panel_users" style="height:40vw">
+              <span class="text-body-secondary fw-bold fs-6" id="_um_roletab_users_text">Members of the selected role</span>
               <a href="javascript:void(0)" id="_um_lnkAddRemMember">
-                (<i class="fa fa-plus" style="color:green"></i>)
+                (<i class="fa fa-plus fs-5 text-success"></i>)
               </a>
-              <div class="table-responsive border p-3 rounded-3 mt-2">
-                <table id="_um_tblRoleMembers" class="table"></table>
+              <div class="border p-3 mt-2 rounded-3">
+                 <div class="w-100" id="_div_role_members"></div>
               </div>
             </div>
-            <div class="tab-panel border-style1" data-viewname="modules" id="_um_tab_panel_modules" style="height:40vw;padding:15px">
-              <span style="color:grey;font-weight:bold;font-size:12px" id="_um_roletab_module_text">
-                Accessible modules
-              </span>
+            <div class="tab-panel border-style1 p-3 rounded-3 bg-white mt-4" data-viewname="modules" id="_um_tab_panel_modules" style="height:40vw">
+              <span class="text-body-secondary fw-bold" id="_um_roletab_module_text">Accessible modules</span>
               <a href="javascript:void(0)" id="_um_lnkAddModule">
-                (<i class="fa fa-plus" style="color:green"></i>)
+                (<i class="fa fa-plus fs-5 text-success"></i>)
               </a>
               <div style="height:10px;border-bottom:1.2px solid orange;margin-bottom:15px"></div>
-              <table id="_um_tblRoleModules" class="table fixed-body-table no-cell-border">
-                <tbody id="_um_tblRoleModules_body" style="height:30vw"></tbody>
-              </table>
+              <div class="table-responsive table-responsive-hover border rounded-3" style="height:90%">
+                <table id="_um_tblRoleModules" class="table fixed-body-table no-cell-border">
+                  <tbody id="_um_tblRoleModules_body"></tbody>
+                </table>
+              </div>
             </div>
-            <div class="tab-panel border-style1" data-viewname="permissions" id="_um_tab_panel_prns" style="height:40vw;padding:15px">
-              <a href="javascript:void(0)" style="color:green" id="_um_roleprn_lnk_add">
-                <i class="fa fa-plus" style="color:green"></i>
-                Manage
-              </a>
-              <a style="display:none" href="javascript:void(0)" style="color:orange" id="_um_roleprn_lnkLargeView">
-                <i class="fa fa-list-alt" style="color:orange"></i>
-                Advanced
-              </a>
+            <div class="tab-panel border-style1 bg-white rounded-3 mt-4" data-viewname="permissions" id="_um_tab_panel_prns" style="height:40vw">
+              <div class="d-flex align-items-center px-2">
+                <a href="javascript:void(0)" id="_um_roleprn_lnk_add">
+                  <i class="fa fa-plus fs-5 text-success"></i>
+                  <span>Manage</span>
+                </a>
+              </div>
               <div style="height:10px;border-bottom:1.2px solid green"></div>
-              <table id="_um_roleprn_tblPrns" class="table fixed-body-table">
-                <thead>
-                  <tr>
-                    <th style="width:25%">Code</th>
-                    <th style="width:50%">Description</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody id="_um_roleprn_tblPrns_body" style="height:25vw"></tbody>
-              </table>
+              <div class="table-responsive table-responsive-hover mt-2 rounded-3">
+                <table id="_um_roleprn_tblPrns" class="table fixed-body-table">
+                  <thead>
+                    <tr>
+                      <th style="width:25%">Code</th>
+                      <th style="width:50%">Description</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="_um_roleprn_tblPrns_body" style="height:25vw"></tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <div id="_um_edit_role" style="width:auto;display:none">
-    <div class="row">
-      <div class="col-lg-6">
-        <a href="javascript:void(0)" id="_um_role_backToRoleList">
-          <i class="fa fa-chevron-left" style="color:blue"></i>
-          Back
-        </a>
-        <div style="height:20px"></div>
-        <span id="_um_edit_role_title" class="text-secondary d-block p-2"></span>
-        <div class="border border-rounded shadow-lg p-3">
-          <div class="form-group">
-            <label class="control-label">Role Name</label>
-            <input type="text" class="form-control" id="_um_edit_role_name" placeholder="Role name" />
-          </div>
-          <div class="form-group">
-            <label class="control-label">User Class</label>
-            <div class="width-select-dialog">
-              <select class="form-select modal-select2" id="_um_edit_userclass" placeholder="User Class"></select>
+  <div id="_um_edit_role" style="display:none">
+    <div class="bg-white p-3 rounded-3">
+      <div class="row">
+        <div class="col-lg-6">
+          <a href="javascript:void(0)" id="_um_role_backToRoleList">
+            <i class="fa fa-chevron-left text-primary"></i>
+            <span class="p-2 bg-warning-subtle rounded-3">Back</span>
+          </a>
+          <div style="height:20px"></div>
+          <span id="_um_edit_role_title" class="text-dark p-2"></span>
+          <div class="border border-rounded p-3 rounded-3 mt-2">
+            <div class="form-group">
+              <label class="control-label">Role Name</label>
+              <input type="text" class="form-control" id="_um_edit_role_name" placeholder="Role name" />
+            </div>
+            <div class="form-group">
+              <label class="control-label">User Class</label>
+              <div class="min-width-select max-width-select">
+                <select class="modal-select2" id="_um_edit_userclass" placeholder="User Class"></select>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="row" style="margin-top:15px">
-      <div class="col-lg-6">
-        <div style="float:left">
-          <span id="_um_edit_role_error" class="error_text"></span>
-        </div>
-        <div style="float:right">
-          <button type="button" class="btn btn-warning" id="_um_btnBackToRoleList">
-            <i class="fa fa-chevron-left" style="color:blue"></i>
-            Back
-          </button>
-          <button type="button" class="btn btn-primary" id="_um_btnSaveRole">
-            <i class="fa fa-save"></i>
-            Save
-          </button>
+      <div class="row" style="margin-top:15px">
+        <div class="col-lg-6">
+          <div style="float:left">
+            <span id="_um_edit_role_error" class="error_text"></span>
+          </div>
+          <div style="float:right">
+            <button type="button" class="btn btn-warning" id="_um_btnBackToRoleList">
+              <i class="fa fa-chevron-left" style="color:blue"></i>
+              <span>Back</span>
+            </button>
+            <button type="button" class="btn btn-primary" id="_um_btnSaveRole">
+              <i class="fa fa-save"></i>
+              <span>Save</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -159,14 +172,12 @@
     <div class="row">
       <div class="col-lg-12">
         <a id="_um_prnlist_backToRoleList" href="javascript:void(0)">
-          <i class="fa fa-angle-double-left" style="color:green"></i>
-          Back
+          <i class="fa fa-angle-double-left text-success"></i>
+          <span>Back</span>
         </a>
-        <span id="_um_prnlist_lblTitle" style="color:grey;font-weight:bold;font-size:15px">
-          Permission List
-        </span>
+        <span id="_um_prnlist_lblTitle" class="text-body-secondary">Permission List</span>
         <a href="javascript:void(0)" id="_um_prnlist_lnkAddPrn">
-          (<i class="fa fa-plus" style="color:blue"></i>)
+          (<i class="fa fa-plus text-primary"></i>)
         </a>
         <a id="_um_prnlist_lnkCreatePrn" href="javascript:void(0)" style="float:right">Create permission</a>
         <a id="_um_prnlist_lnkRefeshPrn" href="javascript:void(0)" style="float:right">Refresh Prns</a>
@@ -204,20 +215,16 @@
         <div class="row">
           <div class="form-group col-md-6">
             <label for="_um_createprn_module" class="col-form-label">Permission Number</label>
-            <div>
-              <input type="number" class="form-control" id="_um_createprn_prn_id">
-            </div>
+            <input type="number" class="form-control" id="_um_createprn_prn_id">
           </div>
           <div class="form-group col-md-6">
             <label for="_um_createprn_module" class="col-form-label">Permission Name</label>
-            <div>
-              <input type="text" class="form-control" id="_um_createprn_prn">
-            </div>
+            <input type="text" class="form-control" id="_um_createprn_prn">
           </div>
           <div class="form-group col-md-12">
             <label for="_um_createprn_module" class="col-form-label">This permission belongs to</label>
-            <div class="width-select-dialog">
-              <select class="modal-select2 form-control" id="_um_createprn_module"></select>
+            <div class="min-width-select max-width-select">
+              <select class="modal-select2" id="_um_createprn_module"></select>
             </div>
           </div>
         </div>
@@ -226,8 +233,12 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary" id="_um_createprn_btnOK">Create Now</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <span>Cancel</span>
+        </button>
+        <button type="button" class="btn btn-primary" id="_um_createprn_btnOK">
+          <span>Create Now</span>
+        </button>
       </div>
     </div>
   </div>
@@ -263,7 +274,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary height" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>

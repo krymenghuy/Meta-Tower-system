@@ -1,31 +1,34 @@
 <?php
 
 namespace App\Models;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+//use Illuminate\Database\Eloquent\Factories\HasFactory;
+//use Illuminate\Database\Eloquent\Model;
+use App\Models\UM;
+use App\Models\DV;
 use Session;
 use Carbon\Carbon;
 use DB;
+use Sanitizer;
+use Config;
 
-class SMS extends Model
+class SMS //extends Model
 {
-    use HasFactory;
-
+    //use HasFactory;
     //$d = {phone_number , text, [sender_name]}
     function sendSMS($d){
-        $ss = getSessionInfo($d);
-        if(!$ss) return '#350'; //user not authenticated
-        if (!prn_allowed(2)) return '@'; //need permission to do this task
-        $branch_id = sanitize($ss->branch_id);
-        $phone_numbers = isset($d->phone_numbers)?sanitize($d->phone_numbers):null;
+        $ss = UM::getUserInfoByToken($d);
+        if ($ss->status_code !==200) return $ss; //user not authenticated
+         //need permission to do this task
+        $branch_id = Sanitizer::sanitize($ss->branch_id);
+        $phone_numbers = isset($d->phone_numbers)?Sanitizer::sanitize($d->phone_numbers):null;
         $text = isset($d->text)?$d->text:null;
         $sender_name = isset($d->sender_name)?$d->sender_name:null;
         return self::send($phone_numbers,$text,$sender_name='SMS Info');
     }
      
     static function _getAuthCode(){
-        $password = 'Ex0!s9Y^';
-        $user_name ='broexpress_prp';
+        $password = Config::get('app.plasgate_sms_password'); //'Ex0!s9Y^'
+        $user_name =Config::get('app.plasgate_sms_user'); //'broexpress_prp';
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "https://restapi.plasgate.com/v1/authorize");
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
@@ -45,8 +48,7 @@ class SMS extends Model
         $try_timeout = 600;
         curl_setopt($ch,CURLOPT_TIMEOUT,$try_timeout); // Set timeout to 60s
 		curl_setopt($ch, CURLOPT_FAILONERROR, true); // Required for HTTP error codes to be reported via our call to curl_error($ch)
-		 
-			 
+		  	 
 		// Execute request
 		$json_string = curl_exec($ch);
 
@@ -58,27 +60,14 @@ class SMS extends Model
 		}
         curl_close($ch);
         $result = (object)array('status'=>'OK','error_message'=>null);
-        if ($err_message == null) {
-            $result->status='OK';
-            $result->error_message = null;
-        }else {
-            $result->status ='Error';
-            $result->error_message = $err_message;
-            return $result;
-        }
+        if($err_message) return DV::error($err_message);
         $obj = json_decode($json_string);
-        $result->authorization_code = $obj->data->authorization_code;
-        return $result;
+        return DV::success(['authorization_code'=>$obj->data->authorization_code]);
     }
 
     static function _getAccessToken(){
-        $result = (object)array('status'=>'OK','error_message'=>null); 
         $m = self::_getAuthCode();
-        if ($m->status =='Error') {
-            $result->status = 'Error';
-            $result->error_message = $m->error_message;
-            return $result; 
-        }
+        if ($m->status =='Error') return DV::error($m->error_message);  
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "https://restapi.plasgate.com/v1/accesstoken");
@@ -110,18 +99,9 @@ class SMS extends Model
 			 if (strpos($err_message,'Could not resolve host') == true) $err_message ="Failed to connect to the SMS server. You may check your internet connection";	   
 		}
         curl_close($ch);
-        $result = (object)array('status'=>'OK','error_message'=>null);
-        if ($err_message == null) {
-            $result->status='OK';
-            $result->error_message = null;
-        }else {
-            $result->status->status='Error';
-            $result->error_message = $err_message;
-            return $result;
-        }
+        if($err_message) return DV::error($err_message);
         $obj = json_decode($json_string,true);
-        $result->access_token = $obj['data']['access_token'];
-        return $result;
+        return DV::success(['access_token'=>$obj['data']['access_token']]);
     }
     
     static function formatPhoneNumber_static($d){
@@ -145,40 +125,53 @@ class SMS extends Model
     }
 
     // send() is a static function and is the same as _sendSMS(). But $this->sendSMS() is different in @parameter
-    static function send($phone_numbers,$text=null,$sender_name= null){
-        if (empty($sender_name)) $sender_name ='SMS Info'; //Note that $sender_name or senderID needs to be registered with Plasgate telecom company
-        if (empty($text) || empty($phone_numbers)) return "phone_numbers or text cannot be empty";
-        $nums = [];
-        $result = (object)array('status'=>'OK','error_message'=>null);
-        if (strpos('|',$phone_numbers)) 
-             $nums = explode('|',$phone_numbers);
-        else $nums = explode(',',$phone_numbers);
-        $numbers = [];
-        foreach($nums as $num) $numbers[] = self::formatPhoneNumber_static($num);  
-        $fields = array(
-          (object)['number'=>$numbers, //must be array
-          'senderID'=>$sender_name,
-          'text'=>$text,
-          'type'=>'sms',
-          "lifeTime"=>555,
-          "delivery"=>false]
-        );
- 
-        $m = self::_getAccessToken();
-        if ($m->status =='Error') {
-            $result->status ='Error';
-            $result->error_message = $m->error_message;
-            return $result;
-        }
+    static function send($phone_number,$text=null,$sender_name= null){
+        //Note that $sender_name or senderID needs to be registered with Plasgate telecom company
+        if (!$sender_name) $sender_name = config::get('app.plasgate_sms_sender_name');
+        if (empty($text) || empty($phone_number)) return DV::error("phone_number or text cannot be empty");
+        // $nums = [];
+        // $result = (object)array('status'=>'OK','error_message'=>null);
+        // if (strpos('|',$phone_numbers)) 
+        //      $nums = explode('|',$phone_numbers);
+        // else $nums = explode(',',$phone_numbers);
+        // $numbers = [];
+        // foreach($nums as $num) $numbers[] = self::formatPhoneNumber_static($num);  
+        $fields = [
+          'to'=>self::formatPhoneNumber_static($phone_number),
+          'username'=>Config::get('app.plasgate_sms_user'),
+          'password'=>Config::get('app.plasgate_sms_password'),
+          'sender'=>$sender_name,
+          'content'=>$text,
+          "dlr"=> "no",
+            //"dlr_method"=> "POST",
+            //"dlr_level"=> 2,
+            //"dlr_url"=> "http://example.com/callback"
+        ];
 
+        // $fields = array(
+        //     (object)['globals'=>(object)[
+        //           'sender'=>Config::get('app.plasgate_sms_sender_name'),
+        //           'messages'=>[
+        //             (object)['to'=>$numbers,'content'=>$text] 
+        //           ]
+        //        ]
+        //     ]
+        //   );
+ 
+        //$m = self::_getAccessToken();
+        //if ($m->status ==='Error') return DV::error($m->error_message);
+        
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://restapi.plasgate.com/v1/send");
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Content-Type: application/json',
-            'X-Access-Token: '.$m->access_token
-        ));
+        //curl_setopt($ch, CURLOPT_URL, "https://cloudapi.plasgate.com/rest/send");
+        /** { "sender": "SMS Info", "to": "855123456789", "content": "Hello from rest #ma#API#ma#" } **/
+        curl_setopt($ch, CURLOPT_URL, "https://cloudapi.plasgate.com/api/send");
+        /** { "globals": { "sender": "SMS Info" }, "messages": [ { "to": ["855123456780", "855123456781"], "content": "Hello from rest API" } ] } **/
+        // curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        //     'Content-Type:*.*',
+        //     'X-Secret:'.$sms_secret
+        // ));
              //curl_setopt($ch, CURLOPT_HTTPHEADER, array('x-api-key: XXXXXX', 'Content-Type: text/plain'));
-             curl_setopt($ch,CURLOPT_POSTFIELDS, json_encode($fields));     
+             curl_setopt($ch,CURLOPT_POSTFIELDS, $fields);  
 
 				//curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
 				 
@@ -186,7 +179,8 @@ class SMS extends Model
 				//WHEN SET CURLOPT_RETURNTRANSFER TO FALSE => the resulting json string has '1' at the end of string causing fucking shit error in ajax receiving method.
 				//curl_setopt($ch, CURLOPT_RETURNTRANSFER,false); 
               //curl_setopt($ch, CURLOPT_HEADER, TRUE);
-            curl_setopt($ch, CURLOPT_POST, 1);
+              //curl_setopt($ch, CURLOPT_POST, 1);
+             //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET"); 
             //Following two lines make insecure connection, by neglecting SSL verification
             curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, 1);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
@@ -216,28 +210,35 @@ class SMS extends Model
 				   
 				}
         curl_close($ch);
-         
-        if ($err_message == null) {
-          $result->status ='OK';
-          $result->error_message = null;
-          $result->data = json_decode($json_string,true);
-          return $result;
-        }else {
-            $result->status ='Error';
-            $result->error_message = $err_message;
-            $result->data = json_decode($json_string,true);
-            return $result;
-        }
+        if($err_message) return DV::error($err_message);
+        //json_decode($json_string,true);
+        return DV::success(['data'=>json_decode($json_string,true)]);
     }
 
     function _sendSMS($phone_numbers,$text=null,$sender_name= null){
        self::send($phone_numbers,$text=null,$sender_name= null);
     }
     
-    static function getMessageTemplate($purpose){
+    static function getMessageTemplate($branch_id,$purpose,$otp=null){
         $purpose = strtolower($purpose);
-        if($purpose ==='change_password') return "លេខសំងត់ otp_code សំរាប់ប្តូរពាក្យសំងាត់";
-        else return "លេខសំងាត់ otp_code សំរាប់"; 
+        $b = DB::table('um_branches as b')->where('branch_id',$branch_id)->selectRaw('name,phone_number')->first();
+        $company_name = $b?$b->name.': ':'';
+        switch($purpose){
+            case "change_password":{
+                return $company_name. ' លេខសំងត់ '.($otp?$otp:"otp_code").' សំរាប់ប្តូរពាក្យសំងាត់';
+                break;
+            }
+            case "reset_password":{
+                return $company_name. " លេខសំងត់ ".($otp?$otp:"otp_code")." សំរាប់ប្តូរពាក្យសំងាត់";
+            }
+            case "forget_password":{
+                return $company_name." លេខសំងត់ ".($otp?$otp:"otp_code")." សំរាប់ប្តូរពាក្យសំងាត់";
+            }
+            default:{
+                return $company_name. " លេខសំងត់ ".($otp?$otp:"otp_code");
+                break;
+            }
+        }
     }
 
 }

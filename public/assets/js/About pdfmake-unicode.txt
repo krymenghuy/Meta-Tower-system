@@ -1,1 +1,0 @@
-pdfmake-unicode.js is used and no need of vfs_fonts.js

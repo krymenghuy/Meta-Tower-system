@@ -2,307 +2,501 @@
 var ReportCenterComponent = new function(){
     let mThis = this;
     this.title_prop = "Report Center";
-    this.self = main_view.appContent.children('#_main_reportCenterComponent');
-    this.options = {};
+    this.self = main_view.appContent.children('#_rpc_reportCenterComponent');
+    this.base_url = main_view.base_url; 
+    this.api_fetch_report_list = [this.base_url,'/api/report-center/report-list'].join('');
+    this.api_fetch_report_filter_options = [this.base_url,'/api/report-center/filter-options'].join('');
+    
+    this.report_url =[this.base_url,'/dms-gen-report'].join('');
+    this.special_routes = {
+        'hs_merchant_invoice': [this.base_url,'/hs-merchant-invoice'].join(''),
+        'hs_merchant_invoice_v2': [this.base_url,'/hs-merchant-invoice-v2'].join(''),
+        'merchant_invoice': [this.base_url,'/merchant-invoice'].join('')
+    };
 
-    this.init = () => {}
+    this.div_report_list = this.self.find('#_rpc_reportlist');
+    this.div_filter_fields = this.self.find('#_rpc_filter_fields');
+    this.no_filter_wrapper = this.self.find('#_rpc_no_filter_text_wrapper');
+    this.selected_report_name = this.self.find('#_rpc_selected_report_name');
+    this.api_encrypt = [`${mThis.base_url}/api/encryptData`].join('');
+ 
+    /** object to store report information */
+    this.reports = {};
 
-    this.filter_fields = [{
-        'type': 'select',
-        'api_fetch': `${main_view.base_url}/api/form-option`,
-        'api_params': {},
-        'name': 'group_id',
-        'value_field': 'id',
-        'text_field': 'name',
-        'required': 'true',
-        'dot_object': 'groups'
-    },
-    {
-        'type': 'select',
-        'api_fetch': `${main_view.base_url}/api/form-option`,
-        'api_params': {},
-        'name': 'term_id',
-        'value_field': 'id',
-        'text_field': 'term',
-        'required': 'true',
-        'dot_object': 'terms'
-    },
-    {
-        'type': 'date',
-        'name': 'start_date'
-    },
-    {
-        'type':'date',
-        'name':'end_date'
-    }];
+    this.btnExportPackages = this.self.find('#_rpc_btnExport');
+    this.btnRunReport = this.self.find('#_rpc_btnRunReport');
+    this.filter_fields = [
+        {
+            'visible':false,
+            'type':'select',
+            'width':'full',
+            'label':'Warehouse',
+            'api_fetch':`${mThis.base_url}/api/settings/options-warehouse`,
+            'api_params':{},
+            'name':'wid',
+            'value_field':'id',
+            'text_field':'warehouse_name'
+        },
+        {
+            'type':'select',
+            'label':'Driver',
+            'api_fetch':`${mThis.base_url}/api/settings/options-driver`,
+            'api_params':{},
+            'multiple':false,
+            'name':'driver_id',
+            'value_field':'id',
+            'text_field':'driver_name'
+        }, 
+        {
+            'type':'select',
+            'allow_choose_all':['daily_packages'],
+            'api_fetch':`${mThis.base_url}/api/settings/options-sender`,
+            'api_params':{},
+            'label':'Merchant',
+            'name':'sender_id',
+            'multiple':false,
+            'value_field':'id',
+            'text_field':'sender_name'
+        },
+        {
+            'name':'start_date',
+            'label':'From',
+            'width':'half'
+        },
+        {
+            'name':'end_date',
+            'label':'To',
+            'width':'half'
+        },
+        {
+            'type':'select',
+            'name':'sender_pmt_status_id',
+            'label':'Payment Status',
+            'api_fetch':`${mThis.base_url}/api/settings/options-pmt-status`,
+            'api_params':{},
+            'value_field':'id',
+            'text_field':'pmt_status',
+            'width':'half'
+        },
+        {
+            'type':'select',
+            'name':'driver_pmt_status_id',
+            'label':'Payment Status',
+            'api_fetch':`${mThis.base_url}/api/settings/options-pmt-status`,
+            'api_params':{},
+            'value_field':'id',
+            'text_field':'pmt_status',
+            'width':'half'
+        },
+        {
+            'type':'select',
+            'name':'delivery_status_id',
+            'label':'Delivery Status',
+            'api_fetch':`${mThis.base_url}/api/settings/options-delivery-status`,
+            'api_params':{},
+            'value_field':'id',
+            'text_field':'delivery_status',
+            'width':'half'
+        },
+        {
+            'type':'select',
+            'name':'agent_id',
+            'label':'Sale Agent',
+            'api_fetch':`${mThis.base_url}/api/settings/options-sales-agent`,
+            'api_params':{},
+            'value_field':'id',
+            'text_field':'agent_name',
+            'width':'half'
+        },
+        {
+            'type':'select',
+            'name':'completed',
+            'label':'Status',
+            'api_fetch':`${mThis.base_url}/api/settings/options-complete-status`,
+            'api_params':{},
+            'value_field':'id',
+            'text_field':'c_status',
+            'width':'half'
+        },
+        {
+            'type':'select',
+            'name':'delivery_type',
+            'label':'Delivery Type',
+            'api_fetch':`${mThis.base_url}/api/settings/options-driver`,
+            'api_params':{},
+            'value_field':'id',
+            'text_field':'driver_name',
+            'width':'half'
+        }
+    ];
 
-    this.displayMainOptions = (onFinish = null) => {
-        vsapi.call(`${main_view.base_url}/api/report-center/report-list`,null,null).then(res => {
-            let data = [];
-            if(res.status_code === 200){
-                data = res.data;
+    mThis.required_filters = {
+        'vd_summary':['sender_id'], /* This means that report named "vd_summary" requires filter option "sender_id" */
+        'dr_summary':['driver_id']
+    }
+
+    this.renderFilterFields =(filterHeight=350)=>{
+        let cnt =0;
+        //mThis.div_filter_fields.hide();
+        mThis.filter_fields.map(f=>{
+            if (!f.id) f.id = [mThis.div_filter_fields.attr('id'),'-',(cnt+1)].join('');
+            let width_class = 'col-lg-12';
+            if(f.width ==='half') width_class= 'col-lg-6';
+
+            let is_date='';
+            if(f.type==='date' || f.name ==='start_date' || f.name ==='end_date' ){
+                is_date = ` type="text"`; //  'date' => `data-select="datepicker"`;
+                f.type ='date';
             }
-            mThis.renderPanelBox(data);
-        });
-        if(typeof onFinish === 'function') onFinish();
-    }
 
-    this.renderPanelBox = (data) => {
-        let html = [`<div class="d-flex p-3 bg-white rounded-3">
-            <button id="_rpt_filter" class="btn-filter" type="button">
-                <span class="trans-text" data-langprop="buttons.Filter"></span>
-            </button>
-            <div class="d-flex justify-content-end gap-2 w-100">
-                <button id="_rpt_pdf" class="btn-print" type="button">
-                    <span class="trans-text" data-langprop="buttons.Print"></span>
-                    <i class="fa-solid fa-print"></i>
-                </button>
-                <button id="_rpt_excel" class="btn-pdf" type="button">
-                    <span class="trans-text" data-langprop="buttons.Export"></span>
-                    <i class="fa-regular fa-file-pdf"></i>
-                </button>
-            </div>
-        </div>
-        <div id="_rpt_container">
-            <div class="row row-cols-lg-2 gy-2 mt-3">
-                <div class="col">
-                    <div class="card-report">
-                        <div class="row gy-2 w-100">
-                            <div id="_rpt_name" class="col">
-                                <ul class="del-marker">
-                                    ${mThis.renderReportType(data) ? mThis.renderReportType(data) : ''}
-                                </ul>
-                            </div>
-                            <div class="col">
-                                <div class="h-img-report">
-                                    <img src="${main_view.base_url}/assets/images/logo/report.png" alt=""/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div id="_rpt_input_filter" class="card-report d-block"></div>
-                </div>
-            </div>
-        </div>
-        <div id="_rpt_table" class="container-table"></div>`].join('');
+            let html ="";
+            if (f.type ==='select')
+            {
+                //let multiple = f.multiple? 'multiple':'';
+                html = `<div style="display:none" class="form-group ${width_class}">
+                <label for="">${f.label}</label>
+                <div><select id="${f.id}" multiple class="modal-select2 rpt-filter"
+                   data-field="${f.name?f.name:f.value_field}" data-used="1"></select> </div>
+                </div>`;
+            }
+            else {
+                html =`<div style="display:none" class="form-group ${width_class}">
+                <label for="">${f.label}</label>
+                <div><input id="${f.id}" ${is_date}
+                        class="form-control rpt-filter height" data-field="${f.name? f.name:f.value_field}" autocomplete="off"></div>
+                </div>`;
+            }
+                
+             mThis.div_filter_fields.append(html);
+             let el = mThis.div_filter_fields.find(`#${f.id}`);
 
-        mThis.self.html(html);
-        mThis.getValueWhenClick(mThis.self.find('#_rpt_name'));
-        mThis.controlPanel(mThis.self);
-        LocaleManager.translateZone('_main_reportCenterComponent');
-    }
-
-    this.controlPanel = (div) => {
-        const tbl = div.find('#_rpt_table').children();
-        if(tbl.length === 0)
-            HtmlString = null;
-
-        div.find('#_rpt_filter').on('click',function(e){
-            e.preventDefault();
-            div.find('#_rpt_container').toggle('slow');
-        });
-
-        div.find('#_rpt_pdf').off('click').on('click',function(e){
-            e.preventDefault();
-            windowPrint();
-        });
-
-        div.find('#_rpt_excel').off('click').on('click',function(e){
-            e.preventDefault();
-            exportToExcel();
-        });
-    }
-
-    this.renderReportType = (d) => {
-        d = d ? d : [];
-        let html = null;
-
-        d.map(item => {
-            html = [html, `<li class="report-name" data-param="${item.params}" data-code="${item.code}">
-                <i class="fa-regular fa-rectangle-list"></i>
-                <span class="text-capitalize">${item.name}</span>
-            </li>`].join('');
-        });
-        return html;
-    }
-
-    this.renderFilters = (div, p) => {
-        p = p ? p : {};
-        let html = null, inner_html = null;
-        if(p.param){
-            p.param.map(item => {
-                const title = item.replace('_id','').split('_').join(' ');
-                mThis.filter_fields.map(f => {
-                    if(f.type === 'select' && f.name === item){
-                        const id = ['select_',f.name].join('');
-                        inner_html = [inner_html, `<div class="col-lg-6">
-                            <div class="form-group">
-                                <label for="${item}" class="form-label text-capitalize trans-text" data-langprop="titles.${title}"></label>
-                                <div class="width-select-in-form">
-                                    <select id="${id}" class="${f.name} modal-select2 data-input" data-field="${item}"></select>
-                                </div>
-                            </div>
-                        </div>`].join('');
-                        mThis.getDataOption(f.api_fetch, f.api_params, f.value_field, f.text_field, f.required, f.dot_object, f.form, id);
+             if(f.type ==='date'){
+                //el.datePicker({'format':'dd M Y'});
+                el.attr('autocomplete','off"');
+                DateTimePicker.init(el);
+                //el.attr('autocomplete','chrome-off"');
+            
+             }else if (f.type==='select'){
+                mThis.initSelect2(el,null,null,f.multiple);
+                vsapi.call(f.api_fetch,f.api_params,null,false).then(res=>{
+                    if(res.status_code ===200){
+                        let items = res.data;
+                        if(f.multiple || f.multiple==1){
+                            let option_all = {};
+                            option_all[f.text_field] ='(All)';
+                            option_all[f.value_field] =0;
+                            items.unshift(option_all);
+                        }
+                        if(f.name =='sender_id') items.unshift({'id': 0, 'sender_name':'(All Merchants)'});
+                        VSUtil.setComboItems(el,items,f.value_field,f.text_field,false,null,null);
+                        if(!f.def_value) f.def_value = items[0]?items[0][f.value_field]:0; 
+                        if(f.def_value) el.val(f.def_value).trigger('change');
+                        else{
+                            if(items[0] && !items[1]){
+                                el.val(items[0][f.value_field]).trigger('change');    
+                            }
+                        }
                     }
-                    else if(f.type === 'date' && f.name === item){
-                        inner_html = [inner_html, `<div class="col-lg-6">
-                            <div class="form-group">
-                                <label for="${item}" class="form-label text-capitalize trans-text" data-langprop="titles.${title}"></label>
-                                <input data-select="datepicker" class="form-control data-input" data-field="${item}"/>
-                            </div>
-                        </div>`].join('');
+                 });
+             }
+            
+             cnt++;
+        });
+
+        if(cnt===0){
+            mThis.div_filter_fields.html(
+            `<div style="diplay:none" id="_rpc_no_filter_text_wrapper" class="form-group col-lg-12 no-filter-text-wrapper">
+                <div class="alert alert-primary">
+                    No filter required :)
+                </div>
+            </div>`);
+        }
+        mThis.div_filter_fields.css('height',[filterHeight,'px !important'].join(''));
+        //mThis.div_filter_fields.show();
+    }
+
+     this.initSelect2 = (el,width,value=null,multiple=false) =>{
+        if(!el) return;     
+            let init_op ={width:width?width:'100%','multiple':multiple};
+            el.select2(init_op);
+            if(value) el.val(value).trigger('change');
+     }
+
+
+    /** Initialize reportCenter object only first user's click on Report Center menu */
+    this.initOnce = ()=>{
+        if (mThis.initAlready) return;
+        mThis.loadReportItems((e)=>{
+            mThis.renderFilterFields(e.wrapper.height());
+        });
+        
+        mThis.div_report_list.on('mouseover','.div-row',function(e){
+            e.preventDefault();
+            mThis.setReportItemState($(this),'hover');
+        });
+
+        mThis.div_report_list.on('mouseleave','.div-row',function(e){
+            e.preventDefault();
+            mThis.setReportItemState($(this),'normal');
+        });
+
+        mThis.div_report_list.on('click','.div-row',function(e){
+            e.preventDefault();
+           mThis.selectReportItem($(this));
+        });
+        
+        this.btnExportPackages.on('click',(e)=>{
+            e.preventDefault();
+            let p = mThis.getReportFilterData();
+            if (!p.start_date || !p.end_date){
+                cv_interact.error('Start date and end date are required');
+                return;
+            } 
+            vsapi.call(`${mThis.base_url}/api/export/packages`,p).then(res=>{
+                if (res.status_code===200){
+                    let rows = res.data;
+                    if(!rows[0]){
+                        cv_interact.warning('No packages to export!');
+                        return;
                     }
-                });
+                    let file_name ='dms-packages';
+                    let titles = null;
+                    JsonToExcel.exportToCSV(rows,file_name,titles,true,[]);
+                }
+                else {
+                    cv_interact.error(res.error_message);
+                }
             });
+        });
+
+        mThis.btnRunReport.off('click').on('click',(e)=>{
+            let rpt = mThis.getSelectedReport();
+            let params = mThis.getReportFilterData();
+
+            //Check required report filters
+            let req_filters = mThis.required_filters[rpt.code];
+            if(!req_filters || !req_filters[0]){
+                mThis.showReport(rpt.code,params);
+                return;
+            }
+
+            (req_filters || []).map(f=>{
+                if(!params[f]){
+                    cv_interact.warning(`${f.replace('_',' ')} is required`);
+                    return false;
+                }else{
+                    this.showReport(rpt.code,params);
+                    // let qstring = mThis.translateToQueryString(params);
+                    // let sp = '';
+                    // if (qstring) sp ='&';
+                    // let p = {'data':`${qstring}${sp}rtype=${rpt.code}`};
+                    // vsapi.call(mThis.api_encrypt,p,null,false).then(res=>{
+                    //     let d = res.data?res.data:res; 
+                    //     if(res.error_message){
+                    //         cv_interact.error(res.error_message);
+                    //         return false;  
+                    //     }
+ 
+                    //     window.open(`${mThis.report_url}/${d}`,'_blank');
+                    //     return false;
+                    // });
+                }
+            });
+           
+         
+        });
+
+        //mThis.init_custom();
+        mThis.initAlready = true;
+    }
+
+        //rpt_params is object
+        this.showReport = (rpt_code, rpt_params)=>{
+            let qstring = mThis.translateToQueryString(rpt_params);
+            let sp = '';
+            if (qstring) sp ='&';
+            let p = {'data':`${qstring}${sp}rtype=${rpt_code}`};
+            let report_route = mThis.special_routes[rpt_code] ? mThis.special_routes[rpt_code] : mThis.report_url;
+            //console.error(`${report_route}/${p.data}`);
+            vsapi.call(mThis.api_encrypt,p,null,false).then(res=>{
+                let d = res.data?res.data:res; 
+                if(res.error_message){
+                    cv_interact.error(res.error_message);
+                    return false;  
+                }
+                
+                window.open(`${report_route}/${d}`,'_blank');
+                return false;
+            });
+       }
+
+    // this.showWebReport = (rpt_code, params="")=>{
+    //     let qstring = mThis.translateToQueryString(params);
+    //     let report_route = mThis.special_routes[rpt_code] ? mThis.special_routes[rpt_code] : mThis.report_url;
+    //     let sp = '';
+    //     if (qstring) sp ='&';
+    //     let p = {'data':`${qstring}${sp}rtype=${rpt_code}`};
+    //     vsapi.call(mThis.api_encrypt,p,null,false).then(res=>{
+    //         let d = res.data?res.data:res; 
+    //         if(res.error_message){
+    //             cv_interact.error(res.error_message);
+    //             return;  
+    //         }
+    //         window.open(`${report_route}/${d}`,'_blank');
+    //     });
+    // }
+    
+    this.translateToQueryString = (params)=>{
+        let q ='';
+        for(let prop in params){
+            let sp = '';
+            if (q) sp='&';
+            let var_name = prop.replace(/_/g, '');
+            q = [q,sp,var_name,'=',params[prop]].join('');
+        }
+        return q;
+    }
+
+    this.setReportItemState = (div_row,state_name ='hover')=>{
+        let hover_color ='orange';
+        let normal_color = 'grey';
+
+        let selected = div_row.hasClass('report-selected');
+        if (state_name ==='hover'){
+            div_row.find('span').css('color',hover_color);
         }
         else{
-            inner_html = [`<div class="col">
-                <div class="d-flex align-items-center justify-content-center">
-                    <h4 class="text-muted">No Filter</h4>
-                </div>
-            </div>`].join('');
+            div_row.find('span').css('color',normal_color);
+            if (!selected)
+                div_row.find('i').removeClass('fa-check').addClass('fa-list-alt').css('color',normal_color);
         }
+    }
+  
+    this.selectReportItem = (div_row)=>{
+        mThis.div_report_list.find('.div-row').each(function(){
+            $(this).removeClass('report-selected');
+            mThis.setReportItemState($(this),'normal');
+        });
 
-        html = [`<div class="row row-cols-lg-2 w-100">
-            ${inner_html ? inner_html : `<div class="col">
-                <h4 class="text-muted text-center">No Filter</h4>
-            </div>`}
-        </div>
-        <div class="form-group mt-3">
-            <button id="_rpt_btn_report" class="btn-filter" type="button">
-                <span class="trans-text" data-langprop="buttons.Run Report"></span>
-            </button>
-        </div>`].join('');
-
-        div.html(html);
-        mThis.runReport(div,p.code);
-        mThis.renderSelect(div);
-
-        div.find("[data-select='datepicker']").each(function(){
-			DateTimePicker.init($(this));
-		});
-        div.find('select.modal-select2').select2();
-        LocaleManager.translateZone('_rpt_input_filter');
+        div_row.addClass('report-selected');
+        
+        div_row.find('i').removeClass('fa-list-alt').addClass('fa-check').css('color','green');
+        const rpt_code = div_row.data('code');
+        let rpt = mThis.reports[rpt_code];
+        if(!rpt) return null; 
+        mThis.selected_report_name.text(rpt.name); 
+        mThis.showReportFilters(rpt.params);
     }
 
-    this.getDataOption = (api, param, value, text, required, dot_object, form, id) => {
-        mThis.options.params = mThis.options.params ? mThis.options.params : [];
-        mThis.options.params.push({
-            'api': api,
-            'param': param,
-            'value': value,
-            'text': text,
-            'required': required,
-            'dot_object': dot_object,
-            'form': form,
-            'dom_id': id
+    this.getSelectedReport = ()=>{
+        let div_row = mThis.div_report_list.find('.report-selected');
+        const rpt_code = div_row.data('code');
+        return mThis.reports[rpt_code];
+    }
+
+    this.loadReportItems = (onFinish)=>{
+        vsapi.call(mThis.api_fetch_report_list,null).then(res=>{
+            mThis.div_report_list.empty();
+
+            let items = StringSanitizer.sanitizeObject(res.data,null,['params']);
+            let i=0,c;
+             
+            do{
+                c = items[i];
+                if(!c) break;
+                mThis.reports[c.code]= {
+                  "id":c.id, 
+                  "name":c.name,
+                  "code":c.code,  
+                  "params":c.params,
+                  "category":c.category,
+                  "module_id":c.module_id
+                };
+               
+                mThis.div_report_list.append(`
+                    <div class="div-row" data-code="${c.code}" data-id="${c.id}">
+                        <div class="div-cell report-icon">
+                            <i class="fa fa-list-alt"></i> 
+                        </div>
+                        <div class="div-cell">
+                            <span class="report-text" data-category="${c.category}">${c.name}</span>
+                        </div>
+                    </div>`);
+               i++;
+            }while(c);
+            mThis.div_report_list.css('min-height','350px');
+            mThis.div_report_list.show();
+            if (typeof onFinish ==='function') onFinish({'wrapper':mThis.div_report_list});
+            //mThis.reports = items;
+ 
         });
     }
+  
+    // this.init_custom = ()=>{
 
-    this.renderSelect = (div) => {
-        mThis.options.params.map(item => {
-            let data = [];
-            vsapi.call(item.api, item.param, null, false).then(res => {
-                if(res.status_code === 200){
-                    data = res.data;
-                    item.dot_object ? data = data[`${item.dot_object}`] : data = data;
-                    const el = div.find(`#${item.dom_id}`);
-                    item.required ? el.attr('data-required',item.required) : false;
-                    item.form ? el.attr('data-form',item.form) : false;
-                    VSUtil.setComboItems(el, data, item.value, item.text, null, null, null);
-                }
-            });
-        });
-    }
+    // }
 
-    this.runReport = (div,code) => {
-        div.find('#_rpt_btn_report').on('click',function(e){
-            e.preventDefault();
-            let p = {};
-            div.find('.data-input').each(function(){
-                const el = $(this);
-                const f = el.data('field');
-                if(el.data('required')){
-                    p['required'] = {
-                        'text': [mThis.capitalize(f.replaceAll('_id','')),'cannot empty!'].join(' '),
-                        'value': el.val()
-                    };
-                }
-                if(el.data('form') == 'simple'){
-                    p['simple'] = true;
-                }
-                p[f] = el.val();
-                p.code = code;
-            });
+    this.showReportFilters = (rpt_params='')=>{
+        if(!rpt_params) rpt_params = '';
+        let fields = rpt_params.split('|');
+         
+        let filter_count =0;
+        mThis.no_filter_wrapper.hide();
 
-            if(p.required && !(p.required.value) && p.required.text){
-                cv_interact.warning(p.required.text);
+        mThis.div_filter_fields.find('.rpt-filter').each(function(){
+            let el = $(this);
+            let field = (el.data('field')+'').trim().toLowerCase();
+
+            if (fields.indexOf(field) >=0) {
+                el.data('used',1);
+                el.closest('div.form-group').show();
+                filter_count++;
+            }else{
+                el.data('used',0);
+                el.parent().parent().hide();
             }
-            else{
-                mThis.getDataTable(div.closest('.main-container'),p);
-            }
         });
-    }
 
-    this.capitalize = (str, lower = false) => (lower ? str.toLowerCase() : str).replace(/(?:^|\s|["'([{])+\S/g, match => match.toUpperCase());
-
-    this.getDataTable = (div, p) => {
-        let end_point = null;
-        switch(p.code){
-            case 'student_attendance':
-                end_point = 'api/reports/enrollment/attendance/list';
-                break;
-            case 'student_list':
-                end_point = 'api/reports/finance/daily-cash-list';
-                break;
-            default:
-                end_point = null;
-                break;
-        }
-        if(end_point){
-            vsapi.call(`${main_view.base_url}/${end_point}`,p,null,false).then(res => {
-                let d = {};
-                if(res.status_code === 200){
-                    d = res.data;
-                }
-                if(d.form === 'simple'){
-                    jsonToTable(div.find('#_rpt_table'),d);
-                }
-                else{
-                    renderTable(div.find('#_rpt_table'),d);
-                }
-            });
+        mThis.div_filter_fields.show();
+        if (filter_count === 0){
+            mThis.no_filter_wrapper.show();
         }
     }
 
-    this.getValueWhenClick = (div) => {
-        div.on('click','li.report-name',function(e){
-            e.preventDefault();
-            let params = $(this).data('param');
-            mThis.options.params = [];
-            $(this).addClass('text-primary').siblings().removeClass('text-primary');
-            if(params) params = params.split('|');
-            let p = {
-                'code': $(this).data('code'),
-                'param': params
-            };
-            mThis.renderFilters(mThis.self.find('#_rpt_input_filter'), p);
-        });
-        div.find('li.report-name').first().trigger('click');
+   //Return filter data in JSON format, depending on which filter (or param) is used (or not) by a currently selected report 
+   this.getReportFilterData = ()=>{
+    let p = {};
+    mThis.div_filter_fields.find('.rpt-filter').each(function(){
+        let el = $(this);
+        let filter_is_used = el.data('used');
+        if (filter_is_used){
+           let field = el.data('field');
+           let val = el.val();
+           if(Array.isArray(val)){
+              let c_val ='';
+              val.map(v=>{
+                   c_val = [c_val,(c_val?'|':''),v].join('');
+              });
+              p[field] = c_val;
+           }else p[field] = val;
+        } 
+    });
+
+    return p;
+  }
+
+ 
+    this.show = (option, onClose= null)=>{
+        mThis.initOnce();
+        if (!option) option={};
+        mThis.onClose = onClose;
+        mThis.filter = option.filter;
+        mThis.self.siblings().hide();
+        main_view.setTitle(mThis.title_prop);
+        mThis.self.hide().fadeIn(250);
     }
 
-    this.show = (options) => {
-        if(!options) options = {};
-        mThis.displayMainOptions(() => {
-            main_view.setTitle(mThis.title_prop);
-            mThis.self.show().siblings().hide();
-        });
+    this.hide = function(){
+        mThis.self.hide();
     }
 }
-
-window.addEventListener('DOMContentLoaded',() => {
-    ReportCenterComponent.init();
-});

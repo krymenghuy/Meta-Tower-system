@@ -1,203 +1,220 @@
 'use strict';
-var RoleManagementComponent = new function () {
-    let mThis = this;
-    this.self = $('#_um_roleManagementComponent');
+var RoleManagementComponent = new function(){
+    const mThis = this;
     this.title_prop = 'Role Management';
-    mThis.base_url = $('#__base_url').val();
+    this.self = main_view.appContent.children('#_um_roleManagementComponent')[0];
     this.onClose = null;
-    this.lnkNewRole = this.self.find('.lnk-new-role');
-    this.lnkAddRoleMember = this.self.find('.lnk-add-role-member');
 
-    this.initialized = false;
+    this.allow_add_remove_users = true;
+    this.allow_add_remove_role = true;
 
-    this.options = {
-        // "allow_add_remove_role_member":true,
-        // "allow_add_remove_role": true,
-        // "allow_create_user": true,
-        // "allow_edit_user_details":true,
-        // "single_user_class": false, // this will be determined by this.user_classes array
-        // "user_classes": [] //this will determine value of this.single_user_class accordingly;
-    }
-
-    this.initOptions = () => {
-        vsapi.call(`${main_view.base_url}/api/auth/um-options`, null, null, false).then(res => {
-            if (res.status_code === 200) {
-                let d = res.data;
-                for (let f in d) {
-                    if (d.hasOwnProperty(f)) {
-                        mThis.options[f] = d[f];
-                    }
-                }
-            }
-        });
-    }
-
-    this.init = function () {
-        mThis.title = 'Manage Roles';
-        this.self = $('#_um_roleManagementComponent');
-        this.initOptions();
-        mThis.initialized = true;
-    };
-
-    this.refreshUserManagementOptions = () => {
-        if (mThis.options.allow_add_remove_role !== 1)
-            mThis.lnkNewRole.hide();
-        if (mThis.options.allow_add_remove_role_member !== 1)
-            mThis.lnkAddRoleMember.hide();
-    }
-
-    this.show = function (options = {}) {
-        main_view.setTitle(mThis.title_prop);
-        if (!mThis.initialized)
-            alert('RoleListComponent.init() is not called for inialization');
-        if (options) {
-            if (options.title)
-                mThis.title = options.title;
+    this.show = function(options = {}){
+        if(options){
+            if(options.title) mThis.title = options.title;
             mThis.onClose = options.onClose;
         }
-        mThis.refreshUserManagementOptions();
-        mThis.self.show().siblings().hide();
+        main_view.setTitle(mThis.title_prop);
+        $(mThis.self).siblings().hide();
         RoleListPanel.show();
+        $(mThis.self).fadeIn(200);
     };
 
-    this.hide = function () {
-        mThis.self.hide();
+    this.hide = function(){
+        $(mThis.self).hide();
     };
 };
 
-var RoleListPanel = new function () {
-    let mThis = this;
-    this.self = $('#_um_roleListPanel');
-    this.base_url = $('#__base_url').val();
-    this.btnClose = $('#_um_btnCloseRoleList');
-    this.lnkNewRole = this.self.find('.lnk-new-role');
+var RoleListPanel = new function(){
+    const mThis = this;
+    this.self = RoleManagementComponent.self.querySelector('#_um_roleListPanel');
+    this.btnClose = mThis.self.querySelector('#_um_btnCloseRoleList');
+    this.lnkNewRole = mThis.self.querySelector('#_um_lnkNewRole');
+    this.elSearchUser = mThis.self.querySelector('#_um_search_user_role');
+    if(!RoleManagementComponent.allow_add_remove_role) mThis.lnkNewRole.style.display = 'none';
+    this.tblRoles = mThis.self.querySelector('#_um_tblRoles');
+    this.tblRoles_body = mThis.self.querySelector('#_um_tblRoles_body');
 
-    this.tblRoles = $('#_um_tblRoles');
-    this.tblRoles_body = $('#_um_tblRoles_body');
+    /** initOnce | init_roleList  **/
+    this.init = () => {
+        if(mThis.initAlready) return;
 
-    mThis.lnkNewRole.on('click', function (e) {
-        e.preventDefault();
-        let onClose = function (e) {}
-        EditRolePanel.show({ title: "Creating a new role", role_id: null }, onClose);
-    });
+        mThis.elSearchUser.onkeyup = function(e){
+            e.preventDefault();
+            setTimeout(() => {
+                mThis.displayRoleList();
+            }, 200);
+        };
 
-    mThis.tblRoles_body.on('click', 'tr>td.col_action a._um_ra_role_prns', function (e) {
-        e.preventDefault();
-        $('#_um_roleprn_lnk_add').trigger('click');
-    });
+        mThis.lnkNewRole.onclick = function(e){
+            e.preventDefault();
+            let onClose = function(e){}
+            EditRolePanel.show({
+                title: "Creating a new role",
+                role_id: null
+            }, onClose);
+        };
 
+        mThis.initAlready = true;
+    }
 
-    mThis.tblRoles_body.on('click', 'tr>td.col_action a._um_ra_delete', function (e) {
-        e.preventDefault();
-
-        let role_id = $(this).parent().data('roleid');
-        cv_interact.confirm('Delete this role?', { title: 'Delete Role', context: 'delete', 'confirmButtonText': "Delete" }, function (e) {
-            if (e) {
-                mThis.deleteRole(role_id);
+    this.setEvent = () => {
+        const trList = mThis.tblRoles_body.querySelectorAll('tr');
+        trList.forEach(tr => {
+            tr.onclick = function(e){
+                e.preventDefault();
+                if(!(e.target.classList.contains('btn_role_action') || e.target.parentElement.classList.contains('btn_role_action'))){
+                    let role_id = this.dataset.roleid;
+                    mThis.selected_role_name = this.dataset.rolename;
+                    mThis.selected_role_id = role_id;
+                    if(mThis.prev_selected_role_row) mThis.prev_selected_role_row.classList.remove('row-selected');
+                    this.classList.toggle('row-selected');
+                    if(this.classList.contains('row-selected')) mThis.prev_selected_role_row = this;
+                    RoleTabView.show(role_id, null);
+                }
             }
         });
-    });
 
-    mThis.tblRoles_body.on('click', 'tr>td.col_action a._um_ra_modify', function (e) {
-        e.preventDefault();
-        let role_id = $(this).parent().data('roleid');
-        EditRolePanel.show({ title: "Renaming existing role", role_id: role_id });
-    });
+        trList.forEach(tr => {
+            tr.onmouseover = function(e){
+                e.preventDefault();
+                let td_action = this.querySelector('td.col_action');
+                td_action.querySelector('a').style.display = 'block';
+            }
 
-    mThis.tblRoles_body.on('click', 'tr>td.col_action a._um_ra_add_member', function (e) {
-        e.preventDefault();
-        let role_id = $(this).parent().data('roleid');
-        let role = { "id": role_id, "name": RoleListPanel.selected_role_name }
-        mThis.addRoleMember(role, function (new_user_count) {
-            if (new_user_count) {
-                mThis.updateSelectRole('col_user_count', new_user_count);
-                RoleTabView.show(role_id, 'users');
+            tr.onmouseleave = function(e){
+                e.preventDefault();
+                let td_action = this.querySelector('td.col_action');
+                td_action.querySelector('a').style.display = 'none';
+                let btn_class_action = td_action.querySelector('a.dropdown-item');
+                if(btn_class_action){
+                    btn_class_action.style.display = 'none';
+                    btn_class_action.closest('.dropdown-menu').classList.remove('show');
+                }
             }
         });
-    });
 
-    mThis.tblRoles_body.on('click', 'tr>td.col_action a._um_ra_add_module', function (e) {
-        e.preventDefault();
-        let role_id = $(this).parent().data('roleid');
-        mThis.addAccessibleModule(role_id, function (e) {
-            if (e) {
-                RoleTabView.show(role_id, 'modules');
+        const btnRoleList = mThis.tblRoles_body.querySelectorAll('a.btn_role_action');
+        btnRoleList.forEach(btn => {
+            btn.onclick = function(e){
+                console.log(e);
+                e.preventDefault();
+                let p = this.parentElement;
+                let role_id = this.dataset.roleid,
+                role_name = this.dataset.rolename;
+
+                let dropdownMenu = p.querySelector('.dropdown-menu');
+                if(!dropdownMenu){
+                    p.innerHTML += mThis.createDropdownMenuHtml_role(role_id, role_name);
+                    dropdownMenu = p.querySelector('.dropdown-menu');
+                }
+                if(mThis.prev_dropdownMenu) mThis.prev_dropdownMenu.classList.remove('show');
+
+                dropdownMenu.classList.toggle('show');
+                dropdownMenu.style.top = e.clientY+'px';
+                dropdownMenu.style.left = e.clientX+'px';
+
+                if(dropdownMenu.classList.contains('show')) mThis.prev_dropdownMenu = dropdownMenu;
+                e.stopImmediatePropagation();
+
+                const btnDelete = mThis.tblRoles_body.querySelector('tr > td.col_action a._um_ra_delete');
+                btnDelete.onclick = function(e){
+                    e.preventDefault();
+                    let role_id = this.parentElement.dataset.roleid;
+                    cv_interact.confirm('Delete this role?', {
+                        title: 'Delete Role',
+                        context: 'delete'
+                    },(e) => {
+                        if(e){
+                            mThis.deleteRole(role_id);
+                        }
+                    });
+                    e.stopImmediatePropagation();
+                };
+
+                const btnModify = mThis.tblRoles_body.querySelector('tr > td.col_action a._um_ra_modify');
+                btnModify.onclick = function(e){
+                    e.preventDefault();
+                    let role_id = this.parentElement.dataset.roleid;
+                    EditRolePanel.show({
+                        title: "Renaming existing role",
+                        role_id: role_id
+                    });
+                    e.stopImmediatePropagation();
+                };
+
+                const btnAddMember = mThis.tblRoles_body.querySelector('tr > td.col_action a._um_ra_add_member');
+                btnAddMember.onclick = function(e){
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    let role_id = this.parentElement.dataset.roleid;
+                    let role = {
+                        id: role_id,
+                        name: RoleListPanel.selected_role_name
+                    };
+                    mThis.addRoleMember(role, function(new_user_count){
+                        if(new_user_count){
+                            mThis.updateSelectRole('col_user_count', new_user_count);
+                            RoleTabView.show(role_id, 'users');
+                        }
+                    });
+                };
+
+                const btnAddModule = mThis.tblRoles_body.querySelector('tr > td.col_action a._um_ra_add_module');
+                btnAddModule.onclick = function(e){
+                    e.preventDefault();
+                    let role_id = this.parentElement.dataset.roleid;
+                    mThis.addAccessibleModule(role_id, function(e){
+                        if(e){
+                            RoleTabView.show(role_id, 'modules');
+                        }
+                    });
+                    e.stopImmediatePropagation();
+                };
+
+                const btnPrns = mThis.tblRoles_body.querySelector('tr > td.col_action a._um_ra_role_prns');
+                btnPrns.onclick = function(e){
+                    e.preventDefault();
+                    RoleManagementComponent.self.querySelector('#_um_roleprn_lnk_add').dispatchEvent(new Event('click'));
+                    e.stopImmediatePropagation();
+                };
             }
         });
-    });
+    }
 
-    $(document).on('click', function (e) {
-        let container = mThis.tblRoles_body.find('.dropdown');
-        if (container) {
-            if (!container.is(e.target) && container.has(e.target).length === 0) {
-                mThis.tblRoles_body.find('.dropdown-menu').each(function () {
-                    $(this).removeClass('show');
-                });
-            } 
-        }
-
-        e.stopPropagation();
-    });
-
-    mThis.tblRoles_body.on('click', '.btn_role_action', function (e) {
-        e.preventDefault();
-        let p = $(this).parent();
-        let role_id = $(this).data('roleid');
-        let role_name = $(this).data('rolename');
-
-        let dropdownMenu = p.find('.dropdown-menu');
-        if (!dropdownMenu || dropdownMenu.length <= 0) {
-            p.append(mThis.createDropdownMenuHtml_role(role_id, role_name));
-            dropdownMenu = p.find('.dropdown-menu');
-        }
-
-        if (mThis.prev_dropdownMenu && mThis.prev_dropdownMenu.is(dropdownMenu) == false) mThis.prev_dropdownMenu.removeClass('show');
-
-        dropdownMenu.toggleClass('show');
-        if (dropdownMenu.hasClass('show')) mThis.prev_dropdownMenu = dropdownMenu;
-    });
-
-    mThis.tblRoles_body.on('mouseover', 'tr', function (e) {
-        let td_action = $(this).find('td.col_action');
-        td_action.find('a').css('display', 'block');
-    }).on('mouseleave', 'tr', function (e) {
-        let td_action = $(this).find('td.col_action');
-        let btn_class_action = td_action.find('a');
-        btn_class_action.css('display', 'none');
-        btn_class_action.closest('.dropdown-menu').removeClass('show');
-    });
-
-    mThis.tblRoles_body.on('click', 'tr', function (e) {
-        e.preventDefault();
-        let role_id = $(this).data('roleid');
-        mThis.selected_role_name = $(this).data('rolename');
-        mThis.selected_role_id = role_id;
-        if (mThis.prev_selected_role_row)
-            mThis.prev_selected_role_row.removeClass('row-selected');
-        $(this).toggleClass('row-selected');
-        if ($(this).hasClass('row-selected'))
-            mThis.prev_selected_role_row = $(this);
-        RoleTabView.show(role_id, null);
-    });
-
-    this.createDropdownMenuHtml_role = function (role_id, role_name) {
-        let html = ['<div class="dropdown-menu" data-roleid="', role_id, '" data-rolename="', role_name, '">',
-            '<a class="dropdown-item _um_ra_delete" href="javascript:void(0)"><i class="fa fa-times" style="color:red;margin-right:5px"></i>Delete Role</a>',
-            '<a class="dropdown-item _um_ra_modify" href="javascript:void(0)"><i class="fa fa-edit" style="color:grey;margin-right:5px"></i>Modify Role</a>',
-            '<div class="dropdown-divider"></div>',
-            '<a class="dropdown-item _um_ra_add_member" href="javascript:void(0)"><i class="fa fa-user" style="color:blue;margin-right:5px"></i>Add Member</a>',
-            '<a class="dropdown-item _um_ra_add_module" href="javascript:void(0)"><i class="fa fa-list-alt" style="color:grey;margin-right:5px"></i>Add Access Module</a>',
-            '<a class="dropdown-item _um_ra_role_prns" href="javascript:void(0)"><i class="fa fa-list-alt" style="color:grey;margin-right:5px"></i>Manage Permissions</a>',
-            '</div>'].join('');
+    this.createDropdownMenuHtml_role = function(role_id, role_name){
+        const html = `<div class="dropdown-menu bg-white shadow position-fixed /*top-left-unset*/" data-roleid="${role_id}" data-rolename="${role_name}">
+            <a class="dropdown-item _um_ra_delete" href="javascript:void(0)">
+                <i class="fa fa-times text-danger pe-2"></i>
+                <span>Delete Role</span>
+            </a>
+            <a class="dropdown-item _um_ra_modify" href="javascript:void(0)">
+                <i class="fa fa-edit text-secondary pe-2"></i>
+                <span>Modify Role</span>
+            </a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item _um_ra_add_member" href="javascript:void(0)">
+                <i class="fa fa-user text-primary pe-2"></i>
+                <span>Add Member<span>
+            </a>
+            <a class="dropdown-item _um_ra_add_module" href="javascript:void(0)">
+                <i class="fa fa-list-alt text-secondary pe-2"></i>
+                <span>Add Access Module</span>
+            </a>
+            <a class="dropdown-item _um_ra_role_prns" href="javascript:void(0)">
+                <i class="fa fa-list-alt text-secondary pe-2"></i>
+                <span>Manage Permissions</span>
+            </a>
+        </div>`;
         return html;
     }
 
-    this.addRoleMember = function (role = {}, onFinish = null) {
+    this.addRoleMember = function(role = {}, onFinish = null){
         let role_id = role.id;
         let p = {};
         p.role_id = 0;
-        vsapi.call([mThis.base_url, '/api/user/options-user'].join(''), p, null, false).then(res => {
-            if (res.status_code === 200) {
+
+        vsapi.call(`${main_view.base_url}/api/getComboItems_user`,p).then(res => {
+            if(res.status_code === 200){
                 let rows = res.data;
                 let option = {};
                 option.title = `Add user to ${role.name} role`;
@@ -207,46 +224,55 @@ var RoleListPanel = new function () {
                 option.dataLabel = "Select User";
                 option.blankErrorMessage = "Choose a user login";
 
-                InputBox2.show(option, function (d) {
-                    if (d) {
+                InputBox2.show(option,function(d){
+                    if(d){
                         let p = {};
                         p.role_id = role_id;
                         p.user_id = d.value;
-                        vsapi.call([mThis.base_url, '/api/role/members/add'].join(''), p).then(res => {
-                            if (res.status_code === 200) {
+                        vsapi.call(`${main_view.base_url}/api/addRoleMember`,p).then(res => {
+                            if(res.status_code === 200){
                                 let d = res.data;
                                 onFinish(d.user_count);
-                            } else cv_interact.error(res.error_message);
+                            }
+                            else
+                                cv_interact.error(res.error_message);
                         });
                     }
                 });
             }
+            else
+                cv_interact.error(res.error_message);
         });
     }
 
     this.addAccessibleModule = function (role_id, onFinish) {
-        vsapi.call([mThis.base_url, '/api/module/options-module'].join(''), null).then(res => {
-            if (res.status_code === 200) {
+        vsapi.call(`${main_view.base_url}/api/getComboItems_module`,null).then(res => {
+            if(res.status_code === 200){
                 let rows = StringSanitizer.sanitizeObject(res.data);
                 let option = {};
                 option.title = "Choose Module";
                 option.dataLabel = "Select Module";
-                rows.unshift({ id: null, name: '(Select Application Module)' });
+                rows.unshift({
+                    id: null,
+                    name: '(Select Application Module)'
+                });
                 option.data = rows;
                 option.valueMember = "id";
                 option.textMember = "name";
                 option.btnOKText = "Add Now";
                 option.defaultValue = null;
                 option.blankErrorMessage = 'Please choose a module';
-                InputBox2.show(option, function (d) {
-                    if (d) {
+                InputBox2.show(option,function(d){
+                    if(d){
                         let p = {};
                         p.role_id = role_id;
                         p.module_id = d.value;
-                        vsapi.call([mThis.base_url, '/api/role/access-module/add'].join(''), p).then(res => {
-                            if (res.status_code === 200) {
+                        vsapi.call(`${main_view.base_url}/api/addAccessibleModule`,p).then(res => {
+                            if(res.status_code === 200){
                                 onFinish(true);
-                            } else cv_interact.error(res.error_message);
+                            }
+                            else
+                                cv_interact.error(res.error_message);
                         });
                     }
                 });
@@ -254,310 +280,503 @@ var RoleListPanel = new function () {
         });
     }
 
-    this.show = function (options) {
+    this.show = function(options = {}){
+        mThis.init(); //init once or one time only
         mThis.selected_role_id = null;
-        mThis.selected_role_name = null; 
-        try {
-            mThis.displayRoleList();
-            mThis.self.show().siblings().hide();
-        } catch (e) {
-            alert(e);
-        }
+        mThis.selected_role_name = null;
+
+        mThis.displayRoleList();
+        $(mThis.self).siblings().hide();
+        $(mThis.self).fadeIn(200);
     }
 
-    this.updateSelectRole = function (col_name, data) {
+    this.updateSelectRole = function(col_name, data){
         let selected_class_name = 'row-selected';
-        mThis.tblRoles_body.find(['tr.', selected_class_name, '>td.', col_name].join('')).html(data);
+        mThis.tblRoles_body.querySelector(`tr.${selected_class_name}>td.${col_name}`).innerHTML = data;
     }
 
-    this.displayRoleList = function () {
-        vsapi.call([mThis.base_url, '/api/role/list'].join(''), null).then(res => {
-            if (res.status_code === 200) {
+    this.displayRoleList = function(){
+        vsapi.call(`${main_view.base_url}/api/role/list`,{
+            search_value: mThis.elSearchUser.value
+        },main_view.apiCluster).then(res => {
+            if(res.status_code === 200){
                 let rows = StringSanitizer.sanitizeObject(res.data);
-                mThis.tblRoles_body.empty();
+                mThis.tblRoles_body.innerHTML = '';
                 let i = 0, c;
-                do {
+                do{
                     c = rows[i];
-                    if (!c) break;
-                    if (!c.user_count) c.user_count = 0;
+                    if(!c) break;
+                    if(!c.user_count) c.user_count = 0;
 
-                    let dropdown_container_html = ['<div class="dropdown">',
-                        '<a href="javascript:void(0)" data-roleid="', c.id, '" data-rolename="', c.name, '" class="vs-btn-sm-outline-round btn_role_action" aria-haspopup="true" aria-expanded="false" style="display:none">',
-                        '<i class="fa fa-chevron-down" style="color:red;font-size:1.2em"></i>',
-                        '</a>',
-                        '</div>'].join('');
+                    let dropdown_container_html = `<div class="dropdown">
+                        <a href="javascript:void(0)" data-roleid="${c.id}" data-rolename="${c.name}" class="vs-btn-sm-outline-round btn_role_action" aria-haspopup="true" aria-expanded="false" style="display:none">
+                            <i class="fa fa-chevron-down text-danger fs-5"></i>
+                        </a>
+                    </div>`;
 
-                    let display_user_class = (c.user_class + '').replace('_', ' ');
-                    let html = ['<tr data-roleid="', c.id, '" data-rolename="', c.name, '">',
-                        '<td class="col_action" style="width:70px">', dropdown_container_html, '</td>',
-                        '<td><span style="font-weight:bold;font-size:1.1em">', c.name, '</span><div><span style="color:grey;font-style:italic">class: </span><span style="color:green;font-weight:bold;font-style:italic">', display_user_class, '</span></div></td>',
-                        '<td class="col_user_count"><span style="display:block;padding-top:15px">', c.user_count, ' members</span></td>',
-                        '</tr>'].join('');
-                    mThis.tblRoles_body.append(html);
+                    let display_user_class = (c.user_class + '').replace(/\_/g,' ');
+                    let html = `<tr data-roleid="${c.id}" data-rolename="${c.name}">
+                        <td class="col_action" style="width:70px">${dropdown_container_html}</td>
+                        <td>
+                            <span class="fw-bold" style="font-size:1.1em">${c.name}</span>
+                            <div>
+                                <span class="set-text-gray">User class: </span>
+                                <span class="ps-2 fw-bold text-capitalize set-text-green">${display_user_class}</span>
+                            </div>
+                        </td>
+                        <td class="col_user_count">
+                            <span class="d-block" style="padding-top:15px">${c.user_count} members</span>
+                        </td>
+                    </tr>`;
+                    mThis.tblRoles_body.innerHTML += html;
                     i++;
-                } while (c);
-
-                mThis.tblRoles_body.find('._um_item_action_button').css('display', 'none');
+                }while(c);
+                
+                if(mThis.tblRoles_body.querySelector('._um_item_action_button')){
+                    mThis.tblRoles_body.querySelector('._um_item_action_button').style.display = 'none';
+                }
                 RoleTabView.show(0, 'users');
-                mThis.tblRoles_body.find('tr:first').trigger('click');
+                mThis.setEvent();
             }
         });
     };
 
-    this.deleteRole = function (id) {
+    this.deleteRole = function(id){
         let p = {};
         p.role_id = id ? id : 0;
-        vsapi.call([mThis.base_url, '/api/role/delete'].join(''), p).then(res => {
-            if (res.status_code === 200) {
+        vsapi.call(`${main_view.base_url}/api/deleteRole`,p).then(res => {
+            if(res.status_code === 200){
                 mThis.displayRoleList();
-            } else cv_interact.error(res.error_message);
+            }
+            else
+                cv_interact.error(re.error_message);
         });
     }
 };
 
-let EditRolePanel = new function () {
-    let mThis = this;
+const EditRolePanel = new function(){
+    const mThis = this;
+    this.self = RoleManagementComponent.self.querySelector('#_um_edit_role');
+    this.lnkBackToRoleList = mThis.self.querySelector('#_um_role_backToRoleList');
+    this.btnBack = mThis.self.querySelector('#_um_btnBackToRoleList');
+    this.btnSave = mThis.self.querySelector('#_um_btnSaveRole');
+    this.elRoleName = mThis.self.querySelector('#_um_edit_role_name');
+    this.elUserClass = mThis.self.querySelector('#_um_edit_userclass');
+    this.elError = mThis.self.querySelector('#_um_edit_role_error');
+    this.elTitle = mThis.self.querySelector('#_um_edit_role_title');
 
-    this.self = $('#_um_edit_role');
-    this.base_url = $('#__base_url').val();
-    this.lnkBackToRoleList = $('#_um_role_backToRoleList');
-    this.btnBack = $('#_um_btnBackToRoleList');
-    this.btnSave = $('#_um_btnSaveRole');
-    this.elRoleName = $('#_um_edit_role_name');
-    this.elUserClass = $('#_um_edit_userclass');
-    this.elError = $('#_um_edit_role_error');
-    this.elTitle = $('#_um_edit_role_title');
-
-    this.lnkBackToRoleList.on('click', function (e) {
+    mThis.lnkBackToRoleList.onclick = function(e){
         e.preventDefault();
         let options = {};
         options.title = "Manage Roles";
         RoleListPanel.show(options);
-    });
+    };
 
-    mThis.btnBack.on('click', function (e) {
-        mThis.lnkBackToRoleList.trigger('click');
-    });
+    mThis.btnBack.onclick = function(e){
+        e.preventDefault();
+        mThis.lnkBackToRoleList.dispatchEvent(new Event('click'));
+    };
 
-    mThis.btnSave.on('click', function (e) {
-        mThis.elError.html(null);
-
+    mThis.btnSave.onclick = function(e){
+        e.preventDefault();
+        mThis.elError.innerHTML = '';
         let p = {};
         p.id = mThis.role_id;
-        p.name = mThis.elRoleName.val();
-        p.user_class = mThis.elUserClass.val();
-        if (!p.id) p.id = 0;
-        if (!p.name) p.name = '';
-        if (!p.name) {
-            mThis.elError.html('Role Name cannot be empty');
+        p.name = mThis.elRoleName.value;
+        p.user_class = mThis.elUserClass.value;
+        if(!p.id) p.id = 0;
+        if(!p.name) p.name = '';
+        if(!p.name){
+            mThis.elError.innerHTML = 'Role Name cannot be empty';
             return;
         }
-        vsapi.call([mThis.base_url, '/api/role/save'].join(''), p).then(res => {
-            if (res.status_code === 200) {
-                mThis.lnkBackToRoleList.trigger('click');
-            } else mThis.elError.text(res.error_message);
+        vsapi.call(`${main_view.base_url}/api/role/save`, p).then(res => {
+            if(res.status_code === 200){
+                mThis.lnkBackToRoleList.dispatchEvent(new Event('click'));
+            }
+            else
+                mThis.elError.textContent = res.error_message;
         });
-    });
+    };
 
     this.prepareData = (def, onFinish) => {
-        if (!def) def = {};
-        if (mThis.user_classes) {
-            VSUtil.setComboItems(mThis.elUserClass, mThis.user_classes, 'user_class', 'user_class', true, '(Select user class)', def.user_class);
-            if (!mThis.user_classes[1])
-                mThis.elUserClass.val(mThis.user_classes[0].user_class).trigger('change');
-            if (typeof onFinish == 'function') onFinish();
+        if(!def) def = {};
+        if(mThis.user_classes){
+            VSUtil.setComboItems(mThis.elUserClass, mThis.user_classes, 'user_class', 'user_class', true, '(Select User Class)', def.user_class);
+            if(typeof onFinish == 'function') onFinish();
             return;
         }
-        vsapi.call([mThis.base_url, '/api/user/options-user-class'].join(''), null).then(res => {
-            if (res.status_code === 200) {
+
+        vsapi.call(`${main_view.base_url}/api/user/options-user-class`, null).then(res => {
+            if(res.status_code === 200){
                 let rows = StringSanitizer.sanitizeObject(res.data);
-                VSUtil.setComboItems(mThis.elUserClass, rows, 'user_class', 'user_class', true, '(Select user class)', def.user_class);
+                VSUtil.setComboItems(mThis.elUserClass, rows, 'user_class', 'user_class', true, '(Select User Class)', def.user_class);
                 mThis.user_classes = rows;
-                if (!mThis.user_classes[1])
-                    mThis.elUserClass.val(mThis.user_classes[0].user_class).trigger('change');
-                if (typeof onFinish == 'function') onFinish();
+                if(typeof onFinish == 'function') onFinish();
             }
         });
     }
 
-    this.show = function (options, onClose) {
-        mThis.elError.html(null);
+    this.show = function(options, onClose){
+        mThis.elError.innerHTML = '';
         mThis.onClose = onClose;
         mThis.role_id = options.role_id;
 
         mThis.prepareData(null, () => {
-            if (options.role_id > 0) {
+            if(options.role_id > 0){
                 mThis.displayRole(options.role_id);
             }
-            mThis.elTitle.text(options.title);
-            mThis.self.show().siblings().hide();
+            mThis.elTitle.textContent = options.title;
+            $(mThis.self).show().siblings().hide();
         });
     }
 
     this.displayRole = function () {
         let p = {};
         p.role_id = mThis.role_id;
-        vsapi.call([mThis.base_url, '/api/role/details'].join(''), p).then(res => {
-            if (res.status_code === 200) {
+        vsapi.call(`${main_view.base_url}/api/getRoleById`, p).then(res => {
+            if(res.status_code === 200){
                 let d = res.data;
                 let name = StringSanitizer.sanitizeOut(d.name);
-                mThis.elRoleName.val(name);
-                mThis.elUserClass.val(d.user_class);
+                mThis.elRoleName.value = name;
+                mThis.elUserClass.value = d.user_class;
             }
         });
     }
 };
 
-var RoleTabView = new function () {
-    let mThis = this;
-    this.self = $('#_um_roleTabView');
-    this.base_url = $('#__base_url').val();
+const RoleTabView = new function(){
+    const mThis = this;
+    this.self = RoleManagementComponent.self.querySelector('#_um_roleTabView');
+    this.tabHeader = mThis.self.querySelector('div.tab-header');
     this.cur_view = 'users';
 
-    this.self.on('click', 'div.tab-header>a.tab-button', function (e) {
-        e.preventDefault();
-        $(this).addClass('active').siblings().removeClass('active');
-        let view_name = $(this).data('viewname').toLowerCase();
-        mThis.show(mThis.role_id, view_name, true);
+    let previousTabButton = null;
+    const tabButtonList = mThis.tabHeader.querySelectorAll('a.tab-button');
+    tabButtonList.forEach(el => {
+        el.onclick = function(e){
+            e.preventDefault();
+            if(previousTabButton) previousTabButton.classList.remove('active');
+            this.classList.add('active');
+            previousTabButton = this;
+            const view_name = this.dataset.viewname.toLowerCase();
+            mThis.show(mThis.role_id, view_name);
+        }
     });
 
-    this.show = function (role_id, view_name, tab_button_clicked = false) {
+    let previousTabPanel = null;
+    this.show = function(role_id, view_name){
         mThis.role_id = role_id;
-        if (!view_name) view_name = mThis.cur_view;
+        if(!view_name) view_name = mThis.cur_view;
         view_name = (view_name + '').toLowerCase();
-        mThis.self.find('div.tab-body>div.tab-panel').each(function () {
-            let this_view_name = ($(this).data('viewname') + '').toLowerCase();
-            if (view_name == this_view_name) {
+
+        mThis.self.querySelectorAll('div.tab-body > div.tab-panel').forEach(el => {
+            let this_view_name = (el.dataset.viewname + '').toLowerCase();
+            if(view_name == this_view_name){
                 mThis.cur_view = view_name;
-                $(this).show().siblings().hide();
-                if (view_name == 'users') {
+                if(previousTabPanel) previousTabPanel.style.display = 'none';
+                el.style.display = 'block';
+                previousTabPanel = el;
+
+                if(view_name == 'users'){
                     mThis.displayRoleMembers(mThis.role_id);
                 }
-                else if (view_name === 'modules') {
+                else if(view_name === 'modules'){
                     mThis.displayAccessibleModules(mThis.role_id);
                 }
-                else if (view_name === 'permissions') {
+                else if(view_name === 'permissions'){
                     mThis.displayRolePermissions(mThis.role_id);
                 }
-
                 return;
             }
         });
+        if(!previousTabButton) tabButtonList[0].dispatchEvent(new Event('click'));
+    }
 
-        if (!tab_button_clicked) {
-            mThis.self.find('div.tab-header>a.tab-button').each(function () {
-                let this_view_name = ($(this).data('viewname') + '').toLowerCase();
-                if (view_name == this_view_name) {
-                    $(this).addClass('active').siblings().removeClass('active');
+    const div = RoleManagementComponent.self;
+    this.tblPrns1 = div.querySelector('#_um_roleprn_tblPrns');
+    this.tblPerns1_body = div.querySelector('#_um_roleprn_tblPrns_body');
+    this.tblModules = div.querySelector('#_um_tblRoleModules');
+    this.tblModules_body = div.querySelector('#_um_tblRoleModules_body');
+    this.lnkAddModule = div.querySelector('#_um_lnkAddModule');
+    this.lnkAddRoleMember = div.querySelector('#_um_lnkAddRemMember');
+    if(!RoleManagementComponent.allow_add_remove_users) mThis.lnkAddRoleMember.style.display = 'none';
+    this.lnk_roleprn_add = div.querySelector('#_um_roleprn_lnk_add');
+    this.lnk_roleprn_largeview = div.querySelector('#_um_roleprn_lnkLargeView');
+
+    this.cols = [
+        {
+            title: 'Login name',
+            className: "text-capitalize align-middle",
+            data: (item, a, b) => {
+                return item.login_name.replace(/\s/g,'');
+            }
+        },
+        {
+            title: 'Full Name',
+            className: "text-capitalize align-middle",
+            data: (user, a, b) => {
+                return user.full_name ? user.full_name : 'Unspecified';
+            }
+        },
+        {
+            title: "Official ID",
+            className: "text-capitalize align-middle",
+            data: (user, a, b) => {
+                return user.official_code ? user.official_code : 'None';
+            }
+        },
+        {
+            title: "Action",
+            className: "text-capitalize align-middle",
+            data: function (item, a, b) {
+                return `<div class="d-flex gap-2">
+                    <a href="javascript:void(0)" class="btn-role-user-modify" data-loginname="${item.login_name}" data-id="${item.id}" data-rolename="${item.role_name}">
+                        <i class="fa fa-edit text-warning fs-5"></i>
+                    </a>
+                    <a href="javascript:void(0)" data-id="${item.id}" data-rolename="${item.role_name}" class="btn-role-user-remove">
+                        <i class="fa-regular fa-circle-xmark text-danger fs-5"></i>
+                    </a>
+                    <a href="javascript:void(0)" data-id="${item.id}" data-rolename="${item.role_name}" class="btn-role-user-delete">
+                        <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                    </a>
+                </div>`;
+            }
+        }
+    ];
+
+    this.roleMemberListView = new ListView('_div_role_members',{
+        fetchApi: `${main_view.base_url}/api/role/members/list`,
+        clientSidePagination:true,
+        perPage: 10,
+        columns: mThis.cols,
+        rowCreated: (data, index, tr) => {
+           tr.dataset.id = data.id;
+        },
+        listContainerClass: null,
+        renderComplete: function(){
+            mThis.setEventRole();
+        }
+    });
+
+    mThis.tblRoleMember = mThis.roleMemberListView.getTable();
+
+    this.setEventRole = () => {
+        const btnRoleRemoveList = mThis.tblRoleMember.querySelectorAll('.btn-role-user-remove');
+        if(btnRoleRemoveList[0]){
+            btnRoleRemoveList.forEach(btn => {
+                btn.onclick = function(e){
+                    let id = e.target.dataset.id;
+                    let role_name = e.target.dataset.rolename || e.target.parentElement.dataset.rolename;
+                    let role_id = RoleListPanel.selected_role_id;
+        
+                    cv_interact.confirm(`Remove this user from ${role_name} role?`,{
+                        title: 'Unenroll User',
+                        confirmButtonText: 'Remove',
+                        cancelButtonText: 'Close'
+                    },function(e){
+                        if(e){
+                            let p = {
+                                user_id: id,
+                                role_id: role_id
+                            };
+                            vsapi.call(`${mThis.base_url}/api/removeRoleMember`, p).then(res => {
+                                if(res.status_code === 200)
+                                    mThis.displayRoleMembers(role_id);
+                                else
+                                    cv_interact.error(res.error_message);
+                            });
+                        }
+                    });
+                };
+            });
+        }
+
+        const btnRoleModifyList = mThis.tblRoleMember.querySelectorAll('.btn-role-user-modify');
+        if(btnRoleModifyList[0]){
+            btnRoleModifyList.forEach(btn => {
+                btn.onclick = function(e){
+                    e.preventDefault();
+                    let role_id = RoleListPanel.selected_role_id;
+
+                    let login_name = e.target.dataset.loginname || e.target.parentElement.dataset.loginname;
+                    let option = {
+                        blankErrorMessage: 'Login name cannot be blank',
+                        btnOKText: 'Commit Change',
+                        defaultValue: login_name,
+                        title: 'Change Login Name',
+                        dataLabel: 'New login name'
+                    };
+
+                    InputBox1.show(option,function(d){
+                        if(d){
+                            if(d !== login_name){
+                                let p = {};
+                                p.login_name = login_name;
+                                p.new_login_name = d;
+                                vsapi.call(`${mThis.base_url}/api/changeLoginName`,p).then(res => {
+                                    if(res.status_code === 200){
+                                        mThis.displayRoleMembers(role_id);
+                                    }
+                                    else
+                                        cv_interact.error(res.error_message);
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        const btnRoleDeleteList = mThis.tblRoleMember.querySelectorAll('.btn-role-user-delete');
+        if(btnRoleDeleteList[0]){
+            btnRoleDeleteList.forEach(btn => {
+                btn.onclick = function(e){
+                    e.preventDefault();
+                    let id = e.currentTarget.dataset.id;
+                    let role_name = e.target.dataset.rolename || e.target.parentElement.dataset.rolename;
+                    let role_id = RoleListPanel.selected_role_id;
+
+                    cv_interact.confirm(`Delete this user from ${role_name} permanently?`,{
+                        title: 'Delete User',
+                        context: 'delete'
+                    },function(e){
+                        if(e){
+                            let p = {
+                                user_id: id
+                            };
+                            vsapi.call(`${mThis.base_url}/api/deleteUser`,p).then(res => {
+                                if(res.error_message)
+                                    cv_interact.error(error_message);
+                                else
+                                    mThis.displayRoleMembers(role_id);
+                            });
+                        }
+                    });
                 }
             });
         }
     }
 
-    this.tblRoleMembers = $('#_um_tblRoleMembers');
-    this.tblRoleMembers_body = $('#_um_tblRoleMembers_body');
-    this.tblPrns1 = $('#_um_roleprn_tblPrns');
-    this.tblPerns1_body = $('#_um_roleprn_tblPrns_body');
-
-    this.tblModules = $('#_um_tblRoleModules');
-    this.tblModules_body = $('#_um_tblRoleModules_body');
-    this.lnkAddModule = $('#_um_lnkAddModule');
-    this.div_module_list = mThis.self.find('#_um_acc_module_list');
-    this.lnkAddRoleMember = mThis.self.find('.lnk-add-role-member');
-
-    this.lnk_roleprn_add = $('#_um_roleprn_lnk_add');
-    this.lnk_roleprn_largeview = $('#_um_roleprn_lnkLargeView');
-
-    this.lnk_roleprn_add.on('click', function (e) {
+    mThis.lnk_roleprn_add.onclick = function(e){
         e.preventDefault();
-        if (!RoleListPanel.selected_role_id) {
+        if(!RoleListPanel.selected_role_id){
             cv_interact.error('No role selected!');
             return;
         }
 
         let role_id = RoleListPanel.selected_role_id;
-        let role = { 'role_id': role_id, 'role_name': RoleListPanel.selected_role_name };
-        AddPermissionDialog.show(role, function (e) {
-            if (e) {
+        let role = {
+            role_id: role_id,
+            role_name: RoleListPanel.selected_role_name
+        };
+        AddPermissionDialog.show(role,function(e){
+            if(e){
                 mThis.displayRolePermissions(role_id);
             }
         });
-    });
+    };
 
-    this.lnk_roleprn_largeview.on('click', function (e) {
-        e.preventDefault();
-        if (!RoleListPanel.selected_role_id) {
-            cv_interact.error('No role selected!');
-            return;
-        }
-        let option = {
-            'title': 'Role Permissions',
-            'role_id': RoleListPanel.selected_role_id,
-            'role_name': RoleListPanel.selected_role_name
+    if(mThis.lnk_roleprn_largeview){
+        mThis.lnk_roleprn_largeview.onclick = function(e){
+            e.preventDefault();
+            if(!RoleListPanel.selected_role_id){
+                cv_interact.error('No role selected!');
+                return;
+            }
+            let option = {
+                title: 'Role Permissions',
+                role_id: RoleListPanel.selected_role_id,
+                role_name: RoleListPanel.selected_role_name
+            };
+    
+            PermissionList.show(option)
         };
+    }
 
-        PermissionList.show(option)
-    });
-
-    this.lnkAddModule.on('click', function (e) {
+    mThis.lnkAddModule.onclick = function(e){
         e.preventDefault();
-        if (!RoleListPanel.selected_role_id) {
+        if(!RoleListPanel.selected_role_id){
             cv_interact.error('No role selected!');
             return;
         }
-        RoleListPanel.addAccessibleModule(mThis.role_id, function (e) {
-            if (e) {
+        RoleListPanel.addAccessibleModule(mThis.role_id,function(e){
+            if(e){
                 mThis.displayAccessibleModules(mThis.role_id);
             }
         });
-    });
+    };
 
-    this.lnkAddRoleMember.on('click', function (e) {
+    mThis.lnkAddRoleMember.onclick = function(e){
         e.preventDefault();
-        if (!RoleListPanel.selected_role_id) {
+        if(!RoleListPanel.selected_role_id){
             cv_interact.error('No role selected!');
             return;
         }
 
-        let op = {
-            "multiple_select": true,
-            "user_class": null,
-            "onSelect": (users) => {}
+        let role = {
+            id: mThis.role_id,
+            name: RoleListPanel.selected_role_name
         };
-        FindUserDialog.show(op);
-    });
-
-    this.tblModules_body.on('click', 'a._um_ma_remove', function (e) {
-        e.preventDefault();
-        let p = {};
-        p.module_id = $(this).data('moduleid');
-        p.role_id = mThis.role_id;
-        cv_interact.confirm('Remove this Accessible Module', { title: 'Remove Access Module', context: 'delete' }, function (e) {
-            if (e) {
-                vsapi.call([mThis.base_url, '/api/role/access-module/remove'].join(''), p).then(res => {
-                    if (res.status_code === 200) {
-                        mThis.displayAccessibleModules(mThis.role_id);
-                    }
-                    else cv_interact.error(res.error_message);
-                });
+        RoleListPanel.addRoleMember(role,function(new_user_count){
+            if(new_user_count){
+                RoleListPanel.updateSelectRole('col_user_count', new_user_count);
+                mThis.displayRoleMembers(mThis.role_id);
             }
         });
-    });
+    };
 
-    mThis.tblPerns1_body.on('mouseover', 'tr', function () {
-        $(this).find('td.col_action').find('a._um_roleprn_delete').show();
-    }).on('mouseleave', 'tr', function () {
-        $(this).find('td.col_action').find('a._um_roleprn_delete').hide();
-    });
+    this.setEventModules = () => {
+        const btnModuleRemoveList = mThis.tblModules_body.querySelectorAll('a._um_ma_remove');
+        if(btnModuleRemoveList[0]){
+            btnModuleRemoveList.forEach(btn => {
+                btn.onclick = function(e){
+                    e.preventDefault();
+                    let p = {};
+                    p.module_id = this.dataset.moduleid;
+                    p.role_id = mThis.role_id;
+                    cv_interact.confirm('Remove this Accessible Module',{
+                        title: 'Remove Access Module',
+                        context: 'delete'
+                    },function(e){
+                        if(e){
+                            vsapi.call(`${main_view.base_url}/api/role/access-module/remove`, p).then(res => {
+                                if(res.status_code === 200){
+                                    mThis.displayAccessibleModules(mThis.role_id);
+                                }
+                                else
+                                    cv_interact.error(res.error_message);
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    }
 
-    mThis.tblPerns1_body.on('click', 'a._um_roleprn_delete', function (e) {
+    mThis.tblPerns1_body.onmouseover = function(){
+        console.log('tr');
+        this.querySelector('td.col_action').querySelector('a._um_roleprn_delete').style.display = 'block';
+    }.onmouseleave = function(){
+        console.log('tr');
+        this.querySelector('td.col_action').querySelector('a._um_roleprn_delete').style.display = 'none';
+    };
+
+    mThis.tblPerns1_body.onclick = function(e){
         e.preventDefault();
-        let ids = $(this).data('prnid');
-        cv_interact.confirm('Remove this permission?', { title: 'Remove Permission', context: 'delete' }, function (e) {
-            if (e) {
-                let p = { 'role_id': mThis.role_id, 'ids': ids };
-                vsapi.call([mThis.base_url, '/api/role/remove-permission'].join(''), p).then(res => {
-                    if (res.status_code === 200) {
+        console.log('a._um_roleprn_delete');
+        let ids = this.dataset.prnid;
+        cv_interact.confirm('Remove this permission?',{
+            title: 'Remove Permission',
+            context: "delete"
+        },function(e){
+            if(e){
+                let p = {
+                    role_id: mThis.role_id,
+                    ids: ids
+                };
+                vsapi.call(`${main_view.base_url}/api/removePermissionFromRole`,p).then(res => {
+                    if(res.status_code === 200){
                         mThis.displayRolePermissions(mThis.role_id);
                     }
                     else
@@ -565,708 +784,486 @@ var RoleTabView = new function () {
                 });
             }
         });
-    });
+    };
 
-    this.tblRoleMembers_body.on('click', 'a._um_rm_remove', function (e) {
-        e.preventDefault();
-        let p = {};
-        p.user_id = $(this).data('userid');
-        p.role_id = mThis.role_id;
-        cv_interact.confirm('Remove this user from the selected role?', { title: 'Unenroll User', context: 'update' }, function (e) {
-            if (e) {
-                vsapi.call([mThis.base_url, '/api/role/remove-member'].join(''), p).then(res => {
-                    if (res.status_code === 200) {
-                        let d = res.data;
-                        mThis.displayRoleMembers(mThis.role_id);
-                        let col_name = 'col_user_count';
-                        RoleListPanel.updateSelectRole(col_name, d.user_count);
-                    }
-                    else
-                        cv_interact.error(res.error_message);
-                });
-            }
-        });
-    });
+    // const btnRmRemove = mThis.tblRoleMember.querySelector('a._um_rm_remove');
+    // btnRmRemove.onclick = function(e){
+    //     e.preventDefault();
+    //     let p = {};
+    //     p.user_id = $(this).data('userid');
+    //     p.role_id = mThis.role_id;
+    //     cv_interact.confirm('Remove this user from the selected role?',{
+    //         title: 'Remove User',
+    //         context: 'delete'
+    //     },function(e){
+    //         if(e){
+    //             vsapi.call(`${mThis.base_url}/api/removeRoleMember`,p).then(res => {
+    //                 if(res.status_code === 200){
+    //                     let d = res.data;
+    //                     mThis.displayRoleMembers(mThis.role_id);
+    //                     let col_name = 'col_user_count';
+    //                     RoleListPanel.updateSelectRole(col_name, d.user_count);
+    //                 }
+    //                 else
+    //                     cv_interact.error(res.error_message);
+    //             });
+    //         }
+    //     });
+    // }
 
-    this.tblRoleMembers_body.on('mouseover', 'tr', function (e) {
-        $(this).find('td.col_action').find('a._um_rm_remove').show()
-    }).on('mouseleave', 'tr', function (e) {
-        $(this).find('td.col_action').find('a._um_rm_remove').hide()
-    });
+    // this.tblRoleMembers_body.on('mouseover', 'tr',function(e){
+    //     $(this).find('td.col_action').find('a._um_rm_remove').show();
+    // }).on('mouseleave', 'tr', function(e){
+    //     $(this).find('td.col_action').find('a._um_rm_remove').hide();
+    // });
 
-    this.tblRoleMembers.on('click', '.btn-role-user-modify', (e) => {
-        let role_id = RoleListPanel.selected_role_id;
-
-        let login_name = e.currentTarget.dataset.loginname;
-        let option = {
-            'blankErrorMessage': 'Login name cannot be blank',
-            'btnOKText': 'Commit Change',
-            'defaultValue': login_name,
-            'title': 'Change Login Name',
-            'dataLabel': 'New login name'
-        };
-
-        InputBox1.show(option, function (d) {
-            if (d) {
-                if (d !== login_name) {
-                    let p = {};
-                    p.login_name = login_name;
-                    p.new_login_name = d;
-                    vsapi.call([mThis.base_url, '/api/user/change-login'].join(''), p).then(res => {
-                        if (res.status_code === 200) {
-                            mThis.displayRoleMembers(role_id);
-                        }
-                        else
-                            cv_interact.error(res.error_message);
-                    });
-                }
-            }
-        });
-    });
-
-    this.tblRoleMembers.on('click', '.btn-role-user-remove', (e) => {
-
-        let id = e.currentTarget.dataset.id;
-        let role_name = e.currentTarget.dataset.rolename;
-        let role_id = RoleListPanel.selected_role_id;
-
-        cv_interact.confirm(`Remove this user from ${role_name} role?`, { title: 'Unenroll User', confirmButtonText: 'Remove', cancelButtonText: 'Close' }, function (e) {
-            if (e) {
-                let p = { "user_id": id, 'role_id': role_id };
-                vsapi.call([mThis.base_url, '/api/role/remove-member'].join(''), p).then(res => {
-                    if (res.status_code === 200)
-                        mThis.displayRoleMembers(role_id);
-                    else
-                        cv_interact.error(res.error_message);
-                });
-            }
-        });
-    });
-
-    this.tblRoleMembers.on('click', '.btn-role-user-delete', e => {
-        let id = e.currentTarget.dataset.id;
-        const el = e.currentTarget.closest('a');
-        let role_name = el.dataset.rolename;
-        let role_id = RoleListPanel.selected_role_id;
-
-        cv_interact.confirm(`You are about to delete this user permanently ${role_name}?`, { title: 'Delete User', context: 'delete', 'confirmButtonText': 'Delete' }, function (e) {
-            if (e) {
-                let p = { "user_id": id };
-                vsapi.call([mThis.base_url, '/api/user/delete'].join(''), p, null, false).then(res => {
-                    if(res.error_message)
-                        cv_interact.error(res.error_message);
-                    else
-                        mThis.displayRoleMembers(role_id);
-                });
-            }
-        });
-    });
-
-    this.renderAccessibleModules = (mods = []) => {
-        let html = '';
-        mThis.div_module_list.html(null);
-        let cnt = 0;
-        console.log(main_view.modules); 
-        (mods || []).map(mod => {
-            let icon_url = mThis.getIconUrl(mod.id);
-            let action = (mod.mod_access == 1) ? 'Enable' : 'Disable';
-            if(!icon_url)  icon_url = [main_view.base_url,'/assets/images/icons/property.png'].join('');
-            html = [html, `<div class="btn_nf_ mod-card border-4 shadow ${action === 'Enable' ? 'access-enable':'access-disable'}">
-                <div class="d-flex align-items-center p-2">
-                <div class="icon-container">
-                    <img src="${icon_url}" class="img-fluid icon" alt="Icon">
-                </div>
-                <div class="flex-fill">
-                    <div class="card-body">
-                    <h5 class="card-title mb-0">${mod.name}</h5>
-                    <div class="d-flex align-items-center mt-2">
-                        <a href="javascript:void(0)" class="_action_">${action}</a>
-                        <i class="fas fa-check-square ml-2 _icon_"></i>
-                    </div>
-                    </div>
-                </div>
-                </div>
-            </div>`].join('');
-            cnt++;
-        });
-        if (cnt === 0) html = '<div class="p-2 m-2 text-center text-secondary">No registered modules!</div>';
-        mThis.div_module_list.html(html);
-        mThis.AddRemoveModuleAccess(mThis.div_module_list);
-    }
-
-    this.getIconUrl = (mod_id)=>{
-        let m = main_view.modules.find(mod => mod.module_id == mod_id);
-        return m?m.icon_url:''; 
-    }
-    this.AddRemoveModuleAccess = (div) => {
-        div.find('.btn_nf_').on('click',function(e){
-            e.preventDefault();
-            console.log("You Clicked!");
-        });
-    }
-
-    this.displayAccessibleModules = function (role_id) {
+    this.displayAccessibleModules = function(role_id){
         let p = {};
         p.role_id = role_id ? role_id : 0;
-        mThis.tblModules_body.empty();
+        mThis.tblModules_body.innerHTML = '';
         let role_name = RoleListPanel.selected_role_name;
-        if (!role_name) role_name = "This role";
-        $('#_um_roletab_module_text').text([role_name, ' can use these modules'].join(''));
+        if(!role_name) role_name = "This role";
+        RoleManagementComponent.self.querySelector('#_um_roletab_module_text').textContent = `${role_name} can use these modules`;
 
-        vsapi.call([mThis.base_url, '/api/role/access-module/list-all'].join(''), p).then(res => {
-            if (res.status_code === 200) {
-                let mods = StringSanitizer.sanitizeObject(res.data);
-                mThis.renderAccessibleModules(mods);
+        vsapi.call(`${main_view.base_url}/api/role/access-module/list-all`,p).then(res => {
+            if(res.status_code === 200){
+                let rows = StringSanitizer.sanitizeObject(res.data);
+                let i = 0, c;
+                do{
+                    c = rows[i];
+                    if(!c) break;
+                    let html = `<tr data-moduleid="${c.id}">
+                        <td style="width:50px !important">
+                            <i class="icon-module-default"></i>
+                        </td>
+                        <td>${c.name}</td>
+                        <td class="col_action">
+                            <a href="javascript:void(0)" class="_um_ma_remove" data-moduleid="${c.id}">
+                                <i class="fa fa-times text-danger"></i>
+                            </a>
+                        </td>
+                    </tr>`;
+                    mThis.tblModules_body.innerHTML += html;
+                    i++;
+                }while(c);
+                mThis.setEventModules();
             }
         });
     }
 
-    this.displayRoleMembers = function (role_id) {
+    this.displayRoleMembers = function(role_id){
         let p = {};
         p.role_id = role_id;
-        $('#_um_roletab_users_text').text(['Members of ', RoleListPanel.selected_role_name, ' role'].join(''));
-        vsapi.call([mThis.base_url, '/api/role/members'].join(''), p).then(res => {
-            if (res.status_code === 200) {
-                let rows = res.data;
-
-                if (mThis.table) {
-                    mThis.tblRoleMembers.DataTable().clear().destroy();
-                    mThis.tblRoleMembers.empty();
-                    mThis.table = null;
-                }
-
-                let data = StringSanitizer.sanitizeObject(rows, null, ['login_name', 'email']);
-                let cnt = 1;
-                let my_columns = [
-                    {
-                        title: "No",
-                        data: () => {
-                            return cnt;
-                        }
-                    },
-                    {
-                        data: (item, a, b) => {
-                            return item.login_name;
-                        },
-                        title: 'Login name'
-                    },
-                    {
-                        title: 'Full Name',
-                        data: (user, a, b) => {
-                            return user.full_name ? user.full_name : 'Unspecified';
-                        }
-                    },
-                    {
-                        title: "Official ID",
-                        data: (user, a, b) => {
-                            return user.official_code ? user.official_code : 'None';
-                        }
-                    },
-                    {
-                        title: "Phone Number",
-                        data: (user, a, b) => {
-                            return user.phone_number ? user.phone_number : "Unavailable"
-                        }
-                    },
-                    {
-                        title: "Action",
-                        data: function (item, a, b) {
-                            return [`<div class="form-inline">`,
-                                `<a href="javascript:void(0)" class="btn-role-user-modify" data-loginname="${item.login_name}" data-id="${item.id}" data-rolename="${item.role_name}"><i class="fa fa-edit"></i></a> &nbsp;`,
-                                `<a href="javascript:void(0);" data-id="${item.id}" data-rolename="${item.role_name}" class="btn-role-user-remove"><i class="fa fa-times-circle" style="color:red"></i></a> &nbsp;`,
-                                `<a href="javascript:void(0);" data-id="${item.id}" data-rolename="${item.role_name}" class="btn-role-user-delete"><i class="fa-solid fa-trash-can text-danger"></i></a>`,
-                                `</div>`
-                            ].join('');
-                        }
-                    }
-                ];
-
-                if (!mThis.table){
-                    mThis.table = mThis.tblRoleMembers.DataTable({
-                        searching: false,
-                        destroy: true,
-                        paging: true,
-                        ordering: false,
-                        retrieve: true,
-                        info: true,
-                        pageLength: 10,
-                        bLengthChange: false,
-                        saveState: true,
-                        processing: true,
-                        language: {
-                            loadingRecords: '&nbsp;',
-                            processing: 'Loading...',
-                            emptyTable: 'No data to display'
-                        },
-                        data: data,
-                        columns: my_columns,
-                        createdRow: function (row, data, dataIndex) {
-                            cnt++;
-                            let tr = $(row);
-                            tr.data('id', data.id);
-                        }
-                    });
-                }
-            }
-        });
+        p.search_value = RoleListPanel.elSearchUser.value;
+        RoleManagementComponent.self.querySelector('#_um_roletab_users_text').textContent = `Members of ${RoleListPanel.selected_role_name} role`;
+        mThis.roleMemberListView.showPage(p);  
     }
 
     this.addPermissionsToRole = (prn_ids, role_id, onFinish) => {
-        let p = { 'role_id': role_id, 'ids': prn_ids };
-        vsapi.call([mThis.base_url, '/api/role/add-permission'].join(''), p).then(res => {
+        let p = {
+            role_id: role_id,
+            ids: prn_ids
+        };
+        vsapi.call(`${main_view.base_url}/api/addPermissionToRole`, p).then(res => {
             let d = {};
-            if (res.status_code === 200) d = res.data ? res.data : {};
-            if (d.success_count > d.fail_count) {
+            if(res.status_code === 200) d = res.data ? res.data : {};
+            if(d.success_count > d.fail_count){
                 if (typeof onFinish === 'function') onFinish();
             }
-            if(d.fail_count > 0) {
+            if(d.fail_count > 0){
                 let i = 0, c, html = '';
-                do {
+                do{
                     c = d.errors[i];
-                    if (!c) break;
-                    if (c) html = [html, '<li>', StringSanitizer.sanitizeOut(c), '<li>'].join('');
+                    if(!c) break;
+                    if(c) html += `<li>${StringSanitizer.sanitizeOut(c)}<li>`;
                     i++;
-                } while (c);
+                }while (c);
 
                 Swal.fire({
                     title: '',
                     icon: 'error',
-                    html: ['<ul>', html, '</ul>'].join(''),
-                    showCancelButton: true,
+                    html: `<ul>${html}</ul>`,
+                    showCancelButton: true
                 });
             }
         });
     }
 
-    this.displayRolePermissions = function (role_id) {
-        role_id = role_id > 0 ? role_id : -1;
-        let p = { 'role_id': role_id };
-        vsapi.call([mThis.base_url, '/api/role/permissions'].join(''), p, null, false).then(res => {
-            if (res.status_code === 200) {
+    this.displayRolePermissions = function(role_id){
+        let p = {
+            role_id: role_id
+        };
+        vsapi.call(`${main_view.base_url}/api/getPermissionsByRole`, p).then(res => {
+            if(res.status_code === 200){
                 let rows = StringSanitizer.sanitizeObject(res.data);
                 let i = 0, c;
-                mThis.tblPerns1_body.empty();
-                do {
+                mThis.tblPerns1_body.innerHTML = '';
+                do{
                     c = rows[i];
-                    if (!c) break;
-                    let html = ['<tr data-prnid="', c.id, '"><td class"col_permission_id" style="width:25%">', c.id, '</td>',
-                        '<td style="width:50%">', c.name, '</td>',
-                        '<td class="col_action"><a data-prnid="', c.id, '" href="javascript:void(0)" class="_um_roleprn_delete btn btn-sm btn-outline-danger" style="display:none"><i class="fa fa-times" style="color:red"></i> Remove</a></td>',
-                        '<tr>'].join('');
-                    mThis.tblPerns1_body.append(html);
-
+                    if(!c) break;
+                    let html = `<tr data-prnid="${c.id}">
+                        <td class"col_permission_id" style="width:25%">${c.id}</td>
+                        <td style="width:50%">${c.name}</td>
+                        <td class="col_action">
+                            <a data-prnid="${c.id}" href="javascript:void(0)" class="_um_roleprn_delete btn btn-sm btn-outline-secondary" style="display:none">
+                                <span class="trans-text" data-langprop="buttons.Remove">Remove</span>
+                            </a>
+                        </td>
+                    <tr>`;
+                    mThis.tblPerns1_body.insertAdjacentElement('afterend',html);
                     i++;
-                } while (c);
-                mThis.tblPerns1_body.find('td.col_permission_id').css('width:70px');
+                }while(c);
+                const permissionElement = mThis.tblPerns1_body.querySelector('td.col_permission_id');
+                if(permissionElement)
+                    permissionElement.style.width = '70px';
             }
         });
     }
 }
 
-var PermissionList = new function () {
-    let mThis = this;
-    this.base_url = $('#__base_url').val();
-    this.self = $('#_um_permissionList');
-    this.tblPrns = $('#_um_tblPrns');
-    this.tblPrns_body = $('#_um_tblPrns_body');
-    this.lnkCreatePrn = $('#_um_prnlist_lnkCreatePrn');
-    this.lnkRefreshPrns = $('#_um_prnlist_lnkRefeshPrn');
-    this.lnkAddPrnByCode = $('#_um_prnlist_lnkAddPrn');
-    this.lblTitle = $('#_um_prnlist_lblTitle');
+const PermissionList = new function(){
+    const mThis = this;
+    this.self = main_view.appContent.find('#_um_permissionList')[0];
+    this.tblPrns = mThis.self.querySelector('#_um_tblPrns');
+    this.tblPrns_body = mThis.self.querySelector('#_um_tblPrns_body');
+    this.lnkCreatePrn = mThis.self.querySelector('#_um_prnlist_lnkCreatePrn');
+    this.lnkRefreshPrns = mThis.self.querySelector('#_um_prnlist_lnkRefeshPrn');
+    this.lnkAddPrnByCode = mThis.self.querySelector('#_um_prnlist_lnkAddPrn');
+    this.lblTitle = mThis.self.querySelector('#_um_prnlist_lblTitle');
 
-    this.lnkCreatePrn.on('click', function (e) {
+    mThis.lnkCreatePrn.onclick = function(e){
         e.preventDefault();
-
-        CreatePermissionDialog.show(mThis.role_id, function (e) {
-            if (e) {
+        CreatePermissionDialog.show(mThis.role_id,function(e){
+            if(e){
                 mThis.displayPermissionList(mThis.role_id);
             }
         });
-    });
+    };
 
-    this.lnkRefreshPrns.on('click', function (e) {
+    mThis.lnkRefreshPrns.onclick = function(e){
         e.preventDefault();
-        vsapi.call([mThis.base_url, '/api/role/cache-list'].join(''), null).then(res => {});
-    });
+        vsapi.call(`${main_view.base_url}/api/localizePermissions`, null).then(res => {});
+    };
 
-    this.lnkAddPrnByCode.on('click', function (e) {
+    mThis.lnkAddPrnByCode.onclick = function(e){
         e.preventDefault();
-        AddPermissionDialog.show(mThis.role_id, function (ids) {
-            if (ids) {
+        AddPermissionDialog.show(mThis.role_id, function(ids){
+            if(ids){
                 RoleTabView.addPermissionsToRole(ids, mThis.role_id, () => {
                     mThis.displayPermissionList(mThis.role_id);
                 });
             }
         });
-    });
+    };
 
-    mThis.tblPrns_body.on('click', 'a._um_pa_remove', function (e) {
+    mThis.tblPrns_body.addEventListener('click',e =>{
         e.preventDefault();
-
-        let p = {};
-        p.role_id = mThis.role_id;
-        p.ids = $(this).data('prnid');
-
-        vsapi.call([mThis.base_url, '/api/role/remove-permission'].join(''), p).then(res => {
-            if (res.status_code === 200) {
-                mThis.displayPermissionList(mThis.role_id);
-            }
-            else
-                cv_interact.error(res.error_message);
-        });
+        
+        //Click on Remove Permission button
+        let btn = VSUtil.getElementByClass(e.target,'_um_pa_remove');
+        if(btn){
+            let p = {};
+            p.role_id = mThis.role_id;
+            p.ids = btn.dataset.prnid;
+    
+            vsapi.call(`${main_view.base_url}/api/removePermissionFromRole`, p).then(res => {
+                if(res.status_code === 200){
+                    mThis.displayPermissionList(mThis.role_id);
+                }
+                else
+                    cv_interact.error(res.error_message);
+            });
+            return;
+        }
+       
     });
 
-    mThis.tblPrns_body.on('mouseover', 'tr', function (e) {
+   $(mThis.tblPrns_body).on('mouseover', 'tr',function(e){
         $(this).find('td.col_action>a').show();
-    }).on('mouseleave', 'tr', function (e) {
+    }).on('mouseleave', 'tr', function(e){
         $(this).find('td.col_action>a').hide();
     });
 
-    this.show = function (option) {
-        if (Option) {
-            if (option.title)
-                mThis.lblTitle.html(option.title);
+    this.show = function(option){
+        if(option){
+            if(option.title) mThis.lblTitle.html(option.title);
             mThis.role_id = option.role_id;
         }
-        mThis.self.show().siblings().hide();
+
         mThis.displayPermissionList(mThis.role_id);
+        mThis.self.siblings().hide();
+        mThis.self.fadeIn(250);
     }
 
-    this.displayPermissionList = function (role_id) {
+    this.displayPermissionList = function(role_id){
         let p = {};
         p.role_id = role_id;
         mThis.tblPrns_body.empty();
 
-        vsapi.call([mThis.base_url, '/api/role/permissions'].join(''), p).then(res => {
-            if (res.status_code === 200) {
+        vsapi.call(`${main_view.base_url}/api/getPermissionsByRole`, p).then(res => {
+            if(res.status_code === 200){
                 let rows = StringSanitizer.sanitizeObject(res.data);
                 let i = 0, c;
-                do {
+                do{
                     c = rows[i];
-                    if (!c) break;
-                    let html = ['<tr data-prnid="', c.id, '">',
-                        '<td>', c.id, '</td>',
-                        '<td>', c.name, '</td>',
-                        '<td>', c.module_name, '</td>',
-                        '<td class="col_action"><a data-prnid="', c.id, '" href="javascript:void(0)" class="_um_pa_remove" style="display:none"><i class="fa fa-times" style="color:red"></i></a></td>',
-                        '</tr>'].join('');
-                    mThis.tblPrns_body.append(html);
+                    if(!c) break;
+                    let html = `<tr data-prnid="${c.id}">
+                        <td>${c.id}</td>
+                        <td>${c.name}</td>
+                        <td>${c.module_name}</td>
+                        <td class="col_action">
+                            <a data-prnid="${c.id}" href="javascript:void(0)" class="_um_pa_remove" style="display:none">
+                                <i class="fa fa-times text-danger"></i>
+                            </a>
+                        </td>
+                    </tr>`;
+                    mThis.tblPrns_body.innerHTML += html;
                     i++;
-                }
-                while (c);
+                }while(c);
             }
         });
     }
 };
 
-var AddPermissionDialog = new function () {
-    let mThis = this;
-    this.self = $('#_um_dlgAddPrn');
-    this.base_url = $('#__base_url').val();
-    this.lnkBackToRoleList = $('#_um_prnlist_backToRoleList');
-    this.btnAdd = $('#_um_addprn_btnOK');
-    this.elTitle = $('#_um_dlgAddPrnTitle');
+const AddPermissionDialog = new function(){
+    const mThis = this;
+    this.self = main_view.appContent.children('#_um_dlgAddPrn')[0];
+    this.lnkBackToRoleList = mThis.self.querySelector('#_um_prnlist_backToRoleList');
+    this.btnAdd = mThis.self.querySelector('#_um_addprn_btnOK');
+    this.elTitle = mThis.self.querySelector('#_um_dlgAddPrnTitle');
+    this.elSearchPrn = mThis.self.querySelector('#_um_addprn_search');
+    this.tblPrns = mThis.self.querySelector('#_um_addprn_tblPrns');
+    this.tblPrns_body = mThis.self.querySelector('#_um_addprn_tblPrns_body');
+    this.elError = mThis.self.querySelector('#_um_addprn_error');
 
-    this.elSearchPrn = $('#_um_addprn_search');
-    this.tblPrns = $('#_um_addprn_tblPrns');
-    this.tblPrns_body = $('#_um_addprn_tblPrns_body');
-    this.elError = $('#_um_addprn_error');
+    if(mThis.lnkBackToRoleList){
+        mThis.lnkBackToRoleList.onclick = function(e){
+            e.preventDefault();
+            let options = {};
+            options.title = "Manage Roles";
+            RoleListPanel.show(options);
+        };
+    }
 
-    this.lnkBackToRoleList.on('click', function (e) {
+    mThis.elSearchPrn.onkeyup = function(e){
         e.preventDefault();
-        let options = {};
-        options.title = "Manage Roles";
-        RoleListPanel.show(options);
-    });
-
-    this.elSearchPrn.on('keyup', function (e) {
-        mThis.elError.html(null);
-
-        let d = $(this).val();
+        mThis.elError.innerHTML = '';
+        let d = this.value;
         let p = {};
         p.search_value = d;
         p.role_id = mThis.role_id;
         p.show_all = 1;
-        mThis.tblPrns_body.empty();
-        vsapi.call([mThis.base_url, '/api/role/permissions'].join(''), p).then(res => {
+        mThis.tblPrns_body.innerHTML = '';
+        vsapi.call(`${main_view.base_url}/api/getPermissionsByRole`, p).then(res => {
             let rows = StringSanitizer.sanitizeObject(res.data);
             mThis.displayPermissions(rows);
         });
-    });
+    };
 
-    this.btnAdd.on('click', function (e) {
-        let ids = mThis.getSelectedPrns();
-        if (!ids) {
-            mThis.elError.html('No permissions selected');
-            return;
-        }
+    if(mThis.btnAdd){
+        mThis.btnAdd.onclick = function(e){
+            e.preventDefault();
+            let ids = mThis.getSelectedPrns();
+            if(!ids){
+                mThis.elError.innerHTML = 'No permissions selected';
+                return;
+            }
+    
+            if(typeof mThis.onClose == 'function') mThis.onClose(ids);
+            mThis.self.modal('hide');
+        };
+    }
 
-        if (typeof mThis.onClose == 'function') mThis.onClose(ids);
-        mThis.self.modal('hide');
-    });
-
-    this.tblPrns.on('click', '.prn_btn_action', function (e) {
+    mThis.tblPrns.onclick = function(e){
         e.preventDefault();
-        let x = $(this);
-        let prn_id = x.data('prnid');
-        let tr = x.closest('tr');
-        let action = x.data('action');
+        console.log('.prn_btn_action');
+        let prn_id = this.dataset.prnid;
+        let tr = this.closest('tr');
+        let action = this.dataset.action;
         mThis.addRemovePermission(tr, mThis.role_id, prn_id, action);
-    });
+    };
 
     this.addRemovePermission = (tr, role_id, prn_id, action) => {
-        let p = { 'role_id': role_id, 'prn_id': prn_id };
-        let m = 'role/add-permission';
+        let p = {
+            role_id: role_id,
+            id: prn_id
+        };
+        let m = 'addPermissionToRole';
 
-        if (action == 'remove') m = 'role/remove-permission';
-        vsapi.call(`${mThis.base_url}/api/${m}`, p).then(res => {
-            if (res.status_code === 200) {
-                if (action == 'add') {
-                    let btn = tr.find('.prn_btn_action');
-                    btn.data('action', 'remove');
-                    btn.removeClass('btn-outline-success').addClass('btn-outline-danger').text('Remove');
-                    tr.data('hasprn', 1).removeClass('tr-disallowed').addClass('tr-allowed');
-
+        if(action == 'remove') m = 'removePermissionFromRole';
+        vsapi.call(`${main_view.base_url}/api/${m}`, p).then(res => {
+            if(res.status_code === 200){
+                if(action == 'add'){
+                    let btn = tr.querySelector('.prn_btn_action');
+                    btn.dataset.action = 'remove';
+                    btn.classList.remove('btn-outline-success').add('btn-outline-danger').textContent = 'Remove';
+                    tr.dataset.hasprn = 1;
+                    tr.classList.remove('tr-disallowed').add('tr-allowed');
                 }
-                else {
-                    let btn = tr.find('.prn_btn_action');
-                    btn.data('action', 'add');
-                    btn.removeClass('btn-outline-danger').addClass('btn-outline-success').text('Add');
-                    tr.data('hasprn', 0).removeClass('tr-allowed').addClass('tr-disallowed');
+                else{
+                    let btn = tr.querySelector('.prn_btn_action');
+                    btn.dataset.action = 'add';
+                    btn.classList.remove('btn-outline-danger').add('btn-outline-success').textContent = 'Add';
+                    tr.dataset.hasprn = 0;
+                    tr.classList.remove('tr-allowed').add('tr-disallowed');
                 }
-
                 mThis.data_changed = true;
-
             }
-            else {
+            else{
                 cv_interact.error(res.error_message);
             }
         });
     }
 
     this.displayPermissions = (items) => {
-        if (!items) items = [];
+        if(!items) items = [];
         let i = 0, c;
-        mThis.tblPrns_body.empty();
-        do {
+        mThis.tblPrns_body.innerHTML = '';
+        do{
             c = items[i];
-            if (!c) break;
-            let btn_action = ['<td class="col_action">', `<a data-action="add" href="javascript:void(0)" class="btn btn-sm btn-outline-success prn_btn_action prn_btn_add" data-roleid="${c.role_id}" data-prnid="${c.id}"> Add</a>`, '</td>'].join('');
-            if (c.has_prn == 1) btn_action = ['<td class="col_action">', `<a href="javascript:void(0)" data-action="remove" class="btn btn-sm btn-outline-danger prn_btn_action prn_btn_remove" data-roleid="${c.role_id}" data-prnid="${c.id}"> Remove</a>`, '</td>'].join('');
+            if(!c) break;
+            let btn_action = `<td class="col_action">
+                <a data-action="add" href="javascript:void(0)" class="btn btn-sm btn-outline-success prn_btn_action prn_btn_add" data-roleid="${c.role_id}" data-prnid="${c.id}">Add</a>
+            </td>`;
+            if(c.has_prn == 1)
+                btn_action = `<td class="col_action">
+                    <a href="javascript:void(0)" data-action="remove" class="btn btn-sm btn-outline-danger prn_btn_action prn_btn_remove" data-roleid="${c.role_id}" data-prnid="${c.id}">Remove</a>
+                </td>`;
             let tr_class = 'tr-disallowed';
-            if (c.has_prn == 1) tr_class = 'tr-allowed';
-            let html = ['<tr class="', tr_class, '" data-id="', c.id, '" data-hasprn="', c.has_prn ? c.has_prn : 0, '">',
-                '<td class="prn-icon"><img src="" width="80px" /></td>',
-                '<td class="prn-id">', c.id, '</td>',
-                '<td class="prn-name">', c.name, '</td>',
-                '<td class="mod-name">', c.module_name, '</td>',
-                btn_action,
-                '</tr>'].join('');
-            mThis.tblPrns_body.append(html);
+            if(c.has_prn == 1)
+                tr_class = 'tr-allowed';
+            let html = `<tr class="${tr_class}" data-id="${c.id}" data-hasprn="${c.has_prn ? c.has_prn : 0}">
+                <td class="prn-icon">
+                    <img src="" width="80px"/>
+                </td>
+                <td class="prn-id">${c.id}</td>
+                <td class="prn-name">${c.name}</td>
+                <td class="mod-name">${c.module_name}</td>
+                ${btn_action}
+            </tr>`;
+            mThis.tblPrns_body.innerHTML += html;
             i++;
-        }
-        while (c);
+        }while(c);
     }
 
-    this.getSelectedPrns = function () {
+    this.getSelectedPrns = function(){
         let prns = null;
-        mThis.tblPrns_body.find('tr').each(function () {
-            let cb_cell = $(this).find('td.col_checkbox>input[type="checkbox"]');
-            if (cb_cell.is(':checked')) {
+        mThis.tblPrns_body.querySelectorAll('tr').forEach(el => {
+            let cb_cell = el.querySelector('td.col_checkbox > input[type="checkbox"]');
+            if(cb_cell.contains(':checked')){
                 let sp = '';
-                if (prns) sp = '|'; else sp = '';
-                prns = [prns, sp, $(this).data('id')].join('');
+                if(prns)
+                    sp = '|';
+                else
+                    sp = '';
+                prns = prns+sp+(this.dataset.id);
             }
         });
         return prns;
     }
 
     this.loadPermissions = (onFinish) => {
-        let p = { 'role_id': mThis.role_id, 'search_value': mThis.elSearchPrn.val(), 'show_all': 1 };
-        vsapi.call([mThis.base_url, '/api/role/permissions'].join(''), p).then(res => {
-            if (res.status_code === 200) {
+        let p = {
+            role_id: mThis.role_id,
+            search_value: mThis.elSearchPrn.value,
+            show_all: 1
+        };
+        vsapi.call(`${main_view.base_url}/api/getPermissionsByRole`, p).then(res => {
+            if(res.status_code === 200){
                 let rows = StringSanitizer.sanitizeObject(res.data);
                 onFinish(rows);
             }
         });
     }
 
-    this.show = function (role, onClose) {
-        mThis.elError.html(null);
+    this.show = function(role, onClose){
+        mThis.elError.innerHTML = '';
         mThis.role_id = role.role_id;
         mThis.role_name = role.role_name;
         mThis.onClose = onClose;
         mThis.data_changed = false;
 
-        mThis.elTitle.text(['Add/Remove Permissions for ', mThis.role_name].join(''));
+        mThis.elTitle.textContent = `Add/Remove Permissions for ${mThis.role_name}`;
         mThis.loadPermissions((items) => {
             mThis.displayPermissions(items);
-            mThis.self.modal({
+            $(mThis.self).modal({
                 backdrop: 'static'
-            }).on('hidden.bs.modal', function () {
-                if (typeof mThis.onClose == 'function') mThis.onClose(mThis.data_changed);
+            }).on('hidden.bs.modal', function(){
+                if(typeof mThis.onClose == 'function') mThis.onClose(mThis.data_changed);
             });
         });
     }
 }
 
-var CreatePermissionDialog = new function () {
-    let mThis = this;
-    this.self = $('#_um_dlgCreatePrn');
-    this.base_url = $('#__base_url').val();
-    this.btnCreate = $('#_um_createprn_btnOK');
+const CreatePermissionDialog = new function(){
+    const mThis = this;
+    this.self = main_view.appContent.children('#_um_dlgCreatePrn')[0];
+    this.btnCreate = mThis.self.querySelector('#_um_createprn_btnOK');
+    this.elPrn = mThis.self.querySelector('#_um_createprn_prn');
+    this.elPrnNumber = mThis.self.querySelector('#_um_createprn_prn_id');
+    this.elModule = mThis.self.querySelector('#_um_createprn_module');
+    this.elError = mThis.self.querySelector('#_um_createprn_error');
 
-    this.elPrn = $('#_um_createprn_prn');
-    this.elPrnNumber = $('#_um_createprn_prn_id');
-    this.elModule = $('#_um_createprn_module');
-    this.elError = $('#_um_createprn_error');
-
-    this.btnCreate.on('click', function (e) {
-        mThis.elError.html(null);
+    mThis.btnCreate.onclick = function(e){
+        e.preventDefault();
+        mThis.elError.innerHTML = '';
         let p = {};
-        p.module_id = mThis.elModule.val();
-        p.name = mThis.elPrn.val();
-        p.prn_id = mThis.elPrnNumber.val();
+        p.module_id = mThis.elModule.value;
+        p.name = mThis.elPrn.value;
+        p.prn_id = mThis.elPrnNumber.value;
         p.role_id = mThis.role_id;
-        if (!p.prn_id) {
-            mThis.elError.text('Permission Number cannot be empty');
+        if(!p.prn_id){
+            mThis.elError.textContent = 'Permission Number cannot be empty';
             return;
         }
 
-        if (!p.name) {
-            mThis.elError.text('Permission name cannot be empty');
+        if(!p.name){
+            mThis.elError.textContent = 'Permission name cannot be empty';
             return;
         }
 
-        if (!p.module_id) {
-            mThis.elError.text('Please select a module');
+        if(!p.module_id){
+            mThis.elError.textContent = 'Please select a module';
             return;
         }
-        vsapi.call([mThis.base_url, '/api/permission/create'].join(''), p).then(res => {
-            if (res.status_code === 200) {
-                if (typeof mThis.onClose === 'function') mThis.onClose(true);
+
+        vsapi.call(`${main_view.base_url}/api/createPermission`, p).then(res => {
+            if(res.status_code === 200){
+                if(typeof mThis.onClose === 'function') mThis.onClose(true);
                 mThis.self.modal('hide');
-            } else mThis.elError.text(res.error_message);
+            }
+            else
+                mThis.elError.textContent = res.error_message;
         });
+    };
 
-    });
-
-    this.loadModules = function (onFinish) {
-        vsapi.call([mThis.base_url, '/api/getComboItems_module'].join(''), null).then(res => {
-            if (res.status_code === 200) {
+    this.loadModules = function(onFinish){
+        vsapi.call(`${main_view.base_url}/api/getComboItems_module`,null).then(res => {
+            if(res.status_code === 200){
                 let i = 0, c;
                 let rows = StringSanitizer.sanitizeObject(res.data);
-                mThis.elModule.empty();
+                mThis.elModule.innerHTML = '';
                 mThis.elModule.append($('<option/>').val(null).text('(Select Application Module)'));
-                do {
+                do{
                     c = rows[i];
-                    if (!c) break;
+                    if(!c) break;
                     mThis.elModule.append($('<option/>').val(c.id).text(c.name));
                     i++;
-                } while (c);
+                }while (c);
                 onFinish();
             }
         });
     }
 
-    this.show = function (role_id, onClose) {
+    this.show = function(role_id, onClose){
         mThis.elError.html(null);
         mThis.role_id = role_id;
         mThis.onClose = onClose;
 
-        mThis.loadModules(function () {
+        mThis.loadModules(function(){
             mThis.self.modal({
                 backdrop: 'static'
             });
         });
     }
 }
-
-let FindUserDialog = new function () {
-    let mThis = this;
-    this.self = $('#_um_dlgFindUser');
-    this.elTitle = $('#_um_dlgFindUser_title');
-    this.elSearch = this.self.find('.search-user');
-    this.btnOK = $('#_um_dlgFindUser_btnOK');
-    this.tblUsers = this.self.find('.found-user-table');
-    this.options = {};
-
-    mThis.elSearch.on('keyup', (e) => {
-        mThis.findUsers();
-    });
-
-    this.tblUsers.on('click', 'tbody>tr', function (e) {
-        const tr = $(this);
-        tr.toggleClass('selected');
-        tr.find('td:first').toggleClass('checked');
-    });
-
-    this.btnOK.on('click', (e) => {
-        e.preventDefault();
-        let users = mThis.getSelection();
-        if (!users[0]) {
-            cv_interact.warning("No users selected");
-            return;
-        }
-        if (typeof mThis.onSelect === 'function')
-            mThis.onSelect(users);
-        mThis.self.modal('hide');
-    });
-
-    this.getSelection = () => {
-        let ps = [];
-        mThis.tblUsers.find('tr.selected').each(function () {
-            let tr = $(this);
-            ps.push({ "id": tr.data('id'), "login_name": tr.data('login'), "name": tr.data("name"), "user_class": tr.data("userclass") });
-        });
-        return ps;
-    }
-
-    this.findUsers = () => {
-        let val = mThis.elSearch.val();
-        let p = { 'user_class': mThis.options.user_class, 'search_value': val };
-        vsapi.call(`${main_view.base_url}/api/user/list`, p, null, false).then(res => {
-            if (res.status_code === 200) {
-                let d = StringSanitizer.sanitizeObject(res.data, null, ['image_url', 'login_name']);
-                mThis.renderUsers(d);
-            }
-        })
-    }
-
-    this.renderUsers = (users = []) => {
-        const tbody = mThis.tblUsers.find('tbody');
-        tbody.html(null);
-        let cnt = 0;
-        let html = '';
-        (users || []).map(user => {
-            html = [html, `<tr data-id="${user.id}"><td class="checkbox"></td><td>`, user.login_name, `</td><td>`, user.full_name, `</td><td>`, user.user_class, `</td><td>`, user.phone_number ? user.phone_number : 'Not Available', `</td></tr>`].join('');
-            cnt++;
-        });
-        if (cnt === 0) html = `<tr><td colspan="100%"><div class="p-3 text-center text-secondary w-100"> No matched users!</div></td></tr>`;
-        tbody.append(html);
-    }
-
-    this.show = (options = null) => {
-        if (!options) options = {};
-        mThis.options = options;
-        mThis.onSelect = options.onSelect;
-        mThis.elSearch.val(null);
-        mThis.tblUsers.find('tbody').html(null);
-
-        mThis.self.modal({
-            'backdrop': "static"
-        });
-    }
-}
-
-window.addEventListener('DOMContentLoaded',function () {
-    //Get module names from main menus (file /resources/views/menus/menu.php) and save those menus items as modules in database table "um_app_modules"
-    $('#_um_lnkSaveModuleList').on('click',(e)=>{
-        vsapi.call(`${main_view.base_url}/api/module/save-module-list`,{"modules":main_view.modules},null).then(res=>{
-            if(res.status_code===200){
-               cv_interact.success('Module list as been saved');  
-            }else cv_interact.error(res.error_message);
-        });
-    });
-    RoleManagementComponent.init();
-});

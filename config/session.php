@@ -128,7 +128,7 @@ return [
 
     'cookie' => env(
         'SESSION_COOKIE',
-        Str::slug(env('APP_NAME', 'vsksm'), '_').'_session'
+        Str::slug(env('APP_NAME', 'DMS'), '_').'_session'
     ),
 
     /*
@@ -169,7 +169,7 @@ return [
     |
     */
 
-    'secure' => env('SESSION_SECURE_COOKIE',true),
+    'secure' => env('SESSION_SECURE_COOKIE'),
 
     /*
     |--------------------------------------------------------------------------
@@ -182,7 +182,7 @@ return [
     |
     */
 
-    'http_only' => true, /** The default one is TRUE. We make it FALSE so that cookie can be accessible to JS script **/
+    'http_only' => false, /** The default one is TRUE. We make it FALSE so that cookie can be accessible to JS script **/
 
     /*
     |--------------------------------------------------------------------------

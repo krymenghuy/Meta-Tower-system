@@ -1,55 +1,227 @@
-<?php  
-  unset($_COOKIE['vectorasoft_vsksm_session']);
-  unset($_COOKIE['vsksm997878za']);
-?>
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
     <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <?php StyleManager::render('login-styles',1); ?>
-        <title>Kids World School</title>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel="icon" type="image/png" href="background-image.png"/>
+        <title>DELIVERY HOUEXPRESS</title>
+        <script>
+            function checkDevice(){
+                if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && !window.MSStream && !navigator.userAgent.match(/iPad/i)) {
+                   //alert("Sorry, this system is not available on mobile devices.");
+                   document.body.innerHTML =`<h2 style="display:block;text-align:center;padding:15px;">Sorry, this system is not available on mobile devices</h2>`;
+                   if (typeof window.stop === 'function') {
+                        window.stop();
+                        } else if (typeof document.execCommand === 'function') {
+                        document.execCommand('Stop', false);
+                    }
+                }
+                //return true;
+            }
+        </script>
+        <style type="text/css">
+            *{
+                padding:0;
+                margin:0;
+                box-sizing:border-box;
+            }
+
+            .vs-container-login{
+                width:100vw;
+                height:100vh;
+                position: absolute;
+                overflow:hidden;
+            }
+
+            .vs-container-login .img-background{
+                width:100vw;
+                height:100vh;
+                position:absolute;
+                background-size: cover;
+                background-repeat: no-repeat;
+                overflow: hidden;
+                filter:blur(5px);
+            }
+
+            .login-frame{
+                width:100vw;
+                height:100vh;
+                position: absolute;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+            }
+
+            .login-frame .vs-container-front-img{
+                width:70vw;
+                height:70vh;
+                background-color:#1286f1;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                border-radius:60px;
+                position: absolute;
+            }
+
+            .login-frame .vs-container-front-img .img-front{
+                height:100%;
+                width:50%;
+                border-radius:60px 0 0 60px;
+            }
+
+            .login-frame .vs-container-front-img .vs-login{
+                height:100%;
+                width:50%;
+                border-radius:0 60px 60px 0;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                flex-direction:column;
+            }
+            .vs-login .vs-title{
+                font-size:50px;
+                margin-bottom:3vh;
+                color:#fff;
+            }
+
+            .vs-login .vs-form-group{
+                width:80%;
+            }
+
+            .vs-login .vs-form-group .vs-d-flex{
+                width:100%;
+                display:flex;
+                flex-direction: column;
+            }
+
+            .vs-login .vs-form-group .vs-d-flex .vs-form-label{
+                color:#fff;
+                font-size:25px;
+                padding:20px 10px;
+            }
+
+            .vs-login .vs-form-group .vs-d-flex .vs-form-control{
+                width:100%;
+                height:50px;
+                border-radius:10px;
+                border:none;
+                outline:none;
+                padding:5px 15px;
+                font-size:18px;
+            }
+
+            ::placeholder{
+                font-size:18px;
+                padding:5px 10px;
+            }
+
+            .vs-login .vs-form-group .vs-d-flex-btn{
+                padding:10px;
+                width:100%;
+                margin-top:20px;
+                display:flex;
+                justify-content:center;
+            }
+
+            .vs-login .vs-form-group .vs-d-flex-btn .btn-login{
+                width:80%;
+                height:50px;
+                border-radius:10px;
+                border:2px solid #fff;
+                background-color:transparent;
+                font-size:25px;
+                color:#fff;
+                cursor:pointer;
+            }
+
+            .vs-login .vs-d-flex-copyright{
+                width:100%;
+                display:flex;
+                height:20%;
+                align-items:center;
+                justify-content:center;
+                flex-direction: column;
+                color:#fff;
+                font-size:18px;
+            }
+
+            .vs-login .vs-form-login{
+                height:80%;
+                width:100%;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                flex-direction: column;
+            }
+
+            .vs-container-front-img .vs-d-flex-copyright p{
+                padding:10px 0;
+            }
+
+            .error_text{
+                color:#ff0000;
+                font-size:18px;
+            }
+
+            .overlay-blur{
+                width:100vw;
+                height:100vh;
+                position: absolute;
+                background-color: #00000073;
+            }
+
+            @media screen and (max-width:820px){
+                .login-frame .vs-container-front-img{
+                    width:96vw;
+                }
+            }
+
+            @media screen and (min-width:821px) and (max-width:1500px){
+                .login-frame .vs-container-front-img{
+                    width:84vw;
+                }
+            }
+        </style>
     </head>
-    <body>
-        <div class="vs-container">
-            <div class="vs-contain-imgFront-form">
-                <div class="sub-vs-contain-imgFront-form">
-                    <div class="form-size">
-                        <div class="vs-logo">
-                            <div class="logo-img">
-                                <img src="{{ asset('assets/images/logo/logo.jpg') }}" />
+    <body onload="checkDevice()">
+        <div class="vs-container-login">
+            <div>
+                <img class="img-background" src="{{ asset('assets/images/background_image.jpg') }}"/>
+                <div class="overlay-blur"></div>
+            </div>
+            <div class="login-frame">
+                <div class="vs-container-front-img">
+                    <img class="img-front" src="{{ asset('assets/images/front_image.png') }}"/>
+                    <div class="vs-login">
+                        <div class="vs-form-login">
+                            <h1 class="vs-title">WELCOME</h1>
+                            <div class="vs-form-group">
+                                <form action="{{ url('/processLogin') }}" method="POST">
+                                    {{ csrf_field() }}
+                                    <div>
+                                        <span class="error_text">
+                                            <?php if(session()->has('login_error')) echo session('login_error'); ?>
+                                        </span>
+                                    </div>
+                                    <div class="vs-d-flex">
+                                        <label for="username" class="vs-form-label">Username</label>
+                                        <input type="text" class="vs-form-control" name="login_name" placeholder="Please enter username"/>
+                                    </div>
+                                    <div class="vs-d-flex">
+                                        <label for="username" class="vs-form-label">Password</label>
+                                        <input type="password" class="vs-form-control" name="password" placeholder="Pleace enter password"/>
+                                    </div>
+                                    <div class="vs-d-flex-btn">
+                                        <button class="btn-login" type="submit">LOGIN</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
-                        <div class="form-inside">
-                            <form autocomplete="false" action="{{ url('/processLogin') }}"
-                                method="POST">
-                                {{ @csrf_field() }}
-                                <span style="color:red;font-size:1em">
-                                    <?php
-                                        if(session()->has('login_error'))
-                                            echo session('login_error');
-                                    ?>
-                                </span>
-                                <div class="vs-form-group">
-                                    <label for="username" class="vs-form-label">User name</label>
-                                    <input type="text" name="login_name" placeholder="username" class="vs-form-control" />
-                                </div>
-                                <div class="vs-form-group">
-                                    <label for="password" class="vs-form-label">Password</label>
-                                    <input type="password" name="password" class="vs-form-control" placeholder="password"
-                                        autocomplete="nope" />
-                                </div>
-                                <div class="vs-btn-group">
-                                    <button class="vs-btn" type="submit">LOGIN</button>
-                                </div>
-                            </form>
+                        <div class="vs-d-flex-copyright">
+                            <p>Vectorasoft Co.,LTD.</p>
+                            <p>Copyright &copy 2023. All rights reserved</p>
                         </div>
                     </div>
-                </div>
-                <div class="sub-vs-contain-imgBack-from">
-                    <img class="img-background" src="{{ asset('assets/images/logo/background.png') }}" />
                 </div>
             </div>
         </div>

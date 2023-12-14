@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\UM;
 use App\Models\JDV;
 use Illuminate\Contracts\Session\Session;
-use Sanitizer;
+// use Sanitizer;
 use Localization;
 use Illuminate\Support\Facades\Response;
 
@@ -21,7 +21,7 @@ class UMController extends Controller
   {
     $this->UMModel = new UM();
   }
-  
+
   function refreshCsrfToken(Request $request)
   {
       //$newToken = csrf_token();
@@ -32,11 +32,12 @@ class UMController extends Controller
   }
 
   function getUserManagementOptions(Request $req){
-     $ss = UM::getUserInfoByToken($req,-1);
-     if($ss->status_code !==200) return JDV::raw($ss);
-     $data = $this->UMModel->getUserManagementOptions(); 
+    //  $ss = UM::getUserInfoByToken($req,-1);
+    //  if($ss->status_code !==200) return JDV::raw($ss);
+     $data = $this->UMModel->getUserManagementOptions();
      return JDV::result($data);
   }
+
   /* #Begin::adhoc methods => Adhoc methods are used to create Applications, Permissions, and module name etc. They are used only in Development time */
   function createApplication(Request $request)
   {
@@ -63,11 +64,11 @@ class UMController extends Controller
     return response()->json($m_str);
   }
 
-  function getModuleList($user_id = 0)
+  function getModuleList(Request $req,$user_id = 0)
   {
     $ss = UM::getUserInfoByToken($req, -1);
     if ($ss->status_code != 200) return $ss; //user not authenticated
-    $modules = $this->UMModel->getModuleList(null, $ss);
+    $modules = $this->UMModel->getUserModuleListPaginate($req->all(),$req->user_id,$ss);
     return JDV::result($modules);
   }
 
@@ -77,12 +78,6 @@ class UMController extends Controller
     if ($ss->status_code != 200) return $ss; //user not authenticated
     $res = $this->UMModel->saveRole($req->all(), $ss);
     return JDV::raw($res);
-  }
-
-  function role_exists(Request $req)
-  {
-    $r = $this->UMModel->role_exists($req);
-    return JDV::result($r);
   }
 
   function deleteRole(Request $req)
@@ -119,16 +114,38 @@ class UMController extends Controller
     $ss = UM::getUserInfoByToken($req, -1);
     if ($ss->status_code != 200) return $ss; //user not authenticated
     $user_id = $req->user_id ? $req->user_id : $req->id;
-    $r = $this->UMModel->getUserRoles($user_id);
+    $r = $this->UMModel->getUserRoleListPaginate($req->all(),$req->user_id,$ss);
     return JDV::result($r);
   }
+
+  function getUserPermissions(Request $req){
+    $ss = UM::getUserInfoByToken($req, -1);
+    if ($ss->status_code != 200) return $ss; //user not authenticated
+    $user_id = $req->user_id ? $req->user_id : $req->id;
+    $r = $this->UMModel->getUserPermissions_paginate($req->all(),$user_id,$ss);
+    return JDV::result($r);
+  }
+  // function getPermissionListPaginate(Request $req){
+  //   $ss = UM::getUserInfoByToken($req, -1);
+  //   if ($ss->status_code != 200) return $ss; //user not authenticated
+  //   $r = $this->UMModel->getPermissionListPaginate($req->all(),$ss);
+  //   return JDV::result($r);
+  // }
 
   function getRoleList(Request $req)
   {
     $ss = UM::getUserInfoByToken($req, -1);
-    if ($ss->status_code != 200) return $ss; //user not authenticated
+    if ($ss->status_code != 200) return JDV::raw($ss); //user not authenticated
     $roles = $this->UMModel->getRoleList($ss);
     return JDV::result($roles);
+  }
+
+  function getRoleList_paginate(Request $req)
+  {
+    $ss = UM::getUserInfoByToken($req, -1);
+    if ($ss->status_code != 200) return $ss; //user not authenticated
+    $data = $this->UMModel->getRoleList_paginate($req->all(),$ss);
+    return JDV::result($data);
   }
 
   function getRoleMembers(Request $req)
@@ -136,7 +153,7 @@ class UMController extends Controller
     $ss = UM::getUserInfoByToken($req, -1);
     if ($ss->status_code != 200) return $ss; //user not authenticated
     $role_id = $req->role_id ? $req->role_id : $req->id;
-    $r = $this->UMModel->getRoleMembers($req->all(), $role_id);
+    $r = $this->UMModel->getRoleMembers($req->all(), $ss);
     return JDV::result($r);
   }
 
@@ -149,6 +166,14 @@ class UMController extends Controller
     return JDV::result($role);
   }
 
+  function getUserList_paginate(Request $req)
+  {
+    $ss = UM::getUserInfoByToken($req, -1);
+    if ($ss->status_code != 200) return $ss; //user not authenticated
+    $data = $this->UMModel->getUserList($req->all(),$ss);
+    return JDV::result($data);
+  }
+
   function getUserList(Request $req)
   {
     $ss = UM::getUserInfoByToken($req, -1);
@@ -157,11 +182,20 @@ class UMController extends Controller
     return JDV::result($users);
   }
 
+  function getUserDetails(Request $req){
+    $ss = UM::getUserInfoByToken($req, -1);
+    if ($ss->status_code != 200) return $ss; //user not authenticated
+    $id = isset($req->id)?$req->id:$req->user_id;
+    $users = $this->UMModel->getUserDetails($id,$ss);
+    return JDV::result($users);
+  }
+
   function saveUser(Request $req)
   {
-    $ss = UM::getUserInfoByToken($req, 100);
+    $prn_code = $req->id?112:100;
+    $ss = UM::getUserInfoByToken($req, $prn_code);
     if ($ss->status_code != 200) return $ss; //user not authenticated
-    $res = $this->UMModel->saveUser($req->all(), $ss);
+    $res = $this->UMModel->saveUser($req->all(),$ss);
     if ($res->status_code === 200) {
       return JDV::success(['id' => $res->id]);
     }
@@ -178,6 +212,50 @@ class UMController extends Controller
     return JDV::result($user);
   }
 
+  /**
+   * Add permission to a user directly
+  */
+  function addPermissionToUser(Request $req)
+  {
+    $ss = UM::getUserInfoByToken($req, 105);
+    if ($ss->status_code != 200) return $ss; //user not authenticated
+    $user_id = $req->user_id ? $req->user_id : $req->id;
+    $prn_id = $req->prn_id?$req->prn_id:$req->permission_id;
+    $res = $this->UMModel->addPermissionToUser($prn_id,$user_id,$ss);
+    return JDV::raw($res);
+  }
+
+  function removeUserPermission(Request $req)
+  {
+    $ss = UM::getUserInfoByToken($req, 111);
+    if ($ss->status_code != 200) return $ss; //user not authenticated
+    $user_id = $req->user_id ? $req->user_id : $req->id;
+    $prn_id = $req->prn_id?$req->prn_id:$req->permission_id;
+    $res = $this->UMModel->removeUserPermission($prn_id,$user_id,$ss);
+    return JDV::raw($res);
+  }
+
+  function removeUserModule(Request $req)
+  {
+    $ss = UM::getUserInfoByToken($req, 115);
+    if ($ss->status_code != 200) return $ss; //user not authenticated
+    $user_id = $req->user_id ? $req->user_id : $req->id;
+    $mod_id = $req->mod_id?$req->mod_id:$req->module_id;
+    $res = $this->UMModel->removeUserModule($mod_id,$user_id,$ss);
+    return JDV::raw($res);
+  }
+
+  //Add/Remove accessible module to a user directly
+  function addModuleToUser(Request $req)
+  {
+    $ss = UM::getUserInfoByToken($req, 114);
+    if ($ss->status_code != 200) return $ss; //user not authenticated
+    $user_id = $req->user_id ? $req->user_id : $req->id;
+    $mod_id = $req->mod_id?$req->mod_id:$req->module_id;
+    $res = $this->UMModel->addModuleToUser($mod_id,$user_id,$ss);
+    return JDV::raw($res);
+  }
+
   function deleteUser(Request $req)
   {
     $ss = UM::getUserInfoByToken($req, 101);
@@ -192,7 +270,7 @@ class UMController extends Controller
     $ss = UM::getUserInfoByToken($req, 106);
     if ($ss->status_code != 200) return $ss; //user not authenticated
     $user_id = $req->user_id ? $req->user_id : $req->id;
-    $res = $this->UMModel->setUserStatus($req->status_id, $user_id);
+    $res = $this->UMModel->setUserStatus($req->status_id, $user_id,true);
     return JDV::raw($res);
   }
 
@@ -207,10 +285,10 @@ class UMController extends Controller
 
   function setLockStatus(Request $req)
   {
-    $ss = UM::getUserInfoByToken($req, -1);
+    $ss = UM::getUserInfoByToken($req, 113);
     if ($ss->status_code != 200) return $ss; //user not authenticated
     $user_id = $req->user_id ? $req->user_id : $req->id;
-    $r = $this->UMModel->setLockStatus($user_id, $req->status_id);
+    $r = $this->UMModel->setLockStatus($req->action,$user_id, true,$ss);
     return JDV::raw($r);
   }
 
@@ -239,7 +317,7 @@ class UMController extends Controller
     $login_name = $req->login_name ? $req->login_name : null;
     $newPwd = $req->newPwd ? $req->newPwd : null;
     if (!$newPwd) $newPwd = $req->newPwd ? $req->newPwd : $req->password;
-    $res = $this->UMModel->setPassword($newPwd, $login_name, $ss);
+    $res = $this->UMModel->setPassword($req->all(),$ss);
     return JDV::raw($res);
   }
 
@@ -255,7 +333,7 @@ class UMController extends Controller
   {
     $ss = UM::getUserInfoByToken($req, -1);
     if ($ss->status_code !== 200) return JDV::raw($ss);
-    $users = $this->UMModel->getComboItems_user(null, $ss);
+    $users = $this->UMModel->getComboItems_user($req->all(), $ss);
     return JDV::result($users);
   }
 
@@ -266,6 +344,7 @@ class UMController extends Controller
     $roles = $this->UMModel->getComboItems_role($req->user_class, $ss);
     return JDV::result($roles);
   }
+
   function getComboItems_workloc(Request $req)
   {
     $ss = UM::getUserInfoByToken($req, -1);
@@ -307,6 +386,22 @@ class UMController extends Controller
     $role_id = $req->role_id;
     $res = $this->UMModel->addAccessibleModule($mod_id, $role_id, $ss);
     return JDV::result($res);
+  }
+
+  function getRolePermissions_paginate(Request $req)
+  {
+    $ss = UM::getUserInfoByToken($req, -1);
+    if ($ss->status_code !== 200) return JDV::raw($ss);
+    $data = $this->UMModel->getRolePermissions_paginate($req->all(),$ss);
+    return JDV::result($data);
+  }
+
+  function getUserPermissions_paginate(Request $req)
+  {
+    $ss = UM::getUserInfoByToken($req, -1);
+    if ($ss->status_code !== 200) return JDV::raw($ss);
+    $data = $this->UMModel->getUserPermissions_paginate($req->all(),$req->user_id,$ss);
+    return JDV::result($data);
   }
 
   function getPermissionsByRole(Request $req)
@@ -426,7 +521,17 @@ class UMController extends Controller
     $rows = $this->UMModel->getComboItems_userclass(null);
     return JDV::result($rows);
   }
- 
+
+  function getUserFormOption(Request $req){
+    $ss = UM::getUserInfoByToken($req, -1);
+    if ($ss->status_code !== 200) return JDV::raw($ss);
+    $data = (object)[
+      'user_classes' => $this->UMModel->getComboItems_userclass(null),
+      'roles' => $this->UMModel->getComboItems_role($req->user_class, $ss)
+    ];
+    return JDV::result($data);
+  }
+
   function getLang(Request $req){
         // $ss = UM::getUserInfoByToken($req,-1);
         // if($ss->status_code !=200) return $ss; //user not authenticated
@@ -444,7 +549,7 @@ class UMController extends Controller
         //   'kh'=> $base_path."/storage/locales/km.json"
         // ];
 
-      //if no valid file_path => use km language  
+      //if no valid file_path => use km language
       $file_path = isset($langRoutes[$lang])? $langRoutes[$lang]:$base_path."/storage/locales/km.json";
       $data = readFileContent($file_path);
       return JDV::result($data);
@@ -454,7 +559,7 @@ class UMController extends Controller
   {
     $ss = UM::getUserInfoByToken($req, -1);
     if ($ss->status_code != 200) return $ss; //user not authenticated
-    $d = Sanitizer::sanitizeObject($req->all(), []);
+    // $d = Sanitizer::sanitizeObject($req->all(), []);
     $lang = $req->lang;
 
     if (!$lang) $lang = "km"; //default langauge in case @lang is not supplied
@@ -483,6 +588,37 @@ class UMController extends Controller
     //$new_token = UM::updateJWT(['lang'=>$lang]);
     return JDV::success(['lang_content' => $data]);
   }
+  function getUserViewReportPermissionListPaginate(Request $req){
+    $ss = UM::getUserInfoByToken($req, -1);
+    if($ss->status_code !=200) return $ss;
+    $rpt = new UM();
+    $list = $this->UMModel->getUserViewReportPermission_paginate($req->all(),$req->user_id,$ss);
+    return JDV::result($list);
+  }
+
+  function permissionList(Request $req){
+    $ss = UM::getUserInfoByToken($req, -1);
+    if($ss->status_code !=200) return $ss;
+    $rpt = new UM();
+    $list = $this->UMModel->permissionList($ss);
+    return JDV::result($list);
+  }
+  function reportPrnList(Request $req){
+    $ss = UM::getUserInfoByToken($req, -1);
+    if($ss->status_code !=200) return $ss;
+    $rpt = new UM();
+    $list = $this->UMModel->reportPrnList($ss);
+    return JDV::result($list);
+  }
+  function moduleList(Request $req){
+    $ss = UM::getUserInfoByToken($req, -1);
+    if($ss->status_code !=200) return $ss;
+    $rpt = new UM();
+    $list = $this->UMModel->moduleList($ss);
+    return JDV::result($list);
+  }
+
+
 
   function logout()
   {

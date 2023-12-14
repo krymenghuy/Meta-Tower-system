@@ -3,8 +3,6 @@
 namespace App\Events;
 
 //use Illuminate\Broadcasting\Channel;
-
-use Exception;
 use Illuminate\Broadcasting\InteractsWithSockets;
 //use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;

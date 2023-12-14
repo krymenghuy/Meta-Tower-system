@@ -6,8 +6,6 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
-//use App\Events\QTYChanged;
-//use App\Listeners\PurchaseEventHandler;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -20,10 +18,6 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        // QTYChanged::class =>[
-        //      PurchaseEventHandler::class,
-        //     //POReceivedEventHandler::class, 
-        // ]
     ];
 
     /**

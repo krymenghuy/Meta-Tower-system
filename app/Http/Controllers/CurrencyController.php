@@ -16,14 +16,18 @@ class CurrencyController extends Controller
     // function __construct(){
     //     $this->UMModel = new UM();
     // }
-    
-    function getCurrencyDetails(){
-        $auth = UM::getUserInfoByToken($req,-1);
-        if($auth->status_code !=200) return JDV::raw($auth);
-        $branch_id = $auth->branch_id;
-        $rows = DB::table('currencies as c')->where('id',$req->id)->select('c.id','c.name','c.symbol','c.symbol_after')->take(1)->get();
-        return JDV::result(isset($rows[0])? $rows[0]:null);
-    }
+
+    // //CheckAuth() returns sessionInfo object
+    // function checkAuth(Request $req,$prn_id=-1){
+    //     $ss = getSessionInfo($req);
+    //     if(!$ss) return (object)['error_message'=>'Authentication failed','status_code'=>401,'status'=>'Error'];//user not authenticated
+    //     if (!prn_allowed($prn_id)) return (object)['error_message'=>"Permisison $prn_id is required",'status_code'=>405,'status'=>'Error']; //need permission to do this task
+ 
+    //     $req->decrypted =1;
+    //     $ss->status='OK';
+    //     $ss->status_code =200;
+    //     return $ss;
+    // }
 
     //Create/Update currency
     //$d = {code,name,symbol,symbol_after,decimal_points}
@@ -127,7 +131,7 @@ class CurrencyController extends Controller
         if($auth->status_code !=200) return JDV::raw($auth);
         $branch_id = $auth->branch_id;
         $id = $req->id;
-        $cols = "r.id,r.x_date,r.x_month,r.currency_pair,r.buy_rate,r.sell_rate,r.create_user,DATE_FORMAT(r.create_date,'%d %b %Y') as create_date";
+        $cols = "r.id,r.x_date,r.x_month,r.currency_pair,ROUND(r.buy_rate,2) AS buy_rate,ROUND(r.sell_rate,2) AS sell_rate,r.create_user,DATE_FORMAT(r.create_date,'%d %b %Y') as create_date";
         $rows = DB::table('exchange_rates as r')->where('id',$id)->where('branch_id',$branch_id)->selectRaw($cols)->take(1)->get();
         return JDV::result(isset($rows[0])?$rows[0]:null);
     }
@@ -162,7 +166,7 @@ class CurrencyController extends Controller
 
         $str_pair = "1=1";
         if($currency_pair) $str_pair ="r.currency_pair ='$currency_pair'";
-        $rows = DB::table("exchange_rates as r")->whereRaw($str_period)->whereRaw($str_pair)->where('r.branch_id',$branch_id)->selectRaw("r.id,DATE_FORMAT(r.x_date,'%d %b %Y %r') as x_date,r.currency_pair,r.buy_rate,r.sell_rate")->orderByRaw("r.x_date DESC")->get();
+        $rows = DB::table("exchange_rates as r")->whereRaw($str_period)->whereRaw($str_pair)->where('r.branch_id',$branch_id)->selectRaw('r.id,formatDate(r.x_date) as x_date,r.currency_pair,ROUND(r.buy_rate,2) AS buy_rate,ROUND(r.sell_rate,2) AS sell_rate')->orderByRaw("r.x_date DESC")->get();
         return JDV::result($rows);
     }
 
@@ -234,7 +238,17 @@ class CurrencyController extends Controller
 
     //Apply Exchange rate based on selected date range
     function applyExchangeRate(Request $req){
-        $start_date = $req->start_date;
-        $end_date = $req->end_date; 
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        // $start_date = convertDate($req->start_date);
+        // $end_date = convertDate($req->end_date);
+        $id = $req->id;
+        $rateInfo = DB::table('exchange_rates as r')->where('r.id',$id)->selectRaw('r.id,r.x_date,r.buy_rate,r.sell_rate')->first();
+        if(!$rateInfo) return JDV::error('It seems the selected Date does not have Exchange Rate data');
+        $x_date = convertDate($rateInfo->x_date);
+        $count = DB::table('package')->where('branch_id',$ss->branch_id)->whereRaw('DATE(arrival_time) = \''.$x_date.'\'')->update([
+            'exchange_rate'=>$rateInfo->buy_rate
+        ]);
+        return JDV::success(['affected_count'=>$count,'buy_dare'=>number_format($rateInfo->buy_rate,2,'.',''),'x_date'=>date('d M Y',strtotime($x_date))]); 
     }
 }

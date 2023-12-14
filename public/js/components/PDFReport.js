@@ -1,9 +1,10 @@
+"use strict";
 //##### begin::pdfReport
 let pdfReport = new function () {
     let mThis = this;
     this.getEncryptData = (qstring, onFinish) => {
         let p = { 'data': qstring };
-        vsapi.call([mThis.base_url, '/api/encryptData'].join(''), p).then(d => {
+        vsapi.call([main_view.base_url, '/api/encryptData'].join(''), p,null,false).then(d => {
             onFinish(d);
         });
     }
@@ -32,7 +33,7 @@ let pdfReport = new function () {
 
         let def_th_style = option.th_style ? option.th_style : {
             //font: 'Khmer',
-            fontSize: 8,
+            fontSize: 11,
             bold: true,
             fillColor: option.header_back_color ? option.header_back_color : '#fff',
             color: option.text_color ? option.text_color : '#333435',
@@ -177,8 +178,21 @@ let pdfReport = new function () {
         return docDef;
     }
 
-    //Create pdf document based on JSON data 
-    //option.header_columns: [] //list of header's titles, example ['Name','Place of Birth','Date of Birth','Phone Number']
+    //Create pdf document based on JSON data
+    /***
+      option = {'header_columns','title','subTitle','td_style','th_style','text_color'}
+      example: 
+               option.text_color = '#5E5E61',
+
+               option.td_style = {
+                 fontSize:9,
+                 color:'#5E5E61',
+                 bold:true/false
+                 margin:[1,1,1,1]
+               }
+
+            option.header_columns: [] //list of header's titles, example ['Name','Place of Birth','Date of Birth','Phone Number']         
+    ***/
     this.createPDFDocumentFromJson = (data, option = {}, extend_last_column = true) => {
         if (!data || !data[0] || data == []) return null;
         let col_widths = [];
@@ -213,8 +227,7 @@ let pdfReport = new function () {
                 x++;
             } while (c);
         }
-
-
+        
         //let except_props = option.exceptProps; // array of exceptions ['email','col_name']
         if (Array.isArray(data)) // process Array object = [{pro1,prop2,...}]
         {
@@ -311,7 +324,7 @@ let pdfReport = new function () {
         if (extend_last_column) col_widths[col_cnt - 1] = "*";
 
         //let rpt_title= {'text':option.title?option.title:'Report Title','style':'rpt_title'};
-        let rpt_sub_title = null;
+        let rpt_sub_title = option.subTitle;
         if (!option.subTitle) option.subTitle = option.sub_title;
         if (option.subTitle) rpt_sub_title = { 'text': option.subTitle, 'style': 'rpt_sub_title' };
         let titles = [];
@@ -380,7 +393,7 @@ let pdfReport = new function () {
         pdfMake.vfs = _vfs_fonts; // _vfs_fonts is built using node command. 'node build-vfs.js "./examples/fonts" '
         if (option.styles) pdfMake.styles = option.styles;
         if (docDef) pdfMake.createPdf(docDef, null, null).open();
-        else cv_interact.error('It seems no data to display. If you see data, make sure your searchbox is empty');
+        else cv_interact.error('It seems no data to display. If you see data, make sure your search box is empty');
     }
 
     //viewPDF_fromTable() | htmlTableToPDF()
@@ -389,7 +402,7 @@ let pdfReport = new function () {
         //##Start creating PDF using pdfmake.js
         pdfMake.vfs = _vfs_fonts;
         if (docDef) pdfMake.createPdf(docDef).open();
-        else cv_interact.error('It seems no data to display. If you see data, make sure your searchbox is empty');
+        else cv_interact.error('It seems no data to display. If you see data, make sure your search box is empty');
 
         // // create the window before the callback
         // var win = window.open('', '_blank');
@@ -402,8 +415,12 @@ let pdfReport = new function () {
 
     //HtmlElementToPDF()
     //convert html element (defined by getElementById() ) to image (screenshot) and display as pdf 
-    //For element ID need to be prefixed with '#' 
+    //For element ID need to be prefixed with '#'
+    //options = {pageSize,pageOrientation,titleColor} 
     this.htmlToPdf = (elementId, option = {}) => {
+        option= option?option:{};
+        //set default title
+        if(!option.title) option.title ='List of Pickups';
         //const  html2canvas =  new html2canvas();
         html2canvas(document.getElementById(elementId), {
             Scale: 5, // scale, default is 1
@@ -413,7 +430,7 @@ let pdfReport = new function () {
             Height: '500', // height of canvas
             BackgroundColor: '× 000000', // the background color of the canvas, which is transparent by default
         }).then((canvas) => {
-            let rpt_title = { 'text': 'List of Pickups', 'style': 'rpt_title' };
+            let rpt_title = { 'text': option.title, 'style': 'rpt_title' };
             let img = canvas.toDataURL("image/png"); //base64
             //let img = canvas.toDataURL(); //base64
             let docDefinition = {
@@ -437,7 +454,7 @@ let pdfReport = new function () {
                         //font: 'Khmer',
                         fontSize: 15,
                         bold: true,
-                        color: option.title_color ? option.title_color : '#2441B8',
+                        color: option.titleColor ? option.titleColor : '#2441B8',
                         margin: [0, 3, 0, 5],
                         alignment: 'center'
                     }

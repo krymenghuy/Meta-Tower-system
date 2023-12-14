@@ -282,7 +282,7 @@ var FindStudentComponent = new function(){
                         'student_id':student_id,
                         'enrollment_id':enrollment_id
                     };
-
+ 
                     StudentDiscountDialog.show(op);
                     return;
                 }
@@ -723,10 +723,8 @@ const StudentDiscountDialog = new function(){
         });
     });
 
-    this.prepareFormOption = (id,onFinish)=>{
-        if(typeof onFinish === 'function') onFinish();
-        return;
-        let p = {'id':id};
+    this.prepareFormOption = (enrollment_id,onFinish)=>{
+        let p = {'enrollment_id':enrollment_id};
         vsapi.call(`${main_view.base_url}/api/student-price-list/form-options`,p,false).then(res=>{
             if(res.status_code ===200){
                 onFinish();
@@ -736,7 +734,7 @@ const StudentDiscountDialog = new function(){
 
     this.show = (options=null)=>{
         options = options ? options:{};
-        mThis.prepareFormOption(() => {
+        mThis.prepareFormOption(options.id,() => {
             mThis.self.modal({
                 'backdrop':'static'
             });

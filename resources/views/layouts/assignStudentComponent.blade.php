@@ -1,1 +1,0 @@
-<div id="_main_assignStudentComponent" class="mobile-padding p-3" style="display:none"></div>

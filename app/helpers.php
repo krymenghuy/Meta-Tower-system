@@ -1,10 +1,12 @@
 <?php
- //use Illuminate\support\Facades\Auth;
+ use App\Models\PublicStorage;
+ use Illuminate\support\Facades\Auth;
  use Illuminate\Support\Facades\DB;
  use App\Models\UM;
  use Carbon\Carbon;
  use App\Models\DV;
  use Intervention\Image\Facades\Image;
+ use Ramsey\Uuid\Uuid;
  //BEGIN:: LocaleManager class
 
  //END:: LocaleManager class
@@ -23,12 +25,40 @@
     'csv'=>"text/csv"
 ];
 
-function isNumber($input){
-    return preg_match('/[^0-9]/', $input);
+// function isPureIneger($string) {
+//     return ctype_digit($string);
+// }
+
+function api_response($data,$error_code=300,$error_message=null) {
+    $d = (object)[];
+     if($error_code ==350 || $data =='#350' || $error_code===401 || $data ===401)
+     {
+        //Authentication, Token Expired, No-Permission
+        $data =null;
+        $error_message ="Authentication failed"; /** user not authenticated **/
+        $d->status ='Error';
+        $d->status_code =401;
+        $d->error_message = $error_message;
+        return response()->json($d);
+     }else{
+            if (isset($data->error_message))
+            {
+                //data validation error
+                $data->status_code = 405;
+                return response()->json($data);
+            }
+            else{
+                $d->status ='OK';
+                $d->status_code =200;
+                $d->error_message = null;
+                $d->data = $data;
+                return response()->json($d);
+            }
+     }
 }
 
 function escape_like_str($str) {
-    return str_replace(['\\', '%', '_','\''], ['\\\\', '\%', '\_',''], $str);
+    return str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $str);
 }
 
 //return UNIQUE random  string at a given length
@@ -48,36 +78,6 @@ function getUniqueString($length)
     return $random;
 }
 
-/**
- * filter or search through $rows or $array based on a given value and return array of matched items
- * filterItems() returns empty array if no matches found
- * **/
- function filterItems($data, $property, $value) {
-    if ($data instanceof Illuminate\Support\Collection || (is_object($data) && $data instanceof \Traversable)) {
-        $matchedElements = $data->filter(function ($element) use ($property, $value) {
-            $val = isset($element->{$property})?$element->{$property}:null;
-            return  $val === $value;
-        })->values()->all();
-
-        if (empty($matchedElements)) {
-            return [];
-        }
-        return $matchedElements;
-    } elseif (is_array($data)) {
-        $matchedElements = array_filter($data, function ($element) use ($property, $value) {
-            return isset($element[$property]) && $element[$property] == $value;
-        });
-
-        if (empty($matchedElements)) {
-            return [];
-        }
-
-        return array_values($matchedElements);
-    }
-
-    return [];
-  }
-
 //returns $result object {'error_message'=>'some error message here','status'=>'Error'} if one of the given @fields[] is empty. @fields = ['name','phone_number',...]
 //$d is an object $d = {'name','phone_number','email','address',...}
 function nonEmptyFields($d,$fields){
@@ -94,46 +94,6 @@ function nonEmptyFields($d,$fields){
    return $result;
 }
 
-// //Task such as changing Phone number requires OTP_CODE
-// //$sms_text = 'អរគុណសំរាប់ការចុះឈ្មោះ​។ លេខសម្ងាត់ #'
-// function createPendingTask($ss,$db_action,$sms_text,$sql_text){
-//      $branch_id = $ss->branch_id;
-//      $login_name = $ss->login_name;
-//      $user_id = $ss->user_id;
-//      $official_id = isset($ss->official_id)?$ss->official_id:null;
-//      $org_phone_number =UM::getUserProp($user_id,'phone_number');
-
-//      if (empty($db_action)) $db_action ="unspecified";
-//      //if (empty($otp_code)) return "Failed to create pending task. OTP CODE cannot be empty";
-
-//      $otp_code = $this->newOTP(6);
-//      $sms_text = str_replace('#',$otp_code,$sms_text);
-
-//      $smsModel = new SMS();
-//      $m_result = $smsModel->_sendSMS($phone_number,$sms_text,null);
-
-//      if ($m_result->status=='Error') {
-//         $err = "Failed to create pending task.".isset($m_result->error_message)?$m_result->error_message:null;
-//         return $err;
-//      }else{
-//          //start:: create text file sql file
-
-//          //end:: create text file or sql file
-
-//         $expiry_time = Carbon::now()->addSecond(60);
-//         DB::table('pending_tasks')->insert(array(
-//            'branch_id'=>$branch_id,
-//            'user_id'=>$user_id,
-//            'official_id'=>$official_id,
-//            "action_file_name"=>$file_name,
-//            "action_file_type"=>$file_type,
-//            "otp_code"=>$otp_code,
-//            "expiry_time"=>$expiry_time
-//         ));
-//         return null;
-//      }
-
-// }
 
 
 function newOTP($length=6)
@@ -142,56 +102,56 @@ function newOTP($length=6)
 }
 
 
-// function getAuthCode($d){
+function getAuthCode($d){
 
-//     //Todo: Catch error if $d is not an object for unexpected case
-//     if (!isset($d->decrypted)) $d->decrypted = 0;
-//     //if(!isset($d->is_cookie)) $d->is_cookie = 0; /** NOTE: if is_cookie = 1 => the decrypted value is split by vertial bar | for equal sign (= ) or key = value pair **/
-//     /**instead of property "access_token", we use prop name as "acc_tk_dms" **/
-//   //if (!empty($d->bearerToken())) $d->acc_tk_dms = $d->bearerToken();
-//   if(!isset($d->acc_tk_dms)) return null; //$d->access_token ='nI082mwubtCp0Tc92MRX9107tnvQfjiGd56pj8';
-//   //else if($d->bearerToken() ==null) return null;
+    //Todo: Catch error if $d is not an object for unexpected case
+    if (!isset($d->decrypted)) $d->decrypted = 0;
+    //if(!isset($d->is_cookie)) $d->is_cookie = 0; /** NOTE: if is_cookie = 1 => the decrypted value is split by vertial bar | for equal sign (= ) or key = value pair **/
+    /**instead of property "access_token", we use prop name as "acc_tk_dms" **/
+  //if (!empty($d->bearerToken())) $d->acc_tk_dms = $d->bearerToken();
+  if(!isset($d->acc_tk_dms)) return null; //$d->access_token ='nI082mwubtCp0Tc92MRX9107tnvQfjiGd56pj8';
+  //else if($d->bearerToken() ==null) return null;
 
-//   $decrypted_token = null;
-//   if ($d->decrypted != 1) {
-//             // get the encrypter service
-//             $encrypter = app(\Illuminate\Contracts\Encryption\Encrypter::class);
-//             // decrypt
-//             $decrypted_token = $encrypter->decrypt($d->acc_tk_dms,false); //FALSE => to avoid serialization issue in decryption
-//             /*** IMPORTANT NOTE:
-//              $result of decryption is => e3aab7a9bb6892c7ee1a1495300d667fe8823428|o1MZKGPJIHm3S6kqiG415LWEidURA75QAI2GGE => therefore, we need to split this key|value by vertical bar character |
-//             ***/
-//             if (strpos($decrypted_token,'|')>0) {
-//                 $parts = explode('|',$decrypted_token);
-//                 if(isset($parts[1]))
-//                    $decrypted_token = $parts[1];
-//                 else return null;
-//             }
-//   } else $decrypted_token = $d->acc_tk_dms;  /** In case external API called from mobile app => the $d->acc_tk_dms is decrypted already by, for example, by $senderModel->getSenderInfoByToken($request) **/
+  $decrypted_token = null;
+  if ($d->decrypted != 1) {
+            // get the encrypter service
+            $encrypter = app(\Illuminate\Contracts\Encryption\Encrypter::class);
+            // decrypt
+            $decrypted_token = $encrypter->decrypt($d->acc_tk_dms,false); //FALSE => to avoid serialization issue in decryption
+            /*** IMPORTANT NOTE:
+             $result of decryption is => e3aab7a9bb6892c7ee1a1495300d667fe8823428|o1MZKGPJIHm3S6kqiG415LWEidURA75QAI2GGE => therefore, we need to split this key|value by vertical bar character |
+            ***/
+            if (strpos($decrypted_token,'|')>0) {
+                $parts = explode('|',$decrypted_token);
+                if(isset($parts[1]))
+                   $decrypted_token = $parts[1];
+                else return null;
+            }
+  } else $decrypted_token = $d->acc_tk_dms;  /** In case external API called from mobile app => the $d->acc_tk_dms is decrypted already by, for example, by $senderModel->getSenderInfoByToken($request) **/
 
-//    if(session()->has('access_token')) {
-//           if (session('access_token') === $decrypted_token){
-//                $data =(object)[];
-//                $data->branch_id = session('branch_id',0);
-//                $data->user_id = session('user_id',0);
-//                //official_id is person_id in this context, and is necessary only for Borrower's login
-//                $data->official_id = session('official_id',0);
-//                $data->login_name = session('login_name',0);
-//                //$data->full_name = session('full_name',0);
-//                $data->last_active_time = Carbon::now();
-//                return $data;
-//           }
-//       }
+   if(session()->has('access_token')) {
+          if (session('access_token') === $decrypted_token){
+               $data =(object)[];
+               $data->branch_id = session('branch_id',0);
+               $data->user_id = session('user_id',0);
+               //official_id is person_id in this context, and is necessary only for Borrower's login
+               $data->official_id = session('official_id',0);
+               $data->login_name = session('login_name',0);
+               //$data->full_name = session('full_name',0);
+               $data->last_active_time = Carbon::now();
+               return $data;
+          }
+      }
 
-//   $rows = DB::table('um_sessions AS u')->join('um_user_roles AS ur','ur.user_id','=','u.user_id')->where('u.access_token',$decrypted_token)->selectRaw('ur.role_id,u.branch_id,u.user_id, u.login_name,u.last_active_time,u.login_name')->limit(1)->get();
-//   foreach($rows as $row) {
-//       //TODO: check for last active_time compared to now() for session expiration
-//       return $row;
-//   }
-//   return null;
-// }
+  $rows = DB::table('um_sessions AS u')->join('um_user_roles AS ur','ur.user_id','=','u.user_id')->where('u.access_token',$decrypted_token)->selectRaw('ur.role_id,u.branch_id,u.user_id, u.login_name,u.last_active_time,u.login_name')->limit(1)->get();
+  foreach($rows as $row) {
+      //TODO: check for last active_time compared to now() for session expiration
+      return $row;
+  }
+  return null;
+}
 
-function setOfficialCode($branch_id,$code_control_table,$target_table,$key_field,$def_prefix="",$len=5,Closure $onSuccess = null){
+function setOfficialCode($branch_id,$code_control_table,$target_table,$key_field=[],$def_prefix="",$len=5,Closure $onSuccess = null){
     if (!$key_field) return null;
     if(!$len) $len=5;
 
@@ -267,19 +227,65 @@ function makeJsonResponse($data) {
     } else return response()->json((object)['status'=>'OK','status_code'=>200,'data'=>$data]);
 }
 
-//if module_id is supplied, then it means if module is accessible => allows access
-function prn_allowed($prn_id,$module_id){
-   return UM::allowed($prn_id,$module_id);
-}
-
+ //if module_id is supplied, then it means if module is accessible => allows access
+ function prn_allowed($prn_id,$module_id){
+    return UM::allowed($prn_id,$module_id);
+ }
+ 
  function getLastDayOfMonth($mDate)
  {
-     $mDate = convertDate($mDate);
+     $mDate = $this->convertDate($mDate);
      $date = new DateTime($mDate);
      $date->modify('last day of this month');
      $last_date =  $date->format('Y-m-d');
      return $last_date;
  }
+
+ function getMonthName($num,$full_name=false){
+    switch($num){
+        case 1:{
+            return 'Jan';
+        }
+        case 2:{
+            return 'Feb';
+        }
+        case 3:{
+         return 'Mar';
+     }
+     case 4:{
+         return 'Apr';
+     }
+     case 5:{
+         return 'May';
+     }
+     case 6:{
+         return 'Jun';
+     }
+     case 7:{
+         return 'Jul';
+     }
+     case 8:{
+         return 'Aug';
+     }
+     case 9:{
+         return 'Sep';
+     }
+     case 10:{
+         return 'Oct';
+     }
+     case 11:{
+         return 'Nov';
+     }
+     case 12:{
+         return 'Dec';
+     }
+    }
+ }
+
+ function isURL($str) {
+    // Use filter_var with FILTER_VALIDATE_URL to check if it's a valid URL
+    return filter_var($str, FILTER_VALIDATE_URL) !== false;
+}
 
  function dateAdd($interval,$num=0, $date=null,$return_format ='Y-m-d'){
     $st = $num>= 0? "+$num days":"-$num days";
@@ -300,69 +306,12 @@ function prn_allowed($prn_id,$module_id){
     return $month == 2 ? ($year % 4 ? 28 : ($year % 100 ? 29 : ($year % 400 ? 28 : 29))) : (($month - 1) % 7 % 2 ? 30 : 31);
  }
 
- function diff_time($start_time,$current_time){
-    $startTimeTimestamp = strtotime($start_time);
-    $currentDateTimeTimestamp = strtotime($current_time);
-
-    // Calculate the difference in minutes
-    $minuteDifference = round(($currentDateTimeTimestamp - $startTimeTimestamp) / 60);
-    return $minuteDifference;
- }
-
- function getAge($dob){
-    $birth_year = date('Y',strtotime($dob));
-    $currentYear = date('Y');
-
-    return $currentYear - $birth_year;
-
- }
-
-
- function getMonthName($num,$is_short_cut=false){
-    if($num>12 || $num<1) return DV::error('num must be between 1 and 12');
-    if(!$is_short_cut){
-        $is_short_cut = null;
-    }else{
-        $is_short_cut = 3;
-    }
-
-    $dateObj = DateTime::createFromFormat('!m', $num);
-    return  substr($dateObj->format('F'),0,$is_short_cut);
- }
- function formatMinsTime($minutes,$short_hand=false) {
-    $short_hand = true?'h':'hour';
-    if ($minutes < 60) {
-        return $minutes . " min";
-    } else {
-        $hours = floor($minutes / 60);
-        $remainingMinutes = $minutes % 60;
-        return $hours . " $short_hand" . ($hours && $short_hand == true > 1 ? "s" : "") . ($remainingMinutes > 0 ? " " . $remainingMinutes . " min" : "");
-    }
-}
-
  function dateDiff_days($start_date,$end_date){
     $date1 = new DateTime($start_date);
     $date2 = New DateTime($end_date);
     $diff = $date1->diff($date2);
     return $diff->days;
  }
- function diffDays($end_date, $leave_date) {
-
-    $end_date = new \DateTime($end_date);
-    $leave_date = new \DateTime($leave_date);
-
-    // Calculate the difference in days
-    $interval = $leave_date->diff($end_date);
-
-    /** check diff days (leave before or after) */
-    if ($leave_date < $end_date) {
-        return '-'.$interval->days;
-    } elseif ($leave_date > $end_date) {
-        return $interval->days;
-    } else {
-        return 0;
-    }
-}
 
  function processQueryString($query_string=null,$sanitize =true,$allow_chars=[]){
     $cs=[];
@@ -521,31 +470,49 @@ function readFileContent($fileName=null)
    }
 
    function isValidTime($time_string) {
-     $date_time = DateTime::createFromFormat('H:i', $time_string);
-     return $date_time && $date_time->format('H:i') == $time_string;
-   }
+    $date_time = DateTime::createFromFormat('H:i', $time_string);
+    return $date_time && $date_time->format('H:i') == $time_string;
+  }
 
-   function createTimestamp($time_string,$today_date=null) {
-    // Get today's date in the desired format
-    if(!$today_date) $today_date = date("Y-m-d");
+  function createTimestamp($time_string,$today_date=null) {
+   // Get today's date in the desired format
+   if(!$today_date) $today_date = date("Y-m-d");
 
-    // Combine today's date and the input time string
-    $datetime_string = $today_date . " " . $time_string;
+   // Combine today's date and the input time string
+   $datetime_string = $today_date . " " . $time_string;
 
-    // Convert the datetime string to a timestamp
-    $timestamp = strtotime($datetime_string);
+   // Convert the datetime string to a timestamp
+   $timestamp = strtotime($datetime_string);
 
-    // Format the timestamp in the desired format
-    $formatted_timestamp = date("Y-m-d H:i:s", $timestamp);
+   // Format the timestamp in the desired format
+   $formatted_timestamp = date("Y-m-d H:i:s", $timestamp);
 
-    return $formatted_timestamp;
- }
+   return $formatted_timestamp;
+  }
 
+  function getLocationUrl($latitude, $longitude) {
+    // Check if latitude and longitude are valid
+    if (!is_numeric($latitude) || !is_numeric($longitude)) {
+        // Return empty string if either latitude or longitude is not valid
+        return '';
+    }
+
+    // Google Maps API Base URL for directions
+    $base_url = "https://www.google.com/maps/dir/?api=1";
+
+    // Destination coordinates
+    $destination = "&destination=" . $latitude . "," . $longitude;
+
+    // Combine base URL and destination coordinates
+    $url = $base_url . $destination;
+
+    return $url;
+  }
+  
    //change date format to yyyy-mm-dd
    function convertDate($date)
    {
        if(!(bool)strtotime($date)) return null;
-
        return date('Y-m-d', strtotime($date));
    }
 
@@ -672,14 +639,11 @@ function readFileContent($fileName=null)
     $m_where ="";
     foreach($key_fields as $field=>$value){
         $sp = $m_where? " AND ":"";
-        if(is_numeric($value))
+        if($value > 0)
            $m_where .= $sp.$field."=$value";
         else $m_where .= $sp.$field."='$value'";
     }
-
-    $rows = DB::table($table_name)->whereRaw($m_where)->selectRaw($cols)->take(1)->get();
-    foreach($rows as $row) return $row;
-    return null;
+    return DB::table($table_name)->whereRaw($m_where)->selectRaw($cols)->take(1)->first();
  }
 
   //return value a specified field given key value
@@ -737,7 +701,7 @@ function readFileContent($fileName=null)
         if ($use_branch_id) $str_branch = "branch_id =".$ss->branch_id?$ss->branch_id:0;
         $inputs['update_uid'] = $ss->user_id;
         $inputs['update_user'] = $ss->full_name;
-        $inputs['updated_at'] = getNowTime();
+        $inputs['update_date'] = getNowTime();
         DB::table($table_name)->where($key_field_name,$key_value)->whereRaw($str_branch)->update($inputs);
         $new_id = $key_value;
     }
@@ -746,22 +710,52 @@ function readFileContent($fileName=null)
         $inputs['branch_id'] = $ss->branch_id;
         $inputs['create_uid'] = $ss->user_id;
         $inputs['create_user'] = $ss->full_name;
-        $inputs['created_at'] = getNowTime();
+        $inputs['create_date'] = getNowTime();
         DB::table($table_name)->insert($inputs);
         $new_id = DB::getPdo()->lastInsertId();
     }
     return $new_id;
  }
 
- /**
-  * saveData() will update existing row based on the provided PRIMARY KEY FIELD specifying in @pk_field_array. If the primary key value is provided as postive number then => if "the primary key Value is not found" AND "@ensure_exists is TRUE" => a new record is created and the new primary key is returned.
-  * if @ensure_exists (that is default to False) is not specified => saveData() will update record when pk value is positive, otherwise create new record and returned pk_key
-  * $pk_field_array is $key_fields. example ['id'=>120] or ["id"=>":student_id"]. In ":student_id", the "student_id" is the prop or array key, for example, $input['student_id']
-  ***/
+//  function createGUID() {
+//     $timestamp = round(microtime(true) * 1000);
+//     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+//     $length = 30;
 
-  function saveData($ss,$table_name,$pk_field_array = [],$inputs=[],$extended_cols=[],$use_branch_id = 0,$ensure_exists = false){
+//     $randomString = substr(str_shuffle(str_repeat($characters, ceil($length / strlen($characters)))), 1, $length);
+
+//     return  $timestamp . strtoupper($randomString);
+// }
+
+/** createUUID version 4 */
+function createUUID() {
+    $uuid = Uuid::uuid4()->toString();
+    return $uuid;
+}
+
+function createUUIDV1()
+{
+    // Generate a Version 1 UUID (time-based)
+    $uuid = sprintf(
+        '%08x-%04x-%04x-%02x%02x-%012x',
+        time(),
+        mt_rand(0, 0xffff),
+        mt_rand(0, 0xffff),
+        mt_rand(0, 0xff),
+        mt_rand(0, 0xff),
+        mt_rand(0, 0xffffffffffff)
+    );
+
+    return $uuid;
+}
+
+ //Unlike createForcibly(), the method saveData() checks the given $key_value. If it is given valid then UPDATE, else CREATE new record.
+ //Unlike method createForcibly(), saveData() will commit UPDATE when the given key_value is positive even this key_value does not exists in target table
+ //$pk_field_array is $key_fields. example ['id'=>120] or ["id"=>":student_id"]. In ":student_id", the "student_id" is the prop or array key, for example, $input['student_id']
+ function saveData($ss,$table_name,$pk_field_array = [],$inputs=[],$extended_cols=[],$use_branch_id = 0,$endure_exits=false,$primary_key_integer = true){
     $key_field =null;
     $key_value = null;
+    if($primary_key_integer ===null) $primary_key_integer = true;
     foreach($pk_field_array as $field=>$value){
         $key_field = $field;
         if (substr($value,0,1)===":")
@@ -773,50 +767,49 @@ function readFileContent($fileName=null)
 
     $new_id = null;
     if(is_array($extended_cols)) foreach($extended_cols as $prop=>$value) $inputs[$prop] = $value;
-    //row_affected => there is some value has been changed
-
-    $must_create = false;
-    if ($key_value>0){
+    if ($key_value){
         $str_branch ="1=1";
         if ($use_branch_id) $str_branch = "branch_id =".$ss->branch_id?$ss->branch_id:0;
-        $query = DB::table($table_name)->where($key_field,$key_value)->whereRaw($str_branch);
-        $row_exists = $query->take(1)->selectRaw($key_field)->exists();
-        if($row_exists){
-            $inputs['update_uid'] = $ss->user_id;
-            $inputs['update_user'] = $ss->full_name;
-            $inputs['updated_at'] = getNowTime();
-            $query->update($inputs);
-            //DB::table($table_name)->where($key_field,$key_value)->whereRaw($str_branch)->update($inputs);
-            $new_id = $key_value;
-            return $new_id;
-        }
-        else $must_create =true;
-    }
-
-    if(!$key_value || ($ensure_exists && $must_create)){
-        if ($use_branch_id) $inputs['branch_id'] = $ss->branch_id;
-        $nowTime = getNowTime();
-        $inputs['create_uid'] = $ss->user_id;
-        $inputs['create_user'] = $ss->full_name;
-        $inputs['created_at'] = $nowTime;
         $inputs['update_uid'] = $ss->user_id;
         $inputs['update_user'] = $ss->full_name;
-        $inputs['updated_at'] = $nowTime;
+        $inputs['update_date'] = getNowTime();
+        DB::table($table_name)->where($key_field,$key_value)->whereRaw($str_branch)->update($inputs);
+        return $key_value;
+    }else{
+        $nowTime = getNowTime();
+        if ($use_branch_id) $inputs['branch_id'] = $ss->branch_id;
+        $inputs['create_uid'] = $ss->user_id;
+        $inputs['create_user'] = $ss->full_name;
+        $inputs['create_date'] = $nowTime;
+        $inputs['update_uid'] = $ss->user_id;
+        $inputs['update_user'] = $ss->full_name;
+        $inputs['update_date'] = $nowTime;
+
+        $pk_value = null;
+        if(!$primary_key_integer){
+            //pk_value is a binary(16) value ready to be insert into database tabe column of data type BINARY(16)
+            $pk_value = DB::raw("UNHEX(REPLACE('".createUUID()."', '-', ''))");
+            //$pk_value = hex2bin(str_replace('-', '', createUUIDV1()));
+            $inputs[$key_field]= $pk_value;
+        }
         DB::table($table_name)->insert($inputs);
-        $new_id = DB::getPdo()->lastInsertId();
-        return $new_id;
-    }else return null;
+        if($primary_key_integer){
+            $new_id = DB::getPdo()->lastInsertId();
+            return $new_id;
+        }else return $pk_value;
+    }
+
  }
 
  //setIdentityFields() | setCommonCols() | setCommonInputs()
  function setCommonFields($d,$ss,$action = 'create',$include_branch_id=1){
         if ($action === 'create'){
             if ($include_branch_id===1) $d['branch_id'] = $ss->branch_id;
-            $d['created_at'] = getNowTime();
+            $d['create_date'] = getNowTime();
             $d['create_uid'] = $ss->user_id;
             $d['create_user'] = $ss->full_name;
         }else{
-            $d['updated_at'] = getNowTime();
+            $d['update_date'] = getNowTime();
             $d['update_uid'] = $ss->user_id;
             $d['update_user'] = $ss->full_name;
         }
@@ -871,6 +864,7 @@ function readFileContent($fileName=null)
         //$image->save('path/to/saved-image.jpg');
         return (object)['error'=>null,'image'=>$image];
     }
+
     // //returns compressed image as base64 format in png. By default, compression to 500 KB
     // function getCompressedImage($base64_str, $size_kb = 500,$default_ext ="png"){
     //     // // Base64 encoded string of an image
@@ -989,7 +983,7 @@ function readFileContent($fileName=null)
 
     function isValidImage_base64($base64_string){
         try {
-            $image = Image::make($base64String);
+            $image = Image::make($base64_string);
             return true;
         } catch (\Exception $e) {
             return false;
@@ -1000,7 +994,7 @@ function readFileContent($fileName=null)
     //getImageSize() |
      function getBase64ImageSize($base64Image=null){
         try{
-            //$size_in_bytes = (int) (strlen(rtrim($base64Image, '=')) * 3 / 4);
+            $size_in_bytes = (int) (strlen(rtrim($base64Image, '=')) * 3 / 4);
             $size_in_kb = $size_in_bytes / 1024;
             //$size_in_mb    = $size_in_kb / 1024;
             return $size_in_kb;
@@ -1083,7 +1077,6 @@ function readFileContent($fileName=null)
           11. Example  "brand_id"=>"1|exists=inv_brands.id" or "group_id"=> "0|exists=inv_groups"  that means to check to ensure that the given @brancd_id exists in table "inv_brands" by primary field "id"
 
           ***/
-
     $lang = Session('lang','en'); //default langauge to English
     $field_name = $field_name?str_replace('_',' ',$field_name):'Some field name'; //$field_name is used to show which technical field_name has validation error
     $parts = explode('|',$spec);
@@ -1106,12 +1099,14 @@ function readFileContent($fileName=null)
 
     //if the value is supplied, then check if there is exist_checking requred for one-to-one or one-to-many relationships.
     //**** EXAMPLE  "brand_id"=>"1|exists=inv_brands.id" => check to ensure that the given @brancd_id exists in table "inv_brands" by primary field "id"
-    if ($val){
+    if ($val || $val ==0){
         //if () return (object)['error'=>$val,'default_value'=>'ddd'];
+       if($val > 0){
         $check_exists_rule = getPropValue('exists',$part2,$part3);
         if($check_exists_rule){
             if (!checkExists($check_exists_rule,$val))  return (object)['error'=>Localization::translate($lang,"$field_name ID is not valid or does not exist"),'default_value'=>null];
         }
+       }
     }
 
     if ($is_identity === 1)
@@ -1191,7 +1186,10 @@ function readFileContent($fileName=null)
                     else return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name is not correct. Email is expected")];
                 }else if ($part2==='phone'){
                     if(isPhoneNumber($val))
-                    return (object)['error'=>null,'default_value'=>$val];
+                    {
+                        $val =str_replace(' ','',$val);
+                        return (object)['error'=>null,'default_value'=>$val];
+                    }
                     else return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name is not correct")];
                 }
                 else if ($part2 === 'option' ||$part2 === 'choice'){
@@ -1234,19 +1232,19 @@ function readFileContent($fileName=null)
                         if (!in_array($ext, $types)) return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name file type is not allowed")];
                         $size = getBase64ImageSize($val);
                         if ($interval->min===-1 && $interval->max===-1){
-                            $image=null;
-                            $mx= resizeImage_base64($val);
-                            if(!$mx->error) $image= $mx->image;
-                            //If the provided image data is not valid returns null silently
+                            $image = null;
+                            $mx = resizeImage_base64($val);
+                            if(!$mx->error) $image = $mx->image;
+                            //If the provided $image or photo data is not valid image, then just return NULL silently
                             return (object)['error'=>null,'default_value'=>$image];
                         }else{
                             if ($size < $interval->min || $size > $interval->max)
                             return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name file size should be between ? and ?"),[$interval->min, $interval->max]];
                             else{
-                                $image =null;
+                                $image = null;
                                 $mx = resizeImage_base64($val);
-                                if (!$mx->error) $image = $mx->image;
-                                //If the provided image data is not valid returns null silently
+                                if(!$mx->error) $image = $mx->image;
+                                //If the provided $image or photo data is not valid image, then just return NULL silently
                                 return (object)['error'=>null,'default_value'=>$image];
                             }
                         }
@@ -1336,13 +1334,13 @@ function readFileContent($fileName=null)
      }
 
      //returns true if exists. If @check_exists_rule or @val is not supplied = > it returns TRUE
-     function checkExists($check_exists_rule="",$val=null){
-        if(!$val || !$check_exists_rule) return true;
-        $exists_rule_parts = explode(".",$check_exists_rule);
+     function checkExists($check_exists_rule='',$val=null){
+        if(($val==null || $val=='') || !$check_exists_rule) return true;
+        $exists_rule_parts = explode('.',$check_exists_rule);
         $table_name = $exists_rule_parts[0];
         if($table_name){
             $exist_col = isset($exists_rule_parts[1])?$exists_rule_parts[1]:'id';
-            $row = getDataRow($table_name,[$exist_col=>$val],$exist_col);
+            $row = DB::table($table_name)->where($exist_col,$val)->selectRaw($exist_col)->first();
             return $row?true:false;
         }
         return true;
@@ -1520,7 +1518,7 @@ function readFileContent($fileName=null)
         $table = $parts[1];
         $field_list = explode(',',$parts[2]);
         $m_where ="";
-        $select_cols =$pk_field_name?$pk_field_name:"id"; //presume a default. That all tables have a "id" column
+        $select_cols =$pk_field_name; //presume a default. That all tables have a "id" column
         //$checking_field_cnt = 0;
         foreach($field_list as $fields){
              $sts = explode('!',$fields);
@@ -1528,7 +1526,7 @@ function readFileContent($fileName=null)
              $where_con="";
              $has_or=0;
              foreach($sts as $f){
-                //NOTE: For example, you want to check duplicate Phone_number. If phone_number is NULL or empty => do not check duplicate
+                //NOTE: For example, you want to check dulicate Phone_number. If phone_number is NULL or empty => do not check duplicate
                 if ($f && isset($d[$f])){
                     if (!$has_or || $has_or ===0) $has_or = $where_con?1:0;
                     //if (!isset($d[$f])) return "Error in checking uniqueness because field $f is empty or it is not supplied";
@@ -1547,7 +1545,7 @@ function readFileContent($fileName=null)
 
         if($pk_value > 0) $str_pk = " AND $table.$pk_field_name <> $pk_value";
         else if($pk_value) $str_pk =" AND $table.$pk_field_name <> '$pk_value'";
-         $text = getPropValue('text',$parts[3]);
+        $text = getPropValue('text',$parts[3]);
         if (!$text) $text = getPropValue('text',isset($parts[4])?$parts[4]:'');
 
         $str_branch = "1=1 ";
@@ -1569,9 +1567,13 @@ function readFileContent($fileName=null)
         else return null;
      }
 
-    function isPhoneNumber($phone_number=null,$nullable=0){
-      if (empty($phone_number)) if ($nullable===0) return false;
-      return true;
+     function isPhoneNumber($phoneNumber) {
+        if (ctype_digit($phoneNumber)) {
+            if (strlen($phoneNumber) >=9 || strlen($phoneNumber) <= 12) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function isEmail($email=null,$nullable=0){
@@ -1588,27 +1590,6 @@ function readFileContent($fileName=null)
 	// 	$string = preg_replace(array('/[^a-z0-9]/i', '/[-]+/') , '-', $string);
 	// 	return strtolower(trim($string, '-'));
 	// }
-
-    function getUrlDirectory($url) {
-        $url_parts = parse_url($url); // Parse the URL into its components
-
-        // Rebuild the URL without the filename
-        $url_directory = $url_parts['scheme'] . '://' . $url_parts['host'] . $url_parts['path'];
-        $url_directory = rtrim($url_directory, '/'); // Remove trailing slash if it exists
-
-        // Get the last directory name from the URL
-        $directory_parts = explode('/', $url_directory);
-        $last_directory = end($directory_parts);
-
-        // Check if the last directory is a filename
-        $filename_parts = explode('.', $last_directory);
-        if (count($filename_parts) > 1) {
-            array_pop($directory_parts); // Remove the last directory (which is the filename)
-            $url_directory = implode('/', $directory_parts);
-        }
-
-        return $url_directory;
-    }
 
     function getStoragePath($private=false){
         if($private)
@@ -1640,129 +1621,9 @@ function readFileContent($fileName=null)
         return Config::get('app.app_id');
     }
 
-    function getAppIdByUserClass(){
-        //return Student Mobile App ID by default
-        return Config::get('app.app_id');
-    }
-
     function channel_prefix(){
-        return Config::get('app.pusher_channel_prefix');
-    }
-
-    function extendProps($cols=[],$d=null){
-        if (!$cols) return $d;
-        else if (!$d) return $d;
-        $cols1 = (array)$cols;
-        foreach($cols1 as $key=>$value) $d->{$key} = $value;
-        return $d;
-    }
-    /**
-     * checkFileUrl() checks if a url points to existing file. If the file does not exists, it return false.
-     * This is useful when api response many images files to browsers, so to avoid many errors of 404
-     * **/
-    function checkFileUrl($url) {
-        if(!$url) return false;
-        $localFilePath = $_SERVER['DOCUMENT_ROOT'] . parse_url($url, PHP_URL_PATH);
-        return file_exists($localFilePath) && getimagesize($localFilePath);
-    }
-    function validateUrl($url,$otherWise=null) {
-        return $url;
-        // if(!$url) return null;
-        // $localFilePath = $_SERVER['DOCUMENT_ROOT'] . parse_url($url, PHP_URL_PATH);
-        // $exists = file_exists($localFilePath) && getimagesize($localFilePath);
-        // return $exists?$url:$otherWise;
-    }
-
-    function isValidLanguage($lang){
-        return in_array($lang,["kh","en","ch"]);
-    }
-    function prepareTranslationInput(&$translate_cols,&$inputs,$lang="en"){
-        if(!isValidLanguage($lang)) return $inputs;
-        foreach($translate_cols as $col){
-            //if(isset($inputs[$col])){
-                     $trans_col = $col."_$lang";
-                     $inputs[$trans_col] = isset($inputs[$col])?$inputs[$col]:null;
-                     unset($inputs[$col]);
-            //}
-        }
-        // $cols ="";
-        // foreach($inputs as $k=>$v){
-        //    $cols .= ",".$k;
-        // }
-        // throw new \Exception($cols);
-        return $inputs;
-    }
-
-    /***when running Select Query, us this function to prepare SELECT columns to be pick the column names of desired lang.
-    For example, the original query specifies "select name, desction from property" then prepareQueryColumns() will convert it into "select name_kh, description_kh from properties" based on
-    the given $translate_cols, and $lang.
-      NOTE: $translate_cols =["name","description"] this tells prepareQueryColumns() to convert $select_cols into "name_kh,description_kh" or "name_en,description_en" depending on $lang
-       $select_cols is a string, NOT array. For example "id,name,description as description_one, ..."
-    **/
-    function prepareQueryColumns(&$translate_cols,&$select_cols,$lang="en"){
-        $query_cols =explode(",",$select_cols);
-        $i=0;
-        $new_cols =null;
-        foreach($query_cols as $col){
-            $col = strtolower(trim($col?$col:""));
-            $sts = explode(" as ",$col);
-            $use_col =null;
-            if(isset($sts[1])){
-                if (in_array($sts[0],$translate_cols))
-                  $use_col = $sts[0]."_$lang as ".$sts[1];
-                else $use_col = $sts[0]." as ".$sts[1];
-            }else if (in_array($sts[0],$translate_cols))
-            {
-                //Remove . from automatic alias. Example, "p.name" => so we use "name" as alisa. Store new alias name in $a_col
-                $ts = explode(".",$sts[0]);
-                $a_col ="";
-                if(isset($ts[1])) $a_col = $ts[1]; else $a_col = $ts[0];
-                $use_col = $sts[0]."_$lang as ".$a_col;
-            }
-            else $use_col = $sts[0];
-            $new_cols .= (($new_cols && $use_col)? ",":"").$use_col;
-            $i++;
-        }
-        return $new_cols;
-    }
-
-    function findFutureMonths($start_date,$months){
-        $last_day = getLastDayOfMonth($start_date);
-        $start_month = date('m',strtotime($start_date));
-        $start_year = date('Y',strtotime($start_date));
-        $start_month += 1;
-        $days = dateDiff_days($start_date,$last_day);
-        $date = $last_day;
-        $i=1;
-        do{
-            $days = days_in_month($start_month,$start_year);
-            $date = dateAdd('day',$days,$date);
-            $start_month ++;
-            $i++;
-        }while($i<=$months);
-
-        return (object)['end_date' => $date];
-    }
-
-    function dateDiffMonths($startDate, $endDate) {
-
-        $startDateTime = new DateTime($startDate);
-        $endDateTime = new DateTime($endDate);
-
-
-        $interval = $startDateTime->diff($endDateTime);
-        $months = $interval->y * 12 + $interval->m;
-
-        return $months;
-    }
-
-    function isExists($table,$pk,$checkCol,$inputValue){
-        $exists = DB::table($table)->where($pk)->selectRaw($checkCol)->first();
-        if($exists && $exists->$checkCol != $inputValue){
-            $exists = DB::table($table)->where($checkCol,$inputValue)->exists();
-            if($exists) return true;
-        }
-        return false;
+        //NOTE: main.js => mThis.backend_channel_name = 'houex.backend.${branch_id}'
+        return Config::get('app.pusher_channel_prefix');  //return "vsdev.";
     }
 
     function topic_prefix($user_class){
@@ -1771,24 +1632,42 @@ function readFileContent($fileName=null)
 
     function getServerKey(){
         return Config::get('app.fcm_server_key');
-    }
-    
-    function findExists($table,$findKeys){
-        $find = DB::table($table)->where($findKeys)->exists();
-        if($find) return true;
-        return false;
+        //return "AAAAsd6RSXs:APA91bH79xi7hY-x1HIpHmwK0GiMq53MVdEc0ruVQt6r60Et8Ww6c1RP1YGs0_Sx_RCUDHvmfI1-Sa4v5KBIVwGha6AC_Q0410CIrwXdJ3KaPx_4c0ftVbfW8FplfJiW52kLbD21WIZT";
     }
 
-    function getEndDate($startDate, $numMonths) {
+    function getAppIdByUserClass($user_class){
+        $user_class = strtolower($user_class);
+        if ($user_class ==='driver') return Config::get('app.driver_app_id');
+        else  if ($user_class ==='merchant') return Config::get('app.merchant_app_id');
+        else  if ($user_class ==='sender') return Config::get('app.merchant_app_id');
+        else return Config::get('app.app_id');
+     }
 
-        $startDate = new DateTime($startDate);
+    function extendProps($cols=[],$d=null){
+        if (!$cols) return $d;
+        else if (!$d) return $d;
+        $cols1 = (array)$cols;
+        foreach($cols1 as $key=>$value) $d->{$key} = $value;
+        return $d;
+    }
+     /**
+     * checkFileUrl() checks if a url points to existing file. If the file does not exists, it return false.
+     * This is useful when api response many images files to browsers, so to avoid many errors of 404
+     * **/
+    function checkFileUrl($url) {
+        $localFilePath = $_SERVER['DOCUMENT_ROOT'] . parse_url($url, PHP_URL_PATH);
+        return file_exists($localFilePath) && getimagesize($localFilePath);
+    }
+    function validateUrl($url,$otherWise="") {
+        $localFilePath = $_SERVER['DOCUMENT_ROOT'] . parse_url($url, PHP_URL_PATH);
+        $exists = file_exists($localFilePath) && getimagesize($localFilePath);
+        return $exists?$url:$otherWise;
+    }
 
-        $endDate = clone $startDate;
-
-        $endDate->add(new DateInterval("P{$numMonths}M"));
-
-        $endDateStr = $endDate->format('Y-m-d');
-
-        return $endDateStr;
+    function getImageUrl($branch_id,$user_class,$file_name){
+        if($file_name !=null){
+            return PublicStorage::getURl($branch_id,$user_class,'image').$file_name;
+        }
+        return null;
     }
 ?>

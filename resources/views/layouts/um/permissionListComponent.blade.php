@@ -7,7 +7,7 @@
           <a href="javascript:void(0)" id="_loc_lnkUser">
             <i class="fa fa-plus" style="color:green"></i>
             New User
-          </a>    
+          </a>
           <div class="table_wrapper">
             <table id="_um_tblUsers" class="table" style="width:100%">
               <thead>
@@ -23,16 +23,16 @@
               </thead>
               <tbody id="_um_tblUsers_body"></tbody>
             </table>
-          </div>            
+          </div>                  
         </div>
       </div>
     </div>
-    <div class="row" style="margin-top:15px">
+    <div class="row" style="margin-top:15px;">
       <div class="col-lg-12">
         <button type="button" class="btn btn-primary" id="_um_btnCloseUserList" style="float:right">
-          <i class="fa fa-times"></i>
-          Close
-        </button>
+        <i class="fa fa-times"></i>
+        Close
+      </button>
       </div>
     </div>
   </div>

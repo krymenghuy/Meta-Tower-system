@@ -309,6 +309,7 @@ class ScriptManager{
     {
         $bs = ScriptProvider::getBundles();
         $b = isset($bs[$bundle_name])?$bs[$bundle_name]:null;
+        if(!$b) return (object)['status'=>'Error','error_message'=>'Bundle name "'.$bundle_name.'" does not exist'];
         return self::createBundleFileFromArray($b,$option);
     }
      
@@ -368,7 +369,7 @@ class ScriptManager{
         foreach ($bs as $b) {
             $res = self::createBundleFileFromArray($b,$option);
             if ($res->status === 'Error') return $res;
-            else  $files[] = $res->file_name;
+            else  $files = $res->files;
         }
         return (object)['status' => 'OK', 'files' => $files];
     }

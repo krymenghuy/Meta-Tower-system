@@ -2,849 +2,1426 @@
 
 namespace App\Models;
 
-// use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Illuminate\Database\Eloquent\Model;
-//use App\Models\CompanyProfile;
+//use Illuminate\Database\Eloquent\Factories\HasFactory;
+//use Illuminate\Database\Eloquent\Model;
+use App\Models\UM;
+// use Carbon\Carbon;
+use App\Models\CompanyProfile;
+use Session;
 use DB;
-
+// use Facade\Ignition\QueryRecorder\Query;
+// use Illuminate\Database\Eloquent\Collection;
+use Sanitizer;
+use DateTime;
+use DateInterval;
+//use Illuminate\Support\Facades\Log;
 class Report //extends Model
 {
     //use HasFactory;
     //protected $companyModel;
 
-    // function __construct(array $attributes = [])
+    // public function __construct(array $attributes = [])
     // {
     //     parent::__construct($attributes);
-    //     $this->companyModel = new CompanyProfile();
+    //     //$this->companyModel = new CompanyProfile();
     // }
-    protected $id=null,$ss=null;
+    function getSummaryData($d){
+        $ss = UM::getUserInfoByToken($d);
+        if (!$ss->status_code !==200) return $ss; //user not authenticated
+        if (!prn_allowed(2)) return '@'; //need permission to do this task
+         $branch_id = isset($ss->branch_id)?Sanitizer::sanitize($ss->branch_id):null;
+         $agent_type = isset($d->agent_type)?Sanitizer::sanitize($d->agent_type):null;
+         $agent_id = isset($d->agent_id)?Sanitizer::sanitize($d->agent_id):null;
+         $date = isset($d->date)?$d->date:null;
+         if(!(bool)strtotime($date)) $date = date('Y-m-d');
 
-    function __construct($id=null,$ss=null){
-        $this->ss = $ss;
-        $this->id = $id;
+         $more_where ="1=1";
+         $rows = DB::table("package AS p")->join('delivery AS d','d.id','=','p.delivery_id')->where('d.branch_id',$branch_id)->whereRaw($more_where)
+         ->selectRaw("DATE_FORMAT(d.depart_time,'%d %b %Y %r') AS delivery_date, p.sender_id,COUNT(p.id) AS package_count, 0 AS delivered_count,0 AS failed_count, 0 AS returned_count, 0 AS total_delivery_fee, 0 AS total_cod")->groupByRaw("p.sender_id, delivery_date")->get();
+         return $rows;
     }
 
-    function getCampanyInfo($ss){
-        $x = new CompanyProfile($ss);
-        $p = $x->getDetails($ss);
-        return $p;
-    }
-
-    static function list($ss){
-        return DB::select("SELECT id, `name`, `hidden`,code,category,rpt.module_id,rpt.description,rpt.params,rpt.display_order,rpt.hidden FROM reports AS rpt WHERE IFNULL(rpt.hidden,0) = 0 ORDER BY rpt.category,rpt.display_order ASC");
-    }
-
-    function getBranchInfo($branch_id=0){
-         $rows = DB::table('um_branches AS b')->where('b.branch_id',$branch_id)->selectRaw("b.branch_id,b.logo_file_name,b.name, b.name_kh,b.address,b.address_kh,b.phone_number,b.first_cp_name,b.first_cp_phone,b.website")->limit(1)->get();
-         foreach($rows as $row) {
-             $user_class="general";
-             $category="image";
-             $dir = PublicStorage::getUrl($branch_id,$user_class,$category);
-             $row->logo_url =  $dir.$row->logo_file_name;
-             return $row;
-         }
-         return (object)array("name"=>'(Company Name)','phone_number'=>'(Unvailaible phone)','website'=>'Unvailable');
-    }
-
-    function getScalarData_loan($loan_app_id=0,$loan_id=0){
-        return (object)[
-          'guarantor_name'=>'Mr.Guarntor',
-          'guarantor_address'=>'BKK1',
-          'guarantor_phone'=>'0124564565',
-          'collateral_description'=>'iWatch a great one',
-        ];
-
-        // $table="collaterals as c";
-        // $str_id="1=2";
-        // if($loan_app_id>0){
-        //     {
-        //       $str_id ="c.loan_app_id = $loan_app_id";
-        //       $table ="collaterals as c";
-        //     }
-        //  }else {
-        //      $str_id ="c.loan_id =$loan_id";
-        //      $table ="collaterals as c";
-        //  }
-        // $rows = DB::table($table)->whereRaw($str_id)->selectRaw("c.id,(select name from collateral_types where id = c.collateral_type_id LIMIT 1) AS collateral_type,c.description,c.estimated_value,c.identification_number,c.owner_name,Date_format(c.expiration_date,'%d %b %Y') as expiration_date")->get();
-        // foreach($rows as $row) return $row;
-    }
-
-    function getDays($compound_cycle){
-     switch($compound_cycle){
-        case 'monthly':{
-            return 30;
-        }case 'day':{
-            return 1;
+    function getBranchInfo($branch_id){
+        $terms_text ="ចំណាំ៖ រាល់ទំនិញខុសច្បាប់ ម្ចាស់ទំនិញត្រូវទទួលខុសត្រូវចំពោះមុខច្បាប់ដោយខ្លួនឯង ក្រុមហ៊ុនមិនទទួលខុសត្រូវឡើយ។ សូមអគុណសំរាប់ការប្រើប្រាស់សេវាកម្មរបស់យើងខ្ញុំ។";//Write company's terms and condition here
+        $rows = DB::table('um_branches AS b')->where('b.branch_id',$branch_id)->selectRaw("b.branch_id,'".$terms_text."' AS terms_text,b.email, b.name, b.name_kh,b.address,b.address_kh,b.phone_number,b.first_cp_name,b.first_cp_phone,b.website")->limit(1)->get();
+        foreach($rows as $row) {
+            $row->logo_url =CompanyProfile::logoUrl($branch_id);
+            return $row;
         }
-        case 'week':{
-            return 7;
-        }
-        default:
-        return 30;
-     }
-    }
-
-   function getActivities($start_date,$end_date){
-     $start_date = convertDate($start_date);
-     $end_date = convertDate($end_date);
-     //$str_where ='DATE(r.updated_at) >=\''.$start_date.'\' AND DATE(r.updated_date) <=\''.$end_date.'\'';
-     $str_where ='1=1';
-     $cols ='r.id, r.term_id, r.student_id,t.`name` AS request_type, c.description,IFNULL(c.calculated_fee,0) AS amount,\'$\' AS currency_symbol, r.remarks, r.request_type_id,r.status_id ,r.authorized, r.auth_user, formatTime(r.auth_date) AS auth_date, formatTime(r.updated_at) AS updated_at,r.update_user';
-     return DB::table('requests as r')->join('request_changes as c','c.request_id','=','r.id')->join('request_types AS t','t.id','=','r.request_type_id')->whereRaw($str_where)->selectRaw($cols)->orderByRaw('r.id DESC')->get();
+        return (object)array("name"=>'(Company Name)','phone_number'=>'(Unvailaible phone)','website'=>'Unvailable');
    }
-
-    function getStudentList($term_id=0,$new_student=null){
-        $term_id=$term_id?$term_id:0;
-        $str_where ='t.id ='.$term_id;
-        if($new_student==1) $str_where .=' AND e.is_new_student =1';
-        $get_group_name =',(SELECT g.name FROM group_members AS gm INNER JOIN student_groups AS g ON g.id = gm.group_id WHERE gm.enrollment_id = e.id LIMIT 1) AS group_name';
-        $cols ='e.id,st.id AS student_id,t.id AS term_id,st.name AS `student_name`, st.name_kh AS student_name_kh,st.code as student_code,st.sex,st.phone_number,(SELECT family_code FROM student_guardians WHERE student_id = st.id LIMIT 1) AS family_code'
-        .',p.id AS program_id, l.id AS level_id,e.session_id,e.campus_id,t.`name` AS term_name, c.`name` AS campus_name,p.`name` AS program_name,l.`name` AS level_name'.$get_group_name.',formatDate(e.start_date) AS start_date, formatDate(e.tuition_end_date) AS tuition_end_date,e.status_id as pmt_status_id,e.enrollment_status_id,e.is_new_student';
-
-        $studentList = DB::table('enrollments as e')
-        ->join('students as st','st.id','=','e.student_id')
-        ->join('terms as t','t.id','=','e.term_id')
-        ->join('program_levels as l','l.id','=','e.level_id')
-        ->join('sessions AS ss','ss.id','=','e.session_id')
-        ->join('campuses AS c','c.id','=','e.campus_id')
-        ->join('programs AS p','p.id','=','l.program_id')->whereRaw($str_where)->selectRaw($cols)->orderByRaw('e.id DESC,st.id')->get();
-        $header_list = ['Name','Name Kh','Sex','Term','Session','Program','Family ID'];
-        $keys = ['name','name_kh','sex'];
-        $key_props = $this->createKeyValue('key',$keys);
-        $headers = $this->createMulKeyValue('name',$header_list,$key_props);
-
-        return (object)[
-            'form' => 'simple',
-            'headers' => $headers,
-            'list' => $studentList
-        ];
+    //getbarCode() | label Info
+    function getPackageLabelInfo($barcode){
+       $branch_id =Session::get('branch_id',0);
+       $rows = DB::table('package As p')->where('qr_code',$barcode)->selectRaw('id')->take(1)->get();
+       $table ='package as p';
+       if(!isset($rows[0])) $table ='order_receivers as p';
+       $rows =DB::table($table)->where('p.branch_id',$branch_id)->where('p.qr_code',$barcode)->join('sender AS s','s.id','=','p.sender_id')->selectRaw("p.qr_code AS barcode,p.delivery_type,p.cod,DATE_FORMAT(p.create_date,'%d %b %Y') as booking_date,
+       CASE IFNULL(p.cod,0) WHEN 1 THEN p.price ELSE 0 END AS price,
+       s.name AS sender_name, s.phone_number AS sender_phone, p.receiver_name, p.receiver_address, p.zone_name, p.delivery_notes,p.zone_code,p.receiver_phone,(SELECT `name` FROM driver WHERE id = p.pickup_driver_id LIMIT 1) AS pickup_driver_name,
+       CASE LOWER(p.df_payer) WHEN 'receiver' THEN (IFNULL(p.base_fee,0) + IFNULL(p.delivery_fee,0)) ELSE 0 END AS total_delivery_fee,
+       IFNULL(p.driver_total,0) AS driver_total, IFNULL(p.exchange_rate,1) AS exchange_rate")->take(1)->get();
+       foreach($rows as $row) return $row;
+       return (object)array('barcode'=>null,'cod'=>0,'other_fees'=>0,'price'=>0,'sender_phone'=>null,'sender_name'=>null,'receiver_address'=>null,'receiver_phone'=>null,'zone_name'=>null,'zone_code'=>null,'exchange_rate'=>1,'total_delivery_fee'=>0);
     }
 
-    function createKeyValue($key_name,$arr){
-        $result = [];
-        foreach ($arr as $d) {
-            $result[] = [$key_name => $d];
+    function getPickupList($warehouse_id,$date,$search_value,$sender_id,$delivery_type,$status_id){
+        $branch_id =Session::get('branch_id',0);
+        $more_wheres = "o.status_id <=4 "; //" o.warehouse_id ='".$warehouse_id."' ";
+        $str_search = null;
+        $str_date = null;
+        $str_sender= null;
+        $str_status = null;
+        $str_delivery_type =null;
+
+        $date = convertDate($date);
+
+        if (!empty($search_value)) {
+            $str_search =" AND (o.code ='".$search_value."' OR s.phone_number ='".$search_value."' OR s.name LIKE '%".escape_like_str($search_value)."%') ";
+            $more_wheres .= $str_search;
+        } else {
+            if($status_id> 0) $str_status = " AND o.status_id ='".Sanitizer::sanitize($status_id)."' ";
+            if($sender_id > 0) $str_sender = " AND o.sender_id ='".Sanitizer::sanitize($sender_id)."' ";
+            //if($driver_id > 0) $str_driver = " AND o.driver_id ='".Sanitizer::sanitize($driver_id)."' ";
+            if ((bool)strtotime($date)) $str_date = " AND DATE(o.request_date) >= '". Date('Y-m-d',strtotime($date))."' ";
+            if (!empty($delivery_type)) $str_delivery_type = " AND o.delivery_type ='".$delivery_type."'";
+            $more_wheres .=$str_date.$str_sender.$str_status.$str_delivery_type;
         }
-        return $result;
+         return DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS os','os.id','=','o.status_id')->where('o.branch_id',$branch_id)->whereRaw($more_wheres)->selectRaw("s.code AS sender_code,s.name AS sender_name, s.phone_number AS sender_phone,o.code AS order_code,DATE_FORMAT(o.request_date,'%d %b %Y') AS request_date, o.product_type, o.qty, o.request_vehicle_type AS vehicle_type,(SELECT d.name FROM driver AS d WHERE d.id =o.driver_id LIMIT 1) AS driver_name, os.name AS status")->get();
+
     }
 
-    function createMulKeyValue($key_name, $arr, $bonus_data=null) {
+    function groupRows($rows, $col_name) {
         $result = [];
-        $count = count($arr);
 
-        foreach ($arr as $index => $header) {
-            $headerData = [$key_name => $header];
+        foreach ($rows as $row) {
+            $col_value = $row->$col_name;
 
-            if (isset($bonus_data[$index])) {
-                foreach ($bonus_data[$index] as $bonus_key => $bonus_value) {
-                    $headerData[$bonus_key] = $bonus_value;
-                }
+            if (!isset($result[$col_value])) {
+                $result[$col_value] = [];
             }
 
-            $result[] = $headerData;
+            $result[$col_value][] = $row;
         }
 
         return $result;
     }
 
-
-    function optionsTerm($acadmic_year=null,$ss){
-        return GeneralSettings::options_term($acadmic_year,$ss);
+    /**
+     *filterOutstandingPackages($rows) returns all outstanding packages in status (5,6,9)
+    */
+    function filterOutstandingPackages($rows, $delivery_date) {
+        // Assuming dateAdd is used correctly and returns the prior date in 'Y-m-d' format
+        //$prior_date = dateAdd('day', -1, $delivery_date, 'Y-m-d');
+        $delivery_date = convertDate($delivery_date);
+        // Check if $rows is a collection or an array
+        if ($rows instanceof \Illuminate\Support\Collection) {
+            // If $rows is a collection, use the 'filter' method
+            return $rows->filter(function ($row) use ($delivery_date) {
+                return ( in_array($row->status_id,[5,6,9]) && convertDate($row->orderByDate) < $delivery_date);
+            });
+        } elseif (is_array($rows)) {
+            // If $rows is an array, use array_filter
+            return array_filter($rows, function ($row) use ($delivery_date) {
+                return (in_array($row->status_id,[5,6,9]) && convertDate($row->orderByDate) < $delivery_date);
+            });
+        } else {
+            // Handle other data types or return an error message if needed
+            return null; // You can customize this based on your needs
+        }
     }
 
-  /**
-   * return list of invoice payments (date to date)
-   * $arr = {term_id,start_date,end_date}
-   *
-  */
-  function getInvoicePaymnents($arr=[]){
-    $d = (object)$arr;
-    $term_id =isset( $d->term_id)? $d->term_id:null;
-    $start_date = isset($d->start_date)?$d->start_date:null;
-    $end_date = isset($d->end_date)?$d->end_date:null;
-    $str_where ='v.is_paid =1 AND v.paid_amount > 0 ';
-    $get_family_code =',(SELECT family_code FROM student_guardians AS sg WHERE sg.student_id = st.id LIMIT 1) AS family_code';
-    $cols = 'v.id,st.id AS student_id,st.name AS student_name, st.name_kh, st.code as student_code, st.phone_number'.$get_family_code.
-    ',v.invoice_date AS issue_date, formatDate(v.due_date) AS due_date, v.invoice_number, v.branch_id, v.amount, v.due_amount, v.paid_amount,v.currency_code, v.is_paid,v.invoice_type, formatDate(v.pmt_date) AS pmt_date,note AS notes,v.purpose, CASE v.inactive WHEN 1 THEN \'Canceled\' ELSE \'Active\' END AS `status`, (CASE (v.is_paid AND v.paid_amount > 0) WHEN 1 THEN \'Paid\' ELSE \'Unpaid\' END) AS pmt_status, receiver,receiver_uid, formatTime(v.updated_at) AS updated_at,v.update_user';
-    return DB::table('invoices as v')->join('students as st','st.id','=','v.student_id')->whereRaw($str_where)->selectRaw($cols)->orderByRaw('v.invoice_date ASC,st.id')->get();
 
-  }
+    function getDailyPackageCountByMerchant($branch_id,$warehouse_id, $start_date,$end_date,$sender_id = null,$pmt_status_id =null){
+       $branch_id = $branch_id?$branch_id : Session::get('branch_id',0);
+       $start_date = convertDate($start_date);
+       $end_date = convertDate($end_date);
 
-  function getInvoiceList($arr=[]){
-    $d = (object)$arr;
-    $term_id =isset( $d->term_id)? $d->term_id:null;
-    $start_date = convertDate(isset($d->start_date)?$d->start_date:null);
-    $end_date = convertDate(isset($d->end_date)?$d->end_date:null);
-    $status_id = isset($d->status_id)?$d->status_id:null;
-    $str_where ='1=1';
-    //if($term_id > 0) $str_where .=' AND v.term_id ='.$term_id;
-    if($status_id > 0) $str_where .=' AND v.status_id ='.$status_id;
+       $str_warehouse = 'p.warehouse_id ='.$warehouse_id.' AND p.branch_id ='.$branch_id;
+       if(!(bool)strtotime($end_date)) $end_date =date('Y-m-d');
+       if(!(bool)strtotime($start_date)) $start_date =date('Y-m-d');
+       $str_dates = 'DATE(p.arrival_time) >=\''.$start_date.'\' AND DATE(p.arrival_time) <=\''.$end_date.'\'';
+       $str_sender= $sender_id > 0? 's.id ='.$sender_id :'1=1';
+       $str_sender_pmt_status ='2=2';
+       if($pmt_status_id ===1){
+         //Query the paid packages, we assume that then status is Paid then it must have been "delivered"
+         $str_sender_pmt_status ='p.sender_pmt_status_id =1';
+       }else if($pmt_status_id ===0){
+         //For Unpaid package, Except returned packages
+        $str_sender_pmt_status ='(IFNULL(p.sender_pmt_status_id,0) =0 AND p.status_id <> 11)';
+       }
 
-    $get_family_code =',(SELECT family_code FROM student_guardians AS sg WHERE sg.student_id = st.id LIMIT 1) AS family_code';
-    $cols = 'v.id,st.id AS student_id,st.name AS student_name, st.name_kh, st.code as student_code, st.phone_number'.$get_family_code.
-    ',v.invoice_date AS issue_date, formatDate(v.due_date) AS due_date, v.invoice_number, v.branch_id, v.amount, v.due_amount, v.paid_amount,v.currency_code,v.is_paid,v.invoice_type, formatDate(v.pmt_date) AS pmt_date,note AS notes,v.purpose, CASE v.inactive WHEN 1 THEN \'Canceled\' ELSE \'Active\' END AS `status`, (CASE (v.is_paid AND v.paid_amount > 0) WHEN 1 THEN \'Paid\' ELSE \'Unpaid\' END) AS pmt_status, receiver,receiver_uid, formatTime(v.updated_at) AS updated_at,v.update_user';
-    return DB::table('invoices as v')->join('students as st','st.id','=','v.student_id')->whereRaw($str_where)->selectRaw($cols)->orderByRaw('v.invoice_date ASC,st.id')->get();
-  }
-
-  //** Attendance Report */
-
-    function attendanceListReport($arr=[],$ss=null){
-        $ss = $ss?$ss:$this->ss;
-        $d = (object)$arr;
-        $group_id =isset($d->group_id)?$d->group_id:null;
-        if(!$group_id) return DV::error('Group ID is required');
-        $existGroup = DB::table('student_groups')->where('id',$group_id)->exists();
-        if(!$existGroup) return DV::error('Group not found');
-
-        $session_date = isset($d->session_date)?date('Y-m-d',strtotime($d->session_date)):null;
-        $startDate =  isset($d->start_date)?date('Y-m-d',strtotime($d->start_date)):null;
-        $endDate =  isset($d->end_date)?date('Y-m-d',strtotime($d->end_date)):null;
-        $limit = isset($d->limit)?$d->limit:6;
-        $is_shortMonthName = isset($d->short_month_name)?$d->short_month_name:false;
-        $aToz = isset($d->a_to_z)?$d->a_to_z:null;
-        $row = DB::table('student_groups as sg')->where('sg.id',$group_id)
-            ->selectRaw('sg.id as group_id,sg.campus_id,sg.level_id,sg.session_id')->first();
-        $arr_report = [
-            "session_date" => $session_date,
-            "a_to_z" => $aToz,
-            "limit" => $limit,
-            'start_date' => $startDate,
-            'end_date' => $endDate,
-            'short_month_name' => $is_shortMonthName,
-        ];
-        $row->form = 'customize';
-        $row->program = GeneralSettings::getProgramByLevel($row->level_id,$ss)->name;
-        $row->campus = GeneralSettings::getCampus($row->campus_id)->name;
-        $row->level = GeneralSettings::getLevel($row->level_id,$ss)->name;
-        $row->session = GeneralSettings::getSession($row->session_id)->name;
-        $row-> count_students = $this->countGroupMembers($group_id,$ss);
-        $row->session_date = $this->studentGroupAttendanceReport($group_id,$arr_report,$ss);
-
-        return $row;
-
+       $cols = 'COUNT(p.id) AS package_count,
+       SUM(CASE p.status_id WHEN 5 THEN 1 ELSE 0 END) AS at_warehouse_count,
+       SUM(CASE p.status_id WHEN 6 THEN 1 ELSE 0 END) AS on_delivery_count,
+       SUM(CASE p.status_id WHEN 8 THEN 1 ELSE 0 END) AS delivered_count,
+       SUM(CASE p.status_id WHEN 9 THEN 1 ELSE 0 END) AS failed_count,
+       SUM(CASE p.status_id WHEN 11 THEN 1 ELSE 0 END) AS returned_count,
+       formatDate(p.arrival_time) AS arrival_date,s.id AS sender_id,s.code AS sender_code, s.`name` AS sender_name, s.phone_number';
+       $rows=  DB::table('package AS p')->join('sender AS s','s.id','=','p.sender_id')->whereRaw($str_dates)->whereRaw($str_warehouse)->whereRaw($str_sender)->whereRaw($str_sender_pmt_status)->selectRaw($cols)->orderByRaw('arrival_date DESC')->groupByRaw('arrival_date,s.code,s.id,s.name,s.phone_number')->havingRaw('COUNT(p.id) > 0')->get();
+       return $this->groupRows($rows,'arrival_date');
     }
 
-    function getAttendanceRows($start_date=null,$end_date=null,$group_id=null,$student_id=null){
+    //getPackageList() returns package list based on start_date and end_date (compared to package's Arrival Dates, not Create Dates )
+    //$completed == true => show only completed package list
+    function getPackageList($warehouse_id,$completed=-1,$start_date=null,$end_date=null,$search_value=null,$sender_id=null,$delivery_type=null,$zone_code=null,$driver_id=null,$status_id=null,$sender_pmt_status_id=-1){
+        $branch_id =Session::get('branch_id',0);
+        $more_wheres = "o.status_id <=4 "; //" o.warehouse_id ='".$warehouse_id."' ";
+        $str_search = null;
+        $str_date = null;
+        $str_sender= $sender_id>0? " AND p.sender_id =$sender_id":'';
+        $str_driver=null;
+        $str_zone = null;
+        $str_status = null;
+        $str_delivery_type =null;
+        $str_warehouse = null;
+        $str_sender_pmt = ($sender_pmt_status_id !==null && $sender_pmt_status_id>=0)? " AND p.sender_pmt_status_id=$sender_pmt_status_id":"";
+
+        if ($warehouse_id>0) $str_warehouse = " AND p.warehouse_id =$warehouse_id";
+        $more_wheres .= $str_warehouse;
+
+        if(!(bool)strtotime($start_date)) $start_date =date('Y-m-d');
+        if(!(bool)strtotime($end_date)) $end_date =date('Y-m-d');
         $start_date = convertDate($start_date);
-        $day = date('d',strtotime($start_date));
         $end_date = convertDate($end_date);
 
-        $strSearchDate ='1=1';
-        if($start_date && $end_date){
-            $strSearchDate = "DATE(session_date) BETWEEN '$start_date' AND '$end_date'";
+        $str_completed ="";
+        if ($completed ==1){
+            $str_completed =" AND IFNULL(p.outstanding,0) = 1 OR p.status_id IN (8,11)";
         }
-        $rows = DB::table('student_attendances')->whereRaw($strSearchDate)->where('group_id',$group_id)->where('student_id',$student_id)->selectRaw('level_id,group_id,remarks,checkin_time,checkout_time,in_remarks,out_remarks,status_id,student_id,id as attendance_id,DAY(session_date) as day,MONTH (session_date) as `month`, YEAR(session_date) as `year`')->get();
+        else if ($completed===0){
+            $str_completed =" AND IFNULL(p.outstanding,0) = 0 AND p.status_id NOT IN (8,11)";
+        }
 
-        if(!isset($rows[0])) return [
-                (object)[
-                    'day' => (int)$day,
-                    'attendance_id' => 'sdfsdf',
-                    'status' => 'A',
-                    'in_remarks' => 'Not Scan',
-                    'out_remarks' => '',
-                    'status_id' => 3,
-                    "session_date" => '',
-                    'checkin_time' => '',
-                    'checkout_time' => '',
-                    'group_id' => '',
-                    "class" => '',
-                    'level_id' => '',
-                    'student_id' => '',
-                    'remarks' => '',
-                    'name' => '',
+        if (empty($status_id)) $status_id = -1; // All statuses of packages
 
-                ]
-            ];
+        if ($search_value) {
+            $str_search = " AND (p.qr_code ='".$search_value."') OR p.receiver_phone ='$search_value'  OR s.phone_number ='$search_value' OR s.name ='%.$search_value%'";
+            $more_wheres = " p.status_id > 4 ".$str_completed.$str_search;
+          }
+          else{
+            if ($delivery_type) $str_delivery_type =' AND p.delivery_type =\''.$delivery_type.'\' ';
+            //if(!$warehouse_id > 0) $str_warehouse =" AND p.warehouse_id ='".$data->warehouse_id."' ";
+            if ($driver_id > 0) $str_driver = ' AND p.driver_id ='. $driver_id;
+            if ($driver_id ==-1) $str_driver = '';
+            if ($sender_id > 0) $str_sender = ' AND p.sender_id ='.$sender_id;
+            if ($zone_code) $str_zone = ' AND p.zone_code =\''.$zone_code.'\'';
+            if ($status_id != -1 && $status_id > 0) $str_status = ' AND p.status_id ='.$status_id;
+            $str_date = " AND (DATE(p.arrival_time) >= '$start_date' AND DATE(p.arrival_time) <= '$end_date')";
+            $more_wheres = ' p.status_id > 4 '.$str_completed.$str_warehouse.$str_sender.$str_sender_pmt.$str_delivery_type.$str_driver.$str_zone.$str_date.$str_status;
+          }
+          $select_cols ='p.id As package_id,p.delivery_id, p.order_id,formatDate(p.arrival_time) AS arrival_date,formatDate(p.create_date) AS create_date,p.product_type, p.zone_code, p.delivery_type, p.qr_code AS barcode,p.delivery_condition, p.delivery_type, formatTime(delivery_time) AS delivery_time, delivery_notes,return_notes,failure_notes,
+          formatDate(p.arrival_time) AS `arrival_time`, s.sender_type_id, st.name AS sender_type, (select x.name from driver as x WHERE x.id = p.driver_id LIMIT 1) AS driver_name, p.driver_id,
+         p.status_id,(SELECT ds.name FROM package_statuses AS ds WHERE ds.id = p.status_id LIMIT 1) AS status, p.sender_id, s.phone_number AS sender_phone, p.receiver_id, p.receiver_address, p.receiver_name, p.receiver_phone, p.zone_code,p.zone_name, s.name AS sender_name,p.cod,p.df_payer,p.forwarding_cost,p.price,p.delivery_fee,p.base_fee, IFNULL(p.driver_total,0) AS driver_total, IFNULL(p.sender_total,0) AS sender_total';
+
+         return DB::table('package AS p')->join('sender AS s','s.id','=','p.sender_id')->join('sender_type AS st','st.id','=','s.sender_type_id')->selectRaw($select_cols)->where('p.branch_id',$branch_id)->whereRaw($more_wheres)->orderByRaw('p.create_date DESC,p.sender_id,p.status_id ASC')->get();
+    }
+
+    //same query as "DeliveryTrim->getDeliveryTrips_print()"
+    function getDeliveryTripList($date,$warehouse_id,$search_value, $driver_id,$delivery_type,$status_id){
+        $branch_id = Session::get('branch_id',0);
+        if (empty($status_id)) $status_id =-1; //status_id = 0 => 'Canceled'
+        $date =isset($date)? convertDate($date):null;
+
+        $str_warehouse = null;
+        $str_status =null;
+        $str_date = null;
+        $str_driver = null;
+        //$str_zone =null;
+        $str_delivery_type =null;
+
+        if (empty($search_value)) {
+            if ((bool)strtotime($date)) $str_date = " AND DATE(IFNULL(d.depart_time,DATE(NOW()))) >='".$date."' ";
+            $str_warehouse =" AND h.id ='".$warehouse_id."' ";
+            if ($driver_id > 0) $str_driver = " AND d.driver_id ='".$driver_id."' ";
+            //if (!empty($zone_code)) $str_zone =" AND d.zone_code ='".$zone_code."' ";
+            if (empty($status_id))
+               $str_status =" AND d.status_id =2";
+            else if ($status_id != -1) $str_status =" AND d.status_id ='".$status_id."' ";
+            if (!empty($delivery_type)) $str_delivery_type =" AND d.delivery_type ='".$delivery_type."' ";
+            $more_wheres = "1=1 ".$str_delivery_type.$str_date.$str_warehouse.$str_status.$str_driver;
+        }else{
+            $search_value = escape_like_str($search_value);
+            $more_wheres ="(d.fleet_tracking_number ='".$search_value."' OR d.driver_id IN (select id FROM driver WHERE branch_id ='".$branch_id."' AND name LIKE '%".$search_value."%') OR d.id IN (SELECT l.delivery_id FROM package AS l WHERE l.branch_id ='".$branch_id."' AND l.qr_code ='".$search_value."' or l.receiver_phone ='".$search_value."'))";
+        }
+        $selectCols ="d.id, d.driver_id, d.fleet_tracking_number,d.delivery_type, DATE_FORMAT(d.depart_time,'%d %b %Y') AS depart_date, encode_time(DATE_FORMAT(d.depart_time,'%r')) AS depart_time, d.package_count, d.delivered_count,d.failed_count, ds.name AS status, dr.name AS driver_name, d.vehicle_type".
+        ",(SELECT SUM(IFNULL(base_fee,0)) FROM package WHERE branch_id ='".$branch_id."' AND delivery_id = d.id) AS total_base_fee ".
+        ",(SELECT SUM(IFNULL(delivery_fee,0)) FROM package WHERE branch_id ='".$branch_id."' AND delivery_id = d.id) AS total_delivery_fee ".
+        ",(SELECT SUM(CASE cod WHEN 1 THEN price ELSE 0 END) AS total FROM package WHERE branch_id ='".$branch_id."' AND delivery_id = d.id) AS total_cod_amount ".
+        ",(SELECT SUM(IFNULL(cod_fee,0)) AS total FROM package WHERE branch_id ='".$branch_id."' AND delivery_id = d.id) AS total_cod_fee ".
+        ",(SELECT SUM(IFNULL(driver_total,0)) FROM package AS p WHERE branch_id = d.branch_id AND p.delivery_id = d.id) AS driver_total, 'Unsettled' AS pmt_status";
+        $rows = DB::table('delivery AS d')->join('delivery_statuses AS ds','ds.id','=','d.status_id')->join('warehouses AS h','h.id','=','d.warehouse_id')->join('driver as dr','dr.id','=','d.driver_id')->where('d.branch_id',$branch_id)->whereRaw($more_wheres)->selectRaw($selectCols)->get();
+        foreach($rows as $h_row){
+            $selectCols ="p.delivery_id,p.id AS package_id,p.qr_code AS barcode,p.sender_name,p.sender_phone,p.package_name, p.product_type,p.dim_x, p.dim_y, p.dim_h, p.billed_kg, p.price, (CASE cod WHEN 1 THEN p.price ELSE 0 END) AS cod_amount, p.cod, p.cod_fee, p.base_fee,p.delivery_fee,p.receiver_name, p.receiver_phone, p.zone_code,p.zone_name, IFNULL(p.forwarding_cost,0) AS forwarding_cost,p.delivery_notes,p.failure_notes, IFNULL(p.driver_total,0) AS driver_total,IFNULL(p.sender_total,0) AS sender_total, p.exchange_rate AS exchange_rate,p.status_id, (SELECT ps.name FROM package_statuses AS ps WHERE ps.id =p.status_id LIMIT 1) AS status, DATE_FORMAT(p.arrival_time,'%d %b %Y %r') AS arrival_time,p.agent_notes";
+            $h_row->packages = DB::table('package AS p')->where('branch_id',$branch_id)->where('delivery_id',$h_row->id)->selectRaw($selectCols)->get();
+        }
         return $rows;
     }
 
-    function studentGroupAttendanceReport($group_id,$arr=[],$ss=null){
-        $ss = $ss?$ss:$this->ss;
-        $d = (object)$arr;
-        $limit = isset($d->limit)?$d->limit:6;
-        $is_shortMonthName = isset($d->short_month_name)?$d->short_month_name:true;
-        $aToz = isset($d->a_to_z)?$d->a_to_z:null;
-        if($aToz){
-            $aToz ='DESC';
-        }else $aToz = 'ASC';
+    function getDriverList($warehouse_id,$search_value,$shift, $status_code,$emp_type){
+         $branch_id = Session::get('branch_id',0);
+         $str_emp_type = null;
+         $str_shift = null;
+         $str_search =null;
+         $str_status =null;
+         $more_wheres ="1=1 ";
+         if (empty($search_value)) {
+            if(!empty($shift) && $shift != '0') $str_shift = " AND s.shift ='$shift' ";
+            if(!empty($emp_type)) $str_emp_type ="AND s.emp_type ='".Sanitizer::sanitize($emp_type)."' ";
+            if(!empty($status_code)) $str_status ="AND s.status_code ='".Sanitizer::sanitize($status_code)."' ";
+            $more_wheres .=$str_emp_type.$str_status.$str_shift;
+         } else {
+            $str_search = "AND (s.name LIKE '%".escape_like_str($search_value)."%' OR s.phone_number ='".Sanitizer::sanitize($search_value)."' )";
+            $more_wheres .=$str_search;
+         }
+        //driver's role = {'pickup_only','pickup_and_delivery','delivery_only','all'}
+         return DB::table('driver as s')->selectRaw("'Main warehouse' AS warehouse_name,1 As warehouse_id,s.id,s.code,s.national_id,s.status_code,s.name,s.name_kh,s.sex,s.driver_license_number,s.vehicle_type,s.vehicle_number,s.address,s.phone_number,s.email,s.emp_type,salary,s.shift, s.delivery_commission_type,s.pickup_commission_type,s.role")->where('s.branch_id',$branch_id)->whereRaw($more_wheres)->orderByRaw('warehouse_name ASC,s.emp_type ASC')->get();
+         //$rows = DB::table('driver as s')->join('driver_warehouses AS dw','dw.driver_id','=','s.id')->join('warehouses AS h','dw.warehouse_id','=','h.id')->selectRaw("h.name AS warehouse_name,s.id,s.code,s.national_id,s.status_code,s.name,s.name_kh,s.sex,s.driver_license_number,s.vehicle_type,s.vehicle_number,s.address,s.phone_number,encode_email(s.email) AS email,s.emp_type,salary,s.shift, s.delivery_commission_type,s.pickup_commission_type,s.role")->where('s.branch_id',$branch_id)->whereRaw($more_wheres)->orderByRaw('warehouse_name ASC,s.emp_type ASC')->get();
+     }
 
-        $instance = new StudentAttendance();
+     function getBankAccountInfo($sender_id){
+        $rows = DB::table('sender_bank_accounts as acc')->join('sender as s','s.id','=','acc.sender_id')->where('s.id',$sender_id)->select(['account_number','account_name','bank_name','is_primary'])->orderBy('is_primary','DESC')->take(1)->get();
+        foreach($rows as $row) return $row;
+        return (object)[
+            'account_number'=>'NA',
+            'account_name'=>'NA',
+            'bank_name'=>''
+        ];
+     }
 
-        $session_date = isset($d->session_date)?date('Y-m-',strtotime($d->session_date)):date('Y-m-d');
-        $startDate =  isset($d->start_date)?date("Y-m-d",strtotime($d->start_date)):null;
-        $endDate =  isset($d->end_date)?date("Y-m-d",strtotime($d->end_date)):null;
-
-        // $existSessionDate = DB::table('student_attendances')->where('session_date',$startDate)->exists();
-
-        $sessionDateCondition = "1=1";
-        if ($session_date) {
-            $sessionDateCondition = "DATE(session_date) = '$session_date'";
+     function getSenderList($warehouse_id){
+        $branch_id = Session::get('branch_id',0);
+        $rows = DB::table('sender as s')->join('sender_type as t','t.id','=','s.sender_type_id')->selectRaw("'Main warehouse' AS warehouse_name,1 As warehouse_id,s.id,s.code,s.status_code,s.name,s.name_kh,s.address,s.phone_number,s.email,t.name as sender_type,business_type")->where('s.branch_id',$branch_id)->orderByRaw('warehouse_id ASC')->orderBy('s.sender_type_id','ASC')->orderBy('s.name','ASC')->get();
+        foreach($rows as $row){
+            $acc = $this->getBankAccountInfo($row->id);
+            $row->account_number = $acc->account_number;
+            $row->account_name = $acc->account_name;
+            $row->bank_name = $acc->bank_name;
         }
-        if($startDate && $endDate) {
-            $sessionDateCondition = "DATE(session_date) BETWEEN '$startDate' AND '$endDate'";
-        }
-        // $att_items = $this->getAttendanceRows($startDate,$endDate,$group_id);
-        $students = DB::table('group_members as gm')
-                ->join('students as s','s.id','=','gm.student_id')
-                ->join('enrollments as e','e.id','=','gm.enrollment_id')
-                ->where('gm.group_id',$group_id)
-                ->selectRaw('s.id as student_id,s.name,s.date_of_birth,s.sex,e.start_date')
-                ->get();
+        return $rows;
+    }
 
-        $start_timestamp = strtotime($startDate);
-        $end_timestamp = strtotime($endDate);
+     //"dr_package_list" => driver_report, driver report,
+     function getDeliveredPackagesByDriver($warehouse_id, $driver_id, $start_date, $end_date,$delivery_type=null){
+            $branch_id = Session::get('branch_id',0);
+            $str_dates =null;
+            //$str_delivery_type = null;
+            $str_driver =null;
+            if ($driver_id > 0) $str_driver = ' AND p.driver_id ='.$driver_id;
 
-        $tmp_months =[];
-        $months = [];
-        $current_timestamp = $start_timestamp;
-        while ($current_timestamp <= $end_timestamp) {
-            $year = date("Y", $current_timestamp);
-            $month = date("m", $current_timestamp);
-            $unique_key = $year . '-' . $month;
+            $start_date = convertDate($start_date);
+            $end_date = convertDate($end_date);
 
-            if (!in_array($unique_key, $tmp_months)) {
-                $tmp_months[] = $unique_key;
-                $months[] = (object)[
-                    'month' => $month,
-                    'year' => $year
-                ];
+            if((bool)strtotime($start_date)) $str_dates =' AND DATE(p.arrival_time) >= \''.$start_date.'\'';
+            if((bool)strtotime($end_date))  $str_dates .= ' AND DATE(p.arrival_time) <=\''.$end_date.'\'';
+            //if (!empty($delivery_type)) $str_delivery_type =" AND p.delivery_type ='".$delivery_type."' ";
+            $more_wheres = 'p.status_id =8 ';
+            if($warehouse_id > 0){
+                $more_wheres .= ' AND p.warehouse_id ='.$warehouse_id;
             }
+            $more_wheres .= $str_dates.$str_driver;
+            $selectCols ="p.id AS package_id, p.delivery_type, p.qr_code AS barcode,p.sender_name, p.sender_phone, p.receiver_name, p.receiver_phone, p.receiver_address, p.zone_code, p.zone_name,
+            CASE p.status_id WHEN 8 THEN DATE_FORMAT(p.arrival_time,'%d %b %Y') ELSE DATE_FORMAT(p.create_date,'%d %b %Y') END AS delivery_date,
+            CASE p.cod WHEN 1 THEN ifnull(p.price,0) ELSE 0 END AS cod_amount,
+            p.df_payer,
+            ifnull(p.cod_fee,0) AS cod_fee,
+            IFNULL(p.base_fee,0) AS base_fee,
+            CASE lower(p.df_payer) WHEN 'receiver' THEN (IFNULL(p.base_fee,0) + IFNULL(p.delivery_fee,0)) ELSE 0 END AS fees,
+            IFNULL(p.delivery_fee,0) AS delivery_fee,
+            IFNULL(p.driver_adjust_amount,0) AS driver_adjust_amount,
+            IFNULL(p.forwarding_cost,0) AS forwarding_cost,
+            0 AS paid_to_sender,
+            0 AS paid_by_driver,
+            IFNULL(p.driver_total,0) AS driver_total,
+            IFNULL(p.sender_total,0) AS sender_total,
+            IFNULL(p.driver_pmt_status_id,0) AS driver_pmt_status_id,
+            p.driver_pmt_notes,
+            '$' AS cur,
+            IFNULL(p.sender_net_amount,0) AS sender_net_amount,
+            p.status_id,ps.name AS status";
+            return DB::table('package AS p')->join('package_statuses AS ps','ps.id','=','p.status_id')->where('p.branch_id',$branch_id)->whereRaw($more_wheres)->selectRaw($selectCols)->orderByRaw('p.create_date DESC,p.delivery_type')->get();
+    }
 
-            $current_timestamp = strtotime("+1 month", $current_timestamp);
 
+       //"vd_package_list", "vd_deliveries" => sender_report, merchant report, pacakge list belonging to sender
+       function getPackagesBySender($warehouse_id, $sender_id, $start_date, $end_date,$delivery_type=null, $status_id = null){
+        $branch_id = Session::get('branch_id',0);
+        $str_dates =null;
+        //$str_delivery_type = null;
+        $end_date =convertDate($end_date);
+        $start_date =convertDate($start_date);
+
+        if((bool)strtotime($start_date)) $str_dates =" AND DATE(p.arrival_time) >= '".convertDate($start_date)."'";
+        if((bool)strtotime($end_date))  $str_dates .= " AND DATE(p.arrival_time) <='".convertDate($end_date)."' ";
+        if (!empty($delivery_type)) $str_delivery_type =" AND p.delivery_type ='".$delivery_type."' ";
+        $more_wheres = " 1=1";
+        if (!empty($status_id)) $more_wheres ="p.status_id ='".$status_id."'";
+        if($warehouse_id > 0){
+            $more_wheres .= " AND p.warehouse_id ='".$warehouse_id."' ";
+        }
+         $more_wheres .= $str_dates;
+        $selectCols ="p.id AS package_id, p.delivery_type, p.qr_code AS barcode,p.sender_name, p.sender_phone, p.receiver_name, p.receiver_phone, p.receiver_address, p.zone_code, p.zone_name,
+        CASE p.status_id WHEN 8 THEN DATE_FORMAT(p.arrival_time,'%d %b %Y') ELSE DATE_FORMAT(p.create_date,'%d %b %Y') END AS delivery_date,
+        CASE p.cod WHEN 1 THEN (ifnull(p.price,0) - ifnull(p.cod_fee,0)) ELSE 0 END AS cod_amount,
+        p.df_payer,
+        ifnull(p.cod_fee,0) AS cod_fee,
+        IFNULL(p.base_fee,0) AS base_fee,
+        IFNULL(p.delivery_fee,0) AS delivery_fee,
+        IFNULL(p.sender_adjust_amount,0) AS sender_adjust_amount,
+        IFNULL(p.forwarding_cost,0) AS forwarding_cost,
+        0 AS paid_to_sender,
+        0 AS paid_by_driver,
+        IFNULL(p.sender_total,0) AS sender_total,
+        IFNULL(p.sender_pmt_status_id,0) AS sender_pmt_status_id,
+        p.sender_pmt_notes,
+        '$' AS cur,
+        IFNULL(p.sender_net_amount,0) AS sender_net_amount,
+        p.status_id,ps.name AS status";
+        $rows = DB::table('package AS p')->join('package_statuses AS ps','ps.id','=','p.status_id')->where('p.branch_id',$branch_id)->where('p.sender_id',$sender_id)->whereRaw($more_wheres)->selectRaw($selectCols)->orderByRaw('p.create_date DESC,p.delivery_type,p.status_id DESC')->get();
+        return $rows;
+   }
+
+    //"dr_summarized_deliveries", driver report
+    function getSummarizedDeliveriesByDriver($warehouse_id=0, $driver_id=0, $start_date='', $end_date='',$delivery_type=null, $status_id = 0){
+        $branch_id = Session::get('branch_id',0);
+        $str_dates =null;
+        $str_delivery_type = null;
+        $str_driver = null;
+        $str_status = null;
+
+        $start_date = convertDate($start_date);
+        $end_date = convertDate($end_date);
+        if(!(bool)strtotime($start_date)) $start_date = date('Y-m-d');
+        if(!(bool)strtotime($end_date)) $end_date = date('Y-m-d');
+
+        $str_dates =" AND DATE(p.arrival_time) >= '$start_date' AND DATE(p.arrival_time) <='$end_date'";
+        if (!empty($delivery_type)) $str_delivery_type =" AND p.delivery_type ='".$delivery_type."' ";
+
+        if (empty($status_id)) $status_id = 8;
+        if ($status_id > 0) $str_status =" p.status_id =$status_id";
+
+        $more_wheres = $str_status;
+        if($warehouse_id > 0){
+            $more_wheres .= " AND p.warehouse_id ='".$warehouse_id."' ";
         }
 
-        $attendanceData = [];
+        if ($driver_id > 0) $str_driver =" AND driver_id =$driver_id";
+        $more_wheres .= $str_dates.$str_driver;
+        $selectCol ="'$' AS currency, COUNT(p.id) AS package_count, p.delivery_type, SUM(CASE p.cod WHEN 1 THEN IFNULL(p.price,0) ELSE 0 END) AS cod_amount, SUM(IFNULL(p.base_fee,0) + IFNULL(p.delivery_fee,0)) AS fees,  SUM(CASE lower(p.df_payer) WHEN 'receiver' THEN (IFNULL(p.base_fee,0) + IFNULL(p.delivery_fee,0)) ELSE 0 END) collected_fees, SUM(IFNULL(p.driver_adjust_amount,0)) AS adjust_amount, '' AS remarks";
+        $rows = DB::table('package AS p')->join('package_statuses AS ps','ps.id','=','p.status_id')->where('p.branch_id',$branch_id)->whereRaw($more_wheres)->selectRaw($selectCol)->groupBy('p.delivery_type')->orderByRaw('p.delivery_type')->get();
+        return $rows;
+    }
 
-        foreach ($months as $date) {
-            $year = $date->year;
-            $month = $date->month;
+    /**returns commissions options (for the company given by @branch_id) as object with prop
+       PICKUP_CMM_TYPE = Pickup Commission type can be {'per_pickup','per_item'}
+       DELIVERY_CMM_TYPE = Delivery Commission type can be {'per_trip','per_item'}
+    **/
+    function getDriverCommissionOptions(){
+       $branch_id = Session::get('branch_id',0);
+       $ss = (object)['branch_id'=>$branch_id];
+       $pickup_cmm_type = get_settings_value($ss,'PICKUP_CMM_TYPE','string');
+       $delivery_cmm_type = get_settings_value($ss,'DELIVERY_CMM_TYPE','string');
+       $result = (object)array('pickup_cmm_type'=>$pickup_cmm_type,'delivery_cmm_type'=>$delivery_cmm_type);
+       return $result;
+    }
+    function getDriverCommissionRates($driver_id,$delivery_type ='normal'){
+        $branch_id = Session::get('branch_id',0);
+        $sql_driver = null;
+        if ($driver_id> 0) $sql_driver = "c.driver_id =$driver_id";
+        $rows = DB::table('driver_commissions AS c')->where('c.branch_id',$branch_id)->whereRaw($sql_driver)->where('is_current',1)->selectRaw('IFNULL(c.pickup_commission,0) AS pickup_commission,IFNULL(c.delivery_commission,0) AS delivery_commission')->limit(1)->get();
+        foreach($rows as $row) return $row;
+        return (object)['pickup_commission'=>0,'delivery_commission'=>0];
+    }
 
-            $current_date = new \DateTime("$year-$month-01");
-            $end_date_obj = new \DateTime("$year-$month-01");
-            $end_date_obj->modify('last day of this month');
+    static function getReturnedCountByDriver($branch_id,$warehouse_id,$driver_id,$start_date,$end_date){
+        $more_wheres ="DATE(p.delivery_time) >='".convertDate($start_date)."' AND DATE(p.delivery_time) <='".convertDate($end_date)."' AND p.pickup_driver_id = ".$driver_id;
+        return DB::table('package as p')->where('p.branch_id',$branch_id)->where('p.warehouse_id',$warehouse_id)->whereRaw($more_wheres)->distinct()->count('p.id');
+    }
 
-            $days_between = [];
+    /** getDriverCommissions | commissions| getDriverCommissionItems() is used by Driver Mobile App and backend 's Driver Commission report */
+    function getDriverCommissionItems($ss,$warehouse_id,$driver_id, $start_date, $end_date){
+      if(!$warehouse_id){
+        /** $ss must have {"branch_id",[user_id] } */
+        $warehouse_id = GeneralSettings::getDefaultWarehouse($ss);
+      }
+      if(!$driver_id) $driver_id =0; 
+      if (!(bool)strtotime($start_date)) $start_date = date('Y-m-d');
+      if (!(bool)strtotime($end_date)) $end_date = date('Y-m-d');
+      $op = $this->getDriverCommissionOptions();
+      //$cmm = $this->getDriverCommissionRates($driver_id);
+      $more_wheres = null;
+      $sql = null;
+      $start_date = convertDate($start_date);
+      $end_date = convertDate($end_date);
+ 
+      //todo: get branch_id from token
+      $branch_id = $ss?$ss->branch_id: 0;
+      $user_class = isset($ss->user_class)?$ss->user_class:'Admin';
+      $notes = 'ទំនិញត្រូវតែបានទូទាត់ជាមួយអ្នកដឹកនឹងជាមួយអ្នកលក់'; 
+      $is_from_mobile = strtolower($user_class) ==='driver';
+      if($is_from_mobile){
+          /** DO not display long remraks on Mobile Driver App */
+          $notes = '';  
+      } 
 
-            // based on month and year of the start_date field
-            $start_day = ($year == date('Y', $start_timestamp) && $month == date('m', $start_timestamp))
-                ? max(date('d', $start_timestamp), 1)
-                : 1;
+      /** PICKUP and DELIVERY COUNT PER ITEMS => Default pickup_cmm_type ='per_item' **/
+        // for time being => now use "booking_date" to retrieve number of pickups or packages picked
+        $str_dates =' AND DATE(p.arrival_time) >=\''.$start_date.'\' AND DATE(p.arrival_time) <=\''.$end_date.'\'';
+        $sql_pickup = 'SELECT \'USD\' AS currency_code, \'Pickup\' AS category, p.delivery_type, p.pickup_driver_id AS driver_id, SUM(CASE p.status_id WHEN 11 THEN 1 ELSE 0 END)  AS returned_count, SUM(CASE (p.status_id =8 and p.driver_pmt_status_id =1 AND p.sender_pmt_status_id =1) WHEN 1 THEN 1 ELSE 0 END) AS item_count, getDriverCommission(\'pickup\',pickup_driver_id,p.delivery_type) AS unit_amount,\''.$op->pickup_cmm_type. '\' AS cmm_type, \''.$notes.'\' AS remarks FROM `package` AS p WHERE p.branch_id = '.$branch_id.' AND p.status_id IN (8,11) AND p.pickup_driver_id ='.$driver_id.' '.$str_dates.
+        ' GROUP BY pickup_driver_id, p.delivery_type';
+        /** Default delivery_cmm_type ='per_item' **/
+        $str_dates =' AND DATE(p.delivery_time) >=\''.$start_date.'\' AND DATE(p.delivery_time) <=\''.$end_date.'\'';
+        $sql_delivery = 'SELECT \'USD\' AS currency_code,\'Delivery\' AS category,p.delivery_type, p.driver_id, 0 AS returned_count, COUNT(p.id) AS item_count, getDriverCommission(\'delivery\',p.driver_id,p.delivery_type) AS unit_amount,\''.$op->delivery_cmm_type.'\' AS cmm_type, \''.$notes.'\' AS remarks FROM `package` AS p WHERE p.branch_id ='.$branch_id.' AND p.status_id= 8 AND p.driver_pmt_status_id =1 AND p.sender_pmt_status_id =1 AND p.driver_id ='.$driver_id.' '.$str_dates.
+        " GROUP BY driver_id, p.delivery_type";
 
-            // based on month and year of the end_date field
-            $end_day = ($year == date('Y', $end_timestamp) && $month == date('m', $end_timestamp))
-                ? min(date('d', $end_timestamp), (int)$end_date_obj->format('d'))
-                : (int)$end_date_obj->format('d');
+      /** COUNT PER PICKUP POINT and PER DELIVERY TRIP */  
+        if ($op->pickup_cmm_type =='per_pickup'){
+            // For time being => now use "booking_date" to retrieve number of pickups or packages picked
+            $more_wheres =" AND DATE(o.create_date) >='".$start_date."' AND DATE(o.create_date) <='".$end_date."' ";  
+            $sql_pickup ="SELECT 'USD' AS currency_code, 'Pickup' AS category, o.delivery_type, '$driver_id' AS driver_id, 0 AS returned_count, COUNT(o.id) AS item_count,getDriverCommission('pickup',o.driver_id,o.delivery_type) AS unit_amount,'".$op->pickup_cmm_type."' AS cmm_type, NULL AS remarks FROM `order` AS o WHERE o.branch_id = '$branch_id' AND IFNULL(o.driver_id,0) >0 AND o.status_id >=3 AND o.driver_id =".$driver_id." ".$more_wheres.
+            " GROUP BY driver_id,o.delivery_type"; 
+        }
+        if ($op->delivery_cmm_type =='per_trip'){
+            $more_wheres =' AND DATE(d.delivery_time) >=\''.$start_date.'\' AND DATE(d.delivery_time) <=\''.$end_date.'\' ';  
+            $sql_delivery = "SELECT 'USD' AS currency_code,'Delivery' AS category,d.delivery_type,'$driver_id' AS driver_id, 0 AS returned_count, COUNT(d.driver_id) AS item_count,getDriverCommission('delivery',d.driver_id,d.delivery_type)  AS unit_amount,'".$op->delivery_cmm_type."' AS cmm_type, NULL AS remarks FROM `package` AS d WHERE d.branch_id = '$branch_id' AND IFNULL(d.driver_id,0) >0 AND d.status_id =3 AND d.driver_id ='".$driver_id."' ".$more_wheres.
+            " GROUP BY driver_id,d.delivery_type";
+        }
 
-            for ($day = $start_day; $day <= $end_day; $day++) {
-                $days_between[] = ['day' => $day]; //str_pad($day, 2, '0', STR_PAD_LEFT)
+      $sql = '('.$sql_pickup.') UNION '.$sql_delivery;
+   
+      $rows = DB::select(DB::raw($sql));
+      $total = 0;
+      $total_item_count =0;
+      $bottom_notes = '';
+      foreach($rows as $row){
+        if(isset($row->item_count)){
+            $row->returned_count = isset($row->returned_count)?$row->returned_count:0;
+            $cat = strtolower($row->category);
+            if($cat ==='pickup'){
+                $total_item_count = $row->item_count + $row->returned_count;
+                //The $row->item_count becomes "total_item_count"
+                $bottom_notes = 'Pickup count: '.$row->item_count. ' pcs = '.$total_item_count.' (picked items) - '.$row->returned_count.' (returned items)';   
+            }else $total_item_count = $row->item_count;
+            $row->unit_amount = $row->unit_amount>=0? $row->unit_amount:0; 
+            $amount = $total_item_count * $row->unit_amount;
+            $row->line_total = $amount;
+            $total += $amount;
+        }
+      }
+
+      return (object)[
+           'bottom_notes_one'=>$bottom_notes,
+           'currency_code'=>'USD',
+           'total'=>number_format($total,2,'.',''),
+           'remarks'=>'ទំនិញ​ដែល​ត្រូវ​បាន​យក​មក​ហាង​វិញ​មិន​ត្រូវ​បាន​រាប់​បញ្ចូល​ក្នុង​ការ​ចេញ​ប្រាក់​កម្រៃ​ជើង​សារ​ទេ។ '.$notes, //'Pickup items that have been returned to store are not counted for commission disbursement',
+           'items'=> $rows 
+      ];
+    }
+ 
+    function getDriverCommissionItems_mobile($ss,$driver_id, $start_date, $end_date){
+        //$warehouse_id = GeneralSettings::getDefaultWarehouse($ss);
+        if(!$driver_id) $driver_id =0; 
+        if (!(bool)strtotime($start_date)) $start_date = date('Y-m-d');
+        if (!(bool)strtotime($end_date)) $end_date = date('Y-m-d');
+        $op = $this->getDriverCommissionOptions();
+        //$cmm = $this->getDriverCommissionRates($driver_id);
+        $more_wheres = null;
+        $sql = null;
+        $start_date = convertDate($start_date);
+        $end_date = convertDate($end_date);
+  
+        //todo: get branch_id from token
+         $branch_id = $ss?$ss->branch_id: 0;
+         
+        /** PICKUP and DELIVERY COUNT PER ITEMS => Default pickup_cmm_type ='per_item' **/
+          // for time being => now use "booking_date" to retrieve number of pickups or packages picked
+          $str_dates =' AND DATE(p.arrival_time) >=\''.$start_date.'\' AND DATE(p.arrival_time) <=\''.$end_date.'\'';
+          $sql_pickup = 'SELECT \'USD\' AS currency_code, \'Pickup\' AS category, p.delivery_type, p.pickup_driver_id AS driver_id, SUM(CASE p.status_id WHEN 11 THEN 1 ELSE 0 END)  AS returned_count, SUM(CASE (p.status_id =8 and p.driver_pmt_status_id =1 AND p.sender_pmt_status_id =1) WHEN 1 THEN 1 ELSE 0 END) AS item_count, getDriverCommission(\'pickup\',pickup_driver_id,p.delivery_type) AS unit_amount,\''.$op->pickup_cmm_type. '\' AS cmm_type, \'ទំនិញត្រូវតែបានទូទាត់ជាមួយអ្នកដឹកនឹងជាមួយអ្នកលក់\' AS remarks FROM `package` AS p WHERE p.branch_id = '.$branch_id.' AND p.status_id IN (8,11) AND p.pickup_driver_id ='.$driver_id.' '.$str_dates.
+          ' GROUP BY pickup_driver_id, p.delivery_type';
+          /** Default delivery_cmm_type ='per_item' **/
+          $str_dates =' AND DATE(p.delivery_time) >=\''.$start_date.'\' AND DATE(p.delivery_time) <=\''.$end_date.'\'';
+          $sql_delivery = 'SELECT \'USD\' AS currency_code,\'Delivery\' AS category,p.delivery_type, p.driver_id, 0 AS returned_count, COUNT(p.id) AS item_count, getDriverCommission(\'delivery\',p.driver_id,p.delivery_type) AS unit_amount,\''.$op->delivery_cmm_type.'\' AS cmm_type, \'ទំនិញត្រូវតែបានទូទាត់ជាមួយអ្នកដឹកនឹងជាមួយអ្នកលក់ \' AS remarks FROM `package` AS p WHERE p.branch_id ='.$branch_id.' AND p.status_id= 8 AND p.driver_pmt_status_id =1 AND p.sender_pmt_status_id =1 AND p.driver_id ='.$driver_id.' '.$str_dates.
+          " GROUP BY driver_id, p.delivery_type";
+  
+        /** COUNT PER PICKUP POINT and PER DELIVERY TRIP */  
+          if ($op->pickup_cmm_type =='per_pickup'){
+              // For time being => now use "booking_date" to retrieve number of pickups or packages picked
+              $more_wheres =" AND DATE(o.create_date) >='".$start_date."' AND DATE(o.create_date) <='".$end_date."' ";  
+              $sql_pickup ="SELECT 'USD' AS currency_code, 'Pickup' AS category, o.delivery_type, '$driver_id' AS driver_id, 0 AS returned_count, COUNT(o.id) AS item_count,getDriverCommission('pickup',o.driver_id,o.delivery_type) AS unit_amount,'".$op->pickup_cmm_type."' AS cmm_type, NULL AS remarks FROM `order` AS o WHERE o.branch_id = '$branch_id' AND IFNULL(o.driver_id,0) >0 AND o.status_id >=3 AND o.driver_id =".$driver_id." ".$more_wheres.
+              " GROUP BY driver_id,o.delivery_type"; 
+          }
+          if ($op->delivery_cmm_type =='per_trip'){
+              $more_wheres =' AND DATE(d.delivery_time) >=\''.$start_date.'\' AND DATE(d.delivery_time) <=\''.$end_date.'\' ';  
+              $sql_delivery = "SELECT 'USD' AS currency_code,'Delivery' AS category,d.delivery_type,'$driver_id' AS driver_id, 0 AS returned_count, COUNT(d.driver_id) AS item_count,getDriverCommission('delivery',d.driver_id,d.delivery_type)  AS unit_amount,'".$op->delivery_cmm_type."' AS cmm_type, NULL AS remarks FROM `package` AS d WHERE d.branch_id = '$branch_id' AND IFNULL(d.driver_id,0) >0 AND d.status_id =3 AND d.driver_id ='".$driver_id."' ".$more_wheres.
+              " GROUP BY driver_id,d.delivery_type";
+          }
+  
+        $sql = '('.$sql_pickup.') UNION '.$sql_delivery;
+        $rows = DB::select(DB::raw($sql));
+        $pickup_items = [];
+        $delivery_items = [];
+        foreach($rows as $row){
+            $cat = strtolower($row->category);
+           if($cat==='pickup'){
+            $net_item_count = $row->item_count - $row->returned_count;
+             /** Display "item_count" as "net_item_count" instead */
+             $row->count =  $net_item_count;
+             $row->currency = '$';
+             $total = $row->count * $row->unit_amount;
+             $row->total =  number_format($total,2,'.',',');
+             $pickup_items[] = $row;
+           }
+           else if ($cat ==='delivery'){
+             $row->count = $row->item_count;
+             $row->currency = '$';
+             $total = $row->count * $row->unit_amount;
+             $row->total =  number_format($total,2,'.',',');
+             $delivery_items[] = $row; 
+           }
+        }
+        return (object)[
+             'pickup_items'=>$pickup_items,
+             'delivery_items'=>$delivery_items
+        ];
+      }
+ 
+    //return total Amount due for each Driver (date to date). Amount driver has to pay to company
+    function getDriverTotalDue($driver_id,$start_date, $end_date){
+        $branch_id = Session::get('branch_id',0);
+        $str_dates ='';
+        $start_date = convertDate($start_date);
+        $end_date = convertDate($end_date);
+        if ((bool)strtotime($start_date)) $str_dates = " AND DATE(p.arrival_time) >= '".$start_date."' ";
+        if ((bool)strtotime($end_date)) $str_dates .= " AND DATE(p.arrival_time) <= '".$end_date."' ";
+        $more_wheres ="1=1 ".$str_dates;
+       //select SUM(IFNULL(driver_total,0)) AS total_due from package AS p WHERE p.status_id =8 AND driver_pmt_status_id =0;
+        $rows = DB::table('package AS p')->where('branch_id',$branch_id)->where('driver_id',$driver_id)->whereRaw($more_wheres)->selectRaw('SUM(IFNULL(p.driver_total,0)) AS total_due')->get();
+        foreach($rows as $row) return is_numeric($row->total_due)?$row->total_due:0;
+        return 0;
+    }
+
+    //returns data to feed Driver Mobile app 's report section => COUNT pickups and delvieries and total commissions, and total driver's payable amount (@total_due)
+    function getDriverReport_mobile($ss,$driver_id,$start_date, $end_date){
+        $m = $this->getDriverCommissionItems($ss,null,$driver_id,$start_date, $end_date);
+        $total_due = $this->getDriverTotalDue($driver_id,$start_date, $end_date);
+       return (object)array('cur'=>'$','currency_code'=>'USD','commissions'=>$m,'total_due'=>$total_due);
+    }
+
+    //dr_payments driver report
+    function getPaymentsByDriver($driver_id, $start_date, $end_date){
+        $branch_id = Session::get('branch_id',0);
+        $start_date = convertDate($start_date);
+        $end_date = convertDate($end_date);
+        if (!(bool)strtotime($start_date)) $start_date = date('Y-m-d');
+        if (!(bool)strtotime($end_date)) $end_date = date('Y-m-d');
+        $str_driver =null;
+
+        if ($driver_id >0) $str_driver =" AND payer_id =$driver_id ";
+        //$more_wheres includes $str_driver
+
+        /***
+         //IMPORTANT NOTE: the condition "where ABS(r.amount) > 0" is used because
+           when Exparess company pays back to driver for taxi fee => the "r.amount" is negative
+           //Todo: later we should move this "payment to driver" transaction to be stored in cash_disbursement table instead
+         * ***/
+        $more_wheres ="ABS(r.amount)>0 AND DATE(r.payment_date) >= '".$start_date."' AND DATE(r.payment_date) <='".$end_date."' ".$str_driver;
+        $select_cols ='HEX(r.trx_id) AS trx_id, \'Receipt\' AS trx_type,r.payer_id,r.payer_name, r.payer_type,formatTime(r.payment_date) AS payment_date,r.package_count, r.amount,r.currency_code,r.create_user,r.create_date, r.remarks';
+        $rows = DB::table('cash_receipts AS r')->where('branch_id',$branch_id)->where('payer_type','driver')->whereRaw($more_wheres)->selectRaw($select_cols)->orderByRaw('r.create_date DESC')->get();
+        foreach($rows as $row){
+           $bs = DB::table('receipt_breakdowns as bs')->whereRaw('bs.trx_id = UNHEX(\''.$row->trx_id.'\')')->selectRaw('bs.pmt_method,bs.amount,bs.currency_code,bs.notes')->get();
+           $notes = '';
+            foreach($bs as $x){
+            $notes .= ($notes? '|':''). $x->pmt_method.' '.$x->amount.' '.$x->currency_code;
             }
+            $row->pmt_breakdowns = $notes;
+        }
+        return $rows;
+    }
 
-            $monthData = [
-                'date' => $year . '-' . getMonthName($month, $is_shortMonthName),
-                'days' => $days_between,
-                'students' => []
+    function getPreviousPackages($branch_id,$start_date){
+        $str_dates ="DATE(p.arrival_time) <'$start_date' AND p.status_id IN (5,6,9)"; /** At warehouse, On-Delivery, Failed **/
+        return DB::table('package AS p')->join('sender as s','s.id','=','p.sender_id')->where('p.branch_id',$branch_id)->whereRaw($str_dates)->selectRaw('p.id, p.status_id,p.delivery_type, IFNULL(p.base_fee,0) AS base_fee, IFNULL(delivery_fee,0) AS delivery_fee, IFNULL(p.driver_total,0) AS driver_total, IFNULL(p.sender_total,0) AS sender_total,IFNULL(p.sender_net_amount,0) AS sender_net_amount,p.cod,IFNULL(p.price,0) AS price,IFNULL(p.cod_fee,0) AS cod_fee, sender_pmt_status_id, driver_pmt_status_id,IFNULL(p.exchange_rate,1) AS exchange_rate,IFNULL(p.forwarding_cost,0) AS forwarding_cost, p.df_payer,failed_num')->get();
+    }
+
+    //General summary report Daily/ general report
+    function getCompanyReport_summary($warehouse_id,$start_date=null,$end_date=null){
+       $branch_id = Session::get('branch_id',0);
+       if(!(bool)strtotime($start_date)) $start_date =date('Y-m-d');
+       if(!(bool)strtotime($end_date)) $end_date = $start_date;
+       $start_date = convertDate($start_date);
+       $end_date = convertDate($end_date);
+
+       $str_dates ="DATE(p.arrival_time) >='$start_date' AND DATE(p.arrival_time) <='$end_date'";
+       $rows = DB::table('package AS p')->join('sender as s','s.id','=','p.sender_id')->where('p.branch_id',$branch_id)->where('p.warehouse_id',$warehouse_id)->whereRaw($str_dates)->selectRaw("COUNT(DISTINCT p.sender_id) AS cnt")->get();
+       $sender_count = 0;
+       foreach($rows as $row) $sender_count = $row->cnt;
+
+       //get package counts by different statuses
+       $rows = DB::table('package AS p')->join('sender as s','s.id','=','p.sender_id')->where('p.branch_id',$branch_id)->where('p.warehouse_id',$warehouse_id)->whereRaw($str_dates)->selectRaw('p.id, p.status_id,p.delivery_type, IFNULL(p.base_fee,0) AS base_fee, IFNULL(delivery_fee,0) AS delivery_fee, IFNULL(p.driver_total,0) AS driver_total, IFNULL(p.sender_total,0) AS sender_total,IFNULL(p.sender_net_amount,0) AS sender_net_amount,p.cod,IFNULL(p.price,0) AS price,IFNULL(p.cod_fee,0) AS cod_fee, sender_pmt_status_id, driver_pmt_status_id,IFNULL(p.exchange_rate,1) AS exchange_rate,IFNULL(p.forwarding_cost,0) AS forwarding_cost, p.df_payer,failed_num')->get();
+
+       $str_diff_dates ='DATE(p.delivery_time) >=\''.$start_date.'\' AND DATE(p.delivery_time) <=\''.$end_date.'\' AND DATE(p.arrival_time) < \''.$start_date.'\'';
+       //$diff_packages is packages that are delivered or returned on the selected filter date, but those package arrived earlier than the filter date
+       $diff_packages = DB::table('package AS p')->where('p.branch_id',$branch_id)->where('p.warehouse_id',$warehouse_id)->whereRaw($str_diff_dates)->whereRaw('p.status_id IN (8,11)')->selectRaw('p.id, p.status_id,p.delivery_type, IFNULL(p.base_fee,0) AS base_fee, IFNULL(delivery_fee,0) AS delivery_fee, IFNULL(p.driver_total,0) AS driver_total, IFNULL(p.sender_total,0) AS sender_total,IFNULL(p.sender_net_amount,0) AS sender_net_amount,p.cod,IFNULL(p.price,0) AS price,IFNULL(p.cod_fee,0) AS cod_fee, sender_pmt_status_id, driver_pmt_status_id,IFNULL(p.exchange_rate,1) AS exchange_rate,IFNULL(p.forwarding_cost,0) AS forwarding_cost, p.df_payer,failed_num')->get();
+
+       //$diff_packages is packages that are delivered or returned on the selected filter date, but those package arrived earlier than the filter date
+       $leftover_rows = $this->getPreviousPackages($branch_id,$start_date);
+        // $count_delivered_normal = $this->countPackageByStatus($rows,8,'normal');
+        //    $count_delivered_fast = $this->countPackageByStatus($rows,8,'fast');
+        //    //$count_failed = $this->countPackageByStatus($rows,9);
+
+        //    $count_ctd_normal = $this->countPackageByStatus($rows,10,'normal');
+        //    $count_ctd_fast = $this->countPackageByStatus($rows,10,'fast');
+        // $count_returned_normal = $this->countPackageByStatus($rows,11,'normal');
+
+       $p = $this->countPackages_rpt($rows,[]);
+       $leftOverInfo = $this->countPackages_rpt($leftover_rows,[8,11]);
+       $diff_package_info =   $this->countPackages_rpt($diff_packages,[5,6,9]);
+       //$count_returned_fast = $this->countPackageByStatus($rows,11,'fast');
+       //$m = $this->countPickups($rows);
+
+    //    $count_failed = $count_returned_normal + $count_returned_fast + $count_ctd_normal + $count_ctd_fast;
+    //    $count_failed_normal = $count_returned_normal  + $count_ctd_normal;
+    //    $count_failed_fast =  $count_returned_fast + $count_ctd_fast;
+
+       $package_counts = [];
+       $p_date = date('d M Y',strtotime($start_date));
+       $package_counts[] = (object)array('is_past'=>0,'status_id'=>null,'item_name'=>'ចំនួនកញ្ចប់បានទៅយក','total'=>$p->count,'normal'=>$p->count_normal,'fast'=>$p->count_fast);
+       $package_counts[] = (object)array('is_past'=>0,'status_id'=>5,'item_name'=>'ចំនួនកញ្ចប់ នៅឃ្លាំង (At Warehouse)','total'=>$p->at_warehouse->total, 'normal'=>$p->at_warehouse->normal,'fast'=>$p->at_warehouse->fast);
+       $package_counts[] = (object)array('is_past'=>0,'status_id'=>6,'item_name'=>'ចំនួនកញ្ចប់ កំពុងដឹក (On Delivery)','total'=>$p->on_delivery->total, 'normal'=>$p->on_delivery->normal,'fast'=>$p->on_delivery->fast);
+       $package_counts[] = (object)array('is_past'=>0,'status_id'=>8,'item_name'=>'ចំនួនកញ្ចប់ដឹកបាន','total'=>$p->delivered->total, 'normal'=>$p->delivered->normal,'fast'=>$p->delivered->fast);
+       $package_counts[] = (object)array('is_past'=>0,'status_id'=>9,'item_name'=>'ចំនួនកញ្ចប់ដឹកមិនបានសំរេច','total'=>$p->failed->total,'normal'=>$p->failed->normal,'fast'=>$p->failed->fast);
+
+       //$package_counts[] = (object)array('status_id'=>10,'item_name'=>'ចំនួនកញ្ចប់បន្តរដឹក','total'=>$p->ctd->total,'normal'=>$p->ctd->normal,'fast'=>$p->ctd->fast);
+       $package_counts[] = (object)array('is_past'=>0,'status_id'=>11,'item_name'=>'ចំនួនកញ្ចប់បញ្ជូនត្រឡប់','total'=>$p->returned->total,'normal'=>$p->returned->normal,'fast'=>$p->returned->fast);
+       $package_counts[] = (object)array('is_past'=>2,'status_id'=>8,'item_name'=>'ចំនួនកញ្ចប់មុនថ្ងៃ '.$p_date.' ដឹកបាន','total'=>$diff_package_info->delivered->total, 'normal'=>$diff_package_info->delivered->normal,'fast'=>$diff_package_info->delivered->fast);
+       $package_counts[] = (object)array('is_past'=>2,'status_id'=>11,'item_name'=>'ចំនួនកញ្ចប់មុនថ្ងៃ '.$p_date.' បញ្ជូនត្រឡប់','total'=>$diff_package_info->returned->total,'normal'=>$diff_package_info->returned->normal,'fast'=>$diff_package_info->returned->fast);
+
+       $package_counts[] = (object)array('is_past'=>1,'status_id'=>null,'item_name'=>'ចំនួនកញ្ចប់មុនថ្ងៃ '.$p_date.' (At Warehouse, On-Delivery, Failed)','total'=>$leftOverInfo->count,'normal'=>$leftOverInfo->count_normal,'fast'=>$leftOverInfo->count_fast);
+       //$package_counts[] = (object)array('status_id'=>8,'item_name'=>'ចំនួនកញ្ចប់មុនថ្ងៃ '.$p_date.' ដឹកបាន','total'=>$leftOverInfo->delivered->total, 'normal'=>$leftOverInfo->delivered->normal,'fast'=>$leftOverInfo->delivered->fast);
+       $package_counts[] = (object)array('is_past'=>1,'status_id'=>9,'item_name'=>'ចំនួនកញ្ចប់មុនថ្ងៃ '.$p_date.' ដឹកមិនបាន (Failed)','total'=>$leftOverInfo->failed->total,'normal'=>$leftOverInfo->failed->normal,'fast'=>$leftOverInfo->failed->fast);
+       $package_counts[] = (object)array('is_past'=>1,'status_id'=>9,'item_name'=>'ចំនួនកញ្ចប់មុនថ្ងៃ '.$p_date.' បន្តរដឹក (On Delivery)','total'=>$leftOverInfo->on_delivery->total,'normal'=>$leftOverInfo->on_delivery->normal,'fast'=>$leftOverInfo->on_delivery->fast);
+       $package_counts[] = (object)array('is_past'=>1,'status_id'=>9,'item_name'=>'ចំនួនកញ្ចប់មុនថ្ងៃ '.$p_date.' នៅឃ្លាំង (At Warehouse)','total'=>$leftOverInfo->at_warehouse->total,'normal'=>$leftOverInfo->at_warehouse->normal,'fast'=>$leftOverInfo->at_warehouse->fast);
+       //$package_counts[] = (object)array('status_id'=>11,'item_name'=>'ចំនួនកញ្ចប់មុនថ្ងៃ '.$p_date.' បញ្ជូនត្រឡប់','total'=>$leftOverInfo->returned->total,'normal'=>$leftOverInfo->returned->normal,'fast'=>$leftOverInfo->returned->fast);
+
+       $payments = [];
+       //get cash_summary count object  based on the given $start_date and $end_date
+       //Cash_summary_count object = {total_revenues, amount_to_sender,total_fees,sender_receiveable,balance}
+       $countInfo = $this->getCashSummary_counts($rows);
+       $amountToMerchant = $countInfo->total_revenues - $countInfo->total_fees;
+       $payments[] = (object)array('var_name'=>'total_revenues','item_name'=>'ទឹកប្រាក់ប្រមូលបាន','amount'=>$countInfo->total_revenues);
+       $payments[] = (object)array('var_name'=>'total_fees','item_name'=>'ថ្លៃសេវាទទួលបាន','amount'=> $countInfo->total_fees);
+       $payments[] = (object)array('var_name'=>'sender_receivable','item_name'=>'ថ្លៃសេវាអតិថិជនជំពាក់','amount'=>$countInfo->sender_receivable);
+       $payments[] = (object)array('var_name'=>'amount_to_sender','item_name'=>'ទឹកប្រាក់ទូទាត់ជូនអតិថិជន','amount'=>$amountToMerchant);
+       $payments[] = (object)array('var_name'=>'balance','item_name'=>'សមតុល្យសេវាកម្មទទួលបាន','amount'=>$countInfo->balance);
+
+       $result = (object)array();
+
+       //Get Exchange rate from table settings_number
+       $ss = (object)['branch_id'=>1];
+       $result->exchange_rate = get_settings_value($ss,'EXCHANGE_RATE_BUY','number');
+
+       $result->sender_count = $sender_count;
+       $result->package_counts = $package_counts;
+       $result->payments = $payments;
+       return $result;
+    }
+ 
+       static function arraySortByKey($rows, $key) {
+            $new_rows = $rows;
+            usort($new_rows, function($a, $b) use ($key) {
+                return $a->$key - $b->$key;
+            });
+
+            return $new_rows;
+        }
+
+    /**
+     * Example => $except_statuses = [8,11]
+     * IMPORTANT NOTE: it is more efficient to use countPackages_rpt() to group packages by Arrival Date, so countPackages_rpt() also returns a key "packagesByDate"
+     *
+    */
+    function countPackages_rpt($rows,$except_statuses=[]){
+            $at_warehouse = (object)['total'=>0,'fast'=>0,'normal'=>0];
+            $on_delivery = (object)['total'=>0,'fast'=>0,'normal'=>0];
+            $delivered = (object)['total'=>0,'fast'=>0,'normal'=>0];
+            $failed = (object)['total'=>0,'fast'=>0,'normal'=>0];
+            $ctd =(object)['total'=>0,'fast'=>0,'normal'=>0];
+            $returned = (object)['total'=>0,'fast'=>0,'normal'=>0];
+
+            $count_total =0;
+            $count_normal = 0;
+            $count_fast =0;
+
+            $exchange_rate = 0;
+            $delivered_cnt=0;
+            $i=0;
+            $c = null;
+            $packagesByDate = [];
+
+            do{
+                if(!isset($rows[$i])) break;
+                $c = (object)$rows[$i];
+                $delivery_type = strtolower($c->delivery_type);
+                $is_excepted = in_array($c->status_id,$except_statuses);
+
+                // //begin:: process grouping packages by arrival date
+                // if(isset($c->arrival_date) && $c->arrival_date){
+                //     $this_date = $c->arrival_date;
+                //     if(!isset($packagesByDate[$this_date])) $packagesByDate[$this_date] = [];
+                //     $packagesByDate[$this_date][] = $c;
+                //    //end:: process grouping packages by arrival date
+                // }
+
+                if(!$is_excepted){
+                            if(strtolower($delivery_type) =='normal')
+                            $count_normal++;
+                            else
+                            $count_fast++;
+
+                            if($c->status_id ==5){
+                                $count_total++;
+                                if($delivery_type =='normal')
+                                  $at_warehouse->normal++;
+                                else if($delivery_type=='fast')
+                                    $at_warehouse->fast++;
+                            }
+                            else if($c->status_id ==6){
+                                $count_total++;
+                                if($c->failed_num > 0){
+                                    if($delivery_type =='normal')
+                                    $ctd->normal++;
+                                    else if($delivery_type =='fast')
+                                    $ctd->fast++;
+                                }
+                                if($delivery_type =='normal')
+                                $on_delivery->normal++;
+                                else if($delivery_type =='fast')
+                                $on_delivery->fast++;
+                            }
+                            else if($c->status_id ==8) {
+                                $count_total++;
+                                if($delivery_type =='normal')
+                                $delivered->normal++;
+                                else if($delivery_type =='fast')
+                                $delivered->fast++;
+                                $exchange_rate += $c->exchange_rate;
+                                $delivered_cnt++;
+                            }
+                        else  if($c->status_id ==9) {
+                            $count_total++;
+                                if($delivery_type =='normal')
+                                  $failed->normal++;
+                                else if($delivery_type =='fast')
+                                  $failed->fast++;
+                        }
+                        else if($c->status_id ==11) {
+                            $count_total++;
+                            if($delivery_type =='normal')
+                              $returned->normal++;
+                            else if($delivery_type=='fast')
+                              $returned->fast++;
+                        }
+                }
+
+                $i++;
+            }while($c);
+
+            $at_warehouse->total = $at_warehouse->fast + $at_warehouse->normal;
+            $on_delivery->total = $on_delivery->fast + $on_delivery->normal;
+            $delivered->total = $delivered->fast + $delivered->normal;
+            $failed->total = $failed->fast + $failed->normal;
+            $ctd->total = $ctd->fast + $ctd->normal;
+            $returned->total = $returned->fast + $returned->normal;
+
+            if($delivered_cnt===0) $delivered_cnt=1;
+            $avg_exchange_rate = number_format($exchange_rate/$delivered_cnt,2);
+            //$exchange_rate =self::getExchangeRate($end_date);
+            $exchangeRateInfo = (object)[
+                'rate'=>$avg_exchange_rate,
+                'currency_pair'=>'USDKHR'
             ];
-
-            $daily_attendance = [];
-            $guardian_phoneNum = [];
-
-
-            foreach ($students as $st) {
-                $current_date = new \DateTime("$year-$month-01");
-                $end_date_obj = new \DateTime("$year-$month-01");
-                $end_date_obj->modify('last day of this month');
-                $att_items = $this->getAttendanceRows($startDate,$endDate,$group_id,$st->student_id);
-
-                $att_info = [];
-                while ($current_date <= $end_date_obj) {
-                    if ($current_date >= new \DateTime($startDate) && $current_date <= new \DateTime($endDate)) {
-                        $att_info[] = $instance->getAttendanceInfo($att_items,$current_date->format('d'),$month,$year,$st->student_id);
-                    }
-                    $current_date->modify('+1 day');
-                }
-
-                $guardian_phoneNum[] = DB::table('student_guardians as sg')->where('sg.student_id',$st->student_id)
-                                    ->join('guardians as g','sg.guardian_id','=','g.id')
-                                    ->selectRaw('g.phone_number')
-                                    ->get();
-
-                $stData = [
-                    'student_id' => $st->student_id,
-                    'name' => $st->name,
-                    'sex' => $st->sex,
-                    'date_of_birth' => $st->date_of_birth,
-                    'start_date' => $st->start_date,
-                    'list' => $att_info,
-                ];
-
-                $count_col_absent = 0;
-                $count_col_present = 0;
-                $count_col_permission = 0;
-                $count_rowsA=[];
-                $count_rowsP=[];
-                $count_rowsPr=[];
-                foreach($att_info as $att){
-
-                    if($att->status == 'A' || $att->status_id == 3){
-
-                        $count_rowsA[] = $count_col_absent ++;
-                    }
-                    if($att->status == 'P' || $att->status_id == 1){
-
-                        $count_rowsP[] = $count_col_present ++;
-                    }
-                    if($att->status == 'Pr' || $att->status_id == 2){
-
-                        $count_rowsPr[] = $count_col_permission ++;
-                    }
-
-                    $daily_attendance[] = self::countDailyAttendance($att_info, $att->day);
-
-                }
-
-                $processedData = [];
-
-                foreach ($daily_attendance as $item) {
-                    $day = $item->day;
-
-                    if (!isset($processedData[$day])) {
-                        $processedData[$day] = [
-                            'day' => $day,
-                            'absent' => 0,
-                            'present' => 0,
-                            'permission' => 0
-                        ];
-                    }
-
-                    if ($item->absent == 1) {
-                        $processedData[$day]['absent']++;
-                    }
-
-                    if ($item->present == 1) {
-                        $processedData[$day]['present']++;
-                    }
-
-                    if ($item->permission == 1) {
-                        $processedData[$day]['permission']++;
-                    }
-                }
-                $result = array_values($processedData);
-
-
-
-                // $monthData['monthly_attendance'][]= [
-                //     'absent' =>$count_col_absent,
-                //     'permission' => $count_col_permission,
-                //     'present' => $count_col_present,
-                // ];
-                $monthData['monthly_attendance'][]= [
-                    'absent' =>count($count_rowsA),
-                    'permission' => count($count_rowsPr),
-                    'present' =>count($count_rowsP),
-                ];
-                $monthData['daily_attendance'] = $result;
-                $monthData['phone_number'] = $guardian_phoneNum;
-                $monthData['students'][] = $stData;
-
-            }
-
-            $attendanceData[] = $monthData;
-
+            $data =  (object)['exchangeRateInfo'=>$exchangeRateInfo,'packagesByDate'=>$packagesByDate,'count'=>$count_total,'count_normal'=>$count_normal,'count_fast'=>$count_fast,'at_warehouse'=>$at_warehouse,'on_delivery'=>$on_delivery,'delivered'=>$delivered,'failed'=>$failed,'ctd'=>$ctd,'returned'=>$returned];
+            return $data;
         }
 
-        return $attendanceData;
-
-    }
-
-    function countDailyAttendance($arr, $day) {
-        $filteredData = array_filter($arr, function ($att) use ($day) {
-            return $att->day == $day;
-        });
-
-        $countA = 0;
-        $countP = 0;
-        $countPr = 0;
-
-        foreach ($filteredData as $att) {
-            if ($att->status == 'A' || $att->status_id == 3) {
-                $countA++;
-            }
-            if ($att->status == 'P' || $att->status_id == 1) {
-                $countP++;
-            }
-            if ($att->status == 'Pr' || $att->status_id == 2) {
-                $countPr++;
-            }
-        }
-
-        return (object)[
-            'day' => $day,
-            'absent' => $countA,
-            'present' => $countP,
-            'permission' => $countPr
-        ];
-    }
-
-    function countGroupMembers($group_id,$ss){
-        $rows = DB::table('group_members as gm')
-            ->join('students as s','s.id','=','gm.student_id')
-            ->where('gm.group_id',$group_id)
-            ->selectRaw('s.sex')->get();
-        $female = [];
-        $all = [];
-        foreach($rows as $row){
-            if($row->sex == 'F'){
-                $female[] = $row->sex;
-            }
-            $all[] = $row->sex;
-        }
-        return (object)[
-            'female' => count($female),
-            'all' => count($all),
-            'male' => count($all) - count($female)
-        ];
-    }
-
-  //** end Attendance Report */
-
-  //** Student List Report */
-
-  function getStudentListReport($arr=[],$ss){
-    $branch_id = $ss->branch_id;
-    $rows = DB::table('students as s')->selectRaw('s.name,s.name_kh,s.sex,s.email,s.phone_number,s.date_of_birth,s.file_name')->get();
-    foreach($rows as $row){
-        $row->age = getAge($row->date_of_birth);
-        if(isset($row->file_name)){
-            $row->image_url = PublicStorage::getUrl($branch_id,'students',' image').$row->file_name;
-        }else $row->image_url = null;
-
-        unset($row->file_name);
-    }
-    return $rows;
-  }
-
-  //** end Student List Report */
-
-  //** Family List Report*/
-
-    function getFamilyListReport($arr=[],$ss){
-        $branch_id = $ss->branch_id;
-        $rows = DB::table('student_guardians as sg')
-            ->select('sg.student_id','sg.family_code')
-            ->groupBy('sg.student_id', 'sg.family_code')->get();
+    function countPickups($rows){
         $i=0;
-        $tmp_keeper = [];
-        while($i<count($rows)){
-            $row = $rows[$i];
-            $studentID = $row->student_id;
-            $family_id = $row->family_code;
-            if(!isset($tmp_keeper[$family_id])){
-                $tmp_keeper[$family_id] = [
-                    'family_id' => $family_id,
-                    'parents' => [],
-                    'children' => []
-                ];
-            }
-
-            $child = DB::table('students')->where('id', $studentID)->first();
-            if ($child) {
-                $tmp_keeper[$family_id]['children'][] = $child;
-            }
-
-            $parents = DB::table('guardians as g')
-                ->join('student_guardians as sg', 'g.id', '=', 'sg.guardian_id')
-                ->selectRaw('g.name, sg.family_code,g.phone_number,g.sex,g.n_id,g.address,g.email,g.file_name,g.role')
-                ->where('sg.family_code', $family_id)
-                ->distinct()
-                ->get();
-
-            $uniqueParents = [];
-            foreach ($parents as $parent) {
-                if(isset($parent->file_name) == null){
-                    $parent->image_url = '';
-                }else $parent->image_url = PublicStorage::getUrl($branch_id,'guardians','image').$parent->file_name;
-                $key = $parent->name . $parent->family_code;
-                if (!isset($uniqueParents[$key])) {
-                    $uniqueParents[$key] = [
-                        'name' => $parent->name,
-                        'phone' => $parent->phone_number,
-                        'email' => $parent->email,
-                        'address' => $parent->address,
-                        'role' => $parent->role,
-                        'sex' => $parent->sex,
-                        'national_id' => $parent->n_id,
-                        'image_url' => $parent->image_url,
-                    ];
-                }
-            }
-
-            $tmp_keeper[$family_id]['parents'] = array_values($uniqueParents);
-
+        $c = null;
+        $count_normal =0;
+        $count_fast =0;
+        $count_total =0;
+        do{
+            if(!isset($rows[$i])) break;
+            $c = (object)$rows[$i];
+             if(strtolower($c->delivery_type) =='normal')
+                $count_normal++;
+             else  if(strtolower($c->delivery_type) =='fast')
+                $count_fast++;
             $i++;
-        }
-
-        // return $rows;
-
-        return array_values($tmp_keeper);
+        }while($c);
+        $count_total = $count_normal + $count_fast;
+        return (object)['count_total'=>$count_total,'count_fast'=>$count_fast,'count_normal'=>$count_normal];
     }
 
-  //** end family list report */
+       //CompanySummary| CompanyReport| get cash_summary count object  based on the given $start_date and $end_date
+       //Cash_summary_count object = {total_revenues, amount_to_sender,total_fees,sender_receiveable,balance}
+      function getCashSummary_counts($rows){
+          $total_rev = 0;
+          $total_fees = 0;
+          $cod_amount =0;
+          $amount_to_sender =0;
+          $total_fee_from_sender = 0;
+          $sender_receivable = 0 ;
+          $total_cod_amount = 0;
+          $sender_receivable_amt =0;
+          $balance = 0;
+          $additional_fee =0;
 
+          $i = 0;
+          $row = null;
+          do{
+              if(!isset($rows[$i])) break;
+                 $row = $rows[$i];
+                 $cod_fee = 0;
+                 $total_cod_fees =0;
 
-  //** daily cash */
+                 if ($row->status_id == 8){
+                    $cod_fee = $row->cod_fee > 0? $row->cod_fee: 0;
+                    $base_fee = $row->base_fee>0 ? $row->base_fee: 0;
+                    //$forwarding_cost = ($row->forwarding_cost >=0)?$row->forwarding_cost:0;
+                    $additional_fee = $row->delivery_fee > 0? $row->delivery_fee:0;
+                    $price = $row->price > 0? $row->price : 0;
+                    $fees = $base_fee + $additional_fee + $cod_fee;
+                    $total_fees += $fees;
 
-    function getDailyCash($filter,$ss){
-        $selectInvoice='i.invoice_number,i.id,i.pmt_date';
-        $str_search = '1=1';
-        $d = (object)$filter;
-        $branch_id = $ss->branch_id;
-        $receiver = isset($d->receiver) ? $d->receiver :null;
-        $receiver_id = isset($d->receiver_id) ? $d->receiver_id :null;
+                    $total_cod_fees += $cod_fee;
 
-        $start_date = isset($d->start_date)?convertDate($d->start_date):null;
-        $end_date = isset($d->end_date)?convertDate($d->end_date):null;
+                    $cod_amount = 0;
+                    if ($row->cod == 1) $cod_amount = $price - $cod_fee;
+                    $total_cod_amount += $cod_amount;
 
-        $str_between_date = '1=1';
-        if($start_date && $end_date) $str_between_date = 'DATE(i.pmt_date) >= \'' . $start_date . '\' AND DATE(i.pmt_date) <= \'' . $end_date . '\'';
+                    $forwarding_cost = $row->forwarding_cost >= 0? $row->forwarding_cost:0;
 
-        if($receiver) $str_search = 'i.receiver LIKE %' . $receiver.'%';
-        if($receiver_id) $str_search .= ' AND i.receiver_uid = ' . $receiver_id;
-        $rows = DB::table('invoices as i')->join('receipts as r','r.invoice_id','=','i.id')
-            ->join('students as s','s.id','=','i.student_id')
-            ->join('enrollments as e','e.student_id','=','s.id')
-            ->selectRaw($selectInvoice.',s.id as student_id,s.name,s.sex,r.receipt_number,e.campus_id')
-            ->whereRaw($str_between_date)
-            ->where('i.branch_id',$branch_id)->whereRaw($str_search)->get();
-        if(!isset($rows[0])) return DV::error('Could not find invoice');
-        $campuses = [];
-        foreach($rows as $row){
-            //** get invoice items */
-            $itemDetails = self::getInvoiceItemDetails($row->id,$branch_id);
-            $row->total = $itemDetails->total;
-            $row->items = $itemDetails->data;
-            $row->deposite = self::getDepositeFee($row->student_id);
-            $row->campus = GeneralSettings::getCampus($row->campus_id)->shortcut;
-            if (!in_array($row->campus, $campuses)) {
-                $campuses[] = $row->campus;
+                    $df_payer = strtolower($row->df_payer);
+                    if ($df_payer === 'receiver')
+                       $total_rev += ($cod_amount + $base_fee + $additional_fee - $forwarding_cost);
+                      //*** $total_rev is money collected from driver
+                    else if($df_payer === 'sender'){
+                        $total_rev += $cod_amount - $forwarding_cost;
+                        // if($cod_amount - $forwarding_cost <0)
+                        // {
+                        //     //This case: $base_fee is the fee to be paid by merchant
+                        //     $total_rev += $cod_amount + $base_fee - $forwarding_cost;
+                        // }
+                        // else $total_rev += $cod_amount - $forwarding_cost;
+                    }
+
+                    //fee_from_sender includes $fees and $forwarding_cost
+                    $fee_from_sender = 0;
+                    if ($df_payer === 'sender'){
+                       $fee_from_sender = $fees;
+                        //    if ($row->sender_pmt_status_id != 1){
+                        //        $amt = $fees - ($cod_amount - $cod_fee);
+                        //        if ($amt>0) $sender_receivable += $fees;
+                        //    }
+                    } else if($df_payer === 'receiver') $fee_from_sender = $cod_fee;
+
+                    $total_fee_from_sender += $fee_from_sender;
+
+                    //cash to be paid to Sender
+                    $amount_to_sender += ($cod_amount - $fee_from_sender);
+                    if ($row->sender_pmt_status_id != 1){
+                        $sender_receivable += $fee_from_sender;
+                    }
+                 }
+
+              $i++;
+          }while($row);
+
+           // $sender_receivable = amount of cash that Sender still owe the Express company
+           $balance = $total_fees - $sender_receivable;
+           $data = (object)['total_revenues'=>$total_rev,
+           "total_fees"=>$total_fees,
+           "total_cod_amount"=>$total_cod_amount,
+           "amount_to_sender"=>$amount_to_sender,
+           "sender_receivable"=>$sender_receivable,
+           "balance"=>$balance];
+           return $data;
+       }
+
+    //GetSendertransactions() getVendorTransactions() getPaymentsBySender() getPaymentsFromSender() MerchantTransaction Merchant Transactions
+      function getVendorTransactions($sender_id,$start_date,$end_date){
+        $branch_id = Session::get('branch_id',0);
+        $sender_id =  Sanitizer::sanitize($sender_id);
+
+        $start_date = convertDate($start_date);
+        $end_date = convertDate($end_date);
+        if (!(bool)strtotime($start_date)) $start_date = date('Y-m-d');
+        if (!(bool)strtotime($end_date)) $end_date = date('Y-m-d');
+        $str_pay_sender =" AND d.payee_type ='Sender' AND d.payee_id ='".$sender_id."' ";
+        $str_from_sender = " AND d.payer_type ='Sender' AND d.payer_id ='".$sender_id."' ";
+        $str_dates = " AND DATE(d.payment_date) >= '".$start_date."' AND DATE(d.payment_date) <= '".$end_date."'";
+
+        $sql ="SELECT d.id, DATE_FORMAT(d.payment_date,'%d %b %Y') AS payment_date,'Disbursement' AS trx_type, payee_name AS payerr_or_payer, CONCAT('Pay to ',payee_name) AS special_notes, description, d.amount,d.pmt_method,d.cashier_name from cash_disbursements AS d WHERE d.branch_id ='".$branch_id."'".$str_pay_sender.$str_dates.
+        " UNION
+        SELECT d.id, DATE_FORMAT(d.payment_date,'%d %b %Y') AS payment_date,'Receipt' AS trx_type,payer_name AS payee_or_payer, CONCAT('Received from ',payer_name) AS special_notes, description, d.amount,d.pmt_method,d.cashier_name from cash_receipts AS d WHERE d.branch_id ='".$branch_id."' ".$str_from_sender.$str_dates;
+        $rows = DB::select(DB::raw($sql));
+        return $rows;
+      }
+
+    // //Daily Summary for maerchant // summarized daily report for Vendor
+    // function getSenderSummary_report($sender_id,$date){
+    //     $branch_id = Session::get('branch_id',0);
+
+    //     //get package counts by different statuses
+    //         $more_wheres ="p.status_id >=5";
+    //         $rows = DB::table('order AS o')->join('package AS p','p.order_id','=','o.id')->whereRaw('o.sender_id = p.sender_id')->where('o.branch_id',$branch_id)->where('p.sender_id',$sender_id)->whereRaw($more_wheres)->selectRaw('COUNT(p.id) AS cnt')->get();
+    //         $picked_packages_count = 0;
+    //         foreach($rows as $row) $picked_packages_count = $row->cnt;
+
+    //     //get package counts by different statuses
+    //     $rows = DB::table('package AS p')->where('p.branch_id',$branch_id)->whereRaw("DATE(p.create_date) ='".$date."'")->where('p.sender_id',$sender_id)->selectRaw('p.id, p.status_id,p.delivery_type, IFNULL(p.driver_total,0) AS driver_total, IFNULL(p.sender_total,0) AS sender_total,IFNULL(p.sender_net_amount,0) AS sender_net_amount,IFNULL(p.cod_fee,0) AS cod_fee, sender_pmt_status_id, driver_pmt_status_id')->get();
+    //     $count_delivered_normal = $this->countPackageByStatus($rows,8,'normal');
+    //     $count_delivered_fast = $this->countPackageByStatus($rows,8,'fast');
+    //     //$count_failed = $this->countPackageByStatus($rows,9);
+
+    //     $count_ctd_normal = $this->countPackageByStatus($rows,10,'normal');
+    //     $count_ctd_fast = $this->countPackageByStatus($rows,10,'fast');
+
+    //     $count_returned_normal = $this->countPackageByStatus($rows,11,'normal');
+    //     $count_returned_fast = $this->countPackageByStatus($rows,11,'fast');
+
+    //     $count_failed = $count_returned_normal + $count_returned_fast + $count_ctd_normal + $count_ctd_fast;
+    //     $count_failed_normal = $count_returned_normal  + $count_ctd_normal;
+    //     $count_failed_fast =  $count_returned_fast + $count_ctd_fast;
+
+    //     $package_counts = [];
+    //     $package_counts[] = (object)array('status_id'=>8,'item_name'=>'ចំនួនកញ្ចប់ទំនិញប្រមូលបាន','count'=>$picked_packages_count,'normal'=>0,'fast'=>0);
+    //     $package_counts[] = (object)array('status_id'=>8,'item_name'=>'ចំនួនកញ្ចប់ទំនិញដឺកបាន','count'=>0,'normal'=>$count_delivered_normal,'fast'=>$count_delivered_fast);
+    //     $package_counts[] = (object)array('status_id'=>9,'item_name'=>'ចំនួនកញ្ចប់ទំនិញដឺកមិនបាន','count'=>0,'normal'=>$count_delivered_normal,'fast'=>$count_delivered_fast);
+    //     $package_counts[] = (object)array('status_id'=>10,'item_name'=>'ចំនួនកញ្ចប់ទំនិញបន្តរដឹក','count'=>0,'normal'=>$count_ctd_normal,'fast'=>$count_ctd_fast);
+    //     $package_counts[] = (object)array('status_id'=>11,'item_name'=>'ចំនួនកញ្ចប់ទំនិញបញ្ជូនត្រឡប់','count'=>0,'normal'=>$count_returned_normal,'fast'=>$count_returned_fast);
+
+    //     $payments = [];
+    //     $payments[] = (object)array('var_name'=>'cod_amount','item_name'=>'ទិកប្រាក់COD','amount'=>0);
+    //     $payments[] = (object)array('var_name'=>'fees','item_name'=>'សរុបថ្លៃសេវា','amount'=>0);
+    //     $payments[] = (object)array('var_name'=>'sender_net_amount','item_name'=>'ទិកប្រាក់ត្រូវទូទាត់ជូនអតិថិជន','amount'=>0);
+    //     $payments[] = (object)array('var_name'=>'paid_to_sender','item_name'=>'ទិកប្រាក់បានទូទាត់','amount'=>0);
+    //     $payments[] = (object)array('var_name'=>'balance','item_name'=>'សមតុល្យ','amount'=>0);
+
+    //     $result = (object)array();
+    //     $result->exchange_rate = 4100;
+    //     $result->package_counts = $package_counts;
+    //     $result->payments = $payments;
+    //     return $result;
+    //  }
+
+    function countPackageByStatus($rows,$status_id,$delivery_type){
+      //$result = (object)array('new_rows'=>[],'count'=>0);
+      $cnt =0;
+      $delivery_type = strtolower($delivery_type);
+      foreach($rows as $row) {
+
+         if ($status_id==10) {
+           //In case of Continue to deliver (when failed_num > 0 and status is "On Delivery (6)")
+           if($status_id ==6 && ($row->failed_num >0) && strtolower($row->delivery_type) == $delivery_type) {
+              $cnt++;
+           }
+         } else {
+            if($status_id == $row->status_id && strtolower($row->delivery_type) == $delivery_type) {
+                $cnt++;
+             }
+         }
+
+      }
+      return $cnt;
+    }
+
+    function getSalesCommissions($warehouse_id,$agent_id=0,$start_date=null,$end_date=null){
+        $branch_id = Session::get('branch_id',0);
+        $status_id = 8; //Delivered
+        $start_date = isset($start_date)? convertDate($start_date): date('Y-m-d');
+        $end_date = isset($end_date)? convertDate($end_date): date('Y-m-d');
+        if (!(bool)strtotime($start_date) ) $start_date =date('Y-m-d');
+        if (!(bool)strtotime($end_date) ) $end_date =date('Y-m-d');
+        $str_dates = " AND p.warehouse_id ='".$warehouse_id. "' AND a.id ='".$agent_id."' AND DATE(p.create_date) >='".$start_date."' AND DATE(p.create_date) <='".$end_date."' ";
+        $rows = DB::select(DB::raw("select DATE_FORMAT(p.create_date,'%d %b %Y') AS booking_date, p.qr_code, p.delivery_type, p.sender_id,p.driver_id, a.id AS sales_agent_id,s.name AS sender_name,a.name as sales_name,a.commission, p.status_id FROM package as p INNER JOIN sender as s ON s.id = p.sender_id
+        Inner join sales_agents AS a ON a.id = s.sales_agent_id WHERE p.status_id ='".$status_id."' ".$str_dates));
+        return $rows;
+    }
+
+    //returns Vendor summary data for reporting
+    function getVendorSummary($sender_id, $start_date, $end_date,$hide_statuses=null){
+        $branch_id = Session::get('branch_id',0);
+        $use_default_dates =0;
+        //use_default_dates = 0 => if not dates supplied then all dates will be used ($str_dates = null)
+        if(!$hide_statuses || $hide_statuses == []) $hide_statuses=[5,6,7]; //Usually we hide statuses such as 5='At Warehouse', 6='On Delivery',7 ='Delayed or Rescheduled'
+        $str_dates = null;
+        $start_date = convertDate($start_date);
+        $end_date = convertDate($end_date);
+        if($use_default_dates==1) {
+            if (!(bool)strtotime($start_date)) $start_date = date('Y-m-d');
+            if (!(bool)strtotime($end_date)) $end_date = date('Y-m-d');
+            $str_dates =" AND DATE(p.pickup_time) >='".$start_date."' AND DATE(p.pickup_time) <='".$end_date."' ";
+        }else {
+            if ((bool)strtotime($start_date) && (bool)strtotime($end_date)){
+               $str_dates =" AND DATE(p.pickup_time) >='".$start_date."' AND DATE(p.pickup_time) <='".$end_date."' ";
             }
-            unset($row->campus,$row->campus_id);
+            $str_dates = null;
         }
 
-        //** create table headers and keys */
-        $header_list = ['Date','Receipt No.','Student Name','Sex','Dis.','Period','School Fee'];
-        $fee_types = DB::table('fee_types')->selectRaw('name')->where('id','>=',20)->get();
-        $key_list = ['pmt_date','receipt_number','name','sex','discount','period','tuition_fee'];
-        foreach($fee_types as $type){
-            //** push header name value into array */
-            array_push($header_list,$type->name);
-            //** push key value into array */
-            array_push($key_list,$this->stringToKeyCase($type->name));
-        }
-        $key_props = $this->createKeyValue('key',$key_list);
-        $headers = $this->createMulKeyValue('name',$header_list,$key_props);
-        //**---- */
+        $data_items =[];
+        $exchange_rate = 0;
+        $package_cnt =0;
+        //Picked up packages
+        $more_wheres = "s.id ='$sender_id' ".$str_dates;
+        $rows = DB::table('package AS p')->join('package_statuses AS ps','ps.id','=','p.status_id')->join('sender AS s','s.id','=','p.sender_id')->where('p.branch_id',$branch_id)->whereRaw($more_wheres)->selectRaw("COUNT(p.id) AS cnt,p.delivery_type,p.status_id, ps.name AS status")->groupByRaw('p.delivery_type,p.status_id,status')->get();
+        $total =0;
+        $prev_dtype =null;
+        $prev_status_id =null;
+        $dtype_count = 0 ; //count items by delivery_type
+        $status_count =0;
+        //NOTE: $rows is grouped by "delivery_type, status_id"
+        foreach($rows as $row) {
+            $total += $row->cnt;
+            $this_dtype = $row->delivery_type;
+            if ($this_dtype != $prev_dtype && empty($prev_dtype)) {
+                $dtype_count++; //first row in the loop
+                if(!in_array($row->status_id,$hide_statuses)) $status_count++;
+            }else if ($this_dtype != $prev_dtype && $prev_dtype != null){
+                $row->item_name = $this->translateItemByStatus($row->status_id);
+                $row->delivery_type = $prev_dtype;
+                $row->cnt=$status_count;
+                $row->cur = "$";
+                $data_items[] = $row;
 
-        return (object)[
-            'title' => 'Daily Cash Collection Report (' . implode(', ', $campuses) . ')',
-            'form' => 'simple',
-            'header' => $headers,
-            'list' => $rows,
-            'company_profile' => $this->getCampanyInfo($ss)
-        ];
+                $dtype_count =0;//reset it to zero when loops come to new status
+                $status_count =0;
+            }
+            else{
+                $dtype_count++;//increment count on same dType in the loop
+                if(!in_array($row->status_id,$hide_statuses)) $status_count++;
+            }
+            $exchange_rate += $row->exchange_rate;
+            $package_cnt++;
+        }
+        array_unshift($data_items,(object)['cnt'=>$total,'status_id'=>null,'status'=>null,'name'=>'បញ្ចប់បានទៅយក']);
+        $data = (object)['p_items'=>$data_items];
+        $rows = DB::table('package AS p')->where('p.branch_id',$branch_id)->where('s.id',$sender_id)->join('sender AS s','s.id','=','p.sender_id')->whereRaw($more_wheres)->selectRaw("SUM(IFNULL(p.sender_total,0)) AS sender_total, SUM(IFNULL(p.driver_total,0)) AS driver_total")->get();
+
+        if($package_cnt===0) $package_cnt=1;
+        $avg_exchange_rate = $exchange_rate/$package_cnt;
+        foreach($rows as $row){
+            $data->c_item = $row;
+            $data->exchangeRateInfo = (object)[
+                'currency_pair'=>'USDKHR',
+                'buy_rate'=>$avg_exchange_rate, //buy rate,
+                'rate'=>$avg_exchange_rate //buy rate
+            ];
+        }
+        return $data;
     }
 
-    function getInvoiceItemDetails($inv_id,$branch_id){
-        $tuition_amt=0;
-        $total=[];
-        $selectCols = 'price,fee_type,invoice_id,date_range,discount,net_amount,start_date,end_date';
-        $rows = DB::table('invoice_items')->where('invoice_id',$inv_id)->where('branch_id',$branch_id)->selectRaw($selectCols)->get();
-        $fee_types = DB::table('fee_types')->selectRaw('name')->where('id','>=',20)->get();
-        $discount=0;
-        // $all_type =[];
-        // foreach($fee_types as $type){
-        //    $all_type[] = $type->name;
+     function translateItemByStatus($status_id) {
+        switch ($status_id)
+        {
+            case 8:
+                return 'បញ្ចប់ដឹកបាន';
+                break;
+            case 9:
+                return 'បញ្ចប់ដឹកមិនបាន';
+                break;
+
+            case 10:
+               return 'បញ្ចប់ដឹកបន្តរ';
+               break;
+            case 11:
+                return 'បញ្ចប់បញ្ជូនត្រឡប់';
+                break;
+            default:
+               return 'Unknown status';
+               break;
+        }
+        return 'Unknown status';
+     }
+
+      //Merchant Summary Report Data | vd_summary report data| getReportData() | getMerchantReport()
+     //$delivery_status_id is package status = {delivered, failed, returned, ...}
+     function getReportData_dv_summary($warehouse_id,$sender_id,$start_date=null, $end_date=null,$sender_pmt_status_id=-1,$delivery_status_id =null){
+        $branch_id = Session::get('branch_id',0);
+        //$use_default_dates =1;
+
+        if(!(bool)strtotime($end_date)) $end_date = date('Y-m-d'); else $end_date = convertDate($end_date);
+        if(!(bool)strtotime($start_date)){
+                $givenDate = new DateTime($end_date);
+                $modifiedDate = $givenDate->sub(new DateInterval('P90D'));
+                $start_date = $modifiedDate->format('Y-m-d');
+        } else $start_date = convertDate($start_date);
+
+        /** If no dates provided => use last 90 days and extract only Unpaid packages with status_id = 8 (delivered) */
+        // if (!(bool)strtotime($start_date)) $start_date = date('Y-m-d', strtotime('-90 days'));
+        // if (!(bool)strtotime($end_date)) $end_date = date('Y-m-d');
+        $str_pmt_status = "";
+        $str_delivery_status =null;
+        if ($delivery_status_id > 0) $str_delivery_status =' AND p.status_id = '.Sanitizer::sanitize($delivery_status_id);
+        if($sender_pmt_status_id >=0) $str_pmt_status  =' AND IFNULL(p.sender_pmt_status_id,0) ='.$sender_pmt_status_id;
+
+        $except_return ='7=7'; //'( (DATE(p.delivery_time) =\''.$start_date.'\' AND p.status_id =11) OR p.status_id <> 11)';
+        $more_wheres = '(DATE(p.arrival_time) >= \''.$start_date.'\' AND DATE(p.arrival_time) <=\''.$end_date.'\') '.$str_pmt_status.$str_delivery_status;
+        $cols = 'DATE(p.arrival_time) AS orderByDate,p.qr_code AS barcode, formatDate(p.arrival_time) AS arrival_date,formatDate(p.create_date) AS booking_date, p.receiver_name,p.receiver_phone,p.zone_name,p.receiver_address,p.cod,p.sender_id,p.delivery_type,p.price,p.df_payer,p.base_fee, CONCAT(p.zone_code,\' \',p.zone_name) AS destination,p.zone_code,p.delivery_fee,p.cod_fee,p.outstanding,p.failed_num, p.sender_adjust_amount,p.sender_pmt_status_id,IFNULL(p.exchange_rate,1) AS exchange_rate,IFNULL(p.forwarding_cost,0) AS forwarding_cost,p.status_id,p.driver_total,p.sender_total, ps.name AS status,formatTime(p.arrival_time) AS arrival_time,formatTime(p.delivery_time) AS delivery_time,(SELECT driver.name FROM driver WHERE id =p.pickup_driver_id LIMIT 1) AS pickup_driver_name, CASE (p.status_id=9 OR p.status_id=11) WHEN 1 THEN p.failure_notes ELSE p.delivery_notes END AS remarks,p.failure_notes,p.delivery_notes, CASE p.status_id  WHEN 8 THEN 1 WHEN 9 THEN 2 WHEN 6 THEN 3 WHEN 5 THEN 4 ELSE 5 END AS status_order';
+        $rows = DB::table('package AS p')->join('package_statuses AS ps','ps.id','=','p.status_id')->where('p.warehouse_id',$warehouse_id)->where('p.branch_id',$branch_id)->where('p.sender_id',$sender_id)->whereRaw($more_wheres)->whereRaw($except_return)->selectRaw($cols)->orderByRaw('orderByDate ASC,p.status_id ASC')->get();
+        //$this->countPackageByStatus($rows,8);
+        $c = $this->countPackages_rpt($rows,[]);
+         $items = [];
+         //$c->ctd->fast
+         $name =null;
+         $total_count = 0;
+         $total_count_fast =0;
+         $total_count_normal=0;
+
+         $exchangeRateInfo = self::getExchangeRate($end_date);
+         //remove ExchangeRateInfo from object $c because all props of object $c must consistently have prop {'fast','normal','total'}
+         unset($c->exchangeRateInfo);
+         foreach($c as $key=>$item){
+            //if($key==='on_delivery')
+              //$name ='Packages On Delivery';
+            //else
+            //$item->total = $item->$item->fast + $item->normal;
+            if($key === 'delivered')
+               $name ='Delivered packages';
+            else if ($key === 'delivered')
+               $name ='Delivered packages';
+            else if ($key==='failed')
+               $name ="Failed packages";
+            else if ($key==='ctd')
+               $name ='Continue to deliver (រាប់ចូលក្នង "On Delivery")';
+            else if ($key==='returned')
+               $name ='Returned packages';
+
+            //   if($key != 'ctd' ){
+            //     $total_count += $item->total;
+            //     $total_count_fast += $item->fast;
+            //     $total_count_normal += $item->normal;
+            //   }
+            if ($key != 'on_delivery') $items[] =(object)['name'=>$name,'total'=>isset($item->total)?$item->total:0,'fast_count'=>isset($item->fast)?$item->fast:0,'normal_count'=>isset($item->normal)?$item->normal:0];
+
+         }
+         $total_item = (object)['name'=>'Collected packages','total'=>$total_count,'fast_count'=>$total_count_fast,'normal_count'=>$total_count_normal];
+         array_unshift($items,$total_item);
+         //NOTE: $c->exchangeRateInfo is object = {rate,buy_rate,currency_pair}
+         $packagesByDate = self::groupRows($rows,'arrival_date');
+         foreach($packagesByDate as $date => $o_rows){
+             $packagesByDate[$date] = self::arraySortByKey($o_rows,'status_order');
+         }
+         $data = (object)['packagesByDate'=>$packagesByDate,'exchangeRateInfo'=>$exchangeRateInfo,'currency_symbol'=>'$'];
+
+         //$data->transactions = $rows;
+         $merchant = new \App\Models\Sender($sender_id?$sender_id:0,(object)['branch_id'=>$branch_id]);
+         $data->merchant = $merchant->getDetails();
+         $data->merchant = $data->merchant? $data->merchant:(object)['name'=>'merchant info','phone_number'=>'NA','email'=>'NA'];
+         $data->start_date = $start_date;
+         $data->end_date = $end_date;
+         return $data;
+     }
+
+     function getActiveSenders($warehouse_id,$start_date,$end_date){
+        if (!(bool)strtotime($start_date)) $start_date = date('Y-m-d');
+        if (!(bool)strtotime($end_date)) $end_date = date('Y-m-d');
+        $str_dates ='DATE(p.arrival_time) >=\''.convertDate($start_date).'\' AND DATE(p.arrival_time) <=\''.convertDate($end_date).'\' ';
+        $query = DB::table('package as p')->whereRaw($str_dates)->where('p.warehouse_id',$warehouse_id)->where('p.sender_id','>',0);
+        $count = $query->join('sender as s','s.id','p.sender_id')->distinct('p.sender_id')->count('p.sender_id');
+        return (object)[
+            'count'=>$count,
+            'senders'=>$query->selectRaw('s.id,s.name,s.phone_number,s.email,count(p.id) AS package_count,(SELECT CONCAT(b.account_number,\' / \',b.account_name,\' / \',b.bank_name) as t FROM sender_bank_accounts AS b WHERE b.sender_id =s.id AND b.is_primary =1 LIMIT 1) AS bank_info')->groupByRaw('s.id,s.name,s.phone_number,s.email')->get()
+        ];
+     }
+     function getActiveDrivers_count($warehouse_id,$start_date,$end_date){
+        if (!(bool)strtotime($start_date)) $start_date = date('Y-m-d');
+        if (!(bool)strtotime($end_date)) $end_date = date('Y-m-d');
+        $str_dates ='DATE(p.arrival_time) >=\''.convertDate($start_date).'\' AND DATE(p.arrival_time) <=\''.convertDate($end_date).'\' ';
+        $query = DB::table('package as p')->whereRaw($str_dates)->where('p.warehouse_id',$warehouse_id)->where('p.driver_id','>',0);
+        return $query->distinct('p.driver_id')->count('p.driver_id');
+     }
+
+    static function getExchangeRate($end_date){
+      return DB::table('exchange_rates AS r')->whereRaw('DATE(r.x_date) <=\''.$end_date.'\'')->selectRaw('r.currency_pair,ROUND(r.buy_rate,2) AS buy_rate,ROUND(r.buy_rate,2) AS rate,ROUND(r.sell_rate,2) AS sell_rate')->orderByRaw('r.x_date DESC')->take(1)->get()->first();
+    }
+
+    static function getMerchantAmount($row){
+        $driver_total =0;
+        $sender_settled_amount = 0;
+        $df_payer = strtolower($row->df_payer);
+        $fees = $row->delivery_fee + $row->base_fee;
+        if (!$row->cod || $row->cod==0){
+            $driver_total = 0;
+        }else  $driver_total = $row->price - $row->cod_fee;;
+
+        if($df_payer =='receiver') $driver_total += $fees -$row->forwarding_cost;
+        else $driver_total -= $row->forwarding_cost;
+
+        $sender_settled_amount = $driver_total; //+ $row->adjustment
+        if($df_payer=='sender') $sender_settled_amount -= $fees;
+        return $sender_settled_amount;
+    }
+
+    //getMerchantSummary => Merchant Summary V2 | Merchant Summary report based on delivery_date, NOT arrival_date for each Sender or merchant
+    function getMerchantSummaryReport($warehouse_id,$sender_id,$start_date=null,$end_date=null){
+        $branch_id = Session::get('branch_id',0);
+        if(!(bool)strtotime($start_date)) $start_date =date('Y-m-d');
+        if(!(bool)strtotime($end_date)) $end_date = $start_date;
+        $start_date = convertDate($start_date);
+        $end_date = convertDate($end_date);
+        $str_first = 'p.warehouse_id ='.$warehouse_id.' AND p.sender_id ='.$sender_id. ' AND p.branch_id ='.$branch_id;
+        $cols ='DATE(p.delivery_time) AS orderByDate,(CASE p.status_id WHEN 8 THEN 1 WHEN 11 THEN 2 WHEN 9 THEN 3 WHEN 6 THEN 4 ELSE 5 END) AS orderByStatus, p.id,p.qr_code AS barcode,formatDate(p.arrival_time) AS arrival_date,formatTime(p.arrival_time) AS arrival_time,formatTime(p.delivery_time) AS delivery_time,p.status_id,st.`name` AS `status`,p.delivery_type, IFNULL(p.base_fee,0) AS base_fee, IFNULL(delivery_fee,0) AS delivery_fee, IFNULL(p.driver_total,0) AS driver_total,p.receiver_phone,p.receiver_address,CONCAT(p.zone_code, \' \',p.zone_name) AS destination, IFNULL(p.sender_total,0) AS sender_total,IFNULL(p.sender_net_amount,0) AS sender_net_amount,p.cod,IFNULL(p.price,0) AS price,IFNULL(p.cod_fee,0) AS cod_fee, sender_pmt_status_id, driver_pmt_status_id,IFNULL(p.exchange_rate,1) AS exchange_rate,IFNULL(p.forwarding_cost,0) AS forwarding_cost, p.df_payer,failed_num,p.delivery_notes,p.failure_notes';
+        $query = DB::table('package AS p')->join('package_statuses AS st','st.id','=','p.status_id')->join('sender as s','s.id','=','p.sender_id')->whereRaw($str_first)->selectRaw($cols);
+
+        $new_count =0;
+        $new_amount =0;
+        $left_over_count = 0;
+        $left_over_amount =0;
+
+        //Get "Unfinished" packages before the $start_date (based on arrival_date)
+        $summary_info['កញ្ចប់សល់'] = (object)['count'=>0,'amount'=>0];
+        //$str_dates ='DATE(p.arrival_time) <\''.$start_date.'\' AND (DATE(p.delivery_time) <\''.$start_date.'\' OR DATE(p.delivery_time) >\''.$end_date.'\')';
+        $str_dates ='DATE(p.delivery_time) >= \''.$start_date.'\' AND DATE(p.delivery_time) <= \''.$end_date.'\'';
+        $all_query = clone $query;
+        $rows = $all_query->whereRaw($str_dates)->whereRaw('p.status_id IN (9,8,11)')->orderByRaw('orderByDate ASC,orderByStatus ASC')->get();
+
+        $rem_count_by_status = ['5'=>0,'6'=>0,'8'=>0,'9'=>0,'11'=>0];
+        $rem_amount_by_status = ['5'=>0,'6'=>0,'8'=>0,'9'=>0,'11'=>0];
+
+        $new_count_by_status = ['5'=>0,'6'=>0,'8'=>0,'9'=>0,'11'=>0];
+        $new_amount_by_status = ['5'=>0,'6'=>0,'8'=>0,'9'=>0,'11'=>0];
+
+        //$groups = self::groupRows($rows,'orderByDate');
+        //Last delivery_date that exists based on the selected "start_dat"e and "end_date"
+
+        $last_delivery_date = null;
+        // foreach($groups as $delivery_date => $d_rows){
+        //      if($last_delivery_date) $last_delivery_date = $delivery_date;
+        //      else if($last_delivery_date < $delivery_date) $last_delivery_date = $delivery_date;
         // }
+
+        $faied_rows = [];
+        $groups = [];
         foreach($rows as $row){
-            $fee_type = self::stringToKeyCase($row->fee_type);
-            $row->$fee_type = $row->net_amount;
+            if(!$last_delivery_date)
+              $last_delivery_date = $row->orderByDate;
+            else if(convertDate( $last_delivery_date) < convertDate($row->orderByDate)) $last_delivery_date = $row->orderByDate;
 
-            if($row->fee_type == 'tuition_fee'){
-                $tuition_amt = $row->net_amount;
-                $discount = $row->discount;
-            }
-            $total[] = $row->net_amount;
-            $row->period = dateDiffMonths($row->start_date, $row->end_date);
-        }
-        $sum_amt = array_sum($total);
+            $sender_amount = self::getMerchantAmount($row);
+            if(!isset($groups[$row->orderByDate])) $groups[$row->orderByDate] = [];
 
-        return (object)['discount'=>$discount,'data'=>$rows,'total'=>$sum_amt];
-    }
-
-
-
-    //** monthly cash */
-    function getMonthlyCash($arr,$ss){
-        $d = (object)$arr;
-        $branch_id = $ss->branch_id;
-        $key_list = DB::table('fee_types')->pluck('name')->toArray();
-        $key_list =array_merge($key_list,['Total','Remark']);
-        $keys = $this->stringToKeyCase($key_list);
-        $headers = $this->createMulKeyValue('name',$key_list,$this->createKeyValue('key',$keys));
-        $str_date = '1=1';
-        $start_date = isset($d->start_date)?convertDate($d->start_date):null;
-        $end_date = isset($d->end_date)?convertDate($d->end_date):null;
-        if($start_date && $end_date) {
-            $str_date = "DATE(i.pmt_date) BETWEEN '$start_date' AND '$end_date'";
-        }
-        $rows = DB::table('invoices as i')->whereRaw($str_date)->selectRaw('i.pmt_date,i.id')->get();
-        foreach($rows as $row){
-            $item = $this->getInvoiceItemDetails($row->id,$branch_id);
-            $row->total = $item->total;
-            $row->items = $item->data;
-        }
-        return (object)[
-            'headers'=>$headers,
-            'list'=>$rows,
-            'company_profiles'=>self::getCampanyInfo($ss)
-        ];
-    }
-    // function getFilterMonthlyCash($arr,$ss){
-    //     $d = (object)$arr;
-    //     $branch_id = $ss->branch_id;
-    //     $month = isset($d->month)?$d->month:date('m');
-    //     $year = isset($d->year)?$d->year:date('Y');
-
-    //     $days = days_in_month($month,$year);
-    //     $i=0;
-    //     $monthlyCashList =[];
-    //     $rows = DB::table('invoices as i')->whereMonth('i.pmt_date',$month)->whereYear('i.pmt_date',$year)->selectRaw('i.invoice_number')->get();
-    //     do{
-    //         $i++;
-    //         $x = 1;//$this->getAttendanceInfo($rows,$i,$month,$year,$student_id);
-    //         $monthlyCashList[] = $x;
-    //     }while ($i<$days);
-    // }
-
-
-
-    static function stringToKeyCase($cnvtString,$bonus_string=null,$front=1){
-
-        $removeSpecialChars = function ($str) {
-            $pattern = '/[^a-zA-Z0-9\s' . preg_quote('_', '/') . ']/u';
-            return preg_replace($pattern, '', $str);
-        };
-        $bonus_string = $removeSpecialChars(strtolower($bonus_string));
-        if (is_array($cnvtString)) {
-
-            $result = [];
-            foreach ($cnvtString as $string) {
-                $string = $removeSpecialChars($string);
-                $convertedString = strtolower(str_replace(' ', '_', $string));
-
-                if ($bonus_string) {
-                    $result[] = $front == 1 ? $bonus_string . '_' . $convertedString : $convertedString . '_' . $bonus_string;
-                } else {
-                    $result[] = $convertedString;
+            if($row->status_id ==9)
+               $faied_rows[] = $row;
+            else{
+                $groups[$row->orderByDate][] = $row;
+                if(convertDate($row->arrival_date) < $start_date){
+                    $left_over_count++;
+                    $left_over_amount += $sender_amount;
+                    $rem_count_by_status[$row->status_id]++;
+                    $rem_amount_by_status[$row->status_id] +=$sender_amount;
+                }else{
+                    $new_count++;
+                    $new_amount += $sender_amount;
+                    $new_count_by_status[$row->status_id]++;
+                    $new_amount_by_status[$row->status_id] += $sender_amount;
                 }
             }
-            return $result;
         }
-        $cnvtString = $removeSpecialChars($cnvtString);
-        $convertedString = strtolower(str_replace(' ', '_', $cnvtString));
 
-        if ($bonus_string) {
-            return $front == 1 ? $bonus_string . '_' . $convertedString : $convertedString . '_' . $bonus_string;
+        foreach($faied_rows as $row){
+            $groups[$last_delivery_date][] = $row;
         }
-        return $convertedString;
-
-    }
-
-    //** referral */
-
-    function getReferralFeeList($arr,$ss){
-        $d = (object)$arr;
-        $selectCols = 's.name,r.commission as referral_fee,r.referrer_id,r.student_id';
-        $is_paid = isset($d->is_paid)?$d->is_paid:1;
-        $campus_id = isset($d->campus_id) ? $d->campus_id :null;
-        $start_date = isset($d->start_date)?convertDate($d->start_date):null;
-        $end_date = isset($d->end_date)?convertDate($d->end_date):null;
-        $str_search = 'r.is_paid = '.$is_paid;
-        $str_date = '1=1';
-        if($start_date && $end_date) $str_date = 'DATE(r.created_at) >= \''.$start_date.'\' AND DATE(r.created_at) <= \''.$end_date.'\'';
-        $rows = DB::table('referals as r')
-            ->join('students as s','s.id','=','r.student_id')
-            ->join('enrollments as e','e.student_id','=','s.id')
-            ->whereRaw($str_search)
-            ->whereRaw($str_date)
-            ->selectRaw($selectCols)->get();
-        foreach($rows as $row){
-            $recommender = DB::table('students as s')->where('s.id', $row->referrer_id)->join('referals as rf','rf.referrer_id','=','s.id')->selectRaw('s.name,s.code as student_id,formatDate(rf.created_at) as receiving_date')->first();
-            $recommender->referral_fee = $row->referral_fee;
-            $row->recommender = $recommender;
-            unset($row->referral_fee);
+         /** get remaining packages that are "At Warehouse" and "On Delivery" and arrived before the selected $end_date */
+         $o_query = clone $query->whereRaw('p.status_id IN (5,6) AND DATE(p.arrival_time) <=\''.$end_date.'\'');
+         $o_rows = $o_query->get();
+         foreach($o_rows as $row){
+               /** Add items with status (5,6) to the remaining_count */
+               $left_over_count++;
+               $sender_amount = self::getMerchantAmount($row);
+               $rem_count_by_status[$row->status_id]++;
+               $rem_amount_by_status[$row->status_id] += $sender_amount;
+               $row->delivery_time = 'មិនទាន់មាន';
+               $groups[$last_delivery_date][] = $row;
         }
-        return (object)[
-            'list' => $rows,
-            'form' => 'customize',
-            'company_profile' => self::getCampanyInfo($ss)
+
+        $summary_info['remaining'] = (object)['label'=>'កញ្ចប់សល់','count'=>$left_over_count,'amount'=>$left_over_amount,'currency_code'=>'USD'];
+        $summary_info['new_arrival'] = (object)['label'=>'កញ្ចប់ថ្មី','count'=>$new_count,'amount'=>$new_amount,'currency_code'=>'USD'];
+        $summary_info['total_count'] = (object)['label'=>'កញ្ចប់សរុប','count'=>($new_count + $left_over_count),'amount'=>($new_amount + $left_over_amount),'currency_code'=>'USD'];
+
+        $delivered_total =$rem_count_by_status[8] + $new_count_by_status[8];
+        $returned_total =$rem_count_by_status[11] + $new_count_by_status[11];
+        $failed_total =  $rem_count_by_status[9] + $new_count_by_status[9];
+        $at_warehouse_total = $rem_count_by_status[5] + $new_count_by_status[5];
+        $on_delivery_total = $rem_count_by_status[6] + $new_count_by_status[6];
+
+        $delivered_amount = $rem_amount_by_status[8] + $new_amount_by_status[8];
+        $returned_amount = $rem_amount_by_status[11] + $new_amount_by_status[11];
+        $failed_amount = $rem_amount_by_status[9] + $new_amount_by_status[9];
+        $at_warehouse_amount = $rem_amount_by_status[5] + $new_amount_by_status[5];
+        $on_delivery_amount = $rem_amount_by_status[6] + $new_amount_by_status[6];
+
+        $summary_info['delivered'] = (object)['label'=>'កញ្ចប់ដឹកបាន','count'=>$delivered_total,'amount'=>$delivered_amount,'new_count'=>$new_count_by_status[8]];
+        $summary_info['failed'] = (object)['label'=>'កញ្ចប់បរាជ័យ','count'=>$failed_total,'amount'=>$failed_amount,'new_count'=>$new_count_by_status[9]];
+        $summary_info['returned'] = (object)['label'=>'កញ្ចប់បញ្ជូនត្រឡប់','count'=>$returned_total,'amount'=>$returned_amount,'new_count'=>$new_count_by_status[11]];
+        $summary_info['at_warehouse'] = (object)['label'=>'នៅឃ្លាំង','count'=>$at_warehouse_total,'amount'=>$at_warehouse_amount,'new_count'=>$new_count_by_status[5]];
+        $summary_info['on_delivery'] = (object)['label'=>'កំពុងដឹក','count'=>$on_delivery_total,'amount'=>$on_delivery_amount,'new_count'=>$new_count_by_status[6]];
+
+        $merchant = new \App\Models\Sender($sender_id?$sender_id:0,(object)['branch_id'=>$branch_id]);
+        $exchange_rate = self::getExchangeRate($end_date); //number_format($exchange_rate/$delivered_cnt,2);
+        $exchangeRateInfo = (object)[
+            'rate'=>$exchange_rate->buy_rate,
+            'currency_pair'=>$exchange_rate->currency_pair
         ];
-    }
 
-    function getNonTuitionFee($filter,$ss){
-        $d = (object)$filter;
-        $fee_type_id = isset($d->fee_type_id) ? $d->fee_type_id:null;
-        $selectInvoiceItems = ',ivt.id,ivt.fee_type';
-        $is_paid = isset($d->is_paid) ? $d->is_paid:null;
-        $campus_id = isset($d->campus_id) ? $d->campus_id:null;
-        $start_date = isset($d->start_date) ? $d->start_date:null;
-        $end_date = isset($d->end_date) ? $d->end_date:null;
-        $selectInvoiceReceipt = 'i.id as invoice_id,formatDate(i.pmt_date) as payment_date,i.invoice_date';
-        if(!$fee_type_id) return DV::error('Fee type must be selected');
-        //** */
-        $str_search = 'ivt.fee_type_id = '.$fee_type_id;
-        if($campus_id) $str_search .=' AND e.campus_id = '.$campus_id;
-        if($is_paid) $str_search .= ' AND i.is_paid = '. $is_paid;
-        //** */
-        $str_date = '1=1';
-        if($start_date && $end_date) $str_date = 'DATE(i.invoice_date) >= \'' .$start_date. '\' AND DATE(i.invoice_date) <= \''.$end_date.'\'';
-        $campuses =[];
+        return (object)[
+              'currency_symbol'=>'$ ',
+              //'packages'=>$delivered_rows->concat($failed_rows)->concat($rem_rows)->concat($rem_rows),
+              'packagesByDate'=>$groups,
+              'merchant'=>$merchant->getDetails(),
+              'exchangeRateInfo'=>$exchangeRateInfo,
+              'summary_info'=>$summary_info
+        ];
+     }
 
-        $rows = DB::table('invoices as i')
-                ->join('enrollments as e','e.id','=','i.enrollment_id')
-                ->join('receipts as r','r.invoice_id','=','i.id')
-                ->join('invoice_items as ivt','ivt.invoice_id','=','i.id')
-                ->join('students as s','s.id','=','i.student_id')
-                ->where('ivt.fee_type','<>','tuition_fee')
-                ->where('i.is_paid',1)->whereRaw($str_search)
-                ->whereRaw($str_date)
-                ->selectRaw($selectInvoiceReceipt.$selectInvoiceItems.',e.campus_id,e.level_id,s.code as student_coce,s.sex,s.name,formatDate(s.admission_date) as admission_date,formatDate(s.date_of_birth) as dob,e.session_id')
-                ->get();
-        foreach($rows as $row){
-            $row->campus = GeneralSettings::getCampus($row->campus_id)->name;
-            if (!in_array($row->campus, $campuses)) {
-                $campuses[] = $row->campus;
+    //Returns Company summary data for reporting (Not used yet)
+    function getCompanySummary($warehouse_id,$start_date, $end_date){
+            $branch_id = Session::get('branch_id',0);
+            $use_default_dates =1;
+            $str_dates = null;
+            $start_date = convertDate($start_date);
+            $end_date = convertDate($end_date);
+            if($use_default_dates==1) {
+                if (!(bool)strtotime($start_date)) $start_date = date('Y-m-d');
+                if (!(bool)strtotime($end_date)) $end_date = date('Y-m-d');
+                $str_dates =" AND DATE(p.pickup_time) >='".$start_date."' AND DATE(p.pickup_time) <='".$end_date."' ";
+            }else {
+                if ((bool)strtotime($start_date) && (bool)strtotime($end_date)){
+                    $str_dates =" AND DATE(p.pickup_time) >='".$start_date."' AND DATE(p.pickup_time) <='".$end_date."' ";
+                }
             }
-            unset($row->campus,$row->campus_id);
-        }
-        $fee_type = 'N/A';
-        if(isset($rows[0])){
-            $row->fee_type;
-        }
-        $title = $fee_type.' Fee Report For (' . implode(',',$campuses).')';
-        return (object)[
-            'title' => $title,
-            'list' => $rows,
-            'form' => 'customize',
-            'company_profile' => self::getCampanyInfo($ss)
-        ];
-    }
 
-    function getDepositeFee($student_id){
-       return Invoice::studentDeposite($student_id,$used = 1);
-    }
+            $data_items =[];
+            //Picked up packages
+            $more_wheres = '1=1'.$str_dates;
+            $rows = DB::table('package AS p')->join('package_statuses AS ps','ps.id','=','p.status_id')->where('branch_id',$branch_id)->whereRaw($more_wheres)->selectRaw("COUNT(p.id) AS cnt,p.delivery_type,p.status_id, ps.name AS status")->groupByRaw('p.delivery_type,p.status_id,status')->orderByRaw('p.status_id ASC')->get();
+            $total =0;
+            foreach($rows as $row) {
+                $name = 'Unspecified';
+                $total += $row->cnt;
+                if($row->status_id ==8) $name ='បញ្ខប់បានដឹក';
+                else if($row->status_id ==9) $name ='បញ្ខប់ដឹកមិនបាន';
+                else if ($row->status_id ==10) $name ='បញ្ខប់ដឹកបន្តរ';
+                else if ($row->status_id ==11) $name ='បញ្ខប់បញ្ជូនត្រឡប់';
+                $row->item_name =$name;
+                $data_items[] = $row;
+            }
+            array_unshift($data_items,(object)['cnt'=>$total,'status_id'=>null,'status'=>null,'name'=>'បញ្ខប់ទៅយក']);
+            //pickup_items
+            $data = (object)['p_items'=>$data_items];
+            $rows = DB::table('package AS p')->where('branch_id',$branch_id)->whereRaw($more_wheres)->selectRaw("SUM(CASE cod WHEN 1 THEN (IFNULL(p.price,0) - IFNULL(p.cod_fee,0)) ELSE 0 END) AS total_cod, SUM(IFNULL(p.sender_total,0)) AS sender_total, SUM(IFNULL(p.driver_total,0)) AS driver_total")->get();
+            foreach($rows as $row) $data->c_item = $row;
+            return $data;
+        }
 }
-
-
-
-// 'DATE(i.pmt_date) >= \'' . $start_date . '\' AND DATE(i.pmt_date) <= \'' . $end_date . '\'';

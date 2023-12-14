@@ -1,126 +1,137 @@
 'use strict'
-let Validator = new function () {
-    let mThis = this;
+let Validator = new function(){
+    const mThis = this;
     this.onLostFocus_select2 = (el) => {
         let required = el.data('required');
         if (required == 1) Validator.checkValue(el);
     };
-
-    let months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec',
-        'january', 'february', 'april', 'may', 'june', 'july', 'august', 'september', 'november', 'december'];
-
-    this.validateFields = function (fields) {
+ 
+    this.validateFields = function(fields){
         let c, i = 0;
-        do {
+        do{
             c = fields[i];
-            if (c == undefined) break;
-            if (c.validate == true) {
-                if (c.choices instanceof Array)
-                {
-                    if (c.choices.indexOf(c.element.val()) < 0) {
+            if(c == undefined) break;
+            if(c.validate == true){
+                if(c.choices instanceof Array){
+                    if(c.choices.indexOf(c.element.val()) < 0){
                         cv_interact.alert(c.validateText, null, 'error');
                         return false;
                     }
                 }
 
-                if (c.dataType == 'string') {
-                    if (validator.isNullOrEmpty1(c.element)) {
-                        cv_interact.alert(c.validateText, null, 'error');
-                        return false;
-                    }
-                } else if (c.dataType == 'number') {
-                    if (!validator.isNumber1(c.element)) {
-                        cv_interact.alert(c.validateText, null, 'error');
-                        return false;
-                    }
-                } else if (c.dataType == 'date') {
-                    if (!validator.isDate1(c.element)) {
+                if(c.dataType == 'string'){
+                    if(validator.isNullOrEmpty1(c.element)){
                         cv_interact.alert(c.validateText, null, 'error');
                         return false;
                     }
                 }
-                else if (c.dataType == 'positive' || c.dataType == 'number positive') {
-                    if (!validator.isPositiveFloat1(c.element)) {
+                else if(c.dataType == 'number'){
+                    if(!validator.isNumber1(c.element)){
                         cv_interact.alert(c.validateText, null, 'error');
                         return false;
                     }
                 }
-            } else {
-                if (c.dataType == 'date') {
-                    if (!DateHelper.isDate(c.element.val())) c.element.val('0/0/0');
+                else if(c.dataType == 'date'){
+                    if(!validator.isDate1(c.element)){
+                        cv_interact.alert(c.validateText, null, 'error');
+                        return false;
+                    }
+                }
+                else if(c.dataType == 'positive' || c.dataType == 'number positive'){
+                    if(!validator.isPositiveFloat1(c.element)){
+                        cv_interact.alert(c.validateText, null, 'error');
+                        return false;
+                    }
+                }
+            }
+            else{
+                if(c.dataType == 'date'){
+                    if(!DateHelper.isDate(c.element.val())) c.element.val('0/0/0');
                 }
             }
 
             i += 1;
-        } while (c != undefined);
-
+        }while(c != undefined);
         return true;
     };
 
-    this.clearForm = function (fields) {
-        var c, i = 0;
+  this.clearForm = (fields)=>{
+        let c, i = 0;
         do {
-            c = fields[i];
-            if (c == undefined) break;
-            if (c.dataType == 'number')
-                c.element.val(0);
-            else
-                c.element.val('');
-            var readOnly = c.alwaysReadOnly ? true : false;
-
-            if (c.element.is('select'))
-                c.element.prop('disabled', readOnly);
-            else
-                c.element.prop('readOnly', readOnly);
-
-            c.element.parent().removeClass('has-error');
-            i += 1;
-        } while (c != undefined);
+          c = fields[i];
+          if (c === undefined) break;
+          if (c.dataType === 'number') {
+            c.element.value = '0';
+          } else {
+            c.element.value = '';
+          }
+          let readOnly = c.alwaysReadOnly ? true : false;
+      
+          if (c.element.tagName === 'SELECT') {
+            c.element.disabled = readOnly;
+          } else {
+            c.element.readOnly = readOnly;
+          }
+      
+          if (c.element.parentElement.classList.contains('has-error')) {
+            c.element.parentElement.classList.remove('has-error');
+          }
+          i += 1;
+        } while (c !== undefined);
+      }
+  
+    this.isNullOrEmpty = function(mValue){
+        if(mValue == null)
+            return true;
+        if(mValue.toString().trim().length <= 0)
+            return true;
     };
 
-    this.isNullOrEmpty = function (mValue) {
-        if (mValue == null)
+    this.isPositiveFloat = function(mValue){
+        if(!Number(mValue) || !$.isNumeric(mValue)) return false;
+        if($.isNumeric(mValue)){
             return true;
-        if (mValue.toString().trim().length <= 0)
-            return true;
-    };
-    this.isPositiveFloat = function (mValue) {
-        if (!Number(mValue) || !$.isNumeric(mValue)) return false;
-        if ($.isNumeric(mValue)) {
-            return true;
-        } else {
+        }
+        else{
             return false;
         }
     };
-    this.isPositiveInt = function (mValue) {
+
+    this.isPositiveInt = function(mValue){
         var d = parseInt(mValue);
-        if (d > 0 && $.isNumeric(mValue)) {
+        if(d > 0 && $.isNumeric(mValue)){
             return true;
-        } else {
+        }
+        else{
             return false;
         }
     };
-    this.isNumber = function (mValue) {
+
+    this.isNumber = function(mValue){
         return $.isNumeric(mValue);
     };
-    this.isBoolean = function (mValue) {
+
+    this.isBoolean = function(mValue){
         mValue = mValue.toString().toLowerCase().trim();
 
-        if (mValue == 'true' || mValue == 'false') {
+        if(mValue == 'true' || mValue == 'false'){
             return true;
-        } else {
+        }
+        else{
             return false;
         }
     };
-    this.isInteger = function (mValue) {
-        if (!$.isNumeric(mValue)) return false;
+
+    this.isInteger = function(mValue){
+        if(!$.isNumeric(mValue)) return false;
         return (mValue % 1 === 0);
     };
-    this.isDate = function (mValue) {
+
+    this.isDate = function(mValue){
         return DateHelper.isDate(mValue);
     };
 
-    this.isEmail = function (email) {
+    this.isEmail = function(email){
         var re = /\S+@\S+\.\S+/;
         return re.test(email);
     };
@@ -129,54 +140,59 @@ let Validator = new function () {
         d = d + '';
         let len = d.length;
         if (len > 25) return false;
-        for (let i = 0; i < len; i++) {
-            if (!$.isNumeric(d.charAt(i))) return false;
+        for(let i = 0; i < len; i++){
+            if(!$.isNumeric(d.charAt(i))) return false;
         }
         return true;
     }
 
-    this.isValidMonth = function (mValue, checkByMonthNameOnly) {
+    this.isValidMonth = function(mValue, checkByMonthNameOnly){
+        const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec',
+        'january', 'february', 'april', 'may', 'june', 'july', 'august', 'september', 'november', 'december'];
 
-        if (checkByMonthNameOnly == true) {
-            if (months.indexOf(mValue.toString().toLowerCase()) == -1)
+        if(checkByMonthNameOnly == true){
+            if(months.indexOf(mValue.toString().toLowerCase()) == -1)
                 return false;
             else
                 return true;
         }
 
-        if (months.indexOf(mValue.toString().toLowerCase()) >= 0) {
+        if(months.indexOf(mValue.toString().toLowerCase()) >= 0){
             return true;
         }
-        else {
-            if (this.isInteger(mValue)) {
-                if (mValue < 1 || mValue > 12) {
+        else{
+            if(this.isInteger(mValue)){
+                if(mValue < 1 || mValue > 12){
                     return false;
-                } else {
+                }
+                else{
                     return true;
                 }
-            } else {
+            }
+            else{
                 return false;
             }
         }
     };
 
-    this.isNullOrEmpty1 = function (el) {
+    this.isNullOrEmpty1 = function(el){
         var d = el.val();
-        if (d == '' || d == 'null') {
+        if(d == '' || d == 'null'){
             el.parent().addClass('has-error');
             el.focus();
             return true;
-        } else {
+        }
+        else{
             el.parent().removeClass('has-error');
         }
     };
 
     this.isDate1 = function(el){
-        if (DateHelper.isDate(el.val())) {
+        if(DateHelper.isDate(el.val())){
             el.parent().removeClass('has-error');
             return true;
         }
-        else {
+        else{
             el.parent().addClass('has-error');
             el.focus();
             return false;
@@ -195,7 +211,7 @@ let Validator = new function () {
         }
     };
 
-    this.isPositiveFloat1 = function (el) {
+    this.isPositiveFloat1 = function(el){
         if(this.isPositiveFloat(el.val())){
             el.parent().removeClass('has-error');
             return true;
@@ -207,7 +223,7 @@ let Validator = new function () {
         }
     };
 
-    this.isPositiveInt1 = function (el) {
+    this.isPositiveInt1 = function(el){
         if(this.isPositiveInt(el.val())){
             el.parent().removeClass('has-error');
             return true;
@@ -219,7 +235,7 @@ let Validator = new function () {
         }
     };
 
-    this.isBetween1 = function (el, min, max) {
+    this.isBetween1 = function(el, min, max){
         var v = el.val();
         if(v >= min && v <= max){
             el.parent().removeClass('has-error');
@@ -232,7 +248,7 @@ let Validator = new function () {
         }
     };
 
-    this.atMost1 = function (el, number) {
+    this.atMost1 = function(el, number){
         var v = el.val();
         if(v <= number){
             el.parent().removeClass('has-error');
@@ -245,7 +261,7 @@ let Validator = new function () {
         }
     };
 
-    this.atLeast1 = function (el, number) {
+    this.atLeast1 = function(el, number){
         var v = el.val();
         if(v >= number){
             el.parent().removeClass('has-error');
@@ -258,7 +274,7 @@ let Validator = new function () {
         }
     };
 
-    this.isInteger1 = function (el) {
+    this.isInteger1 = function(el){
         var val = el.val();
         if(this.isInteger(val)){
             el.parent().removeClass('has-error');
@@ -282,28 +298,29 @@ let Validator = new function () {
     };
 
     this.avoidZero = function(el){
-        if (parseFloat(el.val()) == 0) {
+        if(parseFloat(el.val()) == 0){
             el.parent().addClass('has-error');
             el.focus();
 
             return false;
-        } else {
+        }
+        else{
             el.parent().removeClass('has-error');
             return true;
         }
     };
 
     this.trans = (text) => {
-        if (!LocaleManager) return text;
+        if(!LocaleManager) return text;
         let langSection = 'validation';
         return LocaleManager.trans(text, langSection);
     }
 
     this.getErrorText = (el, dtype = null) => {
         let err = el.data('errortext');
-        if (!err) {
+        if(!err){
             if (!dtype) dtype = el.data('datatype');
-            switch (dtype) {
+            switch(dtype){
                 case 'email': {
                     err = 'Email is not correct';
                     break;
@@ -332,7 +349,7 @@ let Validator = new function () {
                     err = 'Date of birth is not correct';
                     break;
                 }
-                case 'dob': {
+                case 'date_of_birth': {
                     err = 'Date of birth is not correct';
                     break;
                 }
@@ -345,8 +362,8 @@ let Validator = new function () {
                     break;
                 }
                 default: {
-                    let f = el.data('ffield');
-                    f = f ? f : el.data('field');
+                    let f = null;
+                    el.is('select') ? f = el.parent().prev().text() : f = el.prev().text();
                     f = mThis.properCase(f);
                     err = [f ? f : 'This field', ` is required`].join('');
                     break;
@@ -357,24 +374,52 @@ let Validator = new function () {
     }
 
     this.properCase = (inputString) => {
-        if (!inputString) return null;
+        if(!inputString) return null;
         return inputString
             .split('_')
             .map(word => word.charAt(0).toUpperCase() + word.slice(1))
             .join(' ');
     }
 
-    this.clearErrors = (div) => {
-        div.find('.data-input').each(function () {
-            let el = $(this);
-            el.data('error', null);
-            let p = el.parent();
-            p.find('.error_text').remove();
-            p.removeClass('has-error');
-        });
-        div.find('.server-error-text').val(null);
-    }
+    this.clearErrors = (div)=> {
+        if (typeof jQuery !== "undefined" && div instanceof jQuery) {
+          div = div[0]; // Convert the jQuery object to a vanilla JavaScript object
+        }
+      
+        //if (div instanceof HTMLElement) {
+          div.querySelectorAll('.select2-selection--single').forEach(sp=>{
+             sp.classList.remove('select2-error'); 
+          });
 
+          div.querySelectorAll('.error-text').forEach(el=>{
+            el.remove();
+          });
+
+          div.querySelectorAll('.data-input').forEach(function (el) {
+            el.dataset.error = null;
+            let p = el.parentElement;
+            p.classList.remove('has-error');
+
+            // if (el.tagName === 'SELECT') {
+            //   if (p.nextElementSibling && p.nextElementSibling.classList.contains('error_text')) {
+            //     p.nextElementSibling.remove();
+            //     p.querySelector('.select2-selection--single').classList.remove('select2-error');
+            //   }
+            // } else {
+            //   let errorText = p.querySelector('.error_text');
+            //   if (errorText) {
+            //     errorText.remove();
+            //   }
+            // }
+          });
+      
+          let serverErrorText = div.querySelector('.server-error-text');
+          if (serverErrorText) {
+            serverErrorText.value = '';
+          }
+        //}
+    }
+   
     this.getError = (el) => {
         let dtype = el.data('datatype');
         switch(dtype){
@@ -394,7 +439,6 @@ let Validator = new function () {
                 if (!$.isNumeric(el.val())) return mThis.getErrorText(el, 'number');
                 break;
             }
-
             case 'positive': {
                 if (!(el.val() > 0)) return mThis.getErrorText(el, 'positive');
                 break;
@@ -420,19 +464,22 @@ let Validator = new function () {
 
     this.checkValue = (el) => {
         let err = mThis.getError(el);
-        if (err) {
-            if (el.hasClass('modal-select2')) {
-                let select2_containter = el.next();
+        if(err){
+            if(el.hasClass('modal-select2')){
+                const select2_containter = el.parent();
                 select2_containter.find('.select2-selection--single').addClass('select2-error');
+                if(select2_containter.next('.error_text').length > 0)
+                    select2_containter.next().remove();
+                select2_containter.after(`<span class="error_text">${mThis.properCase(select2_containter.prev().text())} is requried!</span>`);
                 return;
             }
 
             let p = el.parent();
-            if (p.hasClass('input-group')) p = p.parent();
-            if (p) {
+            if(p.hasClass('input-group')) p = p.parent();
+            if(p){
                 let span = p.find('.error_text');
-                if (span.length === 0) {
-                    p.append(`<span class="error_text">${err}</span>`);
+                if(span.length === 0){
+                    p.append(`<span class="error_text text-capitalize">${err}</span>`);
                     p.addClass('has-error');
                 }
             }
@@ -440,7 +487,9 @@ let Validator = new function () {
         }
         else{
             if(el.hasClass('modal-select2')){
-                let select2_containter = el.next();
+                const select2_containter = el.parent();
+                if(select2_containter.next('.error_text').length > 0)
+                    select2_containter.next('.error_text').remove();
                 select2_containter.find('.select2-selection--single').removeClass('select2-error');
                 return;
             }
@@ -457,7 +506,7 @@ let Validator = new function () {
 
 window.addEventListener('DOMContentLoaded', function(){
     $(document).find('.data-input').each(function(){
-        let el = $(this);
+        const el = $(this);
         if(el.data('required') == 1){
             el.on('blur', () => {
                 Validator.checkValue(el);

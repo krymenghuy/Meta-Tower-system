@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+//use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
 use Localization;
+use Session;
 
 //JDV is the Data Valiator class
-class JDV
+class JDV //extends Model
 {
-    use HasFactory;
-
+    //use HasFactory;
    static function isEmail($e){
      return filter_var($e, FILTER_VALIDATE_EMAIL);
    }
@@ -20,7 +20,7 @@ class JDV
       else if($len<=0) return false;
       else return true;
    }
-
+ 
    static function getFriendlyName($field=''){
      return str_replace("_"," ",$field);
    }
@@ -44,6 +44,7 @@ class JDV
 
     static function emptyResult($status_code =0,$def_result=null,$lang='en',$error_message=null){
        if (!$lang) $lang = Session('lang','en');
+       if (is_object($status_code)) $status_code = $status_code->status_code;
        $error_message = match($status_code){
           401 => $error_message? $error_message:"Authentication failed",
           402 => $error_message?$error_message:"Token Expired",
@@ -54,7 +55,7 @@ class JDV
           }
        };
        return makeJsonResponse ((object)['status'=>'Error','status_code'=>$status_code,'error_message'=>Localization::translate($lang,$error_message),'data'=>$def_result]);
-
+       
       //  switch($status_code){
       //           case 401:{
       //               $error_message = $error_message?$error_message:"Authentication failed";
@@ -67,7 +68,7 @@ class JDV
       //           case 403:{
       //               $err_message = $error_message?$err_message:"Permission required";
       //               return makeJsonResponse ((object)['status'=>'Error','status_code'=>403,'error_message'=>Localization::translate($lang,$error_message),'data'=>$def_result]);
-      //           }
+      //           } 
       //           default:
       //           {
       //               return makeJsonResponse ((object)['status'=>'OK','status_code'=>200,'data'=>$def_result]);
@@ -76,16 +77,24 @@ class JDV
       //  }
 
     }
+ 
+    //return Authentication error, with status_code =401
+    static function authError($status_code=401){
+         $langSection ='validation';
+         if (!$lang) $lang = Session::get('lang','en');
+         if($status_code===401) $err_message ="Authentication failed";
+        return makeJsonResponse ((object)['error_message'=>Localization::translate($lang,$err_message,$langSection),'status'=>'Error','status_code'=>$status_code]);
+    }
 
     //return error object. default status code is 405 for Data Validation error;
     static function error($err_message=null,$lang=null,$status_code=405,$err_code=null,$createLogFile=false){
-        if (!$lang) $lang = Session('lang','en');
+        if (!$lang) $lang = Session::get('lang','en');
 
         if(!$status_code) $status_code=0;
         if($status_code === 200) $status_code =405;// Status_code cannot be 200 for error
         $err_message=$err_message?$err_message:"There was an error but error message was not supplied by the developer";
         $langSection ='validation';
-        return makeJsonResponse ((object)['error_message'=>Localization::translate($lang,$err_message,$langSection),'status'=>'Error','status_code'=>$status_code,"error_code"=>$err_code]);
+        return makeJsonResponse ((object)['error_message'=>Localization::translate($lang,$err_message,$langSection),'status'=>'Error','status_code'=>$status_code,"error_code"=>$err_code]); 
         //if $createLogFile ==true then todo: create log file to store error message
     }
 
@@ -102,12 +111,11 @@ class JDV
     static function success($arrs =[],$status_code=200){
       //default status_code for create, update, delete is "200"
       if(!$arrs) $arrs = [];
-      $res = (object)['status_code'=>200,'status'=>'OK','error_message'=>null];
-      $d = (object)[];
-      foreach($arrs as $prop=>$val) $d->{$prop} = $val;
-      $res->data = $d;
-      return makeJsonResponse($res);
-    }
+      $d =[];
+      $has_extra_props = false;
+      foreach($arrs as $prop=>$val) $d[$prop] = $val; 
+      return makeJsonResponse((object)$d,200);
+    } 
 
     //returns SELECT QUERY result as JSON array.
     //This method should be predicated soon!
@@ -119,19 +127,11 @@ class JDV
     //JDV::result() and DV::result() return query results inhabited under "data" property. Example $res->data = [... query result ...]
     static function result($rows=[]){
       //default status_code for create, update, delete is "200"
-      if(is_object($rows)){
-         if(isset($rows->status)) if($rows->status ==='Error') return self::error($rows->error_message);
-         else{
-            $outputs = [];
-            $remove_props = ['status','status_code','error_message'];
-            foreach($rows as $prop=>$val) if(!in_array($prop,$remove_props)) $outputs[$prop] = $val;
-            return self::success($outputs);
-         }
-      }
-      return response()->json((object)['status'=>'OK','status_code'=>200,'data'=>$rows]);
+       return response()->json((object)['status'=>'OK','status_code'=>200,'data'=>$rows]);
    }
 
    static function raw($data){
     return response()->json($data);
    }
+
 }

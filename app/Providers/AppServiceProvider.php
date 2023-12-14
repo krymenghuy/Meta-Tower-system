@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+
 //custom: added line for forcing https url
 //use Illuminate\Support\Facades\URL;
 

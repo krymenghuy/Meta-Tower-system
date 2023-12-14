@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Promotion;
+use App\Models\UM;
+use App\Models\JDV;
 
 class PromotionController extends Controller
 {
@@ -16,35 +18,32 @@ class PromotionController extends Controller
     }
 
    function getPromotionList(Request $request){
-      $r = $this->promoModel->getPromotionList($request);
-      if($r =='#350') 
-      return makeJsonResponse($r,350); // user not authenticated
-      else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-     return makeJsonResponse($r);
+      $ss = UM::getUserInfoByToken($request,-1);
+      if ($ss->status_code !==200) return JDV::raw($ss);
+      $rows = $this->promoModel->getPromotionList($ss,$request->all());
+      return JDV::result($rows); 
    } 
 
    function deletePromotion(Request $request){
-    $r = $this->promoModel->deletePromotion($request);
-    if($r =='#350') 
-    return makeJsonResponse($r,350); // user not authenticated
-    else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-   return makeJsonResponse($r);
+    $ss = UM::getUserInfoByToken($request,-1);
+    if ($ss->status_code !==200) return JDV::raw($ss);
+    $res = $this->promoModel->deletePromotion($ss,$request->all());
+    return JDV::raw($res);
   } 
 
   function getPromotionInfo(Request $request){
-    $r = $this->promoModel->getPromotionInfo($request);
-    if($r =='#350') 
-    return makeJsonResponse($r,350); // user not authenticated
-    else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-   return makeJsonResponse($r);
-  } 
-
+    $ss = UM::getUserInfoByToken($request,-1);
+    if ($ss->status_code !==200) return JDV::raw($ss);
+    $row = $this->promoModel->getPromotionInfo($ss,$request->all());
+    return JDV::result($row); 
+  }
+  
   function savePromotion(Request $request){
-    $r = $this->promoModel->savePromotion($request);
-    if($r =='#350') 
-    return makeJsonResponse($r,350); // user not authenticated
-    else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-   return makeJsonResponse($r);
+    $ss = UM::getUserInfoByToken($request,-1);
+    if ($ss->status_code !==200) return JDV::raw($ss);
+    $res = $this->promoModel->savePromotion($ss,$request->all());
+    return JDV::raw($res);
+  
   } 
 
 }
