@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Models\GeneralSettings;
 use App\Models\UM;
 use Illuminate\Http\Request;
 use App\Models\Report;
@@ -8,6 +10,7 @@ use Session;
 use Carbon\Carbon;
 use App\Models\JDV;
 use DB;
+use PHPUnit\TextUI\XmlConfiguration\Generator;
 
 class WebReportController extends Controller{
     protected $reportModel;
@@ -33,10 +36,20 @@ class WebReportController extends Controller{
    }
 
     function getReportFilterOptions(Request $req){
-      $branch_id = Session::get('branch_id');
-      $data = (object)[];
-      $data->users= DB::select("SELECT id as `user_id`,  full_name As `user_name` FROM um_users AS u WHERE u.branch_id = '$branch_id' ORDER BY u.full_name asc");
-      return JDV::json($data);
+      $branch_id = Session::get('branch_id',1);
+      $ss = (object)['branch_id'=>$branch_id];
+      $data = (object)[
+        //'users'=>DB::select("SELECT id as `user_id`,  full_name As `user_name` FROM um_users AS u WHERE u.branch_id = '$branch_id' ORDER BY u.full_name asc"),
+        'warehouses'=>GeneralSettings::options_warehouse($ss),
+        'drivers'=>GeneralSettings::options_driver($ss),
+        'senders'=>GeneralSettings::options_sender($ss),
+        'pmt_statuses'=>GeneralSettings::options_pmt_status($ss),
+        'delivery_statuses'=>GeneralSettings::options_delivery_status($ss),
+        'completed_statuses'=>GeneralSettings::options_complete_status($ss),
+        'sales_agent'=>GeneralSettings::options_sales_agent($ss),
+        'trx_types'=>GeneralSettings::options_trx_type($ss)       
+      ];
+      return JDV::result($data);
     }
 
     public function package_barcode($barcode=null) {
@@ -364,7 +377,7 @@ class WebReportController extends Controller{
             $start_date = $p->startdate;
             $end_date = $p->enddate;
             //$use_paginate = $p->usepaginate;
-            $trx_type = $p->trxtype;
+            $trx_type = isset($p->trxtype)?$p->trxtype:'';
 
             $ss = (object)['branch_id'=>$branch_id];
             $senderInfo = null;
@@ -404,7 +417,7 @@ class WebReportController extends Controller{
           case 'driver_collections':{
             $warehouse_id =$p->wid;
             $driver_id = isset($p->driverid)?$p->driverid:null;
-            $driver = getDataRow('driver',['id'=>$driver_id],"name,phone_number,code");
+            $driver = getDataRow('driver',['id'=>$driver_id],'id,name,phone_number,code');
             $driver_name = "(All Drivers)";
             if($driver) $driver_name = $driver->name;
 
@@ -422,15 +435,16 @@ class WebReportController extends Controller{
             $sub_title = "ចាប់ពី ".date('d M Y',strtotime($start_date))." ដល់ ".date('d M Y',strtotime($end_date));
             $data['subtitle1'] = $sub_title;
 
-            $dashboard = new \App\Models\Dashboard();
-            $d = $dashboard->getDailyCollections([
+            $rpt = new \App\Models\PaymentTransaction();
+            $d = $rpt->getTransactions_driver([
+              'use_paginate'=>false,
               'warehouse_id'=>$warehouse_id,
-              'driver_id'=>$driver_id,
               'start_date'=>$start_date,
-              'end_date'=>$end_date
+              'end_date'=>$end_date,
+              'driver_id'=>$driver? $driver->id:null,
             ],(object)['branch_id'=>$branch_id]);
 
-            $data['items']= $d;
+            $data['data']= $d;
             $data['rtype']='driver_collections';
             break;
           }

@@ -1,8 +1,0 @@
-#drop index if exists idx_journal_entries on journal_entries;
-#create index idx_journal_entries on journal_entries (branch_id,trx_date,entry_id,trx_id,account_id, trx_type);
-#create index idx_invoices on invoices (branch_id,invoice_date,entry_id,invoice_id,invoice_number);
-#create index idx_invoice_payments on invoice_payments (branch_id,payment_date,entry_id,payment_id,cash_account_id);
-#create index idx_bill_payments on bill_payments (branch_id,payment_date,entry_id,payment_id);
-#drop index if exists idx_partners on partners;
-#create index idx_partners on partners (branch_id,id,name, phone_number);
-#create index idx_partner_relations on partner_relations (partner_id,rel_type);
