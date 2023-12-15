@@ -162,6 +162,7 @@ Route::prefix('/delivery-order')->group(function(){
             Route::post('/info', [PickupRequestController::class, 'getOrderInfo']);
             Route::post('/pick', [PickupRequestController::class, 'pickOrderPackages']);
             Route::post('/package-list', [PickupRequestController::class, 'getOrderPackageList']);
+            Route::post('/package-photos', [PickupRequestController::class, 'getOrderPackagePhotos']);
             Route::post('/change-driver', [PickupRequestController::class, 'changePickupDriver']);
             Route::post('/assign-driver', [PickupRequestController::class, 'assignPickupDriver']);
             //Route::post('/merchant-address', [SenderController::class,'getVendorAddress']);
@@ -988,6 +989,12 @@ Route::post('report-center/filter-options', [WebReportController::class, 'getRep
 Route::post('/quick-order/create', [PickupRequestController::class, 'createQuickOrder']);
 Route::post('/quick-order/form-options', [PickupRequestController::class, 'getFormOptions']);
 Route::post('settings/options-sender', [PickupRequestController::class, 'getComboItems_sender']);
+Route::post('settings/options-trxtype', function(){
+    return [
+         (object)['trx_type'=>'disbursement','name'=>'Money Out'],
+         (object)['trx_type'=>'receipt','name'=>'Money In'],
+    ];
+});
 Route::post('settings/options-driver', [GeneralSettingsController::class, 'getComboItems_driver']);
 Route::post('settings/options-delivery-zone', [GeneralSettingsController::class, 'getComboItems_delivery_zone']);
 Route::post('settings/options-warehouse', [GeneralSettingsController::class, 'getComboItems_warehouse']);

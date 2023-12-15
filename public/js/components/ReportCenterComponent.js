@@ -31,8 +31,9 @@ var ReportCenterComponent = new function(){
             'type':'select',
             'width':'full',
             'label':'Warehouse',
-            'api_fetch':`${mThis.base_url}/api/settings/options-warehouse`,
-            'api_params':{},
+            'data':"warehouses",
+            //'api_fetch':`${mThis.base_url}/api/settings/options-warehouse`,
+            //'api_params':{},
             'name':'wid',
             'value_field':'id',
             'text_field':'warehouse_name'
@@ -40,8 +41,9 @@ var ReportCenterComponent = new function(){
         {
             'type':'select',
             'label':'Driver',
-            'api_fetch':`${mThis.base_url}/api/settings/options-driver`,
-            'api_params':{},
+            'data':"drivers",
+            //'api_fetch':`${mThis.base_url}/api/settings/options-driver`,
+            //'api_params':{},
             'multiple':false,
             'name':'driver_id',
             'value_field':'id',
@@ -50,8 +52,9 @@ var ReportCenterComponent = new function(){
         {
             'type':'select',
             'allow_choose_all':['daily_packages'],
-            'api_fetch':`${mThis.base_url}/api/settings/options-sender`,
-            'api_params':{},
+            'data':"senders",
+            //'api_fetch':`${mThis.base_url}/api/settings/options-sender`,
+            //'api_params':{},
             'label':'Merchant',
             'name':'sender_id',
             'multiple':false,
@@ -72,8 +75,9 @@ var ReportCenterComponent = new function(){
             'type':'select',
             'name':'sender_pmt_status_id',
             'label':'Payment Status',
-            'api_fetch':`${mThis.base_url}/api/settings/options-pmt-status`,
-            'api_params':{},
+            'data':"pmt_statuses",
+            //'api_fetch':`${mThis.base_url}/api/settings/options-pmt-status`,
+            //'api_params':{},
             'value_field':'id',
             'text_field':'pmt_status',
             'width':'half'
@@ -82,8 +86,9 @@ var ReportCenterComponent = new function(){
             'type':'select',
             'name':'driver_pmt_status_id',
             'label':'Payment Status',
-            'api_fetch':`${mThis.base_url}/api/settings/options-pmt-status`,
-            'api_params':{},
+            'data':"pmt_statuses",
+            //'api_fetch':`${mThis.base_url}/api/settings/options-pmt-status`,
+            //'api_params':{},
             'value_field':'id',
             'text_field':'pmt_status',
             'width':'half'
@@ -92,8 +97,8 @@ var ReportCenterComponent = new function(){
             'type':'select',
             'name':'delivery_status_id',
             'label':'Delivery Status',
-            'api_fetch':`${mThis.base_url}/api/settings/options-delivery-status`,
-            'api_params':{},
+            //'api_fetch':`${mThis.base_url}/api/settings/options-delivery-status`,
+            //'api_params':{},
             'value_field':'id',
             'text_field':'delivery_status',
             'width':'half'
@@ -102,8 +107,9 @@ var ReportCenterComponent = new function(){
             'type':'select',
             'name':'agent_id',
             'label':'Sale Agent',
-            'api_fetch':`${mThis.base_url}/api/settings/options-sales-agent`,
-            'api_params':{},
+            'data':"sales_agents",
+            //'api_fetch':`${mThis.base_url}/api/settings/options-sales-agent`,
+            //'api_params':{},
             'value_field':'id',
             'text_field':'agent_name',
             'width':'half'
@@ -112,8 +118,9 @@ var ReportCenterComponent = new function(){
             'type':'select',
             'name':'completed',
             'label':'Status',
-            'api_fetch':`${mThis.base_url}/api/settings/options-complete-status`,
-            'api_params':{},
+            'data':"complete_statuses",
+            //'api_fetch':`${mThis.base_url}/api/settings/options-complete-status`,
+            //'api_params':{},
             'value_field':'id',
             'text_field':'c_status',
             'width':'half'
@@ -122,10 +129,22 @@ var ReportCenterComponent = new function(){
             'type':'select',
             'name':'delivery_type',
             'label':'Delivery Type',
-            'api_fetch':`${mThis.base_url}/api/settings/options-driver`,
-            'api_params':{},
+            'data':"drivers",
+            //'api_fetch':`${mThis.base_url}/api/settings/options-driver`,
+            //'api_params':{},
             'value_field':'id',
             'text_field':'driver_name',
+            'width':'half'
+        },
+        {
+            'type':'select',
+            'name':'trx_type',
+            'label':'Trans Type',
+            'data':"trx_types",
+            //'api_fetch':`${mThis.base_url}/api/settings/options-trxtype`,
+            //'api_params':{},
+            'value_field':'trx_type',
+            'text_field':'name',
             'width':'half'
         }
     ];
@@ -135,7 +154,15 @@ var ReportCenterComponent = new function(){
         'dr_summary':['driver_id']
     }
 
-    this.renderFilterFields =(filterHeight=350)=>{
+    this.loadFilterOptions = (filter_height) =>{
+       vsapi.call(mThis.api_fetch_report_filter_options,null,false,null).then(res =>{
+         if(res.status_code === 200){
+            mThis.renderFilterFields(res.data,filter_height);
+         }
+       });
+    }
+
+    this.renderFilterFields =(d = {}, filterHeight=350)=>{
         let cnt =0;
         //mThis.div_filter_fields.hide();
         mThis.filter_fields.map(f=>{
@@ -177,27 +204,46 @@ var ReportCenterComponent = new function(){
                 //el.attr('autocomplete','chrome-off"');
             
              }else if (f.type==='select'){
-                mThis.initSelect2(el,null,null,f.multiple);
-                vsapi.call(f.api_fetch,f.api_params,null,false).then(res=>{
-                    if(res.status_code ===200){
-                        let items = res.data;
-                        if(f.multiple || f.multiple==1){
-                            let option_all = {};
-                            option_all[f.text_field] ='(All)';
-                            option_all[f.value_field] =0;
-                            items.unshift(option_all);
-                        }
-                        if(f.name =='sender_id') items.unshift({'id': 0, 'sender_name':'(All Merchants)'});
-                        VSUtil.setComboItems(el,items,f.value_field,f.text_field,false,null,null);
-                        if(!f.def_value) f.def_value = items[0]?items[0][f.value_field]:0; 
-                        if(f.def_value) el.val(f.def_value).trigger('change');
-                        else{
-                            if(items[0] && !items[1]){
-                                el.val(items[0][f.value_field]).trigger('change');    
-                            }
-                        }
-                    }
-                 });
+               
+                // vsapi.call(f.api_fetch,f.api_params,null,false).then(res=>{
+                //     if(res.status_code ===200){
+                //         let items = res.data;
+                //         if(f.multiple || f.multiple==1){
+                //             let option_all = {};
+                //             option_all[f.text_field] ='(All)';
+                //             option_all[f.value_field] =0;
+                //             items.unshift(option_all);
+                //         }
+                //         if(f.name =='sender_id') items.unshift({'id': 0, 'sender_name':'(All Merchants)'});
+                //         VSUtil.setComboItems(el,items,f.value_field,f.text_field,false,null,null);
+                //         if(!f.def_value) f.def_value = items[0]?items[0][f.value_field]:0; 
+                //         if(f.def_value) el.val(f.def_value).trigger('change');
+                //         else{
+                //             if(items[0] && !items[1]){
+                //                 el.val(items[0][f.value_field]).trigger('change');    
+                //             }
+                //         }
+                //     }
+                //  });
+
+                 mThis.initSelect2(el,null,null,f.multiple);
+                 const items = d[f.data]? d[f.data]: [];
+                 if(f.multiple || f.multiple==1){
+                     let option_all = {};
+                     option_all[f.text_field] ='(All)';
+                     option_all[f.value_field] =0;
+                     items.unshift(option_all);
+                 }
+                 if(f.name =='sender_id') items.unshift({'id': 0, 'sender_name':'(All Merchants)'});
+                 VSUtil.setComboItems(el,items,f.value_field,f.text_field,false,null,null);
+                 if(!f.def_value) f.def_value = items[0]?items[0][f.value_field]:0; 
+                 if(f.def_value) el.val(f.def_value).trigger('change');
+                 else{
+                     if(items[0] && !items[1]){
+                         el.val(items[0][f.value_field]).trigger('change');    
+                     }
+                 }
+                
              }
             
              cnt++;
@@ -226,10 +272,12 @@ var ReportCenterComponent = new function(){
     /** Initialize reportCenter object only first user's click on Report Center menu */
     this.initOnce = ()=>{
         if (mThis.initAlready) return;
+       
         mThis.loadReportItems((e)=>{
-            mThis.renderFilterFields(e.wrapper.height());
+            mThis.loadFilterOptions(e.wrapper.height());
+            //mThis.renderFilterFields(e.wrapper.height());
         });
-        
+
         mThis.div_report_list.on('mouseover','.div-row',function(e){
             e.preventDefault();
             mThis.setReportItemState($(this),'hover');
@@ -428,7 +476,6 @@ var ReportCenterComponent = new function(){
             mThis.div_report_list.show();
             if (typeof onFinish ==='function') onFinish({'wrapper':mThis.div_report_list});
             //mThis.reports = items;
- 
         });
     }
   

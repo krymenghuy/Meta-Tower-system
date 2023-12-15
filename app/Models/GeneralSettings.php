@@ -55,6 +55,12 @@ class GeneralSettings //extends Model
     static function options_warehouse($ss){
      return  DB::table('warehouses')->where('branch_id',$ss->branch_id)->selectRaw('name as warehouse_name,id')->orderBy('name','ASC')->get();
     }
+    static function options_trx_type($ss){
+        return [
+          (object)['trx_type'=>'disbursement','name'=>'Money Out'],
+          (object)['trx_type'=>'receipt','name'=>'Money In'],
+        ];
+    }
     static function options_sender($ss){
         return  DB::table('sender')->where('branch_id',$ss->branch_id)->whereRaw('status_code =\'active\'')->selectRaw('name AS sender_name,id')->orderBy('name','ASC')->get();
     }
