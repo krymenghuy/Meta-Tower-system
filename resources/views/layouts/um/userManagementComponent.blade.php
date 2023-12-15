@@ -35,7 +35,7 @@
       <div class="modal-body"></div>
       <div class="modal-footer">
         <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">
-          <span class="trans-text" data-langprop="buttons.Cancel"></span>
+          <span class="trans-text" data-langprop="buttons.OK"></span>
         </button>
         <button id="dlg_um_btn_save" type="button" class="btn btn-sm btn-primary">
           <span class="trans-text" data-langprop="buttons.Save"></span>

@@ -2040,7 +2040,7 @@ class UM //extends Model
   function getUserDetails($id,$ss){
     $branch_id = $ss->branch_id;
     if(!$id) return DV::error('User identity is required');
-    $selectCols = 'u.user_class,u.login_name,u.phone_number,u.last_login_date,u.full_name,u.official_id,u.official_code,ur.role_id,u.id,u.photo_file_name';
+    $selectCols = 'LOWER(u.user_class) AS user_class,u.login_name,u.phone_number,u.last_login_date,u.full_name,u.official_id,u.official_code,ur.role_id,u.id,u.photo_file_name';
     $row = DB::table('um_users AS u')->join('um_user_roles as ur','ur.user_id','=','u.id')->where('u.id',$id)->where('ur.is_primary_role',1)->selectRaw($selectCols)->first();
     if($row) $row->image_url = self::getUserImage($branch_id,strtolower($row->user_class),$row->id,$row->photo_file_name);
     return $row;
