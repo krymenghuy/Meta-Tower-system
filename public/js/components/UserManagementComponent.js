@@ -408,9 +408,10 @@ var UserManagementComponent = new function(){
                 return;
             }
 
-            btn = VSUtil.getElementByClass(e.target,'btn-um-set-password');
+            btn = VSUtil.closestLimited(e.target,'.btn-um-set-password');
             if(btn){
                 let op = {
+                    button:btn,
                     user_id: btn.dataset.id,
                     user_name: btn.dataset.user,
                     open: 'reset-password',
@@ -424,9 +425,10 @@ var UserManagementComponent = new function(){
                 return;
             }
 
-            btn = VSUtil.getElementByClass(e.target,'btn-um-roles');
+            btn = VSUtil.closestLimited(e.target,'.btn-um-roles');
             if(btn){
                 let op = {
+                    button:btn,
                     user_id: btn.dataset.id,
                     user_name: btn.dataset.user,
                     open: 'roles'
@@ -436,9 +438,10 @@ var UserManagementComponent = new function(){
                 return;
             }
 
-            btn = VSUtil.getElementByClass(e.target,'btn-um-permissions');
+            btn = VSUtil.closestLimited(e.target,'.btn-um-permissions');
             if(btn){
                 let op = {
+                    button:btn,
                     user_id: btn.dataset.id,
                     user_name: btn.dataset.user,
                     open: 'permissions'
@@ -451,6 +454,7 @@ var UserManagementComponent = new function(){
             btn = VSUtil.getElementByClass(e.target,'btn-um-modules');
             if(btn){
                 let op = {
+                    button:btn,
                     user_id: btn.dataset.id,
                     user_name: btn.dataset.user,
                     open: 'modules'
@@ -463,6 +467,7 @@ var UserManagementComponent = new function(){
             btn = VSUtil.getElementByClass(e.target,'btn-um-reports');
             if(btn){
                 let op = {
+                    button:btn,
                     user_id: btn.dataset.id,
                     user_name: btn.dataset.user,
                     open: 'reports'
@@ -545,7 +550,9 @@ const AddUserDialog = new function(){
     this.self = document.querySelector('#dlg_um_');
     this.elTitle = mThis.self.querySelector('.modal-title');
     this.btnSave = mThis.self.querySelector('#dlg_um_btn_save');
-
+    this.selected_options = {};
+    
+    /** Set event handlers */
     this.saveData = (modal,btnSave,end_point,options) => {
         btnSave.onclick = function(e){
             e.preventDefault();
@@ -697,12 +704,12 @@ const AddUserDialog = new function(){
                 inputList[0].classList.add('border-danger');
             }
         };
-    }
-
-    this.renderCreateUser = (modalDiv,options) => {
+ }
+      
+    this.renderCreateUser = (modalDiv,options, onFinish) => {
         const def = options.default || {};
         const div = modalDiv.querySelector('.modal-body');
-        vsapi.call(`${main_view.base_url}/api/user/form-options`,null,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/user/form-options`,null,options.button,false).then(res => {
             if(res.status_code === 200){
                 const d = res.data;
                 let option = '';
@@ -753,7 +760,7 @@ const AddUserDialog = new function(){
                                     <div class="form-group">
                                         <label for="user_class" class="form-label trans-text" data-langprop="titles.User Class"></label>
                                         <div class="width-select-dialog">
-                                            <select class="modal-select2 data-input user-class" data-field="user_class"${options.user_id ? ' disabled' : ''}>
+                                            <select class="modal-select2 data-input user-class" data-field="user_class" ${options.user_id ? ' disabled' : ''}>
                                                 ${option=null,
                                                 d && d.user_classes.forEach(op => {
                                                     option += `<option value="${op.user_class}">${op.user_class_name}</option>`;
@@ -827,7 +834,8 @@ const AddUserDialog = new function(){
                 }
                 
                 LocaleManager.translateZone(div);
-               
+
+                onFinish();
                 /** Set select' events => when user choose User class, show only suitable roles */
                 if(elUserClass){
                     elUserClass.onchange = (e)=>{
@@ -836,7 +844,8 @@ const AddUserDialog = new function(){
                             user_class: elUserClass.value
                         },null,false).then(res=>{
                             let roles = res.status_code === 200 ? res.data: [];
-                            VSUtil.setComboItems(elUserRole,roles,'id','name',null,null, (roles[0]? roles[0].id:null));
+                            let def_role_id = mThis.selected_options.role_id? mThis.selected_options.role_id: ((roles[0]? roles[0].id:null));
+                            VSUtil.setComboItems(elUserRole,roles,'id','name',null,null, def_role_id);
                         });
                     }
                 }
@@ -844,6 +853,7 @@ const AddUserDialog = new function(){
                 mThis.validatePassword(div);
                 mThis.setChooseImage(div);
                 mThis.saveData(div,mThis.btnSave,'/api/user/save',options);
+              
             }
         });
     }
@@ -851,23 +861,27 @@ const AddUserDialog = new function(){
     this.setUserFormData = (div,d)=>{
         d = d || {};
         const btn_chooser = div.querySelector('#_um_profile_show');
+        const elUserClass  = div.querySelector('select.user-class');
+        const elUserRole  = div.querySelector('select.user-role');
         if(d.image_url) mThis.setImage(btn_chooser, d.image_url);
         if(!d.login_name) d.login_name = d.phone_number || d.email;
         div.querySelectorAll('.data-input').forEach(el => {
             const f = el.dataset.field;
             if(el.nodeName.toLowerCase() === 'select'){
                 el.value = d[f] ? d[f] : ''; 
+                /* because when user_class changes then role list also change */
+                if(f ==='user_class') mThis.selected_options.role_id = d.role_id;
                 el.dispatchEvent(new Event('change'));
             }
             else
                 el.value = d[f] ? d[f] : '';
         });
-
-        //Set default Role based on if there is default role_id
-        if(d.role_id){
-            elUserClass.value = d.role_id;
-            elUserClass.dispatchEvent(new Event('change'));
-        }
+        
+        // //Set default Role based on if there is default role_id
+        // if (d.role_id > 0 && elUserRole){
+        //    elUserRole.value = d.role_id;
+        //    elUserRole.dispatchEvent(new Event('change'));
+        // }
     }
 
     this.loadFormDetails = (div, options) => {
@@ -881,7 +895,7 @@ const AddUserDialog = new function(){
         });
     }
 
-    this.renderResetPassword = (modalDiv,options) => {
+    this.renderResetPassword = (modalDiv,options,onFinish) => {
         const div = modalDiv.querySelector('.modal-body');
         const html = `<form action="" method="POST" autocomplete="off">
             <div class="form-group">
@@ -905,11 +919,13 @@ const AddUserDialog = new function(){
         </form>`;
         div.innerHTML = html;
         mThis.validatePassword(div);
+        //Set btnSave's event handler
         mThis.saveData(div,mThis.btnSave,'/api/user/security/set-pwd',options);
         LocaleManager.translateZone(div);
+        onFinish();
     }
 
-    this.renderPermissions = (modalDiv,options) => {
+    this.renderPermissions = (modalDiv,options,onFinish) => {
         const div = modalDiv.querySelector('.modal-body');
         const purpose = options.open === 'roles' ? 'role' : options.open === 'modules' ? 'modules' : options.open === 'reports' ? 'reports' : 'permissions';
         const type = options.open.toLowerCase(); 
@@ -937,6 +953,8 @@ const AddUserDialog = new function(){
             containerPagination = div.querySelector('.container-pagination');
             mThis.controlActionOnTbody(tbody,options);
             mThis.createPagination(containerPagination,d);
+            
+            onFinish();
 
             const inputSearch = div.querySelector('input.data-input');
             let timeOut = null;
@@ -1139,7 +1157,7 @@ const AddUserDialog = new function(){
 
                         if(allowed){
                             if(!AuthManager.allowed(108)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/role/delete`,p,null,false).then(res => {
+                            vsapi.call(`${main_view.base_url}/api/user/role/delete`,p, btn,false).then(res => {
                                 if(res.status_code === 200){
                                     mThis.resetRowForRole(this,{
                                         btn: previousBtn,
@@ -1168,9 +1186,9 @@ const AddUserDialog = new function(){
                                         vsapi.call(`${main_view.base_url}/api/user/role/delete`,{
                                             user_id: p.user_id,
                                             role_id: previousRoleId
-                                        },null,false).then(res => {
+                                        },btn,false).then(res => {
                                             if(res.status_code === 200){
-                                                vsapi.call(`${main_view.base_url}/api/user/role/add`,p,null,false).then(res => {
+                                                vsapi.call(`${main_view.base_url}/api/user/role/add`,p,btn,false).then(res => {
                                                     if(res.status_code === 200){
                                                         mThis.resetRowForRole(this,{
                                                             btn: previousBtn,
@@ -1195,7 +1213,7 @@ const AddUserDialog = new function(){
                                 });
                             }
                             else{
-                                vsapi.call(`${main_view.base_url}/api/user/role/add`,p,null,false).then(res => {
+                                vsapi.call(`${main_view.base_url}/api/user/role/add`,p,btn,false).then(res => {
                                     if(res.status_code === 200){
                                         mThis.resetRowForRole(this,{
                                             btn: previousBtn,
@@ -1229,7 +1247,7 @@ const AddUserDialog = new function(){
 
                         if(allowed){
                             if(!AuthManager.allowed(111)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/permission/delete`,p,null,false).then(res => {
+                            vsapi.call(`${main_view.base_url}/api/user/permission/delete`,p, btn,false).then(res => {
                                 if(res.status_code === 200){
                                     mThis.resetRow(this);
                                 }
@@ -1240,7 +1258,7 @@ const AddUserDialog = new function(){
                         }
                         else{
                             if(!AuthManager.allowed(105)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/permission/add`,p,null,false).then(res => {
+                            vsapi.call(`${main_view.base_url}/api/user/permission/add`,p,btn,false).then(res => {
                                 if(res.status_code === 200){
                                     mThis.resetRow(this);
                                 }
@@ -1265,7 +1283,7 @@ const AddUserDialog = new function(){
 
                         if(allowed){
                             if(!AuthManager.allowed(115)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/module/delete`,p,null,false).then(res => {
+                            vsapi.call(`${main_view.base_url}/api/user/module/delete`,p,btn,false).then(res => {
                                 if(res.status_code === 200){
                                     mThis.resetRow(this);
                                 }
@@ -1276,7 +1294,7 @@ const AddUserDialog = new function(){
                         }
                         else{
                             if(!AuthManager.allowed(114)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/module/add`,p,null,false).then(res => {
+                            vsapi.call(`${main_view.base_url}/api/user/module/add`,p,btn,false).then(res => {
                                 if(res.status_code === 200){
                                     mThis.resetRow(this);
                                 }
@@ -1301,7 +1319,7 @@ const AddUserDialog = new function(){
 
                         if(allowed){
                             if(!AuthManager.allowed(111)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/permission/delete`,p,null,false).then(res => {
+                            vsapi.call(`${main_view.base_url}/api/user/permission/delete`,p,btn,false).then(res => {
                                 if(res.status_code === 200){
                                     mThis.resetRow(this);
                                 }
@@ -1312,7 +1330,7 @@ const AddUserDialog = new function(){
                         }
                         else{
                             if(!AuthManager.allowed(105)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/permission/add`,p,null,false).then(res => {
+                            vsapi.call(`${main_view.base_url}/api/user/permission/add`,p,btn,false).then(res => {
                                 if(res.status_code === 200){
                                     mThis.resetRow(this);
                                 }
@@ -1456,7 +1474,7 @@ const AddUserDialog = new function(){
                 break;
         }
         if(end_point){
-            vsapi.call(`${main_view.base_url}/${end_point}`,params,null).then(res => {
+            vsapi.call(`${main_view.base_url}/${end_point}`,params,options.button,false).then(res => {
                 if(res.status_code === 200){
                     const d = res.data;
                     if(typeof onFinish === 'function') onFinish(d);
@@ -1465,7 +1483,7 @@ const AddUserDialog = new function(){
         }
     }
 
-    this.controlModalBody = (options, modal) => {
+    this.controlModalBody = (options, modal, onFinish) => {
         const open = options.open;
         switch(open){
             case 'add-user':
@@ -1481,14 +1499,14 @@ const AddUserDialog = new function(){
                 }
                 modal.querySelector('.modal-dialog').classList.add('modal-lg');
                 mThis.btnSave.removeAttribute('style');
-                mThis.renderCreateUser(modal,options);
+                mThis.renderCreateUser(modal,options,onFinish); 
                 break;
             case 'reset-password':
                 mThis.elTitle.textContent = LocaleManager.trans('Set New Password','titles');
                 modal.querySelector('.modal-dialog').classList.remove('modal-lg');
-                mThis.btnSave.textContent = 'OK';
+                mThis.btnSave.innerHTML =  `<span>${LocaleManager.trans('OK','buttons')}</span>`;
                 mThis.btnSave.removeAttribute('style');
-                mThis.renderResetPassword(modal,options);
+                mThis.renderResetPassword(modal,options,onFinish);
                 break;
             case 'roles':
             case 'permissions':
@@ -1498,7 +1516,7 @@ const AddUserDialog = new function(){
                 mThis.elTitle.textContent = LocaleManager.trans(`Add/Remove ${purpose} for ${options.user_name ? options.user_name.replace(/^\w/, (c) => c.toUpperCase()) : 'Super Admin'}`,'titles');
                 modal.querySelector('.modal-dialog').classList.add('modal-lg');
                 mThis.btnSave.style.display = 'none';
-                mThis.renderPermissions(modal,options);
+                mThis.renderPermissions(modal,options,onFinish);
                 break;
             default:
                 break;
@@ -1510,10 +1528,11 @@ const AddUserDialog = new function(){
     */
     this.show = (options=null) => {
         if(!options) options = {};
-        mThis.controlModalBody(options,this.self);
-        const modalDiv = $(this.self);
-        modalDiv.modal({
-            backdrop: 'static'
+        mThis.controlModalBody(options,this.self,()=>{
+            const modalDiv = $(this.self);
+            modalDiv.modal({
+                backdrop: 'static'
+            });
         });
     }
 }
