@@ -1843,7 +1843,7 @@ class UM //extends Model
         $str_search = '(am.module_name LIKE \'%' . $search_value . '%\' OR am.id = \''.$search_value.'\')';
         $skip_rows = 0;
     }
-    $query = DB::table('um_app_modules as am')->whereRaw($str_search)->where('am.app_id',$app_id)->selectRaw('am.id,am.ref_code,am.module_name')->orderBy('am.id','asc');
+    $query = DB::table('um_app_modules as am')->whereRaw($str_search)->where('am.app_id',$app_id)->whereRaw('IFNULL(am.hidden,0) = 0')->selectRaw('am.id,am.ref_code,am.module_name')->orderBy('am.id','asc');
     $count_query = clone $query;
     $count = $count_query->count('am.id');
     if($search_value && $count > 0) $per_page = $count;

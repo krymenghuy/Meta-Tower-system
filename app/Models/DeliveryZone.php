@@ -58,7 +58,7 @@ class DeliveryZone //extends Model
         $str_search = '2=2';
         if($search_value){
             $search_value = escape_like_str($search_value);
-            $str_search = '(z.zone_code LIKE \'%'.$search_value.'%\' OR z.zone_name LIKE \'%'.$search_value.'%\')';
+            $str_search = '(z.zone_code = \''.$search_value.'\' OR z.zone_name LIKE \'%'.$search_value.'%\')';
         }
         $str_active ='IFNULL(z.inactive,0)=0';
         $query = DB::table('zones AS z')->join('loc_communes AS com','com.id','=','z.commune_id')->join('loc_districts AS dist','dist.id','=','com.district_id')->join('loc_cities AS city','city.id','=','dist.city_id')->join('loc_countries AS c','c.id','=','city.country_id')->where('z.branch_id',$branch_id)->whereRaw($str_active)->whereRaw($str_search)->selectRaw('z.zone_type,z.id,z.zone_code,z.zone_name,z.country_id,z.city_id,z.district_id,z.commune_id,c.name_kh AS country_name, city.name AS city_name, dist.name AS district_name, com.name AS commune_name, IFNULL(z.price,0) AS price, z.description');
@@ -102,7 +102,7 @@ class DeliveryZone //extends Model
         $branch_id = $ss->branch_id;
         $zone_name = Sanitizer::sanitize($zone_name);
         $str_id = $id > 0? 'z.id <> '.$id:'1=1';
-        $test_id = DB::table('zones AS z')->where('z.branch_id',$branch_id)->where('zone_name',$zone_name)->whereRaw($str_id)->value('id');
+        $test_id = DB::table('zones AS z')->where('z.branch_id',$branch_id)->join('loc_districts as d','d.id','=','z.district_id')->join('loc_communes as c','c.id','=','z.commune_id')->join('loc_countries as x','x.id','=','z.country_id')->where('z.zone_name',$zone_name)->whereRaw($str_id)->value('z.id');
         return $test_id > 0; 
     }
 
@@ -110,7 +110,7 @@ class DeliveryZone //extends Model
         $branch_id = $ss->branch_id;
         $zone_code = Sanitizer::sanitize($zone_code);
         $str_id = $id > 0? 'z.id <> '.$id:'1=1';
-        $test_id = DB::table('zones AS z')->where('z.branch_id',$branch_id)->where('zone_code',$zone_code)->whereRaw($str_id)->value('id');
+        $test_id =  DB::table('zones AS z')->where('z.branch_id',$branch_id)->join('loc_districts as d','d.id','=','z.district_id')->join('loc_communes as c','c.id','=','z.commune_id')->join('loc_countries as x','x.id','=','z.country_id')->where('z.zone_code',$zone_code)->whereRaw($str_id)->value('z.id');
         return $test_id > 0; 
     }
 
@@ -132,7 +132,7 @@ class DeliveryZone //extends Model
         $v_rule = [
             'zone_name'=>'1|string|1-250',
             'zone_code'=>'1|string|1-15',
-            'zone_type'=>'0|string',
+            'zone_type'=>'1|choice|local,international,Local,International',
             'country_id'=>'1|number|exists=loc_countries.id',
             'city_id'=>'0|number|exists=loc_cities.id',
             'district_id'=>'0|number|exists=loc_districts.id',
