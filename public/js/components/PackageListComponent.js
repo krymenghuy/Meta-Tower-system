@@ -516,6 +516,15 @@ var PackageListComponent = new function () {
         });
     }
     
+    this.sanitizeInput = (userInput =null) => {
+        userInput = userInput || '';
+        // Remove HTML tags
+        let withoutHTML = userInput.replace(/<\/?[^>]+(>|$)/g, "");
+        // Use DOMParser to decode entities and extract plain text
+        let doc = new DOMParser().parseFromString(withoutHTML, 'text/html');
+        let safeText = doc.body.textContent || "";
+        return safeText;
+    }
     this.displayOutstandingPackageList = function (filter) {
         let p = {};
         if (filter)
@@ -601,9 +610,12 @@ var PackageListComponent = new function () {
                         let str_driver = ['<a href="javascript:void(0)" class="_pol_driver_name">', data.driver_name ? data.driver_name : 'មិនមានអ្នកដឹក', '</a>'].join('');
 
                         //set failure notes | remarks | package ramarks
-                        let notes = (data.status_id == 9 || data.status_id == 11 || data.status_id == 10) ? data.failure_notes : data.delivery_notes;
+                        //let notes = (data.status_id == 9 || data.status_id == 11 || data.status_id == 10) ? data.remarks : data.delivery_notes;
                         let cls_status = DUtil.getStatusClass(data.status_id);
-                        return ['<a data-notes="', notes, '" class="', cls_status, ' pg-text _pol_status" data-field="status" data-statusid="', data.status_id, '" data-status="', data.status, '" data-did="', data.delivery_id, '" data-senderid="', data.sender_id, '" href="javascript:;">', data.status, '</a>', str_driver].join('');
+                        const remarks = mThis.sanitizeInput(data.remarks);
+                        const failure_notes = mThis.sanitizeInput(data.failure_notes);
+                        const agent_notes = ''; //mThis.sanitizeInput(data.agent_notes); //agent notes is the same as failure notes
+                        return ['<a data-remarks="', remarks, '" data-failurenotes="',failure_notes,'" data-agentnotes ="',agent_notes,'" class="', cls_status, ' pg-text _pol_status" data-field="status" data-statusid="', data.status_id, '" data-status="', data.status, '" data-did="', data.delivery_id, '" data-senderid="', data.sender_id, '" href="javascript:;">', data.status, '</a>', str_driver].join('');
                     },
                     title: 'Status'
                 },
@@ -677,17 +689,19 @@ var PackageListComponent = new function () {
             //begin::init Popover view
                 mThis.tblPackages.find('._pol_status').each(function () {
                     let el = $(this);
-                    let notes = el.data('notes');
+                    let remarks = el.data('remarks');
+                    let failure_notes = el.data('failurenotes');
+                    if(failure_notes && failure_notes ==remarks) remarks = '';
+                    let agent_notes = el.data('agentnotes');
                     let status_id = el.data('statusid');
                     let cls = 'pg-remarks';
                     if (status_id == 9) cls = 'pg-remarks-failed';
-
-                    if (notes) {
+                    if (remarks || failure_notes) {
                         el.popover({
                             html: true,
                             trigger: "hover",
                             title: ["<span class='pg-remarks-title'>Remarks</span>"].join(''),
-                            content: notes
+                            content: ['<span class="d-block text-danger">',failure_notes,'</span><span class="d-block text-black">',remarks,'</span><span class="d-block text-success">',agent_notes,'</span>'].join('')
                         });
                     }
 
@@ -809,8 +823,8 @@ var PackageListComponent = new function () {
             //cod, price, billed_kg, taxi_fee
             let cols = ['delivery_type', 'zone_code', 'cod', 'price', 'billed_kg', 'forwarding_cost', 'df_payer'];
             if (cols.indexOf(change_agent) != -1) {
-                let billed_kg = mThis.getValue(tr, 'billed_kg'); //tr.find('td.pd-container input.billed_kg').val();
-                if (!$.isNumeric(billed_kg)) billed_kg = 0;
+                let billed_kg = mThis.getValue(tr, 'billed_kg',true); //tr.find('td.pd-container input.billed_kg').val();
+                if (isNaN(billed_kg)) billed_kg = 0;
                 let prev_tr = tr.prev();
                 if (prev_tr.hasClass('package_header')) {
                     let sender_id = prev_tr.data('senderid');
@@ -1149,7 +1163,7 @@ var PackageListComponent = new function () {
         //setPackageDetailValues() is to use the given JSON data about the package and display them on package's expended detail
         this.setPackageDetailValues = (tr, d, missing_value = 'NA') => {
             if (!tr) return;
-            if (!d) d = {};
+            let c = d || {};
             let x = tr.find('div.pd-container');
             if (d.cod == 1) d.cod_text = 'Yes'; else d.cod_text = 'No';
             x.find('div.vc-control').each(function () {
@@ -1182,7 +1196,7 @@ var PackageListComponent = new function () {
 
             });
             //display header details for some fields such as *delivery_type, *zone_code, *zone_name, *recever_phone, 
-            mThis.displayHeaderData(tr, ['delivery_type', 'receiver_phone', 'receiver_address', 'zone_code', 'zone_name', 'driver_total', 'sender_total'], d, false);
+            mThis.displayHeaderData(tr, ['delivery_type', 'receiver_phone', 'receiver_address','remarks', 'zone_code', 'zone_name', 'driver_total', 'sender_total'], d, false);
         }
 
         //@tr is expanded detail row <tr.pg_detail>
@@ -1302,7 +1316,7 @@ var PackageListComponent = new function () {
             let pid = tr.data('pid');
             let p = { 'package_id': pid };
             //alway refresh package's expaneded detail from server's database
-            vsapi.call([mThis.base_url, '/api/getPackageDetails'].join(''), p).then(res => {
+            vsapi.call([mThis.base_url, '/api/package/details'].join(''), p).then(res => {
                 if (res.status_code === 200) {
                     let packageInfo =StringSanitizer.sanitizeObject(res.data);
                     mThis.setPackageDetailValues(tr, packageInfo);
@@ -1315,7 +1329,6 @@ var PackageListComponent = new function () {
                 td.find('a.pg-detail_save_button').hide();
                 td.find('a.pg-detail_edit_button').show();
             });
-
         }
 
         this.getData = (tr) => {

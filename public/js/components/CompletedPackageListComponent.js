@@ -106,7 +106,10 @@ var CompletedPackageListComponent = new function() {
                              //set failure notes | remarks | package ramarks
                              let notes = (data.status_id==9 || data.status_id==11 || data.status_id ==10)? data.failure_notes:data.delivery_notes;
                              let cls_status = DUtil.getStatusClass(data.status_id);
-                             return ['<a data-notes="',notes,'" class="',cls_status,' pg-text _pol_status" data-field="status" data-statusid="',data.status_id,'" data-status="',data.status,'" data-did="',data.delivery_id,'" data-senderid="',data.sender_id,'" href="javascript:;">',data.status,'</a>',str_driver].join('');
+                             const remarks = mThis.sanitizeInput(data.remarks);
+                             const failure_notes = mThis.sanitizeInput(data.failure_notes);
+                             const agent_notes = mThis.sanitizeInput(data.agent_notes);
+                             return ['<a data-remarks="',remarks,'" data-failurenotes ="',failure_notes,'" data-agentnotes="',agent_notes,'" class="',cls_status,' pg-text _pol_status" data-field="status" data-statusid="',data.status_id,'" data-status="',data.status,'" data-did="',data.delivery_id,'" data-senderid="',data.sender_id,'" href="javascript:;">',data.status,'</a>',str_driver].join('');
                         },
                         title:'Status'
                     },
@@ -128,6 +131,15 @@ var CompletedPackageListComponent = new function() {
                     }
                 ];
  
+    this.sanitizeInput = (userInput =null) => {
+        userInput = userInput || '';
+       // Remove HTML tags
+       let withoutHTML = userInput.replace(/<\/?[^>]+(>|$)/g, "");
+       // Use DOMParser to decode entities and extract plain text
+       let doc = new DOMParser().parseFromString(withoutHTML, 'text/html');
+       let safeText = doc.body.textContent || "";
+       return safeText;
+    }
     this.initOnce = function() {
         if(mThis.initAlready) return;
         
@@ -157,14 +169,20 @@ var CompletedPackageListComponent = new function() {
                //begin::init Popover view
                     const btnStatus = tr.querySelector('._pol_status');
                     //if(btnStatus){
-                        const notes = btnStatus.dataset.notes;
+                        let remarks = btnStatus.dataset.remarks;
+                        let failure_notes = btnStatus.dataset.failurenotes;
+                        if(failure_notes && failure_notes ==remarks) remarks = '';
+                        const agent_notes = mThis.sanitizeInput(data.agent_notes);
+                        let status_id = btnStatus.dataset.statusid;
+                        let cls = 'pg-remarks';
+                        if (status_id == 9) cls = 'pg-remarks-failed';
                         //const status_id = btnStatus.dataset.statusid;
-                        if (notes) {
+                        if (failure_notes || remarks) {
                             $(btnStatus).popover({
                                 html: true,
                                 trigger: "hover",
                                 title: ["<span class='pg-remarks-title'>Remarks</span>"].join(''),
-                                content: notes
+                                content: ['<span class="d-block text-danger">',failure_notes,'</span><span class="d-block text-black">',remarks,'</span><span class="d-block text-success">',agent_notes,'</span>'].join('')
                             });
                         }
                     //} 
@@ -964,7 +982,7 @@ var CompletedPackageListComponent = new function() {
             "readOnly":true 
         },
         {
-            "name":"delivery_notes",
+            "name":"remarks",
             "label":"Remarks",
             "required":0,
             "inputType":"text" 

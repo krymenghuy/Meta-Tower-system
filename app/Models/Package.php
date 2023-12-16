@@ -52,7 +52,7 @@ class Package //extends Model
       $ss = $ss?$ss:$this->userInfo;
       $package_id = $id?$id:$this->id; 
       $branch_id = $ss->branch_id;
-      return DB::table('package AS p')->where('p.branch_id',$branch_id)->where('p.id',$package_id)->selectRaw('p.id,p.delivery_id, p.sender_pmt_status_id,p.driver_pmt_status_id, p.qr_code AS barcode, p.sender_id,p.sender_name,p.sender_phone,p.dim_x,p.dim_y,p.dim_h,LOWER(p.delivery_type) AS delivery_type,p.zone_code,p.zone_name,p.receiver_phone,p.receiver_address, p.cod, 0 AS cod_fee_percent, p.cod_fee, p.base_fee, p.delivery_fee, p.driver_adjust_amount,p.forwarding_cost,p.price,p.actual_kg,p.billed_kg,p.df_payer,p.agent_notes,p.delivery_notes, CASE (p.status_id=9 OR p.status_id=11) WHEN 1 THEN p.failure_notes ELSE p.delivery_notes END AS remarks, p.status_id, (SELECT name FROM driver WHERE id = p.driver_id LIMIT 1) AS driver_name, p.driver_total, p.sender_total,IFNULL(p.driver_pmt_status_id,0) AS driver_pmt_status_id,IFNULL(p.sender_pmt_status_id,0) AS sender_pmt_status_id')->take(1)->first(); 
+      return DB::table('package AS p')->where('p.branch_id',$branch_id)->where('p.id',$package_id)->selectRaw('p.id,p.delivery_id, p.sender_pmt_status_id,p.driver_pmt_status_id, p.qr_code AS barcode, p.sender_id,p.sender_name,p.sender_phone,p.dim_x,p.dim_y,p.dim_h,LOWER(p.delivery_type) AS delivery_type,p.zone_code,p.zone_name,p.receiver_phone,p.receiver_address, p.cod, 0 AS cod_fee_percent, LOWER(p.df_payer) AS df_payer, p.cod_fee, p.base_fee, p.delivery_fee, p.driver_adjust_amount,p.forwarding_cost,p.price,p.actual_kg,p.billed_kg,p.agent_notes,p.delivery_notes AS remarks, p.failure_notes, p.status_id, (SELECT name FROM driver WHERE id = p.driver_id LIMIT 1) AS driver_name, p.driver_total, p.sender_total,IFNULL(p.driver_pmt_status_id,0) AS driver_pmt_status_id,IFNULL(p.sender_pmt_status_id,0) AS sender_pmt_status_id')->take(1)->first(); 
     } 
  
     /** Return object {"details"=> object,"cod"=>[],"df_payer"=> [],"delivery_type"=>[]} */
@@ -60,11 +60,11 @@ class Package //extends Model
       $ss = $ss?$ss:$this->userInfo;
       $package_id = $id?$id:$this->id; 
       $branch_id = $ss->branch_id;
-      $p = DB::table('package AS p')->where('p.branch_id',$branch_id)->where('p.id',$package_id)->selectRaw('p.id,p.delivery_id, p.sender_pmt_status_id,p.driver_pmt_status_id, p.qr_code AS barcode, p.sender_id,p.sender_name,p.sender_phone,p.dim_x,p.dim_y,p.dim_h,LOWER(p.delivery_type) AS delivery_type,p.zone_code,p.zone_name,p.receiver_phone,p.receiver_address, p.cod, 0 AS cod_fee_percent, p.cod_fee, p.base_fee, p.delivery_fee, p.driver_adjust_amount,p.forwarding_cost,p.price,p.actual_kg,p.billed_kg,p.df_payer,p.agent_notes,p.delivery_notes, CASE (p.status_id=9 OR p.status_id=11) WHEN 1 THEN p.failure_notes ELSE p.delivery_notes END AS remarks, p.status_id, (SELECT name FROM driver WHERE id = p.driver_id LIMIT 1) AS driver_name, p.driver_total, p.sender_total,IFNULL(p.driver_pmt_status_id,0) AS driver_pmt_status_id,IFNULL(p.sender_pmt_status_id,0) AS sender_pmt_status_id')->take(1)->first(); 
+      $p = DB::table('package AS p')->where('p.branch_id',$branch_id)->where('p.id',$package_id)->selectRaw('p.id,p.delivery_id, p.sender_pmt_status_id,p.driver_pmt_status_id, p.qr_code AS barcode, p.sender_id,LOWER(p.df_payer) AS df_payer,p.sender_name,p.sender_phone,p.dim_x,p.dim_y,p.dim_h,LOWER(p.delivery_type) AS delivery_type,p.zone_code,p.zone_name,p.receiver_phone,p.receiver_address, p.cod, 0 AS cod_fee_percent, p.cod_fee, p.base_fee, p.delivery_fee, p.driver_adjust_amount,p.forwarding_cost,p.price,p.actual_kg,p.billed_kg,p.agent_notes,p.delivery_notes AS remarks, p.failure_notes, p.status_id, (SELECT name FROM driver WHERE id = p.driver_id LIMIT 1) AS driver_name, p.driver_total, p.sender_total,IFNULL(p.driver_pmt_status_id,0) AS driver_pmt_status_id,IFNULL(p.sender_pmt_status_id,0) AS sender_pmt_status_id')->take(1)->first(); 
       return (object)[
          'details'=>$p,
          'cod'=>[(object)['cod'=>0,'cod_name'=>'No'],(object)['cod'=>1,'cod_name'=>'Yes']],
-         'df_payer'=>[(object)['df_payer'=>'Sender'],(object)['df_payer'=>'Receiver']],
+         'df_payer'=>[(object)['df_payer'=>'sender'],(object)['df_payer'=>'receiver']],
          'delivery_type'=>[(object)['delivery_type'=>'normal'],(object)['delivery_type'=>'fast']],
          'zone_code'=>DB::table('zones as z')->where('branch_id',$branch_id)->whereRaw('IFNULL(inactive,0) =0')->selectRaw('z.zone_code,CONCAT(zone_code,\' \',z.zone_name) AS zone_name')->get()
       ];
@@ -494,6 +494,7 @@ class Package //extends Model
         'forwarding_cost'=>'0|number|default=0',
         'driver_total'=>'0|number|default=0',
         'sender_total'=>'0|number|default=0',
+        'remarks'=>'0|string|0-250',
         'delivery_notes'=>'0|string|0-250'
       ];
       
@@ -501,6 +502,7 @@ class Package //extends Model
       if($res->error) return DV::error($res->error);
       $inputs = $res->values;
       $d = (object)$inputs;
+      $inputs['delivery_notes'] = $d->delivery_notes ?? $d->remarks;
       $inputs['receiver_phone'] = str_replace(' ','',$d->receiver_phone?$d->receiver_phone:'');
        if (!$id) {
           return DV::error("Package identity is not valid");
@@ -514,7 +516,7 @@ class Package //extends Model
        if ($p->sender_pmt_status_id ==1) return DV::error('Cannot modify package information because payment has been settled with merchant');
        if($p->driver_pmt_status_id ==1) return DV::error('Cannot modify package information because payment has been settled with driver');
        
-       if($p->status_id ==9) $inputs['failure_notes'] = $d->delivery_notes;
+       //if($p->status_id ==9) $inputs['failure_notes'] = $d->delivery_notes;
 
        $zone = $this->getZoneByCode($ss->branch_id,$d->zone_code);
        if ($zone ==null) return DV::error("The provided Zone Code is not valid ");
@@ -2551,7 +2553,7 @@ function getZoneByCode($branch_id, $zone_code) {
           $c->order_id = isset($order->id)? $order->id: (isset($order->order_id)? $order->order_id:null); 
           $c->product_type = isset($c->product_type)? $c->product_type: $order->product_type;
           $remarks = isset($c->remarks)?$c->remarks:'';
-          $c->delivery_notes = $remarks;
+         if(!$c->delivery_notes)  $c->delivery_notes = $remarks;
           $c->warehouse_id = isset($order->warehouse_id)?$order->warehouse_id:null;
           if (!isPhoneNumber($c->receiver_phone)) return DV::error('Receiver phone is not correct');
           if (!isset($c->warehouse_id)) return DV::error('No warehouse ID provided for package with reeiver phone '.$c->receiver_phone);

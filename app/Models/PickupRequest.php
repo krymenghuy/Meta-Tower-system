@@ -14,7 +14,7 @@ use Localization;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-
+use function PHPUnit\Framework\fileExists;
 class PickupRequest //extends Model
 {
     //use HasFactory;
@@ -66,6 +66,7 @@ class PickupRequest //extends Model
         $qty = isset($d['qty'])?$d['qty']:0;
         if ($qty >1000) return DV::error('It seems too many packages');
 
+        $nowTime = getNowTime()();
         DB::table('order')->insert([
              'detail_type'=>$detail_type,
             'branch_id' => $branch_id,
@@ -87,8 +88,12 @@ class PickupRequest //extends Model
             'loc_lat'=>$d['loc_lat'],
             'loc_lng'=>$d['loc_lng'],
             'expiry_date'=>$expiry_date,
-            'create_user'=>$ss->login_name,
-            'create_date'=>getNowTime()
+            'create_uid'=>$ss->user_id,
+            'create_user'=>$ss->full_name,
+            'create_date'=>$nowTime,
+            'update_date'=>$nowTime,
+            'update_user'=>$ss->full_name,
+            'update_uid'=>$ss->user_id
         ]);
         $new_order_id = DB::getPdo()->lastInsertId();
         if($new_order_id>0){
@@ -374,7 +379,7 @@ class PickupRequest //extends Model
             $c->order_id = isset($order->id)? $order->id: (isset($order->order_id)? $order->order_id:null); 
             $c->product_type = isset($c->product_type) ? $c->product_type: $order->product_type;
             $remarks = isset($c->remarks) ? $c->remarks: '';
-            $c->delivery_notes = $remarks;
+            if(!isset($c->delivery_notes)) $c->delivery_notes = $remarks;
             $c->warehouse_id = isset($order->warehouse_id) ? $order->warehouse_id:  null;
             if (!isPhoneNumber($c->receiver_phone)) return DV::error('Receiver phone is not correct');
             if (!$c->warehouse_id) return DV::error('No warehouse ID provided for package with reeiver phone '.$c->receiver_phone);
@@ -532,7 +537,7 @@ class PickupRequest //extends Model
         $warehouse_id = $w->id;
         $inputs['warehouse_id'] =$warehouse_id;
         $d->warehouse_id = $warehouse_id;
-
+        unset( $inputs['use_default_location']);  
         if(!isset($d->order_id)) $d->order_id = 0;
          
         //From External source OR $is_from_mobile = isset($d->is_from_mobile)?$d->is_from_mobile:0;
@@ -703,7 +708,7 @@ class PickupRequest //extends Model
     }
 
     static function getOrderDetails_one($id){
-        $row = DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->where('o.id',$id)->selectRaw('o.id as order_id,booking_channel,IFNULL(o.completed,0) AS completed,o.delivery_type, o.code as order_code, o.request_vehicle_type, o.sender_id, s.name AS sender_name, s.phone_number AS sender_phone, formatDate(o.request_date) AS request_date,  DATE_FORMAT(o.request_date,\'%r\') AS request_time,o.qty, o.product_type,o.loc_lat,loc_lng, o.pickup_address, o.status_id, ps.name AS order_status, (SELECT d.name FROM driver as d WHERE d.id = o.driver_id LIMIT 1) AS driver_name,o.create_user,formatTime(o.create_date) As create_date')->first();
+        $row = DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->where('o.id',$id)->selectRaw('o.id as order_id,booking_channel,IFNULL(o.completed,0) AS completed,o.delivery_type, o.code as order_code, o.request_vehicle_type, o.sender_id, s.name AS sender_name, s.phone_number AS sender_phone, formatDate(o.request_date) AS request_date,  DATE_FORMAT(o.request_date,\'%r\') AS request_time,o.qty, o.product_type,o.loc_lat,o.loc_lng, o.pickup_address, o.status_id, ps.name AS order_status, (SELECT d.name FROM driver as d WHERE d.id = o.driver_id LIMIT 1) AS driver_name,o.create_user,formatTime(o.create_date) As create_date')->first();
         if(!$row) return $row;
         $row->map_url = getLocationUrl($row->loc_lat,$row->loc_lng);
         return $row;
@@ -1482,7 +1487,28 @@ class PickupRequest //extends Model
            $table ='order_receivers';
         else //select packages from table "package"
            $table ='package';
-        return DB::table($table.' AS r')->join('package_statuses AS ps','ps.id','=','r.status_id')->join('sender AS s','s.id','=','r.sender_id')->where('r.branch_id',$branch_id)->where('r.order_id',$order_id)->selectRaw('r.id AS package_id,r.status_id,r.qr_code as barcode,r.delivery_type,\''.$sender_id.'\' AS sender_id,s.name AS sender_name, r.receiver_address,r.receiver_phone,r.receiver_name, r.package_name,LOWER(r.delivery_type) AS delivery_type,r.zone_code,r.zone_name,CONCAT(dim_x,\' \',dim_y,\' \',dim_h) AS size, r.actual_kg, r.billed_kg, IFNULL(r.base_fee,0) AS base_fee, r.delivery_fee,r.df_payer,r.price,r.cod,r.cod_fee,r.forwarding_cost,r.delivery_notes,ps.name AS status, (IFNULL(r.base_fee,0) + IFNULL(r.delivery_fee,0)) AS fees, CASE r.cod WHEN 1 THEN (IFNULL(r.price,0) - IFNULL(r.cod_fee,0)) ELSE 0 END AS cod_amount, ROUND(driver_total,2) AS driver_total')->get();
+        return DB::table($table.' AS r')->join('package_statuses AS ps','ps.id','=','r.status_id')->join('sender AS s','s.id','=','r.sender_id')->where('r.branch_id',$branch_id)->where('r.order_id',$order_id)->selectRaw('r.id AS package_id,r.status_id,r.qr_code as barcode,r.delivery_type,\''.$sender_id.'\' AS sender_id,s.name AS sender_name, r.receiver_address,r.delivery_notes As remarks,r.receiver_phone,r.receiver_name, r.package_name,LOWER(r.delivery_type) AS delivery_type,r.zone_code,r.zone_name,CONCAT(dim_x,\' \',dim_y,\' \',dim_h) AS size, r.actual_kg, r.billed_kg, IFNULL(r.base_fee,0) AS base_fee, r.delivery_fee,r.df_payer,r.price,r.cod,r.cod_fee,r.forwarding_cost,ps.name AS status, (IFNULL(r.base_fee,0) + IFNULL(r.delivery_fee,0)) AS fees, CASE r.cod WHEN 1 THEN (IFNULL(r.price,0) - IFNULL(r.cod_fee,0)) ELSE 0 END AS cod_amount, ROUND(driver_total,2) AS driver_total')->get();
+     }
+ 
+     function getOrderPackagePhotos($id=null,$ss =null){
+        $ss = $ss ?? $this->userInfo;
+        $order_id =$id ?? $this->id;
+        $branch_id = $ss->branch_id;
+
+        $rows = DB::table("order_images as img")->join('order as o','o.id','=','img.order_id')->where('o.id',$order_id)->where('img.branch_id',$branch_id)->selectRaw("img.id,img.file_name,img.file_type,file_size_kb")->get();
+        $img_folder = 'package';
+        $base_url = PublicStorage::getUrl($branch_id,$img_folder,'image');
+        $default_image =$base_url.'/def_image.png';
+        $dir = PublicStorage::getDiskPath($branch_id,$img_folder,'image');
+        
+        foreach($rows as $row){
+            $filePath = $dir.$row->file_name;
+            if (fileExists($filePath))   
+               $row->image_url = $base_url.$row->file_name;
+            else
+               $row->image_url = $default_image; 
+        }
+        return $rows;
      }
 
      //Returns one package's details for editing on Pickup List (when user Reveive packages)
@@ -1498,13 +1524,9 @@ class PickupRequest //extends Model
         $rows = DB::table('order AS o')->where('branch_id',$branch_id)->where('o.id',$order_id)->selectRaw('status_id')->limit(1)->get();
         foreach($rows as $row) $status_id = $row->status_id;
         if(empty($status_id)) $order_id =-1;
-        $rows = [];
-        if ($status_id <5) // Perform Pickup for a particular Pickup Request (select packages from table "order_receivers")
-          $rows= DB::table("order_receivers AS r")->join('sender AS s','s.id','=','r.sender_id')->join('package_statuses AS ps','ps.id','=','r.status_id')->where('r.branch_id',$branch_id)->where('r.order_id',$order_id)->where('r.id',$package_id)->selectRaw("r.id AS package_id,r.status_id, NULL as barcode,r.delivery_type, r.zone_code,r.zone_name, r.sender_id,s.name AS sender_name, r.receiver_address,r.receiver_phone,r.receiver_name, r.package_name,r.zone_code,LOWER(r.delivery_type) AS delivery_type, r.zone_name,CONCAT(dim_x,' ',dim_y,' ',dim_h) AS size, r.actual_kg, r.billed_kg,r.base_fee, r.delivery_fee,r.df_payer,r.price,r.cod,r.cod_fee,r.forwarding_cost,ps.name AS status,(IFNULL(r.base_fee,0) + IFNULL(r.delivery_fee,0)) AS fees, CASE r.cod WHEN 1 THEN (IFNULL(r.price,0) - IFNULL(r.cod_fee,0)) ELSE 0 END AS cod_amount,r.driver_total,r.sender_total")->limit(1)->get();
-        else //select packages from table "package"
-          $rows = DB::table("package AS r")->join('package_statuses AS ps','ps.id','=','r.status_id')->join('sender as s','s.id','=','r.sender_id')->where('r.branch_id',$branch_id)->where('r.order_id',$order_id)->where('r.id',$package_id)->selectRaw("r.id AS package_id,r.status_id,r.qr_code AS barcode,r.delivery_type,r.zone_code,r.zone_name,r.sender_id,s.name AS sender_name,r.receiver_address,r.receiver_phone,r.receiver_name, r.package_name,r.zone_code,LOWER(r.delivery_type) AS delivery_type,r.zone_name,CONCAT(dim_x,' ', dim_y,' ', dim_h) AS size, r.actual_kg, r.billed_kg,r.base_fee, r.delivery_fee,r.df_payer,r.price,r.cod,r.cod_fee,r.forwarding_cost,r.delivery_notes, ps.name AS status,(IFNULL(r.base_fee,0) + IFNULL(r.delivery_fee,0)) AS fees, CASE r.cod WHEN 1 THEN (IFNULL(r.price,0) - IFNULL(r.cod_fee,0)) ELSE 0 END AS cod_amount,r.driver_total,r.sender_total")->limit(1)->get();
-        foreach($rows as $row) return $row;
-        return [];
+        $table = 'order_receivers';
+        if ($status_id >=5)   $table = 'package';
+        return DB::table($table.' AS r')->join('package_statuses AS ps','ps.id','=','r.status_id')->join('sender as s','s.id','=','r.sender_id')->where('r.branch_id',$branch_id)->where('r.order_id',$order_id)->where('r.id',$package_id)->selectRaw("r.id AS package_id,r.status_id,r.qr_code AS barcode,r.delivery_type,r.zone_code,r.zone_name,r.sender_id,s.name AS sender_name,r.receiver_address,r.delivery_notes AS remarks,r.receiver_phone,r.receiver_name, r.package_name,r.zone_code,LOWER(r.delivery_type) AS delivery_type,r.zone_name,CONCAT(dim_x,' ', dim_y,' ', dim_h) AS size, r.actual_kg, r.billed_kg,r.base_fee, r.delivery_fee,r.df_payer,r.price,r.cod,r.cod_fee,r.forwarding_cost,r.delivery_notes, ps.name AS status,(IFNULL(r.base_fee,0) + IFNULL(r.delivery_fee,0)) AS fees, CASE r.cod WHEN 1 THEN (IFNULL(r.price,0) - IFNULL(r.cod_fee,0)) ELSE 0 END AS cod_amount,r.driver_total,r.sender_total")->take(1)->first(); 
      }
  
      function deleteOrderPackage($arr=[],$ss){
@@ -1578,6 +1600,7 @@ class PickupRequest //extends Model
             'size'=>'0|string|0-100',
             'df_payer'=>'0|choice|sender,receiver,Sender,Receiver',
             'receiver_address'=>'0|string|300',
+            'remarks'=>'0|string|250',
             'delivery_notes'=>'0|string|250',
             'base_fee'=>'0|number|0-10|default=0',
             'delivery_fee'=>'0|number|0-10|default=0',
@@ -1964,7 +1987,7 @@ class PickupRequest //extends Model
     }
 
 
-    /** When user Click on Arrive button */
+    /** When user Click on Arrive button | ReceiveOrderPackages */
     function receivePackages($arr = [],$id = null, $ss =null){
         $ss = $ss?$ss:$this->userInfo;
         $id = $id?$id:$this->id;
