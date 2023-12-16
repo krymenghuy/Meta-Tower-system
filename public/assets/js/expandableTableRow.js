@@ -151,10 +151,12 @@
             if (next_tr && next_tr.classList.contains(that.rowClass)){
                 if(that.prev_expandable_row){
                     if(that.prev_expandable_row !== next_tr){
-                       
-                        if (typeof that.option.onClose ==='function')  that.option.onClose();
+                        const div_expandable_row_container = next_tr.querySelector(`.${that.wrapperClass}`);
+                        if (typeof that.option.onClose ==='function'){
+                            that.option.onClose(div_expandable_row_container, that.prev_expandable_row,tr);
+                        }
                         that.prev_expandable_row.style.display ='none';
-                        if (typeof that.option.afterClose ==='function') that.option.afterClose();
+                        if (typeof that.option.afterClose ==='function') that.option.afterClose(div_expandable_row_container,next_tr,tr);
 
                         // if (typeof that.option.onClose ==='function'){
                         //      that.option.onClose();
@@ -170,7 +172,10 @@
                 if (vib){
                     next_tr.style.display='none';
                     that.prev_expandable_row = null;
-                    if (typeof that.option.onClose ==='function') that.option.onClose();
+                    if (typeof that.option.onClose ==='function') {
+                        const div_expandable_row_container = next_tr.querySelector(`.${that.wrapperClass}`);
+                        that.option.onClose(div_expandable_row_container, next_tr,tr);
+                    }
                     // if (typeof that.option.onClose ==='function'){
                     //     let a = that.option.onClose();
                     //     //if(!a) return;

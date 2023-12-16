@@ -65,30 +65,16 @@ class Report //extends Model
        return (object)array('barcode'=>null,'cod'=>0,'other_fees'=>0,'price'=>0,'sender_phone'=>null,'sender_name'=>null,'receiver_address'=>null,'receiver_phone'=>null,'zone_name'=>null,'zone_code'=>null,'exchange_rate'=>1,'total_delivery_fee'=>0);
     }
 
-    function getPickupList($warehouse_id,$date,$search_value,$sender_id,$delivery_type,$status_id){
+    function getPickupListByMerchant($warehouse_id,$start_date,$end_date,$sender_id,$driver_id){
         $branch_id =Session::get('branch_id',0);
-        $more_wheres = "o.status_id <=4 "; //" o.warehouse_id ='".$warehouse_id."' ";
-        $str_search = null;
-        $str_date = null;
-        $str_sender= null;
-        $str_status = null;
-        $str_delivery_type =null;
-
-        $date = convertDate($date);
-
-        if (!empty($search_value)) {
-            $str_search =" AND (o.code ='".$search_value."' OR s.phone_number ='".$search_value."' OR s.name LIKE '%".escape_like_str($search_value)."%') ";
-            $more_wheres .= $str_search;
-        } else {
-            if($status_id> 0) $str_status = " AND o.status_id ='".Sanitizer::sanitize($status_id)."' ";
-            if($sender_id > 0) $str_sender = " AND o.sender_id ='".Sanitizer::sanitize($sender_id)."' ";
-            //if($driver_id > 0) $str_driver = " AND o.driver_id ='".Sanitizer::sanitize($driver_id)."' ";
-            if ((bool)strtotime($date)) $str_date = " AND DATE(o.request_date) >= '". Date('Y-m-d',strtotime($date))."' ";
-            if (!empty($delivery_type)) $str_delivery_type = " AND o.delivery_type ='".$delivery_type."'";
-            $more_wheres .=$str_date.$str_sender.$str_status.$str_delivery_type;
-        }
-         return DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS os','os.id','=','o.status_id')->where('o.branch_id',$branch_id)->whereRaw($more_wheres)->selectRaw("s.code AS sender_code,s.name AS sender_name, s.phone_number AS sender_phone,o.code AS order_code,DATE_FORMAT(o.request_date,'%d %b %Y') AS request_date, o.product_type, o.qty, o.request_vehicle_type AS vehicle_type,(SELECT d.name FROM driver AS d WHERE d.id =o.driver_id LIMIT 1) AS driver_name, os.name AS status")->get();
-
+        $str_date = '1=1';
+        $str_sender= $sender_id > 0 ? 's.id = '.$sender_id : '2=2';
+        $str_driver = $driver_id > 0 ? 'p.pickup_driver_id = '.$driver_id : '3=3';
+        $start_date =convertDate($start_date) ?? date('Y-m-d');
+        $end_date =convertDate($end_date) ?? date('Y-m-d');
+        $str_date = 'DATE(p.arrival_time) >= \''.$start_date.'\' AND DATE(p.arrival_time) <=\''.$end_date. '\'';
+        $cols = 'p.id,p.qr_code AS barcode,formatDate(p.arrival_time) AS arrival_date, p.product_type,p.delivery_notes as remarks,p.receiver_phone, s.name AS sender_name, s.code as sender_code, s.phone_number as sender_phone,p.price, (p.price - IFNULL(p.cod_fee,0)) AS cod_amount, p.base_fee, p.delivery_fee,p.driver_id, p.pickup_driver_id'; 
+        return DB::table('package as p')->join('sender AS s','s.id','=','p.sender_id')->join('package_statuses AS ps','ps.id','=','p.status_id')->where('p.warehouse_id',$warehouse_id)->where('p.branch_id',$branch_id)->whereRaw($str_date)->whereRaw($str_sender)->whereRaw($str_driver)->selectRaw($cols)->get();
     }
 
     function groupRows($rows, $col_name) {
@@ -213,7 +199,6 @@ class Report //extends Model
           $select_cols ='p.id As package_id,p.delivery_id, p.order_id,formatDate(p.arrival_time) AS arrival_date,formatDate(p.create_date) AS create_date,p.product_type, p.zone_code, p.delivery_type, p.qr_code AS barcode,p.delivery_condition, p.delivery_type, formatTime(delivery_time) AS delivery_time, delivery_notes,return_notes,failure_notes,
           formatDate(p.arrival_time) AS `arrival_time`, s.sender_type_id, st.name AS sender_type, (select x.name from driver as x WHERE x.id = p.driver_id LIMIT 1) AS driver_name, p.driver_id,
          p.status_id,(SELECT ds.name FROM package_statuses AS ds WHERE ds.id = p.status_id LIMIT 1) AS status, p.sender_id, s.phone_number AS sender_phone, p.receiver_id, p.receiver_address, p.receiver_name, p.receiver_phone, p.zone_code,p.zone_name, s.name AS sender_name,p.cod,p.df_payer,p.forwarding_cost,p.price,p.delivery_fee,p.base_fee, IFNULL(p.driver_total,0) AS driver_total, IFNULL(p.sender_total,0) AS sender_total';
-
          return DB::table('package AS p')->join('sender AS s','s.id','=','p.sender_id')->join('sender_type AS st','st.id','=','s.sender_type_id')->selectRaw($select_cols)->where('p.branch_id',$branch_id)->whereRaw($more_wheres)->orderByRaw('p.create_date DESC,p.sender_id,p.status_id ASC')->get();
     }
 

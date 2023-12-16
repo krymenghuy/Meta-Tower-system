@@ -138,23 +138,23 @@
                     <span class="kt-menu__link-text font-color text-nowrap trans-text" data-langprop="menus.Merchant Transactions"></span>
                 </a>
             </li>
-            <li class="kt-menu__item" aria-haspopup="true" style="display:none" <?php v_display(223);?>>
+            <!-- <li class="kt-menu__item" aria-haspopup="true" style="display:none" <?php v_display(223);?>>
                 <a href="SalesAgentsComponent" modid="223" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/sales_commissions.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Sales Commissions"></span>
                 </a>
-            </li>
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(219);?>>
+            </li> -->
+            <!-- <li class="d-none kt-menu__item" aria-haspopup="true" <?php v_display(219);?>>
                 <a href="DriverBalancesCompoment" class="menu-item kt-menu__link" modid="219">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/marchant_transactions.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color text-nowrap trans-text" data-langprop="menus.Driver Balances"></span>
                 </a>
-            </li>
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(213); ?>>
+            </li> -->
+            <li class="d-none kt-menu__item" aria-haspopup="true" <?php v_display(213); ?>>
                 <a href="MerchantBalancesCompoment" modid="213" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/marchant_transactions.svg') }}" />

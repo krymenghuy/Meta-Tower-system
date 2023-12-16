@@ -144,13 +144,7 @@ Route::post('contact-info', [MobileAppSettingsController::class, 'getContactInfo
 //No rate limit per minute for ajax search function
 Route::post('getMerchantsByPriceList', [PriceController::class, 'getMerchantsByPriceList']);
 Route::post('getPriceListIdBySearchValue', [PriceController::class, 'getPriceListIdBySearchValue']);
- 
-//begin:: OrderController | PickupRequestComtroller
-Route::prefix('/delivery-order')->group(function(){
-    //Receiver packages to arrive at warehouse
-    Route::post('/receive', [PickupRequestController::class, 'receivePackages']);
-});
-//end:: OrderController | PickuprequestController
+  
 
         Route::prefix('order')->group(function(){
             Route::post('/list', [PickupRequestController::class, 'getPickupList']);
@@ -165,6 +159,8 @@ Route::prefix('/delivery-order')->group(function(){
             Route::post('/package-photos', [PickupRequestController::class, 'getOrderPackagePhotos']);
             Route::post('/change-driver', [PickupRequestController::class, 'changePickupDriver']);
             Route::post('/assign-driver', [PickupRequestController::class, 'assignPickupDriver']);
+            //User click "Arrive" button to receive items
+            Route::post('/receive', [PickupRequestController::class, 'receivePackages']);
             //Route::post('/merchant-address', [SenderController::class,'getVendorAddress']);
         });
 
@@ -226,6 +222,7 @@ Route::prefix('/delivery-order')->group(function(){
             Route::post('/change-sender', [PackageController::class, 'changeSender']);
             Route::post('/change-merchant', [PackageController::class, 'changeSender']);
             Route::post('/price-info', [PackageController::class, 'getDeliveryPriceInfo_api']);
+            Route::post('/details', [PackageController::class, 'getPackageDetails']);
          });
         //end::PackageController new
 

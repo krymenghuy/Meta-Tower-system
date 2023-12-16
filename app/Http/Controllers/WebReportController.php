@@ -90,16 +90,21 @@ class WebReportController extends Controller{
 
         switch($rtype){
           case 'pickup_list':{
-            $warehouse_id =isset($p->wid)? $p->wid:null;
-            $date = isset($p->date)?$p->date:null;
-            $search_value =isset($p->search)?$p->search:null;
-            $sender_id=isset($p->sid)?$p->sid:null;
-            $delivery_type=isset($p->dtype)?$p->dtype:null;
-            $status_id=isset($p->stid)?$p->stid:null;
-
-            $data['items'] = $this->reportModel->getPickupList($warehouse_id,$date,$search_value, $sender_id,$delivery_type,$status_id);
-            $data['title'] ="Pickup List Report";
-            $data['subtitle'] ="Print Date: ".Carbon::now();
+            $warehouse_id =isset($p->wid)? $p->wid:1;
+            $start_date = isset($p->startdate)? convertDate($p->startdate):date('Y-m-d');
+            $end_date = isset($p->enddate)? convertDate($p->enddate):date('Y-m-d');
+            $sender_id=isset($p->senderid)?$p->senderid:null;
+            $driver_id=isset($p->driverid)?$p->driverid:null;
+            $delivery_type=isset($p->deliverytype)?$p->deliverytype:null;
+            $sender = DB::table('sender AS s')->where('s.id',$sender_id)->selectRaw('s.id,s.name,s.code,s.phone_number')->take(1)->first();
+            if (!$sender){
+              echo 'មិនឃើញមានអ្នកលក់ត្រូវបានជ្រើសរើស ដើម្បីមើលរបាយការណ៍មួយនេះទេ';
+              return;
+            }
+            $data['items'] = $this->reportModel->getPickupListByMerchant($warehouse_id,$start_date,$end_date, $sender_id,$driver_id);
+            $data['title'] ='បញ្ជីទំនិញដែលបានទទួល';
+            $data['subtitle'] ='អ្នកលក់ '.$sender->name.' ('.$sender->code.')   Tel: '.$sender->phone_number; //'Print Date: '.Carbon::now();
+            $data['subtitle1'] = 'ចាប់ពីថ្ងៃ '.date('d M Y',$start_date). ' ដល់ '.date('d M Y',  $end_date); 
             break;
           }
           case 'daily_packages':{
