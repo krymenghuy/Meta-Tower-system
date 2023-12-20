@@ -1,10 +1,8 @@
 <?php
 
 namespace App\Models;
-
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
- 
 use App\Models\PublicStorage;
 use App\Models\DV;
 use DB;
@@ -203,7 +201,7 @@ class Lead //extends Model
     function getNextLeadCode($uss,$len =4){
       $branch_id = $uss->branch_id;
       $prefix ='P';
-      $str_prefix = $prefix? 'c.prefix =\''.$prefix.'\'' : '2=2';
+      $str_prefix = $prefix? 'prefix =\''.$prefix.'\'' : '2=2';
       $row = DB::table('lead_code_control AS c')->where('branch_id',$branch_id)->whereRaw($str_prefix)->selectRaw('TRIM(c.prefix) AS prefix,c.last_id')->take(1)->first();
       if($row) {
           $num = $row->last_id;
